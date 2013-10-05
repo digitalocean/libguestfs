@@ -24796,6 +24796,81 @@ ruby_guestfs_journal_set_data_threshold (VALUE gv, VALUE thresholdv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.aug_setm(base, sub, val) -> fixnum
+ *
+ * set multiple Augeas nodes
+ *
+ * Change multiple Augeas nodes in a single operation.
+ * "base" is an expression matching multiple nodes. "sub"
+ * is a path expression relative to "base". All nodes
+ * matching "base" are found, and then for each node, "sub"
+ * is changed to "val". "sub" may also be "NULL" in which
+ * case the "base" nodes are modified.
+ * 
+ * This returns the number of nodes modified.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_aug_setm+[http://libguestfs.org/guestfs.3.html#guestfs_aug_setm]).
+ */
+static VALUE
+ruby_guestfs_aug_setm (VALUE gv, VALUE basev, VALUE subv, VALUE valv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "aug_setm");
+
+  const char *base = StringValueCStr (basev);
+  const char *sub = !NIL_P (subv) ? StringValueCStr (subv) : NULL;
+  const char *val = StringValueCStr (valv);
+
+  int r;
+
+  r = guestfs_aug_setm (g, base, sub, val);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.aug_label(augpath) -> string
+ *
+ * return the label from an Augeas path expression
+ *
+ * The label (name of the last element) of the Augeas path
+ * expression "augpath" is returned. "augpath" must match
+ * exactly one node, else this function returns an error.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_aug_label+[http://libguestfs.org/guestfs.3.html#guestfs_aug_label]).
+ */
+static VALUE
+ruby_guestfs_aug_label (VALUE gv, VALUE augpathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "aug_label");
+
+  const char *augpath = StringValueCStr (augpathv);
+
+  char *r;
+
+  r = guestfs_aug_label (g, augpath);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
 extern void Init__guestfs (void); /* keep GCC warnings happy */
 
 /* Initialize the module. */
@@ -25931,4 +26006,8 @@ Init__guestfs (void)
         ruby_guestfs_journal_get_data_threshold, 0);
   rb_define_method (c_guestfs, "journal_set_data_threshold",
         ruby_guestfs_journal_set_data_threshold, 1);
+  rb_define_method (c_guestfs, "aug_setm",
+        ruby_guestfs_aug_setm, 3);
+  rb_define_method (c_guestfs, "aug_label",
+        ruby_guestfs_aug_label, 1);
 }

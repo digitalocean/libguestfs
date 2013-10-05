@@ -41,7 +41,7 @@ filesystems found, one per line, like this:
 додаткову інформацію:
 
  $ virt-filesystems -a disk.img -l
- Name                   Type         VFS   Label  Size
+ Назва                  Тип          ВФС   Мітка  Розмір
  /dev/sda1              filesystem   ext4  boot   524288000
  /dev/vg_guest/lv_root  filesystem   ext4  root   10212081664
 
@@ -106,11 +106,11 @@ separate I<-a> options.
 примусово використати певний формат, скористайтеся параметром
 I<--format=..>.
 
-=item B<-a URI>
+=item B<-a адреса>
 
-=item B<--add URI>
+=item B<--add адреса>
 
-Add a remote disk.  See L<guestfish(1)/ADDING REMOTE STORAGE>.
+Додати віддалений диск. Див. L<guestfish(1)/ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА>.
 
 =item B<--all>
 

@@ -5836,3 +5836,99 @@ guestfs_journal_open (guestfs_h *g,
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC char *
+guestfs_aug_label (guestfs_h *g,
+                   const char *augpath)
+{
+  struct guestfs_aug_label_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_aug_label_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  char *ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "aug_label", 9);
+  if (augpath == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "aug_label", "augpath");
+    return NULL;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "aug_label");
+    fprintf (trace_buffer.fp, " \"%s\"", augpath);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "aug_label") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "aug_label", "NULL");
+    return NULL;
+  }
+
+  args.augpath = (char *) augpath;
+  serial = guestfs___send (g, GUESTFS_PROC_AUG_LABEL,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_aug_label_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "aug_label", "NULL");
+    return NULL;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "aug_label", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_aug_label_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "aug_label", "NULL");
+    return NULL;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_AUG_LABEL, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "aug_label", "NULL");
+    return NULL;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "aug_label", "NULL");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "aug_label", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "aug_label",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return NULL;
+  }
+
+  ret_v = ret.label; /* caller will free */
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "aug_label");
+    fprintf (trace_buffer.fp, "\"%s\"", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+

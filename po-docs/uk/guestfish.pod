@@ -185,11 +185,11 @@ Using this flag is mostly equivalent to using the C<add> command, with
 C<readonly:true> if the I<--ro> flag was given, and with C<format:...> if
 the I<--format=...> flag was given.
 
-=item B<-a URI>
+=item B<-a адреса>
 
-=item B<--add URI>
+=item B<--add адреса>
 
-Add a remote disk.  See L</ADDING REMOTE STORAGE>.
+Додати віддалений диск. Див. L</ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА>.
 
 =item B<-c адреса>
 
@@ -1078,7 +1078,7 @@ Create a blank 200MB disk called C<blankdisk.img> (instead of C<test1.img>):
 
 __PREPOPTS__
 
-=head1 ADDING REMOTE STORAGE
+=head1 ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА
 
 I<For API-level documentation on this topic, see
 L<guestfs(3)/guestfs_add_drive_opts> and L<guestfs(3)/REMOTE STORAGE>>.
@@ -1514,5 +1514,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2013 Red Hat Inc.
+© Red Hat Inc., 2009–2013
 

@@ -9,11 +9,12 @@ L</guestfs_acl_set_file>
 
 =item B<augeas>
 
-以下の関数: L</guestfs_aug_clear> L</guestfs_aug_close> L</guestfs_aug_defnode>
-L</guestfs_aug_defvar> L</guestfs_aug_get> L</guestfs_aug_init>
-L</guestfs_aug_insert> L</guestfs_aug_load> L</guestfs_aug_ls>
-L</guestfs_aug_match> L</guestfs_aug_mv> L</guestfs_aug_rm>
-L</guestfs_aug_save> L</guestfs_aug_set>
+The following functions: L</guestfs_aug_clear> L</guestfs_aug_close>
+L</guestfs_aug_defnode> L</guestfs_aug_defvar> L</guestfs_aug_get>
+L</guestfs_aug_init> L</guestfs_aug_insert> L</guestfs_aug_label>
+L</guestfs_aug_load> L</guestfs_aug_ls> L</guestfs_aug_match>
+L</guestfs_aug_mv> L</guestfs_aug_rm> L</guestfs_aug_save>
+L</guestfs_aug_set> L</guestfs_aug_setm>
 
 =item B<btrfs>
 

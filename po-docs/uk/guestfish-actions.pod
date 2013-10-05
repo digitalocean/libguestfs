@@ -524,6 +524,14 @@ or after C<path> (depending on the boolean flag C<before>).
 C<path> must match exactly one existing node in the tree, and C<label> must
 be a label, ie. not contain C</>, C<*> or end with a bracketed index C<[N]>.
 
+=head2 aug-label
+
+ aug-label augpath
+
+The label (name of the last element) of the Augeas path expression
+C<augpath> is returned.  C<augpath> must match exactly one node, else this
+function returns an error.
+
 =head2 aug-load
 
  aug-load
@@ -580,6 +588,18 @@ Set the value associated with C<path> to C<val>.
 In the Augeas API, it is possible to clear a node by setting the value to
 NULL.  Due to an oversight in the libguestfs API you cannot do that with
 this call.  Instead you must use the L</aug-clear> call.
+
+=head2 aug-setm
+
+ aug-setm base sub val
+
+Change multiple Augeas nodes in a single operation.  C<base> is an
+expression matching multiple nodes.  C<sub> is a path expression relative to
+C<base>.  All nodes matching C<base> are found, and then for each node,
+C<sub> is changed to C<val>.  C<sub> may also be C<NULL> in which case the
+C<base> nodes are modified.
+
+This returns the number of nodes modified.
 
 =head2 available
 
@@ -887,7 +907,7 @@ Delete the named btrfs subvolume.
 
 =head2 btrfs-subvolume-list
 
- btrfs-subvolume-list fs
+ btrfs-subvolume-list фс
 
 List the btrfs snapshots and subvolumes of the btrfs filesystem which is
 mounted at C<fs>.
@@ -901,7 +921,7 @@ default.  See L</btrfs-subvolume-list> to get a list of subvolumes.
 
 =head2 btrfs-subvolume-snapshot
 
- btrfs-subvolume-snapshot source dest
+ btrfs-subvolume-snapshot джерело призначення
 
 Create a writable snapshot of the btrfs subvolume C<source>.  The C<dest>
 argument is the destination directory and the name of the snapshot, in the
@@ -909,7 +929,7 @@ form C</path/to/dest/name>.
 
 =head2 canonical-device-name
 
- canonical-device-name device
+ canonical-device-name пристрій
 
 This utility function is useful when displaying device names to the user.
 It takes a number of irregular device names and returns them in a consistent
@@ -937,7 +957,7 @@ Other strings are returned unmodified.
 
 =head2 cap-get-file
 
- cap-get-file path
+ cap-get-file шлях
 
 This function returns the Linux capabilities attached to C<path>.  The
 capabilities set is returned in text form (see L<cap_to_text(3)>).
@@ -954,7 +974,7 @@ L<cap_from_text(3)>).
 
 =head2 case-sensitive-path
 
- case-sensitive-path path
+ case-sensitive-path шлях
 
 This can be used to resolve case insensitive paths on a filesystem which is
 case sensitive.  The use case is to resolve paths which you have read from
@@ -1332,7 +1352,7 @@ programs.
 
 =head2 disk-format
 
- disk-format filename
+ disk-format назва файла
 
 Detect and return the format of the disk image called C<filename>.
 C<filename> can also be a host device, etc.  If the format of the image
@@ -1354,7 +1374,7 @@ See L<guestfs(3)/CVE-2010-3851>.
 
 =head2 disk-virtual-size
 
- disk-virtual-size filename
+ disk-virtual-size назва файла
 
 Detect and return the virtual size in bytes of the disk image called
 C<filename>.
@@ -1382,7 +1402,7 @@ machine.
 
 C<filename> can also be a named pipe.
 
-See also L</upload>, L</cat>.
+Див. також L</upload>, L</cat>.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
 
@@ -1400,7 +1420,7 @@ Note that there is no limit on the amount of data that can be downloaded
 with this call, unlike with L</pread>, and this call always reads the full
 amount unless an error occurs.
 
-See also L</download>, L</pread>.
+Див. також L</download>, L</pread>.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
 
@@ -1535,7 +1555,7 @@ with the given C<path> name.
 
 =head2 extlinux
 
- extlinux directory
+ extlinux каталог
 
 Install the SYSLINUX bootloader on the device mounted at C<directory>.
 Unlike L</syslinux> which requires a FAT filesystem, this can be used on an
@@ -1645,8 +1665,8 @@ The output depends on the output of the underlying L<file(1)> command and it
 can change in future in ways beyond our control.  In other words, the output
 is not guaranteed by the ABI.
 
-See also: L<file(1)>, L</vfs-type>, L</lstat>, L</is-file>, L</is-blockdev>
-(etc), L</is-zero>.
+Див. також L<file(1)>, L</vfs-type>, L</lstat>, L</is-file>, L</is-blockdev>
+(тощо), L</is-zero>.
 
 =head2 file-architecture
 
@@ -1992,7 +2012,7 @@ Return the direct appliance mode flag.
 
 =head2 get-e2attrs
 
- get-e2attrs file
+ get-e2attrs файл
 
 This returns the file attributes associated with C<file>.
 
@@ -2015,7 +2035,7 @@ When the file is accessed, its atime is not modified.
 
 =item 'a'
 
-The file is append-only.
+До файла можна лише дописувати дані.
 
 =item 'c'
 
@@ -2101,7 +2121,7 @@ Don't confuse these attributes with extended attributes (see L</getxattr>).
 
 =head2 get-e2generation
 
- get-e2generation file
+ get-e2generation файл
 
 This returns the ext2 file generation of a file.  The generation (which used
 to be called the "version") is a number associated with an inode.  This is
@@ -2161,7 +2181,7 @@ See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 
 =head2 get-libvirt-requested-credential-prompt
 
- get-libvirt-requested-credential-prompt index
+ get-libvirt-requested-credential-prompt індекс
 
 Get the prompt (provided by libvirt) for the C<index>'th requested
 credential.  If libvirt did not provide a prompt, this returns the empty

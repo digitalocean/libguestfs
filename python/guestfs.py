@@ -8814,3 +8814,26 @@ class GuestFS(object):
         r = libguestfsmod.journal_set_data_threshold (self._o, threshold)
         return r
 
+    def aug_setm (self, base, sub, val):
+        """Change multiple Augeas nodes in a single operation.
+        "base" is an expression matching multiple nodes. "sub"
+        is a path expression relative to "base". All nodes
+        matching "base" are found, and then for each node, "sub"
+        is changed to "val". "sub" may also be "NULL" in which
+        case the "base" nodes are modified.
+        
+        This returns the number of nodes modified.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.aug_setm (self._o, base, sub, val)
+        return r
+
+    def aug_label (self, augpath):
+        """The label (name of the last element) of the Augeas path
+        expression "augpath" is returned. "augpath" must match
+        exactly one node, else this function returns an error.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.aug_label (self._o, augpath)
+        return r
+

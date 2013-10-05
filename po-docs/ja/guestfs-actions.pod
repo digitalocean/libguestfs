@@ -729,6 +729,18 @@ be a label, ie. not contain C</>, C<*> or end with a bracketed index C<[N]>.
 
 (0.7 において追加)
 
+=head2 guestfs_aug_label
+
+ char *
+ guestfs_aug_label (guestfs_h *g,
+                    const char *augpath);
+
+The label (name of the last element) of the Augeas path expression
+C<augpath> is returned.  C<augpath> must match exactly one node, else this
+function returns an error.
+
+この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
+
 =head2 guestfs_aug_load
 
  int
@@ -831,6 +843,24 @@ this call.  Instead you must use the C<guestfs_aug_clear> call.
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (0.7 において追加)
+
+=head2 guestfs_aug_setm
+
+ int
+ guestfs_aug_setm (guestfs_h *g,
+                   const char *base,
+                   const char *sub,
+                   const char *val);
+
+Change multiple Augeas nodes in a single operation.  C<base> is an
+expression matching multiple nodes.  C<sub> is a path expression relative to
+C<base>.  All nodes matching C<base> are found, and then for each node,
+C<sub> is changed to C<val>.  C<sub> may also be C<NULL> in which case the
+C<base> nodes are modified.
+
+This returns the number of nodes modified.
+
+この関数はエラーのとき -1 を返します。
 
 =head2 guestfs_available
 
@@ -3650,8 +3680,8 @@ L<getxattr(2)> calls.
 
 関連項目: C<guestfs_lgetxattrs>, L<attr(5)>
 
-This function returns a C<struct guestfs_xattr_list *>, or NULL if there was
-an error.  I<The caller must call C<guestfs_free_xattr_list> after use>.
+この関数は C<struct guestfs_xattr_list *> を返します。もしくは、エラーが発生すると NULL を返します。
+I<呼び出し元は使用後に C<guestfs_free_xattr_list> を呼び出す必要があります>。
 
 (1.0.59 において追加)
 
@@ -5313,8 +5343,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
  GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS, int followsymlinks,
 
-This returns C<true> if and only if there is a block device with the given
-C<path> name.
+与えられたC<パス>名を持つブロックデバイスがあれば、C<真>を返します。
 
 If the optional flag C<followsymlinks> is true, then a symlink (or chain of
 symlinks) that ends with a block device also causes the function to return
@@ -5846,8 +5875,8 @@ C<guestfs_journal_get_data_threshold>).
 If you set the data threshold to unlimited (C<0>) then this call can read a
 journal entry of any size, ie. it is not limited by the libguestfs protocol.
 
-This function returns a C<struct guestfs_xattr_list *>, or NULL if there was
-an error.  I<The caller must call C<guestfs_free_xattr_list> after use>.
+この関数は C<struct guestfs_xattr_list *> を返します。もしくは、エラーが発生すると NULL を返します。
+I<呼び出し元は使用後に C<guestfs_free_xattr_list> を呼び出す必要があります>。
 
 =head2 guestfs_journal_get_data_threshold
 
@@ -6192,8 +6221,8 @@ after use>.
 This is the same as C<guestfs_getxattrs>, but if C<path> is a symbolic link,
 then it returns the extended attributes of the link itself.
 
-This function returns a C<struct guestfs_xattr_list *>, or NULL if there was
-an error.  I<The caller must call C<guestfs_free_xattr_list> after use>.
+この関数は C<struct guestfs_xattr_list *> を返します。もしくは、エラーが発生すると NULL を返します。
+I<呼び出し元は使用後に C<guestfs_free_xattr_list> を呼び出す必要があります>。
 
 (1.0.59 において追加)
 
@@ -6938,8 +6967,8 @@ This call is intended for programs that want to efficiently list a directory
 contents without making many round-trips.  See also C<guestfs_lstatlist> for
 a similarly efficient call for getting standard stats.
 
-This function returns a C<struct guestfs_xattr_list *>, or NULL if there was
-an error.  I<The caller must call C<guestfs_free_xattr_list> after use>.
+この関数は C<struct guestfs_xattr_list *> を返します。もしくは、エラーが発生すると NULL を返します。
+I<呼び出し元は使用後に C<guestfs_free_xattr_list> を呼び出す必要があります>。
 
 (1.0.77 において追加)
 

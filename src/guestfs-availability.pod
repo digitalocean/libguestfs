@@ -17,6 +17,7 @@ L</guestfs_aug_defvar>
 L</guestfs_aug_get>
 L</guestfs_aug_init>
 L</guestfs_aug_insert>
+L</guestfs_aug_label>
 L</guestfs_aug_load>
 L</guestfs_aug_ls>
 L</guestfs_aug_match>
@@ -24,6 +25,7 @@ L</guestfs_aug_mv>
 L</guestfs_aug_rm>
 L</guestfs_aug_save>
 L</guestfs_aug_set>
+L</guestfs_aug_setm>
 
 =item B<btrfs>
 

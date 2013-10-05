@@ -35,8 +35,8 @@ exists in the named virtual machine (or disk image).
 
 Якщо ви просто хочете переглянути файл, скористайтеся L<virt-cat(1)>.
 
-For more complex cases you should look at the L<guestfish(1)> tool (see
-L</USING GUESTFISH> below).
+Для виконання складніших дій можна скористатися програмою L<guestfish(1)>
+(див. L</USING GUESTFISH> нижче).
 
 C<virt-edit> cannot be used to create a new file.  L<guestfish(1)> can do
 that and much more.
@@ -78,11 +78,11 @@ separate I<-a> options.
 примусово використати певний формат, скористайтеся параметром
 I<--format=..>.
 
-=item B<-a URI>
+=item B<-a адреса>
 
-=item B<--add URI>
+=item B<--add адреса>
 
-Add a remote disk.  See L<guestfish(1)/ADDING REMOTE STORAGE>.
+Додати віддалений диск. Див. L<guestfish(1)/ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА>.
 
 =item B<-b> суфікс
 
@@ -105,8 +105,8 @@ write:
 Якщо використовується libvirt, встановити з’єднання з вказаним I<URI>. Якщо
 пропущено, з’єднання буде встановлено з типовим гіпервізором libvirt.
 
-If you specify guest block devices directly, then libvirt is not used at
-all.
+Якщо вказати блокові пристрої гостьових систем безпосередньо, libvirt не
+буде використовуватися взагалі.
 
 =item B<-d> гість
 
@@ -187,7 +187,7 @@ passphrases from the user by opening C</dev/tty>.
 
 =head1 ПАРАМЕТРИ КОМАНДНОГО РЯДКА У ФОРМАТІ ПОПЕРЕДНІХ ВЕРСІЙ
 
-Previous versions of virt-edit allowed you to write either:
+У попередніх версіях virt-edit можна було використовувати або
 
  virt-edit диск.img [диск.img ...] файл
 
@@ -368,5 +368,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2013 Red Hat Inc.
+© Red Hat Inc., 2009–2013
 

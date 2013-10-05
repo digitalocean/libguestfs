@@ -460,7 +460,9 @@ module Guestfs (
   journal_next,
   journal_skip,
   journal_get_data_threshold,
-  journal_set_data_threshold
+  journal_set_data_threshold,
+  aug_setm,
+  aug_label
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -5787,4 +5789,28 @@ journal_set_data_threshold h threshold = do
       err <- last_error h
       fail err
     else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_aug_setm" c_aug_setm
+  :: GuestfsP -> CString -> CString -> CString -> IO CInt
+
+aug_setm :: GuestfsH -> String -> Maybe String -> String -> IO Int
+aug_setm h base sub val = do
+  r <- withCString base $ \base -> maybeWith withCString sub $ \sub -> withCString val $ \val -> withForeignPtr h (\p -> c_aug_setm p base sub val)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs.h guestfs_aug_label" c_aug_label
+  :: GuestfsP -> CString -> IO CString
+
+aug_label :: GuestfsH -> String -> IO String
+aug_label h augpath = do
+  r <- withCString augpath $ \augpath -> withForeignPtr h (\p -> c_aug_label p augpath)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
 

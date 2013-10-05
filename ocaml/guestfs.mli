@@ -409,6 +409,9 @@ val aug_init : t -> string -> int -> unit
 val aug_insert : t -> string -> string -> bool -> unit
 (** insert a sibling Augeas node *)
 
+val aug_label : t -> string -> string
+(** return the label from an Augeas path expression *)
+
 val aug_load : t -> unit
 (** load files into the tree *)
 
@@ -429,6 +432,9 @@ val aug_save : t -> unit
 
 val aug_set : t -> string -> string -> unit
 (** set Augeas path to value *)
+
+val aug_setm : t -> string -> string option -> string -> int
+(** set multiple Augeas nodes *)
 
 val available : t -> string array -> unit
 (** test availability of some parts of the API *)
@@ -2122,6 +2128,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method aug_get : string -> string
   method aug_init : string -> int -> unit
   method aug_insert : string -> string -> bool -> unit
+  method aug_label : string -> string
   method aug_load : unit -> unit
   method aug_ls : string -> string array
   method aug_match : string -> string array
@@ -2129,6 +2136,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method aug_rm : string -> int
   method aug_save : unit -> unit
   method aug_set : string -> string -> unit
+  method aug_setm : string -> string option -> string -> int
   method available : string array -> unit
   method available_all_groups : unit -> string array
   method base64_in : string -> string -> unit

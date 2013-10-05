@@ -1388,6 +1388,24 @@ func (g *Guestfs) Aug_insert (augpath string, label string, before bool) *Guestf
     return nil
 }
 
+/* aug_label : return the label from an Augeas path expression */
+func (g *Guestfs) Aug_label (augpath string) (string, *GuestfsError) {
+    if g.g == nil {
+        return "", closed_handle_error ("aug_label")
+    }
+
+    c_augpath := C.CString (augpath)
+    defer C.free (unsafe.Pointer (c_augpath))
+
+    r := C.guestfs_aug_label (g.g, c_augpath)
+
+    if r == nil {
+        return "", get_error_from_handle (g, "aug_label")
+    }
+    defer C.free (unsafe.Pointer (r))
+    return C.GoString (r), nil
+}
+
 /* aug_load : load files into the tree */
 func (g *Guestfs) Aug_load () *GuestfsError {
     if g.g == nil {
@@ -1507,6 +1525,32 @@ func (g *Guestfs) Aug_set (augpath string, val string) *GuestfsError {
         return get_error_from_handle (g, "aug_set")
     }
     return nil
+}
+
+/* aug_setm : set multiple Augeas nodes */
+func (g *Guestfs) Aug_setm (base string, sub *string, val string) (int, *GuestfsError) {
+    if g.g == nil {
+        return 0, closed_handle_error ("aug_setm")
+    }
+
+    c_base := C.CString (base)
+    defer C.free (unsafe.Pointer (c_base))
+
+    var c_sub *C.char = nil
+    if sub != nil {
+        c_sub = C.CString (*sub)
+        defer C.free (unsafe.Pointer (c_sub))
+    }
+
+    c_val := C.CString (val)
+    defer C.free (unsafe.Pointer (c_val))
+
+    r := C.guestfs_aug_setm (g.g, c_base, c_sub, c_val)
+
+    if r == -1 {
+        return 0, get_error_from_handle (g, "aug_setm")
+    }
+    return int (r), nil
 }
 
 /* available : test availability of some parts of the API */

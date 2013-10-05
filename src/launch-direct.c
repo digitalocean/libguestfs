@@ -290,6 +290,68 @@ launch_direct (guestfs_h *g, const char *arg)
 
     add_cmdline (g, "-nographic");
 
+    /* The qemu -machine option (added 2010-12) is a bit more sane
+     * since it falls back through various different acceleration
+     * modes, so try that first (thanks Markus Armbruster).
+     */
+    if (qemu_supports (g, "-machine")) {
+      add_cmdline (g, "-machine");
+      add_cmdline (g, "accel=kvm:tcg");
+    } else {
+      /* qemu sometimes needs this option to enable hardware
+       * virtualization, but some versions of 'qemu-kvm' will use KVM
+       * regardless (even where this option appears in the help text).
+       * It is rumoured that there are versions of qemu where supplying
+       * this option when hardware virtualization is not available will
+       * cause qemu to fail, so we we have to check at least that
+       * /dev/kvm is openable.  That's not reliable, since /dev/kvm
+       * might be openable by qemu but not by us (think: SELinux) in
+       * which case the user would not get hardware virtualization,
+       * although at least shouldn't fail.  A giant clusterfuck with the
+       * qemu command line, again.
+       */
+      if (qemu_supports (g, "-enable-kvm") &&
+          is_openable (g, "/dev/kvm", O_RDWR|O_CLOEXEC))
+        add_cmdline (g, "-enable-kvm");
+    }
+
+    /* Specify the host CPU for speed, and kvmclock for stability. */
+    add_cmdline (g, "-cpu");
+    add_cmdline (g, "host,+kvmclock");
+
+    if (g->smp > 1) {
+      snprintf (buf, sizeof buf, "%d", g->smp);
+      add_cmdline (g, "-smp");
+      add_cmdline (g, buf);
+    }
+
+    snprintf (buf, sizeof buf, "%d", g->memsize);
+    add_cmdline (g, "-m");
+    add_cmdline (g, buf);
+
+    /* Force exit instead of reboot on panic */
+    add_cmdline (g, "-no-reboot");
+
+    /* These options recommended by KVM developers to improve reliability. */
+#ifndef __arm__
+    /* qemu-system-arm advertises the -no-hpet option but if you try
+     * to use it, it usefully says:
+     *   "Option no-hpet not supported for this target".
+     * Cheers qemu developers.  How many years have we been asking for
+     * capabilities?  Could be 3 or 4 years, I forget.
+     */
+    if (qemu_supports (g, "-no-hpet"))
+      add_cmdline (g, "-no-hpet");
+#endif
+
+    if (qemu_supports (g, "-rtc-td-hack"))
+      add_cmdline (g, "-rtc-td-hack");
+
+    add_cmdline (g, "-kernel");
+    add_cmdline (g, kernel);
+    add_cmdline (g, "-initrd");
+    add_cmdline (g, initrd);
+
     /* Add drives */
     struct drive *drv;
     size_t i;
@@ -339,59 +401,6 @@ launch_direct (guestfs_h *g, const char *arg)
 
       appliance_dev = make_appliance_dev (g, virtio_scsi);
     }
-
-    /* The qemu -machine option (added 2010-12) is a bit more sane
-     * since it falls back through various different acceleration
-     * modes, so try that first (thanks Markus Armbruster).
-     */
-    if (qemu_supports (g, "-machine")) {
-      add_cmdline (g, "-machine");
-      add_cmdline (g, "accel=kvm:tcg");
-    } else {
-      /* qemu sometimes needs this option to enable hardware
-       * virtualization, but some versions of 'qemu-kvm' will use KVM
-       * regardless (even where this option appears in the help text).
-       * It is rumoured that there are versions of qemu where supplying
-       * this option when hardware virtualization is not available will
-       * cause qemu to fail, so we we have to check at least that
-       * /dev/kvm is openable.  That's not reliable, since /dev/kvm
-       * might be openable by qemu but not by us (think: SELinux) in
-       * which case the user would not get hardware virtualization,
-       * although at least shouldn't fail.  A giant clusterfuck with the
-       * qemu command line, again.
-       */
-      if (qemu_supports (g, "-enable-kvm") &&
-          is_openable (g, "/dev/kvm", O_RDWR|O_CLOEXEC))
-        add_cmdline (g, "-enable-kvm");
-    }
-
-    if (g->smp > 1) {
-      snprintf (buf, sizeof buf, "%d", g->smp);
-      add_cmdline (g, "-smp");
-      add_cmdline (g, buf);
-    }
-
-    snprintf (buf, sizeof buf, "%d", g->memsize);
-    add_cmdline (g, "-m");
-    add_cmdline (g, buf);
-
-    /* Force exit instead of reboot on panic */
-    add_cmdline (g, "-no-reboot");
-
-    /* These options recommended by KVM developers to improve reliability. */
-#ifndef __arm__
-    /* qemu-system-arm advertises the -no-hpet option but if you try
-     * to use it, it usefully says:
-     *   "Option no-hpet not supported for this target".
-     * Cheers qemu developers.  How many years have we been asking for
-     * capabilities?  Could be 3 or 4 years, I forget.
-     */
-    if (qemu_supports (g, "-no-hpet"))
-      add_cmdline (g, "-no-hpet");
-#endif
-
-    if (qemu_supports (g, "-rtc-td-hack"))
-      add_cmdline (g, "-rtc-td-hack");
 
     /* Create the virtio serial bus. */
     add_cmdline (g, "-device");
@@ -446,11 +455,6 @@ launch_direct (guestfs_h *g, const char *arg)
       add_cmdline (g, "-device");
       add_cmdline (g, "virtio-net-pci,netdev=usernet");
     }
-
-    add_cmdline (g, "-kernel");
-    add_cmdline (g, kernel);
-    add_cmdline (g, "-initrd");
-    add_cmdline (g, initrd);
 
     add_cmdline (g, "-append");
     CLEANUP_FREE char *cmdline =

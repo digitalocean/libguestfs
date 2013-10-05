@@ -617,6 +617,8 @@
     <keyword type="function" name="guestfs_session_journal_skip ()" link="GuestfsSession.html#guestfs-session-journal-skip"/>
     <keyword type="function" name="guestfs_session_journal_get_data_threshold ()" link="GuestfsSession.html#guestfs-session-journal-get-data-threshold"/>
     <keyword type="function" name="guestfs_session_journal_set_data_threshold ()" link="GuestfsSession.html#guestfs-session-journal-set-data-threshold"/>
+    <keyword type="function" name="guestfs_session_aug_setm ()" link="GuestfsSession.html#guestfs-session-aug-setm"/>
+    <keyword type="function" name="guestfs_session_aug_label ()" link="GuestfsSession.html#guestfs-session-aug-label"/>
     <keyword type="signal" name="The &quot;appliance&quot; signal" link="GuestfsSession.html#GuestfsSession-appliance"/>
     <keyword type="signal" name="The &quot;close&quot; signal" link="GuestfsSession.html#GuestfsSession-close"/>
     <keyword type="signal" name="The &quot;enter&quot; signal" link="GuestfsSession.html#GuestfsSession-enter"/>

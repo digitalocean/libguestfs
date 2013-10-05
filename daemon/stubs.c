@@ -15982,6 +15982,99 @@ done_no_free:
   return;
 }
 
+static void
+aug_setm_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_aug_setm_args args;
+  char *base;
+  char *sub;
+  char *val;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_augeas_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "augeas");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_aug_setm_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  base = args.base;
+  sub = args.sub ? *args.sub : NULL;
+  val = args.val;
+
+  r = do_aug_setm (base, sub, val);
+  if (r == -1)
+    /* do_aug_setm has already called reply_with_error */
+    goto done;
+
+  struct guestfs_aug_setm_ret ret;
+  ret.nodes = r;
+  reply ((xdrproc_t) &xdr_guestfs_aug_setm_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_aug_setm_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+aug_label_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_aug_label_args args;
+  char *augpath;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_augeas_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "augeas");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_aug_label_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  augpath = args.augpath;
+
+  r = do_aug_label (augpath);
+  if (r == NULL)
+    /* do_aug_label has already called reply_with_error */
+    goto done;
+
+  struct guestfs_aug_label_ret ret;
+  ret.label = r;
+  reply ((xdrproc_t) &xdr_guestfs_aug_label_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_aug_label_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -17193,6 +17286,12 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_JOURNAL_SET_DATA_THRESHOLD:
       journal_set_data_threshold_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_AUG_SETM:
+      aug_setm_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_AUG_LABEL:
+      aug_label_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

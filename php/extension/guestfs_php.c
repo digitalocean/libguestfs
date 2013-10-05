@@ -79,6 +79,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_aug_get, NULL)
   PHP_FE (guestfs_aug_init, NULL)
   PHP_FE (guestfs_aug_insert, NULL)
+  PHP_FE (guestfs_aug_label, NULL)
   PHP_FE (guestfs_aug_load, NULL)
   PHP_FE (guestfs_aug_ls, NULL)
   PHP_FE (guestfs_aug_match, NULL)
@@ -86,6 +87,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_aug_rm, NULL)
   PHP_FE (guestfs_aug_save, NULL)
   PHP_FE (guestfs_aug_set, NULL)
+  PHP_FE (guestfs_aug_setm, NULL)
   PHP_FE (guestfs_available, NULL)
   PHP_FE (guestfs_available_all_groups, NULL)
   PHP_FE (guestfs_base64_in, NULL)
@@ -1402,6 +1404,41 @@ PHP_FUNCTION (guestfs_aug_insert)
   RETURN_TRUE;
 }
 
+PHP_FUNCTION (guestfs_aug_label)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *augpath;
+  int augpath_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &augpath, &augpath_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (augpath) != augpath_size) {
+    fprintf (stderr, "libguestfs: aug_label: parameter 'augpath' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  char *r;
+  r = guestfs_aug_label (g, augpath);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  char *r_copy = estrdup (r);
+  free (r);
+  RETURN_STRING (r_copy, 0);
+}
+
 PHP_FUNCTION (guestfs_aug_load)
 {
   zval *z_g;
@@ -1643,6 +1680,53 @@ PHP_FUNCTION (guestfs_aug_set)
   }
 
   RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_aug_setm)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *base;
+  int base_size;
+  char *sub;
+  int sub_size;
+  char *val;
+  int val_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss!s",
+        &z_g, &base, &base_size, &sub, &sub_size, &val, &val_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (base) != base_size) {
+    fprintf (stderr, "libguestfs: aug_setm: parameter 'base' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (strlen (sub) != sub_size) {
+    fprintf (stderr, "libguestfs: aug_setm: parameter 'sub' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (strlen (val) != val_size) {
+    fprintf (stderr, "libguestfs: aug_setm: parameter 'val' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_aug_setm (g, base, sub, val);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_LONG (r);
 }
 
 PHP_FUNCTION (guestfs_available)

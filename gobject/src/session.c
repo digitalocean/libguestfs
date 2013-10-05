@@ -24657,3 +24657,77 @@ guestfs_session_journal_set_data_threshold(GuestfsSession *session, gint64 thres
 
   return TRUE;
 }
+
+/**
+ * guestfs_session_aug_setm:
+ * @session: (transfer none): A GuestfsSession object
+ * @base: (transfer none) (type utf8):
+ * @sub: (transfer none) (type utf8) (allow-none):
+ * @val: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * set multiple Augeas nodes
+ *
+ * Change multiple Augeas nodes in a single operation. @base is an
+ * expression matching multiple nodes. @sub is a path expression relative
+ * to @base. All nodes matching @base are found, and then for each node,
+ * @sub is changed to @val. @sub may also be @NULL in which case the @base
+ * nodes are modified.
+ * 
+ * This returns the number of nodes modified.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint32
+guestfs_session_aug_setm(GuestfsSession *session, const gchar *base, const gchar *sub, const gchar *val, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_setm");
+    return -1;
+  }
+
+  int ret = guestfs_aug_setm (g, base, sub, val);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_aug_label:
+ * @session: (transfer none): A GuestfsSession object
+ * @augpath: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * return the label from an Augeas path expression
+ *
+ * The label (name of the last element) of the Augeas path expression
+ * @augpath is returned. @augpath must match exactly one node, else this
+ * function returns an error.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_aug_label(GuestfsSession *session, const gchar *augpath, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_label");
+    return NULL;
+  }
+
+  char *ret = guestfs_aug_label (g, augpath);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}

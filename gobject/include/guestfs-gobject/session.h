@@ -655,6 +655,8 @@ gint8 guestfs_session_journal_next(GuestfsSession *session, GError **err);
 gint64 guestfs_session_journal_skip(GuestfsSession *session, gint64 skip, GError **err);
 gint64 guestfs_session_journal_get_data_threshold(GuestfsSession *session, GError **err);
 gboolean guestfs_session_journal_set_data_threshold(GuestfsSession *session, gint64 threshold, GError **err);
+gint32 guestfs_session_aug_setm(GuestfsSession *session, const gchar *base, const gchar *sub, const gchar *val, GError **err);
+gchar *guestfs_session_aug_label(GuestfsSession *session, const gchar *augpath, GError **err);
 
 G_END_DECLS
 

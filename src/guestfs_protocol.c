@@ -7943,6 +7943,50 @@ xdr_guestfs_journal_set_data_threshold_args (XDR *xdrs, guestfs_journal_set_data
 }
 
 bool_t
+xdr_guestfs_aug_setm_args (XDR *xdrs, guestfs_aug_setm_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->base, ~0))
+		 return FALSE;
+	 if (!xdr_pointer (xdrs, (char **)&objp->sub, sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->val, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_aug_setm_ret (XDR *xdrs, guestfs_aug_setm_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->nodes))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_aug_label_args (XDR *xdrs, guestfs_aug_label_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->augpath, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_aug_label_ret (XDR *xdrs, guestfs_aug_label_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->label, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

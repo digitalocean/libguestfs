@@ -9931,3 +9931,34 @@ PREINIT:
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
+SV *
+aug_setm (g, base, sub, val)
+      guestfs_h *g;
+      char *base;
+      char *sub = SvOK(ST(2)) ? SvPV_nolen(ST(2)) : NULL;
+      char *val;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_aug_setm (g, base, sub, val);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+aug_label (g, augpath)
+      guestfs_h *g;
+      char *augpath;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_aug_label (g, augpath);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+

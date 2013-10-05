@@ -76,6 +76,7 @@ extern int optgroup_zerofree_available (void);
   char *__attribute__((noreturn)) do_aug_get (const char *augpath) { abort (); } \
   int __attribute__((noreturn)) do_aug_init (const char *root, int flags) { abort (); } \
   int __attribute__((noreturn)) do_aug_insert (const char *augpath, const char *label, int before) { abort (); } \
+  char *__attribute__((noreturn)) do_aug_label (const char *augpath) { abort (); } \
   int __attribute__((noreturn)) do_aug_load (void) { abort (); } \
   char **__attribute__((noreturn)) do_aug_ls (const char *augpath) { abort (); } \
   char **__attribute__((noreturn)) do_aug_match (const char *augpath) { abort (); } \
@@ -83,6 +84,7 @@ extern int optgroup_zerofree_available (void);
   int __attribute__((noreturn)) do_aug_rm (const char *augpath) { abort (); } \
   int __attribute__((noreturn)) do_aug_save (void) { abort (); } \
   int __attribute__((noreturn)) do_aug_set (const char *augpath, const char *val) { abort (); } \
+  int __attribute__((noreturn)) do_aug_setm (const char *base, const char *sub, const char *val) { abort (); } \
   int optgroup_augeas_available (void) { return 0; }
 
 #define OPTGROUP_BTRFS_NOT_AVAILABLE \

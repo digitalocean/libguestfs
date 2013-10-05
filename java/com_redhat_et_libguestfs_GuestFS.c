@@ -13888,3 +13888,53 @@ Java_com_redhat_et_libguestfs_GuestFS__1journal_1set_1data_1threshold  (JNIEnv *
   }
 }
 
+JNIEXPORT jint JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1setm  (JNIEnv *env, jobject obj, jlong jg, jstring jbase, jstring jsub, jstring jval)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *base;
+  const char *sub;
+  const char *val;
+
+  base = (*env)->GetStringUTFChars (env, jbase, NULL);
+  sub = jsub ? (*env)->GetStringUTFChars (env, jsub, NULL) : NULL;
+  val = (*env)->GetStringUTFChars (env, jval, NULL);
+
+  r = guestfs_aug_setm (g, base, sub, val);
+
+  (*env)->ReleaseStringUTFChars (env, jbase, base);
+  if (jsub)
+    (*env)->ReleaseStringUTFChars (env, jsub, sub);
+  (*env)->ReleaseStringUTFChars (env, jval, val);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return -1;
+  }
+  return (jint) r;
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1label  (JNIEnv *env, jobject obj, jlong jg, jstring jaugpath)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jstring jr;
+  char *r;
+  const char *augpath;
+
+  augpath = (*env)->GetStringUTFChars (env, jaugpath, NULL);
+
+  r = guestfs_aug_label (g, augpath);
+
+  (*env)->ReleaseStringUTFChars (env, jaugpath, augpath);
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    return NULL;
+  }
+  jr = (*env)->NewStringUTF (env, r);
+  free (r);
+  return jr;
+}
+

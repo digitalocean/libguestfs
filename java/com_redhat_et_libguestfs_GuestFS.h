@@ -4307,6 +4307,22 @@ JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1journal_1get_1da
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1journal_1set_1data_1threshold
   (JNIEnv *, jobject, jlong, jlong);
 
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _aug_setm
+ * Signature: (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1aug_1setm
+  (JNIEnv *, jobject, jlong, jstring, jstring, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _aug_label
+ * Signature: (JLjava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1aug_1label
+  (JNIEnv *, jobject, jlong, jstring);
+
 #ifdef __cplusplus
 }
 #endif

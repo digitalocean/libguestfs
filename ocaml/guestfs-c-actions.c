@@ -1556,6 +1556,38 @@ ocaml_guestfs_aug_insert (value gv, value augpathv, value labelv, value beforev)
 }
 
 /* Automatically generated wrapper for function
+ * val aug_label : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_aug_label (value gv, value augpathv);
+
+value
+ocaml_guestfs_aug_label (value gv, value augpathv)
+{
+  CAMLparam2 (gv, augpathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("aug_label");
+
+  char *augpath = guestfs___safe_strdup (g, String_val (augpathv));
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_aug_label (g, augpath);
+  caml_leave_blocking_section ();
+  free (augpath);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "aug_label");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val aug_load : t -> unit
  */
 
@@ -1775,6 +1807,43 @@ ocaml_guestfs_aug_set (value gv, value augpathv, value valv)
     ocaml_guestfs_raise_error (g, "aug_set");
 
   rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val aug_setm : t -> string -> string option -> string -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_aug_setm (value gv, value basev, value subv, value valv);
+
+value
+ocaml_guestfs_aug_setm (value gv, value basev, value subv, value valv)
+{
+  CAMLparam4 (gv, basev, subv, valv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("aug_setm");
+
+  char *base = guestfs___safe_strdup (g, String_val (basev));
+  char *sub =
+    subv != Val_int (0) ?
+      guestfs___safe_strdup (g, String_val (Field (subv, 0))) : NULL;
+  char *val = guestfs___safe_strdup (g, String_val (valv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_aug_setm (g, base, sub, val);
+  caml_leave_blocking_section ();
+  free (base);
+  free (sub);
+  free (val);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "aug_setm");
+
+  rv = Val_int (r);
   CAMLreturn (rv);
 }
 

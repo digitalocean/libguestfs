@@ -2832,6 +2832,24 @@ struct guestfs_journal_set_data_threshold_args {
   int64_t threshold;
 };
 
+struct guestfs_aug_setm_args {
+  string base<>;
+  guestfs_str *sub;
+  string val<>;
+};
+
+struct guestfs_aug_setm_ret {
+  int nodes;
+};
+
+struct guestfs_aug_label_args {
+  string augpath<>;
+};
+
+struct guestfs_aug_label_ret {
+  string label<>;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3236,10 +3254,12 @@ enum guestfs_procedure {
   GUESTFS_PROC_JOURNAL_SKIP = 407,
   GUESTFS_PROC_INTERNAL_JOURNAL_GET = 408,
   GUESTFS_PROC_JOURNAL_GET_DATA_THRESHOLD = 409,
-  GUESTFS_PROC_JOURNAL_SET_DATA_THRESHOLD = 410
+  GUESTFS_PROC_JOURNAL_SET_DATA_THRESHOLD = 410,
+  GUESTFS_PROC_AUG_SETM = 411,
+  GUESTFS_PROC_AUG_LABEL = 412
 };
 
-const GUESTFS_MAX_PROC_NR = 410;
+const GUESTFS_MAX_PROC_NR = 412;
 
 /* The remote procedure call protocol. */
 

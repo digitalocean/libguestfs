@@ -544,6 +544,14 @@ C<path> must match exactly one existing node in the tree, and
 C<label> must be a label, ie. not contain C</>, C<*> or end
 with a bracketed index C<[N]>.
 
+=head2 aug-label
+
+ aug-label augpath
+
+The label (name of the last element) of the Augeas path expression
+C<augpath> is returned.  C<augpath> must match exactly one node, else
+this function returns an error.
+
 =head2 aug-load
 
  aug-load
@@ -602,6 +610,18 @@ In the Augeas API, it is possible to clear a node by setting
 the value to NULL.  Due to an oversight in the libguestfs API
 you cannot do that with this call.  Instead you must use the
 L</aug-clear> call.
+
+=head2 aug-setm
+
+ aug-setm base sub val
+
+Change multiple Augeas nodes in a single operation.  C<base> is
+an expression matching multiple nodes.  C<sub> is a path expression
+relative to C<base>.  All nodes matching C<base> are found, and then
+for each node, C<sub> is changed to C<val>.  C<sub> may also be C<NULL>
+in which case the C<base> nodes are modified.
+
+This returns the number of nodes modified.
 
 =head2 available
 

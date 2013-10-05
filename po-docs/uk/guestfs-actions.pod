@@ -735,6 +735,19 @@ be a label, ie. not contain C</>, C<*> or end with a bracketed index C<[N]>.
 
 (Додано у 0.7)
 
+=head2 guestfs_aug_label
+
+ char *
+ guestfs_aug_label (guestfs_h *g,
+                    const char *augpath);
+
+The label (name of the last element) of the Augeas path expression
+C<augpath> is returned.  C<augpath> must match exactly one node, else this
+function returns an error.
+
+This function returns a string, or NULL on error.  I<The caller must free
+the returned string after use>.
+
 =head2 guestfs_aug_load
 
  int
@@ -837,6 +850,24 @@ this call.  Instead you must use the C<guestfs_aug_clear> call.
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
 (Додано у 0.7)
+
+=head2 guestfs_aug_setm
+
+ int
+ guestfs_aug_setm (guestfs_h *g,
+                   const char *base,
+                   const char *sub,
+                   const char *val);
+
+Change multiple Augeas nodes in a single operation.  C<base> is an
+expression matching multiple nodes.  C<sub> is a path expression relative to
+C<base>.  All nodes matching C<base> are found, and then for each node,
+C<sub> is changed to C<val>.  C<sub> may also be C<NULL> in which case the
+C<base> nodes are modified.
+
+This returns the number of nodes modified.
+
+У разі помилки цією функцією буде повернуто -1.
 
 =head2 guestfs_available
 
@@ -3257,7 +3288,7 @@ When the file is accessed, its atime is not modified.
 
 =item 'a'
 
-The file is append-only.
+До файла можна лише дописувати дані.
 
 =item 'c'
 

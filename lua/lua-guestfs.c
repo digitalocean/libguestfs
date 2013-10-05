@@ -897,6 +897,29 @@ guestfs_lua_aug_insert (lua_State *L)
 }
 
 static int
+guestfs_lua_aug_label (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *augpath;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "aug_label");
+
+  augpath = luaL_checkstring (L, 2);
+
+  r = guestfs_aug_label (g, augpath);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
+  return 1;
+}
+
+static int
 guestfs_lua_aug_load (lua_State *L)
 {
   int r;
@@ -1046,6 +1069,32 @@ guestfs_lua_aug_set (lua_State *L)
     return last_error (L, g);
 
   return 0;
+}
+
+static int
+guestfs_lua_aug_setm (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *base;
+  const char *sub;
+  const char *val;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "aug_setm");
+
+  base = luaL_checkstring (L, 2);
+  sub = luaL_optstring (L, 3, NULL);
+  val = luaL_checkstring (L, 4);
+
+  r = guestfs_aug_setm (g, base, sub, val);
+  if (r == -1)
+    return last_error (L, g);
+
+  lua_pushinteger (L, r);
+  return 1;
 }
 
 static int
@@ -14683,6 +14732,7 @@ static luaL_Reg methods[] = {
   { "aug_get", guestfs_lua_aug_get },
   { "aug_init", guestfs_lua_aug_init },
   { "aug_insert", guestfs_lua_aug_insert },
+  { "aug_label", guestfs_lua_aug_label },
   { "aug_load", guestfs_lua_aug_load },
   { "aug_ls", guestfs_lua_aug_ls },
   { "aug_match", guestfs_lua_aug_match },
@@ -14690,6 +14740,7 @@ static luaL_Reg methods[] = {
   { "aug_rm", guestfs_lua_aug_rm },
   { "aug_save", guestfs_lua_aug_save },
   { "aug_set", guestfs_lua_aug_set },
+  { "aug_setm", guestfs_lua_aug_setm },
   { "available", guestfs_lua_available },
   { "available_all_groups", guestfs_lua_available_all_groups },
   { "base64_in", guestfs_lua_base64_in },

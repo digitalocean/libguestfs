@@ -6207,3 +6207,27 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_aug_setm ##### -->
+<para>
+
+</para>
+
+@session: 
+@base: 
+@sub: 
+@val: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_aug_label ##### -->
+<para>
+
+</para>
+
+@session: 
+@augpath: 
+@err: 
+@Returns: 
+
+

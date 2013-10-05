@@ -109,6 +109,40 @@ free space on) certain filesystems by doing:
 
 ヘルプを表示します。
 
+=item B<--check-tmpdir=ignore>
+
+=item B<--check-tmpdir=continue>
+
+=item B<--check-tmpdir=warn>
+
+=item B<--check-tmpdir=fail>
+
+Check if L</TMPDIR> has enough space to complete the operation.  This is
+just an estimate.
+
+If the check indicates a problem, then you can either:
+
+=over 4
+
+=item *
+
+B<ignore> it,
+
+=item *
+
+print a warning and B<continue>,
+
+=item *
+
+B<warn> and wait for the user to press the Return key (this is the default),
+or:
+
+=item *
+
+B<fail> and exit.
+
+=back
+
 =item B<--compress>
 
 出力ファイルを圧縮します。これは 出力形式が C<qcow2> の場合 I<のみ> 機能します。

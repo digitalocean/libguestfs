@@ -1440,7 +1440,8 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify \
 
 # Alphabetical order.
 SOURCES = \
-	sparsify.ml
+	sparsify.ml \
+	statvfs-c.c
 
 
 # Note this list must be in dependency order.
@@ -1452,6 +1453,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/resize/common_utils.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/resize/tTY.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/resize/progress.cmx \
+@HAVE_OCAML_TRUE@	statvfs-c.o \
 @HAVE_OCAML_TRUE@	sparsify.cmx
 
 @HAVE_OCAML_TRUE@bin_SCRIPTS = virt-sparsify

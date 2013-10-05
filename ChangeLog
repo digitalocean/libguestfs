@@ -1,4 +1,58 @@
+2013-08-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	Pull latest translations from Transifex.
+
+	Update Transifex domain name from .net -> .com.
+
+	Update gnulib to latest version.
+
+	sparsify: Get free space on TMPDIR and give a warning if we estimate it is too little.
+
+	Update TODO file.
+
+	New APIs: aug-setm and aug-label.
+	Bindings for the aug_setm and aug_label APIs in Augeas.
+
+	augeas: Improve error reporting.
+	Display all the information from the handle about errors.
+
+2013-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Enable kvmclock.
+	This enables stable guest clocks.
+
+	launch: libvirt: Enable <cpu mode=host-model>.
+	This may still cause problems on some CPUs because of a bug
+	in libvirt.  See:
+	https://bugzilla.redhat.com/show_bug.cgi?id=870071
+
+2013-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Specify -cpu host,+kvmclock.
+	'-cpu host' makes the CPU look like the host CPU.  This is useful
+	because it means the appliance can use all the host CPU's features,
+	eg. for fast checksumming or MD XORing.
+
+	'kvmclock' is the paravirtualized clock for qemu/KVM.  It's much more
+	stable than relying on tsc or a virtualized device such as HPET, and
+	clock instability is one of the problems we have encountered when
+	running libguestfs on a heavily loaded machine, especially in a nested VM.
+
+	Note that we require qemu >= 1.2 (and have for a while) which has long
+	supported both of these options.
+
+2013-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Add drives after machine parameters.
+	This is just code motion.  It should affect the semantics of the code,
+	nor how the appliance VM is created.
+
+	./run: Omit timeout -k option on RHEL 6.
+	If timeout doesn't have the -k option, don't use it.
+
 2013-08-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.13.
 
 	sysprep: Add "notes" field for notes on shortcomings, bugs, etc.
 	Instead of keeping this information as comments in the source, put it

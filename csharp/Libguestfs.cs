@@ -595,6 +595,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_aug_label (IntPtr h, [In] string augpath);
+
+    /// <summary>
+    /// return the label from an Augeas path expression
+    /// </summary>
+    public string aug_label (string augpath)
+    {
+      string r;
+      r = guestfs_aug_label (_handle, augpath);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_aug_load (IntPtr h);
 
     /// <summary>
@@ -693,6 +708,21 @@ namespace Guestfs
       r = guestfs_aug_set (_handle, augpath, val);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_aug_setm (IntPtr h, [In] string base, [In] string sub, [In] string val);
+
+    /// <summary>
+    /// set multiple Augeas nodes
+    /// </summary>
+    public int aug_setm (string base, string sub, string val)
+    {
+      int r;
+      r = guestfs_aug_setm (_handle, base, sub, val);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
     }
 
     [DllImport ("libguestfs.so.0")]

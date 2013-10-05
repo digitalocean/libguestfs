@@ -975,6 +975,21 @@ run_aug_insert (ETERM *message)
 }
 
 static ETERM *
+run_aug_label (ETERM *message)
+{
+  CLEANUP_FREE char *augpath = erl_iolist_to_string (ARG (0));
+  char *r;
+
+  r = guestfs_aug_label (g, augpath);
+  if (r == NULL)
+    return make_error ("aug_label");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
 run_aug_load (ETERM *message)
 {
   int r;
@@ -1069,6 +1084,25 @@ run_aug_set (ETERM *message)
     return make_error ("aug_set");
 
   return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_aug_setm (ETERM *message)
+{
+  CLEANUP_FREE char *base = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *sub;
+  if (atom_equals (ARG (1), "undefined"))
+    sub = NULL;
+  else
+    sub = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (2));
+  int r;
+
+  r = guestfs_aug_setm (g, base, sub, val);
+  if (r == -1)
+    return make_error ("aug_setm");
+
+  return erl_mk_int (r);
 }
 
 static ETERM *
@@ -10126,6 +10160,8 @@ dispatch (ETERM *message)
     return run_aug_init (message);
   else if (atom_equals (fun, "aug_insert"))
     return run_aug_insert (message);
+  else if (atom_equals (fun, "aug_label"))
+    return run_aug_label (message);
   else if (atom_equals (fun, "aug_load"))
     return run_aug_load (message);
   else if (atom_equals (fun, "aug_ls"))
@@ -10140,6 +10176,8 @@ dispatch (ETERM *message)
     return run_aug_save (message);
   else if (atom_equals (fun, "aug_set"))
     return run_aug_set (message);
+  else if (atom_equals (fun, "aug_setm"))
+    return run_aug_setm (message);
   else if (atom_equals (fun, "available"))
     return run_available (message);
   else if (atom_equals (fun, "available_all_groups"))

@@ -434,7 +434,7 @@ machines), change C<-d "$1"> to C<-a "$1">.  See also L<virt-inspector(1)>.
 
 =head1 Показати список файлів і каталогів у віртуальній машині
 
-Use L<virt-ls(1)>.
+Скористайтеся L<virt-ls(1)>.
 
 =head1 Показати список служб у віртуальній машині Windows
 
@@ -544,5 +544,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2013 Red Hat Inc.
+© Red Hat Inc., 2009–2013
 

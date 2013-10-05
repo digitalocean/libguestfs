@@ -1386,6 +1386,8 @@ guestfs_session_journal_next
 guestfs_session_journal_skip
 guestfs_session_journal_get_data_threshold
 guestfs_session_journal_set_data_threshold
+guestfs_session_aug_setm
+guestfs_session_aug_label
 <SUBSECTION Standard>
 GUESTFS_IS_SESSION
 GUESTFS_IS_SESSION_CLASS

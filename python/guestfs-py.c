@@ -21512,6 +21512,81 @@ py_guestfs_journal_set_data_threshold (PyObject *self, PyObject *args)
   return py_r;
 }
 
+static PyObject *
+py_guestfs_aug_setm (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *base;
+  const char *sub;
+  const char *val;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oszs:guestfs_aug_setm",
+                         &py_g, &base, &sub, &val))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_aug_setm (g, base, sub, val);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = PyLong_FromLong ((long) r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_aug_label (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  char *r;
+  const char *augpath;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_aug_label",
+                         &py_g, &augpath))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_aug_label (g, augpath);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
+  free (r);
+
+ out:
+  return py_r;
+}
+
 static PyMethodDef methods[] = {
   { (char *) "create", py_guestfs_create, METH_VARARGS, NULL },
   { (char *) "close", py_guestfs_close, METH_VARARGS, NULL },
@@ -22051,6 +22126,8 @@ static PyMethodDef methods[] = {
   { (char *) "journal_skip", py_guestfs_journal_skip, METH_VARARGS, NULL },
   { (char *) "journal_get_data_threshold", py_guestfs_journal_get_data_threshold, METH_VARARGS, NULL },
   { (char *) "journal_set_data_threshold", py_guestfs_journal_set_data_threshold, METH_VARARGS, NULL },
+  { (char *) "aug_setm", py_guestfs_aug_setm, METH_VARARGS, NULL },
+  { (char *) "aug_label", py_guestfs_aug_label, METH_VARARGS, NULL },
   { NULL, NULL, 0, NULL }
 };
 

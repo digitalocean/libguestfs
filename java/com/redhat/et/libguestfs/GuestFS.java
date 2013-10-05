@@ -17768,4 +17768,51 @@ public class GuestFS {
   private native void _journal_set_data_threshold (long g, long threshold)
     throws LibGuestFSException;
 
+  /**
+   * set multiple Augeas nodes
+   * <p>
+   * Change multiple Augeas nodes in a single operation.
+   * "base" is an expression matching multiple nodes. "sub"
+   * is a path expression relative to "base". All nodes
+   * matching "base" are found, and then for each node, "sub"
+   * is changed to "val". "sub" may also be "NULL" in which
+   * case the "base" nodes are modified.
+   * <p>
+   * This returns the number of nodes modified.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int aug_setm (String base, String sub, String val)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("aug_setm: handle is closed");
+
+    return _aug_setm (g, base, sub, val);
+  }
+
+  private native int _aug_setm (long g, String base, String sub, String val)
+    throws LibGuestFSException;
+
+  /**
+   * return the label from an Augeas path expression
+   * <p>
+   * The label (name of the last element) of the Augeas path
+   * expression "augpath" is returned. "augpath" must match
+   * exactly one node, else this function returns an error.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String aug_label (String augpath)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("aug_label: handle is closed");
+
+    return _aug_label (g, augpath);
+  }
+
+  private native String _aug_label (long g, String augpath)
+    throws LibGuestFSException;
+
 }

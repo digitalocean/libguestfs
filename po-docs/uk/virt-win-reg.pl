@@ -84,8 +84,8 @@ L<hivexregedit(1)>.
 Якщо використовується libvirt, встановити з’єднання з вказаним I<URI>. Якщо
 пропущено, з’єднання буде встановлено з типовим гіпервізором libvirt.
 
-If you specify guest block devices directly, then libvirt is not used at
-all.
+Якщо вказати блокові пристрої гостьових систем безпосередньо, libvirt не
+буде використовуватися взагалі.
 
 =item B<--format> raw
 

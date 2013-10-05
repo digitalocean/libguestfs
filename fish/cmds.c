@@ -542,6 +542,8 @@ static int run_journal_next (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_skip (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_get_data_threshold (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_set_data_threshold (const char *cmd, size_t argc, char *argv[]);
+static int run_aug_setm (const char *cmd, size_t argc, char *argv[]);
+static int run_aug_label (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -3651,6 +3653,18 @@ struct command_entry journal_set_data_threshold_cmd_entry = {
   .run = run_journal_set_data_threshold
 };
 
+struct command_entry aug_setm_cmd_entry = {
+  .name = "aug-setm",
+  .help = "NAME\n    aug-setm - set multiple Augeas nodes\n\nSYNOPSIS\n     aug-setm base sub val\n\nDESCRIPTION\n    Change multiple Augeas nodes in a single operation. \"base\" is an\n    expression matching multiple nodes. \"sub\" is a path expression relative\n    to \"base\". All nodes matching \"base\" are found, and then for each node,\n    \"sub\" is changed to \"val\". \"sub\" may also be \"NULL\" in which case the\n    \"base\" nodes are modified.\n\n    This returns the number of nodes modified.\n\n",
+  .run = run_aug_setm
+};
+
+struct command_entry aug_label_cmd_entry = {
+  .name = "aug-label",
+  .help = "NAME\n    aug-label - return the label from an Augeas path expression\n\nSYNOPSIS\n     aug-label augpath\n\nDESCRIPTION\n    The label (name of the last element) of the Augeas path expression\n    \"augpath\" is returned. \"augpath\" must match exactly one node, else this\n    function returns an error.\n\n",
+  .run = run_aug_label
+};
+
 void
 list_commands (void)
 {
@@ -3674,6 +3688,7 @@ list_commands (void)
   printf ("%-20s %s\n", "aug-get", _("look up the value of an Augeas path"));
   printf ("%-20s %s\n", "aug-init", _("create a new Augeas handle"));
   printf ("%-20s %s\n", "aug-insert", _("insert a sibling Augeas node"));
+  printf ("%-20s %s\n", "aug-label", _("return the label from an Augeas path expression"));
   printf ("%-20s %s\n", "aug-load", _("load files into the tree"));
   printf ("%-20s %s\n", "aug-ls", _("list Augeas nodes under augpath"));
   printf ("%-20s %s\n", "aug-match", _("return Augeas nodes which match augpath"));
@@ -3681,6 +3696,7 @@ list_commands (void)
   printf ("%-20s %s\n", "aug-rm", _("remove an Augeas path"));
   printf ("%-20s %s\n", "aug-save", _("write all pending Augeas changes to disk"));
   printf ("%-20s %s\n", "aug-set", _("set Augeas path to value"));
+  printf ("%-20s %s\n", "aug-setm", _("set multiple Augeas nodes"));
   printf ("%-20s %s\n", "available", _("test availability of some parts of the API"));
   printf ("%-20s %s\n", "available-all-groups", _("return a list of all optional groups"));
   printf ("%-20s %s\n", "base64-in", _("upload base64-encoded data to file"));
@@ -22112,6 +22128,58 @@ run_journal_set_data_threshold (const char *cmd, size_t argc, char *argv[])
   ret = 0;
  out:
  out_threshold:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_aug_setm (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *base;
+  const char *sub;
+  const char *val;
+  size_t i = 0;
+
+  if (argc != 3) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  base = argv[i++];
+  sub = STRNEQ (argv[i], "") ? argv[i] : NULL;
+  i++;
+  val = argv[i++];
+  r = guestfs_aug_setm (g, base, sub, val);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%d\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_aug_label (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  const char *augpath;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  augpath = argv[i++];
+  r = guestfs_aug_label (g, augpath);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
  out_noargs:
   return ret;
 }

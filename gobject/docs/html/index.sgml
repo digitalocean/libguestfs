@@ -550,6 +550,8 @@
 <ANCHOR id="guestfs-session-journal-skip" href="guestfs/GuestfsSession.html#guestfs-session-journal-skip">
 <ANCHOR id="guestfs-session-journal-get-data-threshold" href="guestfs/GuestfsSession.html#guestfs-session-journal-get-data-threshold">
 <ANCHOR id="guestfs-session-journal-set-data-threshold" href="guestfs/GuestfsSession.html#guestfs-session-journal-set-data-threshold">
+<ANCHOR id="guestfs-session-aug-setm" href="guestfs/GuestfsSession.html#guestfs-session-aug-setm">
+<ANCHOR id="guestfs-session-aug-label" href="guestfs/GuestfsSession.html#guestfs-session-aug-label">
 <ANCHOR id="GuestfsSession.signal-details" href="guestfs/GuestfsSession.html#GuestfsSession.signal-details">
 <ANCHOR id="GuestfsSession-appliance" href="guestfs/GuestfsSession.html#GuestfsSession-appliance">
 <ANCHOR id="GuestfsSession-close" href="guestfs/GuestfsSession.html#GuestfsSession-close">

@@ -1956,6 +1956,14 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">gint64</span> threshold</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gint32</span>              <a class="link" href="GuestfsSession.html#guestfs-session-aug-setm" title="guestfs_session_aug_setm ()">guestfs_session_aug_setm</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *base</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *sub</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *val</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gchar</span> *             <a class="link" href="GuestfsSession.html#guestfs-session-aug-label" title="guestfs_session_aug_label ()">guestfs_session_aug_label</a>           (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *augpath</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 </pre>
 </div>
 <div class="refsect1">
@@ -29404,6 +29412,106 @@ See also <a class="link" href="GuestfsSession.html#guestfs-session-journal-get-d
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-aug-setm"></a><h3>guestfs_session_aug_setm ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint32</span>              guestfs_session_aug_setm            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *base</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *sub</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *val</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+set multiple Augeas nodes
+</p>
+<p>
+Change multiple Augeas nodes in a single operation. <em class="parameter"><code>base</code></em> is an
+expression matching multiple nodes. <em class="parameter"><code>sub</code></em> is a path expression relative
+to <em class="parameter"><code>base</code></em>. All nodes matching <em class="parameter"><code>base</code></em> are found, and then for each node,
+<em class="parameter"><code>sub</code></em> is changed to <em class="parameter"><code>val</code></em>. <em class="parameter"><code>sub</code></em> may also be <em class="parameter"><code>NULL</code></em> in which case the <em class="parameter"><code>base</code></em>
+nodes are modified.
+</p>
+<p>
+This returns the number of nodes modified.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>base</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sub</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>val</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned value, or -1 on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-aug-label"></a><h3>guestfs_session_aug_label ()</h3>
+<pre class="programlisting"><span class="returnvalue">gchar</span> *             guestfs_session_aug_label           (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *augpath</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+return the label from an Augeas path expression
+</p>
+<p>
+The label (name of the last element) of the Augeas path expression
+<em class="parameter"><code>augpath</code></em> is returned. <em class="parameter"><code>augpath</code></em> must match exactly one node, else this
+function returns an error.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>augpath</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned string, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
 </tr>
 </tbody>
 </table></div>

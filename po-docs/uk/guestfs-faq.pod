@@ -140,7 +140,7 @@ following SELinux boolean:
 
  setsebool -P virt_use_execmem=on
 
-For more information see
+Докладніші відомості можна знайти за адресою
 L<https://bugzilla.redhat.com/show_bug.cgi?id=806106>.
 
 =head2 "child process died unexpectedly"
@@ -451,9 +451,9 @@ the log files for S<"Setting SELinux context on ..."> messages.
 In theory sVirt should support AppArmor, but we have not tried it.  It will
 almost certainly require patching libvirt and writing an AppArmor policy.
 
-=head2 Libguestfs has a really long list of dependencies!
+=head2 Чому у Libguestfs такий великий список залежностей?
 
-That's because it does a lot of things.
+Тому що вона може робити дуже багато речей.
 
 Libguestfs -- I<as it is packaged for Fedora> -- satisfies the following
 conditions:
@@ -588,7 +588,7 @@ x86-64), but note that libvirt will prevent you from sharing the appliance
 across NFS because of permissions problems (so either switch to the direct
 backend or don't use NFS).
 
-=head2 How can I speed up libguestfs builds?
+=head2 Як пришвидшити збирання libguestfs?
 
 By far the most important thing you can do is to install and properly
 configure Squid.  Note that the default configuration that ships with Squid
@@ -614,7 +614,7 @@ in the approx(8) manual page.
 B<Note:> Most of the information in this section has moved:
 L<guestfs-performance(1)>.
 
-=head2 Upload or write seem very slow.
+=head2 Вивантаження або запис дуже повільні.
 
 In libguestfs E<lt> 1.13.16, the mount command (L<guestfs(3)/guestfs_mount>)
 enabled option C<-o sync> implicitly.  This causes very poor write
@@ -793,7 +793,7 @@ For csh/tcsh the equivalent commands would be:
  setenv LIBGUESTFS_TRACE 1
  setenv LIBGUESTFS_DEBUG 1
 
-For further information, see: L<guestfs(3)/ENVIRONMENT VARIABLES>.
+Докладніші дані можна знайти на сторінці L<guestfs(3)/ЗМІННІ СЕРЕДОВИЩА>
 
 =head2 How do I debug when using guestfish?
 
@@ -801,7 +801,7 @@ You can use the same environment variables above.  Alternatively use the
 guestfish options -x (to trace commands) or -v (to get the full debug
 output), or both.
 
-For further information, see: L<guestfish(1)>.
+Докладніші дані можна знайти на сторінці L<guestfish(1)>.
 
 =head2 How do I debug when using the API?
 

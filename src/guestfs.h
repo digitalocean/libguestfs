@@ -714,6 +714,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_aug_init (guestfs_h *g, const char *root, 
 #define GUESTFS_HAVE_AUG_INSERT 1
 extern GUESTFS_DLL_PUBLIC int guestfs_aug_insert (guestfs_h *g, const char *augpath, const char *label, int before);
 
+#define GUESTFS_HAVE_AUG_LABEL 1
+extern GUESTFS_DLL_PUBLIC char *guestfs_aug_label (guestfs_h *g, const char *augpath);
+
 #define GUESTFS_HAVE_AUG_LOAD 1
 extern GUESTFS_DLL_PUBLIC int guestfs_aug_load (guestfs_h *g);
 
@@ -734,6 +737,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_aug_save (guestfs_h *g);
 
 #define GUESTFS_HAVE_AUG_SET 1
 extern GUESTFS_DLL_PUBLIC int guestfs_aug_set (guestfs_h *g, const char *augpath, const char *val);
+
+#define GUESTFS_HAVE_AUG_SETM 1
+extern GUESTFS_DLL_PUBLIC int guestfs_aug_setm (guestfs_h *g, const char *base, const char *sub, const char *val);
 
 #define GUESTFS_HAVE_AVAILABLE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_available (guestfs_h *g, char *const *groups);
@@ -3388,6 +3394,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_AUG_GET 1
 #define LIBGUESTFS_HAVE_AUG_INIT 1
 #define LIBGUESTFS_HAVE_AUG_INSERT 1
+#define LIBGUESTFS_HAVE_AUG_LABEL 1
 #define LIBGUESTFS_HAVE_AUG_LOAD 1
 #define LIBGUESTFS_HAVE_AUG_LS 1
 #define LIBGUESTFS_HAVE_AUG_MATCH 1
@@ -3395,6 +3402,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_AUG_RM 1
 #define LIBGUESTFS_HAVE_AUG_SAVE 1
 #define LIBGUESTFS_HAVE_AUG_SET 1
+#define LIBGUESTFS_HAVE_AUG_SETM 1
 #define LIBGUESTFS_HAVE_AVAILABLE 1
 #define LIBGUESTFS_HAVE_AVAILABLE_ALL_GROUPS 1
 #define LIBGUESTFS_HAVE_BASE64_IN 1

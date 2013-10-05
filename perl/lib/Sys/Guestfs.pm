@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.410';
+$VERSION = '0.412';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -788,6 +788,12 @@ C<path> must match exactly one existing node in the tree, and
 C<label> must be a label, ie. not contain C</>, C<*> or end
 with a bracketed index C<[N]>.
 
+=item $label = $g->aug_label ($augpath);
+
+The label (name of the last element) of the Augeas path expression
+C<augpath> is returned.  C<augpath> must match exactly one node, else
+this function returns an error.
+
 =item $g->aug_load ();
 
 Load files into the tree.
@@ -832,6 +838,16 @@ In the Augeas API, it is possible to clear a node by setting
 the value to NULL.  Due to an oversight in the libguestfs API
 you cannot do that with this call.  Instead you must use the
 C<$g-E<gt>aug_clear> call.
+
+=item $nodes = $g->aug_setm ($base, $sub, $val);
+
+Change multiple Augeas nodes in a single operation.  C<base> is
+an expression matching multiple nodes.  C<sub> is a path expression
+relative to C<base>.  All nodes matching C<base> are found, and then
+for each node, C<sub> is changed to C<val>.  C<sub> may also be C<NULL>
+in which case the C<base> nodes are modified.
+
+This returns the number of nodes modified.
 
 =item $g->available (\@groups);
 
@@ -7394,6 +7410,14 @@ use vars qw(%guestfs_introspection);
     name => "aug_insert",
     description => "insert a sibling Augeas node",
   },
+  "aug_label" => {
+    ret => 'string',
+    args => [
+      [ 'augpath', 'string', 0 ],
+    ],
+    name => "aug_label",
+    description => "return the label from an Augeas path expression",
+  },
   "aug_load" => {
     ret => 'void',
     args => [
@@ -7449,6 +7473,16 @@ use vars qw(%guestfs_introspection);
     ],
     name => "aug_set",
     description => "set Augeas path to value",
+  },
+  "aug_setm" => {
+    ret => 'int',
+    args => [
+      [ 'base', 'string', 0 ],
+      [ 'sub', 'nullable string', 1 ],
+      [ 'val', 'string', 2 ],
+    ],
+    name => "aug_setm",
+    description => "set multiple Augeas nodes",
   },
   "available" => {
     ret => 'void',

@@ -50,6 +50,7 @@
         guestfs_aug_get;
         guestfs_aug_init;
         guestfs_aug_insert;
+        guestfs_aug_label;
         guestfs_aug_load;
         guestfs_aug_ls;
         guestfs_aug_match;
@@ -57,6 +58,7 @@
         guestfs_aug_rm;
         guestfs_aug_save;
         guestfs_aug_set;
+        guestfs_aug_setm;
         guestfs_available;
         guestfs_available_all_groups;
         guestfs_base64_in;

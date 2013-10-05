@@ -3668,6 +3668,28 @@ struct guestfs_journal_set_data_threshold_args {
 };
 typedef struct guestfs_journal_set_data_threshold_args guestfs_journal_set_data_threshold_args;
 
+struct guestfs_aug_setm_args {
+	char *base;
+	guestfs_str *sub;
+	char *val;
+};
+typedef struct guestfs_aug_setm_args guestfs_aug_setm_args;
+
+struct guestfs_aug_setm_ret {
+	int nodes;
+};
+typedef struct guestfs_aug_setm_ret guestfs_aug_setm_ret;
+
+struct guestfs_aug_label_args {
+	char *augpath;
+};
+typedef struct guestfs_aug_label_args guestfs_aug_label_args;
+
+struct guestfs_aug_label_ret {
+	char *label;
+};
+typedef struct guestfs_aug_label_ret guestfs_aug_label_ret;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -4072,9 +4094,11 @@ enum guestfs_procedure {
 	GUESTFS_PROC_INTERNAL_JOURNAL_GET = 408,
 	GUESTFS_PROC_JOURNAL_GET_DATA_THRESHOLD = 409,
 	GUESTFS_PROC_JOURNAL_SET_DATA_THRESHOLD = 410,
+	GUESTFS_PROC_AUG_SETM = 411,
+	GUESTFS_PROC_AUG_LABEL = 412,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 410
+#define GUESTFS_MAX_PROC_NR 412
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4708,6 +4732,10 @@ extern  bool_t xdr_guestfs_journal_skip_args (XDR *, guestfs_journal_skip_args*)
 extern  bool_t xdr_guestfs_journal_skip_ret (XDR *, guestfs_journal_skip_ret*);
 extern  bool_t xdr_guestfs_journal_get_data_threshold_ret (XDR *, guestfs_journal_get_data_threshold_ret*);
 extern  bool_t xdr_guestfs_journal_set_data_threshold_args (XDR *, guestfs_journal_set_data_threshold_args*);
+extern  bool_t xdr_guestfs_aug_setm_args (XDR *, guestfs_aug_setm_args*);
+extern  bool_t xdr_guestfs_aug_setm_ret (XDR *, guestfs_aug_setm_ret*);
+extern  bool_t xdr_guestfs_aug_label_args (XDR *, guestfs_aug_label_args*);
+extern  bool_t xdr_guestfs_aug_label_ret (XDR *, guestfs_aug_label_ret*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5291,6 +5319,10 @@ extern bool_t xdr_guestfs_journal_skip_args ();
 extern bool_t xdr_guestfs_journal_skip_ret ();
 extern bool_t xdr_guestfs_journal_get_data_threshold_ret ();
 extern bool_t xdr_guestfs_journal_set_data_threshold_args ();
+extern bool_t xdr_guestfs_aug_setm_args ();
+extern bool_t xdr_guestfs_aug_setm_ret ();
+extern bool_t xdr_guestfs_aug_label_args ();
+extern bool_t xdr_guestfs_aug_label_ret ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

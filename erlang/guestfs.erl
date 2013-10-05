@@ -41,6 +41,7 @@
 -export([aug_get/2]).
 -export([aug_init/3]).
 -export([aug_insert/4]).
+-export([aug_label/2]).
 -export([aug_load/1]).
 -export([aug_ls/2]).
 -export([aug_match/2]).
@@ -48,6 +49,7 @@
 -export([aug_rm/2]).
 -export([aug_save/1]).
 -export([aug_set/3]).
+-export([aug_setm/4]).
 -export([available/2]).
 -export([available_all_groups/1]).
 -export([base64_in/3]).
@@ -667,6 +669,9 @@ aug_init(G, Root, Flags) ->
 aug_insert(G, Augpath, Label, Before) ->
   call_port(G, {aug_insert, Augpath, Label, Before}).
 
+aug_label(G, Augpath) ->
+  call_port(G, {aug_label, Augpath}).
+
 aug_load(G) ->
   call_port(G, {aug_load}).
 
@@ -687,6 +692,9 @@ aug_save(G) ->
 
 aug_set(G, Augpath, Val) ->
   call_port(G, {aug_set, Augpath, Val}).
+
+aug_setm(G, Base, Sub, Val) ->
+  call_port(G, {aug_setm, Base, Sub, Val}).
 
 available(G, Groups) ->
   call_port(G, {available, Groups}).

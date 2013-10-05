@@ -74,11 +74,11 @@ I<--format=..>.
 
 B<Всі поточні дані на диску буде витерто.>
 
-=item B<-a URI>
+=item B<-a адреса>
 
-=item B<--add URI>
+=item B<--add адреса>
 
-Add a remote disk.  See L<guestfish(1)/ADDING REMOTE STORAGE>.
+Додати віддалений диск. Див. L<guestfish(1)/ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА>.
 
 =item B<--filesystem=ext3|ntfs|vfat|...>
 

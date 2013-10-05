@@ -735,6 +735,7 @@ AC_SUBST([LTALLOCA])
   fi
   gl_LOCALE_MODULE_INDICATOR([localeconv])
   gl_LOCK
+  gl_MODULE_INDICATOR([lock])
   gl_FUNC_LSEEK
   if test $REPLACE_LSEEK = 1; then
     AC_LIBOBJ([lseek])
