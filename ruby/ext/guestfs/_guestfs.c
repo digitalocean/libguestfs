@@ -23348,9 +23348,7 @@ ruby_guestfs_acl_get_file (VALUE gv, VALUE pathv, VALUE acltypev)
  * set the POSIX ACL attached to a file
  *
  * This function sets the POSIX Access Control List (ACL)
- * attached to "path". The "acl" parameter is the new ACL
- * in either "long text form" or "short text form" (see
- * acl(5)).
+ * attached to "path".
  * 
  * The "acltype" parameter may be:
  * 
@@ -23361,6 +23359,25 @@ ruby_guestfs_acl_get_file (VALUE gv, VALUE pathv, VALUE acltypev)
  * "default"
  * Set the default ACL. Normally this only makes sense
  * if "path" is a directory.
+ * 
+ * The "acl" parameter is the new ACL in either "long text
+ * form" or "short text form" (see acl(5)). The new ACL
+ * completely replaces any previous ACL on the file. The
+ * ACL must contain the full Unix permissions (eg.
+ * "u::rwx,g::rx,o::rx").
+ * 
+ * If you are specifying individual users or groups, then
+ * the mask field is also required (eg. "m::rwx"), followed
+ * by the "u:*ID*:..." and/or "g:*ID*:..." field(s). A full
+ * ACL string might therefore look like this:
+ * 
+ * u::rwx,g::rwx,o::rwx,m::rwx,u:500:rwx,g:500:rwx
+ * \ Unix permissions / \mask/ \      ACL        /
+ * 
+ * You should use numeric UIDs and GIDs. To map usernames
+ * and groupnames to the correct numeric ID in the context
+ * of the guest, use the Augeas functions (see
+ * "g.aug_init").
  *
  *
  * (For the C API documentation for this function, see

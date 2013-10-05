@@ -2226,8 +2226,7 @@ set the POSIX ACL attached to a file
 </p>
 <p>
 This function sets the POSIX Access Control List (ACL) attached to
-<em class="parameter"><code>path</code></em>. The <em class="parameter"><code>acl</code></em> parameter is the new ACL in either "long text form" or
-"short text form" (see acl(5)).
+<em class="parameter"><code>path</code></em>.
 </p>
 <p>
 The <em class="parameter"><code>acltype</code></em> parameter may be:
@@ -2241,6 +2240,28 @@ filesystem object.
 <em class="parameter"><code>default</code></em>
 Set the default ACL. Normally this only makes sense if <em class="parameter"><code>path</code></em> is a
 directory.
+</p>
+<p>
+The <em class="parameter"><code>acl</code></em> parameter is the new ACL in either "long text form" or "short
+text form" (see acl(5)). The new ACL completely replaces any previous
+ACL on the file. The ACL must contain the full Unix permissions (eg.
+"u::rwx,g::rx,o::rx").
+</p>
+<p>
+If you are specifying individual users or groups, then the mask field is
+also required (eg. "m::rwx"), followed by the "u:*ID*:..." and/or
+"g:*ID*:..." field(s). A full ACL string might therefore look like this:
+</p>
+<p>
+u::rwx,g::rwx,o::rwx,m::rwx,u:500:rwx,g:500:rwx
+</p>
+<p>
+\ Unix permissions / \mask/ \      ACL        /
+</p>
+<p>
+You should use numeric UIDs and GIDs. To map usernames and groupnames to
+the correct numeric ID in the context of the guest, use the Augeas
+functions (see <a class="link" href="GuestfsSession.html#guestfs-session-aug-init" title="guestfs_session_aug_init ()"><code class="function">guestfs_session_aug_init()</code></a>).
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>

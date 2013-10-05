@@ -10816,14 +10816,31 @@ C<path> is a directory.
     tests = [
       InitScratchFS, Always, TestRun (
         [["touch"; "/acl_set_file_0"];
-         ["acl_set_file"; "/acl_set_file_0"; "access"; "user::r-x,group::r-x,other::r-x"];
+         ["acl_set_file"; "/acl_set_file_0"; "access"; "u::r-x,g::r-x,o::r-x"];
          ["acl_get_file"; "/acl_set_file_0"; "access"]]), [];
+      InitScratchFS, Always, TestRun (
+        [["touch"; "/acl_set_file_1"];
+         ["acl_set_file"; "/acl_set_file_1"; "access"; "u::r-x,g::r-x,o::r-x,m::rwx,u:500:rw,g:600:x"]]), [];
+      InitScratchFS, Always, TestLastFail (
+        [["touch"; "/acl_set_file_2"];
+         (* m (mask) entry is required when setting user or group ACLs *)
+         ["acl_set_file"; "/acl_set_file_2"; "access"; "u::r-x,g::r-x,o::r-x,u:500:rw,g:600:x"]]), [];
+      InitScratchFS, Always, TestLastFail (
+        [["touch"; "/acl_set_file_3"];
+         (* user does not exist *)
+         ["acl_set_file"; "/acl_set_file_3"; "access"; "u::r-x,g::r-x,o::r-x,m::rwx,u:notauser:rw"]]), [];
+      InitScratchFS, Always, TestLastFail (
+        [["touch"; "/acl_set_file_4"];
+         (* cannot set default on a non-directory *)
+         ["acl_set_file"; "/acl_set_file_4"; "default"; "u::r-x,g::r-x,o::r-x"]]), [];
+      InitScratchFS, Always, TestRun (
+        [["mkdir"; "/acl_set_file_5"];
+         ["acl_set_file"; "/acl_set_file_5"; "default"; "u::r-x,g::r-x,o::r-x"]]), [];
     ];
     shortdesc = "set the POSIX ACL attached to a file";
     longdesc = "\
 This function sets the POSIX Access Control List (ACL) attached
-to C<path>.  The C<acl> parameter is the new ACL in either
-\"long text form\" or \"short text form\" (see L<acl(5)>).
+to C<path>.
 
 The C<acltype> parameter may be:
 
@@ -10839,7 +10856,24 @@ other filesystem object.
 Set the default ACL.  Normally this only makes sense if
 C<path> is a directory.
 
-=back" };
+=back
+
+The C<acl> parameter is the new ACL in either \"long text form\"
+or \"short text form\" (see L<acl(5)>).  The new ACL completely
+replaces any previous ACL on the file.  The ACL must contain the
+full Unix permissions (eg. C<u::rwx,g::rx,o::rx>).
+
+If you are specifying individual users or groups, then the
+mask field is also required (eg. C<m::rwx>), followed by the
+C<u:I<ID>:...> and/or C<g:I<ID>:...> field(s).  A full ACL
+string might therefore look like this:
+
+ u::rwx,g::rwx,o::rwx,m::rwx,u:500:rwx,g:500:rwx
+ \\ Unix permissions / \\mask/ \\      ACL        /
+
+You should use numeric UIDs and GIDs.  To map usernames and
+groupnames to the correct numeric ID in the context of the
+guest, use the Augeas functions (see C<guestfs_aug_init>)." };
 
   { defaults with
     name = "acl_delete_def_file";

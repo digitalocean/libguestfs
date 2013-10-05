@@ -1,3 +1,102 @@
+2013-07-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	mkfs: Use -b size=<size> for xfs (RHBZ#981715).
+
+	tests: Add a regression test for all disk_* info commands (RHBZ#981663).
+
+2013-07-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	info: Fix double-call to error function when qemu-img info command fails (RHBZ#981663).
+	Previously if the 'qemu-img info --output json' command failed, then
+	the stdout callback would be called first with a zero-length buffer.
+	Since a zero-length buffer cannot be valid JSON (in this context)
+	don't produce a separate error message.
+
+	However do catch the case when qemu-img info might produce no output
+	and no error (if that were to happen -- it does not happen at the
+	moment).
+
+2013-07-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	info: disk-format et al: Fix error message when no file exists (RHBZ#981663).
+	$ guestfish disk-format /etc/nosuchfile
+
+	Instead of this obscure double error message:
+
+	  libguestfs: error: qemu-img info: JSON parse error: parse error: premature EOF
+	                       (right here) ------^
+	  libguestfs: error: qemu-img info: /etc/nosuchfile: qemu-img info exited with error status 1.
+	  To see full error messages you may need to enable debugging.
+	  See http://libguestfs.org/guestfs-faq.1.html#debugging-libguestfs
+
+	You will now see this simpler error:
+
+	  libguestfs: error: disk info: /etc/nosuchfile: No such file or directory
+
+	Thanks: Bo Fan.
+
+2013-07-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	cmd: Allow callers to override file-closing behaviour after fork.
+	This allows us to send file descriptors directly to child processes,
+	eg. using /dev/fd/<N>.
+
+	acls: Improve documentation for acl_set_file (RHBZ#985269).
+	Thanks: Bo Fan.
+
+2013-07-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	library: Fix a few direct calls to perror(3).
+	Mainly in the FUSE code, left over from when this code lived in the
+	standalone guestmount program.
+
+	tests: Improve the testing of acl_set_file function.
+	See also: https://bugzilla.redhat.com/show_bug.cgi?id=985269
+
+2013-07-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	./run: Increase default timeout from 1h -> 4h.
+	1 hour was not long enough for the C API tests when run in Koji.
+
+	This update commit caab9f1e6f7ac0d8d5209c31854d640b807519ce.
+
+2013-07-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: appliance: Fix a double-free if kernel linking fails (RHBZ#983218).
+	This also simplifies the code which takes the building_lock around
+	guestfs___build_appliance.
+
+	Thanks Attila Fazekas for the detailed bug report.
+
+2013-07-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	./run: Timeout tests after 1 hour.
+	No single test should run longer than 1 hour even on the slowest of
+	hardware.  We are having a problem in Koji where a test hangs and then
+	we end up losing the output completely, so a timeout + print the log
+	to that point is much better.
+
+	./run: Add a better comment describing --test mode.
+	This is just code motion, there is no functional change.
+
+2013-07-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	Remove more temporary ($builddir/tmp) files when doing 'make clean'.
+
+2013-07-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	golang: Fix it so it builds if libguestfs is not installed.
+	It was using the installed copy of libguestfs not the local copy.
+
+	We can't encode the paths in guestfs.go, since this source file gets
+	copied into the install directory where those paths would not make
+	sense.  Instead we have to use CGO_CFLAGS and CGO_LDFLAGS to
+	communicate the right flags to go when doing the local build and test.
+
+2013-07-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.8.
+
 2013-07-06  Richard W.M. Jones  <rjones@redhat.com>
 
 	tests: Add test for aug_ls.

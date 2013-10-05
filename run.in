@@ -171,6 +171,18 @@ else
     GOPATH="$b/golang:$GOPATH"
 fi
 export GOPATH
+if [ -z "$CGO_CFLAGS" ]; then
+    CGO_CFLAGS="-I$s/src"
+else
+    CGO_CFLAGS="$CGO_CFLAGS -I$s/src"
+fi
+export CGO_CFLAGS
+if [ -z "$CGO_LDFLAGS" ]; then
+    CGO_LDFLAGS="-L$b/src/.libs"
+else
+    CGO_LDFLAGS="$CGO_LDFLAGS -L$b/src/.libs"
+fi
+export CGO_LDFLAGS
 
 # For GObject, Javascript and friends.
 export GJS=@GJS@
@@ -202,28 +214,48 @@ export GNOME_KEYRING_PID=
 # Run the program.
 if [ -z "$test_mode" ]; then
     exec $libtool "$@"
-else
-    # For tests (./run --test), redirect all output to a file, and
-    # only print the file if the test fails.
-    pid=$$
-    tmpout=$b/tmp/run-$pid
-    rm -f $tmpout
-    start_t="$(date +'%s')"
-    $libtool "$@" > $tmpout 2>&1
-    fail=$?
-    end_t="$(date +'%s')"
-    if [ "$fail" -eq 0 ]; then
-        # Test successful.
-        echo $(($end_t - $start_t)) seconds: "$@"
-    elif [ "$fail" -eq 77 ]; then
-        # Tests return 77 to mean skipped.
-        cat $tmpout
-    else
-        # Test failed.
-        echo "$b/run --test" "$@"
-        cat $tmpout
-        echo "$b/run: command failed with exit code $fail"
-    fi
-    rm -f $tmpout
-    exit $fail
 fi
+
+# For tests (./run --test):
+#  - redirect all output to a file, and only print the file if the
+#    test fails
+#  - print how long it takes to run the test
+#  - timeout if the test takes too long to run
+
+# Originally 1h, but that is not long enough to run the C API
+# tests on Koji.
+timeout_period=4h
+
+# Do we have Padraig's timeout utility (from coreutils)?
+if timeout --help >/dev/null 2>&1; then
+    # Timeout (SIGTERM) after $timeout_period.
+    # Then send a second SIGKILL 30 seconds later.
+    timeout="timeout -k 30s $timeout_period"
+fi
+
+pid=$$
+tmpout=$b/tmp/run-$pid
+rm -f $tmpout
+start_t="$(date +'%s')"
+$timeout $libtool "$@" > $tmpout 2>&1
+fail=$?
+end_t="$(date +'%s')"
+if [ "$fail" -eq 0 ]; then
+    # Test successful.
+    echo $(($end_t - $start_t)) seconds: "$@"
+elif [ "$fail" -eq 77 ]; then
+    # Tests return 77 to mean skipped.
+    cat $tmpout
+elif [ "$fail" -eq 124 ]; then
+    # Timed out.
+    echo "$b/run --test" "$@"
+    cat $tmpout
+    echo "$b/run: command timed out after $timeout_period"
+else
+    # Test failed.
+    echo "$b/run --test" "$@"
+    cat $tmpout
+    echo "$b/run: command failed with exit code $fail"
+fi
+rm -f $tmpout
+exit $fail

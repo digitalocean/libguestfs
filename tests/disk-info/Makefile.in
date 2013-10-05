@@ -15,6 +15,23 @@
 @SET_MAKE@
 
 # libguestfs
+# Copyright (C) 2013 Red Hat Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# libguestfs
 # Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -30,6 +47,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# subdir-rules.mk should be included in every *subdirectory* Makefile.am.
 
 # libguestfs
 # Copyright (C) 2013 Red Hat Inc.
@@ -50,7 +69,6 @@
 
 # 'common-rules.mk' should be included in every Makefile.am.
 # cf. 'subdir-rules.mk'
-
 VPATH = @srcdir@
 am__make_dryrun = \
   { \
@@ -86,63 +104,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(srcdir)/pick-guests.pl.in $(srcdir)/podwrapper.pl.in \
-	$(srcdir)/run.in $(top_srcdir)/build-aux/compile \
-	$(top_srcdir)/build-aux/config.guess \
-	$(top_srcdir)/build-aux/config.rpath \
-	$(top_srcdir)/build-aux/config.sub \
-	$(top_srcdir)/build-aux/install-sh \
-	$(top_srcdir)/build-aux/ltmain.sh \
-	$(top_srcdir)/build-aux/missing $(top_srcdir)/common-rules.mk \
-	$(top_srcdir)/configure \
-	$(top_srcdir)/ruby/ext/guestfs/extconf.rb.in AUTHORS COPYING \
-	COPYING.LIB ChangeLog TODO build-aux/compile \
-	build-aux/config.guess build-aux/config.rpath \
-	build-aux/config.sub build-aux/depcomp build-aux/install-sh \
-	build-aux/ltmain.sh build-aux/missing
-@ENABLE_DAEMON_TRUE@am__append_1 = daemon
-
-# Tests - order is important.
-@ENABLE_APPLIANCE_TRUE@am__append_2 = tests/qemu tests/guests \
-@ENABLE_APPLIANCE_TRUE@	tests/c-api tests/tmpdirs \
-@ENABLE_APPLIANCE_TRUE@	tests/protocol tests/parallel \
-@ENABLE_APPLIANCE_TRUE@	tests/disks tests/mountable tests/lvm \
-@ENABLE_APPLIANCE_TRUE@	tests/luks tests/md tests/selinux \
-@ENABLE_APPLIANCE_TRUE@	tests/ntfsclone tests/btrfs \
-@ENABLE_APPLIANCE_TRUE@	tests/charsets tests/xml \
-@ENABLE_APPLIANCE_TRUE@	tests/mount-local tests/9p tests/rsync \
-@ENABLE_APPLIANCE_TRUE@	tests/bigdirs tests/disk-labels \
-@ENABLE_APPLIANCE_TRUE@	tests/hotplug tests/nbd tests/http \
-@ENABLE_APPLIANCE_TRUE@	tests/syslinux tests/fuzz \
-@ENABLE_APPLIANCE_TRUE@	tests/disk-info tests/regressions
-
-# Language bindings.
-@HAVE_PERL_TRUE@am__append_3 = perl perl/examples
-@HAVE_OCAML_TRUE@am__append_4 = ocaml ocaml/examples
-@HAVE_PYTHON_TRUE@am__append_5 = python python/examples
-@HAVE_RUBY_TRUE@am__append_6 = ruby ruby/examples
-@HAVE_JAVA_TRUE@am__append_7 = java java/examples
-@HAVE_HASKELL_TRUE@am__append_8 = haskell
-@HAVE_PHP_TRUE@am__append_9 = php
-@HAVE_ERLANG_TRUE@am__append_10 = erlang erlang/examples
-@HAVE_LUA_TRUE@am__append_11 = lua lua/examples
-@HAVE_GOBJECT_TRUE@am__append_12 = gobject
-@HAVE_GOLANG_TRUE@am__append_13 = golang golang/examples
-
-# OCaml tools.
-@HAVE_OCAML_TRUE@am__append_14 = resize sparsify sysprep
-
-# Perl tools.
-@HAVE_TOOLS_TRUE@am__append_15 = tools
-
-# guestmount
-@HAVE_FUSE_TRUE@am__append_16 = fuse
-
-# po-docs must come after tools, inspector.
-@HAVE_PO4A_TRUE@am__append_17 = po-docs
-subdir = .
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(top_srcdir)/common-rules.mk $(top_srcdir)/subdir-rules.mk
+subdir = tests/disk-info
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/accept4.m4 $(top_srcdir)/m4/alloca.m4 \
@@ -269,12 +233,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
- configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = pick-guests.pl podwrapper.pl run \
-	ruby/ext/guestfs/extconf.rb
+CONFIG_HEADER = $(top_builddir)/config.h
+CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -290,114 +251,16 @@ am__v_at_0 = @
 am__v_at_1 = 
 SOURCES =
 DIST_SOURCES =
-RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
-	html-recursive info-recursive install-data-recursive \
-	install-dvi-recursive install-exec-recursive \
-	install-html-recursive install-info-recursive \
-	install-pdf-recursive install-ps-recursive install-recursive \
-	installcheck-recursive installdirs-recursive pdf-recursive \
-	ps-recursive uninstall-recursive
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
-am__install_max = 40
-am__nobase_strip_setup = \
-  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
-am__nobase_strip = \
-  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
-am__nobase_list = $(am__nobase_strip_setup); \
-  for p in $$list; do echo "$$p $$p"; done | \
-  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
-  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
-    if (++n[$$2] == $(am__install_max)) \
-      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
-    END { for (dir in files) print dir, files[dir] }'
-am__base_list = \
-  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
-  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__uninstall_files_from_dir = { \
-  test -z "$$files" \
-    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
-    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
-         $(am__cd) "$$dir" && rm -f $$files; }; \
-  }
-man1dir = $(mandir)/man1
-am__installdirs = "$(DESTDIR)$(man1dir)"
-NROFF = nroff
-MANS = $(man_MANS)
-DATA = $(noinst_DATA)
-RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
-  distclean-recursive maintainer-clean-recursive
-AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
-	$(RECURSIVE_CLEAN_TARGETS:-recursive=) tags TAGS ctags CTAGS \
-	cscope distdir dist dist-all distcheck
-ETAGS = etags
-CTAGS = ctags
-CSCOPE = cscope
-DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
-	examples po daemon appliance tests/qemu tests/guests \
-	tests/c-api tests/tmpdirs tests/protocol tests/parallel \
-	tests/disks tests/mountable tests/lvm tests/luks tests/md \
-	tests/selinux tests/ntfsclone tests/btrfs tests/charsets \
-	tests/xml tests/mount-local tests/9p tests/rsync tests/bigdirs \
-	tests/disk-labels tests/hotplug tests/nbd tests/http \
-	tests/syslinux tests/fuzz tests/disk-info tests/regressions \
-	test-tool fish align cat df edit format inspector rescue bash \
-	perl perl/examples ocaml ocaml/examples python python/examples \
-	ruby ruby/examples java java/examples haskell php erlang \
-	erlang/examples lua lua/examples gobject golang \
-	golang/examples csharp resize sparsify sysprep tools fuse \
-	po-docs
+am__tty_colors_dummy = \
+  mgn= red= grn= lgn= blu= brg= std=; \
+  am__color_tests=no
+am__tty_colors = $(am__tty_colors_dummy)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-distdir = $(PACKAGE)-$(VERSION)
-top_distdir = $(distdir)
-am__remove_distdir = \
-  if test -d "$(distdir)"; then \
-    find "$(distdir)" -type d ! -perm -200 -exec chmod u+w {} ';' \
-      && rm -rf "$(distdir)" \
-      || { sleep 5 && rm -rf "$(distdir)"; }; \
-  else :; fi
-am__post_remove_distdir = $(am__remove_distdir)
-am__relativize = \
-  dir0=`pwd`; \
-  sed_first='s,^\([^/]*\)/.*$$,\1,'; \
-  sed_rest='s,^[^/]*/*,,'; \
-  sed_last='s,^.*/\([^/]*\)$$,\1,'; \
-  sed_butlast='s,/*[^/]*$$,,'; \
-  while test -n "$$dir1"; do \
-    first=`echo "$$dir1" | sed -e "$$sed_first"`; \
-    if test "$$first" != "."; then \
-      if test "$$first" = ".."; then \
-        dir2=`echo "$$dir0" | sed -e "$$sed_last"`/"$$dir2"; \
-        dir0=`echo "$$dir0" | sed -e "$$sed_butlast"`; \
-      else \
-        first2=`echo "$$dir2" | sed -e "$$sed_first"`; \
-        if test "$$first2" = "$$first"; then \
-          dir2=`echo "$$dir2" | sed -e "$$sed_rest"`; \
-        else \
-          dir2="../$$dir2"; \
-        fi; \
-        dir0="$$dir0"/"$$first"; \
-      fi; \
-    fi; \
-    dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
-  done; \
-  reldir="$$dir2"
-DIST_ARCHIVES = $(distdir).tar.gz
-GZIP_ENV = --best
-DIST_TARGETS = dist-gzip
-distuninstallcheck_listfiles = find . -type f -print
-am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
-  | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
-distcleancheck_listfiles = find . -type f -print
 pkglibexecdir = @pkglibexecdir@
 ACLOCAL = @ACLOCAL@
 ACL_LIBS = @ACL_LIBS@
@@ -1463,419 +1326,157 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-ACLOCAL_AMFLAGS = -I m4
-
-# Gnulib - must be built and tested before the library.
-
-# Basic source for the library.
-
-# libguestfs-test-tool
-
-# Guestfish.
-
-# virt-tools in C.
-
-# bash-completion
-
-# Unconditional because nothing is built yet.
-SUBDIRS = gnulib/lib gnulib/tests tests/data generator src examples po \
-	$(am__append_1) appliance $(am__append_2) test-tool fish align \
-	cat df edit format inspector rescue bash $(am__append_3) \
-	$(am__append_4) $(am__append_5) $(am__append_6) \
-	$(am__append_7) $(am__append_8) $(am__append_9) \
-	$(am__append_10) $(am__append_11) $(am__append_12) \
-	$(am__append_13) csharp $(am__append_14) $(am__append_15) \
-	$(am__append_16) $(am__append_17)
 EXTRA_DIST = \
-	BUGS HACKING ROADMAP TODO \
-	.gitignore \
-	.lvimrc \
-	.mailmap \
-	.tx/config \
-	bugs-in-changelog.sh \
-	autogen.sh \
-	bindtests \
-	contrib/autobuild/autobuild.sh \
-	contrib/guestfsd-in-wine.sh \
-	contrib/intro/libguestfs-intro.html \
-	contrib/intro/overview.png \
-	contrib/intro/overview.svg \
-	contrib/intro/talk.txt \
-	contrib/intro/tools.png \
-	contrib/intro/tools.svg \
-	contrib/intro/virt-manager-t.png \
-	contrib/intro/virt-manager.png \
-	contrib/intro/vmm-icons-t.png \
-	contrib/intro/vmm-icons.png \
-	contrib/intro/win7.xml \
-	contrib/make-check-on-installed.pl \
-	contrib/README \
-	contrib/visualize-alignment/.gitignore \
-	contrib/visualize-alignment/guestfish-add-mount.qtr \
-	contrib/visualize-alignment/guestfish-lv-ext4-4k.qtr \
-	contrib/visualize-alignment/guestfish-lv-ext4-4k-write-hello.qtr \
-	contrib/visualize-alignment/guestfish-N-fs-10M-aligned-part-disk.qtr \
-	contrib/visualize-alignment/guestfish-N-fs-10M.qtr \
-	contrib/visualize-alignment/guestfish-write-hello.qtr \
-	contrib/visualize-alignment/qemu-0.13-trace-block-device-access.patch \
-	contrib/visualize-alignment/README \
-	contrib/visualize-alignment/tracetops.ml \
-	guestfs-release-notes.pod \
-	guestfs-release-notes.txt \
-	html/draft.png \
-	html/draft.svg \
-	html/pod.css \
-	libtool-kill-dependency_libs.sh \
-	logo/fish.svg logo/fish.png \
-	m4/.gitignore \
-	tmp/.gitignore \
-	tx-pull.sh \
-	update-bugs.sh \
-	valgrind-suppressions
+	$(TESTS)
 
+TESTS = \
+	disk-info.pl
 
-# The website.
-HTMLFILES = \
-	html/guestfs.3.html \
-	html/guestfs-examples.3.html \
-	html/guestfs-erlang.3.html \
-	html/guestfs-faq.1.html \
-	html/guestfs-golang.3.html \
-	html/guestfs-java.3.html \
-	html/guestfs-lua.3.html \
-	html/guestfs-ocaml.3.html \
-	html/guestfs-performance.1.html \
-	html/guestfs-perl.3.html \
-	html/guestfs-python.3.html \
-	html/guestfs-recipes.1.html \
-	html/guestfs-release-notes.1.html \
-	html/guestfs-ruby.3.html \
-	html/guestfs-testing.1.html \
-	html/guestfsd.8.html \
-	html/guestfish.1.html \
-	html/guestmount.1.html \
-	html/guestunmount.1.html \
-	html/libguestfs-make-fixed-appliance.1.html \
-	html/libguestfs-test-tool.1.html \
-	html/virt-alignment-scan.1.html \
-	html/virt-cat.1.html \
-	html/virt-copy-in.1.html \
-	html/virt-copy-out.1.html \
-	html/virt-df.1.html \
-	html/virt-edit.1.html \
-	html/virt-filesystems.1.html \
-	html/virt-format.1.html \
-	html/virt-inspector.1.html \
-	html/virt-list-filesystems.1.html \
-	html/virt-list-partitions.1.html \
-	html/virt-ls.1.html \
-	html/virt-make-fs.1.html \
-	html/virt-rescue.1.html \
-	html/virt-resize.1.html \
-	html/virt-sparsify.1.html \
-	html/virt-sysprep.1.html \
-	html/virt-tar.1.html \
-	html/virt-tar-in.1.html \
-	html/virt-tar-out.1.html \
-	html/virt-win-reg.1.html
-
-HTMLSUPPORTFILES = html/draft.png html/pod.css
-TEXTFILES = BUGS README ROADMAP TODO
-WEBSITEDIR = $(HOME)/d/redhat/websites/libguestfs
-
-# Manual pages in top level directory.
-man_MANS = \
-	guestfs-release-notes.1
-
-noinst_DATA = \
-	$(top_builddir)/html/guestfs-release-notes.1.html
-
-
-# NB. podwrapper is an internal tool, so the man page mustn't be installed.
-noinst_MANS = podwrapper.1
-
-# Make clean.
-CLEANFILES = \
-	*~ \
-	html/*.html \
-	pod2htm?.tmp \
-	podwrapper.1 \
-	qemu-wrapper.sh \
-	stamp-guestfs-release-notes.pod \
-	tmp/disk* \
-	tmp/run-* \
-	tmp/valgrind-*.log
-
-QEMUDIR = $(HOME)/d/qemu
-QEMUBINARY = $(QEMUDIR)/x86_64-softmmu/qemu-system-x86_64
-LIBVIRTDIR = $(HOME)/d/libvirt
-all: config.h
-	$(MAKE) $(AM_MAKEFLAGS) all-recursive
+TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
+CLEANFILES = *~
+all: all-am
 
 .SUFFIXES:
-am--refresh: Makefile
-	@:
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/common-rules.mk $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign'; \
-	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign \
-		&& exit 0; \
+	      ( cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh ) \
+	        && { if test -f $@; then exit 0; else break; fi; }; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign tests/disk-info/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign Makefile
+	  $(AUTOMAKE) --foreign tests/disk-info/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
-	    echo ' $(SHELL) ./config.status'; \
-	    $(SHELL) ./config.status;; \
+	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
 	  *) \
-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)'; \
-	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe);; \
+	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
-$(top_srcdir)/common-rules.mk:
+$(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk:
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
-	$(SHELL) ./config.status --recheck
+	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
 $(top_srcdir)/configure:  $(am__configure_deps)
-	$(am__cd) $(srcdir) && $(AUTOCONF)
+	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
-	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
+	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-
-config.h: stamp-h1
-	@if test ! -f $@; then rm -f stamp-h1; else :; fi
-	@if test ! -f $@; then $(MAKE) $(AM_MAKEFLAGS) stamp-h1; else :; fi
-
-stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
-	@rm -f stamp-h1
-	cd $(top_builddir) && $(SHELL) ./config.status config.h
-$(srcdir)/config.h.in:  $(am__configure_deps) 
-	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
-	rm -f stamp-h1
-	touch $@
-
-distclean-hdr:
-	-rm -f config.h stamp-h1
-pick-guests.pl: $(top_builddir)/config.status $(srcdir)/pick-guests.pl.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-podwrapper.pl: $(top_builddir)/config.status $(srcdir)/podwrapper.pl.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-run: $(top_builddir)/config.status $(srcdir)/run.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-ruby/ext/guestfs/extconf.rb: $(top_builddir)/config.status $(top_srcdir)/ruby/ext/guestfs/extconf.rb.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
-
-distclean-libtool:
-	-rm -f libtool config.lt
-install-man1: $(man_MANS)
-	@$(NORMAL_INSTALL)
-	@list1=''; \
-	list2='$(man_MANS)'; \
-	test -n "$(man1dir)" \
-	  && test -n "`echo $$list1$$list2`" \
-	  || exit 0; \
-	echo " $(MKDIR_P) '$(DESTDIR)$(man1dir)'"; \
-	$(MKDIR_P) "$(DESTDIR)$(man1dir)" || exit 1; \
-	{ for i in $$list1; do echo "$$i"; done;  \
-	if test -n "$$list2"; then \
-	  for i in $$list2; do echo "$$i"; done \
-	    | sed -n '/\.1[a-z]*$$/p'; \
-	fi; \
-	} | while read p; do \
-	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; echo "$$p"; \
-	done | \
-	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
-	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
-	sed 'N;N;s,\n, ,g' | { \
-	list=; while read file base inst; do \
-	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
-	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man1dir)/$$inst'"; \
-	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man1dir)/$$inst" || exit $$?; \
-	  fi; \
-	done; \
-	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
-	while read files; do \
-	  test -z "$$files" || { \
-	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man1dir)'"; \
-	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man1dir)" || exit $$?; }; \
-	done; }
-
-uninstall-man1:
-	@$(NORMAL_UNINSTALL)
-	@list=''; test -n "$(man1dir)" || exit 0; \
-	files=`{ for i in $$list; do echo "$$i"; done; \
-	l2='$(man_MANS)'; for i in $$l2; do echo "$$i"; done | \
-	  sed -n '/\.1[a-z]*$$/p'; \
-	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
-	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
-	dir='$(DESTDIR)$(man1dir)'; $(am__uninstall_files_from_dir)
-
-# This directory's subdirectories are mostly independent; you can cd
-# into them and run 'make' without going through this Makefile.
-# To change the values of 'make' variables: instead of editing Makefiles,
-# (1) if the variable is set in 'config.status', edit 'config.status'
-#     (which will cause the Makefiles to be regenerated when you run 'make');
-# (2) otherwise, pass the desired values on the 'make' command line.
-$(RECURSIVE_TARGETS) $(RECURSIVE_CLEAN_TARGETS):
-	@fail= failcom='exit 1'; \
-	for f in x $$MAKEFLAGS; do \
-	  case $$f in \
-	    *=* | --[!k]*);; \
-	    *k*) failcom='fail=yes';; \
-	  esac; \
-	done; \
-	dot_seen=no; \
-	target=`echo $@ | sed s/-recursive//`; \
-	case "$@" in \
-	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
-	  *) list='$(SUBDIRS)' ;; \
-	esac; \
-	for subdir in $$list; do \
-	  echo "Making $$target in $$subdir"; \
-	  if test "$$subdir" = "."; then \
-	    dot_seen=yes; \
-	    local_target="$$target-am"; \
-	  else \
-	    local_target="$$target"; \
-	  fi; \
-	  ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
-	  || eval $$failcom; \
-	done; \
-	if test "$$dot_seen" = "no"; then \
-	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
-	fi; test -z "$$fail"
-tags-recursive:
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  test "$$subdir" = . || ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
-	done
-ctags-recursive:
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  test "$$subdir" = . || ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) ctags); \
-	done
-cscopelist-recursive:
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  test "$$subdir" = . || ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) cscopelist); \
-	done
-
-ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
-	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-	unique=`for i in $$list; do \
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
-	  done | \
-	  $(AWK) '{ files[$$0] = 1; nonempty = 1; } \
-	      END { if (nonempty) { for (i in files) print i; }; }'`; \
-	mkid -fID $$unique
 tags: TAGS
+TAGS:
 
-TAGS: tags-recursive $(HEADERS) $(SOURCES) config.h.in $(TAGS_DEPENDENCIES) \
-		$(TAGS_FILES) $(LISP)
-	set x; \
-	here=`pwd`; \
-	if ($(ETAGS) --etags-include --version) >/dev/null 2>&1; then \
-	  include_option=--etags-include; \
-	  empty_fix=.; \
-	else \
-	  include_option=--include; \
-	  empty_fix=; \
-	fi; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    test ! -f $$subdir/TAGS || \
-	      set "$$@" "$$include_option=$$here/$$subdir/TAGS"; \
-	  fi; \
-	done; \
-	list='$(SOURCES) $(HEADERS) config.h.in $(LISP) $(TAGS_FILES)'; \
-	unique=`for i in $$list; do \
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
-	  done | \
-	  $(AWK) '{ files[$$0] = 1; nonempty = 1; } \
-	      END { if (nonempty) { for (i in files) print i; }; }'`; \
-	shift; \
-	if test -z "$(ETAGS_ARGS)$$*$$unique"; then :; else \
-	  test -n "$$unique" || unique=$$empty_fix; \
-	  if test $$# -gt 0; then \
-	    $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
-	      "$$@" $$unique; \
-	  else \
-	    $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
-	      $$unique; \
-	  fi; \
-	fi
 ctags: CTAGS
-CTAGS: ctags-recursive $(HEADERS) $(SOURCES) config.h.in $(TAGS_DEPENDENCIES) \
-		$(TAGS_FILES) $(LISP)
-	list='$(SOURCES) $(HEADERS) config.h.in $(LISP) $(TAGS_FILES)'; \
-	unique=`for i in $$list; do \
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
-	  done | \
-	  $(AWK) '{ files[$$0] = 1; nonempty = 1; } \
-	      END { if (nonempty) { for (i in files) print i; }; }'`; \
-	test -z "$(CTAGS_ARGS)$$unique" \
-	  || $(CTAGS) $(CTAGSFLAGS) $(AM_CTAGSFLAGS) $(CTAGS_ARGS) \
-	     $$unique
+CTAGS:
 
-GTAGS:
-	here=`$(am__cd) $(top_builddir) && pwd` \
-	  && $(am__cd) $(top_srcdir) \
-	  && gtags -i $(GTAGS_ARGS) "$$here"
+cscope cscopelist:
 
-cscope: cscope.files
-	test ! -s cscope.files \
-	  || $(CSCOPE) -b -q $(AM_CSCOPEFLAGS) $(CSCOPEFLAGS) -i cscope.files $(CSCOPE_ARGS)
 
-clean-cscope:
-	-rm -f cscope.files
-
-cscope.files: clean-cscope cscopelist-recursive cscopelist
-
-cscopelist: cscopelist-recursive $(HEADERS) $(SOURCES) $(LISP)
-	list='$(SOURCES) $(HEADERS) $(LISP)'; \
-	case "$(srcdir)" in \
-	  [\\/]* | ?:[\\/]*) sdir="$(srcdir)" ;; \
-	  *) sdir=$(subdir)/$(srcdir) ;; \
-	esac; \
-	for i in $$list; do \
-	  if test -f "$$i"; then \
-	    echo "$(subdir)/$$i"; \
+check-TESTS: $(TESTS)
+	@failed=0; all=0; xfail=0; xpass=0; skip=0; \
+	srcdir=$(srcdir); export srcdir; \
+	list=' $(TESTS) '; \
+	$(am__tty_colors); \
+	if test -n "$$list"; then \
+	  for tst in $$list; do \
+	    if test -f ./$$tst; then dir=./; \
+	    elif test -f $$tst; then dir=; \
+	    else dir="$(srcdir)/"; fi; \
+	    if $(TESTS_ENVIRONMENT) $${dir}$$tst $(AM_TESTS_FD_REDIRECT); then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *[\ \	]$$tst[\ \	]*) \
+		xpass=`expr $$xpass + 1`; \
+		failed=`expr $$failed + 1`; \
+		col=$$red; res=XPASS; \
+	      ;; \
+	      *) \
+		col=$$grn; res=PASS; \
+	      ;; \
+	      esac; \
+	    elif test $$? -ne 77; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *[\ \	]$$tst[\ \	]*) \
+		xfail=`expr $$xfail + 1`; \
+		col=$$lgn; res=XFAIL; \
+	      ;; \
+	      *) \
+		failed=`expr $$failed + 1`; \
+		col=$$red; res=FAIL; \
+	      ;; \
+	      esac; \
+	    else \
+	      skip=`expr $$skip + 1`; \
+	      col=$$blu; res=SKIP; \
+	    fi; \
+	    echo "$${col}$$res$${std}: $$tst"; \
+	  done; \
+	  if test "$$all" -eq 1; then \
+	    tests="test"; \
+	    All=""; \
 	  else \
-	    echo "$$sdir/$$i"; \
+	    tests="tests"; \
+	    All="All "; \
 	  fi; \
-	done >> $(top_builddir)/cscope.files
-
-distclean-tags:
-	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
-	-rm -f cscope.out cscope.in.out cscope.po.out cscope.files
+	  if test "$$failed" -eq 0; then \
+	    if test "$$xfail" -eq 0; then \
+	      banner="$$All$$all $$tests passed"; \
+	    else \
+	      if test "$$xfail" -eq 1; then failures=failure; else failures=failures; fi; \
+	      banner="$$All$$all $$tests behaved as expected ($$xfail expected $$failures)"; \
+	    fi; \
+	  else \
+	    if test "$$xpass" -eq 0; then \
+	      banner="$$failed of $$all $$tests failed"; \
+	    else \
+	      if test "$$xpass" -eq 1; then passes=pass; else passes=passes; fi; \
+	      banner="$$failed of $$all $$tests did not behave as expected ($$xpass unexpected $$passes)"; \
+	    fi; \
+	  fi; \
+	  dashes="$$banner"; \
+	  skipped=""; \
+	  if test "$$skip" -ne 0; then \
+	    if test "$$skip" -eq 1; then \
+	      skipped="($$skip test was not run)"; \
+	    else \
+	      skipped="($$skip tests were not run)"; \
+	    fi; \
+	    test `echo "$$skipped" | wc -c` -le `echo "$$banner" | wc -c` || \
+	      dashes="$$skipped"; \
+	  fi; \
+	  report=""; \
+	  if test "$$failed" -ne 0 && test -n "$(PACKAGE_BUGREPORT)"; then \
+	    report="Please report to $(PACKAGE_BUGREPORT)"; \
+	    test `echo "$$report" | wc -c` -le `echo "$$banner" | wc -c` || \
+	      dashes="$$report"; \
+	  fi; \
+	  dashes=`echo "$$dashes" | sed s/./=/g`; \
+	  if test "$$failed" -eq 0; then \
+	    col="$$grn"; \
+	  else \
+	    col="$$red"; \
+	  fi; \
+	  echo "$${col}$$dashes$${std}"; \
+	  echo "$${col}$$banner$${std}"; \
+	  test -z "$$skipped" || echo "$${col}$$skipped$${std}"; \
+	  test -z "$$report" || echo "$${col}$$report$${std}"; \
+	  echo "$${col}$$dashes$${std}"; \
+	  test "$$failed" -eq 0; \
+	else :; fi
 
 distdir: $(DISTFILES)
-	@list='$(MANS)'; if test -n "$$list"; then \
-	  list=`for p in $$list; do \
-	    if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
-	    if test -f "$$d$$p"; then echo "$$d$$p"; else :; fi; done`; \
-	  if test -n "$$list" && \
-	    grep 'ab help2man is required to generate this page' $$list >/dev/null; then \
-	    echo "error: found man pages containing the 'missing help2man' replacement text:" >&2; \
-	    grep -l 'ab help2man is required to generate this page' $$list | sed 's/^/         /' >&2; \
-	    echo "       to fix them, install help2man, remove and regenerate the man pages;" >&2; \
-	    echo "       typically 'make maintainer-clean' will remove them" >&2; \
-	    exit 1; \
-	  else :; fi; \
-	else :; fi
-	$(am__remove_distdir)
-	test -d "$(distdir)" || mkdir "$(distdir)"
 	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
 	list='$(DISTFILES)'; \
@@ -1905,175 +1506,20 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
-	@list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    $(am__make_dryrun) \
-	      || test -d "$(distdir)/$$subdir" \
-	      || $(MKDIR_P) "$(distdir)/$$subdir" \
-	      || exit 1; \
-	    dir1=$$subdir; dir2="$(distdir)/$$subdir"; \
-	    $(am__relativize); \
-	    new_distdir=$$reldir; \
-	    dir1=$$subdir; dir2="$(top_distdir)"; \
-	    $(am__relativize); \
-	    new_top_distdir=$$reldir; \
-	    echo " (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir="$$new_top_distdir" distdir="$$new_distdir" \\"; \
-	    echo "     am__remove_distdir=: am__skip_length_check=: am__skip_mode_fix=: distdir)"; \
-	    ($(am__cd) $$subdir && \
-	      $(MAKE) $(AM_MAKEFLAGS) \
-	        top_distdir="$$new_top_distdir" \
-	        distdir="$$new_distdir" \
-		am__remove_distdir=: \
-		am__skip_length_check=: \
-		am__skip_mode_fix=: \
-	        distdir) \
-	      || exit 1; \
-	  fi; \
-	done
-	$(MAKE) $(AM_MAKEFLAGS) \
-	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
-	  dist-hook
-	-test -n "$(am__skip_mode_fix)" \
-	|| find "$(distdir)" -type d ! -perm -755 \
-		-exec chmod u+rwx,go+rx {} \; -o \
-	  ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
-	  ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
-	  ! -type d ! -perm -444 -exec $(install_sh) -c -m a+r {} {} \; \
-	|| chmod -R a+r "$(distdir)"
-dist-gzip: distdir
-	tardir=$(distdir) && $(am__tar) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).tar.gz
-	$(am__post_remove_distdir)
-
-dist-bzip2: distdir
-	tardir=$(distdir) && $(am__tar) | BZIP2=$${BZIP2--9} bzip2 -c >$(distdir).tar.bz2
-	$(am__post_remove_distdir)
-
-dist-lzip: distdir
-	tardir=$(distdir) && $(am__tar) | lzip -c $${LZIP_OPT--9} >$(distdir).tar.lz
-	$(am__post_remove_distdir)
-
-dist-xz: distdir
-	tardir=$(distdir) && $(am__tar) | XZ_OPT=$${XZ_OPT--e} xz -c >$(distdir).tar.xz
-	$(am__post_remove_distdir)
-
-dist-tarZ: distdir
-	tardir=$(distdir) && $(am__tar) | compress -c >$(distdir).tar.Z
-	$(am__post_remove_distdir)
-
-dist-shar: distdir
-	shar $(distdir) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).shar.gz
-	$(am__post_remove_distdir)
-
-dist-zip: distdir
-	-rm -f $(distdir).zip
-	zip -rq $(distdir).zip $(distdir)
-	$(am__post_remove_distdir)
-
-dist dist-all:
-	$(MAKE) $(AM_MAKEFLAGS) $(DIST_TARGETS) am__post_remove_distdir='@:'
-	$(am__post_remove_distdir)
-
-# This target untars the dist file and tries a VPATH configuration.  Then
-# it guarantees that the distribution is self-contained by making another
-# tarfile.
-distcheck: dist
-	case '$(DIST_ARCHIVES)' in \
-	*.tar.gz*) \
-	  GZIP=$(GZIP_ENV) gzip -dc $(distdir).tar.gz | $(am__untar) ;;\
-	*.tar.bz2*) \
-	  bzip2 -dc $(distdir).tar.bz2 | $(am__untar) ;;\
-	*.tar.lz*) \
-	  lzip -dc $(distdir).tar.lz | $(am__untar) ;;\
-	*.tar.xz*) \
-	  xz -dc $(distdir).tar.xz | $(am__untar) ;;\
-	*.tar.Z*) \
-	  uncompress -c $(distdir).tar.Z | $(am__untar) ;;\
-	*.shar.gz*) \
-	  GZIP=$(GZIP_ENV) gzip -dc $(distdir).shar.gz | unshar ;;\
-	*.zip*) \
-	  unzip $(distdir).zip ;;\
-	esac
-	chmod -R a-w $(distdir); chmod u+w $(distdir)
-	mkdir $(distdir)/_build
-	mkdir $(distdir)/_inst
-	chmod a-w $(distdir)
-	test -d $(distdir)/_build || exit 0; \
-	dc_install_base=`$(am__cd) $(distdir)/_inst && pwd | sed -e 's,^[^:\\/]:[\\/],/,'` \
-	  && dc_destdir="$${TMPDIR-/tmp}/am-dc-$$$$/" \
-	  && am__cwd=`pwd` \
-	  && $(am__cd) $(distdir)/_build \
-	  && ../configure --srcdir=.. --prefix="$$dc_install_base" \
-	    $(AM_DISTCHECK_CONFIGURE_FLAGS) \
-	    $(DISTCHECK_CONFIGURE_FLAGS) \
-	  && $(MAKE) $(AM_MAKEFLAGS) \
-	  && $(MAKE) $(AM_MAKEFLAGS) dvi \
-	  && $(MAKE) $(AM_MAKEFLAGS) check \
-	  && $(MAKE) $(AM_MAKEFLAGS) install \
-	  && $(MAKE) $(AM_MAKEFLAGS) installcheck \
-	  && $(MAKE) $(AM_MAKEFLAGS) uninstall \
-	  && $(MAKE) $(AM_MAKEFLAGS) distuninstallcheck_dir="$$dc_install_base" \
-	        distuninstallcheck \
-	  && chmod -R a-w "$$dc_install_base" \
-	  && ({ \
-	       (cd ../.. && umask 077 && mkdir "$$dc_destdir") \
-	       && $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$dc_destdir" install \
-	       && $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$dc_destdir" uninstall \
-	       && $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$dc_destdir" \
-	            distuninstallcheck_dir="$$dc_destdir" distuninstallcheck; \
-	      } || { rm -rf "$$dc_destdir"; exit 1; }) \
-	  && rm -rf "$$dc_destdir" \
-	  && $(MAKE) $(AM_MAKEFLAGS) dist \
-	  && rm -rf $(DIST_ARCHIVES) \
-	  && $(MAKE) $(AM_MAKEFLAGS) distcleancheck \
-	  && cd "$$am__cwd" \
-	  || exit 1
-	$(am__post_remove_distdir)
-	@(echo "$(distdir) archives ready for distribution: "; \
-	  list='$(DIST_ARCHIVES)'; for i in $$list; do echo $$i; done) | \
-	  sed -e 1h -e 1s/./=/g -e 1p -e 1x -e '$$p' -e '$$x'
-distuninstallcheck:
-	@test -n '$(distuninstallcheck_dir)' || { \
-	  echo 'ERROR: trying to run $@ with an empty' \
-	       '$$(distuninstallcheck_dir)' >&2; \
-	  exit 1; \
-	}; \
-	$(am__cd) '$(distuninstallcheck_dir)' || { \
-	  echo 'ERROR: cannot chdir into $(distuninstallcheck_dir)' >&2; \
-	  exit 1; \
-	}; \
-	test `$(am__distuninstallcheck_listfiles) | wc -l` -eq 0 \
-	   || { echo "ERROR: files left after uninstall:" ; \
-	        if test -n "$(DESTDIR)"; then \
-	          echo "  (check DESTDIR support)"; \
-	        fi ; \
-	        $(distuninstallcheck_listfiles) ; \
-	        exit 1; } >&2
-distcleancheck: distclean
-	@if test '$(srcdir)' = . ; then \
-	  echo "ERROR: distcleancheck can only run from a VPATH build" ; \
-	  exit 1 ; \
-	fi
-	@test `$(distcleancheck_listfiles) | wc -l` -eq 0 \
-	  || { echo "ERROR: files left in build directory after distclean:" ; \
-	       $(distcleancheck_listfiles) ; \
-	       exit 1; } >&2
 check-am: all-am
-check: check-recursive
-all-am: Makefile $(MANS) $(DATA) config.h all-local
-installdirs: installdirs-recursive
-installdirs-am:
-	for dir in "$(DESTDIR)$(man1dir)"; do \
-	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
-	done
-install: install-recursive
-install-exec: install-exec-recursive
-install-data: install-data-recursive
-uninstall: uninstall-recursive
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
+check: check-am
+all-am: Makefile
+installdirs:
+install: install-am
+install-exec: install-exec-am
+install-data: install-data-am
+uninstall: uninstall-am
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-installcheck: installcheck-recursive
+installcheck: installcheck-am
 install-strip:
 	if test -z '$(STRIP)'; then \
 	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
@@ -2096,100 +1542,85 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean: clean-recursive
+clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-local mostlyclean-am
+clean-am: clean-generic clean-libtool mostlyclean-am
 
-distclean: distclean-recursive
-	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
+distclean: distclean-am
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-hdr \
-	distclean-libtool distclean-tags
+distclean-am: clean-am distclean-generic
 
-dvi: dvi-recursive
+dvi: dvi-am
 
 dvi-am:
 
-html: html-recursive
+html: html-am
 
 html-am:
 
-info: info-recursive
+info: info-am
 
 info-am:
 
-install-data-am: install-man
+install-data-am:
 
-install-dvi: install-dvi-recursive
+install-dvi: install-dvi-am
 
 install-dvi-am:
 
 install-exec-am:
 
-install-html: install-html-recursive
+install-html: install-html-am
 
 install-html-am:
 
-install-info: install-info-recursive
+install-info: install-info-am
 
 install-info-am:
 
-install-man: install-man1
+install-man:
 
-install-pdf: install-pdf-recursive
+install-pdf: install-pdf-am
 
 install-pdf-am:
 
-install-ps: install-ps-recursive
+install-ps: install-ps-am
 
 install-ps-am:
 
 installcheck-am:
 
-maintainer-clean: maintainer-clean-recursive
-	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf $(top_srcdir)/autom4te.cache
+maintainer-clean: maintainer-clean-am
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
-mostlyclean: mostlyclean-recursive
+mostlyclean: mostlyclean-am
 
 mostlyclean-am: mostlyclean-generic mostlyclean-libtool
 
-pdf: pdf-recursive
+pdf: pdf-am
 
 pdf-am:
 
-ps: ps-recursive
+ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-man
+uninstall-am:
 
-uninstall-man: uninstall-man1
+.MAKE: check-am install-am install-strip
 
-.MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) all \
-	cscopelist-recursive ctags-recursive install-am install-strip \
-	tags-recursive
-
-.PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
-	all all-am all-local am--refresh check check-am clean \
-	clean-cscope clean-generic clean-libtool clean-local cscope \
-	cscopelist cscopelist-recursive ctags ctags-recursive dist \
-	dist-all dist-bzip2 dist-gzip dist-hook dist-lzip dist-shar \
-	dist-tarZ dist-xz dist-zip distcheck distclean \
-	distclean-generic distclean-hdr distclean-libtool \
-	distclean-tags distcleancheck distdir distuninstallcheck dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-man1 \
+.PHONY: all all-am check check-TESTS check-am clean clean-generic \
+	clean-libtool distclean distclean-generic distclean-libtool \
+	distdir dvi dvi-am html html-am info info-am install \
+	install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
 	install-pdf install-pdf-am install-ps install-ps-am \
 	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am tags tags-recursive uninstall uninstall-am \
-	uninstall-man uninstall-man1
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	uninstall uninstall-am
 
 
 -include $(top_builddir)/localenv
@@ -2202,211 +1633,30 @@ abs_builddir ?= @abs_builddir@
 srcdir       ?= @srcdir@
 abs_srcdir   ?= @abs_srcdir@
 
-# For reasons not fully understood, we need to rebuild all the
-# man pages and HTMLFILES from scratch here.
-website: $(HTMLFILES) $(TEXTFILES)
-	find -name 'stamp-*.pod' -delete
-	$(MAKE)
-	cp $(HTMLFILES) $(HTMLSUPPORTFILES) $(WEBSITEDIR)
-	for f in $(TEXTFILES); do cp $$f $(WEBSITEDIR)/$$f.txt; done
-	cd $(WEBSITEDIR) && \
-	date=`date +%F`; \
-	sed -e "s/SUBST_VERSION/$(VERSION)/" \
-	    -e "s/SUBST_DATE/$$date/" \
-	< index.html.in > index.html
+# Individual Makefile.am's should define generator_built if that
+# subdirectory contains any files which are built by the generator.
+# Set generator_built to the list of those files.
 
-# When doing 'make dist' update a few files automatically.
-dist-hook:
-	$(top_srcdir)/build-aux/gitlog-to-changelog > ChangeLog
-	cp ChangeLog $(distdir)/ChangeLog
-	$(top_srcdir)/update-bugs.sh > BUGS-t
-	mv BUGS-t BUGS
-	cp BUGS $(distdir)/BUGS
-	git shortlog -se | awk -F'\t' '{print $$2}' | sort -f > AUTHORS-t
-	mv AUTHORS-t AUTHORS
-	cp AUTHORS $(distdir)/AUTHORS
+$(generator_built): $(top_builddir)/generator/stamp-generator
 
-# Update the list of translatable files (po/POTFILES po/POTFILES-ml).
-# This has to be in the top-level Makefile.am so that we have access
-# to DIST_SUBDIRS.
-all-local:
-	cd $(srcdir); \
-	find $(DIST_SUBDIRS) -name '*.c' -o -name '*.pl' -o -name '*.pm' | \
-	grep -v -E '^(examples|gnulib|perl/(blib|examples)|po-docs|tests)/' | \
-	grep -v -E '/((guestfs|rc)_protocol\.c)$$' | \
-	LC_ALL=C sort > po/POTFILES
-	cd $(srcdir); \
-	find resize sparsify sysprep -name '*.ml' | \
-	LC_ALL=C sort > po/POTFILES-ml
-
-guestfs-release-notes.1 guestfs-release-notes.txt $(top_builddir)/html/guestfs-release-notes.1.html: stamp-guestfs-release-notes.pod
-
-stamp-guestfs-release-notes.pod: guestfs-release-notes.pod
-	$(PODWRAPPER) \
-	  --section 1 \
-	  --man guestfs-release-notes.1 \
-	  --text guestfs-release-notes.txt \
-	  --html $(top_builddir)/html/guestfs-release-notes.1.html \
-	  --license GPLv2+ \
-	  $<
-	touch $@
-podwrapper.1: podwrapper.pl
-	$(PODWRAPPER) \
-	  --section 1 \
-	  --man $@-t \
-	  --license GPLv2+ \
-	  $<
-	mv $@-t $@
-
-clean-local:
-	-rm -rf tmp/libguestfs??????
-	-rm -rf tmp/guestfs.*
-	-rm -rf tmp/.guestfs-*
-
-# If you don't want to run all of the tests ('make check') then this
-# will just run libguestfs-test-tool for a quick check.  Note this
-# is NOT a substitute for proper testing!
-
-quickcheck:
-	$(top_builddir)/run test-tool/libguestfs-test-tool $(QUICKCHECK_TEST_TOOL_ARGS)
-
-# Non-standard tests.
-
-check-all:
-	$(MAKE) -j1 \
-	  check \
-	  check-valgrind \
-	  check-valgrind-local-guests \
-	  check-direct \
-	  check-valgrind-direct \
-	  check-with-upstream-qemu \
-	  check-with-upstream-libvirt \
-	  check-slow
-
-check-release:
-	$(MAKE) -j1 \
-	  check \
-	  check-valgrind \
-	  check-direct \
-	  check-valgrind-direct \
-	  check-slow
-
-check-valgrind: build-test-guests
-	@errors=0; \
-	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
-	  echo $(MAKE) -C `dirname $$f` $@; \
-	  $(MAKE) -C `dirname $$f` $@ || (( errors++ )); \
-	done; \
-	exit $$(( $$errors ? 1 : 0 ))
-
-check-valgrind-local-guests:
-	@GUESTS=`$(top_builddir)/run ./pick-guests.pl 5`; \
-	errors=0; \
-	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
-	  echo $(MAKE) GUESTS="$$GUESTS" -C `dirname $$f` $@; \
-	  $(MAKE) GUESTS="$$GUESTS" -C `dirname $$f` $@ || (( errors++ )); \
-	done; \
-	exit $$(( $$errors ? 1 : 0 ))
-
-check-direct:
-	@backend=`$(top_builddir)/run ./fish/guestfish get-backend`; \
-	if [ "$$backend" != "direct" ]; then \
-	  $(MAKE) LIBGUESTFS_BACKEND=direct check || exit $$?; \
+$(top_builddir)/generator/stamp-generator: $(top_builddir)/generator/generator
+	@if test -f $(top_builddir)/generator/Makefile; then \
+	  $(MAKE) -C $(top_builddir)/generator stamp-generator; \
+	else \
+	  echo "warning: Run 'make' at the top level to build $(generator_built)"; \
 	fi
 
-check-with-appliance: check-direct
-
-check-valgrind-direct:
-	@backend=`$(top_builddir)/run ./fish/guestfish get-backend`; \
-	if [ "$$backend" != "direct" ]; then \
-	  $(MAKE) LIBGUESTFS_BACKEND=direct check-valgrind || exit $$?; \
+# If this file doesn't exist, just print a warning and continue.
+# During 'make distclean' we can end up deleting this file.
+$(top_builddir)/generator/generator:
+	@if test -f $(top_builddir)/generator/Makefile; then \
+	  $(MAKE) -C $(top_builddir)/generator generator; \
+	else \
+	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-check-valgrind-with-appliance: check-valgrind-direct
-
-check-with-upstream-qemu:
-	rm -f $(top_builddir)/qemu-wrapper.sh
-	$(MAKE) check-with-upstream-qemu-1 || exit $$?
-
-check-with-upstream-qemu-1: $(top_builddir)/qemu-wrapper.sh
-	$(QEMUBINARY) --version
-	$(MAKE) LIBGUESTFS_QEMU=$(abs_top_builddir)/qemu-wrapper.sh check
-
-$(top_builddir)/qemu-wrapper.sh: Makefile
-	rm -f $@ $@-t
-	echo -e "#!/bin/sh\nexec" "$(QEMUBINARY)" -L "$(QEMUDIR)/pc-bios" \"\$$@\" > $@-t
-	chmod +x,-w $@-t
-	mv $@-t $@
-
-check-with-upstream-libvirt:
-	@backend=`$(top_builddir)/run ./fish/guestfish get-backend`; \
-	if [ "$$backend" = "libvirt" ] && [ -x "$(LIBVIRTDIR)/run" ]; then \
-	  $(LIBVIRTDIR)/run $(MAKE) check || exit $$?; \
-	fi
-
-check-slow: build-test-guests
-	@errors=0; \
-	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
-	  echo $(MAKE) -C `dirname $$f` $@; \
-	  $(MAKE) -C `dirname $$f` $@ || (( errors++ )); \
-	done; \
-	exit $$(( $$errors ? 1 : 0 ))
-
-build-test-guests:
-	$(MAKE) -C tests/guests check
-
-# Print subdirs.
-#
-# If you want to selectively run tests, or if the test suite fails half
-# way through, use:
-#
-#   make print-subdirs
-#
-# to print the subdirectories, select the ones you want to run / the
-# remaining ones, and do:
-#
-#   make check SUBDIRS="..."
-
-print-subdirs:
-	@echo $(SUBDIRS)
-
-# Tag HEAD with current version (only for maintainer).
-
-maintainer-tag:
-	git tag -a $(VERSION) -m "Version $(VERSION) ($(BRANCH_TYPE))" -f
-
-# Provide help on common Makefile targets.
-
-help:
-	@echo
-	@echo "make                              Build everything."
-	@echo
-	@echo "make check                        Run the standard tests"
-	@echo "make -k check                       ... and display all errors at once."
-	@echo
-	@echo "make check-valgrind               Run a subset of the tests under valgrind."
-	@echo "make check-valgrind-local-guests  Test under valgrind using local guests."
-	@echo "make check-direct                 Test using direct backend."
-	@echo "make check-valgrind-direct        Test valgrind + direct backend."
-	@echo "make check-with-upstream-qemu     Test using upstream qemu."
-	@echo "make check-with-upstream-libvirt  Test using upstream libvirt."
-	@echo "make check-slow                   Slow/long-running tests."
-	@echo
-	@echo "make check-all                    Runs all 'check*' rules."
-	@echo "make check-release                Runs 'check*' rules required for release."
-	@echo
-	@echo "make syntax-check -j1 -k          Check syntax and style problems in the code."
-	@echo "make print-subdirs                Print subdirectories."
-	@echo
-	@echo "make install                      Install everything."
-	@echo
-	@echo "make clean                        Clean everything."
-	@echo
-	@echo "To run programs without installing:"
-	@echo "  ./run ./fish/guestfish [or any other program]"
-	@echo
-	@echo "For more information, see EXTENDING LIBGUESTFS in guestfs(3); and README."
-	@echo
+check-valgrind:
+	$(MAKE) VG="@VG@" check
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

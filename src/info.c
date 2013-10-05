@@ -26,6 +26,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <assert.h>
 
@@ -230,22 +231,46 @@ get_disk_has_backing_file (guestfs_h *g, const char *filename)
  * as JSON, returning a JSON tree and handling errors.
  */
 static void parse_json (guestfs_h *g, void *treevp, const char *input, size_t len);
+#define PARSE_JSON_NO_OUTPUT ((void *) -1)
 
 static yajl_val
 get_json_output (guestfs_h *g, const char *filename)
 {
   CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
-  int r;
+  int fd, r;
+  char fdpath[64];
   yajl_val tree = NULL;
+  struct stat statbuf;
+
+  fd = open (filename, O_RDONLY /* NB: !O_CLOEXEC */);
+  if (fd == -1) {
+    perrorf (g, "disk info: %s", filename);
+    return NULL;
+  }
+
+  if (fstat (fd, &statbuf) == -1) {
+    perrorf (g, "disk info: fstat: %s", filename);
+    close (fd);
+    return NULL;
+  }
+  if (S_ISDIR (statbuf.st_mode)) {
+    error (g, "disk info: %s is a directory", filename);
+    close (fd);
+    return NULL;
+  }
+
+  snprintf (fdpath, sizeof fdpath, "/dev/fd/%d", fd);
+  guestfs___cmd_clear_close_files (cmd);
 
   guestfs___cmd_add_arg (cmd, "qemu-img");
   guestfs___cmd_add_arg (cmd, "info");
   guestfs___cmd_add_arg (cmd, "--output");
   guestfs___cmd_add_arg (cmd, "json");
-  guestfs___cmd_add_arg (cmd, filename);
+  guestfs___cmd_add_arg (cmd, fdpath);
   guestfs___cmd_set_stdout_callback (cmd, parse_json, &tree,
                                      CMD_STDOUT_FLAG_WHOLE_BUFFER);
   r = guestfs___cmd_run (cmd);
+  close (fd);
   if (r == -1)
     return NULL;
   if (!WIFEXITED (r) || WEXITSTATUS (r) != 0) {
@@ -255,6 +280,12 @@ get_json_output (guestfs_h *g, const char *filename)
 
   if (tree == NULL)
     return NULL;        /* parse_json callback already set an error */
+
+  if (tree == PARSE_JSON_NO_OUTPUT) {
+    /* If this ever happened, it would indicate a bug in 'qemu-img info'. */
+    error (g, _("qemu-img info command produced no output, but didn't return an error status code"));
+    return NULL;
+  }
 
   return tree;          /* caller must call yajl_tree_free (tree) */
 }
@@ -268,6 +299,15 @@ parse_json (guestfs_h *g, void *treevp, const char *input, size_t len)
   char parse_error[256];
 
   assert (*tree_ret == NULL);
+
+  /* If the input is completely empty, return a magic value to the
+   * caller.  'qemu-img info' will return an error, but this will let
+   * us catch the case where it does not.
+   */
+  if (len == 0) {
+    *tree_ret = PARSE_JSON_NO_OUTPUT;
+    return;
+  }
 
   /* 'input' is not \0-terminated; we have to make it so. */
   input_copy = safe_strndup (g, input, len);

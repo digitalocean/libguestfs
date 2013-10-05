@@ -23308,8 +23308,7 @@ guestfs_session_acl_get_file(GuestfsSession *session, const gchar *path, const g
  * set the POSIX ACL attached to a file
  *
  * This function sets the POSIX Access Control List (ACL) attached to
- * @path. The @acl parameter is the new ACL in either "long text form" or
- * "short text form" (see acl(5)).
+ * @path.
  * 
  * The @acltype parameter may be:
  * 
@@ -23320,6 +23319,23 @@ guestfs_session_acl_get_file(GuestfsSession *session, const gchar *path, const g
  * @default
  * Set the default ACL. Normally this only makes sense if @path is a
  * directory.
+ * 
+ * The @acl parameter is the new ACL in either "long text form" or "short
+ * text form" (see acl(5)). The new ACL completely replaces any previous
+ * ACL on the file. The ACL must contain the full Unix permissions (eg.
+ * "u::rwx,g::rx,o::rx").
+ * 
+ * If you are specifying individual users or groups, then the mask field is
+ * also required (eg. "m::rwx"), followed by the "u:*ID*:..." and/or
+ * "g:*ID*:..." field(s). A full ACL string might therefore look like this:
+ * 
+ * <![CDATA[u::rwx,g::rwx,o::rwx,m::rwx,u:500:rwx,g:500:rwx]]>
+ * 
+ * <![CDATA[\ Unix permissions / \mask/ \      ACL        /]]>
+ * 
+ * You should use numeric UIDs and GIDs. To map usernames and groupnames to
+ * the correct numeric ID in the context of the guest, use the Augeas
+ * functions (see guestfs_session_aug_init()).
  * 
  * Returns: true on success, false on error
  */

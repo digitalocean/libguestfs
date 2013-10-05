@@ -58,6 +58,7 @@ SUBDIRS += tests/nbd
 SUBDIRS += tests/http
 SUBDIRS += tests/syslinux
 SUBDIRS += tests/fuzz
+SUBDIRS += tests/disk-info
 SUBDIRS += tests/regressions
 endif
 
@@ -304,12 +305,14 @@ CLEANFILES = \
 	podwrapper.1 \
 	qemu-wrapper.sh \
 	stamp-guestfs-release-notes.pod \
-	tmp/guestfs.* \
+	tmp/disk* \
 	tmp/run-* \
 	tmp/valgrind-*.log
 
 clean-local:
 	-rm -rf tmp/libguestfs??????
+	-rm -rf tmp/guestfs.*
+	-rm -rf tmp/.guestfs-*
 
 # If you don't want to run all of the tests ('make check') then this
 # will just run libguestfs-test-tool for a quick check.  Note this
