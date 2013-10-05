@@ -44,6 +44,7 @@ get_backend_ops (guestfs_h *g)
   switch (g->backend) {
   case BACKEND_DIRECT:    return &backend_ops_direct;
   case BACKEND_LIBVIRT:   return &backend_ops_libvirt;
+  case BACKEND_UML:       return &backend_ops_uml;
   case BACKEND_UNIX:      return &backend_ops_unix;
   default: abort ();
   }
@@ -320,6 +321,9 @@ guestfs___appliance_command_line (guestfs_h *g, const char *appliance_dev,
   ret = safe_asprintf
     (g,
      "panic=1"             /* force kernel to panic if daemon exits */
+#ifdef VALGRIND_DAEMON
+     " guestfs_valgrind_daemon=1"
+#endif
 #ifdef __i386__
      " noapic"                  /* workaround for RHBZ#857026 */
 #endif

@@ -41,6 +41,7 @@
 #include <netinet/in.h>
 #include <errno.h>
 #include <assert.h>
+#include <termios.h>
 
 #ifdef HAVE_PRINTF_H
 # include <printf.h>
@@ -78,6 +79,7 @@ static dev_t root_device = 0;
 
 int verbose = 0;
 
+static void makeraw (const char *channel, int fd);
 static int print_shell_quote (FILE *stream, const struct printf_info *info, const void *const *args);
 static int print_sysroot_shell_quote (FILE *stream, const struct printf_info *info, const void *const *args);
 #ifdef HAVE_REGISTER_PRINTF_SPECIFIER
@@ -210,8 +212,6 @@ main (int argc, char *argv[])
       printf ("could not read linux command line\n");
   }
 
-  free (cmdline);
-
 #ifndef WIN32
   /* Make sure SIGPIPE doesn't kill us. */
   struct sigaction sa;
@@ -254,7 +254,22 @@ main (int argc, char *argv[])
   copy_lvm ();
 
   /* Connect to virtio-serial channel. */
-  int sock = open (VIRTIO_SERIAL_CHANNEL, O_RDWR|O_CLOEXEC);
+  char *channel, *p;
+  if (cmdline && (p = strstr (cmdline, "guestfs_channel=")) != NULL) {
+    p += 16;
+    channel = strndup (p, strcspn (p, " \n"));
+  }
+  else
+    channel = strdup (VIRTIO_SERIAL_CHANNEL);
+  if (!channel) {
+    perror ("strdup");
+    exit (EXIT_FAILURE);
+  }
+
+  if (verbose)
+    printf ("trying to open virtio-serial channel '%s'\n", channel);
+
+  int sock = open (channel, O_RDWR|O_CLOEXEC);
   if (sock == -1) {
     fprintf (stderr,
              "\n"
@@ -269,9 +284,19 @@ main (int argc, char *argv[])
              "output to the libguestfs developers, either in a bug report\n"
              "or on the libguestfs redhat com mailing list.\n"
              "\n");
-    perror (VIRTIO_SERIAL_CHANNEL);
+    perror (channel);
     exit (EXIT_FAILURE);
   }
+
+  /* If it's a serial-port like device then it probably has echoing
+   * enabled.  Put it into complete raw mode.
+   */
+  if (STRPREFIX (channel, "/dev/ttyS"))
+    makeraw (channel, sock);
+
+  /* cmdline, channel not used after this point */
+  free (cmdline);
+  free (channel);
 
   /* Wait for udev devices to be created.  If you start libguestfs,
    * especially with disks that contain complex (eg. mdadm) data
@@ -353,6 +378,25 @@ read_cmdline (void)
   }
 
   return r;
+}
+
+/* Try to make the socket raw, but don't fail if it's not possible. */
+static void
+makeraw (const char *channel, int fd)
+{
+  struct termios tt;
+
+  if (tcgetattr (fd, &tt) == -1) {
+    fprintf (stderr, "tcgetattr: ");
+    perror (channel);
+    return;
+  }
+
+  cfmakeraw (&tt);
+  if (tcsetattr (fd, TCSANOW, &tt) == -1) {
+    fprintf (stderr, "tcsetattr: ");
+    perror (channel);
+  }
 }
 
 /* Return true iff device is the root device (and therefore should be
@@ -550,7 +594,7 @@ free_stringslen (char **argv, size_t len)
 int
 compare_device_names (const char *a, const char *b)
 {
-  size_t a_devlen, b_devlen;
+  size_t alen, blen;
   int r;
   int a_partnum, b_partnum;
 
@@ -560,30 +604,32 @@ compare_device_names (const char *a, const char *b)
   if (STRPREFIX (b, "/dev/"))
     b += 5;
 
-  /* Skip sd/hd/vd. */
-  assert (a[1] == 'd');
-  a += 2;
-  assert (b[1] == 'd');
-  b += 2;
+  /* Skip sd/hd/ubd/vd. */
+  alen = strcspn (a, "d");
+  blen = strcspn (a, "d");
+  assert (alen > 0 && alen <= 2);
+  assert (blen > 0 && blen <= 2);
+  a += alen + 1;
+  b += blen + 1;
 
   /* Get device name part, that is, just 'a', 'ab' etc. */
-  a_devlen = strcspn (a, "0123456789");
-  b_devlen = strcspn (b, "0123456789");
+  alen = strcspn (a, "0123456789");
+  blen = strcspn (b, "0123456789");
 
   /* If device name part is longer, it is always greater, eg.
    * "/dev/sdz" < "/dev/sdaa".
    */
-  if (a_devlen != b_devlen)
-    return a_devlen - b_devlen;
+  if (alen != blen)
+    return alen - blen;
 
   /* Device name parts are the same length, so do a regular compare. */
-  r = strncmp (a, b, a_devlen);
+  r = strncmp (a, b, alen);
   if (r != 0)
     return r;
 
   /* Compare partitions numbers. */
-  a += a_devlen;
-  b += a_devlen;
+  a += alen;
+  b += alen;
 
   /* If no partition numbers, bail -- the devices are the same.  This
    * can happen in one peculiar case: where you have a mix of devices
@@ -1019,7 +1065,7 @@ split_lines (char *str)
   char *p, *pend;
 
   if (STREQ (str, ""))
-    goto empty_list;
+    return empty_list ();
 
   p = str;
   while (p) {
@@ -1040,11 +1086,21 @@ split_lines (char *str)
     p = pend;
   }
 
- empty_list:
   if (end_stringsbuf (&lines) == -1)
     return NULL;
 
   return lines.argv;
+}
+
+char **
+empty_list (void)
+{
+  DECLARE_STRINGSBUF (ret);
+
+  if (end_stringsbuf (&ret) == -1)
+    return NULL;
+
+  return ret.argv;
 }
 
 /* Skip leading and trailing whitespace, updating the original string
@@ -1129,77 +1185,105 @@ print_arginfo (const struct printf_info *info, size_t n, int *argtypes)
 #endif
 #endif
 
-/* Perform device name translation.  Don't call this directly -
- * use the RESOLVE_DEVICE macro.
+/* Perform device name translation.  See guestfs(3) for the algorithm.
+ * Usually you should not call this directly.
  *
- * See guestfs(3) for the algorithm.
+ * It returns a newly allocated string which the caller must free.
  *
- * We have to open the device and test for ENXIO, because
- * the device nodes themselves will exist in the appliance.
+ * It returns NULL on error.  *Note* it does *NOT* call reply_with_*.
+ *
+ * We have to open the device and test for ENXIO, because the device
+ * nodes may exist in the appliance.
  */
-int
-device_name_translation (char *device)
+char *
+device_name_translation (const char *device)
 {
   int fd;
+  char *ret;
 
   fd = open (device, O_RDONLY|O_CLOEXEC);
   if (fd >= 0) {
-  close_ok:
     close (fd);
-    return 0;
+    return strdup (device);
   }
 
   if (errno != ENXIO && errno != ENOENT)
-    return -1;
+    return NULL;
 
   /* If the name begins with "/dev/sd" then try the alternatives. */
-  if (STRNEQLEN (device, "/dev/sd", 7))
-    return -1;
+  if (!STRPREFIX (device, "/dev/sd"))
+    return NULL;
+  device += 7;                  /* device == "a1" etc. */
 
-  device[5] = 'h';		/* /dev/hd (old IDE driver) */
-  fd = open (device, O_RDONLY|O_CLOEXEC);
-  if (fd >= 0)
-    goto close_ok;
+  /* /dev/vd (virtio-blk) */
+  if (asprintf (&ret, "/dev/vd%s", device) == -1)
+    return NULL;
+  fd = open (ret, O_RDONLY|O_CLOEXEC);
+  if (fd >= 0) {
+    close (fd);
+    return ret;
+  }
+  free (ret);
 
-  device[5] = 'v';		/* /dev/vd (for virtio devices) */
-  fd = open (device, O_RDONLY|O_CLOEXEC);
-  if (fd >= 0)
-    goto close_ok;
+  /* /dev/hd (old IDE driver) */
+  if (asprintf (&ret, "/dev/hd%s", device) == -1)
+    return NULL;
+  fd = open (ret, O_RDONLY|O_CLOEXEC);
+  if (fd >= 0) {
+    close (fd);
+    return ret;
+  }
+  free (ret);
 
-  device[5] = 's';		/* Restore original device name. */
-  return -1;
+  /* User-Mode Linux */
+  if (asprintf (&ret, "/dev/ubd%s", device) == -1)
+    return NULL;
+  fd = open (ret, O_RDONLY|O_CLOEXEC);
+  if (fd >= 0) {
+    close (fd);
+    return ret;
+  }
+  free (ret);
+
+  return NULL;
 }
 
-/* Parse the mountable descriptor for a btrfs subvolume.  Don't call this
- * directly - use the RESOLVE_MOUNTABLE macro.
+/* Parse the mountable descriptor for a btrfs subvolume.  Don't call
+ * this directly; it is only used from the stubs.
  *
  * A btrfs subvolume is given as:
  *
  * btrfsvol:/dev/sda3/root
  *
- * where /dev/sda3 is a block device containing a btrfs filesystem, and root is
- * the name of a subvolume on it. This function is passed the string following
- * 'btrfsvol:'.
+ * where /dev/sda3 is a block device containing a btrfs filesystem,
+ * and root is the name of a subvolume on it. This function is passed
+ * the string following 'btrfsvol:'.
+ *
+ * On success, mountable->device & mountable->volume must be freed by
+ * the caller.
  */
 int
-parse_btrfsvol (char *desc, mountable_t *mountable)
+parse_btrfsvol (const char *desc_orig, mountable_t *mountable)
 {
-  char *device, *volume = NULL, *slash;
+  size_t len = strlen (desc_orig);
+  char desc[len+1];
+  char *device = NULL, *volume = NULL, *slash;
   struct stat statbuf;
 
   mountable->type = MOUNTABLE_BTRFSVOL;
 
-  device = desc;
+  memcpy (desc, desc_orig, len+1);
 
-  if (! STRPREFIX (device, "/dev/"))
+  if (! STRPREFIX (desc, "/dev/"))
     return -1;
 
-  slash = device + strlen ("/dev/") - 1;
+  slash = desc + strlen ("/dev/") - 1;
   while ((slash = strchr (slash + 1, '/'))) {
     *slash = '\0';
 
-    if (device_name_translation (device) == -1) {
-      perror (device);
+    device = device_name_translation (desc);
+    if (!device) {
+      perror (desc);
       continue;
     }
 
@@ -1209,8 +1293,7 @@ parse_btrfsvol (char *desc, mountable_t *mountable)
     }
 
     if (!S_ISDIR (statbuf.st_mode) &&
-        !is_root_device_stat (&statbuf))
-    {
+        !is_root_device_stat (&statbuf)) {
       volume = slash + 1;
       break;
     }
@@ -1218,7 +1301,14 @@ parse_btrfsvol (char *desc, mountable_t *mountable)
     *slash = '/';
   }
 
+  if (!device) return -1;
+
   if (!volume) return -1;
+  volume = strdup (volume);
+  if (!volume) {
+    perror ("strdup");
+    return -1;
+  }
 
   mountable->device = device;
   mountable->volume = volume;

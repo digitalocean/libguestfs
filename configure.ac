@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [23])
-m4_define([libguestfs_release], [14])
+m4_define([libguestfs_release], [15])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -385,7 +385,6 @@ if test "x$enable_daemon" = "xyes"; then
 
     if test "x$enable_valgrind_daemon" = "xyes"; then
         AC_DEFINE([VALGRIND_DAEMON],[1],[Define to 1 to run the daemon under valgrind.])
-        AC_DEFINE_UNQUOTED([VALGRIND_LOG_PATH],["$(pwd)"],[Path to save valgrind log files.])
     fi
 
     dnl Which directory should we put the daemon in?  NOTE: This

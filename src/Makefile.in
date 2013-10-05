@@ -349,12 +349,12 @@ am_libguestfs_la_OBJECTS = libguestfs_la-actions-0.lo \
 	libguestfs_la-inspect-fs-windows.lo \
 	libguestfs_la-inspect-icon.lo libguestfs_la-journal.lo \
 	libguestfs_la-launch.lo libguestfs_la-launch-direct.lo \
-	libguestfs_la-launch-libvirt.lo libguestfs_la-launch-unix.lo \
-	libguestfs_la-libvirt-auth.lo libguestfs_la-libvirt-domain.lo \
-	libguestfs_la-listfs.lo libguestfs_la-lpj.lo \
-	libguestfs_la-match.lo libguestfs_la-osinfo.lo \
-	libguestfs_la-private-data.lo libguestfs_la-proto.lo \
-	libguestfs_la-tmpdirs.lo
+	libguestfs_la-launch-libvirt.lo libguestfs_la-launch-uml.lo \
+	libguestfs_la-launch-unix.lo libguestfs_la-libvirt-auth.lo \
+	libguestfs_la-libvirt-domain.lo libguestfs_la-listfs.lo \
+	libguestfs_la-lpj.lo libguestfs_la-match.lo \
+	libguestfs_la-osinfo.lo libguestfs_la-private-data.lo \
+	libguestfs_la-proto.lo libguestfs_la-tmpdirs.lo
 libguestfs_la_OBJECTS = $(am_libguestfs_la_OBJECTS)
 libguestfs_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libguestfs_la_CFLAGS) \
@@ -1596,6 +1596,7 @@ libguestfs_la_SOURCES = \
 	launch.c \
 	launch-direct.c \
 	launch-libvirt.c \
+	launch-uml.c \
 	launch-unix.c \
 	libvirt-auth.c \
 	libvirt-domain.c \
@@ -1811,6 +1812,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-journal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-launch-direct.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-launch-libvirt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-launch-uml.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-launch-unix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-launch.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-libvirt-auth.Plo@am__quote@
@@ -2120,6 +2122,13 @@ libguestfs_la-launch-libvirt.lo: launch-libvirt.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='launch-libvirt.c' object='libguestfs_la-launch-libvirt.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-launch-libvirt.lo `test -f 'launch-libvirt.c' || echo '$(srcdir)/'`launch-libvirt.c
+
+libguestfs_la-launch-uml.lo: launch-uml.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-launch-uml.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-launch-uml.Tpo -c -o libguestfs_la-launch-uml.lo `test -f 'launch-uml.c' || echo '$(srcdir)/'`launch-uml.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-launch-uml.Tpo $(DEPDIR)/libguestfs_la-launch-uml.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='launch-uml.c' object='libguestfs_la-launch-uml.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-launch-uml.lo `test -f 'launch-uml.c' || echo '$(srcdir)/'`launch-uml.c
 
 libguestfs_la-launch-unix.lo: launch-unix.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-launch-unix.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-launch-unix.Tpo -c -o libguestfs_la-launch-unix.lo `test -f 'launch-unix.c' || echo '$(srcdir)/'`launch-unix.c

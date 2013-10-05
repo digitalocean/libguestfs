@@ -1,4 +1,160 @@
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.15.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Ensure CLEANUP_FREE* variables are initialized with NULL.
+	Otherwise an early exit from the function will cause an uninitialized
+	pointer to be freed.
+
+	This fixes commit 1d7c3a27822717398415940bde1d4476441e9c1a.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add experimental User-Mode Linux backend.
+
+	daemon: Recognize /dev/ubd[a-] as a valid device name.
+
+	daemon: Allow guestfs_channel to override the virtio-serial channel.
+	Also if /dev/ttyS* is specified, make sure the serial port is set to
+	raw mode.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	conn: Make sure we display all log messages when qemu goes away.
+	If qemu goes away it is (more in theory than in reality) possible for
+	log messages to be lost in the kernel's socket buffer.
+
+	This turns out to matter more for User-Mode Linux.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance/init: Allow guestfs_noreboot=1 flag to avoid reboot at end of /init script.
+
+	lib: Turn 'random_chars' function used by libvirt backend into utility function.
+
+	utils: Remove duplicate inclusion of <string.h>.
+
+	daemon: ldm: Don't return an error if /dev/mapper doesn't exist.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Device name translation now allocates a new string.
+	Previously device name translation worked on the string in-place.
+
+	This worked fine because the device strings always come from XDR where
+	they are dynamically allocated.  However it wouldn't work if the
+	translated name had to be longer than the original, specifically for
+	/dev/sd -> /dev/ubd (for User Mode Linux).
+
+	Therefore this commit changes the generator so that
+	device_name_translation and parse_btrfsvol (which depends on it)
+	allocate the new device name instead of overwriting it.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Move all RESOLVE macros to daemon/stubs.c.
+	These macros are pretty horrible to use, with unexpected side-effects.
+	Move them exclusively into the generated code and rewrite the one
+	place in the general C code which used them.
+
+	There's no functional change in this code.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/mountable: Better error messages.
+	Better error messages (for diagnosis) when this test fails.  Also this
+	fixes the line endings which were broken before.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Fix --enable-valgrind-daemon so it doesn't break valgrind of the library.
+	Using ./configure --enable-valgrind-daemon breaks valgrinding of the
+	library because guestfs_close wouldn't call guestfs_shutdown in that
+	case, resulting in some resources owned by the backend being leaked.
+
+	After this commit, --enable-valgrind-daemon will shut down the handle
+	normally.
+
+	This updates commit 55e3b8711f340a2f8bdb8ee8ff99deb40b4e9108.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Print an error message if valgrind failure is detected in the daemon.
+	This updates commit 55e3b8711f340a2f8bdb8ee8ff99deb40b4e9108.
+
+2013-08-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Remove unnecessary sysroot_path (selinux).
+	This fixes commit 72afcf450a78b7e58f65b4a7aaf94d71cd25fca5.
+
+2013-08-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	Fix --enable-valgrind-daemon option.
+	Don't add the "valgrind channel" to the appliance.
+
+	Just dump out the valgrind.log to stderr while the daemon is running.
+
+	Ensure that if valgrind tests fail in the appliance, that we don't
+	exit with success in the library by checking for a canary message in
+	the verbose daemon logs.
+
+	This allows the option to be used routinely by developers.
+
+2013-08-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	proto: Fix --enable-packet-dump mode.
+	This was broken when we rearranged the socket code.
+
+	appliance/init: Display uname -a in debug output.
+	Useful for debugging kernel / architecture issues.  Note this
+	has no effect if debugging is disabled.
+
+2013-08-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Close augeas, hivex, journal handles in unmount_all.
+	This is also called implicitly from internal_autosync, ensuring that
+	exit won't fail because of an open handle.
+
+	libguestfs: error: internal_autosync: umount: /sysroot: umount: /sysroot: target is busy.
+	        (In some cases useful info about processes that use
+	         the device is found by lsof(8) or fuser(1))
+
+2013-08-07  Paul Mackerras  <paulus@samba.org>
+
+	Fix parsing of boot flag in do_part_get_bootable()
+	The code in do_part_get_bootable() assumes that if a partition has the
+	bootable flag set, then that is the only flag.  It compares the entire
+	flags field with the string "boot".  However, the boot flag isn't
+	always the only flag.  For instance, POWER systems typically have a
+	bootable partition of type 0x41 (PPC PReP boot), which parted -m
+	displays as:
+
+	# parted -m -- f18.img unit b print
+	BYT;
+	/root/f18.img:16106127360B:file:512:512:msdos::;
+	1:1048576B:5242879B:4194304B:::boot, prep;
+
+	That is, the flags field contains "boot, prep", and thus libguestfs
+	fails to see that this partition is bootable.  Ultimately this causes
+	virt-resize to fail to set the bootable flag on the boot partition of
+	the destination image, resulting in an image that won't boot.
+
+	This patch fixes the problem by searching for the string "boot" within
+	the flags field, instead of comparing the whole flags field.
+
 2013-08-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	sparsify: Advertize in --machine-readable that we support --check-tmpdir option.
+	This lets programs add the --check-tmpdir=[ignore|continue|fail]
+	option to avoid interactivity.
+
+	This fixes commit 7c463ac477168df5d4e4eb472ba01fa18b89c1a6.
+
+2013-08-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.14.
 
 	Pull latest translations from Transifex.
 

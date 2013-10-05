@@ -294,16 +294,8 @@ guestfs_close (guestfs_h *g)
 
   debug (g, "closing guestfs handle %p (state %d)", g, g->state);
 
-  /* If we are valgrinding the daemon, then we *don't* want to kill
-   * the subprocess because we want the final valgrind messages sent
-   * when we close sockets below.  However for normal production use,
-   * killing the subprocess is the right thing to do (in case the
-   * daemon or qemu is not responding).
-   */
-#ifndef VALGRIND_DAEMON
   if (g->state != CONFIG)
     shutdown_backend (g, 0);
-#endif
 
   /* Run user close callbacks. */
   guestfs___call_callbacks_void (g, GUESTFS_EVENT_CLOSE);
@@ -382,14 +374,15 @@ shutdown_backend (guestfs_h *g, int check_for_errors)
       ret = -1;
   }
 
+  /* Shut down the backend. */
+  if (g->backend_ops->shutdown (g, check_for_errors) == -1)
+    ret = -1;
+
   /* Close sockets. */
   if (g->conn) {
     g->conn->ops->free_connection (g, g->conn);
     g->conn = NULL;
   }
-
-  if (g->backend_ops->shutdown (g, check_for_errors) == -1)
-    ret = -1;
 
   guestfs___free_drives (g);
 
@@ -611,6 +604,13 @@ parse_backend (guestfs_h *g, const char *method)
     return 0;
   }
 
+  if (STREQ (method, "uml")) {
+    g->backend = BACKEND_UML;
+    free (g->backend_arg);
+    g->backend_arg = NULL;
+    return 0;
+  }
+
   if (STRPREFIX (method, "unix:") && strlen (method) > 5) {
     g->backend = BACKEND_UNIX;
     free (g->backend_arg);
@@ -654,6 +654,10 @@ guestfs__get_backend (guestfs_h *g)
       ret = safe_strdup (g, "libvirt");
     else
       ret = safe_asprintf (g, "libvirt:%s", g->backend_arg);
+    break;
+
+  case BACKEND_UML:
+    ret = safe_strdup (g, "uml");
     break;
 
   case BACKEND_UNIX:

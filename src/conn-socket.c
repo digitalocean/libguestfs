@@ -169,12 +169,22 @@ read_data (guestfs_h *g, struct connection *connv, void *bufv, size_t len)
         if (errno == EINTR || errno == EAGAIN)
           continue;
         if (errno == ECONNRESET) /* essentially the same as EOF case */
-          return 0;
+          goto closed;
         perrorf (g, "read_data: read");
         return -1;
       }
-      if (n == 0)
+      if (n == 0) {
+      closed:
+        /* Even though qemu has gone away, there could be more log
+         * messages in the console socket buffer in the kernel.  Read
+         * them out here.
+         */
+        if (g->verbose && conn->console_sock >= 0) {
+          while (handle_log_message (g, conn) == 1)
+            ;
+        }
         return 0;
+      }
 
       buf += n;
       len -= n;
@@ -320,6 +330,26 @@ handle_log_message (guestfs_h *g,
 
   /* It's an actual log message, send it upwards. */
   guestfs___log_message_callback (g, buf, n);
+
+#ifdef VALGRIND_DAEMON
+  /* Find the canary printed by appliance/init if valgrinding of the
+   * daemon fails, and exit abruptly.  Note this is only used in
+   * developer builds, and should never be enabled in ordinary/
+   * production builds.
+   */
+  if (g->verbose) {
+    const char *valgrind_canary = "DAEMON VALGRIND FAILED";
+
+    if (memmem (buf, n, valgrind_canary, strlen (valgrind_canary)) != NULL) {
+      fprintf (stderr,
+               "Detected valgrind failure in the daemon!  Exiting with exit code 119.\n"
+               "See log messages printed above.\n"
+               "Note: This happens because libguestfs was configured with\n"
+               "'--enable-valgrind-daemon' which should not be used in production builds.\n");
+      exit (119);
+    }
+  }
+#endif
 
   return 1;
 }
