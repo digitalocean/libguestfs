@@ -72,7 +72,8 @@
 
 
 /* Enable compile-time and run-time bounds-checking, and some warnings. */
-#if __OPTIMIZE__
+#if __OPTIMIZE__ && (! defined (_FORTIFY_SOURCE) || _FORTIFY_SOURCE < 2)
+# undef _FORTIFY_SOURCE
 # define _FORTIFY_SOURCE 2
 #endif
 
@@ -2302,6 +2303,9 @@
 
 /* Name of supermin-helper program. */
 #undef SUPERMIN_HELPER
+
+/* Define to 1 if you have supermin-helper >= 4.1.5. */
+#undef SUPERMIN_HELPER_NEW_STYLE_SYNTAX
 
 /* Define to 1 if the type of the st_atim member of a struct stat is struct
    timespec. */

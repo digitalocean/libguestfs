@@ -91,13 +91,28 @@ struct backend_direct_data {
   int virtio_scsi;        /* See function qemu_supports_virtio_scsi */
 };
 
+/* Differences in device names on ARM (virtio-mmio) vs normal
+ * hardware with PCI.
+ */
+#ifndef __arm__
+#define VIRTIO_BLK "virtio-blk-pci"
+#define VIRTIO_SCSI "virtio-scsi-pci"
+#define VIRTIO_SERIAL "virtio-serial-pci"
+#define VIRTIO_NET "virtio-net-pci"
+#else /* __arm__ */
+#define VIRTIO_BLK "virtio-blk-device"
+#define VIRTIO_SCSI "virtio-scsi-device"
+#define VIRTIO_SERIAL "virtio-serial-device"
+#define VIRTIO_NET "virtio-net-device"
+#endif /* __arm__ */
+
 static int is_openable (guestfs_h *g, const char *path, int flags);
 static char *make_appliance_dev (guestfs_h *g, int virtio_scsi);
 static void print_qemu_command_line (guestfs_h *g, char **argv);
 static int qemu_supports (guestfs_h *g, struct backend_direct_data *, const char *option);
 static int qemu_supports_device (guestfs_h *g, struct backend_direct_data *, const char *device_name);
 static int qemu_supports_virtio_scsi (guestfs_h *g, struct backend_direct_data *);
-static char *qemu_drive_param (guestfs_h *g, struct backend_direct_data *data, const struct drive *drv, size_t index);
+static char *qemu_escape_param (guestfs_h *g, const char *param);
 
 /* Like 'add_cmdline' but allowing a shell-quoted string of zero or
  * more options.  XXX The unquoting is not very clever.
@@ -165,7 +180,8 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   int sv[2];
   char guestfsd_sock[256];
   struct sockaddr_un addr;
-  CLEANUP_FREE char *kernel = NULL, *initrd = NULL, *appliance = NULL;
+  CLEANUP_FREE char *kernel = NULL, *dtb = NULL,
+    *initrd = NULL, *appliance = NULL;
   int has_appliance_drive;
   CLEANUP_FREE char *appliance_dev = NULL;
   uint32_t size;
@@ -189,7 +205,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   TRACE0 (launch_build_appliance_start);
 
   /* Locate and/or build the appliance. */
-  if (guestfs___build_appliance (g, &kernel, &initrd, &appliance) == -1)
+  if (guestfs___build_appliance (g, &kernel, &dtb, &initrd, &appliance) == -1)
     return -1;
   has_appliance_drive = appliance != NULL;
 
@@ -260,7 +276,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
    */
   if (qemu_supports (g, data, "-global")) {
     ADD_CMDLINE ("-global");
-    ADD_CMDLINE ("virtio-blk-pci.scsi=off");
+    ADD_CMDLINE (VIRTIO_BLK ".scsi=off");
   }
 
   if (qemu_supports (g, data, "-nodefconfig"))
@@ -278,6 +294,12 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
     ADD_CMDLINE ("-nodefaults");
 
   ADD_CMDLINE ("-nographic");
+
+#ifdef __arm__
+  /* Use the Versatile Express A9 emulation (for now). */
+  ADD_CMDLINE ("-M");
+  ADD_CMDLINE ("vexpress-a9");
+#endif
 
   /* Try to guess if KVM is available.  We are just checking that
    * /dev/kvm is openable.  That's not reliable, since /dev/kvm
@@ -307,6 +329,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
       ADD_CMDLINE ("-enable-kvm");
   }
 
+#if defined(__i386__) || defined (__x86_64__)
   /* -cpu host only works if KVM is available. */
   if (has_kvm) {
     /* Specify the host CPU for speed, and kvmclock for stability. */
@@ -317,6 +340,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
     ADD_CMDLINE ("-cpu");
     ADD_CMDLINE_PRINTF ("qemu%d,+kvmclock", SIZEOF_LONG*8);
   }
+#endif
 
   if (g->smp > 1) {
     ADD_CMDLINE ("-smp");
@@ -346,6 +370,10 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
 
   ADD_CMDLINE ("-kernel");
   ADD_CMDLINE (kernel);
+  if (dtb) {
+    ADD_CMDLINE ("-dtb");
+    ADD_CMDLINE (dtb);
+  }
   ADD_CMDLINE ("-initrd");
   ADD_CMDLINE (initrd);
 
@@ -355,47 +383,72 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   if (virtio_scsi) {
     /* Create the virtio-scsi bus. */
     ADD_CMDLINE ("-device");
-    ADD_CMDLINE ("virtio-scsi-pci,id=scsi");
+    ADD_CMDLINE (VIRTIO_SCSI ",id=scsi");
   }
 
   ITER_DRIVES (g, i, drv) {
-    /* Construct the final -drive parameter. */
-    char *buf = qemu_drive_param (g, data, drv, i);
+    CLEANUP_FREE char *file = NULL, *escaped_file = NULL, *param = NULL;
 
-    ADD_CMDLINE ("-drive");
-    ADD_CMDLINE_STRING_NODUP (buf);
+    /* Make the file= parameter. */
+    file = guestfs___drive_source_qemu_param (g, &drv->src);
+    escaped_file = qemu_escape_param (g, file);
 
-    if (virtio_scsi && drv->iface == NULL) {
+    /* Make the first part of the -drive parameter, everything up to
+     * the if=... at the end.
+     */
+    param = safe_asprintf
+      (g, "file=%s%s,cache=%s%s%s%s%s,id=hd%zu",
+       escaped_file,
+       drv->readonly ? ",snapshot=on" : "",
+       drv->cachemode ? drv->cachemode : "writeback",
+       drv->format ? ",format=" : "",
+       drv->format ? drv->format : "",
+       drv->disk_label ? ",serial=" : "",
+       drv->disk_label ? drv->disk_label : "",
+       i);
+
+    /* If there's an explicit 'iface', use it.  Otherwise default to
+     * virtio-scsi if available.  Otherwise default to virtio-blk.
+     */
+    if (drv->iface) {
+      ADD_CMDLINE ("-drive");
+      ADD_CMDLINE_PRINTF ("%s,if=%s", param, drv->iface);
+    }
+    else if (virtio_scsi) {
+      ADD_CMDLINE ("-drive");
+      ADD_CMDLINE_PRINTF ("%s,if=none" /* sic */, param);
       ADD_CMDLINE ("-device");
       ADD_CMDLINE_PRINTF ("scsi-hd,drive=hd%zu", i);
+    }
+    else {
+      ADD_CMDLINE ("-drive");
+      ADD_CMDLINE_PRINTF ("%s,if=none" /* sic */, param);
+      ADD_CMDLINE ("-device");
+      ADD_CMDLINE_PRINTF (VIRTIO_BLK ",drive=hd%zu", i);
     }
   }
 
   /* Add the ext2 appliance drive (after all the drives). */
   if (has_appliance_drive) {
-    const char *cachemode = "";
-    if (qemu_supports (g, data, "cache=")) {
-      if (qemu_supports (g, data, "unsafe"))
-        cachemode = ",cache=unsafe";
-      else if (qemu_supports (g, data, "writeback"))
-        cachemode = ",cache=writeback";
-    }
-
     ADD_CMDLINE ("-drive");
-    ADD_CMDLINE_PRINTF ("file=%s,snapshot=on,id=appliance,if=%s%s",
-                        appliance, virtio_scsi ? "none" : "virtio", cachemode);
+    ADD_CMDLINE_PRINTF ("file=%s,snapshot=on,id=appliance,cache=unsafe,if=none",
+                        appliance);
 
     if (virtio_scsi) {
       ADD_CMDLINE ("-device");
       ADD_CMDLINE ("scsi-hd,drive=appliance");
-      }
+    }
+    else {
+      ADD_CMDLINE ("-device");
+      ADD_CMDLINE (VIRTIO_BLK ",drive=appliance");
+    }
 
     appliance_dev = make_appliance_dev (g, virtio_scsi);
   }
 
   /* Create the virtio serial bus. */
   ADD_CMDLINE ("-device");
-  ADD_CMDLINE ("virtio-serial");
+  ADD_CMDLINE (VIRTIO_SERIAL);
 
 #if 0
   /* Use virtio-console (a variant form of virtio-serial) for the
@@ -433,7 +486,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
     ADD_CMDLINE ("-netdev");
     ADD_CMDLINE ("user,id=usernet,net=169.254.0.0/16");
     ADD_CMDLINE ("-device");
-    ADD_CMDLINE ("virtio-net-pci,netdev=usernet");
+    ADD_CMDLINE (VIRTIO_NET ",netdev=usernet");
     }
 
   ADD_CMDLINE ("-append");
@@ -512,6 +565,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
       setpgid (0, 0);
 
     setenv ("LC_ALL", "C", 1);
+    setenv ("QEMU_AUDIO_DRV", "none", 1); /* Prevents qemu opening /dev/dsp */
 
     TRACE0 (launch_run_qemu);
 
@@ -961,51 +1015,24 @@ qemu_supports_virtio_scsi (guestfs_h *g, struct backend_direct_data *data)
   return data->virtio_scsi == 1;
 }
 
-/* Convert a struct drive into a qemu -drive parameter.  Note that if
- * using virtio-scsi, then the code above adds a second -device
- * parameter to connect this drive to the SCSI HBA, as is required by
- * virtio-scsi.
+/* Escape a qemu parameter.  Every ',' becomes ',,'.  The caller must
+ * free the returned string.
  */
 static char *
-qemu_drive_param (guestfs_h *g, struct backend_direct_data *data,
-                  const struct drive *drv, size_t index)
+qemu_escape_param (guestfs_h *g, const char *param)
 {
-  CLEANUP_FREE char *file = NULL, *escaped_file = NULL;
-  size_t i, len;
-  const char *iface;
-  char *p;
+  size_t i, len = strlen (param);
+  char *p, *ret;
 
-  /* Make the file= parameter. */
-  file = guestfs___drive_source_qemu_param (g, &drv->src);
-
-  /* Escape the file= parameter.  Every ',' becomes ',,'. */
-  len = strlen (file);
-  p = escaped_file = safe_malloc (g, len*2 + 1); /* max length of escaped name*/
+  ret = p = safe_malloc (g, len*2 + 1); /* max length of escaped name*/
   for (i = 0; i < len; ++i) {
-    *p++ = file[i];
-    if (file[i] == ',')
+    *p++ = param[i];
+    if (param[i] == ',')
       *p++ = ',';
   }
   *p = '\0';
 
-  if (drv->iface)
-    iface = drv->iface;
-  else if (qemu_supports_virtio_scsi (g, data))
-    iface = "none"; /* sic */
-  else
-    iface = "virtio";
-
-  return safe_asprintf
-    (g, "file=%s%s,cache=%s%s%s%s%s,id=hd%zu,if=%s",
-     escaped_file,
-     drv->readonly ? ",snapshot=on" : "",
-     drv->cachemode ? drv->cachemode : "writeback",
-     drv->format ? ",format=" : "",
-     drv->format ? drv->format : "",
-     drv->disk_label ? ",serial=" : "",
-     drv->disk_label ? drv->disk_label : "",
-     index,
-     iface);
+  return ret;
 }
 
 static int

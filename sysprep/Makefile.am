@@ -40,6 +40,7 @@ operations = \
 	dhcp_server_state \
 	dovecot_data \
 	flag_reconfiguration \
+	firewall_rules \
 	firstboot \
 	fs_uuids \
 	hostname \
@@ -64,6 +65,7 @@ operations = \
 	ssh_hostkeys \
 	ssh_userdir \
 	sssd_db_log \
+	tmp_files \
 	udev_persistent_net \
 	user_account \
 	utmp yum_uuid

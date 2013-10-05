@@ -1,4 +1,144 @@
+2013-09-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: appliance: Add support for device trees (dtb's).
+	If supermin-helper >= 4.1.5 is found, use the new-style syntax and if
+	the architecture requires it (only ARM for now) implement device
+	trees.
+
+	This means we pass a supermin-helper --dtb option to find the right
+	device tree (currently Versatile Express A9, since that's what we pass
+	to qemu in the -M option).  This makes supermin-helper find a
+	compatible device tree file.
+
+	Also that we pass the corresponding dtb file to qemu via the qemu -dtb
+	option, or to libvirt via the <dtb> element.
+
+2013-09-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Update POTFILES-ml.
+	This updates commit ea7088b5cab30158149b07bd208e54631b86b8eb.
+
+2013-09-06  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	sysprep: remove tmp files
+	This removes tmp files under /tmp and /var/tmp.
+
+2013-09-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Set QEMU_AUDIO_DRV=none to stop qemu opening audio devices.
+	Libvirt does the same thing, and it definitely has an effect
+	on ARM at least.
+
+	arm: launch: direct: Use virtio-net-device instead of virtio-net-pci on ARM.
+	This updates commit 92749924112b21e01d7cdbbb4cc07627168a705f.
+
+	arm: launch: direct: Use virtio-mmio devices on ARM.
+	Devices such as virtio-blk are (implicitly) PCI devices.  They don't
+	work on ARM.  You have to use the alternate names like
+	'virtio-blk-device' instead.
+
+2013-09-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: launch: direct: Specify a -M (machine type).
+	Currently this uses the Versatile Express A9 (vexpress-a9) machine
+	type, which is not ideal long-term.  However it includes such things
+	as virtio-mmio and so virtio things should work.
+
+	Note that -M vexpress-a15 does not work with qemu (from git on
+	2013-09-05 + Fedora kernel 3.11.0).  There are no boot messages.
+
+2013-09-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: launch: direct: Don't use -cpu flag.
+	We have no idea what the right choice is, so don't choose anything at all.
+
+	arm: configure: Search correctly for qemu-system-arm binary.
+
+2013-09-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Always use -drive ...,iface=none.
+	For virtio-scsi, this is the same as always:
+
+	  -drive ...,iface=none -device scsi-hd
+
+	For virtio-blk, this now uses:
+
+	  -drive ...,iface=none -device virtio-blk
+
+2013-09-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Always use cache=unsafe for the appliance.
+	The code to select writeback was redundant, because current
+	qemu always supports cache=unsafe.
+
+	launch: direct: Refactor -drive parameter for virtio-blk/virtio-scsi.
+	This is a straightforward refactoring of the code for generating
+	-drive and/or -device parameters for virtio-blk and virtio-scsi.
+
+2013-09-05  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	sysprep: remove firewall rules
+	If we do not want to keep the original firewall rules, enable
+	this operation to remove these rules automatically.
+
+
+	RWMJ:
+
+	 - Updated po-file.
+
+	 - Change documentation to note that it's disabled by default
+	   and in theory could make the guest exploitable.
+
+2013-09-05  Martin Kletzander  <mkletzan@redhat.com>
+
+	Get rid of gnulib error
+	Even though this doesn't stop the compile phase, I find it a bit
+	distracting that this is what I get with bootstrap:
+
+	../.gnulib/gnulib-tool: *** cannot find ./configure.ac - make sure you
+	run gnulib-tool from within your package's directory
+	../.gnulib/gnulib-tool: *** Stop.
+
+2013-09-05  Martin Kletzander  <mkletzan@redhat.com>
+
+	Don't redefine _FORTIFY_SOURCE
+	The macro _FORTIFY_SOURCE might be already defined by environment in
+	which case it shouldn't be overriden (might be if it has lower value).
+
+2013-09-05  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	sysprep: remove log file of ntp
+
+	sysprep: remove log file of gdm
+
+	sysprep: remove log file of sysstat
+
+	sysprep: remove /var/log/audit/audit.log
+	audit.log is already included in /var/log/audit/*.
+
+2013-09-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-df: parallel: Compile debugging messages in always.
+	Enable debugging messages whenever LIBGUESTFS_DEBUG=1 / -v option, so
+	that we can track down possible race condition seen in Koji.
+
+2013-09-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: augeas: Don't test if AUG_NO_ERR_CLOSE is defined.
+	It's an enum, not a macro, and in any case it has been present in
+	augeas.h since 0.10.0, and the minimum version that libguestfs
+	requires is 1.0.0.
+
+	This fixes commit 3d132f29204e8c5c77f08841b5288dfe3013f4f0.
+
+2013-09-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: augeas: Enhance error reporting for aug_init failures.
+	Thanks: Dominic Cleal.
+
 2013-09-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.20.
 
 	drives: Don't need to call free_drive_servers since preceding code checks servers == NULL.
 

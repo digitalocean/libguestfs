@@ -40,7 +40,6 @@ let globs = List.sort compare [
   "/var/log/wtmp*";
   "/var/log/apache2/*_log";
   "/var/log/apache2/*_log-*";
-  "/var/log/audit/audit.log";
   "/var/log/ntp";
 
   (* logfiles configured by /etc/logrotate.d/* *)
@@ -80,6 +79,15 @@ let globs = List.sort compare [
 
   (* man pages cache *)
   "/var/cache/man/*";
+
+  (* log file of sysstat *)
+  "/var/log/sa/*";
+
+  (* log file of gdm *)
+  "/var/log/gdm/*";
+
+  (* log file of ntp *)
+  "/var/log/ntpstats/*";
 ]
 let globs_as_pod = String.concat "\n" (List.map ((^) " ") globs)
 

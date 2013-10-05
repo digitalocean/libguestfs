@@ -49,6 +49,16 @@ DHCP サーバーのリースを削除します。
 
 Dovecot (メールサーバー) のデータを削除します。
 
+=head2 B<firewall-rules>
+
+Remove the firewall rules.
+
+This removes custom firewall rules by removing C</etc/sysconfig/iptables> or
+custom firewalld configuration in C</etc/firewalld/*/*>.
+
+Note this is I<not> enabled by default since it may expose guests to
+exploits.  Use with care.
+
 =head2 B<firstboot> *
 
 次回起動時に一度だけ実行するスクリプトを追加します。
@@ -126,13 +136,13 @@ Linux においては以下のファイルが削除されます:
  /var/log/apache2/*_log
  /var/log/apache2/*_log-*
  /var/log/audit/*
- /var/log/audit/audit.log
  /var/log/btmp*
  /var/log/ceph/*.log
  /var/log/chrony/*.log
  /var/log/cron*
  /var/log/cups/*_log
  /var/log/dmesg*
+ /var/log/gdm/*
  /var/log/glusterfs/*glusterd.vol.log
  /var/log/glusterfs/glusterfs.log
  /var/log/httpd/*log
@@ -146,7 +156,9 @@ Linux においては以下のファイルが削除されます:
  /var/log/maillog*
  /var/log/messages*
  /var/log/ntp
+ /var/log/ntpstats/*
  /var/log/ppp/connect-errors
+ /var/log/sa/*
  /var/log/secure*
  /var/log/setroubleshoot/*.log
  /var/log/spooler*
@@ -313,6 +325,12 @@ removed.
 =head2 B<sssd-db-log> *
 
 SSSD のデータベースとログファイルを削除します。
+
+=head2 B<tmp-files> *
+
+Remove temporary files.
+
+This removes temporary files under C</tmp> and C</var/tmp>.
 
 =head2 B<udev-persistent-net> *
 

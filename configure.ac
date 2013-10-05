@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [23])
-m4_define([libguestfs_release], [20])
+m4_define([libguestfs_release], [21])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -196,7 +196,8 @@ if test "$gl_gcc_warnings" = yes; then
     AC_DEFINE([GNULIB_PORTCHECK], [1], [Enable some gnulib portability checks.])
     AH_VERBATIM([FORTIFY_SOURCE],[
 /* Enable compile-time and run-time bounds-checking, and some warnings. */
-#if __OPTIMIZE__
+#if __OPTIMIZE__ && (! defined (_FORTIFY_SOURCE) || _FORTIFY_SOURCE < 2)
+# undef _FORTIFY_SOURCE
 # define _FORTIFY_SOURCE 2
 #endif])
 fi
@@ -462,6 +463,18 @@ AC_MSG_RESULT([$supermin_helper_compressed_cpio])
 AM_CONDITIONAL([SUPERMIN_HELPER_COMPRESSED_CPIO],
                [test "x$supermin_helper_compressed_cpio" = "xyes"])
 
+dnl supermin >= 4.1.5 supports device trees and uses a new style command
+dnl syntax.
+AC_MSG_CHECKING([if supermin-helper supports device trees and new style command syntax])
+if test $supermin_helper_version_int -ge 4001005; then
+    supermin_helper_new_style_syntax=yes
+    AC_DEFINE([SUPERMIN_HELPER_NEW_STYLE_SYNTAX],[1],
+              [Define to 1 if you have supermin-helper >= 4.1.5.])
+else
+    supermin_helper_new_style_syntax=no
+fi
+AC_MSG_RESULT([$supermin_helper_new_style_syntax])
+
 dnl Pass supermin --packager-config option.
 dnl
 dnl Note that in febootstrap >= 3.21 / supermin >= 4.1.0, this option
@@ -681,7 +694,11 @@ fi
 
 dnl Check for QEMU for running binaries on this $host_cpu, fall
 dnl back to basic 'qemu'.  Allow the user to override it.
-qemu_system="`echo qemu-system-$host_cpu | $SED 's/i@<:@456@:>@86/i386/g'`"
+qemu_system="$(
+    echo qemu-system-$host_cpu |
+    $SED -e 's/-i@<:@456@:>@86/-i386/g' \
+         -e 's/-arm.*/-arm/g'
+    )"
 default_qemu="qemu-kvm kvm $qemu_system qemu"
 AC_ARG_WITH([qemu],
     [AS_HELP_STRING([--with-qemu="bin1 bin2 ..."],
