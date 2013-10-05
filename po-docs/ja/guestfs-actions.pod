@@ -7331,8 +7331,12 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_MKE2FS_SPARSESUPER, int sparsesuper,
  GUESTFS_MKE2FS_UNINITBG, int uninitbg,
 
-C<mke2fs> は C<device> に ext2, ext3, または ext4 ファイルシステムを作成するために使用されます。オプションの
-C<blockscount> はブロックにおけるファイルシステムの容量です。これが省略されると、C<device> の容量が初期値となります。
+C<mke2fs> is used to create an ext2, ext3, or ext4 filesystem on C<device>.
+
+The optional C<blockscount> is the size of the filesystem in blocks.  If
+omitted it defaults to the size of C<device>.  Note if the filesystem is too
+small to contain a journal, C<mke2fs> will silently create an ext2
+filesystem instead.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -9711,6 +9715,13 @@ there is no way to supply a password or passphrase so the target must be set
 up not to require one.
 
 オプションの引数は C<guestfs_rsync> のものと同じです。
+
+Globbing does not happen on the C<src> parameter.  In programs which use the
+API directly you have to expand wildcards yourself (see
+C<guestfs_glob_expand>).  In guestfish you can use the C<glob> command (see
+L<guestfish(1)/glob>), for example:
+
+ ><fs> glob rsync-out /* rsync://remote/
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 

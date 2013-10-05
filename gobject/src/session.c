@@ -21960,6 +21960,13 @@ guestfs_session_rsync_in(GuestfsSession *session, const gchar *remote, const gch
  * 
  * The optional arguments are the same as those of guestfs_session_rsync().
  * 
+ * Globbing does not happen on the @src parameter. In programs which use
+ * the API directly you have to expand wildcards yourself (see
+ * guestfs_session_glob_expand()). In guestfish you can use the @glob
+ * command (see "glob" in guestfish(1)), for example:
+ * 
+ * <![CDATA[><fs> glob rsync-out /* rsync://remote/]]>
+ * 
  * Returns: true on success, false on error
  */
 gboolean
@@ -22977,8 +22984,11 @@ guestfs_session_rm_f(GuestfsSession *session, const gchar *path, GError **err)
  * create an ext2/ext3/ext4 filesystem on device
  *
  * @mke2fs is used to create an ext2, ext3, or ext4 filesystem on @device.
+ * 
  * The optional @blockscount is the size of the filesystem in blocks. If
- * omitted it defaults to the size of @device.
+ * omitted it defaults to the size of @device. Note if the filesystem is
+ * too small to contain a journal, @mke2fs will silently create an ext2
+ * filesystem instead.
  * 
  * Returns: true on success, false on error
  */

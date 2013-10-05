@@ -4596,8 +4596,11 @@ contents after use.
  mke2fs device [blockscount:N] [blocksize:N] [fragsize:N] [blockspergroup:N] [numberofgroups:N] [bytesperinode:N] [inodesize:N] [journalsize:N] [numberofinodes:N] [stridesize:N] [stripewidth:N] [maxonlineresize:N] [reservedblockspercentage:N] [mmpupdateinterval:N] [journaldevice:..] [label:..] [lastmounteddir:..] [creatoros:..] [fstype:..] [usagetype:..] [uuid:..] [forcecreate:true|false] [writesbandgrouponly:true|false] [lazyitableinit:true|false] [lazyjournalinit:true|false] [testfs:true|false] [discard:true|false] [quotatype:true|false] [extent:true|false] [filetype:true|false] [flexbg:true|false] [hasjournal:true|false] [journaldev:true|false] [largefile:true|false] [quota:true|false] [resizeinode:true|false] [sparsesuper:true|false] [uninitbg:true|false]
 
 C<mke2fs> is used to create an ext2, ext3, or ext4 filesystem on C<device>.
+
 The optional C<blockscount> is the size of the filesystem in blocks.  If
-omitted it defaults to the size of C<device>.
+omitted it defaults to the size of C<device>.  Note if the filesystem is too
+small to contain a journal, C<mke2fs> will silently create an ext2
+filesystem instead.
 
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
@@ -5953,6 +5956,13 @@ there is no way to supply a password or passphrase so the target must be set
 up not to require one.
 
 The optional arguments are the same as those of L</rsync>.
+
+Globbing does not happen on the C<src> parameter.  In programs which use the
+API directly you have to expand wildcards yourself (see L</glob-expand>).
+In guestfish you can use the C<glob> command (see L<guestfish(1)/glob>), for
+example:
+
+ ><fs> glob rsync-out /* rsync://remote/
 
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.

@@ -1,3 +1,166 @@
+2013-08-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	uml: Skip tests/md/test-inspect-fstab-md.sh
+	Hangs at various places during the test, eg. running mdadm, mounting
+	MD filesystem.  Seems to be a bug in UML/MD.
+
+	mke2fs: Document that too small blockscount will result in ext2 filesystem (RHBZ#1002032).
+
+	rsync: Document use of glob + rsync-out in guestfish (RHBZ#1001876).
+
+	Add a regression test of tar-out excludes option (RHBZ#1001875).
+
+	daemon: tar: Use a temporary file to pass excludes to tar command (RHBZ#1001875).
+	Use tar -X option instead of tar --exclude=... option.
+
+2013-08-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Allow labels to be set on DOS filesystems using 'dosfslabel'.
+	You can now use virt-format or virt-make-fs --label option to set a
+	label for a DOS filesystem:
+
+	$ ./run ./format/virt-format -a /tmp/test.img --filesystem=vfat --label=BOOT
+	$ ./run ./cat/virt-filesystems -a /tmp/test.img --all --long -h
+	Name       Type        VFS   Label  MBR  Size  Parent
+	/dev/sda1  filesystem  vfat  BOOT   -    1.0G  -
+	/dev/sda1  partition   -     -      0b   1.0G  /dev/sda
+	/dev/sda   device      -     -      -    1.0G  -
+
+	This also contains a small code refactoring.
+
+	Thanks: Gerd Hoffmann (kraxel)
+
+2013-08-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-make-fs: Add --label option for setting filesystem label.
+	$ ./run ./tools/virt-make-fs /tmp/supermin-4.1.4.tar.gz /tmp/test.img
+	$ ./run ./cat/virt-filesystems -a /tmp/test.img --all --long -h
+	Name      Type        VFS   Label  MBR  Size  Parent
+	/dev/sda  filesystem  ext2  -      -    3.7M  -
+	/dev/sda  device      -     -      -    3.7M  -
+
+	$ ./run ./tools/virt-make-fs /tmp/supermin-4.1.4.tar.gz /tmp/test.img --label=BOOT
+	$ ./run ./cat/virt-filesystems -a /tmp/test.img --all --long -h
+	Name      Type        VFS   Label  MBR  Size  Parent
+	/dev/sda  filesystem  ext2  BOOT   -    3.7M  -
+	/dev/sda  device      -     -      -    3.7M  -
+
+	Thanks: Gerd Hoffmann (kraxel)
+
+2013-08-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	format: Add --label option for setting filesystem label.
+	$ ./run ./format/virt-format -a /tmp/test.img --filesystem=ext2 --label=BOOT
+	$ ./run ./cat/virt-filesystems -a /tmp/test.img --all --long -h
+	Name       Type        VFS   Label  MBR  Size  Parent
+	/dev/sda1  filesystem  ext2  BOOT   -    1.0G  -
+	/dev/sda1  partition   -     -      83   1.0G  /dev/sda
+	/dev/sda   device      -     -      -    1.0G  -
+
+	Thanks: Gerd Hoffmann (kraxel)
+
+2013-08-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	format: Set MBR partition type byte appropriately (RHBZ#1000428).
+	Windows won't see a filesystem unless the MBR partition type
+	byte is set correctly.
+
+	$ ./run ./format/virt-format -a /tmp/test.img
+	$ ./run ./cat/virt-filesystems -a /tmp/test.img --all --long -h
+	Name       Type        VFS      Label  MBR  Size  Parent
+	/dev/sda1  filesystem  unknown  -      -    1.0G  -
+	/dev/sda1  partition   -        -      83   1.0G  /dev/sda
+	/dev/sda   device      -        -      -    1.0G  -
+
+	$ ./run ./format/virt-format -a /tmp/test.img --filesystem=ntfs
+	$ ./run ./cat/virt-filesystems -a /tmp/test.img --all --long -h
+	Name       Type        VFS   Label  MBR  Size  Parent
+	/dev/sda1  filesystem  ntfs  -      -    1.0G  -
+	/dev/sda1  partition   -     -      07   1.0G  /dev/sda
+	/dev/sda   device      -     -      -    1.0G  -
+
+	$ ./run ./format/virt-format -a /tmp/test.img --filesystem=vfat
+	$ ./run ./cat/virt-filesystems -a /tmp/test.img --all --long -h
+	Name       Type        VFS   Label  MBR  Size  Parent
+	/dev/sda1  filesystem  vfat  -      -    1.0G  -
+	/dev/sda1  partition   -     -      0b   1.0G  /dev/sda
+	/dev/sda   device      -     -      -    1.0G  -
+
+	$ ./run ./format/virt-format -a /tmp/test.img --lvm --filesystem=vfat
+	$ ./run ./cat/virt-filesystems -a /tmp/test.img --all --long -h
+	Name        Type        VFS   Label  MBR  Size   Parent
+	/dev/VG/LV  filesystem  vfat  -      -    1020M  -
+	/dev/VG/LV  lv          -     -      -    1020M  /dev/VG
+	/dev/VG     vg          -     -      -    1020M  /dev/sda1
+	/dev/sda1   pv          -     -      -    1020M  -
+	/dev/sda1   partition   -     -      8e   1.0G   /dev/sda
+	/dev/sda    device      -     -      -    1.0G   -
+
+	Thanks: Gerd Hoffmann (kraxel)
+
+2013-08-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Use gzip-compressed cpio files if supermin-helper supports it.
+	supermin-helper >= 4.1.4 has new support for compressed cpio files
+	(not hostfiles).  Detect if this is supported, and use it.
+
+	javadoc: Install javadoc in $(datadir)/javadoc/libguestfs (without -java-$(version)).
+	Apparently this is the normal place for javadoc, and not
+	where we installed it before.
+
+2013-08-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	Initialize CLEANUP_* stack variables with NULL in various places.
+	Code like:
+
+	  CLEANUP_FREE char *buf;
+	  /* some code which might return early */
+	  buf = malloc (10);
+
+	is a potential bug because the free (*buf) might be called when buf is
+	an uninitialized pointer.  Initialize buf = NULL to avoid this.
+
+	Several of these are bugs, most are not bugs (because there is no
+	early return statement before the variable gets initialized).
+
+	However the compiler can elide the initialization, and even if it does
+	not the performance "penalty" is miniscule, and correctness is better.
+
+2013-08-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: sh: Fix missing initializer which caused segfault (RHBZ#1000121).
+	Thanks: Olaf Hering.
+
+2013-08-20  Olaf Hering  <olaf@aepfle.de>
+
+	lib: avoid pragma usage in journal.c
+	journal.c: In function 'guestfs__journal_get':
+	journal.c:120:9: error: #pragma GCC diagnostic not allowed inside functions
+	journal.c:121:9: error: #pragma GCC diagnostic not allowed inside functions
+	journal.c:123:9: error: #pragma GCC diagnostic not allowed inside functions
+	make[3]: *** [libguestfs_la-journal.lo] Error 1
+
+2013-08-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: hivex: Define empty hivex_finalize function in case !HAVE_HIVEX.
+	Thanks: Olaf Hering (see previous commit).
+
+2013-08-20  Olaf Hering  <olaf@aepfle.de>
+
+	daemon: fix build without systemd-journal
+	Fix typo in OPTGROUP_JOURNAL_NOT_AVAILABLE
+	Define empty journal_finalize, called by mount.c
+
+2013-08-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Document guestfs_verbose=1 and guestfs_channel=<PATH> in man page.
+
+2013-08-19  Olaf Hering  <olaf@aepfle.de>
+
+	tests: change noinst to check
+	This change avoids the hard requirement for qemu-tools during package
+	build.
+
 2013-08-19  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.23.18.

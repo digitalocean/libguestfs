@@ -4517,9 +4517,12 @@ See also: L<mkdtemp(3)>
 =item $g->mke2fs ($device [, blockscount => $blockscount] [, blocksize => $blocksize] [, fragsize => $fragsize] [, blockspergroup => $blockspergroup] [, numberofgroups => $numberofgroups] [, bytesperinode => $bytesperinode] [, inodesize => $inodesize] [, journalsize => $journalsize] [, numberofinodes => $numberofinodes] [, stridesize => $stridesize] [, stripewidth => $stripewidth] [, maxonlineresize => $maxonlineresize] [, reservedblockspercentage => $reservedblockspercentage] [, mmpupdateinterval => $mmpupdateinterval] [, journaldevice => $journaldevice] [, label => $label] [, lastmounteddir => $lastmounteddir] [, creatoros => $creatoros] [, fstype => $fstype] [, usagetype => $usagetype] [, uuid => $uuid] [, forcecreate => $forcecreate] [, writesbandgrouponly => $writesbandgrouponly] [, lazyitableinit => $lazyitableinit] [, lazyjournalinit => $lazyjournalinit] [, testfs => $testfs] [, discard => $discard] [, quotatype => $quotatype] [, extent => $extent] [, filetype => $filetype] [, flexbg => $flexbg] [, hasjournal => $hasjournal] [, journaldev => $journaldev] [, largefile => $largefile] [, quota => $quota] [, resizeinode => $resizeinode] [, sparsesuper => $sparsesuper] [, uninitbg => $uninitbg]);
 
 C<mke2fs> is used to create an ext2, ext3, or ext4 filesystem
-on C<device>.  The optional C<blockscount> is the size of the
-filesystem in blocks.  If omitted it defaults to the size of
-C<device>.
+on C<device>.
+
+The optional C<blockscount> is the size of the filesystem in blocks.
+If omitted it defaults to the size of C<device>.  Note if the
+filesystem is too small to contain a journal, C<mke2fs> will
+silently create an ext2 filesystem instead.
 
 =item $g->mke2fs_J ($fstype, $blocksize, $device, $journal);
 
@@ -5733,6 +5736,13 @@ Note that there is no way to supply a password or passphrase
 so the target must be set up not to require one.
 
 The optional arguments are the same as those of C<$g-E<gt>rsync>.
+
+Globbing does not happen on the C<src> parameter.  In programs
+which use the API directly you have to expand wildcards yourself
+(see C<$g-E<gt>glob_expand>).  In guestfish you can use the C<glob>
+command (see L<guestfish(1)/glob>), for example:
+
+ ><fs> glob rsync-out /* rsync://remote/
 
 =item $g->scrub_device ($device);
 

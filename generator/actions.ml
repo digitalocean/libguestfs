@@ -10410,7 +10410,14 @@ The format of the remote server string is defined by L<rsync(1)>.
 Note that there is no way to supply a password or passphrase
 so the target must be set up not to require one.
 
-The optional arguments are the same as those of C<guestfs_rsync>." };
+The optional arguments are the same as those of C<guestfs_rsync>.
+
+Globbing does not happen on the C<src> parameter.  In programs
+which use the API directly you have to expand wildcards yourself
+(see C<guestfs_glob_expand>).  In guestfish you can use the C<glob>
+command (see L<guestfish(1)/glob>), for example:
+
+ ><fs> glob rsync-out /* rsync://remote/" };
 
   { defaults with
     name = "ls0";
@@ -10804,11 +10811,15 @@ or C<guestfs_rm_rf> to remove directories recursively." };
             ["cat"; "/new"]], "new file contents"), []
        ]);
     shortdesc = "create an ext2/ext3/ext4 filesystem on device";
+    (* XXX document optional args properly *)
     longdesc = "\
 C<mke2fs> is used to create an ext2, ext3, or ext4 filesystem
-on C<device>.  The optional C<blockscount> is the size of the
-filesystem in blocks.  If omitted it defaults to the size of
-C<device>." (* XXX document optional args properly *) };
+on C<device>.
+
+The optional C<blockscount> is the size of the filesystem in blocks.
+If omitted it defaults to the size of C<device>.  Note if the
+filesystem is too small to contain a journal, C<mke2fs> will
+silently create an ext2 filesystem instead." };
 
   { defaults with
     name = "list_disk_labels";

@@ -2085,8 +2085,8 @@ clean-local:
 @HAVE_JAVA_TRUE@	touch $@
 
 @HAVE_JAVA_TRUE@install-data-hook:
-@HAVE_JAVA_TRUE@	mkdir -p $(DESTDIR)$(datadir)/javadoc/$(PACKAGE_NAME)-java-$(PACKAGE_VERSION)
-@HAVE_JAVA_TRUE@	cp -a api/* $(DESTDIR)$(datadir)/javadoc/$(PACKAGE_NAME)-java-$(PACKAGE_VERSION)
+@HAVE_JAVA_TRUE@	mkdir -p $(DESTDIR)$(datadir)/javadoc/$(PACKAGE_NAME)
+@HAVE_JAVA_TRUE@	cp -a api/* $(DESTDIR)$(datadir)/javadoc/$(PACKAGE_NAME)
 
 @HAVE_JAVA_TRUE@t/%.class: t/%.java libguestfs-$(VERSION).jar
 @HAVE_JAVA_TRUE@	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar -d t $<

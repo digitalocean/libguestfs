@@ -8067,6 +8067,14 @@ class GuestFS(object):
         
         The optional arguments are the same as those of
         "g.rsync".
+        
+        Globbing does not happen on the "src" parameter. In
+        programs which use the API directly you have to expand
+        wildcards yourself (see "g.glob_expand"). In guestfish
+        you can use the "glob" command (see "glob" in
+        guestfish(1)), for example:
+        
+        ><fs> glob rsync-out /* rsync://remote/
         """
         self._check_not_closed ()
         r = libguestfsmod.rsync_out (self._o, src, remote, archive, deletedest)
@@ -8335,9 +8343,13 @@ class GuestFS(object):
 
     def mke2fs (self, device, blockscount=None, blocksize=None, fragsize=None, blockspergroup=None, numberofgroups=None, bytesperinode=None, inodesize=None, journalsize=None, numberofinodes=None, stridesize=None, stripewidth=None, maxonlineresize=None, reservedblockspercentage=None, mmpupdateinterval=None, journaldevice=None, label=None, lastmounteddir=None, creatoros=None, fstype=None, usagetype=None, uuid=None, forcecreate=None, writesbandgrouponly=None, lazyitableinit=None, lazyjournalinit=None, testfs=None, discard=None, quotatype=None, extent=None, filetype=None, flexbg=None, hasjournal=None, journaldev=None, largefile=None, quota=None, resizeinode=None, sparsesuper=None, uninitbg=None):
         """"mke2fs" is used to create an ext2, ext3, or ext4
-        filesystem on "device". The optional "blockscount" is
-        the size of the filesystem in blocks. If omitted it
-        defaults to the size of "device".
+        filesystem on "device".
+        
+        The optional "blockscount" is the size of the filesystem
+        in blocks. If omitted it defaults to the size of
+        "device". Note if the filesystem is too small to contain
+        a journal, "mke2fs" will silently create an ext2
+        filesystem instead.
         """
         self._check_not_closed ()
         r = libguestfsmod.mke2fs (self._o, device, blockscount, blocksize, fragsize, blockspergroup, numberofgroups, bytesperinode, inodesize, journalsize, numberofinodes, stridesize, stripewidth, maxonlineresize, reservedblockspercentage, mmpupdateinterval, journaldevice, label, lastmounteddir, creatoros, fstype, usagetype, uuid, forcecreate, writesbandgrouponly, lazyitableinit, lazyjournalinit, testfs, discard, quotatype, extent, filetype, flexbg, hasjournal, journaldev, largefile, quota, resizeinode, sparsesuper, uninitbg)

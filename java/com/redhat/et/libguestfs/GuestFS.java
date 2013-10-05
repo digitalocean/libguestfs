@@ -15740,6 +15740,14 @@ public class GuestFS {
    * The optional arguments are the same as those of
    * "g.rsync".
    * <p>
+   * Globbing does not happen on the "src" parameter. In
+   * programs which use the API directly you have to expand
+   * wildcards yourself (see "g.glob_expand"). In guestfish
+   * you can use the "glob" command (see "glob" in
+   * guestfish(1)), for example:
+   * <p>
+   * ><fs> glob rsync-out /* rsync://remote/
+   * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
@@ -16501,9 +16509,13 @@ public class GuestFS {
    * create an ext2/ext3/ext4 filesystem on device
    * <p>
    * "mke2fs" is used to create an ext2, ext3, or ext4
-   * filesystem on "device". The optional "blockscount" is
-   * the size of the filesystem in blocks. If omitted it
-   * defaults to the size of "device".
+   * filesystem on "device".
+   * <p>
+   * The optional "blockscount" is the size of the filesystem
+   * in blocks. If omitted it defaults to the size of
+   * "device". Note if the filesystem is too small to contain
+   * a journal, "mke2fs" will silently create an ext2
+   * filesystem instead.
    * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the

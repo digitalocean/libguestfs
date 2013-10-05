@@ -139,10 +139,10 @@ DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(srcdir)/Makefile.am \
 	$(srcdir)/libguestfs-make-fixed-appliance.in
 @ENABLE_DAEMON_TRUE@am__append_1 = \
-@ENABLE_DAEMON_TRUE@	supermin.d/daemon.img
+@ENABLE_DAEMON_TRUE@	supermin.d/daemon.img$(GZ)
 
 @ENABLE_APPLIANCE_TRUE@am__append_2 = \
-@ENABLE_APPLIANCE_TRUE@	supermin.d/base.img \
+@ENABLE_APPLIANCE_TRUE@	supermin.d/base.img$(GZ) \
 @ENABLE_APPLIANCE_TRUE@	supermin.d/hostfiles
 
 @VALGRIND_DAEMON_TRUE@am__append_3 = -DVALGRIND_DAEMON=1
@@ -1415,6 +1415,7 @@ superminfsdir = $(libdir)/guestfs/supermin.d
 fs_DATA = 
 superminfs_DATA = supermin.d/init.img supermin.d/udev-rules.img \
 	$(am__append_1) $(am__append_2)
+@SUPERMIN_HELPER_COMPRESSED_CPIO_TRUE@GZ = .gz
 PACKAGELIST_CPP_FLAGS = -D$(DISTRO)=1 \
 	-DEXTRA_PACKAGES="$(EXTRA_PACKAGES)" $(am__append_3)
 
@@ -1833,20 +1834,23 @@ excludelist: excludelist.in Makefile
 	cmp -s $@ $@-t || mv $@-t $@
 	rm -f $@-t
 
-supermin.d/base.img supermin.d/hostfiles: stamp-supermin
+supermin.d/base.img$(GZ) supermin.d/hostfiles: stamp-supermin
 stamp-supermin: make.sh packagelist excludelist
-	rm -f $@ supermin.d/base.img supermin.d/hostfiles
+	rm -f $@ supermin.d/base.img$(GZ) supermin.d/hostfiles
 	./make.sh
+@SUPERMIN_HELPER_COMPRESSED_CPIO_TRUE@	gzip -9 supermin.d/base.img
 	touch $@
 
-supermin.d/daemon.img: ../daemon/guestfsd guestfsd.suppressions
-	rm -f $@ $@-t
+supermin.d/daemon.img$(GZ): ../daemon/guestfsd guestfsd.suppressions
+	rm -f $@ $@-t $@-tt
 	rm -rf tmp-d
 	mkdir -p tmp-d$(DAEMON_SUPERMIN_DIR) tmp-d/etc
 	ln ../daemon/guestfsd tmp-d$(DAEMON_SUPERMIN_DIR)/guestfsd
 	ln $(srcdir)/guestfsd.suppressions tmp-d/etc/guestfsd.suppressions
 	( cd tmp-d && find | cpio --quiet -o -H newc ) > $@-t
 	rm -r tmp-d
+@SUPERMIN_HELPER_COMPRESSED_CPIO_TRUE@	gzip -9 -c $@-t > $@-tt
+@SUPERMIN_HELPER_COMPRESSED_CPIO_TRUE@	mv $@-tt $@-t
 	mv $@-t $@
 
 supermin.d/init.img: init

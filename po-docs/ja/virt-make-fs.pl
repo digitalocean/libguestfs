@@ -185,6 +185,10 @@ that would really make sense here is C<qcow2>.
 
 Any filesystem which is supported read-write by libguestfs can be used here.
 
+=item B<--label=E<lt>LABELE<gt>>
+
+Set the filesystem label.
+
 =item B<--partition>
 
 =item B<--partition=E<lt>parttypeE<gt>>

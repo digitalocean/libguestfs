@@ -108,6 +108,10 @@ C<disk.img> に対してロー形式（自動検知なし）を強制し、C<ano
 仮想マシンのディスクイメージが信頼できないロー形式であるならば、ディスク形式を指定するためにこのオプションを使用すべきです。これにより、悪意のある仮想マシンにより起こり得るセキュリティ問題を回避できます
 (CVE-2010-3851)。
 
+=item B<--label=LABEL>
+
+Set the filesystem label.
+
 =item B<--lvm=/dev/I<VG>/I<LV>>
 
 C</dev/I<VG>/I<LV>> という Linux LVM2

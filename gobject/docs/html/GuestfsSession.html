@@ -26713,6 +26713,15 @@ set up not to require one.
 <p>
 The optional arguments are the same as those of <a class="link" href="GuestfsSession.html#guestfs-session-rsync" title="guestfs_session_rsync ()"><code class="function">guestfs_session_rsync()</code></a>.
 </p>
+<p>
+Globbing does not happen on the <em class="parameter"><code>src</code></em> parameter. In programs which use
+the API directly you have to expand wildcards yourself (see
+<a class="link" href="GuestfsSession.html#guestfs-session-glob-expand" title="guestfs_session_glob_expand ()"><code class="function">guestfs_session_glob_expand()</code></a>). In guestfish you can use the <em class="parameter"><code>glob</code></em>
+command (see "glob" in guestfish(1)), for example:
+</p>
+<p>
+&gt;&lt;fs&gt; glob rsync-out /* rsync://remote/
+</p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
 <col align="left" valign="top">
@@ -27760,8 +27769,12 @@ create an ext2/ext3/ext4 filesystem on device
 </p>
 <p>
 <em class="parameter"><code>mke2fs</code></em> is used to create an ext2, ext3, or ext4 filesystem on <em class="parameter"><code>device</code></em>.
+</p>
+<p>
 The optional <em class="parameter"><code>blockscount</code></em> is the size of the filesystem in blocks. If
-omitted it defaults to the size of <em class="parameter"><code>device</code></em>.
+omitted it defaults to the size of <em class="parameter"><code>device</code></em>. Note if the filesystem is
+too small to contain a journal, <em class="parameter"><code>mke2fs</code></em> will silently create an ext2
+filesystem instead.
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
