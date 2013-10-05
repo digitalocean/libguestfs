@@ -1001,7 +1001,7 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
   }
 
   /* ... else, hotplugging case. */
-  if (!g->backend || !g->backend_ops->hot_add_drive) {
+  if (!g->backend_ops->hot_add_drive) {
     error (g, _("the current backend does not support hotplugging drives"));
     free_drive_struct (drv);
     return -1;
@@ -1020,7 +1020,8 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
       drv_index = i;
 
   /* Hot-add the drive. */
-  if (g->backend_ops->hot_add_drive (g, drv, drv_index) == -1) {
+  if (g->backend_ops->hot_add_drive (g, g->backend_data,
+                                     drv, drv_index) == -1) {
     free_drive_struct (drv);
     return -1;
   }
@@ -1172,7 +1173,7 @@ guestfs__remove_drive (guestfs_h *g, const char *label)
     return 0;
   }
   else {                        /* Hotplugging. */
-    if (!g->backend_ops || !g->backend_ops->hot_remove_drive) {
+    if (!g->backend_ops->hot_remove_drive) {
       error (g, _("the current backend does not support hotplugging drives"));
       return -1;
     }
@@ -1180,7 +1181,7 @@ guestfs__remove_drive (guestfs_h *g, const char *label)
     if (guestfs_internal_hot_remove_drive_precheck (g, label) == -1)
       return -1;
 
-    if (g->backend_ops->hot_remove_drive (g, drv, i) == -1)
+    if (g->backend_ops->hot_remove_drive (g, g->backend_data, drv, i) == -1)
       return -1;
 
     free_drive_struct (drv);
@@ -1220,25 +1221,17 @@ guestfs___rollback_drives (guestfs_h *g, size_t old_i)
 char **
 guestfs__debug_drives (guestfs_h *g)
 {
-  size_t i, count;
-  char **ret;
+  size_t i;
+  DECLARE_STRINGSBUF (ret);
   struct drive *drv;
 
-  count = 0;
   ITER_DRIVES (g, i, drv) {
-    count++;
+    guestfs___add_string_nodup (g, &ret, drive_to_string (g, drv));
   }
 
-  ret = safe_malloc (g, sizeof (char *) * (count + 1));
+  guestfs___end_stringsbuf (g, &ret);
 
-  count = 0;
-  ITER_DRIVES (g, i, drv) {
-    ret[count++] = drive_to_string (g, drv);
-  }
-
-  ret[count] = NULL;
-
-  return ret;                   /* caller frees */
+  return ret.argv;              /* caller frees */
 }
 
 /* The drive_source struct is also used in the backends, so we

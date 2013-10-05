@@ -354,7 +354,8 @@ am_libguestfs_la_OBJECTS = libguestfs_la-actions-0.lo \
 	libguestfs_la-libvirt-domain.lo libguestfs_la-listfs.lo \
 	libguestfs_la-lpj.lo libguestfs_la-match.lo \
 	libguestfs_la-osinfo.lo libguestfs_la-private-data.lo \
-	libguestfs_la-proto.lo libguestfs_la-tmpdirs.lo
+	libguestfs_la-proto.lo libguestfs_la-stringsbuf.lo \
+	libguestfs_la-tmpdirs.lo
 libguestfs_la_OBJECTS = $(am_libguestfs_la_OBJECTS)
 libguestfs_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libguestfs_la_CFLAGS) \
@@ -1606,6 +1607,7 @@ libguestfs_la_SOURCES = \
 	osinfo.c \
 	private-data.c \
 	proto.c \
+	stringsbuf.c \
 	tmpdirs.c \
 	libguestfs.syms
 
@@ -1823,6 +1825,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-osinfo.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-private-data.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-proto.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-stringsbuf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-tmpdirs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libprotocol_la-guestfs_protocol.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-cleanup-structs.Plo@am__quote@
@@ -2192,6 +2195,13 @@ libguestfs_la-proto.lo: proto.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='proto.c' object='libguestfs_la-proto.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-proto.lo `test -f 'proto.c' || echo '$(srcdir)/'`proto.c
+
+libguestfs_la-stringsbuf.lo: stringsbuf.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-stringsbuf.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-stringsbuf.Tpo -c -o libguestfs_la-stringsbuf.lo `test -f 'stringsbuf.c' || echo '$(srcdir)/'`stringsbuf.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-stringsbuf.Tpo $(DEPDIR)/libguestfs_la-stringsbuf.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stringsbuf.c' object='libguestfs_la-stringsbuf.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-stringsbuf.lo `test -f 'stringsbuf.c' || echo '$(srcdir)/'`stringsbuf.c
 
 libguestfs_la-tmpdirs.lo: tmpdirs.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-tmpdirs.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-tmpdirs.Tpo -c -o libguestfs_la-tmpdirs.lo `test -f 'tmpdirs.c' || echo '$(srcdir)/'`tmpdirs.c

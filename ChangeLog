@@ -1,4 +1,136 @@
+2013-08-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.18.
+
+	uml: Remove unused function is_numeric.
+	This fixes commit b607f8628876f4779921047ad29aa9a623e3bde2.
+
+	fish: Document that guestfish --remote --add won't work as expected (RHBZ#998513).
+
+2013-08-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Don't try to wait for qemu if parent process forked (RHBZ#998482).
+	When using guestfish --remote, libguestfs is not the parent of qemu,
+	so waitpid is expected to return -ECHILD.  And indeed guestfish --remote
+	would print a bogus error message in this case:
+
+	  libguestfs: error: waitpid (qemu): No child processes
+
+	If the parent process forked into the background, then it should have
+	called 'set_recovery_proc 0' so we can use this to determine if we
+	need to wait for qemu.
+
+	Thanks: Kazuya Saito for reporting and identifying the issue.
+
+2013-08-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	uml: Remove kill_vmlinux subprocess, problem fixed upstream.
+	Note you need to apply these patches to the Linux kernel to get
+	User-Mode Linux to work with libguestfs:
+
+	http://marc.info/?l=user-mode-linux-devel&m=137682544009451&w=2
+	http://marc.info/?l=user-mode-linux-devel&m=137682543809449&w=2
+	http://marc.info/?l=user-mode-linux-devel&m=137682544209452&w=2
+	http://marc.info/?l=user-mode-linux-devel&m=137682543809448&w=2
+
+2013-08-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	uml: Exit status 1 is a normal exit code for vmlinux subprocess.
+	Note you need to apply these patches to the Linux kernel
+	to get User-Mode Linux to work with libguestfs:
+
+	http://marc.info/?l=user-mode-linux-devel&m=137682544009451&w=2
+	http://marc.info/?l=user-mode-linux-devel&m=137682543809449&w=2
+	http://marc.info/?l=user-mode-linux-devel&m=137682544209452&w=2
+	http://marc.info/?l=user-mode-linux-devel&m=137682543809448&w=2
+
+2013-08-19  Or Goshen  <oberonc@gmail.com>
+
+	Fix to src/proto.c in libguestfs so it will compile with portablexdr under mingw.
+
+2013-08-19  Nikita Menkovich  <n.menkovich@sprinthost.ru>
+
+	sysprep: added --mount-options option to mount selected partitions with options.
+
+2013-08-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: Replace the debugging section (again) with a checklist of information we need to start to fix bugs.
+
+2013-08-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: Move #debug anchor back to the right place.
+	This was accidentally moved by this commit:
+
+	  commit b8b5ed65c26dd19a0bc9f8282a50c6dff90c456a
+	  Author: Richard W.M. Jones <rjones@redhat.com>
+	  Date:   Wed May 23 11:46:23 2012 +0100
+
+	    FAQ: Add section about using libguestfs in closed source programs.
+
+2013-08-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: Delete section about Ubuntu 10.04.
+	The link was broken, and we don't support Ubuntu 10.04 (maybe the
+	'oldlinux' branch does).
+
+	cleanups: Use correct types for some cleanup functions.
+
+2013-08-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	uml: Add uml_mkcow requirement to README.
+	This fixes commit 858d6e7176d7b18bc29c8503bbc2887a3b74a272.
+
+2013-08-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: Create the direct & uml command lines safely.
+	Refactor the direct & uml backends to safely create the qemu & vmlinux
+	command lines.
+
+	Don't do malloc-after-fork, which is not safe.  Do all the allocation
+	in the main process before the fork.
+
+	Use stringsbuf to simplify the code.
+
+2013-08-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	Refactor backends so they are modular.
+	Instead of hard-coding the list of backends into the core of
+	libguestfs in many places, make each backend into a true module which
+	registers itself with the core when the library is loaded.
+
+	This is a step towards making backends into loadable modules, but it
+	doesn't actually do that.
+
+	This is just code motion.
+
+2013-08-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Move internal_set_libvirt_selinux_* APIs to common launch code.
+	This is just code motion, but means the libvirt backend no longer has
+	to export those two internal APIs.
+
+	lib: Use stringsbuf at various places in the library to simplify the code.
+	This is just code refactoring.
+
+	lib: Add stringsbuf mini-library for constructing lists of strings.
+	This is modelled on similar code in the daemon that we have used
+	successfully for a long time.
+
+	list-filesystems: Don't fail if there are no filesystems found (RHBZ#995711).
+	list-filesystems was returning NULL (but not setting an error) if no
+	filesystems were found.  Instead return an empty list.
+
+	cmd: Better type checking in CLEANUP_CMD_CLOSE macro.
+
+	utils: Move guestfs___drive_name function to the utilities library.
+	For some historical reason, it was stuck in src/launch-direct.c and
+	the comment referred to launch-appliance.c!
+
+	podwrapper: guestunmount is a libguestfs page, don't link it to he.net.
+
 2013-08-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.17.
 
 	Remove contrib file from EXTRA_DIST.
 	This fixes commit 36d29700dcef01d681d41f0b593a16e7814e3ee1.
