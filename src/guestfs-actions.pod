@@ -1472,6 +1472,8 @@ I<The caller must free the returned string after use>.
 This function returns the Linux capabilities attached to C<path>.
 The capabilities set is returned in text form (see L<cap_to_text(3)>).
 
+If no capabilities are attached to a file, an empty string is returned.
+
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 

@@ -3473,7 +3473,7 @@ struct command_entry acl_delete_def_file_cmd_entry = {
 
 struct command_entry cap_get_file_cmd_entry = {
   .name = "cap-get-file",
-  .help = "NAME\n    cap-get-file - get the Linux capabilities attached to a file\n\nSYNOPSIS\n     cap-get-file path\n\nDESCRIPTION\n    This function returns the Linux capabilities attached to \"path\". The\n    capabilities set is returned in text form (see cap_to_text(3)).\n\n",
+  .help = "NAME\n    cap-get-file - get the Linux capabilities attached to a file\n\nSYNOPSIS\n     cap-get-file path\n\nDESCRIPTION\n    This function returns the Linux capabilities attached to \"path\". The\n    capabilities set is returned in text form (see cap_to_text(3)).\n\n    If no capabilities are attached to a file, an empty string is returned.\n\n",
   .run = run_cap_get_file
 };
 

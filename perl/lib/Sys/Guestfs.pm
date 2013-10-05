@@ -1136,6 +1136,8 @@ Other strings are returned unmodified.
 This function returns the Linux capabilities attached to C<path>.
 The capabilities set is returned in text form (see L<cap_to_text(3)>).
 
+If no capabilities are attached to a file, an empty string is returned.
+
 =item $g->cap_set_file ($path, $cap);
 
 This function sets the Linux capabilities attached to C<path>.

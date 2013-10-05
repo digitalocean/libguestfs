@@ -315,7 +315,8 @@ am__objects_1 = guestfish-cmds.$(OBJEXT) \
 	guestfish-prepopts.$(OBJEXT)
 am__objects_2 = guestfish-config.$(OBJEXT) guestfish-domain.$(OBJEXT) \
 	guestfish-inspect.$(OBJEXT) guestfish-keys.$(OBJEXT) \
-	guestfish-options.$(OBJEXT) guestfish-progress.$(OBJEXT)
+	guestfish-options.$(OBJEXT) guestfish-progress.$(OBJEXT) \
+	guestfish-uri.$(OBJEXT)
 am_guestfish_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	guestfish-alloc.$(OBJEXT) guestfish-copy.$(OBJEXT) \
 	guestfish-destpaths.$(OBJEXT) guestfish-display.$(OBJEXT) \
@@ -1552,11 +1553,11 @@ EXTRA_DIST = $(BUILT_SOURCES) rc_protocol.x guestfish.pod \
 	libguestfs-tools.conf virt-copy-in virt-copy-out virt-tar-in \
 	virt-tar-out virt-copy-in.pod virt-copy-out.pod \
 	virt-tar-in.pod virt-tar-out.pod test-a.sh test-add-domain.sh \
-	test-copy.sh test-d.sh test-edit.sh test-escapes.sh \
-	test-events.sh test-find0.sh test-glob.sh test-inspect.sh \
-	test-mount-local.sh test-prep.sh test-read-file.sh \
-	test-remote.sh test-remote-events.sh test-reopen.sh \
-	test-run.sh test-stringlist.sh test-tilde.sh \
+	test-add-uri.sh test-copy.sh test-d.sh test-edit.sh \
+	test-escapes.sh test-events.sh test-find0.sh test-glob.sh \
+	test-inspect.sh test-mount-local.sh test-prep.sh \
+	test-read-file.sh test-remote.sh test-remote-events.sh \
+	test-reopen.sh test-run.sh test-stringlist.sh test-tilde.sh \
 	test-upload-to-dir.sh
 
 # These source files (mostly related to option parsing) are shared
@@ -1571,7 +1572,9 @@ SHARED_SOURCE_FILES = \
 	options.h \
 	options.c \
 	progress.h \
-	progress.c
+	progress.c \
+	uri.h \
+	uri.c
 
 guestfish_SOURCES = \
 	$(generator_built) \
@@ -1663,8 +1666,8 @@ toolsconf_DATA = libguestfs-tools.conf
 
 # Tests.
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
-TESTS = test-a.sh test-add-domain.sh test-d.sh test-escapes.sh \
-	test-events.sh test-tilde.sh $(am__append_3)
+TESTS = test-a.sh test-add-domain.sh test-add-uri.sh test-d.sh \
+	test-escapes.sh test-events.sh test-tilde.sh $(am__append_3)
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -1849,6 +1852,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-supported.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-tilde.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-time.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcmds_la-cmds-gperf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librc_protocol_la-rc_protocol.Plo@am__quote@
 
@@ -2026,6 +2030,20 @@ guestfish-progress.obj: progress.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='progress.c' object='guestfish-progress.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-progress.obj `if test -f 'progress.c'; then $(CYGPATH_W) 'progress.c'; else $(CYGPATH_W) '$(srcdir)/progress.c'; fi`
+
+guestfish-uri.o: uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-uri.o -MD -MP -MF $(DEPDIR)/guestfish-uri.Tpo -c -o guestfish-uri.o `test -f 'uri.c' || echo '$(srcdir)/'`uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-uri.Tpo $(DEPDIR)/guestfish-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='uri.c' object='guestfish-uri.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-uri.o `test -f 'uri.c' || echo '$(srcdir)/'`uri.c
+
+guestfish-uri.obj: uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-uri.obj -MD -MP -MF $(DEPDIR)/guestfish-uri.Tpo -c -o guestfish-uri.obj `if test -f 'uri.c'; then $(CYGPATH_W) 'uri.c'; else $(CYGPATH_W) '$(srcdir)/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-uri.Tpo $(DEPDIR)/guestfish-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='uri.c' object='guestfish-uri.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-uri.obj `if test -f 'uri.c'; then $(CYGPATH_W) 'uri.c'; else $(CYGPATH_W) '$(srcdir)/uri.c'; fi`
 
 guestfish-alloc.o: alloc.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-alloc.o -MD -MP -MF $(DEPDIR)/guestfish-alloc.Tpo -c -o guestfish-alloc.o `test -f 'alloc.c' || echo '$(srcdir)/'`alloc.c
@@ -2876,7 +2894,7 @@ stamp-virt-tar-out.pod: virt-tar-out.pod
 	touch $@
 
 check-valgrind:
-	$(MAKE) TESTS="test-inspect.sh test-prep.sh test-run.sh" VG="$(top_builddir)/run @VG@" check
+	$(MAKE) TESTS="test-a.sh test-add-domain.sh test-add-uri.sh test-copy.sh test-d.sh test-edit.sh test-escapes.sh test-events.sh test-find0.sh test-glob.sh test-inspect.sh test-prep.sh test-read-file.sh test-remote.sh test-remote-events.sh test-reopen.sh test-run.sh test-stringlist.sh test-tilde.sh test-upload-to-dir.sh" VG="$(top_builddir)/run @VG@" check
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

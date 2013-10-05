@@ -1446,9 +1446,11 @@ SOURCES = \
 # Note this list must be in dependency order.
 @HAVE_OCAML_TRUE@OBJECTS = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-progress.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/resize/tty-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/resize/progress-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/resize/common_gettext.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/resize/common_utils.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/resize/tTY.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/resize/progress.cmx \
 @HAVE_OCAML_TRUE@	sparsify.cmx
 

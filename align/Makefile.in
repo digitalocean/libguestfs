@@ -282,7 +282,8 @@ am__objects_1 = virt_alignment_scan-domains.$(OBJEXT) \
 	virt_alignment_scan-domain.$(OBJEXT) \
 	virt_alignment_scan-inspect.$(OBJEXT) \
 	virt_alignment_scan-keys.$(OBJEXT) \
-	virt_alignment_scan-options.$(OBJEXT)
+	virt_alignment_scan-options.$(OBJEXT) \
+	virt_alignment_scan-uri.$(OBJEXT)
 am_virt_alignment_scan_OBJECTS = $(am__objects_1) \
 	virt_alignment_scan-scan.$(OBJEXT)
 virt_alignment_scan_OBJECTS = $(am_virt_alignment_scan_OBJECTS)
@@ -1498,7 +1499,9 @@ SHARED_SOURCE_FILES = \
 	../fish/inspect.c \
 	../fish/keys.c \
 	../fish/options.h \
-	../fish/options.c
+	../fish/options.c \
+	../fish/uri.h \
+	../fish/uri.c
 
 virt_alignment_scan_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
@@ -1642,6 +1645,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_alignment_scan-options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_alignment_scan-parallel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_alignment_scan-scan.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_alignment_scan-uri.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1775,6 +1779,20 @@ virt_alignment_scan-options.obj: ../fish/options.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_alignment_scan-options.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o virt_alignment_scan-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+
+virt_alignment_scan-uri.o: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT virt_alignment_scan-uri.o -MD -MP -MF $(DEPDIR)/virt_alignment_scan-uri.Tpo -c -o virt_alignment_scan-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_alignment_scan-uri.Tpo $(DEPDIR)/virt_alignment_scan-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_alignment_scan-uri.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o virt_alignment_scan-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+
+virt_alignment_scan-uri.obj: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT virt_alignment_scan-uri.obj -MD -MP -MF $(DEPDIR)/virt_alignment_scan-uri.Tpo -c -o virt_alignment_scan-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_alignment_scan-uri.Tpo $(DEPDIR)/virt_alignment_scan-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_alignment_scan-uri.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o virt_alignment_scan-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
 virt_alignment_scan-scan.o: scan.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT virt_alignment_scan-scan.o -MD -MP -MF $(DEPDIR)/virt_alignment_scan-scan.Tpo -c -o virt_alignment_scan-scan.o `test -f 'scan.c' || echo '$(srcdir)/'`scan.c

@@ -1417,6 +1417,8 @@ C<guestfs_lvm_canonical_lvm_name> を使用して C</dev/VG/LV> 形式に変換�
 This function returns the Linux capabilities attached to C<path>.  The
 capabilities set is returned in text form (see L<cap_to_text(3)>).
 
+If no capabilities are attached to a file, an empty string is returned.
+
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
 (Added in 1.19.63)

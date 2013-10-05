@@ -277,7 +277,7 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 = virt_df-config.$(OBJEXT) virt_df-domain.$(OBJEXT) \
 	virt_df-inspect.$(OBJEXT) virt_df-keys.$(OBJEXT) \
-	virt_df-options.$(OBJEXT)
+	virt_df-options.$(OBJEXT) virt_df-uri.$(OBJEXT)
 am_virt_df_OBJECTS = $(am__objects_1) virt_df-domains.$(OBJEXT) \
 	virt_df-df.$(OBJEXT) virt_df-estimate-max-threads.$(OBJEXT) \
 	virt_df-main.$(OBJEXT) virt_df-output.$(OBJEXT) \
@@ -1489,7 +1489,9 @@ SHARED_SOURCE_FILES = \
 	../fish/inspect.c \
 	../fish/keys.c \
 	../fish/options.h \
-	../fish/options.c
+	../fish/options.c \
+	../fish/uri.h \
+	../fish/uri.c
 
 virt_df_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
@@ -1643,6 +1645,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_df-options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_df-output.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_df-parallel.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_df-uri.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1734,6 +1737,20 @@ virt_df-options.obj: ../fish/options.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_df-options.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+
+virt_df-uri.o: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-uri.o -MD -MP -MF $(DEPDIR)/virt_df-uri.Tpo -c -o virt_df-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-uri.Tpo $(DEPDIR)/virt_df-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_df-uri.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+
+virt_df-uri.obj: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-uri.obj -MD -MP -MF $(DEPDIR)/virt_df-uri.Tpo -c -o virt_df-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-uri.Tpo $(DEPDIR)/virt_df-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_df-uri.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
 virt_df-domains.o: domains.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-domains.o -MD -MP -MF $(DEPDIR)/virt_df-domains.Tpo -c -o virt_df-domains.o `test -f 'domains.c' || echo '$(srcdir)/'`domains.c

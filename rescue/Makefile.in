@@ -273,7 +273,8 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 = virt_rescue-config.$(OBJEXT) \
 	virt_rescue-domain.$(OBJEXT) virt_rescue-inspect.$(OBJEXT) \
-	virt_rescue-keys.$(OBJEXT) virt_rescue-options.$(OBJEXT)
+	virt_rescue-keys.$(OBJEXT) virt_rescue-options.$(OBJEXT) \
+	virt_rescue-uri.$(OBJEXT)
 am_virt_rescue_OBJECTS = $(am__objects_1) \
 	virt_rescue-virt-rescue.$(OBJEXT)
 virt_rescue_OBJECTS = $(am_virt_rescue_OBJECTS)
@@ -1481,7 +1482,9 @@ SHARED_SOURCE_FILES = \
 	../fish/inspect.c \
 	../fish/keys.c \
 	../fish/options.h \
-	../fish/options.c
+	../fish/options.c \
+	../fish/uri.h \
+	../fish/uri.c
 
 virt_rescue_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
@@ -1616,6 +1619,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_rescue-inspect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_rescue-keys.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_rescue-options.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_rescue-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_rescue-virt-rescue.Po@am__quote@
 
 .c.o:
@@ -1708,6 +1712,20 @@ virt_rescue-options.obj: ../fish/options.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_rescue-options.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o virt_rescue-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+
+virt_rescue-uri.o: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT virt_rescue-uri.o -MD -MP -MF $(DEPDIR)/virt_rescue-uri.Tpo -c -o virt_rescue-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_rescue-uri.Tpo $(DEPDIR)/virt_rescue-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_rescue-uri.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o virt_rescue-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+
+virt_rescue-uri.obj: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT virt_rescue-uri.obj -MD -MP -MF $(DEPDIR)/virt_rescue-uri.Tpo -c -o virt_rescue-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_rescue-uri.Tpo $(DEPDIR)/virt_rescue-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_rescue-uri.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o virt_rescue-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
 virt_rescue-virt-rescue.o: virt-rescue.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT virt_rescue-virt-rescue.o -MD -MP -MF $(DEPDIR)/virt_rescue-virt-rescue.Tpo -c -o virt_rescue-virt-rescue.o `test -f 'virt-rescue.c' || echo '$(srcdir)/'`virt-rescue.c

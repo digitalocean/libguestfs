@@ -282,12 +282,13 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__guestmount_SOURCES_DIST = ../fish/config.c ../fish/domain.c \
 	../fish/inspect.c ../fish/keys.c ../fish/options.h \
-	../fish/options.c guestmount.c
+	../fish/options.c ../fish/uri.h ../fish/uri.c guestmount.c
 @HAVE_FUSE_TRUE@am__objects_1 = guestmount-config.$(OBJEXT) \
 @HAVE_FUSE_TRUE@	guestmount-domain.$(OBJEXT) \
 @HAVE_FUSE_TRUE@	guestmount-inspect.$(OBJEXT) \
 @HAVE_FUSE_TRUE@	guestmount-keys.$(OBJEXT) \
-@HAVE_FUSE_TRUE@	guestmount-options.$(OBJEXT)
+@HAVE_FUSE_TRUE@	guestmount-options.$(OBJEXT) \
+@HAVE_FUSE_TRUE@	guestmount-uri.$(OBJEXT)
 @HAVE_FUSE_TRUE@am_guestmount_OBJECTS = $(am__objects_1) \
 @HAVE_FUSE_TRUE@	guestmount-guestmount.$(OBJEXT)
 guestmount_OBJECTS = $(am_guestmount_OBJECTS)
@@ -1533,7 +1534,9 @@ CLEANFILES = \
 @HAVE_FUSE_TRUE@	../fish/inspect.c \
 @HAVE_FUSE_TRUE@	../fish/keys.c \
 @HAVE_FUSE_TRUE@	../fish/options.h \
-@HAVE_FUSE_TRUE@	../fish/options.c
+@HAVE_FUSE_TRUE@	../fish/options.c \
+@HAVE_FUSE_TRUE@	../fish/uri.h \
+@HAVE_FUSE_TRUE@	../fish/uri.c
 
 
 # guestmount
@@ -1735,6 +1738,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestmount-inspect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestmount-keys.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestmount-options.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestmount-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestunmount-guestunmount.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_guestunmount_fd-test-guestunmount-fd.Po@am__quote@
 
@@ -1828,6 +1832,20 @@ guestmount-options.obj: ../fish/options.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='guestmount-options.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o guestmount-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+
+guestmount-uri.o: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT guestmount-uri.o -MD -MP -MF $(DEPDIR)/guestmount-uri.Tpo -c -o guestmount-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestmount-uri.Tpo $(DEPDIR)/guestmount-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='guestmount-uri.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o guestmount-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+
+guestmount-uri.obj: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT guestmount-uri.obj -MD -MP -MF $(DEPDIR)/guestmount-uri.Tpo -c -o guestmount-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestmount-uri.Tpo $(DEPDIR)/guestmount-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='guestmount-uri.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o guestmount-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
 guestmount-guestmount.o: guestmount.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT guestmount-guestmount.o -MD -MP -MF $(DEPDIR)/guestmount-guestmount.Tpo -c -o guestmount-guestmount.o `test -f 'guestmount.c' || echo '$(srcdir)/'`guestmount.c

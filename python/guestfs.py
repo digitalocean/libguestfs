@@ -8425,6 +8425,9 @@ class GuestFS(object):
         """This function returns the Linux capabilities attached to
         "path". The capabilities set is returned in text form
         (see cap_to_text(3)).
+        
+        If no capabilities are attached to a file, an empty
+        string is returned.
         """
         self._check_not_closed ()
         r = libguestfsmod.cap_get_file (self._o, path)

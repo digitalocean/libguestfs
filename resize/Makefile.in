@@ -1447,16 +1447,27 @@ SOURCES = \
 	progress-c.c \
 	progress.mli \
 	progress.ml \
-	resize.ml
+	resize.ml \
+	tty-c.c \
+	tTY.mli \
+	tTY.ml \
+	uri-c.c \
+	uRI.mli \
+	uRI.ml
 
 
 # Note this list must be in dependency order.
 @HAVE_OCAML_TRUE@OBJECTS = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-progress.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
+@HAVE_OCAML_TRUE@	tty-c.o \
 @HAVE_OCAML_TRUE@	progress-c.o \
+@HAVE_OCAML_TRUE@	uri-c.o \
 @HAVE_OCAML_TRUE@	common_gettext.cmx \
 @HAVE_OCAML_TRUE@	common_utils.cmx \
+@HAVE_OCAML_TRUE@	tTY.cmx \
 @HAVE_OCAML_TRUE@	progress.cmx \
+@HAVE_OCAML_TRUE@	uRI.cmx \
 @HAVE_OCAML_TRUE@	resize.cmx
 
 @HAVE_OCAML_TRUE@bin_SCRIPTS = virt-resize
@@ -1469,6 +1480,11 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(am__append_1)
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
+@HAVE_OCAML_TRUE@OCAMLCLIBS = \
+@HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) -lncurses \
+@HAVE_OCAML_TRUE@	-L../src/.libs -lutils \
+@HAVE_OCAML_TRUE@	-L../gnulib/lib/.libs -lgnu
+
 
 # automake will decide we don't need C support in this file.  Really
 # we do, so we have to provide it ourselves.
@@ -1939,7 +1955,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@virt-resize: $(OBJECTS)
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
 @HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ \
-@HAVE_OCAML_TRUE@	  -cclib -lncurses \
+@HAVE_OCAML_TRUE@	  -cclib '$(OCAMLCLIBS)' \
 @HAVE_OCAML_TRUE@	  $(OCAML_GCOV_LDFLAGS) \
 @HAVE_OCAML_TRUE@	  -o $@
 

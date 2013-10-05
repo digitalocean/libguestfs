@@ -23576,6 +23576,9 @@ ruby_guestfs_acl_delete_def_file (VALUE gv, VALUE dirv)
  * This function returns the Linux capabilities attached to
  * "path". The capabilities set is returned in text form
  * (see cap_to_text(3)).
+ * 
+ * If no capabilities are attached to a file, an empty
+ * string is returned.
  *
  *
  * (For the C API documentation for this function, see

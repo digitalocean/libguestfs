@@ -1495,6 +1495,9 @@ SOURCES = \
 @HAVE_OCAML_TRUE@OBJECTS = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/resize/common_gettext.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/resize/common_utils.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/resize/uri-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/resize/uRI.cmx \
 @HAVE_OCAML_TRUE@	firstboot.cmx \
 @HAVE_OCAML_TRUE@	sysprep_operation.cmx \
 @HAVE_OCAML_TRUE@	$(patsubst %,sysprep_operation_%.cmx,$(operations)) \
@@ -1511,6 +1514,11 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/resize $(am__append_1)
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
+@HAVE_OCAML_TRUE@OCAMLCLIBS = \
+@HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) -lncurses \
+@HAVE_OCAML_TRUE@	-L../src/.libs -lutils \
+@HAVE_OCAML_TRUE@	-L../gnulib/lib/.libs -lgnu
+
 
 # Manual pages and HTML files for the website.
 @HAVE_OCAML_TRUE@man_MANS = virt-sysprep.1
@@ -1983,7 +1991,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@virt-sysprep: $(OBJECTS)
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
 @HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ \
-@HAVE_OCAML_TRUE@	  -cclib -lncurses \
+@HAVE_OCAML_TRUE@	  -cclib '$(OCAMLCLIBS)' \
 @HAVE_OCAML_TRUE@	  $(OCAML_GCOV_LDFLAGS) \
 @HAVE_OCAML_TRUE@	  -o $@
 

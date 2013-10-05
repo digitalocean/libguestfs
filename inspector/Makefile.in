@@ -277,7 +277,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 = virt_inspector-config.$(OBJEXT) \
 	virt_inspector-domain.$(OBJEXT) \
 	virt_inspector-inspect.$(OBJEXT) virt_inspector-keys.$(OBJEXT) \
-	virt_inspector-options.$(OBJEXT)
+	virt_inspector-options.$(OBJEXT) virt_inspector-uri.$(OBJEXT)
 am_virt_inspector_OBJECTS = $(am__objects_1) \
 	virt_inspector-virt-inspector.$(OBJEXT)
 virt_inspector_OBJECTS = $(am_virt_inspector_OBJECTS)
@@ -1511,7 +1511,9 @@ SHARED_SOURCE_FILES = \
 	../fish/inspect.c \
 	../fish/keys.c \
 	../fish/options.h \
-	../fish/options.c
+	../fish/options.c \
+	../fish/uri.h \
+	../fish/uri.c
 
 virt_inspector_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
@@ -1646,6 +1648,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_inspector-inspect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_inspector-keys.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_inspector-options.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_inspector-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_inspector-virt-inspector.Po@am__quote@
 
 .c.o:
@@ -1738,6 +1741,20 @@ virt_inspector-options.obj: ../fish/options.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_inspector-options.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+
+virt_inspector-uri.o: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-uri.o -MD -MP -MF $(DEPDIR)/virt_inspector-uri.Tpo -c -o virt_inspector-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_inspector-uri.Tpo $(DEPDIR)/virt_inspector-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_inspector-uri.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+
+virt_inspector-uri.obj: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-uri.obj -MD -MP -MF $(DEPDIR)/virt_inspector-uri.Tpo -c -o virt_inspector-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_inspector-uri.Tpo $(DEPDIR)/virt_inspector-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_inspector-uri.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
 virt_inspector-virt-inspector.o: virt-inspector.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-virt-inspector.o -MD -MP -MF $(DEPDIR)/virt_inspector-virt-inspector.Tpo -c -o virt_inspector-virt-inspector.o `test -f 'virt-inspector.c' || echo '$(srcdir)/'`virt-inspector.c

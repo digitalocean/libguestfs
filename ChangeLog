@@ -1,3 +1,86 @@
+2013-07-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: fish: Add valgrind testing to various existing tests.
+	This involves running ./guestfish under $VG (== valgrind + options,
+	defined only when check-valgrind is run).
+
+	fish: Add a test for -a URI options.
+
+	fish: Fix guestfish so it can recognize sheepdog://... as a valid URI.
+	Because "sheepdog" is 8 characters, it wasn't recognized before.
+
+2013-07-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Allow -a URI options to be used (RHBZ#968875).
+	This allows you to sysprep a remote guest by doing eg:
+
+	  virt-sysprep -a ssh://remote.example.com/disk.img
+
+2013-07-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	resize: Add bindings for the guestfish -a URI parsing mini-library.
+	This allows -a options to be parsed from OCaml programs, reusing
+	the same code that is being used by C.
+
+2013-07-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Split off URI handling (for -a argument) from general options parsing.
+	This is so we will be able to reuse the same code in the OCaml tools.
+
+	This is just code motion.
+
+2013-07-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: options: Fix optarg -> arg.
+	Don't read the global variable optarg.  Read arg instead.
+	(In all cases they are the same, so this bug made no difference).
+
+2013-07-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Don't store xmlURIPtr directly in the drive struct.
+	Original drv_uri fields:
+
+	      xmlURIPtr uri;        /* URI */
+	      char *socket;         /* ?socket parameter from URI. */
+	      const char *format;   /* format (NULL == autodetect) */
+
+	New drv_uri fields:
+
+	      char *path;           /* disk path */
+	      char *protocol;       /* protocol (eg. "nbd") */
+	      char **server;        /* server(s) - can be NULL */
+	      char *username;       /* username - can be NULL */
+	      const char *format;   /* format (NULL == autodetect) */
+	      const char *orig_uri; /* original URI (for error messages etc.) */
+
+	This is just code motion.
+
+2013-07-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	internal: Add CLEANUP_XMLFREEURI (cleanup function for xmlURIPtr).
+
+	resize: Move isatty_stdout function to separate module (TTY.isatty_stdout).
+	It was jammed into the Progress module just for convenience.
+
+2013-07-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: cap-get-file: Return empty string if no capability on file (RHBZ#989356).
+	Return an empty string (instead of an error) if no capabilities are
+	set on a file, and document that in the API.
+
+	resize: Link to information about dracut-modules-growroot.
+
+2013-07-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/mount-local: Fix test of parallel mount-local.
+	This fixes commit 14fabcd88e1500368affad86b3cf221f3884a739.
+
+	Bug found by Kashyap Chamarthy.
+
+2013-07-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.11.
+
 2013-07-28  Richard W.M. Jones  <rjones@redhat.com>
 
 	tests: Add tests for the new journal APIs (RHBZ#988100).
