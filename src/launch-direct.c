@@ -280,15 +280,9 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
 
   ADD_CMDLINE ("-nographic");
 
-#ifdef __arm__
-  /* Use the Versatile Express A9 emulation (for now). */
+#ifdef MACHINE_TYPE
   ADD_CMDLINE ("-M");
-  ADD_CMDLINE ("vexpress-a9");
-#endif
-
-#ifdef __powerpc__
-  ADD_CMDLINE ("-M");
-  ADD_CMDLINE ("pseries");
+  ADD_CMDLINE (MACHINE_TYPE);
 #endif
 
   /* Try to guess if KVM is available.  We are just checking that
@@ -305,14 +299,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
    */
   if (qemu_supports (g, data, "-machine")) {
     ADD_CMDLINE ("-machine");
-#ifndef __arm__
     ADD_CMDLINE ("accel=kvm:tcg");
-#else
-    if (has_kvm)
-      ADD_CMDLINE ("accel=kvm:tcg,kernel_irqchip=off");
-    else
-      ADD_CMDLINE ("accel=kvm:tcg");
-#endif
   } else {
     /* qemu sometimes needs this option to enable hardware
      * virtualization, but some versions of 'qemu-kvm' will use KVM

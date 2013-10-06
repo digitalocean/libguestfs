@@ -1,3 +1,133 @@
+2013-09-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.23.
+
+2013-09-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update BUGS file.
+
+	Update PO files.
+
+	tools: Generate a special POTFILES-pl and dump symlink hack in tools directory.
+
+2013-09-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Create /dev/loop-control and similar devices.
+	When 'mount -o loop' and similar commands are used, the loop module is
+	loaded automatically by the kernel when /dev/loop-control is accessed.
+
+	/dev/loop-control is created semi-statically by an unholy and
+	overcomplex combination of kmod static-nodes and systemd-tmpfiles
+	(instead of using, say, just udev or even just a simple series of
+	mknod commands).
+
+2013-09-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: If --enable-valgrind-daemon then increase minimum memory to 768 MB.
+	tests/c-api would fail from time to time if --enable-valgrind-daemon
+	was configured.  There was no obvious memory leak.  It looks as if the
+	overhead of valgrind was sufficient to break long-running tests such
+	as this one.
+
+2013-09-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Use host-passthrough instead of host-model.
+	<cpu model="host-passthrough"> really passes -cpu host to qemu, which
+	is what we want since we don't care about live migration or ABI
+	stability.
+
+	This should avoid http://bugzilla.redhat.com/870071 .
+
+	Note this "taints" the libvirt domain.  We don't particularly care
+	about that, and the reason for the tainting doesn't seem to make much
+	sense anyway.
+
+	This updates commit 6f76fdb41eb6bd124fbc3d084f5c2a3371b37d9b.
+
+2013-09-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	sparsify: Fix incorrect reference to documentation from tool.
+
+	mllib: Ensure that mllib is included in POTFILES-ml.
+	This updates commit 2a6ce793200e2cc6793a0242ec9ea3f90ad452b8.
+
+2013-09-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	uri: Fix two compiler warnings.
+	We have to include the right header so that guestfs___free_string_list
+	is declared.  Unfortunately that means ensuring -I src is passed to
+	the compiler in every tool subdirectory.
+
+	Also fix (bogus) compiler warning about incorrect type of the
+	parameter to caml_copy_string_array.
+
+2013-09-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	tools: Move shared OCaml code to mllib/ directory.
+	Previously a lot of shared code lived in the resize/ directory for no
+	particular reason.
+
+	This is just code motion.
+
+2013-09-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	resize: Allow the input file to be a URI.
+	This lets you use nbd as a source for resizing, eg:
+
+	  virt-resize nbd://example.com outfile
+
+2013-09-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Fix option quoting in manual page.
+	This fixes commit b65c1c667b26313abf312a7ab51f8bf947243d07.
+
+2013-09-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-df: parallel: Send debugging messages to stderr.
+	Not stdout (ordinary program output) since that gets eaten by
+	the tests.
+
+	This fixes commit 67b9469754684bc0c79fffab7bbca9f6ffee84f0.
+
+2013-09-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: Drop kernel_irqchip=off hack.
+	Was only required because of the previous use of vexpress-a9.  With
+	vexpress-a15 should no longer be needed.
+
+	arm: Switch to using Versatile Express A15 machine.
+	This is the machine which qemu actually emulates these days.
+
+2013-09-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Remove incorrect comment.
+	qemu does in fact fix up the device tree with the correct memory size
+	supplied by -m <ramsize> so the comment was incorrect.
+
+	This updates commit 8d273a27156813593fe7f6bb657fcf04eb325b59.
+
+2013-09-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: Pass mem= parameter on Linux command line.
+	It is thought that qemu-system-arm -m <ramsize> could conflict with
+	the actual memory that Linux thinks is available (from the device tree).
+
+	Thanks: Marc Zyngier
+
+2013-09-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: Don't bother supplying guest architecture.
+	libvirt seems to do the right thing without this.
+
+	arm: Add notes about machine types.
+	Thanks: Marc Zyngier from ARM, Andre Przywara from Linaro for
+	patiently explaining this to me.
+
+	launch: Centrally define machine type and DTB wildcard.
+	This avoids a bit of arch-specific #ifdef.
+
+	Version 1.23.22.
+
 2013-09-10  Richard W.M. Jones  <rjones@redhat.com>
 
 	docs: Remove misleading / outdated section about other arches from README.

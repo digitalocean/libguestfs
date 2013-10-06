@@ -56,18 +56,36 @@
 #define TRACE4(name, arg1, arg2, arg3, arg4)
 #endif
 
-/* Default, minimum appliance memory size. */
-#ifndef __powerpc__
-#define DEFAULT_MEMSIZE 500
-#define MIN_MEMSIZE 128
-#else
+/* Default and minimum appliance memory size. */
+
 /* Needs to be larger on ppc64 because of the larger page size (64K).
  * For example, test-max-disks won't pass unless we increase the
  * default memory size since the system runs out of memory when
  * creating device nodes.
  */
-#define DEFAULT_MEMSIZE 768
-#define MIN_MEMSIZE 256
+#ifdef __powerpc__
+#  define DEFAULT_MEMSIZE 768
+#  define MIN_MEMSIZE 256
+#endif
+
+/* Valgrind has a fairly hefty memory overhead.  Using the defaults
+ * caused the C API tests to fail.
+ */
+#ifdef VALGRIND_DAEMON
+#  ifndef DEFAULT_MEMSIZE
+#    define DEFAULT_MEMSIZE 768
+#  endif
+#  ifndef MIN_MEMSIZE
+#    define MIN_MEMSIZE 256
+#  endif
+#endif
+
+/* The default and minimum memory size for most users. */
+#ifndef DEFAULT_MEMSIZE
+#  define DEFAULT_MEMSIZE 500
+#endif
+#ifndef MIN_MEMSIZE
+#  define MIN_MEMSIZE 128
 #endif
 
 /* Some limits on what the inspection code will read, for safety. */
@@ -111,6 +129,19 @@
 #define VIRTIO_SERIAL "virtio-serial-device"
 #define VIRTIO_NET "virtio-net-device"
 #endif /* __arm__ */
+
+/* Machine types.  XXX Make these configurable. */
+#ifdef __arm__
+/* In future, we can use mach-virt and drop the device tree completely
+ * (because the plan is for qemu to entirely generate the device tree
+ * internally when using mach-virt).
+ */
+#define MACHINE_TYPE "vexpress-a15"
+#define DTB_WILDCARD "vexpress*a15-tc1.dtb"
+#endif
+#ifdef __powerpc__
+#define MACHINE_TYPE "pseries"
+#endif
 
 /* Guestfs handle and associated structures. */
 

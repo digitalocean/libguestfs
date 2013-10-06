@@ -51,9 +51,9 @@ Windows sysprepping in a future version, and we already have code to do it.
 
 ディスクイメージの形式は自動的に検出されます。強制的に特定の形式を使用するには I<--format> オプションを使用します。
 
-=item B<-a URI>
+=item B<-a> URI
 
-=item B<--add URI>
+=item B<--add> URI
 
 Add a remote disk.  The URI format is compatible with guestfish.  See
 L<guestfish(1)/ADDING REMOTE STORAGE>.

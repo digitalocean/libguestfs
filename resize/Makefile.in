@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs virt-resize 2.0 tools
-# Copyright (C) 2011 Red Hat Inc.
+# Copyright (C) 2011-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1441,33 +1441,32 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize \
 
 # Alphabetical order.
 SOURCES = \
-	common_gettext.ml \
-	common_utils.ml \
-	common_utils_tests.ml \
-	progress-c.c \
-	progress.mli \
-	progress.ml \
+	$(top_builddir)/mllib/common_gettext.ml \
+	$(top_builddir)/mllib/common_utils.ml \
+	$(top_builddir)/mllib/progress-c.c \
+	$(top_builddir)/mllib/progress.mli \
+	$(top_builddir)/mllib/progress.ml \
 	resize.ml \
-	tty-c.c \
-	tTY.mli \
-	tTY.ml \
-	uri-c.c \
-	uRI.mli \
-	uRI.ml
+	$(top_builddir)/mllib/tty-c.c \
+	$(top_builddir)/mllib/tTY.mli \
+	$(top_builddir)/mllib/tTY.ml \
+	$(top_builddir)/mllib/uri-c.c \
+	$(top_builddir)/mllib/uRI.mli \
+	$(top_builddir)/mllib/uRI.ml
 
 
 # Note this list must be in dependency order.
 @HAVE_OCAML_TRUE@OBJECTS = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-progress.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
-@HAVE_OCAML_TRUE@	tty-c.o \
-@HAVE_OCAML_TRUE@	progress-c.o \
-@HAVE_OCAML_TRUE@	uri-c.o \
-@HAVE_OCAML_TRUE@	common_gettext.cmx \
-@HAVE_OCAML_TRUE@	common_utils.cmx \
-@HAVE_OCAML_TRUE@	tTY.cmx \
-@HAVE_OCAML_TRUE@	progress.cmx \
-@HAVE_OCAML_TRUE@	uRI.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/tty-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/progress-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uri-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/tTY.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/progress.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmx \
 @HAVE_OCAML_TRUE@	resize.cmx
 
 @HAVE_OCAML_TRUE@bin_SCRIPTS = virt-resize
@@ -1476,8 +1475,9 @@ SOURCES = \
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
 @HAVE_OCAML_TRUE@OCAMLPACKAGES = -package str,unix -I \
-@HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I ../ocaml \
-@HAVE_OCAML_TRUE@	$(am__append_1)
+@HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/ocaml -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib $(am__append_1)
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@OCAMLCLIBS = \
@@ -1488,16 +1488,21 @@ SOURCES = \
 
 # automake will decide we don't need C support in this file.  Really
 # we do, so we have to provide it ourselves.
-@HAVE_OCAML_TRUE@DEFAULT_INCLUDES = -I. -I$(top_builddir) -I$(shell $(OCAMLC) -where) -I$(top_srcdir)/fish
+@HAVE_OCAML_TRUE@DEFAULT_INCLUDES = \
+@HAVE_OCAML_TRUE@	-I. \
+@HAVE_OCAML_TRUE@	-I$(top_builddir) \
+@HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/src \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/fish
+
 
 # Manual pages and HTML files for the website.
 @HAVE_OCAML_TRUE@man_MANS = virt-resize.1
 @HAVE_OCAML_TRUE@noinst_DATA = $(top_builddir)/html/virt-resize.1.html
 
 # Tests.
-@HAVE_OCAML_TRUE@check_SCRIPTS = common_utils_tests
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
-@HAVE_OCAML_TRUE@TESTS = common_utils_tests $(am__append_3)
+@HAVE_OCAML_TRUE@TESTS = $(am__append_3)
 DISTCLEANFILES = .depend
 all: all-am
 
@@ -1795,7 +1800,6 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) $(check_SCRIPTS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile $(SCRIPTS) $(MANS) $(DATA)
@@ -1979,10 +1983,6 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	  $<
 @HAVE_OCAML_TRUE@	touch $@
 
-@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmx common_utils.cmx common_utils_tests.cmx
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
-@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib -lncurses -o $@
-
 @HAVE_OCAML_TRUE@check-valgrind:
 @HAVE_OCAML_TRUE@	$(MAKE) VG="$(top_builddir)/run @VG@" check
 
@@ -1991,7 +1991,7 @@ $(top_builddir)/generator/generator:
 
 @HAVE_OCAML_TRUE@.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) $^ | \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(top_srcdir)/mllib $^ | \
 @HAVE_OCAML_TRUE@	  $(SED) 's/ *$$//' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \

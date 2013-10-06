@@ -260,6 +260,10 @@ Makefile.in
 /m4/ltversion.m4
 /maint.mk
 /missing
+/mllib/.depend
+/mllib/common_gettext.ml
+/mllib/common_utils_tests
+/mllib/dummy
 /ocaml/bindtests.bc
 /ocaml/bindtests.opt
 /ocaml/bindtests.ml
@@ -328,7 +332,6 @@ Makefile.in
 /po-docs/*/*.1
 /po-docs/*/*.3
 /po-docs/*/*.8
-/po-docs/*/*.pl
 /po-docs/po4a.conf
 /po-docs/*/*.pod
 /po-docs/*/stamp-update-po
@@ -348,8 +351,6 @@ Makefile.in
 /rescue/virt-rescue
 /rescue/virt-rescue.1
 /resize/.depend
-/resize/common_gettext.ml
-/resize/common_utils_tests
 /resize/stamp-virt-resize.pod
 /resize/virt-resize
 /resize/virt-resize.1
@@ -468,4 +469,3 @@ Makefile.in
 /test-tool/libguestfs-test-tool-helper
 /test-tool/stamp-libguestfs-test-tool.pod
 /tools/virt-*.1
-/tools/virt-*.pl

@@ -119,11 +119,10 @@ DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 	$(am__configure_deps) $(srcdir)/config.h.in \
 	$(srcdir)/pick-guests.pl.in $(srcdir)/podwrapper.pl.in \
 	$(srcdir)/run.in $(top_srcdir)/ruby/ext/guestfs/extconf.rb.in \
-	AUTHORS COPYING COPYING.LIB ChangeLog README TODO \
-	build-aux/compile build-aux/config.guess \
-	build-aux/config.rpath build-aux/config.sub build-aux/depcomp \
-	build-aux/install-sh build-aux/missing build-aux/ltmain.sh \
-	$(top_srcdir)/build-aux/compile \
+	AUTHORS COPYING COPYING.LIB README TODO build-aux/compile \
+	build-aux/config.guess build-aux/config.rpath \
+	build-aux/config.sub build-aux/install-sh build-aux/missing \
+	build-aux/ltmain.sh $(top_srcdir)/build-aux/compile \
 	$(top_srcdir)/build-aux/config.guess \
 	$(top_srcdir)/build-aux/config.rpath \
 	$(top_srcdir)/build-aux/config.sub \
@@ -160,8 +159,9 @@ DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 @HAVE_GOBJECT_TRUE@am__append_12 = gobject
 @HAVE_GOLANG_TRUE@am__append_13 = golang golang/examples
 
-# OCaml tools.
-@HAVE_OCAML_TRUE@am__append_14 = resize sparsify sysprep
+# OCaml tools.  Note 'mllib' contains random shared code used by
+# all of the OCaml tools.
+@HAVE_OCAML_TRUE@am__append_14 = mllib resize sparsify sysprep
 
 # Perl tools.
 @HAVE_TOOLS_TRUE@am__append_15 = tools
@@ -406,8 +406,8 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	perl perl/examples ocaml ocaml/examples python python/examples \
 	ruby ruby/examples java java/examples haskell php erlang \
 	erlang/examples lua lua/examples gobject golang \
-	golang/examples csharp resize sparsify sysprep tools fuse \
-	po-docs
+	golang/examples csharp mllib resize sparsify sysprep tools \
+	fuse po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -2246,7 +2246,15 @@ dist-hook:
 	mv AUTHORS-t AUTHORS
 	cp AUTHORS $(distdir)/AUTHORS
 
-# Update the list of translatable files (po/POTFILES po/POTFILES-ml).
+# Update the list of translatable files.  These are separated into:
+#
+#  po/POTFILES - files with ordinary extensions, but not OCaml files
+#  po/POTFILES-pl - Perl files that don't end in *.pl, which need a
+#                   special xgettext option [not generated here]
+#  po/POTFILES-ml - OCaml files, which need a special tool to translate
+#
+# See po/Makefile.am.
+#
 # This has to be in the top-level Makefile.am so that we have access
 # to DIST_SUBDIRS.
 all-local:
@@ -2256,7 +2264,7 @@ all-local:
 	grep -v -E '/((guestfs|rc)_protocol\.c)$$' | \
 	LC_ALL=C sort > po/POTFILES
 	cd $(srcdir); \
-	find resize sparsify sysprep -name '*.ml' | \
+	find mllib resize sparsify sysprep -name '*.ml' | \
 	LC_ALL=C sort > po/POTFILES-ml
 
 guestfs-release-notes.1 guestfs-release-notes.txt $(top_builddir)/html/guestfs-release-notes.1.html: stamp-guestfs-release-notes.pod

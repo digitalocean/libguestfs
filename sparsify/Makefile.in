@@ -1447,12 +1447,12 @@ SOURCES = \
 # Note this list must be in dependency order.
 @HAVE_OCAML_TRUE@OBJECTS = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-progress.o \
-@HAVE_OCAML_TRUE@	$(top_builddir)/resize/tty-c.o \
-@HAVE_OCAML_TRUE@	$(top_builddir)/resize/progress-c.o \
-@HAVE_OCAML_TRUE@	$(top_builddir)/resize/common_gettext.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/resize/common_utils.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/resize/tTY.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/resize/progress.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/tty-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/progress-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/tTY.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/progress.cmx \
 @HAVE_OCAML_TRUE@	statvfs-c.o \
 @HAVE_OCAML_TRUE@	sparsify.cmx
 
@@ -1464,13 +1464,19 @@ SOURCES = \
 @HAVE_OCAML_TRUE@OCAMLPACKAGES = -package str,unix -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml -I \
-@HAVE_OCAML_TRUE@	$(top_builddir)/resize $(am__append_1)
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib $(am__append_1)
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 
 # automake will decide we don't need C support in this file.  Really
 # we do, so we have to provide it ourselves.
-@HAVE_OCAML_TRUE@DEFAULT_INCLUDES = -I. -I$(top_builddir) -I$(shell $(OCAMLC) -where) -I$(top_srcdir)/fish
+@HAVE_OCAML_TRUE@DEFAULT_INCLUDES = \
+@HAVE_OCAML_TRUE@	-I. \
+@HAVE_OCAML_TRUE@	-I$(top_builddir) \
+@HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/src \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/fish
+
 
 # Manual pages and HTML files for the website.
 @HAVE_OCAML_TRUE@man_MANS = virt-sparsify.1
@@ -1967,7 +1973,7 @@ $(top_builddir)/generator/generator:
 
 @HAVE_OCAML_TRUE@.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(top_srcdir)/resize $^ | \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(top_srcdir)/mllib $^ | \
 @HAVE_OCAML_TRUE@	  $(SED) 's/ *$$//' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \

@@ -839,7 +839,6 @@ construct_libvirt_xml_cpu (guestfs_h *g,
 #ifndef __arm__
   /* It is faster to pass the CPU host model to the appliance,
    * allowing maximum speed for things like checksums, encryption.
-   * Note this may cause problems on some CPUs.  See: RHBZ#870071.
    * Only do this with KVM.  It is broken in subtle ways on TCG, and
    * fairly pointless anyway.
    */
@@ -847,7 +846,7 @@ construct_libvirt_xml_cpu (guestfs_h *g,
     XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "cpu"));
     XMLERROR (-1,
 	      xmlTextWriterWriteAttribute (xo, BAD_CAST "mode",
-					   BAD_CAST "host-model"));
+					   BAD_CAST "host-passthrough"));
     XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "model"));
     XMLERROR (-1,
 	      xmlTextWriterWriteAttribute (xo, BAD_CAST "fallback",
@@ -893,13 +892,10 @@ construct_libvirt_xml_boot (guestfs_h *g,
   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "os"));
 
   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "type"));
-#ifdef __arm__
-  XMLERROR (-1,
-            xmlTextWriterWriteAttribute (xo, BAD_CAST "arch",
-                                         BAD_CAST "armv7l"));
+#ifdef MACHINE_TYPE
   XMLERROR (-1,
             xmlTextWriterWriteAttribute (xo, BAD_CAST "machine",
-                                         BAD_CAST "vexpress-a9"));
+                                         BAD_CAST MACHINE_TYPE));
 #endif
   XMLERROR (-1, xmlTextWriterWriteString (xo, BAD_CAST "hvm"));
   XMLERROR (-1, xmlTextWriterEndElement (xo));
@@ -1503,25 +1499,6 @@ construct_libvirt_xml_qemu_cmdline (guestfs_h *g,
                                            BAD_CAST VIRTIO_NET ",netdev=usernet"));
     XMLERROR (-1, xmlTextWriterEndElement (xo));
   }
-
-#ifdef __arm__
-  /* Set kernel_irqchip=off.  Unclear why this is needed.  Is qemu or
-   * the kernel broken?  See:
-   * http://www.mail-archive.com/arm@lists.fedoraproject.org/msg05546.html
-   */
-  if (params->is_kvm) {
-    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "qemu:arg"));
-    XMLERROR (-1,
-	      xmlTextWriterWriteAttribute (xo, BAD_CAST "value",
-					   BAD_CAST "-machine"));
-    XMLERROR (-1, xmlTextWriterEndElement (xo));
-    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "qemu:arg"));
-    XMLERROR (-1,
-	      xmlTextWriterWriteAttribute (xo, BAD_CAST "value",
-					   BAD_CAST "kernel_irqchip=off"));
-    XMLERROR (-1, xmlTextWriterEndElement (xo));
-  }
-#endif
 
   /* The qemu command line arguments requested by the caller. */
   for (hp = g->hv_params; hp; hp = hp->next) {
