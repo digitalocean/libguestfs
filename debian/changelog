@@ -1,3 +1,19 @@
+libguestfs (1:1.23.33-1) experimental; urgency=low
+
+  * New upstream development version
+  * Added patch to fix out-of-tree build
+  * Updated (build-)dependencies
+  * Integrated guestfish into libguestfs-tools package (Closes: #721938)
+  * Added option to generate Java 6 compatible bytecode
+  * Detect Ruby 2 if available
+  * Automatically detect available Lua versions
+  * Install shared object for Ruby bindings from multiarch directory
+  * Updated Javadoc install path
+  * Updated install rule for supermin image components
+  * Updated symbols file
+
+ -- Hilko Bengen <bengen@debian.org>  Wed, 16 Oct 2013 22:43:50 +0200
+
 libguestfs (1:1.23.7-1) experimental; urgency=low
 
   * New upstream development version
