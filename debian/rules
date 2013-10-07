@@ -101,7 +101,9 @@ override_dh_auto_build:
 	$(MAKE) -C $(CURDIR)/debian/build-default/appliance \
 		make.sh \
 		packagelist excludelist \
-		supermin.d/daemon.img supermin.d/init.img
+		supermin.d/daemon.img.gz \
+		supermin.d/init.img \
+		supermin.d/udev-rules.img
 
 override_dh_auto_test:
 	set -e; for p in \
@@ -137,13 +139,12 @@ override_dh_install:
 	install -m644 debian/build-default/appliance/*list \
 		debian/tmp/usr/lib/guestfs
 	install -m644 \
-		debian/build-default/appliance/supermin.d/init.img \
-		debian/build-default/appliance/supermin.d/daemon.img \
+		debian/build-default/appliance/supermin.d/*.img* \
 		debian/tmp/usr/lib/guestfs/supermin.d/
 
 	erlang-depends -perlang-guestfs
 
-	dh_install -X.la -X.so.owner -Xbindtests --fail-missing
+	dh_install -X.la -X.so.owner -Xbindtests -Xguestfs-golang --fail-missing
 
 override_dh_python3:
 	dh_python3 -p python3-guestfs
