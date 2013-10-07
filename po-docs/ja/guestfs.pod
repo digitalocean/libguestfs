@@ -3978,6 +3978,10 @@ Bash tab-completion scripts.
 
 autotools により使用されるさまざまなビルドスクリプト。
 
+=item C<builder>
+
+L<virt-builder(1)> command and documentation.
+
 =item C<cat>
 
 L<virt-cat(1)>, L<virt-filesystems(1)> および L<virt-ls(1)> のコマンドおよびドキュメント。
@@ -4403,8 +4407,8 @@ L<guestfs-examples(3)>, L<guestfs-erlang(3)>, L<guestfs-golang(3)>,
 L<guestfs-java(3)>, L<guestfs-lua(3)>, L<guestfs-ocaml(3)>,
 L<guestfs-perl(3)>, L<guestfs-python(3)>, L<guestfs-ruby(3)>,
 L<guestfish(1)>, L<guestmount(1)>, L<virt-alignment-scan(1)>,
-L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-df(1)>,
-L<virt-edit(1)>, L<virt-filesystems(1)>, L<virt-format(1)>,
+L<virt-builder(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>,
+L<virt-df(1)>, L<virt-edit(1)>, L<virt-filesystems(1)>, L<virt-format(1)>,
 L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
 L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
 L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,

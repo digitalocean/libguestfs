@@ -1,3 +1,156 @@
+2013-10-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.25.
+
+	builder: docs: Add sections on architecture, security, UML.
+
+	uml: Fix virt-builder test.
+	Note comment in the test about networks.
+
+2013-10-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Fix --format/--output-format arguments to virt-resize subcommand.
+	The 'virt-builder --format' option translates to the
+	'virt-resize --output-format' option, because it specifies the output
+	format.
+
+	On the contrary, the 'virt-resize --format' option (the input format)
+	is always 'raw'.
+
+2013-10-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add -v option to test so we get all debugging output.
+
+	tests/nbd: Avoid warning when tests are skipped.
+	Since END{} clause is always called,  might not be defined if
+	we exit early.  Move the whole clause to the top.
+
+	builder: Add test *.xz files to CLEANFILES.
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.24.
+
+	website: Make the rule install builder files to website.
+
+	website: Add HTMLSUPPORTFILES to rule.
+
+	builder: Add Debian 7 template + scripts used to create it.
+
+	builder: Implement --hostname (set hostname of guest).
+	This also makes a minor rearrangement so that the random seed, root
+	password, hostname setting all happen before package installation.
+	This keeps these configuration changes together and means that the
+	packages that are installed can act differently based on hostname
+	(which is conceivable).
+
+	sysprep: Refactor hostname code into a common library.
+
+	builder: Add tests.
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	New tool: virt-builder: For quickly building virtual machine images.
+	On baremetal you can build and customize a new guest in under 2
+	minutes.  For example:
+
+	$ virt-builder fedora-19 \
+	    --root-password password:test \
+	    --install minicom \
+	    --firstboot-command 'yum -y update' \
+	    --firstboot-command 'useradd -m -p "" rjones ; chage -d 0 rjones'
+	[     0.0] Downloading: file:///home/rjones/d/libguestfs/builder/website/fedora-19.xz
+	[     1.0] Uncompressing: file:///home/rjones/d/libguestfs/builder/website/fedora-19.xz
+	[    24.0] Running virt-resize to expand the disk to 4.2G
+	[    77.0] Opening the new disk
+	[    81.0] Installing packages: minicom
+	[    94.0] Installing firstboot command: [001] yum -y update
+	[    94.0] Installing firstboot command: [002] useradd -m -p "" rjones ; chage -d 0 rjones
+	[    94.0] Finishing off
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Refactor setting random seed code into a common library.
+	This is just code motion.
+
+	firstboot: Invoke firstboot.sh script with 'start' parameter.
+	.. else the systemd script does not run.
+
+	sysprep: Refactor firstboot code into a common library.
+
+	resize: Don't add mllib/* sources to 'SOURCES'.
+	This was a mistake in commit 2a6ce793200e2cc6793a0242ec9ea3f90ad452b8.
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Refactor password handling code into a common library.
+	Also the crypt binding is moved to mllib because this is a dependency
+	of the password library.
+
+	This is just code motion.
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	mllib: Rename parse_size to parse_resize.
+	This is just code motion, but it reduces a source of confusion.
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	mllib: error function has ~prog parameter, instead of assuming virt-resize.
+	  $ virt-sparsify a a
+	  virt-resize: error: you cannot use the same disk image for input and
+	  output
+	  If reporting bugs, run virt-resize with the '-d' option and include the
+	  complete output.
+
+	Note (a) it assumes the program is called "virt-resize" which it
+	isn't, and (b) it assumes the program has a debug option -d which it
+	doesn't.
+
+	This commit changes the error message and adds a -v option to
+	virt-resize.
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	resize, sparsify: Small argument parser refactoring.
+	Factor out a common string.
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Don't set LD_PRELOAD for guestfsd children.
+	Commit c598e14052399f19d36d7874d7133cba779bd3c2 exports
+	LD_PRELOAD=/lib64/libSegFault.so so that guestfsd and processes that
+	it runs will produce descriptive stack traces.
+
+	However if we chroot into /sysroot (ie. CHROOT_IN/CHROOT_OUT) and if
+	the libSegFault.so library does not exist inside the chroot (as is the
+	case on Debian guests) then we cannot run any processes.  In any case
+	we *don't* want to necessarily run this library from the guest.
+
+	The proper way to fix this is to confine all chrooting to a
+	subprocess, but that's a big change to guestfsd which we'll have to do
+	one day.  For now, unset LD_PRELOAD once guestfsd starts up.
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Fix xfs_info parser because of new format.
+	The old parser had several problems: firstly it called the error path
+	sometimes without calling reply_with_error causing a protocol hang.
+	More seriously it had hard-coded line numbers, and since Fedora 21 the
+	output of xfs_info has changed, moving lines around.
+
+	Change the parser to be more robust against added fields by using the
+	first name on the line as the section name, thus 'bsize=' is
+	interpreted differently depending on whether it appears in the "data"
+	section or the "naming" section.
+
+	Ensure also that we don't call the error path without calling
+	reply_with_error, which is a side-effect of the above change.
+
+2013-10-03  Cole Robinson  <crobinso@redhat.com>
+
+	launch: libvirt: Set attribute present=yes to enable kvmclock.
+
 2013-09-27  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.23.23.

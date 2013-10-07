@@ -323,6 +323,8 @@ around 2008.
 
 =item B<--debug>
 
+(Deprecated: use I<-v> option instead)
+
 デバッグメッセージを有効にします。
 
 =item B<--debug-gc>
@@ -547,6 +549,12 @@ would give an error unless the user specified a partition to shrink and that
 partition had more than a gigabyte of free space.
 
 Note that you cannot use I<--expand> and I<--shrink> together.
+
+=item B<-v>
+
+=item B<--verbose>
+
+デバッグメッセージを有効にします。
 
 =item B<-V>
 

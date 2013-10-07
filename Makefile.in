@@ -161,7 +161,7 @@ DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 
 # OCaml tools.  Note 'mllib' contains random shared code used by
 # all of the OCaml tools.
-@HAVE_OCAML_TRUE@am__append_14 = mllib resize sparsify sysprep
+@HAVE_OCAML_TRUE@am__append_14 = mllib builder resize sparsify sysprep
 
 # Perl tools.
 @HAVE_TOOLS_TRUE@am__append_15 = tools
@@ -406,8 +406,8 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	perl perl/examples ocaml ocaml/examples python python/examples \
 	ruby ruby/examples java java/examples haskell php erlang \
 	erlang/examples lua lua/examples gobject golang \
-	golang/examples csharp mllib resize sparsify sysprep tools \
-	fuse po-docs
+	golang/examples csharp mllib builder resize sparsify sysprep \
+	tools fuse po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -1611,6 +1611,7 @@ HTMLFILES = \
 	html/libguestfs-make-fixed-appliance.1.html \
 	html/libguestfs-test-tool.1.html \
 	html/virt-alignment-scan.1.html \
+	html/virt-builder.1.html \
 	html/virt-cat.1.html \
 	html/virt-copy-in.1.html \
 	html/virt-copy-out.1.html \
@@ -1634,6 +1635,17 @@ HTMLFILES = \
 
 HTMLSUPPORTFILES = html/draft.png html/pod.css
 TEXTFILES = BUGS README ROADMAP TODO
+BUILDERFILES = \
+	builder/website/README \
+	builder/website/index \
+	builder/website/index.asc \
+	builder/website/debian-7.xz \
+	builder/website/debian-7.xz.sig \
+	builder/website/fedora-18.xz \
+	builder/website/fedora-18.xz.sig \
+	builder/website/fedora-19.xz \
+	builder/website/fedora-19.xz.sig
+
 WEBSITEDIR = $(HOME)/d/redhat/websites/libguestfs
 
 # Manual pages in top level directory.
@@ -2224,11 +2236,12 @@ abs_srcdir   ?= @abs_srcdir@
 
 # For reasons not fully understood, we need to rebuild all the
 # man pages and HTMLFILES from scratch here.
-website: $(HTMLFILES) $(TEXTFILES)
+website: $(HTMLFILES) $(HTMLSUPPORTFILES) $(TEXTFILES) $(BUILDERFILES)
 	find -name 'stamp-*.pod' -delete
 	$(MAKE)
 	cp $(HTMLFILES) $(HTMLSUPPORTFILES) $(WEBSITEDIR)
 	for f in $(TEXTFILES); do cp $$f $(WEBSITEDIR)/$$f.txt; done
+	cp $(BUILDERFILES) $(WEBSITEDIR)/download/builder/
 	cd $(WEBSITEDIR) && \
 	date=`date +%F`; \
 	sed -e "s/SUBST_VERSION/$(VERSION)/" \
@@ -2264,7 +2277,7 @@ all-local:
 	grep -v -E '/((guestfs|rc)_protocol\.c)$$' | \
 	LC_ALL=C sort > po/POTFILES
 	cd $(srcdir); \
-	find mllib resize sparsify sysprep -name '*.ml' | \
+	find builder mllib resize sparsify sysprep -name '*.ml' | \
 	LC_ALL=C sort > po/POTFILES-ml
 
 guestfs-release-notes.1 guestfs-release-notes.txt $(top_builddir)/html/guestfs-release-notes.1.html: stamp-guestfs-release-notes.pod

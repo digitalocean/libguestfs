@@ -72,11 +72,6 @@ operations = \
 
 # Alphabetical order.
 SOURCES = \
-	crypt-c.c \
-	crypt.ml \
-	crypt.mli \
-	firstboot.ml \
-	firstboot.mli \
 	main.ml \
 	sysprep_operation.ml \
 	sysprep_operation.mli \
@@ -91,9 +86,12 @@ OBJECTS = \
 	$(top_builddir)/fish/guestfish-uri.o \
 	$(top_builddir)/mllib/uri-c.o \
 	$(top_builddir)/mllib/uRI.cmx \
-	crypt-c.o \
-	crypt.cmx \
-	firstboot.cmx \
+	$(top_builddir)/mllib/crypt-c.o \
+	$(top_builddir)/mllib/crypt.cmx \
+	$(top_builddir)/mllib/password.cmx \
+	$(top_builddir)/mllib/random_seed.cmx \
+	$(top_builddir)/mllib/hostname.cmx \
+	$(top_builddir)/mllib/firstboot.cmx \
 	sysprep_operation.cmx \
 	$(patsubst %,sysprep_operation_%.cmx,$(operations)) \
 	main.cmx

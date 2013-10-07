@@ -19,7 +19,6 @@
 open Printf
 
 open Common_utils
-open Sysprep_operation
 open Common_gettext.Gettext
 
 (* For Linux guests. *)
@@ -67,7 +66,7 @@ Before=prefdm.service
 
 [Service]
 Type=oneshot
-ExecStart=%s/firstboot.sh
+ExecStart=%s/firstboot.sh start
 RemainAfterExit=yes
 
 [Install]

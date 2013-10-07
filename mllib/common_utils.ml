@@ -146,13 +146,45 @@ let string_random8 =
       ) [1;2;3;4;5;6;7;8]
     )
 
-let error fs =
+(* Drop elements from a list while a predicate is true. *)
+let rec dropwhile f = function
+  | [] -> []
+  | x :: xs when f x -> dropwhile f xs
+  | xs -> xs
+
+(* Take elements from a list while a predicate is true. *)
+let rec takewhile f = function
+  | x :: xs when f x -> x :: takewhile f xs
+  | _ -> []
+
+let rec filter_map f = function
+  | [] -> []
+  | x :: xs ->
+      match f x with
+      | Some y -> y :: filter_map f xs
+      | None -> filter_map f xs
+
+(* Timestamped progress messages, used for ordinary messages when not
+ * --quiet.
+ *)
+let start_t = Unix.time ()
+let make_message_function ~quiet fs =
+  let p str =
+    if not quiet then (
+      let t = sprintf "%.1f" (Unix.time () -. start_t) in
+      printf "[%8s] %s\n%!" t str
+    )
+  in
+  ksprintf p fs
+
+let error ~prog fs =
   let display str =
-    wrap ~chan:stderr (s_"virt-resize: error: " ^ str);
+    wrap ~chan:stderr (sprintf (f_"%s: error: %s") prog str);
     prerr_newline ();
     prerr_newline ();
     wrap ~chan:stderr
-      (s_"If reporting bugs, run virt-resize with the '-d' option and include the complete output.");
+      (sprintf (f_"%s: If reporting bugs, run %s with debugging enabled (-v) and include the complete output.")
+         prog prog);
     prerr_newline ();
     exit 1
   in
@@ -174,8 +206,30 @@ let read_whole_file path =
   close_in chan;
   Buffer.contents buf
 
-(* Parse the size field from --resize and --resize-force options. *)
+(* Parse a size field, eg. "10G". *)
 let parse_size =
+  let const_re = Str.regexp "^\\([.0-9]+\\)\\([bKMG]\\)$" in
+  fun ~prog field ->
+    let matches rex = Str.string_match rex field 0 in
+    let sub i = Str.matched_group i field in
+    let size_scaled f = function
+      | "b" -> Int64.of_float f
+      | "K" -> Int64.of_float (f *. 1024.)
+      | "M" -> Int64.of_float (f *. 1024. *. 1024.)
+      | "G" -> Int64.of_float (f *. 1024. *. 1024. *. 1024.)
+      | _ -> assert false
+    in
+
+    if matches const_re then (
+      size_scaled (float_of_string (sub 1)) (sub 2)
+    )
+    else
+      error ~prog "%s: cannot parse size field" field
+
+(* Parse a size field, eg. "10G", "+20%" etc.  Used particularly by
+ * virt-resize --resize and --resize-force options.
+ *)
+let parse_resize =
   let const_re = Str.regexp "^\\([.0-9]+\\)\\([bKMG]\\)$"
   and plus_const_re = Str.regexp "^\\+\\([.0-9]+\\)\\([bKMG]\\)$"
   and minus_const_re = Str.regexp "^-\\([.0-9]+\\)\\([bKMG]\\)$"
@@ -183,7 +237,7 @@ let parse_size =
   and plus_percent_re = Str.regexp "^\\+\\([.0-9]+\\)%$"
   and minus_percent_re = Str.regexp "^-\\([.0-9]+\\)%$"
   in
-  fun oldsize field ->
+  fun ~prog oldsize field ->
     let matches rex = Str.string_match rex field 0 in
     let sub i = Str.matched_group i field in
     let size_scaled f = function
@@ -218,7 +272,7 @@ let parse_size =
       oldsize -^ oldsize *^ percent /^ 1000L
     )
     else
-      error "virt-resize: %s: cannot parse size field" field
+      error ~prog "%s: cannot parse resize field" field
 
 let human_size i =
   let sign, i = if i < 0L then "-", Int64.neg i else "", i in
@@ -268,7 +322,7 @@ let display_long_options () =
   ) !long_options;
   exit 0
 
-let uuidgen () =
+let uuidgen ~prog () =
   let cmd = "uuidgen -r" in
   let chan = Unix.open_process_in cmd in
   let uuid = input_line chan in
@@ -276,11 +330,11 @@ let uuidgen () =
   (match stat with
   | Unix.WEXITED 0 -> ()
   | Unix.WEXITED i ->
-    error (f_"external command '%s' exited with error %d") cmd i
+    error ~prog (f_"external command '%s' exited with error %d") cmd i
   | Unix.WSIGNALED i ->
-    error (f_"external command '%s' killed by signal %d") cmd i
+    error ~prog (f_"external command '%s' killed by signal %d") cmd i
   | Unix.WSTOPPED i ->
-    error (f_"external command '%s' stopped by signal %d") cmd i
+    error ~prog (f_"external command '%s' stopped by signal %d") cmd i
   );
   let len = String.length uuid in
   let uuid, len =

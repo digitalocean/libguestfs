@@ -1486,11 +1486,6 @@ operations = \
 
 # Alphabetical order.
 SOURCES = \
-	crypt-c.c \
-	crypt.ml \
-	crypt.mli \
-	firstboot.ml \
-	firstboot.mli \
 	main.ml \
 	sysprep_operation.ml \
 	sysprep_operation.mli \
@@ -1504,9 +1499,12 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uri-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmx \
-@HAVE_OCAML_TRUE@	crypt-c.o \
-@HAVE_OCAML_TRUE@	crypt.cmx \
-@HAVE_OCAML_TRUE@	firstboot.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/crypt-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/crypt.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/password.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/random_seed.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/hostname.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/firstboot.cmx \
 @HAVE_OCAML_TRUE@	sysprep_operation.cmx \
 @HAVE_OCAML_TRUE@	$(patsubst %,sysprep_operation_%.cmx,$(operations)) \
 @HAVE_OCAML_TRUE@	main.cmx

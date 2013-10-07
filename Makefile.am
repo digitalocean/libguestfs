@@ -118,7 +118,7 @@ SUBDIRS += csharp
 # OCaml tools.  Note 'mllib' contains random shared code used by
 # all of the OCaml tools.
 if HAVE_OCAML
-SUBDIRS += mllib resize sparsify sysprep
+SUBDIRS += mllib builder resize sparsify sysprep
 endif
 
 # Perl tools.
@@ -206,6 +206,7 @@ HTMLFILES = \
 	html/libguestfs-make-fixed-appliance.1.html \
 	html/libguestfs-test-tool.1.html \
 	html/virt-alignment-scan.1.html \
+	html/virt-builder.1.html \
 	html/virt-cat.1.html \
 	html/virt-copy-in.1.html \
 	html/virt-copy-out.1.html \
@@ -231,15 +232,27 @@ HTMLSUPPORTFILES = html/draft.png html/pod.css
 
 TEXTFILES = BUGS README ROADMAP TODO
 
+BUILDERFILES = \
+	builder/website/README \
+	builder/website/index \
+	builder/website/index.asc \
+	builder/website/debian-7.xz \
+	builder/website/debian-7.xz.sig \
+	builder/website/fedora-18.xz \
+	builder/website/fedora-18.xz.sig \
+	builder/website/fedora-19.xz \
+	builder/website/fedora-19.xz.sig
+
 WEBSITEDIR = $(HOME)/d/redhat/websites/libguestfs
 
 # For reasons not fully understood, we need to rebuild all the
 # man pages and HTMLFILES from scratch here.
-website: $(HTMLFILES) $(TEXTFILES)
+website: $(HTMLFILES) $(HTMLSUPPORTFILES) $(TEXTFILES) $(BUILDERFILES)
 	find -name 'stamp-*.pod' -delete
 	$(MAKE)
 	cp $(HTMLFILES) $(HTMLSUPPORTFILES) $(WEBSITEDIR)
 	for f in $(TEXTFILES); do cp $$f $(WEBSITEDIR)/$$f.txt; done
+	cp $(BUILDERFILES) $(WEBSITEDIR)/download/builder/
 	cd $(WEBSITEDIR) && \
 	date=`date +%F`; \
 	sed -e "s/SUBST_VERSION/$(VERSION)/" \
@@ -275,7 +288,7 @@ all-local:
 	grep -v -E '/((guestfs|rc)_protocol\.c)$$' | \
 	LC_ALL=C sort > po/POTFILES
 	cd $(srcdir); \
-	find mllib resize sparsify sysprep -name '*.ml' | \
+	find builder mllib resize sparsify sysprep -name '*.ml' | \
 	LC_ALL=C sort > po/POTFILES-ml
 
 # Manual pages in top level directory.
