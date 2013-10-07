@@ -17,6 +17,9 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_add_drive_opts_va@Base 1.10
  guestfs_add_drive_ro@Base 1.10
  guestfs_add_drive_ro_with_if@Base 1.10
+ guestfs_add_drive_scratch@Base 1:1.23.10
+ guestfs_add_drive_scratch_argv@Base 1:1.23.10
+ guestfs_add_drive_scratch_va@Base 1:1.23.10
  guestfs_add_drive_with_if@Base 1.10
  guestfs_aug_clear@Base 1.10
  guestfs_aug_close@Base 1.10
@@ -25,6 +28,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_aug_get@Base 1.10
  guestfs_aug_init@Base 1.10
  guestfs_aug_insert@Base 1.10
+ guestfs_aug_label@Base 1:1.23.14
  guestfs_aug_load@Base 1.10
  guestfs_aug_ls@Base 1.10
  guestfs_aug_match@Base 1.10
@@ -32,6 +36,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_aug_rm@Base 1.10
  guestfs_aug_save@Base 1.10
  guestfs_aug_set@Base 1.10
+ guestfs_aug_setm@Base 1:1.23.14
  guestfs_available@Base 1.10
  guestfs_available_all_groups@Base 1.10
  guestfs_base64_in@Base 1.10
@@ -202,6 +207,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_get_e2label@Base 1.10
  guestfs_get_e2uuid@Base 1.10
  guestfs_get_error_handler@Base 1.10
+ guestfs_get_hv@Base 1:1.23.17
  guestfs_get_libvirt_requested_credential_challenge@Base 1:1.20
  guestfs_get_libvirt_requested_credential_defresult@Base 1:1.20
  guestfs_get_libvirt_requested_credential_prompt@Base 1:1.20
@@ -290,9 +296,11 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_inspect_list_applications@Base 1.10
  guestfs_inspect_os@Base 1.10
  guestfs_internal_autosync@Base 1.10
+ guestfs_internal_exit@Base 1:1.23.30
  guestfs_internal_hot_add_drive@Base 1:1.20
  guestfs_internal_hot_remove_drive@Base 1:1.20
  guestfs_internal_hot_remove_drive_precheck@Base 1:1.20
+ guestfs_internal_journal_get@Base 1:1.23.11
  guestfs_internal_lstatlist@Base 1:1.20
  guestfs_internal_lxattrlist@Base 1:1.20
  guestfs_internal_parse_mountable@Base 1:1.22
@@ -333,6 +341,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_internal_test_rstructlisterr@Base 1:1.20
  guestfs_internal_test_set_output@Base 1:1.20
  guestfs_internal_test_va@Base 1:1.20
+ guestfs_internal_upload@Base 1:1.23.29
  guestfs_internal_write@Base 1:1.20
  guestfs_internal_write_append@Base 1:1.20
  guestfs_is_blockdev@Base 1.10
@@ -370,6 +379,13 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_is_zero_device@Base 1.12
  guestfs_isoinfo@Base 1:1.18
  guestfs_isoinfo_device@Base 1:1.18
+ guestfs_journal_close@Base 1:1.23.11
+ guestfs_journal_get@Base 1:1.23.11
+ guestfs_journal_get_data_threshold@Base 1:1.23.11
+ guestfs_journal_next@Base 1:1.23.11
+ guestfs_journal_open@Base 1:1.23.11
+ guestfs_journal_set_data_threshold@Base 1:1.23.11
+ guestfs_journal_skip@Base 1:1.23.11
  guestfs_kill_subprocess@Base 1.10
  guestfs_last_errno@Base 1.10
  guestfs_last_error@Base 1.10
@@ -583,6 +599,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_set_e2label@Base 1.10
  guestfs_set_e2uuid@Base 1.10
  guestfs_set_error_handler@Base 1.10
+ guestfs_set_hv@Base 1:1.23.17
  guestfs_set_event_callback@Base 1.10
  guestfs_set_label@Base 1:1.18
  guestfs_set_launch_done_callback@Base 1.10
@@ -604,6 +621,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_set_subprocess_quit_callback@Base 1.10
  guestfs_set_tmpdir@Base 1:1.20
  guestfs_set_trace@Base 1.10
+ guestfs_set_uuid@Base 1:1.23.10
  guestfs_set_verbose@Base 1.10
  guestfs_setcon@Base 1.10
  guestfs_setxattr@Base 1.10
