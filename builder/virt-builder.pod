@@ -310,6 +310,14 @@ each operating system option.
 
 See also: I<--source>, L</CREATING YOUR OWN TEMPLATES>.
 
+=item B<--no-logfile>
+
+Wipe C<builder.log> (log file from build commands) from the image
+after building is complete.  If you don't want to reveal precisely how
+the image was built, use this option.
+
+See also: L</LOG FILE>.
+
 =item B<--network>
 
 =item B<--no-network>
@@ -569,6 +577,31 @@ The above command will create an C<rjones> account with no password,
 and force the user to set a password when they first log in.  There
 are other ways to manage passwords, see L<useradd(8)> for details.
 
+=head2 LOG FILE
+
+Scripts and package installation that runs at build time (I<--run>,
+I<--run-command>, I<--install>, but I<not> firstboot) is logged in one
+of the following locations:
+
+=over 4
+
+=item C</tmp/builder.log>
+
+On Linux, BSD and other guests.
+
+=item C<C:\Temp\builder.log>
+
+On Windows, DOS guests.
+
+=item C</builder.log>
+
+If C</tmp> or C<C:\Temp> is missing.
+
+=back
+
+If you don't want the log file to appear in the final image, then
+use the I<--no-logfile> command line option.
+
 =head2 INSTALLATION PROCESS
 
 When you invoke virt-builder, installation proceeds as follows:
@@ -592,6 +625,10 @@ If the template image is xz-compressed: If L<nbdkit(1)> and
 L<nbdkit-xz-plugin(1)> are both installed, nbdkit is used to
 transparently uncompress the image on the fly.  Else it is
 uncompressed to a temporary disk which takes more disk space.
+
+[B<Note:> Use of nbdkit is disabled because of a libvirt bug:
+L<https://bugzilla.redhat.com/show_bug.cgi?id=1011063>  It will
+be enabled in a future release.]
 
 =item *
 
@@ -638,6 +675,43 @@ Scripts are run (I<--run>, I<--run-command>).
 Scripts run in the order they appear on the command line.
 
 =back
+
+=head2 IMPORTING THE DISK IMAGE
+
+=head3 Importing into libvirt
+
+Import the disk image into libvirt using L<virt-install(1)>
+I<--import> option.
+
+ virt-install --import \
+   --name guest --ram 2048 --disk path=disk.img,format=raw
+
+Notes:
+
+=over 4
+
+=item 1.
+
+You I<must> specify the correct format.  The format is C<raw> unless
+you used virt-builder's I<--format> option.
+
+=item 2.
+
+You can run virt-install as root or non-root.  Each works slightly
+differently because libvirt manages a different set of virtual
+machines for each user.  In particular virt-manager normally shows the
+root-owned VMs, whereas Boxes shows the user-owned VMs, and other
+tools probably work differently as well.
+
+=back
+
+=begin comment
+
+=head3 Importing into OpenStack
+
+XXX
+
+=end comment
 
 =head2 CREATING YOUR OWN TEMPLATES
 
@@ -946,10 +1020,10 @@ x86-64 host.
 However certain options may not work correctly, specifically options
 that require running commands in the guest during the build process:
 I<--install>, I<--run>, I<--run-command>.  You may need to replace
-these with the firstboot-equivalents.
+these with their firstboot-equivalents.
 
-X86-64 host building 32 bit x86 guests will usually work without any
-special modification.
+An x86-64 host building 32 bit x86 guests should work without any
+special steps.
 
 =head2 SECURITY
 

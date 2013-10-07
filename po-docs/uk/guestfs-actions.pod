@@ -562,6 +562,8 @@ C<guestfs_add_drive>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
+(Added in 1.23.10)
+
 =head2 guestfs_add_drive_scratch_va
 
  int
@@ -775,6 +777,8 @@ function returns an error.
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
+(Added in 1.23.14)
+
 =head2 guestfs_aug_load
 
  int
@@ -895,6 +899,8 @@ C<base> nodes are modified.
 This returns the number of nodes modified.
 
 У разі помилки цією функцією буде повернуто -1.
+
+(Added in 1.23.14)
 
 =head2 guestfs_available
 
@@ -3478,6 +3484,8 @@ the default qemu binary name.
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
+(Added in 1.23.17)
+
 =head2 guestfs_get_libvirt_requested_credential_challenge
 
  char *
@@ -6013,6 +6021,8 @@ Close the journal handle.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
+(Added in 1.23.11)
+
 =head2 guestfs_journal_get
 
  struct guestfs_xattr_list *
@@ -6036,6 +6046,8 @@ journal entry of any size, ie. it is not limited by the libguestfs protocol.
 This function returns a C<struct guestfs_xattr_list *>, or NULL if there was
 an error.  I<The caller must call C<guestfs_free_xattr_list> after use>.
 
+(Added in 1.23.11)
+
 =head2 guestfs_journal_get_data_threshold
 
  int64_t
@@ -6049,6 +6061,8 @@ the threshold is unlimited.
 See also C<guestfs_journal_set_data_threshold>.
 
 У разі помилки цією функцією буде повернуто -1.
+
+(Added in 1.23.11)
 
 =head2 guestfs_journal_next
 
@@ -6064,6 +6078,8 @@ C<guestfs_journal_get_data>), and C<false> means you have reached the end of
 the journal.
 
 This function returns a C truth value on success or -1 on error.
+
+(Added in 1.23.11)
 
 =head2 guestfs_journal_open
 
@@ -6082,6 +6098,8 @@ calling C<guestfs_journal_close>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
+(Added in 1.23.11)
+
 =head2 guestfs_journal_set_data_threshold
 
  int
@@ -6096,6 +6114,8 @@ the threshold is unlimited.
 See also C<guestfs_journal_get_data_threshold>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
+(Added in 1.23.11)
 
 =head2 guestfs_journal_skip
 
@@ -6112,6 +6132,8 @@ The number of entries actually skipped is returned (note S<C<rskip E<ge>
 start of the journal.
 
 У разі помилки цією функцією буде повернуто -1.
+
+(Added in 1.23.11)
 
 =head2 guestfs_kill_subprocess
 
@@ -10263,6 +10285,8 @@ qemu binary at the same time as the handle is created.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
+(Added in 1.23.17)
+
 =head2 guestfs_set_label
 
  int
@@ -10600,6 +10624,8 @@ Only some filesystem types support setting UUIDs.
 To read the UUID on a filesystem, call C<guestfs_vfs_uuid>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
+(Added in 1.23.10)
 
 =head2 guestfs_set_verbose
 

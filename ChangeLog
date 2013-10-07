@@ -1,4 +1,44 @@
+2013-10-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.27.
+
+	perl: valgrind: Renamed function requires different valgrind suppression.
+	Seems to be a difference in Perl 5.18.
+
+	builder: logo: Small adjustments.
+
+	builder: Document how to import disk images to other tools.
+	Thanks: Kashyap Chamarthy
+
+	builder: Display the output filename.
+	Thanks: Kashyap Chamarthy
+
+	Version 1.23.26.
+
+	builder: Use progress bar for large template downloads that are not in the cache.
+
+	builder: Create an install log file, and dump the full log on error.
+	This should make debugging much simpler, and also provides a
+	build log in the guest once it's built.
+
+	builder: Tidy up error messages.
+
+	builder: Clean up messaging.
+	Ensure every significant action gets a message.
+
+	Add virt-builder logo.
+
+	Update release notes with dependency changes since 1.22.
+
+	todo: Some items to do in virt-builder.
+
 2013-10-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: docs: Minor copy-edits of the man page.
+
+	Update release notes.
+
+	Update API support.
 
 	Version 1.23.25.
 

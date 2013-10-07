@@ -558,6 +558,8 @@ C<guestfs_add_drive>.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
+(Added in 1.23.10)
+
 =head2 guestfs_add_drive_scratch_va
 
  int
@@ -768,6 +770,8 @@ function returns an error.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
+(Added in 1.23.14)
+
 =head2 guestfs_aug_load
 
  int
@@ -888,6 +892,8 @@ C<base> nodes are modified.
 This returns the number of nodes modified.
 
 この関数はエラーのとき -1 を返します。
+
+(Added in 1.23.14)
 
 =head2 guestfs_available
 
@@ -3406,6 +3412,8 @@ the default qemu binary name.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
+(Added in 1.23.17)
+
 =head2 guestfs_get_libvirt_requested_credential_challenge
 
  char *
@@ -5901,6 +5909,8 @@ Close the journal handle.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
+(Added in 1.23.11)
+
 =head2 guestfs_journal_get
 
  struct guestfs_xattr_list *
@@ -5924,6 +5934,8 @@ journal entry of any size, ie. it is not limited by the libguestfs protocol.
 この関数は C<struct guestfs_xattr_list *> を返します。もしくは、エラーが発生すると NULL を返します。
 I<呼び出し元は使用後に C<guestfs_free_xattr_list> を呼び出す必要があります>。
 
+(Added in 1.23.11)
+
 =head2 guestfs_journal_get_data_threshold
 
  int64_t
@@ -5937,6 +5949,8 @@ the threshold is unlimited.
 See also C<guestfs_journal_set_data_threshold>.
 
 この関数はエラーのとき -1 を返します。
+
+(Added in 1.23.11)
 
 =head2 guestfs_journal_next
 
@@ -5952,6 +5966,8 @@ C<guestfs_journal_get_data>), and C<false> means you have reached the end of
 the journal.
 
 This function returns a C truth value on success or -1 on error.
+
+(Added in 1.23.11)
 
 =head2 guestfs_journal_open
 
@@ -5970,6 +5986,8 @@ calling C<guestfs_journal_close>.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
+(Added in 1.23.11)
+
 =head2 guestfs_journal_set_data_threshold
 
  int
@@ -5984,6 +6002,8 @@ the threshold is unlimited.
 See also C<guestfs_journal_get_data_threshold>.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(Added in 1.23.11)
 
 =head2 guestfs_journal_skip
 
@@ -6000,6 +6020,8 @@ The number of entries actually skipped is returned (note S<C<rskip E<ge>
 start of the journal.
 
 この関数はエラーのとき -1 を返します。
+
+(Added in 1.23.11)
 
 =head2 guestfs_kill_subprocess
 
@@ -10088,6 +10110,8 @@ qemu binary at the same time as the handle is created.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
+(Added in 1.23.17)
+
 =head2 guestfs_set_label
 
  int
@@ -10419,6 +10443,8 @@ Only some filesystem types support setting UUIDs.
 To read the UUID on a filesystem, call C<guestfs_vfs_uuid>.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(Added in 1.23.10)
 
 =head2 guestfs_set_verbose
 

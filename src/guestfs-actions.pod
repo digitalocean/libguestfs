@@ -578,6 +578,8 @@ C<guestfs_add_drive>.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.23.10)
+
 =head2 guestfs_add_drive_scratch_va
 
  int
@@ -801,6 +803,8 @@ this function returns an error.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
+(Added in 1.23.14)
+
 =head2 guestfs_aug_load
 
  int
@@ -923,6 +927,8 @@ in which case the C<base> nodes are modified.
 This returns the number of nodes modified.
 
 On error this function returns -1.
+
+(Added in 1.23.14)
 
 =head2 guestfs_available
 
@@ -3582,6 +3588,8 @@ return the default qemu binary name.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
+(Added in 1.23.17)
+
 =head2 guestfs_get_libvirt_requested_credential_challenge
 
  char *
@@ -6198,6 +6206,8 @@ Close the journal handle.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.23.11)
+
 =head2 guestfs_journal_get
 
  struct guestfs_xattr_list *
@@ -6223,6 +6233,8 @@ This function returns a C<struct guestfs_xattr_list *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_xattr_list> after use>.
 
+(Added in 1.23.11)
+
 =head2 guestfs_journal_get_data_threshold
 
  int64_t
@@ -6236,6 +6248,8 @@ If this returns C<0>, then the threshold is unlimited.
 See also C<guestfs_journal_set_data_threshold>.
 
 On error this function returns -1.
+
+(Added in 1.23.11)
 
 =head2 guestfs_journal_next
 
@@ -6252,6 +6266,8 @@ records to read.  C<true> means you can read the next record
 have reached the end of the journal.
 
 This function returns a C truth value on success or -1 on error.
+
+(Added in 1.23.11)
 
 =head2 guestfs_journal_open
 
@@ -6270,6 +6286,8 @@ handle by calling C<guestfs_journal_close>.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.23.11)
+
 =head2 guestfs_journal_set_data_threshold
 
  int
@@ -6284,6 +6302,8 @@ If you set this to C<0>, then the threshold is unlimited.
 See also C<guestfs_journal_get_data_threshold>.
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.23.11)
 
 =head2 guestfs_journal_skip
 
@@ -6300,6 +6320,8 @@ If this is not the same as the absolute value of the skip parameter
 the start of the journal.
 
 On error this function returns -1.
+
+(Added in 1.23.11)
 
 =head2 guestfs_kill_subprocess
 
@@ -10568,6 +10590,8 @@ the qemu binary at the same time as the handle is created.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.23.17)
+
 =head2 guestfs_set_label
 
  int
@@ -10914,6 +10938,8 @@ Only some filesystem types support setting UUIDs.
 To read the UUID on a filesystem, call C<guestfs_vfs_uuid>.
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.23.10)
 
 =head2 guestfs_set_verbose
 

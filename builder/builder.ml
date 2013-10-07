@@ -43,7 +43,7 @@ let mode, arg,
   firstboot, run,
   format, gpg, hostname, install, list_long, network, output,
   password_crypto, quiet, root_password,
-  size, source, upload =
+  size, source, upload, wipe_logfile =
   let display_version () =
     let g = new G.guestfs () in
     let version = g#version () in
@@ -82,7 +82,10 @@ let mode, arg,
   let firstboot = ref [] in
   let add_firstboot s =
     if not (Sys.file_exists s) then (
-      eprintf (f_"%s: --firstboot: %s: file not found.\n") prog s;
+      if not (String.contains s ' ') then
+        eprintf (f_"%s: %s: %s: file not found\n") prog "--firstboot" s
+      else
+        eprintf (f_"%s: %s: %s: file not found [did you mean %s?]\n") prog "--firstboot" s "--firstboot-command";
       exit 1
     );
     firstboot := `Script s :: !firstboot
@@ -125,7 +128,10 @@ let mode, arg,
   let run = ref [] in
   let add_run s =
     if not (Sys.file_exists s) then (
-      eprintf (f_"%s: --run: %s: file not found.\n") prog s;
+      if not (String.contains s ' ') then
+        eprintf (f_"%s: %s: %s: file not found\n") prog "--run" s
+      else
+        eprintf (f_"%s: %s: %s: file not found [did you mean %s?]\n") prog "--run" s "--run-command";
       exit 1
     );
     run := `Script s :: !run
@@ -150,12 +156,14 @@ let mode, arg,
     let len = String.length arg in
     let file = String.sub arg 0 i in
     if not (Sys.file_exists file) then (
-      eprintf (f_"%s: --upload: %s: file not found.\n") prog file;
+      eprintf (f_"%s: --upload: %s: file not found\n") prog file;
       exit 1
     );
     let dest = String.sub arg (i+1) (len-(i+1)) in
     upload := (file, dest) :: !upload
   in
+
+  let wipe_logfile = ref false in
 
   let ditto = " -\"-" in
   let argspec = Arg.align [
@@ -188,6 +196,7 @@ let mode, arg,
     "-l",        Arg.Unit list_mode,        " " ^ s_"List available templates";
     "--list",    Arg.Unit list_mode,        ditto;
     "--long",    Arg.Set list_long,         ditto;
+    "--no-logfile", Arg.Set wipe_logfile,   " " ^ s_"Wipe build log file";
     "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
     "--network", Arg.Set network,           " " ^ s_"Enable appliance network (default)";
     "--no-network", Arg.Clear network,      " " ^ s_"Disable appliance network";
@@ -246,6 +255,7 @@ read the man page virt-builder(1).
   let size = !size in
   let source = !source in
   let upload = List.rev !upload in
+  let wipe_logfile = !wipe_logfile in
 
   (* Check options. *)
   let arg =
@@ -290,7 +300,7 @@ read the man page virt-builder(1).
   firstboot, run,
   format, gpg, hostname, install, list_long, network, output,
   password_crypto, quiet, root_password,
-  size, source, upload
+  size, source, upload, wipe_logfile
 
 (* Timestamped messages in ordinary, non-debug non-quiet mode. *)
 let msg fs = make_message_function ~quiet fs
@@ -405,7 +415,8 @@ let template =
     let { Index_parser.revision = revision; file_uri = file_uri } = entry in
     let template = arg, revision in
     msg (f_"Downloading: %s") file_uri;
-    Downloader.download downloader ~template file_uri in
+    let progress_bar = not quiet in
+    Downloader.download downloader ~template ~progress_bar file_uri in
   if delete_on_exit then unlink_on_exit template;
   template
 
@@ -446,6 +457,7 @@ let output, format =
   | Some output, Some format -> output, format
 
 let delete_output_file =
+  msg (f_"Creating disk image: %s") output;
   let cmd =
     sprintf "qemu-img create -f %s %s %Ld%s"
       (quote format) (quote output) size
@@ -576,14 +588,19 @@ let root =
     exit 1
 
 (* Set the random seed. *)
-let () = ignore (Random_seed.set_random_seed g root)
+let () =
+  msg (f_"Setting a random seed");
+  if not (Random_seed.set_random_seed g root) then
+    eprintf (f_"%s: warning: random seed could not be set for this type of guest\n%!") prog
 
 (* Set the hostname. *)
 let () =
   match hostname with
   | None -> ()
   | Some hostname ->
-    ignore (Hostname.set_hostname g root hostname)
+    msg (f_"Setting the hostname: %s") hostname;
+    if not (Hostname.set_hostname g root hostname) then
+      eprintf (f_"%s: warning: hostname could not be set for this type of guest\n%!") prog
 
 (* Root password.
  * Note 'None' means that we randomize the root password.
@@ -602,15 +619,19 @@ let () =
     done;
     close_in chan;
 
-    msg "Random root password: %s [did you mean to use --root-password?]" buf;
-
     buf
   in
 
   let root_password =
     match root_password with
-    | Some pw -> pw
-    | None -> make_random_password () in
+    | Some pw ->
+      msg (f_"Setting root password");
+      pw
+    | None ->
+      let pw = make_random_password () in
+      msg (f_"Random root password: %s [did you mean to use --root-password?]")
+        pw;
+      pw in
 
   match g#inspect_get_type root with
   | "linux" ->
@@ -618,13 +639,23 @@ let () =
     Hashtbl.replace h "root" root_password;
     set_linux_passwords ~prog ?password_crypto g root h
   | _ ->
-    ()
+    eprintf (f_"%s: warning: root password could not be set for this type of guest\n%!") prog
+
+(* Based on the guest type, choose a log file location. *)
+let logfile =
+  match g#inspect_get_type root with
+  | "windows" | "dos" ->
+    if g#is_dir "/Temp" then "/Temp/builder.log" else "/builder.log"
+  | _ ->
+    if g#is_dir "/tmp" then "/tmp/builder.log" else "/builder.log"
 
 (* Useful wrapper for scripts. *)
-let do_run cmd =
+let do_run ~display cmd =
   (* Add a prologue to the scripts:
    * - Pass environment variables through from the host.
-   * - Send stdout to stderr so we capture all output in error messages.
+   * - Send stdout and stderr to a log file so we capture all output
+   *   in error messages.
+   * Also catch errors and dump the log file completely on error.
    *)
   let env_vars =
     filter_map (
@@ -635,13 +666,22 @@ let do_run cmd =
   let env_vars = String.concat "\n" env_vars ^ "\n" in
 
   let cmd = sprintf "\
-exec 1>&2
+exec >>%s 2>&1
 %s
 %s
-" env_vars cmd in
+" (quote logfile) env_vars cmd in
 
-  if debug then eprintf "running: %s\n%!" cmd;
-  ignore (g#sh cmd)
+  if debug then eprintf "running command:\n%s\n%!" cmd;
+  try ignore (g#sh cmd)
+  with Guestfs.Error msg ->
+    (* Cat the log file. *)
+    (try g#download logfile "/dev/stderr"
+     with exn ->
+       eprintf (f_"%s: internal error: could not display the log file: %s\n")
+         prog (Printexc.to_string exn)
+    );
+    eprintf (f_"%s: %s: command exited with an error\n") prog display;
+    exit 1
 
 let guest_install_command packages =
   let quoted_args = String.concat " " (List.map quote packages) in
@@ -674,7 +714,7 @@ let () =
     msg (f_"Installing packages: %s") (String.concat " " install);
 
     let cmd = guest_install_command install in
-    do_run cmd;
+    do_run ~display:cmd cmd
   )
 
 (* Upload files. *)
@@ -714,15 +754,25 @@ let () =
     | `Script script ->
       msg (f_"Running: %s") script;
       let cmd = read_whole_file script in
-      do_run cmd
+      do_run ~display:script cmd
     | `Command cmd ->
       msg (f_"Running: %s") cmd;
-      do_run cmd
+      do_run ~display:cmd cmd
   ) run
+
+(* Wipe the log file. *)
+let () =
+  if wipe_logfile && g#exists logfile then (
+    msg (f_"Wiping the log file");
+
+    (* Try various methods with decreasing complexity. *)
+    try g#scrub_file logfile
+    with _ -> g#rm_f logfile
+  )
 
 (* Unmount everything and we're done! *)
 let () =
-  msg "Finishing off";
+  msg (f_"Finishing off");
 
   g#umount_all ();
   g#shutdown ();
