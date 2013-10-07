@@ -1,4 +1,4 @@
-usr/share/javadoc/libguestfs-java-*/* usr/share/doc/libguestfs-java/api/
+usr/share/javadoc/libguestfs/* usr/share/doc/libguestfs-java/api/
 usr/share/java
 usr/lib/*-*/*jni*
 
