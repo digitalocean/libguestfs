@@ -1,3 +1,57 @@
+2013-10-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.28.
+
+2013-10-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: command: Copy appliance /etc/resolv.conf in before running commands.
+	When you try to run commands for an Ubuntu guest, they fail because in
+	Ubuntu /etc/resolv.conf is a symlink to /run/...  and this turns out
+	to be a dangling symlink when the Ubuntu guest is mounted up under the
+	appliance.
+
+	Therefore even if the network is enabled, any command which tries to
+	do name resolution will fail.
+
+	Ideally we would like to bind-mount the appliance /etc/resolv.conf
+	into the sysroot.  However this is not possible because mount is buggy
+	(see comment).  So instead we use a complex hack to achieve the same
+	ends.
+
+	Note this is only done if the network is enabled and if /etc in the
+	guest actually exists.  The original /etc/resolv.conf is restored
+	as soon as the command has run.
+
+2013-10-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Refactor bind-mount code.
+	This is just code motion.
+
+	daemon: 'exists' API should not follow broken symlinks.
+	Using guestfs_exists on a symlink which existed but pointed to a
+	non-existent file was returning false.  However exists obviously
+	should not be following the symlink in the first place.
+
+	sysprep: ubuntu: Use secure SHA-512 crypt back to Ubuntu 10.04.
+
+	builder: Add Ubuntu 10.04LTS, 12.04LTS and 13.10 templates.
+
+	sysprep: Fix documentation for --mount-options.
+
+2013-10-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Don't remove /var/cache/apt/archives/partial directory.
+	Removing this directory breaks Ubuntu guests.
+
+	This change adds a utility function which removes only files from a
+	directory.  This is a safer way to clean cache directories etc.
+
+2013-10-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: network: Note that only outgoing connections are allowed.
+
+	builder: Add section on debugging and other documentation fixes.
+
 2013-10-05  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.23.27.
