@@ -1465,6 +1465,8 @@ SOURCES = \
 	index_parser.ml \
 	list_entries.mli \
 	list_entries.ml \
+	perl_edit.ml \
+	perl_edit.mli \
 	sigchecker.mli \
 	sigchecker.ml
 
@@ -1485,6 +1487,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	sigchecker.cmx \
 @HAVE_OCAML_TRUE@	index_parser.cmx \
 @HAVE_OCAML_TRUE@	list_entries.cmx \
+@HAVE_OCAML_TRUE@	perl_edit.cmx \
 @HAVE_OCAML_TRUE@	builder.cmx
 
 @HAVE_OCAML_TRUE@bin_SCRIPTS = virt-builder

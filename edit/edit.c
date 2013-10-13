@@ -114,6 +114,7 @@ main (int argc, char *argv[])
     { "connect", 1, 0, 'c' },
     { "domain", 1, 0, 'd' },
     { "echo-keys", 0, 0, 0 },
+    { "edit", 1, 0, 'e' },
     { "expr", 1, 0, 'e' },
     { "format", 2, 0, 0 },
     { "help", 0, 0, HELP_OPTION },
@@ -449,6 +450,7 @@ edit_interactively (const char *tmpfile)
   return ret;
 }
 
+/* Note that virt-builder uses exactly the same code .. in OCaml. */
 static char *
 edit_non_interactively (const char *tmpfile)
 {

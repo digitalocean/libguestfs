@@ -31,7 +31,7 @@ let quote = Filename.quote
 (* Command line argument parsing. *)
 let prog = Filename.basename Sys.executable_name
 
-let cachedir =
+let default_cachedir =
   try Some (Sys.getenv "XDG_CACHE_HOME" // "virt-builder")
   with Not_found ->
     try Some (Sys.getenv "HOME" // ".cache" // "virt-builder")
@@ -39,11 +39,11 @@ let cachedir =
       None (* no cache directory *)
 
 let mode, arg,
-  attach, cache, check_signature, curl, debug, fingerprint,
+  attach, cache, check_signature, curl, debug, delete, edit, fingerprint,
   firstboot, run,
   format, gpg, hostname, install, list_long, network, output,
   password_crypto, quiet, root_password,
-  size, source, upload, wipe_logfile =
+  scrub, scrub_logfile, size, source, upload =
   let display_version () =
     let g = new G.guestfs () in
     let version = g#version () in
@@ -55,6 +55,8 @@ let mode, arg,
   let mode = ref `Install in
   let list_mode () = mode := `List in
   let get_kernel_mode () = mode := `Get_kernel in
+  let cache_all_mode () = mode := `Cache_all in
+  let print_cache_mode () = mode := `Print_cache in
   let delete_cache_mode () = mode := `Delete_cache in
 
   let attach = ref [] in
@@ -65,13 +67,29 @@ let mode, arg,
   in
   let attach_disk s = attach := (!attach_format, s) :: !attach in
 
-  let cache = ref cachedir in
+  let cache = ref default_cachedir in
   let set_cache arg = cache := Some arg in
   let no_cache () = cache := None in
 
   let check_signature = ref true in
   let curl = ref "curl" in
   let debug = ref false in
+
+  let delete = ref [] in
+  let add_delete s = delete := s :: !delete in
+
+  let edit = ref [] in
+  let add_edit arg =
+    let i =
+      try String.index arg ':'
+      with Not_found ->
+        eprintf (f_"%s: invalid --edit format, see the man page.\n") prog;
+        exit 1 in
+    let len = String.length arg in
+    let file = String.sub arg 0 i in
+    let expr = String.sub arg (i+1) (len-(i+1)) in
+    edit := (file, expr) :: !edit
+  in
 
   let fingerprint =
     try Some (Sys.getenv "VIRT_BUILDER_FINGERPRINT")
@@ -138,6 +156,11 @@ let mode, arg,
   in
   let add_run_cmd s = run := `Command s :: !run in
 
+  let scrub = ref [] in
+  let add_scrub s = scrub := s :: !scrub in
+
+  let scrub_logfile = ref false in
+
   let size = ref None in
   let set_size arg = size := Some (parse_size ~prog arg) in
 
@@ -163,8 +186,6 @@ let mode, arg,
     upload := (file, dest) :: !upload
   in
 
-  let wipe_logfile = ref false in
-
   let ditto = " -\"-" in
   let argspec = Arg.align [
     "--attach",  Arg.String attach_disk,    "iso" ^ " " ^ s_"Attach data disk/ISO during install";
@@ -172,6 +193,8 @@ let mode, arg,
                                             "format" ^ " " ^ s_"Set attach disk format";
     "--cache",   Arg.String set_cache,      "dir" ^ " " ^ s_"Set template cache dir";
     "--no-cache", Arg.Unit no_cache,        " " ^ s_"Disable template cache";
+    "--cache-all-templates", Arg.Unit cache_all_mode,
+                                            " " ^ s_"Download all templates to the cache";
     "--check-signature", Arg.Set check_signature,
                                             " " ^ s_"Check digital signatures";
     "--check-signatures", Arg.Set check_signature, ditto;
@@ -179,8 +202,10 @@ let mode, arg,
                                             " " ^ s_"Disable digital signatures";
     "--no-check-signatures", Arg.Clear check_signature, ditto;
     "--curl",    Arg.Set_string curl,       "curl" ^ " " ^ s_"Set curl binary/command";
+    "--delete",  Arg.String add_delete,     "name" ^ s_"Delete a file or dir";
     "--delete-cache", Arg.Unit delete_cache_mode,
                                             " " ^ s_"Delete the template cache";
+    "--edit",    Arg.String add_edit,       "file:expr" ^ " " ^ s_"Edit file with Perl expr";
     "--fingerprint", Arg.String set_fingerprint,
                                             "AAAA.." ^ " " ^ s_"Fingerprint of valid signing key";
     "--firstboot", Arg.String add_firstboot, "script" ^ " " ^ s_"Run script at first guest boot";
@@ -196,7 +221,7 @@ let mode, arg,
     "-l",        Arg.Unit list_mode,        " " ^ s_"List available templates";
     "--list",    Arg.Unit list_mode,        ditto;
     "--long",    Arg.Set list_long,         ditto;
-    "--no-logfile", Arg.Set wipe_logfile,   " " ^ s_"Wipe build log file";
+    "--no-logfile", Arg.Set scrub_logfile,  " " ^ s_"Scrub build log file";
     "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
     "--network", Arg.Set network,           " " ^ s_"Enable appliance network (default)";
     "--no-network", Arg.Clear network,      " " ^ s_"Disable appliance network";
@@ -204,11 +229,14 @@ let mode, arg,
     "--output",  Arg.Set_string output,     "file" ^ ditto;
     "--password-crypto", Arg.String set_password_crypto,
                                             "md5|sha256|sha512" ^ " " ^ s_"Set password crypto";
+    "--print-cache", Arg.Unit print_cache_mode,
+                                            " " ^ s_"Print info about template cache";
     "--quiet",   Arg.Set quiet,             " " ^ s_"No progress messages";
     "--root-password", Arg.String set_root_password,
                                             "..." ^ " " ^ s_"Set root password";
     "--run",     Arg.String add_run,        "script" ^ " " ^ s_"Run script in disk image";
     "--run-command", Arg.String add_run_cmd, "cmd+args" ^ " " ^ s_"Run command in disk image";
+    "--scrub",   Arg.String add_scrub,      "name" ^ s_"Scrub a file";
     "--size",    Arg.String set_size,       "size" ^ " " ^ s_"Set output disk size";
     "--source",  Arg.Set_string source,     "URL" ^ " " ^ s_"Set source URL";
     "--upload",  Arg.String add_upload,     "file:dest" ^ " " ^ s_"Upload file to dest";
@@ -239,6 +267,8 @@ read the man page virt-builder(1).
   let check_signature = !check_signature in
   let curl = !curl in
   let debug = !debug in
+  let delete = List.rev !delete in
+  let edit = List.rev !edit in
   let fingerprint = !fingerprint in
   let firstboot = List.rev !firstboot in
   let run = List.rev !run in
@@ -252,10 +282,11 @@ read the man page virt-builder(1).
   let password_crypto = !password_crypto in
   let quiet = !quiet in
   let root_password = !root_password in
+  let scrub = List.rev !scrub in
+  let scrub_logfile = !scrub_logfile in
   let size = !size in
   let source = !source in
   let upload = List.rev !upload in
-  let wipe_logfile = !wipe_logfile in
 
   (* Check options. *)
   let arg =
@@ -277,11 +308,13 @@ read the man page virt-builder(1).
         eprintf (f_"%s: virt-builder --list does not need any extra arguments.\n") prog;
         exit 1
       )
+    | `Cache_all
+    | `Print_cache
     | `Delete_cache ->
       (match args with
       | [] -> ""
       | _ ->
-        eprintf (f_"%s: virt-builder --delete-cache does not need any extra arguments.\n") prog;
+        eprintf (f_"%s: virt-builder --cache-all-templates/--print-cache/--delete-cache does not need any extra arguments.\n") prog;
         exit 1
       )
     | `Get_kernel ->
@@ -296,11 +329,11 @@ read the man page virt-builder(1).
       ) in
 
   mode, arg,
-  attach, cache, check_signature, curl, debug, fingerprint,
+  attach, cache, check_signature, curl, debug, delete, edit, fingerprint,
   firstboot, run,
   format, gpg, hostname, install, list_long, network, output,
   password_crypto, quiet, root_password,
-  size, source, upload, wipe_logfile
+  scrub, scrub_logfile, size, source, upload
 
 (* Timestamped messages in ordinary, non-debug non-quiet mode. *)
 let msg fs = make_message_function ~quiet fs
@@ -313,26 +346,27 @@ let () =
     prerr_newline ()
   )
 
-(* --get-kernel is really a different program ... *)
-let () =
-  if mode = `Get_kernel then (
+(* Handle some modes here, some later on. *)
+let mode =
+  match mode with
+  | `Get_kernel -> (* --get-kernel is really a different program ... *)
     Get_kernel.get_kernel ~debug ?format ?output arg;
     exit 0
-  )
 
-let () =
-  if mode = `Delete_cache then (
-    match cachedir with
+  | `Delete_cache ->                    (* --delete-cache *)
+    (match cache with
     | Some cachedir ->
       msg "Deleting: %s" cachedir;
       let cmd = sprintf "rm -rf %s" (quote cachedir) in
       ignore (Sys.command cmd);
       exit 0
     | None ->
-      eprintf (f_"%s: error: could not find cache directory\nIs $HOME set?\n")
+      eprintf (f_"%s: error: could not find cache directory. Is $HOME set?\n")
         prog;
       exit 1
-  )
+    )
+
+  | (`Install|`List|`Print_cache|`Cache_all) as mode -> mode
 
 (* Check various programs/dependencies are installed. *)
 let have_nbdkit =
@@ -392,17 +426,51 @@ let sigchecker =
 let index =
   Index_parser.get_index ~debug ~downloader ~sigchecker source
 
-(* Now we can do the --list option. *)
+(* Now handle the remaining modes. *)
 let () =
-  if mode = `List then (
+  match mode with
+  | `List ->                            (* --list *)
     List_entries.list_entries ~list_long ~source index;
     exit 0
-  )
+
+  | `Print_cache ->                     (* --print-cache *)
+    (match cache with
+    | Some cachedir ->
+      printf (f_"cache directory: %s\n") cachedir;
+      List.iter (
+        fun (name, { Index_parser.revision = revision; hidden = hidden }) ->
+          if not hidden then (
+            let filename = Downloader.cache_of_name cachedir name revision in
+            let cached = Sys.file_exists filename in
+            printf "%-24s %s\n" name (if cached then s_"cached" else (*s_*)"no")
+          )
+      ) index
+    | None -> printf (f_"no cache directory\n")
+    );
+    exit 0
+
+  | `Cache_all ->                       (* --cache-all-templates *)
+    (match cache with
+    | None ->
+      eprintf (f_"%s: error: no cache directory\n") prog;
+      exit 1
+    | Some _ ->
+      List.iter (
+        fun (name, { Index_parser.revision = revision; file_uri = file_uri }) ->
+          let template = name, revision in
+          msg (f_"Downloading: %s") file_uri;
+          let progress_bar = not quiet in
+          ignore (Downloader.download downloader ~template ~progress_bar
+                    file_uri)
+      ) index;
+      exit 0
+    );
+
+  | `Install ->                         (* (no mode: install a guest) *)
+    ()
 
 (* If we get here, we want to create a guest (but which one?) *)
 let entry =
-  assert (mode = `Install);
-
   try List.assoc arg index
   with Not_found ->
     eprintf (f_"%s: cannot find os-version '%s'.\nUse --list to list available guest types.\n")
@@ -649,6 +717,18 @@ let logfile =
   | _ ->
     if g#is_dir "/tmp" then "/tmp/builder.log" else "/builder.log"
 
+(* Function to cat the log file, for debugging and error messages. *)
+let debug_logfile () =
+  try
+    (* XXX If stderr is redirected this actually truncates the
+     * redirection file, which is pretty annoying to say the
+     * least.
+     *)
+    g#download logfile "/dev/stderr"
+  with exn ->
+    eprintf (f_"%s: log file %s: %s (ignored)\n")
+      prog logfile (Printexc.to_string exn)
+
 (* Useful wrapper for scripts. *)
 let do_run ~display cmd =
   (* Add a prologue to the scripts:
@@ -673,15 +753,11 @@ exec >>%s 2>&1
 
   if debug then eprintf "running command:\n%s\n%!" cmd;
   try ignore (g#sh cmd)
-  with Guestfs.Error msg ->
-    (* Cat the log file. *)
-    (try g#download logfile "/dev/stderr"
-     with exn ->
-       eprintf (f_"%s: internal error: could not display the log file: %s\n")
-         prog (Printexc.to_string exn)
-    );
-    eprintf (f_"%s: %s: command exited with an error\n") prog display;
-    exit 1
+  with
+    Guestfs.Error msg ->
+      debug_logfile ();
+      eprintf (f_"%s: %s: command exited with an error\n") prog display;
+      exit 1
 
 let guest_install_command packages =
   let quoted_args = String.concat " " (List.map quote packages) in
@@ -725,6 +801,37 @@ let () =
       g#upload file dest
   ) upload
 
+(* Edit files. *)
+let () =
+  List.iter (
+    fun (file, expr) ->
+      msg (f_"Editing: %s") file;
+
+      if not (g#is_file file) then (
+        eprintf (f_"%s: error: %s is not a regular file in the guest\n")
+          prog file;
+        exit 1
+      );
+
+      Perl_edit.edit_file ~debug g file expr
+  ) edit
+
+(* Delete files. *)
+let () =
+  List.iter (
+    fun file ->
+      msg (f_"Deleting: %s") file;
+      g#rm_rf file
+  ) delete
+
+(* Scrub files. *)
+let () =
+  List.iter (
+    fun file ->
+      msg (f_"Scrubbing: %s") file;
+      g#scrub_file file
+  ) scrub
+
 (* Firstboot scripts/commands/install. *)
 let () =
   let id = ref 0 in
@@ -760,15 +867,52 @@ let () =
       do_run ~display:cmd cmd
   ) run
 
-(* Wipe the log file. *)
+(* Clean up the log file:
+ *
+ * If debugging, dump out the log file.
+ * Then if asked, scrub the log file.
+ *)
 let () =
-  if wipe_logfile && g#exists logfile then (
-    msg (f_"Wiping the log file");
+  if debug then debug_logfile ();
+  if scrub_logfile && g#exists logfile then (
+    msg (f_"Scrubbing the log file");
 
     (* Try various methods with decreasing complexity. *)
     try g#scrub_file logfile
     with _ -> g#rm_f logfile
   )
+
+(* Collect some stats about the final output file.
+ * Notes:
+ * - These are virtual disk stats.
+ * - Never fail here.
+ *)
+let stats =
+  if not quiet then (
+    try
+      (* Calculate the free space (in bytes) across all mounted
+       * filesystems in the guest.
+       *)
+      let free_bytes =
+        let filesystems = List.map snd (g#mountpoints ()) in
+        let stats = List.map g#statvfs filesystems in
+        let free = List.map (
+          fun { G.bfree = bfree; bsize = bsize } -> bfree *^ bsize
+        ) stats in
+        List.fold_left (+^) 0L free in
+      let free_percent = 100L *^ free_bytes /^ size in
+
+      Some (
+        String.concat "\n" [
+          sprintf (f_"Output: %s (%s)") output (human_size size);
+          sprintf (f_"Free space: %s (%Ld%%)")
+            (human_size free_bytes) free_percent;
+        ] ^ "\n"
+      )
+    with
+      _ -> None
+  )
+  else None
 
 (* Unmount everything and we're done! *)
 let () =
@@ -783,3 +927,12 @@ let () =
  *)
 let () =
   delete_output_file := false
+
+(* Print the stats calculated above. *)
+let () =
+  Pervasives.flush Pervasives.stdout;
+  Pervasives.flush Pervasives.stderr;
+
+  match stats with
+  | None -> ()
+  | Some stats -> print_string stats

@@ -12,12 +12,18 @@ virt-builder - Build virtual machine images quickly
     [--hostname HOSTNAME]
     [--install PKG,[PKG...]]
     [--upload FILE:DEST]
+    [--edit FILE:EXPR]
+    [--delete FILE] [--scrub FILE]
     [--run SCRIPT] [--run-command 'CMD ARGS ...']
     [--firstboot SCRIPT] [--firstboot-command 'CMD ARGS ...']
     [--firstboot-install PKG,[PKG...]]
     os-version
 
  virt-builder -l|--list [--long]
+
+ virt-builder --print-cache
+
+ virt-builder --cache-all-templates
 
  virt-builder --delete-cache
 
@@ -106,18 +112,20 @@ Set the hostname to C<virt.example.com>.
 To install packages from the ordinary (guest) software repository
 (eg. yum or apt):
 
- virt-builder fedora-20 --install "inkscape,+Xfce Desktop"
+ virt-builder fedora-20 --install "inkscape,@Xfce Desktop"
 
-C<+> is used to install groups of packages (see L<yum(8)>).
+(In Fedora, C<@> is used to install groups of packages.  On Debian
+you would install a meta-package instead.)
 
 =head2 Customizing the installation
 
-There are four options that let you run shell scripts to customize the
-installation.  They are: I<--run>/I<--run-command>, which run a shell
-script or command while the disk image is being generated and lets you
-add or edit files that go into the disk image.  And
+There are many options that let you customize the installation.  These
+include: I<--run>/I<--run-command>, which run a shell script or
+command while the disk image is being generated and lets you add or
+edit files that go into the disk image.
 I<--firstboot>/I<--firstboot-command>, which let you add
 scripts/commands that are run the first time the guest boots.
+I<--edit> to edit files.  I<--upload> to upload files.
 
 For example:
 
@@ -131,22 +139,17 @@ or simply:
 
  virt-builder fedora-20 --firstboot-command 'yum -y update'
 
-which makes the C<yum update> command run once the first time the
-guest boots.
+which makes the L<yum(8)> C<update> command run once the first time
+the guest boots.
 
 Or:
 
- cat <<'EOF' > /tmp/no-gpg-sigs.sh
- sed -i 's/gpgcheck=1/gpgcheck=0/' /etc/yum.conf
- EOF
- 
- virt-builder fedora-20 --run /tmp/no-gpg-sigs.sh
+ virt-builder fedora-20 --edit '/etc/yum.conf: s/gpgcheck=1/gpgcheck=0/'
 
 which edits C</etc/yum.conf> inside the disk image (during disk image
 creation, long before boot).
 
-You can combine these options, and have multiple of either or both
-sets of scripts.
+You can combine these options, and have multiple options of all types.
 
 =head1 OPTIONS
 
@@ -191,6 +194,13 @@ C<$XDG_CACHE_HOME/virt-builder/> or C<$HOME/.cache/virt-builder/>.
 
 I<--no-cache> disables template caching.
 
+=item B<--cache-all-templates>
+
+Download all templates to the cache and then exit.  See L</CACHING>.
+
+Note this doesn't cache everything.  More templates might be uploaded.
+Also this doesn't cache packages (the I<--install> option).
+
 =item B<--check-signature>
 
 =item B<--no-check-signature>
@@ -208,9 +218,29 @@ curl parameters, for example to disable https certificate checks:
 
  virt-builder --curl "curl --insecure" [...]
 
+=item B<--delete> FILE
+
+=item B<--delete> DIR
+
+Delete a file from the guest.  Or delete a directory (and all its
+contents, recursively).
+
+See also: I<--upload>, I<--scrub>.
+
 =item B<--delete-cache>
 
 Delete the template cache.  See L</CACHING>.
+
+=item B<--edit> FILE:EXPR
+
+Edit C<FILE> using the Perl expression C<EXPR>.
+
+Be careful to properly quote the expression to prevent it from
+being altered by the shell.
+
+Note that this option is only available when Perl 5 is installed.
+
+See L<virt-edit(1)/NON-INTERACTIVE EDITING>.
 
 =item B<--fingerprint> 'AAAA BBBB ...'
 
@@ -312,7 +342,7 @@ See also: I<--source>, L</CREATING YOUR OWN TEMPLATES>.
 
 =item B<--no-logfile>
 
-Wipe C<builder.log> (log file from build commands) from the image
+Scrub C<builder.log> (log file from build commands) from the image
 after building is complete.  If you don't want to reveal precisely how
 the image was built, use this option.
 
@@ -390,6 +420,10 @@ The default is C<sha512> unless libguestfs detects an old guest that
 didn't have support for SHA-512, in which case it will use C<md5>.
 You can override libguestfs by specifying this option.
 
+=item B<--print-cache>
+
+Print information about the template cache.  See L</CACHING>.
+
 =item B<--quiet>
 
 Don't print ordinary progress messages.
@@ -428,6 +462,22 @@ in the same order that they appear on the command line.
 
 See also I<--firstboot>, I<--attach>.
 
+=item B<--scrub> FILE
+
+Scrub a file from the guest.  This is like I<--delete> except that:
+
+=over 4
+
+=item *
+
+It scrubs the data so a guest could not recover it.
+
+=item *
+
+It cannot delete directories, only regular files.
+
+=back
+
 =item B<--size> SIZE
 
 Select the size, where the size can be specified using common names
@@ -456,6 +506,8 @@ the I<--no-network> option.
 Upload local file C<FILE> to destination C<DEST> in the disk image.
 File owner and permissions from the original are preserved, so you
 should set them to what you want them to be in the disk image.
+
+See also: I<--delete>, I<--scrub>.
 
 =item B<-v>
 
@@ -661,6 +713,14 @@ Packages are installed (I<--install>).
 =item *
 
 Files are uploaded (I<--upload>).
+
+=item *
+
+Files are edited (I<--edit>).
+
+=item *
+
+Files are deleted (I<--delete>, I<--scrub>).
 
 =item *
 
@@ -1029,19 +1089,31 @@ Since the templates are usually very large, downloaded templates are
 cached in the user's home directory.
 
 The location of the cache is C<$XDG_CACHE_HOME/virt-builder/> or
-C<$HOME/.cache/virt-builder>.  This directory can be deleted after use
-if you want to save space by doing:
+C<$HOME/.cache/virt-builder>.
+
+You can print out information about the cache directory, including
+which guests are currently cached, by doing:
+
+ virt-builder --print-cache
+
+The cache can be deleted after use if you want to save space by doing:
 
  virt-builder --delete-cache
+
+You can download all (current) templates to the local cache by doing:
+
+ virt-builder --cache-all-templates
 
 To disable the template cache, use I<--no-cache>.
 
 Only templates are cached.  The index and detached digital signatures
 are not cached.
 
-Virt-builder uses L<curl(1)> to download files.  Since curl obeys
-C<http_proxy> (etc) environment variables, files might also be cached
-by your proxy if you have one.
+Virt-builder uses L<curl(1)> to download files and it also uses the
+current C<http_proxy> (etc) settings when installing packages
+(I<--install>).  You may therefore want to set those environment
+variables in order to maximize the amount of local caching that
+happens.  See L</ENVIRONMENT VARIABLES> and L<curl(1)>.
 
 =head2 DIGITAL SIGNATURES
 

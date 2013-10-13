@@ -124,6 +124,8 @@ flag to see what you are typing.
 
 =item B<-e> вираз
 
+=item B<--edit> EXPR
+
 =item B<--expr> вираз
 
 Instead of launching the external editor, non-interactively apply the Perl

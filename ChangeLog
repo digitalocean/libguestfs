@@ -1,3 +1,114 @@
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.31.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	po: builder: Hack to remove duplicate message definition.
+	Because we're not running msgmerge but concatenating the PO files, you
+	can get duplicate messages (in this case "no"), resulting in this
+	error:
+
+	libguestfs.pot:6142: duplicate message definition...
+	libguestfs.pot:3285: ...this is the location of the first definition
+
+	Just work around this for now.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Document how to enable virtual consoles on Debian guests.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add --edit option.
+	This allows you to use Perl to edit files in the guest.
+
+	This works very similarly to the 'virt-edit -e' (non-interactive
+	editing) function.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Small copy-edit to the manual.
+
+	edit: Add virt-edit --edit as an alias for virt-edit -e.
+	This just adds the alias and does nothing else.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Upcase --delete and --scrub option arguments in man page.
+	For consistency with other options.
+
+	This updates commit 7820aaf1f3f1402811c1c3c8b2239aec0e12cf5e.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Disable LD_PRELOAD libSegFault in virt-rescue shell.
+	Commit c598e14052399f19d36d7874d7133cba779bd3c2 exports
+	LD_PRELOAD=/lib64/libSegFault.so so that guestfsd and processes that
+	it runs will produce descriptive stack traces.
+
+	However it exports it to everything including the virt-rescue shell.
+	But if we are chrooting into a guest which doesn't have this file (or
+	indeed any guest) we should not use LD_PRELOAD.
+
+	Therefore unset LD_PRELOAD in the rescue shell.
+
+	See also related commit 21e5fc811ea3708ef0c768467ffe53368bc435e9.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add Debian 6 (Squeeze) guest template.
+
+	builder: With -v option, dump out the log file.
+	Useful for debugging install errors.
+
+	builder: Add comment about download /dev/stderr truncating redirection files.
+
+	builder: '@' (not '+') is used to install groups of packages in Fedora.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Print some stats about the generated image at the end.
+	It will print stats at the end like this:
+
+	  Output: fedora-18.img (8.0G)
+	  Free space: 3.2G (39%)
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add --delete and --scrub options for deleting guest files.
+
+	builder: In documentation, use 'scrub log file' instead of 'wipe'.
+	Since we really do try to scrub the data.
+
+	builder: Advice on setting environment variables to maximize caching.
+
+	builder: Add --cache-all-templates option.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Make --delete-cache obey the --cache option.
+	Previously a command such as:
+
+	  virt-builder --cache /tmp/cache --delete-cache
+
+	would delete ~/.cache/virt-builder (the default cachedir).
+
+	It's obviously meant to delete /tmp/cache, which this commit fixes.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add --print-cache option.
+
+	recipes: More recipes for virt-builder, syslinux, Xen partitionless guest conversion.
+
+2013-10-12  John Eckersberg  <jeckersb@redhat.com>
+
+	btrfs: Fix improper memmove usage in do_btrfs_subvolume_list (RHBZ#1018149).
+	The third parameter (number of bytes to copy) was given as an offset
+	relative to dest, when it should be relative to src.  This fixes some
+	valgrind warnings I happened across.
+
 2013-10-11  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.23.30.

@@ -112,6 +112,8 @@ libvirt を使用していると、指定された I<URI> に接続します。 
 
 =item B<-e> EXPR
 
+=item B<--edit> EXPR
+
 =item B<--expr> EXPR
 
 外部エディターを起動する代わりに、ファイルにある各行に対して非対話的に Perl 表現 C<EXPR> を適用します。以下の L</非対話的な編集方法>
