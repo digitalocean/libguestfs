@@ -392,13 +392,16 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
 
   dom = virDomainCreateXML (conn, (char *) xml, VIR_DOMAIN_START_AUTODESTROY);
   if (!dom) {
-    libvirt_error (g, _("could not create appliance through libvirt"));
+    libvirt_error (g, _(
+      "could not create appliance through libvirt.\n"
+      "Try using the direct backend to run qemu directly without libvirt,\n"
+      "by setting the LIBGUESTFS_BACKEND=direct environment variable."));
     goto cleanup;
   }
 
   g->state = LAUNCHING;
 
-  /* Wait for console socket to open. */
+  /* Wait for console socket to be opened (by qemu). */
   r = accept4 (console_sock, NULL, NULL, SOCK_NONBLOCK|SOCK_CLOEXEC);
   if (r == -1) {
     perrorf (g, "accept");

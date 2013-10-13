@@ -587,5 +587,7 @@ extern int64_t do_journal_get_data_threshold (void);
 extern int do_journal_set_data_threshold (int64_t threshold);
 extern int do_aug_setm (const char *base, const char *sub, const char *val);
 extern char *do_aug_label (const char *augpath);
+extern int do_internal_upload (const char *tmpname, int mode);
+extern int do_internal_exit (void);
 
 #endif /* GUESTFSD_ACTIONS_H */

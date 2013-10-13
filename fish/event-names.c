@@ -62,6 +62,8 @@ event_bitmask_of_event_set (const char *arg, uint64_t *eventset_r)
       *eventset_r |= GUESTFS_EVENT_ENTER;
     else if (STREQLEN (arg, "libvirt_auth", n))
       *eventset_r |= GUESTFS_EVENT_LIBVIRT_AUTH;
+    else if (STREQLEN (arg, "warning", n))
+      *eventset_r |= GUESTFS_EVENT_WARNING;
     else {
       fprintf (stderr, _("unknown event name: %s\n"), arg);
       return -1;

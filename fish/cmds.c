@@ -1653,13 +1653,13 @@ struct command_entry blockdev_getss_cmd_entry = {
 
 struct command_entry blockdev_getbsz_cmd_entry = {
   .name = "blockdev-getbsz",
-  .help = "NAME\n    blockdev-getbsz - get blocksize of block device\n\nSYNOPSIS\n     blockdev-getbsz device\n\nDESCRIPTION\n    This returns the block size of a device.\n\n    (Note this is different from both *size in blocks* and *filesystem block\n    size*).\n\n    This uses the blockdev(8) command.\n\n",
+  .help = "NAME\n    blockdev-getbsz - get blocksize of block device\n\nSYNOPSIS\n     blockdev-getbsz device\n\nDESCRIPTION\n    This returns the block size of a device.\n\n    Note: this is different from both *size in blocks* and *filesystem block\n    size*. Also this setting is not really used by anything. You should\n    probably not use it for anything. Filesystems have their own idea about\n    what block size to choose.\n\n    This uses the blockdev(8) command.\n\n",
   .run = run_blockdev_getbsz
 };
 
 struct command_entry blockdev_setbsz_cmd_entry = {
   .name = "blockdev-setbsz",
-  .help = "NAME\n    blockdev-setbsz - set blocksize of block device\n\nSYNOPSIS\n     blockdev-setbsz device blocksize\n\nDESCRIPTION\n    This sets the block size of a device.\n\n    (Note this is different from both *size in blocks* and *filesystem block\n    size*).\n\n    This uses the blockdev(8) command.\n\n",
+  .help = "NAME\n    blockdev-setbsz - set blocksize of block device\n\nSYNOPSIS\n     blockdev-setbsz device blocksize\n\nDESCRIPTION\n    This call does nothing and has never done anything because of a bug in\n    blockdev. Do not use it.\n\n    If you need to set the filesystem block size, use the \"blocksize\" option\n    of \"mkfs\".\n\n    *This function is deprecated.* In new code, use the \"mkfs\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_blockdev_setbsz
 };
 

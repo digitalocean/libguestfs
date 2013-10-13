@@ -78,7 +78,8 @@ EVENT_LIBRARY = 0x20
 EVENT_TRACE = 0x40
 EVENT_ENTER = 0x80
 EVENT_LIBVIRT_AUTH = 0x100
-EVENT_ALL = 0x1ff
+EVENT_WARNING = 0x200
+EVENT_ALL = 0x3ff
 
 
 def event_to_string (events):
@@ -3637,8 +3638,11 @@ class GuestFS(object):
     def blockdev_getbsz (self, device):
         """This returns the block size of a device.
         
-        (Note this is different from both *size in blocks* and
-        *filesystem block size*).
+        Note: this is different from both *size in blocks* and
+        *filesystem block size*. Also this setting is not really
+        used by anything. You should probably not use it for
+        anything. Filesystems have their own idea about what
+        block size to choose.
         
         This uses the blockdev(8) command.
         """
@@ -3647,12 +3651,18 @@ class GuestFS(object):
         return r
 
     def blockdev_setbsz (self, device, blocksize):
-        """This sets the block size of a device.
+        """This call does nothing and has never done anything
+        because of a bug in blockdev. Do not use it.
         
-        (Note this is different from both *size in blocks* and
-        *filesystem block size*).
+        If you need to set the filesystem block size, use the
+        "blocksize" option of "g.mkfs".
         
-        This uses the blockdev(8) command.
+        *This function is deprecated.* In new code, use the
+        "mkfs" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
         r = libguestfsmod.blockdev_setbsz (self._o, device, blocksize)

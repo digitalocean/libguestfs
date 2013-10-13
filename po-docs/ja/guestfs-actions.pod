@@ -1074,7 +1074,10 @@ This tells the kernel to flush internal buffers associated with C<device>.
 
 これはデバイスのブロック容量を返します。
 
-(これは I<size in blocks> および I<filesystem block size> と異なることに注意してください。)
+Note: this is different from both I<size in blocks> and I<filesystem block
+size>.  Also this setting is not really used by anything.  You should
+probably not use it for anything.  Filesystems have their own idea about
+what block size to choose.
 
 これは L<blockdev(8)> コマンドを使用します。
 
@@ -1168,11 +1171,17 @@ C<device> のパーティションテーブルを再読み込みします。
                           const char *device,
                           int blocksize);
 
-デバイスのブロック容量を設定します。
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</guestfs_mkfs> を使用してください。
 
-(これは I<size in blocks> および I<filesystem block size> と異なることに注意してください。)
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
-これは L<blockdev(8)> コマンドを使用します。
+This call does nothing and has never done anything because of a bug in
+blockdev.  B<Do not use it.>
+
+If you need to set the filesystem block size, use the C<blocksize> option of
+C<guestfs_mkfs>.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 

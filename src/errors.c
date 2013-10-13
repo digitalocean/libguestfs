@@ -57,7 +57,7 @@ void
 guestfs___warning (guestfs_h *g, const char *fs, ...)
 {
   va_list args;
-  CLEANUP_FREE char *msg = NULL, *msg2 = NULL;
+  CLEANUP_FREE char *msg = NULL;
   int len;
 
   va_start (args, fs);
@@ -66,11 +66,7 @@ guestfs___warning (guestfs_h *g, const char *fs, ...)
 
   if (len < 0) return;
 
-  len = asprintf (&msg2, _("warning: %s"), msg);
-
-  if (len < 0) return;
-
-  guestfs___call_callbacks_message (g, GUESTFS_EVENT_LIBRARY, msg2, len);
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_WARNING, msg, len);
 }
 
 /* Debug messages. */
@@ -301,6 +297,20 @@ guestfs___unexpected_close_error (guestfs_h *g)
     error (g, _(
 "appliance closed the connection unexpectedly.\n"
 "This usually means the libguestfs appliance crashed.\n"
+"See http://libguestfs.org/guestfs-faq.1.html#debugging-libguestfs\n"
+"for information about how to debug libguestfs and report bugs."));
+}
+
+/* As above, but for appliance kernel hanging. */
+void
+guestfs___launch_timeout (guestfs_h *g)
+{
+  if (g->verbose)
+    error (g, _("appliance launch timed out, see earlier error messages"));
+  else
+    error (g, _(
+"appliance launch timed out.\n"
+"This usually means the kernel or appliance hung during launch.\n"
 "See http://libguestfs.org/guestfs-faq.1.html#debugging-libguestfs\n"
 "for information about how to debug libguestfs and report bugs."));
 }

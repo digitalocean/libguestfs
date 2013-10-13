@@ -43,6 +43,7 @@ G_BEGIN_DECLS
  * @GUESTFS_SESSION_EVENT_TRACE: The trace event
  * @GUESTFS_SESSION_EVENT_ENTER: The enter event
  * @GUESTFS_SESSION_EVENT_LIBVIRT_AUTH: The libvirt_auth event
+ * @GUESTFS_SESSION_EVENT_WARNING: The warning event
  *
  * For more detail on libguestfs events, see "SETTING CALLBACKS TO HANDLE
  * EVENTS" in guestfs(3).
@@ -57,6 +58,7 @@ typedef enum {
   GUESTFS_SESSION_EVENT_TRACE,
   GUESTFS_SESSION_EVENT_ENTER,
   GUESTFS_SESSION_EVENT_LIBVIRT_AUTH,
+  GUESTFS_SESSION_EVENT_WARNING,
 } GuestfsSessionEvent;
 GType guestfs_session_event_get_type(void);
 #define GUESTFS_TYPE_SESSION_EVENT (guestfs_session_event_get_type())

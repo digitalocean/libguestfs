@@ -1998,6 +1998,7 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
   "<a class="link" href="GuestfsSession.html#GuestfsSession-progress" title='The "progress" signal'>progress</a>"                                       : <code class="literal">Run Last</code>
   "<a class="link" href="GuestfsSession.html#GuestfsSession-subprocess-quit" title='The "subprocess-quit" signal'>subprocess-quit</a>"                                : <code class="literal">Run Last</code>
   "<a class="link" href="GuestfsSession.html#GuestfsSession-trace" title='The "trace" signal'>trace</a>"                                          : <code class="literal">Run Last</code>
+  "<a class="link" href="GuestfsSession.html#GuestfsSession-warning" title='The "warning" signal'>warning</a>"                                        : <code class="literal">Run Last</code>
 </pre>
 </div>
 <div class="refsect1">
@@ -2017,6 +2018,7 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
   GUESTFS_SESSION_EVENT_TRACE,
   GUESTFS_SESSION_EVENT_ENTER,
   GUESTFS_SESSION_EVENT_LIBVIRT_AUTH,
+  GUESTFS_SESSION_EVENT_WARNING,
 } GuestfsSessionEvent;
 </pre>
 <p>
@@ -2072,6 +2074,11 @@ EVENTS" in guestfs(3).
 <tr>
 <td><p><a name="GUESTFS-SESSION-EVENT-LIBVIRT-AUTH:CAPS"></a><span class="term"><code class="literal">GUESTFS_SESSION_EVENT_LIBVIRT_AUTH</code></span></p></td>
 <td>The libvirt_auth event
+</td>
+</tr>
+<tr>
+<td><p><a name="GUESTFS-SESSION-EVENT-WARNING:CAPS"></a><span class="term"><code class="literal">GUESTFS_SESSION_EVENT_WARNING</code></span></p></td>
+<td>The warning event
 </td>
 </tr>
 </tbody>
@@ -12255,8 +12262,10 @@ get blocksize of block device
 This returns the block size of a device.
 </p>
 <p>
-(Note this is different from both *size in blocks* and *filesystem block
-size*).
+Note: this is different from both *size in blocks* and *filesystem block
+size*. Also this setting is not really used by anything. You should
+probably not use it for anything. Filesystems have their own idea about
+what block size to choose.
 </p>
 <p>
 This uses the blockdev(8) command.
@@ -12299,14 +12308,12 @@ This uses the blockdev(8) command.
 set blocksize of block device
 </p>
 <p>
-This sets the block size of a device.
+This call does nothing and has never done anything because of a bug in
+blockdev. Do not use it.
 </p>
 <p>
-(Note this is different from both *size in blocks* and *filesystem block
-size*).
-</p>
-<p>
-This uses the blockdev(8) command.
+If you need to set the filesystem block size, use the <em class="parameter"><code>blocksize</code></em> option
+of <a class="link" href="GuestfsSession.html#guestfs-session-mkfs" title="guestfs_session_mkfs ()"><code class="function">guestfs_session_mkfs()</code></a>.
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -29888,6 +29895,37 @@ more details about this event.
 <hr>
 <div class="refsect2">
 <a name="GuestfsSession-trace"></a><h3>The <code class="literal">"trace"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a>            *session,
+                                                        <a class="link" href="GuestfsSession.html#GuestfsSessionEventParams"><span class="type">GuestfsSessionEventParams</span></a> *params,
+                                                        <span class="type">gpointer</span>                   user_data)      : <code class="literal">Run Last</code></pre>
+<p>
+See "SETTING CALLBACKS TO HANDLE EVENTS" in guestfs(3) for
+more details about this event.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>The session which emitted the signal</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>params</code></em> :</span></p></td>
+<td>An object containing event parameters</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>user_data</code></em> :</span></p></td>
+<td>user data set when the signal handler was connected.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsSession-warning"></a><h3>The <code class="literal">"warning"</code> signal</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a>            *session,
                                                         <a class="link" href="GuestfsSession.html#GuestfsSessionEventParams"><span class="type">GuestfsSessionEventParams</span></a> *params,
                                                         <span class="type">gpointer</span>                   user_data)      : <code class="literal">Run Last</code></pre>

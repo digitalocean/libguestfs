@@ -36,6 +36,7 @@ GuestfsSession
 @GUESTFS_SESSION_EVENT_TRACE: 
 @GUESTFS_SESSION_EVENT_ENTER: 
 @GUESTFS_SESSION_EVENT_LIBVIRT_AUTH: 
+@GUESTFS_SESSION_EVENT_WARNING: 
 
 <!-- ##### STRUCT GuestfsSessionEventParams ##### -->
 <para>
@@ -114,6 +115,14 @@ GuestfsSession
 @arg1: 
 
 <!-- ##### SIGNAL GuestfsSession::trace ##### -->
+<para>
+
+</para>
+
+@guestfssession: the object which received the signal.
+@arg1: 
+
+<!-- ##### SIGNAL GuestfsSession::warning ##### -->
 <para>
 
 </para>

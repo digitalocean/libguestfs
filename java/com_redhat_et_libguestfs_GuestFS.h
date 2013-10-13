@@ -25,8 +25,10 @@ extern "C" {
 #define com_redhat_et_libguestfs_GuestFS_EVENT_ENTER 128LL
 #undef com_redhat_et_libguestfs_GuestFS_EVENT_LIBVIRT_AUTH
 #define com_redhat_et_libguestfs_GuestFS_EVENT_LIBVIRT_AUTH 256LL
+#undef com_redhat_et_libguestfs_GuestFS_EVENT_WARNING
+#define com_redhat_et_libguestfs_GuestFS_EVENT_WARNING 512LL
 #undef com_redhat_et_libguestfs_GuestFS_EVENT_ALL
-#define com_redhat_et_libguestfs_GuestFS_EVENT_ALL 511LL
+#define com_redhat_et_libguestfs_GuestFS_EVENT_ALL 1023LL
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _create

@@ -150,7 +150,7 @@
 #ifdef HAVE_ATTRIBUTE_CLEANUP
 #define CLEANUP_FREE_MOUNTABLE __attribute__((cleanup(cleanup_free_mountable)))
 #else
-#define CLEANUP_FREE_MOUNTABLE_DEVICE
+#define CLEANUP_FREE_MOUNTABLE
 #endif
 
 static void
@@ -16067,6 +16067,63 @@ done_no_free:
   return;
 }
 
+static void
+internal_upload_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_internal_upload_args args;
+  const char *tmpname;
+  int mode;
+
+  if (optargs_bitmask != 0) {
+    cancel_receive ();
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_internal_upload_args (xdr_in, &args)) {
+    cancel_receive ();
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  tmpname = args.tmpname;
+  mode = args.mode;
+
+  r = do_internal_upload (tmpname, mode);
+  if (r == -1)
+    /* do_internal_upload has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_upload_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+internal_exit_stub (XDR *xdr_in)
+{
+  int r;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_internal_exit ();
+  if (r == -1)
+    /* do_internal_exit has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -17284,6 +17341,12 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_AUG_LABEL:
       aug_label_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INTERNAL_UPLOAD:
+      internal_upload_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INTERNAL_EXIT:
+      internal_exit_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

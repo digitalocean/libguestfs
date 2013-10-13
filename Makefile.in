@@ -1646,7 +1646,7 @@ BUILDERFILES = \
 	builder/website/fedora-19.xz \
 	builder/website/fedora-19.xz.sig
 
-WEBSITEDIR = $(HOME)/d/redhat/websites/libguestfs
+WEBSITEDIR = $(HOME)/d/websites/libguestfs
 
 # Manual pages in top level directory.
 man_MANS = \

@@ -13855,6 +13855,7 @@ static const char *event_all[] = {
   "trace",
   "enter",
   "libvirt_auth",
+  "warning",
   NULL
 };
 
@@ -13923,6 +13924,10 @@ push_event (lua_State *L, uint64_t event)
   }
   if (event == 256) {
     lua_pushliteral (L, "libvirt_auth");
+    return;
+  }
+  if (event == 512) {
+    lua_pushliteral (L, "warning");
     return;
   }
   abort (); /* should never happen */

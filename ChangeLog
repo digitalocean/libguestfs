@@ -1,3 +1,134 @@
+2013-10-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.30.
+
+	debian: Warn if /dev/kvm is 0660 and user is not in the KVM group.
+	On Debian, /dev/kvm is mode 0660 and group kvm, so users need to add
+	themselves to the kvm group otherwise things are going to be very slow
+	(this is Debian bug 640328).
+
+	events: Add a warning event and direct all warning messages through it.
+	This also causes warnings to be printed even in non-verbose mode,
+	which is useful.
+
+	launch: libvirt: Suggest using the direct backend if libvirt fails.
+
+	builder: Avoid parallel cache downloads from stomping on each other.
+	This should let you run virt-builder instances in parallel.
+
+2013-10-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Don't leak 'device' string in parse_btrfsvol.
+	Since 'device' is assigned repeatedly, and because
+	device_name_translation allocates a new string each time, we have to
+	free it in the loop and along error paths.
+
+	Found by ./configure --enable-valgrind-daemon.
+
+2013-10-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: xattr: Fix scope of cleanup buf to avoid memory leaks.
+	Found by ./configure --enable-valgrind-daemon.
+
+	daemon: Fix macro definition.
+	Defined a bogus macro along an unused code path.
+
+	daemon: parted: Fix memory leak of list of strings.
+	Found by ./configure --enable-valgrind-daemon.
+
+	daemon: Fix scope of cleanup functions to avoid memory leaks.
+	Found by ./configure --enable-valgrind-daemon.
+
+	daemon: Ignore memory leak in aug_setm.
+	(Found by ./configure --enable-valgrind-daemon)
+
+2013-10-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: When valgrinding the daemon, take steps to cleanly exit daemon.
+	This adds a new internal API: internal_exit
+
+	Only when valgrinding the daemon, have the library call internal_exit
+	along the close path, and close the sockets first.  This ensures we
+	will see normal valgrind messages (we were only seeing valgrind aborts
+	before).
+
+	Note this is not used in production builds.
+
+2013-10-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.29.
+
+	inspector: Allow the test to be skipped by setting an environment variable.
+
+2013-10-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Use UNIX_PATH_MAX instead of hard-coded value for max length of socket buf.
+
+	sparsify: Use Filename.temp_dir_name instead of Filename.get_temp_dir_name ().
+	The latter function is only available in OCaml >= 4.00 whereas
+	Filename.temp_dir_name has been around since OCaml 3.09.1.  In this
+	case it doesn't make any difference which one we use.
+
+2013-10-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Change handling of C 'function(void)' to be simpler.
+	This also fixes an obscure case in daemon/optgroups.h.
+
+	The only difference in the generated output is:
+
+	--- daemon/optgroups.h.orig	     2013-10-09 20:42:02.479681861 +0100
+	+++ daemon/optgroups.h		     2013-10-09 20:42:10.563681858 +0100
+	@@ -149,7 +149,7 @@
+	   int optgroup_inotify_available (void) { return 0; }
+
+	 #define OPTGROUP_JOURNAL_NOT_AVAILABLE \
+	-  int __attribute__((noreturn)) do_internal_journal_get () { abort (); } \
+	+  int __attribute__((noreturn)) do_internal_journal_get (void) { abort (); } \
+	   int __attribute__((noreturn)) do_journal_close (void) { abort (); } \
+	   int64_t __attribute__((noreturn)) do_journal_get_data_threshold (void) { abort (); } \
+	   int __attribute__((noreturn)) do_journal_next (void) { abort (); } \
+
+2013-10-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: WEBSITEDIR has moved.
+
+	Update TODO with more ideas.
+
+2013-10-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Upload /etc/resolv.conf from the host when the network is enabled.
+	When the user has enabled the network (not the default) we upload
+	/etc/resolv.conf from the host to the appliance /etc/resolv.conf
+	so that programs in the appliance can contact nameservers.
+
+	Commit 9521422ce60578f7196cc8b7977d998159238c19 previously changed the
+	behaviour to copy /etc/resolv.conf into the sysroot when running
+	commands.
+
+2013-10-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	df: parallel: Add a debug message when work function returns an error.
+	Further attempts to find out why this hangs under Koji.
+
+	launch: If launch takes longer than 20 minutes, time out.
+	Add a constant fixed timeout for launch (currently 20 minutes, we'll
+	make it configurable if needed in the future).  If the appliance takes
+	longer than this to connect back, we time out assuming that the kernel
+	has hung during boot.
+
+	launch: libvirt: Clarify comment.
+
+2013-10-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	blockdev: Deprecate blockdev_setbsz and make it do nothing (RHBZ#624334).
+	This call never did anything.  Don't use it.  Also I have submitted a
+	patch upstream to remove the corresponding option from blockdev.
+
+	See RHBZ#1002825 for an explanation of why this call was always
+	useless.
+
+	Thanks: Masayoshi Mizuma
+
 2013-10-08  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.23.28.

@@ -7987,6 +7987,18 @@ xdr_guestfs_aug_label_ret (XDR *xdrs, guestfs_aug_label_ret *objp)
 }
 
 bool_t
+xdr_guestfs_internal_upload_args (XDR *xdrs, guestfs_internal_upload_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->tmpname, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->mode))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

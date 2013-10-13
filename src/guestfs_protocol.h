@@ -3690,6 +3690,12 @@ struct guestfs_aug_label_ret {
 };
 typedef struct guestfs_aug_label_ret guestfs_aug_label_ret;
 
+struct guestfs_internal_upload_args {
+	char *tmpname;
+	int mode;
+};
+typedef struct guestfs_internal_upload_args guestfs_internal_upload_args;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -4096,9 +4102,11 @@ enum guestfs_procedure {
 	GUESTFS_PROC_JOURNAL_SET_DATA_THRESHOLD = 410,
 	GUESTFS_PROC_AUG_SETM = 411,
 	GUESTFS_PROC_AUG_LABEL = 412,
+	GUESTFS_PROC_INTERNAL_UPLOAD = 413,
+	GUESTFS_PROC_INTERNAL_EXIT = 414,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 412
+#define GUESTFS_MAX_PROC_NR 414
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4736,6 +4744,7 @@ extern  bool_t xdr_guestfs_aug_setm_args (XDR *, guestfs_aug_setm_args*);
 extern  bool_t xdr_guestfs_aug_setm_ret (XDR *, guestfs_aug_setm_ret*);
 extern  bool_t xdr_guestfs_aug_label_args (XDR *, guestfs_aug_label_args*);
 extern  bool_t xdr_guestfs_aug_label_ret (XDR *, guestfs_aug_label_ret*);
+extern  bool_t xdr_guestfs_internal_upload_args (XDR *, guestfs_internal_upload_args*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5323,6 +5332,7 @@ extern bool_t xdr_guestfs_aug_setm_args ();
 extern bool_t xdr_guestfs_aug_setm_ret ();
 extern bool_t xdr_guestfs_aug_label_args ();
 extern bool_t xdr_guestfs_aug_label_ret ();
+extern bool_t xdr_guestfs_internal_upload_args ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

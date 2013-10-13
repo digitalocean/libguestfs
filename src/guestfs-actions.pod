@@ -1117,8 +1117,11 @@ This function returns 0 on success or -1 on error.
 
 This returns the block size of a device.
 
-(Note this is different from both I<size in blocks> and
-I<filesystem block size>).
+Note: this is different from both I<size in blocks> and
+I<filesystem block size>.  Also this setting is not really
+used by anything.  You should probably not use it for
+anything.  Filesystems have their own idea about what
+block size to choose.
 
 This uses the L<blockdev(8)> command.
 
@@ -1215,12 +1218,18 @@ This function returns 0 on success or -1 on error.
                           const char *device,
                           int blocksize);
 
-This sets the block size of a device.
+I<This function is deprecated.>
+In new code, use the L</guestfs_mkfs> call instead.
 
-(Note this is different from both I<size in blocks> and
-I<filesystem block size>).
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
-This uses the L<blockdev(8)> command.
+This call does nothing and has never done anything
+because of a bug in blockdev.  B<Do not use it.>
+
+If you need to set the filesystem block size, use the
+C<blocksize> option of C<guestfs_mkfs>.
 
 This function returns 0 on success or -1 on error.
 

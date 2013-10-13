@@ -74,7 +74,7 @@ G_DEFINE_BOXED_TYPE(GuestfsSessionEventParams,
                     guestfs_session_event_params_free)
 
 /* Event callback */
-static guint signals[9] = { 0 };
+static guint signals[10] = { 0 };
 
 static GuestfsSessionEvent
 guestfs_session_event_from_guestfs_event(uint64_t event)
@@ -89,6 +89,7 @@ guestfs_session_event_from_guestfs_event(uint64_t event)
     case GUESTFS_EVENT_TRACE: return GUESTFS_SESSION_EVENT_TRACE;
     case GUESTFS_EVENT_ENTER: return GUESTFS_SESSION_EVENT_ENTER;
     case GUESTFS_EVENT_LIBVIRT_AUTH: return GUESTFS_SESSION_EVENT_LIBVIRT_AUTH;
+    case GUESTFS_EVENT_WARNING: return GUESTFS_SESSION_EVENT_WARNING;
   }
 
   g_warning("guestfs_session_event_from_guestfs_event: invalid event %lu",
@@ -143,6 +144,7 @@ guestfs_session_event_get_type(void)
       { GUESTFS_SESSION_EVENT_TRACE, "GUESTFS_SESSION_EVENT_TRACE", "trace" },
       { GUESTFS_SESSION_EVENT_ENTER, "GUESTFS_SESSION_EVENT_ENTER", "enter" },
       { GUESTFS_SESSION_EVENT_LIBVIRT_AUTH, "GUESTFS_SESSION_EVENT_LIBVIRT_AUTH", "libvirt_auth" },
+      { GUESTFS_SESSION_EVENT_WARNING, "GUESTFS_SESSION_EVENT_WARNING", "warning" },
     };
     etype = g_enum_register_static("GuestfsSessionEvent", values);
   }
@@ -335,6 +337,24 @@ guestfs_session_class_init(GuestfsSessionClass *klass)
    */
   signals[GUESTFS_SESSION_EVENT_LIBVIRT_AUTH] =
     g_signal_new(g_intern_static_string("libvirt_auth"),
+                 G_OBJECT_CLASS_TYPE(object_class),
+                 G_SIGNAL_RUN_LAST,
+                 0,
+                 NULL, NULL,
+                 NULL,
+                 G_TYPE_NONE,
+                 1, guestfs_session_event_params_get_type());
+
+  /**
+   * GuestfsSession::warning:
+   * @session: The session which emitted the signal
+   * @params: An object containing event parameters
+   *
+   * See "SETTING CALLBACKS TO HANDLE EVENTS" in guestfs(3) for
+   * more details about this event.
+   */
+  signals[GUESTFS_SESSION_EVENT_WARNING] =
+    g_signal_new(g_intern_static_string("warning"),
                  G_OBJECT_CLASS_TYPE(object_class),
                  G_SIGNAL_RUN_LAST,
                  0,
@@ -9781,8 +9801,10 @@ guestfs_session_blockdev_getss(GuestfsSession *session, const gchar *device, GEr
  *
  * This returns the block size of a device.
  * 
- * (Note this is different from both *size in blocks* and *filesystem block
- * size*).
+ * Note: this is different from both *size in blocks* and *filesystem block
+ * size*. Also this setting is not really used by anything. You should
+ * probably not use it for anything. Filesystems have their own idea about
+ * what block size to choose.
  * 
  * This uses the blockdev(8) command.
  * 
@@ -9817,12 +9839,11 @@ guestfs_session_blockdev_getbsz(GuestfsSession *session, const gchar *device, GE
  *
  * set blocksize of block device
  *
- * This sets the block size of a device.
+ * This call does nothing and has never done anything because of a bug in
+ * blockdev. Do not use it.
  * 
- * (Note this is different from both *size in blocks* and *filesystem block
- * size*).
- * 
- * This uses the blockdev(8) command.
+ * If you need to set the filesystem block size, use the @blocksize option
+ * of guestfs_session_mkfs().
  * 
  * Returns: true on success, false on error
  */

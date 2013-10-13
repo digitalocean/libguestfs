@@ -2850,6 +2850,11 @@ struct guestfs_aug_label_ret {
   string label<>;
 };
 
+struct guestfs_internal_upload_args {
+  string tmpname<>;
+  int mode;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3256,10 +3261,12 @@ enum guestfs_procedure {
   GUESTFS_PROC_JOURNAL_GET_DATA_THRESHOLD = 409,
   GUESTFS_PROC_JOURNAL_SET_DATA_THRESHOLD = 410,
   GUESTFS_PROC_AUG_SETM = 411,
-  GUESTFS_PROC_AUG_LABEL = 412
+  GUESTFS_PROC_AUG_LABEL = 412,
+  GUESTFS_PROC_INTERNAL_UPLOAD = 413,
+  GUESTFS_PROC_INTERNAL_EXIT = 414
 };
 
-const GUESTFS_MAX_PROC_NR = 412;
+const GUESTFS_MAX_PROC_NR = 414;
 
 /* The remote procedure call protocol. */
 

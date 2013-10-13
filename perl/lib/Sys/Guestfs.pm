@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.412';
+$VERSION = '0.414';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -200,13 +200,21 @@ See L<guestfs(3)/GUESTFS_EVENT_LIBVIRT_AUTH>.
 
 our $EVENT_LIBVIRT_AUTH = 0x100;
 
+=item $Sys::Guestfs::EVENT_WARNING
+
+See L<guestfs(3)/GUESTFS_EVENT_WARNING>.
+
+=cut
+
+our $EVENT_WARNING = 0x200;
+
 =item $Sys::Guestfs::EVENT_ALL
 
 See L<guestfs(3)/GUESTFS_EVENT_ALL>.
 
 =cut
 
-our $EVENT_ALL = 0x1ff;
+our $EVENT_ALL = 0x3ff;
 
 =item $event_handle = $g->set_event_callback (\&cb, $event_bitmask);
 
@@ -1005,8 +1013,11 @@ This uses the L<blockdev(8)> command.
 
 This returns the block size of a device.
 
-(Note this is different from both I<size in blocks> and
-I<filesystem block size>).
+Note: this is different from both I<size in blocks> and
+I<filesystem block size>.  Also this setting is not really
+used by anything.  You should probably not use it for
+anything.  Filesystems have their own idea about what
+block size to choose.
 
 This uses the L<blockdev(8)> command.
 
@@ -1054,12 +1065,18 @@ This uses the L<blockdev(8)> command.
 
 =item $g->blockdev_setbsz ($device, $blocksize);
 
-This sets the block size of a device.
+This call does nothing and has never done anything
+because of a bug in blockdev.  B<Do not use it.>
 
-(Note this is different from both I<size in blocks> and
-I<filesystem block size>).
+If you need to set the filesystem block size, use the
+C<blocksize> option of C<$g-E<gt>mkfs>.
 
-This uses the L<blockdev(8)> command.
+I<This function is deprecated.>
+In new code, use the L</mkfs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $g->blockdev_setro ($device);
 

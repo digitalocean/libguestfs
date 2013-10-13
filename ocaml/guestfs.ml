@@ -39,6 +39,7 @@ type event =
   | EVENT_TRACE
   | EVENT_ENTER
   | EVENT_LIBVIRT_AUTH
+  | EVENT_WARNING
 
 let event_all = [
   EVENT_CLOSE;
@@ -50,6 +51,7 @@ let event_all = [
   EVENT_TRACE;
   EVENT_ENTER;
   EVENT_LIBVIRT_AUTH;
+  EVENT_WARNING;
 ]
 
 type event_handle = int

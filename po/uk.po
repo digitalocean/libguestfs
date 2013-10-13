@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: libguestfs\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2013-10-08 00:52+0100\n"
+"POT-Creation-Date: 2013-10-11 15:45+0100\n"
 "PO-Revision-Date: 2013-08-06 13:32+0000\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
@@ -2944,7 +2944,7 @@ msgstr "показати назву файла\n"
 msgid "use '%s filename' to edit a file\n"
 msgstr "скористайтеся командою «%s назва_файла» для редагування файла\n"
 
-#: fish/event-names.c:66
+#: fish/event-names.c:68
 #, c-format
 msgid "unknown event name: %s\n"
 msgstr "невідома назва події: %s\n"
@@ -4163,23 +4163,23 @@ msgstr ""
 "безпека: кешований пристрій %s доступний для запису учасниками групи або "
 "іншими користувачами (режим %o)"
 
-#: src/conn-socket.c:59
+#: src/conn-socket.c:63
 msgid "accept_connection called twice"
 msgstr "accept_connection викликано двічі"
 
-#: src/conn-socket.c:130
+#: src/conn-socket.c:142
 msgid "read_data: socket not connected"
 msgstr "read_data: сокет не з’єднано"
 
-#: src/conn-socket.c:205
+#: src/conn-socket.c:217
 msgid "can_read_data: socket not connected"
 msgstr "can_read_data: сокет не з’єднано"
 
-#: src/conn-socket.c:234
+#: src/conn-socket.c:246
 msgid "write_data: socket not connected"
 msgstr "write_data: сокет не з’єднано"
 
-#: src/conn-socket.c:327
+#: src/conn-socket.c:339
 msgid "error reading console messages from the appliance"
 msgstr "помилка під час читання повідомлень консолі з базової системи"
 
@@ -4427,28 +4427,23 @@ msgstr ""
 msgid "disk with label '%s' not found"
 msgstr "диска з міткою «%s» не знайдено"
 
-#: src/errors.c:69
-#, c-format
-msgid "warning: %s"
-msgstr "попередження: %s"
-
-#: src/errors.c:236
+#: src/errors.c:232
 #, c-format
 msgid "libguestfs: error: %s\n"
 msgstr "libguestfs: помилка: %s\n"
 
-#: src/errors.c:264
+#: src/errors.c:260
 #, c-format
 msgid "<truncated, original size %zu bytes>"
 msgstr "<скорочено, початковий розмір — %zu байтів>"
 
-#: src/errors.c:284
+#: src/errors.c:280
 msgid "guestfs_launch failed, see earlier error messages"
 msgstr ""
 "спроба виклику guestfs_launch була невдалою, ознайомтеся з попередніми "
 "повідомленнями"
 
-#: src/errors.c:287
+#: src/errors.c:283
 msgid ""
 "guestfs_launch failed.\n"
 "This usually means the libguestfs appliance failed to start or crashed.\n"
@@ -4464,14 +4459,14 @@ msgstr ""
 "звіту\n"
 "щодо вади *повністю* чи надішліть їх до списку листування libguestfs."
 
-#: src/errors.c:299
+#: src/errors.c:295
 msgid ""
 "appliance closed the connection unexpectedly, see earlier error messages"
 msgstr ""
 "базова система несподівано розірвала з’єднання, див. попередні повідомлення "
 "про помилки"
 
-#: src/errors.c:302
+#: src/errors.c:298
 msgid ""
 "appliance closed the connection unexpectedly.\n"
 "This usually means the libguestfs appliance crashed.\n"
@@ -4484,17 +4479,29 @@ msgstr ""
 "щоб дізнатися більше про діагностування помилок у libguestfs та звітування\n"
 "про вади."
 
-#: src/errors.c:320
+#: src/errors.c:309
+msgid "appliance launch timed out, see earlier error messages"
+msgstr ""
+
+#: src/errors.c:312
+msgid ""
+"appliance launch timed out.\n"
+"This usually means the kernel or appliance hung during launch.\n"
+"See http://libguestfs.org/guestfs-faq.1.html#debugging-libguestfs\n"
+"for information about how to debug libguestfs and report bugs."
+msgstr ""
+
+#: src/errors.c:330
 #, c-format
 msgid "%s, see debug messages above"
 msgstr "%s, див. діагностичні повідомлення вище"
 
-#: src/errors.c:322
+#: src/errors.c:332
 #, c-format
 msgid "%s: %s: %s, see debug messages above"
 msgstr "%s: %s: %s, див. діагностичні повідомлення вище"
 
-#: src/errors.c:328
+#: src/errors.c:338
 #, c-format
 msgid ""
 "%s.\n"
@@ -4506,7 +4513,7 @@ msgstr ""
 "діагностику.\n"
 "Див. http://libguestfs.org/guestfs-faq.1.html#debugging-libguestfs"
 
-#: src/errors.c:334
+#: src/errors.c:344
 #, c-format
 msgid ""
 "%s: %s: %s.\n"
@@ -4684,21 +4691,30 @@ msgstr ""
 "кореневого пристрою, дані якого раніше було повернуто функцією "
 "guestfs_inspect_os"
 
-#: src/launch-direct.c:125
+#: src/launch-direct.c:127
 #, c-format
 msgid "unclosed quote character (%c) in command line near: %s"
 msgstr "неврівноважений символ лапки (%c) у командному рядку поблизу від %s"
 
-#: src/launch-direct.c:144
+#: src/launch-direct.c:146
 #, c-format
 msgid "cannot parse quoted string near: %s"
 msgstr "не вдалося обробити рядок у лапках поблизу від %s"
 
-#: src/launch-direct.c:184 src/launch-uml.c:120
+#: src/launch-direct.c:212
+#, c-format
+msgid ""
+"current user is not a member of the KVM group (group ID %d). This user "
+"cannot access /dev/kvm, so libguestfs may run very slowly. It is recommended "
+"that you 'chmod 0666 /dev/kvm' or add the current user to the KVM group (you "
+"might need to log out and log in again)."
+msgstr ""
+
+#: src/launch-direct.c:246 src/launch-uml.c:120
 msgid "you must call guestfs_add_drive before guestfs_launch"
 msgstr "вам слід викликати guestfs_add_drive перед викликом guestfs_launch"
 
-#: src/launch-direct.c:700 src/launch-libvirt.c:462
+#: src/launch-direct.c:764 src/launch-libvirt.c:465
 msgid "qemu launched and contacted daemon, but state != READY"
 msgstr ""
 "qemu запущено, встановлено зв’язок з фоновою службою, але стан процесу не "
@@ -4724,26 +4740,29 @@ msgstr "не вдалося встановити з’єднання з libvirt 
 msgid "could not get libvirt capabilities"
 msgstr "не вдалося визначити можливості libvirt"
 
-#: src/launch-libvirt.c:395
-msgid "could not create appliance through libvirt"
-msgstr "не вдалося створити систему для розгортання за допомогою libvirt"
+#: src/launch-libvirt.c:396
+msgid ""
+"could not create appliance through libvirt.\n"
+"Try using the direct backend to run qemu directly without libvirt,\n"
+"by setting the LIBGUESTFS_BACKEND=direct environment variable."
+msgstr ""
 
-#: src/launch-libvirt.c:526
+#: src/launch-libvirt.c:529
 msgid "unable to parse capabilities XML returned by libvirt"
 msgstr ""
 "не вдалося обробити запис можливостей у форматі XML, повернутий libvirt"
 
-#: src/launch-libvirt.c:532 src/libvirt-domain.c:352 src/libvirt-domain.c:435
+#: src/launch-libvirt.c:535 src/libvirt-domain.c:352 src/libvirt-domain.c:435
 #: src/libvirt-domain.c:642
 msgid "unable to create new XPath context"
 msgstr "не вдалося створити контекст XPath"
 
-#: src/launch-libvirt.c:542
+#: src/launch-libvirt.c:545
 #, c-format
 msgid "unable to evaluate XPath expression: %s"
 msgstr "не вдалося обробити вираз XPath: %s"
 
-#: src/launch-libvirt.c:575
+#: src/launch-libvirt.c:578
 #, c-format
 msgid ""
 "libvirt hypervisor doesn't support qemu or KVM,\n"
@@ -4771,16 +4790,16 @@ msgstr ""
 "guestfs(3) та списком поширених питань щодо libguestfs та відповідей\n"
 "на ці питання."
 
-#: src/launch-libvirt.c:726
+#: src/launch-libvirt.c:729
 #, c-format
 msgid "error constructing libvirt XML at \"%s\""
 msgstr "помилка під час спроби побудувати XML для libvirt у «%s»"
 
-#: src/launch-libvirt.c:1102
+#: src/launch-libvirt.c:1105
 msgid "'iface' parameter is not supported by the libvirt backend"
 msgstr "підтримки параметра «iface» у модулі libvirt не передбачено"
 
-#: src/launch-libvirt.c:1213
+#: src/launch-libvirt.c:1216
 msgid ""
 "libvirt does not support the qemu curl driver protocols (ftp, http, etc.); "
 "try setting LIBGUESTFS_BACKEND=direct"
@@ -4788,7 +4807,7 @@ msgstr ""
 "у libvirt не передбачено підтримки драйверів протоколів curl qemu (ftp, http "
 "тощо); спробуйте встановити LIBGUESTFS_BACKEND=direct"
 
-#: src/launch-libvirt.c:1251
+#: src/launch-libvirt.c:1254
 msgid ""
 "could not auto-detect the format.\n"
 "If the format is known, pass the format to libguestfs, eg. using the\n"
@@ -4800,7 +4819,7 @@ msgstr ""
 "параметра «--format» або за допомогою додаткового параметра аргументу "
 "формату до «add-drive»."
 
-#: src/launch-libvirt.c:1262
+#: src/launch-libvirt.c:1265
 msgid ""
 "could not auto-detect the format when using a non-file protocol.\n"
 "If the format is known, pass the format to libguestfs, eg. using the\n"
@@ -4813,25 +4832,25 @@ msgstr ""
 "параметра «--format» або за допомогою додаткового параметра аргументу "
 "формату до «add-drive»."
 
-#: src/launch-libvirt.c:1617
+#: src/launch-libvirt.c:1620
 #, c-format
 msgid "realpath: could not convert '%s' to absolute path"
 msgstr "realpath: не вдалося перетворити «%s» на абсолютний шлях"
 
-#: src/launch-libvirt.c:1697
+#: src/launch-libvirt.c:1700
 msgid "could not destroy libvirt domain"
 msgstr "не вдалося знищити домен libvirt"
 
-#: src/launch-libvirt.c:1734
+#: src/launch-libvirt.c:1737
 #, c-format
 msgid "%s: internal error forming error message"
 msgstr "%s: внутрішня помилка формування повідомлення щодо помилки"
 
-#: src/launch-libvirt.c:1796
+#: src/launch-libvirt.c:1799
 msgid "could not attach disk to libvirt domain"
 msgstr "не вдалося долучити диск до домену libvirt"
 
-#: src/launch-libvirt.c:1827
+#: src/launch-libvirt.c:1830
 msgid "could not detach disk from libvirt domain"
 msgstr "не вдалося від’єднати диск від домену libvirt"
 
@@ -4879,25 +4898,25 @@ msgstr "встановлено зв’язок з guestfs, але стан пр�
 msgid "the libguestfs handle has already been launched"
 msgstr "елемент керування libguestfs вже запущено"
 
-#: src/launch.c:162
+#: src/launch.c:172
 msgid "get-pid can only be called after launch"
 msgstr "get-pid можна викликати лише після launch"
 
-#: src/launch.c:168
+#: src/launch.c:178
 msgid "the current backend does not support 'get-pid'"
 msgstr "у поточному модулі не передбачено підтримки «get-pid»"
 
-#: src/launch.c:179
+#: src/launch.c:189
 msgid "the current backend does not allow max disks to be queried"
 msgstr ""
 "у поточному модулі не передбачено опитування щодо максимальної кількості "
 "дисків"
 
-#: src/launch.c:215
+#: src/launch.c:225
 msgid "qemu has not been launched yet"
 msgstr "qemu ще не запущено"
 
-#: src/launch.c:285
+#: src/launch.c:295
 #, c-format
 msgid "parameter '%s' isn't allowed"
 msgstr "не можна використовувати параметр «%s»"
@@ -7384,7 +7403,7 @@ msgstr ""
 msgid "virt-builder: cannot use a URI ('%s') in the index file\n"
 msgstr ""
 
-#: ../builder/downloader.ml:111 ../builder/downloader.ml:79
+#: ../builder/downloader.ml:119 ../builder/downloader.ml:80
 msgid "virt-builder: curl (download) command failed downloading '%s'\n"
 msgstr ""
 
@@ -7427,15 +7446,15 @@ msgid ""
 "you are susceptible to man-in-the-middle attacks.\n"
 msgstr ""
 
-#: ../builder/downloader.ml:82
+#: ../builder/downloader.ml:83
 msgid "virt-builder: external command '%s' killed by signal %d\n"
 msgstr ""
 
-#: ../builder/downloader.ml:86
+#: ../builder/downloader.ml:87
 msgid "virt-builder: external command '%s' stopped by signal %d\n"
 msgstr ""
 
-#: ../builder/downloader.ml:97
+#: ../builder/downloader.ml:98
 msgid "virt-builder: failed to download %s: HTTP status code %s\n"
 msgstr ""
 
@@ -7588,6 +7607,12 @@ msgid "you cannot use the same disk image for input and output"
 msgstr ""
 "не можна використовувати один образ диска для початкових даних і даних "
 "результату"
+
+#~ msgid "warning: %s"
+#~ msgstr "попередження: %s"
+
+#~ msgid "could not create appliance through libvirt"
+#~ msgstr "не вдалося створити систему для розгортання за допомогою libvirt"
 
 #~ msgid ""
 #~ "If reporting bugs, run virt-resize with the '-d' option and include the "

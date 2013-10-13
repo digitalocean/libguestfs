@@ -74,6 +74,7 @@ type event =
   | EVENT_TRACE
   | EVENT_ENTER
   | EVENT_LIBVIRT_AUTH
+  | EVENT_WARNING
 
 val event_all : event list
 (** A list containing all event types. *)
@@ -473,7 +474,10 @@ val blockdev_rereadpt : t -> string -> unit
 (** reread partition table *)
 
 val blockdev_setbsz : t -> string -> int -> unit
-(** set blocksize of block device *)
+(** set blocksize of block device
+
+    @deprecated Use {!mkfs} instead
+ *)
 
 val blockdev_setro : t -> string -> unit
 (** set block device to read-only *)

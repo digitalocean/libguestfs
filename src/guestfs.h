@@ -120,7 +120,8 @@ extern GUESTFS_DLL_PUBLIC guestfs_abort_cb guestfs_get_out_of_memory_handler (gu
 #define GUESTFS_EVENT_TRACE            0x0040
 #define GUESTFS_EVENT_ENTER            0x0080
 #define GUESTFS_EVENT_LIBVIRT_AUTH     0x0100
-#define GUESTFS_EVENT_ALL              0x01ff
+#define GUESTFS_EVENT_WARNING          0x0200
+#define GUESTFS_EVENT_ALL              0x03ff
 
 #ifndef GUESTFS_TYPEDEF_EVENT_CALLBACK
 #define GUESTFS_TYPEDEF_EVENT_CALLBACK 1
@@ -780,8 +781,8 @@ extern GUESTFS_DLL_PUBLIC int64_t guestfs_blockdev_getsz (guestfs_h *g, const ch
 #define GUESTFS_HAVE_BLOCKDEV_REREADPT 1
 extern GUESTFS_DLL_PUBLIC int guestfs_blockdev_rereadpt (guestfs_h *g, const char *device);
 
-#define GUESTFS_HAVE_BLOCKDEV_SETBSZ 1
-extern GUESTFS_DLL_PUBLIC int guestfs_blockdev_setbsz (guestfs_h *g, const char *device, int blocksize);
+extern GUESTFS_DLL_PUBLIC int guestfs_blockdev_setbsz (guestfs_h *g, const char *device, int blocksize)
+  GUESTFS_DEPRECATED_BY ("mkfs");
 
 #define GUESTFS_HAVE_BLOCKDEV_SETRO 1
 extern GUESTFS_DLL_PUBLIC int guestfs_blockdev_setro (guestfs_h *g, const char *device);
@@ -3031,6 +3032,9 @@ extern GUESTFS_DLL_PUBLIC char **guestfs_zgrepi (guestfs_h *g, const char *regex
 #define GUESTFS_HAVE_INTERNAL_AUTOSYNC 1
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_autosync (guestfs_h *g);
 
+#define GUESTFS_HAVE_INTERNAL_EXIT 1
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_exit (guestfs_h *g);
+
 #define GUESTFS_HAVE_INTERNAL_HOT_ADD_DRIVE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_add_drive (guestfs_h *g, const char *label);
 
@@ -3345,6 +3349,9 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_pv_list *guestfs_internal_test_rstr
 extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_pv_list *guestfs_internal_test_rstructlisterr (guestfs_h *g);
 
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_set_output (guestfs_h *g, const char *filename);
+
+#define GUESTFS_HAVE_INTERNAL_UPLOAD 1
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_upload (guestfs_h *g, const char *filename, const char *tmpname, int mode);
 
 #define GUESTFS_HAVE_INTERNAL_WRITE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_write (guestfs_h *g, const char *path, const char *content, size_t content_size);

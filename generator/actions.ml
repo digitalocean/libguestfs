@@ -4328,8 +4328,11 @@ This uses the L<blockdev(8)> command." };
     longdesc = "\
 This returns the block size of a device.
 
-(Note this is different from both I<size in blocks> and
-I<filesystem block size>).
+Note: this is different from both I<size in blocks> and
+I<filesystem block size>.  Also this setting is not really
+used by anything.  You should probably not use it for
+anything.  Filesystems have their own idea about what
+block size to choose.
 
 This uses the L<blockdev(8)> command." };
 
@@ -4337,14 +4340,14 @@ This uses the L<blockdev(8)> command." };
     name = "blockdev_setbsz";
     style = RErr, [Device "device"; Int "blocksize"], [];
     proc_nr = Some 61;
+    deprecated_by = Some "mkfs";
     shortdesc = "set blocksize of block device";
     longdesc = "\
-This sets the block size of a device.
+This call does nothing and has never done anything
+because of a bug in blockdev.  B<Do not use it.>
 
-(Note this is different from both I<size in blocks> and
-I<filesystem block size>).
-
-This uses the L<blockdev(8)> command." };
+If you need to set the filesystem block size, use the
+C<blocksize> option of C<guestfs_mkfs>." };
 
   { defaults with
     name = "blockdev_getsz";
@@ -11603,6 +11606,27 @@ This returns the number of nodes modified." };
 The label (name of the last element) of the Augeas path expression
 C<augpath> is returned.  C<augpath> must match exactly one node, else
 this function returns an error." };
+
+  { defaults with
+    name = "internal_upload";
+    style = RErr, [FileIn "filename"; String "tmpname"; Int "mode"], [];
+    proc_nr = Some 413;
+    visibility = VInternal;
+    cancellable = true;
+    shortdesc = "upload a file to the appliance (internal use only)";
+    longdesc = "\
+This function is used internally when setting up the appliance." };
+
+  { defaults with
+    name = "internal_exit";
+    style = RErr, [], [];
+    proc_nr = Some 414;
+    visibility = VInternal;
+    cancellable = true;
+    shortdesc = "cause the daemon to exit (internal use only)";
+    longdesc = "\
+This function is used internally when closing the appliance.  Note
+it's only called when ./configure --enable-valgrind-daemon is used." };
 
 ]
 

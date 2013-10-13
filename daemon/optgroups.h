@@ -149,7 +149,7 @@ extern int optgroup_zerofree_available (void);
   int optgroup_inotify_available (void) { return 0; }
 
 #define OPTGROUP_JOURNAL_NOT_AVAILABLE \
-  int __attribute__((noreturn)) do_internal_journal_get () { abort (); } \
+  int __attribute__((noreturn)) do_internal_journal_get (void) { abort (); } \
   int __attribute__((noreturn)) do_journal_close (void) { abort (); } \
   int64_t __attribute__((noreturn)) do_journal_get_data_threshold (void) { abort (); } \
   int __attribute__((noreturn)) do_journal_next (void) { abort (); } \

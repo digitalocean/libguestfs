@@ -182,8 +182,15 @@ public class GuestFS {
    */
   public static final long EVENT_LIBVIRT_AUTH = 0x100;
 
+  /**
+   * Event 'warning'.
+   *
+   * @see #set_event_callback
+   */
+  public static final long EVENT_WARNING = 0x200;
+
   /** Bitmask of all events. */
-  public static final long EVENT_ALL = 0x1ff;
+  public static final long EVENT_ALL = 0x3ff;
 
 /** Utility function to turn an event number or bitmask into a string. */
   public static String eventToString (long events)
@@ -6846,8 +6853,11 @@ public class GuestFS {
    * <p>
    * This returns the block size of a device.
    * <p>
-   * (Note this is different from both *size in blocks* and
-   * *filesystem block size*).
+   * Note: this is different from both *size in blocks* and
+   * *filesystem block size*. Also this setting is not really
+   * used by anything. You should probably not use it for
+   * anything. Filesystems have their own idea about what
+   * block size to choose.
    * <p>
    * This uses the blockdev(8) command.
    * <p>
@@ -6868,12 +6878,18 @@ public class GuestFS {
   /**
    * set blocksize of block device
    * <p>
-   * This sets the block size of a device.
+   * This call does nothing and has never done anything
+   * because of a bug in blockdev. Do not use it.
    * <p>
-   * (Note this is different from both *size in blocks* and
-   * *filesystem block size*).
+   * If you need to set the filesystem block size, use the
+   * "blocksize" option of "g.mkfs".
    * <p>
-   * This uses the blockdev(8) command.
+   * *This function is deprecated.* In new code, use the
+   * "mkfs" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */

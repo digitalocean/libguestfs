@@ -630,6 +630,7 @@
     <keyword type="signal" name="The &quot;progress&quot; signal" link="GuestfsSession.html#GuestfsSession-progress"/>
     <keyword type="signal" name="The &quot;subprocess-quit&quot; signal" link="GuestfsSession.html#GuestfsSession-subprocess-quit"/>
     <keyword type="signal" name="The &quot;trace&quot; signal" link="GuestfsSession.html#GuestfsSession-trace"/>
+    <keyword type="signal" name="The &quot;warning&quot; signal" link="GuestfsSession.html#GuestfsSession-warning"/>
     <keyword type="enum" name="enum GuestfsTristate" link="GuestfsTristate.html#GuestfsTristate-enum"/>
     <keyword type="struct" name="struct GuestfsIntBool" link="GuestfsIntBool.html#GuestfsIntBool-struct"/>
     <keyword type="struct" name="struct GuestfsPV" link="GuestfsPV.html#GuestfsPV-struct"/>
@@ -1058,6 +1059,7 @@
     <keyword type="constant" name="GUESTFS_SESSION_EVENT_TRACE" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-TRACE:CAPS"/>
     <keyword type="constant" name="GUESTFS_SESSION_EVENT_ENTER" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-ENTER:CAPS"/>
     <keyword type="constant" name="GUESTFS_SESSION_EVENT_LIBVIRT_AUTH" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-LIBVIRT-AUTH:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_WARNING" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-WARNING:CAPS"/>
     <keyword type="constant" name="GUESTFS_TRISTATE_FALSE" link="GuestfsTristate.html#GUESTFS-TRISTATE-FALSE:CAPS"/>
     <keyword type="constant" name="GUESTFS_TRISTATE_TRUE" link="GuestfsTristate.html#GUESTFS-TRISTATE-TRUE:CAPS"/>
     <keyword type="constant" name="GUESTFS_TRISTATE_NONE" link="GuestfsTristate.html#GUESTFS-TRISTATE-NONE:CAPS"/>

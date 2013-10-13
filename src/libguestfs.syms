@@ -318,6 +318,7 @@
         guestfs_inspect_list_applications2;
         guestfs_inspect_os;
         guestfs_internal_autosync;
+        guestfs_internal_exit;
         guestfs_internal_hot_add_drive;
         guestfs_internal_hot_remove_drive;
         guestfs_internal_hot_remove_drive_precheck;
@@ -362,6 +363,7 @@
         guestfs_internal_test_rstructlisterr;
         guestfs_internal_test_set_output;
         guestfs_internal_test_va;
+        guestfs_internal_upload;
         guestfs_internal_write;
         guestfs_internal_write_append;
         guestfs_is_blockdev;

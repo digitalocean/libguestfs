@@ -431,4 +431,6 @@ const char *function_names[] = {
   [410] = "journal_set_data_threshold",
   [411] = "aug_setm",
   [412] = "aug_label",
+  [413] = "internal_upload",
+  [414] = "internal_exit",
 };

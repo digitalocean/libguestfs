@@ -756,7 +756,10 @@ This tells the kernel to flush internal buffers associated with C<device>.
 
 これはデバイスのブロック容量を返します。
 
-(これは I<size in blocks> および I<filesystem block size> と異なることに注意してください。)
+Note: this is different from both I<size in blocks> and I<filesystem block
+size>.  Also this setting is not really used by anything.  You should
+probably not use it for anything.  Filesystems have their own idea about
+what block size to choose.
 
 これは L<blockdev(8)> コマンドを使用します。
 
@@ -812,11 +815,17 @@ C<device> のパーティションテーブルを再読み込みします。
 
  blockdev-setbsz device blocksize
 
-デバイスのブロック容量を設定します。
+This call does nothing and has never done anything because of a bug in
+blockdev.  B<Do not use it.>
 
-(これは I<size in blocks> および I<filesystem block size> と異なることに注意してください。)
+If you need to set the filesystem block size, use the C<blocksize> option of
+L</mkfs>.
 
-これは L<blockdev(8)> コマンドを使用します。
+I<This function is deprecated.> In new code, use the L</mkfs> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 blockdev-setro
 
