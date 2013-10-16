@@ -42,6 +42,7 @@ java_tests = \
 	t/GuestFS420LogMessages.java
 
 EXTRA_DIST = \
+	com/redhat/et/libguestfs/.gitignore \
 	$(java_sources) \
 	$(java_tests) \
 	run-bindtests \
@@ -115,8 +116,8 @@ doc-stamp: $(java_sources)
 	touch $@
 
 install-data-hook:
-	mkdir -p $(DESTDIR)$(datadir)/javadoc/$(PACKAGE_NAME)-java-$(PACKAGE_VERSION)
-	cp -a api/* $(DESTDIR)$(datadir)/javadoc/$(PACKAGE_NAME)-java-$(PACKAGE_VERSION)
+	mkdir -p $(DESTDIR)$(datadir)/javadoc/$(PACKAGE_NAME)
+	cp -a api/* $(DESTDIR)$(datadir)/javadoc/$(PACKAGE_NAME)
 
 # Tests (not comprehensive).
 

@@ -453,6 +453,14 @@ If you don't want to use Augeas (you fool!) then try calling
 L</guestfs_read_lines> to get the file as a list of lines which you can
 iterate over.
 
+=head2 SYSTEMD JOURNAL FILES
+
+To read the systemd journal from a Linux guest, use the C<guestfs_journal_*>
+APIs starting with L</guestfs_journal_open>.
+
+Consult the journal documentation here: L<sd-journal(3)>,
+L<sd_journal_open(3)>.
+
 =head2 SELINUX
 
 We support SELinux guests.  To ensure that labeling happens correctly in
@@ -506,6 +514,29 @@ There are two ways to avoid being affected by umask.  Either set umask to 0
 L</guestfs_chmod> after creating each file or directory.
 
 For more information about umask, see L<umask(2)>.
+
+=head2 LABELS AND UUIDS
+
+Many filesystems, devices and logical volumes support either labels (short
+strings like "BOOT" which might not be unique) and/or UUIDs (globally unique
+IDs).
+
+For filesystems, use L</guestfs_vfs_label> or L</guestfs_vfs_uuid> to read
+the label or UUID.  Some filesystems let you call L</guestfs_set_label> or
+L</guestfs_set_uuid> to change the label or UUID.
+
+You can locate a filesystem by its label or UUID using
+L</guestfs_findfs_label> or L</guestfs_findfs_uuid>.
+
+For LVM2 (which supports only UUIDs), there is a rich set of APIs for
+fetching UUIDs, fetching UUIDs of the contained objects, and changing
+UUIDs.  See: L</guestfs_lvuuid>, L</guestfs_vguuid>, L</guestfs_pvuuid>,
+L</guestfs_vglvuuids>, L</guestfs_vgpvuuids>, L</guestfs_vgchange_uuid>,
+L</guestfs_vgchange_uuid_all>, L</guestfs_pvchange_uuid>,
+L</guestfs_pvchange_uuid_all>.
+
+Note when cloning a filesystem, device or whole guest, it is a good idea to
+set new randomly generated UUIDs on the copy.
 
 =head2 ЗАШИФРОВАНІ ДИСКИ
 
@@ -1054,20 +1085,7 @@ available.  See the C<gobject> directory in the source.
 
 =item B<Go>
 
-Experimental Go bindings are available.  See the C<golang> directory in the
-source.  These are incomplete:
-
-=over 4
-
-=item *
-
-No support for L</EVENTS>.
-
-=item *
-
-UUIDs cannot be returned in structures.
-
-=back
+See <guestfs-golang(3)>.
 
 =item B<Haskell>
 
@@ -1297,10 +1315,9 @@ source:
  exec $qemudir/x86_64-softmmu/qemu-system-x86_64 -L $qemudir/pc-bios "$@"
 
 Save this script as C</tmp/qemu.wrapper> (or wherever), C<chmod +x>, and
-then use it by setting the LIBGUESTFS_QEMU environment variable.  For
-example:
+then use it by setting the LIBGUESTFS_HV environment variable.  For example:
 
- LIBGUESTFS_QEMU=/tmp/qemu.wrapper guestfish
+ LIBGUESTFS_HV=/tmp/qemu.wrapper guestfish
 
 Note that libguestfs also calls qemu with the -help and -version options in
 order to determine features.
@@ -1337,8 +1354,8 @@ right one to remove, putting the remaining options into the C<args> array.
 
 The backend (previously known as the "attach method") controls how
 libguestfs creates and/or connects to the backend daemon, eg. by starting
-qemu directly, or by using libvirt to manage an appliance, or connecting to
-an already running daemon.
+qemu directly, or using libvirt to manage an appliance, running User-Mode
+Linux, or connecting to an already running daemon.
 
 You can set the backend by calling L</guestfs_set_backend>, or by setting
 the environment variable C<LIBGUESTFS_BACKEND>.
@@ -1370,6 +1387,17 @@ would be C<libvirt:qemu:///session>
 
 The libvirt backend supports more features, including hotplugging (see
 L</HOTPLUGGING>) and sVirt.
+
+=item C<uml>
+
+Run the User-Mode Linux kernel.  The location of the kernel is set using
+C<$LIBGUESTFS_HV> or using the L</guestfs_set_qemu> API (note that qemu is
+not involved, we just reuse the same variable in the handle for
+convenience).
+
+User-Mode Linux can be much faster, simpler and more lightweight than using
+a full-blown virtual machine, but it also has some shortcomings.  See
+L</USER-MODE LINUX BACKEND> below.
 
 =item C<unix:I<шлях>>
 
@@ -1446,6 +1474,80 @@ to attach to and modify live virtual machines.
 
 The virtual machine needs to have been set up beforehand so that it has the
 virtio-serial channel and so that guestfsd is running inside it.
+
+=head2 USER-MODE LINUX BACKEND
+
+Setting the following environment variables (or the equivalent in the API)
+selects the User-Mode Linux backend:
+
+ export LIBGUESTFS_BACKEND=uml
+ export LIBGUESTFS_HV=/path/to/vmlinux
+
+C<vmlinux> (or it may be called C<linux>) is the Linux binary, compiled to
+run as a userspace process.  Note that we reuse the qemu variable in the
+handle for convenience; qemu is not involved.
+
+User-Mode Linux can be faster and more lightweight than running a full-blown
+virtual machine as the backend (especially if you are already running
+libguestfs in a virtual machine or cloud instance), but it also has some
+shortcomings compared to the usual qemu/KVM-based backend.
+
+=head3 BUILDING USER-MODE LINUX FROM SOURCE
+
+Your Linux distro may provide UML in which case you can ignore this section.
+
+These instructions are adapted from:
+L<http://user-mode-linux.sourceforge.net/source.html>
+
+=over 4
+
+=item 1. Check out Linux sources
+
+Clone the Linux git repository or download the Linux source tarball.
+
+=item 2. Configure the kernel
+
+B<Note:> All 'make' commands must have C<ARCH=um> added.
+
+ make menuconfig ARCH=um
+
+Make sure any filesystem drivers that you need are compiled into the kernel.
+
+B<Currently, it needs a large amount of extra work to get modules working>.
+It's recommended that you disable module support in the kernel
+configuration, which will cause everything to be compiled into the image.
+
+=item 3. Build the kernel
+
+ make ARCH=um
+
+This will leave a file called C<linux> or C<vmlinux> in the top-level
+directory.  This is the UML kernel.  You should set C<LIBGUESTFS_HV> to
+point to this file.
+
+=back
+
+=head3 USER-MODE LINUX DIFFERENCES FROM KVM
+
+=over 4
+
+=item UML only supports raw-format images
+
+Only plain raw-format images will work.  No qcow2, no backing files.
+
+=item UML does not support any remote drives
+
+No NBD, etc.
+
+=item UML only works on ix86 and x86-64
+
+=item UML is experimental
+
+In particular, support for UML in libguestfs depends on support for UML in
+the upstream kernel.  If UML was ever removed from the upstream Linux
+kernel, then we might remove it from libguestfs too.
+
+=back
 
 =head2 ГАРАНТІЯ ЩОДО ABI
 
@@ -2585,6 +2687,15 @@ If no callback is registered: the messages are discarded unless the verbose
 flag is set in which case they are sent to stderr.  You can override the
 printing of verbose messages to stderr by setting up a callback.
 
+=item GUESTFS_EVENT_WARNING (payload type: message buffer)
+
+The callback function is called whenever a warning message is generated by
+the library part of libguestfs.
+
+If no callback is registered: the messages are printed to stderr.  You can
+override the printing of warning messages to stderr by setting up a
+callback.
+
 =item GUESTFS_EVENT_TRACE (payload type: message buffer)
 
 The callback function is called whenever a trace message is generated.  This
@@ -2631,8 +2742,9 @@ This function registers a callback (C<cb>) for all event classes in the
 C<event_bitmask>.
 
 For example, to register for all log message events, you could call this
-function with the bitmask C<GUESTFS_EVENT_APPLIANCE|GUESTFS_EVENT_LIBRARY>.
-To register a single callback for all possible classes of events, use
+function with the bitmask
+C<GUESTFS_EVENT_APPLIANCE|GUESTFS_EVENT_LIBRARY|GUESTFS_EVENT_WARNING>.  To
+register a single callback for all possible classes of events, use
 C<GUESTFS_EVENT_ALL>.
 
 C<flags> should always be passed as 0.
@@ -2719,8 +2831,9 @@ capture debug and other messages.  In libguestfs E<le> 1.8 these were sent
 unconditionally to C<stderr>.
 
 Events associated with log messages are: C<GUESTFS_EVENT_LIBRARY>,
-C<GUESTFS_EVENT_APPLIANCE> and C<GUESTFS_EVENT_TRACE>.  (Note that error
-messages are not events; you must capture error messages separately).
+C<GUESTFS_EVENT_APPLIANCE>, C<GUESTFS_EVENT_WARNING> and
+C<GUESTFS_EVENT_TRACE>.  (Note that error messages are not events; you must
+capture error messages separately).
 
 Programs have to set up a callback to capture the classes of events of
 interest:
@@ -2728,8 +2841,8 @@ interest:
  int eh =
    guestfs_set_event_callback
      (g, message_callback,
-      GUESTFS_EVENT_LIBRARY|GUESTFS_EVENT_APPLIANCE|
-      GUESTFS_EVENT_TRACE,
+      GUESTFS_EVENT_LIBRARY | GUESTFS_EVENT_APPLIANCE |
+      GUESTFS_EVENT_WARNING | GUESTFS_EVENT_TRACE,
       0, NULL) == -1)
  if (eh == -1) {
    // handle error in the usual way
@@ -3803,16 +3916,31 @@ run by this rule.
 Runs a subset of the test suite under valgrind using locally installed
 libvirt guests (read-only).
 
-=item C<make check-with-appliance>
+=item C<make check-direct>
 
 Runs all tests using default appliance back-end.  This only has any effect
 if a non-default backend was selected using C<./configure
 --with-default-backend=...>
 
-=item C<make check-valgrind-with-appliance>
+=item C<make check-valgrind-direct>
 
 Run a subset of the test suite under valgrind using the default appliance
 back-end.
+
+=item C<make check-uml>
+
+Runs all tests using the User-Mode Linux backend.
+
+As there is no standard location for the User-Mode Linux kernel, you I<have>
+to set C<LIBGUESTFS_HV> to point to the kernel image, eg:
+
+ make check-uml LIBGUESTFS_HV=~/d/linux-um/vmlinux
+
+=item C<make check-valgrind-uml>
+
+Runs all tests using the User-Mode Linux backend, under valgrind.
+
+As above, you have to set C<LIBGUESTFS_HV> to point to the kernel.
 
 =item C<make check-with-upstream-qemu>
 
@@ -3866,6 +3994,14 @@ check-direct
 =item *
 
 check-valgrind-direct
+
+=item *
+
+check-uml
+
+=item *
+
+check-valgrind-uml
 
 =item *
 
@@ -3943,6 +4079,10 @@ Bash tab-completion scripts.
 
 Various build scripts used by autotools.
 
+=item C<builder>
+
+L<virt-builder(1)> command and documentation.
+
 =item C<cat>
 
 The L<virt-cat(1)>, L<virt-filesystems(1)> and L<virt-ls(1)> commands and
@@ -4008,6 +4148,11 @@ Logo used on the website.  The fish is called Arthur by the way.
 =item C<m4>
 
 M4 macros used by autoconf.
+
+=item C<mllib>
+
+Various libraries and common code used by L<virt-resize(1)> and the other
+tools which are written in OCaml.
 
 =item C<po>
 
@@ -4307,6 +4452,14 @@ See also L</LIBGUESTFS_TMPDIR>, L</guestfs_set_cachedir>.
 Set C<LIBGUESTFS_DEBUG=1> to enable verbose messages.  This has the same
 effect as calling C<guestfs_set_verbose (g, 1)>.
 
+=item LIBGUESTFS_HV
+
+Set the default hypervisor (usually qemu) binary that libguestfs uses.  If
+not set, then the qemu which was found at compile time by the configure
+script is used.
+
+See also L</QEMU WRAPPERS> above.
+
 =item LIBGUESTFS_MEMSIZE
 
 Set the memory allocated to the qemu process, in megabytes.  For example:
@@ -4320,10 +4473,7 @@ the discussion of paths in section L</PATH> above.
 
 =item LIBGUESTFS_QEMU
 
-Set the default qemu binary that libguestfs uses.  If not set, then the qemu
-which was found at compile time by the configure script is used.
-
-See also L</QEMU WRAPPERS> above.
+This is the old way to set C<LIBGUESTFS_HV>.
 
 =item LIBGUESTFS_TMPDIR
 
@@ -4366,12 +4516,13 @@ See L</LIBGUESTFS_CACHEDIR>, L</LIBGUESTFS_TMPDIR>.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
-L<guestfs-examples(3)>, L<guestfs-erlang(3)>, L<guestfs-java(3)>,
-L<guestfs-lua(3)>, L<guestfs-ocaml(3)>, L<guestfs-perl(3)>,
-L<guestfs-python(3)>, L<guestfs-ruby(3)>, L<guestfish(1)>, L<guestmount(1)>,
-L<virt-alignment-scan(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>,
-L<virt-copy-out(1)>, L<virt-df(1)>, L<virt-edit(1)>, L<virt-filesystems(1)>,
-L<virt-format(1)>, L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
+L<guestfs-examples(3)>, L<guestfs-erlang(3)>, L<guestfs-golang(3)>,
+L<guestfs-java(3)>, L<guestfs-lua(3)>, L<guestfs-ocaml(3)>,
+L<guestfs-perl(3)>, L<guestfs-python(3)>, L<guestfs-ruby(3)>,
+L<guestfish(1)>, L<guestmount(1)>, L<virt-alignment-scan(1)>,
+L<virt-builder(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>,
+L<virt-df(1)>, L<virt-edit(1)>, L<virt-filesystems(1)>, L<virt-format(1)>,
+L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
 L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
 L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
 L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
@@ -4379,7 +4530,7 @@ L<virt-win-reg(1)>, L<guestfs-faq(1)>, L<guestfs-performance(1)>,
 L<guestfs-release-notes(1)>, L<guestfs-testing(1)>,
 L<libguestfs-test-tool(1)>, L<libguestfs-make-fixed-appliance(1)>,
 L<supermin(8)>, L<supermin-helper(8)>, L<qemu(1)>, L<hivex(3)>, L<stap(1)>,
-L<http://libguestfs.org/>.
+L<sd-journal(3)>, L<http://libguestfs.org/>.
 
 Tools with a similar purpose: L<fdisk(8)>, L<parted(8)>, L<kpartx(8)>,
 L<lvm(8)>, L<disktype(1)>.
@@ -4390,5 +4541,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2013 Red Hat Inc.
+© Red Hat Inc., 2009–2013
 

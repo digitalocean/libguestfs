@@ -466,6 +466,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_add_drive_scratch_argv (IntPtr h, long size, void *);
+
+    /// <summary>
+    /// add a temporary scratch drive
+    /// </summary>
+    public void add_drive_scratch (long size)
+    {
+      int r;
+      r = guestfs_add_drive_scratch_argv (_handle, size, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_add_drive_with_if (IntPtr h, [In] string filename, [In] string iface);
 
     /// <summary>
@@ -581,6 +595,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_aug_label (IntPtr h, [In] string augpath);
+
+    /// <summary>
+    /// return the label from an Augeas path expression
+    /// </summary>
+    public string aug_label (string augpath)
+    {
+      string r;
+      r = guestfs_aug_label (_handle, augpath);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_aug_load (IntPtr h);
 
     /// <summary>
@@ -679,6 +708,21 @@ namespace Guestfs
       r = guestfs_aug_set (_handle, augpath, val);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_aug_setm (IntPtr h, [In] string base, [In] string sub, [In] string val);
+
+    /// <summary>
+    /// set multiple Augeas nodes
+    /// </summary>
+    public int aug_setm (string base, string sub, string val)
+    {
+      int r;
+      r = guestfs_aug_setm (_handle, base, sub, val);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -1275,15 +1319,15 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_config (IntPtr h, [In] string qemuparam, [In] string qemuvalue);
+    static extern int guestfs_config (IntPtr h, [In] string hvparam, [In] string hvvalue);
 
     /// <summary>
-    /// add qemu parameters
+    /// add hypervisor parameters
     /// </summary>
-    public void config (string qemuparam, string qemuvalue)
+    public void config (string hvparam, string hvvalue)
     {
       int r;
-      r = guestfs_config (_handle, qemuparam, qemuvalue);
+      r = guestfs_config (_handle, hvparam, hvvalue);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -2151,6 +2195,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_get_hv (IntPtr h);
+
+    /// <summary>
+    /// get the hypervisor binary
+    /// </summary>
+    public string get_hv ()
+    {
+      string r;
+      r = guestfs_get_hv (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string guestfs_get_libvirt_requested_credential_challenge (IntPtr h, int index);
 
     /// <summary>
@@ -2214,7 +2273,7 @@ namespace Guestfs
     static extern int guestfs_get_memsize (IntPtr h);
 
     /// <summary>
-    /// get memory allocated to the qemu subprocess
+    /// get memory allocated to the hypervisor
     /// </summary>
     public int get_memsize ()
     {
@@ -2274,7 +2333,7 @@ namespace Guestfs
     static extern int guestfs_get_pid (IntPtr h);
 
     /// <summary>
-    /// get PID of qemu subprocess
+    /// get PID of hypervisor
     /// </summary>
     public int get_pid ()
     {
@@ -2304,7 +2363,7 @@ namespace Guestfs
     static extern string guestfs_get_qemu (IntPtr h);
 
     /// <summary>
-    /// get the qemu binary
+    /// get the hypervisor binary (usually qemu)
     /// </summary>
     public string get_qemu ()
     {
@@ -4014,10 +4073,112 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_journal_close (IntPtr h);
+
+    /// <summary>
+    /// close the systemd journal
+    /// </summary>
+    public void journal_close ()
+    {
+      int r;
+      r = guestfs_journal_close (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _xattr[] guestfs_journal_get (IntPtr h);
+
+    /// <summary>
+    /// read the current journal entry
+    /// </summary>
+    public _xattr[] journal_get ()
+    {
+      _xattr[] r;
+      r = guestfs_journal_get (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_journal_get_data_threshold (IntPtr h);
+
+    /// <summary>
+    /// get the data threshold for reading journal entries
+    /// </summary>
+    public long journal_get_data_threshold ()
+    {
+      long r;
+      r = guestfs_journal_get_data_threshold (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_journal_next (IntPtr h);
+
+    /// <summary>
+    /// move to the next journal entry
+    /// </summary>
+    public bool journal_next ()
+    {
+      int r;
+      r = guestfs_journal_next (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_journal_open (IntPtr h, [In] string directory);
+
+    /// <summary>
+    /// open the systemd journal
+    /// </summary>
+    public void journal_open (string directory)
+    {
+      int r;
+      r = guestfs_journal_open (_handle, directory);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_journal_set_data_threshold (IntPtr h, long threshold);
+
+    /// <summary>
+    /// set the data threshold for reading journal entries
+    /// </summary>
+    public void journal_set_data_threshold (long threshold)
+    {
+      int r;
+      r = guestfs_journal_set_data_threshold (_handle, threshold);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_journal_skip (IntPtr h, long skip);
+
+    /// <summary>
+    /// skip forwards or backwards in the journal
+    /// </summary>
+    public long journal_skip (long skip)
+    {
+      long r;
+      r = guestfs_journal_skip (_handle, skip);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_kill_subprocess (IntPtr h);
 
     /// <summary>
-    /// kill the qemu subprocess
+    /// kill the hypervisor
     /// </summary>
     public void kill_subprocess ()
     {
@@ -4031,7 +4192,7 @@ namespace Guestfs
     static extern int guestfs_launch (IntPtr h);
 
     /// <summary>
-    /// launch the qemu subprocess
+    /// launch the backend
     /// </summary>
     public void launch ()
     {
@@ -6493,6 +6654,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_hv (IntPtr h, [In] string hv);
+
+    /// <summary>
+    /// set the hypervisor binary
+    /// </summary>
+    public void set_hv (string hv)
+    {
+      int r;
+      r = guestfs_set_hv (_handle, hv);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_set_label (IntPtr h, [In] string mountable, [In] string label);
 
     /// <summary>
@@ -6538,7 +6713,7 @@ namespace Guestfs
     static extern int guestfs_set_memsize (IntPtr h, int memsize);
 
     /// <summary>
-    /// set memory allocated to the qemu subprocess
+    /// set memory allocated to the hypervisor
     /// </summary>
     public void set_memsize (int memsize)
     {
@@ -6605,15 +6780,15 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_set_qemu (IntPtr h, [In] string qemu);
+    static extern int guestfs_set_qemu (IntPtr h, [In] string hv);
 
     /// <summary>
-    /// set the qemu binary
+    /// set the hypervisor binary (usually qemu)
     /// </summary>
-    public void set_qemu (string qemu)
+    public void set_qemu (string hv)
     {
       int r;
-      r = guestfs_set_qemu (_handle, qemu);
+      r = guestfs_set_qemu (_handle, hv);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -6684,6 +6859,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_set_trace (_handle, trace);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_uuid (IntPtr h, [In] string device, [In] string uuid);
+
+    /// <summary>
+    /// set the filesystem UUID
+    /// </summary>
+    public void set_uuid (string device, string uuid)
+    {
+      int r;
+      r = guestfs_set_uuid (_handle, device, uuid);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -6851,7 +7040,7 @@ namespace Guestfs
     static extern int guestfs_shutdown (IntPtr h);
 
     /// <summary>
-    /// shutdown the qemu subprocess
+    /// shutdown the hypervisor
     /// </summary>
     public void shutdown ()
     {
@@ -7672,7 +7861,7 @@ namespace Guestfs
     static extern int guestfs_wait_ready (IntPtr h);
 
     /// <summary>
-    /// wait until the qemu subprocess launches (no op)
+    /// wait until the hypervisor launches (no op)
     /// </summary>
     public void wait_ready ()
     {

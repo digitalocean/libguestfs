@@ -95,7 +95,7 @@ child_cleanup (guestfs_h *g)
 {
   debug (g, "child_cleanup: %p: child process died", g);
 
-  g->backend_ops->shutdown (g, 0);
+  g->backend_ops->shutdown (g, g->backend_data, 0);
   if (g->conn) {
     g->conn->ops->free_connection (g, g->conn);
     g->conn = NULL;
@@ -213,7 +213,7 @@ guestfs___send (guestfs_h *g, int proc_nr,
 {
   struct guestfs_message_header hdr;
   XDR xdr;
-  u_int32_t len;
+  uint32_t len;
   int serial = g->msg_next_serial++;
   ssize_t r;
   CLEANUP_FREE char *msg_out = NULL;
@@ -411,7 +411,7 @@ send_file_complete (guestfs_h *g)
 static int
 send_file_chunk (guestfs_h *g, int cancel, const char *buf, size_t buflen)
 {
-  u_int32_t len;
+  uint32_t len;
   ssize_t r;
   guestfs_chunk chunk;
   XDR xdr;
@@ -580,14 +580,14 @@ recv_from_daemon (guestfs_h *g, uint32_t *size_rtn, void **buf_rtn)
   if (g->verbose) {
     ssize_t i, j;
 
-    for (i = 0; i < nr; i += 16) {
+    for (i = 0; i < n; i += 16) {
       printf ("%04zx: ", i);
-      for (j = i; j < MIN (i+16, nr); ++j)
+      for (j = i; j < MIN (i+16, n); ++j)
         printf ("%02x ", (*(unsigned char **)buf_rtn)[j]);
       for (; j < i+16; ++j)
         printf ("   ");
       printf ("|");
-      for (j = i; j < MIN (i+16, nr); ++j)
+      for (j = i; j < MIN (i+16, n); ++j)
         if (c_isprint ((*(char **)buf_rtn)[j]))
           printf ("%c", (*(char **)buf_rtn)[j]);
         else

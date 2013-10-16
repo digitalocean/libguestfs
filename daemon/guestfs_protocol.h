@@ -3632,6 +3632,70 @@ struct guestfs_remount_args {
 };
 typedef struct guestfs_remount_args guestfs_remount_args;
 
+struct guestfs_set_uuid_args {
+	char *device;
+	char *uuid;
+};
+typedef struct guestfs_set_uuid_args guestfs_set_uuid_args;
+
+struct guestfs_journal_open_args {
+	char *directory;
+};
+typedef struct guestfs_journal_open_args guestfs_journal_open_args;
+
+struct guestfs_journal_next_ret {
+	bool_t more;
+};
+typedef struct guestfs_journal_next_ret guestfs_journal_next_ret;
+
+struct guestfs_journal_skip_args {
+	int64_t skip;
+};
+typedef struct guestfs_journal_skip_args guestfs_journal_skip_args;
+
+struct guestfs_journal_skip_ret {
+	int64_t rskip;
+};
+typedef struct guestfs_journal_skip_ret guestfs_journal_skip_ret;
+
+struct guestfs_journal_get_data_threshold_ret {
+	int64_t threshold;
+};
+typedef struct guestfs_journal_get_data_threshold_ret guestfs_journal_get_data_threshold_ret;
+
+struct guestfs_journal_set_data_threshold_args {
+	int64_t threshold;
+};
+typedef struct guestfs_journal_set_data_threshold_args guestfs_journal_set_data_threshold_args;
+
+struct guestfs_aug_setm_args {
+	char *base;
+	guestfs_str *sub;
+	char *val;
+};
+typedef struct guestfs_aug_setm_args guestfs_aug_setm_args;
+
+struct guestfs_aug_setm_ret {
+	int nodes;
+};
+typedef struct guestfs_aug_setm_ret guestfs_aug_setm_ret;
+
+struct guestfs_aug_label_args {
+	char *augpath;
+};
+typedef struct guestfs_aug_label_args guestfs_aug_label_args;
+
+struct guestfs_aug_label_ret {
+	char *label;
+};
+typedef struct guestfs_aug_label_ret guestfs_aug_label_ret;
+
+struct guestfs_internal_upload_args {
+	char *tmpname;
+	int mode;
+};
+typedef struct guestfs_internal_upload_args guestfs_internal_upload_args;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -4028,9 +4092,21 @@ enum guestfs_procedure {
 	GUESTFS_PROC_EXTLINUX = 400,
 	GUESTFS_PROC_CP_R = 401,
 	GUESTFS_PROC_REMOUNT = 402,
+	GUESTFS_PROC_SET_UUID = 403,
+	GUESTFS_PROC_JOURNAL_OPEN = 404,
+	GUESTFS_PROC_JOURNAL_CLOSE = 405,
+	GUESTFS_PROC_JOURNAL_NEXT = 406,
+	GUESTFS_PROC_JOURNAL_SKIP = 407,
+	GUESTFS_PROC_INTERNAL_JOURNAL_GET = 408,
+	GUESTFS_PROC_JOURNAL_GET_DATA_THRESHOLD = 409,
+	GUESTFS_PROC_JOURNAL_SET_DATA_THRESHOLD = 410,
+	GUESTFS_PROC_AUG_SETM = 411,
+	GUESTFS_PROC_AUG_LABEL = 412,
+	GUESTFS_PROC_INTERNAL_UPLOAD = 413,
+	GUESTFS_PROC_INTERNAL_EXIT = 414,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 402
+#define GUESTFS_MAX_PROC_NR 414
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4657,6 +4733,18 @@ extern  bool_t xdr_guestfs_syslinux_args (XDR *, guestfs_syslinux_args*);
 extern  bool_t xdr_guestfs_extlinux_args (XDR *, guestfs_extlinux_args*);
 extern  bool_t xdr_guestfs_cp_r_args (XDR *, guestfs_cp_r_args*);
 extern  bool_t xdr_guestfs_remount_args (XDR *, guestfs_remount_args*);
+extern  bool_t xdr_guestfs_set_uuid_args (XDR *, guestfs_set_uuid_args*);
+extern  bool_t xdr_guestfs_journal_open_args (XDR *, guestfs_journal_open_args*);
+extern  bool_t xdr_guestfs_journal_next_ret (XDR *, guestfs_journal_next_ret*);
+extern  bool_t xdr_guestfs_journal_skip_args (XDR *, guestfs_journal_skip_args*);
+extern  bool_t xdr_guestfs_journal_skip_ret (XDR *, guestfs_journal_skip_ret*);
+extern  bool_t xdr_guestfs_journal_get_data_threshold_ret (XDR *, guestfs_journal_get_data_threshold_ret*);
+extern  bool_t xdr_guestfs_journal_set_data_threshold_args (XDR *, guestfs_journal_set_data_threshold_args*);
+extern  bool_t xdr_guestfs_aug_setm_args (XDR *, guestfs_aug_setm_args*);
+extern  bool_t xdr_guestfs_aug_setm_ret (XDR *, guestfs_aug_setm_ret*);
+extern  bool_t xdr_guestfs_aug_label_args (XDR *, guestfs_aug_label_args*);
+extern  bool_t xdr_guestfs_aug_label_ret (XDR *, guestfs_aug_label_ret*);
+extern  bool_t xdr_guestfs_internal_upload_args (XDR *, guestfs_internal_upload_args*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5233,6 +5321,18 @@ extern bool_t xdr_guestfs_syslinux_args ();
 extern bool_t xdr_guestfs_extlinux_args ();
 extern bool_t xdr_guestfs_cp_r_args ();
 extern bool_t xdr_guestfs_remount_args ();
+extern bool_t xdr_guestfs_set_uuid_args ();
+extern bool_t xdr_guestfs_journal_open_args ();
+extern bool_t xdr_guestfs_journal_next_ret ();
+extern bool_t xdr_guestfs_journal_skip_args ();
+extern bool_t xdr_guestfs_journal_skip_ret ();
+extern bool_t xdr_guestfs_journal_get_data_threshold_ret ();
+extern bool_t xdr_guestfs_journal_set_data_threshold_args ();
+extern bool_t xdr_guestfs_aug_setm_args ();
+extern bool_t xdr_guestfs_aug_setm_ret ();
+extern bool_t xdr_guestfs_aug_label_args ();
+extern bool_t xdr_guestfs_aug_label_ret ();
+extern bool_t xdr_guestfs_internal_upload_args ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

@@ -32,6 +32,7 @@ extern int optgroup_gdisk_available (void);
 extern int optgroup_grub_available (void);
 extern int optgroup_hivex_available (void);
 extern int optgroup_inotify_available (void);
+extern int optgroup_journal_available (void);
 extern int optgroup_ldm_available (void);
 extern int optgroup_linuxcaps_available (void);
 extern int optgroup_linuxfsuuid_available (void);
@@ -75,6 +76,7 @@ extern int optgroup_zerofree_available (void);
   char *__attribute__((noreturn)) do_aug_get (const char *augpath) { abort (); } \
   int __attribute__((noreturn)) do_aug_init (const char *root, int flags) { abort (); } \
   int __attribute__((noreturn)) do_aug_insert (const char *augpath, const char *label, int before) { abort (); } \
+  char *__attribute__((noreturn)) do_aug_label (const char *augpath) { abort (); } \
   int __attribute__((noreturn)) do_aug_load (void) { abort (); } \
   char **__attribute__((noreturn)) do_aug_ls (const char *augpath) { abort (); } \
   char **__attribute__((noreturn)) do_aug_match (const char *augpath) { abort (); } \
@@ -82,6 +84,7 @@ extern int optgroup_zerofree_available (void);
   int __attribute__((noreturn)) do_aug_rm (const char *augpath) { abort (); } \
   int __attribute__((noreturn)) do_aug_save (void) { abort (); } \
   int __attribute__((noreturn)) do_aug_set (const char *augpath, const char *val) { abort (); } \
+  int __attribute__((noreturn)) do_aug_setm (const char *base, const char *sub, const char *val) { abort (); } \
   int optgroup_augeas_available (void) { return 0; }
 
 #define OPTGROUP_BTRFS_NOT_AVAILABLE \
@@ -144,6 +147,16 @@ extern int optgroup_zerofree_available (void);
   guestfs_int_inotify_event_list *__attribute__((noreturn)) do_inotify_read (void) { abort (); } \
   int __attribute__((noreturn)) do_inotify_rm_watch (int wd) { abort (); } \
   int optgroup_inotify_available (void) { return 0; }
+
+#define OPTGROUP_JOURNAL_NOT_AVAILABLE \
+  int __attribute__((noreturn)) do_internal_journal_get (void) { abort (); } \
+  int __attribute__((noreturn)) do_journal_close (void) { abort (); } \
+  int64_t __attribute__((noreturn)) do_journal_get_data_threshold (void) { abort (); } \
+  int __attribute__((noreturn)) do_journal_next (void) { abort (); } \
+  int __attribute__((noreturn)) do_journal_open (const char *directory) { abort (); } \
+  int __attribute__((noreturn)) do_journal_set_data_threshold (int64_t threshold) { abort (); } \
+  int64_t __attribute__((noreturn)) do_journal_skip (int64_t skip) { abort (); } \
+  int optgroup_journal_available (void) { return 0; }
 
 #define OPTGROUP_LDM_NOT_AVAILABLE \
   int __attribute__((noreturn)) do_ldmtool_create_all (void) { abort (); } \

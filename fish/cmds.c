@@ -51,6 +51,8 @@ static int run_add_drive_ro (const char *cmd, size_t argc, char *argv[]);
 static int run_config (const char *cmd, size_t argc, char *argv[]);
 static int run_set_qemu (const char *cmd, size_t argc, char *argv[]);
 static int run_get_qemu (const char *cmd, size_t argc, char *argv[]);
+static int run_set_hv (const char *cmd, size_t argc, char *argv[]);
+static int run_get_hv (const char *cmd, size_t argc, char *argv[]);
 static int run_set_path (const char *cmd, size_t argc, char *argv[]);
 static int run_get_path (const char *cmd, size_t argc, char *argv[]);
 static int run_set_append (const char *cmd, size_t argc, char *argv[]);
@@ -149,6 +151,8 @@ static int run_get_cachedir (const char *cmd, size_t argc, char *argv[]);
 static int run_user_cancel (const char *cmd, size_t argc, char *argv[]);
 static int run_set_program (const char *cmd, size_t argc, char *argv[]);
 static int run_get_program (const char *cmd, size_t argc, char *argv[]);
+static int run_add_drive_scratch (const char *cmd, size_t argc, char *argv[]);
+static int run_journal_get (const char *cmd, size_t argc, char *argv[]);
 static int run_mount (const char *cmd, size_t argc, char *argv[]);
 static int run_sync (const char *cmd, size_t argc, char *argv[]);
 static int run_touch (const char *cmd, size_t argc, char *argv[]);
@@ -533,6 +537,15 @@ static int run_syslinux (const char *cmd, size_t argc, char *argv[]);
 static int run_extlinux (const char *cmd, size_t argc, char *argv[]);
 static int run_cp_r (const char *cmd, size_t argc, char *argv[]);
 static int run_remount (const char *cmd, size_t argc, char *argv[]);
+static int run_set_uuid (const char *cmd, size_t argc, char *argv[]);
+static int run_journal_open (const char *cmd, size_t argc, char *argv[]);
+static int run_journal_close (const char *cmd, size_t argc, char *argv[]);
+static int run_journal_next (const char *cmd, size_t argc, char *argv[]);
+static int run_journal_skip (const char *cmd, size_t argc, char *argv[]);
+static int run_journal_get_data_threshold (const char *cmd, size_t argc, char *argv[]);
+static int run_journal_set_data_threshold (const char *cmd, size_t argc, char *argv[]);
+static int run_aug_setm (const char *cmd, size_t argc, char *argv[]);
+static int run_aug_label (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -632,7 +645,7 @@ struct command_entry setenv_cmd_entry = {
 
 struct command_entry sparse_cmd_entry = {
   .name = "sparse",
-  .help = "NAME\n    sparse - create a sparse disk image and add\n\nDESCRIPTION\n     sparse filename size\n\n    This creates an empty sparse file of the given size, and then adds so it\n    can be further examined.\n\n    In all respects it works the same as the \"alloc\" command, except that\n    the image file is allocated sparsely, which means that disk blocks are\n    not assigned to the file until they are needed. Sparse disk files only\n    use space when written to, but they are slower and there is a danger you\n    could run out of real disk space during a write operation.\n\n    For more advanced image creation, see qemu-img(1) utility.\n\n    Size can be specified using standard suffixes, eg. \"1M\".\n\n",
+  .help = "NAME\n    sparse - create a sparse disk image and add\n\nDESCRIPTION\n     sparse filename size\n\n    This creates an empty sparse file of the given size, and then adds so it\n    can be further examined.\n\n    In all respects it works the same as the \"alloc\" command, except that\n    the image file is allocated sparsely, which means that disk blocks are\n    not assigned to the file until they are needed. Sparse disk files only\n    use space when written to, but they are slower and there is a danger you\n    could run out of real disk space during a write operation.\n\n    For more advanced image creation, see qemu-img(1) utility.\n\n    Size can be specified using standard suffixes, eg. \"1M\".\n\n    See also the guestfish \"scratch\" command.\n\n",
   .run = run_sparse
 };
 
@@ -656,13 +669,13 @@ struct command_entry unsetenv_cmd_entry = {
 
 struct command_entry launch_cmd_entry = {
   .name = "launch",
-  .help = "NAME\n    launch - launch the qemu subprocess\n\nSYNOPSIS\n     launch\n\nDESCRIPTION\n    Internally libguestfs is implemented by running a virtual machine using\n    qemu(1).\n\n    You should call this after configuring the handle (eg. adding drives)\n    but before performing any actions.\n\n    Do not call \"launch\" twice on the same handle. Although it will not give\n    an error (for historical reasons), the precise behaviour when you do\n    this is not well defined. Handles are very cheap to create, so create a\n    new one for each launch.\n\n    You can use 'run' as an alias for this command.\n\n",
+  .help = "NAME\n    launch - launch the backend\n\nSYNOPSIS\n     launch\n\nDESCRIPTION\n    You should call this after configuring the handle (eg. adding drives)\n    but before performing any actions.\n\n    Do not call \"launch\" twice on the same handle. Although it will not give\n    an error (for historical reasons), the precise behaviour when you do\n    this is not well defined. Handles are very cheap to create, so create a\n    new one for each launch.\n\n    You can use 'run' as an alias for this command.\n\n",
   .run = run_launch
 };
 
 struct command_entry kill_subprocess_cmd_entry = {
   .name = "kill-subprocess",
-  .help = "NAME\n    kill-subprocess - kill the qemu subprocess\n\nSYNOPSIS\n     kill-subprocess\n\nDESCRIPTION\n    This kills the qemu subprocess.\n\n    Do not call this. See: \"shutdown\" instead.\n\n    *This function is deprecated.* In new code, use the \"shutdown\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    kill-subprocess - kill the hypervisor\n\nSYNOPSIS\n     kill-subprocess\n\nDESCRIPTION\n    This kills the hypervisor.\n\n    Do not call this. See: \"shutdown\" instead.\n\n    *This function is deprecated.* In new code, use the \"shutdown\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_kill_subprocess
 };
 
@@ -680,20 +693,32 @@ struct command_entry add_drive_ro_cmd_entry = {
 
 struct command_entry config_cmd_entry = {
   .name = "config",
-  .help = "NAME\n    config - add qemu parameters\n\nSYNOPSIS\n     config qemuparam qemuvalue\n\nDESCRIPTION\n    This can be used to add arbitrary qemu command line parameters of the\n    form *-param value*. Actually it's not quite arbitrary - we prevent you\n    from setting some parameters which would interfere with parameters that\n    we use.\n\n    The first character of \"qemuparam\" string must be a \"-\" (dash).\n\n    \"qemuvalue\" can be NULL.\n\n",
+  .help = "NAME\n    config - add hypervisor parameters\n\nSYNOPSIS\n     config hvparam hvvalue\n\nDESCRIPTION\n    This can be used to add arbitrary hypervisor parameters of the form\n    *-param value*. Actually it's not quite arbitrary - we prevent you from\n    setting some parameters which would interfere with parameters that we\n    use.\n\n    The first character of \"hvparam\" string must be a \"-\" (dash).\n\n    \"hvvalue\" can be NULL.\n\n",
   .run = run_config
 };
 
 struct command_entry set_qemu_cmd_entry = {
   .name = "set-qemu",
-  .help = "NAME\n    set-qemu - set the qemu binary\n\nSYNOPSIS\n     set-qemu qemu\n\nDESCRIPTION\n    Set the qemu binary that we will use.\n\n    The default is chosen when the library was compiled by the configure\n    script.\n\n    You can also override this by setting the \"LIBGUESTFS_QEMU\" environment\n    variable.\n\n    Setting \"qemu\" to \"NULL\" restores the default qemu binary.\n\n    Note that you should call this function as early as possible after\n    creating the handle. This is because some pre-launch operations depend\n    on testing qemu features (by running \"qemu -help\"). If the qemu binary\n    changes, we don't retest features, and so you might see inconsistent\n    results. Using the environment variable \"LIBGUESTFS_QEMU\" is safest of\n    all since that picks the qemu binary at the same time as the handle is\n    created.\n\n    You can use 'qemu' as an alias for this command.\n\n",
+  .help = "NAME\n    set-qemu - set the hypervisor binary (usually qemu)\n\nSYNOPSIS\n     set-qemu hv\n\nDESCRIPTION\n    Set the hypervisor binary (usually qemu) that we will use.\n\n    The default is chosen when the library was compiled by the configure\n    script.\n\n    You can also override this by setting the \"LIBGUESTFS_HV\" environment\n    variable.\n\n    Setting \"hv\" to \"NULL\" restores the default qemu binary.\n\n    Note that you should call this function as early as possible after\n    creating the handle. This is because some pre-launch operations depend\n    on testing qemu features (by running \"qemu -help\"). If the qemu binary\n    changes, we don't retest features, and so you might see inconsistent\n    results. Using the environment variable \"LIBGUESTFS_HV\" is safest of all\n    since that picks the qemu binary at the same time as the handle is\n    created.\n\n    *This function is deprecated.* In new code, use the \"set-hv\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n    You can use 'qemu' as an alias for this command.\n\n",
   .run = run_set_qemu
 };
 
 struct command_entry get_qemu_cmd_entry = {
   .name = "get-qemu",
-  .help = "NAME\n    get-qemu - get the qemu binary\n\nSYNOPSIS\n     get-qemu\n\nDESCRIPTION\n    Return the current qemu binary.\n\n    This is always non-NULL. If it wasn't set already, then this will return\n    the default qemu binary name.\n\n",
+  .help = "NAME\n    get-qemu - get the hypervisor binary (usually qemu)\n\nSYNOPSIS\n     get-qemu\n\nDESCRIPTION\n    Return the current hypervisor binary (usually qemu).\n\n    This is always non-NULL. If it wasn't set already, then this will return\n    the default qemu binary name.\n\n    *This function is deprecated.* In new code, use the \"get-hv\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_get_qemu
+};
+
+struct command_entry set_hv_cmd_entry = {
+  .name = "set-hv",
+  .help = "NAME\n    set-hv - set the hypervisor binary\n\nSYNOPSIS\n     set-hv hv\n\nDESCRIPTION\n    Set the hypervisor binary that we will use. The hypervisor depends on\n    the backend, but is usually the location of the qemu/KVM hypervisor. For\n    the uml backend, it is the location of the \"linux\" or \"vmlinux\" binary.\n\n    The default is chosen when the library was compiled by the configure\n    script.\n\n    You can also override this by setting the \"LIBGUESTFS_HV\" environment\n    variable.\n\n    Note that you should call this function as early as possible after\n    creating the handle. This is because some pre-launch operations depend\n    on testing qemu features (by running \"qemu -help\"). If the qemu binary\n    changes, we don't retest features, and so you might see inconsistent\n    results. Using the environment variable \"LIBGUESTFS_HV\" is safest of all\n    since that picks the qemu binary at the same time as the handle is\n    created.\n\n    You can use 'hv' as an alias for this command.\n\n",
+  .run = run_set_hv
+};
+
+struct command_entry get_hv_cmd_entry = {
+  .name = "get-hv",
+  .help = "NAME\n    get-hv - get the hypervisor binary\n\nSYNOPSIS\n     get-hv\n\nDESCRIPTION\n    Return the current hypervisor binary.\n\n    This is always non-NULL. If it wasn't set already, then this will return\n    the default qemu binary name.\n\n",
+  .run = run_get_hv
 };
 
 struct command_entry set_path_cmd_entry = {
@@ -752,19 +777,19 @@ struct command_entry is_config_cmd_entry = {
 
 struct command_entry set_memsize_cmd_entry = {
   .name = "set-memsize",
-  .help = "NAME\n    set-memsize - set memory allocated to the qemu subprocess\n\nSYNOPSIS\n     set-memsize memsize\n\nDESCRIPTION\n    This sets the memory size in megabytes allocated to the qemu subprocess.\n    This only has any effect if called before \"launch\".\n\n    You can also change this by setting the environment variable\n    \"LIBGUESTFS_MEMSIZE\" before the handle is created.\n\n    For more information on the architecture of libguestfs, see guestfs(3).\n\n    You can use 'memsize' as an alias for this command.\n\n",
+  .help = "NAME\n    set-memsize - set memory allocated to the hypervisor\n\nSYNOPSIS\n     set-memsize memsize\n\nDESCRIPTION\n    This sets the memory size in megabytes allocated to the hypervisor. This\n    only has any effect if called before \"launch\".\n\n    You can also change this by setting the environment variable\n    \"LIBGUESTFS_MEMSIZE\" before the handle is created.\n\n    For more information on the architecture of libguestfs, see guestfs(3).\n\n    You can use 'memsize' as an alias for this command.\n\n",
   .run = run_set_memsize
 };
 
 struct command_entry get_memsize_cmd_entry = {
   .name = "get-memsize",
-  .help = "NAME\n    get-memsize - get memory allocated to the qemu subprocess\n\nSYNOPSIS\n     get-memsize\n\nDESCRIPTION\n    This gets the memory size in megabytes allocated to the qemu subprocess.\n\n    If \"set_memsize\" was not called on this handle, and if\n    \"LIBGUESTFS_MEMSIZE\" was not set, then this returns the compiled-in\n    default value for memsize.\n\n    For more information on the architecture of libguestfs, see guestfs(3).\n\n",
+  .help = "NAME\n    get-memsize - get memory allocated to the hypervisor\n\nSYNOPSIS\n     get-memsize\n\nDESCRIPTION\n    This gets the memory size in megabytes allocated to the hypervisor.\n\n    If \"set_memsize\" was not called on this handle, and if\n    \"LIBGUESTFS_MEMSIZE\" was not set, then this returns the compiled-in\n    default value for memsize.\n\n    For more information on the architecture of libguestfs, see guestfs(3).\n\n",
   .run = run_get_memsize
 };
 
 struct command_entry get_pid_cmd_entry = {
   .name = "get-pid",
-  .help = "NAME\n    get-pid - get PID of qemu subprocess\n\nSYNOPSIS\n     get-pid\n\nDESCRIPTION\n    Return the process ID of the qemu subprocess. If there is no qemu\n    subprocess, then this will return an error.\n\n    This is an internal call used for debugging and testing.\n\n    You can use 'pid' as an alias for this command.\n\n",
+  .help = "NAME\n    get-pid - get PID of hypervisor\n\nSYNOPSIS\n     get-pid\n\nDESCRIPTION\n    Return the process ID of the hypervisor. If there is no hypervisor\n    running, then this will return an error.\n\n    This is an internal call used for debugging and testing.\n\n    You can use 'pid' as an alias for this command.\n\n",
   .run = run_get_pid
 };
 
@@ -812,7 +837,7 @@ struct command_entry get_direct_cmd_entry = {
 
 struct command_entry set_recovery_proc_cmd_entry = {
   .name = "set-recovery-proc",
-  .help = "NAME\n    set-recovery-proc - enable or disable the recovery process\n\nSYNOPSIS\n     set-recovery-proc recoveryproc\n\nDESCRIPTION\n    If this is called with the parameter \"false\" then \"launch\" does not\n    create a recovery process. The purpose of the recovery process is to\n    stop runaway qemu processes in the case where the main program aborts\n    abruptly.\n\n    This only has any effect if called before \"launch\", and the default is\n    true.\n\n    About the only time when you would want to disable this is if the main\n    process will fork itself into the background (\"daemonize\" itself). In\n    this case the recovery process thinks that the main program has\n    disappeared and so kills qemu, which is not very helpful.\n\n    You can use 'recovery-proc' as an alias for this command.\n\n",
+  .help = "NAME\n    set-recovery-proc - enable or disable the recovery process\n\nSYNOPSIS\n     set-recovery-proc recoveryproc\n\nDESCRIPTION\n    If this is called with the parameter \"false\" then \"launch\" does not\n    create a recovery process. The purpose of the recovery process is to\n    stop runaway hypervisor processes in the case where the main program\n    aborts abruptly.\n\n    This only has any effect if called before \"launch\", and the default is\n    true.\n\n    About the only time when you would want to disable this is if the main\n    process will fork itself into the background (\"daemonize\" itself). In\n    this case the recovery process thinks that the main program has\n    disappeared and so kills the hypervisor, which is not very helpful.\n\n    You can use 'recovery-proc' as an alias for this command.\n\n",
   .run = run_set_recovery_proc
 };
 
@@ -914,7 +939,7 @@ struct command_entry list_filesystems_cmd_entry = {
 
 struct command_entry add_drive_cmd_entry = {
   .name = "add-drive",
-  .help = "NAME\n    add-drive - add an image to examine or modify\n\nSYNOPSIS\n     add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..] [secret:..]\n\nDESCRIPTION\n    This function adds a disk image called \"filename\" to the handle.\n    \"filename\" may be a regular host file or a host device.\n\n    When this function is called before \"launch\" (the usual case) then the\n    first time you call this function, the disk appears in the API as\n    \"/dev/sda\", the second time as \"/dev/sdb\", and so on.\n\n    In libguestfs ≥ 1.20 you can also call this function after launch (with\n    some restrictions). This is called \"hotplugging\". When hotplugging, you\n    must specify a \"label\" so that the new disk gets a predictable name. For\n    more information see \"HOTPLUGGING\" in guestfs(3).\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that \"filename\" exists.\n\n    \"filename\" may be the special string \"/dev/null\". See \"NULL DISKS\" in\n    guestfs(3).\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. \"/dev/sdb\". This\n        is used as a hint to the guest inspection process if it is\n        available.\n\n    \"label\"\n        Give the disk a label. The label should be a unique, short string\n        using *only* ASCII characters \"[a-zA-Z]\". As well as its usual name\n        in the API (such as \"/dev/sda\"), the drive will also be named\n        \"/dev/disk/guestfs/*label*\".\n\n        See \"DISK LABELS\" in guestfs(3).\n\n    \"protocol\"\n        The optional protocol argument can be used to select an alternate\n        source protocol.\n\n        See also: \"REMOTE STORAGE\" in guestfs(3).\n\n        \"protocol = \"file\"\"\n            \"filename\" is interpreted as a local file or device. This is the\n            default if the optional protocol parameter is omitted.\n\n        \"protocol = \"ftp\"|\"ftps\"|\"http\"|\"https\"|\"tftp\"\"\n            Connect to a remote FTP, HTTP or TFTP server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"FTP, HTTP AND TFTP\" in guestfs(3)\n\n        \"protocol = \"gluster\"\"\n            Connect to the GlusterFS server. The \"server\" parameter must\n            also be supplied - see below.\n\n            See also: \"GLUSTER\" in guestfs(3)\n\n        \"protocol = \"iscsi\"\"\n            Connect to the iSCSI server. The \"server\" parameter must also be\n            supplied - see below.\n\n            See also: \"ISCSI\" in guestfs(3).\n\n        \"protocol = \"nbd\"\"\n            Connect to the Network Block Device server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"NETWORK BLOCK DEVICE\" in guestfs(3).\n\n        \"protocol = \"rbd\"\"\n            Connect to the Ceph (librbd/RBD) server. The \"server\" parameter\n            must also be supplied - see below. The \"username\" parameter may\n            be supplied. See below. The \"secret\" parameter may be supplied.\n            See below.\n\n            See also: \"CEPH\" in guestfs(3).\n\n        \"protocol = \"sheepdog\"\"\n            Connect to the Sheepdog server. The \"server\" parameter may also\n            be supplied - see below.\n\n            See also: \"SHEEPDOG\" in guestfs(3).\n\n        \"protocol = \"ssh\"\"\n            Connect to the Secure Shell (ssh) server.\n\n            The \"server\" parameter must be supplied. The \"username\"\n            parameter may be supplied. See below.\n\n            See also: \"SSH\" in guestfs(3).\n\n    \"server\"\n        For protocols which require access to a remote server, this is a\n        list of server(s).\n\n         Protocol       Number of servers required\n         --------       --------------------------\n         file           List must be empty or param not used at all\n         ftp|ftps|http|https|tftp  Exactly one\n         gluster        Exactly one\n         iscsi          Exactly one\n         nbd            Exactly one\n         rbd            One or more\n         sheepdog       Zero or more\n         ssh            Exactly one\n\n        Each list element is a string specifying a server. The string must\n        be in one of the following formats:\n\n         hostname\n         hostname:port\n         tcp:hostname\n         tcp:hostname:port\n         unix:/path/to/socket\n\n        If the port number is omitted, then the standard port number for the\n        protocol is used (see \"/etc/services\").\n\n    \"username\"\n        For the \"ftp\", \"ftps\", \"http\", \"https\", \"iscsi\", \"rbd\", \"ssh\" and\n        \"tftp\" protocols, this specifies the remote username.\n\n        If not given, then the local username is used for \"ssh\", and no\n        authentication is attempted for ceph. But note this sometimes may\n        give unexpected results, for example if using the libvirt backend\n        and if the libvirt backend is configured to start the qemu appliance\n        as a special user such as \"qemu.qemu\". If in doubt, specify the\n        remote username you want.\n\n    \"secret\"\n        For the \"rbd\" protocol only, this specifies the 'secret' to use when\n        connecting to the remote device.\n\n        If not given, then a secret matching the given username will be\n        looked up in the default keychain locations, or if no username is\n        given, then no authentication will be used.\n\n    You can use 'add' or 'add-drive-opts' as an alias for this command.\n\n",
+  .help = "NAME\n    add-drive - add an image to examine or modify\n\nSYNOPSIS\n     add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..] [secret:..] [cachemode:..]\n\nDESCRIPTION\n    This function adds a disk image called \"filename\" to the handle.\n    \"filename\" may be a regular host file or a host device.\n\n    When this function is called before \"launch\" (the usual case) then the\n    first time you call this function, the disk appears in the API as\n    \"/dev/sda\", the second time as \"/dev/sdb\", and so on.\n\n    In libguestfs ≥ 1.20 you can also call this function after launch (with\n    some restrictions). This is called \"hotplugging\". When hotplugging, you\n    must specify a \"label\" so that the new disk gets a predictable name. For\n    more information see \"HOTPLUGGING\" in guestfs(3).\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that \"filename\" exists.\n\n    \"filename\" may be the special string \"/dev/null\". See \"NULL DISKS\" in\n    guestfs(3).\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. \"/dev/sdb\". This\n        is used as a hint to the guest inspection process if it is\n        available.\n\n    \"label\"\n        Give the disk a label. The label should be a unique, short string\n        using *only* ASCII characters \"[a-zA-Z]\". As well as its usual name\n        in the API (such as \"/dev/sda\"), the drive will also be named\n        \"/dev/disk/guestfs/*label*\".\n\n        See \"DISK LABELS\" in guestfs(3).\n\n    \"protocol\"\n        The optional protocol argument can be used to select an alternate\n        source protocol.\n\n        See also: \"REMOTE STORAGE\" in guestfs(3).\n\n        \"protocol = \"file\"\"\n            \"filename\" is interpreted as a local file or device. This is the\n            default if the optional protocol parameter is omitted.\n\n        \"protocol = \"ftp\"|\"ftps\"|\"http\"|\"https\"|\"tftp\"\"\n            Connect to a remote FTP, HTTP or TFTP server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"FTP, HTTP AND TFTP\" in guestfs(3)\n\n        \"protocol = \"gluster\"\"\n            Connect to the GlusterFS server. The \"server\" parameter must\n            also be supplied - see below.\n\n            See also: \"GLUSTER\" in guestfs(3)\n\n        \"protocol = \"iscsi\"\"\n            Connect to the iSCSI server. The \"server\" parameter must also be\n            supplied - see below.\n\n            See also: \"ISCSI\" in guestfs(3).\n\n        \"protocol = \"nbd\"\"\n            Connect to the Network Block Device server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"NETWORK BLOCK DEVICE\" in guestfs(3).\n\n        \"protocol = \"rbd\"\"\n            Connect to the Ceph (librbd/RBD) server. The \"server\" parameter\n            must also be supplied - see below. The \"username\" parameter may\n            be supplied. See below. The \"secret\" parameter may be supplied.\n            See below.\n\n            See also: \"CEPH\" in guestfs(3).\n\n        \"protocol = \"sheepdog\"\"\n            Connect to the Sheepdog server. The \"server\" parameter may also\n            be supplied - see below.\n\n            See also: \"SHEEPDOG\" in guestfs(3).\n\n        \"protocol = \"ssh\"\"\n            Connect to the Secure Shell (ssh) server.\n\n            The \"server\" parameter must be supplied. The \"username\"\n            parameter may be supplied. See below.\n\n            See also: \"SSH\" in guestfs(3).\n\n    \"server\"\n        For protocols which require access to a remote server, this is a\n        list of server(s).\n\n         Protocol       Number of servers required\n         --------       --------------------------\n         file           List must be empty or param not used at all\n         ftp|ftps|http|https|tftp  Exactly one\n         gluster        Exactly one\n         iscsi          Exactly one\n         nbd            Exactly one\n         rbd            One or more\n         sheepdog       Zero or more\n         ssh            Exactly one\n\n        Each list element is a string specifying a server. The string must\n        be in one of the following formats:\n\n         hostname\n         hostname:port\n         tcp:hostname\n         tcp:hostname:port\n         unix:/path/to/socket\n\n        If the port number is omitted, then the standard port number for the\n        protocol is used (see \"/etc/services\").\n\n    \"username\"\n        For the \"ftp\", \"ftps\", \"http\", \"https\", \"iscsi\", \"rbd\", \"ssh\" and\n        \"tftp\" protocols, this specifies the remote username.\n\n        If not given, then the local username is used for \"ssh\", and no\n        authentication is attempted for ceph. But note this sometimes may\n        give unexpected results, for example if using the libvirt backend\n        and if the libvirt backend is configured to start the qemu appliance\n        as a special user such as \"qemu.qemu\". If in doubt, specify the\n        remote username you want.\n\n    \"secret\"\n        For the \"rbd\" protocol only, this specifies the 'secret' to use when\n        connecting to the remote device.\n\n        If not given, then a secret matching the given username will be\n        looked up in the default keychain locations, or if no username is\n        given, then no authentication will be used.\n\n    \"cachemode\"\n        Choose whether or not libguestfs will obey sync operations (safe but\n        slow) or not (unsafe but fast). The possible values for this string\n        are:\n\n        \"cachemode = \"writeback\"\"\n            This is the default.\n\n            Write operations in the API do not return until a write(2) call\n            has completed in the host [but note this does not imply that\n            anything gets written to disk].\n\n            Sync operations in the API, including implicit syncs caused by\n            filesystem journalling, will not return until an fdatasync(2)\n            call has completed in the host, indicating that data has been\n            committed to disk.\n\n        \"cachemode = \"unsafe\"\"\n            In this mode, there are no guarantees. Libguestfs may cache\n            anything and ignore sync requests. This is suitable only for\n            scratch or temporary disks.\n\n    You can use 'add' or 'add-drive-opts' as an alias for this command.\n\n",
   .run = run_add_drive
 };
 
@@ -1100,7 +1125,7 @@ struct command_entry canonical_device_name_cmd_entry = {
 
 struct command_entry shutdown_cmd_entry = {
   .name = "shutdown",
-  .help = "NAME\n    shutdown - shutdown the qemu subprocess\n\nSYNOPSIS\n     shutdown\n\nDESCRIPTION\n    This is the opposite of \"launch\". It performs an orderly shutdown of the\n    backend process(es). If the autosync flag is set (which is the default)\n    then the disk image is synchronized.\n\n    If the subprocess exits with an error then this function will return an\n    error, which should *not* be ignored (it may indicate that the disk\n    image could not be written out properly).\n\n    It is safe to call this multiple times. Extra calls are ignored.\n\n    This call does *not* close or free up the handle. You still need to call\n    \"close\" afterwards.\n\n    \"close\" will call this if you don't do it explicitly, but note that any\n    errors are ignored in that case.\n\n",
+  .help = "NAME\n    shutdown - shutdown the hypervisor\n\nSYNOPSIS\n     shutdown\n\nDESCRIPTION\n    This is the opposite of \"launch\". It performs an orderly shutdown of the\n    backend process(es). If the autosync flag is set (which is the default)\n    then the disk image is synchronized.\n\n    If the subprocess exits with an error then this function will return an\n    error, which should *not* be ignored (it may indicate that the disk\n    image could not be written out properly).\n\n    It is safe to call this multiple times. Extra calls are ignored.\n\n    This call does *not* close or free up the handle. You still need to call\n    \"close\" afterwards.\n\n    \"close\" will call this if you don't do it explicitly, but note that any\n    errors are ignored in that case.\n\n",
   .run = run_shutdown
 };
 
@@ -1282,6 +1307,18 @@ struct command_entry get_program_cmd_entry = {
   .name = "get-program",
   .help = "NAME\n    get-program - get the program name\n\nSYNOPSIS\n     get-program\n\nDESCRIPTION\n    Get the program name. See \"set_program\".\n\n",
   .run = run_get_program
+};
+
+struct command_entry add_drive_scratch_cmd_entry = {
+  .name = "add-drive-scratch",
+  .help = "NAME\n    add-drive-scratch - add a temporary scratch drive\n\nSYNOPSIS\n     add-drive-scratch size [name:..] [label:..]\n\nDESCRIPTION\n    This command adds a temporary scratch drive to the handle. The \"size\"\n    parameter is the virtual size (in bytes). The scratch drive is blank\n    initially (all reads return zeroes until you start writing to it). The\n    drive is deleted when the handle is closed.\n\n    The optional arguments \"name\" and \"label\" are passed through to\n    \"add_drive\".\n\n    You can use 'scratch' as an alias for this command.\n\n",
+  .run = run_add_drive_scratch
+};
+
+struct command_entry journal_get_cmd_entry = {
+  .name = "journal-get",
+  .help = "NAME\n    journal-get - read the current journal entry\n\nSYNOPSIS\n     journal-get\n\nDESCRIPTION\n    Read the current journal entry. This returns all the fields in the\n    journal as a set of \"(attrname, attrval)\" pairs. The \"attrname\" is the\n    field name (a string).\n\n    The \"attrval\" is the field value (a binary blob, often but not always a\n    string). Please note that \"attrval\" is a byte array, *not* a\n    \\0-terminated C string.\n\n    The length of data may be truncated to the data threshold (see:\n    \"journal_set_data_threshold\", \"journal_get_data_threshold\").\n\n    If you set the data threshold to unlimited (0) then this call can read a\n    journal entry of any size, ie. it is not limited by the libguestfs\n    protocol.\n\n",
+  .run = run_journal_get
 };
 
 struct command_entry mount_cmd_entry = {
@@ -1616,13 +1653,13 @@ struct command_entry blockdev_getss_cmd_entry = {
 
 struct command_entry blockdev_getbsz_cmd_entry = {
   .name = "blockdev-getbsz",
-  .help = "NAME\n    blockdev-getbsz - get blocksize of block device\n\nSYNOPSIS\n     blockdev-getbsz device\n\nDESCRIPTION\n    This returns the block size of a device.\n\n    (Note this is different from both *size in blocks* and *filesystem block\n    size*).\n\n    This uses the blockdev(8) command.\n\n",
+  .help = "NAME\n    blockdev-getbsz - get blocksize of block device\n\nSYNOPSIS\n     blockdev-getbsz device\n\nDESCRIPTION\n    This returns the block size of a device.\n\n    Note: this is different from both *size in blocks* and *filesystem block\n    size*. Also this setting is not really used by anything. You should\n    probably not use it for anything. Filesystems have their own idea about\n    what block size to choose.\n\n    This uses the blockdev(8) command.\n\n",
   .run = run_blockdev_getbsz
 };
 
 struct command_entry blockdev_setbsz_cmd_entry = {
   .name = "blockdev-setbsz",
-  .help = "NAME\n    blockdev-setbsz - set blocksize of block device\n\nSYNOPSIS\n     blockdev-setbsz device blocksize\n\nDESCRIPTION\n    This sets the block size of a device.\n\n    (Note this is different from both *size in blocks* and *filesystem block\n    size*).\n\n    This uses the blockdev(8) command.\n\n",
+  .help = "NAME\n    blockdev-setbsz - set blocksize of block device\n\nSYNOPSIS\n     blockdev-setbsz device blocksize\n\nDESCRIPTION\n    This call does nothing and has never done anything because of a bug in\n    blockdev. Do not use it.\n\n    If you need to set the filesystem block size, use the \"blocksize\" option\n    of \"mkfs\".\n\n    *This function is deprecated.* In new code, use the \"mkfs\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_blockdev_setbsz
 };
 
@@ -1712,7 +1749,7 @@ struct command_entry mount_vfs_cmd_entry = {
 
 struct command_entry debug_cmd_entry = {
   .name = "debug",
-  .help = "NAME\n    debug - debugging and internals\n\nSYNOPSIS\n     debug subcmd extraargs\n\nDESCRIPTION\n    The \"debug\" command exposes some internals of \"guestfsd\" (the guestfs\n    daemon) that runs inside the qemu subprocess.\n\n    There is no comprehensive help for this command. You have to look at the\n    file \"daemon/debug.c\" in the libguestfs source to find out what you can\n    do.\n\n",
+  .help = "NAME\n    debug - debugging and internals\n\nSYNOPSIS\n     debug subcmd extraargs\n\nDESCRIPTION\n    The \"debug\" command exposes some internals of \"guestfsd\" (the guestfs\n    daemon) that runs inside the hypervisor.\n\n    There is no comprehensive help for this command. You have to look at the\n    file \"daemon/debug.c\" in the libguestfs source to find out what you can\n    do.\n\n",
   .run = run_debug
 };
 
@@ -1748,7 +1785,7 @@ struct command_entry get_e2label_cmd_entry = {
 
 struct command_entry set_e2uuid_cmd_entry = {
   .name = "set-e2uuid",
-  .help = "NAME\n    set-e2uuid - set the ext2/3/4 filesystem UUID\n\nSYNOPSIS\n     set-e2uuid device uuid\n\nDESCRIPTION\n    This sets the ext2/3/4 filesystem UUID of the filesystem on \"device\" to\n    \"uuid\". The format of the UUID and alternatives such as \"clear\",\n    \"random\" and \"time\" are described in the tune2fs(8) manpage.\n\n    You can use either \"tune2fs_l\" or \"get_e2uuid\" to return the existing\n    UUID of a filesystem.\n\n",
+  .help = "NAME\n    set-e2uuid - set the ext2/3/4 filesystem UUID\n\nSYNOPSIS\n     set-e2uuid device uuid\n\nDESCRIPTION\n    This sets the ext2/3/4 filesystem UUID of the filesystem on \"device\" to\n    \"uuid\". The format of the UUID and alternatives such as \"clear\",\n    \"random\" and \"time\" are described in the tune2fs(8) manpage.\n\n    You can use \"vfs_uuid\" to return the existing UUID of a filesystem.\n\n    *This function is deprecated.* In new code, use the \"set-uuid\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_set_e2uuid
 };
 
@@ -1808,7 +1845,7 @@ struct command_entry dmesg_cmd_entry = {
 
 struct command_entry ping_daemon_cmd_entry = {
   .name = "ping-daemon",
-  .help = "NAME\n    ping-daemon - ping the guest daemon\n\nSYNOPSIS\n     ping-daemon\n\nDESCRIPTION\n    This is a test probe into the guestfs daemon running inside the qemu\n    subprocess. Calling this function checks that the daemon responds to the\n    ping message, without affecting the daemon or attached block device(s)\n    in any other way.\n\n",
+  .help = "NAME\n    ping-daemon - ping the guest daemon\n\nSYNOPSIS\n     ping-daemon\n\nDESCRIPTION\n    This is a test probe into the guestfs daemon running inside the\n    hypervisor. Calling this function checks that the daemon responds to the\n    ping message, without affecting the daemon or attached block device(s)\n    in any other way.\n\n",
   .run = run_ping_daemon
 };
 
@@ -3062,7 +3099,7 @@ struct command_entry ntfsclone_in_cmd_entry = {
 
 struct command_entry set_label_cmd_entry = {
   .name = "set-label",
-  .help = "NAME\n    set-label - set filesystem label\n\nSYNOPSIS\n     set-label mountable label\n\nDESCRIPTION\n    Set the filesystem label on \"mountable\" to \"label\".\n\n    Only some filesystem types support labels, and libguestfs supports\n    setting labels on only a subset of these.\n\n    On ext2/3/4 filesystems, labels are limited to 16 bytes.\n\n    On NTFS filesystems, labels are limited to 128 unicode characters.\n\n    Setting the label on a btrfs subvolume will set the label on its parent\n    filesystem.\n\n    To read the label on a filesystem, call \"vfs_label\".\n\n",
+  .help = "NAME\n    set-label - set filesystem label\n\nSYNOPSIS\n     set-label mountable label\n\nDESCRIPTION\n    Set the filesystem label on \"mountable\" to \"label\".\n\n    Only some filesystem types support labels, and libguestfs supports\n    setting labels on only a subset of these.\n\n    ext2, ext3, ext4\n        Labels are limited to 16 bytes.\n\n    NTFS\n        Labels are limited to 128 unicode characters.\n\n    XFS The label is limited to 12 bytes. The filesystem must not be mounted\n        when trying to set the label.\n\n    btrfs\n        The label is limited to 256 bytes and some characters are not\n        allowed. Setting the label on a btrfs subvolume will set the label\n        on its parent filesystem. The filesystem must not be mounted when\n        trying to set the label.\n\n    To read the label on a filesystem, call \"vfs_label\".\n\n",
   .run = run_set_label
 };
 
@@ -3200,7 +3237,7 @@ struct command_entry btrfs_fsck_cmd_entry = {
 
 struct command_entry filesystem_available_cmd_entry = {
   .name = "filesystem-available",
-  .help = "NAME\n    filesystem-available - check if filesystem is available\n\nSYNOPSIS\n     filesystem-available filesystem\n\nDESCRIPTION\n    Check whether libguestfs supports the named filesystem. The argument\n    \"filesystem\" is a filesystem name, such as \"ext3\".\n\n    You must call \"launch\" before using this command.\n\n    This is mainly useful as a negative test. If this returns true, it\n    doesn't mean that a particular filesystem can be mounted, since\n    filesystems can fail for other reasons such as it being a later version\n    of the filesystem, or having incompatible features.\n\n    See also \"available\", \"feature_available\", \"AVAILABILITY\" in guestfs(3).\n\n",
+  .help = "NAME\n    filesystem-available - check if filesystem is available\n\nSYNOPSIS\n     filesystem-available filesystem\n\nDESCRIPTION\n    Check whether libguestfs supports the named filesystem. The argument\n    \"filesystem\" is a filesystem name, such as \"ext3\".\n\n    You must call \"launch\" before using this command.\n\n    This is mainly useful as a negative test. If this returns true, it\n    doesn't mean that a particular filesystem can be created or mounted,\n    since filesystems can fail for other reasons such as it being a later\n    version of the filesystem, or having incompatible features, or lacking\n    the right mkfs.<*fs*> tool.\n\n    See also \"available\", \"feature_available\", \"AVAILABILITY\" in guestfs(3).\n\n",
   .run = run_filesystem_available
 };
 
@@ -3278,7 +3315,7 @@ struct command_entry rsync_in_cmd_entry = {
 
 struct command_entry rsync_out_cmd_entry = {
   .name = "rsync-out",
-  .help = "NAME\n    rsync-out - synchronize filesystem with host or remote filesystem\n\nSYNOPSIS\n     rsync-out src remote [archive:true|false] [deletedest:true|false]\n\nDESCRIPTION\n    This call may be used to copy or synchronize the filesystem within\n    libguestfs with a filesystem on the host or on a remote computer. This\n    uses the rsync(1) program which uses a fast algorithm that avoids\n    copying files unnecessarily.\n\n    This call only works if the network is enabled. See \"set_network\" or the\n    *--network* option to various tools like guestfish(1).\n\n    Files are copied from the source directory \"src\" to the remote server\n    and directory specified by \"remote\".\n\n    The format of the remote server string is defined by rsync(1). Note that\n    there is no way to supply a password or passphrase so the target must be\n    set up not to require one.\n\n    The optional arguments are the same as those of \"rsync\".\n\n",
+  .help = "NAME\n    rsync-out - synchronize filesystem with host or remote filesystem\n\nSYNOPSIS\n     rsync-out src remote [archive:true|false] [deletedest:true|false]\n\nDESCRIPTION\n    This call may be used to copy or synchronize the filesystem within\n    libguestfs with a filesystem on the host or on a remote computer. This\n    uses the rsync(1) program which uses a fast algorithm that avoids\n    copying files unnecessarily.\n\n    This call only works if the network is enabled. See \"set_network\" or the\n    *--network* option to various tools like guestfish(1).\n\n    Files are copied from the source directory \"src\" to the remote server\n    and directory specified by \"remote\".\n\n    The format of the remote server string is defined by rsync(1). Note that\n    there is no way to supply a password or passphrase so the target must be\n    set up not to require one.\n\n    The optional arguments are the same as those of \"rsync\".\n\n    Globbing does not happen on the \"src\" parameter. In programs which use\n    the API directly you have to expand wildcards yourself (see\n    \"glob_expand\"). In guestfish you can use the \"glob\" command (see \"glob\"\n    in guestfish(1)), for example:\n\n     ><fs> glob rsync-out /* rsync://remote/\n\n",
   .run = run_rsync_out
 };
 
@@ -3410,7 +3447,7 @@ struct command_entry rm_f_cmd_entry = {
 
 struct command_entry mke2fs_cmd_entry = {
   .name = "mke2fs",
-  .help = "NAME\n    mke2fs - create an ext2/ext3/ext4 filesystem on device\n\nSYNOPSIS\n     mke2fs device [blockscount:N] [blocksize:N] [fragsize:N] [blockspergroup:N] [numberofgroups:N] [bytesperinode:N] [inodesize:N] [journalsize:N] [numberofinodes:N] [stridesize:N] [stripewidth:N] [maxonlineresize:N] [reservedblockspercentage:N] [mmpupdateinterval:N] [journaldevice:..] [label:..] [lastmounteddir:..] [creatoros:..] [fstype:..] [usagetype:..] [uuid:..] [forcecreate:true|false] [writesbandgrouponly:true|false] [lazyitableinit:true|false] [lazyjournalinit:true|false] [testfs:true|false] [discard:true|false] [quotatype:true|false] [extent:true|false] [filetype:true|false] [flexbg:true|false] [hasjournal:true|false] [journaldev:true|false] [largefile:true|false] [quota:true|false] [resizeinode:true|false] [sparsesuper:true|false] [uninitbg:true|false]\n\nDESCRIPTION\n    \"mke2fs\" is used to create an ext2, ext3, or ext4 filesystem on\n    \"device\". The optional \"blockscount\" is the size of the filesystem in\n    blocks. If omitted it defaults to the size of \"device\".\n\n",
+  .help = "NAME\n    mke2fs - create an ext2/ext3/ext4 filesystem on device\n\nSYNOPSIS\n     mke2fs device [blockscount:N] [blocksize:N] [fragsize:N] [blockspergroup:N] [numberofgroups:N] [bytesperinode:N] [inodesize:N] [journalsize:N] [numberofinodes:N] [stridesize:N] [stripewidth:N] [maxonlineresize:N] [reservedblockspercentage:N] [mmpupdateinterval:N] [journaldevice:..] [label:..] [lastmounteddir:..] [creatoros:..] [fstype:..] [usagetype:..] [uuid:..] [forcecreate:true|false] [writesbandgrouponly:true|false] [lazyitableinit:true|false] [lazyjournalinit:true|false] [testfs:true|false] [discard:true|false] [quotatype:true|false] [extent:true|false] [filetype:true|false] [flexbg:true|false] [hasjournal:true|false] [journaldev:true|false] [largefile:true|false] [quota:true|false] [resizeinode:true|false] [sparsesuper:true|false] [uninitbg:true|false]\n\nDESCRIPTION\n    \"mke2fs\" is used to create an ext2, ext3, or ext4 filesystem on\n    \"device\".\n\n    The optional \"blockscount\" is the size of the filesystem in blocks. If\n    omitted it defaults to the size of \"device\". Note if the filesystem is\n    too small to contain a journal, \"mke2fs\" will silently create an ext2\n    filesystem instead.\n\n",
   .run = run_mke2fs
 };
 
@@ -3440,7 +3477,7 @@ struct command_entry acl_get_file_cmd_entry = {
 
 struct command_entry acl_set_file_cmd_entry = {
   .name = "acl-set-file",
-  .help = "NAME\n    acl-set-file - set the POSIX ACL attached to a file\n\nSYNOPSIS\n     acl-set-file path acltype acl\n\nDESCRIPTION\n    This function sets the POSIX Access Control List (ACL) attached to\n    \"path\". The \"acl\" parameter is the new ACL in either \"long text form\" or\n    \"short text form\" (see acl(5)).\n\n    The \"acltype\" parameter may be:\n\n    \"access\"\n        Set the ordinary (access) ACL for any file, directory or other\n        filesystem object.\n\n    \"default\"\n        Set the default ACL. Normally this only makes sense if \"path\" is a\n        directory.\n\n",
+  .help = "NAME\n    acl-set-file - set the POSIX ACL attached to a file\n\nSYNOPSIS\n     acl-set-file path acltype acl\n\nDESCRIPTION\n    This function sets the POSIX Access Control List (ACL) attached to\n    \"path\".\n\n    The \"acltype\" parameter may be:\n\n    \"access\"\n        Set the ordinary (access) ACL for any file, directory or other\n        filesystem object.\n\n    \"default\"\n        Set the default ACL. Normally this only makes sense if \"path\" is a\n        directory.\n\n    The \"acl\" parameter is the new ACL in either \"long text form\" or \"short\n    text form\" (see acl(5)). The new ACL completely replaces any previous\n    ACL on the file. The ACL must contain the full Unix permissions (eg.\n    \"u::rwx,g::rx,o::rx\").\n\n    If you are specifying individual users or groups, then the mask field is\n    also required (eg. \"m::rwx\"), followed by the \"u:*ID*:...\" and/or\n    \"g:*ID*:...\" field(s). A full ACL string might therefore look like this:\n\n     u::rwx,g::rwx,o::rwx,m::rwx,u:500:rwx,g:500:rwx\n     \\ Unix permissions / \\mask/ \\      ACL        /\n\n    You should use numeric UIDs and GIDs. To map usernames and groupnames to\n    the correct numeric ID in the context of the guest, use the Augeas\n    functions (see \"aug_init\").\n\n",
   .run = run_acl_set_file
 };
 
@@ -3452,7 +3489,7 @@ struct command_entry acl_delete_def_file_cmd_entry = {
 
 struct command_entry cap_get_file_cmd_entry = {
   .name = "cap-get-file",
-  .help = "NAME\n    cap-get-file - get the Linux capabilities attached to a file\n\nSYNOPSIS\n     cap-get-file path\n\nDESCRIPTION\n    This function returns the Linux capabilities attached to \"path\". The\n    capabilities set is returned in text form (see cap_to_text(3)).\n\n",
+  .help = "NAME\n    cap-get-file - get the Linux capabilities attached to a file\n\nSYNOPSIS\n     cap-get-file path\n\nDESCRIPTION\n    This function returns the Linux capabilities attached to \"path\". The\n    capabilities set is returned in text form (see cap_to_text(3)).\n\n    If no capabilities are attached to a file, an empty string is returned.\n\n",
   .run = run_cap_get_file
 };
 
@@ -3588,6 +3625,60 @@ struct command_entry remount_cmd_entry = {
   .run = run_remount
 };
 
+struct command_entry set_uuid_cmd_entry = {
+  .name = "set-uuid",
+  .help = "NAME\n    set-uuid - set the filesystem UUID\n\nSYNOPSIS\n     set-uuid device uuid\n\nDESCRIPTION\n    Set the filesystem UIUD on \"device\" to \"label\".\n\n    Only some filesystem types support setting UUIDs.\n\n    To read the UUID on a filesystem, call \"vfs_uuid\".\n\n",
+  .run = run_set_uuid
+};
+
+struct command_entry journal_open_cmd_entry = {
+  .name = "journal-open",
+  .help = "NAME\n    journal-open - open the systemd journal\n\nSYNOPSIS\n     journal-open directory\n\nDESCRIPTION\n    Open the systemd journal located in \"directory\". Any previously opened\n    journal handle is closed.\n\n    The contents of the journal can be read using \"journal_next\" and\n    \"journal_get\".\n\n    After you have finished using the journal, you should close the handle\n    by calling \"journal_close\".\n\n",
+  .run = run_journal_open
+};
+
+struct command_entry journal_close_cmd_entry = {
+  .name = "journal-close",
+  .help = "NAME\n    journal-close - close the systemd journal\n\nSYNOPSIS\n     journal-close\n\nDESCRIPTION\n    Close the journal handle.\n\n",
+  .run = run_journal_close
+};
+
+struct command_entry journal_next_cmd_entry = {
+  .name = "journal-next",
+  .help = "NAME\n    journal-next - move to the next journal entry\n\nSYNOPSIS\n     journal-next\n\nDESCRIPTION\n    Move to the next journal entry. You have to call this at least once\n    after opening the handle before you are able to read data.\n\n    The returned boolean tells you if there are any more journal records to\n    read. \"true\" means you can read the next record (eg. using\n    \"journal_get_data\"), and \"false\" means you have reached the end of the\n    journal.\n\n",
+  .run = run_journal_next
+};
+
+struct command_entry journal_skip_cmd_entry = {
+  .name = "journal-skip",
+  .help = "NAME\n    journal-skip - skip forwards or backwards in the journal\n\nSYNOPSIS\n     journal-skip skip\n\nDESCRIPTION\n    Skip forwards (\"skip ≥ 0\") or backwards (\"skip < 0\") in the journal.\n\n    The number of entries actually skipped is returned (note \"rskip ≥ 0\").\n    If this is not the same as the absolute value of the skip parameter\n    (\"|skip|\") you passed in then it means you have reached the end or the\n    start of the journal.\n\n",
+  .run = run_journal_skip
+};
+
+struct command_entry journal_get_data_threshold_cmd_entry = {
+  .name = "journal-get-data-threshold",
+  .help = "NAME\n    journal-get-data-threshold - get the data threshold for reading journal\n    entries\n\nSYNOPSIS\n     journal-get-data-threshold\n\nDESCRIPTION\n    Get the current data threshold for reading journal entries. This is a\n    hint to the journal that it may truncate data fields to this size when\n    reading them (note also that it may not truncate them). If this returns\n    0, then the threshold is unlimited.\n\n    See also \"journal_set_data_threshold\".\n\n",
+  .run = run_journal_get_data_threshold
+};
+
+struct command_entry journal_set_data_threshold_cmd_entry = {
+  .name = "journal-set-data-threshold",
+  .help = "NAME\n    journal-set-data-threshold - set the data threshold for reading journal\n    entries\n\nSYNOPSIS\n     journal-set-data-threshold threshold\n\nDESCRIPTION\n    Set the data threshold for reading journal entries. This is a hint to\n    the journal that it may truncate data fields to this size when reading\n    them (note also that it may not truncate them). If you set this to 0,\n    then the threshold is unlimited.\n\n    See also \"journal_get_data_threshold\".\n\n",
+  .run = run_journal_set_data_threshold
+};
+
+struct command_entry aug_setm_cmd_entry = {
+  .name = "aug-setm",
+  .help = "NAME\n    aug-setm - set multiple Augeas nodes\n\nSYNOPSIS\n     aug-setm base sub val\n\nDESCRIPTION\n    Change multiple Augeas nodes in a single operation. \"base\" is an\n    expression matching multiple nodes. \"sub\" is a path expression relative\n    to \"base\". All nodes matching \"base\" are found, and then for each node,\n    \"sub\" is changed to \"val\". \"sub\" may also be \"NULL\" in which case the\n    \"base\" nodes are modified.\n\n    This returns the number of nodes modified.\n\n",
+  .run = run_aug_setm
+};
+
+struct command_entry aug_label_cmd_entry = {
+  .name = "aug-label",
+  .help = "NAME\n    aug-label - return the label from an Augeas path expression\n\nSYNOPSIS\n     aug-label augpath\n\nDESCRIPTION\n    The label (name of the last element) of the Augeas path expression\n    \"augpath\" is returned. \"augpath\" must match exactly one node, else this\n    function returns an error.\n\n",
+  .run = run_aug_label
+};
+
 void
 list_commands (void)
 {
@@ -3601,6 +3692,7 @@ list_commands (void)
   printf ("%-20s %s\n", "add-drive", _("add an image to examine or modify"));
   printf ("%-20s %s\n", "add-drive-ro", _("add a drive in snapshot mode (read-only)"));
   printf ("%-20s %s\n", "add-drive-ro-with-if", _("add a drive read-only specifying the QEMU block emulation to use"));
+  printf ("%-20s %s\n", "add-drive-scratch", _("add a temporary scratch drive"));
   printf ("%-20s %s\n", "add-drive-with-if", _("add a drive specifying the QEMU block emulation to use"));
   printf ("%-20s %s\n", "alloc", _("allocate and add a disk file"));
   printf ("%-20s %s\n", "aug-clear", _("clear Augeas path"));
@@ -3610,6 +3702,7 @@ list_commands (void)
   printf ("%-20s %s\n", "aug-get", _("look up the value of an Augeas path"));
   printf ("%-20s %s\n", "aug-init", _("create a new Augeas handle"));
   printf ("%-20s %s\n", "aug-insert", _("insert a sibling Augeas node"));
+  printf ("%-20s %s\n", "aug-label", _("return the label from an Augeas path expression"));
   printf ("%-20s %s\n", "aug-load", _("load files into the tree"));
   printf ("%-20s %s\n", "aug-ls", _("list Augeas nodes under augpath"));
   printf ("%-20s %s\n", "aug-match", _("return Augeas nodes which match augpath"));
@@ -3617,6 +3710,7 @@ list_commands (void)
   printf ("%-20s %s\n", "aug-rm", _("remove an Augeas path"));
   printf ("%-20s %s\n", "aug-save", _("write all pending Augeas changes to disk"));
   printf ("%-20s %s\n", "aug-set", _("set Augeas path to value"));
+  printf ("%-20s %s\n", "aug-setm", _("set multiple Augeas nodes"));
   printf ("%-20s %s\n", "available", _("test availability of some parts of the API"));
   printf ("%-20s %s\n", "available-all-groups", _("return a list of all optional groups"));
   printf ("%-20s %s\n", "base64-in", _("upload base64-encoded data to file"));
@@ -3658,7 +3752,7 @@ list_commands (void)
   printf ("%-20s %s\n", "command-lines", _("run a command, returning lines"));
   printf ("%-20s %s\n", "compress-device-out", _("output compressed device"));
   printf ("%-20s %s\n", "compress-out", _("output compressed file"));
-  printf ("%-20s %s\n", "config", _("add qemu parameters"));
+  printf ("%-20s %s\n", "config", _("add hypervisor parameters"));
   printf ("%-20s %s\n", "copy-device-to-device", _("copy from source device to destination device"));
   printf ("%-20s %s\n", "copy-device-to-file", _("copy from source device to destination file"));
   printf ("%-20s %s\n", "copy-file-to-device", _("copy from source file to destination device"));
@@ -3725,17 +3819,18 @@ list_commands (void)
   printf ("%-20s %s\n", "get-e2generation", _("get ext2 file generation of a file"));
   printf ("%-20s %s\n", "get-e2label", _("get the ext2/3/4 filesystem label"));
   printf ("%-20s %s\n", "get-e2uuid", _("get the ext2/3/4 filesystem UUID"));
+  printf ("%-20s %s\n", "get-hv", _("get the hypervisor binary"));
   printf ("%-20s %s\n", "get-libvirt-requested-credential-challenge", _("challenge of i'th requested credential"));
   printf ("%-20s %s\n", "get-libvirt-requested-credential-defresult", _("default result of i'th requested credential"));
   printf ("%-20s %s\n", "get-libvirt-requested-credential-prompt", _("prompt of i'th requested credential"));
   printf ("%-20s %s\n", "get-libvirt-requested-credentials", _("get list of credentials requested by libvirt"));
-  printf ("%-20s %s\n", "get-memsize", _("get memory allocated to the qemu subprocess"));
+  printf ("%-20s %s\n", "get-memsize", _("get memory allocated to the hypervisor"));
   printf ("%-20s %s\n", "get-network", _("get enable network flag"));
   printf ("%-20s %s\n", "get-path", _("get the search path"));
   printf ("%-20s %s\n", "get-pgroup", _("get process group flag"));
-  printf ("%-20s %s\n", "get-pid", _("get PID of qemu subprocess"));
+  printf ("%-20s %s\n", "get-pid", _("get PID of hypervisor"));
   printf ("%-20s %s\n", "get-program", _("get the program name"));
-  printf ("%-20s %s\n", "get-qemu", _("get the qemu binary"));
+  printf ("%-20s %s\n", "get-qemu", _("get the hypervisor binary (usually qemu)"));
   printf ("%-20s %s\n", "get-recovery-proc", _("get recovery process enabled flag"));
   printf ("%-20s %s\n", "get-selinux", _("get SELinux enabled flag"));
   printf ("%-20s %s\n", "get-smp", _("get number of virtual CPUs in appliance"));
@@ -3818,8 +3913,15 @@ list_commands (void)
   printf ("%-20s %s\n", "is-zero-device", _("test if a device contains all zero bytes"));
   printf ("%-20s %s\n", "isoinfo", _("get ISO information from primary volume descriptor of ISO file"));
   printf ("%-20s %s\n", "isoinfo-device", _("get ISO information from primary volume descriptor of device"));
-  printf ("%-20s %s\n", "kill-subprocess", _("kill the qemu subprocess"));
-  printf ("%-20s %s\n", "launch", _("launch the qemu subprocess"));
+  printf ("%-20s %s\n", "journal-close", _("close the systemd journal"));
+  printf ("%-20s %s\n", "journal-get", _("read the current journal entry"));
+  printf ("%-20s %s\n", "journal-get-data-threshold", _("get the data threshold for reading journal entries"));
+  printf ("%-20s %s\n", "journal-next", _("move to the next journal entry"));
+  printf ("%-20s %s\n", "journal-open", _("open the systemd journal"));
+  printf ("%-20s %s\n", "journal-set-data-threshold", _("set the data threshold for reading journal entries"));
+  printf ("%-20s %s\n", "journal-skip", _("skip forwards or backwards in the journal"));
+  printf ("%-20s %s\n", "kill-subprocess", _("kill the hypervisor"));
+  printf ("%-20s %s\n", "launch", _("launch the backend"));
   printf ("%-20s %s\n", "lcd", _("change working directory"));
   printf ("%-20s %s\n", "lchown", _("change file owner and group"));
   printf ("%-20s %s\n", "ldmtool-create-all", _("scan and create Windows dynamic disk volumes"));
@@ -3994,20 +4096,22 @@ list_commands (void)
   printf ("%-20s %s\n", "set-e2generation", _("set ext2 file generation of a file"));
   printf ("%-20s %s\n", "set-e2label", _("set the ext2/3/4 filesystem label"));
   printf ("%-20s %s\n", "set-e2uuid", _("set the ext2/3/4 filesystem UUID"));
+  printf ("%-20s %s\n", "set-hv", _("set the hypervisor binary"));
   printf ("%-20s %s\n", "set-label", _("set filesystem label"));
   printf ("%-20s %s\n", "set-libvirt-requested-credential", _("pass requested credential back to libvirt"));
   printf ("%-20s %s\n", "set-libvirt-supported-credentials", _("set libvirt credentials supported by calling program"));
-  printf ("%-20s %s\n", "set-memsize", _("set memory allocated to the qemu subprocess"));
+  printf ("%-20s %s\n", "set-memsize", _("set memory allocated to the hypervisor"));
   printf ("%-20s %s\n", "set-network", _("set enable network flag"));
   printf ("%-20s %s\n", "set-path", _("set the search path"));
   printf ("%-20s %s\n", "set-pgroup", _("set process group flag"));
   printf ("%-20s %s\n", "set-program", _("set the program name"));
-  printf ("%-20s %s\n", "set-qemu", _("set the qemu binary"));
+  printf ("%-20s %s\n", "set-qemu", _("set the hypervisor binary (usually qemu)"));
   printf ("%-20s %s\n", "set-recovery-proc", _("enable or disable the recovery process"));
   printf ("%-20s %s\n", "set-selinux", _("set SELinux enabled or disabled at appliance boot"));
   printf ("%-20s %s\n", "set-smp", _("set number of virtual CPUs in appliance"));
   printf ("%-20s %s\n", "set-tmpdir", _("set the temporary directory"));
   printf ("%-20s %s\n", "set-trace", _("enable or disable command traces"));
+  printf ("%-20s %s\n", "set-uuid", _("set the filesystem UUID"));
   printf ("%-20s %s\n", "set-verbose", _("set verbose mode"));
   printf ("%-20s %s\n", "setcon", _("set SELinux security context"));
   printf ("%-20s %s\n", "setenv", _("set an environment variable"));
@@ -4020,7 +4124,7 @@ list_commands (void)
   printf ("%-20s %s\n", "sfdisk-l", _("display the partition table"));
   printf ("%-20s %s\n", "sh", _("run a command via the shell"));
   printf ("%-20s %s\n", "sh-lines", _("run a command via the shell returning lines"));
-  printf ("%-20s %s\n", "shutdown", _("shutdown the qemu subprocess"));
+  printf ("%-20s %s\n", "shutdown", _("shutdown the hypervisor"));
   printf ("%-20s %s\n", "sleep", _("sleep for some seconds"));
   printf ("%-20s %s\n", "sparse", _("create a sparse disk image and add"));
   printf ("%-20s %s\n", "stat", _("get file information"));
@@ -4720,8 +4824,8 @@ run_config (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   int r;
-  const char *qemuparam;
-  const char *qemuvalue;
+  const char *hvparam;
+  const char *hvvalue;
   size_t i = 0;
 
   if (argc != 2) {
@@ -4729,10 +4833,10 @@ run_config (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  qemuparam = argv[i++];
-  qemuvalue = STRNEQ (argv[i], "") ? argv[i] : NULL;
+  hvparam = argv[i++];
+  hvvalue = STRNEQ (argv[i], "") ? argv[i] : NULL;
   i++;
-  r = guestfs_config (g, qemuparam, qemuvalue);
+  r = guestfs_config (g, hvparam, hvvalue);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -4745,7 +4849,7 @@ run_set_qemu (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   int r;
-  const char *qemu;
+  const char *hv;
   size_t i = 0;
 
   if (argc != 1) {
@@ -4753,9 +4857,9 @@ run_set_qemu (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  qemu = STRNEQ (argv[i], "") ? argv[i] : NULL;
+  hv = STRNEQ (argv[i], "") ? argv[i] : NULL;
   i++;
-  r = guestfs_set_qemu (g, qemu);
+  r = guestfs_set_qemu (g, hv);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -4778,6 +4882,49 @@ run_get_qemu (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   printf ("%s\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_hv (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *hv;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  hv = argv[i++];
+  r = guestfs_set_hv (g, hv);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_get_hv (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_get_hv (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
  out:
  out_noargs:
   return ret;
@@ -5635,8 +5782,8 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
   struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 1 || argc > 10) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 10);
+  if (argc < 1 || argc > 11) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 11);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5695,6 +5842,11 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
       optargs_s.secret = &argv[i][7];
       this_mask = GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
       this_arg = "secret";
+    }
+    else if (STRPREFIX (argv[i], "cachemode:")) {
+      optargs_s.cachemode = &argv[i][10];
+      this_mask = GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
+      this_arg = "cachemode";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
@@ -7475,6 +7627,93 @@ run_get_program (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   printf ("%s\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_add_drive_scratch (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  int64_t size;
+  struct guestfs_add_drive_scratch_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 3) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 3);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "size", "xstrtoll", xerr);
+      goto out_size;
+    }
+    size = r;
+  }
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "name:")) {
+      optargs_s.name = &argv[i][5];
+      this_mask = GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK;
+      this_arg = "name";
+    }
+    else if (STRPREFIX (argv[i], "label:")) {
+      optargs_s.label = &argv[i][6];
+      this_mask = GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK;
+      this_arg = "label";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_add_drive_scratch_argv (g, size, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_size:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_journal_get (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  struct guestfs_xattr_list *r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_journal_get (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_xattr_list (r);
+  guestfs_free_xattr_list (r);
  out:
  out_noargs:
   return ret;
@@ -21774,6 +22013,237 @@ run_remount (const char *cmd, size_t argc, char *argv[])
  out:
   free (mountpoint);
  out_mountpoint:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_uuid (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  const char *uuid;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  uuid = argv[i++];
+  r = guestfs_set_uuid (g, device, uuid);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_journal_open (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *directory;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  directory = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (directory == NULL) goto out_directory;
+  r = guestfs_journal_open (g, directory);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (directory);
+ out_directory:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_journal_close (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_journal_close (g);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_journal_next (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_journal_next (g);
+  if (r == -1) goto out;
+  ret = 0;
+  if (r) printf ("true\n"); else printf ("false\n");
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_journal_skip (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int64_t r;
+  int64_t skip;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "skip", "xstrtoll", xerr);
+      goto out_skip;
+    }
+    skip = r;
+  }
+  r = guestfs_journal_skip (g, skip);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
+ out:
+ out_skip:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_journal_get_data_threshold (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int64_t r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_journal_get_data_threshold (g);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_journal_set_data_threshold (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  int64_t threshold;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "threshold", "xstrtoll", xerr);
+      goto out_threshold;
+    }
+    threshold = r;
+  }
+  r = guestfs_journal_set_data_threshold (g, threshold);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_threshold:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_aug_setm (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *base;
+  const char *sub;
+  const char *val;
+  size_t i = 0;
+
+  if (argc != 3) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  base = argv[i++];
+  sub = STRNEQ (argv[i], "") ? argv[i] : NULL;
+  i++;
+  val = argv[i++];
+  r = guestfs_aug_setm (g, base, sub, val);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%d\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_aug_label (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  const char *augpath;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  augpath = argv[i++];
+  r = guestfs_aug_label (g, augpath);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
  out_noargs:
   return ret;
 }

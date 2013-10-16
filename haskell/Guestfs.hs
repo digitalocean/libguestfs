@@ -48,6 +48,8 @@ module Guestfs (
   config,
   set_qemu,
   get_qemu,
+  set_hv,
+  get_hv,
   set_path,
   get_path,
   set_append,
@@ -453,7 +455,16 @@ module Guestfs (
   is_whole_device,
   feature_available,
   extlinux,
-  cp_r
+  cp_r,
+  set_uuid,
+  journal_open,
+  journal_close,
+  journal_next,
+  journal_skip,
+  journal_get_data_threshold,
+  journal_set_data_threshold,
+  aug_setm,
+  aug_label
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -769,8 +780,8 @@ foreign import ccall unsafe "guestfs.h guestfs_config" c_config
   :: GuestfsP -> CString -> CString -> IO CInt
 
 config :: GuestfsH -> String -> Maybe String -> IO ()
-config h qemuparam qemuvalue = do
-  r <- withCString qemuparam $ \qemuparam -> maybeWith withCString qemuvalue $ \qemuvalue -> withForeignPtr h (\p -> c_config p qemuparam qemuvalue)
+config h hvparam hvvalue = do
+  r <- withCString hvparam $ \hvparam -> maybeWith withCString hvvalue $ \hvvalue -> withForeignPtr h (\p -> c_config p hvparam hvvalue)
   if (r == -1)
     then do
       err <- last_error h
@@ -781,8 +792,8 @@ foreign import ccall unsafe "guestfs.h guestfs_set_qemu" c_set_qemu
   :: GuestfsP -> CString -> IO CInt
 
 set_qemu :: GuestfsH -> Maybe String -> IO ()
-set_qemu h qemu = do
-  r <- maybeWith withCString qemu $ \qemu -> withForeignPtr h (\p -> c_set_qemu p qemu)
+set_qemu h hv = do
+  r <- maybeWith withCString hv $ \hv -> withForeignPtr h (\p -> c_set_qemu p hv)
   if (r == -1)
     then do
       err <- last_error h
@@ -795,6 +806,30 @@ foreign import ccall unsafe "guestfs.h guestfs_get_qemu" c_get_qemu
 get_qemu :: GuestfsH -> IO String
 get_qemu h = do
   r <- withForeignPtr h (\p -> c_get_qemu p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_set_hv" c_set_hv
+  :: GuestfsP -> CString -> IO CInt
+
+set_hv :: GuestfsH -> String -> IO ()
+set_hv h hv = do
+  r <- withCString hv $ \hv -> withForeignPtr h (\p -> c_set_hv p hv)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_get_hv" c_get_hv
+  :: GuestfsP -> IO CString
+
+get_hv :: GuestfsH -> IO String
+get_hv h = do
+  r <- withForeignPtr h (\p -> c_get_hv p)
   if (r == nullPtr)
     then do
       err <- last_error h
@@ -5696,4 +5731,112 @@ cp_r h src dest = do
       err <- last_error h
       fail err
     else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_set_uuid" c_set_uuid
+  :: GuestfsP -> CString -> CString -> IO CInt
+
+set_uuid :: GuestfsH -> String -> String -> IO ()
+set_uuid h device uuid = do
+  r <- withCString device $ \device -> withCString uuid $ \uuid -> withForeignPtr h (\p -> c_set_uuid p device uuid)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_journal_open" c_journal_open
+  :: GuestfsP -> CString -> IO CInt
+
+journal_open :: GuestfsH -> String -> IO ()
+journal_open h directory = do
+  r <- withCString directory $ \directory -> withForeignPtr h (\p -> c_journal_open p directory)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_journal_close" c_journal_close
+  :: GuestfsP -> IO CInt
+
+journal_close :: GuestfsH -> IO ()
+journal_close h = do
+  r <- withForeignPtr h (\p -> c_journal_close p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_journal_next" c_journal_next
+  :: GuestfsP -> IO CInt
+
+journal_next :: GuestfsH -> IO Bool
+journal_next h = do
+  r <- withForeignPtr h (\p -> c_journal_next p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_journal_skip" c_journal_skip
+  :: GuestfsP -> Int64 -> IO Int64
+
+journal_skip :: GuestfsH -> Integer -> IO Int64
+journal_skip h skip = do
+  r <- withForeignPtr h (\p -> c_journal_skip p (fromIntegral skip))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs.h guestfs_journal_get_data_threshold" c_journal_get_data_threshold
+  :: GuestfsP -> IO Int64
+
+journal_get_data_threshold :: GuestfsH -> IO Int64
+journal_get_data_threshold h = do
+  r <- withForeignPtr h (\p -> c_journal_get_data_threshold p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs.h guestfs_journal_set_data_threshold" c_journal_set_data_threshold
+  :: GuestfsP -> Int64 -> IO CInt
+
+journal_set_data_threshold :: GuestfsH -> Integer -> IO ()
+journal_set_data_threshold h threshold = do
+  r <- withForeignPtr h (\p -> c_journal_set_data_threshold p (fromIntegral threshold))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_aug_setm" c_aug_setm
+  :: GuestfsP -> CString -> CString -> CString -> IO CInt
+
+aug_setm :: GuestfsH -> String -> Maybe String -> String -> IO Int
+aug_setm h base sub val = do
+  r <- withCString base $ \base -> maybeWith withCString sub $ \sub -> withCString val $ \val -> withForeignPtr h (\p -> c_aug_setm p base sub val)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs.h guestfs_aug_label" c_aug_label
+  :: GuestfsP -> CString -> IO CString
+
+aug_label :: GuestfsH -> String -> IO String
+aug_label h augpath = do
+  r <- withCString augpath $ \augpath -> withForeignPtr h (\p -> c_aug_label p augpath)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
 

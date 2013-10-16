@@ -1,5 +1,5 @@
 # libguestfs virt-resize 2.0 tools
-# Copyright (C) 2011 Red Hat Inc.
+# Copyright (C) 2011-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,16 +22,10 @@ EXTRA_DIST = \
 	virt-resize.pod \
 	test-virt-resize.sh
 
-CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize test.img
+CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize
 
 # Alphabetical order.
 SOURCES = \
-	common_gettext.ml \
-	common_utils.ml \
-	common_utils_tests.ml \
-	progress-c.c \
-	progress.mli \
-	progress.ml \
 	resize.ml
 
 if HAVE_OCAML
@@ -39,10 +33,15 @@ if HAVE_OCAML
 # Note this list must be in dependency order.
 OBJECTS = \
 	$(top_builddir)/fish/guestfish-progress.o \
-	progress-c.o \
-	common_gettext.cmx \
-	common_utils.cmx \
-	progress.cmx \
+	$(top_builddir)/fish/guestfish-uri.o \
+	$(top_builddir)/mllib/tty-c.o \
+	$(top_builddir)/mllib/progress-c.o \
+	$(top_builddir)/mllib/uri-c.o \
+	$(top_builddir)/mllib/common_gettext.cmx \
+	$(top_builddir)/mllib/common_utils.cmx \
+	$(top_builddir)/mllib/tTY.cmx \
+	$(top_builddir)/mllib/progress.cmx \
+	$(top_builddir)/mllib/uRI.cmx \
 	resize.cmx
 
 bin_SCRIPTS = virt-resize
@@ -50,7 +49,11 @@ bin_SCRIPTS = virt-resize
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
-OCAMLPACKAGES = -package str,unix -I $(top_builddir)/src/.libs -I ../ocaml
+OCAMLPACKAGES = \
+	-package str,unix \
+	-I $(top_builddir)/src/.libs \
+	-I $(top_builddir)/ocaml \
+	-I $(top_builddir)/mllib
 if HAVE_OCAML_PKG_GETTEXT
 OCAMLPACKAGES += -package gettext-stub
 endif
@@ -58,10 +61,15 @@ endif
 OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
 OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 
+OCAMLCLIBS  = \
+	$(LIBXML2_LIBS) -lncurses \
+	-L../src/.libs -lutils \
+	-L../gnulib/lib/.libs -lgnu
+
 virt-resize: $(OBJECTS)
 	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
 	  mlguestfs.cmxa -linkpkg $^ \
-	  -cclib -lncurses \
+	  -cclib '$(OCAMLCLIBS)' \
 	  $(OCAML_GCOV_LDFLAGS) \
 	  -o $@
 
@@ -75,7 +83,12 @@ virt-resize: $(OBJECTS)
 # automake will decide we don't need C support in this file.  Really
 # we do, so we have to provide it ourselves.
 
-DEFAULT_INCLUDES = -I. -I$(top_builddir) -I$(shell $(OCAMLC) -where) -I$(top_srcdir)/fish
+DEFAULT_INCLUDES = \
+	-I. \
+	-I$(top_builddir) \
+	-I$(shell $(OCAMLC) -where) \
+	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/fish
 
 .c.o:
 	$(CC) $(CFLAGS) $(PROF_CFLAGS) $(DEFAULT_INCLUDES) -c $< -o $@
@@ -100,15 +113,9 @@ CLEANFILES += stamp-virt-resize.pod
 
 # Tests.
 
-check_SCRIPTS = common_utils_tests
-
-common_utils_tests: common_gettext.cmx common_utils.cmx common_utils_tests.cmx
-	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
-	  mlguestfs.cmxa -linkpkg $^ -cclib -lncurses -o $@
-
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
-TESTS = common_utils_tests
+TESTS =
 if ENABLE_APPLIANCE
 TESTS += test-virt-resize.sh
 endif
@@ -121,7 +128,7 @@ depend: .depend
 
 .depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
 	rm -f $@ $@-t
-	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) $^ | \
+	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(top_srcdir)/mllib $^ | \
 	  $(SED) 's/ *$$//' | \
 	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
 	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \

@@ -74,6 +74,7 @@ type event =
   | EVENT_TRACE
   | EVENT_ENTER
   | EVENT_LIBVIRT_AUTH
+  | EVENT_WARNING
 
 val event_all : event list
 (** A list containing all event types. *)
@@ -365,10 +366,10 @@ val add_cdrom : t -> string -> unit
 val add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> string -> int
 (** add the disk(s) from a named libvirt domain *)
 
-val add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> string -> unit
+val add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> string -> unit
 (** add an image to examine or modify *)
 
-val add_drive_opts : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> string -> unit
+val add_drive_opts : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> string -> unit
 
 val add_drive_ro : t -> string -> unit
 (** add a drive in snapshot mode (read-only) *)
@@ -378,6 +379,9 @@ val add_drive_ro_with_if : t -> string -> string -> unit
 
     @deprecated Use {!add_drive} instead
  *)
+
+val add_drive_scratch : t -> ?name:string -> ?label:string -> int64 -> unit
+(** add a temporary scratch drive *)
 
 val add_drive_with_if : t -> string -> string -> unit
 (** add a drive specifying the QEMU block emulation to use
@@ -406,6 +410,9 @@ val aug_init : t -> string -> int -> unit
 val aug_insert : t -> string -> string -> bool -> unit
 (** insert a sibling Augeas node *)
 
+val aug_label : t -> string -> string
+(** return the label from an Augeas path expression *)
+
 val aug_load : t -> unit
 (** load files into the tree *)
 
@@ -426,6 +433,9 @@ val aug_save : t -> unit
 
 val aug_set : t -> string -> string -> unit
 (** set Augeas path to value *)
+
+val aug_setm : t -> string -> string option -> string -> int
+(** set multiple Augeas nodes *)
 
 val available : t -> string array -> unit
 (** test availability of some parts of the API *)
@@ -464,7 +474,10 @@ val blockdev_rereadpt : t -> string -> unit
 (** reread partition table *)
 
 val blockdev_setbsz : t -> string -> int -> unit
-(** set blocksize of block device *)
+(** set blocksize of block device
+
+    @deprecated Use {!mkfs} instead
+ *)
 
 val blockdev_setro : t -> string -> unit
 (** set block device to read-only *)
@@ -551,7 +564,7 @@ val compress_out : t -> ?level:int -> string -> string -> string -> unit
 (** output compressed file *)
 
 val config : t -> string -> string option -> unit
-(** add qemu parameters *)
+(** add hypervisor parameters *)
 
 val copy_device_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
 (** copy from source device to destination device *)
@@ -760,6 +773,9 @@ val get_e2uuid : t -> string -> string
     @deprecated Use {!vfs_uuid} instead
  *)
 
+val get_hv : t -> string
+(** get the hypervisor binary *)
+
 val get_libvirt_requested_credential_challenge : t -> int -> string
 (** challenge of i'th requested credential *)
 
@@ -773,7 +789,7 @@ val get_libvirt_requested_credentials : t -> string array
 (** get list of credentials requested by libvirt *)
 
 val get_memsize : t -> int
-(** get memory allocated to the qemu subprocess *)
+(** get memory allocated to the hypervisor *)
 
 val get_network : t -> bool
 (** get enable network flag *)
@@ -785,13 +801,16 @@ val get_pgroup : t -> bool
 (** get process group flag *)
 
 val get_pid : t -> int
-(** get PID of qemu subprocess *)
+(** get PID of hypervisor *)
 
 val get_program : t -> string
 (** get the program name *)
 
 val get_qemu : t -> string
-(** get the qemu binary *)
+(** get the hypervisor binary (usually qemu)
+
+    @deprecated Use {!get_hv} instead
+ *)
 
 val get_recovery_proc : t -> bool
 (** get recovery process enabled flag *)
@@ -1119,14 +1138,35 @@ val isoinfo : t -> string -> isoinfo
 val isoinfo_device : t -> string -> isoinfo
 (** get ISO information from primary volume descriptor of device *)
 
+val journal_close : t -> unit
+(** close the systemd journal *)
+
+val journal_get : t -> xattr array
+(** read the current journal entry *)
+
+val journal_get_data_threshold : t -> int64
+(** get the data threshold for reading journal entries *)
+
+val journal_next : t -> bool
+(** move to the next journal entry *)
+
+val journal_open : t -> string -> unit
+(** open the systemd journal *)
+
+val journal_set_data_threshold : t -> int64 -> unit
+(** set the data threshold for reading journal entries *)
+
+val journal_skip : t -> int64 -> int64
+(** skip forwards or backwards in the journal *)
+
 val kill_subprocess : t -> unit
-(** kill the qemu subprocess
+(** kill the hypervisor
 
     @deprecated Use {!shutdown} instead
  *)
 
 val launch : t -> unit
-(** launch the qemu subprocess *)
+(** launch the backend *)
 
 val lchown : t -> int -> int -> string -> unit
 (** change file owner and group *)
@@ -1675,7 +1715,13 @@ val set_e2label : t -> string -> string -> unit
  *)
 
 val set_e2uuid : t -> string -> string -> unit
-(** set the ext2/3/4 filesystem UUID *)
+(** set the ext2/3/4 filesystem UUID
+
+    @deprecated Use {!set_uuid} instead
+ *)
+
+val set_hv : t -> string -> unit
+(** set the hypervisor binary *)
 
 val set_label : t -> string -> string -> unit
 (** set filesystem label *)
@@ -1687,7 +1733,7 @@ val set_libvirt_supported_credentials : t -> string array -> unit
 (** set libvirt credentials supported by calling program *)
 
 val set_memsize : t -> int -> unit
-(** set memory allocated to the qemu subprocess *)
+(** set memory allocated to the hypervisor *)
 
 val set_network : t -> bool -> unit
 (** set enable network flag *)
@@ -1702,7 +1748,10 @@ val set_program : t -> string -> unit
 (** set the program name *)
 
 val set_qemu : t -> string option -> unit
-(** set the qemu binary *)
+(** set the hypervisor binary (usually qemu)
+
+    @deprecated Use {!set_hv} instead
+ *)
 
 val set_recovery_proc : t -> bool -> unit
 (** enable or disable the recovery process *)
@@ -1718,6 +1767,9 @@ val set_tmpdir : t -> string option -> unit
 
 val set_trace : t -> bool -> unit
 (** enable or disable command traces *)
+
+val set_uuid : t -> string -> string -> unit
+(** set the filesystem UUID *)
 
 val set_verbose : t -> bool -> unit
 (** set verbose mode *)
@@ -1765,7 +1817,7 @@ val sh_lines : t -> string -> string array
 (** run a command via the shell returning lines *)
 
 val shutdown : t -> unit
-(** shutdown the qemu subprocess *)
+(** shutdown the hypervisor *)
 
 val sleep : t -> int -> unit
 (** sleep for some seconds *)
@@ -1951,7 +2003,7 @@ val vguuid : t -> string -> string
 (** get the UUID of a volume group *)
 
 val wait_ready : t -> unit
-(** wait until the qemu subprocess launches (no op)
+(** wait until the hypervisor launches (no op)
 
     @deprecated Use {!launch} instead
  *)
@@ -2079,10 +2131,11 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method acl_set_file : string -> string -> string -> unit
   method add_cdrom : string -> unit
   method add_domain : ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> string -> int
-  method add_drive : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> string -> unit
-  method add_drive_opts : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> string -> unit
+  method add_drive : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> string -> unit
+  method add_drive_opts : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> string -> unit
   method add_drive_ro : string -> unit
   method add_drive_ro_with_if : string -> string -> unit
+  method add_drive_scratch : ?name:string -> ?label:string -> int64 -> unit
   method add_drive_with_if : string -> string -> unit
   method aug_clear : string -> unit
   method aug_close : unit -> unit
@@ -2091,6 +2144,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method aug_get : string -> string
   method aug_init : string -> int -> unit
   method aug_insert : string -> string -> bool -> unit
+  method aug_label : string -> string
   method aug_load : unit -> unit
   method aug_ls : string -> string array
   method aug_match : string -> string array
@@ -2098,6 +2152,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method aug_rm : string -> int
   method aug_save : unit -> unit
   method aug_set : string -> string -> unit
+  method aug_setm : string -> string option -> string -> int
   method available : string array -> unit
   method available_all_groups : unit -> string array
   method base64_in : string -> string -> unit
@@ -2199,6 +2254,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method get_e2generation : string -> int64
   method get_e2label : string -> string
   method get_e2uuid : string -> string
+  method get_hv : unit -> string
   method get_libvirt_requested_credential_challenge : int -> string
   method get_libvirt_requested_credential_defresult : int -> string
   method get_libvirt_requested_credential_prompt : int -> string
@@ -2328,6 +2384,13 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method is_zero_device : string -> bool
   method isoinfo : string -> isoinfo
   method isoinfo_device : string -> isoinfo
+  method journal_close : unit -> unit
+  method journal_get : unit -> xattr array
+  method journal_get_data_threshold : unit -> int64
+  method journal_next : unit -> bool
+  method journal_open : string -> unit
+  method journal_set_data_threshold : int64 -> unit
+  method journal_skip : int64 -> int64
   method kill_subprocess : unit -> unit
   method launch : unit -> unit
   method lchown : int -> int -> string -> unit
@@ -2502,6 +2565,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method set_e2generation : string -> int64 -> unit
   method set_e2label : string -> string -> unit
   method set_e2uuid : string -> string -> unit
+  method set_hv : string -> unit
   method set_label : string -> string -> unit
   method set_libvirt_requested_credential : int -> string -> unit
   method set_libvirt_supported_credentials : string array -> unit
@@ -2516,6 +2580,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method set_smp : int -> unit
   method set_tmpdir : string option -> unit
   method set_trace : bool -> unit
+  method set_uuid : string -> string -> unit
   method set_verbose : bool -> unit
   method setcon : string -> unit
   method setxattr : string -> string -> int -> string -> unit

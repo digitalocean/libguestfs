@@ -29,6 +29,7 @@ let min_extra_partition = 10L *^ 1024L *^ 1024L
 
 (* Command line argument parsing. *)
 let prog = Filename.basename Sys.executable_name
+let error fs = error ~prog fs
 
 type align_first_t = [ `Never | `Always | `Auto ]
 
@@ -36,7 +37,7 @@ let infile, outfile, align_first, alignment, copy_boot_loader,
   debug, debug_gc, deletes,
   dryrun, expand, expand_content, extra_partition, format, ignores,
   lv_expands, machine_readable, ntfsresize_force, output_format,
-  quiet, resizes, resizes_force, shrink =
+  quiet, resizes, resizes_force, shrink, sparse =
   let display_version () =
     let g = new G.guestfs () in
     let version = g#version () in
@@ -77,13 +78,15 @@ let infile, outfile, align_first, alignment, copy_boot_loader,
     else if !shrink <> "" then error (f_"--shrink option given twice")
     else shrink := s
   in
+  let sparse = ref true in
 
+  let ditto = " -\"-" in
   let argspec = Arg.align [
     "--align-first", Arg.Set_string align_first, s_"never|always|auto" ^ " " ^ s_"Align first partition (default: auto)";
     "--alignment", Arg.Set_int alignment,   s_"sectors" ^ " " ^ s_"Set partition alignment (default: 128 sectors)";
     "--no-copy-boot-loader", Arg.Clear copy_boot_loader, " " ^ s_"Don't copy boot loader";
     "-d",        Arg.Set debug,             " " ^ s_"Enable debugging messages";
-    "--debug",   Arg.Set debug,             " -\"-";
+    "--debug",   Arg.Set debug,             ditto;
     "--debug-gc",Arg.Set debug_gc,          " " ^ s_"Debug GC and memory allocations";
     "--delete",  Arg.String (add deletes),  s_"part" ^ " " ^ s_"Delete partition";
     "--expand",  Arg.String set_expand,     s_"part" ^ " " ^ s_"Expand partition";
@@ -93,22 +96,25 @@ let infile, outfile, align_first, alignment, copy_boot_loader,
     "--ignore",  Arg.String (add ignores),  s_"part" ^ " " ^ s_"Ignore partition";
     "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
     "--lv-expand", Arg.String (add lv_expands), s_"lv" ^ " " ^ s_"Expand logical volume";
-    "--LV-expand", Arg.String (add lv_expands), s_"lv" ^ " -\"-";
-    "--lvexpand", Arg.String (add lv_expands), s_"lv" ^ " -\"-";
-    "--LVexpand", Arg.String (add lv_expands), s_"lv" ^ " -\"-";
+    "--LV-expand", Arg.String (add lv_expands), s_"lv" ^ ditto;
+    "--lvexpand", Arg.String (add lv_expands), s_"lv" ^ ditto;
+    "--LVexpand", Arg.String (add lv_expands), s_"lv" ^ ditto;
     "--machine-readable", Arg.Set machine_readable, " " ^ s_"Make output machine readable";
     "-n",        Arg.Set dryrun,            " " ^ s_"Don't perform changes";
-    "--dryrun",  Arg.Set dryrun,            " -\"-";
-    "--dry-run", Arg.Set dryrun,            " -\"-";
+    "--dryrun",  Arg.Set dryrun,            ditto;
+    "--dry-run", Arg.Set dryrun,            ditto;
     "--ntfsresize-force", Arg.Set ntfsresize_force, " " ^ s_"Force ntfsresize";
     "--output-format", Arg.Set_string output_format, s_"format" ^ " " ^ s_"Format of output disk";
     "-q",        Arg.Set quiet,             " " ^ s_"Don't print the summary";
-    "--quiet",   Arg.Set quiet,             " -\"-";
+    "--quiet",   Arg.Set quiet,             ditto;
     "--resize",  Arg.String (add resizes),  s_"part=size" ^ " " ^ s_"Resize partition";
     "--resize-force", Arg.String (add resizes_force), s_"part=size" ^ " " ^ s_"Forcefully resize partition";
     "--shrink",  Arg.String set_shrink,     s_"part" ^ " " ^ s_"Shrink partition";
+    "--no-sparse", Arg.Clear sparse,        " " ^ s_"Turn off sparse copying";
+    "-v",        Arg.Set debug,             " " ^ s_"Enable debugging messages";
+    "--verbose", Arg.Set debug,             ditto;
     "-V",        Arg.Unit display_version,  " " ^ s_"Display version and exit";
-    "--version", Arg.Unit display_version,  " -\"-";
+    "--version", Arg.Unit display_version,  ditto;
   ] in
   long_options := argspec;
   let disks = ref [] in
@@ -149,6 +155,7 @@ read the man page virt-resize(1).
   let resizes = List.rev !resizes in
   let resizes_force = List.rev !resizes_force in
   let shrink = match !shrink with "" -> None | str -> Some str in
+  let sparse = !sparse in
 
   if alignment < 1 then
     error (f_"alignment cannot be < 1");
@@ -174,6 +181,7 @@ read the man page virt-resize(1).
     printf "128-sector-alignment\n";
     printf "alignment\n";
     printf "align-first\n";
+    printf "infile-uri\n";
     let g = new G.guestfs () in
     g#add_drive "/dev/null";
     g#launch ();
@@ -197,11 +205,18 @@ read the man page virt-resize(1).
   if infile = outfile then
     error (f_"you cannot use the same disk image for input and output");
 
+  (* infile can be a URI. *)
+  let infile =
+    try (infile, URI.parse_uri infile)
+    with Invalid_argument "URI.parse_uri" ->
+      error (f_"error parsing URI '%s'. Look for error messages printed above.")
+        infile in
+
   infile, outfile, align_first, alignment, copy_boot_loader,
   debug, debug_gc, deletes,
   dryrun, expand, expand_content, extra_partition, format, ignores,
   lv_expands, machine_readable, ntfsresize_force, output_format,
-  quiet, resizes, resizes_force, shrink
+  quiet, resizes, resizes_force, shrink, sparse
 
 (* Default to true, since NTFS and btrfs support are usually available. *)
 let ntfs_available = ref true
@@ -211,7 +226,9 @@ let btrfs_available = ref true
 let connect_both_disks () =
   let g = new G.guestfs () in
   if debug then g#set_trace true;
-  g#add_drive ?format ~readonly:true infile;
+  let _, { URI.path = path; protocol = protocol;
+           server = server; username = username } = infile in
+  g#add_drive ?format ~readonly:true ~protocol ?server ?username path;
   g#add_drive ?format:output_format ~readonly:false outfile;
   if not quiet then Progress.set_up_progress_bar ~machine_readable g;
   g#launch ();
@@ -229,7 +246,7 @@ let connect_both_disks () =
 
 let g =
   if not quiet then
-    printf (f_"Examining %s ...\n%!") infile;
+    printf (f_"Examining %s ...\n%!") (fst infile);
 
   let g = connect_both_disks () in
 
@@ -246,7 +263,7 @@ let sectsize, insize, outsize =
   let insize = g#blockdev_getsize64 "/dev/sda" in
   let outsize = g#blockdev_getsize64 "/dev/sdb" in
   if debug then (
-    eprintf "%s size %Ld bytes\n" infile insize;
+    eprintf "%s size %Ld bytes\n" (fst infile) insize;
     eprintf "%s size %Ld bytes\n" outfile outsize
   );
   sectsize, insize, outsize
@@ -268,7 +285,7 @@ let max_bootloader =
 let () =
   if insize < Int64.of_int max_bootloader then
     error (f_"%s: file is too small to be a disk image (%Ld bytes)")
-      infile insize;
+      (fst infile) insize;
   if outsize < Int64.of_int max_bootloader then
     error (f_"%s: file is too small to be a disk image (%Ld bytes)")
       outfile outsize
@@ -284,7 +301,7 @@ let parttype, parttype_string =
   | "msdos" -> MBR, "msdos"
   | "gpt" -> GPT, "gpt"
   | _ ->
-    error (f_"%s: unknown partition table type\nvirt-resize only supports MBR (DOS) and GPT partition tables.") infile
+    error (f_"%s: unknown partition table type\nvirt-resize only supports MBR (DOS) and GPT partition tables.") (fst infile)
 
 (* Build a data structure describing the source disk's partition layout.
  *
@@ -537,7 +554,7 @@ let find_partition =
       try Hashtbl.find hash name
       with Not_found ->
         error (f_"%s: partition not found in the source disk image (this error came from '%s' option on the command line).  Try running this command: virt-filesystems --partitions --long -a %s")
-          name option infile in
+          name option (fst infile) in
 
     if partition.p_operation = OpIgnore then
       error (f_"%s: partition already ignored, you cannot use it in '%s' option")
@@ -630,7 +647,7 @@ let () =
 
     (* Parse the size field. *)
     let oldsize = p.p_part.G.part_size in
-    let newsize = parse_size oldsize sizefield in
+    let newsize = parse_resize ~prog oldsize sizefield in
 
     if newsize <= 0L then
       error (f_"%s: new partition size is zero or negative") dev;
@@ -755,7 +772,7 @@ let () =
         try Hashtbl.find hash name
         with Not_found ->
           error (f_"%s: logical volume not found in the source disk image (this error came from '--lv-expand' option on the command line).  Try running this command: virt-filesystems --logical-volumes --long -a %s")
-            name infile in
+            name (fst infile) in
       lv.lv_operation <- LVOpExpand
   ) lv_expands
 
@@ -1068,7 +1085,7 @@ let () =
 
         (match p.p_type with
          | ContentUnknown | ContentPV _ | ContentFS _ ->
-           g#copy_device_to_device ~size:copysize ~sparse:true source target
+           g#copy_device_to_device ~size:copysize ~sparse source target
 
          | ContentExtendedPartition ->
            (* You can't just copy an extended partition by name, eg.

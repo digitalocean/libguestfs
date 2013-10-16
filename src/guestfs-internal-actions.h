@@ -55,9 +55,11 @@ extern int guestfs__wait_ready (guestfs_h *g);
 extern int guestfs__kill_subprocess (guestfs_h *g);
 extern int guestfs__add_cdrom (guestfs_h *g, const char *filename);
 extern int guestfs__add_drive_ro (guestfs_h *g, const char *filename);
-extern int guestfs__config (guestfs_h *g, const char *qemuparam, const char *qemuvalue);
-extern int guestfs__set_qemu (guestfs_h *g, const char *qemu);
+extern int guestfs__config (guestfs_h *g, const char *hvparam, const char *hvvalue);
+extern int guestfs__set_qemu (guestfs_h *g, const char *hv);
 extern const char *guestfs__get_qemu (guestfs_h *g);
+extern int guestfs__set_hv (guestfs_h *g, const char *hv);
+extern char *guestfs__get_hv (guestfs_h *g);
 extern int guestfs__set_path (guestfs_h *g, const char *searchpath);
 extern const char *guestfs__get_path (guestfs_h *g);
 extern int guestfs__set_append (guestfs_h *g, const char *append);
@@ -162,5 +164,7 @@ extern int guestfs__internal_set_libvirt_selinux_norelabel_disks (guestfs_h *g, 
 extern int guestfs__user_cancel (guestfs_h *g);
 extern int guestfs__set_program (guestfs_h *g, const char *program);
 extern const char *guestfs__get_program (guestfs_h *g);
+extern int guestfs__add_drive_scratch (guestfs_h *g, int64_t size, const struct guestfs_add_drive_scratch_argv *optargs);
+extern struct guestfs_xattr_list *guestfs__journal_get (guestfs_h *g);
 
 #endif /* GUESTFS_INTERNAL_ACTIONS_H_ */

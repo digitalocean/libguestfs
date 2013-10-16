@@ -33,8 +33,7 @@ C<path> is a directory.
  acl-set-file path acltype acl
 
 This function sets the POSIX Access Control List (ACL) attached
-to C<path>.  The C<acl> parameter is the new ACL in either
-"long text form" or "short text form" (see L<acl(5)>).
+to C<path>.
 
 The C<acltype> parameter may be:
 
@@ -51,6 +50,23 @@ Set the default ACL.  Normally this only makes sense if
 C<path> is a directory.
 
 =back
+
+The C<acl> parameter is the new ACL in either "long text form"
+or "short text form" (see L<acl(5)>).  The new ACL completely
+replaces any previous ACL on the file.  The ACL must contain the
+full Unix permissions (eg. C<u::rwx,g::rx,o::rx>).
+
+If you are specifying individual users or groups, then the
+mask field is also required (eg. C<m::rwx>), followed by the
+C<u:I<ID>:...> and/or C<g:I<ID>:...> field(s).  A full ACL
+string might therefore look like this:
+
+ u::rwx,g::rwx,o::rwx,m::rwx,u:500:rwx,g:500:rwx
+ \ Unix permissions / \mask/ \      ACL        /
+
+You should use numeric UIDs and GIDs.  To map usernames and
+groupnames to the correct numeric ID in the context of the
+guest, use the Augeas functions (see L</aug-init>).
 
 =head2 add-cdrom
 
@@ -166,7 +182,7 @@ This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 
 =head2 add-drive-opts
 
- add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..] [secret:..]
+ add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..] [secret:..] [cachemode:..]
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -352,6 +368,34 @@ If not given, then a secret matching the given username will be looked up in the
 default keychain locations, or if no username is given, then no authentication
 will be used.
 
+=item C<cachemode>
+
+Choose whether or not libguestfs will obey sync operations (safe but slow)
+or not (unsafe but fast).  The possible values for this string are:
+
+=over 4
+
+=item C<cachemode = "writeback">
+
+This is the default.
+
+Write operations in the API do not return until a L<write(2)>
+call has completed in the host [but note this does not imply
+that anything gets written to disk].
+
+Sync operations in the API, including implicit syncs caused by
+filesystem journalling, will not return until an L<fdatasync(2)>
+call has completed in the host, indicating that data has been
+committed to disk.
+
+=item C<cachemode = "unsafe">
+
+In this mode, there are no guarantees.  Libguestfs may cache
+anything and ignore sync requests.  This is suitable only
+for scratch or temporary disks.
+
+=back
+
 =back
 
 This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
@@ -380,6 +424,22 @@ In new code, use the L</add-drive> call instead.
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
+
+=head2 add-drive-scratch
+
+=head2 scratch
+
+ add-drive-scratch size [name:..] [label:..]
+
+This command adds a temporary scratch drive to the handle.  The
+C<size> parameter is the virtual size (in bytes).  The scratch
+drive is blank initially (all reads return zeroes until you start
+writing to it).  The drive is deleted when the handle is closed.
+
+The optional arguments C<name> and C<label> are passed through to
+L</add-drive>.
+
+This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 
 =head2 add-drive-with-if
 
@@ -512,6 +572,14 @@ C<path> must match exactly one existing node in the tree, and
 C<label> must be a label, ie. not contain C</>, C<*> or end
 with a bracketed index C<[N]>.
 
+=head2 aug-label
+
+ aug-label augpath
+
+The label (name of the last element) of the Augeas path expression
+C<augpath> is returned.  C<augpath> must match exactly one node, else
+this function returns an error.
+
 =head2 aug-load
 
  aug-load
@@ -570,6 +638,18 @@ In the Augeas API, it is possible to clear a node by setting
 the value to NULL.  Due to an oversight in the libguestfs API
 you cannot do that with this call.  Instead you must use the
 L</aug-clear> call.
+
+=head2 aug-setm
+
+ aug-setm base sub val
+
+Change multiple Augeas nodes in a single operation.  C<base> is
+an expression matching multiple nodes.  C<sub> is a path expression
+relative to C<base>.  All nodes matching C<base> are found, and then
+for each node, C<sub> is changed to C<val>.  C<sub> may also be C<NULL>
+in which case the C<base> nodes are modified.
+
+This returns the number of nodes modified.
 
 =head2 available
 
@@ -717,8 +797,11 @@ This uses the L<blockdev(8)> command.
 
 This returns the block size of a device.
 
-(Note this is different from both I<size in blocks> and
-I<filesystem block size>).
+Note: this is different from both I<size in blocks> and
+I<filesystem block size>.  Also this setting is not really
+used by anything.  You should probably not use it for
+anything.  Filesystems have their own idea about what
+block size to choose.
 
 This uses the L<blockdev(8)> command.
 
@@ -778,12 +861,18 @@ This uses the L<blockdev(8)> command.
 
  blockdev-setbsz device blocksize
 
-This sets the block size of a device.
+This call does nothing and has never done anything
+because of a bug in blockdev.  B<Do not use it.>
 
-(Note this is different from both I<size in blocks> and
-I<filesystem block size>).
+If you need to set the filesystem block size, use the
+C<blocksize> option of L</mkfs>.
 
-This uses the L<blockdev(8)> command.
+I<This function is deprecated.>
+In new code, use the L</mkfs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =head2 blockdev-setro
 
@@ -939,6 +1028,8 @@ Other strings are returned unmodified.
 
 This function returns the Linux capabilities attached to C<path>.
 The capabilities set is returned in text form (see L<cap_to_text(3)>).
+
+If no capabilities are attached to a file, an empty string is returned.
 
 =head2 cap-set-file
 
@@ -1179,16 +1270,16 @@ This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 
 =head2 config
 
- config qemuparam qemuvalue
+ config hvparam hvvalue
 
-This can be used to add arbitrary qemu command line parameters
-of the form I<-param value>.  Actually it's not quite arbitrary - we
+This can be used to add arbitrary hypervisor parameters of the
+form I<-param value>.  Actually it's not quite arbitrary - we
 prevent you from setting some parameters which would interfere with
 parameters that we use.
 
-The first character of C<qemuparam> string must be a C<-> (dash).
+The first character of C<hvparam> string must be a C<-> (dash).
 
-C<qemuvalue> can be NULL.
+C<hvvalue> can be NULL.
 
 =head2 copy-device-to-device
 
@@ -1816,9 +1907,11 @@ C<ext3>.
 You must call L</launch> before using this command.
 
 This is mainly useful as a negative test.  If this returns true,
-it doesn't mean that a particular filesystem can be mounted,
-since filesystems can fail for other reasons such as it being
-a later version of the filesystem, or having incompatible features.
+it doesn't mean that a particular filesystem can be created
+or mounted, since filesystems can fail for other reasons
+such as it being a later version of the filesystem,
+or having incompatible features, or lacking the right
+mkfs.E<lt>I<fs>E<gt> tool.
 
 See also L</available>, L</feature-available>,
 L<guestfs(3)/AVAILABILITY>.
@@ -2195,6 +2288,15 @@ Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
 
+=head2 get-hv
+
+ get-hv
+
+Return the current hypervisor binary.
+
+This is always non-NULL.  If it wasn't set already, then this will
+return the default qemu binary name.
+
 =head2 get-libvirt-requested-credential-challenge
 
  get-libvirt-requested-credential-challenge index
@@ -2243,7 +2345,7 @@ See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
  get-memsize
 
 This gets the memory size in megabytes allocated to the
-qemu subprocess.
+hypervisor.
 
 If L</set-memsize> was not called
 on this handle, and if C<LIBGUESTFS_MEMSIZE> was not set,
@@ -2279,8 +2381,8 @@ This returns the process group flag.
 
  get-pid
 
-Return the process ID of the qemu subprocess.  If there is no
-qemu subprocess, then this will return an error.
+Return the process ID of the hypervisor.  If there is no
+hypervisor running, then this will return an error.
 
 This is an internal call used for debugging and testing.
 
@@ -2294,10 +2396,17 @@ Get the program name.  See L</set-program>.
 
  get-qemu
 
-Return the current qemu binary.
+Return the current hypervisor binary (usually qemu).
 
 This is always non-NULL.  If it wasn't set already, then this will
 return the default qemu binary name.
+
+I<This function is deprecated.>
+In new code, use the L</get-hv> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =head2 get-recovery-proc
 
@@ -3784,11 +3893,97 @@ instead of going through libguestfs.
 For information on the primary volume descriptor fields, see
 L<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor>
 
+=head2 journal-close
+
+ journal-close
+
+Close the journal handle.
+
+=head2 journal-get
+
+ journal-get
+
+Read the current journal entry.  This returns all the fields
+in the journal as a set of C<(attrname, attrval)> pairs.  The
+C<attrname> is the field name (a string).
+
+The C<attrval> is the field value (a binary blob, often but
+not always a string).  Please note that C<attrval> is a byte
+array, I<not> a \0-terminated C string.
+
+The length of data may be truncated to the data threshold
+(see: L</journal-set-data-threshold>,
+L</journal-get-data-threshold>).
+
+If you set the data threshold to unlimited (C<0>) then this call
+can read a journal entry of any size, ie. it is not limited by
+the libguestfs protocol.
+
+=head2 journal-get-data-threshold
+
+ journal-get-data-threshold
+
+Get the current data threshold for reading journal entries.
+This is a hint to the journal that it may truncate data fields to
+this size when reading them (note also that it may not truncate them).
+If this returns C<0>, then the threshold is unlimited.
+
+See also L</journal-set-data-threshold>.
+
+=head2 journal-next
+
+ journal-next
+
+Move to the next journal entry.  You have to call this
+at least once after opening the handle before you are able
+to read data.
+
+The returned boolean tells you if there are any more journal
+records to read.  C<true> means you can read the next record
+(eg. using L</journal-get-data>), and C<false> means you
+have reached the end of the journal.
+
+=head2 journal-open
+
+ journal-open directory
+
+Open the systemd journal located in C<directory>.  Any previously
+opened journal handle is closed.
+
+The contents of the journal can be read using L</journal-next>
+and L</journal-get>.
+
+After you have finished using the journal, you should close the
+handle by calling L</journal-close>.
+
+=head2 journal-set-data-threshold
+
+ journal-set-data-threshold threshold
+
+Set the data threshold for reading journal entries.
+This is a hint to the journal that it may truncate data fields to
+this size when reading them (note also that it may not truncate them).
+If you set this to C<0>, then the threshold is unlimited.
+
+See also L</journal-get-data-threshold>.
+
+=head2 journal-skip
+
+ journal-skip skip
+
+Skip forwards (C<skip E<ge> 0>) or backwards (C<skip E<lt> 0>) in the
+journal.
+
+The number of entries actually skipped is returned (note S<C<rskip E<ge> 0>>).
+If this is not the same as the absolute value of the skip parameter
+(C<|skip|>) you passed in then it means you have reached the end or
+the start of the journal.
+
 =head2 kill-subprocess
 
  kill-subprocess
 
-This kills the qemu subprocess.
+This kills the hypervisor.
 
 Do not call this.  See: L</shutdown> instead.
 
@@ -3804,9 +3999,6 @@ with correct use of these functions.
 =head2 run
 
  launch
-
-Internally libguestfs is implemented by running a virtual machine
-using L<qemu(1)>.
 
 You should call this after configuring the handle
 (eg. adding drives) but before performing any actions.
@@ -4646,9 +4838,12 @@ See also: L<mkdtemp(3)>
  mke2fs device [blockscount:N] [blocksize:N] [fragsize:N] [blockspergroup:N] [numberofgroups:N] [bytesperinode:N] [inodesize:N] [journalsize:N] [numberofinodes:N] [stridesize:N] [stripewidth:N] [maxonlineresize:N] [reservedblockspercentage:N] [mmpupdateinterval:N] [journaldevice:..] [label:..] [lastmounteddir:..] [creatoros:..] [fstype:..] [usagetype:..] [uuid:..] [forcecreate:true|false] [writesbandgrouponly:true|false] [lazyitableinit:true|false] [lazyjournalinit:true|false] [testfs:true|false] [discard:true|false] [quotatype:true|false] [extent:true|false] [filetype:true|false] [flexbg:true|false] [hasjournal:true|false] [journaldev:true|false] [largefile:true|false] [quota:true|false] [resizeinode:true|false] [sparsesuper:true|false] [uninitbg:true|false]
 
 C<mke2fs> is used to create an ext2, ext3, or ext4 filesystem
-on C<device>.  The optional C<blockscount> is the size of the
-filesystem in blocks.  If omitted it defaults to the size of
-C<device>.
+on C<device>.
+
+The optional C<blockscount> is the size of the filesystem in blocks.
+If omitted it defaults to the size of C<device>.  Note if the
+filesystem is too small to contain a journal, C<mke2fs> will
+silently create an ext2 filesystem instead.
 
 This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 
@@ -5590,7 +5785,7 @@ See also L</part-to-dev>.
  ping-daemon
 
 This is a test probe into the guestfs daemon running inside
-the qemu subprocess.  Calling this function checks that the
+the hypervisor.  Calling this function checks that the
 daemon responds to the ping message, without affecting the daemon
 or attached block device(s) in any other way.
 
@@ -6045,6 +6240,13 @@ so the target must be set up not to require one.
 
 The optional arguments are the same as those of L</rsync>.
 
+Globbing does not happen on the C<src> parameter.  In programs
+which use the API directly you have to expand wildcards yourself
+(see L</glob-expand>).  In guestfish you can use the C<glob>
+command (see L<guestfish(1)/glob>), for example:
+
+ ><fs> glob rsync-out /* rsync://remote/
+
 This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 
 =head2 scrub-device
@@ -6238,8 +6440,40 @@ C<device> to C<uuid>.  The format of the UUID and alternatives
 such as C<clear>, C<random> and C<time> are described in the
 L<tune2fs(8)> manpage.
 
-You can use either L</tune2fs-l> or L</get-e2uuid>
-to return the existing UUID of a filesystem.
+You can use L</vfs-uuid> to return the existing UUID
+of a filesystem.
+
+I<This function is deprecated.>
+In new code, use the L</set-uuid> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
+=head2 set-hv
+
+=head2 hv
+
+ set-hv hv
+
+Set the hypervisor binary that we will use.  The hypervisor
+depends on the backend, but is usually the location of the
+qemu/KVM hypervisor.  For the uml backend, it is the location
+of the C<linux> or C<vmlinux> binary.
+
+The default is chosen when the library was compiled by the
+configure script.
+
+You can also override this by setting the C<LIBGUESTFS_HV>
+environment variable.
+
+Note that you should call this function as early as possible
+after creating the handle.  This is because some pre-launch
+operations depend on testing qemu features (by running C<qemu -help>).
+If the qemu binary changes, we don't retest features, and
+so you might see inconsistent results.  Using the environment
+variable C<LIBGUESTFS_HV> is safest of all since that picks
+the qemu binary at the same time as the handle is created.
 
 =head2 set-label
 
@@ -6250,12 +6484,29 @@ Set the filesystem label on C<mountable> to C<label>.
 Only some filesystem types support labels, and libguestfs supports
 setting labels on only a subset of these.
 
-On ext2/3/4 filesystems, labels are limited to 16 bytes.
+=over 4
 
-On NTFS filesystems, labels are limited to 128 unicode characters.
+=item ext2, ext3, ext4
 
-Setting the label on a btrfs subvolume will set the label on its parent
-filesystem.
+Labels are limited to 16 bytes.
+
+=item NTFS
+
+Labels are limited to 128 unicode characters.
+
+=item XFS
+
+The label is limited to 12 bytes.  The filesystem must not
+be mounted when trying to set the label.
+
+=item btrfs
+
+The label is limited to 256 bytes and some characters are
+not allowed.  Setting the label on a btrfs subvolume will set the
+label on its parent filesystem.  The filesystem must not be mounted
+when trying to set the label.
+
+=back
 
 To read the label on a filesystem, call L</vfs-label>.
 
@@ -6312,7 +6563,7 @@ See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
  set-memsize memsize
 
 This sets the memory size in megabytes allocated to the
-qemu subprocess.  This only has any effect if called before
+hypervisor.  This only has any effect if called before
 L</launch>.
 
 You can also change this by setting the environment
@@ -6384,25 +6635,32 @@ it is set to the empty string (but never C<NULL>).
 
 =head2 qemu
 
- set-qemu qemu
+ set-qemu hv
 
-Set the qemu binary that we will use.
+Set the hypervisor binary (usually qemu) that we will use.
 
 The default is chosen when the library was compiled by the
 configure script.
 
-You can also override this by setting the C<LIBGUESTFS_QEMU>
+You can also override this by setting the C<LIBGUESTFS_HV>
 environment variable.
 
-Setting C<qemu> to C<NULL> restores the default qemu binary.
+Setting C<hv> to C<NULL> restores the default qemu binary.
 
 Note that you should call this function as early as possible
 after creating the handle.  This is because some pre-launch
 operations depend on testing qemu features (by running C<qemu -help>).
 If the qemu binary changes, we don't retest features, and
 so you might see inconsistent results.  Using the environment
-variable C<LIBGUESTFS_QEMU> is safest of all since that picks
+variable C<LIBGUESTFS_HV> is safest of all since that picks
 the qemu binary at the same time as the handle is created.
+
+I<This function is deprecated.>
+In new code, use the L</set-hv> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =head2 set-recovery-proc
 
@@ -6412,7 +6670,7 @@ the qemu binary at the same time as the handle is created.
 
 If this is called with the parameter C<false> then
 L</launch> does not create a recovery process.  The
-purpose of the recovery process is to stop runaway qemu
+purpose of the recovery process is to stop runaway hypervisor
 processes in the case where the main program aborts abruptly.
 
 This only has any effect if called before L</launch>,
@@ -6422,7 +6680,7 @@ About the only time when you would want to disable this is
 if the main process will fork itself into the background
 ("daemonize" itself).  In this case the recovery process
 thinks that the main program has disappeared and so kills
-qemu, which is not very helpful.
+the hypervisor, which is not very helpful.
 
 =head2 set-selinux
 
@@ -6483,6 +6741,16 @@ C<LIBGUESTFS_TRACE> is defined and set to C<1>.
 Trace messages are normally sent to C<stderr>, unless you
 register a callback to send them somewhere else (see
 L</set-event-callback>).
+
+=head2 set-uuid
+
+ set-uuid device uuid
+
+Set the filesystem UIUD on C<device> to C<label>.
+
+Only some filesystem types support setting UUIDs.
+
+To read the UUID on a filesystem, call L</vfs-uuid>.
 
 =head2 set-verbose
 

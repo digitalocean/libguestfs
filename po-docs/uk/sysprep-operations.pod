@@ -13,6 +13,12 @@ Remove the automatically generated ABRT crash data in C</var/spool/abrt/>.
 Вилучити журнал команд bash користувача «root» та всіх інших користувачів, у
 домашніх каталогах яких містяться файли C<.bash_history>.
 
+=head3 Notes on bash-history
+
+Currently this only looks in C</root> and C</home/*> for home directories,
+so users with home directories in other locations won't have the bash
+history removed.
+
 =head2 B<blkid-tab> *
 
 Вилучити вкладку ідентифікаторів блоків у гостьовій системі.
@@ -43,6 +49,16 @@ Remove the automatically generated ABRT crash data in C</var/spool/abrt/>.
 
 Вилучити дані Dovecot (поштового сервера).
 
+=head2 B<firewall-rules>
+
+Remove the firewall rules.
+
+This removes custom firewall rules by removing C</etc/sysconfig/iptables> or
+custom firewalld configuration in C</etc/firewalld/*/*>.
+
+Note this is I<not> enabled by default since it may expose guests to
+exploits.  Use with care.
+
 =head2 B<firstboot> *
 
 Додати скрипти для одноразового запуску під час наступного завантаження.
@@ -56,8 +72,10 @@ the context of the guest operating system, for example C<yum update>.
 Output or errors from the scripts are written to
 C<~root/virt-sysprep-firstboot.log> (in the guest).
 
-Currently this is only implemented for Linux guests using either System V
-init, or systemd.
+=head3 Notes on firstboot
+
+Currently this is only implemented for Linux guests using either
+SysVinit-style scripts, Upstart or systemd.
 
 =head2 B<flag-reconfiguration>
 
@@ -65,6 +83,22 @@ init, or systemd.
 
 Зауважте, що це може потребувати втручання користувача під час завантаження
 гостьової системи.
+
+=head2 B<fs-uuids>
+
+Change filesystem UUIDs.
+
+On guests and filesystem types where this is supported, new random UUIDs are
+generated and assigned to filesystems.
+
+=head3 Notes on fs-uuids
+
+The fs-uuids operation is disabled by default because it does not yet find
+and update all the places in the guest that use the UUIDs.  For example
+C</etc/fstab> or the bootloader.  Enabling this operation is more likely
+than not to make your guest unbootable.
+
+See: L<https://bugzilla.redhat.com/show_bug.cgi?id=991641>
 
 =head2 B<hostname> *
 
@@ -75,6 +109,10 @@ init, or systemd.
 
 Якщо параметр I<--hostname> не буде вказано, назву вузла буде змінено на
 C<localhost.localdomain>.
+
+=head3 Notes on hostname
+
+Currently this can only set the hostname on Linux guests.
 
 =head2 B<дані-kerberos>
 
@@ -100,13 +138,13 @@ C<localhost.localdomain>.
  /var/log/apache2/*_log
  /var/log/apache2/*_log-*
  /var/log/audit/*
- /var/log/audit/audit.log
  /var/log/btmp*
  /var/log/ceph/*.log
  /var/log/chrony/*.log
  /var/log/cron*
  /var/log/cups/*_log
  /var/log/dmesg*
+ /var/log/gdm/*
  /var/log/glusterfs/*glusterd.vol.log
  /var/log/glusterfs/glusterfs.log
  /var/log/httpd/*log
@@ -120,7 +158,9 @@ C<localhost.localdomain>.
  /var/log/maillog*
  /var/log/messages*
  /var/log/ntp
+ /var/log/ntpstats/*
  /var/log/ppp/connect-errors
+ /var/log/sa/*
  /var/log/secure*
  /var/log/setroubleshoot/*.log
  /var/log/spooler*
@@ -175,6 +215,30 @@ process accounting is on.
 =head2 B<pam-data> *
 
 Вилучити дані PAM у гостьовій системі.
+
+=head2 B<password> *
+
+Set root or user password.
+
+Set root or another user's password.
+
+Use the I<--root-password> option to specify a replacement root password for
+the guest.  You can only use this option once.
+
+Use the I<--password> option to specify replacement user password(s).  You
+can use this option as many times as you want.
+
+Use I<--password-crypto> to change the password encryption used.
+
+See L</OPTIONS> above for details of these options.
+
+This operation is enabled by default, but it only does something if there is
+at least one I<--root-password> or I<--password> argument given.
+
+=head3 Notes on password
+
+Currently this only works for glibc-based Linux guests that use shadow
+passwords.
 
 =head2 B<puppet-data-log> *
 
@@ -257,9 +321,21 @@ run on the host, not in the guest.
 Вилучити каталог C<.ssh> користувача «root» та всіх інших користувачів,
 домашні каталоги яких містять каталог C<.ssh>.
 
+=head3 Notes on ssh-userdir
+
+Currently this only looks in C</root> and C</home/*> for home directories,
+so users with home directories in other locations won't have the ssh files
+removed.
+
 =head2 B<sssd-db-log> *
 
 Вилучити бази даних і файли журналів sssd.
+
+=head2 B<tmp-files> *
+
+Remove temporary files.
+
+This removes temporary files under C</tmp> and C</var/tmp>.
 
 =head2 B<udev-persistent-net> *
 
@@ -281,6 +357,11 @@ udev цьому можна запобігти.
 
 Вилучити всі облікові записи користувачів та відповідні домашні
 каталоги. Обліковий запис «root» вилучено не буде.
+
+=head3 Notes on user-account
+
+Currently this does not remove the user accounts from C</etc/shadow>.  This
+is because there is no lens for the shadow password file in Augeas.
 
 =head2 B<utmp> *
 

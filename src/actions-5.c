@@ -7794,3 +7794,300 @@ guestfs_feature_available (guestfs_h *g,
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_journal_next (guestfs_h *g)
+{
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_journal_next_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "journal_next", 12);
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "journal_next");
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "journal_next") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_next", "-1");
+    return -1;
+  }
+
+  serial = guestfs___send (g, GUESTFS_PROC_JOURNAL_NEXT, progress_hint, 0,
+                           NULL, NULL);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_next", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "journal_next", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_journal_next_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_next", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_JOURNAL_NEXT, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_next", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_next", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "journal_next", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "journal_next",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = ret.more;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "journal_next");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int64_t
+guestfs_journal_skip (guestfs_h *g,
+                      int64_t skip)
+{
+  struct guestfs_journal_skip_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_journal_skip_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int64_t ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "journal_skip", 12);
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "journal_skip");
+    fprintf (trace_buffer.fp, " %" PRIi64, skip);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "journal_skip") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_skip", "-1");
+    return -1;
+  }
+
+  args.skip = skip;
+  serial = guestfs___send (g, GUESTFS_PROC_JOURNAL_SKIP,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_journal_skip_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_skip", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "journal_skip", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_journal_skip_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_skip", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_JOURNAL_SKIP, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_skip", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_skip", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "journal_skip", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "journal_skip",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = ret.rskip;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "journal_skip");
+    fprintf (trace_buffer.fp, "%" PRIi64, ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_internal_upload (guestfs_h *g,
+                         const char *filename,
+                         const char *tmpname,
+                         int mode)
+{
+  struct guestfs_internal_upload_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  uint64_t progress_hint = 0;
+  struct stat progress_stat;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "internal_upload", 15);
+  if (filename == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "internal_upload", "filename");
+    return -1;
+  }
+  if (tmpname == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "internal_upload", "tmpname");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "internal_upload");
+    fprintf (trace_buffer.fp, " \"%s\"", filename);
+    fprintf (trace_buffer.fp, " \"%s\"", tmpname);
+    fprintf (trace_buffer.fp, " %d", mode);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (stat (filename, &progress_stat) == 0 &&
+      S_ISREG (progress_stat.st_mode))
+    progress_hint += progress_stat.st_size;
+
+  if (guestfs___check_appliance_up (g, "internal_upload") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_upload", "-1");
+    return -1;
+  }
+
+  args.tmpname = (char *) tmpname;
+  args.mode = mode;
+  serial = guestfs___send (g, GUESTFS_PROC_INTERNAL_UPLOAD,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_internal_upload_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_upload", "-1");
+    return -1;
+  }
+
+  r = guestfs___send_file (g, filename);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_upload", "-1");
+    /* daemon will send an error reply which we discard */
+    guestfs___recv_discard (g, "internal_upload");
+    return -1;
+  }
+  if (r == -2) /* daemon cancelled */
+    goto read_reply;
+
+ read_reply:
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "internal_upload", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_upload", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_INTERNAL_UPLOAD, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_upload", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_upload", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "internal_upload", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "internal_upload",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "internal_upload");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+

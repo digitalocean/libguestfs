@@ -1,3 +1,2290 @@
+2013-10-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.33.
+
+	builder: Add maintainer test for new guests.
+	This is not part of the automated test suite.  It's a manual test run
+	by the maintainer which must be run on each new guest to ensure that
+	all the virt-builder features work on the new guest.
+
+	firstboot: Ensure firstboot scripts run in command line order.
+	Previously they ran in effectively random order.
+
+	sysprep: firstboot: Don't set `Created_files flag unless files are created.
+
+	firstboot: Add some debugging to the control script.
+	For reasons unknown, firstboot does not work on Debian 6 & 7.
+	https://bugzilla.redhat.com/show_bug.cgi?id=1019388
+
+	sysprep: random seed: Try much harder to create a random seed file.
+	Since this is essential for security, be much more proactive about
+	trying to create a random seed file, even for guests which have buggy
+	installers that don't create this file during installation.
+
+	builder: Really force apt not to ask questions.
+	This fixes commit b812a0d45992e729a85f10483ae26b82b8e2da90.
+
+	builder: Remove capital O and lower case L from random root password.
+	They look too much like 0 and 1.
+
+	builder: Wrap program in an exception handler which pretty-prints common exceptions.
+	This looks like a large change, but is mainly just reindenting
+	everything into a 'main ()' function.
+
+	builder: Remove nbdkit-xz-plugin support (it was disabled anyway).
+	We can re-add this later if libvirt gets fixed, but for now simplify
+	the code and concentrate on the one code path.
+
+	builder: Move command line argument processing to separate source file.
+	This is just code motion.
+
+	firstboot: Fix test for installing sysvinit scripts.
+	This fixes commit 9aa13e057497a91ce9037f18a51ea6f35b4f2aa5.
+
+2013-10-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Try really hard to make apt non-interactive.
+
+2013-10-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Remove cruft and run udevd directly.
+	This commit removes a lot of cruft from old RHEL which was required to
+	start udev.  Instead we run the daemon directly.
+
+	Also it removes the fallback path which created some device nodes in
+	/dev by hand.  This likely did not work.  This also removes the
+	dependency on MAKEDEV which is long gone from most distros.
+
+	This is required for Ubuntu, since the /etc/init.d/udev script didn't
+	actually work.  The most common symptom was that /dev/virtio-ports/*
+	was not created because udev didn't process the cold start events.
+
+2013-10-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.32.
+
+	build: Add missing EXTRA_DIST files.
+
+	build: Add maintainer-check-extra-dist rule.
+	This is used by the maintainer to check for missing files
+	in EXTRA_DIST.
+
+	build: Don't hard-code list of virt-builder templates in top level directory.
+	It's troublesome for maintenance.  Use a wildcard here.
+
+	Update to latest gnulib.
+
+2013-10-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	firstboot: Install both systemd and SysV init scripts.
+	This should be safe, and avoids the whole issue of whether a guest
+	uses systemd or not.  Also it is possible to switch init systems
+	(eg. by specifying init= on the command line) so it's not even clear
+	if a guest "is" systemd.
+
+	Thanks: Tom Gundersen on #systemd.
+
+	This updates/fixes commit 596de56a436d56886616f5cc213bb72a4f6f5561.
+
+2013-10-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	firstboot: Start service after network only.
+	Not necessary to wait for syslog since (a) we do our own logging
+	to a file and (b) syslog might not be installed.
+
+	firstboot: Fix firstboot scripts so they work on Ubuntu.
+	Ubuntu 13.10 has /etc/systemd but uses Upstart.  This confuses the
+	script because it assumed that if you have /etc/systemd then you are
+	using systemd.  Ubuntu includes systemd services (inherited from
+	Debian) but they just don't run.
+
+	builder: Add --notes option.
+	This displays the release notes.
+
+	builder: Add short synopsis in --help output.
+
+	builder: Tidy up release notes for operating systems.
+
+	builder: debian/ubuntu: Add notes about running dpkg-reconfigure.
+	Required to regenerate SSH host keys.
+
+	builder: Fix typo in man page.
+
+2013-10-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Fix output to block devices.
+	If the output is a block device:
+
+	- Detect the size of the output device.
+
+	- Don't attempt to delete the output device on failure.
+
+	- Turn off sparse copying in virt-resize.
+
+2013-10-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	resize: Add --no-sparse flag to let you turn off sparse copying.
+	Useful when the target is a block device containing old data.
+
+	builder: Run 'apt-get update' before trying to install packages.
+
+	FAQ: Clearer instructions for Debian and Ubuntu users.
+
+2013-10-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Kill any daemons started by installed packages.
+	Some --install requests may pull in packages that start daemons (dbus
+	being a favourite daemon apparently).  These daemons will prevent the
+	disks from being unmounted and everything being cleaned up at the end.
+	Add some experimental code to kill these daemons.
+
+	builder: Add more templates to the list which is copied to the website.
+
+2013-10-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add the logo to the HTML manual page.
+	Unfortunately:
+
+	 - It appears below the TOC.  This is unavoidable because of the
+	   flow of the current HTML.
+
+	 - The logo is now duplicated in git.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.31.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	po: builder: Hack to remove duplicate message definition.
+	Because we're not running msgmerge but concatenating the PO files, you
+	can get duplicate messages (in this case "no"), resulting in this
+	error:
+
+	libguestfs.pot:6142: duplicate message definition...
+	libguestfs.pot:3285: ...this is the location of the first definition
+
+	Just work around this for now.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Document how to enable virtual consoles on Debian guests.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add --edit option.
+	This allows you to use Perl to edit files in the guest.
+
+	This works very similarly to the 'virt-edit -e' (non-interactive
+	editing) function.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Small copy-edit to the manual.
+
+	edit: Add virt-edit --edit as an alias for virt-edit -e.
+	This just adds the alias and does nothing else.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Upcase --delete and --scrub option arguments in man page.
+	For consistency with other options.
+
+	This updates commit 7820aaf1f3f1402811c1c3c8b2239aec0e12cf5e.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Disable LD_PRELOAD libSegFault in virt-rescue shell.
+	Commit c598e14052399f19d36d7874d7133cba779bd3c2 exports
+	LD_PRELOAD=/lib64/libSegFault.so so that guestfsd and processes that
+	it runs will produce descriptive stack traces.
+
+	However it exports it to everything including the virt-rescue shell.
+	But if we are chrooting into a guest which doesn't have this file (or
+	indeed any guest) we should not use LD_PRELOAD.
+
+	Therefore unset LD_PRELOAD in the rescue shell.
+
+	See also related commit 21e5fc811ea3708ef0c768467ffe53368bc435e9.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add Debian 6 (Squeeze) guest template.
+
+	builder: With -v option, dump out the log file.
+	Useful for debugging install errors.
+
+	builder: Add comment about download /dev/stderr truncating redirection files.
+
+	builder: '@' (not '+') is used to install groups of packages in Fedora.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Print some stats about the generated image at the end.
+	It will print stats at the end like this:
+
+	  Output: fedora-18.img (8.0G)
+	  Free space: 3.2G (39%)
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add --delete and --scrub options for deleting guest files.
+
+	builder: In documentation, use 'scrub log file' instead of 'wipe'.
+	Since we really do try to scrub the data.
+
+	builder: Advice on setting environment variables to maximize caching.
+
+	builder: Add --cache-all-templates option.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Make --delete-cache obey the --cache option.
+	Previously a command such as:
+
+	  virt-builder --cache /tmp/cache --delete-cache
+
+	would delete ~/.cache/virt-builder (the default cachedir).
+
+	It's obviously meant to delete /tmp/cache, which this commit fixes.
+
+2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add --print-cache option.
+
+	recipes: More recipes for virt-builder, syslinux, Xen partitionless guest conversion.
+
+2013-10-12  John Eckersberg  <jeckersb@redhat.com>
+
+	btrfs: Fix improper memmove usage in do_btrfs_subvolume_list (RHBZ#1018149).
+	The third parameter (number of bytes to copy) was given as an offset
+	relative to dest, when it should be relative to src.  This fixes some
+	valgrind warnings I happened across.
+
+2013-10-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.30.
+
+	debian: Warn if /dev/kvm is 0660 and user is not in the KVM group.
+	On Debian, /dev/kvm is mode 0660 and group kvm, so users need to add
+	themselves to the kvm group otherwise things are going to be very slow
+	(this is Debian bug 640328).
+
+	events: Add a warning event and direct all warning messages through it.
+	This also causes warnings to be printed even in non-verbose mode,
+	which is useful.
+
+	launch: libvirt: Suggest using the direct backend if libvirt fails.
+
+	builder: Avoid parallel cache downloads from stomping on each other.
+	This should let you run virt-builder instances in parallel.
+
+2013-10-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Don't leak 'device' string in parse_btrfsvol.
+	Since 'device' is assigned repeatedly, and because
+	device_name_translation allocates a new string each time, we have to
+	free it in the loop and along error paths.
+
+	Found by ./configure --enable-valgrind-daemon.
+
+2013-10-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: xattr: Fix scope of cleanup buf to avoid memory leaks.
+	Found by ./configure --enable-valgrind-daemon.
+
+	daemon: Fix macro definition.
+	Defined a bogus macro along an unused code path.
+
+	daemon: parted: Fix memory leak of list of strings.
+	Found by ./configure --enable-valgrind-daemon.
+
+	daemon: Fix scope of cleanup functions to avoid memory leaks.
+	Found by ./configure --enable-valgrind-daemon.
+
+	daemon: Ignore memory leak in aug_setm.
+	(Found by ./configure --enable-valgrind-daemon)
+
+2013-10-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: When valgrinding the daemon, take steps to cleanly exit daemon.
+	This adds a new internal API: internal_exit
+
+	Only when valgrinding the daemon, have the library call internal_exit
+	along the close path, and close the sockets first.  This ensures we
+	will see normal valgrind messages (we were only seeing valgrind aborts
+	before).
+
+	Note this is not used in production builds.
+
+2013-10-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.29.
+
+	inspector: Allow the test to be skipped by setting an environment variable.
+
+2013-10-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Use UNIX_PATH_MAX instead of hard-coded value for max length of socket buf.
+
+	sparsify: Use Filename.temp_dir_name instead of Filename.get_temp_dir_name ().
+	The latter function is only available in OCaml >= 4.00 whereas
+	Filename.temp_dir_name has been around since OCaml 3.09.1.  In this
+	case it doesn't make any difference which one we use.
+
+2013-10-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Change handling of C 'function(void)' to be simpler.
+	This also fixes an obscure case in daemon/optgroups.h.
+
+	The only difference in the generated output is:
+
+	--- daemon/optgroups.h.orig	     2013-10-09 20:42:02.479681861 +0100
+	+++ daemon/optgroups.h		     2013-10-09 20:42:10.563681858 +0100
+	@@ -149,7 +149,7 @@
+	   int optgroup_inotify_available (void) { return 0; }
+
+	 #define OPTGROUP_JOURNAL_NOT_AVAILABLE \
+	-  int __attribute__((noreturn)) do_internal_journal_get () { abort (); } \
+	+  int __attribute__((noreturn)) do_internal_journal_get (void) { abort (); } \
+	   int __attribute__((noreturn)) do_journal_close (void) { abort (); } \
+	   int64_t __attribute__((noreturn)) do_journal_get_data_threshold (void) { abort (); } \
+	   int __attribute__((noreturn)) do_journal_next (void) { abort (); } \
+
+2013-10-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: WEBSITEDIR has moved.
+
+	Update TODO with more ideas.
+
+2013-10-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Upload /etc/resolv.conf from the host when the network is enabled.
+	When the user has enabled the network (not the default) we upload
+	/etc/resolv.conf from the host to the appliance /etc/resolv.conf
+	so that programs in the appliance can contact nameservers.
+
+	Commit 9521422ce60578f7196cc8b7977d998159238c19 previously changed the
+	behaviour to copy /etc/resolv.conf into the sysroot when running
+	commands.
+
+2013-10-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	df: parallel: Add a debug message when work function returns an error.
+	Further attempts to find out why this hangs under Koji.
+
+	launch: If launch takes longer than 20 minutes, time out.
+	Add a constant fixed timeout for launch (currently 20 minutes, we'll
+	make it configurable if needed in the future).  If the appliance takes
+	longer than this to connect back, we time out assuming that the kernel
+	has hung during boot.
+
+	launch: libvirt: Clarify comment.
+
+2013-10-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	blockdev: Deprecate blockdev_setbsz and make it do nothing (RHBZ#624334).
+	This call never did anything.  Don't use it.  Also I have submitted a
+	patch upstream to remove the corresponding option from blockdev.
+
+	See RHBZ#1002825 for an explanation of why this call was always
+	useless.
+
+	Thanks: Masayoshi Mizuma
+
+2013-10-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.28.
+
+2013-10-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: command: Copy appliance /etc/resolv.conf in before running commands.
+	When you try to run commands for an Ubuntu guest, they fail because in
+	Ubuntu /etc/resolv.conf is a symlink to /run/...  and this turns out
+	to be a dangling symlink when the Ubuntu guest is mounted up under the
+	appliance.
+
+	Therefore even if the network is enabled, any command which tries to
+	do name resolution will fail.
+
+	Ideally we would like to bind-mount the appliance /etc/resolv.conf
+	into the sysroot.  However this is not possible because mount is buggy
+	(see comment).  So instead we use a complex hack to achieve the same
+	ends.
+
+	Note this is only done if the network is enabled and if /etc in the
+	guest actually exists.  The original /etc/resolv.conf is restored
+	as soon as the command has run.
+
+2013-10-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Refactor bind-mount code.
+	This is just code motion.
+
+	daemon: 'exists' API should not follow broken symlinks.
+	Using guestfs_exists on a symlink which existed but pointed to a
+	non-existent file was returning false.  However exists obviously
+	should not be following the symlink in the first place.
+
+	sysprep: ubuntu: Use secure SHA-512 crypt back to Ubuntu 10.04.
+
+	builder: Add Ubuntu 10.04LTS, 12.04LTS and 13.10 templates.
+
+	sysprep: Fix documentation for --mount-options.
+
+2013-10-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Don't remove /var/cache/apt/archives/partial directory.
+	Removing this directory breaks Ubuntu guests.
+
+	This change adds a utility function which removes only files from a
+	directory.  This is a safer way to clean cache directories etc.
+
+2013-10-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: network: Note that only outgoing connections are allowed.
+
+	builder: Add section on debugging and other documentation fixes.
+
+2013-10-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.27.
+
+	perl: valgrind: Renamed function requires different valgrind suppression.
+	Seems to be a difference in Perl 5.18.
+
+	builder: logo: Small adjustments.
+
+	builder: Document how to import disk images to other tools.
+	Thanks: Kashyap Chamarthy
+
+	builder: Display the output filename.
+	Thanks: Kashyap Chamarthy
+
+	Version 1.23.26.
+
+	builder: Use progress bar for large template downloads that are not in the cache.
+
+	builder: Create an install log file, and dump the full log on error.
+	This should make debugging much simpler, and also provides a
+	build log in the guest once it's built.
+
+	builder: Tidy up error messages.
+
+	builder: Clean up messaging.
+	Ensure every significant action gets a message.
+
+	Add virt-builder logo.
+
+	Update release notes with dependency changes since 1.22.
+
+	todo: Some items to do in virt-builder.
+
+2013-10-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: docs: Minor copy-edits of the man page.
+
+	Update release notes.
+
+	Update API support.
+
+	Version 1.23.25.
+
+	builder: docs: Add sections on architecture, security, UML.
+
+	uml: Fix virt-builder test.
+	Note comment in the test about networks.
+
+2013-10-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Fix --format/--output-format arguments to virt-resize subcommand.
+	The 'virt-builder --format' option translates to the
+	'virt-resize --output-format' option, because it specifies the output
+	format.
+
+	On the contrary, the 'virt-resize --format' option (the input format)
+	is always 'raw'.
+
+2013-10-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add -v option to test so we get all debugging output.
+
+	tests/nbd: Avoid warning when tests are skipped.
+	Since END{} clause is always called,  might not be defined if
+	we exit early.  Move the whole clause to the top.
+
+	builder: Add test *.xz files to CLEANFILES.
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.24.
+
+	website: Make the rule install builder files to website.
+
+	website: Add HTMLSUPPORTFILES to rule.
+
+	builder: Add Debian 7 template + scripts used to create it.
+
+	builder: Implement --hostname (set hostname of guest).
+	This also makes a minor rearrangement so that the random seed, root
+	password, hostname setting all happen before package installation.
+	This keeps these configuration changes together and means that the
+	packages that are installed can act differently based on hostname
+	(which is conceivable).
+
+	sysprep: Refactor hostname code into a common library.
+
+	builder: Add tests.
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	New tool: virt-builder: For quickly building virtual machine images.
+	On baremetal you can build and customize a new guest in under 2
+	minutes.  For example:
+
+	$ virt-builder fedora-19 \
+	    --root-password password:test \
+	    --install minicom \
+	    --firstboot-command 'yum -y update' \
+	    --firstboot-command 'useradd -m -p "" rjones ; chage -d 0 rjones'
+	[     0.0] Downloading: file:///home/rjones/d/libguestfs/builder/website/fedora-19.xz
+	[     1.0] Uncompressing: file:///home/rjones/d/libguestfs/builder/website/fedora-19.xz
+	[    24.0] Running virt-resize to expand the disk to 4.2G
+	[    77.0] Opening the new disk
+	[    81.0] Installing packages: minicom
+	[    94.0] Installing firstboot command: [001] yum -y update
+	[    94.0] Installing firstboot command: [002] useradd -m -p "" rjones ; chage -d 0 rjones
+	[    94.0] Finishing off
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Refactor setting random seed code into a common library.
+	This is just code motion.
+
+	firstboot: Invoke firstboot.sh script with 'start' parameter.
+	.. else the systemd script does not run.
+
+	sysprep: Refactor firstboot code into a common library.
+
+	resize: Don't add mllib/* sources to 'SOURCES'.
+	This was a mistake in commit 2a6ce793200e2cc6793a0242ec9ea3f90ad452b8.
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Refactor password handling code into a common library.
+	Also the crypt binding is moved to mllib because this is a dependency
+	of the password library.
+
+	This is just code motion.
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	mllib: Rename parse_size to parse_resize.
+	This is just code motion, but it reduces a source of confusion.
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	mllib: error function has ~prog parameter, instead of assuming virt-resize.
+	  $ virt-sparsify a a
+	  virt-resize: error: you cannot use the same disk image for input and
+	  output
+	  If reporting bugs, run virt-resize with the '-d' option and include the
+	  complete output.
+
+	Note (a) it assumes the program is called "virt-resize" which it
+	isn't, and (b) it assumes the program has a debug option -d which it
+	doesn't.
+
+	This commit changes the error message and adds a -v option to
+	virt-resize.
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	resize, sparsify: Small argument parser refactoring.
+	Factor out a common string.
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Don't set LD_PRELOAD for guestfsd children.
+	Commit c598e14052399f19d36d7874d7133cba779bd3c2 exports
+	LD_PRELOAD=/lib64/libSegFault.so so that guestfsd and processes that
+	it runs will produce descriptive stack traces.
+
+	However if we chroot into /sysroot (ie. CHROOT_IN/CHROOT_OUT) and if
+	the libSegFault.so library does not exist inside the chroot (as is the
+	case on Debian guests) then we cannot run any processes.  In any case
+	we *don't* want to necessarily run this library from the guest.
+
+	The proper way to fix this is to confine all chrooting to a
+	subprocess, but that's a big change to guestfsd which we'll have to do
+	one day.  For now, unset LD_PRELOAD once guestfsd starts up.
+
+2013-10-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Fix xfs_info parser because of new format.
+	The old parser had several problems: firstly it called the error path
+	sometimes without calling reply_with_error causing a protocol hang.
+	More seriously it had hard-coded line numbers, and since Fedora 21 the
+	output of xfs_info has changed, moving lines around.
+
+	Change the parser to be more robust against added fields by using the
+	first name on the line as the section name, thus 'bsize=' is
+	interpreted differently depending on whether it appears in the "data"
+	section or the "naming" section.
+
+	Ensure also that we don't call the error path without calling
+	reply_with_error, which is a side-effect of the above change.
+
+2013-10-03  Cole Robinson  <crobinso@redhat.com>
+
+	launch: libvirt: Set attribute present=yes to enable kvmclock.
+
+2013-09-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.23.
+
+2013-09-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update BUGS file.
+
+	Update PO files.
+
+	tools: Generate a special POTFILES-pl and dump symlink hack in tools directory.
+
+2013-09-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Create /dev/loop-control and similar devices.
+	When 'mount -o loop' and similar commands are used, the loop module is
+	loaded automatically by the kernel when /dev/loop-control is accessed.
+
+	/dev/loop-control is created semi-statically by an unholy and
+	overcomplex combination of kmod static-nodes and systemd-tmpfiles
+	(instead of using, say, just udev or even just a simple series of
+	mknod commands).
+
+2013-09-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: If --enable-valgrind-daemon then increase minimum memory to 768 MB.
+	tests/c-api would fail from time to time if --enable-valgrind-daemon
+	was configured.  There was no obvious memory leak.  It looks as if the
+	overhead of valgrind was sufficient to break long-running tests such
+	as this one.
+
+2013-09-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Use host-passthrough instead of host-model.
+	<cpu model="host-passthrough"> really passes -cpu host to qemu, which
+	is what we want since we don't care about live migration or ABI
+	stability.
+
+	This should avoid http://bugzilla.redhat.com/870071 .
+
+	Note this "taints" the libvirt domain.  We don't particularly care
+	about that, and the reason for the tainting doesn't seem to make much
+	sense anyway.
+
+	This updates commit 6f76fdb41eb6bd124fbc3d084f5c2a3371b37d9b.
+
+2013-09-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	sparsify: Fix incorrect reference to documentation from tool.
+
+	mllib: Ensure that mllib is included in POTFILES-ml.
+	This updates commit 2a6ce793200e2cc6793a0242ec9ea3f90ad452b8.
+
+2013-09-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	uri: Fix two compiler warnings.
+	We have to include the right header so that guestfs___free_string_list
+	is declared.  Unfortunately that means ensuring -I src is passed to
+	the compiler in every tool subdirectory.
+
+	Also fix (bogus) compiler warning about incorrect type of the
+	parameter to caml_copy_string_array.
+
+2013-09-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	tools: Move shared OCaml code to mllib/ directory.
+	Previously a lot of shared code lived in the resize/ directory for no
+	particular reason.
+
+	This is just code motion.
+
+2013-09-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	resize: Allow the input file to be a URI.
+	This lets you use nbd as a source for resizing, eg:
+
+	  virt-resize nbd://example.com outfile
+
+2013-09-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Fix option quoting in manual page.
+	This fixes commit b65c1c667b26313abf312a7ab51f8bf947243d07.
+
+2013-09-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-df: parallel: Send debugging messages to stderr.
+	Not stdout (ordinary program output) since that gets eaten by
+	the tests.
+
+	This fixes commit 67b9469754684bc0c79fffab7bbca9f6ffee84f0.
+
+2013-09-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: Drop kernel_irqchip=off hack.
+	Was only required because of the previous use of vexpress-a9.  With
+	vexpress-a15 should no longer be needed.
+
+	arm: Switch to using Versatile Express A15 machine.
+	This is the machine which qemu actually emulates these days.
+
+2013-09-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Remove incorrect comment.
+	qemu does in fact fix up the device tree with the correct memory size
+	supplied by -m <ramsize> so the comment was incorrect.
+
+	This updates commit 8d273a27156813593fe7f6bb657fcf04eb325b59.
+
+2013-09-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: Pass mem= parameter on Linux command line.
+	It is thought that qemu-system-arm -m <ramsize> could conflict with
+	the actual memory that Linux thinks is available (from the device tree).
+
+	Thanks: Marc Zyngier
+
+2013-09-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: Don't bother supplying guest architecture.
+	libvirt seems to do the right thing without this.
+
+	arm: Add notes about machine types.
+	Thanks: Marc Zyngier from ARM, Andre Przywara from Linaro for
+	patiently explaining this to me.
+
+	launch: Centrally define machine type and DTB wildcard.
+	This avoids a bit of arch-specific #ifdef.
+
+	Version 1.23.22.
+
+2013-09-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Remove misleading / outdated section about other arches from README.
+
+	ppc: inspection: Use iconv "UTF-16LE" instead of "UTF-16".
+	See commit message:
+	https://github.com/libguestfs/hivex/commit/8e31fd84cb1c7edcd897ddaaea407774de459b2e
+
+2013-09-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Don't print a warning if \Windows\explorer.exe does not exist.
+	guestfs_case_sensitive_path does not test for file existence.  We have
+	to test for it explicitly.
+
+	This updates commit 9ea6e9701461e594033999150f930cc4fafec4d2.  See the
+	description of that commit for more details.
+
+2013-09-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	ppc: Disallow ide interface.
+	qemu-system-ppc64 lets you add the IDE interface to the appliance, but
+	the appliance kernel ignores it (and consequently can't find the
+	appliance disk so it all goes wrong).  Best to just disallow this.
+
+	Also skip tests that try using iface = 'ide'.
+
+2013-09-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	ppc: Use a larger default memory size on ppc64.
+	Without this, test-max-disks fails when creating device nodes.
+
+2013-09-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	ppc: launch: direct: Use -M pseries.
+
+	arm: launch: direct: Use correct device name for virtio-scsi when detecting.
+
+	tests: Add a regression test that ensure the network can be added.
+	This was only tested before (implicitly) by the rsync test in
+	tests/rsync.  It's better to have an explicit test of this
+	functionality.
+
+	arm: launch: libvirt: Use virtio-net-{pci,device} instead of hard-coding virtio-net-pci.
+	This is so it works on virtio-mmio platforms such as ARM.
+
+	arm: launch: libvirt: Set kernel_irqchip=off for KVM to work around buggy qemu/kernel.
+
+2013-09-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: launch: libvirt: Force <emulator>.
+	This is a temporary hack, because otherwise libvirt tries to use
+	/usr/bin/qemu-kvm even though this is ARM.
+
+	arm: launch: libvirt: Use vexpress-a9 machine type.
+
+2013-09-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: launch: libvirt: Don't try setting a cpu model on ARM.
+	One day we may be able to make this work, but presently libvirt says:
+
+	  CPU specification not supported by hypervisor
+
+2013-09-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: 'is_custom_hv' instead of 'is_custom_qemu'.
+	Just code motion related to the changed from LIBGUESTFS_QEMU
+	to LIBGUESTFS_HV.
+
+	This updates commit 78dbd08dd2115efcc488e8fbcaf9705697eb075b.
+
+2013-09-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: tests: 9p: Modify name of virtio-9p-pci device when using virtio-mmio.
+	It's called virtio-9p-device on virtio-mmio.
+
+	arm: Error if iface=ide and skip tests that use iface=ide.
+	ARM doesn't support IDE.  (Well, that's not entirely true as I found a
+	reference to one extremely obscure ARM board that had IDE disks, but
+	qemu-system-arm doesn't appear to support them).
+
+	launch: direct: Handle iface=virtio using virtio-blk path.
+	iface=virtio means use (old) virtio-blk.  Since there's an existing
+	path for using virtio-blk, use that instead of adding if=virtio (which
+	will fail on ARM).
+
+2013-09-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: launch: direct: Add kernel_irqchip=off to make ARM KVM work.
+	See:
+	https://lists.fedoraproject.org/pipermail/arm/2013-September/006758.html
+
+	Version 1.23.21.
+
+2013-09-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: appliance: Add support for device trees (dtb's).
+	If supermin-helper >= 4.1.5 is found, use the new-style syntax and if
+	the architecture requires it (only ARM for now) implement device
+	trees.
+
+	This means we pass a supermin-helper --dtb option to find the right
+	device tree (currently Versatile Express A9, since that's what we pass
+	to qemu in the -M option).  This makes supermin-helper find a
+	compatible device tree file.
+
+	Also that we pass the corresponding dtb file to qemu via the qemu -dtb
+	option, or to libvirt via the <dtb> element.
+
+2013-09-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Update POTFILES-ml.
+	This updates commit ea7088b5cab30158149b07bd208e54631b86b8eb.
+
+2013-09-06  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	sysprep: remove tmp files
+	This removes tmp files under /tmp and /var/tmp.
+
+2013-09-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Set QEMU_AUDIO_DRV=none to stop qemu opening audio devices.
+	Libvirt does the same thing, and it definitely has an effect
+	on ARM at least.
+
+	arm: launch: direct: Use virtio-net-device instead of virtio-net-pci on ARM.
+	This updates commit 92749924112b21e01d7cdbbb4cc07627168a705f.
+
+	arm: launch: direct: Use virtio-mmio devices on ARM.
+	Devices such as virtio-blk are (implicitly) PCI devices.  They don't
+	work on ARM.  You have to use the alternate names like
+	'virtio-blk-device' instead.
+
+2013-09-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: launch: direct: Specify a -M (machine type).
+	Currently this uses the Versatile Express A9 (vexpress-a9) machine
+	type, which is not ideal long-term.  However it includes such things
+	as virtio-mmio and so virtio things should work.
+
+	Note that -M vexpress-a15 does not work with qemu (from git on
+	2013-09-05 + Fedora kernel 3.11.0).  There are no boot messages.
+
+2013-09-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: launch: direct: Don't use -cpu flag.
+	We have no idea what the right choice is, so don't choose anything at all.
+
+	arm: configure: Search correctly for qemu-system-arm binary.
+
+2013-09-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Always use -drive ...,iface=none.
+	For virtio-scsi, this is the same as always:
+
+	  -drive ...,iface=none -device scsi-hd
+
+	For virtio-blk, this now uses:
+
+	  -drive ...,iface=none -device virtio-blk
+
+2013-09-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Always use cache=unsafe for the appliance.
+	The code to select writeback was redundant, because current
+	qemu always supports cache=unsafe.
+
+	launch: direct: Refactor -drive parameter for virtio-blk/virtio-scsi.
+	This is a straightforward refactoring of the code for generating
+	-drive and/or -device parameters for virtio-blk and virtio-scsi.
+
+2013-09-05  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	sysprep: remove firewall rules
+	If we do not want to keep the original firewall rules, enable
+	this operation to remove these rules automatically.
+
+
+	RWMJ:
+
+	 - Updated po-file.
+
+	 - Change documentation to note that it's disabled by default
+	   and in theory could make the guest exploitable.
+
+2013-09-05  Martin Kletzander  <mkletzan@redhat.com>
+
+	Get rid of gnulib error
+	Even though this doesn't stop the compile phase, I find it a bit
+	distracting that this is what I get with bootstrap:
+
+	../.gnulib/gnulib-tool: *** cannot find ./configure.ac - make sure you
+	run gnulib-tool from within your package's directory
+	../.gnulib/gnulib-tool: *** Stop.
+
+2013-09-05  Martin Kletzander  <mkletzan@redhat.com>
+
+	Don't redefine _FORTIFY_SOURCE
+	The macro _FORTIFY_SOURCE might be already defined by environment in
+	which case it shouldn't be overriden (might be if it has lower value).
+
+2013-09-05  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	sysprep: remove log file of ntp
+
+	sysprep: remove log file of gdm
+
+	sysprep: remove log file of sysstat
+
+	sysprep: remove /var/log/audit/audit.log
+	audit.log is already included in /var/log/audit/*.
+
+2013-09-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-df: parallel: Compile debugging messages in always.
+	Enable debugging messages whenever LIBGUESTFS_DEBUG=1 / -v option, so
+	that we can track down possible race condition seen in Koji.
+
+2013-09-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: augeas: Don't test if AUG_NO_ERR_CLOSE is defined.
+	It's an enum, not a macro, and in any case it has been present in
+	augeas.h since 0.10.0, and the minimum version that libguestfs
+	requires is 1.0.0.
+
+	This fixes commit 3d132f29204e8c5c77f08841b5288dfe3013f4f0.
+
+2013-09-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: augeas: Enhance error reporting for aug_init failures.
+	Thanks: Dominic Cleal.
+
+2013-09-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.20.
+
+	drives: Don't need to call free_drive_servers since preceding code checks servers == NULL.
+
+	rescue: Use cachemode "unsafe" for the virt-rescue --scratch option.
+
+	sparsify: Use cachemode "unsafe" for the overlay disk.
+
+	drives: Ensure all scratch drives use cachemode "unsafe".
+	They are _scratch_ drives so any data on them doesn't matter and can
+	be reconstructed in the event of a host system crash.
+
+2013-09-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	add_drive: Introduce 'cachemode' parameter to control drive caching.
+	This commit adds an optional 'cachemode' parameter to the 'add_drive'
+	API to control caching.  This corresponds approximately to the
+	'-drive ...,cache=' parameter in qemu, but the choices are much more
+	restrictive, just 'writeback' or 'unsafe', for reasons outlined below.
+
+	The caching modes supported by recent QEMU are:
+
+	  writeback:
+	   - Reports data writes completed when data is present in the host
+	     page cache.
+	     Only safe provided guest correctly issues flush operations.
+
+	  writethrough:
+	   - Reports data writes completed only when each write has been
+	     flushed to disk.  Performance is reported as not good.
+
+	  none:
+	   - Uses O_DIRECT (avoids all interaction with host cache), but does
+	     not ensure every write is flushed to disk.
+	     Only safe provided guest correctly issues flush operations.
+
+	  directsync:
+	   - Uses O_DIRECT (avoids all interaction with host cache), and
+	     ensures every write has been flushed to disk.
+
+	  unsafe:
+	   - No special handling.
+
+	Since the libguestfs appliance kernel always issues flush operations
+	(eg. for filesystem journalling and for sync) the following modes can
+	be ignored: 'directsync', 'writethrough'.
+
+	That leaves 'writeback', 'none' and 'unsafe'.  However 'none' is both
+	a constant source of pain (RHBZ#994517), is inefficient because it
+	doesn't use the host cache, and does not give us any safety guarantees
+	over and above 'writeback'.  Therefore we should ignore 'none'.
+
+	This leaves 'writeback' (safe) and 'unsafe' (fast, useful for scratch
+	disks), which is what we implement in this patch.
+
+	Note that the previous behaviour was to use 'none' if possible, else
+	to use 'writeback'.  The new behaviour is to use 'writeback' only
+	which is (in safety terms) equivalent to 'none', and also faster and
+	less painful (RHBZ#994517).
+
+	This patch also allows you to specify a cache mode for network drives
+	which also previously defaulted to 'writeback'.
+
+	There is a considerable performance benefit to using unsafe (for
+	scratch disks only, of course).  The C API tests only use scratch
+	disks (since they are just tests, the final state of the disk doesn't
+	matter), and this decreases total run time from 202 seconds to 163
+	seconds, about 25% faster.
+
+2013-08-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	sparsify: Test for qcow2 features instead of keying off qemu-img version.
+	Test whether qcow2 features are possible in qemu-img instead of
+	assuming they are by keying off the version.
+
+	Also use the 'lazy_refcounts' flag, if available.  It may make writing
+	to the overlay file marginally faster (however I tested it and there
+	was no measurable difference).
+
+2013-08-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	sparsify: Fix signal handling.
+	If you don't have a ^C (SIGINT) signal handler at all, then at_exit
+	handlers are not called so you end up leaving the large temporary
+	overlay file lying around.  That was fixed, incorrectly, by
+	commit 7283a5a2765c0670e9dceec70e626a49a30d269c.
+
+	However the code now would delete the overlay file in the SIGINT
+	handler but otherwise continue running until basically it tries to
+	read the overlay file (now deleted) and fails.  So it kind of worked,
+	by accident.
+
+	Fix this so that the signal handler calls exit, thus ensuring both
+	that the exit handler is called (to delete the file) and that the
+	program actually exits as soon as possible.
+
+	This also refactors the unlink_on_exit function into a utility.
+
+2013-08-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Add comment about how zero_free_space would be better if we could do cancellation.
+
+2013-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	configure: Fix stupid typo which caused compressed images to always be used.
+	Libguestfs won't work if you try to use it with supermin < 4.1.4
+	because the logic for detecting if compressed images can be used was
+	wrong (it was always enabled, instead of disabled for supermin < 4.1.4).
+
+2013-08-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	Rename virt-{cat,edit,filesystems,inspector,ls,rescue}.c to *.c.
+	This is just renaming of files.
+
+	Version 1.23.19.
+
+	uml: Skip tests/md/test-inspect-fstab-md.sh
+	Hangs at various places during the test, eg. running mdadm, mounting
+	MD filesystem.  Seems to be a bug in UML/MD.
+
+	mke2fs: Document that too small blockscount will result in ext2 filesystem (RHBZ#1002032).
+
+	rsync: Document use of glob + rsync-out in guestfish (RHBZ#1001876).
+
+	Add a regression test of tar-out excludes option (RHBZ#1001875).
+
+	daemon: tar: Use a temporary file to pass excludes to tar command (RHBZ#1001875).
+	Use tar -X option instead of tar --exclude=... option.
+
+2013-08-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Allow labels to be set on DOS filesystems using 'dosfslabel'.
+	You can now use virt-format or virt-make-fs --label option to set a
+	label for a DOS filesystem:
+
+	$ ./run ./format/virt-format -a /tmp/test.img --filesystem=vfat --label=BOOT
+	$ ./run ./cat/virt-filesystems -a /tmp/test.img --all --long -h
+	Name       Type        VFS   Label  MBR  Size  Parent
+	/dev/sda1  filesystem  vfat  BOOT   -    1.0G  -
+	/dev/sda1  partition   -     -      0b   1.0G  /dev/sda
+	/dev/sda   device      -     -      -    1.0G  -
+
+	This also contains a small code refactoring.
+
+	Thanks: Gerd Hoffmann (kraxel)
+
+2013-08-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-make-fs: Add --label option for setting filesystem label.
+	$ ./run ./tools/virt-make-fs /tmp/supermin-4.1.4.tar.gz /tmp/test.img
+	$ ./run ./cat/virt-filesystems -a /tmp/test.img --all --long -h
+	Name      Type        VFS   Label  MBR  Size  Parent
+	/dev/sda  filesystem  ext2  -      -    3.7M  -
+	/dev/sda  device      -     -      -    3.7M  -
+
+	$ ./run ./tools/virt-make-fs /tmp/supermin-4.1.4.tar.gz /tmp/test.img --label=BOOT
+	$ ./run ./cat/virt-filesystems -a /tmp/test.img --all --long -h
+	Name      Type        VFS   Label  MBR  Size  Parent
+	/dev/sda  filesystem  ext2  BOOT   -    3.7M  -
+	/dev/sda  device      -     -      -    3.7M  -
+
+	Thanks: Gerd Hoffmann (kraxel)
+
+2013-08-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	format: Add --label option for setting filesystem label.
+	$ ./run ./format/virt-format -a /tmp/test.img --filesystem=ext2 --label=BOOT
+	$ ./run ./cat/virt-filesystems -a /tmp/test.img --all --long -h
+	Name       Type        VFS   Label  MBR  Size  Parent
+	/dev/sda1  filesystem  ext2  BOOT   -    1.0G  -
+	/dev/sda1  partition   -     -      83   1.0G  /dev/sda
+	/dev/sda   device      -     -      -    1.0G  -
+
+	Thanks: Gerd Hoffmann (kraxel)
+
+2013-08-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	format: Set MBR partition type byte appropriately (RHBZ#1000428).
+	Windows won't see a filesystem unless the MBR partition type
+	byte is set correctly.
+
+	$ ./run ./format/virt-format -a /tmp/test.img
+	$ ./run ./cat/virt-filesystems -a /tmp/test.img --all --long -h
+	Name       Type        VFS      Label  MBR  Size  Parent
+	/dev/sda1  filesystem  unknown  -      -    1.0G  -
+	/dev/sda1  partition   -        -      83   1.0G  /dev/sda
+	/dev/sda   device      -        -      -    1.0G  -
+
+	$ ./run ./format/virt-format -a /tmp/test.img --filesystem=ntfs
+	$ ./run ./cat/virt-filesystems -a /tmp/test.img --all --long -h
+	Name       Type        VFS   Label  MBR  Size  Parent
+	/dev/sda1  filesystem  ntfs  -      -    1.0G  -
+	/dev/sda1  partition   -     -      07   1.0G  /dev/sda
+	/dev/sda   device      -     -      -    1.0G  -
+
+	$ ./run ./format/virt-format -a /tmp/test.img --filesystem=vfat
+	$ ./run ./cat/virt-filesystems -a /tmp/test.img --all --long -h
+	Name       Type        VFS   Label  MBR  Size  Parent
+	/dev/sda1  filesystem  vfat  -      -    1.0G  -
+	/dev/sda1  partition   -     -      0b   1.0G  /dev/sda
+	/dev/sda   device      -     -      -    1.0G  -
+
+	$ ./run ./format/virt-format -a /tmp/test.img --lvm --filesystem=vfat
+	$ ./run ./cat/virt-filesystems -a /tmp/test.img --all --long -h
+	Name        Type        VFS   Label  MBR  Size   Parent
+	/dev/VG/LV  filesystem  vfat  -      -    1020M  -
+	/dev/VG/LV  lv          -     -      -    1020M  /dev/VG
+	/dev/VG     vg          -     -      -    1020M  /dev/sda1
+	/dev/sda1   pv          -     -      -    1020M  -
+	/dev/sda1   partition   -     -      8e   1.0G   /dev/sda
+	/dev/sda    device      -     -      -    1.0G   -
+
+	Thanks: Gerd Hoffmann (kraxel)
+
+2013-08-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Use gzip-compressed cpio files if supermin-helper supports it.
+	supermin-helper >= 4.1.4 has new support for compressed cpio files
+	(not hostfiles).  Detect if this is supported, and use it.
+
+	javadoc: Install javadoc in $(datadir)/javadoc/libguestfs (without -java-$(version)).
+	Apparently this is the normal place for javadoc, and not
+	where we installed it before.
+
+2013-08-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	Initialize CLEANUP_* stack variables with NULL in various places.
+	Code like:
+
+	  CLEANUP_FREE char *buf;
+	  /* some code which might return early */
+	  buf = malloc (10);
+
+	is a potential bug because the free (*buf) might be called when buf is
+	an uninitialized pointer.  Initialize buf = NULL to avoid this.
+
+	Several of these are bugs, most are not bugs (because there is no
+	early return statement before the variable gets initialized).
+
+	However the compiler can elide the initialization, and even if it does
+	not the performance "penalty" is miniscule, and correctness is better.
+
+2013-08-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: sh: Fix missing initializer which caused segfault (RHBZ#1000121).
+	Thanks: Olaf Hering.
+
+2013-08-20  Olaf Hering  <olaf@aepfle.de>
+
+	lib: avoid pragma usage in journal.c
+	journal.c: In function 'guestfs__journal_get':
+	journal.c:120:9: error: #pragma GCC diagnostic not allowed inside functions
+	journal.c:121:9: error: #pragma GCC diagnostic not allowed inside functions
+	journal.c:123:9: error: #pragma GCC diagnostic not allowed inside functions
+	make[3]: *** [libguestfs_la-journal.lo] Error 1
+
+2013-08-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: hivex: Define empty hivex_finalize function in case !HAVE_HIVEX.
+	Thanks: Olaf Hering (see previous commit).
+
+2013-08-20  Olaf Hering  <olaf@aepfle.de>
+
+	daemon: fix build without systemd-journal
+	Fix typo in OPTGROUP_JOURNAL_NOT_AVAILABLE
+	Define empty journal_finalize, called by mount.c
+
+2013-08-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Document guestfs_verbose=1 and guestfs_channel=<PATH> in man page.
+
+2013-08-19  Olaf Hering  <olaf@aepfle.de>
+
+	tests: change noinst to check
+	This change avoids the hard requirement for qemu-tools during package
+	build.
+
+2013-08-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.18.
+
+	uml: Remove unused function is_numeric.
+	This fixes commit b607f8628876f4779921047ad29aa9a623e3bde2.
+
+	fish: Document that guestfish --remote --add won't work as expected (RHBZ#998513).
+
+2013-08-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Don't try to wait for qemu if parent process forked (RHBZ#998482).
+	When using guestfish --remote, libguestfs is not the parent of qemu,
+	so waitpid is expected to return -ECHILD.  And indeed guestfish --remote
+	would print a bogus error message in this case:
+
+	  libguestfs: error: waitpid (qemu): No child processes
+
+	If the parent process forked into the background, then it should have
+	called 'set_recovery_proc 0' so we can use this to determine if we
+	need to wait for qemu.
+
+	Thanks: Kazuya Saito for reporting and identifying the issue.
+
+2013-08-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	uml: Remove kill_vmlinux subprocess, problem fixed upstream.
+	Note you need to apply these patches to the Linux kernel to get
+	User-Mode Linux to work with libguestfs:
+
+	http://marc.info/?l=user-mode-linux-devel&m=137682544009451&w=2
+	http://marc.info/?l=user-mode-linux-devel&m=137682543809449&w=2
+	http://marc.info/?l=user-mode-linux-devel&m=137682544209452&w=2
+	http://marc.info/?l=user-mode-linux-devel&m=137682543809448&w=2
+
+2013-08-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	uml: Exit status 1 is a normal exit code for vmlinux subprocess.
+	Note you need to apply these patches to the Linux kernel
+	to get User-Mode Linux to work with libguestfs:
+
+	http://marc.info/?l=user-mode-linux-devel&m=137682544009451&w=2
+	http://marc.info/?l=user-mode-linux-devel&m=137682543809449&w=2
+	http://marc.info/?l=user-mode-linux-devel&m=137682544209452&w=2
+	http://marc.info/?l=user-mode-linux-devel&m=137682543809448&w=2
+
+2013-08-19  Or Goshen  <oberonc@gmail.com>
+
+	Fix to src/proto.c in libguestfs so it will compile with portablexdr under mingw.
+
+2013-08-19  Nikita Menkovich  <n.menkovich@sprinthost.ru>
+
+	sysprep: added --mount-options option to mount selected partitions with options.
+
+2013-08-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: Replace the debugging section (again) with a checklist of information we need to start to fix bugs.
+
+2013-08-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: Move #debug anchor back to the right place.
+	This was accidentally moved by this commit:
+
+	  commit b8b5ed65c26dd19a0bc9f8282a50c6dff90c456a
+	  Author: Richard W.M. Jones <rjones@redhat.com>
+	  Date:   Wed May 23 11:46:23 2012 +0100
+
+	    FAQ: Add section about using libguestfs in closed source programs.
+
+2013-08-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: Delete section about Ubuntu 10.04.
+	The link was broken, and we don't support Ubuntu 10.04 (maybe the
+	'oldlinux' branch does).
+
+	cleanups: Use correct types for some cleanup functions.
+
+2013-08-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	uml: Add uml_mkcow requirement to README.
+	This fixes commit 858d6e7176d7b18bc29c8503bbc2887a3b74a272.
+
+2013-08-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: Create the direct & uml command lines safely.
+	Refactor the direct & uml backends to safely create the qemu & vmlinux
+	command lines.
+
+	Don't do malloc-after-fork, which is not safe.  Do all the allocation
+	in the main process before the fork.
+
+	Use stringsbuf to simplify the code.
+
+2013-08-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	Refactor backends so they are modular.
+	Instead of hard-coding the list of backends into the core of
+	libguestfs in many places, make each backend into a true module which
+	registers itself with the core when the library is loaded.
+
+	This is a step towards making backends into loadable modules, but it
+	doesn't actually do that.
+
+	This is just code motion.
+
+2013-08-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Move internal_set_libvirt_selinux_* APIs to common launch code.
+	This is just code motion, but means the libvirt backend no longer has
+	to export those two internal APIs.
+
+	lib: Use stringsbuf at various places in the library to simplify the code.
+	This is just code refactoring.
+
+	lib: Add stringsbuf mini-library for constructing lists of strings.
+	This is modelled on similar code in the daemon that we have used
+	successfully for a long time.
+
+	list-filesystems: Don't fail if there are no filesystems found (RHBZ#995711).
+	list-filesystems was returning NULL (but not setting an error) if no
+	filesystems were found.  Instead return an empty list.
+
+	cmd: Better type checking in CLEANUP_CMD_CLOSE macro.
+
+	utils: Move guestfs___drive_name function to the utilities library.
+	For some historical reason, it was stuck in src/launch-direct.c and
+	the comment referred to launch-appliance.c!
+
+	podwrapper: guestunmount is a libguestfs page, don't link it to he.net.
+
+2013-08-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.17.
+
+	Remove contrib file from EXTRA_DIST.
+	This fixes commit 36d29700dcef01d681d41f0b593a16e7814e3ee1.
+
+	guestfs-performance: Add a section on the performance of UML.
+
+	Rename 'qemu' as 'hv', 'LIBGUESTFS_QEMU' as 'LIBGUESTFS_HV'.
+
+2013-08-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Don't enable <cpu mode="host-model"> on TCG.
+	It's fairly pointless to do this with TCG, since all we would be doing
+	is emulating a more complicated processor slowly.  Also it may be the
+	cause of subtle problems we see during testing.
+
+	This updates commit 6f76fdb41eb6bd124fbc3d084f5c2a3371b37d9b.
+
+2013-08-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Don't use -cpu host on TCG.
+	qemu -cpu \? documents this as:
+
+	host  KVM processor with all supported host features (only available in KVM mode)
+
+	And indeed if you try it with TCG you'll get this error:
+
+	Unable to find CPU definition: host
+
+	This fixes commit 038ed0a08eaed33e62a27c9f91780a25de0bc08c.
+
+2013-08-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add a test that console log messages make it up to events.
+	In Rawhide, the console was briefly broken although it "fixed itself"
+	when libvirtd was restarted.
+
+2013-08-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	Remove contrib/guestfsd-in-wine.sh.
+	Added in 2009, unlikely it still works since I doubt it has been
+	compiled since then.
+
+	uml: Change (temporary) path to UML binary.
+
+	Version 1.23.16.
+
+	uml: Add check-uml and check-valgrind-uml to release tests.
+
+	uml: tests: Add 'make check-uml' and 'make check-valgrind-uml' rules.
+	These run the test suite using User-Mode Linux.  Currently you have to
+	set LIBGUESTFS_QEMU to point to the vmlinux binary, but perhaps we
+	can solve that in future.
+
+	uml: virt-make-fs: Modify test so it doesn't use qcow2 under UML.
+	Modify the test so it doesn't try to test qcow2 format when the
+	backend is User-Mode Linux which doesn't support qcow2.
+
+	uml: sparsify: Skip test since it needs qcow2.
+
+	uml: resize: Skip test since it needs qcow2.
+
+	uml: fuse: Skip test since it needs qcow2.
+
+	uml: tests: edit: Skip test since it needs qcow2.
+
+	uml: tests/qemu: Fix tests so they work without support for qcow2.
+
+	uml: tests/md: Skip test-inspect-fstab.sh since it needs qcow2.
+
+	uml: tests/md: Fix test to cope with /dev/ubd* device names.
+
+	uml: tests/luks: Fix assumption that broke /dev/ubd* device names.
+
+	uml: tests/lvm: Fix assumption that broke /dev/ubd* device names.
+
+	uml: tests/mountable: Skip tests that need qcow2.
+
+	uml: tests/disks: Fix test so it can cope with /dev/ubd* device names.
+
+	uml: tests: Skip some tests which cannot work with the UML backend.
+
+	uml: Fix race when multiple handles are used in parallel.
+	See comment for explanation.
+
+	uml: Fix maximum number of disks.
+
+	uml: Fix guestfs_canonical_device_name API to understand /dev/ubd* paths.
+
+	virt-list-filesystems: Fix to use $g->canonical_device_name instead of homebrew function.
+	The homebrew function didn't recognize /dev/ubd* device names, and in
+	any case using the API function is shorter and clearer.
+
+2013-08-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: list-md-devices: Check if a /dev/md<X> device is valid before returning it.
+	For reasons not fully understood, if md is linked into the kernel (and
+	not a module), a /dev/md0 device node is created.  However this is not
+	a real RAID device.  For example running mdadm --detail /dev/md0 will
+	fail on it.
+
+	Check the /dev/md<X> devices are real RAID devices before returning
+	them from the list-md-devices API.
+
+2013-08-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: md: Whitespace fixes.
+
+	daemon: If /proc/modules doesn't exist, linuxmodules optgroup is disabled.
+	It likely means the kernel was compiled without modules support.
+
+	tests/regressions: Allow regression test for bug 914931 to be skipped.
+
+2013-08-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/md: Fix error path to display the correct output.
+
+	docs: The old make check-with-appliance/etc rules were renamed.
+	This fixes commit 68990840b64491b39ab8da5f1e46367ae5f01594.
+
+	tests: c-api: Fix device name comparison when using User-Mode Linux.
+	This updates commit 858d6e7176d7b18bc29c8503bbc2887a3b74a272.
+
+	docs: Clearer documentation for User-Mode Linux.
+	This updates commit 858d6e7176d7b18bc29c8503bbc2887a3b74a272.
+
+	launch: direct: Print \n after printing qemu command line.
+	This makes it easier to see error messages printed by qemu.
+
+	daemon: compare_device_names: Fix typo in this function.
+	This would have broken the function if we were comparing mixed
+	/dev/sda and /dev/ubda (ie different length) strings.  Which we never
+	normally do, luckily.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.15.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Ensure CLEANUP_FREE* variables are initialized with NULL.
+	Otherwise an early exit from the function will cause an uninitialized
+	pointer to be freed.
+
+	This fixes commit 1d7c3a27822717398415940bde1d4476441e9c1a.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add experimental User-Mode Linux backend.
+
+	daemon: Recognize /dev/ubd[a-] as a valid device name.
+
+	daemon: Allow guestfs_channel to override the virtio-serial channel.
+	Also if /dev/ttyS* is specified, make sure the serial port is set to
+	raw mode.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	conn: Make sure we display all log messages when qemu goes away.
+	If qemu goes away it is (more in theory than in reality) possible for
+	log messages to be lost in the kernel's socket buffer.
+
+	This turns out to matter more for User-Mode Linux.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance/init: Allow guestfs_noreboot=1 flag to avoid reboot at end of /init script.
+
+	lib: Turn 'random_chars' function used by libvirt backend into utility function.
+
+	utils: Remove duplicate inclusion of <string.h>.
+
+	daemon: ldm: Don't return an error if /dev/mapper doesn't exist.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Device name translation now allocates a new string.
+	Previously device name translation worked on the string in-place.
+
+	This worked fine because the device strings always come from XDR where
+	they are dynamically allocated.  However it wouldn't work if the
+	translated name had to be longer than the original, specifically for
+	/dev/sd -> /dev/ubd (for User Mode Linux).
+
+	Therefore this commit changes the generator so that
+	device_name_translation and parse_btrfsvol (which depends on it)
+	allocate the new device name instead of overwriting it.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Move all RESOLVE macros to daemon/stubs.c.
+	These macros are pretty horrible to use, with unexpected side-effects.
+	Move them exclusively into the generated code and rewrite the one
+	place in the general C code which used them.
+
+	There's no functional change in this code.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/mountable: Better error messages.
+	Better error messages (for diagnosis) when this test fails.  Also this
+	fixes the line endings which were broken before.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Fix --enable-valgrind-daemon so it doesn't break valgrind of the library.
+	Using ./configure --enable-valgrind-daemon breaks valgrinding of the
+	library because guestfs_close wouldn't call guestfs_shutdown in that
+	case, resulting in some resources owned by the backend being leaked.
+
+	After this commit, --enable-valgrind-daemon will shut down the handle
+	normally.
+
+	This updates commit 55e3b8711f340a2f8bdb8ee8ff99deb40b4e9108.
+
+2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Print an error message if valgrind failure is detected in the daemon.
+	This updates commit 55e3b8711f340a2f8bdb8ee8ff99deb40b4e9108.
+
+2013-08-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Remove unnecessary sysroot_path (selinux).
+	This fixes commit 72afcf450a78b7e58f65b4a7aaf94d71cd25fca5.
+
+2013-08-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	Fix --enable-valgrind-daemon option.
+	Don't add the "valgrind channel" to the appliance.
+
+	Just dump out the valgrind.log to stderr while the daemon is running.
+
+	Ensure that if valgrind tests fail in the appliance, that we don't
+	exit with success in the library by checking for a canary message in
+	the verbose daemon logs.
+
+	This allows the option to be used routinely by developers.
+
+2013-08-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	proto: Fix --enable-packet-dump mode.
+	This was broken when we rearranged the socket code.
+
+	appliance/init: Display uname -a in debug output.
+	Useful for debugging kernel / architecture issues.  Note this
+	has no effect if debugging is disabled.
+
+2013-08-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Close augeas, hivex, journal handles in unmount_all.
+	This is also called implicitly from internal_autosync, ensuring that
+	exit won't fail because of an open handle.
+
+	libguestfs: error: internal_autosync: umount: /sysroot: umount: /sysroot: target is busy.
+	        (In some cases useful info about processes that use
+	         the device is found by lsof(8) or fuser(1))
+
+2013-08-07  Paul Mackerras  <paulus@samba.org>
+
+	Fix parsing of boot flag in do_part_get_bootable()
+	The code in do_part_get_bootable() assumes that if a partition has the
+	bootable flag set, then that is the only flag.  It compares the entire
+	flags field with the string "boot".  However, the boot flag isn't
+	always the only flag.  For instance, POWER systems typically have a
+	bootable partition of type 0x41 (PPC PReP boot), which parted -m
+	displays as:
+
+	# parted -m -- f18.img unit b print
+	BYT;
+	/root/f18.img:16106127360B:file:512:512:msdos::;
+	1:1048576B:5242879B:4194304B:::boot, prep;
+
+	That is, the flags field contains "boot, prep", and thus libguestfs
+	fails to see that this partition is bootable.  Ultimately this causes
+	virt-resize to fail to set the bootable flag on the boot partition of
+	the destination image, resulting in an image that won't boot.
+
+	This patch fixes the problem by searching for the string "boot" within
+	the flags field, instead of comparing the whole flags field.
+
+2013-08-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	sparsify: Advertize in --machine-readable that we support --check-tmpdir option.
+	This lets programs add the --check-tmpdir=[ignore|continue|fail]
+	option to avoid interactivity.
+
+	This fixes commit 7c463ac477168df5d4e4eb472ba01fa18b89c1a6.
+
+2013-08-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.14.
+
+	Pull latest translations from Transifex.
+
+	Update Transifex domain name from .net -> .com.
+
+	Update gnulib to latest version.
+
+	sparsify: Get free space on TMPDIR and give a warning if we estimate it is too little.
+
+	Update TODO file.
+
+	New APIs: aug-setm and aug-label.
+	Bindings for the aug_setm and aug_label APIs in Augeas.
+
+	augeas: Improve error reporting.
+	Display all the information from the handle about errors.
+
+2013-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Enable kvmclock.
+	This enables stable guest clocks.
+
+	launch: libvirt: Enable <cpu mode=host-model>.
+	This may still cause problems on some CPUs because of a bug
+	in libvirt.  See:
+	https://bugzilla.redhat.com/show_bug.cgi?id=870071
+
+2013-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Specify -cpu host,+kvmclock.
+	'-cpu host' makes the CPU look like the host CPU.  This is useful
+	because it means the appliance can use all the host CPU's features,
+	eg. for fast checksumming or MD XORing.
+
+	'kvmclock' is the paravirtualized clock for qemu/KVM.  It's much more
+	stable than relying on tsc or a virtualized device such as HPET, and
+	clock instability is one of the problems we have encountered when
+	running libguestfs on a heavily loaded machine, especially in a nested VM.
+
+	Note that we require qemu >= 1.2 (and have for a while) which has long
+	supported both of these options.
+
+2013-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Add drives after machine parameters.
+	This is just code motion.  It should affect the semantics of the code,
+	nor how the appliance VM is created.
+
+	./run: Omit timeout -k option on RHEL 6.
+	If timeout doesn't have the -k option, don't use it.
+
+2013-08-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.13.
+
+	sysprep: Add "notes" field for notes on shortcomings, bugs, etc.
+	Instead of keeping this information as comments in the source, put it
+	into the virt-sysprep(1) man page.
+
+2013-08-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Various code refactorings of the operations.
+	 - Use 'op' instead of 'xxx_op' for operation table.
+	 - Add a 'defaults' for the operation table and remove any default
+	   values.
+
+	This is just code motion and there is no functional change.
+
+2013-08-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	resize: Mark progress bar functions as "noalloc".
+	Avoids GC overhead and turns these into simple C calls.  See:
+	http://camltastic.blogspot.co.uk/2008/08/tip-calling-c-functions-directly-with.html
+
+	resize: Mark isatty function as "noalloc".
+	This turns it into an ordinary C call without the unnecessary [in this
+	case] GC frame overhead.  See:
+	http://camltastic.blogspot.co.uk/2008/08/tip-calling-c-functions-directly-with.html
+
+	FAQ: Tips about using direct backend and fixed appliance on Fedora/RHEL.
+
+	FAQ: Common problem with Debian is not running update-guestfs-appliance.
+
+2013-08-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Allow root and non-root passwords to be set.
+	This adds a virt-sysprep 'password' operation which adds the
+	following command line options:
+
+	  --root-password     Set the guest's root password.
+	  --password          Set any guest password.
+
+2013-08-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Disable fs-uuids operation by default.
+	Disable this operation because it is more likely than not to break
+	Linux guests.
+
+	To fix this properly will involve finding all the places in the guest
+	where the UUIDs are used to locate and mount filesystems,
+	eg. /etc/fstab and possibly initramfs.
+
+	This updates commit 8965368eb89532ac1613fffb0a3a661f005bae81.
+
+2013-07-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	journal: Fix incorrect printf format specifier for 32-bit.
+	journal.c: In function 'do_journal_skip':
+	journal.c:134:5: error: format '%zd' expects argument of type 'signed size_t', but argument 3 has type 'int64_t' [-Werror=format=]
+	     reply_with_perror_errno (-r, "failed to skip %zd journal entries", skip);
+	     ^
+
+	This fixes commit 5cb7f294f6a5a8b4a68e940c30ca9af0fe0741d5.
+
+2013-07-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: Avoid cast-align warning.
+	Note the 64-bit int field really isn't aligned.  We hope that the ARM
+	kernel this is running on will do the appropriate fix ups.
+
+2013-07-31  Nicholas Strugnell  <nstrug@redhat.com>
+
+	sysprep: rhn_systemid: delete osad-auth.conf file in RHN configuration
+
+2013-07-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.12.
+
+	tests: fish: Add valgrind testing to various existing tests.
+	This involves running ./guestfish under $VG (== valgrind + options,
+	defined only when check-valgrind is run).
+
+	fish: Add a test for -a URI options.
+
+	fish: Fix guestfish so it can recognize sheepdog://... as a valid URI.
+	Because "sheepdog" is 8 characters, it wasn't recognized before.
+
+2013-07-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Allow -a URI options to be used (RHBZ#968875).
+	This allows you to sysprep a remote guest by doing eg:
+
+	  virt-sysprep -a ssh://remote.example.com/disk.img
+
+2013-07-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	resize: Add bindings for the guestfish -a URI parsing mini-library.
+	This allows -a options to be parsed from OCaml programs, reusing
+	the same code that is being used by C.
+
+2013-07-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Split off URI handling (for -a argument) from general options parsing.
+	This is so we will be able to reuse the same code in the OCaml tools.
+
+	This is just code motion.
+
+2013-07-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: options: Fix optarg -> arg.
+	Don't read the global variable optarg.  Read arg instead.
+	(In all cases they are the same, so this bug made no difference).
+
+2013-07-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Don't store xmlURIPtr directly in the drive struct.
+	Original drv_uri fields:
+
+	      xmlURIPtr uri;        /* URI */
+	      char *socket;         /* ?socket parameter from URI. */
+	      const char *format;   /* format (NULL == autodetect) */
+
+	New drv_uri fields:
+
+	      char *path;           /* disk path */
+	      char *protocol;       /* protocol (eg. "nbd") */
+	      char **server;        /* server(s) - can be NULL */
+	      char *username;       /* username - can be NULL */
+	      const char *format;   /* format (NULL == autodetect) */
+	      const char *orig_uri; /* original URI (for error messages etc.) */
+
+	This is just code motion.
+
+2013-07-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	internal: Add CLEANUP_XMLFREEURI (cleanup function for xmlURIPtr).
+
+	resize: Move isatty_stdout function to separate module (TTY.isatty_stdout).
+	It was jammed into the Progress module just for convenience.
+
+2013-07-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: cap-get-file: Return empty string if no capability on file (RHBZ#989356).
+	Return an empty string (instead of an error) if no capabilities are
+	set on a file, and document that in the API.
+
+	resize: Link to information about dracut-modules-growroot.
+
+2013-07-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/mount-local: Fix test of parallel mount-local.
+	This fixes commit 14fabcd88e1500368affad86b3cf221f3884a739.
+
+	Bug found by Kashyap Chamarthy.
+
+2013-07-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.11.
+
+2013-07-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add tests for the new journal APIs (RHBZ#988100).
+	This relies on the test data from
+	commit b502197ec4f201fa79255243fa09343cf3550ab5.
+
+2013-07-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	New APIs: Add systemd journal support (RHBZ#988100).
+	This adds simple support for reading the journal files from guests
+	that use the systemd journal.
+
+	The new APIs are:
+
+	  journal-open
+	  journal-close
+	  journal-next
+	  journal-skip
+	  journal-get
+	  journal-get-data-threshold
+	  journal-set-data-threshold
+	  internal-journal-get
+
+	More complex journal support (eg. for seeking within the journal,
+	support for cursors) could be added later.
+
+2013-07-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/guests: Add some systemd journal data to the Fedora test images.
+	The journal data blob comes from a real Fedora 20 (x86-64) machine.
+
+2013-07-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	src/file.c: Be sure to call guestfs___lazy_make_tmpdir before using g->tmpdir.
+	Although g->tmpdir is always set after launch, and none of these calls
+	should be used before launch, it's always possible that a caller would
+	use one of these APIs before launching the handle.
+
+	If guestfs___lazy_make_tmpdir is not called, then g->tmpdir is NULL,
+	and the constructed filename would look like "(null)/...".
+
+	In fact it's possible to observe this error (although it seems to have
+	no especially bad effects):
+
+	  $ strace guestfish ls / |& fgrep '(null)'
+	  unlink("(null)/ls1")     = -1 ENOENT (No such file or directory)
+
+2013-07-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Fix the case where a daemon function has one FileIn/FileOut parameter and no other parameters.
+	The FileIn/FileOut parameters are not passed through to the daemon.
+	Previously we generated incorrect RPC code (an empty 'struct
+	guestfs_<fn>_args') because we didn't account for these FileIn/FileOut
+	parameters correctly.
+
+	generator: Fix whitespace.
+
+2013-07-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: On RHEL, firstboot script should be called S99... not 99.
+	Thanks: Nicholas Strugnell
+
+2013-07-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.10.
+
+2013-07-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Use unique or temporary names for temporary files.
+	Review every test(!) to ensure that it:
+
+	 - Doesn't use a generic name (eg. "test1.img", "test.out") for any
+	   temporary file it needs.
+
+	 - Does instead use a unique name or a temporary name (eg. a name like
+	   "name-of-the-test.img", or a scratch disk).
+
+	 - Does not use 'rm -f' to clean up its temporary files (so we can
+	   detect errors if the wrong temporary file is created or removed).
+
+	This allows tests to be run in parallel, so they don't stomp on each
+	other's temporary files.
+
+2013-07-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: For -N option, add drive with explicit format = "raw".
+	Although autodetecting is safe (we always have just created a drive),
+	it saves a little bit of time if we don't have to run qemu-img to
+	detect the disk format with the libvirt backend.
+
+	Note that for prepared drives the format is always raw and we don't
+	anticipate creating drives in other formats.
+
+2013-07-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Allow -N filename=type to use 'filename' instead of 'test1.img' (etc.)
+	So:
+
+	  guestfish -N fs
+
+	is equivalent to:
+
+	  guestfish -N test1.img=fs
+
+2013-07-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Split up long line in --help output.
+
+	fish: Clarify documentation.
+	It's not "the guest" which is launched, but the libguestfs appliance.
+
+	sysprep: Add new fs-uuids operation.
+	This creates new random UUIDs for all filesystems in a guest.
+
+	docs: Document labels and UUIDs in the API overview section.
+
+	New API: Implement set-uuid for ext2/3/4 and XFS (RHBZ#986877).
+	Also includes tests.
+
+2013-07-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Implement set-label for XFS and fix it for btrfs (RHBZ#986875).
+	Implement 'set-label' for XFS filesystems.
+
+	Fix the call for btrfs.  Previous
+	commit d5817537fa6c51a7f851ecc5e4e63e60609e0c03 added some bogus
+	documentation implying this call would work for btrfs, but it did
+	not.
+
+	Add tests.
+
+2013-07-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	tools: 'test.img' is no longer used.
+	This probably used to be a temporary file used for testing.
+
+2013-07-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Use new guestfs_add_drive_scratch API where possible in tests.
+	Replaces code such as:
+
+	  fd = open "test1.img"
+	  ftruncate fd, size
+	  close fd
+	  g.add_drive "test1.img"
+
+	with the shorter and simpler:
+
+	  g.add_drive_scratch size
+
+2013-07-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Link to the new 'scratch' command from the old 'sparse' command.
+
+	tests/lvm: Remove some commented out debugging code.
+
+	tests/c-api: Use guestfs_add_drive_scratch API to create scratch drives.
+	Replaces the old custom code for making and deleting the drives.
+
+	New API: add-drive-scratch.
+	This adds a temporary scratch drive to the handle.
+
+2013-07-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	Revert "tests: Add a regression test for all disk_* info commands (RHBZ#981663)."
+	This reverts commit 2311fb0632a64cfa2bab8bf65c82ffaa042d619e.
+
+	This is no longer needed, since now the disk_* info functions
+	are being properly tested by the C API tests.
+
+2013-07-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/c-api: Remove 'GETKEY:' hack since it's no longer used anywhere.
+
+	tests: Better testing of guestfs_disk_* functions using blank disks from tests/data directory.
+
+	tests/data: Add some blank disks in various sizes and formats for testing.
+
+2013-07-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Rewrite TESTS rule to be compatible with automake 1.13 parallel-tests.
+	Because of this bug in automake:
+
+	  https://lists.gnu.org/archive/html/bug-automake/2013-01/threads.html#00103
+
+	this requires that we duplicate the lists of bytecode (bc) and native
+	code (opt) tests because we cannot use ordinary GNU make macros to
+	construct these lists.
+
+2013-07-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: Add section about different packaging strategies for libguestfs.
+
+2013-07-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update API support.
+
+	Version 1.23.9.
+
+2013-07-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	mkfs: Use -b size=<size> for xfs (RHBZ#981715).
+
+	tests: Add a regression test for all disk_* info commands (RHBZ#981663).
+
+2013-07-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	info: Fix double-call to error function when qemu-img info command fails (RHBZ#981663).
+	Previously if the 'qemu-img info --output json' command failed, then
+	the stdout callback would be called first with a zero-length buffer.
+	Since a zero-length buffer cannot be valid JSON (in this context)
+	don't produce a separate error message.
+
+	However do catch the case when qemu-img info might produce no output
+	and no error (if that were to happen -- it does not happen at the
+	moment).
+
+2013-07-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	info: disk-format et al: Fix error message when no file exists (RHBZ#981663).
+	$ guestfish disk-format /etc/nosuchfile
+
+	Instead of this obscure double error message:
+
+	  libguestfs: error: qemu-img info: JSON parse error: parse error: premature EOF
+	                       (right here) ------^
+	  libguestfs: error: qemu-img info: /etc/nosuchfile: qemu-img info exited with error status 1.
+	  To see full error messages you may need to enable debugging.
+	  See http://libguestfs.org/guestfs-faq.1.html#debugging-libguestfs
+
+	You will now see this simpler error:
+
+	  libguestfs: error: disk info: /etc/nosuchfile: No such file or directory
+
+	Thanks: Bo Fan.
+
+2013-07-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	cmd: Allow callers to override file-closing behaviour after fork.
+	This allows us to send file descriptors directly to child processes,
+	eg. using /dev/fd/<N>.
+
+	acls: Improve documentation for acl_set_file (RHBZ#985269).
+	Thanks: Bo Fan.
+
+2013-07-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	library: Fix a few direct calls to perror(3).
+	Mainly in the FUSE code, left over from when this code lived in the
+	standalone guestmount program.
+
+	tests: Improve the testing of acl_set_file function.
+	See also: https://bugzilla.redhat.com/show_bug.cgi?id=985269
+
+2013-07-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	./run: Increase default timeout from 1h -> 4h.
+	1 hour was not long enough for the C API tests when run in Koji.
+
+	This update commit caab9f1e6f7ac0d8d5209c31854d640b807519ce.
+
+2013-07-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: appliance: Fix a double-free if kernel linking fails (RHBZ#983218).
+	This also simplifies the code which takes the building_lock around
+	guestfs___build_appliance.
+
+	Thanks Attila Fazekas for the detailed bug report.
+
+2013-07-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	./run: Timeout tests after 1 hour.
+	No single test should run longer than 1 hour even on the slowest of
+	hardware.  We are having a problem in Koji where a test hangs and then
+	we end up losing the output completely, so a timeout + print the log
+	to that point is much better.
+
+	./run: Add a better comment describing --test mode.
+	This is just code motion, there is no functional change.
+
+2013-07-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	Remove more temporary ($builddir/tmp) files when doing 'make clean'.
+
+2013-07-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	golang: Fix it so it builds if libguestfs is not installed.
+	It was using the installed copy of libguestfs not the local copy.
+
+	We can't encode the paths in guestfs.go, since this source file gets
+	copied into the install directory where those paths would not make
+	sense.  Instead we have to use CGO_CFLAGS and CGO_LDFLAGS to
+	communicate the right flags to go when doing the local build and test.
+
+2013-07-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.8.
+
+2013-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add test for aug_ls.
+
+	tests: Test aug_insert, aug_clear and aug_save.
+
+	tests: Test aug_set.
+
+	tests: Test result of aug_get properly.
+	Don't just check aug_get runs, check the resulting string is correct.
+
+2013-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: c-api: Add a cleanup function for tests.
+	By specifying a cleanup function we can ensure that Augeas and hivex
+	functions can be tested.
+
+	There is no functional change here, verified by diffing the generated
+	file tests/c-api/tests.c before and after.
+
+2013-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Fix mix up of actual/expected in error messages.
+
+	FAQ: Fix typo.
+
+	FAQ: Explain qemu-nbd & libguestfs better.
+
+2013-07-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add basic Augeas tests.
+
+2013-07-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	hivex: Add some simple tests of the hivex_* APIs.
+	These are by no means comprehensive, but cover the basics.
+
+	The 'minimal' hive comes from hivex.
+
+2013-07-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: hivex: Check that hivex_commit is passed an absolute path (RHBZ#981683).
+	You will now get an error like:
+
+	libguestfs: error: hivex_commit: do_hivex_commit: path must start with a / character
+
+2013-07-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	filesystem-available: Clarify documentation for this test.
+	See:
+	https://bugzilla.redhat.com/show_bug.cgi?id=980358#c1
+
+	Thanks Bo Fan.
+
+2013-07-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	golang: Add examples and guestfs-golang(3) man page.
+
+	golang: Don't try to free the result of guestfs_last_error.
+	The return value is a constant string, part of the handle, and
+	it must not be freed by the golang code.
+
+	golang: tests: Call or defer g.Close().
+
+	golang: Add bindtests.
+
+	golang: Map OptString to *string, not string (since string is not nullable).
+
+	golang: Capitalize fields in OptArgs* structs.
+	Otherwise those fields aren't accessible outside the package.  We
+	didn't catch this because all tests run in the same package.
+
+	golang: If 'go run' command fails, log the error message in config.log.
+
+	java: Fix typo in comment.
+
 2013-07-03  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.23.7.

@@ -39,7 +39,7 @@ guestfs_event_to_string (uint64_t event)
 
   /* Count how long the final string will be. */
   len = 1;
-  for (i = 0; i < 9; ++i) {
+  for (i = 0; i < 10; ++i) {
     if ((event & (UINT64_C(1) << i)) != 0)
       len += 16; /* overestimate */
   }
@@ -86,6 +86,10 @@ guestfs_event_to_string (uint64_t event)
   if ((event & GUESTFS_EVENT_TRACE) != 0) {
     strcpy (&ret[len], "trace,");
     len += 5 + 1;
+  }
+  if ((event & GUESTFS_EVENT_WARNING) != 0) {
+    strcpy (&ret[len], "warning,");
+    len += 7 + 1;
   }
 
   if (len > 0)

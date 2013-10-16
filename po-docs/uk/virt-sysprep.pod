@@ -53,6 +53,13 @@ Windows sysprepping in a future version, and we already have code to do it.
 Формат образу диска визначається автоматично. Щоб перевизначити його і
 примусово використати певний формат, скористайтеся параметром I<--format>.
 
+=item B<-a> URI
+
+=item B<--add> URI
+
+Add a remote disk.  The URI format is compatible with guestfish.  See
+L<guestfish(1)/ADDING REMOTE STORAGE>.
+
 =item B<-c> адреса
 
 =item B<--connect> адреса
@@ -144,6 +151,22 @@ the description of the operation.
 
 Before libguestfs 1.17.33 only the first (operation name) field was shown
 and all operations were enabled by default.
+
+=item B<--mount-options> mp:opts[;mp:opts;...]
+
+Set the mount options for each mountpoint in the guest.  Use a
+semicolon-separated list of C<mountpoint:options> pairs.  You may need to
+quote this list to protect it from the shell.
+
+Приклад:
+
+ --mount-options "/:noatime"
+
+will mount the root directory with C<notime>.  This example:
+
+ --mount-options "/:noatime;/var:rw,nodiratime"
+
+will do the same, plus mount C</var> with C<rw,nodiratime>.
 
 =item B<-q>
 
@@ -492,7 +515,7 @@ Wanlong Gao, Fujitsu Ltd.
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2011–2012
+Copyright (C) 2011-2013 Red Hat Inc.
 
 Copyright (C) 2012 Fujitsu Ltd.
 

@@ -68,6 +68,7 @@ static char *debug_fds (const char *subcmd, size_t argc, char *const *const argv
 static char *debug_ldd (const char *subcmd, size_t argc, char *const *const argv);
 static char *debug_ls (const char *subcmd, size_t argc, char *const *const argv);
 static char *debug_ll (const char *subcmd, size_t argc, char *const *const argv);
+static char *debug_print (const char *subcmd, size_t argc, char *const *const argv);
 static char *debug_progress (const char *subcmd, size_t argc, char *const *const argv);
 static char *debug_qtrace (const char *subcmd, size_t argc, char *const *const argv);
 static char *debug_segv (const char *subcmd, size_t argc, char *const *const argv);
@@ -85,6 +86,7 @@ static struct cmd cmds[] = {
   { "ldd", debug_ldd },
   { "ls", debug_ls },
   { "ll", debug_ll },
+  { "print", debug_print },
   { "progress", debug_progress },
   { "qtrace", debug_qtrace },
   { "segv", debug_segv },
@@ -258,6 +260,8 @@ debug_sh (const char *subcmd, size_t argc, char *const *const argv)
     setenv ("sd", "sd", 1);
   else if (access ("/sys/block/hda", F_OK) == 0)
     setenv ("sd", "hd", 1);
+  else if (access ("/sys/block/ubda", F_OK) == 0)
+    setenv ("sd", "ubd", 1);
   else if (access ("/sys/block/vda", F_OK) == 0)
     setenv ("sd", "vd", 1);
 
@@ -321,7 +325,7 @@ debug_binaries (const char *subcmd, size_t argc, char *const *const argv)
 {
   int r;
   char *out;
-  CLEANUP_FREE char *err;
+  CLEANUP_FREE char *err = NULL;
   char cmd[256];
 
   snprintf (cmd, sizeof (cmd),
@@ -391,7 +395,7 @@ debug_ls (const char *subcmd, size_t argc, char *const *const argv)
   size_t i;
   int r;
   char *out;
-  CLEANUP_FREE char *err;
+  CLEANUP_FREE char *err = NULL;
 
   cargv[0] = str_ls;
   cargv[1] = "-a";
@@ -418,7 +422,7 @@ debug_ll (const char *subcmd, size_t argc, char *const *const argv)
   size_t i;
   int r;
   char *out;
-  CLEANUP_FREE char *err;
+  CLEANUP_FREE char *err = NULL;
 
   cargv[0] = str_ls;
   cargv[1] = "-la";
@@ -434,6 +438,31 @@ debug_ll (const char *subcmd, size_t argc, char *const *const argv)
   }
 
   return out;
+}
+
+/* Print something on the serial console.  Used to check that
+ * debugging messages are being emitted.
+ */
+static char *
+debug_print (const char *subcmd, size_t argc, char *const *const argv)
+{
+  size_t i;
+  char *ret;
+
+  for (i = 0; i < argc; ++i) {
+    if (i > 0)
+      fputc (' ', stderr);
+    fprintf (stderr, "%s", argv[i]);
+  }
+  fputc ('\n', stderr);
+
+  ret = strdup ("ok");
+  if (ret == NULL) {
+    reply_with_perror ("strdup");
+    return NULL;
+  }
+
+  return ret;
 }
 
 /* Generate progress notification messages in order to test progress bars. */
@@ -720,6 +749,14 @@ do_debug_upload (const char *filename, int mode)
   }
 
   return 0;
+}
+
+/* This function is identical to debug_upload. */
+/* Has one FileIn parameter. */
+int
+do_internal_upload (const char *filename, int mode)
+{
+  return do_debug_upload (filename, mode);
 }
 
 /* Internal function used only when testing

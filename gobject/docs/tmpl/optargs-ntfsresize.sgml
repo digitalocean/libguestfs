@@ -9,10 +9,12 @@ GuestfsNTFSResizeOpts
 
 </para>
 
+
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
+
 
 <!-- ##### SECTION Stability_Level ##### -->
 
@@ -43,12 +45,6 @@ GuestfsNTFSResizeOpts
 
 @parent_class: 
 
-<!-- ##### STRUCT GuestfsNTFSResizeOptsPrivate ##### -->
-<para>
-
-</para>
-
-
 <!-- ##### FUNCTION guestfs_ntfsresize_new ##### -->
 <para>
 
@@ -56,5 +52,11 @@ GuestfsNTFSResizeOpts
 
 @void: 
 @Returns: 
+
+
+<!-- ##### STRUCT GuestfsNTFSResizeOptsPrivate ##### -->
+<para>
+
+</para>
 
 

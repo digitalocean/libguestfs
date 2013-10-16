@@ -21,6 +21,7 @@ EXTRA_DIST = \
 	guest-aux/make-debian-img.sh \
 	guest-aux/debian-packages \
 	guest-aux/make-fedora-img.pl \
+	guest-aux/fedora-journal.tar.xz \
 	guest-aux/fedora-name.db.txt \
 	guest-aux/fedora-name.db \
 	guest-aux/fedora-packages.db.txt \
@@ -72,15 +73,16 @@ display = \
 # include them in the libvirt fake XML to make sure that virt-df and
 # virt-alignment-scan don't break when they encounter them.
 blank-%.img:
-	rm -f $@ test1.img
+	rm -f $@ $@-t
 	$(top_builddir)/run \
 	  ../../fish/guestfish \
-	    -N "$$(echo $@ | sed -e 's/blank-//' -e 's/.img//')" exit
-	mv test1.img $@
+	    -N $@-t="$$(echo $@ | sed -e 's/blank-//' -e 's/.img//')" exit
+	mv $@-t $@
 	$(call display,$@)
 
 # Make a (dummy) Fedora image.
 fedora.img: guest-aux/make-fedora-img.pl \
+		guest-aux/fedora-journal.tar.xz \
 		guest-aux/fedora-name.db \
 		guest-aux/fedora-packages.db
 	SRCDIR=$(srcdir) LAYOUT=partitions $(top_builddir)/run --test $<
@@ -90,6 +92,7 @@ fedora.img: guest-aux/make-fedora-img.pl \
 fedora-md1.img fedora-md2.img: stamp-fedora-md.img
 
 stamp-fedora-md.img: guest-aux/make-fedora-img.pl \
+		guest-aux/fedora-journal.tar.xz \
 		guest-aux/fedora-name.db \
 		guest-aux/fedora-packages.db
 	rm -f $@
@@ -99,6 +102,7 @@ stamp-fedora-md.img: guest-aux/make-fedora-img.pl \
 	touch $@
 
 fedora-btrfs.img: guest-aux/make-fedora-img.pl \
+		guest-aux/fedora-journal.tar.xz \
 		guest-aux/fedora-name.db \
 		guest-aux/fedora-packages.db
 	SRCDIR=$(srcdir) LAYOUT=btrfs $(top_builddir)/run --test $<

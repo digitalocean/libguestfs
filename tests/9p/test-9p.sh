@@ -32,25 +32,37 @@ if [[ "$backend" != "direct" ]]; then
     exit 77
 fi
 
-rm -f test.img test.out
+# The name of the virtio-9p device is different on virtio-pci and virtio-mmio.
+arch="$(uname -m)"
+if [[ "$arch" =~ ^arm ]]; then
+    virtio_mmio=yes
+fi
+if [ "$virtio_mmio" != "yes" ]; then
+    virtio_9p=virtio-9p-pci
+else
+    virtio_9p=virtio-9p-device
+fi
+
+rm -f test-9p.img test-9p.out
 
 ../../fish/guestfish <<EOF
 # This dummy disk is not actually used, but libguestfs requires one.
-sparse test.img 1M
+sparse test-9p.img 1M
 
-config -device 'virtio-9p-pci,fsdev=test9p,mount_tag=test9p'
+config -device '$virtio_9p,fsdev=test9p,mount_tag=test9p'
 config -fsdev 'local,id=test9p,path=$(pwd),security_model=passthrough'
 
 run
 
 mount-9p test9p /
-ls / | grep 'test-9p.sh\$' > test.out
+ls / | grep 'test-9p.sh\$' > test-9p.out
 
 EOF
 
-if [ "$(cat test.out)" != "test-9p.sh" ]; then
+if [ "$(cat test-9p.out)" != "test-9p.sh" ]; then
     echo "$0: unexpected output from listing 9p directory:"
-    cat test.out
+    cat test-9p.out
+    exit 1
 fi
 
-rm test.img test.out
+rm test-9p.img test-9p.out

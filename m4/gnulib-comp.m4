@@ -592,7 +592,7 @@ AC_SUBST([LTALLOCA])
     gl_PREREQ_FNMATCH
   fi
   gl_FUNC_FPENDING
-  if test $ac_cv_func___fpending = no; then
+  if test $gl_cv_func___fpending = no; then
     AC_LIBOBJ([fpending])
     gl_PREREQ_FPENDING
   fi
@@ -652,7 +652,7 @@ AC_SUBST([LTALLOCA])
   fi
   gl_STDIO_MODULE_INDICATOR([getdelim])
   gl_FUNC_GETDTABLESIZE
-  if test $HAVE_GETDTABLESIZE = 0; then
+  if test $HAVE_GETDTABLESIZE = 0 || test $REPLACE_GETDTABLESIZE = 1; then
     AC_LIBOBJ([getdtablesize])
     gl_PREREQ_GETDTABLESIZE
   fi
@@ -735,6 +735,7 @@ AC_SUBST([LTALLOCA])
   fi
   gl_LOCALE_MODULE_INDICATOR([localeconv])
   gl_LOCK
+  gl_MODULE_INDICATOR([lock])
   gl_FUNC_LSEEK
   if test $REPLACE_LSEEK = 1; then
     AC_LIBOBJ([lseek])
@@ -1017,7 +1018,7 @@ AC_SUBST([LTALLOCA])
   fi
   gl_STDLIB_MODULE_INDICATOR([strtoull])
   gl_FUNC_STRTOUMAX
-  if test $ac_cv_func_strtoumax = no; then
+  if test $HAVE_DECL_STRTOUMAX = 0 || test $REPLACE_STRTOUMAX = 1; then
     AC_LIBOBJ([strtoumax])
     gl_PREREQ_STRTOUMAX
   fi

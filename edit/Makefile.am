@@ -31,11 +31,13 @@ SHARED_SOURCE_FILES = \
 	../fish/inspect.c \
 	../fish/keys.c \
 	../fish/options.h \
-	../fish/options.c
+	../fish/options.c \
+	../fish/uri.h \
+	../fish/uri.c
 
 virt_edit_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
-	virt-edit.c
+	edit.c
 
 virt_edit_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \

@@ -28,21 +28,36 @@ if [ -n "$SKIP_TEST_RHBZ690819_SH" ]; then
     exit 77
 fi
 
+arch="$(uname -m)"
+if [[ "$arch" =~ ^arm ]]; then
+    echo "$0: test skipped because ARM does not support 'ide' interface."
+    exit 77
+fi
+if [[ "$arch" =~ ^ppc ]]; then
+    echo "$0: test skipped because PowerPC does not support 'ide' interface."
+    exit 77
+fi
+
 backend="$(../../fish/guestfish get-backend)"
 if [[ "$backend" =~ ^libvirt ]]; then
     echo "$0: test skipped because backend ($backend) is 'libvirt'."
     exit 77
 fi
 
-rm -f test.img
+if [ "$backend" = "uml" ]; then
+    echo "$0: test skipped because uml backend does not support 'iface' param."
+    exit 77
+fi
 
-../../fish/guestfish sparse test.img 100M
+rm -f rhbz690819.img
+
+../../fish/guestfish sparse rhbz690819.img 100M
 
 ../../fish/guestfish <<EOF
-add-drive-with-if test.img ide
+add-drive-with-if rhbz690819.img ide
 run
 mkfs ext3 /dev/sda
 mount /dev/sda /
 EOF
 
-rm -f test.img
+rm rhbz690819.img

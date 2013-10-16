@@ -72,11 +72,12 @@ run: warning: has not been set automatically.
 EOF
 fi
 
-# Set the PATH to contain guestunmount (called by umount-local API).
+# Set the PATH to contain guestunmount (called by umount-local API)
+# and virt-resize (called by virt-builder).
 if [ -z "$PATH" ]; then
-    PATH="$b/fuse"
+    PATH="$b/fuse:$b/resize"
 else
-    PATH="$b/fuse:$PATH"
+    PATH="$b/fuse:$b/resize:$PATH"
 fi
 export PATH
 
@@ -87,6 +88,13 @@ else
     LD_LIBRARY_PATH="$b/src/.libs:$b/gobject/.libs:$LD_LIBRARY_PATH"
 fi
 export LD_LIBRARY_PATH
+
+# Make virt-builder use the local website copy to avoid hitting
+# the network all the time.
+if [ -z "$VIRT_BUILDER_SOURCE" ]; then
+    VIRT_BUILDER_SOURCE="file://$s/builder/website/index.asc"
+    export VIRT_BUILDER_SOURCE
+fi
 
 # For Perl.
 if [ -z "$PERL5LIB" ]; then
@@ -171,6 +179,18 @@ else
     GOPATH="$b/golang:$GOPATH"
 fi
 export GOPATH
+if [ -z "$CGO_CFLAGS" ]; then
+    CGO_CFLAGS="-I$s/src"
+else
+    CGO_CFLAGS="$CGO_CFLAGS -I$s/src"
+fi
+export CGO_CFLAGS
+if [ -z "$CGO_LDFLAGS" ]; then
+    CGO_LDFLAGS="-L$b/src/.libs"
+else
+    CGO_LDFLAGS="$CGO_LDFLAGS -L$b/src/.libs"
+fi
+export CGO_LDFLAGS
 
 # For GObject, Javascript and friends.
 export GJS=@GJS@
@@ -202,28 +222,53 @@ export GNOME_KEYRING_PID=
 # Run the program.
 if [ -z "$test_mode" ]; then
     exec $libtool "$@"
-else
-    # For tests (./run --test), redirect all output to a file, and
-    # only print the file if the test fails.
-    pid=$$
-    tmpout=$b/tmp/run-$pid
-    rm -f $tmpout
-    start_t="$(date +'%s')"
-    $libtool "$@" > $tmpout 2>&1
-    fail=$?
-    end_t="$(date +'%s')"
-    if [ "$fail" -eq 0 ]; then
-        # Test successful.
-        echo $(($end_t - $start_t)) seconds: "$@"
-    elif [ "$fail" -eq 77 ]; then
-        # Tests return 77 to mean skipped.
-        cat $tmpout
-    else
-        # Test failed.
-        echo "$b/run --test" "$@"
-        cat $tmpout
-        echo "$b/run: command failed with exit code $fail"
-    fi
-    rm -f $tmpout
-    exit $fail
 fi
+
+# For tests (./run --test):
+#  - redirect all output to a file, and only print the file if the
+#    test fails
+#  - print how long it takes to run the test
+#  - timeout if the test takes too long to run
+
+# Originally 1h, but that is not long enough to run the C API
+# tests on Koji.
+timeout_period=4h
+timeout_kill=30s
+
+# Do we have Padraig's timeout utility (from coreutils)?
+if timeout --help >/dev/null 2>&1; then
+    # Does this version of timeout have the -k option?  (Not on RHEL 6)
+    if timeout -k 10s 10s true >/dev/null 2>&1; then
+        timeout_k_opt="-k $timeout_kill"
+    fi
+    # Timeout (SIGTERM) after $timeout_period.
+    # Then send a second SIGKILL $timeout_kill seconds later.
+    timeout="timeout $timeout_k_opt $timeout_period"
+fi
+
+pid=$$
+tmpout=$b/tmp/run-$pid
+rm -f $tmpout
+start_t="$(date +'%s')"
+$timeout $libtool "$@" > $tmpout 2>&1
+fail=$?
+end_t="$(date +'%s')"
+if [ "$fail" -eq 0 ]; then
+    # Test successful.
+    echo $(($end_t - $start_t)) seconds: "$@"
+elif [ "$fail" -eq 77 ]; then
+    # Tests return 77 to mean skipped.
+    cat $tmpout
+elif [ "$fail" -eq 124 ]; then
+    # Timed out.
+    echo "$b/run --test" "$@"
+    cat $tmpout
+    echo "$b/run: command timed out after $timeout_period"
+else
+    # Test failed.
+    echo "$b/run --test" "$@"
+    cat $tmpout
+    echo "$b/run: command failed with exit code $fail"
+fi
+rm -f $tmpout
+exit $fail

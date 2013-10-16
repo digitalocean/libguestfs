@@ -760,6 +760,11 @@ run_add_drive (ETERM *message)
       optargs_s.secret = erl_iolist_to_string (hd_value);
     }
     else
+    if (atom_equals (hd_name, "cachemode")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
+      optargs_s.cachemode = erl_iolist_to_string (hd_value);
+    }
+    else
       return unknown_optarg ("add_drive", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
@@ -783,6 +788,8 @@ run_add_drive (ETERM *message)
     free ((char *) optargs_s.username);
   if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK))
     free ((char *) optargs_s.secret);
+  if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK))
+    free ((char *) optargs_s.cachemode);
   if (r == -1)
     return make_error ("add_drive");
 
@@ -812,6 +819,46 @@ run_add_drive_ro_with_if (ETERM *message)
   r = guestfs_add_drive_ro_with_if (g, filename, iface);
   if (r == -1)
     return make_error ("add_drive_ro_with_if");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_add_drive_scratch (ETERM *message)
+{
+  int64_t size = get_int64 (ARG (0));
+
+  struct guestfs_add_drive_scratch_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "name")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK;
+      optargs_s.name = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "label")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK;
+      optargs_s.label = erl_iolist_to_string (hd_value);
+    }
+    else
+      return unknown_optarg ("add_drive_scratch", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_add_drive_scratch_argv (g, size, optargs);
+  if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK))
+    free ((char *) optargs_s.name);
+  if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK))
+    free ((char *) optargs_s.label);
+  if (r == -1)
+    return make_error ("add_drive_scratch");
 
   return erl_mk_atom ("ok");
 }
@@ -935,6 +982,21 @@ run_aug_insert (ETERM *message)
 }
 
 static ETERM *
+run_aug_label (ETERM *message)
+{
+  CLEANUP_FREE char *augpath = erl_iolist_to_string (ARG (0));
+  char *r;
+
+  r = guestfs_aug_label (g, augpath);
+  if (r == NULL)
+    return make_error ("aug_label");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
 run_aug_load (ETERM *message)
 {
   int r;
@@ -1029,6 +1091,25 @@ run_aug_set (ETERM *message)
     return make_error ("aug_set");
 
   return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_aug_setm (ETERM *message)
+{
+  CLEANUP_FREE char *base = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *sub;
+  if (atom_equals (ARG (1), "undefined"))
+    sub = NULL;
+  else
+    sub = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (2));
+  int r;
+
+  r = guestfs_aug_setm (g, base, sub, val);
+  if (r == -1)
+    return make_error ("aug_setm");
+
+  return erl_mk_int (r);
 }
 
 static ETERM *
@@ -1687,15 +1768,15 @@ run_compress_out (ETERM *message)
 static ETERM *
 run_config (ETERM *message)
 {
-  CLEANUP_FREE char *qemuparam = erl_iolist_to_string (ARG (0));
-  CLEANUP_FREE char *qemuvalue;
+  CLEANUP_FREE char *hvparam = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *hvvalue;
   if (atom_equals (ARG (1), "undefined"))
-    qemuvalue = NULL;
+    hvvalue = NULL;
   else
-    qemuvalue = erl_iolist_to_string (ARG (1));
+    hvvalue = erl_iolist_to_string (ARG (1));
   int r;
 
-  r = guestfs_config (g, qemuparam, qemuvalue);
+  r = guestfs_config (g, hvparam, hvvalue);
   if (r == -1)
     return make_error ("config");
 
@@ -2720,6 +2801,20 @@ run_get_e2uuid (ETERM *message)
   r = guestfs_get_e2uuid (g, device);
   if (r == NULL)
     return make_error ("get_e2uuid");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_get_hv (ETERM *message)
+{
+  char *r;
+
+  r = guestfs_get_hv (g);
+  if (r == NULL)
+    return make_error ("get_hv");
 
   ETERM *rt = erl_mk_string (r);
   free (r);
@@ -5020,6 +5115,95 @@ run_isoinfo_device (ETERM *message)
   ETERM *rt = make_isoinfo (r);
   guestfs_free_isoinfo (r);
   return rt;
+}
+
+static ETERM *
+run_journal_close (ETERM *message)
+{
+  int r;
+
+  r = guestfs_journal_close (g);
+  if (r == -1)
+    return make_error ("journal_close");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_journal_get (ETERM *message)
+{
+  struct guestfs_xattr_list *r;
+
+  r = guestfs_journal_get (g);
+  if (r == NULL)
+    return make_error ("journal_get");
+
+  ETERM *rt = make_xattr_list (r);
+  guestfs_free_xattr_list (r);
+  return rt;
+}
+
+static ETERM *
+run_journal_get_data_threshold (ETERM *message)
+{
+  int64_t r;
+
+  r = guestfs_journal_get_data_threshold (g);
+  if (r == -1)
+    return make_error ("journal_get_data_threshold");
+
+  return erl_mk_longlong (r);
+}
+
+static ETERM *
+run_journal_next (ETERM *message)
+{
+  int r;
+
+  r = guestfs_journal_next (g);
+  if (r == -1)
+    return make_error ("journal_next");
+
+  return make_bool (r);
+}
+
+static ETERM *
+run_journal_open (ETERM *message)
+{
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_journal_open (g, directory);
+  if (r == -1)
+    return make_error ("journal_open");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_journal_set_data_threshold (ETERM *message)
+{
+  int64_t threshold = get_int64 (ARG (0));
+  int r;
+
+  r = guestfs_journal_set_data_threshold (g, threshold);
+  if (r == -1)
+    return make_error ("journal_set_data_threshold");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_journal_skip (ETERM *message)
+{
+  int64_t skip = get_int64 (ARG (0));
+  int64_t r;
+
+  r = guestfs_journal_skip (g, skip);
+  if (r == -1)
+    return make_error ("journal_skip");
+
+  return erl_mk_longlong (r);
 }
 
 static ETERM *
@@ -8109,6 +8293,19 @@ run_set_e2uuid (ETERM *message)
 }
 
 static ETERM *
+run_set_hv (ETERM *message)
+{
+  CLEANUP_FREE char *hv = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_set_hv (g, hv);
+  if (r == -1)
+    return make_error ("set_hv");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_set_label (ETERM *message)
 {
   CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (0));
@@ -8223,14 +8420,14 @@ run_set_program (ETERM *message)
 static ETERM *
 run_set_qemu (ETERM *message)
 {
-  CLEANUP_FREE char *qemu;
+  CLEANUP_FREE char *hv;
   if (atom_equals (ARG (0), "undefined"))
-    qemu = NULL;
+    hv = NULL;
   else
-    qemu = erl_iolist_to_string (ARG (0));
+    hv = erl_iolist_to_string (ARG (0));
   int r;
 
-  r = guestfs_set_qemu (g, qemu);
+  r = guestfs_set_qemu (g, hv);
   if (r == -1)
     return make_error ("set_qemu");
 
@@ -8302,6 +8499,20 @@ run_set_trace (ETERM *message)
   r = guestfs_set_trace (g, trace);
   if (r == -1)
     return make_error ("set_trace");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_set_uuid (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *uuid = erl_iolist_to_string (ARG (1));
+  int r;
+
+  r = guestfs_set_uuid (g, device, uuid);
+  if (r == -1)
+    return make_error ("set_uuid");
 
   return erl_mk_atom ("ok");
 }
@@ -9965,6 +10176,8 @@ dispatch (ETERM *message)
     return run_add_drive_ro (message);
   else if (atom_equals (fun, "add_drive_ro_with_if"))
     return run_add_drive_ro_with_if (message);
+  else if (atom_equals (fun, "add_drive_scratch"))
+    return run_add_drive_scratch (message);
   else if (atom_equals (fun, "add_drive_with_if"))
     return run_add_drive_with_if (message);
   else if (atom_equals (fun, "aug_clear"))
@@ -9981,6 +10194,8 @@ dispatch (ETERM *message)
     return run_aug_init (message);
   else if (atom_equals (fun, "aug_insert"))
     return run_aug_insert (message);
+  else if (atom_equals (fun, "aug_label"))
+    return run_aug_label (message);
   else if (atom_equals (fun, "aug_load"))
     return run_aug_load (message);
   else if (atom_equals (fun, "aug_ls"))
@@ -9995,6 +10210,8 @@ dispatch (ETERM *message)
     return run_aug_save (message);
   else if (atom_equals (fun, "aug_set"))
     return run_aug_set (message);
+  else if (atom_equals (fun, "aug_setm"))
+    return run_aug_setm (message);
   else if (atom_equals (fun, "available"))
     return run_available (message);
   else if (atom_equals (fun, "available_all_groups"))
@@ -10197,6 +10414,8 @@ dispatch (ETERM *message)
     return run_get_e2label (message);
   else if (atom_equals (fun, "get_e2uuid"))
     return run_get_e2uuid (message);
+  else if (atom_equals (fun, "get_hv"))
+    return run_get_hv (message);
   else if (atom_equals (fun, "get_libvirt_requested_credential_challenge"))
     return run_get_libvirt_requested_credential_challenge (message);
   else if (atom_equals (fun, "get_libvirt_requested_credential_defresult"))
@@ -10441,6 +10660,20 @@ dispatch (ETERM *message)
     return run_isoinfo (message);
   else if (atom_equals (fun, "isoinfo_device"))
     return run_isoinfo_device (message);
+  else if (atom_equals (fun, "journal_close"))
+    return run_journal_close (message);
+  else if (atom_equals (fun, "journal_get"))
+    return run_journal_get (message);
+  else if (atom_equals (fun, "journal_get_data_threshold"))
+    return run_journal_get_data_threshold (message);
+  else if (atom_equals (fun, "journal_next"))
+    return run_journal_next (message);
+  else if (atom_equals (fun, "journal_open"))
+    return run_journal_open (message);
+  else if (atom_equals (fun, "journal_set_data_threshold"))
+    return run_journal_set_data_threshold (message);
+  else if (atom_equals (fun, "journal_skip"))
+    return run_journal_skip (message);
   else if (atom_equals (fun, "kill_subprocess"))
     return run_kill_subprocess (message);
   else if (atom_equals (fun, "launch"))
@@ -10783,6 +11016,8 @@ dispatch (ETERM *message)
     return run_set_e2label (message);
   else if (atom_equals (fun, "set_e2uuid"))
     return run_set_e2uuid (message);
+  else if (atom_equals (fun, "set_hv"))
+    return run_set_hv (message);
   else if (atom_equals (fun, "set_label"))
     return run_set_label (message);
   else if (atom_equals (fun, "set_libvirt_requested_credential"))
@@ -10811,6 +11046,8 @@ dispatch (ETERM *message)
     return run_set_tmpdir (message);
   else if (atom_equals (fun, "set_trace"))
     return run_set_trace (message);
+  else if (atom_equals (fun, "set_uuid"))
+    return run_set_uuid (message);
   else if (atom_equals (fun, "set_verbose"))
     return run_set_verbose (message);
   else if (atom_equals (fun, "setcon"))

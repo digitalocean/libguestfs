@@ -43,6 +43,7 @@ G_BEGIN_DECLS
  * @GUESTFS_SESSION_EVENT_TRACE: The trace event
  * @GUESTFS_SESSION_EVENT_ENTER: The enter event
  * @GUESTFS_SESSION_EVENT_LIBVIRT_AUTH: The libvirt_auth event
+ * @GUESTFS_SESSION_EVENT_WARNING: The warning event
  *
  * For more detail on libguestfs events, see "SETTING CALLBACKS TO HANDLE
  * EVENTS" in guestfs(3).
@@ -57,6 +58,7 @@ typedef enum {
   GUESTFS_SESSION_EVENT_TRACE,
   GUESTFS_SESSION_EVENT_ENTER,
   GUESTFS_SESSION_EVENT_LIBVIRT_AUTH,
+  GUESTFS_SESSION_EVENT_WARNING,
 } GuestfsSessionEvent;
 GType guestfs_session_event_get_type(void);
 #define GUESTFS_TYPE_SESSION_EVENT (guestfs_session_event_get_type())
@@ -157,9 +159,11 @@ gboolean guestfs_session_wait_ready(GuestfsSession *session, GError **err);
 gboolean guestfs_session_kill_subprocess(GuestfsSession *session, GError **err);
 gboolean guestfs_session_add_cdrom(GuestfsSession *session, const gchar *filename, GError **err);
 gboolean guestfs_session_add_drive_ro(GuestfsSession *session, const gchar *filename, GError **err);
-gboolean guestfs_session_config(GuestfsSession *session, const gchar *qemuparam, const gchar *qemuvalue, GError **err);
-gboolean guestfs_session_set_qemu(GuestfsSession *session, const gchar *qemu, GError **err);
+gboolean guestfs_session_config(GuestfsSession *session, const gchar *hvparam, const gchar *hvvalue, GError **err);
+gboolean guestfs_session_set_qemu(GuestfsSession *session, const gchar *hv, GError **err);
 const gchar *guestfs_session_get_qemu(GuestfsSession *session, GError **err);
+gboolean guestfs_session_set_hv(GuestfsSession *session, const gchar *hv, GError **err);
+gchar *guestfs_session_get_hv(GuestfsSession *session, GError **err);
 gboolean guestfs_session_set_path(GuestfsSession *session, const gchar *searchpath, GError **err);
 const gchar *guestfs_session_get_path(GuestfsSession *session, GError **err);
 gboolean guestfs_session_set_append(GuestfsSession *session, const gchar *append, GError **err);
@@ -262,6 +266,8 @@ gchar *guestfs_session_get_cachedir(GuestfsSession *session, GError **err);
 gboolean guestfs_session_user_cancel(GuestfsSession *session, GError **err);
 gboolean guestfs_session_set_program(GuestfsSession *session, const gchar *program, GError **err);
 const gchar *guestfs_session_get_program(GuestfsSession *session, GError **err);
+gboolean guestfs_session_add_drive_scratch(GuestfsSession *session, gint64 size, GuestfsAddDriveScratch *optargs, GError **err);
+GuestfsXAttr **guestfs_session_journal_get(GuestfsSession *session, GError **err);
 gboolean guestfs_session_mount(GuestfsSession *session, const gchar *mountable, const gchar *mountpoint, GError **err);
 gboolean guestfs_session_sync(GuestfsSession *session, GError **err);
 gboolean guestfs_session_touch(GuestfsSession *session, const gchar *path, GError **err);
@@ -646,6 +652,15 @@ gboolean guestfs_session_syslinux(GuestfsSession *session, const gchar *device, 
 gboolean guestfs_session_extlinux(GuestfsSession *session, const gchar *directory, GError **err);
 gboolean guestfs_session_cp_r(GuestfsSession *session, const gchar *src, const gchar *dest, GError **err);
 gboolean guestfs_session_remount(GuestfsSession *session, const gchar *mountpoint, GuestfsRemount *optargs, GError **err);
+gboolean guestfs_session_set_uuid(GuestfsSession *session, const gchar *device, const gchar *uuid, GError **err);
+gboolean guestfs_session_journal_open(GuestfsSession *session, const gchar *directory, GError **err);
+gboolean guestfs_session_journal_close(GuestfsSession *session, GError **err);
+gint8 guestfs_session_journal_next(GuestfsSession *session, GError **err);
+gint64 guestfs_session_journal_skip(GuestfsSession *session, gint64 skip, GError **err);
+gint64 guestfs_session_journal_get_data_threshold(GuestfsSession *session, GError **err);
+gboolean guestfs_session_journal_set_data_threshold(GuestfsSession *session, gint64 threshold, GError **err);
+gint32 guestfs_session_aug_setm(GuestfsSession *session, const gchar *base, const gchar *sub, const gchar *val, GError **err);
+gchar *guestfs_session_aug_label(GuestfsSession *session, const gchar *augpath, GError **err);
 
 G_END_DECLS
 

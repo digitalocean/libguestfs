@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <libxml/uri.h>
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 #include <libxml/xmlwriter.h>
@@ -43,9 +44,9 @@ guestfs___cleanup_free (void *ptr)
 }
 
 void
-guestfs___cleanup_free_string_list (void *ptr)
+guestfs___cleanup_free_string_list (char ***ptr)
 {
-  guestfs___free_string_list (* (char ***) ptr);
+  guestfs___free_string_list (*ptr);
 }
 
 void
@@ -58,9 +59,9 @@ guestfs___cleanup_hash_free (void *ptr)
 }
 
 void
-guestfs___cleanup_unlink_free (void *ptr)
+guestfs___cleanup_unlink_free (char **ptr)
 {
-  char *filename = * (char **) ptr;
+  char *filename = *ptr;
 
   if (filename) {
     unlink (filename);
@@ -84,6 +85,15 @@ guestfs___cleanup_xmlFreeDoc (void *ptr)
 
   if (doc)
     xmlFreeDoc (doc);
+}
+
+void
+guestfs___cleanup_xmlFreeURI (void *ptr)
+{
+  xmlURIPtr uri = * (xmlURIPtr *) ptr;
+
+  if (uri)
+    xmlFreeURI (uri);
 }
 
 void

@@ -67,9 +67,11 @@ access VirtualBox images directly.
 
 =item I<vs. qemu-nbd>
 
-nbd is like kpartx but for qcow2 images.  See the kpartx comparison
-above.  You can use libguestfs and qemu-nbd together for access to
-block devices over the network.
+NBD (Network Block Device) is a protocol for exporting block devices
+over the network.  qemu-nbd is an NBD server which can handle any disk
+format supported by qemu (eg. raw, qcow2).  You can use libguestfs and
+qemu-nbd together to access block devices over the network, for
+example: C<guestfish -a nbd://remote>
 
 =item I<vs. mounting filesystems in the host>
 
@@ -153,6 +155,13 @@ To get further information about the failure, you have to run:
 
 If, after using this, you still don't understand the failure, contact
 us (see previous section).
+
+=head2 libguestfs: error: cannot find any suitable libguestfs supermin, fixed or old-style appliance on LIBGUESTFS_PATH
+
+If you see this error on Debian/Ubuntu, you need to run the following
+command as root:
+
+ update-guestfs-appliance
 
 =head2 Non-ASCII characters don't appear on VFAT filesystems.
 
@@ -285,6 +294,18 @@ Windows guest support.
 
 =item Debian and Ubuntu
 
+After installing libguestfs you need to do:
+
+ sudo update-guestfs-appliance
+
+On Ubuntu only:
+
+ sudo chmod 0644 /boot/vmlinuz*
+
+You may need to add yourself to the C<kvm> group:
+
+ sudo useradd -a -G kvm yourlogin
+
 =over 4
 
 =item Debian Squeeze (6)
@@ -312,11 +333,6 @@ So every user should do this:
  sudo chmod 0644 /boot/vmlinuz*
 
 =over 4
-
-=item Ubuntu 10.04
-
-See:
-L<http://libguestfs.org/download/binaries/ubuntu1004-packages/>
 
 =item Ubuntu 12.04
 
@@ -450,6 +466,142 @@ policy.
 =head2 Libguestfs has a really long list of dependencies!
 
 That's because it does a lot of things.
+
+Libguestfs -- I<as it is packaged for Fedora> -- satisfies the
+following conditions:
+
+=over 4
+
+=item 1.
+
+The Fedora package is full featured, that is, it supports every
+possible feature of libguestfs (every filesystem, every filesystem
+tool, etc.)
+
+A common request is to split up libguestfs into separate feature areas
+so you could, say, install XFS support and NTFS support separately.
+This is not possible right now.
+
+=item 2.
+
+The download size of the libguestfs package is relatively small
+(ie. not ten's of megabytes as it would be if it included a complete,
+"statically linked" appliance).
+
+=item 3.
+
+The Fedora package automatically updates itself if there is a security
+update.  It doesn't include a huge static blob that has to be rebuilt
+and users have to re-download if there is an update.
+
+=item 4.
+
+Able to be installed without needing direct network access.  This is
+important when using closed networks, privately mirrored repositories
+or RHN Satellite.
+
+=item 5.
+
+The Fedora package can be tested during the build.
+
+=back
+
+If you want to drop any one of those conditions, then you can package
+libguestfs differently and make it have fewer dependencies, fewer
+features or a faster start up time:
+
+=over 4
+
+=item 1. (full featured)
+
+Take C<appliance/packagelist.in> in the source, and comment out any
+features you don't actually care about.  For example if you never
+anticipate editing a Windows guest, remove all the ntfs-related
+packages.  You can get away with fewer dependencies.
+
+=item 2. (download size) / 3. (updates)
+
+Use L<libguestfs-make-fixed-appliance(1)> to build a compressed
+appliance.  Bundle this with your package and set C<$LIBGUESTFS_PATH>
+to point to it.  Users will have to download this large appliance, but
+no dependencies are needed, and L<supermin-helper(1)> is not used.
+
+=item 4. (network access)
+
+Reconstruct and cache the appliance once during package install.  The
+Debian packaging currently works like this, but requires network
+access during package install.
+
+=item 5. (tests)
+
+Don't run any tests during the build.  The build will be much
+faster, but also less likely to work correctly.
+
+Note that running the tests in C<tests/qemu> is probably a good idea,
+since those are sanity tests.  Also you should do S<C<make quickcheck>>
+to ensure libguestfs is basically working.
+
+=back
+
+=head2 Errors during launch on Fedora E<ge> 18, RHEL E<ge> 7
+
+In Fedora E<ge> 18 and RHEL E<ge> 7, libguestfs uses libvirt to manage
+the appliance.  Previously (and upstream) libguestfs runs qemu
+directly:
+
+ +----------------------------------+
+ | libguestfs                       |
+ +----------------+-----------------+
+ | direct backend | libvirt backend |
+ +----------------+-----------------+
+        |                  |
+        v                  v
+    +-------+         +----------+
+    | qemu  |         | libvirtd |
+    +-------+         +----------+
+                           |
+                           v
+                       +-------+
+                       | qemu  |
+                       +-------+
+ 
+    upstream          Fedora 18+
+    non-Fedora         RHEL 7+
+    non-RHEL
+
+The libvirt backend is more sophisticated, supporting SELinux/sVirt
+(see above), hotplugging and more.  It is, however, more complex and
+so less robust.
+
+If you have permissions problems using the libvirt backend, you can
+switch to the direct backend by setting this environment variable:
+
+ export LIBGUESTFS_BACKEND=direct
+
+before running any libguestfs program or virt tool.
+
+=head2 How can I switch to a fixed / prebuilt appliance?
+
+This may improve the stability and performance of libguestfs on Fedora
+and RHEL.
+
+Any time after installing libguestfs, run the following commands as
+root:
+
+ mkdir -p /usr/local/lib/guestfs/appliance
+ libguestfs-make-fixed-appliance /usr/local/lib/guestfs/appliance
+ ls -l /usr/local/lib/guestfs/appliance
+
+Now set the following environment variable before using libguestfs or
+any virt tool:
+
+ export LIBGUESTFS_PATH=/usr/local/lib/guestfs/appliance
+
+Of course you can change the path to any directory you want.  You can
+share the appliance across machines that have the same architecture
+(eg. all x86-64), but note that libvirt will prevent you from sharing
+the appliance across NFS because of permissions problems (so either
+switch to the direct backend or don't use NFS).
 
 =head2 How can I speed up libguestfs builds?
 
@@ -595,13 +747,6 @@ Once you're familiar with the API overview, you should look at this
 list of starting points for other language bindings:
 L<guestfs(3)/USING LIBGUESTFS WITH OTHER PROGRAMMING LANGUAGES>.
 
-=begin html
-
-<!-- old anchor for the next section -->
-<a name="debug"/>
-
-=end html
-
 =head2 Can I use libguestfs in my proprietary / closed source /
 commercial program?
 
@@ -613,27 +758,55 @@ In the source tree the license is in the file C<COPYING.LIB> (LGPLv2+
 for the library and bindings) and C<COPYING> (GPLv2+ for the
 standalone programs).
 
+=begin html
+
+<!-- old anchor for the next section -->
+<a name="debug"/>
+
+=end html
+
 =head1 DEBUGGING LIBGUESTFS
 
-B<In summary:> enable debugging by setting these two environment
-variables before running the program:
+=head2 Help, it's not working!
+
+Please supply all the information in this checklist, in an
+email sent to C<libguestfs> @ C<redhat.com>:
+
+=over 4
+
+=item *
+
+What are you trying to achieve?
+
+=item *
+
+What exact commands did you run?
+
+=item *
+
+What was the precise error / output of these commands?
+
+=item *
+
+Enable debugging, run the commands again, and capture the B<complete>
+output.  B<Do not edit the output.>
 
  export LIBGUESTFS_DEBUG=1
  export LIBGUESTFS_TRACE=1
 
-This will produce a lot of output.  Put the B<complete> output in an
-email message or pastebin and send it
-L<to the mailing list|/What mailing lists or chat rooms are available?>.
-B<Do not edit the output.>
+=item *
 
 Include the version of libguestfs, the operating system version, and
 how you installed libguestfs (eg. from source, C<yum install>, etc.)
 
-If no libguestfs program works, run the program below and paste the
-B<complete, unedited> output into an email or pastebin and send it to
-the mailing list:
+=item *
+
+If no libguestfs program seems to work at all, run the program below
+and paste the B<complete, unedited> output into the email:
 
  libguestfs-test-tool
+
+=back
 
 =head2 How do I debug when using any libguestfs program or tool
 (eg. virt-v2v or virt-df)?
@@ -944,8 +1117,8 @@ manually approved.
 
 B<Please don't use github pull requests - they will be ignored>.  The
 reasons are (a) we want to discuss and dissect patches on the mailing
-list, and (b) github pull requests turn into merge commits we prefer
-to have a linear history.
+list, and (b) github pull requests turn into merge commits but we
+prefer to have a linear history.
 
 =head2 How do I propose a feature?
 

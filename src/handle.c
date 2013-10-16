@@ -39,7 +39,6 @@
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 
-static int parse_backend (guestfs_h *g, const char *method);
 static int shutdown_backend (guestfs_h *g, int check_for_errors);
 static void close_handles (void);
 
@@ -108,8 +107,8 @@ guestfs_create_flags (unsigned flags, ...)
   g->path = strdup (GUESTFS_DEFAULT_PATH);
   if (!g->path) goto error;
 
-  g->qemu = strdup (QEMU);
-  if (!g->qemu) goto error;
+  g->hv = strdup (QEMU);
+  if (!g->hv) goto error;
 
   /* Get program name. */
 #if HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME == 1
@@ -123,9 +122,12 @@ guestfs_create_flags (unsigned flags, ...)
 #endif
   if (!g->program) goto error;
 
-  if (parse_backend (g, DEFAULT_BACKEND) == -1) {
+  if (guestfs___set_backend (g, DEFAULT_BACKEND) == -1) {
     warning (g, _("libguestfs was built with an invalid default backend, using 'direct' instead"));
-    g->backend = BACKEND_DIRECT;
+    if (guestfs___set_backend (g, "direct") == -1) {
+      warning (g, _("'direct' backend does not work"));
+      goto error;
+    }
   }
 
   if (!(flags & GUESTFS_CREATE_NO_ENVIRONMENT))
@@ -151,10 +153,10 @@ guestfs_create_flags (unsigned flags, ...)
   return g;
 
  error:
-  free (g->backend_arg);
+  free (g->backend);
   free (g->program);
   free (g->path);
-  free (g->qemu);
+  free (g->hv);
   free (g->append);
   free (g);
   return NULL;
@@ -200,9 +202,14 @@ parse_environment (guestfs_h *g,
   if (str)
     guestfs_set_path (g, str);
 
-  str = do_getenv (data, "LIBGUESTFS_QEMU");
+  str = do_getenv (data, "LIBGUESTFS_HV");
   if (str)
-    guestfs_set_qemu (g, str);
+    guestfs_set_hv (g, str);
+  else {
+    str = do_getenv (data, "LIBGUESTFS_QEMU");
+    if (str)
+      guestfs_set_hv (g, str);
+  }
 
   str = do_getenv (data, "LIBGUESTFS_APPEND");
   if (str)
@@ -267,7 +274,7 @@ guestfs__parse_environment_list (guestfs_h *g, char * const *strings)
 void
 guestfs_close (guestfs_h *g)
 {
-  struct qemu_param *qp, *qp_next;
+  struct hv_param *hp, *hp_next;
   guestfs_h **gg;
 
   if (g->state == NO_HANDLE) {
@@ -294,16 +301,8 @@ guestfs_close (guestfs_h *g)
 
   debug (g, "closing guestfs handle %p (state %d)", g, g->state);
 
-  /* If we are valgrinding the daemon, then we *don't* want to kill
-   * the subprocess because we want the final valgrind messages sent
-   * when we close sockets below.  However for normal production use,
-   * killing the subprocess is the right thing to do (in case the
-   * daemon or qemu is not responding).
-   */
-#ifndef VALGRIND_DAEMON
   if (g->state != CONFIG)
     shutdown_backend (g, 0);
-#endif
 
   /* Run user close callbacks. */
   guestfs___call_callbacks_void (g, GUESTFS_EVENT_CLOSE);
@@ -329,11 +328,11 @@ guestfs_close (guestfs_h *g)
   guestfs___free_inspect_info (g);
   guestfs___free_drives (g);
 
-  for (qp = g->qemu_params; qp; qp = qp_next) {
-    free (qp->qemu_param);
-    free (qp->qemu_value);
-    qp_next = qp->next;
-    free (qp);
+  for (hp = g->hv_params; hp; hp = hp_next) {
+    free (hp->hv_param);
+    free (hp->hv_value);
+    hp_next = hp->next;
+    free (hp);
   }
 
   while (g->error_cb_stack)
@@ -341,8 +340,6 @@ guestfs_close (guestfs_h *g)
 
   if (g->pda)
     hash_free (g->pda);
-  free (g->virt_selinux_label);
-  free (g->virt_selinux_imagelabel);
   free (g->tmpdir);
   free (g->env_tmpdir);
   free (g->int_tmpdir);
@@ -350,7 +347,9 @@ guestfs_close (guestfs_h *g)
   free (g->last_error);
   free (g->program);
   free (g->path);
-  free (g->qemu);
+  free (g->hv);
+  free (g->backend);
+  free (g->backend_data);
   free (g->append);
   free (g);
 }
@@ -380,16 +379,32 @@ shutdown_backend (guestfs_h *g, int check_for_errors)
   if (g->autosync && g->state == READY) {
     if (guestfs_internal_autosync (g) == -1)
       ret = -1;
+#ifdef VALGRIND_DAEMON
+    /* When valgrinding the daemon, this causes the daemon to exit
+     * properly, so we'll see any valgrind problems.  Don't do this in
+     * production builds because it's slow and unnecessary.
+     */
+    guestfs_internal_exit (g);
+    if (g->conn) {
+      /* internal_exit above will cause the daemon to close the
+       * connection.  The purpose of the read_data here is to read the
+       * remaining log messages.
+       */
+      char buf[1];
+      g->conn->ops->read_data (g, g->conn, buf, sizeof buf);
+    }
+#endif
   }
+
+  /* Shut down the backend. */
+  if (g->backend_ops->shutdown (g, g->backend_data, check_for_errors) == -1)
+    ret = -1;
 
   /* Close sockets. */
   if (g->conn) {
     g->conn->ops->free_connection (g, g->conn);
     g->conn = NULL;
   }
-
-  if (g->backend_ops->shutdown (g, check_for_errors) == -1)
-    ret = -1;
 
   guestfs___free_drives (g);
 
@@ -452,17 +467,29 @@ guestfs__get_path (guestfs_h *g)
 int
 guestfs__set_qemu (guestfs_h *g, const char *qemu)
 {
-  free (g->qemu);
-  g->qemu = NULL;
-
-  g->qemu = qemu == NULL ? safe_strdup (g, QEMU) : safe_strdup (g, qemu);
+  free (g->hv);
+  g->hv = qemu == NULL ? safe_strdup (g, QEMU) : safe_strdup (g, qemu);
   return 0;
 }
 
 const char *
 guestfs__get_qemu (guestfs_h *g)
 {
-  return g->qemu;
+  return g->hv;
+}
+
+int
+guestfs__set_hv (guestfs_h *g, const char *hv)
+{
+  free (g->hv);
+  g->hv = safe_strdup (g, hv);
+  return 0;
+}
+
+char *
+guestfs__get_hv (guestfs_h *g)
+{
+  return safe_strdup (g, g->hv);
 }
 
 int
@@ -587,45 +614,10 @@ guestfs__get_program (guestfs_h *g)
   return g->program;
 }
 
-static int
-parse_backend (guestfs_h *g, const char *method)
-{
-  if (STREQ (method, "direct") || STREQ (method, "appliance")) {
-    g->backend = BACKEND_DIRECT;
-    free (g->backend_arg);
-    g->backend_arg = NULL;
-    return 0;
-  }
-
-  if (STREQ (method, "libvirt")) {
-    g->backend = BACKEND_LIBVIRT;
-    free (g->backend_arg);
-    g->backend_arg = NULL;
-    return 0;
-  }
-
-  if (STRPREFIX (method, "libvirt:") && strlen (method) > 8) {
-    g->backend = BACKEND_LIBVIRT;
-    free (g->backend_arg);
-    g->backend_arg = safe_strdup (g, method + 8);
-    return 0;
-  }
-
-  if (STRPREFIX (method, "unix:") && strlen (method) > 5) {
-    g->backend = BACKEND_UNIX;
-    free (g->backend_arg);
-    g->backend_arg = safe_strdup (g, method + 5);
-    /* Note that we don't check the path exists until launch is called. */
-    return 0;
-  }
-
-  return -1;
-}
-
 int
 guestfs__set_backend (guestfs_h *g, const char *method)
 {
-  if (parse_backend (g, method) == -1) {
+  if (guestfs___set_backend (g, method) == -1) {
     error (g, "invalid backend: %s", method);
     return -1;
   }
@@ -642,42 +634,17 @@ guestfs__set_attach_method (guestfs_h *g, const char *method)
 char *
 guestfs__get_backend (guestfs_h *g)
 {
-  char *ret = NULL;
-
-  switch (g->backend) {
-  case BACKEND_DIRECT:
-    ret = safe_strdup (g, "direct");
-    break;
-
-  case BACKEND_LIBVIRT:
-    if (g->backend_arg == NULL)
-      ret = safe_strdup (g, "libvirt");
-    else
-      ret = safe_asprintf (g, "libvirt:%s", g->backend_arg);
-    break;
-
-  case BACKEND_UNIX:
-    ret = safe_asprintf (g, "unix:%s", g->backend_arg);
-    break;
-  }
-
-  if (ret == NULL)
-    abort ();
-
-  return ret;
+  return safe_strdup (g, g->backend);
 }
 
 char *
 guestfs__get_attach_method (guestfs_h *g)
 {
-  switch (g->backend) {
-  case BACKEND_DIRECT:
+  if (STREQ (g->backend, "direct"))
     /* Return 'appliance' here for backwards compatibility. */
     return safe_strdup (g, "appliance");
 
-  default:
-    return guestfs_get_backend (g);
-  }
+  return guestfs_get_backend (g);
 }
 
 int

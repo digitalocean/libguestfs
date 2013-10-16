@@ -1,5 +1,5 @@
 # libguestfs virt-rescue
-# Copyright (C) 2010-2012 Red Hat Inc.
+# Copyright (C) 2010-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,11 +31,13 @@ SHARED_SOURCE_FILES = \
 	../fish/inspect.c \
 	../fish/keys.c \
 	../fish/options.h \
-	../fish/options.c
+	../fish/options.c \
+	../fish/uri.h \
+	../fish/uri.c
 
 virt_rescue_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
-	virt-rescue.c
+	rescue.c
 
 virt_rescue_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \

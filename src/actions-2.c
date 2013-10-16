@@ -482,8 +482,14 @@ guestfs_add_drive_opts_argv (guestfs_h *g,
            "add_drive_opts", "secret");
     return -1;
   }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK) &&
+      optargs->cachemode == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_opts", "cachemode");
+    return -1;
+  }
 
-  if (optargs->bitmask & UINT64_C(0xfffffffffffffe00)) {
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffc00)) {
     error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
            "add_drive_opts", "add_drive_opts");
     return -1;
@@ -526,6 +532,9 @@ guestfs_add_drive_opts_argv (guestfs_h *g,
     }
     if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK) {
       fprintf (trace_buffer.fp, " \"%s:%s\"", "secret", optargs->secret);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "cachemode", optargs->cachemode);
     }
     guestfs___trace_send_line (g, &trace_buffer);
   }
@@ -935,6 +944,74 @@ guestfs_parse_environment (guestfs_h *g)
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "parse_environment", "-1");
+  }
+
+  return r;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_add_drive_scratch_argv (guestfs_h *g,
+                                int64_t size,
+                                const struct guestfs_add_drive_scratch_argv *optargs)
+{
+  struct guestfs_add_drive_scratch_argv optargs_null;
+  if (!optargs) {
+    optargs_null.bitmask = 0;
+    optargs = &optargs_null;
+  }
+
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "add_drive_scratch", 17);
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK) &&
+      optargs->name == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_scratch", "name");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK) &&
+      optargs->label == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_scratch", "label");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffffc)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "add_drive_scratch", "add_drive_scratch");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "add_drive_scratch");
+    fprintf (trace_buffer.fp, " %" PRIi64, size);
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "name", optargs->name);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "label", optargs->label);
+    }
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__add_drive_scratch (g, size, optargs);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "add_drive_scratch");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "add_drive_scratch", "-1");
   }
 
   return r;
@@ -5668,6 +5745,196 @@ guestfs_cp_r (guestfs_h *g,
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "cp_r");
     fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_journal_open (guestfs_h *g,
+                      const char *directory)
+{
+  struct guestfs_journal_open_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "journal_open", 12);
+  if (directory == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "journal_open", "directory");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "journal_open");
+    fprintf (trace_buffer.fp, " \"%s\"", directory);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "journal_open") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_open", "-1");
+    return -1;
+  }
+
+  args.directory = (char *) directory;
+  serial = guestfs___send (g, GUESTFS_PROC_JOURNAL_OPEN,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_journal_open_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_open", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "journal_open", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_open", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_JOURNAL_OPEN, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_open", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_open", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "journal_open", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "journal_open",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "journal_open");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC char *
+guestfs_aug_label (guestfs_h *g,
+                   const char *augpath)
+{
+  struct guestfs_aug_label_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_aug_label_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  char *ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "aug_label", 9);
+  if (augpath == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "aug_label", "augpath");
+    return NULL;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "aug_label");
+    fprintf (trace_buffer.fp, " \"%s\"", augpath);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "aug_label") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "aug_label", "NULL");
+    return NULL;
+  }
+
+  args.augpath = (char *) augpath;
+  serial = guestfs___send (g, GUESTFS_PROC_AUG_LABEL,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_aug_label_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "aug_label", "NULL");
+    return NULL;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "aug_label", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_aug_label_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "aug_label", "NULL");
+    return NULL;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_AUG_LABEL, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "aug_label", "NULL");
+    return NULL;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "aug_label", "NULL");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "aug_label", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "aug_label",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return NULL;
+  }
+
+  ret_v = ret.label; /* caller will free */
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "aug_label");
+    fprintf (trace_buffer.fp, "\"%s\"", ret_v);
     guestfs___trace_send_line (g, &trace_buffer);
   }
 

@@ -120,7 +120,8 @@ extern GUESTFS_DLL_PUBLIC guestfs_abort_cb guestfs_get_out_of_memory_handler (gu
 #define GUESTFS_EVENT_TRACE            0x0040
 #define GUESTFS_EVENT_ENTER            0x0080
 #define GUESTFS_EVENT_LIBVIRT_AUTH     0x0100
-#define GUESTFS_EVENT_ALL              0x01ff
+#define GUESTFS_EVENT_WARNING          0x0200
+#define GUESTFS_EVENT_ALL              0x03ff
 
 #ifndef GUESTFS_TYPEDEF_EVENT_CALLBACK
 #define GUESTFS_TYPEDEF_EVENT_CALLBACK 1
@@ -641,6 +642,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_add_drive (guestfs_h *g, const char *filen
 #define GUESTFS_ADD_DRIVE_OPTS_SERVER 6
 #define GUESTFS_ADD_DRIVE_OPTS_USERNAME 7
 #define GUESTFS_ADD_DRIVE_OPTS_SECRET 8
+#define GUESTFS_ADD_DRIVE_OPTS_CACHEMODE 9
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts (guestfs_h *g, const char *filename, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts_va (guestfs_h *g, const char *filename, va_list args);
 
@@ -664,6 +666,8 @@ struct guestfs_add_drive_opts_argv {
   const char *username;
 # define GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK (UINT64_C(1)<<8)
   const char *secret;
+# define GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK (UINT64_C(1)<<9)
+  const char *cachemode;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts_argv (guestfs_h *g, const char *filename, const struct guestfs_add_drive_opts_argv *optargs);
@@ -673,6 +677,22 @@ extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_ro (guestfs_h *g, const char *fi
 
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_ro_with_if (guestfs_h *g, const char *filename, const char *iface)
   GUESTFS_DEPRECATED_BY ("add_drive");
+
+#define GUESTFS_HAVE_ADD_DRIVE_SCRATCH 1
+#define GUESTFS_ADD_DRIVE_SCRATCH_NAME 0
+#define GUESTFS_ADD_DRIVE_SCRATCH_LABEL 1
+extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_scratch (guestfs_h *g, int64_t size, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_scratch_va (guestfs_h *g, int64_t size, va_list args);
+
+struct guestfs_add_drive_scratch_argv {
+  uint64_t bitmask;
+# define GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK (UINT64_C(1)<<0)
+  const char *name;
+# define GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK (UINT64_C(1)<<1)
+  const char *label;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_scratch_argv (guestfs_h *g, int64_t size, const struct guestfs_add_drive_scratch_argv *optargs);
 
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_with_if (guestfs_h *g, const char *filename, const char *iface)
   GUESTFS_DEPRECATED_BY ("add_drive");
@@ -698,6 +718,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_aug_init (guestfs_h *g, const char *root, 
 #define GUESTFS_HAVE_AUG_INSERT 1
 extern GUESTFS_DLL_PUBLIC int guestfs_aug_insert (guestfs_h *g, const char *augpath, const char *label, int before);
 
+#define GUESTFS_HAVE_AUG_LABEL 1
+extern GUESTFS_DLL_PUBLIC char *guestfs_aug_label (guestfs_h *g, const char *augpath);
+
 #define GUESTFS_HAVE_AUG_LOAD 1
 extern GUESTFS_DLL_PUBLIC int guestfs_aug_load (guestfs_h *g);
 
@@ -718,6 +741,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_aug_save (guestfs_h *g);
 
 #define GUESTFS_HAVE_AUG_SET 1
 extern GUESTFS_DLL_PUBLIC int guestfs_aug_set (guestfs_h *g, const char *augpath, const char *val);
+
+#define GUESTFS_HAVE_AUG_SETM 1
+extern GUESTFS_DLL_PUBLIC int guestfs_aug_setm (guestfs_h *g, const char *base, const char *sub, const char *val);
 
 #define GUESTFS_HAVE_AVAILABLE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_available (guestfs_h *g, char *const *groups);
@@ -755,8 +781,8 @@ extern GUESTFS_DLL_PUBLIC int64_t guestfs_blockdev_getsz (guestfs_h *g, const ch
 #define GUESTFS_HAVE_BLOCKDEV_REREADPT 1
 extern GUESTFS_DLL_PUBLIC int guestfs_blockdev_rereadpt (guestfs_h *g, const char *device);
 
-#define GUESTFS_HAVE_BLOCKDEV_SETBSZ 1
-extern GUESTFS_DLL_PUBLIC int guestfs_blockdev_setbsz (guestfs_h *g, const char *device, int blocksize);
+extern GUESTFS_DLL_PUBLIC int guestfs_blockdev_setbsz (guestfs_h *g, const char *device, int blocksize)
+  GUESTFS_DEPRECATED_BY ("mkfs");
 
 #define GUESTFS_HAVE_BLOCKDEV_SETRO 1
 extern GUESTFS_DLL_PUBLIC int guestfs_blockdev_setro (guestfs_h *g, const char *device);
@@ -886,7 +912,7 @@ struct guestfs_compress_out_argv {
 extern GUESTFS_DLL_PUBLIC int guestfs_compress_out_argv (guestfs_h *g, const char *ctype, const char *file, const char *zfile, const struct guestfs_compress_out_argv *optargs);
 
 #define GUESTFS_HAVE_CONFIG 1
-extern GUESTFS_DLL_PUBLIC int guestfs_config (guestfs_h *g, const char *qemuparam, const char *qemuvalue);
+extern GUESTFS_DLL_PUBLIC int guestfs_config (guestfs_h *g, const char *hvparam, const char *hvvalue);
 
 #define GUESTFS_HAVE_COPY_DEVICE_TO_DEVICE 1
 #define GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET 0
@@ -1167,6 +1193,9 @@ extern GUESTFS_DLL_PUBLIC char *guestfs_get_e2label (guestfs_h *g, const char *d
 extern GUESTFS_DLL_PUBLIC char *guestfs_get_e2uuid (guestfs_h *g, const char *device)
   GUESTFS_DEPRECATED_BY ("vfs_uuid");
 
+#define GUESTFS_HAVE_GET_HV 1
+extern GUESTFS_DLL_PUBLIC char *guestfs_get_hv (guestfs_h *g);
+
 #define GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_CHALLENGE 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_get_libvirt_requested_credential_challenge (guestfs_h *g, int index);
 
@@ -1197,8 +1226,8 @@ extern GUESTFS_DLL_PUBLIC int guestfs_get_pid (guestfs_h *g);
 #define GUESTFS_HAVE_GET_PROGRAM 1
 extern GUESTFS_DLL_PUBLIC const char *guestfs_get_program (guestfs_h *g);
 
-#define GUESTFS_HAVE_GET_QEMU 1
-extern GUESTFS_DLL_PUBLIC const char *guestfs_get_qemu (guestfs_h *g);
+extern GUESTFS_DLL_PUBLIC const char *guestfs_get_qemu (guestfs_h *g)
+  GUESTFS_DEPRECATED_BY ("get_hv");
 
 #define GUESTFS_HAVE_GET_RECOVERY_PROC 1
 extern GUESTFS_DLL_PUBLIC int guestfs_get_recovery_proc (guestfs_h *g);
@@ -1580,6 +1609,27 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_isoinfo *guestfs_isoinfo (guestfs_h *g,
 
 #define GUESTFS_HAVE_ISOINFO_DEVICE 1
 extern GUESTFS_DLL_PUBLIC struct guestfs_isoinfo *guestfs_isoinfo_device (guestfs_h *g, const char *device);
+
+#define GUESTFS_HAVE_JOURNAL_CLOSE 1
+extern GUESTFS_DLL_PUBLIC int guestfs_journal_close (guestfs_h *g);
+
+#define GUESTFS_HAVE_JOURNAL_GET 1
+extern GUESTFS_DLL_PUBLIC struct guestfs_xattr_list *guestfs_journal_get (guestfs_h *g);
+
+#define GUESTFS_HAVE_JOURNAL_GET_DATA_THRESHOLD 1
+extern GUESTFS_DLL_PUBLIC int64_t guestfs_journal_get_data_threshold (guestfs_h *g);
+
+#define GUESTFS_HAVE_JOURNAL_NEXT 1
+extern GUESTFS_DLL_PUBLIC int guestfs_journal_next (guestfs_h *g);
+
+#define GUESTFS_HAVE_JOURNAL_OPEN 1
+extern GUESTFS_DLL_PUBLIC int guestfs_journal_open (guestfs_h *g, const char *directory);
+
+#define GUESTFS_HAVE_JOURNAL_SET_DATA_THRESHOLD 1
+extern GUESTFS_DLL_PUBLIC int guestfs_journal_set_data_threshold (guestfs_h *g, int64_t threshold);
+
+#define GUESTFS_HAVE_JOURNAL_SKIP 1
+extern GUESTFS_DLL_PUBLIC int64_t guestfs_journal_skip (guestfs_h *g, int64_t skip);
 
 extern GUESTFS_DLL_PUBLIC int guestfs_kill_subprocess (guestfs_h *g)
   GUESTFS_DEPRECATED_BY ("shutdown");
@@ -2449,8 +2499,11 @@ extern GUESTFS_DLL_PUBLIC int guestfs_set_e2generation (guestfs_h *g, const char
 extern GUESTFS_DLL_PUBLIC int guestfs_set_e2label (guestfs_h *g, const char *device, const char *label)
   GUESTFS_DEPRECATED_BY ("set_label");
 
-#define GUESTFS_HAVE_SET_E2UUID 1
-extern GUESTFS_DLL_PUBLIC int guestfs_set_e2uuid (guestfs_h *g, const char *device, const char *uuid);
+extern GUESTFS_DLL_PUBLIC int guestfs_set_e2uuid (guestfs_h *g, const char *device, const char *uuid)
+  GUESTFS_DEPRECATED_BY ("set_uuid");
+
+#define GUESTFS_HAVE_SET_HV 1
+extern GUESTFS_DLL_PUBLIC int guestfs_set_hv (guestfs_h *g, const char *hv);
 
 #define GUESTFS_HAVE_SET_LABEL 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_label (guestfs_h *g, const char *mountable, const char *label);
@@ -2476,8 +2529,8 @@ extern GUESTFS_DLL_PUBLIC int guestfs_set_pgroup (guestfs_h *g, int pgroup);
 #define GUESTFS_HAVE_SET_PROGRAM 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_program (guestfs_h *g, const char *program);
 
-#define GUESTFS_HAVE_SET_QEMU 1
-extern GUESTFS_DLL_PUBLIC int guestfs_set_qemu (guestfs_h *g, const char *qemu);
+extern GUESTFS_DLL_PUBLIC int guestfs_set_qemu (guestfs_h *g, const char *hv)
+  GUESTFS_DEPRECATED_BY ("set_hv");
 
 #define GUESTFS_HAVE_SET_RECOVERY_PROC 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_recovery_proc (guestfs_h *g, int recoveryproc);
@@ -2493,6 +2546,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_set_tmpdir (guestfs_h *g, const char *tmpd
 
 #define GUESTFS_HAVE_SET_TRACE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_trace (guestfs_h *g, int trace);
+
+#define GUESTFS_HAVE_SET_UUID 1
+extern GUESTFS_DLL_PUBLIC int guestfs_set_uuid (guestfs_h *g, const char *device, const char *uuid);
 
 #define GUESTFS_HAVE_SET_VERBOSE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_verbose (guestfs_h *g, int verbose);
@@ -2976,6 +3032,9 @@ extern GUESTFS_DLL_PUBLIC char **guestfs_zgrepi (guestfs_h *g, const char *regex
 #define GUESTFS_HAVE_INTERNAL_AUTOSYNC 1
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_autosync (guestfs_h *g);
 
+#define GUESTFS_HAVE_INTERNAL_EXIT 1
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_exit (guestfs_h *g);
+
 #define GUESTFS_HAVE_INTERNAL_HOT_ADD_DRIVE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_add_drive (guestfs_h *g, const char *label);
 
@@ -2984,6 +3043,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_remove_drive (guestfs_h *g, c
 
 #define GUESTFS_HAVE_INTERNAL_HOT_REMOVE_DRIVE_PRECHECK 1
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_remove_drive_precheck (guestfs_h *g, const char *label);
+
+#define GUESTFS_HAVE_INTERNAL_JOURNAL_GET 1
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_journal_get (guestfs_h *g, const char *filename);
 
 #define GUESTFS_HAVE_INTERNAL_LSTATLIST 1
 extern GUESTFS_DLL_PUBLIC struct guestfs_stat_list *guestfs_internal_lstatlist (guestfs_h *g, const char *path, char *const *names);
@@ -3288,6 +3350,9 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_pv_list *guestfs_internal_test_rstr
 
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_set_output (guestfs_h *g, const char *filename);
 
+#define GUESTFS_HAVE_INTERNAL_UPLOAD 1
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_upload (guestfs_h *g, const char *filename, const char *tmpname, int mode);
+
 #define GUESTFS_HAVE_INTERNAL_WRITE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_write (guestfs_h *g, const char *path, const char *content, size_t content_size);
 
@@ -3336,6 +3401,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_ADD_DRIVE 1
 #define LIBGUESTFS_HAVE_ADD_DRIVE_RO 1
 #define LIBGUESTFS_HAVE_ADD_DRIVE_RO_WITH_IF 1
+#define LIBGUESTFS_HAVE_ADD_DRIVE_SCRATCH 1
 #define LIBGUESTFS_HAVE_ADD_DRIVE_WITH_IF 1
 #define LIBGUESTFS_HAVE_AUG_CLEAR 1
 #define LIBGUESTFS_HAVE_AUG_CLOSE 1
@@ -3344,6 +3410,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_AUG_GET 1
 #define LIBGUESTFS_HAVE_AUG_INIT 1
 #define LIBGUESTFS_HAVE_AUG_INSERT 1
+#define LIBGUESTFS_HAVE_AUG_LABEL 1
 #define LIBGUESTFS_HAVE_AUG_LOAD 1
 #define LIBGUESTFS_HAVE_AUG_LS 1
 #define LIBGUESTFS_HAVE_AUG_MATCH 1
@@ -3351,6 +3418,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_AUG_RM 1
 #define LIBGUESTFS_HAVE_AUG_SAVE 1
 #define LIBGUESTFS_HAVE_AUG_SET 1
+#define LIBGUESTFS_HAVE_AUG_SETM 1
 #define LIBGUESTFS_HAVE_AVAILABLE 1
 #define LIBGUESTFS_HAVE_AVAILABLE_ALL_GROUPS 1
 #define LIBGUESTFS_HAVE_BASE64_IN 1
@@ -3452,6 +3520,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_GET_E2GENERATION 1
 #define LIBGUESTFS_HAVE_GET_E2LABEL 1
 #define LIBGUESTFS_HAVE_GET_E2UUID 1
+#define LIBGUESTFS_HAVE_GET_HV 1
 #define LIBGUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_CHALLENGE 1
 #define LIBGUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_DEFRESULT 1
 #define LIBGUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_PROMPT 1
@@ -3547,6 +3616,13 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_IS_ZERO_DEVICE 1
 #define LIBGUESTFS_HAVE_ISOINFO 1
 #define LIBGUESTFS_HAVE_ISOINFO_DEVICE 1
+#define LIBGUESTFS_HAVE_JOURNAL_CLOSE 1
+#define LIBGUESTFS_HAVE_JOURNAL_GET 1
+#define LIBGUESTFS_HAVE_JOURNAL_GET_DATA_THRESHOLD 1
+#define LIBGUESTFS_HAVE_JOURNAL_NEXT 1
+#define LIBGUESTFS_HAVE_JOURNAL_OPEN 1
+#define LIBGUESTFS_HAVE_JOURNAL_SET_DATA_THRESHOLD 1
+#define LIBGUESTFS_HAVE_JOURNAL_SKIP 1
 #define LIBGUESTFS_HAVE_KILL_SUBPROCESS 1
 #define LIBGUESTFS_HAVE_LAUNCH 1
 #define LIBGUESTFS_HAVE_LCHOWN 1
@@ -3718,6 +3794,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_SET_E2GENERATION 1
 #define LIBGUESTFS_HAVE_SET_E2LABEL 1
 #define LIBGUESTFS_HAVE_SET_E2UUID 1
+#define LIBGUESTFS_HAVE_SET_HV 1
 #define LIBGUESTFS_HAVE_SET_LABEL 1
 #define LIBGUESTFS_HAVE_SET_LIBVIRT_REQUESTED_CREDENTIAL 1
 #define LIBGUESTFS_HAVE_SET_LIBVIRT_SUPPORTED_CREDENTIALS 1
@@ -3732,6 +3809,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_SET_SMP 1
 #define LIBGUESTFS_HAVE_SET_TMPDIR 1
 #define LIBGUESTFS_HAVE_SET_TRACE 1
+#define LIBGUESTFS_HAVE_SET_UUID 1
 #define LIBGUESTFS_HAVE_SET_VERBOSE 1
 #define LIBGUESTFS_HAVE_SETCON 1
 #define LIBGUESTFS_HAVE_SETXATTR 1

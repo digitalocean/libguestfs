@@ -227,22 +227,27 @@ compare_lists (char **ret, char **expected,
   return 0; /* test expecting false for failure */
 }
 
-/* Compare two device names, ignoring hd/sd/vd */
+/* Compare two device names, ignoring hd/sd/ubd/vd */
 int
-compare_devices (const char *dev1, const char *dev2)
+compare_devices (const char *a, const char *b)
 {
-  CLEANUP_FREE char *copy1 = NULL, *copy2 = NULL;
+  size_t alen, blen;
 
-  assert (dev1 && dev2);
-  if (strlen (dev1) < 6 || strlen (dev2) < 6)
-    return -1;
+  /* Skip /dev/ prefix if present. */
+  if (STRPREFIX (a, "/dev/"))
+    a += 5;
+  if (STRPREFIX (b, "/dev/"))
+    b += 5;
 
-  copy1 = strdup (dev1);
-  copy2 = strdup (dev2);
-  copy1[5] = 'h';
-  copy2[5] = 'h';
+  /* Skip sd/hd/ubd/vd. */
+  alen = strcspn (a, "d");
+  blen = strcspn (b, "d");
+  assert (alen > 0 && alen <= 2);
+  assert (blen > 0 && blen <= 2);
+  a += alen + 1;
+  b += blen + 1;
 
-  return strcmp (copy1, copy2);
+  return strcmp (a, b);
 }
 
 /* Compare returned buffer with expected buffer.  Note the buffers have
@@ -409,65 +414,6 @@ skipped (const char *test_name, const char *fs, ...)
           test_name, reason);
 }
 
-static void
-delete_file (guestfs_h *g, void *filenamev,
-             uint64_t event, int eh, int flags,
-             const char *buf, size_t buf_len,
-             const uint64_t *array, size_t array_len)
-{
-  char *filename = filenamev;
-
-  unlink (filename);
-  free (filename);
-}
-
-static void
-add_disk (guestfs_h *g, const char *key, off_t size)
-{
-  CLEANUP_FREE char *tmpdir = guestfs_get_tmpdir (g);
-  char *filename;
-  int fd;
-
-  if (asprintf (&filename, "%s/diskXXXXXX", tmpdir) == -1) {
-    perror ("asprintf");
-    exit (EXIT_FAILURE);
-  }
-
-  fd = mkostemp (filename, O_WRONLY|O_CREAT|O_NOCTTY|O_TRUNC|O_CLOEXEC);
-  if (fd == -1) {
-    perror ("mkstemp");
-    exit (EXIT_FAILURE);
-  }
-  if (ftruncate (fd, size) == -1) {
-    perror ("ftruncate");
-    close (fd);
-    unlink (filename);
-    exit (EXIT_FAILURE);
-  }
-  if (close (fd) == -1) {
-    perror (filename);
-    unlink (filename);
-    exit (EXIT_FAILURE);
-  }
-
-  if (guestfs_add_drive (g, filename) == -1) {
-    printf ("FAIL: guestfs_add_drive %s\n", filename);
-    exit (EXIT_FAILURE);
-  }
-
-  if (guestfs_set_event_callback (g, delete_file,
-                                  GUESTFS_EVENT_CLOSE, 0, filename) == -1) {
-    printf ("FAIL: guestfs_set_event_callback (GUESTFS_EVENT_CLOSE)\n");
-    exit (EXIT_FAILURE);
-  }
-
-  /* Record the real filename in the named private key.  Tests can
-   * retrieve these names using the magic "GETKEY:<key>" String
-   * parameter.
-   */
-  guestfs_set_private (g, key, filename);
-}
-
 /* Create the handle, with attached disks. */
 static guestfs_h *
 create_handle (void)
@@ -480,11 +426,20 @@ create_handle (void)
     exit (EXIT_FAILURE);
   }
 
-  add_disk (g, "test1", 524288000);
+  if (guestfs_add_drive_scratch (g, 524288000, -1) == -1) {
+    printf ("FAIL: guestfs_add_drive_scratch\n");
+    exit (EXIT_FAILURE);
+  }
 
-  add_disk (g, "test2", 52428800);
+  if (guestfs_add_drive_scratch (g, 52428800, -1) == -1) {
+    printf ("FAIL: guestfs_add_drive_scratch\n");
+    exit (EXIT_FAILURE);
+  }
 
-  add_disk (g, "test3", 10485760);
+  if (guestfs_add_drive_scratch (g, 10485760, -1) == -1) {
+    printf ("FAIL: guestfs_add_drive_scratch\n");
+    exit (EXIT_FAILURE);
+  }
 
   if (guestfs_add_drive_ro (g, "../data/test.iso") == -1) {
     printf ("FAIL: guestfs_add_drive_ro ../data/test.iso\n");

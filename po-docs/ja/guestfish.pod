@@ -337,9 +337,9 @@ libguestfs misidentifies a filesystem.
 
 Enable QEMU user networking in the guest.
 
-=item B<-N type>
+=item B<-N [filename=]type>
 
-=item B<--new type>
+=item B<--new [filename=]type>
 
 =item B<-N help>
 
@@ -1000,6 +1000,23 @@ cleans up guestfish when the script exits:
  
  # ...
 
+=head2 REMOTE CONTROL DOES NOT WORK WITH I<-a> ETC. OPTIONS
+
+Options such as I<-a>, I<--add>, I<-N>, I<--new> etc don't interact properly
+with remote support.  They are processed locally, and not sent through to
+the remote guestfish.  In particular this won't do what you expect:
+
+ guestfish --remote --add disk.img
+
+Don't use these options.  Use the equivalent commands instead, eg:
+
+ guestfish --remote add-drive disk.img
+
+または:
+
+ guestfish --remote
+ ><fs> add disk.img
+
 =head2 REMOTE CONTROL RUN COMMAND HANGING
 
 Using the C<run> (or C<launch>) command remotely in a command substitution
@@ -1013,15 +1030,16 @@ L<https://bugzilla.redhat.com/show_bug.cgi?id=592910>.
 
 =head1 PREPARED DISK IMAGES
 
-Use the I<-N type> or I<--new type> parameter to select one of a set of
-preformatted disk images that guestfish can make for you to save typing.
-This is particularly useful for testing purposes.  This option is used
-instead of the I<-a> option, and like I<-a> can appear multiple times (and
-can be mixed with I<-a>).
+Use the I<-N [filename=]type> or I<--new [filename=]type> parameter to
+select one of a set of preformatted disk images that guestfish can make for
+you to save typing.  This is particularly useful for testing purposes.  This
+option is used instead of the I<-a> option, and like I<-a> can appear
+multiple times (and can be mixed with I<-a>).
 
 The new disk is called C<test1.img> for the first I<-N>, C<test2.img> for
 the second and so on.  Existing files in the current directory are
-I<overwritten>.
+I<overwritten>.  You can use a different filename by specifying C<filename=>
+before the type (see examples below).
 
 The type briefly describes how the disk should be sized, partitioned, how
 filesystem(s) should be created, and how content should be added.
@@ -1034,11 +1052,13 @@ on a 1GB disk instead.
 Note that the prepared filesystem is not mounted.  You would usually have to
 use the C<mount /dev/sda1 /> command or add the I<-m /dev/sda1> option.
 
-I<-N> または I<--new> オプションが指定されると、仮想マシンが自動的に起動します。
+If any I<-N> or I<--new> options are given, the libguestfs appliance is
+automatically launched.
 
 =head2 例
 
-ext4 フォーマットのパーティションを持つ 100MB ディスクを作成します:
+Create a 100MB disk with an ext4-formatted partition, called C<test1.img> in
+the current directory:
 
  guestfish -N fs:ext4
 
@@ -1049,6 +1069,10 @@ VFAT フォーマットのパーティションを持つ 32MB ディスクを作
 200MB の空ディスクを作成します:
 
  guestfish -N disk:200M
+
+Create a blank 200MB disk called C<blankdisk.img> (instead of C<test1.img>):
+
+ guestfish -N blankdisk.img=disk:200M
 
 __PREPOPTS__
 
@@ -1351,6 +1375,12 @@ See also L</LIBGUESTFS_TMPDIR>, L</set-cachedir>.
 Set C<LIBGUESTFS_DEBUG=1> to enable verbose messages.  This has the same
 effect as using the B<-v> option.
 
+=item LIBGUESTFS_HV
+
+Set the default hypervisor (usually qemu) binary that libguestfs uses.  If
+not set, then the qemu which was found at compile time by the configure
+script is used.
+
 =item LIBGUESTFS_MEMSIZE
 
 Set the memory allocated to the qemu process, in megabytes.  For example:
@@ -1364,8 +1394,7 @@ the discussion of paths in L<guestfs(3)>.
 
 =item LIBGUESTFS_QEMU
 
-Set the default qemu binary that libguestfs uses.  If not set, then the qemu
-which was found at compile time by the configure script is used.
+This is the old way to set C<LIBGUESTFS_HV>.
 
 =item LIBGUESTFS_TMPDIR
 
@@ -1461,20 +1490,21 @@ guestfish が大文字小文字を区別するようになります。
 When using the I<-N> or I<--new> option, the prepared disk or filesystem
 will be created in the file C<test1.img> in the current directory.  The
 second use of I<-N> will use C<test2.img> and so on.  Any existing file with
-the same name will be overwritten.
+the same name will be overwritten.  You can use a different filename by
+using the C<filename=> prefix.
 
 =back
 
 =head1 関連項目
 
 L<guestfs(3)>, L<http://libguestfs.org/>, L<virt-alignment-scan(1)>,
-L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-df(1)>,
-L<virt-edit(1)>, L<virt-filesystems(1)>, L<virt-inspector(1)>,
-L<virt-list-filesystems(1)>, L<virt-list-partitions(1)>, L<virt-ls(1)>,
-L<virt-make-fs(1)>, L<virt-rescue(1)>, L<virt-resize(1)>,
-L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>,
-L<virt-tar-out(1)>, L<virt-win-reg(1)>, L<display(1)>, L<hexedit(1)>,
-L<supermin-helper(8)>.
+L<virt-builder(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>,
+L<virt-df(1)>, L<virt-edit(1)>, L<virt-filesystems(1)>,
+L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
+L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
+L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
+L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
+L<virt-win-reg(1)>, L<display(1)>, L<hexedit(1)>, L<supermin-helper(8)>.
 
 =head1 著者
 

@@ -1,5 +1,6 @@
 ../align/virt-alignment-scan.pod
 ../appliance/libguestfs-make-fixed-appliance.pod
+../builder/virt-builder.pod
 ../cat/virt-cat.pod
 ../cat/virt-filesystems.pod
 ../cat/virt-ls.pod
@@ -23,6 +24,7 @@
 ../format/virt-format.pod
 ../fuse/guestmount.pod
 ../fuse/guestunmount.pod
+../golang/examples/guestfs-golang.pod
 ../guestfs-release-notes.pod
 ../inspector/virt-inspector.pod
 ../java/examples/guestfs-java.pod
@@ -42,8 +44,8 @@
 ../sysprep/sysprep-operations.pod
 ../sysprep/virt-sysprep.pod
 ../test-tool/libguestfs-test-tool.pod
-../tools/virt-list-filesystems.pl
-../tools/virt-list-partitions.pl
-../tools/virt-make-fs.pl
-../tools/virt-tar.pl
-../tools/virt-win-reg.pl
+../tools/virt-list-filesystems
+../tools/virt-list-partitions
+../tools/virt-make-fs
+../tools/virt-tar
+../tools/virt-win-reg

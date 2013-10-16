@@ -57,11 +57,13 @@ SHARED_SOURCE_FILES = \
 	../fish/inspect.c \
 	../fish/keys.c \
 	../fish/options.h \
-	../fish/options.c
+	../fish/options.c \
+	../fish/uri.h \
+	../fish/uri.c
 
 virt_inspector_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
-	virt-inspector.c
+	inspector.c
 
 virt_inspector_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \

@@ -78,7 +78,8 @@ EVENT_LIBRARY = 0x20
 EVENT_TRACE = 0x40
 EVENT_ENTER = 0x80
 EVENT_LIBVIRT_AUTH = 0x100
-EVENT_ALL = 0x1ff
+EVENT_WARNING = 0x200
+EVENT_ALL = 0x3ff
 
 
 def event_to_string (events):
@@ -309,10 +310,7 @@ class GuestFS(object):
         return r
 
     def launch (self):
-        """Internally libguestfs is implemented by running a
-        virtual machine using qemu(1).
-        
-        You should call this after configuring the handle (eg.
+        """You should call this after configuring the handle (eg.
         adding drives) but before performing any actions.
         
         Do not call "g.launch" twice on the same handle.
@@ -349,7 +347,7 @@ class GuestFS(object):
         return r
 
     def kill_subprocess (self):
-        """This kills the qemu subprocess.
+        """This kills the hypervisor.
         
         Do not call this. See: "g.shutdown" instead.
         
@@ -393,33 +391,32 @@ class GuestFS(object):
         r = libguestfsmod.add_drive_ro (self._o, filename)
         return r
 
-    def config (self, qemuparam, qemuvalue):
-        """This can be used to add arbitrary qemu command line
-        parameters of the form *-param value*. Actually it's not
-        quite arbitrary - we prevent you from setting some
-        parameters which would interfere with parameters that we
-        use.
+    def config (self, hvparam, hvvalue):
+        """This can be used to add arbitrary hypervisor parameters
+        of the form *-param value*. Actually it's not quite
+        arbitrary - we prevent you from setting some parameters
+        which would interfere with parameters that we use.
         
-        The first character of "qemuparam" string must be a "-"
+        The first character of "hvparam" string must be a "-"
         (dash).
         
-        "qemuvalue" can be NULL.
+        "hvvalue" can be NULL.
         """
         self._check_not_closed ()
-        r = libguestfsmod.config (self._o, qemuparam, qemuvalue)
+        r = libguestfsmod.config (self._o, hvparam, hvvalue)
         return r
 
-    def set_qemu (self, qemu):
-        """Set the qemu binary that we will use.
+    def set_qemu (self, hv):
+        """Set the hypervisor binary (usually qemu) that we will
+        use.
         
         The default is chosen when the library was compiled by
         the configure script.
         
         You can also override this by setting the
-        "LIBGUESTFS_QEMU" environment variable.
+        "LIBGUESTFS_HV" environment variable.
         
-        Setting "qemu" to "NULL" restores the default qemu
-        binary.
+        Setting "hv" to "NULL" restores the default qemu binary.
         
         Note that you should call this function as early as
         possible after creating the handle. This is because some
@@ -427,21 +424,71 @@ class GuestFS(object):
         (by running "qemu -help"). If the qemu binary changes,
         we don't retest features, and so you might see
         inconsistent results. Using the environment variable
-        "LIBGUESTFS_QEMU" is safest of all since that picks the
+        "LIBGUESTFS_HV" is safest of all since that picks the
         qemu binary at the same time as the handle is created.
+        
+        *This function is deprecated.* In new code, use the
+        "set_hv" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
-        r = libguestfsmod.set_qemu (self._o, qemu)
+        r = libguestfsmod.set_qemu (self._o, hv)
         return r
 
     def get_qemu (self):
-        """Return the current qemu binary.
+        """Return the current hypervisor binary (usually qemu).
+        
+        This is always non-NULL. If it wasn't set already, then
+        this will return the default qemu binary name.
+        
+        *This function is deprecated.* In new code, use the
+        "get_hv" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.get_qemu (self._o)
+        return r
+
+    def set_hv (self, hv):
+        """Set the hypervisor binary that we will use. The
+        hypervisor depends on the backend, but is usually the
+        location of the qemu/KVM hypervisor. For the uml
+        backend, it is the location of the "linux" or "vmlinux"
+        binary.
+        
+        The default is chosen when the library was compiled by
+        the configure script.
+        
+        You can also override this by setting the
+        "LIBGUESTFS_HV" environment variable.
+        
+        Note that you should call this function as early as
+        possible after creating the handle. This is because some
+        pre-launch operations depend on testing qemu features
+        (by running "qemu -help"). If the qemu binary changes,
+        we don't retest features, and so you might see
+        inconsistent results. Using the environment variable
+        "LIBGUESTFS_HV" is safest of all since that picks the
+        qemu binary at the same time as the handle is created.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.set_hv (self._o, hv)
+        return r
+
+    def get_hv (self):
+        """Return the current hypervisor binary.
         
         This is always non-NULL. If it wasn't set already, then
         this will return the default qemu binary name.
         """
         self._check_not_closed ()
-        r = libguestfsmod.get_qemu (self._o)
+        r = libguestfsmod.get_hv (self._o)
         return r
 
     def set_path (self, searchpath):
@@ -585,8 +632,8 @@ class GuestFS(object):
 
     def set_memsize (self, memsize):
         """This sets the memory size in megabytes allocated to the
-        qemu subprocess. This only has any effect if called
-        before "g.launch".
+        hypervisor. This only has any effect if called before
+        "g.launch".
         
         You can also change this by setting the environment
         variable "LIBGUESTFS_MEMSIZE" before the handle is
@@ -601,7 +648,7 @@ class GuestFS(object):
 
     def get_memsize (self):
         """This gets the memory size in megabytes allocated to the
-        qemu subprocess.
+        hypervisor.
         
         If "g.set_memsize" was not called on this handle, and if
         "LIBGUESTFS_MEMSIZE" was not set, then this returns the
@@ -615,8 +662,8 @@ class GuestFS(object):
         return r
 
     def get_pid (self):
-        """Return the process ID of the qemu subprocess. If there
-        is no qemu subprocess, then this will return an error.
+        """Return the process ID of the hypervisor. If there is no
+        hypervisor running, then this will return an error.
         
         This is an internal call used for debugging and testing.
         """
@@ -745,9 +792,9 @@ class GuestFS(object):
     def set_recovery_proc (self, recoveryproc):
         """If this is called with the parameter "false" then
         "g.launch" does not create a recovery process. The
-        purpose of the recovery process is to stop runaway qemu
-        processes in the case where the main program aborts
-        abruptly.
+        purpose of the recovery process is to stop runaway
+        hypervisor processes in the case where the main program
+        aborts abruptly.
         
         This only has any effect if called before "g.launch",
         and the default is true.
@@ -756,8 +803,8 @@ class GuestFS(object):
         is if the main process will fork itself into the
         background ("daemonize" itself). In this case the
         recovery process thinks that the main program has
-        disappeared and so kills qemu, which is not very
-        helpful.
+        disappeared and so kills the hypervisor, which is not
+        very helpful.
         """
         self._check_not_closed ()
         r = libguestfsmod.set_recovery_proc (self._o, recoveryproc)
@@ -1235,7 +1282,7 @@ class GuestFS(object):
         r = self._maybe_convert_to_dict (r)
         return r
 
-    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None, username=None, secret=None):
+    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None, username=None, secret=None, cachemode=None):
         """This function adds a disk image called "filename" to the
         handle. "filename" may be a regular host file or a host
         device.
@@ -1412,9 +1459,34 @@ class GuestFS(object):
         username will be looked up in the default keychain
         locations, or if no username is given, then no
         authentication will be used.
+        
+        "cachemode"
+        Choose whether or not libguestfs will obey sync
+        operations (safe but slow) or not (unsafe but fast).
+        The possible values for this string are:
+        
+        "cachemode = "writeback""
+        This is the default.
+        
+        Write operations in the API do not return until
+        a write(2) call has completed in the host [but
+        note this does not imply that anything gets
+        written to disk].
+        
+        Sync operations in the API, including implicit
+        syncs caused by filesystem journalling, will not
+        return until an fdatasync(2) call has completed
+        in the host, indicating that data has been
+        committed to disk.
+        
+        "cachemode = "unsafe""
+        In this mode, there are no guarantees.
+        Libguestfs may cache anything and ignore sync
+        requests. This is suitable only for scratch or
+        temporary disks.
         """
         self._check_not_closed ()
-        r = libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label, protocol, server, username, secret)
+        r = libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label, protocol, server, username, secret, cachemode)
         return r
 
     add_drive_opts = add_drive
@@ -2734,6 +2806,44 @@ class GuestFS(object):
         r = libguestfsmod.get_program (self._o)
         return r
 
+    def add_drive_scratch (self, size, name=None, label=None):
+        """This command adds a temporary scratch drive to the
+        handle. The "size" parameter is the virtual size (in
+        bytes). The scratch drive is blank initially (all reads
+        return zeroes until you start writing to it). The drive
+        is deleted when the handle is closed.
+        
+        The optional arguments "name" and "label" are passed
+        through to "g.add_drive".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.add_drive_scratch (self._o, size, name, label)
+        return r
+
+    def journal_get (self):
+        """Read the current journal entry. This returns all the
+        fields in the journal as a set of "(attrname, attrval)"
+        pairs. The "attrname" is the field name (a string).
+        
+        The "attrval" is the field value (a binary blob, often
+        but not always a string). Please note that "attrval" is
+        a byte array, *not* a \\0-terminated C string.
+        
+        The length of data may be truncated to the data
+        threshold (see: "g.journal_set_data_threshold",
+        "g.journal_get_data_threshold").
+        
+        If you set the data threshold to unlimited (0) then this
+        call can read a journal entry of any size, ie. it is not
+        limited by the libguestfs protocol.
+        
+        This function returns a list of xattrs. Each xattr is
+        represented as a dictionary.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.journal_get (self._o)
+        return r
+
     def mount (self, mountable, mountpoint):
         """Mount a guest disk at a position in the filesystem.
         Block devices are named "/dev/sda", "/dev/sdb" and so
@@ -3528,8 +3638,11 @@ class GuestFS(object):
     def blockdev_getbsz (self, device):
         """This returns the block size of a device.
         
-        (Note this is different from both *size in blocks* and
-        *filesystem block size*).
+        Note: this is different from both *size in blocks* and
+        *filesystem block size*. Also this setting is not really
+        used by anything. You should probably not use it for
+        anything. Filesystems have their own idea about what
+        block size to choose.
         
         This uses the blockdev(8) command.
         """
@@ -3538,12 +3651,18 @@ class GuestFS(object):
         return r
 
     def blockdev_setbsz (self, device, blocksize):
-        """This sets the block size of a device.
+        """This call does nothing and has never done anything
+        because of a bug in blockdev. Do not use it.
         
-        (Note this is different from both *size in blocks* and
-        *filesystem block size*).
+        If you need to set the filesystem block size, use the
+        "blocksize" option of "g.mkfs".
         
-        This uses the blockdev(8) command.
+        *This function is deprecated.* In new code, use the
+        "mkfs" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
         r = libguestfsmod.blockdev_setbsz (self._o, device, blocksize)
@@ -3849,8 +3968,15 @@ class GuestFS(object):
         alternatives such as "clear", "random" and "time" are
         described in the tune2fs(8) manpage.
         
-        You can use either "g.tune2fs_l" or "g.get_e2uuid" to
-        return the existing UUID of a filesystem.
+        You can use "g.vfs_uuid" to return the existing UUID of
+        a filesystem.
+        
+        *This function is deprecated.* In new code, use the
+        "set_uuid" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
         r = libguestfsmod.set_e2uuid (self._o, device, uuid)
@@ -4008,8 +4134,8 @@ class GuestFS(object):
 
     def ping_daemon (self):
         """This is a test probe into the guestfs daemon running
-        inside the qemu subprocess. Calling this function checks
-        that the daemon responds to the ping message, without
+        inside the hypervisor. Calling this function checks that
+        the daemon responds to the ping message, without
         affecting the daemon or attached block device(s) in any
         other way.
         """
@@ -7390,13 +7516,21 @@ class GuestFS(object):
         libguestfs supports setting labels on only a subset of
         these.
         
-        On ext2/3/4 filesystems, labels are limited to 16 bytes.
+        ext2, ext3, ext4
+        Labels are limited to 16 bytes.
         
-        On NTFS filesystems, labels are limited to 128 unicode
-        characters.
+        NTFS
+        Labels are limited to 128 unicode characters.
         
-        Setting the label on a btrfs subvolume will set the
-        label on its parent filesystem.
+        XFS The label is limited to 12 bytes. The filesystem
+        must not be mounted when trying to set the label.
+        
+        btrfs
+        The label is limited to 256 bytes and some
+        characters are not allowed. Setting the label on a
+        btrfs subvolume will set the label on its parent
+        filesystem. The filesystem must not be mounted when
+        trying to set the label.
         
         To read the label on a filesystem, call "g.vfs_label".
         """
@@ -7767,9 +7901,10 @@ class GuestFS(object):
         
         This is mainly useful as a negative test. If this
         returns true, it doesn't mean that a particular
-        filesystem can be mounted, since filesystems can fail
-        for other reasons such as it being a later version of
-        the filesystem, or having incompatible features.
+        filesystem can be created or mounted, since filesystems
+        can fail for other reasons such as it being a later
+        version of the filesystem, or having incompatible
+        features, or lacking the right mkfs.<*fs*> tool.
         
         See also "g.available", "g.feature_available",
         "AVAILABILITY" in guestfs(3).
@@ -7967,6 +8102,14 @@ class GuestFS(object):
         
         The optional arguments are the same as those of
         "g.rsync".
+        
+        Globbing does not happen on the "src" parameter. In
+        programs which use the API directly you have to expand
+        wildcards yourself (see "g.glob_expand"). In guestfish
+        you can use the "glob" command (see "glob" in
+        guestfish(1)), for example:
+        
+        ><fs> glob rsync-out /* rsync://remote/
         """
         self._check_not_closed ()
         r = libguestfsmod.rsync_out (self._o, src, remote, archive, deletedest)
@@ -8235,9 +8378,13 @@ class GuestFS(object):
 
     def mke2fs (self, device, blockscount=None, blocksize=None, fragsize=None, blockspergroup=None, numberofgroups=None, bytesperinode=None, inodesize=None, journalsize=None, numberofinodes=None, stridesize=None, stripewidth=None, maxonlineresize=None, reservedblockspercentage=None, mmpupdateinterval=None, journaldevice=None, label=None, lastmounteddir=None, creatoros=None, fstype=None, usagetype=None, uuid=None, forcecreate=None, writesbandgrouponly=None, lazyitableinit=None, lazyjournalinit=None, testfs=None, discard=None, quotatype=None, extent=None, filetype=None, flexbg=None, hasjournal=None, journaldev=None, largefile=None, quota=None, resizeinode=None, sparsesuper=None, uninitbg=None):
         """"mke2fs" is used to create an ext2, ext3, or ext4
-        filesystem on "device". The optional "blockscount" is
-        the size of the filesystem in blocks. If omitted it
-        defaults to the size of "device".
+        filesystem on "device".
+        
+        The optional "blockscount" is the size of the filesystem
+        in blocks. If omitted it defaults to the size of
+        "device". Note if the filesystem is too small to contain
+        a journal, "mke2fs" will silently create an ext2
+        filesystem instead.
         """
         self._check_not_closed ()
         r = libguestfsmod.mke2fs (self._o, device, blockscount, blocksize, fragsize, blockspergroup, numberofgroups, bytesperinode, inodesize, journalsize, numberofinodes, stridesize, stripewidth, maxonlineresize, reservedblockspercentage, mmpupdateinterval, journaldevice, label, lastmounteddir, creatoros, fstype, usagetype, uuid, forcecreate, writesbandgrouponly, lazyitableinit, lazyjournalinit, testfs, discard, quotatype, extent, filetype, flexbg, hasjournal, journaldev, largefile, quota, resizeinode, sparsesuper, uninitbg)
@@ -8324,9 +8471,7 @@ class GuestFS(object):
 
     def acl_set_file (self, path, acltype, acl):
         """This function sets the POSIX Access Control List (ACL)
-        attached to "path". The "acl" parameter is the new ACL
-        in either "long text form" or "short text form" (see
-        acl(5)).
+        attached to "path".
         
         The "acltype" parameter may be:
         
@@ -8337,6 +8482,25 @@ class GuestFS(object):
         "default"
         Set the default ACL. Normally this only makes sense
         if "path" is a directory.
+        
+        The "acl" parameter is the new ACL in either "long text
+        form" or "short text form" (see acl(5)). The new ACL
+        completely replaces any previous ACL on the file. The
+        ACL must contain the full Unix permissions (eg.
+        "u::rwx,g::rx,o::rx").
+        
+        If you are specifying individual users or groups, then
+        the mask field is also required (eg. "m::rwx"), followed
+        by the "u:*ID*:..." and/or "g:*ID*:..." field(s). A full
+        ACL string might therefore look like this:
+        
+        u::rwx,g::rwx,o::rwx,m::rwx,u:500:rwx,g:500:rwx
+        \\ Unix permissions / \\mask/ \\      ACL        /
+        
+        You should use numeric UIDs and GIDs. To map usernames
+        and groupnames to the correct numeric ID in the context
+        of the guest, use the Augeas functions (see
+        "g.aug_init").
         """
         self._check_not_closed ()
         r = libguestfsmod.acl_set_file (self._o, path, acltype, acl)
@@ -8354,6 +8518,9 @@ class GuestFS(object):
         """This function returns the Linux capabilities attached to
         "path". The capabilities set is returned in text form
         (see cap_to_text(3)).
+        
+        If no capabilities are attached to a file, an empty
+        string is returned.
         """
         self._check_not_closed ()
         r = libguestfsmod.cap_get_file (self._o, path)
@@ -8652,5 +8819,114 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.remount (self._o, mountpoint, rw)
+        return r
+
+    def set_uuid (self, device, uuid):
+        """Set the filesystem UIUD on "device" to "label".
+        
+        Only some filesystem types support setting UUIDs.
+        
+        To read the UUID on a filesystem, call "g.vfs_uuid".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.set_uuid (self._o, device, uuid)
+        return r
+
+    def journal_open (self, directory):
+        """Open the systemd journal located in "directory". Any
+        previously opened journal handle is closed.
+        
+        The contents of the journal can be read using
+        "g.journal_next" and "g.journal_get".
+        
+        After you have finished using the journal, you should
+        close the handle by calling "g.journal_close".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.journal_open (self._o, directory)
+        return r
+
+    def journal_close (self):
+        """Close the journal handle.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.journal_close (self._o)
+        return r
+
+    def journal_next (self):
+        """Move to the next journal entry. You have to call this at
+        least once after opening the handle before you are able
+        to read data.
+        
+        The returned boolean tells you if there are any more
+        journal records to read. "true" means you can read the
+        next record (eg. using "g.journal_get_data"), and
+        "false" means you have reached the end of the journal.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.journal_next (self._o)
+        return r
+
+    def journal_skip (self, skip):
+        """Skip forwards ("skip ≥ 0") or backwards ("skip < 0") in
+        the journal.
+        
+        The number of entries actually skipped is returned (note
+        "rskip ≥ 0"). If this is not the same as the absolute
+        value of the skip parameter ("|skip|") you passed in
+        then it means you have reached the end or the start of
+        the journal.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.journal_skip (self._o, skip)
+        return r
+
+    def journal_get_data_threshold (self):
+        """Get the current data threshold for reading journal
+        entries. This is a hint to the journal that it may
+        truncate data fields to this size when reading them
+        (note also that it may not truncate them). If this
+        returns 0, then the threshold is unlimited.
+        
+        See also "g.journal_set_data_threshold".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.journal_get_data_threshold (self._o)
+        return r
+
+    def journal_set_data_threshold (self, threshold):
+        """Set the data threshold for reading journal entries. This
+        is a hint to the journal that it may truncate data
+        fields to this size when reading them (note also that it
+        may not truncate them). If you set this to 0, then the
+        threshold is unlimited.
+        
+        See also "g.journal_get_data_threshold".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.journal_set_data_threshold (self._o, threshold)
+        return r
+
+    def aug_setm (self, base, sub, val):
+        """Change multiple Augeas nodes in a single operation.
+        "base" is an expression matching multiple nodes. "sub"
+        is a path expression relative to "base". All nodes
+        matching "base" are found, and then for each node, "sub"
+        is changed to "val". "sub" may also be "NULL" in which
+        case the "base" nodes are modified.
+        
+        This returns the number of nodes modified.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.aug_setm (self._o, base, sub, val)
+        return r
+
+    def aug_label (self, augpath):
+        """The label (name of the last element) of the Augeas path
+        expression "augpath" is returned. "augpath" must match
+        exactly one node, else this function returns an error.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.aug_label (self._o, augpath)
         return r
 

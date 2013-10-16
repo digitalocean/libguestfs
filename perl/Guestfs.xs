@@ -1182,25 +1182,25 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
-config (g, qemuparam, qemuvalue)
+config (g, hvparam, hvvalue)
       guestfs_h *g;
-      char *qemuparam;
-      char *qemuvalue = SvOK(ST(2)) ? SvPV_nolen(ST(2)) : NULL;
+      char *hvparam;
+      char *hvvalue = SvOK(ST(2)) ? SvPV_nolen(ST(2)) : NULL;
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_config (g, qemuparam, qemuvalue);
+      r = guestfs_config (g, hvparam, hvvalue);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
 void
-set_qemu (g, qemu)
+set_qemu (g, hv)
       guestfs_h *g;
-      char *qemu = SvOK(ST(1)) ? SvPV_nolen(ST(1)) : NULL;
+      char *hv = SvOK(ST(1)) ? SvPV_nolen(ST(1)) : NULL;
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_set_qemu (g, qemu);
+      r = guestfs_set_qemu (g, hv);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -1214,6 +1214,31 @@ PREINIT:
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);
+ OUTPUT:
+      RETVAL
+
+void
+set_hv (g, hv)
+      guestfs_h *g;
+      char *hv;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_hv (g, hv);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+get_hv (g)
+      guestfs_h *g;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_get_hv (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -1826,6 +1851,10 @@ PREINIT:
         else if (STREQ (this_arg, "secret")) {
           optargs_s.secret = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
+        }
+        else if (STREQ (this_arg, "cachemode")) {
+          optargs_s.cachemode = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
@@ -2878,6 +2907,62 @@ PREINIT:
       RETVAL = newSVpv (r, 0);
  OUTPUT:
       RETVAL
+
+void
+add_drive_scratch (g, size, ...)
+      guestfs_h *g;
+      int64_t size;
+PREINIT:
+      int r;
+      struct guestfs_add_drive_scratch_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "name")) {
+          optargs_s.name = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK;
+        }
+        else if (STREQ (this_arg, "label")) {
+          optargs_s.label = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_add_drive_scratch_argv (g, size, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+journal_get (g)
+      guestfs_h *g;
+PREINIT:
+      struct guestfs_xattr_list *r;
+      size_t i;
+      HV *hv;
+ PPCODE:
+      r = guestfs_journal_get (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
+        hv = newHV ();
+        (void) hv_store (hv, "attrname", 8, newSVpv (r->val[i].attrname, 0), 0);
+        (void) hv_store (hv, "attrval", 7, newSVpvn (r->val[i].attrval, r->val[i].attrval_len), 0);
+        PUSHs (sv_2mortal (newRV ((SV *) hv)));
+      }
+      guestfs_free_xattr_list (r);
 
 void
 mount (g, mountable, mountpoint)
@@ -9790,4 +9875,119 @@ PREINIT:
       r = guestfs_remount_argv (g, mountpoint, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
+
+void
+set_uuid (g, device, uuid)
+      guestfs_h *g;
+      char *device;
+      char *uuid;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_uuid (g, device, uuid);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+journal_open (g, directory)
+      guestfs_h *g;
+      char *directory;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_journal_open (g, directory);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+journal_close (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_journal_close (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+journal_next (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_journal_next (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+journal_skip (g, skip)
+      guestfs_h *g;
+      int64_t skip;
+PREINIT:
+      int64_t r;
+   CODE:
+      r = guestfs_journal_skip (g, skip);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = my_newSVll (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+journal_get_data_threshold (g)
+      guestfs_h *g;
+PREINIT:
+      int64_t r;
+   CODE:
+      r = guestfs_journal_get_data_threshold (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = my_newSVll (r);
+ OUTPUT:
+      RETVAL
+
+void
+journal_set_data_threshold (g, threshold)
+      guestfs_h *g;
+      int64_t threshold;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_journal_set_data_threshold (g, threshold);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+aug_setm (g, base, sub, val)
+      guestfs_h *g;
+      char *base;
+      char *sub = SvOK(ST(2)) ? SvPV_nolen(ST(2)) : NULL;
+      char *val;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_aug_setm (g, base, sub, val);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+aug_label (g, augpath)
+      guestfs_h *g;
+      char *augpath;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_aug_label (g, augpath);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
 

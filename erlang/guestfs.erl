@@ -32,6 +32,7 @@
 -export([add_drive_opts/2, add_drive_opts/3]).
 -export([add_drive_ro/2]).
 -export([add_drive_ro_with_if/3]).
+-export([add_drive_scratch/2, add_drive_scratch/3]).
 -export([add_drive_with_if/3]).
 -export([aug_clear/2]).
 -export([aug_close/1]).
@@ -40,6 +41,7 @@
 -export([aug_get/2]).
 -export([aug_init/3]).
 -export([aug_insert/4]).
+-export([aug_label/2]).
 -export([aug_load/1]).
 -export([aug_ls/2]).
 -export([aug_match/2]).
@@ -47,6 +49,7 @@
 -export([aug_rm/2]).
 -export([aug_save/1]).
 -export([aug_set/3]).
+-export([aug_setm/4]).
 -export([available/2]).
 -export([available_all_groups/1]).
 -export([base64_in/3]).
@@ -148,6 +151,7 @@
 -export([get_e2generation/2]).
 -export([get_e2label/2]).
 -export([get_e2uuid/2]).
+-export([get_hv/1]).
 -export([get_libvirt_requested_credential_challenge/2]).
 -export([get_libvirt_requested_credential_defresult/2]).
 -export([get_libvirt_requested_credential_prompt/2]).
@@ -277,6 +281,13 @@
 -export([is_zero_device/2]).
 -export([isoinfo/2]).
 -export([isoinfo_device/2]).
+-export([journal_close/1]).
+-export([journal_get/1]).
+-export([journal_get_data_threshold/1]).
+-export([journal_next/1]).
+-export([journal_open/2]).
+-export([journal_set_data_threshold/2]).
+-export([journal_skip/2]).
 -export([kill_subprocess/1]).
 -export([launch/1]).
 -export([lchown/4]).
@@ -451,6 +462,7 @@
 -export([set_e2generation/3]).
 -export([set_e2label/3]).
 -export([set_e2uuid/3]).
+-export([set_hv/2]).
 -export([set_label/3]).
 -export([set_libvirt_requested_credential/3]).
 -export([set_libvirt_supported_credentials/2]).
@@ -465,6 +477,7 @@
 -export([set_smp/2]).
 -export([set_tmpdir/2]).
 -export([set_trace/2]).
+-export([set_uuid/3]).
 -export([set_verbose/2]).
 -export([setcon/2]).
 -export([setxattr/5]).
@@ -629,6 +642,11 @@ add_drive_ro(G, Filename) ->
 add_drive_ro_with_if(G, Filename, Iface) ->
   call_port(G, {add_drive_ro_with_if, Filename, Iface}).
 
+add_drive_scratch(G, Size, Optargs) ->
+  call_port(G, {add_drive_scratch, Size, Optargs}).
+add_drive_scratch(G, Size) ->
+  add_drive_scratch(G, Size, []).
+
 add_drive_with_if(G, Filename, Iface) ->
   call_port(G, {add_drive_with_if, Filename, Iface}).
 
@@ -653,6 +671,9 @@ aug_init(G, Root, Flags) ->
 aug_insert(G, Augpath, Label, Before) ->
   call_port(G, {aug_insert, Augpath, Label, Before}).
 
+aug_label(G, Augpath) ->
+  call_port(G, {aug_label, Augpath}).
+
 aug_load(G) ->
   call_port(G, {aug_load}).
 
@@ -673,6 +694,9 @@ aug_save(G) ->
 
 aug_set(G, Augpath, Val) ->
   call_port(G, {aug_set, Augpath, Val}).
+
+aug_setm(G, Base, Sub, Val) ->
+  call_port(G, {aug_setm, Base, Sub, Val}).
 
 available(G, Groups) ->
   call_port(G, {available, Groups}).
@@ -805,8 +829,8 @@ compress_out(G, Ctype, File, Zfile, Optargs) ->
 compress_out(G, Ctype, File, Zfile) ->
   compress_out(G, Ctype, File, Zfile, []).
 
-config(G, Qemuparam, Qemuvalue) ->
-  call_port(G, {config, Qemuparam, Qemuvalue}).
+config(G, Hvparam, Hvvalue) ->
+  call_port(G, {config, Hvparam, Hvvalue}).
 
 copy_device_to_device(G, Src, Dest, Optargs) ->
   call_port(G, {copy_device_to_device, Src, Dest, Optargs}).
@@ -996,6 +1020,9 @@ get_e2label(G, Device) ->
 
 get_e2uuid(G, Device) ->
   call_port(G, {get_e2uuid, Device}).
+
+get_hv(G) ->
+  call_port(G, {get_hv}).
 
 get_libvirt_requested_credential_challenge(G, Index) ->
   call_port(G, {get_libvirt_requested_credential_challenge, Index}).
@@ -1414,6 +1441,27 @@ isoinfo(G, Isofile) ->
 
 isoinfo_device(G, Device) ->
   call_port(G, {isoinfo_device, Device}).
+
+journal_close(G) ->
+  call_port(G, {journal_close}).
+
+journal_get(G) ->
+  call_port(G, {journal_get}).
+
+journal_get_data_threshold(G) ->
+  call_port(G, {journal_get_data_threshold}).
+
+journal_next(G) ->
+  call_port(G, {journal_next}).
+
+journal_open(G, Directory) ->
+  call_port(G, {journal_open, Directory}).
+
+journal_set_data_threshold(G, Threshold) ->
+  call_port(G, {journal_set_data_threshold, Threshold}).
+
+journal_skip(G, Skip) ->
+  call_port(G, {journal_skip, Skip}).
 
 kill_subprocess(G) ->
   call_port(G, {kill_subprocess}).
@@ -1972,6 +2020,9 @@ set_e2label(G, Device, Label) ->
 set_e2uuid(G, Device, Uuid) ->
   call_port(G, {set_e2uuid, Device, Uuid}).
 
+set_hv(G, Hv) ->
+  call_port(G, {set_hv, Hv}).
+
 set_label(G, Mountable, Label) ->
   call_port(G, {set_label, Mountable, Label}).
 
@@ -1996,8 +2047,8 @@ set_pgroup(G, Pgroup) ->
 set_program(G, Program) ->
   call_port(G, {set_program, Program}).
 
-set_qemu(G, Qemu) ->
-  call_port(G, {set_qemu, Qemu}).
+set_qemu(G, Hv) ->
+  call_port(G, {set_qemu, Hv}).
 
 set_recovery_proc(G, Recoveryproc) ->
   call_port(G, {set_recovery_proc, Recoveryproc}).
@@ -2013,6 +2064,9 @@ set_tmpdir(G, Tmpdir) ->
 
 set_trace(G, Trace) ->
   call_port(G, {set_trace, Trace}).
+
+set_uuid(G, Device, Uuid) ->
+  call_port(G, {set_uuid, Device, Uuid}).
 
 set_verbose(G, Verbose) ->
   call_port(G, {set_verbose, Verbose}).

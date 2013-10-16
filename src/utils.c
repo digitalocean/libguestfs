@@ -22,13 +22,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <string.h>
+#include <fcntl.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <libintl.h>
 
 #include "guestfs.h"
 #include "guestfs-internal-frontend.h"
+
+/* Note that functions in libutils are used by the tools and language
+ * bindings.  Therefore these must not call internal library functions
+ * such as safe_*, error or perrorf.
+ */
 
 void
 guestfs___free_string_list (char **argv)
@@ -125,4 +131,59 @@ guestfs___exit_status_to_string (int status, const char *cmd_name,
   }
 
   return buffer;
+}
+
+/* Notes:
+ *
+ * The 'ret' buffer must have length len+1 in order to store the final
+ * \0 character.
+ *
+ * There is about 5 bits of randomness per output character (so about
+ * 5*len bits of randomness in the resulting string).
+ */
+int
+guestfs___random_string (char *ret, size_t len)
+{
+  int fd;
+  size_t i;
+  unsigned char c;
+  int saved_errno;
+
+  fd = open ("/dev/urandom", O_RDONLY|O_CLOEXEC);
+  if (fd == -1)
+    return -1;
+
+  for (i = 0; i < len; ++i) {
+    if (read (fd, &c, 1) != 1) {
+      saved_errno = errno;
+      close (fd);
+      errno = saved_errno;
+      return -1;
+    }
+    ret[i] = "0123456789abcdefghijklmnopqrstuvwxyz"[c % 36];
+  }
+  ret[len] = '\0';
+
+  if (close (fd) == -1)
+    return -1;
+
+  return 0;
+}
+
+/* This turns a drive index (eg. 27) into a drive name (eg. "ab").
+ * Drive indexes count from 0.  The return buffer has to be large
+ * enough for the resulting string, and the returned pointer points to
+ * the *end* of the string.
+ *
+ * https://rwmj.wordpress.com/2011/01/09/how-are-linux-drives-named-beyond-drive-26-devsdz/
+ */
+char *
+guestfs___drive_name (size_t index, char *ret)
+{
+  if (index >= 26)
+    ret = guestfs___drive_name (index/26 - 1, ret);
+  index %= 26;
+  *ret++ = 'a' + index;
+  *ret = '\0';
+  return ret;
 }

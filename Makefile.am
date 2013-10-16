@@ -37,15 +37,18 @@ SUBDIRS += tests/guests
 SUBDIRS += tests/c-api
 SUBDIRS += tests/tmpdirs
 SUBDIRS += tests/protocol
+SUBDIRS += tests/events
 SUBDIRS += tests/parallel
 SUBDIRS += tests/disks
 SUBDIRS += tests/mountable
+SUBDIRS += tests/network
 SUBDIRS += tests/lvm
 SUBDIRS += tests/luks
 SUBDIRS += tests/md
 SUBDIRS += tests/selinux
 SUBDIRS += tests/ntfsclone
 SUBDIRS += tests/btrfs
+SUBDIRS += tests/xfs
 SUBDIRS += tests/charsets
 SUBDIRS += tests/xml
 SUBDIRS += tests/mount-local
@@ -57,6 +60,7 @@ SUBDIRS += tests/hotplug
 SUBDIRS += tests/nbd
 SUBDIRS += tests/http
 SUBDIRS += tests/syslinux
+SUBDIRS += tests/journal
 SUBDIRS += tests/fuzz
 SUBDIRS += tests/regressions
 endif
@@ -105,15 +109,16 @@ if HAVE_GOBJECT
 SUBDIRS += gobject
 endif
 if HAVE_GOLANG
-SUBDIRS += golang
+SUBDIRS += golang golang/examples
 endif
 
 # Unconditional because nothing is built yet.
 SUBDIRS += csharp
 
-# OCaml tools.
+# OCaml tools.  Note 'mllib' contains random shared code used by
+# all of the OCaml tools.
 if HAVE_OCAML
-SUBDIRS += resize sparsify sysprep
+SUBDIRS += mllib builder resize sparsify sysprep
 endif
 
 # Perl tools.
@@ -137,11 +142,12 @@ EXTRA_DIST = \
 	.lvimrc \
 	.mailmap \
 	.tx/config \
+	bootstrap \
 	bugs-in-changelog.sh \
 	autogen.sh \
 	bindtests \
+	cfg.mk \
 	contrib/autobuild/autobuild.sh \
-	contrib/guestfsd-in-wine.sh \
 	contrib/intro/libguestfs-intro.html \
 	contrib/intro/overview.png \
 	contrib/intro/overview.svg \
@@ -165,18 +171,28 @@ EXTRA_DIST = \
 	contrib/visualize-alignment/qemu-0.13-trace-block-device-access.patch \
 	contrib/visualize-alignment/README \
 	contrib/visualize-alignment/tracetops.ml \
+	contrib/windows-icons.pl \
 	guestfs-release-notes.pod \
 	guestfs-release-notes.txt \
 	html/draft.png \
 	html/draft.svg \
 	html/pod.css \
+	html/virt-builder.svg \
 	libtool-kill-dependency_libs.sh \
 	logo/fish.svg logo/fish.png \
+	logo/virt-builder.svg \
 	m4/.gitignore \
 	tmp/.gitignore \
 	tx-pull.sh \
 	update-bugs.sh \
-	valgrind-suppressions
+	valgrind-suppressions \
+	.x-sc_avoid_ctype_macros \
+	.x-sc_prohibit_have_config_h \
+	.x-sc_prohibit_magic_number_exit \
+	.x-sc_prohibit_strcmp \
+	.x-sc_prohibit_strcmp_and_strncmp \
+	.x-sc_TAB_in_indentation \
+	.x-sc_trailing_blank
 
 # The website.
 HTMLFILES = \
@@ -184,6 +200,7 @@ HTMLFILES = \
 	html/guestfs-examples.3.html \
 	html/guestfs-erlang.3.html \
 	html/guestfs-faq.1.html \
+	html/guestfs-golang.3.html \
 	html/guestfs-java.3.html \
 	html/guestfs-lua.3.html \
 	html/guestfs-ocaml.3.html \
@@ -201,6 +218,7 @@ HTMLFILES = \
 	html/libguestfs-make-fixed-appliance.1.html \
 	html/libguestfs-test-tool.1.html \
 	html/virt-alignment-scan.1.html \
+	html/virt-builder.1.html \
 	html/virt-cat.1.html \
 	html/virt-copy-in.1.html \
 	html/virt-copy-out.1.html \
@@ -222,19 +240,30 @@ HTMLFILES = \
 	html/virt-tar-out.1.html \
 	html/virt-win-reg.1.html
 
-HTMLSUPPORTFILES = html/draft.png html/pod.css
+HTMLSUPPORTFILES = \
+	html/draft.png \
+	html/pod.css \
+	html/virt-builder.svg
 
 TEXTFILES = BUGS README ROADMAP TODO
 
-WEBSITEDIR = $(HOME)/d/redhat/websites/libguestfs
+BUILDERFILES = \
+	builder/website/README \
+	builder/website/index \
+	builder/website/index.asc \
+	builder/website/*.xz \
+	builder/website/*.xz.sig
+
+WEBSITEDIR = $(HOME)/d/websites/libguestfs
 
 # For reasons not fully understood, we need to rebuild all the
 # man pages and HTMLFILES from scratch here.
-website: $(HTMLFILES) $(TEXTFILES)
+website: $(HTMLFILES) $(HTMLSUPPORTFILES) $(TEXTFILES) $(BUILDERFILES)
 	find -name 'stamp-*.pod' -delete
 	$(MAKE)
 	cp $(HTMLFILES) $(HTMLSUPPORTFILES) $(WEBSITEDIR)
 	for f in $(TEXTFILES); do cp $$f $(WEBSITEDIR)/$$f.txt; done
+	cp $(BUILDERFILES) $(WEBSITEDIR)/download/builder/
 	cd $(WEBSITEDIR) && \
 	date=`date +%F`; \
 	sed -e "s/SUBST_VERSION/$(VERSION)/" \
@@ -252,7 +281,15 @@ dist-hook:
 	mv AUTHORS-t AUTHORS
 	cp AUTHORS $(distdir)/AUTHORS
 
-# Update the list of translatable files (po/POTFILES po/POTFILES-ml).
+# Update the list of translatable files.  These are separated into:
+#
+#  po/POTFILES - files with ordinary extensions, but not OCaml files
+#  po/POTFILES-pl - Perl files that don't end in *.pl, which need a
+#                   special xgettext option [not generated here]
+#  po/POTFILES-ml - OCaml files, which need a special tool to translate
+#
+# See po/Makefile.am.
+#
 # This has to be in the top-level Makefile.am so that we have access
 # to DIST_SUBDIRS.
 all-local:
@@ -262,7 +299,7 @@ all-local:
 	grep -v -E '/((guestfs|rc)_protocol\.c)$$' | \
 	LC_ALL=C sort > po/POTFILES
 	cd $(srcdir); \
-	find resize sparsify sysprep -name '*.ml' | \
+	find builder mllib resize sparsify sysprep -name '*.ml' | \
 	LC_ALL=C sort > po/POTFILES-ml
 
 # Manual pages in top level directory.
@@ -303,12 +340,14 @@ CLEANFILES = \
 	podwrapper.1 \
 	qemu-wrapper.sh \
 	stamp-guestfs-release-notes.pod \
-	tmp/guestfs.* \
+	tmp/disk* \
 	tmp/run-* \
 	tmp/valgrind-*.log
 
 clean-local:
 	-rm -rf tmp/libguestfs??????
+	-rm -rf tmp/guestfs.*
+	-rm -rf tmp/.guestfs-*
 
 # If you don't want to run all of the tests ('make check') then this
 # will just run libguestfs-test-tool for a quick check.  Note this
@@ -326,6 +365,8 @@ check-all:
 	  check-valgrind-local-guests \
 	  check-direct \
 	  check-valgrind-direct \
+	  check-uml \
+	  check-valgrind-uml \
 	  check-with-upstream-qemu \
 	  check-with-upstream-libvirt \
 	  check-slow
@@ -335,7 +376,11 @@ check-release:
 	  check \
 	  check-valgrind \
 	  check-direct \
-	  check-valgrind-direct \
+	  check-valgrind-direct
+	$(MAKE) -j1 LIBGUESTFS_HV=$(HOME)/d/linux-um/vmlinux \
+	  check-uml \
+	  check-valgrind-uml
+	$(MAKE) -j1 \
 	  check-slow
 
 check-valgrind: build-test-guests
@@ -371,6 +416,24 @@ check-valgrind-direct:
 
 check-valgrind-with-appliance: check-valgrind-direct
 
+# Tests which currently fail under UML:
+# - blockdev --setro seems to have no effect on /dev/ubd* devices [*]
+# - RHBZ#914931: test is sent a SIGTERM, apparently by UML [*]
+# - tests/md/test-inspect-fstab-md.sh hangs at various places during the
+#   test, eg. running mdadm, mounting MD filesystem [*]
+# [*] = likely to be a bug in UML itself
+SKIP_TESTS_FAILING_IN_UML = \
+	SKIP_TEST_BLOCKDEV_GETRO=1 \
+	SKIP_TEST_BLOCKDEV_SETRO=1 \
+	SKIP_TEST_RHBZ914931=1 \
+	SKIP_TEST_INSPECT_FSTAB_MD_SH=1
+
+check-uml:
+	$(MAKE) LIBGUESTFS_BACKEND=uml $(SKIP_TESTS_FAILING_IN_UML) check
+
+check-valgrind-uml:
+	$(MAKE) LIBGUESTFS_BACKEND=uml $(SKIP_TESTS_FAILING_IN_UML) check-valgrind
+
 QEMUDIR = $(HOME)/d/qemu
 QEMUBINARY = $(QEMUDIR)/x86_64-softmmu/qemu-system-x86_64
 
@@ -380,7 +443,7 @@ check-with-upstream-qemu:
 
 check-with-upstream-qemu-1: $(top_builddir)/qemu-wrapper.sh
 	$(QEMUBINARY) --version
-	$(MAKE) LIBGUESTFS_QEMU=$(abs_top_builddir)/qemu-wrapper.sh check
+	$(MAKE) LIBGUESTFS_HV=$(abs_top_builddir)/qemu-wrapper.sh check
 
 $(top_builddir)/qemu-wrapper.sh: Makefile
 	rm -f $@ $@-t
@@ -427,6 +490,17 @@ print-subdirs:
 maintainer-tag:
 	git tag -a $(VERSION) -m "Version $(VERSION) ($(BRANCH_TYPE))" -f
 
+# Maintainer only: check EXTRA_DIST rule is complete.
+# (Note you must have done 'make dist')
+
+maintainer-check-extra-dist:
+	zcat $(PACKAGE_NAME)-$(VERSION).tar.gz | tar tf - | sort | \
+	  sed 's,^$(PACKAGE_NAME)-$(VERSION)/,,' > tmp/tarfiles
+	git ls-files | sort > tmp/gitfiles
+	diff -ur tmp/tarfiles tmp/gitfiles | grep '^\+' | \
+	  grep -v src/api-support/[0-9]
+	rm tmp/tarfiles tmp/gitfiles
+
 # Provide help on common Makefile targets.
 
 help:
@@ -440,6 +514,8 @@ help:
 	@echo "make check-valgrind-local-guests  Test under valgrind using local guests."
 	@echo "make check-direct                 Test using direct backend."
 	@echo "make check-valgrind-direct        Test valgrind + direct backend."
+	@echo "make check-uml                    Test using User-Mode Linux."
+	@echo "make check-valgrind-uml           Test valgrind + User-Mode Linux."
 	@echo "make check-with-upstream-qemu     Test using upstream qemu."
 	@echo "make check-with-upstream-libvirt  Test using upstream libvirt."
 	@echo "make check-slow                   Slow/long-running tests."

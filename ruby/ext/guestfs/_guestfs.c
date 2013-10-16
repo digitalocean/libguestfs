@@ -1435,11 +1435,8 @@ ruby_guestfs_internal_test_close_output (VALUE gv)
  * call-seq:
  *   g.launch() -> nil
  *
- * launch the qemu subprocess
+ * launch the backend
  *
- * Internally libguestfs is implemented by running a
- * virtual machine using qemu(1).
- * 
  * You should call this after configuring the handle (eg.
  * adding drives) but before performing any actions.
  * 
@@ -1475,7 +1472,7 @@ ruby_guestfs_launch (VALUE gv)
  * call-seq:
  *   g.wait_ready() -> nil
  *
- * wait until the qemu subprocess launches (no op)
+ * wait until the hypervisor launches (no op)
  *
  * This function is a no op.
  * 
@@ -1521,9 +1518,9 @@ ruby_guestfs_wait_ready (VALUE gv)
  * call-seq:
  *   g.kill_subprocess() -> nil
  *
- * kill the qemu subprocess
+ * kill the hypervisor
  *
- * This kills the qemu subprocess.
+ * This kills the hypervisor.
  * 
  * Do not call this. See: "g.shutdown" instead.
  * 
@@ -1635,39 +1632,38 @@ ruby_guestfs_add_drive_ro (VALUE gv, VALUE filenamev)
 
 /*
  * call-seq:
- *   g.config(qemuparam, qemuvalue) -> nil
+ *   g.config(hvparam, hvvalue) -> nil
  *
- * add qemu parameters
+ * add hypervisor parameters
  *
- * This can be used to add arbitrary qemu command line
- * parameters of the form *-param value*. Actually it's not
- * quite arbitrary - we prevent you from setting some
- * parameters which would interfere with parameters that we
- * use.
+ * This can be used to add arbitrary hypervisor parameters
+ * of the form *-param value*. Actually it's not quite
+ * arbitrary - we prevent you from setting some parameters
+ * which would interfere with parameters that we use.
  * 
- * The first character of "qemuparam" string must be a "-"
+ * The first character of "hvparam" string must be a "-"
  * (dash).
  * 
- * "qemuvalue" can be NULL.
+ * "hvvalue" can be NULL.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_config+[http://libguestfs.org/guestfs.3.html#guestfs_config]).
  */
 static VALUE
-ruby_guestfs_config (VALUE gv, VALUE qemuparamv, VALUE qemuvaluev)
+ruby_guestfs_config (VALUE gv, VALUE hvparamv, VALUE hvvaluev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "config");
 
-  const char *qemuparam = StringValueCStr (qemuparamv);
-  const char *qemuvalue = !NIL_P (qemuvaluev) ? StringValueCStr (qemuvaluev) : NULL;
+  const char *hvparam = StringValueCStr (hvparamv);
+  const char *hvvalue = !NIL_P (hvvaluev) ? StringValueCStr (hvvaluev) : NULL;
 
   int r;
 
-  r = guestfs_config (g, qemuparam, qemuvalue);
+  r = guestfs_config (g, hvparam, hvvalue);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -1676,20 +1672,20 @@ ruby_guestfs_config (VALUE gv, VALUE qemuparamv, VALUE qemuvaluev)
 
 /*
  * call-seq:
- *   g.set_qemu(qemu) -> nil
+ *   g.set_qemu(hv) -> nil
  *
- * set the qemu binary
+ * set the hypervisor binary (usually qemu)
  *
- * Set the qemu binary that we will use.
+ * Set the hypervisor binary (usually qemu) that we will
+ * use.
  * 
  * The default is chosen when the library was compiled by
  * the configure script.
  * 
  * You can also override this by setting the
- * "LIBGUESTFS_QEMU" environment variable.
+ * "LIBGUESTFS_HV" environment variable.
  * 
- * Setting "qemu" to "NULL" restores the default qemu
- * binary.
+ * Setting "hv" to "NULL" restores the default qemu binary.
  * 
  * Note that you should call this function as early as
  * possible after creating the handle. This is because some
@@ -1697,26 +1693,33 @@ ruby_guestfs_config (VALUE gv, VALUE qemuparamv, VALUE qemuvaluev)
  * (by running "qemu -help"). If the qemu binary changes,
  * we don't retest features, and so you might see
  * inconsistent results. Using the environment variable
- * "LIBGUESTFS_QEMU" is safest of all since that picks the
+ * "LIBGUESTFS_HV" is safest of all since that picks the
  * qemu binary at the same time as the handle is created.
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "set_hv" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_set_qemu+[http://libguestfs.org/guestfs.3.html#guestfs_set_qemu]).
  */
 static VALUE
-ruby_guestfs_set_qemu (VALUE gv, VALUE qemuv)
+ruby_guestfs_set_qemu (VALUE gv, VALUE hvv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "set_qemu");
 
-  const char *qemu = !NIL_P (qemuv) ? StringValueCStr (qemuv) : NULL;
+  const char *hv = !NIL_P (hvv) ? StringValueCStr (hvv) : NULL;
 
   int r;
 
-  r = guestfs_set_qemu (g, qemu);
+  r = guestfs_set_qemu (g, hv);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -1727,12 +1730,19 @@ ruby_guestfs_set_qemu (VALUE gv, VALUE qemuv)
  * call-seq:
  *   g.get_qemu() -> string
  *
- * get the qemu binary
+ * get the hypervisor binary (usually qemu)
  *
- * Return the current qemu binary.
+ * Return the current hypervisor binary (usually qemu).
  * 
  * This is always non-NULL. If it wasn't set already, then
  * this will return the default qemu binary name.
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "get_hv" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -1754,6 +1764,91 @@ ruby_guestfs_get_qemu (VALUE gv)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return rb_str_new2 (r);
+}
+
+/*
+ * call-seq:
+ *   g.set_hv(hv) -> nil
+ *
+ * set the hypervisor binary
+ *
+ * Set the hypervisor binary that we will use. The
+ * hypervisor depends on the backend, but is usually the
+ * location of the qemu/KVM hypervisor. For the uml
+ * backend, it is the location of the "linux" or "vmlinux"
+ * binary.
+ * 
+ * The default is chosen when the library was compiled by
+ * the configure script.
+ * 
+ * You can also override this by setting the
+ * "LIBGUESTFS_HV" environment variable.
+ * 
+ * Note that you should call this function as early as
+ * possible after creating the handle. This is because some
+ * pre-launch operations depend on testing qemu features
+ * (by running "qemu -help"). If the qemu binary changes,
+ * we don't retest features, and so you might see
+ * inconsistent results. Using the environment variable
+ * "LIBGUESTFS_HV" is safest of all since that picks the
+ * qemu binary at the same time as the handle is created.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_hv+[http://libguestfs.org/guestfs.3.html#guestfs_set_hv]).
+ */
+static VALUE
+ruby_guestfs_set_hv (VALUE gv, VALUE hvv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_hv");
+
+  const char *hv = StringValueCStr (hvv);
+
+  int r;
+
+  r = guestfs_set_hv (g, hv);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.get_hv() -> string
+ *
+ * get the hypervisor binary
+ *
+ * Return the current hypervisor binary.
+ * 
+ * This is always non-NULL. If it wasn't set already, then
+ * this will return the default qemu binary name.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_hv+[http://libguestfs.org/guestfs.3.html#guestfs_get_hv]).
+ */
+static VALUE
+ruby_guestfs_get_hv (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_hv");
+
+
+  char *r;
+
+  r = guestfs_get_hv (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
 }
 
 /*
@@ -2203,11 +2298,11 @@ ruby_guestfs_get_state (VALUE gv)
  * call-seq:
  *   g.set_memsize(memsize) -> nil
  *
- * set memory allocated to the qemu subprocess
+ * set memory allocated to the hypervisor
  *
  * This sets the memory size in megabytes allocated to the
- * qemu subprocess. This only has any effect if called
- * before "g.launch".
+ * hypervisor. This only has any effect if called before
+ * "g.launch".
  * 
  * You can also change this by setting the environment
  * variable "LIBGUESTFS_MEMSIZE" before the handle is
@@ -2243,10 +2338,10 @@ ruby_guestfs_set_memsize (VALUE gv, VALUE memsizev)
  * call-seq:
  *   g.get_memsize() -> fixnum
  *
- * get memory allocated to the qemu subprocess
+ * get memory allocated to the hypervisor
  *
  * This gets the memory size in megabytes allocated to the
- * qemu subprocess.
+ * hypervisor.
  * 
  * If "g.set_memsize" was not called on this handle, and if
  * "LIBGUESTFS_MEMSIZE" was not set, then this returns the
@@ -2281,10 +2376,10 @@ ruby_guestfs_get_memsize (VALUE gv)
  * call-seq:
  *   g.get_pid() -> fixnum
  *
- * get PID of qemu subprocess
+ * get PID of hypervisor
  *
- * Return the process ID of the qemu subprocess. If there
- * is no qemu subprocess, then this will return an error.
+ * Return the process ID of the hypervisor. If there is no
+ * hypervisor running, then this will return an error.
  * 
  * This is an internal call used for debugging and testing.
  *
@@ -2603,9 +2698,9 @@ ruby_guestfs_get_direct (VALUE gv)
  *
  * If this is called with the parameter "false" then
  * "g.launch" does not create a recovery process. The
- * purpose of the recovery process is to stop runaway qemu
- * processes in the case where the main program aborts
- * abruptly.
+ * purpose of the recovery process is to stop runaway
+ * hypervisor processes in the case where the main program
+ * aborts abruptly.
  * 
  * This only has any effect if called before "g.launch",
  * and the default is true.
@@ -2614,8 +2709,8 @@ ruby_guestfs_get_direct (VALUE gv)
  * is if the main process will fork itself into the
  * background ("daemonize" itself). In this case the
  * recovery process thinks that the main program has
- * disappeared and so kills qemu, which is not very
- * helpful.
+ * disappeared and so kills the hypervisor, which is not
+ * very helpful.
  *
  *
  * (For the C API documentation for this function, see
@@ -3701,6 +3796,31 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * locations, or if no username is given, then no
  * authentication will be used.
  * 
+ * "cachemode"
+ * Choose whether or not libguestfs will obey sync
+ * operations (safe but slow) or not (unsafe but fast).
+ * The possible values for this string are:
+ * 
+ * "cachemode = "writeback""
+ * This is the default.
+ * 
+ * Write operations in the API do not return until
+ * a write(2) call has completed in the host [but
+ * note this does not imply that anything gets
+ * written to disk].
+ * 
+ * Sync operations in the API, including implicit
+ * syncs caused by filesystem journalling, will not
+ * return until an fdatasync(2) call has completed
+ * in the host, indicating that data has been
+ * committed to disk.
+ * 
+ * "cachemode = "unsafe""
+ * In this mode, there are no guarantees.
+ * Libguestfs may cache anything and ignore sync
+ * requests. This is suitable only for scratch or
+ * temporary disks.
+ * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
  * value. Pass an empty {} for no optional arguments.
@@ -3786,6 +3906,11 @@ ruby_guestfs_add_drive (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.secret = StringValueCStr (v);
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("cachemode")));
+  if (v != Qnil) {
+    optargs_s.cachemode = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
   }
 
   int r;
@@ -5497,7 +5622,7 @@ ruby_guestfs_canonical_device_name (VALUE gv, VALUE devicev)
  * call-seq:
  *   g.shutdown() -> nil
  *
- * shutdown the qemu subprocess
+ * shutdown the hypervisor
  *
  * This is the opposite of "g.launch". It performs an
  * orderly shutdown of the backend process(es). If the
@@ -6895,6 +7020,122 @@ ruby_guestfs_get_program (VALUE gv)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return rb_str_new2 (r);
+}
+
+/*
+ * call-seq:
+ *   g.add_drive_scratch(size, {optargs...}) -> nil
+ *
+ * add a temporary scratch drive
+ *
+ * This command adds a temporary scratch drive to the
+ * handle. The "size" parameter is the virtual size (in
+ * bytes). The scratch drive is blank initially (all reads
+ * return zeroes until you start writing to it). The drive
+ * is deleted when the handle is closed.
+ * 
+ * The optional arguments "name" and "label" are passed
+ * through to "g.add_drive".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_add_drive_scratch+[http://libguestfs.org/guestfs.3.html#guestfs_add_drive_scratch]).
+ */
+static VALUE
+ruby_guestfs_add_drive_scratch (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "add_drive_scratch");
+
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE sizev = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
+  long long size = NUM2LL (sizev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_add_drive_scratch_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("name")));
+  if (v != Qnil) {
+    optargs_s.name = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("label")));
+  if (v != Qnil) {
+    optargs_s.label = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_add_drive_scratch_argv (g, size, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.journal_get() -> list
+ *
+ * read the current journal entry
+ *
+ * Read the current journal entry. This returns all the
+ * fields in the journal as a set of "(attrname, attrval)"
+ * pairs. The "attrname" is the field name (a string).
+ * 
+ * The "attrval" is the field value (a binary blob, often
+ * but not always a string). Please note that "attrval" is
+ * a byte array, *not* a \0-terminated C string.
+ * 
+ * The length of data may be truncated to the data
+ * threshold (see: "g.journal_set_data_threshold",
+ * "g.journal_get_data_threshold").
+ * 
+ * If you set the data threshold to unlimited (0) then this
+ * call can read a journal entry of any size, ie. it is not
+ * limited by the libguestfs protocol.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_journal_get+[http://libguestfs.org/guestfs.3.html#guestfs_journal_get]).
+ */
+static VALUE
+ruby_guestfs_journal_get (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "journal_get");
+
+
+  struct guestfs_xattr_list *r;
+
+  r = guestfs_journal_get (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_ary_new2 (r->len);
+  size_t i;
+  for (i = 0; i < r->len; ++i) {
+    volatile VALUE hv = rb_hash_new ();
+    rb_hash_aset (hv, rb_str_new2 ("attrname"), rb_str_new2 (r->val[i].attrname));
+    rb_hash_aset (hv, rb_str_new2 ("attrval"), rb_str_new (r->val[i].attrval, r->val[i].attrval_len));
+    rb_ary_push (rv, hv);
+  }
+  guestfs_free_xattr_list (r);
+  return rv;
 }
 
 /*
@@ -9284,8 +9525,11 @@ ruby_guestfs_blockdev_getss (VALUE gv, VALUE devicev)
  *
  * This returns the block size of a device.
  * 
- * (Note this is different from both *size in blocks* and
- * *filesystem block size*).
+ * Note: this is different from both *size in blocks* and
+ * *filesystem block size*. Also this setting is not really
+ * used by anything. You should probably not use it for
+ * anything. Filesystems have their own idea about what
+ * block size to choose.
  * 
  * This uses the blockdev(8) command.
  *
@@ -9318,12 +9562,18 @@ ruby_guestfs_blockdev_getbsz (VALUE gv, VALUE devicev)
  *
  * set blocksize of block device
  *
- * This sets the block size of a device.
+ * This call does nothing and has never done anything
+ * because of a bug in blockdev. Do not use it.
  * 
- * (Note this is different from both *size in blocks* and
- * *filesystem block size*).
+ * If you need to set the filesystem block size, use the
+ * "blocksize" option of "g.mkfs".
  * 
- * This uses the blockdev(8) command.
+ * *This function is deprecated.* In new code, use the
+ * "mkfs" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -10217,8 +10467,15 @@ ruby_guestfs_get_e2label (VALUE gv, VALUE devicev)
  * alternatives such as "clear", "random" and "time" are
  * described in the tune2fs(8) manpage.
  * 
- * You can use either "g.tune2fs_l" or "g.get_e2uuid" to
- * return the existing UUID of a filesystem.
+ * You can use "g.vfs_uuid" to return the existing UUID of
+ * a filesystem.
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "set_uuid" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -10625,8 +10882,8 @@ ruby_guestfs_dmesg (VALUE gv)
  * ping the guest daemon
  *
  * This is a test probe into the guestfs daemon running
- * inside the qemu subprocess. Calling this function checks
- * that the daemon responds to the ping message, without
+ * inside the hypervisor. Calling this function checks that
+ * the daemon responds to the ping message, without
  * affecting the daemon or attached block device(s) in any
  * other way.
  *
@@ -20114,13 +20371,21 @@ ruby_guestfs_ntfsclone_in (VALUE gv, VALUE backupfilev, VALUE devicev)
  * libguestfs supports setting labels on only a subset of
  * these.
  * 
- * On ext2/3/4 filesystems, labels are limited to 16 bytes.
+ * ext2, ext3, ext4
+ * Labels are limited to 16 bytes.
  * 
- * On NTFS filesystems, labels are limited to 128 unicode
- * characters.
+ * NTFS
+ * Labels are limited to 128 unicode characters.
  * 
- * Setting the label on a btrfs subvolume will set the
- * label on its parent filesystem.
+ * XFS The label is limited to 12 bytes. The filesystem
+ * must not be mounted when trying to set the label.
+ * 
+ * btrfs
+ * The label is limited to 256 bytes and some
+ * characters are not allowed. Setting the label on a
+ * btrfs subvolume will set the label on its parent
+ * filesystem. The filesystem must not be mounted when
+ * trying to set the label.
  * 
  * To read the label on a filesystem, call "g.vfs_label".
  *
@@ -21238,9 +21503,10 @@ ruby_guestfs_btrfs_fsck (int argc, VALUE *argv, VALUE gv)
  * 
  * This is mainly useful as a negative test. If this
  * returns true, it doesn't mean that a particular
- * filesystem can be mounted, since filesystems can fail
- * for other reasons such as it being a later version of
- * the filesystem, or having incompatible features.
+ * filesystem can be created or mounted, since filesystems
+ * can fail for other reasons such as it being a later
+ * version of the filesystem, or having incompatible
+ * features, or lacking the right mkfs.<*fs*> tool.
  * 
  * See also "g.available", "g.feature_available",
  * "AVAILABILITY" in guestfs(3).
@@ -21912,6 +22178,14 @@ ruby_guestfs_rsync_in (int argc, VALUE *argv, VALUE gv)
  * 
  * The optional arguments are the same as those of
  * "g.rsync".
+ * 
+ * Globbing does not happen on the "src" parameter. In
+ * programs which use the API directly you have to expand
+ * wildcards yourself (see "g.glob_expand"). In guestfish
+ * you can use the "glob" command (see "glob" in
+ * guestfish(1)), for example:
+ * 
+ * ><fs> glob rsync-out / * rsync://remote/
  * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
@@ -22908,9 +23182,13 @@ ruby_guestfs_rm_f (VALUE gv, VALUE pathv)
  * create an ext2/ext3/ext4 filesystem on device
  *
  * "mke2fs" is used to create an ext2, ext3, or ext4
- * filesystem on "device". The optional "blockscount" is
- * the size of the filesystem in blocks. If omitted it
- * defaults to the size of "device".
+ * filesystem on "device".
+ * 
+ * The optional "blockscount" is the size of the filesystem
+ * in blocks. If omitted it defaults to the size of
+ * "device". Note if the filesystem is too small to contain
+ * a journal, "mke2fs" will silently create an ext2
+ * filesystem instead.
  * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
@@ -23347,9 +23625,7 @@ ruby_guestfs_acl_get_file (VALUE gv, VALUE pathv, VALUE acltypev)
  * set the POSIX ACL attached to a file
  *
  * This function sets the POSIX Access Control List (ACL)
- * attached to "path". The "acl" parameter is the new ACL
- * in either "long text form" or "short text form" (see
- * acl(5)).
+ * attached to "path".
  * 
  * The "acltype" parameter may be:
  * 
@@ -23360,6 +23636,25 @@ ruby_guestfs_acl_get_file (VALUE gv, VALUE pathv, VALUE acltypev)
  * "default"
  * Set the default ACL. Normally this only makes sense
  * if "path" is a directory.
+ * 
+ * The "acl" parameter is the new ACL in either "long text
+ * form" or "short text form" (see acl(5)). The new ACL
+ * completely replaces any previous ACL on the file. The
+ * ACL must contain the full Unix permissions (eg.
+ * "u::rwx,g::rx,o::rx").
+ * 
+ * If you are specifying individual users or groups, then
+ * the mask field is also required (eg. "m::rwx"), followed
+ * by the "u:*ID*:..." and/or "g:*ID*:..." field(s). A full
+ * ACL string might therefore look like this:
+ * 
+ * u::rwx,g::rwx,o::rwx,m::rwx,u:500:rwx,g:500:rwx
+ * \ Unix permissions / \mask/ \      ACL        /
+ * 
+ * You should use numeric UIDs and GIDs. To map usernames
+ * and groupnames to the correct numeric ID in the context
+ * of the guest, use the Augeas functions (see
+ * "g.aug_init").
  *
  *
  * (For the C API documentation for this function, see
@@ -23427,6 +23722,9 @@ ruby_guestfs_acl_delete_def_file (VALUE gv, VALUE dirv)
  * This function returns the Linux capabilities attached to
  * "path". The capabilities set is returned in text form
  * (see cap_to_text(3)).
+ * 
+ * If no capabilities are attached to a file, an empty
+ * string is returned.
  *
  *
  * (For the C API documentation for this function, see
@@ -24392,6 +24690,333 @@ ruby_guestfs_remount (int argc, VALUE *argv, VALUE gv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.set_uuid(device, uuid) -> nil
+ *
+ * set the filesystem UUID
+ *
+ * Set the filesystem UIUD on "device" to "label".
+ * 
+ * Only some filesystem types support setting UUIDs.
+ * 
+ * To read the UUID on a filesystem, call "g.vfs_uuid".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_uuid+[http://libguestfs.org/guestfs.3.html#guestfs_set_uuid]).
+ */
+static VALUE
+ruby_guestfs_set_uuid (VALUE gv, VALUE devicev, VALUE uuidv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_uuid");
+
+  const char *device = StringValueCStr (devicev);
+  const char *uuid = StringValueCStr (uuidv);
+
+  int r;
+
+  r = guestfs_set_uuid (g, device, uuid);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.journal_open(directory) -> nil
+ *
+ * open the systemd journal
+ *
+ * Open the systemd journal located in "directory". Any
+ * previously opened journal handle is closed.
+ * 
+ * The contents of the journal can be read using
+ * "g.journal_next" and "g.journal_get".
+ * 
+ * After you have finished using the journal, you should
+ * close the handle by calling "g.journal_close".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_journal_open+[http://libguestfs.org/guestfs.3.html#guestfs_journal_open]).
+ */
+static VALUE
+ruby_guestfs_journal_open (VALUE gv, VALUE directoryv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "journal_open");
+
+  const char *directory = StringValueCStr (directoryv);
+
+  int r;
+
+  r = guestfs_journal_open (g, directory);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.journal_close() -> nil
+ *
+ * close the systemd journal
+ *
+ * Close the journal handle.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_journal_close+[http://libguestfs.org/guestfs.3.html#guestfs_journal_close]).
+ */
+static VALUE
+ruby_guestfs_journal_close (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "journal_close");
+
+
+  int r;
+
+  r = guestfs_journal_close (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.journal_next() -> [True|False]
+ *
+ * move to the next journal entry
+ *
+ * Move to the next journal entry. You have to call this at
+ * least once after opening the handle before you are able
+ * to read data.
+ * 
+ * The returned boolean tells you if there are any more
+ * journal records to read. "true" means you can read the
+ * next record (eg. using "g.journal_get_data"), and
+ * "false" means you have reached the end of the journal.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_journal_next+[http://libguestfs.org/guestfs.3.html#guestfs_journal_next]).
+ */
+static VALUE
+ruby_guestfs_journal_next (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "journal_next");
+
+
+  int r;
+
+  r = guestfs_journal_next (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.journal_skip(skip) -> fixnum
+ *
+ * skip forwards or backwards in the journal
+ *
+ * Skip forwards ("skip ≥ 0") or backwards ("skip < 0") in
+ * the journal.
+ * 
+ * The number of entries actually skipped is returned (note
+ * "rskip ≥ 0"). If this is not the same as the absolute
+ * value of the skip parameter ("|skip|") you passed in
+ * then it means you have reached the end or the start of
+ * the journal.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_journal_skip+[http://libguestfs.org/guestfs.3.html#guestfs_journal_skip]).
+ */
+static VALUE
+ruby_guestfs_journal_skip (VALUE gv, VALUE skipv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "journal_skip");
+
+  long long skip = NUM2LL (skipv);
+
+  int64_t r;
+
+  r = guestfs_journal_skip (g, skip);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.journal_get_data_threshold() -> fixnum
+ *
+ * get the data threshold for reading journal entries
+ *
+ * Get the current data threshold for reading journal
+ * entries. This is a hint to the journal that it may
+ * truncate data fields to this size when reading them
+ * (note also that it may not truncate them). If this
+ * returns 0, then the threshold is unlimited.
+ * 
+ * See also "g.journal_set_data_threshold".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_journal_get_data_threshold+[http://libguestfs.org/guestfs.3.html#guestfs_journal_get_data_threshold]).
+ */
+static VALUE
+ruby_guestfs_journal_get_data_threshold (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "journal_get_data_threshold");
+
+
+  int64_t r;
+
+  r = guestfs_journal_get_data_threshold (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.journal_set_data_threshold(threshold) -> nil
+ *
+ * set the data threshold for reading journal entries
+ *
+ * Set the data threshold for reading journal entries. This
+ * is a hint to the journal that it may truncate data
+ * fields to this size when reading them (note also that it
+ * may not truncate them). If you set this to 0, then the
+ * threshold is unlimited.
+ * 
+ * See also "g.journal_get_data_threshold".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_journal_set_data_threshold+[http://libguestfs.org/guestfs.3.html#guestfs_journal_set_data_threshold]).
+ */
+static VALUE
+ruby_guestfs_journal_set_data_threshold (VALUE gv, VALUE thresholdv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "journal_set_data_threshold");
+
+  long long threshold = NUM2LL (thresholdv);
+
+  int r;
+
+  r = guestfs_journal_set_data_threshold (g, threshold);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.aug_setm(base, sub, val) -> fixnum
+ *
+ * set multiple Augeas nodes
+ *
+ * Change multiple Augeas nodes in a single operation.
+ * "base" is an expression matching multiple nodes. "sub"
+ * is a path expression relative to "base". All nodes
+ * matching "base" are found, and then for each node, "sub"
+ * is changed to "val". "sub" may also be "NULL" in which
+ * case the "base" nodes are modified.
+ * 
+ * This returns the number of nodes modified.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_aug_setm+[http://libguestfs.org/guestfs.3.html#guestfs_aug_setm]).
+ */
+static VALUE
+ruby_guestfs_aug_setm (VALUE gv, VALUE basev, VALUE subv, VALUE valv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "aug_setm");
+
+  const char *base = StringValueCStr (basev);
+  const char *sub = !NIL_P (subv) ? StringValueCStr (subv) : NULL;
+  const char *val = StringValueCStr (valv);
+
+  int r;
+
+  r = guestfs_aug_setm (g, base, sub, val);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.aug_label(augpath) -> string
+ *
+ * return the label from an Augeas path expression
+ *
+ * The label (name of the last element) of the Augeas path
+ * expression "augpath" is returned. "augpath" must match
+ * exactly one node, else this function returns an error.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_aug_label+[http://libguestfs.org/guestfs.3.html#guestfs_aug_label]).
+ */
+static VALUE
+ruby_guestfs_aug_label (VALUE gv, VALUE augpathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "aug_label");
+
+  const char *augpath = StringValueCStr (augpathv);
+
+  char *r;
+
+  r = guestfs_aug_label (g, augpath);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
 extern void Init__guestfs (void); /* keep GCC warnings happy */
 
 /* Initialize the module. */
@@ -24436,8 +25061,10 @@ Init__guestfs (void)
                    ULL2NUM (UINT64_C (0x80)));
   rb_define_const (m_guestfs, "EVENT_LIBVIRT_AUTH",
                    ULL2NUM (UINT64_C (0x100)));
+  rb_define_const (m_guestfs, "EVENT_WARNING",
+                   ULL2NUM (UINT64_C (0x200)));
   rb_define_const (m_guestfs, "EVENT_ALL",
-                   ULL2NUM (UINT64_C (0x1ff)));
+                   ULL2NUM (UINT64_C (0x3ff)));
 
   rb_define_method (c_guestfs, "internal_test",
         ruby_guestfs_internal_test, -1);
@@ -24509,6 +25136,10 @@ Init__guestfs (void)
         ruby_guestfs_set_qemu, 1);
   rb_define_method (c_guestfs, "get_qemu",
         ruby_guestfs_get_qemu, 0);
+  rb_define_method (c_guestfs, "set_hv",
+        ruby_guestfs_set_hv, 1);
+  rb_define_method (c_guestfs, "get_hv",
+        ruby_guestfs_get_hv, 0);
   rb_define_method (c_guestfs, "set_path",
         ruby_guestfs_set_path, 1);
   rb_define_method (c_guestfs, "get_path",
@@ -24715,6 +25346,10 @@ Init__guestfs (void)
         ruby_guestfs_set_program, 1);
   rb_define_method (c_guestfs, "get_program",
         ruby_guestfs_get_program, 0);
+  rb_define_method (c_guestfs, "add_drive_scratch",
+        ruby_guestfs_add_drive_scratch, -1);
+  rb_define_method (c_guestfs, "journal_get",
+        ruby_guestfs_journal_get, 0);
   rb_define_method (c_guestfs, "mount",
         ruby_guestfs_mount, 2);
   rb_define_method (c_guestfs, "sync",
@@ -25509,4 +26144,22 @@ Init__guestfs (void)
         ruby_guestfs_cp_r, 2);
   rb_define_method (c_guestfs, "remount",
         ruby_guestfs_remount, -1);
+  rb_define_method (c_guestfs, "set_uuid",
+        ruby_guestfs_set_uuid, 2);
+  rb_define_method (c_guestfs, "journal_open",
+        ruby_guestfs_journal_open, 1);
+  rb_define_method (c_guestfs, "journal_close",
+        ruby_guestfs_journal_close, 0);
+  rb_define_method (c_guestfs, "journal_next",
+        ruby_guestfs_journal_next, 0);
+  rb_define_method (c_guestfs, "journal_skip",
+        ruby_guestfs_journal_skip, 1);
+  rb_define_method (c_guestfs, "journal_get_data_threshold",
+        ruby_guestfs_journal_get_data_threshold, 0);
+  rb_define_method (c_guestfs, "journal_set_data_threshold",
+        ruby_guestfs_journal_set_data_threshold, 1);
+  rb_define_method (c_guestfs, "aug_setm",
+        ruby_guestfs_aug_setm, 3);
+  rb_define_method (c_guestfs, "aug_label",
+        ruby_guestfs_aug_label, 1);
 }

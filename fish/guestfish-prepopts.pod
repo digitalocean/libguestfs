@@ -1,6 +1,6 @@
 =head2 B<-N disk> - create a blank disk
 
-C<guestfish -N disk[:I<size>]>
+C<guestfish -N [I<filename>=]disk[:I<size>]>
 
 Create a blank disk, size 100MB (by default).
 
@@ -13,7 +13,7 @@ The optional parameters are:
 
 =head2 B<-N part> - create a partitioned disk
 
-C<guestfish -N part[:I<size>[:I<partition>]]>
+C<guestfish -N [I<filename>=]part[:I<size>[:I<partition>]]>
 
 Create a disk with a single partition.  By default the size of the disk
 is 100MB (the available space in the partition will be a tiny bit smaller)
@@ -29,7 +29,7 @@ The optional parameters are:
 
 =head2 B<-N fs> - create a filesystem
 
-C<guestfish -N fs[:I<filesystem>[:I<size>[:I<partition>]]]>
+C<guestfish -N [I<filename>=]fs[:I<filesystem>[:I<size>[:I<partition>]]]>
 
 Create a disk with a single partition, with the partition containing
 an empty filesystem.  This defaults to creating a 100MB disk (the available
@@ -47,7 +47,7 @@ The optional parameters are:
 
 =head2 B<-N lv> - create a disk with logical volume
 
-C<guestfish -N lv[:I<name>[:I<size>[:I<partition>]]]>
+C<guestfish -N [I<filename>=]lv[:I<name>[:I<size>[:I<partition>]]]>
 
 Create a disk with a single partition, set up the partition as an
 LVM2 physical volume, and place a volume group and logical volume
@@ -66,7 +66,7 @@ The optional parameters are:
 
 =head2 B<-N lvfs> - create a disk with logical volume and filesystem
 
-C<guestfish -N lvfs[:I<name>[:I<filesystem>[:I<size>[:I<partition>]]]]>
+C<guestfish -N [I<filename>=]lvfs[:I<name>[:I<filesystem>[:I<size>[:I<partition>]]]]>
 
 Create a disk with a single partition, set up the partition as an
 LVM2 physical volume, and place a volume group and logical volume
@@ -84,7 +84,7 @@ The optional parameters are:
 
 =head2 B<-N bootroot> - create a boot and root filesystem
 
-C<guestfish -N bootroot[:I<bootfs>[:I<rootfs>[:I<size>[:I<bootsize>[:I<partition>]]]]]>
+C<guestfish -N [I<filename>=]bootroot[:I<bootfs>[:I<rootfs>[:I<size>[:I<bootsize>[:I<partition>]]]]]>
 
 Create a disk with two partitions, for boot and root filesystem.
 Format the two filesystems independently.  There are several optional
@@ -101,7 +101,7 @@ The optional parameters are:
 
 =head2 B<-N bootrootlv> - create a boot and root filesystem using LVM
 
-C<guestfish -N bootrootlv[:I<name>[:I<bootfs>[:I<rootfs>[:I<size>[:I<bootsize>[:I<partition>]]]]]]>
+C<guestfish -N [I<filename>=]bootrootlv[:I<name>[:I<bootfs>[:I<rootfs>[:I<size>[:I<bootsize>[:I<partition>]]]]]]>
 
 This is the same as C<bootroot> but the root filesystem (only) is
 placed on a logical volume, named by default C</dev/VG/LV>.  There are

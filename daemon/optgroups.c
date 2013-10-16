@@ -35,6 +35,7 @@ struct optgroup optgroups[] = {
   { "grub", optgroup_grub_available },
   { "hivex", optgroup_hivex_available },
   { "inotify", optgroup_inotify_available },
+  { "journal", optgroup_journal_available },
   { "ldm", optgroup_ldm_available },
   { "linuxcaps", optgroup_linuxcaps_available },
   { "linuxfsuuid", optgroup_linuxfsuuid_available },

@@ -8,7 +8,7 @@
 <link rel="up" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
 <link rel="prev" href="object-tree.html" title="Object Hierarchy">
 <link rel="next" href="deprecated-api-index.html" title="Index of deprecated API">
-<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.19 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -101,6 +101,10 @@
 </dt>
 <dd></dd>
 <dt>
+<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--cachemode" title='The "cachemode" property'>GuestfsAddDrive:cachemode</a>, object property in <a class="link" href="GuestfsAddDrive.html" title="GuestfsAddDrive">GuestfsAddDrive</a>
+</dt>
+<dd></dd>
+<dt>
 <a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--format" title='The "format" property'>GuestfsAddDrive:format</a>, object property in <a class="link" href="GuestfsAddDrive.html" title="GuestfsAddDrive">GuestfsAddDrive</a>
 </dt>
 <dd></dd>
@@ -137,11 +141,31 @@
 </dt>
 <dd></dd>
 <dt>
+<a class="link" href="GuestfsAddDriveScratch.html#GuestfsAddDriveScratch-struct" title="struct GuestfsAddDriveScratch">GuestfsAddDriveScratch</a>, struct in <a class="link" href="GuestfsAddDriveScratch.html" title="GuestfsAddDriveScratch">GuestfsAddDriveScratch</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GuestfsAddDriveScratch.html#GuestfsAddDriveScratch--label" title='The "label" property'>GuestfsAddDriveScratch:label</a>, object property in <a class="link" href="GuestfsAddDriveScratch.html" title="GuestfsAddDriveScratch">GuestfsAddDriveScratch</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GuestfsAddDriveScratch.html#GuestfsAddDriveScratch--name" title='The "name" property'>GuestfsAddDriveScratch:name</a>, object property in <a class="link" href="GuestfsAddDriveScratch.html" title="GuestfsAddDriveScratch">GuestfsAddDriveScratch</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GuestfsAddDriveScratch.html#GuestfsAddDriveScratchClass" title="struct GuestfsAddDriveScratchClass">GuestfsAddDriveScratchClass</a>, struct in <a class="link" href="GuestfsAddDriveScratch.html" title="GuestfsAddDriveScratch">GuestfsAddDriveScratch</a>
+</dt>
+<dd></dd>
+<dt>
 <a class="link" href="GuestfsAddDomain.html#guestfs-add-domain-new" title="guestfs_add_domain_new ()">guestfs_add_domain_new</a>, function in <a class="link" href="GuestfsAddDomain.html" title="GuestfsAddDomain">GuestfsAddDomain</a>
 </dt>
 <dd></dd>
 <dt>
 <a class="link" href="GuestfsAddDrive.html#guestfs-add-drive-new" title="guestfs_add_drive_new ()">guestfs_add_drive_new</a>, function in <a class="link" href="GuestfsAddDrive.html" title="GuestfsAddDrive">GuestfsAddDrive</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GuestfsAddDriveScratch.html#guestfs-add-drive-scratch-new" title="guestfs_add_drive_scratch_new ()">guestfs_add_drive_scratch_new</a>, function in <a class="link" href="GuestfsAddDriveScratch.html" title="GuestfsAddDriveScratch">GuestfsAddDriveScratch</a>
 </dt>
 <dd></dd>
 <dt>
@@ -1447,6 +1471,10 @@
 </dt>
 <dd></dd>
 <dt>
+<a class="link" href="GuestfsSession.html#GuestfsSession-warning" title='The "warning" signal'>GuestfsSession::warning</a>, object signal in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
+</dt>
+<dd></dd>
+<dt>
 <a class="link" href="GuestfsSession.html#GuestfsSessionClass" title="struct GuestfsSessionClass">GuestfsSessionClass</a>, struct in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
 </dt>
 <dd></dd>
@@ -1491,6 +1519,10 @@
 </dt>
 <dd></dd>
 <dt>
+<a class="link" href="GuestfsSession.html#guestfs-session-add-drive-scratch" title="guestfs_session_add_drive_scratch ()">guestfs_session_add_drive_scratch</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
+</dt>
+<dd></dd>
+<dt>
 <a class="link" href="GuestfsSession.html#guestfs-session-add-drive-with-if" title="guestfs_session_add_drive_with_if ()">guestfs_session_add_drive_with_if</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
 </dt>
 <dd></dd>
@@ -1523,6 +1555,10 @@
 </dt>
 <dd></dd>
 <dt>
+<a class="link" href="GuestfsSession.html#guestfs-session-aug-label" title="guestfs_session_aug_label ()">guestfs_session_aug_label</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
+</dt>
+<dd></dd>
+<dt>
 <a class="link" href="GuestfsSession.html#guestfs-session-aug-load" title="guestfs_session_aug_load ()">guestfs_session_aug_load</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
 </dt>
 <dd></dd>
@@ -1548,6 +1584,10 @@
 <dd></dd>
 <dt>
 <a class="link" href="GuestfsSession.html#guestfs-session-aug-set" title="guestfs_session_aug_set ()">guestfs_session_aug_set</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GuestfsSession.html#guestfs-session-aug-setm" title="guestfs_session_aug_setm ()">guestfs_session_aug_setm</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
 </dt>
 <dd></dd>
 <dt>
@@ -1968,6 +2008,10 @@
 <dd></dd>
 <dt>
 <a class="link" href="GuestfsSession.html#guestfs-session-get-e2uuid" title="guestfs_session_get_e2uuid ()">guestfs_session_get_e2uuid</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GuestfsSession.html#guestfs-session-get-hv" title="guestfs_session_get_hv ()">guestfs_session_get_hv</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
 </dt>
 <dd></dd>
 <dt>
@@ -2440,6 +2484,34 @@
 <dd></dd>
 <dt>
 <a class="link" href="GuestfsSession.html#guestfs-session-is-zero-device" title="guestfs_session_is_zero_device ()">guestfs_session_is_zero_device</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GuestfsSession.html#guestfs-session-journal-close" title="guestfs_session_journal_close ()">guestfs_session_journal_close</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GuestfsSession.html#guestfs-session-journal-get" title="guestfs_session_journal_get ()">guestfs_session_journal_get</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GuestfsSession.html#guestfs-session-journal-get-data-threshold" title="guestfs_session_journal_get_data_threshold ()">guestfs_session_journal_get_data_threshold</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GuestfsSession.html#guestfs-session-journal-next" title="guestfs_session_journal_next ()">guestfs_session_journal_next</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GuestfsSession.html#guestfs-session-journal-open" title="guestfs_session_journal_open ()">guestfs_session_journal_open</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GuestfsSession.html#guestfs-session-journal-set-data-threshold" title="guestfs_session_journal_set_data_threshold ()">guestfs_session_journal_set_data_threshold</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GuestfsSession.html#guestfs-session-journal-skip" title="guestfs_session_journal_skip ()">guestfs_session_journal_skip</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
 </dt>
 <dd></dd>
 <dt>
@@ -3139,6 +3211,10 @@
 </dt>
 <dd></dd>
 <dt>
+<a class="link" href="GuestfsSession.html#guestfs-session-set-hv" title="guestfs_session_set_hv ()">guestfs_session_set_hv</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
+</dt>
+<dd></dd>
+<dt>
 <a class="link" href="GuestfsSession.html#guestfs-session-set-label" title="guestfs_session_set_label ()">guestfs_session_set_label</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
 </dt>
 <dd></dd>
@@ -3192,6 +3268,10 @@
 <dd></dd>
 <dt>
 <a class="link" href="GuestfsSession.html#guestfs-session-set-trace" title="guestfs_session_set_trace ()">guestfs_session_set_trace</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GuestfsSession.html#guestfs-session-set-uuid" title="guestfs_session_set_uuid ()">guestfs_session_set_uuid</a>, function in <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
 </dt>
 <dd></dd>
 <dt>
@@ -3877,6 +3957,6 @@
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.18</div>
+          Generated by GTK-Doc V1.19</div>
 </body>
 </html>

@@ -2490,15 +2490,15 @@ py_guestfs_config (PyObject *self, PyObject *args)
   guestfs_h *g;
   PyObject *py_r = NULL;
   int r;
-  const char *qemuparam;
-  const char *qemuvalue;
+  const char *hvparam;
+  const char *hvvalue;
 
   if (!PyArg_ParseTuple (args, (char *) "Osz:guestfs_config",
-                         &py_g, &qemuparam, &qemuvalue))
+                         &py_g, &hvparam, &hvvalue))
     goto out;
   g = get_handle (py_g);
 
-  r = guestfs_config (g, qemuparam, qemuvalue);
+  r = guestfs_config (g, hvparam, hvvalue);
 
   if (r == -1) {
     PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
@@ -2519,14 +2519,14 @@ py_guestfs_set_qemu (PyObject *self, PyObject *args)
   guestfs_h *g;
   PyObject *py_r = NULL;
   int r;
-  const char *qemu;
+  const char *hv;
 
   if (!PyArg_ParseTuple (args, (char *) "Oz:guestfs_set_qemu",
-                         &py_g, &qemu))
+                         &py_g, &hv))
     goto out;
   g = get_handle (py_g);
 
-  r = guestfs_set_qemu (g, qemu);
+  r = guestfs_set_qemu (g, hv);
 
   if (r == -1) {
     PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
@@ -2565,6 +2565,65 @@ py_guestfs_get_qemu (PyObject *self, PyObject *args)
 #else
   py_r = PyUnicode_FromString (r);
 #endif
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_set_hv (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *hv;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_set_hv",
+                         &py_g, &hv))
+    goto out;
+  g = get_handle (py_g);
+
+  r = guestfs_set_hv (g, hv);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_get_hv (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  char *r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_get_hv",
+                         &py_g))
+    goto out;
+  g = get_handle (py_g);
+
+  r = guestfs_get_hv (g);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
+  free (r);
 
  out:
   return py_r;
@@ -3780,11 +3839,12 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
   PyObject *py_server;
   PyObject *py_username;
   PyObject *py_secret;
+  PyObject *py_cachemode;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OsOOOOOOOOO:guestfs_add_drive",
-                         &py_g, &filename, &py_readonly, &py_format, &py_iface, &py_name, &py_label, &py_protocol, &py_server, &py_username, &py_secret))
+  if (!PyArg_ParseTuple (args, (char *) "OsOOOOOOOOOO:guestfs_add_drive",
+                         &py_g, &filename, &py_readonly, &py_format, &py_iface, &py_name, &py_label, &py_protocol, &py_server, &py_username, &py_secret, &py_cachemode))
     goto out;
   g = get_handle (py_g);
 
@@ -3866,6 +3926,16 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
     PyObject *bytes;
     bytes = PyUnicode_AsUTF8String (py_secret);
     optargs_s.secret = PyBytes_AS_STRING (bytes);
+#endif
+  }
+  if (py_cachemode != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.cachemode = PyString_AsString (py_cachemode);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_cachemode);
+    optargs_s.cachemode = PyBytes_AS_STRING (bytes);
 #endif
   }
 
@@ -6040,6 +6110,95 @@ py_guestfs_get_program (PyObject *self, PyObject *args)
 #else
   py_r = PyUnicode_FromString (r);
 #endif
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_add_drive_scratch (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_add_drive_scratch_argv optargs_s;
+  struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
+  int r;
+  long long size;
+  PyObject *py_name;
+  PyObject *py_label;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OLOO:guestfs_add_drive_scratch",
+                         &py_g, &size, &py_name, &py_label))
+    goto out;
+  g = get_handle (py_g);
+
+  if (py_name != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.name = PyString_AsString (py_name);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_name);
+    optargs_s.name = PyBytes_AS_STRING (bytes);
+#endif
+  }
+  if (py_label != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.label = PyString_AsString (py_label);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_label);
+    optargs_s.label = PyBytes_AS_STRING (bytes);
+#endif
+  }
+
+  r = guestfs_add_drive_scratch_argv (g, size, optargs);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_journal_get (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_xattr_list *r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_journal_get",
+                         &py_g))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_journal_get (g);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = put_xattr_list (r);
+  guestfs_free_xattr_list (r);
 
  out:
   return py_r;
@@ -21183,6 +21342,321 @@ py_guestfs_remount (PyObject *self, PyObject *args)
   return py_r;
 }
 
+static PyObject *
+py_guestfs_set_uuid (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *device;
+  const char *uuid;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_set_uuid",
+                         &py_g, &device, &uuid))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_set_uuid (g, device, uuid);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_journal_open (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *directory;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_journal_open",
+                         &py_g, &directory))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_journal_open (g, directory);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_journal_close (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_journal_close",
+                         &py_g))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_journal_close (g);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_journal_next (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_journal_next",
+                         &py_g))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_journal_next (g);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = PyLong_FromLong ((long) r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_journal_skip (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int64_t r;
+  long long skip;
+
+  if (!PyArg_ParseTuple (args, (char *) "OL:guestfs_journal_skip",
+                         &py_g, &skip))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_journal_skip (g, skip);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = PyLong_FromLongLong (r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_journal_get_data_threshold (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int64_t r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_journal_get_data_threshold",
+                         &py_g))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_journal_get_data_threshold (g);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = PyLong_FromLongLong (r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_journal_set_data_threshold (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  long long threshold;
+
+  if (!PyArg_ParseTuple (args, (char *) "OL:guestfs_journal_set_data_threshold",
+                         &py_g, &threshold))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_journal_set_data_threshold (g, threshold);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_aug_setm (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *base;
+  const char *sub;
+  const char *val;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oszs:guestfs_aug_setm",
+                         &py_g, &base, &sub, &val))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_aug_setm (g, base, sub, val);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = PyLong_FromLong ((long) r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_aug_label (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  char *r;
+  const char *augpath;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_aug_label",
+                         &py_g, &augpath))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_aug_label (g, augpath);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
+  free (r);
+
+ out:
+  return py_r;
+}
+
 static PyMethodDef methods[] = {
   { (char *) "create", py_guestfs_create, METH_VARARGS, NULL },
   { (char *) "close", py_guestfs_close, METH_VARARGS, NULL },
@@ -21227,6 +21701,8 @@ static PyMethodDef methods[] = {
   { (char *) "config", py_guestfs_config, METH_VARARGS, NULL },
   { (char *) "set_qemu", py_guestfs_set_qemu, METH_VARARGS, NULL },
   { (char *) "get_qemu", py_guestfs_get_qemu, METH_VARARGS, NULL },
+  { (char *) "set_hv", py_guestfs_set_hv, METH_VARARGS, NULL },
+  { (char *) "get_hv", py_guestfs_get_hv, METH_VARARGS, NULL },
   { (char *) "set_path", py_guestfs_set_path, METH_VARARGS, NULL },
   { (char *) "get_path", py_guestfs_get_path, METH_VARARGS, NULL },
   { (char *) "set_append", py_guestfs_set_append, METH_VARARGS, NULL },
@@ -21329,6 +21805,8 @@ static PyMethodDef methods[] = {
   { (char *) "user_cancel", py_guestfs_user_cancel, METH_VARARGS, NULL },
   { (char *) "set_program", py_guestfs_set_program, METH_VARARGS, NULL },
   { (char *) "get_program", py_guestfs_get_program, METH_VARARGS, NULL },
+  { (char *) "add_drive_scratch", py_guestfs_add_drive_scratch, METH_VARARGS, NULL },
+  { (char *) "journal_get", py_guestfs_journal_get, METH_VARARGS, NULL },
   { (char *) "mount", py_guestfs_mount, METH_VARARGS, NULL },
   { (char *) "sync", py_guestfs_sync, METH_VARARGS, NULL },
   { (char *) "touch", py_guestfs_touch, METH_VARARGS, NULL },
@@ -21713,6 +22191,15 @@ static PyMethodDef methods[] = {
   { (char *) "extlinux", py_guestfs_extlinux, METH_VARARGS, NULL },
   { (char *) "cp_r", py_guestfs_cp_r, METH_VARARGS, NULL },
   { (char *) "remount", py_guestfs_remount, METH_VARARGS, NULL },
+  { (char *) "set_uuid", py_guestfs_set_uuid, METH_VARARGS, NULL },
+  { (char *) "journal_open", py_guestfs_journal_open, METH_VARARGS, NULL },
+  { (char *) "journal_close", py_guestfs_journal_close, METH_VARARGS, NULL },
+  { (char *) "journal_next", py_guestfs_journal_next, METH_VARARGS, NULL },
+  { (char *) "journal_skip", py_guestfs_journal_skip, METH_VARARGS, NULL },
+  { (char *) "journal_get_data_threshold", py_guestfs_journal_get_data_threshold, METH_VARARGS, NULL },
+  { (char *) "journal_set_data_threshold", py_guestfs_journal_set_data_threshold, METH_VARARGS, NULL },
+  { (char *) "aug_setm", py_guestfs_aug_setm, METH_VARARGS, NULL },
+  { (char *) "aug_label", py_guestfs_aug_label, METH_VARARGS, NULL },
   { NULL, NULL, 0, NULL }
 };
 

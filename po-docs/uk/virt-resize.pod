@@ -119,9 +119,9 @@ Or use L<virsh(1)> vol-create-as to create a libvirt storage volume:
 
 =item 5. Зміна розміру
 
-virt-resize takes two mandatory parameters, the input disk (eg. device or
-file) and the output disk.  The output disk is the one created in the
-previous step.
+virt-resize takes two mandatory parameters, the input disk (eg. device,
+file, or a URI to a remote disk) and the output disk.  The output disk is
+the one created in the previous step.
 
  # virt-resize indisk outdisk
 
@@ -156,6 +156,12 @@ calling a command such as L<pvresize(8)>, L<resize2fs(8)>, L<ntfsresize(8)>
 or L<btrfs(8)>.  However virt-resize does not know how to resize some
 filesystems, so you would have to online resize them after booting the
 guest.
+
+ # virt-resize --expand /dev/sda2 nbd://example.com outdisk
+
+The input disk can be a URI, in order to use a remote disk as the source.
+The URI format is compatible with guestfish.  See L<guestfish(1)/ADDING
+REMOTE STORAGE>.
 
 Other options are covered below.
 
@@ -319,6 +325,8 @@ around 2008.
 
 =item B<--debug>
 
+(Deprecated: use I<-v> option instead)
+
 Увімкнути показ діагностичних повідомлень.
 
 =item B<--debug-gc>
@@ -462,6 +470,10 @@ partitions, if it knows how (see I<--expand> option above).
 If you give the I<--no-expand-content> option then virt-resize will not
 attempt this.
 
+=item B<--no-sparse>
+
+Turn off sparse copying.  See L</SPARSE COPYING> below.
+
 =item B<--ntfsresize-force>
 
 Pass the I<--force> option to L<ntfsresize(8)>, allowing resizing even if
@@ -547,6 +559,12 @@ would give an error unless the user specified a partition to shrink and that
 partition had more than a gigabyte of free space.
 
 Note that you cannot use I<--expand> and I<--shrink> together.
+
+=item B<-v>
+
+=item B<--verbose>
+
+Увімкнути показ діагностичних повідомлень.
 
 =item B<-V>
 
@@ -669,19 +687,19 @@ STARTUP>.
 
 =head2 SPARSE COPYING
 
-You must create a fresh, zeroed target disk image for virt-resize to use.
-Do not reuse a target, especially one which contains data already.
+You should create a fresh, zeroed target disk image for virt-resize to use.
 
-Virt-resize performs sparse copying.  This means that it does not copy
-blocks from the source disk which are all zeroes.  This improves speed and
-efficiency, but will produce incorrect results if the target disk image
+Virt-resize by default performs sparse copying.  This means that it does not
+copy blocks from the source disk which are all zeroes.  This improves speed
+and efficiency, but will produce incorrect results if the target disk image
 contains unzeroed data.
 
 The main time this can be a problem is if the target is a host partition
 (eg. S<C<virt-resize source.img /dev/sda4>>) because the usual partitioning
-tools tend to leave whatever data happened to be on the disk when making
-partitions.  In rare cases you may need to S<C<dd if=/dev/zero
-of=/dev/sdXN>> first to ensure the target partition is zeroed.
+tools tend to leave whatever data happened to be on the disk before.
+
+If you have to reuse a target which contains data already, you should use
+the I<--no-sparse> option.  Note this can be much slower.
 
 =head1 АЛЬТЕРНАТИВНІ ІНСТРУМЕНТИ
 
@@ -698,6 +716,10 @@ but at a much lower level.  You will probably end up hand-calculating sector
 offsets, which is something that virt-resize was designed to avoid.  If you
 want to see the guestfish-equivalent commands that virt-resize runs, use the
 I<--debug> flag.
+
+L<dracut(8)> includes a module called C<dracut-modules-growroot> which can
+be used to grow the root partition when the guest first boots up.  There is
+documentation for this module in an associated README file.
 
 =head1 ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ
 

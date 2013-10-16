@@ -20,7 +20,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include "guestfs_protocol.h"
 #include "daemon.h"
@@ -31,21 +33,196 @@
 GUESTFSD_EXT_CMD(str_mount, mount);
 GUESTFSD_EXT_CMD(str_umount, umount);
 
+#ifdef HAVE_ATTRIBUTE_CLEANUP
+#define CLEANUP_BIND_STATE __attribute__((cleanup(free_bind_state)))
+#define CLEANUP_RESOLVER_STATE __attribute__((cleanup(free_resolver_state)))
+#else
+#define CLEANUP_BIND_STATE
+#define CLEANUP_RESOLVER_STATE
+#endif
+
+struct bind_state {
+  bool mounted;
+  char *sysroot_dev;
+  char *sysroot_dev_pts;
+  char *sysroot_proc;
+  char *sysroot_sys;
+  bool dev_ok, dev_pts_ok, proc_ok, sys_ok;
+};
+
+struct resolver_state {
+  bool mounted;
+  char *sysroot_etc_resolv_conf;
+  char *sysroot_etc_resolv_conf_old;
+};
+
+/* While running the command, bind-mount /dev, /proc, /sys
+ * into the chroot.  However we must be careful to unmount them
+ * afterwards because otherwise they would interfere with
+ * future mount and unmount operations.
+ *
+ * We deliberately allow these commands to fail silently, BUT
+ * if a mount fails, don't unmount the corresponding mount.
+ */
+static int
+bind_mount (struct bind_state *bs)
+{
+  int r;
+
+  memset (bs, 0, sizeof *bs);
+
+  bs->sysroot_dev = sysroot_path ("/dev");
+  bs->sysroot_dev_pts = sysroot_path ("/dev/pts");
+  bs->sysroot_proc = sysroot_path ("/proc");
+  bs->sysroot_sys = sysroot_path ("/sys");
+
+  if (bs->sysroot_dev == NULL || bs->sysroot_dev_pts == NULL ||
+      bs->sysroot_proc == NULL || bs->sysroot_sys == NULL) {
+    reply_with_perror ("malloc");
+    free (bs->sysroot_dev);
+    free (bs->sysroot_dev_pts);
+    free (bs->sysroot_proc);
+    free (bs->sysroot_sys);
+    return -1;
+  }
+
+  r = command (NULL, NULL, str_mount, "--bind", "/dev", bs->sysroot_dev, NULL);
+  bs->dev_ok = r != -1;
+  r = command (NULL, NULL, str_mount, "--bind", "/dev/pts", bs->sysroot_dev_pts, NULL);
+  bs->dev_pts_ok = r != -1;
+  r = command (NULL, NULL, str_mount, "--bind", "/proc", bs->sysroot_proc, NULL);
+  bs->proc_ok = r != -1;
+  r = command (NULL, NULL, str_mount, "--bind", "/sys", bs->sysroot_sys, NULL);
+  bs->sys_ok = r != -1;
+
+  bs->mounted = true;
+
+  return 0;
+}
+
 static inline void
 umount_ignore_fail (const char *path)
 {
   ignore_value (command (NULL, NULL, str_umount, path, NULL));
 }
 
+static void
+free_bind_state (struct bind_state *bs)
+{
+  if (bs->mounted) {
+    if (bs->sys_ok) umount_ignore_fail (bs->sysroot_sys);
+    free (bs->sysroot_sys);
+    if (bs->proc_ok) umount_ignore_fail (bs->sysroot_proc);
+    free (bs->sysroot_proc);
+    if (bs->dev_pts_ok) umount_ignore_fail (bs->sysroot_dev_pts);
+    free (bs->sysroot_dev_pts);
+    if (bs->dev_ok) umount_ignore_fail (bs->sysroot_dev);
+    free (bs->sysroot_dev);
+    bs->mounted = false;
+  }
+}
+
+/* If the network is enabled, we want <sysroot>/etc/resolv.conf to
+ * reflect the contents of /etc/resolv.conf so that name resolution
+ * works.  It would be nice to bind-mount the file (single file bind
+ * mounts are possible).  However annoyingly that doesn't work for
+ * Ubuntu guests where the guest resolv.conf is a dangling symlink,
+ * and for reasons unknown mount tries to follow the symlink and
+ * fails (likely a bug).  So this is a hack.  Note we only invoke
+ * this if the network is enabled.
+ */
+static int
+set_up_etc_resolv_conf (struct resolver_state *rs)
+{
+  struct stat statbuf;
+
+  rs->sysroot_etc_resolv_conf_old = NULL;
+
+  rs->sysroot_etc_resolv_conf = sysroot_path ("/etc/resolv.conf");
+
+  if (!rs->sysroot_etc_resolv_conf) {
+    reply_with_perror ("malloc");
+    goto error;
+  }
+
+  /* If /etc/resolv.conf exists, rename it to the backup file.  Note
+   * that on Ubuntu it's a dangling symlink.
+   */
+  if (lstat (rs->sysroot_etc_resolv_conf, &statbuf) == 0) {
+    size_t len = sysroot_len + 32;
+    char buf[len];
+
+    /* Make a random name for the backup file. */
+    snprintf (buf, len, "%s/etc/XXXXXXXX", sysroot);
+    if (random_name (buf) == -1) {
+      reply_with_perror ("random_name");
+      goto error;
+    }
+    rs->sysroot_etc_resolv_conf_old = strdup (buf);
+    if (!rs->sysroot_etc_resolv_conf_old) {
+      reply_with_perror ("strdup");
+      goto error;
+    }
+
+    if (verbose)
+      fprintf (stderr, "renaming %s to %s\n", rs->sysroot_etc_resolv_conf,
+               rs->sysroot_etc_resolv_conf_old);
+
+    if (rename (rs->sysroot_etc_resolv_conf,
+                rs->sysroot_etc_resolv_conf_old) == -1) {
+      reply_with_perror ("rename: %s to %s", rs->sysroot_etc_resolv_conf,
+                         rs->sysroot_etc_resolv_conf_old);
+      goto error;
+    }
+  }
+
+  /* Now that the guest's <sysroot>/etc/resolv.conf is out the way, we
+   * can create our own copy of the appliance /etc/resolv.conf.
+   */
+  ignore_value (command (NULL, NULL, "cp", "/etc/resolv.conf",
+                         rs->sysroot_etc_resolv_conf, NULL));
+
+  rs->mounted = true;
+  return 0;
+
+ error:
+  free (rs->sysroot_etc_resolv_conf);
+  free (rs->sysroot_etc_resolv_conf_old);
+  return -1;
+}
+
+static void
+free_resolver_state (struct resolver_state *rs)
+{
+  if (rs->mounted) {
+    unlink (rs->sysroot_etc_resolv_conf);
+
+    if (rs->sysroot_etc_resolv_conf_old) {
+      if (verbose)
+        fprintf (stderr, "renaming %s to %s\n", rs->sysroot_etc_resolv_conf_old,
+                 rs->sysroot_etc_resolv_conf);
+
+      if (rename (rs->sysroot_etc_resolv_conf_old,
+                  rs->sysroot_etc_resolv_conf) == -1)
+        perror ("error: could not restore /etc/resolv.conf");
+
+      free (rs->sysroot_etc_resolv_conf_old);
+    }
+
+    free (rs->sysroot_etc_resolv_conf);
+    rs->mounted = false;
+  }
+}
+
 char *
 do_command (char *const *argv)
 {
   char *out;
-  CLEANUP_FREE char *err;
+  CLEANUP_FREE char *err = NULL;
   int r;
-  CLEANUP_FREE char *sysroot_dev = NULL, *sysroot_dev_pts = NULL,
-    *sysroot_proc = NULL, *sysroot_selinux = NULL, *sysroot_sys = NULL;
-  int dev_ok, dev_pts_ok, proc_ok, sys_ok;
+  CLEANUP_BIND_STATE struct bind_state bind_state = { .mounted = false };
+  CLEANUP_RESOLVER_STATE struct resolver_state resolver_state =
+    { .mounted = false };
 
   /* We need a root filesystem mounted to do this. */
   NEED_ROOT (, return NULL);
@@ -59,44 +236,19 @@ do_command (char *const *argv)
     return NULL;
   }
 
-  /* While running the command, bind-mount /dev, /proc, /sys
-   * into the chroot.  However we must be careful to unmount them
-   * afterwards because otherwise they would interfere with
-   * future mount and unmount operations.
-   *
-   * We deliberately allow these commands to fail silently, BUT
-   * if a mount fails, don't unmount the corresponding mount.
-   */
-  sysroot_dev = sysroot_path ("/dev");
-  sysroot_dev_pts = sysroot_path ("/dev/pts");
-  sysroot_proc = sysroot_path ("/proc");
-  sysroot_selinux = sysroot_path ("/sys/fs/selinux");
-  sysroot_sys = sysroot_path ("/sys");
-
-  if (sysroot_dev == NULL || sysroot_dev_pts == NULL ||
-      sysroot_proc == NULL || sysroot_selinux == NULL ||
-      sysroot_sys == NULL) {
-    reply_with_perror ("malloc");
+  if (bind_mount (&bind_state) == -1)
     return NULL;
+  if (enable_network) {
+    if (set_up_etc_resolv_conf (&resolver_state) == -1)
+      return NULL;
   }
-
-  r = command (NULL, NULL, str_mount, "--bind", "/dev", sysroot_dev, NULL);
-  dev_ok = r != -1;
-  r = command (NULL, NULL, str_mount, "--bind", "/dev/pts", sysroot_dev_pts, NULL);
-  dev_pts_ok = r != -1;
-  r = command (NULL, NULL, str_mount, "--bind", "/proc", sysroot_proc, NULL);
-  proc_ok = r != -1;
-  r = command (NULL, NULL, str_mount, "--bind", "/sys", sysroot_sys, NULL);
-  sys_ok = r != -1;
 
   CHROOT_IN;
   r = commandv (&out, &err, (const char * const *) argv);
   CHROOT_OUT;
 
-  if (sys_ok) umount_ignore_fail (sysroot_sys);
-  if (proc_ok) umount_ignore_fail (sysroot_proc);
-  if (dev_pts_ok) umount_ignore_fail (sysroot_dev_pts);
-  if (dev_ok) umount_ignore_fail (sysroot_dev);
+  free_bind_state (&bind_state);
+  free_resolver_state (&resolver_state);
 
   if (r == -1) {
     reply_with_error ("%s", err);

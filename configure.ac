@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [23])
-m4_define([libguestfs_release], [7])
+m4_define([libguestfs_release], [33])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -196,7 +196,8 @@ if test "$gl_gcc_warnings" = yes; then
     AC_DEFINE([GNULIB_PORTCHECK], [1], [Enable some gnulib portability checks.])
     AH_VERBATIM([FORTIFY_SOURCE],[
 /* Enable compile-time and run-time bounds-checking, and some warnings. */
-#if __OPTIMIZE__
+#if __OPTIMIZE__ && (! defined (_FORTIFY_SOURCE) || _FORTIFY_SOURCE < 2)
+# undef _FORTIFY_SOURCE
 # define _FORTIFY_SOURCE 2
 #endif])
 fi
@@ -286,6 +287,7 @@ AC_CHECK_HEADERS([\
     byteswap.h \
     endian.h \
     errno.h \
+    linux/raid/md_u.h \
     printf.h \
     sys/inotify.h \
     sys/socket.h \
@@ -385,7 +387,6 @@ if test "x$enable_daemon" = "xyes"; then
 
     if test "x$enable_valgrind_daemon" = "xyes"; then
         AC_DEFINE([VALGRIND_DAEMON],[1],[Define to 1 to run the daemon under valgrind.])
-        AC_DEFINE_UNQUOTED([VALGRIND_LOG_PATH],["$(pwd)"],[Path to save valgrind log files.])
     fi
 
     dnl Which directory should we put the daemon in?  NOTE: This
@@ -445,6 +446,34 @@ AC_CHECK_PROGS([SUPERMIN],
                [supermin febootstrap],[no])
 AC_CHECK_PROGS([SUPERMIN_HELPER],
                [supermin-helper febootstrap-supermin-helper],[no])
+
+dnl supermin >= 4.1.4 supports compressed cpio images.
+AC_MSG_CHECKING([for supermin-helper version])
+supermin_helper_version=`$SUPERMIN_HELPER --version | awk '{print $2}'`
+AC_MSG_RESULT([$supermin_helper_version])
+AC_MSG_CHECKING([if supermin-helper supports compressed cpio images])
+supermin_helper_version_int=`echo "$supermin_helper_version" | awk -F. '{print $1 * 1000000 + $2 * 1000 + $3}'`
+echo supermin_helper_version_int=$supermin_helper_version_int >&AS_MESSAGE_LOG_FD
+if test $supermin_helper_version_int -ge 4001004; then
+    supermin_helper_compressed_cpio=yes
+else
+    supermin_helper_compressed_cpio=no
+fi
+AC_MSG_RESULT([$supermin_helper_compressed_cpio])
+AM_CONDITIONAL([SUPERMIN_HELPER_COMPRESSED_CPIO],
+               [test "x$supermin_helper_compressed_cpio" = "xyes"])
+
+dnl supermin >= 4.1.5 supports device trees and uses a new style command
+dnl syntax.
+AC_MSG_CHECKING([if supermin-helper supports device trees and new style command syntax])
+if test $supermin_helper_version_int -ge 4001005; then
+    supermin_helper_new_style_syntax=yes
+    AC_DEFINE([SUPERMIN_HELPER_NEW_STYLE_SYNTAX],[1],
+              [Define to 1 if you have supermin-helper >= 4.1.5.])
+else
+    supermin_helper_new_style_syntax=no
+fi
+AC_MSG_RESULT([$supermin_helper_new_style_syntax])
 
 dnl Pass supermin --packager-config option.
 dnl
@@ -665,7 +694,11 @@ fi
 
 dnl Check for QEMU for running binaries on this $host_cpu, fall
 dnl back to basic 'qemu'.  Allow the user to override it.
-qemu_system="`echo qemu-system-$host_cpu | $SED 's/i@<:@456@:>@86/i386/g'`"
+qemu_system="$(
+    echo qemu-system-$host_cpu |
+    $SED -e 's/-i@<:@456@:>@86/-i386/g' \
+         -e 's/-arm.*/-arm/g'
+    )"
 default_qemu="qemu-kvm kvm $qemu_system qemu"
 AC_ARG_WITH([qemu],
     [AS_HELP_STRING([--with-qemu="bin1 bin2 ..."],
@@ -876,6 +909,14 @@ PKG_CHECK_MODULES([HIVEX], [hivex],[
     [AC_MSG_WARN([hivex not found, some core features will be disabled])])
 AM_CONDITIONAL([HAVE_HIVEX],[test "x$HIVEX_LIBS" != "x"])
 
+dnl systemd journal library (optional)
+PKG_CHECK_MODULES([SD_JOURNAL], [libsystemd-journal],[
+    AC_SUBST([SD_JOURNAL_CFLAGS])
+    AC_SUBST([SD_JOURNAL_LIBS])
+    AC_DEFINE([HAVE_SD_JOURNAL],[1],[systemd journal library found at compile time.])
+],
+    [AC_MSG_WARN([systemd journal library not found, some features will be disabled])])
+
 dnl FUSE is optional to build the FUSE module.
 AC_ARG_ENABLE([fuse],
     AS_HELP_STRING([--disable-fuse], [disable FUSE (guestmount) support]),
@@ -995,13 +1036,13 @@ AS_IF([test "x$OCAMLC" != "xno"],[
 
     dnl Write a common gettext module used by each OCaml tool.
     dnl If OCaml gettext is not available then we write dummy functions.
-    AC_MSG_NOTICE([creating resize/common_gettext.ml])
-    rm -f resize/common_gettext.ml
-    # If we're building in a different directory, then 'resize/' might
+    AC_MSG_NOTICE([creating mllib/common_gettext.ml])
+    rm -f mllib/common_gettext.ml
+    # If we're building in a different directory, then 'mllib/' might
     # not exist yet, so create it:
-    mkdir -p resize
+    mkdir -p mllib
 
-    cat <<EOF > resize/common_gettext.ml
+    cat <<EOF > mllib/common_gettext.ml
 (* This file is generated automatically by ./configure. *)
 
 (** Gettext functions for OCaml virt tools.
@@ -1039,7 +1080,7 @@ EOF
 
     if test "x$OCAML_PKG_gettext" != "xno"; then
         # ocaml-gettext available: real module.
-        cat <<EOF >>resize/common_gettext.ml
+        cat <<EOF >>mllib/common_gettext.ml
 module Gettext = Gettext.Program (
   struct
     let textdomain = "$PACKAGE_NAME"
@@ -1051,7 +1092,7 @@ module Gettext = Gettext.Program (
 EOF
     else
         # No gettext: module containing dummy gettext functions.
-        cat <<EOF >>resize/common_gettext.ml
+        cat <<EOF >>mllib/common_gettext.ml
 module Gettext = struct
   external s_ : string -> string = "%identity"
   external f_ : ('a, 'b, 'c, 'd, 'e, 'f) format6
@@ -1067,7 +1108,7 @@ end
 EOF
     fi
 
-    chmod -w resize/common_gettext.ml
+    chmod -w mllib/common_gettext.ml
 ])
 AM_CONDITIONAL([HAVE_OCAML_PKG_GETTEXT],
     [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && test "x$OCAML_PKG_gettext" != "xno"])
@@ -1455,7 +1496,7 @@ AS_IF([test "x$enable_golang" != "xno"],[
     AC_CHECK_PROG([GOLANG],[go],[go],[no])
     AS_IF([test "x$GOLANG" != "xno"],[
         AC_MSG_CHECKING([if $GOLANG is usable])
-        AS_IF([$GOLANG run golang/config-test.go],[
+        AS_IF([$GOLANG run golang/config-test.go 2>&AS_MESSAGE_LOG_FD],[
             AC_MSG_RESULT([yes])
 
             # Substitute some golang environment.
@@ -1598,6 +1639,8 @@ AC_CONFIG_FILES([Makefile
                  align/Makefile
                  appliance/Makefile
                  bash/Makefile
+                 builder/Makefile
+                 builder/test-index
                  cat/Makefile
                  csharp/Makefile
                  daemon/Makefile
@@ -1617,12 +1660,14 @@ AC_CONFIG_FILES([Makefile
                  gobject/docs/Makefile
                  gobject/docs/guestfs-docs.sgml
                  golang/Makefile
+                 golang/examples/Makefile
                  haskell/Makefile
                  inspector/Makefile
                  java/Makefile
                  java/examples/Makefile
                  lua/Makefile
                  lua/examples/Makefile
+                 mllib/Makefile
                  ocaml/META
                  ocaml/Makefile
                  ocaml/examples/Makefile
@@ -1655,17 +1700,20 @@ AC_CONFIG_FILES([Makefile
                  tests/data/Makefile
                  tests/disks/Makefile
                  tests/disk-labels/Makefile
+                 tests/events/Makefile
                  tests/fuzz/Makefile
                  tests/guests/Makefile
                  tests/guests/guests.xml
                  tests/hotplug/Makefile
                  tests/http/Makefile
+                 tests/journal/Makefile
                  tests/luks/Makefile
                  tests/lvm/Makefile
                  tests/md/Makefile
                  tests/mount-local/Makefile
                  tests/mountable/Makefile
                  tests/nbd/Makefile
+                 tests/network/Makefile
                  tests/ntfsclone/Makefile
                  tests/parallel/Makefile
                  tests/protocol/Makefile
@@ -1675,6 +1723,7 @@ AC_CONFIG_FILES([Makefile
                  tests/selinux/Makefile
                  tests/syslinux/Makefile
                  tests/tmpdirs/Makefile
+                 tests/xfs/Makefile
                  tests/xml/Makefile
                  tools/Makefile])
 AC_OUTPUT

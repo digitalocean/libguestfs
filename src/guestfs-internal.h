@@ -56,9 +56,45 @@
 #define TRACE4(name, arg1, arg2, arg3, arg4)
 #endif
 
-/* Default, minimum appliance memory size. */
-#define DEFAULT_MEMSIZE 500
-#define MIN_MEMSIZE 128
+/* Default and minimum appliance memory size. */
+
+/* Needs to be larger on ppc64 because of the larger page size (64K).
+ * For example, test-max-disks won't pass unless we increase the
+ * default memory size since the system runs out of memory when
+ * creating device nodes.
+ */
+#ifdef __powerpc__
+#  define DEFAULT_MEMSIZE 768
+#  define MIN_MEMSIZE 256
+#endif
+
+/* Valgrind has a fairly hefty memory overhead.  Using the defaults
+ * caused the C API tests to fail.
+ */
+#ifdef VALGRIND_DAEMON
+#  ifndef DEFAULT_MEMSIZE
+#    define DEFAULT_MEMSIZE 768
+#  endif
+#  ifndef MIN_MEMSIZE
+#    define MIN_MEMSIZE 256
+#  endif
+#endif
+
+/* The default and minimum memory size for most users. */
+#ifndef DEFAULT_MEMSIZE
+#  define DEFAULT_MEMSIZE 500
+#endif
+#ifndef MIN_MEMSIZE
+#  define MIN_MEMSIZE 128
+#endif
+
+/* Timeout waiting for appliance to come up (seconds).
+ *
+ * XXX This is just a large timeout for now.  Should make this
+ * configurable.  Also it interacts with libguestfs-test-tool -t
+ * option.
+ */
+#define APPLIANCE_TIMEOUT (20*60) /* 20 mins */
 
 /* Some limits on what the inspection code will read, for safety. */
 
@@ -87,18 +123,39 @@
 /* Maximum size of Windows explorer.exe.  2.6MB on Windows 7. */
 #define MAX_WINDOWS_EXPLORER_SIZE (4 * 1000 * 1000)
 
+/* Differences in device names on ARM (virtio-mmio) vs normal
+ * hardware with PCI.
+ */
+#ifndef __arm__
+#define VIRTIO_BLK "virtio-blk-pci"
+#define VIRTIO_SCSI "virtio-scsi-pci"
+#define VIRTIO_SERIAL "virtio-serial-pci"
+#define VIRTIO_NET "virtio-net-pci"
+#else /* __arm__ */
+#define VIRTIO_BLK "virtio-blk-device"
+#define VIRTIO_SCSI "virtio-scsi-device"
+#define VIRTIO_SERIAL "virtio-serial-device"
+#define VIRTIO_NET "virtio-net-device"
+#endif /* __arm__ */
+
+/* Machine types.  XXX Make these configurable. */
+#ifdef __arm__
+/* In future, we can use mach-virt and drop the device tree completely
+ * (because the plan is for qemu to entirely generate the device tree
+ * internally when using mach-virt).
+ */
+#define MACHINE_TYPE "vexpress-a15"
+#define DTB_WILDCARD "vexpress*a15-tc1.dtb"
+#endif
+#ifdef __powerpc__
+#define MACHINE_TYPE "pseries"
+#endif
+
 /* Guestfs handle and associated structures. */
 
 /* State. */
 enum state { CONFIG = 0, LAUNCHING = 1, READY = 2,
              NO_HANDLE = 0xebadebad };
-
-/* Backend. */
-enum backend {
-  BACKEND_DIRECT,
-  BACKEND_LIBVIRT,
-  BACKEND_UNIX,
-};
 
 /* Event. */
 struct event {
@@ -179,37 +236,52 @@ struct drive {
   char *iface;
   char *name;
   char *disk_label;
-  bool use_cache_none;
+  char *cachemode;
 
   /* Data used by the backend. */
   void *priv;
   void (*free_priv) (void *);
 };
 
-/* Extra qemu parameters (from guestfs_config). */
-struct qemu_param {
-  struct qemu_param *next;
+/* Extra hv parameters (from guestfs_config). */
+struct hv_param {
+  struct hv_param *next;
 
-  char *qemu_param;
-  char *qemu_value;             /* May be NULL. */
+  char *hv_param;
+  char *hv_value;               /* May be NULL. */
 };
 
 /* Backend operations. */
 struct backend_ops {
-  int (*launch) (guestfs_h *g, const char *arg); /* Initialize and launch. */
-                                /* Shutdown and cleanup. */
-  int (*shutdown) (guestfs_h *g, int check_for_errors);
+  /* Size (in bytes) of the per-handle data structure needed by this
+   * backend.  The data pointer is allocated and freed by libguestfs
+   * and passed to the functions in the 'void *data' parameter.
+   * Inside the data structure is opaque to libguestfs.  Any strings
+   * etc pointed to by it must be freed by the backend during
+   * shutdown.
+   */
+  size_t data_size;
 
-  int (*get_pid) (guestfs_h *g);         /* get-pid API. */
-  int (*max_disks) (guestfs_h *g);       /* max-disks API. */
+  /* Launch and shut down. */
+  int (*launch) (guestfs_h *g, void *data, const char *arg);
+  int (*shutdown) (guestfs_h *g, void *data, int check_for_errors);
+
+  /* Miscellaneous. */
+  int (*get_pid) (guestfs_h *g, void *data);
+  int (*max_disks) (guestfs_h *g, void *data);
 
   /* Hotplugging drives. */
-  int (*hot_add_drive) (guestfs_h *g, struct drive *drv, size_t drv_index);
-  int (*hot_remove_drive) (guestfs_h *g, struct drive *drv, size_t drv_index);
+  int (*hot_add_drive) (guestfs_h *g, void *data, struct drive *drv, size_t drv_index);
+  int (*hot_remove_drive) (guestfs_h *g, void *data, struct drive *drv, size_t drv_index);
+
+  /* These are a hack used to communicate between guestfs_add_domain and
+   * the libvirt backend.  We will probably remove these in a future
+   * version once we can find a better way to pass this information
+   * around.
+   */
+  int (*set_libvirt_selinux_label) (guestfs_h *g, void *data, const char *label, const char *imagelabel);
+  int (*set_libvirt_selinux_norelabel_disks) (guestfs_h *g, void *data, int flag);
 };
-extern struct backend_ops backend_ops_direct;
-extern struct backend_ops backend_ops_libvirt;
-extern struct backend_ops backend_ops_unix;
 
 /* Connection module.  A 'connection' represents the appliance console
  * connection plus the daemon connection.  It hides the underlying
@@ -228,6 +300,7 @@ struct connection_ops {
   void (*free_connection) (guestfs_h *g, struct connection *);
 
   /* Accept the connection (back to us) from the daemon.
+   * There is an implicit timeout (APPLIANCE_TIMEOUT defined above).
    *
    * Returns: 1 = accepted, 0 = appliance closed connection, -1 = error
    */
@@ -277,14 +350,14 @@ struct guestfs_h
   bool pgroup;                  /* Create process group for children? */
   bool close_on_exit;           /* Is this handle on the atexit list? */
 
-  int smp;                      /* If > 1, -smp flag passed to qemu. */
+  int smp;                      /* If > 1, -smp flag passed to hv. */
   int memsize;			/* Size of RAM (megabytes). */
 
   char *path;			/* Path to the appliance. */
-  char *qemu;			/* Qemu binary. */
+  char *hv;			/* Hypervisor (HV) binary. */
   char *append;			/* Append to kernel command line. */
 
-  struct qemu_param *qemu_params; /* Extra qemu parameters. */
+  struct hv_param *hv_params;   /* Extra hv parameters. */
 
   char *program;                /* Program name. */
 
@@ -312,10 +385,11 @@ struct guestfs_h
   for (i = 0; i < (g)->nr_drives; ++i)    \
     if (((drv) = (g)->drives[i]) != NULL)
 
-  /* Backend, and associated backend operations. */
-  enum backend backend;
-  char *backend_arg;
+  /* Backend.  NB: Use guestfs___set_backend to change the backend. */
+  char *backend;                /* The full string, always non-NULL. */
+  char *backend_arg;            /* Pointer to the argument part. */
   const struct backend_ops *backend_ops;
+  void *backend_data;           /* Per-handle data. */
 
   /**** Runtime information. ****/
   char *last_error;             /* Last error on handle. */
@@ -398,40 +472,6 @@ struct guestfs_h
   unsigned int nr_requested_credentials;
   virConnectCredentialPtr requested_credentials;
 #endif
-
-  /**** Private data for backends. ****/
-  /* NB: This cannot be a union because of a pathological case where
-   * the user changes backend while reusing the handle to launch
-   * multiple times (not a recommended thing to do).  Some fields here
-   * cache things across launches so that would break if we used a
-   * union.
-   */
-  struct {                      /* Used only by src/launch-appliance.c. */
-    pid_t pid;                  /* Qemu PID. */
-    pid_t recoverypid;          /* Recovery process PID. */
-
-    char *qemu_help;            /* Output of qemu -help. */
-    char *qemu_version;         /* Output of qemu -version. */
-    char *qemu_devices;         /* Output of qemu -device ? */
-
-    /* qemu version (0, 0 if unable to parse). */
-    int qemu_version_major, qemu_version_minor;
-
-    char **cmdline;   /* Only used in child, does not need freeing. */
-    size_t cmdline_size;
-
-    int virtio_scsi;      /* See function qemu_supports_virtio_scsi */
-  } direct;
-
-#ifdef HAVE_LIBVIRT
-  struct {                      /* Used only by src/launch-libvirt.c. */
-    virConnectPtr conn;         /* libvirt connection */
-    virDomainPtr dom;           /* libvirt domain */
-  } virt;
-#endif
-  char *virt_selinux_label;
-  char *virt_selinux_imagelabel;
-  bool virt_selinux_norelabel_disks;
 };
 
 /* Per-filesystem data stored for inspect_os. */
@@ -569,6 +609,7 @@ extern void guestfs___print_BufferOut (FILE *out, const char *buf, size_t buf_si
 
 extern void guestfs___launch_failed_error (guestfs_h *g);
 extern void guestfs___unexpected_close_error (guestfs_h *g);
+extern void guestfs___launch_timeout (guestfs_h *g);
 extern void guestfs___external_command_failed (guestfs_h *g, int status, const char *cmd_name, const char *extra);
 
 /* actions-support.c */
@@ -596,6 +637,30 @@ extern int guestfs___match6 (guestfs_h *g, const char *str, const pcre *re, char
 #define match2 guestfs___match2
 #define match3 guestfs___match3
 #define match6 guestfs___match6
+
+/* stringsbuf.c */
+struct stringsbuf {
+  char **argv;
+  size_t size;
+  size_t alloc;
+};
+#define DECLARE_STRINGSBUF(v) \
+  struct stringsbuf (v) = { .argv = NULL, .size = 0, .alloc = 0 }
+
+extern void guestfs___add_string_nodup (guestfs_h *g, struct stringsbuf *sb, char *str);
+extern void guestfs___add_string (guestfs_h *g, struct stringsbuf *sb, const char *str);
+extern void guestfs___add_sprintf (guestfs_h *g, struct stringsbuf *sb, const char *fs, ...)
+  __attribute__((format (printf,3,4)));
+extern void guestfs___end_stringsbuf (guestfs_h *g, struct stringsbuf *sb);
+
+extern void guestfs___free_stringsbuf (struct stringsbuf *sb);
+
+#ifdef HAVE_ATTRIBUTE_CLEANUP
+#define CLEANUP_FREE_STRINGSBUF __attribute__((cleanup(guestfs___cleanup_free_stringsbuf)))
+#else
+#define CLEANUP_FREE_STRINGSBUF
+#endif
+extern void guestfs___cleanup_free_stringsbuf (struct stringsbuf *sb);
 
 /* proto.c */
 extern int guestfs___send (guestfs_h *g, int proc_nr, uint64_t progress_hint, uint64_t optargs_bitmask, xdrproc_t xdrp, char *args);
@@ -632,7 +697,7 @@ extern char *guestfs___drive_source_qemu_param (guestfs_h *g, const struct drive
 extern void guestfs___free_drive_source (struct drive_source *src);
 
 /* appliance.c */
-extern int guestfs___build_appliance (guestfs_h *g, char **kernel, char **initrd, char **appliance);
+extern int guestfs___build_appliance (guestfs_h *g, char **kernel, char **dtb, char **initrd, char **appliance);
 
 /* launch.c */
 extern int64_t guestfs___timeval_diff (const struct timeval *x, const struct timeval *y);
@@ -640,9 +705,8 @@ extern void guestfs___print_timestamped_message (guestfs_h *g, const char *fs, .
 extern void guestfs___launch_send_progress (guestfs_h *g, int perdozen);
 extern char *guestfs___appliance_command_line (guestfs_h *g, const char *appliance_dev, int flags);
 #define APPLIANCE_COMMAND_LINE_IS_TCG 1
-
-/* launch-appliance.c */
-extern char *guestfs___drive_name (size_t index, char *ret);
+extern void guestfs___register_backend (const char *name, const struct backend_ops *);
+extern int guestfs___set_backend (guestfs_h *g, const char *method);
 
 /* inspect.c */
 extern void guestfs___free_inspect_info (guestfs_h *g);
@@ -735,6 +799,7 @@ extern void guestfs___cmd_set_stdout_callback (struct command *, cmd_stdout_call
 #define CMD_STDOUT_FLAG_WHOLE_BUFFER    2
 extern void guestfs___cmd_set_stderr_to_stdout (struct command *);
 extern void guestfs___cmd_clear_capture_errors (struct command *);
+extern void guestfs___cmd_clear_close_files (struct command *);
 extern int guestfs___cmd_run (struct command *);
 extern void guestfs___cmd_close (struct command *);
 
@@ -743,6 +808,6 @@ extern void guestfs___cmd_close (struct command *);
 #else
 #define CLEANUP_CMD_CLOSE
 #endif
-extern void guestfs___cleanup_cmd_close (void *ptr);
+extern void guestfs___cleanup_cmd_close (struct command **);
 
 #endif /* GUESTFS_INTERNAL_H_ */

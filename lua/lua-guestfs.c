@@ -622,6 +622,10 @@ guestfs_lua_add_drive (lua_State *L)
       optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
       optargs_s.secret = luaL_checkstring (L, -1);
     );
+    OPTARG_IF_SET (3, "cachemode",
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
+      optargs_s.cachemode = luaL_checkstring (L, -1);
+    );
   }
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);
@@ -670,6 +674,41 @@ guestfs_lua_add_drive_ro_with_if (lua_State *L)
   iface = luaL_checkstring (L, 3);
 
   r = guestfs_add_drive_ro_with_if (g, filename, iface);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_add_drive_scratch (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  int64_t size;
+  struct guestfs_add_drive_scratch_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "add_drive_scratch");
+
+  size = get_int64 (L, 2);
+
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 3) == LUA_TTABLE) {
+    OPTARG_IF_SET (3, "name",
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK;
+      optargs_s.name = luaL_checkstring (L, -1);
+    );
+    OPTARG_IF_SET (3, "label",
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK;
+      optargs_s.label = luaL_checkstring (L, -1);
+    );
+  }
+
+  r = guestfs_add_drive_scratch_argv (g, size, optargs);
   if (r == -1)
     return last_error (L, g);
 
@@ -862,6 +901,29 @@ guestfs_lua_aug_insert (lua_State *L)
 }
 
 static int
+guestfs_lua_aug_label (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *augpath;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "aug_label");
+
+  augpath = luaL_checkstring (L, 2);
+
+  r = guestfs_aug_label (g, augpath);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
+  return 1;
+}
+
+static int
 guestfs_lua_aug_load (lua_State *L)
 {
   int r;
@@ -1011,6 +1073,32 @@ guestfs_lua_aug_set (lua_State *L)
     return last_error (L, g);
 
   return 0;
+}
+
+static int
+guestfs_lua_aug_setm (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *base;
+  const char *sub;
+  const char *val;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "aug_setm");
+
+  base = luaL_checkstring (L, 2);
+  sub = luaL_optstring (L, 3, NULL);
+  val = luaL_checkstring (L, 4);
+
+  r = guestfs_aug_setm (g, base, sub, val);
+  if (r == -1)
+    return last_error (L, g);
+
+  lua_pushinteger (L, r);
+  return 1;
 }
 
 static int
@@ -1994,17 +2082,17 @@ guestfs_lua_config (lua_State *L)
   int r;
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
-  const char *qemuparam;
-  const char *qemuvalue;
+  const char *hvparam;
+  const char *hvvalue;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
                 "config");
 
-  qemuparam = luaL_checkstring (L, 2);
-  qemuvalue = luaL_optstring (L, 3, NULL);
+  hvparam = luaL_checkstring (L, 2);
+  hvvalue = luaL_optstring (L, 3, NULL);
 
-  r = guestfs_config (g, qemuparam, qemuvalue);
+  r = guestfs_config (g, hvparam, hvvalue);
   if (r == -1)
     return last_error (L, g);
 
@@ -3462,6 +3550,27 @@ guestfs_lua_get_e2uuid (lua_State *L)
   device = luaL_checkstring (L, 2);
 
   r = guestfs_get_e2uuid (g, device);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
+  return 1;
+}
+
+static int
+guestfs_lua_get_hv (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "get_hv");
+
+
+  r = guestfs_get_hv (g);
   if (r == NULL)
     return last_error (L, g);
 
@@ -6564,6 +6673,150 @@ guestfs_lua_isoinfo_device (lua_State *L)
 
   push_isoinfo (L, r);
   guestfs_free_isoinfo (r);
+  return 1;
+}
+
+static int
+guestfs_lua_journal_close (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "journal_close");
+
+
+  r = guestfs_journal_close (g);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_journal_get (lua_State *L)
+{
+  struct guestfs_xattr_list *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "journal_get");
+
+
+  r = guestfs_journal_get (g);
+  if (r == NULL)
+    return last_error (L, g);
+
+  push_xattr_list (L, r);
+  guestfs_free_xattr_list (r);
+  return 1;
+}
+
+static int
+guestfs_lua_journal_get_data_threshold (lua_State *L)
+{
+  int64_t r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "journal_get_data_threshold");
+
+
+  r = guestfs_journal_get_data_threshold (g);
+  if (r == -1)
+    return last_error (L, g);
+
+  push_int64 (L, r);
+  return 1;
+}
+
+static int
+guestfs_lua_journal_next (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "journal_next");
+
+
+  r = guestfs_journal_next (g);
+  if (r == -1)
+    return last_error (L, g);
+
+  lua_pushboolean (L, r);
+  return 1;
+}
+
+static int
+guestfs_lua_journal_open (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *directory;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "journal_open");
+
+  directory = luaL_checkstring (L, 2);
+
+  r = guestfs_journal_open (g, directory);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_journal_set_data_threshold (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  int64_t threshold;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "journal_set_data_threshold");
+
+  threshold = get_int64 (L, 2);
+
+  r = guestfs_journal_set_data_threshold (g, threshold);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_journal_skip (lua_State *L)
+{
+  int64_t r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  int64_t skip;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "journal_skip");
+
+  skip = get_int64 (L, 2);
+
+  r = guestfs_journal_skip (g, skip);
+  if (r == -1)
+    return last_error (L, g);
+
+  push_int64 (L, r);
   return 1;
 }
 
@@ -10877,6 +11130,27 @@ guestfs_lua_set_e2uuid (lua_State *L)
 }
 
 static int
+guestfs_lua_set_hv (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *hv;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "set_hv");
+
+  hv = luaL_checkstring (L, 2);
+
+  r = guestfs_set_hv (g, hv);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_set_label (lua_State *L)
 {
   int r;
@@ -11056,15 +11330,15 @@ guestfs_lua_set_qemu (lua_State *L)
   int r;
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
-  const char *qemu;
+  const char *hv;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
                 "set_qemu");
 
-  qemu = luaL_optstring (L, 2, NULL);
+  hv = luaL_optstring (L, 2, NULL);
 
-  r = guestfs_set_qemu (g, qemu);
+  r = guestfs_set_qemu (g, hv);
   if (r == -1)
     return last_error (L, g);
 
@@ -11170,6 +11444,29 @@ guestfs_lua_set_trace (lua_State *L)
   trace = lua_toboolean (L, 2);
 
   r = guestfs_set_trace (g, trace);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_set_uuid (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  const char *uuid;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "set_uuid");
+
+  device = luaL_checkstring (L, 2);
+  uuid = luaL_checkstring (L, 3);
+
+  r = guestfs_set_uuid (g, device, uuid);
   if (r == -1)
     return last_error (L, g);
 
@@ -13558,6 +13855,7 @@ static const char *event_all[] = {
   "trace",
   "enter",
   "libvirt_auth",
+  "warning",
   NULL
 };
 
@@ -13626,6 +13924,10 @@ push_event (lua_State *L, uint64_t event)
   }
   if (event == 256) {
     lua_pushliteral (L, "libvirt_auth");
+    return;
+  }
+  if (event == 512) {
+    lua_pushliteral (L, "warning");
     return;
   }
   abort (); /* should never happen */
@@ -14472,6 +14774,7 @@ static luaL_Reg methods[] = {
   { "add_drive", guestfs_lua_add_drive },
   { "add_drive_ro", guestfs_lua_add_drive_ro },
   { "add_drive_ro_with_if", guestfs_lua_add_drive_ro_with_if },
+  { "add_drive_scratch", guestfs_lua_add_drive_scratch },
   { "add_drive_with_if", guestfs_lua_add_drive_with_if },
   { "aug_clear", guestfs_lua_aug_clear },
   { "aug_close", guestfs_lua_aug_close },
@@ -14480,6 +14783,7 @@ static luaL_Reg methods[] = {
   { "aug_get", guestfs_lua_aug_get },
   { "aug_init", guestfs_lua_aug_init },
   { "aug_insert", guestfs_lua_aug_insert },
+  { "aug_label", guestfs_lua_aug_label },
   { "aug_load", guestfs_lua_aug_load },
   { "aug_ls", guestfs_lua_aug_ls },
   { "aug_match", guestfs_lua_aug_match },
@@ -14487,6 +14791,7 @@ static luaL_Reg methods[] = {
   { "aug_rm", guestfs_lua_aug_rm },
   { "aug_save", guestfs_lua_aug_save },
   { "aug_set", guestfs_lua_aug_set },
+  { "aug_setm", guestfs_lua_aug_setm },
   { "available", guestfs_lua_available },
   { "available_all_groups", guestfs_lua_available_all_groups },
   { "base64_in", guestfs_lua_base64_in },
@@ -14588,6 +14893,7 @@ static luaL_Reg methods[] = {
   { "get_e2generation", guestfs_lua_get_e2generation },
   { "get_e2label", guestfs_lua_get_e2label },
   { "get_e2uuid", guestfs_lua_get_e2uuid },
+  { "get_hv", guestfs_lua_get_hv },
   { "get_libvirt_requested_credential_challenge", guestfs_lua_get_libvirt_requested_credential_challenge },
   { "get_libvirt_requested_credential_defresult", guestfs_lua_get_libvirt_requested_credential_defresult },
   { "get_libvirt_requested_credential_prompt", guestfs_lua_get_libvirt_requested_credential_prompt },
@@ -14710,6 +15016,13 @@ static luaL_Reg methods[] = {
   { "is_zero_device", guestfs_lua_is_zero_device },
   { "isoinfo", guestfs_lua_isoinfo },
   { "isoinfo_device", guestfs_lua_isoinfo_device },
+  { "journal_close", guestfs_lua_journal_close },
+  { "journal_get", guestfs_lua_journal_get },
+  { "journal_get_data_threshold", guestfs_lua_journal_get_data_threshold },
+  { "journal_next", guestfs_lua_journal_next },
+  { "journal_open", guestfs_lua_journal_open },
+  { "journal_set_data_threshold", guestfs_lua_journal_set_data_threshold },
+  { "journal_skip", guestfs_lua_journal_skip },
   { "kill_subprocess", guestfs_lua_kill_subprocess },
   { "launch", guestfs_lua_launch },
   { "lchown", guestfs_lua_lchown },
@@ -14881,6 +15194,7 @@ static luaL_Reg methods[] = {
   { "set_e2generation", guestfs_lua_set_e2generation },
   { "set_e2label", guestfs_lua_set_e2label },
   { "set_e2uuid", guestfs_lua_set_e2uuid },
+  { "set_hv", guestfs_lua_set_hv },
   { "set_label", guestfs_lua_set_label },
   { "set_libvirt_requested_credential", guestfs_lua_set_libvirt_requested_credential },
   { "set_libvirt_supported_credentials", guestfs_lua_set_libvirt_supported_credentials },
@@ -14895,6 +15209,7 @@ static luaL_Reg methods[] = {
   { "set_smp", guestfs_lua_set_smp },
   { "set_tmpdir", guestfs_lua_set_tmpdir },
   { "set_trace", guestfs_lua_set_trace },
+  { "set_uuid", guestfs_lua_set_uuid },
   { "set_verbose", guestfs_lua_set_verbose },
   { "setcon", guestfs_lua_setcon },
   { "setxattr", guestfs_lua_setxattr },

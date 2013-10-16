@@ -24,7 +24,15 @@ use Sys::Guestfs;
 
 my $disk = "../guests/fedora.img";
 
+my $pid = 0;
+END { kill 15, $pid if $pid > 0 };
+
 exit 77 if $ENV{SKIP_TEST_NBD_PL};
+
+if (Sys::Guestfs->new()->get_backend() eq "uml") {
+    print "$0: test skipped because UML backend does not support NBD\n";
+    exit 77
+}
 
 # Check we have qemu-nbd.
 if (system ("qemu-nbd --help >/dev/null 2>&1") != 0) {
@@ -36,9 +44,6 @@ if (! -r $disk || -z $disk) {
     print "$0: test skipped because $disk is not found\n";
     exit 77
 }
-
-my $pid = 0;
-END { kill 15, $pid if $pid > 0 };
 
 sub run_test {
     my $readonly = shift;

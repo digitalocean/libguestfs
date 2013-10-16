@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.402';
+$VERSION = '0.414';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -200,13 +200,21 @@ See L<guestfs(3)/GUESTFS_EVENT_LIBVIRT_AUTH>.
 
 our $EVENT_LIBVIRT_AUTH = 0x100;
 
+=item $Sys::Guestfs::EVENT_WARNING
+
+See L<guestfs(3)/GUESTFS_EVENT_WARNING>.
+
+=cut
+
+our $EVENT_WARNING = 0x200;
+
 =item $Sys::Guestfs::EVENT_ALL
 
 See L<guestfs(3)/GUESTFS_EVENT_ALL>.
 
 =cut
 
-our $EVENT_ALL = 0x1ff;
+our $EVENT_ALL = 0x3ff;
 
 =item $event_handle = $g->set_event_callback (\&cb, $event_bitmask);
 
@@ -309,8 +317,7 @@ C<path> is a directory.
 =item $g->acl_set_file ($path, $acltype, $acl);
 
 This function sets the POSIX Access Control List (ACL) attached
-to C<path>.  The C<acl> parameter is the new ACL in either
-"long text form" or "short text form" (see L<acl(5)>).
+to C<path>.
 
 The C<acltype> parameter may be:
 
@@ -327,6 +334,23 @@ Set the default ACL.  Normally this only makes sense if
 C<path> is a directory.
 
 =back
+
+The C<acl> parameter is the new ACL in either "long text form"
+or "short text form" (see L<acl(5)>).  The new ACL completely
+replaces any previous ACL on the file.  The ACL must contain the
+full Unix permissions (eg. C<u::rwx,g::rx,o::rx>).
+
+If you are specifying individual users or groups, then the
+mask field is also required (eg. C<m::rwx>), followed by the
+C<u:I<ID>:...> and/or C<g:I<ID>:...> field(s).  A full ACL
+string might therefore look like this:
+
+ u::rwx,g::rwx,o::rwx,m::rwx,u:500:rwx,g:500:rwx
+ \ Unix permissions / \mask/ \      ACL        /
+
+You should use numeric UIDs and GIDs.  To map usernames and
+groupnames to the correct numeric ID in the context of the
+guest, use the Augeas functions (see C<$g-E<gt>aug_init>).
 
 =item $g->add_cdrom ($filename);
 
@@ -428,7 +452,7 @@ Disks with the E<lt>readonly/E<gt> flag are skipped.
 The other optional parameters are passed directly through to
 C<$g-E<gt>add_drive_opts>.
 
-=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret]);
+=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret] [, cachemode => $cachemode]);
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -614,9 +638,37 @@ If not given, then a secret matching the given username will be looked up in the
 default keychain locations, or if no username is given, then no authentication
 will be used.
 
+=item C<cachemode>
+
+Choose whether or not libguestfs will obey sync operations (safe but slow)
+or not (unsafe but fast).  The possible values for this string are:
+
+=over 4
+
+=item C<cachemode = "writeback">
+
+This is the default.
+
+Write operations in the API do not return until a L<write(2)>
+call has completed in the host [but note this does not imply
+that anything gets written to disk].
+
+Sync operations in the API, including implicit syncs caused by
+filesystem journalling, will not return until an L<fdatasync(2)>
+call has completed in the host, indicating that data has been
+committed to disk.
+
+=item C<cachemode = "unsafe">
+
+In this mode, there are no guarantees.  Libguestfs may cache
+anything and ignore sync requests.  This is suitable only
+for scratch or temporary disks.
+
 =back
 
-=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret]);
+=back
+
+=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret] [, cachemode => $cachemode]);
 
 This is an alias of L</add_drive>.
 
@@ -646,6 +698,16 @@ In new code, use the L</add_drive> call instead.
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
+
+=item $g->add_drive_scratch ($size [, name => $name] [, label => $label]);
+
+This command adds a temporary scratch drive to the handle.  The
+C<size> parameter is the virtual size (in bytes).  The scratch
+drive is blank initially (all reads return zeroes until you start
+writing to it).  The drive is deleted when the handle is closed.
+
+The optional arguments C<name> and C<label> are passed through to
+C<$g-E<gt>add_drive>.
 
 =item $g->add_drive_with_if ($filename, $iface);
 
@@ -762,6 +824,12 @@ C<path> must match exactly one existing node in the tree, and
 C<label> must be a label, ie. not contain C</>, C<*> or end
 with a bracketed index C<[N]>.
 
+=item $label = $g->aug_label ($augpath);
+
+The label (name of the last element) of the Augeas path expression
+C<augpath> is returned.  C<augpath> must match exactly one node, else
+this function returns an error.
+
 =item $g->aug_load ();
 
 Load files into the tree.
@@ -806,6 +874,16 @@ In the Augeas API, it is possible to clear a node by setting
 the value to NULL.  Due to an oversight in the libguestfs API
 you cannot do that with this call.  Instead you must use the
 C<$g-E<gt>aug_clear> call.
+
+=item $nodes = $g->aug_setm ($base, $sub, $val);
+
+Change multiple Augeas nodes in a single operation.  C<base> is
+an expression matching multiple nodes.  C<sub> is a path expression
+relative to C<base>.  All nodes matching C<base> are found, and then
+for each node, C<sub> is changed to C<val>.  C<sub> may also be C<NULL>
+in which case the C<base> nodes are modified.
+
+This returns the number of nodes modified.
 
 =item $g->available (\@groups);
 
@@ -935,8 +1013,11 @@ This uses the L<blockdev(8)> command.
 
 This returns the block size of a device.
 
-(Note this is different from both I<size in blocks> and
-I<filesystem block size>).
+Note: this is different from both I<size in blocks> and
+I<filesystem block size>.  Also this setting is not really
+used by anything.  You should probably not use it for
+anything.  Filesystems have their own idea about what
+block size to choose.
 
 This uses the L<blockdev(8)> command.
 
@@ -984,12 +1065,18 @@ This uses the L<blockdev(8)> command.
 
 =item $g->blockdev_setbsz ($device, $blocksize);
 
-This sets the block size of a device.
+This call does nothing and has never done anything
+because of a bug in blockdev.  B<Do not use it.>
 
-(Note this is different from both I<size in blocks> and
-I<filesystem block size>).
+If you need to set the filesystem block size, use the
+C<blocksize> option of C<$g-E<gt>mkfs>.
 
-This uses the L<blockdev(8)> command.
+I<This function is deprecated.>
+In new code, use the L</mkfs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $g->blockdev_setro ($device);
 
@@ -1109,6 +1196,8 @@ Other strings are returned unmodified.
 
 This function returns the Linux capabilities attached to C<path>.
 The capabilities set is returned in text form (see L<cap_to_text(3)>).
+
+If no capabilities are attached to a file, an empty string is returned.
 
 =item $g->cap_set_file ($path, $cap);
 
@@ -1313,16 +1402,16 @@ The optional C<level> parameter controls compression level.  The
 meaning and default for this parameter depends on the compression
 program being used.
 
-=item $g->config ($qemuparam, $qemuvalue);
+=item $g->config ($hvparam, $hvvalue);
 
-This can be used to add arbitrary qemu command line parameters
-of the form I<-param value>.  Actually it's not quite arbitrary - we
+This can be used to add arbitrary hypervisor parameters of the
+form I<-param value>.  Actually it's not quite arbitrary - we
 prevent you from setting some parameters which would interfere with
 parameters that we use.
 
-The first character of C<qemuparam> string must be a C<-> (dash).
+The first character of C<hvparam> string must be a C<-> (dash).
 
-C<qemuvalue> can be NULL.
+C<hvvalue> can be NULL.
 
 =item $g->copy_device_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse]);
 
@@ -1862,9 +1951,11 @@ C<ext3>.
 You must call C<$g-E<gt>launch> before using this command.
 
 This is mainly useful as a negative test.  If this returns true,
-it doesn't mean that a particular filesystem can be mounted,
-since filesystems can fail for other reasons such as it being
-a later version of the filesystem, or having incompatible features.
+it doesn't mean that a particular filesystem can be created
+or mounted, since filesystems can fail for other reasons
+such as it being a later version of the filesystem,
+or having incompatible features, or lacking the right
+mkfs.E<lt>I<fs>E<gt> tool.
 
 See also C<$g-E<gt>available>, C<$g-E<gt>feature_available>,
 L<guestfs(3)/AVAILABILITY>.
@@ -2199,6 +2290,13 @@ Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
 
+=item $hv = $g->get_hv ();
+
+Return the current hypervisor binary.
+
+This is always non-NULL.  If it wasn't set already, then this will
+return the default qemu binary name.
+
 =item $challenge = $g->get_libvirt_requested_credential_challenge ($index);
 
 Get the challenge (provided by libvirt) for the C<index>'th
@@ -2237,7 +2335,7 @@ See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 =item $memsize = $g->get_memsize ();
 
 This gets the memory size in megabytes allocated to the
-qemu subprocess.
+hypervisor.
 
 If C<$g-E<gt>set_memsize> was not called
 on this handle, and if C<LIBGUESTFS_MEMSIZE> was not set,
@@ -2263,8 +2361,8 @@ This returns the process group flag.
 
 =item $pid = $g->get_pid ();
 
-Return the process ID of the qemu subprocess.  If there is no
-qemu subprocess, then this will return an error.
+Return the process ID of the hypervisor.  If there is no
+hypervisor running, then this will return an error.
 
 This is an internal call used for debugging and testing.
 
@@ -2272,12 +2370,19 @@ This is an internal call used for debugging and testing.
 
 Get the program name.  See C<$g-E<gt>set_program>.
 
-=item $qemu = $g->get_qemu ();
+=item $hv = $g->get_qemu ();
 
-Return the current qemu binary.
+Return the current hypervisor binary (usually qemu).
 
 This is always non-NULL.  If it wasn't set already, then this will
 return the default qemu binary name.
+
+I<This function is deprecated.>
+In new code, use the L</get_hv> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $recoveryproc = $g->get_recovery_proc ();
 
@@ -3684,9 +3789,81 @@ instead of going through libguestfs.
 For information on the primary volume descriptor fields, see
 L<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor>
 
+=item $g->journal_close ();
+
+Close the journal handle.
+
+=item @fields = $g->journal_get ();
+
+Read the current journal entry.  This returns all the fields
+in the journal as a set of C<(attrname, attrval)> pairs.  The
+C<attrname> is the field name (a string).
+
+The C<attrval> is the field value (a binary blob, often but
+not always a string).  Please note that C<attrval> is a byte
+array, I<not> a \0-terminated C string.
+
+The length of data may be truncated to the data threshold
+(see: C<$g-E<gt>journal_set_data_threshold>,
+C<$g-E<gt>journal_get_data_threshold>).
+
+If you set the data threshold to unlimited (C<0>) then this call
+can read a journal entry of any size, ie. it is not limited by
+the libguestfs protocol.
+
+=item $threshold = $g->journal_get_data_threshold ();
+
+Get the current data threshold for reading journal entries.
+This is a hint to the journal that it may truncate data fields to
+this size when reading them (note also that it may not truncate them).
+If this returns C<0>, then the threshold is unlimited.
+
+See also C<$g-E<gt>journal_set_data_threshold>.
+
+=item $more = $g->journal_next ();
+
+Move to the next journal entry.  You have to call this
+at least once after opening the handle before you are able
+to read data.
+
+The returned boolean tells you if there are any more journal
+records to read.  C<true> means you can read the next record
+(eg. using C<$g-E<gt>journal_get_data>), and C<false> means you
+have reached the end of the journal.
+
+=item $g->journal_open ($directory);
+
+Open the systemd journal located in C<directory>.  Any previously
+opened journal handle is closed.
+
+The contents of the journal can be read using C<$g-E<gt>journal_next>
+and C<$g-E<gt>journal_get>.
+
+After you have finished using the journal, you should close the
+handle by calling C<$g-E<gt>journal_close>.
+
+=item $g->journal_set_data_threshold ($threshold);
+
+Set the data threshold for reading journal entries.
+This is a hint to the journal that it may truncate data fields to
+this size when reading them (note also that it may not truncate them).
+If you set this to C<0>, then the threshold is unlimited.
+
+See also C<$g-E<gt>journal_get_data_threshold>.
+
+=item $rskip = $g->journal_skip ($skip);
+
+Skip forwards (C<skip E<ge> 0>) or backwards (C<skip E<lt> 0>) in the
+journal.
+
+The number of entries actually skipped is returned (note S<C<rskip E<ge> 0>>).
+If this is not the same as the absolute value of the skip parameter
+(C<|skip|>) you passed in then it means you have reached the end or
+the start of the journal.
+
 =item $g->kill_subprocess ();
 
-This kills the qemu subprocess.
+This kills the hypervisor.
 
 Do not call this.  See: C<$g-E<gt>shutdown> instead.
 
@@ -3698,9 +3875,6 @@ fact that they are deprecated indicates that there are problems
 with correct use of these functions.
 
 =item $g->launch ();
-
-Internally libguestfs is implemented by running a virtual machine
-using L<qemu(1)>.
 
 You should call this after configuring the handle
 (eg. adding drives) but before performing any actions.
@@ -4388,9 +4562,12 @@ See also: L<mkdtemp(3)>
 =item $g->mke2fs ($device [, blockscount => $blockscount] [, blocksize => $blocksize] [, fragsize => $fragsize] [, blockspergroup => $blockspergroup] [, numberofgroups => $numberofgroups] [, bytesperinode => $bytesperinode] [, inodesize => $inodesize] [, journalsize => $journalsize] [, numberofinodes => $numberofinodes] [, stridesize => $stridesize] [, stripewidth => $stripewidth] [, maxonlineresize => $maxonlineresize] [, reservedblockspercentage => $reservedblockspercentage] [, mmpupdateinterval => $mmpupdateinterval] [, journaldevice => $journaldevice] [, label => $label] [, lastmounteddir => $lastmounteddir] [, creatoros => $creatoros] [, fstype => $fstype] [, usagetype => $usagetype] [, uuid => $uuid] [, forcecreate => $forcecreate] [, writesbandgrouponly => $writesbandgrouponly] [, lazyitableinit => $lazyitableinit] [, lazyjournalinit => $lazyjournalinit] [, testfs => $testfs] [, discard => $discard] [, quotatype => $quotatype] [, extent => $extent] [, filetype => $filetype] [, flexbg => $flexbg] [, hasjournal => $hasjournal] [, journaldev => $journaldev] [, largefile => $largefile] [, quota => $quota] [, resizeinode => $resizeinode] [, sparsesuper => $sparsesuper] [, uninitbg => $uninitbg]);
 
 C<mke2fs> is used to create an ext2, ext3, or ext4 filesystem
-on C<device>.  The optional C<blockscount> is the size of the
-filesystem in blocks.  If omitted it defaults to the size of
-C<device>.
+on C<device>.
+
+The optional C<blockscount> is the size of the filesystem in blocks.
+If omitted it defaults to the size of C<device>.  Note if the
+filesystem is too small to contain a journal, C<mke2fs> will
+silently create an ext2 filesystem instead.
 
 =item $g->mke2fs_J ($fstype, $blocksize, $device, $journal);
 
@@ -5224,7 +5401,7 @@ See also C<$g-E<gt>part_to_dev>.
 =item $g->ping_daemon ();
 
 This is a test probe into the guestfs daemon running inside
-the qemu subprocess.  Calling this function checks that the
+the hypervisor.  Calling this function checks that the
 daemon responds to the ping message, without affecting the daemon
 or attached block device(s) in any other way.
 
@@ -5605,6 +5782,13 @@ so the target must be set up not to require one.
 
 The optional arguments are the same as those of C<$g-E<gt>rsync>.
 
+Globbing does not happen on the C<src> parameter.  In programs
+which use the API directly you have to expand wildcards yourself
+(see C<$g-E<gt>glob_expand>).  In guestfish you can use the C<glob>
+command (see L<guestfish(1)/glob>), for example:
+
+ ><fs> glob rsync-out /* rsync://remote/
+
 =item $g->scrub_device ($device);
 
 This command writes patterns over C<device> to make data retrieval
@@ -5756,8 +5940,36 @@ C<device> to C<uuid>.  The format of the UUID and alternatives
 such as C<clear>, C<random> and C<time> are described in the
 L<tune2fs(8)> manpage.
 
-You can use either C<$g-E<gt>tune2fs_l> or C<$g-E<gt>get_e2uuid>
-to return the existing UUID of a filesystem.
+You can use C<$g-E<gt>vfs_uuid> to return the existing UUID
+of a filesystem.
+
+I<This function is deprecated.>
+In new code, use the L</set_uuid> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
+=item $g->set_hv ($hv);
+
+Set the hypervisor binary that we will use.  The hypervisor
+depends on the backend, but is usually the location of the
+qemu/KVM hypervisor.  For the uml backend, it is the location
+of the C<linux> or C<vmlinux> binary.
+
+The default is chosen when the library was compiled by the
+configure script.
+
+You can also override this by setting the C<LIBGUESTFS_HV>
+environment variable.
+
+Note that you should call this function as early as possible
+after creating the handle.  This is because some pre-launch
+operations depend on testing qemu features (by running C<qemu -help>).
+If the qemu binary changes, we don't retest features, and
+so you might see inconsistent results.  Using the environment
+variable C<LIBGUESTFS_HV> is safest of all since that picks
+the qemu binary at the same time as the handle is created.
 
 =item $g->set_label ($mountable, $label);
 
@@ -5766,12 +5978,29 @@ Set the filesystem label on C<mountable> to C<label>.
 Only some filesystem types support labels, and libguestfs supports
 setting labels on only a subset of these.
 
-On ext2/3/4 filesystems, labels are limited to 16 bytes.
+=over 4
 
-On NTFS filesystems, labels are limited to 128 unicode characters.
+=item ext2, ext3, ext4
 
-Setting the label on a btrfs subvolume will set the label on its parent
-filesystem.
+Labels are limited to 16 bytes.
+
+=item NTFS
+
+Labels are limited to 128 unicode characters.
+
+=item XFS
+
+The label is limited to 12 bytes.  The filesystem must not
+be mounted when trying to set the label.
+
+=item btrfs
+
+The label is limited to 256 bytes and some characters are
+not allowed.  Setting the label on a btrfs subvolume will set the
+label on its parent filesystem.  The filesystem must not be mounted
+when trying to set the label.
+
+=back
 
 To read the label on a filesystem, call C<$g-E<gt>vfs_label>.
 
@@ -5820,7 +6049,7 @@ See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 =item $g->set_memsize ($memsize);
 
 This sets the memory size in megabytes allocated to the
-qemu subprocess.  This only has any effect if called before
+hypervisor.  This only has any effect if called before
 C<$g-E<gt>launch>.
 
 You can also change this by setting the environment
@@ -5872,31 +6101,38 @@ When the handle is created, the program name in the handle is
 set to the basename from C<argv[0]>.  If that was not possible,
 it is set to the empty string (but never C<NULL>).
 
-=item $g->set_qemu ($qemu);
+=item $g->set_qemu ($hv);
 
-Set the qemu binary that we will use.
+Set the hypervisor binary (usually qemu) that we will use.
 
 The default is chosen when the library was compiled by the
 configure script.
 
-You can also override this by setting the C<LIBGUESTFS_QEMU>
+You can also override this by setting the C<LIBGUESTFS_HV>
 environment variable.
 
-Setting C<qemu> to C<NULL> restores the default qemu binary.
+Setting C<hv> to C<NULL> restores the default qemu binary.
 
 Note that you should call this function as early as possible
 after creating the handle.  This is because some pre-launch
 operations depend on testing qemu features (by running C<qemu -help>).
 If the qemu binary changes, we don't retest features, and
 so you might see inconsistent results.  Using the environment
-variable C<LIBGUESTFS_QEMU> is safest of all since that picks
+variable C<LIBGUESTFS_HV> is safest of all since that picks
 the qemu binary at the same time as the handle is created.
+
+I<This function is deprecated.>
+In new code, use the L</set_hv> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $g->set_recovery_proc ($recoveryproc);
 
 If this is called with the parameter C<false> then
 C<$g-E<gt>launch> does not create a recovery process.  The
-purpose of the recovery process is to stop runaway qemu
+purpose of the recovery process is to stop runaway hypervisor
 processes in the case where the main program aborts abruptly.
 
 This only has any effect if called before C<$g-E<gt>launch>,
@@ -5906,7 +6142,7 @@ About the only time when you would want to disable this is
 if the main process will fork itself into the background
 ("daemonize" itself).  In this case the recovery process
 thinks that the main program has disappeared and so kills
-qemu, which is not very helpful.
+the hypervisor, which is not very helpful.
 
 =item $g->set_selinux ($selinux);
 
@@ -5951,6 +6187,14 @@ C<LIBGUESTFS_TRACE> is defined and set to C<1>.
 Trace messages are normally sent to C<stderr>, unless you
 register a callback to send them somewhere else (see
 C<$g-E<gt>set_event_callback>).
+
+=item $g->set_uuid ($device, $uuid);
+
+Set the filesystem UIUD on C<device> to C<label>.
+
+Only some filesystem types support setting UUIDs.
+
+To read the UUID on a filesystem, call C<$g-E<gt>vfs_uuid>.
 
 =item $g->set_verbose ($verbose);
 
@@ -7157,6 +7401,7 @@ use vars qw(%guestfs_introspection);
       server => [ 'server', 'string list', 6 ],
       username => [ 'username', 'string', 7 ],
       secret => [ 'secret', 'string', 8 ],
+      cachemode => [ 'cachemode', 'string', 9 ],
     },
     name => "add_drive",
     description => "add an image to examine or modify",
@@ -7177,6 +7422,18 @@ use vars qw(%guestfs_introspection);
     ],
     name => "add_drive_ro_with_if",
     description => "add a drive read-only specifying the QEMU block emulation to use",
+  },
+  "add_drive_scratch" => {
+    ret => 'void',
+    args => [
+      [ 'size', 'int64', 0 ],
+    ],
+    optargs => {
+      name => [ 'name', 'string', 0 ],
+      label => [ 'label', 'string', 1 ],
+    },
+    name => "add_drive_scratch",
+    description => "add a temporary scratch drive",
   },
   "add_drive_with_if" => {
     ret => 'void',
@@ -7248,6 +7505,14 @@ use vars qw(%guestfs_introspection);
     name => "aug_insert",
     description => "insert a sibling Augeas node",
   },
+  "aug_label" => {
+    ret => 'string',
+    args => [
+      [ 'augpath', 'string', 0 ],
+    ],
+    name => "aug_label",
+    description => "return the label from an Augeas path expression",
+  },
   "aug_load" => {
     ret => 'void',
     args => [
@@ -7303,6 +7568,16 @@ use vars qw(%guestfs_introspection);
     ],
     name => "aug_set",
     description => "set Augeas path to value",
+  },
+  "aug_setm" => {
+    ret => 'int',
+    args => [
+      [ 'base', 'string', 0 ],
+      [ 'sub', 'nullable string', 1 ],
+      [ 'val', 'string', 2 ],
+    ],
+    name => "aug_setm",
+    description => "set multiple Augeas nodes",
   },
   "available" => {
     ret => 'void',
@@ -7667,11 +7942,11 @@ use vars qw(%guestfs_introspection);
   "config" => {
     ret => 'void',
     args => [
-      [ 'qemuparam', 'string', 0 ],
-      [ 'qemuvalue', 'nullable string', 1 ],
+      [ 'hvparam', 'string', 0 ],
+      [ 'hvvalue', 'nullable string', 1 ],
     ],
     name => "config",
-    description => "add qemu parameters",
+    description => "add hypervisor parameters",
   },
   "copy_device_to_device" => {
     ret => 'void',
@@ -8199,6 +8474,13 @@ use vars qw(%guestfs_introspection);
     name => "get_e2uuid",
     description => "get the ext2/3/4 filesystem UUID",
   },
+  "get_hv" => {
+    ret => 'string',
+    args => [
+    ],
+    name => "get_hv",
+    description => "get the hypervisor binary",
+  },
   "get_libvirt_requested_credential_challenge" => {
     ret => 'string',
     args => [
@@ -8235,7 +8517,7 @@ use vars qw(%guestfs_introspection);
     args => [
     ],
     name => "get_memsize",
-    description => "get memory allocated to the qemu subprocess",
+    description => "get memory allocated to the hypervisor",
   },
   "get_network" => {
     ret => 'bool',
@@ -8263,7 +8545,7 @@ use vars qw(%guestfs_introspection);
     args => [
     ],
     name => "get_pid",
-    description => "get PID of qemu subprocess",
+    description => "get PID of hypervisor",
   },
   "get_program" => {
     ret => 'const string',
@@ -8277,7 +8559,7 @@ use vars qw(%guestfs_introspection);
     args => [
     ],
     name => "get_qemu",
-    description => "get the qemu binary",
+    description => "get the hypervisor binary (usually qemu)",
   },
   "get_recovery_proc" => {
     ret => 'bool',
@@ -9262,19 +9544,71 @@ use vars qw(%guestfs_introspection);
     name => "isoinfo_device",
     description => "get ISO information from primary volume descriptor of device",
   },
+  "journal_close" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "journal_close",
+    description => "close the systemd journal",
+  },
+  "journal_get" => {
+    ret => 'struct xattr list',
+    args => [
+    ],
+    name => "journal_get",
+    description => "read the current journal entry",
+  },
+  "journal_get_data_threshold" => {
+    ret => 'int64',
+    args => [
+    ],
+    name => "journal_get_data_threshold",
+    description => "get the data threshold for reading journal entries",
+  },
+  "journal_next" => {
+    ret => 'bool',
+    args => [
+    ],
+    name => "journal_next",
+    description => "move to the next journal entry",
+  },
+  "journal_open" => {
+    ret => 'void',
+    args => [
+      [ 'directory', 'string(path)', 0 ],
+    ],
+    name => "journal_open",
+    description => "open the systemd journal",
+  },
+  "journal_set_data_threshold" => {
+    ret => 'void',
+    args => [
+      [ 'threshold', 'int64', 0 ],
+    ],
+    name => "journal_set_data_threshold",
+    description => "set the data threshold for reading journal entries",
+  },
+  "journal_skip" => {
+    ret => 'int64',
+    args => [
+      [ 'skip', 'int64', 0 ],
+    ],
+    name => "journal_skip",
+    description => "skip forwards or backwards in the journal",
+  },
   "kill_subprocess" => {
     ret => 'void',
     args => [
     ],
     name => "kill_subprocess",
-    description => "kill the qemu subprocess",
+    description => "kill the hypervisor",
   },
   "launch" => {
     ret => 'void',
     args => [
     ],
     name => "launch",
-    description => "launch the qemu subprocess",
+    description => "launch the backend",
   },
   "lchown" => {
     ret => 'void',
@@ -10833,6 +11167,14 @@ use vars qw(%guestfs_introspection);
     name => "set_e2uuid",
     description => "set the ext2/3/4 filesystem UUID",
   },
+  "set_hv" => {
+    ret => 'void',
+    args => [
+      [ 'hv', 'string', 0 ],
+    ],
+    name => "set_hv",
+    description => "set the hypervisor binary",
+  },
   "set_label" => {
     ret => 'void',
     args => [
@@ -10865,7 +11207,7 @@ use vars qw(%guestfs_introspection);
       [ 'memsize', 'int', 0 ],
     ],
     name => "set_memsize",
-    description => "set memory allocated to the qemu subprocess",
+    description => "set memory allocated to the hypervisor",
   },
   "set_network" => {
     ret => 'void',
@@ -10902,10 +11244,10 @@ use vars qw(%guestfs_introspection);
   "set_qemu" => {
     ret => 'void',
     args => [
-      [ 'qemu', 'nullable string', 0 ],
+      [ 'hv', 'nullable string', 0 ],
     ],
     name => "set_qemu",
-    description => "set the qemu binary",
+    description => "set the hypervisor binary (usually qemu)",
   },
   "set_recovery_proc" => {
     ret => 'void',
@@ -10946,6 +11288,15 @@ use vars qw(%guestfs_introspection);
     ],
     name => "set_trace",
     description => "enable or disable command traces",
+  },
+  "set_uuid" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'uuid', 'string', 1 ],
+    ],
+    name => "set_uuid",
+    description => "set the filesystem UUID",
   },
   "set_verbose" => {
     ret => 'void',
@@ -11053,7 +11404,7 @@ use vars qw(%guestfs_introspection);
     args => [
     ],
     name => "shutdown",
-    description => "shutdown the qemu subprocess",
+    description => "shutdown the hypervisor",
   },
   "sleep" => {
     ret => 'void',
@@ -11539,7 +11890,7 @@ use vars qw(%guestfs_introspection);
     args => [
     ],
     name => "wait_ready",
-    description => "wait until the qemu subprocess launches (no op)",
+    description => "wait until the hypervisor launches (no op)",
   },
   "wc_c" => {
     ret => 'int',

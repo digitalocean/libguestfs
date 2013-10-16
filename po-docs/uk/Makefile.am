@@ -25,12 +25,16 @@ LINGUA = $(shell basename -- `pwd`)
 
 CLEANFILES = *.1 *.3 stamp-update-po
 
+# Before 1.23.23, the old Perl tools were called *.pl.
+CLEANFILES += *.pl
+
 MANPAGES = \
 	guestfish.1 \
 	guestfs.3 \
 	guestfs-erlang.3 \
 	guestfs-examples.3 \
 	guestfs-faq.1 \
+	guestfs-golang.3 \
 	guestfs-java.3 \
 	guestfs-lua.3 \
 	guestfs-ocaml.3 \
@@ -47,6 +51,7 @@ MANPAGES = \
 	libguestfs-make-fixed-appliance.1 \
 	libguestfs-test-tool.1 \
 	virt-alignment-scan.1 \
+	virt-builder.1 \
 	virt-cat.1 \
 	virt-copy-in.1 \
 	virt-copy-out.1 \
@@ -68,7 +73,7 @@ MANPAGES = \
 	virt-tar-out.1 \
 	virt-win-reg.1
 
-podfiles := $(shell for f in `cat $(top_srcdir)/po-docs/podfiles`; do basename $$f; done)
+podfiles := $(shell for f in `cat $(top_srcdir)/po-docs/podfiles`; do echo `basename $$f .pod`.pod; done)
 
 # Ship the POD files and the translated manpages in the tarball.  This
 # just simplifies building from the tarball, at a small cost in extra
@@ -127,12 +132,6 @@ virt-sysprep.1: virt-sysprep.pod sysprep-extra-options.pod sysprep-operations.po
 	  --no-strict-checks \
 	  --man $@ \
 	  --section 8 \
-	  $<
-
-%.1: %.pl
-	$(PODWRAPPER) \
-	  --no-strict-checks \
-	  --man $@ \
 	  $<
 
 # Ensure that the first time we build from git, since guestfs.pod

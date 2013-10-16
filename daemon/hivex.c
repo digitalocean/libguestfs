@@ -47,8 +47,8 @@ optgroup_hivex_available (void)
 static hive_h *h = NULL;
 
 /* Clean up the hivex handle on daemon exit. */
-static void hivex_finalize (void) __attribute__((destructor));
-static void
+void hivex_finalize (void) __attribute__((destructor));
+void
 hivex_finalize (void)
 {
   if (h) {
@@ -339,6 +339,12 @@ do_hivex_commit (const char *filename)
    * cases will be NULL.
    */
   if (filename) {
+    /* There is no "OptPathname" in the generator, so we have
+     * to do the pathname checks explicitly here.  RHBZ#981683
+     */
+    ABS_PATH (filename, , return -1);
+    NEED_ROOT (, return -1);
+
     buf = sysroot_path (filename);
     if (!buf) {
       reply_with_perror ("malloc");
@@ -410,5 +416,10 @@ do_hivex_node_set_value (int64_t nodeh,
 #else /* !HAVE_HIVEX */
 
 OPTGROUP_HIVEX_NOT_AVAILABLE
+
+void
+hivex_finalize (void)
+{
+}
 
 #endif /* !HAVE_HIVEX */

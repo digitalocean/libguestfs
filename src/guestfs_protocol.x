@@ -2803,6 +2803,58 @@ struct guestfs_remount_args {
   bool rw;
 };
 
+struct guestfs_set_uuid_args {
+  string device<>;
+  string uuid<>;
+};
+
+struct guestfs_journal_open_args {
+  string directory<>;
+};
+
+struct guestfs_journal_next_ret {
+  bool more;
+};
+
+struct guestfs_journal_skip_args {
+  int64_t skip;
+};
+
+struct guestfs_journal_skip_ret {
+  int64_t rskip;
+};
+
+struct guestfs_journal_get_data_threshold_ret {
+  int64_t threshold;
+};
+
+struct guestfs_journal_set_data_threshold_args {
+  int64_t threshold;
+};
+
+struct guestfs_aug_setm_args {
+  string base<>;
+  guestfs_str *sub;
+  string val<>;
+};
+
+struct guestfs_aug_setm_ret {
+  int nodes;
+};
+
+struct guestfs_aug_label_args {
+  string augpath<>;
+};
+
+struct guestfs_aug_label_ret {
+  string label<>;
+};
+
+struct guestfs_internal_upload_args {
+  string tmpname<>;
+  int mode;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3199,10 +3251,22 @@ enum guestfs_procedure {
   GUESTFS_PROC_SYSLINUX = 399,
   GUESTFS_PROC_EXTLINUX = 400,
   GUESTFS_PROC_CP_R = 401,
-  GUESTFS_PROC_REMOUNT = 402
+  GUESTFS_PROC_REMOUNT = 402,
+  GUESTFS_PROC_SET_UUID = 403,
+  GUESTFS_PROC_JOURNAL_OPEN = 404,
+  GUESTFS_PROC_JOURNAL_CLOSE = 405,
+  GUESTFS_PROC_JOURNAL_NEXT = 406,
+  GUESTFS_PROC_JOURNAL_SKIP = 407,
+  GUESTFS_PROC_INTERNAL_JOURNAL_GET = 408,
+  GUESTFS_PROC_JOURNAL_GET_DATA_THRESHOLD = 409,
+  GUESTFS_PROC_JOURNAL_SET_DATA_THRESHOLD = 410,
+  GUESTFS_PROC_AUG_SETM = 411,
+  GUESTFS_PROC_AUG_LABEL = 412,
+  GUESTFS_PROC_INTERNAL_UPLOAD = 413,
+  GUESTFS_PROC_INTERNAL_EXIT = 414
 };
 
-const GUESTFS_MAX_PROC_NR = 402;
+const GUESTFS_MAX_PROC_NR = 414;
 
 /* The remote procedure call protocol. */
 

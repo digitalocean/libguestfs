@@ -45,9 +45,7 @@
 #define DEFAULT_TIMEOUT 600
 
 static int timeout = DEFAULT_TIMEOUT;
-static char tmpf[] = P_tmpdir "/libguestfs-test-tool-sda-XXXXXX";
 
-static void make_files (void);
 static void set_qemu (guestfs_h *g, const char *path, int use_wrapper);
 
 static void
@@ -192,8 +190,6 @@ main (int argc, char *argv[])
   if (qemu)
     set_qemu (g, qemu, qemu_use_wrapper);
 
-  make_files ();
-
   /* Print out any environment variables which may relate to this test. */
   for (i = 0; environ[i] != NULL; ++i) {
     if (STRPREFIX (environ[i], "LIBGUESTFS_"))
@@ -224,12 +220,9 @@ main (int argc, char *argv[])
   ignore_value (system ("getenforce"));
 
   /* Configure the handle. */
-  if (guestfs_add_drive_opts (g, tmpf,
-                              GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
-                              -1) == -1) {
+  if (guestfs_add_drive_scratch (g, 100*1024*1024, -1) == -1) {
     fprintf (stderr,
-             _("libguestfs-test-tool: failed to add drive '%s'\n"),
-             tmpf);
+             _("libguestfs-test-tool: failed to add scratch drive\n"));
     exit (EXIT_FAILURE);
   }
 
@@ -252,12 +245,14 @@ main (int argc, char *argv[])
   printf ("guestfs_get_cachedir: %s\n", p ? : "(null)");
   free (p);
   printf ("guestfs_get_direct: %d\n", guestfs_get_direct (g));
+  p = guestfs_get_hv (g);
+  printf ("guestfs_get_hv: %s\n", p);
+  free (p);
   printf ("guestfs_get_memsize: %d\n", guestfs_get_memsize (g));
   printf ("guestfs_get_network: %d\n", guestfs_get_network (g));
   printf ("guestfs_get_path: %s\n", guestfs_get_path (g) ? : "(null)");
   printf ("guestfs_get_pgroup: %d\n", guestfs_get_pgroup (g));
   printf ("guestfs_get_program: %s\n", guestfs_get_program (g));
-  printf ("guestfs_get_qemu: %s\n", guestfs_get_qemu (g));
   printf ("guestfs_get_recovery_proc: %d\n", guestfs_get_recovery_proc (g));
   printf ("guestfs_get_selinux: %d\n", guestfs_get_selinux (g));
   printf ("guestfs_get_smp: %d\n", guestfs_get_smp (g));
@@ -345,9 +340,10 @@ set_qemu (guestfs_h *g, const char *path, int use_wrapper)
   int fd;
   FILE *fp;
 
-  if (getenv ("LIBGUESTFS_QEMU")) {
+  if (getenv ("LIBGUESTFS_QEMU") != NULL ||
+      getenv ("LIBGUESTFS_HV") != NULL) {
     fprintf (stderr,
-    _("LIBGUESTFS_QEMU environment variable is already set, so\n"
+    _("LIBGUESTFS_HV/LIBGUESTFS_QEMU environment variable is already set, so\n"
       "--qemu/--qemudir options cannot be used.\n"));
     exit (EXIT_FAILURE);
   }
@@ -360,7 +356,7 @@ set_qemu (guestfs_h *g, const char *path, int use_wrapper)
       exit (EXIT_FAILURE);
     }
 
-    guestfs_set_qemu (g, path);
+    guestfs_set_hv (g, path);
     return;
   }
 
@@ -398,43 +394,6 @@ set_qemu (guestfs_h *g, const char *path, int use_wrapper)
            host_cpu, path);
   fclose (fp);
 
-  guestfs_set_qemu (g, qemuwrapper);
+  guestfs_set_hv (g, qemuwrapper);
   atexit (cleanup_wrapper);
-}
-
-static void
-cleanup_tmpfiles (void)
-{
-  unlink (tmpf);
-}
-
-static void
-make_files (void)
-{
-  int fd;
-
-  /* Allocate the sparse file for /dev/sda. */
-  fd = mkstemp (tmpf);
-  if (fd == -1) {
-    perror (tmpf);
-    exit (EXIT_FAILURE);
-  }
-
-  if (lseek (fd, 100 * 1024 * 1024 - 1, SEEK_SET) == -1) {
-    perror ("lseek");
-    close (fd);
-    unlink (tmpf);
-    exit (EXIT_FAILURE);
-  }
-
-  if (write (fd, "\0", 1) == -1) {
-    perror ("write");
-    close (fd);
-    unlink (tmpf);
-    exit (EXIT_FAILURE);
-  }
-
-  close (fd);
-
-  atexit (cleanup_tmpfiles);	/* Removes tmpf. */
 }

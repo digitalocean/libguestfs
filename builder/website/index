@@ -1,0 +1,168 @@
+[debian-6]
+name=Debian 6 (Squeeze)
+osinfo=debian6
+file=debian-6.xz
+sig=debian-6.xz.sig
+format=raw
+size=4294967296
+compressed_size=141531780
+expand=/dev/sda1
+notes=Debian 6 (Squeeze).
+ 
+ This is a default Debian install.
+ 
+ The preseed and virt-install scripts that produced this image
+ can be found in the libguestfs git tree:
+ libguestfs.git/builder/website/debian-6.preseed
+ libguestfs.git/builder/website/debian-6.sh
+ 
+ This image is so very minimal that it only includes an ssh
+ server and no virtual consoles.  To enable virtual consoles
+ use this virt-builder option:
+ 
+ virt-builder debian-6 \
+     --edit '/etc/inittab: s,^#([1-9].*respawn.*/sbin/getty.*),$1,'
+ 
+ This image does not contain SSH host keys.  To regenerate them use:
+ 
+ --firstboot-command "dpkg-reconfigure openssh-server"
+
+[debian-7]
+name=Debian 7 (Wheezy)
+osinfo=debian7
+file=debian-7.xz
+sig=debian-7.xz.sig
+format=raw
+size=4294967296
+compressed_size=149230076
+expand=/dev/sda1
+notes=Debian 7 (Wheezy).
+ 
+ This is a default Debian install.
+ 
+ The preseed and virt-install scripts that produced this image
+ can be found in the libguestfs git tree:
+ libguestfs.git/builder/website/debian-7.preseed
+ libguestfs.git/builder/website/debian-7.sh
+ 
+ This image is so very minimal that it only includes an ssh
+ server and no virtual consoles.  To enable virtual consoles
+ use this virt-builder option:
+ 
+ virt-builder debian-7 \
+     --edit '/etc/inittab: s,^#([1-9].*respawn.*/sbin/getty.*),$1,'
+ 
+ This image does not contain SSH host keys.  To regenerate them use:
+ 
+ --firstboot-command "dpkg-reconfigure openssh-server"
+
+[fedora-18]
+name=Fedora® 18
+osinfo=fedora18
+file=fedora-18.xz
+sig=fedora-18.xz.sig
+format=raw
+size=6442450944
+compressed_size=148947524
+expand=/dev/sda3
+notes=Fedora 18.
+ 
+ This Fedora image contains only unmodified @Core group packages.
+ 
+ It is thus very minimal.  The kickstart and install script can be
+ found in the libguestfs git tree:
+ libguestfs.git/builder/website/fedora-18.ks
+ libguestfs.git/builder/website/fedora-18.sh
+ 
+ Fedora and the Infinity design logo are trademarks of Red Hat, Inc.
+ Source and further information is available from http://fedoraproject.org/
+
+[fedora-19]
+name=Fedora® 19
+osinfo=fedora19
+file=fedora-19.xz
+sig=fedora-19.xz.sig
+format=raw
+size=4294967296
+compressed_size=172190964
+expand=/dev/sda3
+notes=Fedora 19.
+ 
+ This Fedora image contains only unmodified @Core group packages.
+ 
+ It is thus very minimal.  The kickstart and install script can be
+ found in the libguestfs git tree:
+ libguestfs.git/builder/website/fedora-19.ks
+ libguestfs.git/builder/website/fedora-19.sh
+ 
+ Fedora and the Infinity design logo are trademarks of Red Hat, Inc.
+ Source and further information is available from http://fedoraproject.org/
+
+[ubuntu-10.04]
+name=Ubuntu 10.04 (Lucid)
+osinfo=ubuntulucid
+file=ubuntu-10.04.xz
+sig=ubuntu-10.04.xz.sig
+format=raw
+size=4294967296
+compressed_size=149728112
+expand=/dev/sda1
+notes=Ubuntu 10.04 (Lucid).
+ 
+ This is a minimal Ubuntu 10.04 (Lucid) install.
+ 
+ Only the openssh-server package is selected in tasksel.
+ The preseed and virt-install scripts that produced this image
+ can be found in the libguestfs git tree:
+ libguestfs.git/builder/website/ubuntu-10.04.preseed
+ libguestfs.git/builder/website/ubuntu-10.04.sh
+ 
+ This image does not contain SSH host keys.  To regenerate them use:
+ 
+ --firstboot-command "dpkg-reconfigure openssh-server"
+
+[ubuntu-12.04]
+name=Ubuntu 12.04 (Precise)
+osinfo=ubuntuprecise
+file=ubuntu-12.04.xz
+sig=ubuntu-12.04.xz.sig
+format=raw
+size=4294967296
+compressed_size=168593316
+expand=/dev/sda1
+notes=Ubuntu 12.04 (Precise).
+ 
+ This is a minimal Ubuntu 12.04 (Precise) install.
+ 
+ Only the openssh-server package is selected in tasksel.
+ The preseed and virt-install scripts that produced this image
+ can be found in the libguestfs git tree:
+ libguestfs.git/builder/website/ubuntu-12.04.preseed
+ libguestfs.git/builder/website/ubuntu-12.04.sh
+ 
+ This image does not contain SSH host keys.  To regenerate them use:
+ 
+ --firstboot-command "dpkg-reconfigure openssh-server"
+
+[ubuntu-13.10]
+name=Ubuntu 13.10 (Saucy)
+osinfo=ubuntusaucy
+file=ubuntu-13.10.xz
+sig=ubuntu-13.10.xz.sig
+format=raw
+size=4294967296
+compressed_size=196481392
+expand=/dev/sda1
+notes=Ubuntu 13.10 (Saucy).
+ 
+ This is a minimal Ubuntu 13.10 (Saucy) install.
+ 
+ Only the openssh-server package is selected in tasksel.
+ The preseed and virt-install scripts that produced this image
+ can be found in the libguestfs git tree:
+ libguestfs.git/builder/website/ubuntu-13.10.preseed
+ libguestfs.git/builder/website/ubuntu-13.10.sh
+ 
+ This image does not contain SSH host keys.  To regenerate them use:
+ 
+ --firstboot-command "dpkg-reconfigure openssh-server"

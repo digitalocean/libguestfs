@@ -47,6 +47,8 @@
   __attribute__((cleanup(guestfs___cleanup_xmlBufferFree)))
 #define CLEANUP_XMLFREEDOC                                      \
   __attribute__((cleanup(guestfs___cleanup_xmlFreeDoc)))
+#define CLEANUP_XMLFREEURI                                              \
+  __attribute__((cleanup(guestfs___cleanup_xmlFreeURI)))
 #define CLEANUP_XMLFREETEXTWRITER                               \
   __attribute__((cleanup(guestfs___cleanup_xmlFreeTextWriter)))
 #define CLEANUP_XMLXPATHFREECONTEXT                                     \
@@ -60,6 +62,7 @@
 #define CLEANUP_UNLINK_FREE
 #define CLEANUP_XMLBUFFERFREE
 #define CLEANUP_XMLFREEDOC
+#define CLEANUP_XMLFREEURI
 #define CLEANUP_XMLFREETEXTWRITER
 #define CLEANUP_XMLXPATHFREECONTEXT
 #define CLEANUP_XMLXPATHFREEOBJECT
@@ -94,16 +97,19 @@ extern size_t guestfs___count_strings (char *const *);
 extern char *guestfs___concat_strings (char *const *);
 extern char *guestfs___join_strings (const char *sep, char *const *);
 extern char *guestfs___exit_status_to_string (int status, const char *cmd_name, char *buffer, size_t buflen);
+extern int guestfs___random_string (char *ret, size_t len);
+extern char *guestfs___drive_name (size_t index, char *ret);
 
 /* These functions are used internally by the CLEANUP_* macros.
  * Don't call them directly.
  */
 extern void guestfs___cleanup_free (void *ptr);
-extern void guestfs___cleanup_free_string_list (void *ptr);
+extern void guestfs___cleanup_free_string_list (char ***ptr);
 extern void guestfs___cleanup_hash_free (void *ptr);
-extern void guestfs___cleanup_unlink_free (void *ptr);
+extern void guestfs___cleanup_unlink_free (char **ptr);
 extern void guestfs___cleanup_xmlBufferFree (void *ptr);
 extern void guestfs___cleanup_xmlFreeDoc (void *ptr);
+extern void guestfs___cleanup_xmlFreeURI (void *ptr);
 extern void guestfs___cleanup_xmlFreeTextWriter (void *ptr);
 extern void guestfs___cleanup_xmlXPathFreeContext (void *ptr);
 extern void guestfs___cleanup_xmlXPathFreeObject (void *ptr);

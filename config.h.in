@@ -72,7 +72,8 @@
 
 
 /* Enable compile-time and run-time bounds-checking, and some warnings. */
-#if __OPTIMIZE__
+#if __OPTIMIZE__ && (! defined (_FORTIFY_SOURCE) || _FORTIFY_SOURCE < 2)
+# undef _FORTIFY_SOURCE
 # define _FORTIFY_SOURCE 2
 #endif
 
@@ -119,6 +120,10 @@
 /* Define to a C preprocessor expression that evaluates to 1 or 0, depending
    whether the gnulib module fscanf shall be considered present. */
 #undef GNULIB_FSCANF
+
+/* Define to a C preprocessor expression that evaluates to 1 or 0, depending
+   whether the gnulib module lock shall be considered present. */
+#undef GNULIB_LOCK
 
 /* Define to a C preprocessor expression that evaluates to 1 or 0, depending
    whether the gnulib module mkstemps shall be considered present. */
@@ -673,10 +678,6 @@
    don't. */
 #undef HAVE_DECL__SNPRINTF
 
-/* Define to 1 if you have the declaration of `__fpending', and to 0 if you
-   don't. */
-#undef HAVE_DECL___FPENDING
-
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
 #undef HAVE_DIRENT_H
@@ -879,6 +880,9 @@
 
 /* libvirt found at compile time. */
 #undef HAVE_LIBVIRT
+
+/* Define to 1 if you have the <linux/raid/md_u.h> header file. */
+#undef HAVE_LINUX_RAID_MD_U_H
 
 /* Define to 1 if you have the `listxattr' function. */
 #undef HAVE_LISTXATTR
@@ -1708,6 +1712,9 @@
 /* Define to 1 if the system has the type `sa_family_t'. */
 #undef HAVE_SA_FAMILY_T
 
+/* systemd journal library found at compile time. */
+#undef HAVE_SD_JOURNAL
+
 /* Define to 1 if you have the <search.h> header file. */
 #undef HAVE_SEARCH_H
 
@@ -1719,6 +1726,9 @@
 
 /* Define to 1 if you have the `setcon' function. */
 #undef HAVE_SETCON
+
+/* Define to 1 if you have the 'setdtablesize' function. */
+#undef HAVE_SETDTABLESIZE
 
 /* Define to 1 if you have the 'setenv' function. */
 #undef HAVE_SETENV
@@ -2082,9 +2092,6 @@
 /* Define to 1 if you have the '_set_invalid_parameter_handler' function. */
 #undef HAVE__SET_INVALID_PARAMETER_HANDLER
 
-/* Define to 1 if you have the '__fpending' function. */
-#undef HAVE___FPENDING
-
 /* Define to 1 if you have the `__secure_getenv' function. */
 #undef HAVE___SECURE_GETENV
 
@@ -2293,6 +2300,9 @@
 /* Name of supermin-helper program. */
 #undef SUPERMIN_HELPER
 
+/* Define to 1 if you have supermin-helper >= 4.1.5. */
+#undef SUPERMIN_HELPER_NEW_STYLE_SYNTAX
+
 /* Define to 1 if the type of the st_atim member of a struct stat is struct
    timespec. */
 #undef TYPEOF_STRUCT_STAT_ST_ATIM_IS_STRUCT_TIMESPEC
@@ -2361,9 +2371,6 @@
 
 /* Define to 1 to run the daemon under valgrind. */
 #undef VALGRIND_DAEMON
-
-/* Path to save valgrind log files. */
-#undef VALGRIND_LOG_PATH
 
 /* Version number of package */
 #undef VERSION
@@ -2454,15 +2461,7 @@
 /* Define like PROTOTYPES; this can be used by system headers. */
 #undef __PROTOTYPES
 
-/* _GL_INLINE is a portable alternative to ISO C99 plain 'inline'.
-   _GL_EXTERN_INLINE is a portable alternative to 'extern inline'.
-   _GL_INLINE_HEADER_BEGIN contains useful stuff to put
-     in an include file, before uses of _GL_INLINE.
-     It suppresses GCC's bogus "no previous prototype for 'FOO'" diagnostic,
-     when FOO is an inline function in the header; see
-     <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=54113>.
-   _GL_INLINE_HEADER_END contains useful stuff to put
-     in the same include file, after uses of _GL_INLINE.
+/* Please see the Gnulib manual for how to use these macros.
 
    Suppress extern inline with HP-UX cc, as it appears to be broken; see
    <http://lists.gnu.org/archive/html/bug-texinfo/2013-02/msg00030.html>.
@@ -2473,19 +2472,28 @@
    'reference to static identifier "f" in extern inline function'.
    This bug was observed with Sun C 5.12 SunOS_i386 2011/11/16.
 
-   Suppress the use of extern inline on Apple's platforms, as Libc at least
-   through Libc-825.26 (2013-04-09) is incompatible with it; see, e.g.,
+   Suppress the use of extern inline on problematic Apple configurations, as
+   Libc at least through Libc-825.26 (2013-04-09) mishandles it; see, e.g.,
    <http://lists.gnu.org/archive/html/bug-gnulib/2012-12/msg00023.html>.
    Perhaps Apple will fix this some day.  */
+#if (defined __APPLE__ \
+     && ((! defined _DONT_USE_CTYPE_INLINE_ \
+          && (defined __GNUC__ || defined __cplusplus)) \
+         || (defined _FORTIFY_SOURCE && 0 < _FORTIFY_SOURCE \
+             && defined __GNUC__ && ! defined __cplusplus)))
+# define _GL_EXTERN_INLINE_APPLE_BUG
+#endif
 #if ((__GNUC__ \
       ? defined __GNUC_STDC_INLINE__ && __GNUC_STDC_INLINE__ \
       : (199901L <= __STDC_VERSION__ \
          && !defined __HP_cc \
          && !(defined __SUNPRO_C && __STDC__))) \
-     && !defined __APPLE__)
+     && !defined _GL_EXTERN_INLINE_APPLE_BUG)
 # define _GL_INLINE inline
 # define _GL_EXTERN_INLINE extern inline
-#elif 2 < __GNUC__ + (7 <= __GNUC_MINOR__) && !defined __APPLE__
+# define _GL_EXTERN_INLINE_IN_USE
+#elif (2 < __GNUC__ + (7 <= __GNUC_MINOR__) && !defined __STRICT_ANSI__ \
+       && !defined _GL_EXTERN_INLINE_APPLE_BUG)
 # if __GNUC_GNU_INLINE__
    /* __gnu_inline__ suppresses a GCC 4.2 diagnostic.  */
 #  define _GL_INLINE extern inline __attribute__ ((__gnu_inline__))
@@ -2493,6 +2501,7 @@
 #  define _GL_INLINE extern inline
 # endif
 # define _GL_EXTERN_INLINE extern
+# define _GL_EXTERN_INLINE_IN_USE
 #else
 # define _GL_INLINE static _GL_UNUSED
 # define _GL_EXTERN_INLINE static _GL_UNUSED
@@ -2505,6 +2514,10 @@
 #  define _GL_INLINE_HEADER_CONST_PRAGMA \
      _Pragma ("GCC diagnostic ignored \"-Wsuggest-attribute=const\"")
 # endif
+  /* Suppress GCC's bogus "no previous prototype for 'FOO'"
+     and "no previous declaration for 'FOO'"  diagnostics,
+     when FOO is an inline function in the header; see
+     <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=54113>.  */
 # define _GL_INLINE_HEADER_BEGIN \
     _Pragma ("GCC diagnostic push") \
     _Pragma ("GCC diagnostic ignored \"-Wmissing-prototypes\"") \

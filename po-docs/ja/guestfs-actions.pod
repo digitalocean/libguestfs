@@ -52,8 +52,6 @@ directory.
                        const char *acl);
 
 This function sets the POSIX Access Control List (ACL) attached to C<path>.
-The C<acl> parameter is the new ACL in either "long text form" or "short
-text form" (see L<acl(5)>).
 
 The C<acltype> parameter may be:
 
@@ -70,6 +68,22 @@ Set the default ACL.  Normally this only makes sense if C<path> is a
 directory.
 
 =back
+
+The C<acl> parameter is the new ACL in either "long text form" or "short
+text form" (see L<acl(5)>).  The new ACL completely replaces any previous
+ACL on the file.  The ACL must contain the full Unix permissions
+(eg. C<u::rwx,g::rx,o::rx>).
+
+If you are specifying individual users or groups, then the mask field is
+also required (eg. C<m::rwx>), followed by the C<u:I<ID>:...> and/or
+C<g:I<ID>:...> field(s).  A full ACL string might therefore look like this:
+
+ u::rwx,g::rwx,o::rwx,m::rwx,u:500:rwx,g:500:rwx
+ \ Unix permissions / \mask/ \      ACL        /
+
+You should use numeric UIDs and GIDs.  To map usernames and groupnames to
+the correct numeric ID in the context of the guest, use the Augeas functions
+(see C<guestfs_aug_init>).
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -254,6 +268,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_ADD_DRIVE_OPTS_SERVER, char *const *server,
  GUESTFS_ADD_DRIVE_OPTS_USERNAME, const char *username,
  GUESTFS_ADD_DRIVE_OPTS_SECRET, const char *secret,
+ GUESTFS_ADD_DRIVE_OPTS_CACHEMODE, const char *cachemode,
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -432,6 +447,32 @@ If not given, then a secret matching the given username will be looked up in
 the default keychain locations, or if no username is given, then no
 authentication will be used.
 
+=item C<cachemode>
+
+Choose whether or not libguestfs will obey sync operations (safe but slow)
+or not (unsafe but fast).  The possible values for this string are:
+
+=over 4
+
+=item C<cachemode = "writeback">
+
+これがデフォルトです。
+
+Write operations in the API do not return until a L<write(2)> call has
+completed in the host [but note this does not imply that anything gets
+written to disk].
+
+Sync operations in the API, including implicit syncs caused by filesystem
+journalling, will not return until an L<fdatasync(2)> call has completed in
+the host, indicating that data has been committed to disk.
+
+=item C<cachemode = "unsafe">
+
+In this mode, there are no guarantees.  Libguestfs may cache anything and
+ignore sync requests.  This is suitable only for scratch or temporary disks.
+
+=back
+
 =back
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
@@ -492,6 +533,54 @@ QEMU interface emulation to use at run time.
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (1.0.84 において追加)
+
+=head2 guestfs_add_drive_scratch
+
+ int
+ guestfs_add_drive_scratch (guestfs_h *g,
+                            int64_t size,
+                            ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_ADD_DRIVE_SCRATCH_NAME, const char *name,
+ GUESTFS_ADD_DRIVE_SCRATCH_LABEL, const char *label,
+
+This command adds a temporary scratch drive to the handle.  The C<size>
+parameter is the virtual size (in bytes).  The scratch drive is blank
+initially (all reads return zeroes until you start writing to it).  The
+drive is deleted when the handle is closed.
+
+The optional arguments C<name> and C<label> are passed through to
+C<guestfs_add_drive>.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(Added in 1.23.10)
+
+=head2 guestfs_add_drive_scratch_va
+
+ int
+ guestfs_add_drive_scratch_va (guestfs_h *g,
+                               int64_t size,
+                               va_list args);
+
+This is the "va_list variant" of L</guestfs_add_drive_scratch>.
+
+L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
+
+=head2 guestfs_add_drive_scratch_argv
+
+ int
+ guestfs_add_drive_scratch_argv (guestfs_h *g,
+                                 int64_t size,
+                                 const struct guestfs_add_drive_scratch_argv *optargs);
+
+This is the "argv variant" of L</guestfs_add_drive_scratch>.
+
+L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
 
 =head2 guestfs_add_drive_with_if
 
@@ -669,6 +758,20 @@ be a label, ie. not contain C</>, C<*> or end with a bracketed index C<[N]>.
 
 (0.7 において追加)
 
+=head2 guestfs_aug_label
+
+ char *
+ guestfs_aug_label (guestfs_h *g,
+                    const char *augpath);
+
+The label (name of the last element) of the Augeas path expression
+C<augpath> is returned.  C<augpath> must match exactly one node, else this
+function returns an error.
+
+この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
+
+(Added in 1.23.14)
+
 =head2 guestfs_aug_load
 
  int
@@ -771,6 +874,26 @@ this call.  Instead you must use the C<guestfs_aug_clear> call.
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (0.7 において追加)
+
+=head2 guestfs_aug_setm
+
+ int
+ guestfs_aug_setm (guestfs_h *g,
+                   const char *base,
+                   const char *sub,
+                   const char *val);
+
+Change multiple Augeas nodes in a single operation.  C<base> is an
+expression matching multiple nodes.  C<sub> is a path expression relative to
+C<base>.  All nodes matching C<base> are found, and then for each node,
+C<sub> is changed to C<val>.  C<sub> may also be C<NULL> in which case the
+C<base> nodes are modified.
+
+This returns the number of nodes modified.
+
+この関数はエラーのとき -1 を返します。
+
+(Added in 1.23.14)
 
 =head2 guestfs_available
 
@@ -951,7 +1074,10 @@ This tells the kernel to flush internal buffers associated with C<device>.
 
 これはデバイスのブロック容量を返します。
 
-(これは I<size in blocks> および I<filesystem block size> と異なることに注意してください。)
+Note: this is different from both I<size in blocks> and I<filesystem block
+size>.  Also this setting is not really used by anything.  You should
+probably not use it for anything.  Filesystems have their own idea about
+what block size to choose.
 
 これは L<blockdev(8)> コマンドを使用します。
 
@@ -1045,11 +1171,17 @@ C<device> のパーティションテーブルを再読み込みします。
                           const char *device,
                           int blocksize);
 
-デバイスのブロック容量を設定します。
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</guestfs_mkfs> を使用してください。
 
-(これは I<size in blocks> および I<filesystem block size> と異なることに注意してください。)
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
-これは L<blockdev(8)> コマンドを使用します。
+This call does nothing and has never done anything because of a bug in
+blockdev.  B<Do not use it.>
+
+If you need to set the filesystem block size, use the C<blocksize> option of
+C<guestfs_mkfs>.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -1356,6 +1488,8 @@ C<guestfs_lvm_canonical_lvm_name> を使用して C</dev/VG/LV> 形式に変換�
 
 This function returns the Linux capabilities attached to C<path>.  The
 capabilities set is returned in text form (see L<cap_to_text(3)>).
+
+If no capabilities are attached to a file, an empty string is returned.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
@@ -1728,16 +1862,16 @@ L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
 
  int
  guestfs_config (guestfs_h *g,
-                 const char *qemuparam,
-                 const char *qemuvalue);
+                 const char *hvparam,
+                 const char *hvvalue);
 
-This can be used to add arbitrary qemu command line parameters of the form
-I<-param value>.  Actually it's not quite arbitrary - we prevent you from
-setting some parameters which would interfere with parameters that we use.
+This can be used to add arbitrary hypervisor parameters of the form I<-param
+value>.  Actually it's not quite arbitrary - we prevent you from setting
+some parameters which would interfere with parameters that we use.
 
-The first character of C<qemuparam> string must be a C<-> (dash).
+The first character of C<hvparam> string must be a C<-> (dash).
 
-C<qemuvalue> は NULL の可能性があります。
+C<hvvalue> can be NULL.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -2752,9 +2886,10 @@ C<filesystem> is a filesystem name, such as C<ext3>.
 このコマンドを使用する前に C<guestfs_launch> を呼び出す必要があります。
 
 This is mainly useful as a negative test.  If this returns true, it doesn't
-mean that a particular filesystem can be mounted, since filesystems can fail
-for other reasons such as it being a later version of the filesystem, or
-having incompatible features.
+mean that a particular filesystem can be created or mounted, since
+filesystems can fail for other reasons such as it being a later version of
+the filesystem, or having incompatible features, or lacking the right
+mkfs.E<lt>I<fs>E<gt> tool.
 
 See also C<guestfs_available>, C<guestfs_feature_available>,
 L<guestfs(3)/AVAILABILITY>.
@@ -3274,6 +3409,20 @@ these functions.
 
 (1.0.15 において追加)
 
+=head2 guestfs_get_hv
+
+ char *
+ guestfs_get_hv (guestfs_h *g);
+
+Return the current hypervisor binary.
+
+This is always non-NULL.  If it wasn't set already, then this will return
+the default qemu binary name.
+
+この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
+
+(Added in 1.23.17)
+
 =head2 guestfs_get_libvirt_requested_credential_challenge
 
  char *
@@ -3347,7 +3496,7 @@ strings and the array after use>.
  int
  guestfs_get_memsize (guestfs_h *g);
 
-これは QEMU サブプロセスに割り当てられているメモリー容量をメガバイト単位で取得します。
+This gets the memory size in megabytes allocated to the hypervisor.
 
 If C<guestfs_set_memsize> was not called on this handle, and if
 C<LIBGUESTFS_MEMSIZE> was not set, then this returns the compiled-in default
@@ -3401,8 +3550,8 @@ This function returns a C truth value on success or -1 on error.
  int
  guestfs_get_pid (guestfs_h *g);
 
-Return the process ID of the qemu subprocess.  If there is no qemu
-subprocess, then this will return an error.
+Return the process ID of the hypervisor.  If there is no hypervisor running,
+then this will return an error.
 
 This is an internal call used for debugging and testing.
 
@@ -3427,7 +3576,14 @@ the guest handle and must I<not> be freed.
  const char *
  guestfs_get_qemu (guestfs_h *g);
 
-現在の QEMU バイナリーを返します。
+I<This function is deprecated.> In new code, use the L</guestfs_get_hv> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
+Return the current hypervisor binary (usually qemu).
 
 This is always non-NULL.  If it wasn't set already, then this will return
 the default qemu binary name.
@@ -3587,8 +3743,8 @@ L<getxattr(2)> calls.
 
 関連項目: C<guestfs_lgetxattrs>, L<attr(5)>
 
-This function returns a C<struct guestfs_xattr_list *>, or NULL if there was
-an error.  I<The caller must call C<guestfs_free_xattr_list> after use>.
+この関数は C<struct guestfs_xattr_list *> を返します。もしくは、エラーが発生すると NULL を返します。
+I<呼び出し元は使用後に C<guestfs_free_xattr_list> を呼び出す必要があります>。
 
 (1.0.59 において追加)
 
@@ -5250,8 +5406,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
  GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS, int followsymlinks,
 
-This returns C<true> if and only if there is a block device with the given
-C<path> name.
+与えられたC<パス>名を持つブロックデバイスがあれば、C<真>を返します。
 
 If the optional flag C<followsymlinks> is true, then a symlink (or chain of
 symlinks) that ends with a block device also causes the function to return
@@ -5260,6 +5415,8 @@ true.
 C<guestfs_stat> 参照。
 
 This function returns a C truth value on success or -1 on error.
+
+(Added in 1.23.4)
 
 =head2 guestfs_is_blockdev_opts_va
 
@@ -5333,6 +5490,8 @@ symlinks) that ends with a chardev also causes the function to return true.
 C<guestfs_stat> 参照。
 
 This function returns a C truth value on success or -1 on error.
+
+(Added in 1.23.4)
 
 =head2 guestfs_is_chardev_opts_va
 
@@ -5408,6 +5567,8 @@ C<guestfs_stat> 参照。
 
 This function returns a C truth value on success or -1 on error.
 
+(Added in 1.23.4)
+
 =head2 guestfs_is_dir_opts_va
 
  int
@@ -5466,6 +5627,8 @@ symlinks) that ends with a FIFO also causes the function to return true.
 C<guestfs_stat> 参照。
 
 This function returns a C truth value on success or -1 on error.
+
+(Added in 1.23.4)
 
 =head2 guestfs_is_fifo_opts_va
 
@@ -5526,6 +5689,8 @@ symlinks) that ends with a file also causes the function to return true.
 C<guestfs_stat> 参照。
 
 This function returns a C truth value on success or -1 on error.
+
+(Added in 1.23.4)
 
 =head2 guestfs_is_file_opts_va
 
@@ -5626,6 +5791,8 @@ symlinks) that ends with a socket also causes the function to return true.
 C<guestfs_stat> 参照。
 
 This function returns a C truth value on success or -1 on error.
+
+(Added in 1.23.4)
 
 =head2 guestfs_is_socket_opts_va
 
@@ -5742,6 +5909,129 @@ error.  I<The caller must call C<guestfs_free_isoinfo> after use>.
 
 (1.17.19 において追加)
 
+=head2 guestfs_journal_close
+
+ int
+ guestfs_journal_close (guestfs_h *g);
+
+Close the journal handle.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(Added in 1.23.11)
+
+=head2 guestfs_journal_get
+
+ struct guestfs_xattr_list *
+ guestfs_journal_get (guestfs_h *g);
+
+Read the current journal entry.  This returns all the fields in the journal
+as a set of C<(attrname, attrval)> pairs.  The C<attrname> is the field name
+(a string).
+
+The C<attrval> is the field value (a binary blob, often but not always a
+string).  Please note that C<attrval> is a byte array, I<not> a
+\0-terminated C string.
+
+The length of data may be truncated to the data threshold (see:
+C<guestfs_journal_set_data_threshold>,
+C<guestfs_journal_get_data_threshold>).
+
+If you set the data threshold to unlimited (C<0>) then this call can read a
+journal entry of any size, ie. it is not limited by the libguestfs protocol.
+
+この関数は C<struct guestfs_xattr_list *> を返します。もしくは、エラーが発生すると NULL を返します。
+I<呼び出し元は使用後に C<guestfs_free_xattr_list> を呼び出す必要があります>。
+
+(Added in 1.23.11)
+
+=head2 guestfs_journal_get_data_threshold
+
+ int64_t
+ guestfs_journal_get_data_threshold (guestfs_h *g);
+
+Get the current data threshold for reading journal entries.  This is a hint
+to the journal that it may truncate data fields to this size when reading
+them (note also that it may not truncate them).  If this returns C<0>, then
+the threshold is unlimited.
+
+See also C<guestfs_journal_set_data_threshold>.
+
+この関数はエラーのとき -1 を返します。
+
+(Added in 1.23.11)
+
+=head2 guestfs_journal_next
+
+ int
+ guestfs_journal_next (guestfs_h *g);
+
+Move to the next journal entry.  You have to call this at least once after
+opening the handle before you are able to read data.
+
+The returned boolean tells you if there are any more journal records to
+read.  C<true> means you can read the next record (eg. using
+C<guestfs_journal_get_data>), and C<false> means you have reached the end of
+the journal.
+
+This function returns a C truth value on success or -1 on error.
+
+(Added in 1.23.11)
+
+=head2 guestfs_journal_open
+
+ int
+ guestfs_journal_open (guestfs_h *g,
+                       const char *directory);
+
+Open the systemd journal located in C<directory>.  Any previously opened
+journal handle is closed.
+
+The contents of the journal can be read using C<guestfs_journal_next> and
+C<guestfs_journal_get>.
+
+After you have finished using the journal, you should close the handle by
+calling C<guestfs_journal_close>.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(Added in 1.23.11)
+
+=head2 guestfs_journal_set_data_threshold
+
+ int
+ guestfs_journal_set_data_threshold (guestfs_h *g,
+                                     int64_t threshold);
+
+Set the data threshold for reading journal entries.  This is a hint to the
+journal that it may truncate data fields to this size when reading them
+(note also that it may not truncate them).  If you set this to C<0>, then
+the threshold is unlimited.
+
+See also C<guestfs_journal_get_data_threshold>.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(Added in 1.23.11)
+
+=head2 guestfs_journal_skip
+
+ int64_t
+ guestfs_journal_skip (guestfs_h *g,
+                       int64_t skip);
+
+Skip forwards (C<skip E<ge> 0>) or backwards (C<skip E<lt> 0>) in the
+journal.
+
+The number of entries actually skipped is returned (note S<C<rskip E<ge>
+0>>).  If this is not the same as the absolute value of the skip parameter
+(C<|skip|>) you passed in then it means you have reached the end or the
+start of the journal.
+
+この関数はエラーのとき -1 を返します。
+
+(Added in 1.23.11)
+
 =head2 guestfs_kill_subprocess
 
  int
@@ -5753,7 +6043,7 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
-これにより QEMU のサブプロセスがキルされます
+This kills the hypervisor.
 
 これを呼び出してはいけません。代わりに C<guestfs_shutdown> を参照してください。
 
@@ -5765,9 +6055,6 @@ these functions.
 
  int
  guestfs_launch (guestfs_h *g);
-
-Internally libguestfs is implemented by running a virtual machine using
-L<qemu(1)>.
 
 You should call this after configuring the handle (eg. adding drives) but
 before performing any actions.
@@ -6008,8 +6295,8 @@ after use>.
 This is the same as C<guestfs_getxattrs>, but if C<path> is a symbolic link,
 then it returns the extended attributes of the link itself.
 
-This function returns a C<struct guestfs_xattr_list *>, or NULL if there was
-an error.  I<The caller must call C<guestfs_free_xattr_list> after use>.
+この関数は C<struct guestfs_xattr_list *> を返します。もしくは、エラーが発生すると NULL を返します。
+I<呼び出し元は使用後に C<guestfs_free_xattr_list> を呼び出す必要があります>。
 
 (1.0.59 において追加)
 
@@ -6754,8 +7041,8 @@ This call is intended for programs that want to efficiently list a directory
 contents without making many round-trips.  See also C<guestfs_lstatlist> for
 a similarly efficient call for getting standard stats.
 
-This function returns a C<struct guestfs_xattr_list *>, or NULL if there was
-an error.  I<The caller must call C<guestfs_free_xattr_list> after use>.
+この関数は C<struct guestfs_xattr_list *> を返します。もしくは、エラーが発生すると NULL を返します。
+I<呼び出し元は使用後に C<guestfs_free_xattr_list> を呼び出す必要があります>。
 
 (1.0.77 において追加)
 
@@ -7102,8 +7389,12 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_MKE2FS_SPARSESUPER, int sparsesuper,
  GUESTFS_MKE2FS_UNINITBG, int uninitbg,
 
-C<mke2fs> は C<device> に ext2, ext3, または ext4 ファイルシステムを作成するために使用されます。オプションの
-C<blockscount> はブロックにおけるファイルシステムの容量です。これが省略されると、C<device> の容量が初期値となります。
+C<mke2fs> is used to create an ext2, ext3, or ext4 filesystem on C<device>.
+
+The optional C<blockscount> is the size of the filesystem in blocks.  If
+omitted it defaults to the size of C<device>.  Note if the filesystem is too
+small to contain a journal, C<mke2fs> will silently create an ext2
+filesystem instead.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -8710,10 +9001,9 @@ C<guestfs_part_to_dev> 参照。
  int
  guestfs_ping_daemon (guestfs_h *g);
 
-This is a test probe into the guestfs daemon running inside the qemu
-subprocess.  Calling this function checks that the daemon responds to the
-ping message, without affecting the daemon or attached block device(s) in
-any other way.
+This is a test probe into the guestfs daemon running inside the hypervisor.
+Calling this function checks that the daemon responds to the ping message,
+without affecting the daemon or attached block device(s) in any other way.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -9131,6 +9421,8 @@ future we may allow other flags to be adjusted.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
+(Added in 1.23.2)
+
 =head2 guestfs_remount_va
 
  int
@@ -9482,6 +9774,13 @@ up not to require one.
 
 オプションの引数は C<guestfs_rsync> のものと同じです。
 
+Globbing does not happen on the C<src> parameter.  In programs which use the
+API directly you have to expand wildcards yourself (see
+C<guestfs_glob_expand>).  In guestfish you can use the C<glob> command (see
+L<guestfish(1)/glob>), for example:
+
+ ><fs> glob rsync-out /* rsync://remote/
+
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (1.19.29 において追加)
@@ -9779,16 +10078,48 @@ the existing label on a filesystem.
                      const char *device,
                      const char *uuid);
 
+I<This function is deprecated.> In new code, use the L</guestfs_set_uuid>
+call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 This sets the ext2/3/4 filesystem UUID of the filesystem on C<device> to
 C<uuid>.  The format of the UUID and alternatives such as C<clear>,
 C<random> and C<time> are described in the L<tune2fs(8)> manpage.
 
-You can use either C<guestfs_tune2fs_l> or C<guestfs_get_e2uuid> to return
-the existing UUID of a filesystem.
+You can use C<guestfs_vfs_uuid> to return the existing UUID of a filesystem.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (1.0.15 において追加)
+
+=head2 guestfs_set_hv
+
+ int
+ guestfs_set_hv (guestfs_h *g,
+                 const char *hv);
+
+Set the hypervisor binary that we will use.  The hypervisor depends on the
+backend, but is usually the location of the qemu/KVM hypervisor.  For the
+uml backend, it is the location of the C<linux> or C<vmlinux> binary.
+
+The default is chosen when the library was compiled by the configure script.
+
+You can also override this by setting the C<LIBGUESTFS_HV> environment
+variable.
+
+Note that you should call this function as early as possible after creating
+the handle.  This is because some pre-launch operations depend on testing
+qemu features (by running C<qemu -help>).  If the qemu binary changes, we
+don't retest features, and so you might see inconsistent results.  Using the
+environment variable C<LIBGUESTFS_HV> is safest of all since that picks the
+qemu binary at the same time as the handle is created.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(Added in 1.23.17)
 
 =head2 guestfs_set_label
 
@@ -9801,12 +10132,29 @@ Set the filesystem label on C<mountable> to C<label>.
 
 いくつかのファイルシステム形式のみがラベルをサポートします。そして libguestfs はこれらのサブセットのみにおいてラベルの設定をサポートします。
 
-ext2/3/4 ファイルシステムでは、ラベルは 16 バイトに制限されます。
+=over 4
 
-NTFS ファイルシステムでは、ラベルは 128 Unicode 文字に制限されます。
+=item ext2, ext3, ext4
 
+Labels are limited to 16 bytes.
+
+=item NTFS
+
+Labels are limited to 128 unicode characters.
+
+=item XFS
+
+The label is limited to 12 bytes.  The filesystem must not be mounted when
+trying to set the label.
+
+=item btrfs
+
+The label is limited to 256 bytes and some characters are not allowed.
 Setting the label on a btrfs subvolume will set the label on its parent
-filesystem.
+filesystem.  The filesystem must not be mounted when trying to set the
+label.
+
+=back
 
 ファイルシステムにあるラベルを読み込むには C<guestfs_vfs_label> を呼び出します。
 
@@ -9879,8 +10227,8 @@ See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
  guestfs_set_memsize (guestfs_h *g,
                       int memsize);
 
-This sets the memory size in megabytes allocated to the qemu subprocess.
-This only has any effect if called before C<guestfs_launch>.
+This sets the memory size in megabytes allocated to the hypervisor.  This
+only has any effect if called before C<guestfs_launch>.
 
 ハンドルが設定される前に環境変数 C<LIBGUESTFS_MEMSIZE> を設定することにより、これを変更できます。
 
@@ -9966,23 +10314,30 @@ string (but never C<NULL>).
 
  int
  guestfs_set_qemu (guestfs_h *g,
-                   const char *qemu);
+                   const char *hv);
 
-使用したい QEMU バイナリーを設定します。
+I<This function is deprecated.> In new code, use the L</guestfs_set_hv> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
+Set the hypervisor binary (usually qemu) that we will use.
 
 The default is chosen when the library was compiled by the configure script.
 
-You can also override this by setting the C<LIBGUESTFS_QEMU> environment
+You can also override this by setting the C<LIBGUESTFS_HV> environment
 variable.
 
-Setting C<qemu> to C<NULL> restores the default qemu binary.
+Setting C<hv> to C<NULL> restores the default qemu binary.
 
 Note that you should call this function as early as possible after creating
 the handle.  This is because some pre-launch operations depend on testing
 qemu features (by running C<qemu -help>).  If the qemu binary changes, we
 don't retest features, and so you might see inconsistent results.  Using the
-environment variable C<LIBGUESTFS_QEMU> is safest of all since that picks
-the qemu binary at the same time as the handle is created.
+environment variable C<LIBGUESTFS_HV> is safest of all since that picks the
+qemu binary at the same time as the handle is created.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -9996,7 +10351,7 @@ the qemu binary at the same time as the handle is created.
 
 If this is called with the parameter C<false> then C<guestfs_launch> does
 not create a recovery process.  The purpose of the recovery process is to
-stop runaway qemu processes in the case where the main program aborts
+stop runaway hypervisor processes in the case where the main program aborts
 abruptly.
 
 This only has any effect if called before C<guestfs_launch>, and the default
@@ -10005,7 +10360,7 @@ is true.
 About the only time when you would want to disable this is if the main
 process will fork itself into the background ("daemonize" itself).  In this
 case the recovery process thinks that the main program has disappeared and
-so kills qemu, which is not very helpful.
+so kills the hypervisor, which is not very helpful.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -10082,6 +10437,23 @@ callback to send them somewhere else (see C<guestfs_set_event_callback>).
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (1.0.69 において追加)
+
+=head2 guestfs_set_uuid
+
+ int
+ guestfs_set_uuid (guestfs_h *g,
+                   const char *device,
+                   const char *uuid);
+
+Set the filesystem UIUD on C<device> to C<label>.
+
+Only some filesystem types support setting UUIDs.
+
+To read the UUID on a filesystem, call C<guestfs_vfs_uuid>.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(Added in 1.23.10)
 
 =head2 guestfs_set_verbose
 

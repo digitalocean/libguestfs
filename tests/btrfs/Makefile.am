@@ -18,6 +18,7 @@
 include $(top_srcdir)/subdir-rules.mk
 
 TESTS = \
+	test-btrfs-misc.pl \
 	test-btrfs-devices.sh \
 	test-btrfs-subvolume-default.pl
 

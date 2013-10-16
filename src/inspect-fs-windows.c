@@ -480,7 +480,7 @@ check_windows_system_registry (guestfs_h *g, struct inspect_fs *fs)
     if (STRCASEEQLEN (key, "\\DosDevices\\", 12) &&
         c_isalpha (key[12]) && key[13] == ':') {
       /* Get the binary value.  Is it a fixed disk? */
-      CLEANUP_FREE char *blob;
+      CLEANUP_FREE char *blob = NULL;
       char *device;
       size_t len;
       int64_t type;
@@ -599,6 +599,10 @@ map_registry_disk_blob (guestfs_h *g, const void *blob)
   return safe_asprintf (g, "%s%d", devices[i], partitions->val[j].part_num);
 }
 
+/* NB: This function DOES NOT test for the existence of the file.  It
+ * will return non-NULL even if the file/directory does not exist.
+ * You have to call guestfs_is_file{,_opts} etc.
+ */
 char *
 guestfs___case_sensitive_path_silently (guestfs_h *g, const char *path)
 {
@@ -640,7 +644,7 @@ guestfs__hivex_value_utf8 (guestfs_h *g, int64_t valueh)
 static char *
 utf16_to_utf8 (/* const */ char *input, size_t len)
 {
-  iconv_t ic = iconv_open ("UTF-8", "UTF-16");
+  iconv_t ic = iconv_open ("UTF-8", "UTF-16LE");
   if (ic == (iconv_t) -1)
     return NULL;
 

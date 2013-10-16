@@ -108,10 +108,7 @@ struct command
   enum command_style style;
   union {
     /* COMMAND_STYLE_EXECV */
-    struct {
-      char **args;
-      size_t len, alloc;
-    } argv;
+    struct stringsbuf argv;
     /* COMMAND_STYLE_SYSTEM */
     struct {
       char *str;
@@ -122,6 +119,9 @@ struct command
   /* Capture errors to the error log (defaults to true). */
   bool capture_errors;
   int errorfd;
+
+  /* Close file descriptors (defaults to true). */
+  bool close_files;
 
   /* Supply a callback to receive stdout. */
   cmd_stdout_callback stdout_callback;
@@ -145,6 +145,7 @@ guestfs___new_command (guestfs_h *g)
   cmd = safe_calloc (g, 1, sizeof *cmd);
   cmd->g = g;
   cmd->capture_errors = true;
+  cmd->close_files = true;
   cmd->errorfd = -1;
   cmd->outfd = -1;
   return cmd;
@@ -157,16 +158,7 @@ add_arg_no_strdup (struct command *cmd, char *arg)
   assert (cmd->style != COMMAND_STYLE_SYSTEM);
   cmd->style = COMMAND_STYLE_EXECV;
 
-  if (cmd->argv.len >= cmd->argv.alloc) {
-    if (cmd->argv.alloc == 0)
-      cmd->argv.alloc = 16;
-    else
-      cmd->argv.alloc *= 2;
-    cmd->argv.args = safe_realloc (cmd->g, cmd->argv.args,
-                                   cmd->argv.alloc * sizeof (char *));
-  }
-  cmd->argv.args[cmd->argv.len] = arg;
-  cmd->argv.len++;
+  guestfs___add_string_nodup (cmd->g, &cmd->argv, arg);
 }
 
 static void
@@ -306,6 +298,15 @@ guestfs___cmd_clear_capture_errors (struct command *cmd)
   cmd->capture_errors = false;
 }
 
+/* Don't close file descriptors after the fork.  XXX Should allow
+ * single fds to be sent to child process.
+ */
+void
+guestfs___cmd_clear_close_files (struct command *cmd)
+{
+  cmd->close_files = false;
+}
+
 /* Finish off the command by either NULL-terminating the argv array or
  * adding a terminating \0 to the string, or die with an internal
  * error if no command has been added.
@@ -315,7 +316,7 @@ finish_command (struct command *cmd)
 {
   switch (cmd->style) {
   case COMMAND_STYLE_EXECV:
-    add_arg_no_strdup (cmd, NULL);
+    guestfs___end_stringsbuf (cmd->g, &cmd->argv);
     break;
 
   case COMMAND_STYLE_SYSTEM:
@@ -334,17 +335,17 @@ debug_command (struct command *cmd)
 
   switch (cmd->style) {
   case COMMAND_STYLE_EXECV:
-    debug (cmd->g, "command: run: %s", cmd->argv.args[0]);
-    last = cmd->argv.len-1;     /* omit final NULL pointer */
+    debug (cmd->g, "command: run: %s", cmd->argv.argv[0]);
+    last = cmd->argv.size-1;     /* omit final NULL pointer */
     for (i = 1; i < last; ++i) {
       if (i < last-1 &&
-          cmd->argv.args[i][0] == '-' && cmd->argv.args[i+1][0] != '-') {
+          cmd->argv.argv[i][0] == '-' && cmd->argv.argv[i+1][0] != '-') {
         debug (cmd->g, "command: run: \\ %s %s",
-               cmd->argv.args[i], cmd->argv.args[i+1]);
+               cmd->argv.argv[i], cmd->argv.argv[i+1]);
         i++;
       }
       else
-        debug (cmd->g, "command: run: \\ %s", cmd->argv.args[i]);
+        debug (cmd->g, "command: run: \\ %s", cmd->argv.argv[i]);
     }
     break;
 
@@ -437,16 +438,18 @@ run_command (struct command *cmd)
   for (i = 1; i < NSIG; ++i)
     sigaction (i, &sa, NULL);
 
-  /* Close all other file descriptors.  This ensures that we don't
-   * hold open (eg) pipes from the parent process.
-   */
-  max_fd = sysconf (_SC_OPEN_MAX);
-  if (max_fd == -1)
-    max_fd = 1024;
-  if (max_fd > 65536)
-    max_fd = 65536;          /* bound the amount of work we do here */
-  for (fd = 3; fd < max_fd; ++fd)
-    close (fd);
+  if (cmd->close_files) {
+    /* Close all other file descriptors.  This ensures that we don't
+     * hold open (eg) pipes from the parent process.
+     */
+    max_fd = sysconf (_SC_OPEN_MAX);
+    if (max_fd == -1)
+      max_fd = 1024;
+    if (max_fd > 65536)
+      max_fd = 65536;        /* bound the amount of work we do here */
+    for (fd = 3; fd < max_fd; ++fd)
+      close (fd);
+  }
 
   /* Clean up the environment. */
   setenv ("LC_ALL", "C", 1);
@@ -457,8 +460,8 @@ run_command (struct command *cmd)
   /* Run the command. */
   switch (cmd->style) {
   case COMMAND_STYLE_EXECV:
-    execvp (cmd->argv.args[0], cmd->argv.args);
-    perror (cmd->argv.args[0]);
+    execvp (cmd->argv.argv[0], cmd->argv.argv);
+    perror (cmd->argv.argv[0]);
     _exit (EXIT_FAILURE);
 
   case COMMAND_STYLE_SYSTEM:
@@ -623,8 +626,6 @@ guestfs___cmd_run (struct command *cmd)
 void
 guestfs___cmd_close (struct command *cmd)
 {
-  size_t i;
-
   if (!cmd)
     return;
 
@@ -634,9 +635,7 @@ guestfs___cmd_close (struct command *cmd)
     break;
 
   case COMMAND_STYLE_EXECV:
-    for (i = 0; i < cmd->argv.len; ++i)
-      free (cmd->argv.args[i]);
-    free (cmd->argv.args);
+    guestfs___free_stringsbuf (&cmd->argv);
     break;
 
   case COMMAND_STYLE_SYSTEM:
@@ -659,9 +658,9 @@ guestfs___cmd_close (struct command *cmd)
 }
 
 void
-guestfs___cleanup_cmd_close (void *ptr)
+guestfs___cleanup_cmd_close (struct command **ptr)
 {
-  guestfs___cmd_close (* (struct command **) ptr);
+  guestfs___cmd_close (*ptr);
 }
 
 /* Deal with buffering stdout for the callback. */

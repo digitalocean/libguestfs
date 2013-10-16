@@ -369,9 +369,16 @@ do_umount_all (void)
   FILE *fp;
   struct mntent *m;
   DECLARE_STRINGSBUF (mounts);
-  CLEANUP_FREE char *err = NULL;
   size_t i;
   int r;
+
+  /* This is called from internal_autosync and generally as a cleanup
+   * function, and since the umount will definitely fail if any
+   * handles are open, we may as well close them.
+   */
+  aug_finalize ();
+  hivex_finalize ();
+  journal_finalize ();
 
   /* NB: Eventually we should aim to parse /proc/self/mountinfo, but
    * that requires custom parsing code.
@@ -406,6 +413,8 @@ do_umount_all (void)
 
   /* Unmount them. */
   for (i = 0; i < mounts.size; ++i) {
+    CLEANUP_FREE char *err = NULL;
+
     r = command (NULL, &err, str_umount, mounts.argv[i], NULL);
     if (r == -1) {
       reply_with_error ("umount: %s: %s", mounts.argv[i], err);

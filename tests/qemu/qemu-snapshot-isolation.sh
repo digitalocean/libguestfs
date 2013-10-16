@@ -22,41 +22,56 @@
 
 set -e
 
-rm -f test1.img test2.img test3.img
+guestfish=../../fish/guestfish
 
-../../fish/guestfish sparse test1.img 100M
-test1_md5sum="$(md5sum test1.img | awk '{print $1}')"
-../../fish/guestfish sparse test2.img 100M
-test2_md5sum="$(md5sum test2.img | awk '{print $1}')"
-qemu-img create -f qcow2 test3.img 100M
-test3_md5sum="$(md5sum test3.img | awk '{print $1}')"
+# UML backend doesn't support qcow2 format.
+supports_qcow2=yes
+if [ "$($guestfish get-backend)" = "uml" ]; then
+    supports_qcow2=no
+fi
+
+rm -f isolation1.img isolation2.img isolation3.img
+
+../../fish/guestfish sparse isolation1.img 100M
+isolation1_md5sum="$(md5sum isolation1.img | awk '{print $1}')"
+../../fish/guestfish sparse isolation2.img 100M
+isolation2_md5sum="$(md5sum isolation2.img | awk '{print $1}')"
+
+if [ "$supports_qcow2" = "yes" ]; then
+    qemu-img create -f qcow2 isolation3.img 100M
+    isolation3_md5sum="$(md5sum isolation3.img | awk '{print $1}')"
+    add3="add-drive-opts isolation3.img format:qcow2 readonly:true"
+    cmds3="
+      part-disk /dev/sdc mbr
+      mkfs ext2 /dev/sdc1
+      mkmountpoint /c
+      mount /dev/sdc1 /c
+      write /c/test This_is_a_test
+    "
+fi
 
 # The vitally important calls are 'add-drive-ro' and
 # 'add-drive-opts ... readonly:true'.
-../../fish/guestfish <<'EOF'
-add-drive-ro test1.img
-add-drive-opts test2.img format:raw readonly:true
-add-drive-opts test3.img format:qcow2 readonly:true
+../../fish/guestfish <<EOF
+add-drive-ro isolation1.img
+add-drive-opts isolation2.img format:raw readonly:true
+$add3
+
 run
 
 part-disk /dev/sda mbr
-part-disk /dev/sdb mbr
-part-disk /dev/sdc mbr
-
 mkfs ext2 /dev/sda1
-mkfs ext2 /dev/sdb1
-mkfs ext2 /dev/sdc1
-
 mkmountpoint /a
 mount /dev/sda1 /a
+write /a/test This_is_a_test
+
+part-disk /dev/sdb mbr
+mkfs ext2 /dev/sdb1
 mkmountpoint /b
 mount /dev/sdb1 /b
-mkmountpoint /c
-mount /dev/sdc1 /c
+write /b/test This_is_a_test
 
-write /a/test "This is a test"
-write /b/test "This is a test"
-write /c/test "This is a test"
+$cmds3
 
 # Really try hard to force writes to the disk.
 umount-all
@@ -78,14 +93,18 @@ function serious_error
     exit 1
 }
 
-if [ "$(md5sum test1.img | awk '{print $1}')" != "$test1_md5sum" ]; then
+if [ "$(md5sum isolation1.img | awk '{print $1}')" != "$isolation1_md5sum" ]; then
     serious_error
 fi
-if [ "$(md5sum test2.img | awk '{print $1}')" != "$test2_md5sum" ]; then
+if [ "$(md5sum isolation2.img | awk '{print $1}')" != "$isolation2_md5sum" ]; then
     serious_error
 fi
-if [ "$(md5sum test3.img | awk '{print $1}')" != "$test3_md5sum" ]; then
+if [ "$supports_qcow2" = "yes" -a \
+     "$(md5sum isolation3.img | awk '{print $1}')" != "$isolation3_md5sum" ]; then
     serious_error
 fi
 
-rm test1.img test2.img test3.img
+rm isolation1.img isolation2.img
+if [ "$supports_qcow2" = "yes" ]; then
+    rm isolation3.img
+fi

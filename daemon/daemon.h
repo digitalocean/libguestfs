@@ -36,12 +36,14 @@
 
 typedef struct {
   mountable_type_t type;
-  const char *device;
-  const char *volume;
+  char *device;
+  char *volume;
 } mountable_t;
 
 /*-- in guestfsd.c --*/
 extern int verbose;
+
+extern int enable_network;
 
 extern int autosync_umount;
 
@@ -105,6 +107,8 @@ extern char *join_strings (const char *separator, char *const *argv);
 
 extern char **split_lines (char *str);
 
+extern char **empty_list (void);
+
 #define command(out,err,name,...) commandf((out),(err),0,(name),__VA_ARGS__)
 #define commandr(out,err,name,...) commandrf((out),(err),0,(name),__VA_ARGS__)
 #define commandv(out,err,argv) commandvf((out),(err),0,(argv))
@@ -130,9 +134,9 @@ extern int is_power_of_2 (unsigned long v);
 
 extern void trim (char *str);
 
-extern int device_name_translation (char *device);
+extern char *device_name_translation (const char *device);
 
-extern int parse_btrfsvol (char *desc, mountable_t *mountable);
+extern int parse_btrfsvol (const char *desc, mountable_t *mountable);
 
 extern int prog_exists (const char *prog);
 
@@ -207,6 +211,9 @@ extern int sync_disks (void);
 #define EXT2_LABEL_MAX 16
 extern int fstype_is_extfs (const char *fstype);
 
+/*-- in blkid.c --*/
+extern char *get_blkid_tag (const char *device, const char *tag);
+
 /*-- in lvm.c --*/
 extern int lv_canonical (const char *device, char **ret);
 
@@ -215,6 +222,11 @@ extern void copy_lvm (void);
 
 /*-- in zero.c --*/
 extern void wipe_device_before_mkfs (const char *device);
+
+/*-- in augeas.c, hivex.c, journal.c --*/
+extern void aug_finalize (void);
+extern void hivex_finalize (void);
+extern void journal_finalize (void);
 
 /*-- in proto.c --*/
 extern void main_loop (int sock) __attribute__((noreturn));
@@ -333,99 +345,6 @@ is_zero (const char *buffer, size_t size)
       fail_stmt;							\
     }									\
   } while (0)
-
-/* All functions that need an argument that is a device or partition name
- * must call this macro.  It checks that the device exists and does
- * device name translation (described in the guestfs(3) manpage).
- * Note that the "path" argument may be modified.
- *
- * NB. Cannot be used for FileIn functions.
- */
-#define RESOLVE_DEVICE(path,cancel_stmt,fail_stmt)                      \
-  do {									\
-    if (STRNEQLEN ((path), "/dev/", 5)) {				\
-      cancel_stmt;                                                      \
-      reply_with_error ("%s: %s: expecting a device name", __func__, (path)); \
-      fail_stmt;							\
-    }									\
-    if (is_root_device (path)) {                                        \
-      cancel_stmt;                                                      \
-      reply_with_error ("%s: %s: device not found", __func__, path);    \
-      fail_stmt;                                                        \
-    }                                                                   \
-    if (device_name_translation ((path)) == -1) {                       \
-      int err = errno;                                                  \
-      cancel_stmt;                                                      \
-      errno = err;                                                      \
-      reply_with_perror ("%s: %s", __func__, path);                     \
-      fail_stmt;							\
-    }                                                                   \
-  } while (0)
-
-/* All functions that take a mountable argument must call this macro.
- * It parses the mountable into a mountable_t, ensures any
- * underlying device exists, and does device name translation
- * (described in the guestfs(3) manpage).
- *
- * Note that the "string" argument may be modified.
- */
-#define RESOLVE_MOUNTABLE(string,mountable,cancel_stmt,fail_stmt)       \
-  do {                                                                  \
-    if (STRPREFIX ((string), "btrfsvol:")) {                            \
-      if (parse_btrfsvol ((string) + strlen ("btrfsvol:"), &(mountable)) == -1)\
-      {                                                                 \
-        cancel_stmt;                                                    \
-        reply_with_error ("%s: %s: expecting a btrfs volume",           \
-                          __func__, (string));                          \
-        fail_stmt;                                                      \
-      }                                                                 \
-    }                                                                   \
-                                                                        \
-    else {                                                              \
-      (mountable).type = MOUNTABLE_DEVICE;                              \
-      (mountable).device = (string);                                    \
-      (mountable).volume = NULL;                                        \
-      RESOLVE_DEVICE((string), cancel_stmt, fail_stmt);                 \
-    }                                                                   \
-  } while (0)
-
-/* Helper for functions which need either an absolute path in the
- * mounted filesystem, OR a /dev/ device which exists.
- *
- * NB. Cannot be used for FileIn functions.
- *
- * NB #2: Functions which mix filenames and device paths should be
- * avoided, and existing functions should be deprecated.  This is
- * because we intend in future to make device parameters a distinct
- * type from filenames.
- */
-#define REQUIRE_ROOT_OR_RESOLVE_DEVICE(path,cancel_stmt,fail_stmt)      \
-  do {									\
-    if (STREQLEN ((path), "/dev/", 5))                                  \
-      RESOLVE_DEVICE ((path), cancel_stmt, fail_stmt);                  \
-    else {								\
-      NEED_ROOT (cancel_stmt, fail_stmt);                               \
-      ABS_PATH ((path), cancel_stmt, fail_stmt);                        \
-    }									\
-  } while (0)
-
-/* Helper for functions which need either an absolute path in the
- * mounted filesystem, OR a valid mountable description.
- */
-#define REQUIRE_ROOT_OR_RESOLVE_MOUNTABLE(string, mountable,            \
-                                          cancel_stmt, fail_stmt)       \
-  do {                                                                  \
-    if (STREQLEN ((string), "/dev/", strlen ("/dev/")) || (string)[0] != '/') {\
-      RESOLVE_MOUNTABLE (string, mountable, cancel_stmt, fail_stmt);    \
-    }                                                                   \
-                                                                        \
-    else {                                                              \
-      NEED_ROOT (cancel_stmt, fail_stmt);                               \
-      (mountable).type = MOUNTABLE_PATH;                                \
-      (mountable).device = (string);                                    \
-    }                                                                   \
-  } while (0)                                                           \
-
 
 /* NB:
  * (1) You must match CHROOT_IN and CHROOT_OUT even along error paths.

@@ -28,17 +28,16 @@ let rhn_systemid_perform g root =
   match typ, distro with
   | "linux", "rhel" ->
     (try g#rm "/etc/sysconfig/rhn/systemid" with G.Error _ -> ());
+    (try g#rm "/etc/sysconfig/rhn/osad-auth.conf" with G.Error _ -> ());
     []
   | _ -> []
 
-let rhn_systemid_op = {
-  name = "rhn-systemid";
-  enabled_by_default = true;
-  heading = s_"Remove the RHN system ID";
-  pod_description = None;
-  extra_args = [];
-  perform_on_filesystems = Some rhn_systemid_perform;
-  perform_on_devices = None;
+let op = {
+  defaults with
+    name = "rhn-systemid";
+    enabled_by_default = true;
+    heading = s_"Remove the RHN system ID";
+    perform_on_filesystems = Some rhn_systemid_perform;
 }
 
-let () = register_operation rhn_systemid_op
+let () = register_operation op

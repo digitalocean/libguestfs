@@ -21,8 +21,6 @@
 
 #include <getopt.h>
 
-#include <libxml/uri.h>
-
 #include "guestfs-internal-frontend.h"
 
 /* Provided by guestfish or guestmount. */
@@ -62,11 +60,15 @@ struct drv {
     struct {
       char *filename;       /* disk filename */
       const char *format;   /* format (NULL == autodetect) */
+      const char *cachemode;/* cachemode (NULL == default) */
     } a;
     struct {
-      xmlURIPtr uri;        /* URI */
-      char *socket;         /* ?socket parameter from URI. */
+      char *path;           /* disk path */
+      char *protocol;       /* protocol (eg. "nbd") */
+      char **server;        /* server(s) - can be NULL */
+      char *username;       /* username - can be NULL */
       const char *format;   /* format (NULL == autodetect) */
+      const char *orig_uri; /* original URI (for error messages etc.) */
     } uri;
     struct {
       char *guest;          /* guest name */

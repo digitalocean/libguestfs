@@ -9,10 +9,12 @@ GuestfsAddDrive
 
 </para>
 
+
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
+
 
 <!-- ##### SECTION Stability_Level ##### -->
 
@@ -25,6 +27,11 @@ GuestfsAddDrive
 
 </para>
 
+
+<!-- ##### ARG GuestfsAddDrive:cachemode ##### -->
+<para>
+
+</para>
 
 <!-- ##### ARG GuestfsAddDrive:format ##### -->
 <para>

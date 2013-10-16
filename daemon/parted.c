@@ -628,7 +628,7 @@ do_part_get_bootable (const char *device, int partnum)
     if (boot == NULL)
       return -1;
 
-    return STREQ (boot, "boot");
+    return strstr (boot, "boot") != NULL;
   }
   else {
     /* Old-style: First look for the line matching "^Number". */
@@ -807,7 +807,7 @@ do_part_get_gpt_type(const char *device, int partnum)
     return NULL;
   }
 
-  char **lines = split_lines (err);
+  CLEANUP_FREE_STRING_LIST char **lines = split_lines (err);
   if (lines == NULL) {
     reply_with_error ("'%s %s -i %i' returned no output",
                       str_sgdisk, device, partnum);

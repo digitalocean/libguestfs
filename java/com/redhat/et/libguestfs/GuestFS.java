@@ -182,8 +182,15 @@ public class GuestFS {
    */
   public static final long EVENT_LIBVIRT_AUTH = 0x100;
 
+  /**
+   * Event 'warning'.
+   *
+   * @see #set_event_callback
+   */
+  public static final long EVENT_WARNING = 0x200;
+
   /** Bitmask of all events. */
-  public static final long EVENT_ALL = 0x1ff;
+  public static final long EVENT_ALL = 0x3ff;
 
 /** Utility function to turn an event number or bitmask into a string. */
   public static String eventToString (long events)
@@ -1176,10 +1183,7 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * launch the qemu subprocess
-   * <p>
-   * Internally libguestfs is implemented by running a
-   * virtual machine using qemu(1).
+   * launch the backend
    * <p>
    * You should call this after configuring the handle (eg.
    * adding drives) but before performing any actions.
@@ -1205,7 +1209,7 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * wait until the qemu subprocess launches (no op)
+   * wait until the hypervisor launches (no op)
    * <p>
    * This function is a no op.
    * <p>
@@ -1240,9 +1244,9 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * kill the qemu subprocess
+   * kill the hypervisor
    * <p>
-   * This kills the qemu subprocess.
+   * This kills the hypervisor.
    * <p>
    * Do not call this. See: "g.shutdown" instead.
    * <p>
@@ -1321,46 +1325,45 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * add qemu parameters
+   * add hypervisor parameters
    * <p>
-   * This can be used to add arbitrary qemu command line
-   * parameters of the form *-param value*. Actually it's not
-   * quite arbitrary - we prevent you from setting some
-   * parameters which would interfere with parameters that we
-   * use.
+   * This can be used to add arbitrary hypervisor parameters
+   * of the form *-param value*. Actually it's not quite
+   * arbitrary - we prevent you from setting some parameters
+   * which would interfere with parameters that we use.
    * <p>
-   * The first character of "qemuparam" string must be a "-"
+   * The first character of "hvparam" string must be a "-"
    * (dash).
    * <p>
-   * "qemuvalue" can be NULL.
+   * "hvvalue" can be NULL.
    * <p>
    * @throws LibGuestFSException
    */
-  public void config (String qemuparam, String qemuvalue)
+  public void config (String hvparam, String hvvalue)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("config: handle is closed");
 
-    _config (g, qemuparam, qemuvalue);
+    _config (g, hvparam, hvvalue);
   }
 
-  private native void _config (long g, String qemuparam, String qemuvalue)
+  private native void _config (long g, String hvparam, String hvvalue)
     throws LibGuestFSException;
 
   /**
-   * set the qemu binary
+   * set the hypervisor binary (usually qemu)
    * <p>
-   * Set the qemu binary that we will use.
+   * Set the hypervisor binary (usually qemu) that we will
+   * use.
    * <p>
    * The default is chosen when the library was compiled by
    * the configure script.
    * <p>
    * You can also override this by setting the
-   * "LIBGUESTFS_QEMU" environment variable.
+   * "LIBGUESTFS_HV" environment variable.
    * <p>
-   * Setting "qemu" to "NULL" restores the default qemu
-   * binary.
+   * Setting "hv" to "NULL" restores the default qemu binary.
    * <p>
    * Note that you should call this function as early as
    * possible after creating the handle. This is because some
@@ -1368,30 +1371,44 @@ public class GuestFS {
    * (by running "qemu -help"). If the qemu binary changes,
    * we don't retest features, and so you might see
    * inconsistent results. Using the environment variable
-   * "LIBGUESTFS_QEMU" is safest of all since that picks the
+   * "LIBGUESTFS_HV" is safest of all since that picks the
    * qemu binary at the same time as the handle is created.
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "set_hv" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
-  public void set_qemu (String qemu)
+  public void set_qemu (String hv)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("set_qemu: handle is closed");
 
-    _set_qemu (g, qemu);
+    _set_qemu (g, hv);
   }
 
-  private native void _set_qemu (long g, String qemu)
+  private native void _set_qemu (long g, String hv)
     throws LibGuestFSException;
 
   /**
-   * get the qemu binary
+   * get the hypervisor binary (usually qemu)
    * <p>
-   * Return the current qemu binary.
+   * Return the current hypervisor binary (usually qemu).
    * <p>
    * This is always non-NULL. If it wasn't set already, then
    * this will return the default qemu binary name.
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "get_hv" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -1405,6 +1422,66 @@ public class GuestFS {
   }
 
   private native String _get_qemu (long g)
+    throws LibGuestFSException;
+
+  /**
+   * set the hypervisor binary
+   * <p>
+   * Set the hypervisor binary that we will use. The
+   * hypervisor depends on the backend, but is usually the
+   * location of the qemu/KVM hypervisor. For the uml
+   * backend, it is the location of the "linux" or "vmlinux"
+   * binary.
+   * <p>
+   * The default is chosen when the library was compiled by
+   * the configure script.
+   * <p>
+   * You can also override this by setting the
+   * "LIBGUESTFS_HV" environment variable.
+   * <p>
+   * Note that you should call this function as early as
+   * possible after creating the handle. This is because some
+   * pre-launch operations depend on testing qemu features
+   * (by running "qemu -help"). If the qemu binary changes,
+   * we don't retest features, and so you might see
+   * inconsistent results. Using the environment variable
+   * "LIBGUESTFS_HV" is safest of all since that picks the
+   * qemu binary at the same time as the handle is created.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_hv (String hv)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_hv: handle is closed");
+
+    _set_hv (g, hv);
+  }
+
+  private native void _set_hv (long g, String hv)
+    throws LibGuestFSException;
+
+  /**
+   * get the hypervisor binary
+   * <p>
+   * Return the current hypervisor binary.
+   * <p>
+   * This is always non-NULL. If it wasn't set already, then
+   * this will return the default qemu binary name.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String get_hv ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_hv: handle is closed");
+
+    return _get_hv (g);
+  }
+
+  private native String _get_hv (long g)
     throws LibGuestFSException;
 
   /**
@@ -1703,11 +1780,11 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * set memory allocated to the qemu subprocess
+   * set memory allocated to the hypervisor
    * <p>
    * This sets the memory size in megabytes allocated to the
-   * qemu subprocess. This only has any effect if called
-   * before "g.launch".
+   * hypervisor. This only has any effect if called before
+   * "g.launch".
    * <p>
    * You can also change this by setting the environment
    * variable "LIBGUESTFS_MEMSIZE" before the handle is
@@ -1731,10 +1808,10 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * get memory allocated to the qemu subprocess
+   * get memory allocated to the hypervisor
    * <p>
    * This gets the memory size in megabytes allocated to the
-   * qemu subprocess.
+   * hypervisor.
    * <p>
    * If "g.set_memsize" was not called on this handle, and if
    * "LIBGUESTFS_MEMSIZE" was not set, then this returns the
@@ -1758,10 +1835,10 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * get PID of qemu subprocess
+   * get PID of hypervisor
    * <p>
-   * Return the process ID of the qemu subprocess. If there
-   * is no qemu subprocess, then this will return an error.
+   * Return the process ID of the hypervisor. If there is no
+   * hypervisor running, then this will return an error.
    * <p>
    * This is an internal call used for debugging and testing.
    * <p>
@@ -1983,9 +2060,9 @@ public class GuestFS {
    * <p>
    * If this is called with the parameter "false" then
    * "g.launch" does not create a recovery process. The
-   * purpose of the recovery process is to stop runaway qemu
-   * processes in the case where the main program aborts
-   * abruptly.
+   * purpose of the recovery process is to stop runaway
+   * hypervisor processes in the case where the main program
+   * aborts abruptly.
    * <p>
    * This only has any effect if called before "g.launch",
    * and the default is true.
@@ -1994,8 +2071,8 @@ public class GuestFS {
    * is if the main process will fork itself into the
    * background ("daemonize" itself). In this case the
    * recovery process thinks that the main program has
-   * disappeared and so kills qemu, which is not very
-   * helpful.
+   * disappeared and so kills the hypervisor, which is not
+   * very helpful.
    * <p>
    * @throws LibGuestFSException
    */
@@ -2847,6 +2924,31 @@ public class GuestFS {
    * locations, or if no username is given, then no
    * authentication will be used.
    * <p>
+   * "cachemode"
+   * Choose whether or not libguestfs will obey sync
+   * operations (safe but slow) or not (unsafe but fast).
+   * The possible values for this string are:
+   * <p>
+   * "cachemode = "writeback""
+   * This is the default.
+   * <p>
+   * Write operations in the API do not return until
+   * a write(2) call has completed in the host [but
+   * note this does not imply that anything gets
+   * written to disk].
+   * <p>
+   * Sync operations in the API, including implicit
+   * syncs caused by filesystem journalling, will not
+   * return until an fdatasync(2) call has completed
+   * in the host, indicating that data has been
+   * committed to disk.
+   * <p>
+   * "cachemode = "unsafe""
+   * In this mode, there are no guarantees.
+   * Libguestfs may cache anything and ignore sync
+   * requests. This is suitable only for scratch or
+   * temporary disks.
+   * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
@@ -2935,8 +3037,16 @@ public class GuestFS {
       secret = ((String) _optobj);
       _optargs_bitmask |= 256L;
     }
+    String cachemode = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("cachemode");
+    if (_optobj != null) {
+      cachemode = ((String) _optobj);
+      _optargs_bitmask |= 512L;
+    }
 
-    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server, username, secret);
+    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server, username, secret, cachemode);
   }
 
   public void add_drive (String filename)
@@ -2957,7 +3067,7 @@ public class GuestFS {
     add_drive (filename, null);
   }
 
-  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String[] server, String username, String secret)
+  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String[] server, String username, String secret, String cachemode)
     throws LibGuestFSException;
 
   /**
@@ -4266,7 +4376,7 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * shutdown the qemu subprocess
+   * shutdown the hypervisor
    * <p>
    * This is the opposite of "g.launch". It performs an
    * orderly shutdown of the backend process(es). If the
@@ -5133,6 +5243,96 @@ public class GuestFS {
   }
 
   private native String _get_program (long g)
+    throws LibGuestFSException;
+
+  /**
+   * add a temporary scratch drive
+   * <p>
+   * This command adds a temporary scratch drive to the
+   * handle. The "size" parameter is the virtual size (in
+   * bytes). The scratch drive is blank initially (all reads
+   * return zeroes until you start writing to it). The drive
+   * is deleted when the handle is closed.
+   * <p>
+   * The optional arguments "name" and "label" are passed
+   * through to "g.add_drive".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void add_drive_scratch (long size, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("add_drive_scratch: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    String name = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("name");
+    if (_optobj != null) {
+      name = ((String) _optobj);
+      _optargs_bitmask |= 1L;
+    }
+    String label = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("label");
+    if (_optobj != null) {
+      label = ((String) _optobj);
+      _optargs_bitmask |= 2L;
+    }
+
+    _add_drive_scratch (g, size, _optargs_bitmask, name, label);
+  }
+
+  public void add_drive_scratch (long size)
+    throws LibGuestFSException
+  {
+    add_drive_scratch (size, null);
+  }
+
+  private native void _add_drive_scratch (long g, long size, long _optargs_bitmask, String name, String label)
+    throws LibGuestFSException;
+
+  /**
+   * read the current journal entry
+   * <p>
+   * Read the current journal entry. This returns all the
+   * fields in the journal as a set of "(attrname, attrval)"
+   * pairs. The "attrname" is the field name (a string).
+   * <p>
+   * The "attrval" is the field value (a binary blob, often
+   * but not always a string). Please note that "attrval" is
+   * a byte array, *not* a \0-terminated C string.
+   * <p>
+   * The length of data may be truncated to the data
+   * threshold (see: "g.journal_set_data_threshold",
+   * "g.journal_get_data_threshold").
+   * <p>
+   * If you set the data threshold to unlimited (0) then this
+   * call can read a journal entry of any size, ie. it is not
+   * limited by the libguestfs protocol.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public XAttr[] journal_get ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("journal_get: handle is closed");
+
+    return _journal_get (g);
+  }
+
+  private native XAttr[] _journal_get (long g)
     throws LibGuestFSException;
 
   /**
@@ -6653,8 +6853,11 @@ public class GuestFS {
    * <p>
    * This returns the block size of a device.
    * <p>
-   * (Note this is different from both *size in blocks* and
-   * *filesystem block size*).
+   * Note: this is different from both *size in blocks* and
+   * *filesystem block size*. Also this setting is not really
+   * used by anything. You should probably not use it for
+   * anything. Filesystems have their own idea about what
+   * block size to choose.
    * <p>
    * This uses the blockdev(8) command.
    * <p>
@@ -6675,12 +6878,18 @@ public class GuestFS {
   /**
    * set blocksize of block device
    * <p>
-   * This sets the block size of a device.
+   * This call does nothing and has never done anything
+   * because of a bug in blockdev. Do not use it.
    * <p>
-   * (Note this is different from both *size in blocks* and
-   * *filesystem block size*).
+   * If you need to set the filesystem block size, use the
+   * "blocksize" option of "g.mkfs".
    * <p>
-   * This uses the blockdev(8) command.
+   * *This function is deprecated.* In new code, use the
+   * "mkfs" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -7314,8 +7523,15 @@ public class GuestFS {
    * alternatives such as "clear", "random" and "time" are
    * described in the tune2fs(8) manpage.
    * <p>
-   * You can use either "g.tune2fs_l" or "g.get_e2uuid" to
-   * return the existing UUID of a filesystem.
+   * You can use "g.vfs_uuid" to return the existing UUID of
+   * a filesystem.
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "set_uuid" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -7593,8 +7809,8 @@ public class GuestFS {
    * ping the guest daemon
    * <p>
    * This is a test probe into the guestfs daemon running
-   * inside the qemu subprocess. Calling this function checks
-   * that the daemon responds to the ping message, without
+   * inside the hypervisor. Calling this function checks that
+   * the daemon responds to the ping message, without
    * affecting the daemon or attached block device(s) in any
    * other way.
    * <p>
@@ -14262,13 +14478,21 @@ public class GuestFS {
    * libguestfs supports setting labels on only a subset of
    * these.
    * <p>
-   * On ext2/3/4 filesystems, labels are limited to 16 bytes.
+   * ext2, ext3, ext4
+   * Labels are limited to 16 bytes.
    * <p>
-   * On NTFS filesystems, labels are limited to 128 unicode
-   * characters.
+   * NTFS
+   * Labels are limited to 128 unicode characters.
    * <p>
-   * Setting the label on a btrfs subvolume will set the
-   * label on its parent filesystem.
+   * XFS The label is limited to 12 bytes. The filesystem
+   * must not be mounted when trying to set the label.
+   * <p>
+   * btrfs
+   * The label is limited to 256 bytes and some
+   * characters are not allowed. Setting the label on a
+   * btrfs subvolume will set the label on its parent
+   * filesystem. The filesystem must not be mounted when
+   * trying to set the label.
    * <p>
    * To read the label on a filesystem, call "g.vfs_label".
    * <p>
@@ -15033,9 +15257,10 @@ public class GuestFS {
    * <p>
    * This is mainly useful as a negative test. If this
    * returns true, it doesn't mean that a particular
-   * filesystem can be mounted, since filesystems can fail
-   * for other reasons such as it being a later version of
-   * the filesystem, or having incompatible features.
+   * filesystem can be created or mounted, since filesystems
+   * can fail for other reasons such as it being a later
+   * version of the filesystem, or having incompatible
+   * features, or lacking the right mkfs.<*fs*> tool.
    * <p>
    * See also "g.available", "g.feature_available",
    * "AVAILABILITY" in guestfs(3).
@@ -15563,6 +15788,14 @@ public class GuestFS {
    * <p>
    * The optional arguments are the same as those of
    * "g.rsync".
+   * <p>
+   * Globbing does not happen on the "src" parameter. In
+   * programs which use the API directly you have to expand
+   * wildcards yourself (see "g.glob_expand"). In guestfish
+   * you can use the "glob" command (see "glob" in
+   * guestfish(1)), for example:
+   * <p>
+   * ><fs> glob rsync-out /* rsync://remote/
    * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
@@ -16325,9 +16558,13 @@ public class GuestFS {
    * create an ext2/ext3/ext4 filesystem on device
    * <p>
    * "mke2fs" is used to create an ext2, ext3, or ext4
-   * filesystem on "device". The optional "blockscount" is
-   * the size of the filesystem in blocks. If omitted it
-   * defaults to the size of "device".
+   * filesystem on "device".
+   * <p>
+   * The optional "blockscount" is the size of the filesystem
+   * in blocks. If omitted it defaults to the size of
+   * "device". Note if the filesystem is too small to contain
+   * a journal, "mke2fs" will silently create an ext2
+   * filesystem instead.
    * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
@@ -16814,9 +17051,7 @@ public class GuestFS {
    * set the POSIX ACL attached to a file
    * <p>
    * This function sets the POSIX Access Control List (ACL)
-   * attached to "path". The "acl" parameter is the new ACL
-   * in either "long text form" or "short text form" (see
-   * acl(5)).
+   * attached to "path".
    * <p>
    * The "acltype" parameter may be:
    * <p>
@@ -16827,6 +17062,25 @@ public class GuestFS {
    * "default"
    * Set the default ACL. Normally this only makes sense
    * if "path" is a directory.
+   * <p>
+   * The "acl" parameter is the new ACL in either "long text
+   * form" or "short text form" (see acl(5)). The new ACL
+   * completely replaces any previous ACL on the file. The
+   * ACL must contain the full Unix permissions (eg.
+   * "u::rwx,g::rx,o::rx").
+   * <p>
+   * If you are specifying individual users or groups, then
+   * the mask field is also required (eg. "m::rwx"), followed
+   * by the "u:*ID*:..." and/or "g:*ID*:..." field(s). A full
+   * ACL string might therefore look like this:
+   * <p>
+   * u::rwx,g::rwx,o::rwx,m::rwx,u:500:rwx,g:500:rwx
+   * \ Unix permissions / \mask/ \      ACL        /
+   * <p>
+   * You should use numeric UIDs and GIDs. To map usernames
+   * and groupnames to the correct numeric ID in the context
+   * of the guest, use the Augeas functions (see
+   * "g.aug_init").
    * <p>
    * @throws LibGuestFSException
    */
@@ -16868,6 +17122,9 @@ public class GuestFS {
    * This function returns the Linux capabilities attached to
    * "path". The capabilities set is returned in text form
    * (see cap_to_text(3)).
+   * <p>
+   * If no capabilities are attached to a file, an empty
+   * string is returned.
    * <p>
    * @throws LibGuestFSException
    */
@@ -17470,6 +17727,223 @@ public class GuestFS {
   }
 
   private native void _remount (long g, String mountpoint, long _optargs_bitmask, boolean rw)
+    throws LibGuestFSException;
+
+  /**
+   * set the filesystem UUID
+   * <p>
+   * Set the filesystem UIUD on "device" to "label".
+   * <p>
+   * Only some filesystem types support setting UUIDs.
+   * <p>
+   * To read the UUID on a filesystem, call "g.vfs_uuid".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_uuid (String device, String uuid)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_uuid: handle is closed");
+
+    _set_uuid (g, device, uuid);
+  }
+
+  private native void _set_uuid (long g, String device, String uuid)
+    throws LibGuestFSException;
+
+  /**
+   * open the systemd journal
+   * <p>
+   * Open the systemd journal located in "directory". Any
+   * previously opened journal handle is closed.
+   * <p>
+   * The contents of the journal can be read using
+   * "g.journal_next" and "g.journal_get".
+   * <p>
+   * After you have finished using the journal, you should
+   * close the handle by calling "g.journal_close".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void journal_open (String directory)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("journal_open: handle is closed");
+
+    _journal_open (g, directory);
+  }
+
+  private native void _journal_open (long g, String directory)
+    throws LibGuestFSException;
+
+  /**
+   * close the systemd journal
+   * <p>
+   * Close the journal handle.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void journal_close ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("journal_close: handle is closed");
+
+    _journal_close (g);
+  }
+
+  private native void _journal_close (long g)
+    throws LibGuestFSException;
+
+  /**
+   * move to the next journal entry
+   * <p>
+   * Move to the next journal entry. You have to call this at
+   * least once after opening the handle before you are able
+   * to read data.
+   * <p>
+   * The returned boolean tells you if there are any more
+   * journal records to read. "true" means you can read the
+   * next record (eg. using "g.journal_get_data"), and
+   * "false" means you have reached the end of the journal.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean journal_next ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("journal_next: handle is closed");
+
+    return _journal_next (g);
+  }
+
+  private native boolean _journal_next (long g)
+    throws LibGuestFSException;
+
+  /**
+   * skip forwards or backwards in the journal
+   * <p>
+   * Skip forwards ("skip ≥ 0") or backwards ("skip < 0") in
+   * the journal.
+   * <p>
+   * The number of entries actually skipped is returned (note
+   * "rskip ≥ 0"). If this is not the same as the absolute
+   * value of the skip parameter ("|skip|") you passed in
+   * then it means you have reached the end or the start of
+   * the journal.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long journal_skip (long skip)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("journal_skip: handle is closed");
+
+    return _journal_skip (g, skip);
+  }
+
+  private native long _journal_skip (long g, long skip)
+    throws LibGuestFSException;
+
+  /**
+   * get the data threshold for reading journal entries
+   * <p>
+   * Get the current data threshold for reading journal
+   * entries. This is a hint to the journal that it may
+   * truncate data fields to this size when reading them
+   * (note also that it may not truncate them). If this
+   * returns 0, then the threshold is unlimited.
+   * <p>
+   * See also "g.journal_set_data_threshold".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long journal_get_data_threshold ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("journal_get_data_threshold: handle is closed");
+
+    return _journal_get_data_threshold (g);
+  }
+
+  private native long _journal_get_data_threshold (long g)
+    throws LibGuestFSException;
+
+  /**
+   * set the data threshold for reading journal entries
+   * <p>
+   * Set the data threshold for reading journal entries. This
+   * is a hint to the journal that it may truncate data
+   * fields to this size when reading them (note also that it
+   * may not truncate them). If you set this to 0, then the
+   * threshold is unlimited.
+   * <p>
+   * See also "g.journal_get_data_threshold".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void journal_set_data_threshold (long threshold)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("journal_set_data_threshold: handle is closed");
+
+    _journal_set_data_threshold (g, threshold);
+  }
+
+  private native void _journal_set_data_threshold (long g, long threshold)
+    throws LibGuestFSException;
+
+  /**
+   * set multiple Augeas nodes
+   * <p>
+   * Change multiple Augeas nodes in a single operation.
+   * "base" is an expression matching multiple nodes. "sub"
+   * is a path expression relative to "base". All nodes
+   * matching "base" are found, and then for each node, "sub"
+   * is changed to "val". "sub" may also be "NULL" in which
+   * case the "base" nodes are modified.
+   * <p>
+   * This returns the number of nodes modified.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int aug_setm (String base, String sub, String val)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("aug_setm: handle is closed");
+
+    return _aug_setm (g, base, sub, val);
+  }
+
+  private native int _aug_setm (long g, String base, String sub, String val)
+    throws LibGuestFSException;
+
+  /**
+   * return the label from an Augeas path expression
+   * <p>
+   * The label (name of the last element) of the Augeas path
+   * expression "augpath" is returned. "augpath" must match
+   * exactly one node, else this function returns an error.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String aug_label (String augpath)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("aug_label: handle is closed");
+
+    return _aug_label (g, augpath);
+  }
+
+  private native String _aug_label (long g, String augpath)
     throws LibGuestFSException;
 
 }

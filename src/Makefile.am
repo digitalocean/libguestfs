@@ -104,9 +104,11 @@ libguestfs_la_SOURCES = \
 	inspect-fs-unix.c \
 	inspect-fs-windows.c \
 	inspect-icon.c \
+	journal.c \
 	launch.c \
 	launch-direct.c \
 	launch-libvirt.c \
+	launch-uml.c \
 	launch-unix.c \
 	libvirt-auth.c \
 	libvirt-domain.c \
@@ -116,6 +118,7 @@ libguestfs_la_SOURCES = \
 	osinfo.c \
 	private-data.c \
 	proto.c \
+	stringsbuf.c \
 	tmpdirs.c \
 	libguestfs.syms
 

@@ -43,6 +43,7 @@ extern struct command_entry add_domain_cmd_entry;
 extern struct command_entry add_drive_cmd_entry;
 extern struct command_entry add_drive_ro_cmd_entry;
 extern struct command_entry add_drive_ro_with_if_cmd_entry;
+extern struct command_entry add_drive_scratch_cmd_entry;
 extern struct command_entry add_drive_with_if_cmd_entry;
 extern struct command_entry alloc_cmd_entry;
 extern struct command_entry aug_clear_cmd_entry;
@@ -52,6 +53,7 @@ extern struct command_entry aug_defvar_cmd_entry;
 extern struct command_entry aug_get_cmd_entry;
 extern struct command_entry aug_init_cmd_entry;
 extern struct command_entry aug_insert_cmd_entry;
+extern struct command_entry aug_label_cmd_entry;
 extern struct command_entry aug_load_cmd_entry;
 extern struct command_entry aug_ls_cmd_entry;
 extern struct command_entry aug_match_cmd_entry;
@@ -59,6 +61,7 @@ extern struct command_entry aug_mv_cmd_entry;
 extern struct command_entry aug_rm_cmd_entry;
 extern struct command_entry aug_save_cmd_entry;
 extern struct command_entry aug_set_cmd_entry;
+extern struct command_entry aug_setm_cmd_entry;
 extern struct command_entry available_cmd_entry;
 extern struct command_entry available_all_groups_cmd_entry;
 extern struct command_entry base64_in_cmd_entry;
@@ -167,6 +170,7 @@ extern struct command_entry get_e2attrs_cmd_entry;
 extern struct command_entry get_e2generation_cmd_entry;
 extern struct command_entry get_e2label_cmd_entry;
 extern struct command_entry get_e2uuid_cmd_entry;
+extern struct command_entry get_hv_cmd_entry;
 extern struct command_entry get_libvirt_requested_credential_challenge_cmd_entry;
 extern struct command_entry get_libvirt_requested_credential_defresult_cmd_entry;
 extern struct command_entry get_libvirt_requested_credential_prompt_cmd_entry;
@@ -260,6 +264,13 @@ extern struct command_entry is_zero_cmd_entry;
 extern struct command_entry is_zero_device_cmd_entry;
 extern struct command_entry isoinfo_cmd_entry;
 extern struct command_entry isoinfo_device_cmd_entry;
+extern struct command_entry journal_close_cmd_entry;
+extern struct command_entry journal_get_cmd_entry;
+extern struct command_entry journal_get_data_threshold_cmd_entry;
+extern struct command_entry journal_next_cmd_entry;
+extern struct command_entry journal_open_cmd_entry;
+extern struct command_entry journal_set_data_threshold_cmd_entry;
+extern struct command_entry journal_skip_cmd_entry;
 extern struct command_entry kill_subprocess_cmd_entry;
 extern struct command_entry launch_cmd_entry;
 extern struct command_entry lcd_cmd_entry;
@@ -436,6 +447,7 @@ extern struct command_entry set_e2attrs_cmd_entry;
 extern struct command_entry set_e2generation_cmd_entry;
 extern struct command_entry set_e2label_cmd_entry;
 extern struct command_entry set_e2uuid_cmd_entry;
+extern struct command_entry set_hv_cmd_entry;
 extern struct command_entry set_label_cmd_entry;
 extern struct command_entry set_libvirt_requested_credential_cmd_entry;
 extern struct command_entry set_libvirt_supported_credentials_cmd_entry;
@@ -450,6 +462,7 @@ extern struct command_entry set_selinux_cmd_entry;
 extern struct command_entry set_smp_cmd_entry;
 extern struct command_entry set_tmpdir_cmd_entry;
 extern struct command_entry set_trace_cmd_entry;
+extern struct command_entry set_uuid_cmd_entry;
 extern struct command_entry set_verbose_cmd_entry;
 extern struct command_entry setcon_cmd_entry;
 extern struct command_entry setenv_cmd_entry;
@@ -569,6 +582,9 @@ add-drive-ro, &add_drive_ro_cmd_entry
 add-ro, &add_drive_ro_cmd_entry
 add_drive_ro_with_if, &add_drive_ro_with_if_cmd_entry
 add-drive-ro-with-if, &add_drive_ro_with_if_cmd_entry
+add_drive_scratch, &add_drive_scratch_cmd_entry
+add-drive-scratch, &add_drive_scratch_cmd_entry
+scratch, &add_drive_scratch_cmd_entry
 add_drive_with_if, &add_drive_with_if_cmd_entry
 add-drive-with-if, &add_drive_with_if_cmd_entry
 alloc, &alloc_cmd_entry
@@ -587,6 +603,8 @@ aug_init, &aug_init_cmd_entry
 aug-init, &aug_init_cmd_entry
 aug_insert, &aug_insert_cmd_entry
 aug-insert, &aug_insert_cmd_entry
+aug_label, &aug_label_cmd_entry
+aug-label, &aug_label_cmd_entry
 aug_load, &aug_load_cmd_entry
 aug-load, &aug_load_cmd_entry
 aug_ls, &aug_ls_cmd_entry
@@ -601,6 +619,8 @@ aug_save, &aug_save_cmd_entry
 aug-save, &aug_save_cmd_entry
 aug_set, &aug_set_cmd_entry
 aug-set, &aug_set_cmd_entry
+aug_setm, &aug_setm_cmd_entry
+aug-setm, &aug_setm_cmd_entry
 available, &available_cmd_entry
 available_all_groups, &available_all_groups_cmd_entry
 available-all-groups, &available_all_groups_cmd_entry
@@ -783,6 +803,8 @@ get_e2label, &get_e2label_cmd_entry
 get-e2label, &get_e2label_cmd_entry
 get_e2uuid, &get_e2uuid_cmd_entry
 get-e2uuid, &get_e2uuid_cmd_entry
+get_hv, &get_hv_cmd_entry
+get-hv, &get_hv_cmd_entry
 get_libvirt_requested_credential_challenge, &get_libvirt_requested_credential_challenge_cmd_entry
 get-libvirt-requested-credential-challenge, &get_libvirt_requested_credential_challenge_cmd_entry
 get_libvirt_requested_credential_defresult, &get_libvirt_requested_credential_defresult_cmd_entry
@@ -967,6 +989,20 @@ is-zero-device, &is_zero_device_cmd_entry
 isoinfo, &isoinfo_cmd_entry
 isoinfo_device, &isoinfo_device_cmd_entry
 isoinfo-device, &isoinfo_device_cmd_entry
+journal_close, &journal_close_cmd_entry
+journal-close, &journal_close_cmd_entry
+journal_get, &journal_get_cmd_entry
+journal-get, &journal_get_cmd_entry
+journal_get_data_threshold, &journal_get_data_threshold_cmd_entry
+journal-get-data-threshold, &journal_get_data_threshold_cmd_entry
+journal_next, &journal_next_cmd_entry
+journal-next, &journal_next_cmd_entry
+journal_open, &journal_open_cmd_entry
+journal-open, &journal_open_cmd_entry
+journal_set_data_threshold, &journal_set_data_threshold_cmd_entry
+journal-set-data-threshold, &journal_set_data_threshold_cmd_entry
+journal_skip, &journal_skip_cmd_entry
+journal-skip, &journal_skip_cmd_entry
 kill_subprocess, &kill_subprocess_cmd_entry
 kill-subprocess, &kill_subprocess_cmd_entry
 launch, &launch_cmd_entry
@@ -1271,6 +1307,9 @@ set_e2label, &set_e2label_cmd_entry
 set-e2label, &set_e2label_cmd_entry
 set_e2uuid, &set_e2uuid_cmd_entry
 set-e2uuid, &set_e2uuid_cmd_entry
+set_hv, &set_hv_cmd_entry
+set-hv, &set_hv_cmd_entry
+hv, &set_hv_cmd_entry
 set_label, &set_label_cmd_entry
 set-label, &set_label_cmd_entry
 set_libvirt_requested_credential, &set_libvirt_requested_credential_cmd_entry
@@ -1310,6 +1349,8 @@ tmpdir, &set_tmpdir_cmd_entry
 set_trace, &set_trace_cmd_entry
 set-trace, &set_trace_cmd_entry
 trace, &set_trace_cmd_entry
+set_uuid, &set_uuid_cmd_entry
+set-uuid, &set_uuid_cmd_entry
 set_verbose, &set_verbose_cmd_entry
 set-verbose, &set_verbose_cmd_entry
 verbose, &set_verbose_cmd_entry
