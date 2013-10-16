@@ -1441,6 +1441,7 @@ EXTRA_DIST = \
 	test-virt-builder.sh \
 	test-virt-builder-list.sh \
 	website/.gitignore \
+	website/test-guest.sh \
 	website/README \
 	website/index \
 	website/index.asc \
@@ -1472,6 +1473,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-builder \
 # Alphabetical order.
 SOURCES = \
 	builder.ml \
+	cmdline.ml \
 	downloader.mli \
 	downloader.ml \
 	get_kernel.mli \
@@ -1503,6 +1505,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	index_parser.cmx \
 @HAVE_OCAML_TRUE@	list_entries.cmx \
 @HAVE_OCAML_TRUE@	perl_edit.cmx \
+@HAVE_OCAML_TRUE@	cmdline.cmx \
 @HAVE_OCAML_TRUE@	builder.cmx
 
 @HAVE_OCAML_TRUE@bin_SCRIPTS = virt-builder

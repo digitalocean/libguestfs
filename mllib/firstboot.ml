@@ -45,6 +45,9 @@ let firstboot_sh = sprintf "\
 d=%s/scripts
 logfile=~root/virt-sysprep-firstboot.log
 
+echo \"$0\" \"$@\" >>$logfile
+echo \"Scripts dir: $d\" >>$logfile
+
 if test \"$1\" = \"start\"
 then
   for f in $d/* ; do
@@ -91,7 +94,7 @@ let rec install_service (g : Guestfs.guestfs) distro =
    *)
   if g#is_dir "/etc/systemd/system" then
     install_systemd_service g;
-  if g#is_dir "/etc/rc.d" && g#is_dir "/etc/init.d" then
+  if g#is_dir "/etc/rc.d" || g#is_dir "/etc/init.d" then
     install_sysvinit_service g distro
 
 (* Install the systemd firstboot service, if not installed already. *)
@@ -150,7 +153,7 @@ and install_sysvinit_debian g =
   g#ln_sf "/etc/init.d/virt-sysprep-firstboot"
     "/etc/rc5.d/S99virt-sysprep-firstboot"
 
-let add_firstboot_script (g : Guestfs.guestfs) root id content =
+let add_firstboot_script (g : Guestfs.guestfs) root i content =
   let typ = g#inspect_get_type root in
   let distro = g#inspect_get_distro root in
   match typ, distro with
@@ -158,7 +161,7 @@ let add_firstboot_script (g : Guestfs.guestfs) root id content =
     install_service g distro;
     let t = Int64.of_float (Unix.time ()) in
     let r = string_random8 () in
-    let filename = sprintf "%s/scripts/%Ld-%s-%s" firstboot_dir t r id in
+    let filename = sprintf "%s/scripts/%04d-%Ld-%s" firstboot_dir i t r in
     g#write filename content;
     g#chmod 0o755 filename
 

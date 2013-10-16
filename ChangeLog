@@ -1,3 +1,64 @@
+2013-10-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.33.
+
+	builder: Add maintainer test for new guests.
+	This is not part of the automated test suite.  It's a manual test run
+	by the maintainer which must be run on each new guest to ensure that
+	all the virt-builder features work on the new guest.
+
+	firstboot: Ensure firstboot scripts run in command line order.
+	Previously they ran in effectively random order.
+
+	sysprep: firstboot: Don't set `Created_files flag unless files are created.
+
+	firstboot: Add some debugging to the control script.
+	For reasons unknown, firstboot does not work on Debian 6 & 7.
+	https://bugzilla.redhat.com/show_bug.cgi?id=1019388
+
+	sysprep: random seed: Try much harder to create a random seed file.
+	Since this is essential for security, be much more proactive about
+	trying to create a random seed file, even for guests which have buggy
+	installers that don't create this file during installation.
+
+	builder: Really force apt not to ask questions.
+	This fixes commit b812a0d45992e729a85f10483ae26b82b8e2da90.
+
+	builder: Remove capital O and lower case L from random root password.
+	They look too much like 0 and 1.
+
+	builder: Wrap program in an exception handler which pretty-prints common exceptions.
+	This looks like a large change, but is mainly just reindenting
+	everything into a 'main ()' function.
+
+	builder: Remove nbdkit-xz-plugin support (it was disabled anyway).
+	We can re-add this later if libvirt gets fixed, but for now simplify
+	the code and concentrate on the one code path.
+
+	builder: Move command line argument processing to separate source file.
+	This is just code motion.
+
+	firstboot: Fix test for installing sysvinit scripts.
+	This fixes commit 9aa13e057497a91ce9037f18a51ea6f35b4f2aa5.
+
+2013-10-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Try really hard to make apt non-interactive.
+
+2013-10-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Remove cruft and run udevd directly.
+	This commit removes a lot of cruft from old RHEL which was required to
+	start udev.  Instead we run the daemon directly.
+
+	Also it removes the fallback path which created some device nodes in
+	/dev by hand.  This likely did not work.  This also removes the
+	dependency on MAKEDEV which is long gone from most distros.
+
+	This is required for Ubuntu, since the /etc/init.d/udev script didn't
+	actually work.  The most common symptom was that /dev/virtio-ports/*
+	was not created because udev didn't process the cold start events.
+
 2013-10-14  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.23.32.

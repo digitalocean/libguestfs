@@ -23,6 +23,7 @@ EXTRA_DIST = \
 	test-virt-builder.sh \
 	test-virt-builder-list.sh \
 	website/.gitignore \
+	website/test-guest.sh \
 	website/README \
 	website/index \
 	website/index.asc \
@@ -53,6 +54,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-builder
 # Alphabetical order.
 SOURCES = \
 	builder.ml \
+	cmdline.ml \
 	downloader.mli \
 	downloader.ml \
 	get_kernel.mli \
@@ -85,6 +87,7 @@ OBJECTS = \
 	index_parser.cmx \
 	list_entries.cmx \
 	perl_edit.cmx \
+	cmdline.cmx \
 	builder.cmx
 
 bin_SCRIPTS = virt-builder
