@@ -1,3 +1,94 @@
+2013-10-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.32.
+
+	build: Add missing EXTRA_DIST files.
+
+	build: Add maintainer-check-extra-dist rule.
+	This is used by the maintainer to check for missing files
+	in EXTRA_DIST.
+
+	build: Don't hard-code list of virt-builder templates in top level directory.
+	It's troublesome for maintenance.  Use a wildcard here.
+
+	Update to latest gnulib.
+
+2013-10-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	firstboot: Install both systemd and SysV init scripts.
+	This should be safe, and avoids the whole issue of whether a guest
+	uses systemd or not.  Also it is possible to switch init systems
+	(eg. by specifying init= on the command line) so it's not even clear
+	if a guest "is" systemd.
+
+	Thanks: Tom Gundersen on #systemd.
+
+	This updates/fixes commit 596de56a436d56886616f5cc213bb72a4f6f5561.
+
+2013-10-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	firstboot: Start service after network only.
+	Not necessary to wait for syslog since (a) we do our own logging
+	to a file and (b) syslog might not be installed.
+
+	firstboot: Fix firstboot scripts so they work on Ubuntu.
+	Ubuntu 13.10 has /etc/systemd but uses Upstart.  This confuses the
+	script because it assumed that if you have /etc/systemd then you are
+	using systemd.  Ubuntu includes systemd services (inherited from
+	Debian) but they just don't run.
+
+	builder: Add --notes option.
+	This displays the release notes.
+
+	builder: Add short synopsis in --help output.
+
+	builder: Tidy up release notes for operating systems.
+
+	builder: debian/ubuntu: Add notes about running dpkg-reconfigure.
+	Required to regenerate SSH host keys.
+
+	builder: Fix typo in man page.
+
+2013-10-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Fix output to block devices.
+	If the output is a block device:
+
+	- Detect the size of the output device.
+
+	- Don't attempt to delete the output device on failure.
+
+	- Turn off sparse copying in virt-resize.
+
+2013-10-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	resize: Add --no-sparse flag to let you turn off sparse copying.
+	Useful when the target is a block device containing old data.
+
+	builder: Run 'apt-get update' before trying to install packages.
+
+	FAQ: Clearer instructions for Debian and Ubuntu users.
+
+2013-10-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Kill any daemons started by installed packages.
+	Some --install requests may pull in packages that start daemons (dbus
+	being a favourite daemon apparently).  These daemons will prevent the
+	disks from being unmounted and everything being cleaned up at the end.
+	Add some experimental code to kill these daemons.
+
+	builder: Add more templates to the list which is copied to the website.
+
+2013-10-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add the logo to the HTML manual page.
+	Unfortunately:
+
+	 - It appears below the TOC.  This is unavoidable because of the
+	   flow of the current HTML.
+
+	 - The logo is now duplicated in git.
+
 2013-10-12  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.23.31.

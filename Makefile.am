@@ -142,9 +142,11 @@ EXTRA_DIST = \
 	.lvimrc \
 	.mailmap \
 	.tx/config \
+	bootstrap \
 	bugs-in-changelog.sh \
 	autogen.sh \
 	bindtests \
+	cfg.mk \
 	contrib/autobuild/autobuild.sh \
 	contrib/intro/libguestfs-intro.html \
 	contrib/intro/overview.png \
@@ -169,18 +171,28 @@ EXTRA_DIST = \
 	contrib/visualize-alignment/qemu-0.13-trace-block-device-access.patch \
 	contrib/visualize-alignment/README \
 	contrib/visualize-alignment/tracetops.ml \
+	contrib/windows-icons.pl \
 	guestfs-release-notes.pod \
 	guestfs-release-notes.txt \
 	html/draft.png \
 	html/draft.svg \
 	html/pod.css \
+	html/virt-builder.svg \
 	libtool-kill-dependency_libs.sh \
 	logo/fish.svg logo/fish.png \
+	logo/virt-builder.svg \
 	m4/.gitignore \
 	tmp/.gitignore \
 	tx-pull.sh \
 	update-bugs.sh \
-	valgrind-suppressions
+	valgrind-suppressions \
+	.x-sc_avoid_ctype_macros \
+	.x-sc_prohibit_have_config_h \
+	.x-sc_prohibit_magic_number_exit \
+	.x-sc_prohibit_strcmp \
+	.x-sc_prohibit_strcmp_and_strncmp \
+	.x-sc_TAB_in_indentation \
+	.x-sc_trailing_blank
 
 # The website.
 HTMLFILES = \
@@ -228,7 +240,10 @@ HTMLFILES = \
 	html/virt-tar-out.1.html \
 	html/virt-win-reg.1.html
 
-HTMLSUPPORTFILES = html/draft.png html/pod.css
+HTMLSUPPORTFILES = \
+	html/draft.png \
+	html/pod.css \
+	html/virt-builder.svg
 
 TEXTFILES = BUGS README ROADMAP TODO
 
@@ -236,12 +251,8 @@ BUILDERFILES = \
 	builder/website/README \
 	builder/website/index \
 	builder/website/index.asc \
-	builder/website/debian-7.xz \
-	builder/website/debian-7.xz.sig \
-	builder/website/fedora-18.xz \
-	builder/website/fedora-18.xz.sig \
-	builder/website/fedora-19.xz \
-	builder/website/fedora-19.xz.sig
+	builder/website/*.xz \
+	builder/website/*.xz.sig
 
 WEBSITEDIR = $(HOME)/d/websites/libguestfs
 
@@ -478,6 +489,17 @@ print-subdirs:
 
 maintainer-tag:
 	git tag -a $(VERSION) -m "Version $(VERSION) ($(BRANCH_TYPE))" -f
+
+# Maintainer only: check EXTRA_DIST rule is complete.
+# (Note you must have done 'make dist')
+
+maintainer-check-extra-dist:
+	zcat $(PACKAGE_NAME)-$(VERSION).tar.gz | tar tf - | sort | \
+	  sed 's,^$(PACKAGE_NAME)-$(VERSION)/,,' > tmp/tarfiles
+	git ls-files | sort > tmp/gitfiles
+	diff -ur tmp/tarfiles tmp/gitfiles | grep '^\+' | \
+	  grep -v src/api-support/[0-9]
+	rm tmp/tarfiles tmp/gitfiles
 
 # Provide help on common Makefile targets.
 

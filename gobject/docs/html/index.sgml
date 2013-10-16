@@ -1443,9 +1443,9 @@
 <ANCHOR id="guestfs-remount-new" href="guestfs/GuestfsRemount.html#guestfs-remount-new">
 <ANCHOR id="GuestfsRemount.property-details" href="guestfs/GuestfsRemount.html#GuestfsRemount.property-details">
 <ANCHOR id="GuestfsRemount--rw" href="guestfs/GuestfsRemount.html#GuestfsRemount--rw">
-<ANCHOR id="annotation-glossterm-array" href="guestfs/annotation-glossary.html#annotation-glossterm-array">
-<ANCHOR id="annotation-glossterm-allow-none" href="guestfs/annotation-glossary.html#annotation-glossterm-allow-none">
 <ANCHOR id="annotation-glossterm-transfer full" href="guestfs/annotation-glossary.html#annotation-glossterm-transfer full">
-<ANCHOR id="annotation-glossterm-element-type" href="guestfs/annotation-glossary.html#annotation-glossterm-element-type">
-<ANCHOR id="annotation-glossterm-transfer none" href="guestfs/annotation-glossary.html#annotation-glossterm-transfer none">
 <ANCHOR id="annotation-glossterm-type" href="guestfs/annotation-glossary.html#annotation-glossterm-type">
+<ANCHOR id="annotation-glossterm-transfer none" href="guestfs/annotation-glossary.html#annotation-glossterm-transfer none">
+<ANCHOR id="annotation-glossterm-allow-none" href="guestfs/annotation-glossary.html#annotation-glossterm-allow-none">
+<ANCHOR id="annotation-glossterm-array" href="guestfs/annotation-glossary.html#annotation-glossterm-array">
+<ANCHOR id="annotation-glossterm-element-type" href="guestfs/annotation-glossary.html#annotation-glossterm-element-type">

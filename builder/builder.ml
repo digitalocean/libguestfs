@@ -54,6 +54,7 @@ let mode, arg,
 
   let mode = ref `Install in
   let list_mode () = mode := `List in
+  let notes_mode () = mode := `Notes in
   let get_kernel_mode () = mode := `Get_kernel in
   let cache_all_mode () = mode := `Cache_all in
   let print_cache_mode () = mode := `Print_cache in
@@ -225,6 +226,7 @@ let mode, arg,
     "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
     "--network", Arg.Set network,           " " ^ s_"Enable appliance network (default)";
     "--no-network", Arg.Clear network,      " " ^ s_"Disable appliance network";
+    "--notes",   Arg.Unit notes_mode,       " " ^ s_"Display installation notes";
     "-o",        Arg.Set_string output,     "file" ^ " " ^ s_"Set output filename";
     "--output",  Arg.Set_string output,     "file" ^ ditto;
     "--password-crypto", Arg.String set_password_crypto,
@@ -252,6 +254,14 @@ let mode, arg,
   let usage_msg =
     sprintf (f_"\
 %s: build virtual machine images quickly
+
+ virt-builder OS-VERSION
+ virt-builder -l
+ virt-builder --notes OS-VERSION
+ virt-builder --print-cache
+ virt-builder --cache-all-templates
+ virt-builder --delete-cache
+ virt-builder --get-kernel IMAGE
 
 A short summary of the options is given below.  For detailed help please
 read the man page virt-builder(1).
@@ -306,6 +316,16 @@ read the man page virt-builder(1).
       | [] -> ""
       | _ ->
         eprintf (f_"%s: virt-builder --list does not need any extra arguments.\n") prog;
+        exit 1
+      )
+    | `Notes ->
+      (match args with
+      | [arg] -> arg
+      | [] ->
+        eprintf (f_"%s: virt-builder --notes os-version\nMissing 'os-version'. Use '--list' to list available template names.\n") prog;
+        exit 1
+      | _ ->
+        eprintf (f_"%s: virt-builder: too many parameters, expecting 'os-version'\n") prog;
         exit 1
       )
     | `Cache_all
@@ -366,7 +386,7 @@ let mode =
       exit 1
     )
 
-  | (`Install|`List|`Print_cache|`Cache_all) as mode -> mode
+  | (`Install|`List|`Notes|`Print_cache|`Cache_all) as mode -> mode
 
 (* Check various programs/dependencies are installed. *)
 let have_nbdkit =
@@ -427,7 +447,7 @@ let index =
   Index_parser.get_index ~debug ~downloader ~sigchecker source
 
 (* Now handle the remaining modes. *)
-let () =
+let mode =
   match mode with
   | `List ->                            (* --list *)
     List_entries.list_entries ~list_long ~source index;
@@ -466,16 +486,31 @@ let () =
       exit 0
     );
 
-  | `Install ->                         (* (no mode: install a guest) *)
-    ()
+  | (`Install|`Notes) as mode -> mode
 
-(* If we get here, we want to create a guest (but which one?) *)
+(* Which os-version (ie. index entry)? *)
 let entry =
   try List.assoc arg index
   with Not_found ->
     eprintf (f_"%s: cannot find os-version '%s'.\nUse --list to list available guest types.\n")
       prog arg;
     exit 1
+
+let () =
+  match mode with
+  | `Notes ->                           (* --notes *)
+    (match entry with
+    | { Index_parser.notes = Some notes } ->
+      print_endline notes;
+    | { Index_parser.notes = None } ->
+      printf (f_"There are no notes for %s\n") arg
+    );
+    exit 0
+
+  | `Install ->
+    () (* fall through to create the guest *)
+
+(* If we get here, we want to create a guest. *)
 
 (* Download the template, or it may be in the cache. *)
 let template =
@@ -501,50 +536,79 @@ let () =
 
   Sigchecker.verify_detached sigchecker template sigfile
 
-(* Check the --size option. *)
-let headroom = 256L *^ 1024L *^ 1024L
-let size =
-  let { Index_parser.size = default_size } = entry in
-  match size with
-  | None -> default_size +^ headroom
-  | Some size ->
-    if size < default_size +^ headroom then (
-      eprintf (f_"%s: --size is too small for this disk image, minimum size is %s\n")
-        prog (human_size default_size);
+let output, size, format, delete_output_file, resize_sparse =
+  let is_block_device file =
+    try (stat file).st_kind = S_BLK
+    with Unix_error _ -> false
+  in
+
+  let headroom = 256L *^ 1024L *^ 1024L in
+
+  match output with
+  (* If the output file was specified and it exists and it's a block
+   * device, then we should skip the creation step.
+   *)
+  | Some output when is_block_device output ->
+    if size <> None then (
+      eprintf (f_"%s: you cannot use --size option with block devices\n") prog;
       exit 1
     );
-    size
+    (* XXX Should check the output size is big enough.  However this
+     * requires running 'blockdev --getsize64 <output>'.
+     *)
 
-(* Create the output file. *)
-let output, format =
-  match output, format with
-  | None, None -> sprintf "%s.img" arg, "raw"
-  | None, Some "raw" -> sprintf "%s.img" arg, "raw"
-  | None, Some format -> sprintf "%s.%s" arg format, format
-  | Some output, None -> output, "raw"
-  | Some output, Some format -> output, format
+    let format = match format with None -> "raw" | Some f -> f in
 
-let delete_output_file =
-  msg (f_"Creating disk image: %s") output;
-  let cmd =
-    sprintf "qemu-img create -f %s %s %Ld%s"
-      (quote format) (quote output) size
-      (if debug then "" else " >/dev/null 2>&1") in
-  let r = Sys.command cmd in
-  if r <> 0 then (
-    eprintf (f_"%s: error: could not create output file '%s'\n") prog output;
-    exit 1
-  );
-  (* This ensures the output file will be deleted on failure,
-   * until we set !delete_output_file = false at the end of the build.
-   *)
-  let delete_output_file = ref true in
-  let delete_file () =
-    if !delete_output_file then
-      try unlink output with _ -> ()
-  in
-  at_exit delete_file;
-  delete_output_file
+    (* Dummy: The output file is never deleted in this case. *)
+    let delete_output_file = ref false in
+
+    output, None, format, delete_output_file, false
+
+  (* Regular file output.  Note the file gets deleted. *)
+  | _ ->
+    (* Check the --size option. *)
+    let size =
+      let { Index_parser.size = default_size } = entry in
+      match size with
+      | None -> default_size +^ headroom
+      | Some size ->
+        if size < default_size +^ headroom then (
+          eprintf (f_"%s: --size is too small for this disk image, minimum size is %s\n")
+            prog (human_size default_size);
+          exit 1
+        );
+        size in
+
+    (* Create the output file. *)
+    let output, format =
+      match output, format with
+      | None, None -> sprintf "%s.img" arg, "raw"
+      | None, Some "raw" -> sprintf "%s.img" arg, "raw"
+      | None, Some format -> sprintf "%s.%s" arg format, format
+      | Some output, None -> output, "raw"
+      | Some output, Some format -> output, format in
+
+    msg (f_"Creating disk image: %s") output;
+    let cmd =
+      sprintf "qemu-img create -f %s %s %Ld%s"
+        (quote format) (quote output) size
+        (if debug then "" else " >/dev/null 2>&1") in
+    let r = Sys.command cmd in
+    if r <> 0 then (
+      eprintf (f_"%s: error: could not create output file '%s'\n") prog output;
+      exit 1
+    );
+    (* This ensures the output file will be deleted on failure,
+     * until we set !delete_output_file = false at the end of the build.
+     *)
+    let delete_output_file = ref true in
+    let delete_file () =
+      if !delete_output_file then
+        try unlink output with _ -> ()
+    in
+    at_exit delete_file;
+
+    output, Some size, format, delete_output_file, true
 
 let source =
   (* XXX Disable this for now because libvirt is broken:
@@ -590,14 +654,21 @@ let source =
 
 (* Resize the source to the output file. *)
 let () =
-  msg (f_"Running virt-resize to expand the disk to %s") (human_size size);
+  (match size with
+  | None ->
+    msg (f_"Running virt-resize to expand the disk")
+  | Some size ->
+    msg (f_"Running virt-resize to expand the disk to %s")
+      (human_size size)
+  );
 
   let { Index_parser.expand = expand; lvexpand = lvexpand;
         format = input_format } =
     entry in
   let cmd =
-    sprintf "virt-resize%s%s --output-format %s%s%s %s %s"
+    sprintf "virt-resize%s%s%s --output-format %s%s%s %s %s"
       (if debug then " --verbose" else " --quiet")
+      (if not resize_sparse then " --no-sparse" else "")
       (match input_format with
       | None -> ""
       | Some input_format -> sprintf " --format %s" (quote input_format))
@@ -763,7 +834,7 @@ let guest_install_command packages =
   let quoted_args = String.concat " " (List.map quote packages) in
   match g#inspect_get_package_management root with
   | "apt" ->
-    sprintf "apt-get -y install %s" quoted_args
+    sprintf "apt-get update; apt-get -y install %s" quoted_args
   | "pisi" ->
     sprintf "pisi it %s" quoted_args
   | "pacman" ->
@@ -893,18 +964,23 @@ let stats =
       (* Calculate the free space (in bytes) across all mounted
        * filesystems in the guest.
        *)
-      let free_bytes =
+      let free_bytes, total_bytes =
         let filesystems = List.map snd (g#mountpoints ()) in
         let stats = List.map g#statvfs filesystems in
-        let free = List.map (
-          fun { G.bfree = bfree; bsize = bsize } -> bfree *^ bsize
+        let stats = List.map (
+          fun { G.bfree = bfree; bsize = bsize; blocks = blocks } ->
+            bfree *^ bsize, blocks *^ bsize
         ) stats in
-        List.fold_left (+^) 0L free in
-      let free_percent = 100L *^ free_bytes /^ size in
+        List.fold_left (
+          fun (f,t) (f',t') -> f +^ f', t +^ t'
+        ) (0L, 0L) stats in
+      let free_percent = 100L *^ free_bytes /^ total_bytes in
 
       Some (
         String.concat "\n" [
-          sprintf (f_"Output: %s (%s)") output (human_size size);
+          sprintf (f_"Output: %s") output;
+          sprintf (f_"Total usable space: %s")
+            (human_size total_bytes);
           sprintf (f_"Free space: %s (%Ld%%)")
             (human_size free_bytes) free_percent;
         ] ^ "\n"
@@ -917,6 +993,19 @@ let stats =
 (* Unmount everything and we're done! *)
 let () =
   msg (f_"Finishing off");
+
+  (* Kill any daemons (eg. started by newly installed packages) using
+   * the sysroot.
+   * XXX How to make this nicer?
+   * XXX fuser returns an error if it doesn't kill any processes, which
+   * is not very useful.
+   *)
+  (try ignore (g#debug "sh" [| "fuser"; "-k"; "/sysroot" |])
+   with exn ->
+     if debug then
+       eprintf (f_"%s: %s (ignored)\n") prog (Printexc.to_string exn)
+  );
+  g#ping_daemon (); (* tiny delay after kill *)
 
   g#umount_all ();
   g#shutdown ();
