@@ -260,7 +260,7 @@ if the optional protocol parameter is omitted.
 Connect to a remote FTP, HTTP or TFTP server.  The C<server> parameter must
 also be supplied - see below.
 
-See also: L<guestfs(3)/FTP, HTTP AND TFTP>
+Див. також L<guestfs(3)/FTP, HTTP AND TFTP>
 
 =item C<protocol = "gluster">
 
@@ -274,7 +274,7 @@ supplied - see below.
 Connect to the iSCSI server.  The C<server> parameter must also be supplied
 - see below.
 
-See also: L<guestfs(3)/ISCSI>.
+Див. також L<guestfs(3)/ISCSI>.
 
 =item C<protocol = "nbd">
 
@@ -300,12 +300,12 @@ supplied - see below.
 
 =item C<protocol = "ssh">
 
-Connect to the Secure Shell (ssh) server.
+Встановити з’єднання з сервером Secure Shell (ssh).
 
 The C<server> parameter must be supplied.  The C<username> parameter may be
 supplied.  See below.
 
-See also: L<guestfs(3)/SSH>.
+Див. також L<guestfs(3)/SSH>.
 
 =back
 
@@ -1174,7 +1174,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 command-lines
 
- command-lines 'arguments ...'
+ command-lines 'аргументи...'
 
 This is the same as L</command>, but splits the result into a list of lines.
 
@@ -3682,21 +3682,21 @@ C<path> name.
 
 =head2 is-whole-device
 
- is-whole-device device
+ is-whole-device пристрій
 
 This returns C<true> if and only if C<device> refers to a whole block
 device. That is, not a partition or a logical device.
 
 =head2 is-zero
 
- is-zero path
+ is-zero шлях
 
 This returns true iff the file exists and the file is empty or it contains
 all zero bytes.
 
 =head2 is-zero-device
 
- is-zero-device device
+ is-zero-device пристрій
 
 This returns true iff the device exists and contains all zero bytes.
 
@@ -3704,7 +3704,7 @@ Note that for large devices this can take a long time to run.
 
 =head2 isoinfo
 
- isoinfo isofile
+ isoinfo файл_образу_iso
 
 This is the same as L</isoinfo-device> except that it works for an ISO file
 located inside some other mounted filesystem.  Note that in the common case
@@ -3713,7 +3713,7 @@ call this.  Instead you would call L</isoinfo-device>.
 
 =head2 isoinfo-device
 
- isoinfo-device device
+ isoinfo-device пристрій
 
 C<device> is an ISO device.  This returns a struct of information read from
 the primary volume descriptor (the ISO equivalent of the superblock) of the
@@ -3730,7 +3730,7 @@ L<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor>
 
  journal-close
 
-Close the journal handle.
+Завершити роботу обробника журналу.
 
 =head2 journal-get
 
@@ -3759,7 +3759,7 @@ to the journal that it may truncate data fields to this size when reading
 them (note also that it may not truncate them).  If this returns C<0>, then
 the threshold is unlimited.
 
-See also L</journal-set-data-threshold>.
+Див. також L</journal-set-data-threshold>.
 
 =head2 journal-next
 
@@ -3775,7 +3775,7 @@ journal.
 
 =head2 journal-open
 
- journal-open directory
+ journal-open каталог
 
 Open the systemd journal located in C<directory>.  Any previously opened
 journal handle is closed.
@@ -3788,18 +3788,18 @@ calling L</journal-close>.
 
 =head2 journal-set-data-threshold
 
- journal-set-data-threshold threshold
+ journal-set-data-threshold порогове_значення
 
 Set the data threshold for reading journal entries.  This is a hint to the
 journal that it may truncate data fields to this size when reading them
 (note also that it may not truncate them).  If you set this to C<0>, then
 the threshold is unlimited.
 
-See also L</journal-get-data-threshold>.
+Див. також L</journal-get-data-threshold>.
 
 =head2 journal-skip
 
- journal-skip skip
+ journal-skip пропуск
 
 Skip forwards (C<skip E<ge> 0>) or backwards (C<skip E<lt> 0>) in the
 journal.
@@ -3815,7 +3815,7 @@ start of the journal.
 
 This kills the hypervisor.
 
-Do not call this.  See: L</shutdown> instead.
+Не виконуйте цього виклику, краще скористайтеся L</shutdown>.
 
 I<This function is deprecated.> In new code, use the L</shutdown> call
 instead.
@@ -3866,7 +3866,7 @@ disk.
 
 =head2 ldmtool-diskgroup-disks
 
- ldmtool-diskgroup-disks diskgroup
+ ldmtool-diskgroup-disks група_дисків
 
 Return the disks in a Windows dynamic disk group.  The C<diskgroup>
 parameter should be the GUID of a disk group, one element from the list
@@ -3874,7 +3874,7 @@ returned by L</ldmtool-scan>.
 
 =head2 ldmtool-diskgroup-name
 
- ldmtool-diskgroup-name diskgroup
+ ldmtool-diskgroup-name група_дисків
 
 Return the name of a Windows dynamic disk group.  The C<diskgroup> parameter
 should be the GUID of a disk group, one element from the list returned by
@@ -3882,7 +3882,7 @@ L</ldmtool-scan>.
 
 =head2 ldmtool-diskgroup-volumes
 
- ldmtool-diskgroup-volumes diskgroup
+ ldmtool-diskgroup-volumes група_дисків
 
 Return the volumes in a Windows dynamic disk group.  The C<diskgroup>
 parameter should be the GUID of a disk group, one element from the list
@@ -3908,7 +3908,7 @@ call L</ldmtool-scan-devices> instead.
 
 =head2 ldmtool-scan-devices
 
- ldmtool-scan-devices 'devices ...'
+ ldmtool-scan-devices 'пристрої...'
 
 This function scans for Windows dynamic disks.  It returns a list of
 identifiers (GUIDs) for all disk groups that were found.  These identifiers
@@ -3919,7 +3919,7 @@ this list is empty, all block devices are scanned.
 
 =head2 ldmtool-volume-hint
 
- ldmtool-volume-hint diskgroup volume
+ ldmtool-volume-hint група_дисків том
 
 Return the hint field of the volume named C<volume> in the disk group with
 GUID C<diskgroup>.  This may not be defined, in which case the empty string
@@ -3928,14 +3928,14 @@ Windows drive, eg. C<E:>.
 
 =head2 ldmtool-volume-partitions
 
- ldmtool-volume-partitions diskgroup volume
+ ldmtool-volume-partitions група_дисків том
 
 Return the list of partitions in the volume named C<volume> in the disk
 group with GUID C<diskgroup>.
 
 =head2 ldmtool-volume-type
 
- ldmtool-volume-type diskgroup volume
+ ldmtool-volume-type група_дисків том
 
 Return the type of the volume named C<volume> in the disk group with GUID
 C<diskgroup>.
@@ -5368,7 +5368,7 @@ possible, although unusual.  See L</part-init> for a full list.
 
 =head2 part-init
 
- part-init device parttype
+ part-init пристрій тип_розділу
 
 This creates an empty partition table on C<device> of one of the partition
 types listed below.  Usually C<parttype> should be either C<msdos> or C<gpt>
@@ -5463,11 +5463,11 @@ the device's sector size, see L</blockdev-getss>.
 
 =item B<part_end>
 
-End of the partition in bytes.
+Позиція завершення розділу у байтах.
 
 =item B<part_size>
 
-Size of the partition in bytes.
+Розмір розділу у байтах.
 
 =back
 
@@ -5531,7 +5531,7 @@ See also L</part-to-partnum>, L</device-index>.
 
 =head2 part-to-partnum
 
- part-to-partnum partition
+ part-to-partnum розділ
 
 This function takes a partition name (eg. "/dev/sdb1") and returns the
 partition number (eg. C<1>).
@@ -5581,7 +5581,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 pvchange-uuid
 
- pvchange-uuid device
+ pvchange-uuid пристрій
 
 Generate a new random UUID for the physical volume C<device>.
 
@@ -5618,7 +5618,7 @@ the new size of the underlying device.
 
 =head2 pvresize-size
 
- pvresize-size device size
+ pvresize-size пристрій розмір
 
 This command is the same as L</pvresize> except that it allows you to
 specify the new size (in bytes) explicitly.
@@ -6160,7 +6160,7 @@ This sets the ext2 file generation of a file.
 
 =head2 set-e2label
 
- set-e2label device label
+ set-e2label пристрій мітка
 
 This sets the ext2/3/4 filesystem label of the filesystem on C<device> to
 C<label>.  Filesystem labels are limited to 16 characters.
@@ -6177,7 +6177,7 @@ these functions.
 
 =head2 set-e2uuid
 
- set-e2uuid device uuid
+ set-e2uuid пристрій uuid
 
 This sets the ext2/3/4 filesystem UUID of the filesystem on C<device> to
 C<uuid>.  The format of the UUID and alternatives such as C<clear>,
@@ -6231,7 +6231,7 @@ Labels are limited to 16 bytes.
 
 =item NTFS
 
-Labels are limited to 128 unicode characters.
+Мітки обмежено 128 символами unicode.
 
 =item XFS
 
@@ -6327,7 +6327,7 @@ You must call this before calling L</launch>, otherwise it has no effect.
 
 =head2 шлях
 
- set-path searchpath
+ set-path шлях_для_пошуку
 
 Set the path that libguestfs searches for kernel and initrd.img.
 
@@ -6355,9 +6355,9 @@ L</user-cancel>).
 
 =head2 set-program
 
-=head2 program
+=head2 програма
 
- set-program program
+ set-program програма
 
 Set the program name.  This is an informative string which the main program
 may optionally set in the handle.
@@ -6442,9 +6442,9 @@ This function must be called before L</launch>.
 
 =head2 set-tmpdir
 
-=head2 tmpdir
+=head2 тимчасовий_каталог
 
- set-tmpdir tmpdir
+ set-tmpdir тимчасовий_каталог
 
 Set the directory used by the handle to store temporary files.
 
@@ -6473,7 +6473,7 @@ callback to send them somewhere else (see L</set-event-callback>).
 
 =head2 set-uuid
 
- set-uuid device uuid
+ set-uuid пристрій uuid
 
 Set the filesystem UIUD on C<device> to C<label>.
 

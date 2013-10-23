@@ -65,17 +65,18 @@ exploits.  Use with care.
 
 Supply one of more shell scripts (using the I<--firstboot> option).
 
-These are run the first time the guest boots, and then are deleted.  So
-these are useful for performing last minute configuration that must run in
-the context of the guest operating system, for example C<yum update>.
+Ці скрипти буде одноразово виконано під час першого завантаження гостьової
+системи і після цього вилучено. Такими скриптами зручно користуватися для
+остаточного налаштовування, яке має бути виконано у контексті гостьової
+операційної системи, наприклад C<yum update>.
 
-Output or errors from the scripts are written to
-C<~root/virt-sysprep-firstboot.log> (in the guest).
+Виведені дані і повідомлення про помилки для таких скриптів буде записано до
+C<~root/virt-sysprep-firstboot.log> (у гостьовій системі).
 
-=head3 Notes on firstboot
+=head3 Зауваження щодо firstboot
 
-Currently this is only implemented for Linux guests using either
-SysVinit-style scripts, Upstart or systemd.
+У поточній версії цю можливість реалізовано лише для гостьових систем Linux,
+у яких використовується System V init або systemd
 
 =head2 B<flag-reconfiguration>
 
@@ -86,19 +87,21 @@ SysVinit-style scripts, Upstart or systemd.
 
 =head2 B<fs-uuids>
 
-Change filesystem UUIDs.
+Змінити UUID файлових систем.
 
-On guests and filesystem types where this is supported, new random UUIDs are
-generated and assigned to filesystems.
+У гостьових системах та типах файлових систем, де передбачено таку
+підтримку, буде створено нові випадкові UUID, які буде пов’язано з файловими
+системами.
 
-=head3 Notes on fs-uuids
+=head3 Зауваження щодо fs-uuids
 
-The fs-uuids operation is disabled by default because it does not yet find
-and update all the places in the guest that use the UUIDs.  For example
-C</etc/fstab> or the bootloader.  Enabling this operation is more likely
-than not to make your guest unbootable.
+Типово, дію fs-uuids вимкнено, оскільки у поточній версії програма ще не
+здатна знайти і оновити усі записи у гостьовій системі, які використовують
+UUID, наприклад C</etc/fstab> або завантажувач. Вмикання цієї дії може з
+високою ймовірністю зробити вашу гостьову систему непридатною до
+завантаження.
 
-See: L<https://bugzilla.redhat.com/show_bug.cgi?id=991641>
+Див. L<https://bugzilla.redhat.com/show_bug.cgi?id=991641>
 
 =head2 B<hostname> *
 
@@ -110,9 +113,10 @@ See: L<https://bugzilla.redhat.com/show_bug.cgi?id=991641>
 Якщо параметр I<--hostname> не буде вказано, назву вузла буде змінено на
 C<localhost.localdomain>.
 
-=head3 Notes on hostname
+=head3 Зауваження щодо hostname
 
-Currently this can only set the hostname on Linux guests.
+У поточній версії назву вузла можна встановлювати лише для гостьових систем
+Linux.
 
 =head2 B<дані-kerberos>
 
@@ -173,17 +177,18 @@ Currently this can only set the hostname on Linux guests.
 
 Змінити UUID ФТ і ГТ LVM2.
 
-On Linux guests that have LVM2 physical volumes (PVs) or volume groups
-(VGs), new random UUIDs are generated and assigned to those PVs and VGs.
+Для гостьових систем Linux, які містять фізичні томи (ФТ) або групи томів
+(ГТ) LVM2 для ФТ і ГТ буде створено і призначено випадкові UUID.
 
 =head2 B<ід-комп’ютера> *
 
 Вилучити ідентифікатор локального комп’ютера.
 
-The machine ID is usually generated from a random source during system
-installation and stays constant for all subsequent boots.  Optionally, for
-stateless systems it is generated during runtime at boot if it is found to
-be empty.
+Зазвичай, ідентифікатор системи створюється на основі випадкових джерел
+даних під час встановлення системи і не змінюється під час всіх наступних її
+завантажень. За потреби у системах без певного стану цей ідентифікатор
+створюється під час роботи завантажувача,
+якщо буде виявлено порожнє значення.
 
 =head2 B<mail-spool> *
 
@@ -205,8 +210,8 @@ be empty.
 
 Вилучити файли журналу обліку процесів.
 
-The system wide process accounting will store to the pacct log files if the
-process accounting is on.
+Дані обліку процесів системи будуть зберігатися у файлах журналу pacct, якщо
+увімкнено облік процесів.
 
 =head2 B<package-manager-cache> *
 
@@ -218,7 +223,7 @@ process accounting is on.
 
 =head2 B<password> *
 
-Set root or user password.
+Встановити пароль root або користувача.
 
 Set root or another user's password.
 
@@ -235,10 +240,10 @@ See L</OPTIONS> above for details of these options.
 This operation is enabled by default, but it only does something if there is
 at least one I<--root-password> or I<--password> argument given.
 
-=head3 Notes on password
+=head3 Зауваження щодо password
 
-Currently this only works for glibc-based Linux guests that use shadow
-passwords.
+У поточній версії цим можна користуватися лише для гостьових систем Linux,
+заснованих на glibc, у яких використовуються паролі shadow.
 
 =head2 B<puppet-data-log> *
 
@@ -259,10 +264,10 @@ passwords.
 
 =head2 B<rpm-db> *
 
-Remove host-specific RPM database files.
+Вилучити специфічні для системи файли баз даних RPM.
 
-Remove host-specific RPM database files and locks.  RPM will recreate these
-files automatically if needed.
+Вилучити специфічні для системи файли баз даних RPM. RPM буде повторно
+створено ці файли, якщо це потрібно.
 
 =head2 B<samba-db-log> *
 
@@ -321,11 +326,11 @@ run on the host, not in the guest.
 Вилучити каталог C<.ssh> користувача «root» та всіх інших користувачів,
 домашні каталоги яких містять каталог C<.ssh>.
 
-=head3 Notes on ssh-userdir
+=head3 Зауваження щодо ssh-userdir
 
-Currently this only looks in C</root> and C</home/*> for home directories,
-so users with home directories in other locations won't have the ssh files
-removed.
+У поточній версії пошук домашніх каталогів користувачів виконується лише у
+C</root> і C</home/*>. Отже, файли ssh користувачів, дані яких зберігаються
+у інших каталогах, не буде вилучено.
 
 =head2 B<sssd-db-log> *
 
@@ -358,10 +363,11 @@ udev цьому можна запобігти.
 Вилучити всі облікові записи користувачів та відповідні домашні
 каталоги. Обліковий запис «root» вилучено не буде.
 
-=head3 Notes on user-account
+=head3 Зауваження щодо user-account
 
-Currently this does not remove the user accounts from C</etc/shadow>.  This
-is because there is no lens for the shadow password file in Augeas.
+У поточній версії записи користувачів не вилучаються з
+C</etc/shadow>. Причиною є те, що у Augeas ще немає модуля для файлів
+паролів shadow.
 
 =head2 B<utmp> *
 

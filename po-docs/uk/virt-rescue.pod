@@ -410,14 +410,15 @@ L<sh(1)> for details.
 This configuration file controls the default read-only or read-write mode
 (I<--ro> or I<--rw>).
 
-Див. L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+See L<libguestfs-tools.conf(5)>.
 
 =back
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-cat(1)>, L<virt-edit(1)>,
-L<virt-filesystems(1)>, L<http://libguestfs.org/>.
+L<virt-filesystems(1)>, L<libguestfs-tools.conf(5)>,
+L<http://libguestfs.org/>.
 
 =head1 АВТОР
 

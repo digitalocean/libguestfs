@@ -205,8 +205,7 @@ E<lt>readonly/E<gt> フラグのあるディスクはスキップされます
 
 =back
 
-The other optional parameters are passed directly through to
-C<guestfs_add_drive_opts>.
+他のオプションパラメーターは C<guestfs_add_drive_opts> にそのまま渡されます。
 
 この関数はエラーのとき -1 を返します。
 
@@ -637,17 +636,15 @@ any other Augeas functions.
                       const char *expr,
                       const char *val);
 
-Defines a variable C<name> whose value is the result of evaluating C<expr>.
+その値が C<expr> を評価した結果である変数 C<name> を定義します。
 
-If C<expr> evaluates to an empty nodeset, a node is created, equivalent to
-calling C<guestfs_aug_set> C<expr>, C<value>.  C<name> will be the nodeset
-containing that single node.
+C<expr> が空のノードセットであると評価された場合、ノードが作成されます。C<guestfs_aug_set> C<expr>, C<value>
+を呼び出すことと同等です。C<name>  は単一のノードを含むノードセットです。
 
-On success this returns a pair containing the number of nodes in the
-nodeset, and a boolean flag if a node was created.
+成功した場合、ノードセットに含まれるノード数を含むペアが返されます。また、ノードが作成されたかどうかの論理フラグが返されます。
 
-This function returns a C<struct guestfs_int_bool *>, or NULL if there was
-an error.  I<The caller must call C<guestfs_free_int_bool> after use>.
+この関数は C<struct guestfs_int_bool *> を返します。もしくは、エラーが発生すると NULL を返します。
+I<呼び出し元は使用後に C<guestfs_free_int_bool> を呼び出す必要があります>。
 
 (0.7 において追加)
 
@@ -661,8 +658,8 @@ an error.  I<The caller must call C<guestfs_free_int_bool> after use>.
 C<expr> を評価した結果の値である Augeas 変数 C<name> を定義します。 C<expr> が NULL ならば、 C<name>
 が定義されません。
 
-On success this returns the number of nodes in C<expr>, or C<0> if C<expr>
-evaluates to something which is not a nodeset.
+成功した場合、C<expr> にあるノード数が返されます。または、C<expr> がノードセット以外のものであると評価された場合、C<0>
+が返されます。
 
 この関数はエラーのとき -1 を返します。
 
@@ -674,8 +671,7 @@ evaluates to something which is not a nodeset.
  guestfs_aug_get (guestfs_h *g,
                   const char *augpath);
 
-Look up the value associated with C<path>.  If C<path> matches exactly one
-node, the C<value> is returned.
+C<path> と関連づけられた値を検索します。C<path> がちょうど一つのノードと一致した場合、C<value> が返されます。
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
@@ -975,8 +971,8 @@ out which ones the daemon can actually support you have to call
 C<guestfs_available> / C<guestfs_feature_available> on each member of the
 returned list.
 
-See also C<guestfs_available>, C<guestfs_feature_available> and
-L<guestfs(3)/AVAILABILITY>.
+C<guestfs_available>, C<guestfs_feature_available> および
+L<guestfs(3)/AVAILABILITY> 参照。
 
 This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
@@ -1058,7 +1054,7 @@ caller must free the strings and the array after use>.
  guestfs_blockdev_flushbufs (guestfs_h *g,
                              const char *device);
 
-This tells the kernel to flush internal buffers associated with C<device>.
+C<device> と関連づけられている内部バッファーをフラッシュするようカーネルに指示します。
 
 これは L<blockdev(8)> コマンドを使用します。
 
@@ -1123,8 +1119,7 @@ C<guestfs_blockdev_getsz> 参照。
 
 これはブロックデバイスのセクター容量を返します。通常は 512 ですが、最近のデバイスはより大きいかもしれません。
 
-(Note, this is not the size in sectors, use C<guestfs_blockdev_getsz> for
-that).
+（これはセクターのサイズではありません、そのためには C<guestfs_blockdev_getsz> を使用する必要があることに注意してください）。
 
 これは L<blockdev(8)> コマンドを使用します。
 
@@ -2176,7 +2171,7 @@ not support it (primarily when writing to DOS FAT filesystems).
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.21.38)
+(1.21.38 において追加)
 
 =head2 guestfs_dd
 
@@ -2607,11 +2602,11 @@ Additional configuration can be supplied to SYSLINUX by placing a file
 called C<extlinux.conf> on the filesystem under C<directory>.  For further
 information about the contents of this file, see L<extlinux(1)>.
 
-See also C<guestfs_syslinux>.
+C<guestfs_syslinux> 参照。
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.21.27)
+(1.21.27 において追加)
 
 =head2 guestfs_fallocate
 
@@ -2672,7 +2667,7 @@ feature is not found.  For other documentation see C<guestfs_available>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.21.26)
+(1.21.26 において追加)
 
 =head2 guestfs_fgrep
 
@@ -2891,8 +2886,8 @@ filesystems can fail for other reasons such as it being a later version of
 the filesystem, or having incompatible features, or lacking the right
 mkfs.E<lt>I<fs>E<gt> tool.
 
-See also C<guestfs_available>, C<guestfs_feature_available>,
-L<guestfs(3)/AVAILABILITY>.
+C<guestfs_available>, C<guestfs_feature_available>,
+L<guestfs(3)/AVAILABILITY> 参照。
 
 This function returns a C truth value on success or -1 on error.
 
@@ -3175,8 +3170,7 @@ must I<not> be freed.
  char *
  guestfs_get_attach_method (guestfs_h *g);
 
-I<This function is deprecated.> In new code, use the L</guestfs_get_backend>
-call instead.
+I<この函数は推奨されません。> 新しいコードでは、代わりに L</guestfs_get_backend> を使用してください。
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -3184,7 +3178,7 @@ these functions.
 
 Return the current backend.
 
-See C<guestfs_set_backend> and L<guestfs(3)/BACKEND>.
+C<guestfs_set_backend> および L<guestfs(3)/BACKEND> 参照。
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
@@ -3210,11 +3204,11 @@ Return the current backend.
 
 This handle property was previously called the "attach method".
 
-See C<guestfs_set_backend> and L<guestfs(3)/BACKEND>.
+C<guestfs_set_backend> および L<guestfs(3)/BACKEND> 参照。
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(Added in 1.21.26)
+(1.21.26 において追加)
 
 =head2 guestfs_get_cachedir
 
@@ -3569,7 +3563,7 @@ Get the program name.  See C<guestfs_set_program>.
 This function returns a string, or NULL on error.  The string is owned by
 the guest handle and must I<not> be freed.
 
-(Added in 1.21.29)
+(1.21.29 において追加)
 
 =head2 guestfs_get_qemu
 
@@ -5842,7 +5836,7 @@ device. That is, not a partition or a logical device.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.21.9)
+(1.21.9 において追加)
 
 =head2 guestfs_is_zero
 
@@ -6111,7 +6105,7 @@ Windows dynamic disk.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.20.0)
+(1.20.0 において追加)
 
 =head2 guestfs_ldmtool_diskgroup_disks
 
@@ -6127,7 +6121,7 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
-(Added in 1.20.0)
+(1.20.0 において追加)
 
 =head2 guestfs_ldmtool_diskgroup_name
 
@@ -6141,7 +6135,7 @@ C<guestfs_ldmtool_scan>.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(Added in 1.20.0)
+(1.20.0 において追加)
 
 =head2 guestfs_ldmtool_diskgroup_volumes
 
@@ -6157,7 +6151,7 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
-(Added in 1.20.0)
+(1.20.0 において追加)
 
 =head2 guestfs_ldmtool_remove_all
 
@@ -6169,7 +6163,7 @@ removes the device mapper mappings for all Windows dynamic disk volumes
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.20.0)
+(1.20.0 において追加)
 
 =head2 guestfs_ldmtool_scan
 
@@ -6187,7 +6181,7 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
-(Added in 1.20.0)
+(1.20.0 において追加)
 
 =head2 guestfs_ldmtool_scan_devices
 
@@ -6206,7 +6200,7 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
-(Added in 1.20.0)
+(1.20.0 において追加)
 
 =head2 guestfs_ldmtool_volume_hint
 
@@ -6222,7 +6216,7 @@ Windows drive, eg. C<E:>.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(Added in 1.20.0)
+(1.20.0 において追加)
 
 =head2 guestfs_ldmtool_volume_partitions
 
@@ -6238,7 +6232,7 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
-(Added in 1.20.0)
+(1.20.0 において追加)
 
 =head2 guestfs_ldmtool_volume_type
 
@@ -6256,7 +6250,7 @@ returned.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(Added in 1.20.0)
+(1.20.0 において追加)
 
 =head2 guestfs_lgetxattr
 
@@ -6425,7 +6419,7 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
-(Added in 1.20.0)
+(1.20.0 において追加)
 
 =head2 guestfs_list_ldm_volumes
 
@@ -6439,7 +6433,7 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
-(Added in 1.20.0)
+(1.20.0 において追加)
 
 =head2 guestfs_list_md_devices
 
@@ -9931,7 +9925,7 @@ See L<guestfs(3)/BACKEND>.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.21.26)
+(1.21.26 において追加)
 
 =head2 guestfs_set_cachedir
 
@@ -10308,7 +10302,7 @@ string (but never C<NULL>).
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.21.29)
+(1.21.29 において追加)
 
 =head2 guestfs_set_qemu
 
@@ -10996,7 +10990,7 @@ See also C<guestfs_extlinux>.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.21.27)
+(1.21.27 において追加)
 
 =head2 guestfs_syslinux_va
 

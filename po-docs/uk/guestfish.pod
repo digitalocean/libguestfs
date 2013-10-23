@@ -263,9 +263,11 @@ Read commands from C<file>.  To write pure guestfish scripts, use:
 примусове встановлення формату без обробки (без автоматичного визначення)
 для C<disk.img> і повернення до автоматичного визначення для C<another.img>.
 
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (CVE-2010-3851).  See also L</add>.
+Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
+форматі, вам слід скористатися цим параметром для визначення формату
+диска. Таким чином можна уникнути можливих проблем з захистом для
+сформованих зловмисниками гостьових систем (CVE-2010-3851). Див. також
+L</add>.
 
 =item B<-i>
 
@@ -312,9 +314,9 @@ L</REMOTE CONTROL GUESTFISH OVER A SOCKET> below.
 Connect to a live virtual machine.  (Experimental, see
 L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>).
 
-=item B<-m dev[:mountpoint[:options[:fstype]]]>
+=item B<-m пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]>
 
-=item B<--mount dev[:mountpoint[:options[:fstype]]]>
+=item B<--mount пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]>
 
 Mount the named partition or logical volume on the given mountpoint.
 
@@ -350,9 +352,9 @@ libguestfs misidentifies a filesystem.
 
 Enable QEMU user networking in the guest.
 
-=item B<-N [filename=]type>
+=item B<-N [назва_файла=]тип>
 
-=item B<--new [filename=]type>
+=item B<--new [назва_файла=]тип>
 
 =item B<-N help>
 
@@ -986,6 +988,9 @@ of the process, and C<$PID> is the process ID of the server.
 
 Guestfish client and server versions must match exactly.
 
+Older versions of guestfish were vulnerable to CVE-2013-4419 (see
+L<guestfs(3)/CVE-2013-4419>).  This is fixed in the current version.
+
 =head2 USING REMOTE CONTROL ROBUSTLY FROM SHELL SCRIPTS
 
 From Bash, you can use the following code which creates a guestfish
@@ -1114,19 +1119,19 @@ The possible I<-a URI> formats are described below.
 
 =head2 B<-a disk.img>
 
-=head2 B<-a file:///path/to/disk.img>
+=head2 B<-a file:///шлях/на/диску.img>
 
 Add the local disk image (or device) called C<disk.img>.
 
 =head2 B<-a ftp://[user@]example.com[:port]/disk.img>
 
-=head2 B<-a ftps://[user@]example.com[:port]/disk.img>
+=head2 B<-a ftps://[user@]example.com[:порт]/disk.img>
 
-=head2 B<-a http://[user@]example.com[:port]/disk.img>
+=head2 B<-a http://[user@]example.com[:порт]/disk.img>
 
-=head2 B<-a https://[user@]example.com[:port]/disk.img>
+=head2 B<-a https://[user@]example.com[:порт]/disk.img>
 
-=head2 B<-a tftp://[user@]example.com[:port]/disk.img>
+=head2 B<-a tftp://[user@]example.com[:порт]/disk.img>
 
 Add a disk located on a remote FTP, HTTP or TFTP server.
 
@@ -1134,7 +1139,7 @@ The equivalent API command would be:
 
  ><fs> add /disk.img protocol:(ftp|...) server:tcp:example.com
 
-=head2 B<-a gluster://example.com[:port]/disk>
+=head2 B<-a gluster://example.com[:порт]/disk>
 
 Add a disk image located on GlusterFS storage.
 
@@ -1152,11 +1157,11 @@ The equivalent API command would be:
 
  ><fs> add /target-iqn-name/lun protocol:iscsi server:tcp:example.com
 
-=head2 B<-a nbd://example.com[:port]>
+=head2 B<-a nbd://example.com[:порт]>
 
-=head2 B<-a nbd://example.com[:port]/exportname>
+=head2 B<-a nbd://example.com[:порт]/назва_для_експортування>
 
-=head2 B<-a nbd://?socket=/socket>
+=head2 B<-a nbd://?socket=/сокет>
 
 =head2 B<-a nbd:///exportname?socket=/socket>
 
@@ -1173,7 +1178,7 @@ The equivalent API command would be (no export name):
 
  ><fs> add "" protocol:nbd server:[tcp:example.com|unix:/socket]
 
-=head2 B<-a rbd://example.com[:port]/disk>
+=head2 B<-a rbd://example.com[:порт]/диск>
 
 Add a disk image located on a Ceph (RBD/librbd) storage volume.
 
@@ -1470,7 +1475,7 @@ See L</LIBGUESTFS_CACHEDIR>, L</LIBGUESTFS_TMPDIR>.
 This configuration file controls the default read-only or read-write mode
 (I<--ro> or I<--rw>).
 
-Див. L</OPENING DISKS FOR READ AND WRITE>.
+See L<libguestfs-tools.conf(5)>.
 
 =item $HOME/.guestfish
 
@@ -1528,7 +1533,8 @@ L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
 L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
 L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
 L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
-L<virt-win-reg(1)>, L<display(1)>, L<hexedit(1)>, L<supermin-helper(8)>.
+L<virt-win-reg(1)>, L<libguestfs-tools.conf(5)>, L<display(1)>,
+L<hexedit(1)>, L<supermin-helper(8)>.
 
 =head1 АВТОРИ
 

@@ -17,14 +17,14 @@ create users).  The following formats may be used for this option:
 
 =over 4
 
-=item B<--password USERNAME:file:FILENAME>
+=item B<--password КОРИСТУВАЧ:file:НАЗВА_ФАЙЛА>
 
 Change the password for C<USERNAME>.  Read the password from C<FILENAME>.
 The whole first line of this file is the replacement password.  Any other
 lines are ignored.  You should create the file with mode 0600 to ensure no
 one else can read it.
 
-=item B<--password USERNAME:password:PASSWORD>
+=item B<--password КОРИСТУВАЧ:password:ПАРОЛЬ>
 
 Change the password for C<USERNAME>.  Set the password to the literal string
 C<PASSWORD>.
@@ -34,19 +34,21 @@ cleartext password using L<ps(1)>.
 
 =back
 
-=item B<--password-crypto> password-crypto (see C<password> below)
+=item B<--password-crypto> спосіб_шифрування_паролів (див. C<password> нижче)
 
-Set the password encryption to C<md5>, C<sha256> or C<sha512>.
+Встановити спосіб шифрування паролів: C<md5>, C<sha256> або C<sha512>.
 
-C<sha256> and C<sha512> require glibc E<ge> 2.7 (check L<crypt(3)> inside
-the guest).
+Для шифрування за допомогою C<sha256> і C<sha512> потрібна glibc E<ge> 2.7
+(див. L<crypt(3)> у гостьовій системі).
 
-C<md5> will work with relatively old Linux guests (eg. RHEL 3), but is not
-secure against modern attacks.
+C<md5> працюватиме з відносно давніми гостьовими системами Linux
+(наприкладRHEL 3), але є незахищеним щодо новітніх способів атак.
 
-The default is C<sha512> unless libguestfs detects an old guest that didn't
-have support for SHA-512, in which case it will use C<md5>.  You can
-override libguestfs by specifying this option.
+Типовим способом шифрування є C<sha512>. Він використовується, якщо
+libguestfs вдасться виявити у гостьовій системі підтримку SHA-512. Якщо
+такої підтримки не буде виявлено, використовуватиметься C<md5>. За допомогою
+цього параметра ви можете перевизначити автоматично визначений libguestfs
+спосіб шифрування.
 
 =item B<--root-password> root-password (see C<password> below)
 
@@ -54,13 +56,13 @@ Set the root password.  The following formats may be used for this option:
 
 =over 4
 
-=item B<--root-password file:FILENAME>
+=item B<--root-password file:НАЗВА_ФАЙЛА>
 
 Read the root password from C<FILENAME>.  The whole first line of this file
 is the replacement password.  Any other lines are ignored.  You should
 create the file with mode 0600 to ensure no one else can read it.
 
-=item B<--root-password password:PASSWORD>
+=item B<--root-password password:ПАРОЛЬ>
 
 Set the root password to the literal string C<PASSWORD>.
 

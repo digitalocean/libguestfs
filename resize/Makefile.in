@@ -1449,16 +1449,18 @@ SOURCES = \
 
 # Note this list must be in dependency order.
 @HAVE_OCAML_TRUE@OBJECTS = \
-@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-progress.o \
-@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/tty-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/tTY.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/fsync-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/fsync.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-progress.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/progress-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/progress.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uri-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/tTY.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/progress.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmx \
 @HAVE_OCAML_TRUE@	resize.cmx
 
 @HAVE_OCAML_TRUE@bin_SCRIPTS = virt-resize

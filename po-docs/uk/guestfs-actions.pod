@@ -352,7 +352,7 @@ if the optional protocol parameter is omitted.
 Connect to a remote FTP, HTTP or TFTP server.  The C<server> parameter must
 also be supplied - see below.
 
-See also: L<guestfs(3)/FTP, HTTP AND TFTP>
+Див. також L<guestfs(3)/FTP, HTTP AND TFTP>
 
 =item C<protocol = "gluster">
 
@@ -366,7 +366,7 @@ supplied - see below.
 Connect to the iSCSI server.  The C<server> parameter must also be supplied
 - see below.
 
-See also: L<guestfs(3)/ISCSI>.
+Див. також L<guestfs(3)/ISCSI>.
 
 =item C<protocol = "nbd">
 
@@ -392,12 +392,12 @@ supplied - see below.
 
 =item C<protocol = "ssh">
 
-Connect to the Secure Shell (ssh) server.
+Встановити з’єднання з сервером Secure Shell (ssh).
 
 The C<server> parameter must be supplied.  The C<username> parameter may be
 supplied.  See below.
 
-See also: L<guestfs(3)/SSH>.
+Див. також L<guestfs(3)/SSH>.
 
 =back
 
@@ -571,7 +571,7 @@ C<guestfs_add_drive>.
                                int64_t size,
                                va_list args);
 
-This is the "va_list variant" of L</guestfs_add_drive_scratch>.
+Це «варіант з va_list» L</guestfs_add_drive_scratch>
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -582,7 +582,7 @@ This is the "va_list variant" of L</guestfs_add_drive_scratch>.
                                  int64_t size,
                                  const struct guestfs_add_drive_scratch_argv *optargs);
 
-This is the "argv variant" of L</guestfs_add_drive_scratch>.
+Це «варіант з argv» L</guestfs_add_drive_scratch>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -982,7 +982,7 @@ out which ones the daemon can actually support you have to call
 C<guestfs_available> / C<guestfs_feature_available> on each member of the
 returned list.
 
-See also C<guestfs_available>, C<guestfs_feature_available> and
+Див. також C<guestfs_available>, C<guestfs_feature_available> і
 L<guestfs(3)/AVAILABILITY>.
 
 This function returns a NULL-terminated array of strings (like
@@ -2209,7 +2209,7 @@ not support it (primarily when writing to DOS FAT filesystems).
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.21.38)
+(Додано у 1.21.38)
 
 =head2 guestfs_dd
 
@@ -2661,7 +2661,7 @@ information about the contents of this file, see L<extlinux(1)>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.21.27)
+(Додано у 1.21.27)
 
 =head2 guestfs_fallocate
 
@@ -2723,7 +2723,7 @@ feature is not found.  For other documentation see C<guestfs_available>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.21.26)
+(Додано у 1.21.26)
 
 =head2 guestfs_fgrep
 
@@ -3277,7 +3277,7 @@ See C<guestfs_set_backend> and L<guestfs(3)/BACKEND>.
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
-(Added in 1.21.26)
+(Додано у 1.21.26)
 
 =head2 guestfs_get_cachedir
 
@@ -3638,12 +3638,12 @@ This is an internal call used for debugging and testing.
  const char *
  guestfs_get_program (guestfs_h *g);
 
-Get the program name.  See C<guestfs_set_program>.
+Отримати назву програми. Див. C<guestfs_set_program>.
 
 This function returns a string, or NULL on error.  The string is owned by
 the guest handle and must I<not> be freed.
 
-(Added in 1.21.29)
+(Додано у 1.21.29)
 
 =head2 guestfs_get_qemu
 
@@ -5527,7 +5527,7 @@ true.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.23.4)
+(Додано у 1.23.4)
 
 =head2 guestfs_is_blockdev_opts_va
 
@@ -5536,7 +5536,7 @@ This function returns a C truth value on success or -1 on error.
                               const char *path,
                               va_list args);
 
-This is the "va_list variant" of L</guestfs_is_blockdev_opts>.
+Це «варіант з va_list» L</guestfs_is_blockdev_opts>
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -5547,7 +5547,7 @@ This is the "va_list variant" of L</guestfs_is_blockdev_opts>.
                                 const char *path,
                                 const struct guestfs_is_blockdev_opts_argv *optargs);
 
-This is the "argv variant" of L</guestfs_is_blockdev_opts>.
+Це «варіант з argv» L</guestfs_is_blockdev_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -5602,7 +5602,7 @@ symlinks) that ends with a chardev also causes the function to return true.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.23.4)
+(Додано у 1.23.4)
 
 =head2 guestfs_is_chardev_opts_va
 
@@ -5611,7 +5611,7 @@ This function returns a C truth value on success or -1 on error.
                              const char *path,
                              va_list args);
 
-This is the "va_list variant" of L</guestfs_is_chardev_opts>.
+Це «варіант з va_list» L</guestfs_is_chardev_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -5622,7 +5622,7 @@ This is the "va_list variant" of L</guestfs_is_chardev_opts>.
                                const char *path,
                                const struct guestfs_is_chardev_opts_argv *optargs);
 
-This is the "argv variant" of L</guestfs_is_chardev_opts>.
+Це «варіант з argv» L</guestfs_is_chardev_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -5678,7 +5678,7 @@ true.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.23.4)
+(Додано у 1.23.4)
 
 =head2 guestfs_is_dir_opts_va
 
@@ -5687,7 +5687,7 @@ This function returns a C truth value on success or -1 on error.
                          const char *path,
                          va_list args);
 
-This is the "va_list variant" of L</guestfs_is_dir_opts>.
+Це «варіант з va_list» L</guestfs_is_dir_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -5698,7 +5698,7 @@ This is the "va_list variant" of L</guestfs_is_dir_opts>.
                            const char *path,
                            const struct guestfs_is_dir_opts_argv *optargs);
 
-This is the "argv variant" of L</guestfs_is_dir_opts>.
+Це «варіант з argv» L</guestfs_is_dir_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -5739,7 +5739,7 @@ symlinks) that ends with a FIFO also causes the function to return true.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.23.4)
+(Додано у 1.23.4)
 
 =head2 guestfs_is_fifo_opts_va
 
@@ -5748,7 +5748,7 @@ This function returns a C truth value on success or -1 on error.
                           const char *path,
                           va_list args);
 
-This is the "va_list variant" of L</guestfs_is_fifo_opts>.
+Це «варіант з va_list» L</guestfs_is_fifo_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -5759,7 +5759,7 @@ This is the "va_list variant" of L</guestfs_is_fifo_opts>.
                             const char *path,
                             const struct guestfs_is_fifo_opts_argv *optargs);
 
-This is the "argv variant" of L</guestfs_is_fifo_opts>.
+Це «варіант з argv» L</guestfs_is_fifo_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -5801,7 +5801,7 @@ symlinks) that ends with a file also causes the function to return true.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.23.4)
+(Додано у 1.23.4)
 
 =head2 guestfs_is_file_opts_va
 
@@ -5810,7 +5810,7 @@ This function returns a C truth value on success or -1 on error.
                           const char *path,
                           va_list args);
 
-This is the "va_list variant" of L</guestfs_is_file_opts>.
+Це «варіант з va_list» L</guestfs_is_file_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -5821,7 +5821,7 @@ This is the "va_list variant" of L</guestfs_is_file_opts>.
                             const char *path,
                             const struct guestfs_is_file_opts_argv *optargs);
 
-This is the "argv variant" of L</guestfs_is_file_opts>.
+Це «варіант з argv» L</guestfs_is_file_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -5903,7 +5903,7 @@ symlinks) that ends with a socket also causes the function to return true.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.23.4)
+(Додано у 1.23.4)
 
 =head2 guestfs_is_socket_opts_va
 
@@ -5912,7 +5912,7 @@ This function returns a C truth value on success or -1 on error.
                             const char *path,
                             va_list args);
 
-This is the "va_list variant" of L</guestfs_is_socket_opts>.
+Це «варіант з va_list» L</guestfs_is_socket_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -5923,7 +5923,7 @@ This is the "va_list variant" of L</guestfs_is_socket_opts>.
                               const char *path,
                               const struct guestfs_is_socket_opts_argv *optargs);
 
-This is the "argv variant" of L</guestfs_is_socket_opts>.
+Це «варіант з argv» L</guestfs_is_socket_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -6025,7 +6025,7 @@ error.  I<The caller must call C<guestfs_free_isoinfo> after use>.
  int
  guestfs_journal_close (guestfs_h *g);
 
-Close the journal handle.
+Завершити роботу обробника журналу.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -6066,7 +6066,7 @@ to the journal that it may truncate data fields to this size when reading
 them (note also that it may not truncate them).  If this returns C<0>, then
 the threshold is unlimited.
 
-See also C<guestfs_journal_set_data_threshold>.
+Див. також C<guestfs_journal_set_data_threshold>
 
 У разі помилки цією функцією буде повернуто -1.
 
@@ -6119,7 +6119,7 @@ journal that it may truncate data fields to this size when reading them
 (note also that it may not truncate them).  If you set this to C<0>, then
 the threshold is unlimited.
 
-See also C<guestfs_journal_get_data_threshold>.
+Див. також C<guestfs_journal_get_data_threshold>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -9031,11 +9031,11 @@ the device's sector size, see C<guestfs_blockdev_getss>.
 
 =item B<part_end>
 
-End of the partition in bytes.
+Позиція завершення розділу у байтах.
 
 =item B<part_size>
 
-Size of the partition in bytes.
+Розмір розділу у байтах.
 
 =back
 
@@ -9589,7 +9589,7 @@ future we may allow other flags to be adjusted.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.23.2)
+(Додано у 1.23.2)
 
 =head2 guestfs_remount_va
 
@@ -9598,7 +9598,7 @@ future we may allow other flags to be adjusted.
                      const char *mountpoint,
                      va_list args);
 
-This is the "va_list variant" of L</guestfs_remount>.
+Це «варіант з va_list» L</guestfs_remount>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -9609,7 +9609,7 @@ This is the "va_list variant" of L</guestfs_remount>.
                        const char *mountpoint,
                        const struct guestfs_remount_argv *optargs);
 
-This is the "argv variant" of L</guestfs_remount>.
+Це «варіант з argv» L</guestfs_remount>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -10103,7 +10103,7 @@ This handle property was previously called the "attach method".
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.21.26)
+(Додано у 1.21.26)
 
 =head2 guestfs_set_cachedir
 
@@ -10315,7 +10315,7 @@ Labels are limited to 16 bytes.
 
 =item NTFS
 
-Labels are limited to 128 unicode characters.
+Мітки обмежено 128 символами unicode.
 
 =item XFS
 
@@ -10487,7 +10487,7 @@ string (but never C<NULL>).
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.21.29)
+(Додано у 1.21.29)
 
 =head2 guestfs_set_qemu
 
@@ -11188,7 +11188,7 @@ information about the contents of this file, see L<syslinux(1)>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.21.27)
+(Додано у 1.21.27)
 
 =head2 guestfs_syslinux_va
 

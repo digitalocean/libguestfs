@@ -204,7 +204,7 @@ or contain unknown data.
 
 =item B<--human-readable>
 
-In I<--long> mode, display sizes in human-readable format.
+У режимі I<--long> показувати розміри у зручному для читання форматі.
 
 =item B<--keys-from-stdin>
 
@@ -215,7 +215,7 @@ passphrases from the user by opening C</dev/tty>.
 
 =item B<--long>
 
-Display extra columns of data ("long format").
+Показувати додаткові стовпчики даних («довгий формат»).
 
 A title row is added unless you also specify I<--no-title>.
 

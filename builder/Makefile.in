@@ -1498,6 +1498,8 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/firstboot.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/crypt-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/crypt.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/fsync-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/fsync.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/password.cmx \
 @HAVE_OCAML_TRUE@	get_kernel.cmx \
 @HAVE_OCAML_TRUE@	downloader.cmx \

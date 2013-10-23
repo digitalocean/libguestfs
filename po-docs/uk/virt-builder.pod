@@ -420,17 +420,19 @@ volume.
 
 =item B<--password-crypto> password-crypto
 
-Set the password encryption to C<md5>, C<sha256> or C<sha512>.
+Встановити спосіб шифрування паролів: C<md5>, C<sha256> або C<sha512>.
 
 C<sha256> and C<sha512> require glibc E<ge> 2.7 (check crypt(3) inside the
 guest).
 
-C<md5> will work with relatively old Linux guests (eg. RHEL 3), but is not
-secure against modern attacks.
+C<md5> працюватиме з відносно давніми гостьовими системами Linux
+(наприкладRHEL 3), але є незахищеним щодо новітніх способів атак.
 
-The default is C<sha512> unless libguestfs detects an old guest that didn't
-have support for SHA-512, in which case it will use C<md5>.  You can
-override libguestfs by specifying this option.
+Типовим способом шифрування є C<sha512>. Він використовується, якщо
+libguestfs вдасться виявити у гостьовій системі підтримку SHA-512. Якщо
+такої підтримки не буде виявлено, використовуватиметься C<md5>. За допомогою
+цього параметра ви можете перевизначити автоматично визначений libguestfs
+спосіб шифрування.
 
 =item B<--print-cache>
 

@@ -1414,6 +1414,9 @@ SOURCES = \
 	crypt.mli \
 	firstboot.mli \
 	firstboot.ml \
+	fsync-c.c \
+	fsync.mli \
+	fsync.ml \
 	hostname.mli \
 	hostname.ml \
 	password.mli \
@@ -1439,6 +1442,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-progress.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
 @HAVE_OCAML_TRUE@	tty-c.o \
+@HAVE_OCAML_TRUE@	fsync-c.o \
 @HAVE_OCAML_TRUE@	progress-c.o \
 @HAVE_OCAML_TRUE@	uri-c.o \
 @HAVE_OCAML_TRUE@	crypt-c.o \
@@ -1449,6 +1453,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	hostname.cmx \
 @HAVE_OCAML_TRUE@	firstboot.cmx \
 @HAVE_OCAML_TRUE@	tTY.cmx \
+@HAVE_OCAML_TRUE@	fsync.cmx \
 @HAVE_OCAML_TRUE@	progress.cmx \
 @HAVE_OCAML_TRUE@	uRI.cmx \
 @HAVE_OCAML_TRUE@	crypt.cmx \

@@ -84,7 +84,7 @@ libvirt не буде використовуватися взагалі.
 Perform a read-only "dry run" on the guest.  This runs the sysprep
 operation, but throws away any changes to the disk at the end.
 
-=item B<--enable> operations
+=item B<--enable> дії
 
 Choose which sysprep operations to perform.  Give a comma-separated list of
 operations, for example:
@@ -108,10 +108,11 @@ See L</OPERATIONS> below for a list and an explanation of each operation.
 
 =item B<--format> auto
 
-The default for the I<-a> option is to auto-detect the format of the disk
-image.  Using this forces the disk format for I<-a> options which follow on
-the command line.  Using I<--format auto> switches back to auto-detection
-for subsequent I<-a> options.
+Типовим значенням для параметра I<-a> є автоматичне визначення формату
+образу диска. Використання цього параметра примусово визначає значення
+параметрів I<-a> формату диска у наступному рядку команди. Використання
+параметра I<--format auto> перемикає програму у режим автоматичного
+визначення у наступних параметрах I<-a>.
 
 Приклад:
 
