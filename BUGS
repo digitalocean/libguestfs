@@ -272,9 +272,6 @@ You can help by testing the fixes.
 1011922 MODIFIED https://bugzilla.redhat.com/show_bug.cgi?id=1011922
   Use host-passthrough instead of host-model
 
-1020535 MODIFIED https://bugzilla.redhat.com/show_bug.cgi?id=1020535
-  CVE-2013-4419 libguestfs: insecure temporary directory handling for guestfish's network socket [fedora-all]
-
 1020950 MODIFIED https://bugzilla.redhat.com/show_bug.cgi?id=1020950
   CVE-2013-4419 libguestfs: insecure temporary directory handling for guestfish's network socket [epel-5]
 
@@ -391,6 +388,9 @@ You can help by testing the fixes.
 
 1003291 ON_QA https://bugzilla.redhat.com/show_bug.cgi?id=1003291
   Backport cachemode patch to RHEL 7
+
+1020535 ON_QA https://bugzilla.redhat.com/show_bug.cgi?id=1020535
+  CVE-2013-4419 libguestfs: insecure temporary directory handling for guestfish's network socket [fedora-all]
 
 (42 bugs)
 
