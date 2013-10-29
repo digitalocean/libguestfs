@@ -1,3 +1,58 @@
+2013-10-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.1.
+
+2013-10-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Don't fail if ~/.cache doesn't exist (RHBZ#1022431).
+
+	builder: Copy-editing on documentation.
+	Plus some ideas added to TODO file.
+
+	builder: Add --mkdir option to create directories.
+
+2013-10-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Fix two problems in --help output.
+
+2013-10-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add --no-sync option to avoid sync on exit.
+
+2013-10-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	Revert "java: Remove version number from the jar file (RHBZ#1022184)."
+	This reverts commit 7330ccd288a001d33866308ff8d679a884230d83.
+
+	See comment in https://bugzilla.redhat.com/1022184
+
+2013-10-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	java: Remove version number from the jar file (RHBZ#1022184).
+
+	builder: Use pxzcat (optionally) to speed up xzcat step.
+
+	builder: Make xzcat binary configurable and use AC_PATH_PROG.
+
+	builder: Don't run virt-resize when not necessary.
+	If:
+	 - the output is a regular file
+	 - the output format is raw
+	 - the user didn't specify the --size option
+	then we don't need to run virt-resize.  Simply uncompress
+	the template directly to the output file.
+
+	build: xz is required.
+	It is needed for libguestfs-make-fixed-appliance and many other places.
+
+	mllib: Create config.ml from configure and use it for --version options.
+	Also don't internationalize the output of the --version option, as
+	that isn't useful.
+
+2013-10-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	configure: Use AC_PATH_PROG{,S} for external programs used by the library.
+
 2013-10-18  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.25.0.

@@ -39,10 +39,7 @@ let default_cachedir =
 
 let parse_cmdline () =
   let display_version () =
-    let g = new G.guestfs () in
-    let version = g#version () in
-    printf (f_"virt-builder %Ld.%Ld.%Ld%s\n")
-      version.G.major version.G.minor version.G.release version.G.extra;
+    printf "virt-builder %s\n" Config.package_version;
     exit 0
   in
 
@@ -122,6 +119,10 @@ let parse_cmdline () =
   in
 
   let list_long = ref false in
+
+  let mkdirs = ref [] in
+  let add_mkdir arg = mkdirs := arg :: !mkdirs in
+
   let network = ref true in
   let output = ref "" in
 
@@ -164,6 +165,8 @@ let parse_cmdline () =
     with Not_found -> "http://libguestfs.org/download/builder/index.asc" in
   let source = ref source in
 
+  let sync = ref true in
+
   let upload = ref [] in
   let add_upload arg =
     let i =
@@ -197,7 +200,7 @@ let parse_cmdline () =
                                             " " ^ s_"Disable digital signatures";
     "--no-check-signatures", Arg.Clear check_signature, ditto;
     "--curl",    Arg.Set_string curl,       "curl" ^ " " ^ s_"Set curl binary/command";
-    "--delete",  Arg.String add_delete,     "name" ^ s_"Delete a file or dir";
+    "--delete",  Arg.String add_delete,     "name" ^ " " ^ s_"Delete a file or dir";
     "--delete-cache", Arg.Unit delete_cache_mode,
                                             " " ^ s_"Delete the template cache";
     "--edit",    Arg.String add_edit,       "file:expr" ^ " " ^ s_"Edit file with Perl expr";
@@ -218,6 +221,7 @@ let parse_cmdline () =
     "--long",    Arg.Set list_long,         ditto;
     "--no-logfile", Arg.Set scrub_logfile,  " " ^ s_"Scrub build log file";
     "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
+    "--mkdir",   Arg.String add_mkdir,      "dir" ^ " " ^ s_"Create directory";
     "--network", Arg.Set network,           " " ^ s_"Enable appliance network (default)";
     "--no-network", Arg.Clear network,      " " ^ s_"Disable appliance network";
     "--notes",   Arg.Unit notes_mode,       " " ^ s_"Display installation notes";
@@ -232,9 +236,10 @@ let parse_cmdline () =
                                             "..." ^ " " ^ s_"Set root password";
     "--run",     Arg.String add_run,        "script" ^ " " ^ s_"Run script in disk image";
     "--run-command", Arg.String add_run_cmd, "cmd+args" ^ " " ^ s_"Run command in disk image";
-    "--scrub",   Arg.String add_scrub,      "name" ^ s_"Scrub a file";
+    "--scrub",   Arg.String add_scrub,      "name" ^ " " ^ s_"Scrub a file";
     "--size",    Arg.String set_size,       "size" ^ " " ^ s_"Set output disk size";
     "--source",  Arg.Set_string source,     "URL" ^ " " ^ s_"Set source URL";
+    "--no-sync", Arg.Clear sync,            " " ^ s_"Do not fsync output file on exit";
     "--upload",  Arg.String add_upload,     "file:dest" ^ " " ^ s_"Upload file to dest";
     "-v",        Arg.Set debug,             " " ^ s_"Enable debugging messages";
     "--verbose", Arg.Set debug,             ditto;
@@ -281,6 +286,7 @@ read the man page virt-builder(1).
   let hostname = !hostname in
   let install = !install in
   let list_long = !list_long in
+  let mkdirs = List.rev !mkdirs in
   let network = !network in
   let output = match !output with "" -> None | s -> Some s in
   let password_crypto = !password_crypto in
@@ -290,6 +296,7 @@ read the man page virt-builder(1).
   let scrub_logfile = !scrub_logfile in
   let size = !size in
   let source = !source in
+  let sync = !sync in
   let upload = List.rev !upload in
 
   (* Check options. *)
@@ -344,6 +351,6 @@ read the man page virt-builder(1).
 
   mode, arg,
   attach, cache, check_signature, curl, debug, delete, edit, fingerprint,
-  firstboot, run, format, gpg, hostname, install, list_long, network, output,
-  password_crypto, quiet, root_password, scrub, scrub_logfile, size, source,
-  upload
+  firstboot, run, format, gpg, hostname, install, list_long, mkdirs,
+  network, output, password_crypto, quiet, root_password, scrub,
+  scrub_logfile, size, source, sync, upload

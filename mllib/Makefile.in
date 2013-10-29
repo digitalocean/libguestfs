@@ -135,7 +135,7 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
-	$(srcdir)/Makefile.am
+	$(srcdir)/Makefile.am $(srcdir)/config.ml.in
 @HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
 subdir = mllib
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -266,7 +266,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = config.ml
 CONFIG_CLEAN_VPATH_FILES =
 SCRIPTS = $(noinst_SCRIPTS)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -1137,6 +1137,7 @@ PRIPTR_PREFIX = @PRIPTR_PREFIX@
 PRI_MACROS_BROKEN = @PRI_MACROS_BROKEN@
 PTHREAD_H_DEFINES_STRUCT_TIMESPEC = @PTHREAD_H_DEFINES_STRUCT_TIMESPEC@
 PTRDIFF_T_SUFFIX = @PTRDIFF_T_SUFFIX@
+PXZCAT = @PXZCAT@
 PYTHON = @PYTHON@
 PYTHON_CFLAGS = @PYTHON_CFLAGS@
 PYTHON_EXT_SUFFIX = @PYTHON_EXT_SUFFIX@
@@ -1334,6 +1335,7 @@ WINT_T_SUFFIX = @WINT_T_SUFFIX@
 WRESTOOL = @WRESTOOL@
 XGETTEXT = @XGETTEXT@
 XMLLINT = @XMLLINT@
+XZCAT = @XZCAT@
 YAJL_CFLAGS = @YAJL_CFLAGS@
 YAJL_LIBS = @YAJL_LIBS@
 YIELD_LIB = @YIELD_LIB@
@@ -1409,6 +1411,7 @@ SOURCES = \
 	common_gettext.ml \
 	common_utils.ml \
 	common_utils_tests.ml \
+	config.ml \
 	crypt-c.c \
 	crypt.ml \
 	crypt.mli \
@@ -1446,6 +1449,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	progress-c.o \
 @HAVE_OCAML_TRUE@	uri-c.o \
 @HAVE_OCAML_TRUE@	crypt-c.o \
+@HAVE_OCAML_TRUE@	config.cmx \
 @HAVE_OCAML_TRUE@	libdir.cmx \
 @HAVE_OCAML_TRUE@	common_gettext.cmx \
 @HAVE_OCAML_TRUE@	common_utils.cmx \
@@ -1525,6 +1529,8 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+config.ml: $(top_builddir)/config.status $(srcdir)/config.ml.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -36,9 +36,9 @@ let main () =
   (* Command line argument parsing - see cmdline.ml. *)
   let mode, arg,
     attach, cache, check_signature, curl, debug, delete, edit, fingerprint,
-    firstboot, run, format, gpg, hostname, install, list_long, network, output,
-    password_crypto, quiet, root_password, scrub, scrub_logfile, size, source,
-    upload =
+    firstboot, run, format, gpg, hostname, install, list_long, mkdirs,
+    network, output, password_crypto, quiet, root_password, scrub,
+    scrub_logfile, size, source, sync, upload =
     parse_cmdline () in
 
   (* Timestamped messages in ordinary, non-debug non-quiet mode. *)
@@ -106,9 +106,24 @@ let main () =
   let cache =
     match cache with
     | None -> None
-    | (Some dir) as cache ->
-      (try mkdir dir 0o755 with _ -> ());
-      if Sys.is_directory dir then cache else None in
+    | Some dir ->
+      (* Annoyingly Sys.is_directory throws an exception on failure
+       * (RHBZ#1022431).
+       *)
+      if (try Sys.is_directory dir with Sys_error _ -> false) then
+        Some dir
+      else (
+        (* Try to make the directory.  If that fails, warn and continue
+         * without any cache.
+         *)
+        try mkdir dir 0o755; Some dir
+        with exn ->
+          eprintf (f_"%s: warning: cache %s: %s\n") prog dir
+            (Printexc.to_string exn);
+          eprintf (f_"%s: disabling the cache\n%!") prog;
+          None
+      )
+  in
 
   (* Make the downloader and signature checker abstract data types. *)
   let downloader = Downloader.create ~debug ~curl ~cache in
@@ -210,7 +225,12 @@ let main () =
 
     Sigchecker.verify_detached sigchecker template sigfile in
 
-  let output, size, format, delete_output_file, resize_sparse =
+  (* Plan how to create the output.  This depends on:
+   * - did the user specify --output?
+   * - is the output a block device?
+   * - did the user specify --size?
+   *)
+  let output, size, format, delete_output_file, do_resize, resize_sparse =
     let is_block_device file =
       try (stat file).st_kind = S_BLK
       with Unix_error _ -> false
@@ -237,22 +257,22 @@ let main () =
       (* Dummy: The output file is never deleted in this case. *)
       let delete_output_file = ref false in
 
-      output, None, format, delete_output_file, false
+      output, None, format, delete_output_file, true, false
 
     (* Regular file output.  Note the file gets deleted. *)
     | _ ->
       (* Check the --size option. *)
-      let size =
+      let size, do_resize =
         let { Index_parser.size = default_size } = entry in
         match size with
-        | None -> default_size +^ headroom
+        | None -> default_size, false
         | Some size ->
           if size < default_size +^ headroom then (
             eprintf (f_"%s: --size is too small for this disk image, minimum size is %s\n")
               prog (human_size default_size);
             exit 1
           );
-          size in
+          size, true in
 
       (* Create the output file. *)
       let output, format =
@@ -262,6 +282,14 @@ let main () =
         | None, Some format -> sprintf "%s.%s" arg format, format
         | Some output, None -> output, "raw"
         | Some output, Some format -> output, format in
+
+      (* If the input format != output format then we must run virt-resize. *)
+      let do_resize =
+        let input_format =
+          match entry with
+          | { Index_parser.format = Some format } -> format
+          | { Index_parser.format = None } -> "raw" in
+        if input_format <> format then true else do_resize in
 
       msg (f_"Creating disk image: %s") output;
       let cmd =
@@ -286,25 +314,49 @@ let main () =
       in
       at_exit delete_file;
 
-      output, Some size, format, delete_output_file, true in
+      output, Some size, format, delete_output_file, do_resize, true in
 
-  let source =
-    (* Uncompress it to a temporary file. *)
+  (* Create xzcat/pxzcat command to uncompress from input to output. *)
+  let xzcat_command input output =
+    match Config.pxzcat with
+    | None -> sprintf "%s %s > %s" Config.xzcat input output
+    | Some pxzcat -> sprintf "%s %s -o %s" pxzcat input output
+  in
+
+  if not do_resize then (
+    (* If the user did not specify --size and the output is a regular
+     * file and the format is raw, then we just uncompress the template
+     * directly to the output file.  This is fast but less flexible.
+     *)
     let { Index_parser.file_uri = file_uri } = entry in
-    let tmpfile = Filename.temp_file "vbsrc" ".img" in
-    let cmd = sprintf "xzcat %s > %s" (quote template) (quote tmpfile) in
+    let cmd = xzcat_command template output in
     if debug then eprintf "%s\n%!" cmd;
     msg (f_"Uncompressing: %s") file_uri;
     let r = Sys.command cmd in
     if r <> 0 then (
       eprintf (f_"%s: error: failed to uncompress template\n") prog;
       exit 1
-    );
-    unlink_on_exit tmpfile;
-    tmpfile in
+    )
+  ) else (
+    (* If none of the above apply, uncompress to a temporary file and
+     * run virt-resize on the result.
+     *)
+    let tmpfile =
+      (* Uncompress it to a temporary file. *)
+      let { Index_parser.file_uri = file_uri } = entry in
+      let tmpfile = Filename.temp_file "vbsrc" ".img" in
+      let cmd = xzcat_command template tmpfile in
+      if debug then eprintf "%s\n%!" cmd;
+      msg (f_"Uncompressing: %s") file_uri;
+      let r = Sys.command cmd in
+      if r <> 0 then (
+        eprintf (f_"%s: error: failed to uncompress template\n") prog;
+        exit 1
+      );
+      unlink_on_exit tmpfile;
+      tmpfile in
 
-  (* Resize the source to the output file. *)
-  let () =
+    (* Resize the source to the output file. *)
     (match size with
     | None ->
       msg (f_"Running virt-resize to expand the disk")
@@ -329,13 +381,14 @@ let main () =
         (match lvexpand with
         | None -> ""
         | Some lvexpand -> sprintf " --lv-expand %s" (quote lvexpand))
-        (quote source) (quote output) in
+        (quote tmpfile) (quote output) in
     if debug then eprintf "%s\n%!" cmd;
     let r = Sys.command cmd in
     if r <> 0 then (
       eprintf (f_"%s: error: virt-resize failed\n") prog;
       exit 1
-    ) in
+    )
+  );
 
   (* Now mount the output disk so we can make changes. *)
   msg (f_"Opening the new disk");
@@ -522,6 +575,13 @@ exec >>%s 2>&1
     do_run ~display:cmd cmd
   );
 
+  (* Make directories. *)
+  List.iter (
+    fun dir ->
+      msg (f_"Making directory: %s") dir;
+      g#mkdir_p dir
+  ) mkdirs;
+
   (* Upload files. *)
   List.iter (
     fun (file, dest) ->
@@ -667,7 +727,8 @@ exec >>%s 2>&1
    * and therefore bypasses the host cache).  In general you should not
    * use cache=none.
    *)
-  Fsync.file output;
+  if sync then
+    Fsync.file output;
 
   (* Now that we've finished the build, don't delete the output file on
    * exit.
