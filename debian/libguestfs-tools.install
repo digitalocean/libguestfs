@@ -3,7 +3,10 @@ usr/share/man/man1/virt-*
 usr/share/man/*/man1/virt-*
 
 usr/share/bash-completion/completions/virt-*
+
 etc/libguestfs-tools.conf
+usr/share/man/man5/libguestfs-tools.conf*
+usr/share/man/*/man5/libguestfs-tools.conf*
 
 usr/bin/libguestfs-test-tool
 usr/share/man/man1/libguestfs-test-tool*
