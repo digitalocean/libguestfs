@@ -1461,6 +1461,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmx \
 @HAVE_OCAML_TRUE@	resize.cmx
 
 @HAVE_OCAML_TRUE@bin_SCRIPTS = virt-resize

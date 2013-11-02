@@ -157,6 +157,7 @@ and do_verify t args =
   import_key t;
 
   let status_file = Filename.temp_file "vbstat" ".txt" in
+  unlink_on_exit status_file;
   let cmd =
     sprintf "%s --verify%s --status-file %s %s"
         t.gpg (if t.debug then "" else " -q --logger-file /dev/null")
@@ -170,7 +171,6 @@ and do_verify t args =
 
   (* Check the fingerprint is who it should be. *)
   let status = read_whole_file status_file in
-  unlink status_file;
 
   let status = string_nsplit "\n" status in
   let fingerprint = ref "" in
@@ -183,7 +183,7 @@ and do_verify t args =
   ) status;
 
   if not (equal_fingerprints !fingerprint t.fingerprint) then (
-    eprintf (f_"virt-builder: error: fingerprint of signature does not match the expected fingerprint!\n     found fingerprint: %s\n  expected fingerprint: %s\n")
+    eprintf (f_"virt-builder: error: fingerprint of signature does not match the expected fingerprint!\n  found fingerprint: %s\n  expected fingerprint: %s\n")
       !fingerprint t.fingerprint;
     exit 1
   )
@@ -193,6 +193,7 @@ and import_key t =
   if not !key_imported && equal_fingerprints t.fingerprint default_fingerprint
   then (
     let filename, chan = Filename.open_temp_file "vbpubkey" ".asc" in
+    unlink_on_exit filename;
     output_string chan default_pubkey;
     close_out chan;
 
@@ -204,6 +205,34 @@ and import_key t =
       eprintf (f_"virt-builder: error: could not import public key\nUse the '-v' option and look for earlier error messages.\n");
       exit 1
     );
-    unlink filename;
     key_imported := true
+  )
+
+type csum_t = SHA512 of string
+
+let verify_checksum t (SHA512 csum) filename =
+  let csum_file = Filename.temp_file "vbcsum" ".txt" in
+  unlink_on_exit csum_file;
+  let cmd = sprintf "sha512sum %s | awk '{print $1}' > %s"
+    (quote filename) (quote csum_file) in
+  if t.debug then eprintf "%s\n%!" cmd;
+  let r = Sys.command cmd in
+  if r <> 0 then (
+    eprintf (f_"virt-builder: error: could not run sha512sum command to verify checksum\n");
+    exit 1
+  );
+
+  let csum_actual = read_whole_file csum_file in
+
+  let csum_actual =
+    let len = String.length csum_actual in
+    if len > 0 && csum_actual.[len-1] = '\n' then
+      String.sub csum_actual 0 (len-1)
+    else
+      csum_actual in
+
+  if csum <> csum_actual then (
+    eprintf (f_"virt-builder: error: checksum of template did not match the expected checksum!\n  found checksum: %s\n  expected checksum: %s\nTry:\n - Use the '-v' option and look for earlier error messages.\n - Delete the cache: virt-builder --delete-cache\n - Check no one has tampered with the website or your network!\n")
+      csum_actual csum;
+    exit 1
   )

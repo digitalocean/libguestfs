@@ -1508,6 +1508,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/random_seed.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/hostname.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/firstboot.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmx \
 @HAVE_OCAML_TRUE@	sysprep_operation.cmx \
 @HAVE_OCAML_TRUE@	$(patsubst %,sysprep_operation_%.cmx,$(operations)) \
 @HAVE_OCAML_TRUE@	main.cmx
