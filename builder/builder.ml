@@ -106,9 +106,24 @@ let main () =
   let cache =
     match cache with
     | None -> None
-    | (Some dir) as cache ->
-      (try mkdir dir 0o755 with _ -> ());
-      if Sys.is_directory dir then cache else None in
+    | Some dir ->
+      (* Annoyingly Sys.is_directory throws an exception on failure
+       * (RHBZ#1022431).
+       *)
+      if (try Sys.is_directory dir with Sys_error _ -> false) then
+        Some dir
+      else (
+        (* Try to make the directory.  If that fails, warn and continue
+         * without any cache.
+         *)
+        try mkdir dir 0o755; Some dir
+        with exn ->
+          eprintf (f_"%s: warning: cache %s: %s\n") prog dir
+            (Printexc.to_string exn);
+          eprintf (f_"%s: disabling the cache\n%!") prog;
+          None
+      )
+  in
 
   (* Make the downloader and signature checker abstract data types. *)
   let downloader = Downloader.create ~debug ~curl ~cache in
@@ -199,16 +214,23 @@ let main () =
 
   (* Check the signature of the file. *)
   let () =
-    let sigfile =
-      match entry with
-      | { Index_parser.signature_uri = None } -> None
-      | { Index_parser.signature_uri = Some signature_uri } ->
-        let sigfile, delete_on_exit =
-          Downloader.download downloader signature_uri in
-        if delete_on_exit then unlink_on_exit sigfile;
-        Some sigfile in
+    match entry with
+    (* New-style: Using a checksum. *)
+    | { Index_parser.checksum_sha512 = Some csum } ->
+      Sigchecker.verify_checksum sigchecker (Sigchecker.SHA512 csum) template
 
-    Sigchecker.verify_detached sigchecker template sigfile in
+    | { Index_parser.checksum_sha512 = None } ->
+      (* Old-style: detached signature. *)
+      let sigfile =
+        match entry with
+        | { Index_parser.signature_uri = None } -> None
+        | { Index_parser.signature_uri = Some signature_uri } ->
+          let sigfile, delete_on_exit =
+            Downloader.download downloader signature_uri in
+          if delete_on_exit then unlink_on_exit sigfile;
+          Some sigfile in
+
+      Sigchecker.verify_detached sigchecker template sigfile in
 
   let output, size, format, delete_output_file, resize_sparse =
     let is_block_device file =
@@ -265,8 +287,10 @@ let main () =
 
       msg (f_"Creating disk image: %s") output;
       let cmd =
-        sprintf "qemu-img create -f %s %s %Ld%s"
-          (quote format) (quote output) size
+        sprintf "qemu-img create -f %s%s %s %Ld%s"
+          (quote format)
+          (if format = "qcow2" then " -o preallocation=metadata" else "")
+          (quote output) size
           (if debug then "" else " >/dev/null 2>&1") in
       let r = Sys.command cmd in
       if r <> 0 then (
@@ -343,7 +367,8 @@ let main () =
 
     g#set_network network;
 
-    g#add_drive_opts ~format output;
+    (* The output disk is being created, so use cache=unsafe here. *)
+    g#add_drive_opts ~format ~cachemode:"unsafe" output;
 
     (* Attach ISOs, if we have any. *)
     List.iter (
@@ -657,6 +682,14 @@ exec >>%s 2>&1
   g#umount_all ();
   g#shutdown ();
   g#close ();
+
+  (* Because we used cache=unsafe when writing the output file, the
+   * file might not be committed to disk.  This is a problem if qemu is
+   * immediately used afterwards with cache=none (which uses O_DIRECT
+   * and therefore bypasses the host cache).  In general you should not
+   * use cache=none.
+   *)
+  Fsync.file output;
 
   (* Now that we've finished the build, don't delete the output file on
    * exit.

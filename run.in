@@ -23,7 +23,7 @@
 # With this script you can run all the virt tools without needing to
 # install them first.  You just have to do for example:
 #
-#   ./run ./inspector/virt-inspector [args ...]
+#   ./run virt-inspector [args ...]
 #
 # This works for any C program, virt tools, and most non-C bindings
 # and programs in the libguestfs distribution.
@@ -72,13 +72,9 @@ run: warning: has not been set automatically.
 EOF
 fi
 
-# Set the PATH to contain guestunmount (called by umount-local API)
-# and virt-resize (called by virt-builder).
-if [ -z "$PATH" ]; then
-    PATH="$b/fuse:$b/resize"
-else
-    PATH="$b/fuse:$b/resize:$PATH"
-fi
+# Set the PATH to contain all the libguestfs binaries.  There are a
+# lot of binaries, so a lot of path entries.
+PATH="$b/align:$b/builder:$b/cat:$b/df:$b/edit:$b/erlang:$b/fish:$b/format:$b/fuse:$b/rescue:$b/resize:$b/sparsify:$b/sysprep:$b/test-tool:$b/tools:$PATH"
 export PATH
 
 # Set LD_LIBRARY_PATH to contain library.
@@ -148,19 +144,13 @@ else
 fi
 export CLASSPATH
 
-# For Erlang.
+# For Erlang (note $PATH is adjusted above to include erl-guestfs).
 if [ -z "$ERL_LIBS" ]; then
     ERL_LIBS="$b/erlang"
 else
     ERL_LIBS="$b/erlang:$ERL_LIBS"
 fi
 export ERL_LIBS
-if [ -z "$PATH" ]; then
-    PATH="$b/erlang"
-else
-    PATH="$b/erlang:$PATH"
-fi
-export PATH
 
 # For Lua.
 export LUA=@LUA@
@@ -229,6 +219,7 @@ fi
 #    test fails
 #  - print how long it takes to run the test
 #  - timeout if the test takes too long to run
+#  - don't use timeout on RHEL 6 because it's broken (RHBZ#1025269)
 
 # Originally 1h, but that is not long enough to run the C API
 # tests on Koji.
@@ -239,11 +230,8 @@ timeout_kill=30s
 if timeout --help >/dev/null 2>&1; then
     # Does this version of timeout have the -k option?  (Not on RHEL 6)
     if timeout -k 10s 10s true >/dev/null 2>&1; then
-        timeout_k_opt="-k $timeout_kill"
+        timeout="timeout -k $timeout_kill $timeout_period"
     fi
-    # Timeout (SIGTERM) after $timeout_period.
-    # Then send a second SIGKILL $timeout_kill seconds later.
-    timeout="timeout $timeout_k_opt $timeout_period"
 fi
 
 pid=$$

@@ -126,13 +126,13 @@ Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate I<-a> options.
 
-ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、I<--format=..> オプションを使用します。
+ディスクイメージの形式は自動検知されます。 これを上書きして強制的に特定の形式を使用する場合、 I<--format=..> オプションを使用します。
 
 =item B<-a URI>
 
 =item B<--add URI>
 
-Add a remote disk.  See L<guestfish(1)/ADDING REMOTE STORAGE>.
+リモートディスクを追加します。 L<guestfish(1)/リモートストレージの追加> 参照。
 
 =item B<--append kernelopts>
 
@@ -150,28 +150,28 @@ libvirt を使用していると、指定された I<URI> に接続します。 
 
 =item B<--domain> guest
 
-名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの UUID が名前の代わりに使用されます。
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  名前の代わりに仮想マシンの UUID を使用できます。
 
 =item B<--format=raw|qcow2|..>
 
 =item B<--format>
 
-I<-a> オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、I<-a>
-オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで I<--format> を使用することにより、後続の I<-a>
+I<-a> オプションは標準状態でディスクイメージの形式を自動検知します。 これを使用することにより、コマンドラインで後続の I<-a>
+オプションのディスク形式を強制的に指定できます。 引数なしで I<--format> を使用することにより、 後続の I<-a>
 オプションに対して自動検知に戻せます。
 
 例:
 
  virt-rescue --format=raw -a disk.img
 
-C<disk.img> に対してローイメージを強制します（自動検出しません）。
+強制的に C<disk.img> を raw 形式にします (自動検出しません)。
 
  virt-rescue --format=raw -a disk.img --format -a another.img
 
-C<disk.img> に対してロー形式（自動検知なし）を強制し、C<another.img> に対して自動検知に戻します。
+強制的に C<disk.img> を raw 形式にし (自動検知なし)、 C<another.img> に対して自動検知に戻します。
 
-仮想マシンのディスクイメージが信頼できないロー形式であるならば、ディスク形式を指定するためにこのオプションを使用すべきです。これにより、悪意のある仮想マシンにより起こり得るセキュリティ問題を回避できます
-(CVE-2010-3851)。
+仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
+これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。
 
 =item B<-m MB>
 
@@ -184,7 +184,7 @@ megabytes.
 
 =item B<--network>
 
-仮想マシンにおいて QEMU ユーザーネットワークを有効にします。 L</NETWORK> 参照。
+仮想マシンにおいて QEMU のユーザーモードのネットワークを有効にします。 L</NETWORK> 参照。
 
 =item B<-r>
 
@@ -396,14 +396,15 @@ L<sh(1)> for details.
 This configuration file controls the default read-only or read-write mode
 (I<--ro> or I<--rw>).
 
-L<guestfish(1)/OPENING DISKS FOR READ AND WRITE> 参照。
+See L<libguestfs-tools.conf(5)>.
 
 =back
 
 =head1 関連項目
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-cat(1)>, L<virt-edit(1)>,
-L<virt-filesystems(1)>, L<http://libguestfs.org/>.
+L<virt-filesystems(1)>, L<libguestfs-tools.conf(5)>,
+L<http://libguestfs.org/>.
 
 =head1 著者
 

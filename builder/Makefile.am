@@ -27,6 +27,9 @@ EXTRA_DIST = \
 	website/README \
 	website/index \
 	website/index.asc \
+	website/centos-6.ks \
+	website/centos-6.sh \
+	website/centos-6.xz.sig \
 	website/debian-6.preseed \
 	website/debian-6.sh \
 	website/debian-6.xz.sig \
@@ -80,7 +83,10 @@ OBJECTS = \
 	$(top_builddir)/mllib/firstboot.cmx \
 	$(top_builddir)/mllib/crypt-c.o \
 	$(top_builddir)/mllib/crypt.cmx \
+	$(top_builddir)/mllib/fsync-c.o \
+	$(top_builddir)/mllib/fsync.cmx \
 	$(top_builddir)/mllib/password.cmx \
+	$(top_builddir)/mllib/config.cmx \
 	get_kernel.cmx \
 	downloader.cmx \
 	sigchecker.cmx \

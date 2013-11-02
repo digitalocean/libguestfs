@@ -254,7 +254,7 @@ L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>).
 
 =item B<-m dev[:mountpoint[:options[:fstype]]>
 
-=item B<--mount dev[:mountpoint[:options[:fstype]]]>
+=item B<--mount пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]>
 
 Mount the named partition or logical volume on the given mountpoint B<in the
 guest> (this has nothing to do with mountpoints in the host).
@@ -390,7 +390,7 @@ I<--no-fork>).
 This configuration file controls the default read-only or read-write mode
 (I<--ro> or I<--rw>).
 
-Див. L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+See L<libguestfs-tools.conf(5)>.
 
 =back
 
@@ -402,7 +402,8 @@ This configuration file controls the default read-only or read-write mode
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<guestunmount(1)>, L<fusermount(1)>, L<guestfish(1)>, L<virt-inspector(1)>,
-L<virt-cat(1)>, L<virt-edit(1)>, L<virt-tar(1)>, L<guestfs(3)/MOUNT LOCAL>,
+L<virt-cat(1)>, L<virt-edit(1)>, L<virt-tar(1)>,
+L<libguestfs-tools.conf(5)>, L<guestfs(3)/MOUNT LOCAL>,
 L<http://libguestfs.org/>, L<http://fuse.sf.net/>.
 
 =head1 АВТОРИ

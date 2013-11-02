@@ -1456,6 +1456,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/tTY.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/progress.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmx \
 @HAVE_OCAML_TRUE@	statvfs-c.o \
 @HAVE_OCAML_TRUE@	sparsify.cmx
 

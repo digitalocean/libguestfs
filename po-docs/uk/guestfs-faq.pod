@@ -263,9 +263,9 @@ L<http://koji.fedoraproject.org/koji/packageinfo?packageID=8391>
 
 =item RHEL 5
 
-The version shipped in official RHEL 5 is very old and should not be used
-except in conjunction with virt-v2v.  Use the up-to-date libguestfs 1.20
-package in EPEL 5: L<https://fedoraproject.org/wiki/EPEL>
+Версія, що постачається разом з офіційним RHEL 5 є дуже застарілою. Нею не
+варто користуватися без сполучення з virt-v2v. Скористайтеся пакунками
+libguestfs 1.20 з EPEL 5: L<https://fedoraproject.org/wiki/EPEL>
 
 =item RHEL 6
 
@@ -304,7 +304,7 @@ On Ubuntu only:
 
 You may need to add yourself to the C<kvm> group:
 
- sudo useradd -a -G kvm yourlogin
+ sudo usermod -a -G kvm yourlogin
 
 =over 4
 
@@ -315,8 +315,9 @@ L<http://packages.debian.org/search?keywords=guestfs&searchon=names&section=all&
 
 =item Debian Wheezy та пізніші версії (7+)
 
-Hilko Bengen supports libguestfs on Debian.  Official Debian packages are
-available: L<http://packages.debian.org/search?keywords=libguestfs>
+Супровід libguestfs у Debian здійснює Hilko Bengen. Ви можете скористатися
+офіційними пакунками Debian:
+L<http://packages.debian.org/search?keywords=libguestfs>
 
 =item Ubuntu
 
@@ -507,7 +508,7 @@ or a faster start up time:
 
 =over 4
 
-=item 1. (full featured)
+=item 1. (повний набір можливостей)
 
 Take C<appliance/packagelist.in> in the source, and comment out any features
 you don't actually care about.  For example if you never anticipate editing
@@ -521,13 +522,13 @@ Bundle this with your package and set C<$LIBGUESTFS_PATH> to point to it.
 Users will have to download this large appliance, but no dependencies are
 needed, and L<supermin-helper(1)> is not used.
 
-=item 4. (network access)
+=item 4. (доступ до мережі)
 
 Reconstruct and cache the appliance once during package install.  The Debian
 packaging currently works like this, but requires network access during
 package install.
 
-=item 5. (tests)
+=item 5. (тести)
 
 Don't run any tests during the build.  The build will be much faster, but
 also less likely to work correctly.

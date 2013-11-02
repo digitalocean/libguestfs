@@ -454,14 +454,13 @@ other Augeas functions.
 
  aug-defnode name expr val
 
-Defines a variable C<name> whose value is the result of evaluating C<expr>.
+その値が C<expr> を評価した結果である変数 C<name> を定義します。
 
 If C<expr> evaluates to an empty nodeset, a node is created, equivalent to
 calling L</aug-set> C<expr>, C<value>.  C<name> will be the nodeset
 containing that single node.
 
-On success this returns a pair containing the number of nodes in the
-nodeset, and a boolean flag if a node was created.
+成功した場合、ノードセットに含まれるノード数を含むペアが返されます。また、ノードが作成されたかどうかの論理フラグが返されます。
 
 =head2 aug-defvar
 
@@ -470,15 +469,14 @@ nodeset, and a boolean flag if a node was created.
 C<expr> を評価した結果の値である Augeas 変数 C<name> を定義します。 C<expr> が NULL ならば、 C<name>
 が定義されません。
 
-On success this returns the number of nodes in C<expr>, or C<0> if C<expr>
-evaluates to something which is not a nodeset.
+成功した場合、C<expr> にあるノード数が返されます。または、C<expr> がノードセット以外のものであると評価された場合、C<0>
+が返されます。
 
 =head2 aug-get
 
  aug-get augpath
 
-Look up the value associated with C<path>.  If C<path> matches exactly one
-node, the C<value> is returned.
+C<path> と関連づけられた値を検索します。C<path> がちょうど一つのノードと一致した場合、C<value> が返されます。
 
 =head2 aug-init
 
@@ -746,7 +744,7 @@ blkid コマンドのバージョン。
 
  blockdev-flushbufs device
 
-This tells the kernel to flush internal buffers associated with C<device>.
+C<device> と関連づけられている内部バッファーをフラッシュするようカーネルに指示します。
 
 これは L<blockdev(8)> コマンドを使用します。
 
@@ -1007,12 +1005,31 @@ be a problem.
 バグか機能か？次を見て決めてください:
 L<http://www.tuxera.com/community/ntfs-3g-faq/#posixfilenames1>
 
-This function resolves the true case of each element in the path and returns
-the case-sensitive path.
+L</case-sensitive-path> attempts to resolve the true case of each element in
+the path. It will return a resolved path if either the full path or its
+parent directory exists. If the parent directory exists but the full path
+does not, the case of the parent directory will be correctly resolved, and
+the remainder appended unmodified. For example, if the file
+C<"/Windows/System32/netkvm.sys"> exists:
 
-Thus L</case-sensitive-path> ("/Windows/System32")  might return
-C<"/WINDOWS/system32"> (the exact return value would depend on details of
-how the directories were originally created under Windows).
+=over 4
+
+=item L</case-sensitive-path> ("/windows/system32/netkvm.sys")
+
+"Windows/System32/netkvm.sys"
+
+=item L</case-sensitive-path> ("/windows/system32/NoSuchFile")
+
+"Windows/System32/NoSuchFile"
+
+=item L</case-sensitive-path> ("/windows/system33/netkvm.sys")
+
+I<ERROR>
+
+=back
+
+I<Note>: Because of the above behaviour, L</case-sensitive-path> cannot be
+used to check for the existence of a file.
 
 I<Note>: This function does not handle drive names, backslashes etc.
 

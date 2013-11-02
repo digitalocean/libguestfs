@@ -152,7 +152,7 @@ C<qcow2>.
 
 =item B<--convert> qcow2
 
-=item B<--convert> [other formats]
+=item B<--convert> [інші формати]
 
 Use C<output-format> as the format for the destination image.  If this is
 not specified, then the input format is used.

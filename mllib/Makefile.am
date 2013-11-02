@@ -27,11 +27,15 @@ SOURCES = \
 	common_gettext.ml \
 	common_utils.ml \
 	common_utils_tests.ml \
+	config.ml \
 	crypt-c.c \
 	crypt.ml \
 	crypt.mli \
 	firstboot.mli \
 	firstboot.ml \
+	fsync-c.c \
+	fsync.mli \
+	fsync.ml \
 	hostname.mli \
 	hostname.ml \
 	password.mli \
@@ -58,9 +62,11 @@ OBJECTS = \
 	$(top_builddir)/fish/guestfish-progress.o \
 	$(top_builddir)/fish/guestfish-uri.o \
 	tty-c.o \
+	fsync-c.o \
 	progress-c.o \
 	uri-c.o \
 	crypt-c.o \
+	config.cmx \
 	libdir.cmx \
 	common_gettext.cmx \
 	common_utils.cmx \
@@ -68,6 +74,7 @@ OBJECTS = \
 	hostname.cmx \
 	firstboot.cmx \
 	tTY.cmx \
+	fsync.cmx \
 	progress.cmx \
 	uRI.cmx \
 	crypt.cmx \

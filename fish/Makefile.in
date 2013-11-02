@@ -308,7 +308,8 @@ librc_protocol_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(librc_protocol_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" \
-	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(toolsconfdir)"
+	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(man5dir)" \
+	"$(DESTDIR)$(toolsconfdir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 = guestfish-cmds.$(OBJEXT) \
 	guestfish-completion.$(OBJEXT) guestfish-event-names.$(OBJEXT) \
@@ -412,6 +413,7 @@ am__can_run_installinfo = \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
 man1dir = $(mandir)/man1
+man5dir = $(mandir)/man5
 NROFF = nroff
 MANS = $(man_MANS)
 DATA = $(noinst_DATA) $(toolsconf_DATA)
@@ -1529,6 +1531,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 CLEANFILES = \
 	stamp-guestfish.pod \
+	stamp-libguestfs-tools.conf.pod \
 	stamp-virt-copy-in.pod \
 	stamp-virt-copy-out.pod \
 	stamp-virt-tar-in.pod \
@@ -1553,12 +1556,12 @@ BUILT_SOURCES = \
 	rc_protocol.c
 
 EXTRA_DIST = $(BUILT_SOURCES) rc_protocol.x guestfish.pod \
-	libguestfs-tools.conf virt-copy-in virt-copy-out virt-tar-in \
-	virt-tar-out virt-copy-in.pod virt-copy-out.pod \
-	virt-tar-in.pod virt-tar-out.pod test-a.sh test-add-domain.sh \
-	test-add-uri.sh test-copy.sh test-d.sh test-edit.sh \
-	test-escapes.sh test-events.sh test-find0.sh test-glob.sh \
-	test-inspect.sh test-mount-local.sh test-prep.sh \
+	libguestfs-tools.conf libguestfs-tools.conf.pod virt-copy-in \
+	virt-copy-out virt-tar-in virt-tar-out virt-copy-in.pod \
+	virt-copy-out.pod virt-tar-in.pod virt-tar-out.pod test-a.sh \
+	test-add-domain.sh test-add-uri.sh test-copy.sh test-d.sh \
+	test-edit.sh test-escapes.sh test-events.sh test-find0.sh \
+	test-glob.sh test-inspect.sh test-mount-local.sh test-prep.sh \
 	test-read-file.sh test-remote.sh test-remote-events.sh \
 	test-reopen.sh test-run.sh test-stringlist.sh test-tilde.sh \
 	test-upload-to-dir.sh
@@ -1650,6 +1653,7 @@ bin_SCRIPTS = virt-copy-in virt-copy-out virt-tar-in virt-tar-out
 # Manual pages.
 man_MANS = \
 	guestfish.1 \
+	libguestfs-tools.conf.5 \
 	virt-copy-in.1 \
 	virt-copy-out.1 \
 	virt-tar-in.1 \
@@ -1657,6 +1661,7 @@ man_MANS = \
 
 noinst_DATA = \
 	$(top_builddir)/html/guestfish.1.html \
+	$(top_builddir)/html/libguestfs-tools.conf.5.html \
 	$(top_builddir)/html/virt-copy-in.1.html \
 	$(top_builddir)/html/virt-copy-out.1.html \
 	$(top_builddir)/html/virt-tar-in.1.html \
@@ -2460,6 +2465,49 @@ uninstall-man1:
 	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
 	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
 	dir='$(DESTDIR)$(man1dir)'; $(am__uninstall_files_from_dir)
+install-man5: $(man_MANS)
+	@$(NORMAL_INSTALL)
+	@list1=''; \
+	list2='$(man_MANS)'; \
+	test -n "$(man5dir)" \
+	  && test -n "`echo $$list1$$list2`" \
+	  || exit 0; \
+	echo " $(MKDIR_P) '$(DESTDIR)$(man5dir)'"; \
+	$(MKDIR_P) "$(DESTDIR)$(man5dir)" || exit 1; \
+	{ for i in $$list1; do echo "$$i"; done;  \
+	if test -n "$$list2"; then \
+	  for i in $$list2; do echo "$$i"; done \
+	    | sed -n '/\.5[a-z]*$$/p'; \
+	fi; \
+	} | while read p; do \
+	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; echo "$$p"; \
+	done | \
+	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^5][0-9a-z]*$$,5,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
+	sed 'N;N;s,\n, ,g' | { \
+	list=; while read file base inst; do \
+	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
+	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man5dir)/$$inst'"; \
+	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man5dir)/$$inst" || exit $$?; \
+	  fi; \
+	done; \
+	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
+	while read files; do \
+	  test -z "$$files" || { \
+	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man5dir)'"; \
+	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man5dir)" || exit $$?; }; \
+	done; }
+
+uninstall-man5:
+	@$(NORMAL_UNINSTALL)
+	@list=''; test -n "$(man5dir)" || exit 0; \
+	files=`{ for i in $$list; do echo "$$i"; done; \
+	l2='$(man_MANS)'; for i in $$l2; do echo "$$i"; done | \
+	  sed -n '/\.5[a-z]*$$/p'; \
+	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^5][0-9a-z]*$$,5,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
+	dir='$(DESTDIR)$(man5dir)'; $(am__uninstall_files_from_dir)
 install-toolsconfDATA: $(toolsconf_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(toolsconf_DATA)'; test -n "$(toolsconfdir)" || list=; \
@@ -2663,7 +2711,7 @@ check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(SCRIPTS) $(MANS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(toolsconfdir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(man5dir)" "$(DESTDIR)$(toolsconfdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: $(BUILT_SOURCES)
@@ -2738,7 +2786,7 @@ install-info: install-info-am
 
 install-info-am:
 
-install-man: install-man1
+install-man: install-man1 install-man5
 
 install-pdf: install-pdf-am
 
@@ -2771,7 +2819,7 @@ ps-am:
 uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS uninstall-man \
 	uninstall-toolsconfDATA
 
-uninstall-man: uninstall-man1
+uninstall-man: uninstall-man1 uninstall-man5
 
 .MAKE: all check check-am install install-am install-strip
 
@@ -2784,14 +2832,14 @@ uninstall-man: uninstall-man1
 	install-data install-data-am install-dvi install-dvi-am \
 	install-exec install-exec-am install-html install-html-am \
 	install-info install-info-am install-man install-man1 \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip install-toolsconfDATA installcheck \
+	install-man5 install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip install-toolsconfDATA installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS \
 	uninstall-binSCRIPTS uninstall-man uninstall-man1 \
-	uninstall-toolsconfDATA
+	uninstall-man5 uninstall-toolsconfDATA
 
 
 -include $(top_builddir)/localenv
@@ -2852,6 +2900,17 @@ stamp-guestfish.pod: guestfish.pod guestfish-actions.pod guestfish-commands.pod 
 	  --insert $(srcdir)/guestfish-actions.pod:__ACTIONS__ \
 	  --insert $(srcdir)/guestfish-commands.pod:__FISH_COMMANDS__ \
 	  --insert $(srcdir)/guestfish-prepopts.pod:__PREPOPTS__ \
+	  --license GPLv2+ \
+	  $<
+	touch $@
+
+libguestfs-tools.conf.5 $(top_builddir)/html/libguestfs-tools.conf.5.html: stamp-libguestfs-tools.conf.pod
+
+stamp-libguestfs-tools.conf.pod: libguestfs-tools.conf.pod
+	$(PODWRAPPER) \
+	  --section 5 \
+	  --man libguestfs-tools.conf.5 \
+	  --html $(top_builddir)/html/libguestfs-tools.conf.5.html \
 	  --license GPLv2+ \
 	  $<
 	touch $@

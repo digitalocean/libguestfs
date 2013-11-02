@@ -1,3 +1,230 @@
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.24.1.
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Only warn about unknown fields in the index if -v option is used.
+	Allows us to add new fields in future without having pointless
+	warnings from old versions of virt-builder.
+
+	(cherry picked from commit 5280e3031be9d1f72d03510483fa22634b5d9af5)
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Allow checksum= as an alias for checksum[sha512]=.
+	This is for backwards compatibility with virt-builder 1.24.0 which
+	could not parse a key that contains square brackets and numbers.
+
+	This updates commit 4b73e0be29302da0ae8c5c79a51e770cbe6ed7cf.
+
+	(cherry picked from commit 8d14abb0df1e216682fa9c35bda3d4ecdb9b4dd2)
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add missing files to EXTRA_DIST.
+	(cherry picked from commit e9d908929fd87ef8adb6f95f35da35e39876f148)
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	./run: Disable timeouts in tests on RHEL 6.
+	Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=1025269
+
+	(cherry picked from commit 7113aee0b439b411602d8d7d4b03bf02bc91b800)
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: When debugging, print curl command before running it.
+	(cherry picked from commit b25e8da6d60875d1b7416558ecb24fe3e161654d)
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: index: Add checksum[sha512]=... option and deprecate template sigs.
+	We don't need to sign individual templates, provided the signed index
+	file contains the cryptographically secure checksums of the templates.
+	Since the index file cannot be interfered with and the checksums
+	cannot be spoofed, this is sufficient to ensure the integrity of the
+	templates.
+
+	Note the template signatures are now deprecated and will be removed in
+	libguestfs 1.26.  To avoid any backwards compatibility issues, I will
+	backport the relevant changes to the stable-1.24 branch.
+
+	Thanks Dennis Gilmore for pointing out that we could do this.
+
+	(cherry picked from commit 4b73e0be29302da0ae8c5c79a51e770cbe6ed7cf)
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add CentOS 6.4 guest.
+	(cherry picked from commit 276cde033c454e084e38c36af693c3fcad86281f)
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	./run: Fix massive thinko in $PATH setting.
+	This fixes commit 76c20d761b24195b3cd7a620524ae84ed0ab6ab3.
+
+	(cherry picked from commit 3b746ee796770302893e9aee20d077c1f67e0c01)
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Whitespace change in error message.
+	(cherry picked from commit 984b024c5a74dd47b99dee128f8709dd36e56fb1)
+
+	builder: Be more careful about deleting temporary files on exit.
+	(cherry picked from commit 124f20a1ca49749af40f1052bb9506ec9a8b7046)
+
+	builder: Whitespace fix in Index_parser module.
+	(cherry picked from commit 9ac076c269f3396a01c699fb71ccb32c00bed6ca)
+
+2013-11-01  Matthew Booth  <mbooth@redhat.com>
+
+	docs: guestfs_case_sensitive_path returns error on non-existent path
+	(cherry picked from commit 12e0e3fb0948d9e2975f2bfa596d068d83b717fa)
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	./run: Adjust $PATH to include all libguestfs binaries.
+	Instead of typing:
+
+	  ./run ./fish/guestfish ...
+
+	you can now use:
+
+	  ./run guestfish ...
+
+	This is shorter, but there are also two good reasons for this change:
+	It never made any sense to run the system-installed guestfish (or
+	other) binary.  It would be unlikely to work.  Also binaries in
+	libguestfs should be able to call other binaries freely without adding
+	special exceptions (which we had before this change).
+
+	(cherry picked from commit 76c20d761b24195b3cd7a620524ae84ed0ab6ab3)
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Don't fail if ~/.cache doesn't exist (RHBZ#1022431).
+	(cherry picked from commit 2add5c9295c704738fbe183463243d4b65392bab)
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Copy-editing on documentation.
+	Plus some ideas added to TODO file.
+
+	(cherry picked from commit dd5959cd8875496594df0fdbb8a00cbe6618c9ee)
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Fix two problems in --help output.
+	(cherry picked from commit b3ab3b452ac9654ec9460e0eb881839432a38928)
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: xz is required.
+	It is needed for libguestfs-make-fixed-appliance and many other places.
+
+	(cherry picked from commit 2a76aa22c7105aa165d8fee6360ca6dbaf4027c3)
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	mllib: Create config.ml from configure and use it for --version options.
+	Also don't internationalize the output of the --version option, as
+	that isn't useful.
+
+	(cherry picked from commit 5b89dd4aa1e918890c5958b96857a6c249203dbc)
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	configure: Use AC_PATH_PROG{,S} for external programs used by the library.
+	(cherry picked from commit d6e5a6546afeb1554e676e5a4197002559f6cde7)
+
+2013-10-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.24.0.
+	New stable branch.
+
+	appliance: When valgrinding daemon + error path, sleep so valgrind messages are seen.
+
+	appliance: Add comments to init script.
+
+	resize, builder: Improve speed by using cache=unsafe on newly created files.
+	However because qemu might open these files immediately afterwards
+	using cache=none, we have to sync the file before exiting.
+
+	resize: Rearrange objects.
+	This is just build refactoring.
+
+2013-10-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	RHEL 5: Don't use 'truncate' command in tests.
+	Use 'guestfish sparse' instead, which is roughly equivalent.
+
+	See commit ef1514aa1e0a099d71cbb7d2c5f24f9f32e1939d
+	and commit 39df80dcc0e485e69048bddbf33c259ce532e50d.
+
+2013-10-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	Finalize release notes for libguestfs 1.24 release.
+
+	Update PO files from Transifex.
+
+	Update ROADMAP.
+
+	API support: Fix website directory for new location.
+
+	Update API support.
+
+	Update TODO.
+
+	Add man page for /etc/libguestfs-tools.conf (RHBZ#1019889).
+	Add a man page to document this configuration file.  This is
+	required by some distros, eg. Debian and RHEL.
+
+	Use qemu-img -o preallocation=metadata where possible.
+	When format is qcow2 and we're *not* using a backing disk, we can use
+	preallocation=metadata for better performance.
+
+2013-10-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: CVE-2013-4419: Fix insecure temporary directory handling for remote guestfish (RHBZ#1016960).
+	When using the guestfish --remote or guestfish --listen options,
+	guestfish would create a socket in a known location
+	(/tmp/.guestfish-$UID/socket-$PID).
+
+	The location has to be a known one in order for both ends to
+	communicate.  However no checking was done that the containing
+	directory (/tmp/.guestfish-$UID) is owned by the user.  Thus another
+	user could create this directory and potentially modify sockets owned
+	by another user's guestfish client or server.
+
+	This commit fixes the issue by creating the directory unconditionally,
+	and then checking that the directory has the correct owner and
+	permissions, thus preventing another user from creating the directory
+	first.
+
+	If guestfish sees a suspicious socket directory it will print an error
+	like this and exit with an error status:
+
+	  guestfish: '/tmp/.guestfish-1000' is not a directory or has insecure owner or permissions
+
+	Thanks: Michael Scherer for discovering this issue.
+
+	Version 2:
+	 - Add assigned CVE number.
+	 - Update documentation.
+
+2013-10-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: When doing maintainer test for new guests, test adding a user account.
+
+	launch: libvirt: Add guestfs-<random> name to the handle.
+	This is so we can display the random name in debug messages.
+
+2013-10-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: useradd -> usermod.
+	This fixes commit dd554d94ad2f381c37c4a5229502963058c2c9f4.
+
 2013-10-15  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.23.33.

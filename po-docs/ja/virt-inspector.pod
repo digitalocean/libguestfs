@@ -66,7 +66,7 @@ Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate I<-a> options.
 
-ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、I<--format=..> オプションを使用します。
+ディスクイメージの形式は自動検知されます。 これを上書きして強制的に特定の形式を使用する場合、 I<--format=..> オプションを使用します。
 
 =item B<-c URI>
 
@@ -82,14 +82,12 @@ at all.
 
 =item B<--domain> guest
 
-名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの UUID が名前の代わりに使用されます。
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  名前の代わりに仮想マシンの UUID を使用できます。
 
 =item B<--echo-keys>
 
-When prompting for keys and passphrases, virt-inspector normally turns
-echoing off so you cannot see what you are typing.  If you are not worried
-about Tempest attacks and there is no one else in the room you can specify
-this flag to see what you are typing.
+キーやパスフレーズを入力するとき、通常 virt-inspector はエコーを無効化します。 そのため、入力内容を確認できません。
+テンペスト攻撃の心配がなく、 部屋に誰も居なければ、 入力内容を確認するためにこのフラグを指定できます。
 
 =item B<--format=raw|qcow2|..>
 
@@ -107,8 +105,7 @@ the format is always specified.
 
 =item B<--keys-from-stdin>
 
-標準入力からキーまたはパスフレーズのパラメーターを読み込みます。標準で C</dev/tty>
-を開いているユーザーからパスフレーズを読み込もうとします。
+標準入力からキーまたはパスフレーズのパラメーターを読み込みます。 標準で C</dev/tty> を開いているユーザーから読み込もうとします。
 
 =item B<-v>
 

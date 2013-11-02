@@ -2,7 +2,7 @@
 
 =head1 名前
 
-guestfish - the guest filesystem shell
+guestfish - ゲスト・ファイルシステム・シェル
 
 =head1 書式
 
@@ -22,17 +22,17 @@ guestfish - the guest filesystem shell
 
 =head1 警告
 
-guestfish
-を読み書きモードで動作中の仮想マシンにおいて使用することは、ディスク破損を引き起こす可能性があり、非常に危険です。ディスクイメージまたは仮想マシンが稼働中であるならば、安全に
-guestfish を使用するために I<--ro> (読み込み専用) オプションを使用してください。
+guestfish を読み書きモードで動作中の仮想マシンにおいて使用すると、 ディスク破損を引き起こす可能性があり、非常に危険です。
+ディスクイメージまたは仮想マシンが動作中である場合、 安全に guestfish を使用するために I<--ro> (読み込み専用)
+オプションを使用します。
 
 =head1 説明
 
-guestfish は仮想マシンのファイルシステムを検査および変更するためのシェルおよびコマンドラインツールです。libguestfs
-を使用し、guestfs API の機能のすべてを利用します。L<guestfs(3)> を参照してください。
+guestfish は仮想マシンのファイルシステムを検査および変更するために 使用するシェルおよびコマンドラインツールです。 これは
+libguestfs を使用し、 guestfs API のすべての機能を提供します。 詳細は L<guestfs(3)> を参照してください。
 
-guestfish はシェルスクリプトまたはコマンドラインから対話的に libguestfs API
-への構造的なアクセスを提供します。壊れた仮想マシンイメージを救出したいならば、 L<virt-rescue(1)> コマンドを参照してください。
+guestfish は、シェルスクリプト、コマンドライン、対話式シェルから libguestfs API への構造的なアクセスを提供します。
+壊れた仮想マシンイメージを救出したい場合、 L<virt-rescue(1)> コマンドを考えてください。
 
 =head1 例
 
@@ -40,12 +40,11 @@ guestfish はシェルスクリプトまたはコマンドラインから対話�
 
  $ guestfish
  
- Welcome to guestfish, the guest filesystem shell for
- editing virtual machine filesystems.
- 
- 入力: コマンド一覧は 'help'
-       マニュアルを読むには 'man'
-       シェルを終了するには 'quit'
+guestfish へようこそ。仮想マシンのファイルシステムを
+編集するためのゲスト・ファイルシステム・シェルです。
+ 入力: コマンド一覧の表示は 'help'
+       マニュアルの参照は 'man'
+       シェルの終了は 'quit'
  
  ><fs> add-ro disk.img
  ><fs> run
@@ -108,7 +107,7 @@ C</boot/grub/grub.conf> を対話的に編集します:
 
  guestfish --ro -d libvirt-domain -i cat /etc/group
 
-対話的に C</boot/grub/grub.conf> を編集するもう一つの方法は次のとおりです:
+次のように対話的に C</boot/grub/grub.conf> を編集することもできます:
 
  guestfish --rw -a disk.img -i edit /boot/grub/grub.conf
 
@@ -124,17 +123,17 @@ ext2 フォーマット済みパーティションを含む 100MB ディスク�
 
 =head2 準備済みディスクを用いた起動
 
-一つの ext2 フォーマット済みパーティションを含む C<test1.img> という 100MB ディスクを作成するもう一つの方法です:
+一つの ext2 フォーマット済みパーティションを含む C<test1.img> という 100MB ディスクを作成するもう一つの方法:
 
  guestfish -N fs
 
-利用可能なものを一覧表示するには:
+利用可能なものを一覧表示する方法:
 
  guestfish -N help | less
 
-=head2 Remote drives
+=head2 リモートドライブ
 
-Access a remote disk using ssh:
+SSH を使用してリモートディスクにアクセスします:
 
  guestfish -a ssh://example.com/path/to/disk.img
 
@@ -157,13 +156,13 @@ Access a remote disk using ssh:
 
 =item B<--cmd-help>
 
-利用可能な available guestfish コマンドをすべて一覧表示します。
+すべての利用可能な guestfish コマンドを一覧表示します。
 
 =item B<-h cmd>
 
 =item B<--cmd-help cmd>
 
-あるコマンド C<cmd> の詳細なヘルプを表示します。
+単一のコマンド C<cmd> の詳細なヘルプを表示します。
 
 =item B<-a image>
 
@@ -171,65 +170,60 @@ Access a remote disk using ssh:
 
 ブロックデバイスまたは仮想マシンイメージをシェルに追加します。
 
-ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、I<--format=..> オプションを使用します。
+ディスクイメージの形式は自動検知されます。 これを上書きして強制的に特定の形式を使用する場合、 I<--format=..> オプションを使用します。
 
-Using this flag is mostly equivalent to using the C<add> command, with
-C<readonly:true> if the I<--ro> flag was given, and with C<format:...> if
-the I<--format=...> flag was given.
+このフラグを使用することは C<add> コマンドを使用することとほぼ同じです。 I<--ro>
+フラグが指定された場合、C<readonly:true> と同じです。 I<--format=...>
+フラグが指定された場合、C<format:...> と同じです。
 
 =item B<-a URI>
 
 =item B<--add URI>
 
-Add a remote disk.  See L</ADDING REMOTE STORAGE>.
+リモートディスクを追加します。 L</リモートストレージの追加> 参照。
 
 =item B<-c URI>
 
 =item B<--connect URI>
 
-When used in conjunction with the I<-d> option, this specifies the libvirt
-URI to use.  The default is to use the default libvirt connection.
+ I<-d> オプションと同時に使用するとき、 これは使用する libvirt URI を指定します。 標準状態で標準の libvirt
+接続を使用します。
 
 =item B<--csh>
 
-If using the I<--listen> option and a csh-like shell, use this option.  See
-section L</REMOTE CONTROL AND CSH> below.
+I<--listen> オプションと csh 系シェルを使用している場合、 このオプションを使用します。 以下の L</リモート制御と csh>
+のセクションを参照してください。
 
 =item B<-d libvirt-domain>
 
 =item B<--domain libvirt-domain>
 
-Add disks from the named libvirt domain.  If the I<--ro> option is also
-used, then any libvirt domain can be used.  However in write mode, only
-libvirt domains which are shut down can be named here.
+名前付き libvirt 仮想マシンからディスクを追加します。 I<--ro> オプションも使用されている場合、すべての libvirt
+仮想マシンを使用できます。 しかしながら、書き込みモードでは、 停止状態の libvirt 仮想マシンのみ指定できます。
 
-Domain UUIDs can be used instead of names.
+名前の代わりに仮想マシンの UUID を使用できます。
 
-Using this flag is mostly equivalent to using the C<add-domain> command,
-with C<readonly:true> if the I<--ro> flag was given, and with C<format:...>
-if the I<--format=...> flag was given.
+このフラグを使用することは、C<add-domain> コマンドを使用することとほぼ同等です。 I<--ro>
+フラグを指定した場合、C<readonly:true> が付きます。 I<--format=...> フラグを指定した場合、C<format:...>
+が付きます。
 
 =item B<-D>
 
 =item B<--no-dest-paths>
 
-Don't tab-complete paths on the guest filesystem.  It is useful to be able
-to hit the tab key to complete paths on the guest filesystem, but this
-causes extra "hidden" guestfs calls to be made, so this option is here to
-allow this feature to be disabled.
+ゲストのファイルシステムのパスをタブ補完しません。 この機能は、ゲストのファイルシステムのパスを補完する ためにタブキーを使えるようになり、有用です。
+しかし、別の「隠し」guestfs コールを呼び出す可能性があります。 そのため、この機能を無効化するために、このオプションがあります。
 
 =item B<--echo-keys>
 
-When prompting for keys and passphrases, guestfish normally turns echoing
-off so you cannot see what you are typing.  If you are not worried about
-Tempest attacks and there is no one else in the room you can specify this
-flag to see what you are typing.
+キーやパスフレーズを入力するとき、通常 guestfish はエコーを無効化します。 そのため、入力内容を確認できません。 テンペスト攻撃の心配がなく、
+部屋に誰も居なければ、 入力内容を確認するためにこのフラグを指定できます。
 
 =item B<-f file>
 
 =item B<--file file>
 
-C<file> からコマンドを読み込みます。  純粋な guestfish スクリプトを書くには、以下を使用します:
+C<file> からコマンドを読み込みます。 純粋な guestfish スクリプトを書く場合、以下を使用します:
 
  #!/usr/bin/guestfish -f
 
@@ -237,105 +231,95 @@ C<file> からコマンドを読み込みます。  純粋な guestfish スク�
 
 =item B<--format>
 
-I<-a> オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、I<-a>
-オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで I<--format> を使用することにより、後続の I<-a>
+I<-a> オプションは標準状態でディスクイメージの形式を自動検知します。 これを使用することにより、コマンドラインで後続の I<-a>
+オプションのディスク形式を強制的に指定できます。 引数なしで I<--format> を使用することにより、 後続の I<-a>
 オプションに対して自動検知に戻せます。
 
 例:
 
  guestfish --format=raw -a disk.img
 
-C<disk.img> に対してローイメージを強制します（自動検出しません）。
+強制的に C<disk.img> を raw 形式にします (自動検出しません)。
 
  guestfish --format=raw -a disk.img --format -a another.img
 
-C<disk.img> に対してロー形式（自動検知なし）を強制し、C<another.img> に対して自動検知に戻します。
+強制的に C<disk.img> を raw 形式にし (自動検知なし)、 C<another.img> に対して自動検知に戻します。
 
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (CVE-2010-3851).  See also L</add>.
+仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
+これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。 L</add> 参照。
 
 =item B<-i>
 
 =item B<--inspector>
 
-Using L<virt-inspector(1)> code, inspect the disks looking for an operating
-system and mount filesystems as they would be mounted on the real virtual
-machine.
+L<virt-inspector(1)> コードを使用すると、 オペレーティングシステムを判定するためにディスクを検査します。
+また、実際の仮想マシンにマウントすることと同じように ファイルシステムをマウントします。
 
-Typical usage is either:
+一般的な使用法は次のどちらかです:
 
  guestfish -d myguest -i
 
-(for an inactive libvirt domain called I<myguest>), or:
+(I<myguest> という停止状態の libvirt 仮想マシンの場合)、または:
 
  guestfish --ro -d myguest -i
 
-(for active domains, readonly), or specify the block device directly:
+(動作中の仮想マシンの場合、読み込み専用)、 またはブロックデバイスを直接指定します:
 
  guestfish --rw -a /dev/Guests/MyGuest -i
 
-Note that the command line syntax changed slightly over older versions of
-guestfish.  You can still use the old syntax:
+コマンドライン構文が古いバージョンの guestfish から少し変更されたことに注意してください。 まだ古い構文を使用することができます:
 
  guestfish [--ro] -i disk.img
 
  guestfish [--ro] -i libvirt-domain
 
-Using this flag is mostly equivalent to using the C<inspect-os> command and
-then using other commands to mount the filesystems that were found.
+このフラグを使用することは、 C<inspect-os> コマンドを使用することとほぼ同じです。 検出されたファイルシステムをマウントするために
+他のコマンドを使用します。
 
 =item B<--keys-from-stdin>
 
-標準入力からキーまたはパスフレーズのパラメーターを読み込みます。標準で C</dev/tty>
-を開いているユーザーからパスフレーズを読み込もうとします。
+標準入力からキーまたはパスフレーズのパラメーターを読み込みます。 標準で C</dev/tty> を開いているユーザーから読み込もうとします。
 
 =item B<--listen>
 
-Fork into the background and listen for remote commands.  See section
-L</REMOTE CONTROL GUESTFISH OVER A SOCKET> below.
+バックグラウンドにフォークし、リモートコマンドをリッスンします。 以下の L</guestfish のソケット経由のリモート制御 > 参照。
 
 =item B<--live>
 
-Connect to a live virtual machine.  (Experimental, see
-L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>).
+動作中の仮想マシンに接続します。 (実験的、L<guestfs(3)/ATTACHING TO RUNNING DAEMONS> 参照)。
 
 =item B<-m dev[:mountpoint[:options[:fstype]]]>
 
 =item B<--mount dev[:mountpoint[:options[:fstype]]]>
 
-Mount the named partition or logical volume on the given mountpoint.
+指定されたマウントポイントにある、 名前付きパーティションまたは論理ボリュームをマウントします。
 
-マウントポイントが省略されると、初期値は C</> です。
+マウントポイントが省略された場合、標準で C</> になります。
 
-多くのコマンドが動作させる前に、何かを C</> にマウントする必要があります。
+多くのコマンドは動作させる前に、何かを C</> にマウントする必要があります。
 
-I<-m> または I<--mount> オプションが指定されると、仮想マシンが自動的に起動します。
+何らかの I<-m> または I<--mount> オプションが指定されると、 仮想マシンが自動的に起動されます。
 
-If you don't know what filesystems a disk image contains, you can either run
-guestfish without this option, then list the partitions, filesystems and LVs
-available (see L</list-partitions>, L</list-filesystems> and L</lvs>
-commands), or you can use the L<virt-filesystems(1)> program.
+仮想マシンのディスクイメージに含まれるファイルシステムが不明な場合、 guestfish をこのオプションなしで実行することもできます。
+そうすると、利用可能なパーティション、ファイルシステム、 論理ボリューム (LVM) の一覧が表示されます (L</list-partitions>,
+L</list-filesystems>, L</lvs> コマンド参照)。 または、 L<virt-filesystems(1)>
+コマンドを使用することもできます。
 
-The third (and rarely used) part of the mount parameter is the list of mount
-options used to mount the underlying filesystem.  If this is not given, then
-the mount options are either the empty string or C<ro> (the latter if the
-I<--ro> flag is used).  By specifying the mount options, you override this
-default choice.  Probably the only time you would use this is to enable ACLs
-and/or extended attributes if the filesystem can support them:
+マウントパラメーターの三番目の (ほとんど使用されない) 項目は、 バックエンドのファイルシステムをマウントするために使用される
+マウントオプションの一覧です。 これが指定されていない場合、 マウントオプションは空文字列または C<ro> (I<--ro>
+フラグが使用されている場合) になります。
 
  -m /dev/sda1:/:acl,user_xattr
 
-Using this flag is equivalent to using the C<mount-options> command.
+このフラグを使用することは、 C<mount-options> コマンドを使用することと同等です。
 
-The fourth part of the parameter is the filesystem driver to use, such as
-C<ext3> or C<ntfs>. This is rarely needed, but can be useful if multiple
-drivers are valid for a filesystem (eg: C<ext2> and C<ext3>), or if
-libguestfs misidentifies a filesystem.
+パラメーターの四番目の項目は使用するファイルシステムドライバー (C<ext3> や C<ntfs> など) です。 これはほとんど必要ありません。
+しかし、複数のドライバーがファイルシステムに対して有効である場合 (例: C<ext2> と C<ext3>)、 または libguestfs
+がファイルシステムを誤検知している場合、 これは有用です。
 
 =item B<--network>
 
-Enable QEMU user networking in the guest.
+仮想マシンにおいて QEMU のユーザーモードのネットワークを有効にします。
 
 =item B<-N [filename=]type>
 
@@ -343,27 +327,25 @@ Enable QEMU user networking in the guest.
 
 =item B<-N help>
 
-Prepare a fresh disk image formatted as "type".  This is an alternative to
-the I<-a> option: whereas I<-a> adds an existing disk, I<-N> creates a
-preformatted disk with a filesystem and adds it.  See L</PREPARED DISK
-IMAGES> below.
+"type" としてフォーマットされた新しいディスクイメージを準備します。 これは I<-a> オプションの代わりになります。 I<-a>
+は既存のディスクを追加するのに対して、 I<-N> はファイルシステムの準備済みディスクを作成し、追加します。 以下の L</準備済みディスクイメージ>
+を参照してください。
 
 =item B<-n>
 
 =item B<--no-sync>
 
-Disable autosync.  This is enabled by default.  See the discussion of
-autosync in the L<guestfs(3)> manpage.
+自動同期を無効化します。 これは標準で有効化されています。 L<guestfs(3)> マニュアルページの自動同期に関する記載を 参照してください。
 
 =item B<--pipe-error>
 
-コマンドのパイプ (以下の L</PIPES> 参照) への書き込みに失敗すると、コマンドはエラーを返します。
+コマンドのパイプ (以下の L</パイプ> 参照) への書き込みに失敗した場合、 このコマンドがエラーを返します。
 
 The default (also for historical reasons) is to ignore such errors so that:
 
  ><fs> command_with_lots_of_output | head
 
-エラーを与えません。
+エラーは渡されません。
 
 =item B<--progress-bars>
 
@@ -916,7 +898,7 @@ error in non-interactive mode (scripts, commands given on the command line).
 If you prefix a command with a I<-> character, then that command will not
 cause guestfish to exit, even if that (one) command returns an error.
 
-=head1 REMOTE CONTROL GUESTFISH OVER A SOCKET
+=head1 guestfish のソケット経由のリモート制御
 
 Guestfish can be remote-controlled over a socket.  This is useful
 particularly in shell scripts where you want to make several different
@@ -966,6 +948,9 @@ C</tmp/.guestfish-$UID/socket-$PID>, where C<$UID> is the effective user ID
 of the process, and C<$PID> is the process ID of the server.
 
 Guestfish client and server versions must match exactly.
+
+Older versions of guestfish were vulnerable to CVE-2013-4419 (see
+L<guestfs(3)/CVE-2013-4419>).  This is fixed in the current version.
 
 =head2 USING REMOTE CONTROL ROBUSTLY FROM SHELL SCRIPTS
 
@@ -1448,7 +1433,7 @@ See L</LIBGUESTFS_CACHEDIR>, L</LIBGUESTFS_TMPDIR>.
 This configuration file controls the default read-only or read-write mode
 (I<--ro> or I<--rw>).
 
-See L</OPENING DISKS FOR READ AND WRITE>.
+See L<libguestfs-tools.conf(5)>.
 
 =item $HOME/.guestfish
 
@@ -1504,7 +1489,8 @@ L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
 L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
 L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
 L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
-L<virt-win-reg(1)>, L<display(1)>, L<hexedit(1)>, L<supermin-helper(8)>.
+L<virt-win-reg(1)>, L<libguestfs-tools.conf(5)>, L<display(1)>,
+L<hexedit(1)>, L<supermin-helper(8)>.
 
 =head1 著者
 

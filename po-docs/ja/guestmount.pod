@@ -164,30 +164,29 @@ program.
 
 ブロックデバイスまたは仮想マシンイメージを追加します。
 
-ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、I<--format=..> オプションを使用します。
+ディスクイメージの形式は自動検知されます。 これを上書きして強制的に特定の形式を使用する場合、 I<--format=..> オプションを使用します。
 
 =item B<-a URI>
 
 =item B<--add URI>
 
-Add a remote disk.  See L<guestfish(1)/ADDING REMOTE STORAGE>.
+リモートディスクを追加します。 L<guestfish(1)/リモートストレージの追加> 参照。
 
 =item B<-c URI>
 
 =item B<--connect URI>
 
-When used in conjunction with the I<-d> option, this specifies the libvirt
-URI to use.  The default is to use the default libvirt connection.
+ I<-d> オプションと同時に使用するとき、 これは使用する libvirt URI を指定します。 標準状態で標準の libvirt
+接続を使用します。
 
 =item B<-d libvirt-domain>
 
 =item B<--domain libvirt-domain>
 
-Add disks from the named libvirt domain.  If the I<--ro> option is also
-used, then any libvirt domain can be used.  However in write mode, only
-libvirt domains which are shut down can be named here.
+名前付き libvirt 仮想マシンからディスクを追加します。 I<--ro> オプションも使用されている場合、すべての libvirt
+仮想マシンを使用できます。 しかしながら、書き込みモードでは、 停止状態の libvirt 仮想マシンのみ指定できます。
 
-Domain UUIDs can be used instead of names.
+名前の代わりに仮想マシンの UUID を使用できます。
 
 =item B<--dir-cache-timeout N>
 
@@ -203,23 +202,20 @@ requests, only cache existing ones.
 
 =item B<--echo-keys>
 
-When prompting for keys and passphrases, guestfish normally turns echoing
-off so you cannot see what you are typing.  If you are not worried about
-Tempest attacks and there is no one else in the room you can specify this
-flag to see what you are typing.
+キーやパスフレーズを入力するとき、通常 guestfish はエコーを無効化します。 そのため、入力内容を確認できません。 テンペスト攻撃の心配がなく、
+部屋に誰も居なければ、 入力内容を確認するためにこのフラグを指定できます。
 
 =item B<--format=raw|qcow2|..>
 
 =item B<--format>
 
-I<-a> オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、I<-a>
-オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで I<--format> を使用することにより、後続の I<-a>
+I<-a> オプションは標準状態でディスクイメージの形式を自動検知します。 これを使用することにより、コマンドラインで後続の I<-a>
+オプションのディスク形式を強制的に指定できます。 引数なしで I<--format> を使用することにより、 後続の I<-a>
 オプションに対して自動検知に戻せます。
 
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (CVE-2010-3851).  See also
-L<guestfs(3)/guestfs_add_drive_opts>.
+仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
+これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。
+L</guestfs(3)/guestfs_add_drive_opts> 参照。
 
 =item B<--fuse-help>
 
@@ -233,19 +229,16 @@ Display help on special FUSE options (see I<-o> below).
 
 =item B<--inspector>
 
-Using L<virt-inspector(1)> code, inspect the disks looking for an operating
-system and mount filesystems as they would be mounted on the real virtual
-machine.
+L<virt-inspector(1)> コードを使用すると、 オペレーティングシステムを判定するためにディスクを検査します。
+また、実際の仮想マシンにマウントすることと同じように ファイルシステムをマウントします。
 
 =item B<--keys-from-stdin>
 
-標準入力からキーまたはパスフレーズのパラメーターを読み込みます。標準で C</dev/tty>
-を開いているユーザーからパスフレーズを読み込もうとします。
+標準入力からキーまたはパスフレーズのパラメーターを読み込みます。 標準で C</dev/tty> を開いているユーザーから読み込もうとします。
 
 =item B<--live>
 
-Connect to a live virtual machine.  (Experimental, see
-L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>).
+動作中の仮想マシンに接続します。 (実験的、L<guestfs(3)/ATTACHING TO RUNNING DAEMONS> 参照)。
 
 =item B<-m dev[:mountpoint[:options[:fstype]]>
 
@@ -257,19 +250,15 @@ guest> (this has nothing to do with mountpoints in the host).
 If the mountpoint is omitted, it defaults to C</>.  You have to mount
 something on C</>.
 
-The third (and rarely used) part of the mount parameter is the list of mount
-options used to mount the underlying filesystem.  If this is not given, then
-the mount options are either the empty string or C<ro> (the latter if the
-I<--ro> flag is used).  By specifying the mount options, you override this
-default choice.  Probably the only time you would use this is to enable ACLs
-and/or extended attributes if the filesystem can support them:
+マウントパラメーターの三番目の (ほとんど使用されない) 項目は、 バックエンドのファイルシステムをマウントするために使用される
+マウントオプションの一覧です。 これが指定されていない場合、 マウントオプションは空文字列または C<ro> (I<--ro>
+フラグが使用されている場合) になります。
 
  -m /dev/sda1:/:acl,user_xattr
 
-The fourth part of the parameter is the filesystem driver to use, such as
-C<ext3> or C<ntfs>. This is rarely needed, but can be useful if multiple
-drivers are valid for a filesystem (eg: C<ext2> and C<ext3>), or if
-libguestfs misidentifies a filesystem.
+パラメーターの四番目の項目は使用するファイルシステムドライバー (C<ext3> や C<ntfs> など) です。 これはほとんど必要ありません。
+しかし、複数のドライバーがファイルシステムに対して有効である場合 (例: C<ext2> と C<ext3>)、 または libguestfs
+がファイルシステムを誤検知している場合、 これは有用です。
 
 =item B<--no-fork>
 
@@ -385,7 +374,7 @@ I<--no-fork>).
 This configuration file controls the default read-only or read-write mode
 (I<--ro> or I<--rw>).
 
-L<guestfish(1)/OPENING DISKS FOR READ AND WRITE> 参照。
+See L<libguestfs-tools.conf(5)>.
 
 =back
 
@@ -396,7 +385,8 @@ L<guestfish(1)/OPENING DISKS FOR READ AND WRITE> 参照。
 =head1 関連項目
 
 L<guestunmount(1)>, L<fusermount(1)>, L<guestfish(1)>, L<virt-inspector(1)>,
-L<virt-cat(1)>, L<virt-edit(1)>, L<virt-tar(1)>, L<guestfs(3)/MOUNT LOCAL>,
+L<virt-cat(1)>, L<virt-edit(1)>, L<virt-tar(1)>,
+L<libguestfs-tools.conf(5)>, L<guestfs(3)/MOUNT LOCAL>,
 L<http://libguestfs.org/>, L<http://fuse.sf.net/>.
 
 =head1 著者

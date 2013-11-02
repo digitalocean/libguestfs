@@ -135,7 +135,7 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
-	$(srcdir)/Makefile.am
+	$(srcdir)/Makefile.am $(srcdir)/config.ml.in
 @HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
 subdir = mllib
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -266,7 +266,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = config.ml
 CONFIG_CLEAN_VPATH_FILES =
 SCRIPTS = $(noinst_SCRIPTS)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -1409,11 +1409,15 @@ SOURCES = \
 	common_gettext.ml \
 	common_utils.ml \
 	common_utils_tests.ml \
+	config.ml \
 	crypt-c.c \
 	crypt.ml \
 	crypt.mli \
 	firstboot.mli \
 	firstboot.ml \
+	fsync-c.c \
+	fsync.mli \
+	fsync.ml \
 	hostname.mli \
 	hostname.ml \
 	password.mli \
@@ -1439,9 +1443,11 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-progress.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
 @HAVE_OCAML_TRUE@	tty-c.o \
+@HAVE_OCAML_TRUE@	fsync-c.o \
 @HAVE_OCAML_TRUE@	progress-c.o \
 @HAVE_OCAML_TRUE@	uri-c.o \
 @HAVE_OCAML_TRUE@	crypt-c.o \
+@HAVE_OCAML_TRUE@	config.cmx \
 @HAVE_OCAML_TRUE@	libdir.cmx \
 @HAVE_OCAML_TRUE@	common_gettext.cmx \
 @HAVE_OCAML_TRUE@	common_utils.cmx \
@@ -1449,6 +1455,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	hostname.cmx \
 @HAVE_OCAML_TRUE@	firstboot.cmx \
 @HAVE_OCAML_TRUE@	tTY.cmx \
+@HAVE_OCAML_TRUE@	fsync.cmx \
 @HAVE_OCAML_TRUE@	progress.cmx \
 @HAVE_OCAML_TRUE@	uRI.cmx \
 @HAVE_OCAML_TRUE@	crypt.cmx \
@@ -1520,6 +1527,8 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+config.ml: $(top_builddir)/config.status $(srcdir)/config.ml.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 mostlyclean-libtool:
 	-rm -f *.lo
