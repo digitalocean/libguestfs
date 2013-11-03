@@ -17,7 +17,7 @@
  *)
 
 let package_name = "libguestfs"
-let package_version = "1.25.2"
+let package_version = "1.25.3"
 
 let xzcat = "/usr/bin/xzcat"
 let pxzcat =

@@ -1,4 +1,55 @@
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.3.
+
+	builder: Add missing files to EXTRA_DIST.
+
+	./run: Disable timeouts in tests on RHEL 6.
+	Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=1025269
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Allow multiple source paths to be specified.
+	Users can now specify multiple source paths, eg:
+
+	  virt-builder --source http://example.com/foo \
+	    --source http://example.com/bar
+
+	to get templates from multiple places.
+
+	There is still only one built-in path, but we can add more later.
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: When debugging, print curl command before running it.
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: index: Add checksum[sha512]=... option and deprecate template sigs.
+	We don't need to sign individual templates, provided the signed index
+	file contains the cryptographically secure checksums of the templates.
+	Since the index file cannot be interfered with and the checksums
+	cannot be spoofed, this is sufficient to ensure the integrity of the
+	templates.
+
+	Note the template signatures are now deprecated and will be removed in
+	libguestfs 1.26.  To avoid any backwards compatibility issues, I will
+	backport the relevant changes to the stable-1.24 branch.
+
+	Thanks Dennis Gilmore for pointing out that we could do this.
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	./run: Fix massive thinko in $PATH setting.
+	This fixes commit 76c20d761b24195b3cd7a620524ae84ed0ab6ab3.
+
 2013-10-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Whitespace change in error message.
+
+	builder: Be more careful about deleting temporary files on exit.
+
+	builder: Whitespace fix in Index_parser module.
 
 	Version 1.25.2.
 

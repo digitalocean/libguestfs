@@ -16,9 +16,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
+val default_fingerprint : string
+
 type t
 
-val create : debug:bool -> gpg:string -> ?fingerprint:string -> check_signature:bool -> t
+val create : debug:bool -> gpg:string -> fingerprint:string -> check_signature:bool -> t
 
 val verify : t -> string -> unit
 (** Verify the file is signed (if check_signature is true). *)
@@ -26,3 +28,9 @@ val verify : t -> string -> unit
 val verify_detached : t -> string -> string option -> unit
 (** Verify the file is signed against the detached signature
     (if check_signature is true). *)
+
+type csum_t = SHA512 of string
+
+val verify_checksum : t -> csum_t -> string -> unit
+(** Verify the checksum of the file.  This is always verified even if
+    check_signature if false. *)
