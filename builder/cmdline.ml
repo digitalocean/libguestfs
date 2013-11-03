@@ -120,6 +120,9 @@ let parse_cmdline () =
 
   let list_long = ref false in
 
+  let memsize = ref None in
+  let set_memsize arg = memsize := Some arg in
+
   let mkdirs = ref [] in
   let add_mkdir arg = mkdirs := arg :: !mkdirs in
 
@@ -160,6 +163,9 @@ let parse_cmdline () =
   let size = ref None in
   let set_size arg = size := Some (parse_size ~prog arg) in
 
+  let smp = ref None in
+  let set_smp arg = smp := Some arg in
+
   let source =
     try Sys.getenv "VIRT_BUILDER_SOURCE"
     with Not_found -> "http://libguestfs.org/download/builder/index.asc" in
@@ -182,6 +188,19 @@ let parse_cmdline () =
     );
     let dest = String.sub arg (i+1) (len-(i+1)) in
     upload := (file, dest) :: !upload
+  in
+
+  let writes = ref [] in
+  let add_write arg =
+    let i =
+      try String.index arg ':'
+      with Not_found ->
+        eprintf (f_"%s: invalid --write format, see the man page.\n") prog;
+        exit 1 in
+    let len = String.length arg in
+    let file = String.sub arg 0 i in
+    let content = String.sub arg (i+1) (len-(i+1)) in
+    writes := (file, content) :: !writes
   in
 
   let ditto = " -\"-" in
@@ -221,6 +240,8 @@ let parse_cmdline () =
     "--long",    Arg.Set list_long,         ditto;
     "--no-logfile", Arg.Set scrub_logfile,  " " ^ s_"Scrub build log file";
     "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
+    "-m",        Arg.Int set_memsize,       "mb" ^ " " ^ s_"Set memory size";
+    "--memsize", Arg.Int set_memsize,       "mb" ^ ditto;
     "--mkdir",   Arg.String add_mkdir,      "dir" ^ " " ^ s_"Create directory";
     "--network", Arg.Set network,           " " ^ s_"Enable appliance network (default)";
     "--no-network", Arg.Clear network,      " " ^ s_"Disable appliance network";
@@ -238,6 +259,7 @@ let parse_cmdline () =
     "--run-command", Arg.String add_run_cmd, "cmd+args" ^ " " ^ s_"Run command in disk image";
     "--scrub",   Arg.String add_scrub,      "name" ^ " " ^ s_"Scrub a file";
     "--size",    Arg.String set_size,       "size" ^ " " ^ s_"Set output disk size";
+    "--smp",     Arg.Int set_smp,           "vcpus" ^ " " ^ s_"Set number of vCPUs";
     "--source",  Arg.Set_string source,     "URL" ^ " " ^ s_"Set source URL";
     "--no-sync", Arg.Clear sync,            " " ^ s_"Do not fsync output file on exit";
     "--upload",  Arg.String add_upload,     "file:dest" ^ " " ^ s_"Upload file to dest";
@@ -245,6 +267,7 @@ let parse_cmdline () =
     "--verbose", Arg.Set debug,             ditto;
     "-V",        Arg.Unit display_version,  " " ^ s_"Display version and exit";
     "--version", Arg.Unit display_version,  ditto;
+    "--write",   Arg.String add_write,      "file:content" ^ " " ^ s_"Write file";
   ] in
   long_options := argspec;
 
@@ -286,6 +309,7 @@ read the man page virt-builder(1).
   let hostname = !hostname in
   let install = !install in
   let list_long = !list_long in
+  let memsize = !memsize in
   let mkdirs = List.rev !mkdirs in
   let network = !network in
   let output = match !output with "" -> None | s -> Some s in
@@ -295,9 +319,11 @@ read the man page virt-builder(1).
   let scrub = List.rev !scrub in
   let scrub_logfile = !scrub_logfile in
   let size = !size in
+  let smp = !smp in
   let source = !source in
   let sync = !sync in
   let upload = List.rev !upload in
+  let writes = List.rev !writes in
 
   (* Check options. *)
   let arg =
@@ -351,6 +377,6 @@ read the man page virt-builder(1).
 
   mode, arg,
   attach, cache, check_signature, curl, debug, delete, edit, fingerprint,
-  firstboot, run, format, gpg, hostname, install, list_long, mkdirs,
+  firstboot, run, format, gpg, hostname, install, list_long, memsize, mkdirs,
   network, output, password_crypto, quiet, root_password, scrub,
-  scrub_logfile, size, source, sync, upload
+  scrub_logfile, size, smp, source, sync, upload, writes

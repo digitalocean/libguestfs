@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [25])
-m4_define([libguestfs_release], [1])
+m4_define([libguestfs_release], [2])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -556,6 +556,9 @@ if test -f /etc/arch-release; then
 fi
 if test -f /etc/SuSE-release; then
     DISTRO=SUSE
+fi
+if test -f /etc/frugalware-release; then
+    DISTRO=FRUGALWARE
 fi
 AC_MSG_RESULT([$DISTRO])
 AC_SUBST([DISTRO])

@@ -36,9 +36,9 @@ let main () =
   (* Command line argument parsing - see cmdline.ml. *)
   let mode, arg,
     attach, cache, check_signature, curl, debug, delete, edit, fingerprint,
-    firstboot, run, format, gpg, hostname, install, list_long, mkdirs,
+    firstboot, run, format, gpg, hostname, install, list_long, memsize, mkdirs,
     network, output, password_crypto, quiet, root_password, scrub,
-    scrub_logfile, size, source, sync, upload =
+    scrub_logfile, size, smp, source, sync, upload, writes =
     parse_cmdline () in
 
   (* Timestamped messages in ordinary, non-debug non-quiet mode. *)
@@ -396,6 +396,8 @@ let main () =
     let g = new G.guestfs () in
     if debug then g#set_trace true;
 
+    (match memsize with None -> () | Some memsize -> g#set_memsize memsize);
+    (match smp with None -> () | Some smp -> g#set_smp smp);
     g#set_network network;
 
     (* The output disk is being created, so use cache=unsafe here. *)
@@ -582,11 +584,33 @@ exec >>%s 2>&1
       g#mkdir_p dir
   ) mkdirs;
 
+  (* Write files. *)
+  List.iter (
+    fun (file, content) ->
+      msg (f_"Writing: %s") file;
+      g#write file content
+  ) writes;
+
   (* Upload files. *)
   List.iter (
     fun (file, dest) ->
-      msg (f_"Uploading: %s") dest;
-      g#upload file dest
+      msg (f_"Uploading: %s to %s") file dest;
+      let dest =
+        if g#is_dir dest then
+          dest ^ "/" ^ Filename.basename file
+        else
+          dest in
+      (* Do the file upload. *)
+      g#upload file dest;
+
+      (* Copy (some of) the permissions from the local file to the
+       * uploaded file.
+       *)
+      let statbuf = stat file in
+      let perms = statbuf.st_perm land 0o7777 (* sticky & set*id *) in
+      g#chmod perms dest;
+      let uid, gid = statbuf.st_uid, statbuf.st_gid in
+      g#chown uid gid dest
   ) upload;
 
   (* Edit files. *)

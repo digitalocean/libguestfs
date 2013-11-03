@@ -10696,13 +10696,27 @@ public class GuestFS {
    * <http://www.tuxera.com/community/ntfs-3g-faq/#posixfilen
    * ames1>
    * <p>
-   * This function resolves the true case of each element in
-   * the path and returns the case-sensitive path.
+   * "g.case_sensitive_path" attempts to resolve the true
+   * case of each element in the path. It will return a
+   * resolved path if either the full path or its parent
+   * directory exists. If the parent directory exists but the
+   * full path does not, the case of the parent directory
+   * will be correctly resolved, and the remainder appended
+   * unmodified. For example, if the file
+   * "/Windows/System32/netkvm.sys" exists:
    * <p>
-   * Thus "g.case_sensitive_path" ("/Windows/System32") might
-   * return "/WINDOWS/system32" (the exact return value would
-   * depend on details of how the directories were originally
-   * created under Windows).
+   * "g.case_sensitive_path" ("/windows/system32/netkvm.sys")
+   * "Windows/System32/netkvm.sys"
+   * <p>
+   * "g.case_sensitive_path" ("/windows/system32/NoSuchFile")
+   * "Windows/System32/NoSuchFile"
+   * <p>
+   * "g.case_sensitive_path" ("/windows/system33/netkvm.sys")
+   * *ERROR*
+   * <p>
+   * *Note*: Because of the above behaviour,
+   * "g.case_sensitive_path" cannot be used to check for the
+   * existence of a file.
    * <p>
    * *Note*: This function does not handle drive names,
    * backslashes etc.

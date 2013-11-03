@@ -1,4 +1,79 @@
+2013-10-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.2.
+
+2013-10-29  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	sysprep: add feature of deleting specified paths
+
+2013-10-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add -m/--memsize and --smp command line options.
+
+2013-10-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Add some code to enable qemu / gdb debugging.
+	See the comment for details.
+
+	Note this is disabled by default.  Developers can only enable it by
+	changing #if 0 -> #if 1.
+
+2013-10-29  Matthew Booth  <mbooth@redhat.com>
+
+	docs: guestfs_case_sensitive_path returns error on non-existent path
+
+2013-10-29  Daniel Exner  <dex@dragonslave.de>
+
+	Initial FrugalWare support.
+
+2013-10-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add CentOS 6.4 guest.
+
+	builder: Add a section on performance to the manual.
+
 2013-10-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	./run: Adjust $PATH to include all libguestfs binaries.
+	Instead of typing:
+
+	  ./run ./fish/guestfish ...
+
+	you can now use:
+
+	  ./run guestfish ...
+
+	This is shorter, but there are also two good reasons for this change:
+	It never made any sense to run the system-installed guestfish (or
+	other) binary.  It would be unlikely to work.  Also binaries in
+	libguestfs should be able to call other binaries freely without adding
+	special exceptions (which we had before this change).
+
+2013-10-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	firstboot: Send the output to the console as well as to the log file.
+	For systemd:
+	Currently stdout+stderr go to the journal (these are effectively
+	empty unless there are gross errors).  The output of the commands
+	goes to the log file.
+
+	With this change, the output goes to the journal, the console and
+	the log file.
+
+	For SysV-init:
+	Currently stdout+stderr go to the console (but these are effectively
+	empty).  The output of the commands goes to the log file.
+
+	With this change, the output goes to the console and the log file.
+
+2013-10-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Document how to boot VMs directly in qemu or KVM.
+
+	builder: Add --write option to write a literal file.
+
+	builder: Allow --upload to a directory.
+	Also set the owner and permissions on the destination file correctly.
 
 	Version 1.25.1.
 

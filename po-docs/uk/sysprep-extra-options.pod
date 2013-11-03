@@ -1,5 +1,9 @@
 =encoding utf8
 
+=item B<--delete> delete (see C<delete> below)
+
+Delete (recursively) the specified C<path> on guest.
+
 =item B<--firstboot> firstboot (see C<firstboot> below)
 
 Run script(s) once next time the guest boots.  You can supply the
