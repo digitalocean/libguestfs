@@ -8,7 +8,7 @@ Subject: Fix virt-builder tests for out-of-tree build
  2 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/builder/test-virt-builder-list.sh b/builder/test-virt-builder-list.sh
-index 01e4d1b..2f5ca0b 100755
+index 134ca7c..3a159bb 100755
 --- a/builder/test-virt-builder-list.sh
 +++ b/builder/test-virt-builder-list.sh
 @@ -21,9 +21,9 @@
@@ -21,10 +21,10 @@ index 01e4d1b..2f5ca0b 100755
 -export VIRT_BUILDER_SOURCE=file://$abs_srcdir/test-index
 +export VIRT_BUILDER_SOURCE=file://$abs_builddir/test-index
  
- short_list=$(./virt-builder --no-check-signature --no-cache --list)
+ short_list=$($VG ./virt-builder --no-check-signature --no-cache --list)
  
 diff --git a/builder/test-virt-builder.sh b/builder/test-virt-builder.sh
-index fbc52a0..de6fb4c 100755
+index cec76fa..c8d2e58 100755
 --- a/builder/test-virt-builder.sh
 +++ b/builder/test-virt-builder.sh
 @@ -19,9 +19,9 @@

@@ -4,3 +4,4 @@
 0004-perl-revert-failed-attempt-at-building-out-of-tree-s.patch
 0005-Disable-gnulib-tests-by-default.patch
 0006-Fix-virt-builder-tests-for-out-of-tree-build.patch
+0007-Fix-for-installing-man-pages-in-out-of-tree-build.patch
