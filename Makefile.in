@@ -161,7 +161,7 @@ DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 
 # OCaml tools.  Note 'mllib' contains random shared code used by
 # all of the OCaml tools.
-@HAVE_OCAML_TRUE@am__append_14 = mllib builder resize sparsify sysprep
+@HAVE_OCAML_TRUE@am__append_14 = mllib builder builder/website resize sparsify sysprep
 
 # Perl tools.
 @HAVE_TOOLS_TRUE@am__append_15 = tools
@@ -406,8 +406,8 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	perl perl/examples ocaml ocaml/examples python python/examples \
 	ruby ruby/examples java java/examples haskell php erlang \
 	erlang/examples lua lua/examples gobject golang \
-	golang/examples csharp mllib builder resize sparsify sysprep \
-	tools fuse po-docs
+	golang/examples csharp mllib builder builder/website resize \
+	sparsify sysprep tools fuse po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -1417,7 +1417,7 @@ RUBY = @RUBY@
 SD_JOURNAL_CFLAGS = @SD_JOURNAL_CFLAGS@
 SD_JOURNAL_LIBS = @SD_JOURNAL_LIBS@
 SED = @SED@
-SELINUX_LIB = @SELINUX_LIB@
+SELINUX_LIBS = @SELINUX_LIBS@
 SERVENT_LIB = @SERVENT_LIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -2270,7 +2270,7 @@ dist-hook:
 	$(top_srcdir)/update-bugs.sh > BUGS-t
 	mv BUGS-t BUGS
 	cp BUGS $(distdir)/BUGS
-	git shortlog -se | awk -F'\t' '{print $$2}' | sort -f > AUTHORS-t
+	git shortlog -s | awk -F'\t' '{print $$2}' | sort -f > AUTHORS-t
 	mv AUTHORS-t AUTHORS
 	cp AUTHORS $(distdir)/AUTHORS
 

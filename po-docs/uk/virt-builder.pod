@@ -15,7 +15,7 @@ virt-builder - Build virtual machine images quickly
 
  virt-builder [-o|--output DISKIMAGE] [--size SIZE] [--format raw|qcow2]
     [--attach ISOFILE]
-    [--root-password ...]
+    [--root-password SELECTOR]
     [--hostname HOSTNAME]
     [--install PKG,[PKG...]]
     [--upload FILE:DEST]
@@ -445,11 +445,11 @@ Print information about the template cache.  See L</CACHING>.
 
 Don't print ordinary progress messages.
 
-=item B<--root-password> PASSWORD
+=item B<--root-password> SELECTOR
 
 Set the root password.
 
-See L</USERS AND PASSWORDS> below for the format of the C<PASSWORD> field,
+See L</USERS AND PASSWORDS> below for the format of the C<SELECTOR> field,
 and also how to set up user accounts.
 
 Note if you I<don't> set I<--root-password> then the guest is given a
@@ -525,7 +525,14 @@ Upload local file C<FILE> to destination C<DEST> in the disk image.  File
 owner and permissions from the original are preserved, so you should set
 them to what you want them to be in the disk image.
 
-See also: I<--delete>, I<--scrub>.
+C<DEST> could be the final filename.  This can be used to rename the file on
+upload.
+
+If C<DEST> is a directory name (which must already exist in the guest)  then
+the file is uploaded into that directory, and it keeps the same name as on
+the local filesystem.
+
+See also: I<--mkdir>, I<--delete>, I<--scrub>.
 
 =item B<-v>
 
@@ -614,7 +621,8 @@ Use the I<--attach> option to attach the CD:
 =head2 USERS AND PASSWORDS
 
 The I<--root-password> option is used to change the root password (otherwise
-a random password is used).  This option has the following formats:
+a random password is used).  This option takes a password C<SELECTOR> in one
+of the following formats:
 
 =over 4
 
@@ -850,7 +858,7 @@ information in this index file.
 
 The templates hosted on libguestfs.org were created using shell scripts,
 kickstart files and preseed files which can be found in the libguestfs
-source tree, in C<libguestfs.git/builder/website>.
+source tree, in C<builder/website>.
 
 =head3 Setting up the repository
 
@@ -894,7 +902,7 @@ Also find the fingerprint of your key:
 There are many ways to create the templates.  For example you could clone
 existing guests (see L<virt-sysprep(1)>), or you could install a guest by
 hand (L<virt-install(1)>).  To see how the templates were created for
-virt-builder, look at the scripts in C<libguestfs.git/builder/website>
+virt-builder, look at the scripts in C<builder/website>
 
 For best results when compressing the templates, use the following xz
 options (see L<nbdkit-xz-plugin(1)> for further explanation):
@@ -1171,15 +1179,15 @@ always create signed index and templates.
 
 =head2 АРХІТЕКТУРА
 
-Virt-builder can, in theory, build a guest for any architecture no matter
-what the host architecture is.  For example a ppc64 guest on an x86-64 host.
+Virt-builder can build a guest for any architecture no matter what the host
+architecture is.  For example an x86-64 guest on an ARM host.
 
 However certain options may not work correctly, specifically options that
 require running commands in the guest during the build process:
 I<--install>, I<--run>, I<--run-command>.  You may need to replace these
 with their firstboot-equivalents.
 
-An x86-64 host building 32 bit x86 guests should work without any special
+An x86-64 host building 32 bit i686 guests should work without any special
 steps.
 
 =head2 БЕЗПЕКА

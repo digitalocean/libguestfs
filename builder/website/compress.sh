@@ -1,3 +1,4 @@
+#!/bin/bash -
 # virt-builder
 # Copyright (C) 2013 Red Hat Inc.
 #
@@ -15,26 +16,23 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-install
-text
-reboot
-lang en_US.UTF-8
-keyboard us
-network --bootproto dhcp
-rootpw builder
-firewall --enabled --ssh
-selinux --enforcing
-timezone --utc America/New_York
-bootloader --location=mbr --append="console=tty0 console=ttyS0,115200 rd_NO_PLYMOUTH"
-zerombr
-clearpart --all --initlabel
-part /boot --fstype=ext4 --size=512         --asprimary
-part swap                --size=1024        --asprimary
-part /     --fstype=ext4 --size=1024 --grow --asprimary
+# Common code which syspreps, sparsifies and compresses the templates.
 
-# Halt the system once configuration has finished.
-poweroff
+output=$1
 
-%packages
-@core
-%end
+# Sysprep (removes logfiles and so on).
+# Note this also touches /.autorelabel so the further installation
+# changes that we make will be labelled properly at first boot.
+virt-sysprep -a $output
+
+# Sparsify.
+mv $output $output.old
+virt-sparsify $output.old $output
+rm $output.old
+
+# Compress.
+xz --best --block-size=16777216 $output
+
+# Result.  These can be copied into the index file directly.
+echo -n compressed_size= ; stat -c %s $output.xz
+echo -n checksum= ; sha512sum $output.xz | awk '{print $1}'

@@ -1,40 +1,46 @@
 =encoding utf8
 
-=item B<--firstboot> firstboot (see C<firstboot> below)
+=item B<--firstboot> SCRIPT (see C<firstboot> below)
 
 Run script(s) once next time the guest boots.  You can supply the
 I<--firstboot> option as many times as needed.
 
-=item B<--hostname> hostname (see C<hostname> below)
+=item B<--hostname> HOSTNAME (see C<hostname> below)
 
 Змінити назву вузла. Якщо не вказано, використовувати типове
 C<localhost.localdomain>.
 
-=item B<--password> password (see C<password> below)
+=item B<--password> USERNAME:SELECTOR (see C<password> below)
 
 Set a user password.  The user must exist already (this option does I<not>
-create users).  The following formats may be used for this option:
+create users).
+
+The I<--password> option takes C<USERNAME:SELECTOR>.  The I<--root-password>
+option takes just the C<SELECTOR>.  The format of the C<SELECTOR> is
+described below:
 
 =over 4
 
 =item B<--password КОРИСТУВАЧ:file:НАЗВА_ФАЙЛА>
 
-Change the password for C<USERNAME>.  Read the password from C<FILENAME>.
-The whole first line of this file is the replacement password.  Any other
-lines are ignored.  You should create the file with mode 0600 to ensure no
-one else can read it.
+=item B<--root-password file:НАЗВА_ФАЙЛА>
+
+Read the password from C<FILENAME>.  The whole first line of this file is
+the replacement password.  Any other lines are ignored.  You should create
+the file with mode 0600 to ensure no one else can read it.
 
 =item B<--password КОРИСТУВАЧ:password:ПАРОЛЬ>
 
-Change the password for C<USERNAME>.  Set the password to the literal string
-C<PASSWORD>.
+=item B<--root-password password:ПАРОЛЬ>
+
+Set the password to the literal string C<PASSWORD>.
 
 B<Note: this is not secure> since any user on the same machine can see the
 cleartext password using L<ps(1)>.
 
 =back
 
-=item B<--password-crypto> спосіб_шифрування_паролів (див. C<password> нижче)
+=item B<--password-crypto> md5|sha256|sha512 (see C<password> below)
 
 Встановити спосіб шифрування паролів: C<md5>, C<sha256> або C<sha512>.
 
@@ -50,43 +56,27 @@ libguestfs вдасться виявити у гостьовій системі 
 цього параметра ви можете перевизначити автоматично визначений libguestfs
 спосіб шифрування.
 
-=item B<--root-password> root-password (see C<password> below)
+=item B<--root-password> SELECTOR (see C<password> below)
 
-Set the root password.  The following formats may be used for this option:
+Set the root password.  See I<--password> above for the format of
+C<SELECTOR>.
 
-=over 4
+=item B<--script> SCRIPT (see C<script> below)
 
-=item B<--root-password file:НАЗВА_ФАЙЛА>
-
-Read the root password from C<FILENAME>.  The whole first line of this file
-is the replacement password.  Any other lines are ignored.  You should
-create the file with mode 0600 to ensure no one else can read it.
-
-=item B<--root-password password:ПАРОЛЬ>
-
-Set the root password to the literal string C<PASSWORD>.
-
-B<Note: this is not secure> since any user on the same machine can see the
-cleartext password using L<ps(1)>.
-
-=back
-
-=item B<--script> script (see C<script> below)
-
-Run the named C<script> (a shell script or program) against the guest.  The
+Run the named C<SCRIPT> (a shell script or program) against the guest.  The
 script can be any program on the host.  The script's current directory will
 be the guest's root directory.
 
 B<Note:> If the script is not on the $PATH, then you must give the full
 absolute path to the script.
 
-=item B<--scriptdir> scriptdir (see C<script> below)
+=item B<--scriptdir> SCRIPTDIR (see C<script> below)
 
 Точку монтування (порожній каталог на вузлі), використану при виконанні дії
 C<script>, увімкнено і вказано використання одного або декількох скриптів за
 допомогою I<--script>.
 
-B<Зауваження:> C<scriptdir> B<має> бути вказано повністю.
+B<Note:> C<SCRIPTDIR> B<must> be an absolute path.
 
 Якщо I<--scriptdir> не вказано, буде створено тимчасову точку монтування
 

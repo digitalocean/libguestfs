@@ -73,8 +73,8 @@ L<guestfs(3)> API.
 Find the differences between files in a guest and an earlier snapshot of the
 same guest.
 
- virt-ls -lR -a snapshot.img / --uids --time-t > old
- virt-ls -lR -a current.img / --uids --time-t > new
+ virt-ls -lR -a snapshot.img / --uids > old
+ virt-ls -lR -a current.img / --uids > new
  diff -u old new | less
 
 The commands above won't find files where the content has changed but the
@@ -82,6 +82,12 @@ metadata (eg. file size and modification date) is the same.  To do that, you
 need to add the I<--checksum> parameter to both C<virt-ls> commands.
 I<--checksum> can be quite slow since it has to read and compute a checksum
 of every regular file in the virtual machine.
+
+The commands above won't show changes in file times.  Add I<--time-t> to
+both C<virt-ls> commands if you want to show all time changes (that includes
+file access times).
+
+To diff the content of files, use L<virt-cat(1)> or L<guestfish(1)>.
 
 =head1 РЕЖИМИ ВИВЕДЕННЯ ДАНИХ
 

@@ -118,7 +118,7 @@ SUBDIRS += csharp
 # OCaml tools.  Note 'mllib' contains random shared code used by
 # all of the OCaml tools.
 if HAVE_OCAML
-SUBDIRS += mllib builder resize sparsify sysprep
+SUBDIRS += mllib builder builder/website resize sparsify sysprep
 endif
 
 # Perl tools.
@@ -277,7 +277,7 @@ dist-hook:
 	$(top_srcdir)/update-bugs.sh > BUGS-t
 	mv BUGS-t BUGS
 	cp BUGS $(distdir)/BUGS
-	git shortlog -se | awk -F'\t' '{print $$2}' | sort -f > AUTHORS-t
+	git shortlog -s | awk -F'\t' '{print $$2}' | sort -f > AUTHORS-t
 	mv AUTHORS-t AUTHORS
 	cp AUTHORS $(distdir)/AUTHORS
 

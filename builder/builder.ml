@@ -422,16 +422,7 @@ let main () =
        *)
       let chars =
         "ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789" in
-      let nr_chars = String.length chars in
-
-      let chan = open_in "/dev/urandom" in
-      let buf = String.create 16 in
-      for i = 0 to 15 do
-        buf.[i] <- chars.[Char.code (input_char chan) mod nr_chars]
-      done;
-      close_in chan;
-
-      buf
+      Urandom.urandom_uniform 16 chars
     in
 
     let root_password =
@@ -443,7 +434,7 @@ let main () =
         let pw = make_random_password () in
         msg (f_"Random root password: %s [did you mean to use --root-password?]")
           pw;
-        pw in
+        Password.Set_password pw in
 
     match g#inspect_get_type root with
     | "linux" ->
@@ -457,9 +448,11 @@ let main () =
   let logfile =
     match g#inspect_get_type root with
     | "windows" | "dos" ->
-      if g#is_dir "/Temp" then "/Temp/builder.log" else "/builder.log"
+      if g#is_dir ~followsymlinks:true "/Temp" then "/Temp/builder.log"
+      else "/builder.log"
     | _ ->
-      if g#is_dir "/tmp" then "/tmp/builder.log" else "/builder.log" in
+      if g#is_dir ~followsymlinks:true "/tmp" then "/tmp/builder.log"
+      else "/builder.log" in
 
   (* Function to cat the log file, for debugging and error messages. *)
   let debug_logfile () =
@@ -547,8 +540,23 @@ exec >>%s 2>&1
   (* Upload files. *)
   List.iter (
     fun (file, dest) ->
-      msg (f_"Uploading: %s") dest;
-      g#upload file dest
+      msg (f_"Uploading: %s to %s") file dest;
+      let dest =
+        if g#is_dir ~followsymlinks:true dest then
+          dest ^ "/" ^ Filename.basename file
+        else
+          dest in
+      (* Do the file upload. *)
+      g#upload file dest;
+
+      (* Copy (some of) the permissions from the local file to the
+       * uploaded file.
+       *)
+      let statbuf = stat file in
+      let perms = statbuf.st_perm land 0o7777 (* sticky & set*id *) in
+      g#chmod perms dest;
+      let uid, gid = statbuf.st_uid, statbuf.st_gid in
+      g#chown uid gid dest
   ) upload;
 
   (* Edit files. *)

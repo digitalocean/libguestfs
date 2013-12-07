@@ -1,3 +1,338 @@
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.24.2.
+
+	launch: direct: Whitespace fix.
+	(cherry picked from commit 04769ad507e1c84c8a04bf5fe9029ae20cc67600)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: Print program and version as part of standard debug output when launching the handle.
+	There are a lot of cases where people post debugging output, but we're
+	not sure precisely which version they are using.
+
+	(cherry picked from commit e7fa7f4d1691bc5e34b163509645c535ac6d8767)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Remove unused function prototype.
+	(cherry picked from commit 45afcdb30788d6cb9bdba14fe554b3b12a0d8479)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	po-docs: If *.pod files are missing, tell user to run 'make update-po'.
+	I'm now fairly convinced it's not possible to do this automatically.
+	However we should at least tell the user what needs to be done.
+
+	(cherry picked from commit 1ea1646e6f224dbc5b3922bb3c65aab4d71a9cb9)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	lua: Don't redefine lua_objlen if already defined.
+	lua 5.2.2 seems to define this symbol already.
+
+	(cherry picked from commit 5ee193433a46d205e181bc51080e15f696bbda1a)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	mllib: password: Replace password string with password_selector type.
+	This is just code motion, there is no functional change.
+
+	(cherry picked from commit 91450b5f9a2bf0603971d7cdf3271f390ed0c2c4)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder/sysprep: Describe --password/--root-password option as "selector".
+	It now appears in the respective man pages as:
+
+	  --root-password selector
+
+	or:
+
+	  --password selector
+
+	This avoids confusion from people who think these command line options
+	take the password directly.
+
+	(cherry picked from commit 9186438937f5451ddfdaa33c9dcb9ffe27b2a098)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	ls: Note that you can use virt-cat or guestfish to show file differences.
+	(cherry picked from commit c7b0457c32b25fb289e9e1de3f960b12cebe4adf)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	ls: In image diff example, don't use --time-t.
+	It shows differences in file access times (atime) which is not
+	actually that useful for most people.
+
+	(cherry picked from commit 90245512453bb404f50e54cddf052bce63385073)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: "execl: /init: Permission denied" error also caused by /init not being executable.
+	This updates commit 98cd329323d35ab54efd976e095ae9cbf18ad338.
+
+	(cherry picked from commit 2d9f69db614c8fecdd11c879d00fca366850e720)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: Attempt to explain "execl: /init: Permission denied" error.
+	(cherry picked from commit 98cd329323d35ab54efd976e095ae9cbf18ad338)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Make sure -lselinux is used when linking libguestfs.so.
+	If libselinux was detected, it was not added to the linker command
+	line.  This still worked (at least on Fedora) because some other
+	library pulls in the dependency implicitly, possibly libvirt.  However
+	this broke on Arch:
+
+	https://aur.archlinux.org/packages/libguestfs/
+
+	Reported by and thanks: Antoni Segura Puimedon.
+
+	(cherry picked from commit acce28e8874e08acce0a6cd7a6703043a1e4ec25)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: btrfs: Upstream 'btrfs device add' command now needs '--force' option to work.
+	However earlier versions didn't have the --force option, so we
+	have to detect it.
+
+	(cherry picked from commit 59596810b009744316941da8ef18b7e75b503b9f)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl: Give error instead of crashing if optarg is not an array reference.
+	  $g->add_drive ("", server => 1);
+
+	would segfault.  Now it gives a nice error instead:
+
+	  array reference expected for 'server' argument at [line]
+
+	(cherry picked from commit c032130226bdca539b8ac34ce622e5cd9a71c152)
+
+2013-12-06  Török Edwin  <edwin@etorok.net>
+
+	Avoid modulo bias in random password generation
+	Char.code (input_char chan) mod nr_chars has modulo bias because
+	the original interval is not a multiple of the destination interval,
+	i.e. 256 mod nr_chars != 0.
+
+	One way to fix this is to keep generating random numbers until they fall outside
+	the interval where modulo bias occurs, that is accept only c=[256 % nr_chars, 256).
+	That interval maps back to [0, nr_chars), and has a length of
+	(256 - 256 % nr_chars), which is a multiple of nr_chars.
+
+	RWMJ:
+	 - Modify the code so it goes into a utility library.
+	 - Use the same code across virt-builder and virt-sysprep.
+
+	(cherry picked from commit 6a1061663fa467d43777a8ed98f4f07750125012)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	mllib: Add a utility function for safely reading from /dev/urandom.
+	OCaml's buffered 'in_channel' has a 64k buffer, so using it to read a
+	few bytes from /dev/urandom removes a lot of the system's entropy (for
+	example /proc/sys/kernel/random/entropy_avail goes from ~3000 to 128).
+
+	This patch was originally by Edwin Török for builder.ml.  I
+	generalized it because there are two other places where we did
+	over-sized reads from /dev/urandom.
+
+	(cherry picked from commit f013b15fa1daf623cbf39007182c44c734e9bc79)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Clarify architecture section of the documentation.
+	I have checked and cross architecture builds work fine:
+
+	http://rwmj.wordpress.com/2013/11/09/virt-builder-running-on-arm/#content
+	(cherry picked from commit 544d6b25e345e2317b1f2e92684af6c08e1c58ba)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	podwrapper: virt-install is not a libguestfs page.
+	This now redirect to http://man.he.net/man1/virt-install, but this is
+	unfortunately a 404.
+
+	Incomplete fix for RHBZ#1029134.
+
+	Thanks: Paul Maunders.
+	(cherry picked from commit edacd479faf7175eb2ddb10dd8c7ab4c90db5d0b)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: debian: Remove bogus proxy from apt configuration.
+	Thanks: Daniel Miranda
+	(cherry picked from commit 4b2e9c9264dcebd3c5945050b7f1d1b4cb4d3dae)
+
+	builder: After building a template, print fields for index file.
+	(cherry picked from commit 50aca447eabaa8c47f7b6adf57db48a225bf589e)
+
+	builder/website: Add some missing files to EXTRA_DIST.
+	(cherry picked from commit 300b357eb98445926a096927655763a8d2150271)
+
+	builder: Allow /tmp or /Temp to be symlinks to a directory.
+	(cherry picked from commit 63ec023f19f2b397dfa629a8674bb9fbed752c71)
+
+	builder: Allow upload to directory when target is a symlink to a directory.
+	(cherry picked from commit 7a8addb48553c90cf34cea5804d9d139e1c81b85)
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Allow --upload to a directory.
+	Also set the owner and permissions on the destination file correctly.
+
+	(cherry picked from commit 10c849ed1cb4375c5ef811197fa0a3206d365b86)
+
+2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update TODO: Remove some things that we've done.
+	(cherry picked from commit e982c0a2f56a5324d41b90b7a8f2715412f7e899)
+
+	builder/website: Add support for RHEL 5 releases to internal RHEL script.
+	(cherry picked from commit 55795e652ebeb8f1860e8204d738b4af94a9975f)
+
+	builder/website: Don't use http_proxy in internal RHEL script.
+	(cherry picked from commit 133ae6a34b5bdf8c831b0ee967eb1f7798062943)
+
+	builder: After compressing the template, calculate the SHA-512 hash.
+	(cherry picked from commit e906d30c62fcca597fa4ddb4d620ea1f9b83b8b2)
+
+	builder: Add a Scientific Linux 6 image.
+	(cherry picked from commit f459fe47f899e2e93a455a1338860a2b11165c9e)
+
+	builder: Old OCaml didn't have List.iteri, so add a utility function.
+	(cherry picked from commit 7147d415645d2c66b459c4bf366b6288ddbf2584)
+
+2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add script for making Red Hat Enterprise Linux instances.
+	This uses some internal Red Hat repositories so it's not generally
+	useful, but could be easily adapted by users.
+
+	(cherry picked from commit e9294668b4cd5cfa10ab4d936bccb271107f138b)
+
+2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Use common code to sysprep, sparsify and compress images.
+	(cherry picked from commit 4dd6e4328ca57020e8e415e99925eab73b2fe95e)
+
+2013-12-05  Adam Huffman  <adam.huffman@gmail.com>
+
+	builder: Add script for making Scientific Linux instances.
+	RWMJ:
+	 - Renamed the script from sl.sh -> scientificlinux.sh
+	 - The output file is called scientificlinux-$version
+	 - I fixed some whitespace issues so it's now similar to the CentOS script.
+
+	(cherry picked from commit c76912cd778281f70490b05a276c140eacf8c647)
+
+2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update to latest gnulib to get hash relicensing change (thanks Jim Meyering).
+	(cherry picked from commit d669db7ff0a2f8216ae8287d4c74314c5d9e2f13)
+
+2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Fix centos script - output filename was wrong.
+	This fixes commit 2f3fb2420e7f2ccc19fdc863ecc7b7ce29dd6aa1.
+
+	(cherry picked from commit 663012c5ffecc6f89ad164d292fc0f970338f824)
+
+2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Don't include email addresses in AUTHORS file.
+	Some authors had duplicate entries because they had multiple
+	email addresses.
+
+	(cherry picked from commit ab801c2657354639ae7bad1cd60ad387592249f4)
+
+2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Replace centos-6.sh with a single script.
+	Just use:
+
+	  ./centos.sh 6
+
+	Note that you don't need to be root.
+
+	(cherry picked from commit 2f3fb2420e7f2ccc19fdc863ecc7b7ce29dd6aa1)
+
+2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Replace debian-<NN>.sh with a single script.
+	Just use:
+
+	  ./debian.sh 6 squeeze
+
+	Note that you don't need to be root.
+
+	(cherry picked from commit af9e9299bf0f422d7e07ccfe9a59e664b49c2dfe)
+
+2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Replace ubuntu-<NN>.sh with a single script.
+	Just use:
+
+	  ./ubuntu.sh 10.04 lucid
+
+	Note that you don't need to be root.
+
+	(cherry picked from commit 91b5e7fb37751719304573882c521071aa811e36)
+
+2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Replace fedora-<NN> shell & kickstart with a single script.
+	Just use:
+
+	  ./fedora.sh 18
+
+	Note that you don't need to be root.
+
+	(cherry picked from commit ade0f1a97d6371f5d5a538da9d41263146cc58d6)
+
+2013-12-05  Nikos Skalkotos  <skalkoto@grnet.gr>
+
+	Fix fstab block device resolution for FreeBSD
+	The device name prefix for IDE hard drives used to be `ad' but now
+	is `ada' (http://www.freebsd.org/doc/handbook/disks-naming.html).
+	For virtio hard drives it is `vtbd'.
+
+	Under an MBR partition table a slice will be used, so the name of
+	the first partitions will be either `ada0s1a' or `vtbd0s1a'. Under a
+	GPT partition table, where no slice is needed, the name of the first
+	partition will be either `ada0p1' or `vtbd0p1'.
+
+	(cherry picked from commit 7e2576a74a93474bc04525adc398cdc4144f389d)
+
+2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add an extra Makefile.am to builder/website.
+	(cherry picked from commit cd10f6f4db32689b2552b52a4875795be8b35694)
+
+	builder: Fix 'check-valgrind' so it does something in this directory.
+	(cherry picked from commit 2dca9d719434f6783e11976699e45a98128ca913)
+
+2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Don't use git tree / libguestfs.git to refer to the source.
+	git is just a VCS.
+
+	(cherry picked from commit 3ffdddbedf176fa5f12172fb2e3c6bd4b2690f9e)
+
+2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	df: Allow parallel test to be skipped.
+	It currently fails because of
+	https://bugzilla.redhat.com/show_bug.cgi?id=1025942
+
+	(cherry picked from commit 50486232db08ccad4b38f5addfcef92b0f4faef3)
+
 2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.24.1.
