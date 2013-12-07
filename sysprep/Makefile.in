@@ -1329,7 +1329,7 @@ RUBY = @RUBY@
 SD_JOURNAL_CFLAGS = @SD_JOURNAL_CFLAGS@
 SD_JOURNAL_LIBS = @SD_JOURNAL_LIBS@
 SED = @SED@
-SELINUX_LIB = @SELINUX_LIB@
+SELINUX_LIBS = @SELINUX_LIBS@
 SERVENT_LIB = @SERVENT_LIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -1504,6 +1504,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/crypt-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/crypt.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/urandom.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/password.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/random_seed.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/hostname.cmx \

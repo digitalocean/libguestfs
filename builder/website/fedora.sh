@@ -1,3 +1,4 @@
+#!/bin/bash -
 # virt-builder
 # Copyright (C) 2013 Red Hat Inc.
 #
@@ -15,6 +16,29 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+# This script was used to create the Fedora templates used by
+# virt-builder.
+
+unset CDPATH
+export LANG=C
+set -e
+set -x
+
+if [ $# -ne 1 ]; then
+    echo "$0 VERSION"
+    exit 1
+fi
+
+version=$1
+tree=http://mirror.bytemark.co.uk/fedora/linux/releases/$version/Fedora/x86_64/os/
+output=fedora-$version
+tmpname=tmp-$(tr -cd 'a-f0-9' < /dev/urandom | head -c 8)
+
+rm -f $output $output.old $output.xz
+
+# Generate the kickstart to a temporary file.
+ks=$(mktemp)
+cat > $ks <<'EOF'
 install
 text
 reboot
@@ -36,3 +60,26 @@ poweroff
 %packages
 @core
 %end
+EOF
+
+# Clean up function.
+cleanup ()
+{
+    rm -f $ks
+    virsh undefine $tmpname ||:
+}
+trap cleanup INT QUIT TERM EXIT ERR
+
+virt-install \
+    --name=$tmpname \
+    --ram=2048 \
+    --cpu=host --vcpus=2 \
+    --os-type=linux --os-variant=fedora18 \
+    --initrd-inject=$ks \
+    --extra-args="ks=file:/`basename $ks` console=tty0 console=ttyS0,115200 proxy=$http_proxy" \
+    --disk $(pwd)/$output,size=6 \
+    --location=$tree \
+    --nographics \
+    --noreboot
+
+source $(dirname "$0")/compress.sh $output

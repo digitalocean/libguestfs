@@ -1,39 +1,45 @@
 =encoding utf8
 
-=item B<--firstboot> firstboot (see C<firstboot> below)
+=item B<--firstboot> SCRIPT (see C<firstboot> below)
 
 Run script(s) once next time the guest boots.  You can supply the
 I<--firstboot> option as many times as needed.
 
-=item B<--hostname> hostname (以下の C<hostname> 参照)
+=item B<--hostname> HOSTNAME (see C<hostname> below)
 
 ホスト名を変更します。指定されないと、デフォルトで C<localhost.localdomain> になります。
 
-=item B<--password> password (see C<password> below)
+=item B<--password> USERNAME:SELECTOR (see C<password> below)
 
 Set a user password.  The user must exist already (this option does I<not>
-create users).  The following formats may be used for this option:
+create users).
+
+The I<--password> option takes C<USERNAME:SELECTOR>.  The I<--root-password>
+option takes just the C<SELECTOR>.  The format of the C<SELECTOR> is
+described below:
 
 =over 4
 
 =item B<--password USERNAME:file:FILENAME>
 
-Change the password for C<USERNAME>.  Read the password from C<FILENAME>.
-The whole first line of this file is the replacement password.  Any other
-lines are ignored.  You should create the file with mode 0600 to ensure no
-one else can read it.
+=item B<--root-password file:FILENAME>
+
+Read the password from C<FILENAME>.  The whole first line of this file is
+the replacement password.  Any other lines are ignored.  You should create
+the file with mode 0600 to ensure no one else can read it.
 
 =item B<--password USERNAME:password:PASSWORD>
 
-Change the password for C<USERNAME>.  Set the password to the literal string
-C<PASSWORD>.
+=item B<--root-password password:PASSWORD>
+
+Set the password to the literal string C<PASSWORD>.
 
 B<Note: this is not secure> since any user on the same machine can see the
 cleartext password using L<ps(1)>.
 
 =back
 
-=item B<--password-crypto> password-crypto (see C<password> below)
+=item B<--password-crypto> md5|sha256|sha512 (see C<password> below)
 
 Set the password encryption to C<md5>, C<sha256> or C<sha512>.
 
@@ -47,43 +53,27 @@ The default is C<sha512> unless libguestfs detects an old guest that didn't
 have support for SHA-512, in which case it will use C<md5>.  You can
 override libguestfs by specifying this option.
 
-=item B<--root-password> root-password (see C<password> below)
+=item B<--root-password> SELECTOR (see C<password> below)
 
-Set the root password.  The following formats may be used for this option:
+Set the root password.  See I<--password> above for the format of
+C<SELECTOR>.
 
-=over 4
+=item B<--script> SCRIPT (see C<script> below)
 
-=item B<--root-password file:FILENAME>
-
-Read the root password from C<FILENAME>.  The whole first line of this file
-is the replacement password.  Any other lines are ignored.  You should
-create the file with mode 0600 to ensure no one else can read it.
-
-=item B<--root-password password:PASSWORD>
-
-Set the root password to the literal string C<PASSWORD>.
-
-B<Note: this is not secure> since any user on the same machine can see the
-cleartext password using L<ps(1)>.
-
-=back
-
-=item B<--script> script (以下の C<script> 参照)
-
-Run the named C<script> (a shell script or program) against the guest.  The
+Run the named C<SCRIPT> (a shell script or program) against the guest.  The
 script can be any program on the host.  The script's current directory will
 be the guest's root directory.
 
 B<Note:> If the script is not on the $PATH, then you must give the full
 absolute path to the script.
 
-=item B<--scriptdir> scriptdir (以下の C<script> 参照)
+=item B<--scriptdir> SCRIPTDIR (see C<script> below)
 
 The mount point (an empty directory on the host) used when the C<script>
 operation is enabled and one or more scripts are specified using I<--script>
 parameter(s).
 
-B<Note:> C<scriptdir> B<must> be an absolute path.
+B<Note:> C<SCRIPTDIR> B<must> be an absolute path.
 
 If I<--scriptdir> is not specified then a temporary mountpoint will be
 created.

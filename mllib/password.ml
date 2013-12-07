@@ -21,7 +21,9 @@ open Printf
 
 type password_crypto = [`MD5 | `SHA256 | `SHA512 ]
 
-type password_map = (string, string) Hashtbl.t
+type password_selector = Set_password of string
+
+type password_map = (string, password_selector) Hashtbl.t
 
 let password_crypto_of_string ~prog = function
   | "md5" -> `MD5
@@ -32,7 +34,7 @@ let password_crypto_of_string ~prog = function
       prog arg;
     exit 1
 
-let rec get_password ~prog arg =
+let rec parse_selector ~prog arg =
   let i =
     try String.index arg ':'
     with Not_found ->
@@ -43,8 +45,8 @@ let rec get_password ~prog arg =
     String.sub arg 0 i, String.sub arg (i+1) (len-(i+1)) in
 
   match key with
-  | "file" -> read_password_from_file value
-  | "password" -> value
+  | "file" -> Set_password (read_password_from_file value)
+  | "password" -> Set_password value
   | _ ->
     eprintf (f_"%s: password format, \"%s:...\" is not recognized; see the man page.\n") prog key;
     exit 1
@@ -57,7 +59,6 @@ and read_password_from_file filename =
 
 (* Permissible characters in a salt. *)
 let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789./"
-let nr_chars = String.length chars
 
 let rec set_linux_passwords ~prog ?password_crypto g root passwords =
   let crypto =
@@ -79,10 +80,12 @@ let rec set_linux_passwords ~prog ?password_crypto g root passwords =
            *)
           let i = String.index line ':' in
           let user = String.sub line 0 i in
-          let password = Hashtbl.find passwords user in
+          let selector = Hashtbl.find passwords user in
           let j = String.index_from line (i+1) ':' in
           let rest = String.sub line j (String.length line - j) in
-          user ^ ":" ^ encrypt password crypto ^ rest
+          match selector with
+          | Set_password password ->
+            user ^ ":" ^ encrypt password crypto ^ rest
         with Not_found -> line
     ) shadow in
 
@@ -95,14 +98,7 @@ let rec set_linux_passwords ~prog ?password_crypto g root passwords =
  *)
 and encrypt password crypto =
   (* Get random characters from the set [A-Za-z0-9./] *)
-  let salt =
-    let chan = open_in "/dev/urandom" in
-    let buf = String.create 16 in
-    for i = 0 to 15 do
-      buf.[i] <- chars.[Char.code (input_char chan) mod nr_chars]
-    done;
-    close_in chan;
-    buf in
+  let salt = Urandom.urandom_uniform 16 chars in
   let salt =
     (match crypto with
     | `MD5 -> "$1$"

@@ -1,4 +1,4 @@
-# virt-builder
+# libguestfs virt-builder tool
 # Copyright (C) 2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,24 +15,31 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-install
-text
-reboot
-lang en_US.UTF-8
-keyboard us
-network --bootproto dhcp
-rootpw builder
-firewall --enabled --ssh
-selinux --enforcing
-timezone --utc America/New_York
-bootloader --location=mbr --append="console=tty0 console=ttyS0,115200 rd_NO_PLYMOUTH"
-zerombr
-clearpart --all --initlabel
-autopart --type=plain
+include $(top_srcdir)/subdir-rules.mk
 
-# Halt the system once configuration has finished.
-poweroff
+EXTRA_DIST = \
+	.gitignore \
+	compress.sh \
+	test-guest.sh \
+	README \
+	index \
+	index.asc \
+	centos.sh \
+	centos-6.xz.sig \
+	debian.preseed \
+	debian.sh \
+	debian-6.xz.sig \
+	debian-7.xz.sig \
+	fedora.sh \
+	fedora-18.xz.sig \
+	fedora-19.xz.sig \
+	rhel.sh \
+	scientificlinux.sh \
+	scientificlinux-6.xz.sig \
+	ubuntu.preseed \
+	ubuntu.sh \
+	ubuntu-10.04.xz.sig \
+	ubuntu-12.04.xz.sig \
+	ubuntu-13.10.xz.sig
 
-%packages
-@core
-%end
+CLEANFILES = *~
