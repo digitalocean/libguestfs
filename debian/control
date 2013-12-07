@@ -138,19 +138,6 @@ Description: guest disk image management system - shared library
  what file system is in each LV, etc.); to run commands in the context of the
  guest; and to upload and download files and directories.
 
-Package: guestmount
-Section: admin
-Architecture: i386 amd64
-Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-Description: guest disk image management system - FUSE mount utility
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- The guestmount utility can be used to mount virtual machine file systems and
- other disk images on the host. It uses libguestfs for access to the guest
- file system, and FUSE ("File system in USErspace") to make it appear as a
- mountable device.
-
 Package: libguestfs-tools
 Section: admin
 Architecture: i386 amd64
@@ -159,8 +146,10 @@ Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
  libwin-hivex-perl,
  libintl-perl, libstring-shellquote-perl
 Replaces: guestfish (<< 1:1.22.6-1~),
+ guestmount (<< 1.24.2-1~),
  libguestfs0 (<< 1:1.18.2-1~),
 Breaks: guestfish (<< 1:1.22.6-1~),
+ guestmount (<< 1.24.2-1~),
  libguestfs0 (<< 1:1.18.2-1~),
 Description: guest disk image management system - tools
  The libguestfs library allows accessing and modifying guest disk

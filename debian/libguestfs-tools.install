@@ -27,3 +27,12 @@ usr/share/man/man1/guestfish*
 usr/share/man/*/man1/guestfish*
 
 usr/share/bash-completion/completions/guestfish
+
+usr/bin/guestmount
+usr/share/man/man1/guestmount*
+usr/share/man/*/man1/guestmount*
+usr/bin/guestunmount
+usr/share/man/man1/guestunmount*
+usr/share/man/*/man1/guestunmount*
+
+usr/share/bash-completion/completions/guestmount
