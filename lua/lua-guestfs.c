@@ -35,7 +35,9 @@
 #include <lauxlib.h>
 
 #if LUA_VERSION_NUM >= 502
+#ifndef lua_objlen
 #define lua_objlen lua_rawlen
+#endif
 #endif
 
 #include <guestfs.h>

@@ -1301,7 +1301,7 @@ RUBY = @RUBY@
 SD_JOURNAL_CFLAGS = @SD_JOURNAL_CFLAGS@
 SD_JOURNAL_LIBS = @SD_JOURNAL_LIBS@
 SED = @SED@
-SELINUX_LIB = @SELINUX_LIB@
+SELINUX_LIBS = @SELINUX_LIBS@
 SERVENT_LIB = @SERVENT_LIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -1438,6 +1438,8 @@ SOURCES = \
 	tty-c.c \
 	tTY.mli \
 	tTY.ml \
+	urandom.mli \
+	urandom.ml \
 	uri-c.c \
 	uRI.mli \
 	uRI.ml
@@ -1459,6 +1461,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	libdir.cmx \
 @HAVE_OCAML_TRUE@	common_gettext.cmx \
 @HAVE_OCAML_TRUE@	common_utils.cmx \
+@HAVE_OCAML_TRUE@	urandom.cmx \
 @HAVE_OCAML_TRUE@	random_seed.cmx \
 @HAVE_OCAML_TRUE@	hostname.cmx \
 @HAVE_OCAML_TRUE@	firstboot.cmx \

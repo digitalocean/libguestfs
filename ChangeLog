@@ -1,3 +1,167 @@
+2013-11-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.11.
+
+	sysprep: Fix broken test when backend is UML.
+	This fixes commit cc1888a4977eb4942254ea5ac15c1d0a47458317.
+
+2013-11-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.10.
+
+	lua: Don't redefine lua_objlen if already defined.
+	lua 5.2.2 seems to define this symbol already.
+
+	Version 1.25.9.
+
+	sysprep: Add a test suite for the --password option.
+
+2013-11-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder/sysprep: Allow accounts to be locked (RHBZ#1028660).
+	This allows you to select both locked accounts and disabled
+	passwords.  The two are subtly different concepts.
+
+	A locked account [cf. passwd -l] puts "!!" at the beginning of the
+	shadow password field.  Locking is reversible, because the "!!"  can
+	be removed, restoring the original password.  Therefore "locked"
+	acts as a flag in front of an existing selector.
+
+	A disabled account has "*" in the password field.  Therefore it has no
+	password.
+
+	Note that an account may be both locked and disabled, although this is
+	probably not useful.  The shadow password field will contain "!!*".
+
+2013-11-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder/sysprep: Allow 'random' as a password selector.
+	This chooses a random password.
+
+2013-11-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	mllib: password: Replace password string with password_selector type.
+	This is just code motion, there is no functional change.
+
+2013-11-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder/sysprep: Describe --password/--root-password option as "selector".
+	It now appears in the respective man pages as:
+
+	  --root-password selector
+
+	or:
+
+	  --password selector
+
+	This avoids confusion from people who think these command line options
+	take the password directly.
+
+2013-11-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	ls: Note that you can use virt-cat or guestfish to show file differences.
+
+	ls: In image diff example, don't use --time-t.
+	It shows differences in file access times (atime) which is not
+	actually that useful for most people.
+
+2013-11-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: "execl: /init: Permission denied" error also caused by /init not being executable.
+	This updates commit 98cd329323d35ab54efd976e095ae9cbf18ad338.
+
+	FAQ: Attempt to explain "execl: /init: Permission denied" error.
+
+2013-11-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Make sure -lselinux is used when linking libguestfs.so.
+	If libselinux was detected, it was not added to the linker command
+	line.  This still worked (at least on Fedora) because some other
+	library pulls in the dependency implicitly, possibly libvirt.  However
+	this broke on Arch:
+
+	https://aur.archlinux.org/packages/libguestfs/
+
+	Reported by and thanks: Antoni Segura Puimedon.
+
+2013-11-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: btrfs: Upstream 'btrfs device add' command now needs '--force' option to work.
+	However earlier versions didn't have the --force option, so we
+	have to detect it.
+
+2013-11-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.8.
+
+	virt-win-reg: Allow URIs (RHBZ#912193).
+
+2013-11-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl: Give error instead of crashing if optarg is not an array reference.
+	  $g->add_drive ("", server => 1);
+
+	would segfault.  Now it gives a nice error instead:
+
+	  array reference expected for 'server' argument at [line]
+
+2013-11-14  Török Edwin  <edwin@etorok.net>
+
+	Avoid modulo bias in random password generation
+	Char.code (input_char chan) mod nr_chars has modulo bias because
+	the original interval is not a multiple of the destination interval,
+	i.e. 256 mod nr_chars != 0.
+
+	One way to fix this is to keep generating random numbers until they fall outside
+	the interval where modulo bias occurs, that is accept only c=[256 % nr_chars, 256).
+	That interval maps back to [0, nr_chars), and has a length of
+	(256 - 256 % nr_chars), which is a multiple of nr_chars.
+
+	RWMJ:
+	 - Modify the code so it goes into a utility library.
+	 - Use the same code across virt-builder and virt-sysprep.
+
+2013-11-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	mllib: Add a utility function for safely reading from /dev/urandom.
+	OCaml's buffered 'in_channel' has a 64k buffer, so using it to read a
+	few bytes from /dev/urandom removes a lot of the system's entropy (for
+	example /proc/sys/kernel/random/entropy_avail goes from ~3000 to 128).
+
+	This patch was originally by Edwin Török for builder.ml.  I
+	generalized it because there are two other places where we did
+	over-sized reads from /dev/urandom.
+
+2013-11-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Clarify architecture section of the documentation.
+	I have checked and cross architecture builds work fine:
+
+	http://rwmj.wordpress.com/2013/11/09/virt-builder-running-on-arm/#content
+
+2013-11-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	Change supermin man pages section 8 to section 1.
+	Corresponding change in upstream supermin:
+	https://github.com/libguestfs/supermin/commit/cb3f9e8bbaf5e612fdf97caf9f47a4cd839c3438
+
+2013-11-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	podwrapper: virt-install is not a libguestfs page.
+	This now redirect to http://man.he.net/man1/virt-install, but this is
+	unfortunately a 404.
+
+	Incomplete fix for RHBZ#1029134.
+
+	Thanks: Paul Maunders.
+
+2013-11-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: debian: Remove bogus proxy from apt configuration.
+	Thanks: Daniel Miranda
+
+	builder: After building a template, print fields for index file.
+
 2013-11-08  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.25.7.

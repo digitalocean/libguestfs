@@ -1,4 +1,4 @@
-(* configuration for mllib.
+(* Read /dev/urandom.
  * Copyright (C) 2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,5 +16,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-let package_name = "libguestfs"
-let package_version = "1.25.11"
+(** Read and return N bytes (only) from /dev/urandom. *)
+
+val urandom_bytes : int -> string
+(** Read N bytes from /dev/urandom and return it as a binary string. *)
+
+val urandom_uniform : int -> string -> string
+(** [urandom_uniform n chars] returns [n] bytes, uniformly
+    distributed from the sets of characters [chars]. *)

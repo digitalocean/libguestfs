@@ -1334,7 +1334,7 @@ RUBY = @RUBY@
 SD_JOURNAL_CFLAGS = @SD_JOURNAL_CFLAGS@
 SD_JOURNAL_LIBS = @SD_JOURNAL_LIBS@
 SED = @SED@
-SELINUX_LIB = @SELINUX_LIB@
+SELINUX_LIBS = @SELINUX_LIBS@
 SERVENT_LIB = @SERVENT_LIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -1443,6 +1443,7 @@ top_srcdir = @top_srcdir@
 EXTRA_DIST = \
 	$(SOURCES) \
 	test-virt-sysprep.sh \
+	test-virt-sysprep-passwords.sh \
 	test-virt-sysprep-script.sh script1.sh script2.sh script3.sh \
 	virt-sysprep.pod
 
@@ -1513,6 +1514,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/crypt-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/crypt.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/urandom.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/password.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/random_seed.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/hostname.cmx \
@@ -1562,6 +1564,7 @@ SOURCES = \
 
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@TESTS = \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-virt-sysprep.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-virt-sysprep-passwords.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-virt-sysprep-script.sh
 
 DISTCLEANFILES = .depend

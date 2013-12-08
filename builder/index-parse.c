@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 2.6.4.  */
+/* A Bison parser, made by GNU Bison 2.7.  */
 
 /* Bison implementation for Yacc-like parsers in C
    
@@ -44,7 +44,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.6.4"
+#define YYBISON_VERSION "2.7"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -62,7 +62,7 @@
 
 
 /* Copy the first part of user declarations.  */
-/* Line 358 of yacc.c  */
+/* Line 371 of yacc.c  */
 #line 19 "index-parse.y"
 
 #include <config.h>
@@ -99,7 +99,7 @@ concat_newline (const char *str1, const char *str2)
 }
 
 
-/* Line 358 of yacc.c  */
+/* Line 371 of yacc.c  */
 #line 104 "index-parse.c"
 
 # ifndef YY_NULL
@@ -157,7 +157,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
 {
-/* Line 374 of yacc.c  */
+/* Line 387 of yacc.c  */
 #line 57 "index-parse.y"
 
   struct section *section;
@@ -165,7 +165,7 @@ typedef union YYSTYPE
   char *str;
 
 
-/* Line 374 of yacc.c  */
+/* Line 387 of yacc.c  */
 #line 170 "index-parse.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
@@ -206,7 +206,7 @@ int yyparse ();
 
 /* Copy the second part of user declarations.  */
 
-/* Line 377 of yacc.c  */
+/* Line 390 of yacc.c  */
 #line 211 "index-parse.c"
 
 #ifdef short
@@ -642,9 +642,10 @@ do                                                              \
     }								\
 while (YYID (0))
 
-
+/* Error token number */
 #define YYTERROR	1
 #define YYERRCODE	256
+
 
 /* YYLLOC_DEFAULT -- Set CURRENT to span from RHS[1] to RHS[N].
    If N is 0, then set CURRENT to the empty location which ends
@@ -673,17 +674,52 @@ while (YYID (0))
 #define YYRHSLOC(Rhs, K) ((Rhs)[K])
 
 
-
 /* YY_LOCATION_PRINT -- Print the location on the stream.
    This macro was not mandated originally: define only if we know
    we won't break user code: when these are the locations we know.  */
 
 #ifndef YY_LOCATION_PRINT
 # if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
-#  define YY_LOCATION_PRINT(File, Loc)			\
-     fprintf (File, "%d.%d-%d.%d",			\
-	      (Loc).first_line, (Loc).first_column,	\
-	      (Loc).last_line,  (Loc).last_column)
+
+/* Print *YYLOCP on YYO.  Private, do not rely on its existence. */
+
+__attribute__((__unused__))
+#if (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
+static unsigned
+yy_location_print_ (FILE *yyo, YYLTYPE const * const yylocp)
+#else
+static unsigned
+yy_location_print_ (yyo, yylocp)
+    FILE *yyo;
+    YYLTYPE const * const yylocp;
+#endif
+{
+  unsigned res = 0;
+  int end_col = 0 != yylocp->last_column ? yylocp->last_column - 1 : 0;
+  if (0 <= yylocp->first_line)
+    {
+      res += fprintf (yyo, "%d", yylocp->first_line);
+      if (0 <= yylocp->first_column)
+        res += fprintf (yyo, ".%d", yylocp->first_column);
+    }
+  if (0 <= yylocp->last_line)
+    {
+      if (yylocp->first_line < yylocp->last_line)
+        {
+          res += fprintf (yyo, "-%d", yylocp->last_line);
+          if (0 <= end_col)
+            res += fprintf (yyo, ".%d", end_col);
+        }
+      else if (0 <= end_col && yylocp->first_column < end_col)
+        res += fprintf (yyo, "-%d", end_col);
+    }
+  return res;
+ }
+
+#  define YY_LOCATION_PRINT(File, Loc)          \
+  yy_location_print_ (File, &(Loc))
+
 # else
 #  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
 # endif
@@ -691,7 +727,6 @@ while (YYID (0))
 
 
 /* YYLEX -- calling `yylex' with the right arguments.  */
-
 #ifdef YYLEX_PARAM
 # define YYLEX yylex (YYLEX_PARAM)
 #else
@@ -756,7 +791,7 @@ yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp)
   switch (yytype)
     {
       default:
-	break;
+        break;
     }
 }
 
@@ -1002,7 +1037,6 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
 {
   YYSIZE_T yysize0 = yytnamerr (YY_NULL, yytname[yytoken]);
   YYSIZE_T yysize = yysize0;
-  YYSIZE_T yysize1;
   enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
   /* Internationalized format string. */
   const char *yyformat = YY_NULL;
@@ -1065,11 +1099,13 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
                     break;
                   }
                 yyarg[yycount++] = yytname[yyx];
-                yysize1 = yysize + yytnamerr (YY_NULL, yytname[yyx]);
-                if (! (yysize <= yysize1
-                       && yysize1 <= YYSTACK_ALLOC_MAXIMUM))
-                  return 2;
-                yysize = yysize1;
+                {
+                  YYSIZE_T yysize1 = yysize + yytnamerr (YY_NULL, yytname[yyx]);
+                  if (! (yysize <= yysize1
+                         && yysize1 <= YYSTACK_ALLOC_MAXIMUM))
+                    return 2;
+                  yysize = yysize1;
+                }
               }
         }
     }
@@ -1089,10 +1125,12 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
 # undef YYCASE_
     }
 
-  yysize1 = yysize + yystrlen (yyformat);
-  if (! (yysize <= yysize1 && yysize1 <= YYSTACK_ALLOC_MAXIMUM))
-    return 2;
-  yysize = yysize1;
+  {
+    YYSIZE_T yysize1 = yysize + yystrlen (yyformat);
+    if (! (yysize <= yysize1 && yysize1 <= YYSTACK_ALLOC_MAXIMUM))
+      return 2;
+    yysize = yysize1;
+  }
 
   if (*yymsg_alloc < yysize)
     {
@@ -1154,7 +1192,7 @@ yydestruct (yymsg, yytype, yyvaluep, yylocationp)
     {
 
       default:
-	break;
+        break;
     }
 }
 
@@ -1165,19 +1203,24 @@ yydestruct (yymsg, yytype, yyvaluep, yylocationp)
 int yychar;
 
 
-#ifndef YYLVAL_INITIALIZE
-# define YYLVAL_INITIALIZE()
-#endif
 #ifndef YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
 # define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
 # define YY_IGNORE_MAYBE_UNINITIALIZED_END
 #endif
+#ifndef YY_INITIAL_VALUE
+# define YY_INITIAL_VALUE(Value) /* Nothing. */
+#endif
 
 /* The semantic value of the lookahead symbol.  */
-YYSTYPE yylval;
+YYSTYPE yylval YY_INITIAL_VALUE(yyval_default);
 
 /* Location data for the lookahead symbol.  */
-YYLTYPE yylloc;
+YYLTYPE yylloc
+# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
+  = { 1, 1, 1, 1 }
+# endif
+;
+
 
 /* Number of syntax errors so far.  */
 int yynerrs;
@@ -1263,9 +1306,9 @@ yyparse ()
      Keep to zero when no symbol should be popped.  */
   int yylen = 0;
 
-  yyss = yyssa;
-  yyvs = yyvsa;
-  yyls = yylsa;
+  yyssp = yyss = yyssa;
+  yyvsp = yyvs = yyvsa;
+  yylsp = yyls = yylsa;
   yystacksize = YYINITDEPTH;
 
   YYDPRINTF ((stderr, "Starting parse\n"));
@@ -1274,21 +1317,7 @@ yyparse ()
   yyerrstatus = 0;
   yynerrs = 0;
   yychar = YYEMPTY; /* Cause a token to be read.  */
-
-  /* Initialize stack pointers.
-     Waste one element of value and location stack
-     so that they stay on the same level as the state stack.
-     The wasted elements are never initialized.  */
-  yyssp = yyss;
-  yyvsp = yyvs;
-  yylsp = yyls;
-
-  YYLVAL_INITIALIZE ();
-#if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
-  /* Initialize the default location before parsing starts.  */
-  yylloc.first_line   = yylloc.last_line   = 1;
-  yylloc.first_column = yylloc.last_column = 1;
-#endif
+  yylsp[0] = yylloc;
   goto yysetstate;
 
 /*------------------------------------------------------------.
@@ -1474,31 +1503,31 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-/* Line 1813 of yacc.c  */
+/* Line 1792 of yacc.c  */
 #line 78 "index-parse.y"
     { parsed_index = (yyvsp[(1) - (1)].section); }
     break;
 
   case 3:
-/* Line 1813 of yacc.c  */
+/* Line 1792 of yacc.c  */
 #line 80 "index-parse.y"
     { parsed_index = (yyvsp[(2) - (3)].section); }
     break;
 
   case 4:
-/* Line 1813 of yacc.c  */
+/* Line 1792 of yacc.c  */
 #line 84 "index-parse.y"
     { (yyval.section) = (yyvsp[(1) - (1)].section); }
     break;
 
   case 5:
-/* Line 1813 of yacc.c  */
+/* Line 1792 of yacc.c  */
 #line 86 "index-parse.y"
     { (yyval.section) = (yyvsp[(1) - (3)].section); (yyval.section)->next = (yyvsp[(3) - (3)].section); }
     break;
 
   case 6:
-/* Line 1813 of yacc.c  */
+/* Line 1792 of yacc.c  */
 #line 90 "index-parse.y"
     { (yyval.section) = malloc (sizeof (struct section));
           (yyval.section)->next = NULL;
@@ -1507,19 +1536,19 @@ yyreduce:
     break;
 
   case 7:
-/* Line 1813 of yacc.c  */
+/* Line 1792 of yacc.c  */
 #line 97 "index-parse.y"
     { (yyval.field) = NULL; }
     break;
 
   case 8:
-/* Line 1813 of yacc.c  */
+/* Line 1792 of yacc.c  */
 #line 99 "index-parse.y"
     { (yyval.field) = (yyvsp[(1) - (2)].field); (yyval.field)->next = (yyvsp[(2) - (2)].field); }
     break;
 
   case 9:
-/* Line 1813 of yacc.c  */
+/* Line 1792 of yacc.c  */
 #line 102 "index-parse.y"
     { (yyval.field) = (yyvsp[(1) - (2)].field);
           char *old_value = (yyval.field)->value;
@@ -1529,13 +1558,13 @@ yyreduce:
     break;
 
   case 10:
-/* Line 1813 of yacc.c  */
+/* Line 1792 of yacc.c  */
 #line 110 "index-parse.y"
     { (yyval.str) = NULL; }
     break;
 
   case 11:
-/* Line 1813 of yacc.c  */
+/* Line 1792 of yacc.c  */
 #line 112 "index-parse.y"
     { (yyval.str) = concat_newline ((yyvsp[(1) - (2)].str), (yyvsp[(2) - (2)].str));
           free ((yyvsp[(1) - (2)].str));
@@ -1543,8 +1572,8 @@ yyreduce:
     break;
 
 
-/* Line 1813 of yacc.c  */
-#line 1548 "index-parse.c"
+/* Line 1792 of yacc.c  */
+#line 1577 "index-parse.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1782,7 +1811,7 @@ yyreturn:
 }
 
 
-/* Line 2076 of yacc.c  */
+/* Line 2055 of yacc.c  */
 #line 116 "index-parse.y"
 
 

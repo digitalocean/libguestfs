@@ -15,7 +15,7 @@ virt-builder - Build virtual machine images quickly
 
  virt-builder [-o|--output DISKIMAGE] [--size SIZE] [--format raw|qcow2]
     [--attach ISOFILE]
-    [--root-password ...]
+    [--root-password SELECTOR]
     [--hostname HOSTNAME]
     [--install PKG,[PKG...]]
     [--mkdir DIR]
@@ -486,11 +486,11 @@ Print information about the template cache.  See L</CACHING>.
 
 Don't print ordinary progress messages.
 
-=item B<--root-password> PASSWORD
+=item B<--root-password> SELECTOR
 
 Set the root password.
 
-See L</USERS AND PASSWORDS> below for the format of the C<PASSWORD> field,
+See L</USERS AND PASSWORDS> below for the format of the C<SELECTOR> field,
 and also how to set up user accounts.
 
 Note if you I<don't> set I<--root-password> then the guest is given a
@@ -672,7 +672,8 @@ Use the I<--attach> option to attach the CD:
 =head2 USERS AND PASSWORDS
 
 The I<--root-password> option is used to change the root password (otherwise
-a random password is used).  This option has the following formats:
+a random password is used).  This option takes a password C<SELECTOR> in one
+of the following formats:
 
 =over 4
 
@@ -688,6 +689,33 @@ Set the root password to the literal string C<PASSWORD>.
 
 B<Note: this is not secure> since any user on the same machine can see the
 cleartext password using L<ps(1)>.
+
+=item B<--root-password> random
+
+Choose a random password, which is printed on stdout.  The password has
+approximately 120 bits of randomness.
+
+Типове значення.
+
+=item B<--root-password> disabled
+
+The root account password is disabled.  This is like putting C<*> in the
+password field.
+
+=item B<--root-password> locked:file:FILENAME
+
+=item B<--root-password> locked:password:PASSWORD
+
+=item B<--root-password> locked:random
+
+The root account is locked, but a password is placed on the account.  If
+first unlocked (using C<passwd -u>) then logins will use the given password.
+
+=item B<--root-password> locked
+
+=item B<--root-password> locked:disabled
+
+The root account is locked I<and> password is disabled.
 
 =back
 
@@ -1299,15 +1327,15 @@ always create signed index and templates.
 
 =head2 АРХІТЕКТУРА
 
-Virt-builder can, in theory, build a guest for any architecture no matter
-what the host architecture is.  For example a ppc64 guest on an x86-64 host.
+Virt-builder can build a guest for any architecture no matter what the host
+architecture is.  For example an x86-64 guest on an ARM host.
 
 However certain options may not work correctly, specifically options that
 require running commands in the guest during the build process:
 I<--install>, I<--run>, I<--run-command>.  You may need to replace these
 with their firstboot-equivalents.
 
-An x86-64 host building 32 bit x86 guests should work without any special
+An x86-64 host building 32 bit i686 guests should work without any special
 steps.
 
 =head2 БЕЗПЕКА

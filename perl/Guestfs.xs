@@ -351,10 +351,13 @@ PREINIT:
         else if (STREQ (this_arg, "ostringlist")) {
           size_t i, len;
           char **r;
+          SV *arg;
           AV *av;
           SV **svp;
 
-          /* XXX More checking required here. */
+          arg = ST (items_i+1);
+          if (!SvROK (arg) || SvTYPE (SvRV (arg)) != SVt_PVAV)
+            croak ("array reference expected for '%s' argument", "ostringlist");
           av = (AV *) SvRV (ST (items_i+1));
 
           /* Note av_len returns index of final element. */
@@ -1826,10 +1829,13 @@ PREINIT:
         else if (STREQ (this_arg, "server")) {
           size_t i, len;
           char **r;
+          SV *arg;
           AV *av;
           SV **svp;
 
-          /* XXX More checking required here. */
+          arg = ST (items_i+1);
+          if (!SvROK (arg) || SvTYPE (SvRV (arg)) != SVt_PVAV)
+            croak ("array reference expected for '%s' argument", "server");
           av = (AV *) SvRV (ST (items_i+1));
 
           /* Note av_len returns index of final element. */
@@ -4100,10 +4106,13 @@ PREINIT:
         else if (STREQ (this_arg, "excludes")) {
           size_t i, len;
           char **r;
+          SV *arg;
           AV *av;
           SV **svp;
 
-          /* XXX More checking required here. */
+          arg = ST (items_i+1);
+          if (!SvROK (arg) || SvTYPE (SvRV (arg)) != SVt_PVAV)
+            croak ("array reference expected for '%s' argument", "excludes");
           av = (AV *) SvRV (ST (items_i+1));
 
           /* Note av_len returns index of final element. */

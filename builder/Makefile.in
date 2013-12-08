@@ -1395,7 +1395,7 @@ RUBY = @RUBY@
 SD_JOURNAL_CFLAGS = @SD_JOURNAL_CFLAGS@
 SD_JOURNAL_LIBS = @SD_JOURNAL_LIBS@
 SED = @SED@
-SELINUX_LIB = @SELINUX_LIB@
+SELINUX_LIBS = @SELINUX_LIBS@
 SERVENT_LIB = @SERVENT_LIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -1550,6 +1550,7 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/libdir.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/urandom.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/random_seed.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/hostname.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/firstboot.cmx \

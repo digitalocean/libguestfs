@@ -20,6 +20,7 @@ include $(top_srcdir)/subdir-rules.mk
 EXTRA_DIST = \
 	$(SOURCES) \
 	test-virt-sysprep.sh \
+	test-virt-sysprep-passwords.sh \
 	test-virt-sysprep-script.sh script1.sh script2.sh script3.sh \
 	virt-sysprep.pod
 
@@ -89,6 +90,7 @@ OBJECTS = \
 	$(top_builddir)/mllib/uRI.cmx \
 	$(top_builddir)/mllib/crypt-c.o \
 	$(top_builddir)/mllib/crypt.cmx \
+	$(top_builddir)/mllib/urandom.cmx \
 	$(top_builddir)/mllib/password.cmx \
 	$(top_builddir)/mllib/random_seed.cmx \
 	$(top_builddir)/mllib/hostname.cmx \
@@ -184,6 +186,7 @@ TESTS_ENVIRONMENT = \
 if ENABLE_APPLIANCE
 TESTS = \
 	test-virt-sysprep.sh \
+	test-virt-sysprep-passwords.sh \
 	test-virt-sysprep-script.sh
 endif ENABLE_APPLIANCE
 
