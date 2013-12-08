@@ -8,7 +8,7 @@ Build-Depends: debhelper (>= 9~), autotools-dev, aptitude,
   po-debconf, bash-completion,
   supermin (>= 4.1.5-2~),
   libreadline-dev, libaugeas-dev (>= 1.0.0), libselinux1-dev, libhivex-dev, libvirt-dev,
-  libmagic-dev, libncurses5-dev, libpcre3-dev, libxml2-dev,
+  liblzma-dev, libmagic-dev, libncurses5-dev, libpcre3-dev, libxml2-dev,
   libconfig-dev, libc-dev-bin, systemtap-sdt-dev,
   libcap-dev, libacl1-dev, libyajl-dev,
   automake, autoconf, libtool,
@@ -29,6 +29,7 @@ Build-Depends: debhelper (>= 9~), autotools-dev, aptitude,
   netpbm, icoutils,
   po4a,
   curl,
+  flex, bison,
 Homepage: http://libguestfs.org
 Standards-Version: 3.9.4
 Vcs-Git: git://git.debian.org/git/pkg-libvirt/libguestfs.git
