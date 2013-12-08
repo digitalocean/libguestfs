@@ -1,0 +1,21 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Sun, 8 Dec 2013 23:17:30 +0100
+Subject: Fix for builder/website test in out-of-tree builds
+
+---
+ builder/website/validate.sh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/builder/website/validate.sh b/builder/website/validate.sh
+index f09e30c..1c535e7 100755
+--- a/builder/website/validate.sh
++++ b/builder/website/validate.sh
+@@ -19,6 +19,6 @@
+ export LANG=C
+ set -e
+ 
+-../virt-index-validate index
+-../virt-index-validate index.asc
++../virt-index-validate $srcdir/index
++../virt-index-validate $srcdir/index.asc
+ 
