@@ -21,9 +21,9 @@
 export LANG=C
 set -e
 
-abs_srcdir=$(cd $srcdir && pwd)
+abs_builddir=$(pwd)
 
-export VIRT_BUILDER_SOURCE=file://$abs_srcdir/test-index
+export VIRT_BUILDER_SOURCE=file://$abs_builddir/test-index
 
 short_list=$($VG ./virt-builder --no-check-signature --no-cache --list)
 
@@ -39,34 +39,39 @@ fi
 long_list=$(./virt-builder --no-check-signature --no-cache --list --long)
 
 if [ "$long_list" != "Source URI: $VIRT_BUILDER_SOURCE
+Fingerprint: F777 4FB1 AD07 4A7E 8C87 67EA 9173 8F73 E1B7 68A0
 
 os-version:              phony-debian
 Full name:               Phony Debian
 Minimum/default size:    512.0M
 
 Notes:
- Phony Debian look-alike used for testing.
+
+Phony Debian look-alike used for testing.
 
 os-version:              phony-fedora
 Full name:               Phony Fedora
 Minimum/default size:    1.0G
 
 Notes:
- Phony Fedora look-alike used for testing.
+
+Phony Fedora look-alike used for testing.
 
 os-version:              phony-ubuntu
 Full name:               Phony Ubuntu
 Minimum/default size:    512.0M
 
 Notes:
- Phony Ubuntu look-alike used for testing.
+
+Phony Ubuntu look-alike used for testing.
 
 os-version:              phony-windows
 Full name:               Phony Windows
 Minimum/default size:    512.0M
 
 Notes:
- Phony Windows look-alike used for testing." ]; then
+
+Phony Windows look-alike used for testing." ]; then
     echo "$0: unexpected --list --long output:"
     echo "$long_list"
     exit 1

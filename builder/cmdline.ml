@@ -37,6 +37,8 @@ let default_cachedir =
     with Not_found ->
       None (* no cache directory *)
 
+let default_source = "http://libguestfs.org/download/builder/index.asc"
+
 let parse_cmdline () =
   let display_version () =
     printf "virt-builder %s\n" Config.package_version;
@@ -83,11 +85,8 @@ let parse_cmdline () =
     edit := (file, expr) :: !edit
   in
 
-  let fingerprint =
-    try Some (Sys.getenv "VIRT_BUILDER_FINGERPRINT")
-    with Not_found -> None in
-  let fingerprint = ref fingerprint in
-  let set_fingerprint fp = fingerprint := Some fp in
+  let fingerprints = ref [] in
+  let add_fingerprint arg = fingerprints := arg :: !fingerprints in
 
   let firstboot = ref [] in
   let add_firstboot s =
@@ -119,6 +118,13 @@ let parse_cmdline () =
   in
 
   let list_long = ref false in
+
+  let memsize = ref None in
+  let set_memsize arg = memsize := Some arg in
+
+  let mkdirs = ref [] in
+  let add_mkdir arg = mkdirs := arg :: !mkdirs in
+
   let network = ref true in
   let output = ref "" in
 
@@ -156,10 +162,13 @@ let parse_cmdline () =
   let size = ref None in
   let set_size arg = size := Some (parse_size ~prog arg) in
 
-  let source =
-    try Sys.getenv "VIRT_BUILDER_SOURCE"
-    with Not_found -> "http://libguestfs.org/download/builder/index.asc" in
-  let source = ref source in
+  let smp = ref None in
+  let set_smp arg = smp := Some arg in
+
+  let sources = ref [] in
+  let add_source arg = sources := arg :: !sources in
+
+  let sync = ref true in
 
   let upload = ref [] in
   let add_upload arg =
@@ -176,6 +185,19 @@ let parse_cmdline () =
     );
     let dest = String.sub arg (i+1) (len-(i+1)) in
     upload := (file, dest) :: !upload
+  in
+
+  let writes = ref [] in
+  let add_write arg =
+    let i =
+      try String.index arg ':'
+      with Not_found ->
+        eprintf (f_"%s: invalid --write format, see the man page.\n") prog;
+        exit 1 in
+    let len = String.length arg in
+    let file = String.sub arg 0 i in
+    let content = String.sub arg (i+1) (len-(i+1)) in
+    writes := (file, content) :: !writes
   in
 
   let ditto = " -\"-" in
@@ -198,7 +220,7 @@ let parse_cmdline () =
     "--delete-cache", Arg.Unit delete_cache_mode,
                                             " " ^ s_"Delete the template cache";
     "--edit",    Arg.String add_edit,       "file:expr" ^ " " ^ s_"Edit file with Perl expr";
-    "--fingerprint", Arg.String set_fingerprint,
+    "--fingerprint", Arg.String add_fingerprint,
                                             "AAAA.." ^ " " ^ s_"Fingerprint of valid signing key";
     "--firstboot", Arg.String add_firstboot, "script" ^ " " ^ s_"Run script at first guest boot";
     "--firstboot-command", Arg.String add_firstboot_cmd, "cmd+args" ^ " " ^ s_"Run command at first guest boot";
@@ -215,6 +237,9 @@ let parse_cmdline () =
     "--long",    Arg.Set list_long,         ditto;
     "--no-logfile", Arg.Set scrub_logfile,  " " ^ s_"Scrub build log file";
     "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
+    "-m",        Arg.Int set_memsize,       "mb" ^ " " ^ s_"Set memory size";
+    "--memsize", Arg.Int set_memsize,       "mb" ^ ditto;
+    "--mkdir",   Arg.String add_mkdir,      "dir" ^ " " ^ s_"Create directory";
     "--network", Arg.Set network,           " " ^ s_"Enable appliance network (default)";
     "--no-network", Arg.Clear network,      " " ^ s_"Disable appliance network";
     "--notes",   Arg.Unit notes_mode,       " " ^ s_"Display installation notes";
@@ -231,12 +256,15 @@ let parse_cmdline () =
     "--run-command", Arg.String add_run_cmd, "cmd+args" ^ " " ^ s_"Run command in disk image";
     "--scrub",   Arg.String add_scrub,      "name" ^ " " ^ s_"Scrub a file";
     "--size",    Arg.String set_size,       "size" ^ " " ^ s_"Set output disk size";
-    "--source",  Arg.Set_string source,     "URL" ^ " " ^ s_"Set source URL";
+    "--smp",     Arg.Int set_smp,           "vcpus" ^ " " ^ s_"Set number of vCPUs";
+    "--source",  Arg.String add_source,     "URL" ^ " " ^ s_"Set source URL";
+    "--no-sync", Arg.Clear sync,            " " ^ s_"Do not fsync output file on exit";
     "--upload",  Arg.String add_upload,     "file:dest" ^ " " ^ s_"Upload file to dest";
     "-v",        Arg.Set debug,             " " ^ s_"Enable debugging messages";
     "--verbose", Arg.Set debug,             ditto;
     "-V",        Arg.Unit display_version,  " " ^ s_"Display version and exit";
     "--version", Arg.Unit display_version,  ditto;
+    "--write",   Arg.String add_write,      "file:content" ^ " " ^ s_"Write file";
   ] in
   long_options := argspec;
 
@@ -270,7 +298,7 @@ read the man page virt-builder(1).
   let debug = !debug in
   let delete = List.rev !delete in
   let edit = List.rev !edit in
-  let fingerprint = !fingerprint in
+  let fingerprints = List.rev !fingerprints in
   let firstboot = List.rev !firstboot in
   let run = List.rev !run in
   let format = match !format with "" -> None | s -> Some s in
@@ -278,6 +306,8 @@ read the man page virt-builder(1).
   let hostname = !hostname in
   let install = !install in
   let list_long = !list_long in
+  let memsize = !memsize in
+  let mkdirs = List.rev !mkdirs in
   let network = !network in
   let output = match !output with "" -> None | s -> Some s in
   let password_crypto = !password_crypto in
@@ -286,8 +316,11 @@ read the man page virt-builder(1).
   let scrub = List.rev !scrub in
   let scrub_logfile = !scrub_logfile in
   let size = !size in
-  let source = !source in
+  let smp = !smp in
+  let sources = List.rev !sources in
+  let sync = !sync in
   let upload = List.rev !upload in
+  let writes = List.rev !writes in
 
   (* Check options. *)
   let arg =
@@ -339,8 +372,50 @@ read the man page virt-builder(1).
         exit 1
       ) in
 
+  (* Check source(s) and fingerprint(s), or use environment or default. *)
+  let sources =
+    let list_split = function "" -> [] | str -> string_nsplit "," str in
+    let rec repeat x = function
+      | 0 -> [] | 1 -> [x]
+      | n -> x :: repeat x (n-1)
+    in
+
+    let sources =
+      if sources <> [] then sources
+      else (
+        try list_split (Sys.getenv "VIRT_BUILDER_SOURCE")
+        with Not_found -> [ default_source ]
+      ) in
+    let fingerprints =
+      if fingerprints <> [] then fingerprints
+      else (
+        try list_split (Sys.getenv "VIRT_BUILDER_FINGERPRINT")
+        with Not_found -> [ Sigchecker.default_fingerprint ]
+      ) in
+
+    let nr_sources = List.length sources in
+    let fingerprints =
+      match fingerprints with
+      | [fingerprint] ->
+        (* You're allowed to have multiple sources and one fingerprint: it
+         * means that the same fingerprint is used for all sources.
+         *)
+        repeat fingerprint nr_sources
+      | xs -> xs in
+
+    if List.length fingerprints <> nr_sources then (
+      eprintf (f_"%s: source and fingerprint lists are not the same length\n")
+        prog;
+      exit 1
+    );
+
+    assert (nr_sources > 0);
+
+    (* Combine the sources and fingerprints into a single list of pairs. *)
+    List.combine sources fingerprints in
+
   mode, arg,
-  attach, cache, check_signature, curl, debug, delete, edit, fingerprint,
-  firstboot, run, format, gpg, hostname, install, list_long, network, output,
-  password_crypto, quiet, root_password, scrub, scrub_logfile, size, source,
-  upload
+  attach, cache, check_signature, curl, debug, delete, edit,
+  firstboot, run, format, gpg, hostname, install, list_long, memsize, mkdirs,
+  network, output, password_crypto, quiet, root_password, scrub,
+  scrub_logfile, size, smp, sources, sync, upload, writes

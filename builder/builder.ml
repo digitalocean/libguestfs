@@ -24,6 +24,7 @@ open Common_utils
 open Password
 
 open Cmdline
+open Pxzcat
 
 open Unix
 open Printf
@@ -35,21 +36,26 @@ let prog = Filename.basename Sys.executable_name
 let main () =
   (* Command line argument parsing - see cmdline.ml. *)
   let mode, arg,
-    attach, cache, check_signature, curl, debug, delete, edit, fingerprint,
-    firstboot, run, format, gpg, hostname, install, list_long, network, output,
-    password_crypto, quiet, root_password, scrub, scrub_logfile, size, source,
-    upload =
+    attach, cache, check_signature, curl, debug, delete, edit,
+    firstboot, run, format, gpg, hostname, install, list_long, memsize, mkdirs,
+    network, output, password_crypto, quiet, root_password, scrub,
+    scrub_logfile, size, smp, sources, sync, upload, writes =
     parse_cmdline () in
 
   (* Timestamped messages in ordinary, non-debug non-quiet mode. *)
   let msg fs = make_message_function ~quiet fs in
 
-  (* If debugging, echo the command line arguments. *)
+  (* If debugging, echo the command line arguments and the sources. *)
   if debug then (
     eprintf "command line:";
     List.iter (eprintf " %s") (Array.to_list Sys.argv);
-    prerr_newline ()
+    prerr_newline ();
+    iteri (
+      fun i (source, fingerprint) ->
+        eprintf "source[%d] = (%S, %S)\n" i source fingerprint
+    ) sources
   );
+
 
   (* Handle some modes here, some later on. *)
   let mode =
@@ -125,19 +131,23 @@ let main () =
       )
   in
 
-  (* Make the downloader and signature checker abstract data types. *)
+  (* Download the sources. *)
   let downloader = Downloader.create ~debug ~curl ~cache in
-  let sigchecker =
-    Sigchecker.create ~debug ~gpg ?fingerprint ~check_signature in
-
-  (* Download the source (index) file. *)
-  let index = Index_parser.get_index ~debug ~downloader ~sigchecker source in
+  let index : Index_parser.index =
+    List.concat (
+      List.map (
+        fun (source, fingerprint) ->
+          let sigchecker =
+            Sigchecker.create ~debug ~gpg ~fingerprint ~check_signature in
+          Index_parser.get_index ~debug ~downloader ~sigchecker source
+      ) sources
+    ) in
 
   (* Now handle the remaining modes. *)
   let mode =
     match mode with
     | `List ->                          (* --list *)
-      List_entries.list_entries ~list_long ~source index;
+      List_entries.list_entries ~list_long ~sources index;
       exit 0
 
     | `Print_cache ->                   (* --print-cache *)
@@ -184,6 +194,7 @@ let main () =
       eprintf (f_"%s: cannot find os-version '%s'.\nUse --list to list available guest types.\n")
         prog arg;
       exit 1 in
+  let sigchecker = entry.Index_parser.sigchecker in
 
   (match mode with
   | `Notes ->                           (* --notes *)
@@ -232,7 +243,12 @@ let main () =
 
       Sigchecker.verify_detached sigchecker template sigfile in
 
-  let output, size, format, delete_output_file, resize_sparse =
+  (* Plan how to create the output.  This depends on:
+   * - did the user specify --output?
+   * - is the output a block device?
+   * - did the user specify --size?
+   *)
+  let output, size, format, delete_output_file, do_resize, resize_sparse =
     let is_block_device file =
       try (stat file).st_kind = S_BLK
       with Unix_error _ -> false
@@ -259,22 +275,22 @@ let main () =
       (* Dummy: The output file is never deleted in this case. *)
       let delete_output_file = ref false in
 
-      output, None, format, delete_output_file, false
+      output, None, format, delete_output_file, true, false
 
     (* Regular file output.  Note the file gets deleted. *)
     | _ ->
       (* Check the --size option. *)
-      let size =
+      let size, do_resize =
         let { Index_parser.size = default_size } = entry in
         match size with
-        | None -> default_size +^ headroom
+        | None -> default_size, false
         | Some size ->
           if size < default_size +^ headroom then (
             eprintf (f_"%s: --size is too small for this disk image, minimum size is %s\n")
               prog (human_size default_size);
             exit 1
           );
-          size in
+          size, true in
 
       (* Create the output file. *)
       let output, format =
@@ -284,6 +300,14 @@ let main () =
         | None, Some format -> sprintf "%s.%s" arg format, format
         | Some output, None -> output, "raw"
         | Some output, Some format -> output, format in
+
+      (* If the input format != output format then we must run virt-resize. *)
+      let do_resize =
+        let input_format =
+          match entry with
+          | { Index_parser.format = Some format } -> format
+          | { Index_parser.format = None } -> "raw" in
+        if input_format <> format then true else do_resize in
 
       msg (f_"Creating disk image: %s") output;
       let cmd =
@@ -308,25 +332,30 @@ let main () =
       in
       at_exit delete_file;
 
-      output, Some size, format, delete_output_file, true in
+      output, Some size, format, delete_output_file, do_resize, true in
 
-  let source =
-    (* Uncompress it to a temporary file. *)
+  if not do_resize then (
+    (* If the user did not specify --size and the output is a regular
+     * file and the format is raw, then we just uncompress the template
+     * directly to the output file.  This is fast but less flexible.
+     *)
     let { Index_parser.file_uri = file_uri } = entry in
-    let tmpfile = Filename.temp_file "vbsrc" ".img" in
-    let cmd = sprintf "xzcat %s > %s" (quote template) (quote tmpfile) in
-    if debug then eprintf "%s\n%!" cmd;
     msg (f_"Uncompressing: %s") file_uri;
-    let r = Sys.command cmd in
-    if r <> 0 then (
-      eprintf (f_"%s: error: failed to uncompress template\n") prog;
-      exit 1
-    );
-    unlink_on_exit tmpfile;
-    tmpfile in
+    pxzcat template output
+  ) else (
+    (* If none of the above apply, uncompress to a temporary file and
+     * run virt-resize on the result.
+     *)
+    let tmpfile =
+      (* Uncompress it to a temporary file. *)
+      let { Index_parser.file_uri = file_uri } = entry in
+      let tmpfile = Filename.temp_file "vbsrc" ".img" in
+      msg (f_"Uncompressing: %s") file_uri;
+      pxzcat template tmpfile;
+      unlink_on_exit tmpfile;
+      tmpfile in
 
-  (* Resize the source to the output file. *)
-  let () =
+    (* Resize the source to the output file. *)
     (match size with
     | None ->
       msg (f_"Running virt-resize to expand the disk")
@@ -351,13 +380,14 @@ let main () =
         (match lvexpand with
         | None -> ""
         | Some lvexpand -> sprintf " --lv-expand %s" (quote lvexpand))
-        (quote source) (quote output) in
+        (quote tmpfile) (quote output) in
     if debug then eprintf "%s\n%!" cmd;
     let r = Sys.command cmd in
     if r <> 0 then (
       eprintf (f_"%s: error: virt-resize failed\n") prog;
       exit 1
-    ) in
+    )
+  );
 
   (* Now mount the output disk so we can make changes. *)
   msg (f_"Opening the new disk");
@@ -365,6 +395,8 @@ let main () =
     let g = new G.guestfs () in
     if debug then g#set_trace true;
 
+    (match memsize with None -> () | Some memsize -> g#set_memsize memsize);
+    (match smp with None -> () | Some smp -> g#set_smp smp);
     g#set_network network;
 
     (* The output disk is being created, so use cache=unsafe here. *)
@@ -416,31 +448,19 @@ let main () =
    * Note 'None' means that we randomize the root password.
    *)
   let () =
-    let make_random_password () =
-      (* Get random characters from the set [A-Za-z0-9] with some
-       * homoglyphs removed.
-       *)
-      let chars =
-        "ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789" in
-      Urandom.urandom_uniform 16 chars
-    in
-
-    let root_password =
-      match root_password with
-      | Some pw ->
-        msg (f_"Setting root password");
-        pw
-      | None ->
-        let pw = make_random_password () in
-        msg (f_"Random root password: %s [did you mean to use --root-password?]")
-          pw;
-        Password.Set_password pw in
-
     match g#inspect_get_type root with
     | "linux" ->
-      let h = Hashtbl.create 1 in
-      Hashtbl.replace h "root" root_password;
-      set_linux_passwords ~prog ?password_crypto g root h
+      let password_map = Hashtbl.create 1 in
+      let pw =
+        match root_password with
+        | Some pw ->
+          msg (f_"Setting root password");
+          pw
+        | None ->
+          msg (f_"Setting random root password [did you mean to use --root-password?]");
+          parse_selector ~prog "random" in
+      Hashtbl.replace password_map "root" pw;
+      set_linux_passwords ~prog ?password_crypto g root password_map
     | _ ->
       eprintf (f_"%s: warning: root password could not be set for this type of guest\n%!") prog in
 
@@ -536,6 +556,20 @@ exec >>%s 2>&1
     let cmd = guest_install_command install in
     do_run ~display:cmd cmd
   );
+
+  (* Make directories. *)
+  List.iter (
+    fun dir ->
+      msg (f_"Making directory: %s") dir;
+      g#mkdir_p dir
+  ) mkdirs;
+
+  (* Write files. *)
+  List.iter (
+    fun (file, content) ->
+      msg (f_"Writing: %s") file;
+      g#write file content
+  ) writes;
 
   (* Upload files. *)
   List.iter (
@@ -697,7 +731,8 @@ exec >>%s 2>&1
    * and therefore bypasses the host cache).  In general you should not
    * use cache=none.
    *)
-  Fsync.file output;
+  if sync then
+    Fsync.file output;
 
   (* Now that we've finished the build, don't delete the output file on
    * exit.

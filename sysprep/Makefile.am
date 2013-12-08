@@ -20,6 +20,7 @@ include $(top_srcdir)/subdir-rules.mk
 EXTRA_DIST = \
 	$(SOURCES) \
 	test-virt-sysprep.sh \
+	test-virt-sysprep-passwords.sh \
 	test-virt-sysprep-script.sh script1.sh script2.sh script3.sh \
 	virt-sysprep.pod
 
@@ -36,6 +37,7 @@ operations = \
 	ca_certificates \
 	crash_data \
 	cron_spool \
+	delete \
 	dhcp_client_state \
 	dhcp_server_state \
 	dovecot_data \
@@ -184,6 +186,7 @@ TESTS_ENVIRONMENT = \
 if ENABLE_APPLIANCE
 TESTS = \
 	test-virt-sysprep.sh \
+	test-virt-sysprep-passwords.sh \
 	test-virt-sysprep-script.sh
 endif ENABLE_APPLIANCE
 

@@ -1016,9 +1016,14 @@ JNI_INSTALL_DIR = @JNI_INSTALL_DIR@
 JNI_VERSION_INFO = @JNI_VERSION_INFO@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
+LEX = @LEX@
+LEXLIB = @LEXLIB@
+LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBCONFIG_CFLAGS = @LIBCONFIG_CFLAGS@
 LIBCONFIG_LIBS = @LIBCONFIG_LIBS@
 LIBINTL = @LIBINTL@
+LIBLZMA_CFLAGS = @LIBLZMA_CFLAGS@
+LIBLZMA_LIBS = @LIBLZMA_LIBS@
 LIBMULTITHREAD = @LIBMULTITHREAD@
 LIBOBJS = @LIBOBJS@
 LIBPTH = @LIBPTH@
@@ -1367,8 +1372,11 @@ WINT_T_SUFFIX = @WINT_T_SUFFIX@
 WRESTOOL = @WRESTOOL@
 XGETTEXT = @XGETTEXT@
 XMLLINT = @XMLLINT@
+XZCAT = @XZCAT@
+YACC = @YACC@
 YAJL_CFLAGS = @YAJL_CFLAGS@
 YAJL_LIBS = @YAJL_LIBS@
+YFLAGS = @YFLAGS@
 YIELD_LIB = @YIELD_LIB@
 abs_aux_dir = @abs_aux_dir@
 abs_builddir = @abs_builddir@
@@ -1435,6 +1443,7 @@ top_srcdir = @top_srcdir@
 EXTRA_DIST = \
 	$(SOURCES) \
 	test-virt-sysprep.sh \
+	test-virt-sysprep-passwords.sh \
 	test-virt-sysprep-script.sh script1.sh script2.sh script3.sh \
 	virt-sysprep.pod
 
@@ -1452,6 +1461,7 @@ operations = \
 	ca_certificates \
 	crash_data \
 	cron_spool \
+	delete \
 	dhcp_client_state \
 	dhcp_server_state \
 	dovecot_data \
@@ -1554,6 +1564,7 @@ SOURCES = \
 
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@TESTS = \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-virt-sysprep.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-virt-sysprep-passwords.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-virt-sysprep-script.sh
 
 DISTCLEANFILES = .depend

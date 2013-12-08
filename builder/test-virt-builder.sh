@@ -19,9 +19,9 @@
 export LANG=C
 set -e
 
-abs_srcdir=$(cd $srcdir && pwd)
+abs_builddir=$(pwd)
 
-export VIRT_BUILDER_SOURCE=file://$abs_srcdir/test-index
+export VIRT_BUILDER_SOURCE=file://$abs_builddir/test-index
 
 if [ ! -f fedora.xz ]; then
     echo "$0: test skipped because there is no fedora.xz in the build directory"
@@ -54,8 +54,10 @@ $VG ./virt-builder phony-fedora \
     -o $output --size 2G --format $format \
     --hostname test.example.com \
     --root-password password:123456 \
+    --mkdir /etc/foo/bar/baz \
+    --write '/etc/foo/bar/baz/foo:Hello World' \
     --upload Makefile:/Makefile \
-    --upload Makefile:/etc \
+    --upload Makefile:/etc/foo/bar/baz \
     --delete /Makefile \
     --firstboot Makefile --firstboot-command 'echo "hello"' \
     --firstboot-install "minicom,inkscape"

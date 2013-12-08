@@ -3257,7 +3257,7 @@ The appliance is cached in C</var/tmp/.guestfs-E<lt>UIDE<gt>> (or in another
 directory if C<LIBGUESTFS_CACHEDIR> or C<TMPDIR> are set).
 
 For a complete description of how the appliance is created and cached, read
-the L<supermin(8)> and L<supermin-helper(8)> man pages.
+the L<supermin(1)> and L<supermin-helper(1)> man pages.
 
 =item QEMU を開始してカーネルを起動します
 
@@ -4420,7 +4420,7 @@ everything.
 These two environment variables allow the kernel that libguestfs uses in the
 appliance to be selected.  If C<$SUPERMIN_KERNEL> is not set, then the most
 recent host kernel is chosen.  For more information about kernel selection,
-see L<supermin-helper(8)>.  This feature is only available in supermin /
+see L<supermin-helper(1)>.  This feature is only available in supermin /
 febootstrap E<ge> 3.8.
 
 =item TMPDIR
@@ -4444,7 +4444,7 @@ L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
 L<virt-win-reg(1)>, L<guestfs-faq(1)>, L<guestfs-performance(1)>,
 L<guestfs-release-notes(1)>, L<guestfs-testing(1)>,
 L<libguestfs-test-tool(1)>, L<libguestfs-make-fixed-appliance(1)>,
-L<supermin(8)>, L<supermin-helper(8)>, L<qemu(1)>, L<hivex(3)>, L<stap(1)>,
+L<supermin(1)>, L<supermin-helper(1)>, L<qemu(1)>, L<hivex(3)>, L<stap(1)>,
 L<sd-journal(3)>, L<http://libguestfs.org/>.
 
 同じ目的を持つツール: L<fdisk(8)>, L<parted(8)>, L<kpartx(8)>, L<lvm(8)>,

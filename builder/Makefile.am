@@ -17,9 +17,18 @@
 
 include $(top_srcdir)/subdir-rules.mk
 
+AM_YFLAGS = -d
+AM_CFLAGS = \
+	-I$(shell $(OCAMLC) -where) \
+	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/fish \
+	-pthread \
+	$(LIBLZMA_CFLAGS)
+
 EXTRA_DIST = \
 	$(SOURCES) \
 	virt-builder.pod \
+	virt-index-validate.pod \
 	test-virt-builder.sh \
 	test-virt-builder-list.sh
 
@@ -35,12 +44,19 @@ SOURCES = \
 	get_kernel.ml \
 	index_parser.mli \
 	index_parser.ml \
+	index-parser-c.c \
 	list_entries.mli \
 	list_entries.ml \
 	perl_edit.ml \
 	perl_edit.mli \
+	pxzcat.ml \
+	pxzcat.mli \
+	pxzcat-c.c \
 	sigchecker.mli \
 	sigchecker.ml
+
+man_MANS =
+noinst_DATA =
 
 if HAVE_OCAML
 
@@ -59,6 +75,12 @@ OBJECTS = \
 	$(top_builddir)/mllib/fsync.cmx \
 	$(top_builddir)/mllib/password.cmx \
 	$(top_builddir)/mllib/config.cmx \
+	index-scan.o \
+	index-struct.o \
+	index-parse.o \
+	index-parser-c.o \
+	pxzcat-c.o \
+	pxzcat.cmx \
 	get_kernel.cmx \
 	downloader.cmx \
 	sigchecker.cmx \
@@ -88,7 +110,7 @@ OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 virt-builder: $(OBJECTS)
 	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
 	  mlguestfs.cmxa -linkpkg $^ \
-	  -cclib '-lncurses -lcrypt' \
+	  -cclib '-pthread $(LIBLZMA_LIBS) -lncurses -lcrypt -lpthread' \
 	  $(OCAML_GCOV_LDFLAGS) \
 	  -o $@
 
@@ -99,24 +121,10 @@ virt-builder: $(OBJECTS)
 .ml.cmx:
 	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -c $< -o $@
 
-# automake will decide we don't need C support in this file.  Really
-# we do, so we have to provide it ourselves.
-
-DEFAULT_INCLUDES = \
-	-I. \
-	-I$(top_builddir) \
-	-I$(shell $(OCAMLC) -where) \
-	-I$(top_srcdir)/src \
-	-I$(top_srcdir)/fish
-
-.c.o:
-	$(CC) $(CFLAGS) $(PROF_CFLAGS) $(DEFAULT_INCLUDES) -c $< -o $@
-
 # Manual pages and HTML files for the website.
 
-man_MANS = virt-builder.1
-
-noinst_DATA = $(top_builddir)/html/virt-builder.1.html
+man_MANS += virt-builder.1
+noinst_DATA += $(top_builddir)/html/virt-builder.1.html
 
 virt-builder.1 $(top_builddir)/html/virt-builder.1.html: stamp-virt-builder.pod
 
@@ -172,3 +180,39 @@ endif
 DISTCLEANFILES = .depend
 
 .PHONY: depend docs
+
+# Build a small C index validator program.
+bin_PROGRAMS = virt-index-validate
+
+virt_index_validate_SOURCES = \
+	index-parse.y \
+	index-scan.l \
+	index-struct.h \
+	index-struct.c \
+	index-validate.c
+
+man_MANS += virt-index-validate.1
+noinst_DATA += $(top_builddir)/html/virt-index-validate.1.html
+
+virt-index-validate.1 $(top_builddir)/html/virt-index-validate.1.html: stamp-virt-index-validate.pod
+
+stamp-virt-index-validate.pod: virt-index-validate.pod
+	$(PODWRAPPER) \
+	  --man virt-index-validate.1 \
+	  --html $(top_builddir)/html/virt-index-validate.1.html \
+	  --license GPLv2+ \
+	  $<
+	touch $@
+
+CLEANFILES += \
+	index-parse.c \
+	index-parse.h \
+	index-scan.c \
+	stamp-virt-index-validate.pod
+
+# Fix dependencies which automake doesn't generate correctly.
+if HAVE_OCAML
+index-parser-c.o: index-parse.h
+index-scan.o: index-parse.h
+endif
+index-validate.o: index-parse.h

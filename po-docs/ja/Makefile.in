@@ -945,9 +945,14 @@ JNI_INSTALL_DIR = @JNI_INSTALL_DIR@
 JNI_VERSION_INFO = @JNI_VERSION_INFO@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
+LEX = @LEX@
+LEXLIB = @LEXLIB@
+LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBCONFIG_CFLAGS = @LIBCONFIG_CFLAGS@
 LIBCONFIG_LIBS = @LIBCONFIG_LIBS@
 LIBINTL = @LIBINTL@
+LIBLZMA_CFLAGS = @LIBLZMA_CFLAGS@
+LIBLZMA_LIBS = @LIBLZMA_LIBS@
 LIBMULTITHREAD = @LIBMULTITHREAD@
 LIBOBJS = @LIBOBJS@
 LIBPTH = @LIBPTH@
@@ -1296,8 +1301,11 @@ WINT_T_SUFFIX = @WINT_T_SUFFIX@
 WRESTOOL = @WRESTOOL@
 XGETTEXT = @XGETTEXT@
 XMLLINT = @XMLLINT@
+XZCAT = @XZCAT@
+YACC = @YACC@
 YAJL_CFLAGS = @YAJL_CFLAGS@
 YAJL_LIBS = @YAJL_LIBS@
+YFLAGS = @YFLAGS@
 YIELD_LIB = @YIELD_LIB@
 abs_aux_dir = @abs_aux_dir@
 abs_builddir = @abs_builddir@
@@ -1397,6 +1405,7 @@ MANPAGES = \
 	virt-edit.1 \
 	virt-filesystems.1 \
 	virt-format.1 \
+	virt-index-validate.1 \
 	virt-inspector.1 \
 	virt-list-filesystems.1 \
 	virt-list-partitions.1 \
@@ -1723,11 +1732,11 @@ $(podfiles):
 # XXX Can automake do this properly?
 install-data-hook:
 	$(MKDIR_P) $(DESTDIR)$(mandir)/$(LINGUA)/man1
-	$(INSTALL) -m 0644 *.1 $(DESTDIR)$(mandir)/$(LINGUA)/man1
+	$(INSTALL) -m 0644 $(srcdir)/*.1 $(DESTDIR)$(mandir)/$(LINGUA)/man1
 	$(MKDIR_P) $(DESTDIR)$(mandir)/$(LINGUA)/man3
-	$(INSTALL) -m 0644 *.3 $(DESTDIR)$(mandir)/$(LINGUA)/man3
+	$(INSTALL) -m 0644 $(srcdir)/*.3 $(DESTDIR)$(mandir)/$(LINGUA)/man3
 	$(MKDIR_P) $(DESTDIR)$(mandir)/$(LINGUA)/man5
-	$(INSTALL) -m 0644 *.5 $(DESTDIR)$(mandir)/$(LINGUA)/man5
+	$(INSTALL) -m 0644 $(srcdir)/*.5 $(DESTDIR)$(mandir)/$(LINGUA)/man5
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

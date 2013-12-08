@@ -18,6 +18,8 @@ virt-builder - Build virtual machine images quickly
     [--root-password SELECTOR]
     [--hostname HOSTNAME]
     [--install PKG,[PKG...]]
+    [--mkdir DIR]
+    [--write FILE:CONTENT]
     [--upload FILE:DEST]
     [--edit FILE:EXPR]
     [--delete FILE] [--scrub FILE]
@@ -257,9 +259,13 @@ Check that the index and templates are signed by the key with the given
 fingerprint.  (The fingerprint is a long string, usually written as 10
 groups of 4 hexadecimal digits).
 
-If signature checking is enabled and the I<--fingerprint> option is not
-given, then this checks the download was signed by S<F777 4FB1 AD07 4A7E
-8C87 67EA 9173 8F73 E1B7 68A0> (which is S<Richard W.M. Jones's> key).
+You can give this option multiple times.  If you have multiple source URLs,
+then you can have either no fingerprint, one fingerprint or multiple
+fingerprints.  If you have multiple, then each must correspond 1-1 with a
+source URL.
+
+The default fingerprint (if none are supplied) is S<F777 4FB1 AD07 4A7E 8C87
+67EA 9173 8F73 E1B7 68A0> (which is S<Richard W.M. Jones's> key).
 
 You can also set the C<VIRT_BUILDER_FINGERPRINT> environment variable.
 
@@ -357,6 +363,25 @@ was built, use this option.
 
 See also: L</LOG FILE>.
 
+=item B<-m> MB
+
+=item B<--memsize> MB
+
+Change the amount of memory allocated to I<--run> scripts.  Increase this if
+you find that I<--run> scripts or the I<--install> option are running out of
+memory.
+
+The default can be found with this command:
+
+ guestfish get-memsize
+
+=item B<--mkdir> DIR
+
+Create a directory in the guest.
+
+This uses S<C<mkdir -p>> so any intermediate directories are created, and it
+also works if the directory already exists.
+
 =item B<--network>
 
 =item B<--no-network>
@@ -401,6 +426,22 @@ the source of the operating system templates.  (See L</SECURITY> below).
 You don't have a host network (eg. in secure/restricted environments).
 
 =back
+
+=item B<--no-sync>
+
+Do not sync the output file on exit.
+
+Virt-builder fsync's the output file or disk image when it exits.
+
+The reason is that qemu/KVM's default caching mode is C<none> or
+C<directsync>, both of which bypass the host page cache.  Therefore these
+would not work correctly if you immediately started the guest after running
+virt-builder - they would not see the complete output file.  (Note that you
+should not use these caching modes - they are fundamentally broken for this
+and other reasons.)
+
+If you are not using these broken caching modes, you can use I<--no-sync> to
+avoid this unnecessary sync and gain considerable extra performance.
 
 =item B<--notes> os-version
 
@@ -503,10 +544,16 @@ If the size is not specified, then one of two things happens.  If the output
 is a file, then the size is the same as the template.  If the output is a
 device, partition, etc then the size of that device is used.
 
+=item B<--smp> N
+
+Enable N E<ge> 2 virtual CPUs for I<--run> scripts to use.
+
 =item B<--source> URL
 
-Set the source URL to look for templates.  If not specified it defaults to
-L<http://libguestfs.org/download/builder/index.asc>
+Set the source URL to look for indexes.
+
+You can give this option multiple times to specify multiple sources.  If not
+specified it defaults to L<http://libguestfs.org/download/builder/index.asc>
 
 See also L</CREATING YOUR OWN TEMPLATES> below.
 
@@ -545,6 +592,10 @@ bug report.
 =item B<--version>
 
 バージョン番号を表示して終了します。
+
+=item B<--write> FILE:CONTENT
+
+Write C<CONTENT> to C<FILE>.
 
 =back
 
@@ -636,6 +687,33 @@ Set the root password to the literal string C<PASSWORD>.
 B<Note: this is not secure> since any user on the same machine can see the
 cleartext password using L<ps(1)>.
 
+=item B<--root-password> random
+
+Choose a random password, which is printed on stdout.  The password has
+approximately 120 bits of randomness.
+
+これがデフォルトです。
+
+=item B<--root-password> disabled
+
+The root account password is disabled.  This is like putting C<*> in the
+password field.
+
+=item B<--root-password> locked:file:FILENAME
+
+=item B<--root-password> locked:password:PASSWORD
+
+=item B<--root-password> locked:random
+
+The root account is locked, but a password is placed on the account.  If
+first unlocked (using C<passwd -u>) then logins will use the given password.
+
+=item B<--root-password> locked
+
+=item B<--root-password> locked:disabled
+
+The root account is locked I<and> password is disabled.
+
 =back
 
 =head3 Creating user accounts
@@ -722,6 +800,14 @@ Packages are installed (I<--install>).
 
 =item *
 
+Directories are created (I<--mkdir>).
+
+=item *
+
+Files are written (I<--write>).
+
+=item *
+
 Files are uploaded (I<--upload>).
 
 =item *
@@ -785,6 +871,21 @@ differently as well.
 XXX
 
 =end コメント
+
+=head3 Booting directly using qemu or KVM
+
+The qemu command line is not very stable or easy to use, hence libvirt
+should be used if possible.  However a command line similar to the following
+could be used to boot the virtual machine:
+
+ qemu-system-x86_64 \
+   -machine accel=kvm:tcg \
+   -cpu host \
+   -m 2048 \
+   -drive file=disk.img,format=raw,if=virtio
+
+As with libvirt, it is very important that the correct format is chosen.  It
+will be C<raw> unless the I<--format> option was used.
 
 =head2 DEBUGGING BUILDS
 
@@ -1111,11 +1212,58 @@ Now run virt-builder commands as normal, eg:
 
 To debug problems, add the C<-v> option to these commands.
 
+=head3 Running virt-builder against multiple sources
+
+It is possible to use multiple sources with virt-builder.  Use either
+multiple I<--source> and/or I<--fingerprint> options, or a comma-separated
+list in the C<VIRT_BUILDER_SOURCE> / C<VIRT_BUILDER_FINGERPRINT> environment
+variables:
+
+ virt-builder \
+   --source http://example.com/s1/index.asc \
+   --source http://example.com/s2/index.asc
+
+or equivalently:
+
+ export VIRT_BUILDER_SOURCE=http://example.com/s1/index.asc,http://example.com/s2/index.asc
+ virt-builder [...]
+
+You can provide N, 1 or 0 fingerprints.  In the case where you provide N
+fingerprints, N = number of sources and there is a 1-1 correspondence
+between each source and each fingerprint:
+
+ virt-builder \
+   --source http://example.com/s1/index.asc --fingerprint '0123 ...' \
+   --source http://example.com/s2/index.asc --fingerprint '9876 ...'
+
+In the case where you provide 1 fingerprint, the same fingerprint is used
+for all sources.
+
+In the case where you provide no fingerprints, the default fingerprint built
+into virt-builder is used for all sources.
+
 =head3 Licensing of templates
 
 You should be aware of the licensing of images that you distribute.  For
 open source guests, provide a link to the source code in the C<notes> field
 and comply with other requirements (eg. around trademarks).
+
+=head3 Formal specification of the index file
+
+The index file format has a formal specification defined by the flex scanner
+and bison parser used to parse the file.  This can be found in the following
+files in the libguestfs source tree:
+
+ builder/index-scan.l
+ builder/index-parse.y
+
+A tool called L<virt-index-validate(1)> is available to validate the index
+file to ensure it is correct.
+
+Note that the parser and tool can work on either the signed or unsigned
+index file (ie. C<index> or C<index.asc>).
+
+The index is always encoded in UTF-8.
 
 =head2 CACHING
 
@@ -1212,7 +1360,48 @@ truly random when the guest boots.
 
 You should check digital signatures and not ignore any signing errors.
 
-=head2 USER MODE LINUX
+=head2 PERFORMANCE
+
+The most important aspect of getting good performance is caching.  Templates
+gets downloaded into the cache the first time they are used, or if you use
+the I<--cache-all-templates> option.  See L</CACHING> above for further
+information.
+
+Packages required for the I<--install> option are downloaded using the host
+network connection.  Setting the C<http_proxy>, C<https_proxy> and
+C<ftp_proxy> environment variables to point to a local web cache may ensure
+they only need to be downloaded once.  You can also try using a local
+package repository, although this can be complex to set up and varies
+according to which Linux distro you are trying to install.
+
+=head3 Skipping virt-resize
+
+Virt-builder can skip the virt-resize step under certain conditions.  This
+makes virt-builder much faster.  The conditions are:
+
+=over 4
+
+=item *
+
+the output must be a regular file (not a block device), B<and>
+
+=item *
+
+the user did B<not> use the I<--size> option, B<and>
+
+=item *
+
+the output format is the same as the template format (usually raw).
+
+=back
+
+=head3 pxzcat
+
+Virt-builder uses an internal implementation of pxzcat (parallel xzcat) if
+liblzma was found at build time.  If liblzma was not found at build time,
+regular C<xzcat> is used which is single-threaded.
+
+=head3 User-Mode Linux
 
 You can use virt-builder with the User-Mode Linux (UML) backend.  This may
 be faster when running virt-builder inside a virtual machine (eg. in the
@@ -1247,21 +1436,15 @@ actually interpreted by L<curl(1)>, not virt-builder.
 
 Used to determine the location of the template cache.  See L</CACHING>.
 
-=item C<LIBGUESTFS_MEMSIZE>
-
-The size (in megabytes) of the appliance.  The default can be found using
-the command S<C<guestfish get-memsize>>.  Increase this if you find that
-I<--run> scripts are running out of memory.
-
 =item C<VIRT_BUILDER_FINGERPRINT>
 
-Set the default value for the GPG signature fingerprint (see
-I<--fingerprint> option).
+Set the default value for the GPG signature fingerprint or comma-separated
+list of fingerprints (see I<--fingerprint> option).
 
 =item C<VIRT_BUILDER_SOURCE>
 
-Set the default value for the source URL for the template repository (see
-I<--source> option).
+Set the default value for the source URL (or comma-separated list of URLs)
+for the template repository (see I<--source> option).
 
 =item C<XDG_CACHE_HOME>
 

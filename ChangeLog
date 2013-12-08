@@ -1,46 +1,160 @@
+2013-12-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.13.
+
+2013-12-07  Hilko Bengen  <bengen@hilluzination.de>
+
+	Fix virt-builder tests for out-of-tree build
+
+	Fix installing man-pages from out-of-tree build
+
+2013-12-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add CentOS 6.5 image.
+
 2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
 
-	Version 1.24.2.
+	recipes: Add a recipe for masking a systemd service.
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	Revert half of "builder: translate more user-visible strings"
+	Don't change "os-version" to "OS version".  It's intended to be the
+	same as the virt-builder man page, which consistently calls this the
+	"os-version" string.
+
+	This partially reverts commit ee0e56f43e55307fefa1d04505ed6477d604d220.
+
+2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Pass -enable-fips option if qemu supports it.
+
+2013-12-05  Pino Toscano  <ptoscano@redhat.com>
+
+	po: fix dependencies for libguestfs.pot extraction
+	Fix the dependencies of the libguestfs.pot target: other than using the
+	right make variables holding the contents of the POTFILES, depend also
+	on the POTFILES themselves.
+
+	fish: improve the command error messages
+	- when a command needs no parameters, tell that explicitly instead of
+	  "command should have 0 parameters"
+	- use gettext's plural form when printing the number of required
+	  arguments
+	- improve the error message for a variable number of parameters limited
+	  only in the maximum number of them, using also a plural form
+
+2013-12-05  Pino Toscano  <ptoscano@redhat.com>
+
+	po: fix broken message extraction
+	Extracting separately the pot for the various languages and then
+	creating manually the global pot (by manually joining the above ones
+	after having stripped their headers) is wrong, since other than being
+	an hack it can create an invalid pot when the same message appears in
+	sources written in different languages.
+
+	Instead, a cleaner and safer solution is to first let ocaml-gettext
+	(if available) extract the messages for the ml files, and then use
+	xgettext to extract the messages for the other languages, joining the
+	new messages to the existing (or not) pot file.
+
+2013-12-04  Pino Toscano  <ptoscano@redhat.com>
+
+	builder: translate more user-visible strings
+	Translate also the "OS version" and "Notes" strings that appear in the
+	--long output.
+
+2013-12-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.12.
+
+2013-11-28  Pino Toscano  <ptoscano@redhat.com>
+
+	inspect: improve detection of FreeBSD install discs (RHBZ#1033207).
+	Check for /boot/loader.rc as "install disc" detection, using it to mark
+	FreeBSD install discs.
+	Also, check for /mfsroot.gz to see whether such disc is also a live one.
+
+	See also RHBZ#1033207.
+
+2013-11-28  Pino Toscano  <ptoscano@redhat.com>
+
+	inspect: ignore special CD devices on FreeBSD install discs
+	/etc/fstab in installation discs of FreeBSD can have an entry pointing
+	to the mounted CD itself; skip it as it is done with other CD devices in
+	check_fstab.
+
+	inspect: recognise Debian live images as such
+	Check for filesystem.squashfs also in /live, since it is where
+	live-build places it.
+
+2013-11-26  Richard W.M. Jones  <rjones@redhat.com>
 
 	launch: direct: Whitespace fix.
-	(cherry picked from commit 04769ad507e1c84c8a04bf5fe9029ae20cc67600)
 
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+2013-11-25  Richard W.M. Jones  <rjones@redhat.com>
 
 	launch: Print program and version as part of standard debug output when launching the handle.
 	There are a lot of cases where people post debugging output, but we're
 	not sure precisely which version they are using.
 
-	(cherry picked from commit e7fa7f4d1691bc5e34b163509645c535ac6d8767)
-
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+	tests: Test that network drives are mapped to correct qemu -drive parameters.
+	Although this test only specifically tests the direct backend, the
+	same code is shared with the libvirt backend in some circumstances
+	(eg. creating readonly drives).  So this is testing a bit of both.
 
 	ocaml: Remove unused function prototype.
-	(cherry picked from commit 45afcdb30788d6cb9bdba14fe554b3b12a0d8479)
-
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
 
 	po-docs: If *.pod files are missing, tell user to run 'make update-po'.
 	I'm now fairly convinced it's not possible to do this automatically.
 	However we should at least tell the user what needs to be done.
 
-	(cherry picked from commit 1ea1646e6f224dbc5b3922bb3c65aab4d71a9cb9)
+2013-11-23  Richard W.M. Jones  <rjones@redhat.com>
 
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+	Version 1.25.11.
+
+	sysprep: Fix broken test when backend is UML.
+	This fixes commit cc1888a4977eb4942254ea5ac15c1d0a47458317.
+
+2013-11-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.10.
 
 	lua: Don't redefine lua_objlen if already defined.
 	lua 5.2.2 seems to define this symbol already.
 
-	(cherry picked from commit 5ee193433a46d205e181bc51080e15f696bbda1a)
+	Version 1.25.9.
 
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+	sysprep: Add a test suite for the --password option.
+
+2013-11-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder/sysprep: Allow accounts to be locked (RHBZ#1028660).
+	This allows you to select both locked accounts and disabled
+	passwords.  The two are subtly different concepts.
+
+	A locked account [cf. passwd -l] puts "!!" at the beginning of the
+	shadow password field.  Locking is reversible, because the "!!"  can
+	be removed, restoring the original password.  Therefore "locked"
+	acts as a flag in front of an existing selector.
+
+	A disabled account has "*" in the password field.  Therefore it has no
+	password.
+
+	Note that an account may be both locked and disabled, although this is
+	probably not useful.  The shadow password field will contain "!!*".
+
+2013-11-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder/sysprep: Allow 'random' as a password selector.
+	This chooses a random password.
+
+2013-11-21  Richard W.M. Jones  <rjones@redhat.com>
 
 	mllib: password: Replace password string with password_selector type.
 	This is just code motion, there is no functional change.
 
-	(cherry picked from commit 91450b5f9a2bf0603971d7cdf3271f390ed0c2c4)
-
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+2013-11-21  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder/sysprep: Describe --password/--root-password option as "selector".
 	It now appears in the respective man pages as:
@@ -54,34 +168,22 @@
 	This avoids confusion from people who think these command line options
 	take the password directly.
 
-	(cherry picked from commit 9186438937f5451ddfdaa33c9dcb9ffe27b2a098)
-
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+2013-11-21  Richard W.M. Jones  <rjones@redhat.com>
 
 	ls: Note that you can use virt-cat or guestfish to show file differences.
-	(cherry picked from commit c7b0457c32b25fb289e9e1de3f960b12cebe4adf)
-
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
 
 	ls: In image diff example, don't use --time-t.
 	It shows differences in file access times (atime) which is not
 	actually that useful for most people.
 
-	(cherry picked from commit 90245512453bb404f50e54cddf052bce63385073)
-
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+2013-11-19  Richard W.M. Jones  <rjones@redhat.com>
 
 	FAQ: "execl: /init: Permission denied" error also caused by /init not being executable.
 	This updates commit 98cd329323d35ab54efd976e095ae9cbf18ad338.
 
-	(cherry picked from commit 2d9f69db614c8fecdd11c879d00fca366850e720)
-
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
-
 	FAQ: Attempt to explain "execl: /init: Permission denied" error.
-	(cherry picked from commit 98cd329323d35ab54efd976e095ae9cbf18ad338)
 
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+2013-11-19  Richard W.M. Jones  <rjones@redhat.com>
 
 	lib: Make sure -lselinux is used when linking libguestfs.so.
 	If libselinux was detected, it was not added to the linker command
@@ -93,17 +195,19 @@
 
 	Reported by and thanks: Antoni Segura Puimedon.
 
-	(cherry picked from commit acce28e8874e08acce0a6cd7a6703043a1e4ec25)
-
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+2013-11-15  Richard W.M. Jones  <rjones@redhat.com>
 
 	daemon: btrfs: Upstream 'btrfs device add' command now needs '--force' option to work.
 	However earlier versions didn't have the --force option, so we
 	have to detect it.
 
-	(cherry picked from commit 59596810b009744316941da8ef18b7e75b503b9f)
+2013-11-14  Richard W.M. Jones  <rjones@redhat.com>
 
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+	Version 1.25.8.
+
+	virt-win-reg: Allow URIs (RHBZ#912193).
+
+2013-11-14  Richard W.M. Jones  <rjones@redhat.com>
 
 	perl: Give error instead of crashing if optarg is not an array reference.
 	  $g->add_drive ("", server => 1);
@@ -112,9 +216,7 @@
 
 	  array reference expected for 'server' argument at [line]
 
-	(cherry picked from commit c032130226bdca539b8ac34ce622e5cd9a71c152)
-
-2013-12-06  Török Edwin  <edwin@etorok.net>
+2013-11-14  Török Edwin  <edwin@etorok.net>
 
 	Avoid modulo bias in random password generation
 	Char.code (input_char chan) mod nr_chars has modulo bias because
@@ -130,9 +232,7 @@
 	 - Modify the code so it goes into a utility library.
 	 - Use the same code across virt-builder and virt-sysprep.
 
-	(cherry picked from commit 6a1061663fa467d43777a8ed98f4f07750125012)
-
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+2013-11-14  Richard W.M. Jones  <rjones@redhat.com>
 
 	mllib: Add a utility function for safely reading from /dev/urandom.
 	OCaml's buffered 'in_channel' has a 64k buffer, so using it to read a
@@ -143,17 +243,20 @@
 	generalized it because there are two other places where we did
 	over-sized reads from /dev/urandom.
 
-	(cherry picked from commit f013b15fa1daf623cbf39007182c44c734e9bc79)
-
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+2013-11-12  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder: Clarify architecture section of the documentation.
 	I have checked and cross architecture builds work fine:
 
 	http://rwmj.wordpress.com/2013/11/09/virt-builder-running-on-arm/#content
-	(cherry picked from commit 544d6b25e345e2317b1f2e92684af6c08e1c58ba)
 
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+2013-11-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	Change supermin man pages section 8 to section 1.
+	Corresponding change in upstream supermin:
+	https://github.com/libguestfs/supermin/commit/cb3f9e8bbaf5e612fdf97caf9f47a4cd839c3438
+
+2013-11-11  Richard W.M. Jones  <rjones@redhat.com>
 
 	podwrapper: virt-install is not a libguestfs page.
 	This now redirect to http://man.he.net/man1/virt-install, but this is
@@ -162,67 +265,50 @@
 	Incomplete fix for RHBZ#1029134.
 
 	Thanks: Paul Maunders.
-	(cherry picked from commit edacd479faf7175eb2ddb10dd8c7ab4c90db5d0b)
 
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+2013-11-11  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder: debian: Remove bogus proxy from apt configuration.
 	Thanks: Daniel Miranda
-	(cherry picked from commit 4b2e9c9264dcebd3c5945050b7f1d1b4cb4d3dae)
 
 	builder: After building a template, print fields for index file.
-	(cherry picked from commit 50aca447eabaa8c47f7b6adf57db48a225bf589e)
+
+2013-11-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.7.
 
 	builder/website: Add some missing files to EXTRA_DIST.
-	(cherry picked from commit 300b357eb98445926a096927655763a8d2150271)
+
+2013-11-07  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder: Allow /tmp or /Temp to be symlinks to a directory.
-	(cherry picked from commit 63ec023f19f2b397dfa629a8674bb9fbed752c71)
 
 	builder: Allow upload to directory when target is a symlink to a directory.
-	(cherry picked from commit 7a8addb48553c90cf34cea5804d9d139e1c81b85)
-
-2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
-
-	builder: Allow --upload to a directory.
-	Also set the owner and permissions on the destination file correctly.
-
-	(cherry picked from commit 10c849ed1cb4375c5ef811197fa0a3206d365b86)
-
-2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
 
 	Update TODO: Remove some things that we've done.
-	(cherry picked from commit e982c0a2f56a5324d41b90b7a8f2715412f7e899)
+
+2013-11-06  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder/website: Add support for RHEL 5 releases to internal RHEL script.
-	(cherry picked from commit 55795e652ebeb8f1860e8204d738b4af94a9975f)
 
 	builder/website: Don't use http_proxy in internal RHEL script.
-	(cherry picked from commit 133ae6a34b5bdf8c831b0ee967eb1f7798062943)
 
 	builder: After compressing the template, calculate the SHA-512 hash.
-	(cherry picked from commit e906d30c62fcca597fa4ddb4d620ea1f9b83b8b2)
 
 	builder: Add a Scientific Linux 6 image.
-	(cherry picked from commit f459fe47f899e2e93a455a1338860a2b11165c9e)
 
 	builder: Old OCaml didn't have List.iteri, so add a utility function.
-	(cherry picked from commit 7147d415645d2c66b459c4bf366b6288ddbf2584)
-
-2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder: Add script for making Red Hat Enterprise Linux instances.
 	This uses some internal Red Hat repositories so it's not generally
 	useful, but could be easily adapted by users.
 
-	(cherry picked from commit e9294668b4cd5cfa10ab4d936bccb271107f138b)
-
-2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+	builder: Fail if lex is not installed.
+	This completes the fix for commit a4800e2d4fc50f372a8b626333c4fbb9b8ca9633.
 
 	builder: Use common code to sysprep, sparsify and compress images.
-	(cherry picked from commit 4dd6e4328ca57020e8e415e99925eab73b2fe95e)
 
-2013-12-05  Adam Huffman  <adam.huffman@gmail.com>
+2013-11-06  Adam Huffman  <adam.huffman@gmail.com>
 
 	builder: Add script for making Scientific Linux instances.
 	RWMJ:
@@ -230,29 +316,53 @@
 	 - The output file is called scientificlinux-$version
 	 - I fixed some whitespace issues so it's now similar to the CentOS script.
 
-	(cherry picked from commit c76912cd778281f70490b05a276c140eacf8c647)
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
 
-2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+	builder: Fail if bison is not installed.
+	This partially fixes commit a4800e2d4fc50f372a8b626333c4fbb9b8ca9633.
+
+	builder: Add dependencies which automake doesn't generate correctly.
+	This is a further attempt, earlier commits:
+	commit e3ac293e869a4c69225e3d954b812e9bf21588a1
+	commit dfe97b352d6b398c3cb3ddb1c9984767722e514b
 
 	Update to latest gnulib to get hash relicensing change (thanks Jim Meyering).
-	(cherry picked from commit d669db7ff0a2f8216ae8287d4c74314c5d9e2f13)
-
-2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder: Fix centos script - output filename was wrong.
 	This fixes commit 2f3fb2420e7f2ccc19fdc863ecc7b7ce29dd6aa1.
 
-	(cherry picked from commit 663012c5ffecc6f89ad164d292fc0f970338f824)
+	Version 1.25.6.
 
-2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+	builder: Add dependency from index-parse.h to index-validate.
+	For some reason automake doesn't get this dependency right,
+	resulting in occasional build failures if yacc races the
+	rest of the build.
+
+	builder: Add some generated files to CLEANFILES.
+	This updates commit a4800e2d4fc50f372a8b626333c4fbb9b8ca9633.
+
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add missing dependency.
+	index-parser-c.c depends on index-parse.h being created first.
+	However without an explicit dependency, this is not done (and implicit
+	deps don't work because automake doesn't sufficiently understand OCaml
+	programs).
+
+	This fixes commit a4800e2d4fc50f372a8b626333c4fbb9b8ca9633.
+
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.5.
 
 	Don't include email addresses in AUTHORS file.
 	Some authors had duplicate entries because they had multiple
 	email addresses.
 
-	(cherry picked from commit ab801c2657354639ae7bad1cd60ad387592249f4)
+	builder/website: Add validate.sh test script to EXTRA_DIST.
+	This fixes commit 154bfb7dd46e7998eed1d40ead95923590763739.
 
-2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder: Replace centos-6.sh with a single script.
 	Just use:
@@ -261,9 +371,7 @@
 
 	Note that you don't need to be root.
 
-	(cherry picked from commit 2f3fb2420e7f2ccc19fdc863ecc7b7ce29dd6aa1)
-
-2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder: Replace debian-<NN>.sh with a single script.
 	Just use:
@@ -272,9 +380,7 @@
 
 	Note that you don't need to be root.
 
-	(cherry picked from commit af9e9299bf0f422d7e07ccfe9a59e664b49c2dfe)
-
-2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder: Replace ubuntu-<NN>.sh with a single script.
 	Just use:
@@ -283,9 +389,7 @@
 
 	Note that you don't need to be root.
 
-	(cherry picked from commit 91b5e7fb37751719304573882c521071aa811e36)
-
-2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder: Replace fedora-<NN> shell & kickstart with a single script.
 	Just use:
@@ -294,9 +398,17 @@
 
 	Note that you don't need to be root.
 
-	(cherry picked from commit ade0f1a97d6371f5d5a538da9d41263146cc58d6)
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
 
-2013-12-05  Nikos Skalkotos  <skalkoto@grnet.gr>
+	builder: Internal implementation of parallel xzcat (pxzcat).
+	Instead of calling out to the pxzcat program, use an internal
+	implementation.  This requires liblzma to be available at build time.
+	If it's not available, fall back to using regular xzcat.
+
+	It is intended that eventually this code will go away when regular
+	xzcat / unxz is able to use threads.
+
+2013-11-05  Nikos Skalkotos  <skalkoto@grnet.gr>
 
 	Fix fstab block device resolution for FreeBSD
 	The device name prefix for IDE hard drives used to be `ad' but now
@@ -308,42 +420,38 @@
 	GPT partition table, where no slice is needed, the name of the first
 	partition will be either `ada0p1' or `vtbd0p1'.
 
-	(cherry picked from commit 7e2576a74a93474bc04525adc398cdc4144f389d)
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
 
-2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+	builder/website: Add index validation test script.
 
 	builder: Add an extra Makefile.am to builder/website.
-	(cherry picked from commit cd10f6f4db32689b2552b52a4875795be8b35694)
+
+	builder: Fix missing files in EXTRA_DIST.
+	This fixes commit a4800e2d4fc50f372a8b626333c4fbb9b8ca9633.
+
+2013-11-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.4.
 
 	builder: Fix 'check-valgrind' so it does something in this directory.
-	(cherry picked from commit 2dca9d719434f6783e11976699e45a98128ca913)
 
-2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+	builder: Add a real scanner/parser for index files.
+	This adds a tool called virt-index-validate to validate index files.
 
 	builder: Don't use git tree / libguestfs.git to refer to the source.
 	git is just a VCS.
 
-	(cherry picked from commit 3ffdddbedf176fa5f12172fb2e3c6bd4b2690f9e)
-
-2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+2013-11-02  Richard W.M. Jones  <rjones@redhat.com>
 
 	df: Allow parallel test to be skipped.
 	It currently fails because of
 	https://bugzilla.redhat.com/show_bug.cgi?id=1025942
-
-	(cherry picked from commit 50486232db08ccad4b38f5addfcef92b0f4faef3)
-
-2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
-
-	Version 1.24.1.
 
 2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder: Only warn about unknown fields in the index if -v option is used.
 	Allows us to add new fields in future without having pointless
 	warnings from old versions of virt-builder.
-
-	(cherry picked from commit 5280e3031be9d1f72d03510483fa22634b5d9af5)
 
 2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
 
@@ -353,24 +461,32 @@
 
 	This updates commit 4b73e0be29302da0ae8c5c79a51e770cbe6ed7cf.
 
-	(cherry picked from commit 8d14abb0df1e216682fa9c35bda3d4ecdb9b4dd2)
-
 2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Update TODO file with some more ideas.
+
+	Version 1.25.3.
 
 	builder: Add missing files to EXTRA_DIST.
-	(cherry picked from commit e9d908929fd87ef8adb6f95f35da35e39876f148)
-
-2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	./run: Disable timeouts in tests on RHEL 6.
 	Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=1025269
 
-	(cherry picked from commit 7113aee0b439b411602d8d7d4b03bf02bc91b800)
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Allow multiple source paths to be specified.
+	Users can now specify multiple source paths, eg:
+
+	  virt-builder --source http://example.com/foo \
+	    --source http://example.com/bar
+
+	to get templates from multiple places.
+
+	There is still only one built-in path, but we can add more later.
 
 2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder: When debugging, print curl command before running it.
-	(cherry picked from commit b25e8da6d60875d1b7416558ecb24fe3e161654d)
 
 2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
 
@@ -387,37 +503,52 @@
 
 	Thanks Dennis Gilmore for pointing out that we could do this.
 
-	(cherry picked from commit 4b73e0be29302da0ae8c5c79a51e770cbe6ed7cf)
-
-2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
-
-	builder: Add CentOS 6.4 guest.
-	(cherry picked from commit 276cde033c454e084e38c36af693c3fcad86281f)
-
 2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	./run: Fix massive thinko in $PATH setting.
 	This fixes commit 76c20d761b24195b3cd7a620524ae84ed0ab6ab3.
 
-	(cherry picked from commit 3b746ee796770302893e9aee20d077c1f67e0c01)
-
-2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+2013-10-29  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder: Whitespace change in error message.
-	(cherry picked from commit 984b024c5a74dd47b99dee128f8709dd36e56fb1)
 
 	builder: Be more careful about deleting temporary files on exit.
-	(cherry picked from commit 124f20a1ca49749af40f1052bb9506ec9a8b7046)
 
 	builder: Whitespace fix in Index_parser module.
-	(cherry picked from commit 9ac076c269f3396a01c699fb71ccb32c00bed6ca)
 
-2013-11-01  Matthew Booth  <mbooth@redhat.com>
+	Version 1.25.2.
+
+2013-10-29  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	sysprep: add feature of deleting specified paths
+
+2013-10-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add -m/--memsize and --smp command line options.
+
+2013-10-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Add some code to enable qemu / gdb debugging.
+	See the comment for details.
+
+	Note this is disabled by default.  Developers can only enable it by
+	changing #if 0 -> #if 1.
+
+2013-10-29  Matthew Booth  <mbooth@redhat.com>
 
 	docs: guestfs_case_sensitive_path returns error on non-existent path
-	(cherry picked from commit 12e0e3fb0948d9e2975f2bfa596d068d83b717fa)
 
-2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+2013-10-29  Daniel Exner  <dex@dragonslave.de>
+
+	Initial FrugalWare support.
+
+2013-10-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add CentOS 6.4 guest.
+
+	builder: Add a section on performance to the manual.
+
+2013-10-26  Richard W.M. Jones  <rjones@redhat.com>
 
 	./run: Adjust $PATH to include all libguestfs binaries.
 	Instead of typing:
@@ -434,46 +565,88 @@
 	libguestfs should be able to call other binaries freely without adding
 	special exceptions (which we had before this change).
 
-	(cherry picked from commit 76c20d761b24195b3cd7a620524ae84ed0ab6ab3)
+2013-10-26  Richard W.M. Jones  <rjones@redhat.com>
 
-2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+	firstboot: Send the output to the console as well as to the log file.
+	For systemd:
+	Currently stdout+stderr go to the journal (these are effectively
+	empty unless there are gross errors).  The output of the commands
+	goes to the log file.
+
+	With this change, the output goes to the journal, the console and
+	the log file.
+
+	For SysV-init:
+	Currently stdout+stderr go to the console (but these are effectively
+	empty).  The output of the commands goes to the log file.
+
+	With this change, the output goes to the console and the log file.
+
+2013-10-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Document how to boot VMs directly in qemu or KVM.
+
+	builder: Add --write option to write a literal file.
+
+	builder: Allow --upload to a directory.
+	Also set the owner and permissions on the destination file correctly.
+
+	Version 1.25.1.
+
+2013-10-25  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder: Don't fail if ~/.cache doesn't exist (RHBZ#1022431).
-	(cherry picked from commit 2add5c9295c704738fbe183463243d4b65392bab)
-
-2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder: Copy-editing on documentation.
 	Plus some ideas added to TODO file.
 
-	(cherry picked from commit dd5959cd8875496594df0fdbb8a00cbe6618c9ee)
+	builder: Add --mkdir option to create directories.
 
-2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+2013-10-23  Richard W.M. Jones  <rjones@redhat.com>
 
 	builder: Fix two problems in --help output.
-	(cherry picked from commit b3ab3b452ac9654ec9460e0eb881839432a38928)
 
-2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+2013-10-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add --no-sync option to avoid sync on exit.
+
+2013-10-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	Revert "java: Remove version number from the jar file (RHBZ#1022184)."
+	This reverts commit 7330ccd288a001d33866308ff8d679a884230d83.
+
+	See comment in https://bugzilla.redhat.com/1022184
+
+2013-10-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	java: Remove version number from the jar file (RHBZ#1022184).
+
+	builder: Use pxzcat (optionally) to speed up xzcat step.
+
+	builder: Make xzcat binary configurable and use AC_PATH_PROG.
+
+	builder: Don't run virt-resize when not necessary.
+	If:
+	 - the output is a regular file
+	 - the output format is raw
+	 - the user didn't specify the --size option
+	then we don't need to run virt-resize.  Simply uncompress
+	the template directly to the output file.
 
 	build: xz is required.
 	It is needed for libguestfs-make-fixed-appliance and many other places.
-
-	(cherry picked from commit 2a76aa22c7105aa165d8fee6360ca6dbaf4027c3)
-
-2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	mllib: Create config.ml from configure and use it for --version options.
 	Also don't internationalize the output of the --version option, as
 	that isn't useful.
 
-	(cherry picked from commit 5b89dd4aa1e918890c5958b96857a6c249203dbc)
-
-2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+2013-10-19  Richard W.M. Jones  <rjones@redhat.com>
 
 	configure: Use AC_PATH_PROG{,S} for external programs used by the library.
-	(cherry picked from commit d6e5a6546afeb1554e676e5a4197002559f6cde7)
 
 2013-10-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.0.
 
 	Version 1.24.0.
 	New stable branch.

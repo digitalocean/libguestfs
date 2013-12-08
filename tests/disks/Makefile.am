@@ -18,9 +18,11 @@
 include $(top_srcdir)/subdir-rules.mk
 
 TESTS = \
-	test-max-disks.pl
+	test-max-disks.pl \
+	test-qemu-drive.sh
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 EXTRA_DIST = \
+	debug-qemu.sh \
 	$(TESTS)

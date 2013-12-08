@@ -17,13 +17,28 @@
  *)
 
 open Common_gettext.Gettext
+open Common_utils
 open Printf
 
 type password_crypto = [`MD5 | `SHA256 | `SHA512 ]
 
-type password_selector = Set_password of string
+type password_selector = {
+  pw_password : password;
+  pw_locked : bool;
+}
+and password =
+| Password of string
+| Random_password
+| Disabled_password
 
 type password_map = (string, password_selector) Hashtbl.t
+
+let make_random_password =
+  (* Get random characters from the set [A-Za-z0-9] with some
+   * homoglyphs removed.
+   *)
+  let chars = "ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789" in
+  fun () -> Urandom.urandom_uniform 16 chars
 
 let password_crypto_of_string ~prog = function
   | "md5" -> `MD5
@@ -35,20 +50,26 @@ let password_crypto_of_string ~prog = function
     exit 1
 
 let rec parse_selector ~prog arg =
-  let i =
-    try String.index arg ':'
-    with Not_found ->
-      eprintf (f_"%s: invalid password format; see the man page.\n") prog;
-      exit 1 in
-  let key, value =
-    let len = String.length arg in
-    String.sub arg 0 i, String.sub arg (i+1) (len-(i+1)) in
+  parse_selector_list ~prog arg (string_nsplit ":" arg)
 
-  match key with
-  | "file" -> Set_password (read_password_from_file value)
-  | "password" -> Set_password value
+and parse_selector_list ~prog orig_arg = function
+  | [ "lock"|"locked" ] ->
+    { pw_locked = true; pw_password = Disabled_password }
+  | ("lock"|"locked") :: rest ->
+    let pw = parse_selector_list ~prog orig_arg rest in
+    { pw with pw_locked = true }
+  | [ "file"; filename ] ->
+    { pw_password = Password (read_password_from_file filename);
+      pw_locked = false }
+  | "password" :: password ->
+    { pw_password = Password (String.concat ":" password); pw_locked = false }
+  | [ "random" ] ->
+    { pw_password = Random_password; pw_locked = false }
+  | [ "disable"|"disabled" ] ->
+    { pw_password = Disabled_password; pw_locked = false }
   | _ ->
-    eprintf (f_"%s: password format, \"%s:...\" is not recognized; see the man page.\n") prog key;
+    eprintf (f_"%s: invalid password selector '%s'; see the man page.\n")
+      prog orig_arg;
     exit 1
 
 and read_password_from_file filename =
@@ -75,7 +96,8 @@ let rec set_linux_passwords ~prog ?password_crypto g root passwords =
     List.map (
       fun line ->
         try
-          (* Each line is: "user:password:..."
+          (* Each line is: "user:[!!]password:..."
+           * !! at the front of the password field means the account is locked.
            * 'i' points to the first colon, 'j' to the second colon.
            *)
           let i = String.index line ':' in
@@ -83,9 +105,20 @@ let rec set_linux_passwords ~prog ?password_crypto g root passwords =
           let selector = Hashtbl.find passwords user in
           let j = String.index_from line (i+1) ':' in
           let rest = String.sub line j (String.length line - j) in
-          match selector with
-          | Set_password password ->
-            user ^ ":" ^ encrypt password crypto ^ rest
+          let pwfield =
+            match selector with
+            | { pw_locked = locked;
+                pw_password = Password password } ->
+              if locked then "!!" else "" ^ encrypt password crypto
+            | { pw_locked = locked;
+                pw_password = Random_password } ->
+              let password = make_random_password () in
+              printf (f_"Setting random password of %s to %s\n%!")
+                user password;
+              if locked then "!!" else "" ^ encrypt password crypto
+            | { pw_locked = true; pw_password = Disabled_password } -> "!!*"
+            | { pw_locked = false; pw_password = Disabled_password } -> "*" in
+          user ^ ":" ^ pwfield ^ rest
         with Not_found -> line
     ) shadow in
 

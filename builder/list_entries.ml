@@ -21,10 +21,14 @@ open Common_utils
 
 open Printf
 
-let list_entries ?(list_long = false) ~source index =
+let list_entries ?(list_long = false) ~sources index =
   if list_long then (
-    printf (f_"Source URI: %s\n") source;
-    printf "\n"
+    List.iter (
+      fun (source, fingerprint) ->
+        printf (f_"Source URI: %s\n") source;
+        printf (f_"Fingerprint: %s\n") fingerprint;
+        printf "\n"
+    ) sources
   );
 
   List.iter (
@@ -58,7 +62,7 @@ let list_entries ?(list_long = false) ~source index =
           | None -> ()
           | Some notes ->
             printf "\n";
-            printf "Notes:\n %s\n" notes
+            printf (f_"Notes:\n\n%s\n") notes
           );
           printf "\n"
         )

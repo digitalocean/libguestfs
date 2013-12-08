@@ -21,6 +21,7 @@ EXTRA_DIST = \
 	.gitignore \
 	compress.sh \
 	test-guest.sh \
+	validate.sh \
 	README \
 	index \
 	index.asc \
@@ -43,3 +44,7 @@ EXTRA_DIST = \
 	ubuntu-13.10.xz.sig
 
 CLEANFILES = *~
+
+# Validates the index file.
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
+TESTS = validate.sh

@@ -941,9 +941,14 @@ JNI_INSTALL_DIR = @JNI_INSTALL_DIR@
 JNI_VERSION_INFO = @JNI_VERSION_INFO@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
+LEX = @LEX@
+LEXLIB = @LEXLIB@
+LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBCONFIG_CFLAGS = @LIBCONFIG_CFLAGS@
 LIBCONFIG_LIBS = @LIBCONFIG_LIBS@
 LIBINTL = @LIBINTL@
+LIBLZMA_CFLAGS = @LIBLZMA_CFLAGS@
+LIBLZMA_LIBS = @LIBLZMA_LIBS@
 LIBMULTITHREAD = @LIBMULTITHREAD@
 LIBOBJS = @LIBOBJS@
 LIBPTH = @LIBPTH@
@@ -1292,8 +1297,11 @@ WINT_T_SUFFIX = @WINT_T_SUFFIX@
 WRESTOOL = @WRESTOOL@
 XGETTEXT = @XGETTEXT@
 XMLLINT = @XMLLINT@
+XZCAT = @XZCAT@
+YACC = @YACC@
 YAJL_CFLAGS = @YAJL_CFLAGS@
 YAJL_LIBS = @YAJL_LIBS@
+YFLAGS = @YFLAGS@
 YIELD_LIB = @YIELD_LIB@
 abs_aux_dir = @abs_aux_dir@
 abs_builddir = @abs_builddir@
@@ -1638,23 +1646,13 @@ $(top_builddir)/generator/generator:
 
 @HAVE_GNU_GETTEXT_TRUE@update-gmo: Makefile $(GMOFILES)
 
-@HAVE_GNU_GETTEXT_TRUE@$(DOMAIN).pot: Makefile $(POTFILES) $(POTFILES-pl) $(POTFILES-ml)
-@HAVE_GNU_GETTEXT_TRUE@	rm -f $@-t $@-pl $@-ml
-@HAVE_GNU_GETTEXT_TRUE@	$(XGETTEXT) -o $@-t $(XGETTEXT_ARGS) \
+@HAVE_GNU_GETTEXT_TRUE@$(DOMAIN).pot: Makefile POTFILES $(POTFILES) POTFILES-pl $(POTFILES_PL) POTFILES-ml $(POTFILES_ML)
+@HAVE_GNU_GETTEXT_TRUE@	rm -f $@-t
+@HAVE_GNU_GETTEXT_TRUE@@HAVE_OCAML_GETTEXT_TRUE@	$(OCAML_GETTEXT) --action extract --extract-pot $@-t $(POTFILES_ML)
+@HAVE_GNU_GETTEXT_TRUE@	$(XGETTEXT) -j -o $@-t $(XGETTEXT_ARGS) \
 @HAVE_GNU_GETTEXT_TRUE@	  --files-from=$(abs_srcdir)/POTFILES
-@HAVE_GNU_GETTEXT_TRUE@	$(XGETTEXT) -o $@-pl $(XGETTEXT_ARGS) --language=Perl \
+@HAVE_GNU_GETTEXT_TRUE@	$(XGETTEXT) -j -o $@-t $(XGETTEXT_ARGS) --language=Perl \
 @HAVE_GNU_GETTEXT_TRUE@	  --files-from=$(abs_srcdir)/POTFILES-pl
-# Don't trust msgcat since it will definitely screw up.  Instead, chop
-# the head from the second file and append it to the first.
-@HAVE_GNU_GETTEXT_TRUE@	echo >> $@-t
-@HAVE_GNU_GETTEXT_TRUE@	awk '/^#:/{i++}i{print}' < $@-pl >> $@-t
-@HAVE_GNU_GETTEXT_TRUE@	rm $@-pl
-@HAVE_GNU_GETTEXT_TRUE@@HAVE_OCAML_GETTEXT_TRUE@	$(OCAML_GETTEXT) --action extract --extract-pot $@-ml $(POTFILES_ML)
-# Don't trust msgcat since it will definitely screw up.  Instead, chop
-# the head from the second file and append it to the first.
-@HAVE_GNU_GETTEXT_TRUE@@HAVE_OCAML_GETTEXT_TRUE@	echo >> $@-t
-@HAVE_GNU_GETTEXT_TRUE@@HAVE_OCAML_GETTEXT_TRUE@	awk '/^#:/{i++}i{print}' < $@-ml >> $@-t
-@HAVE_GNU_GETTEXT_TRUE@@HAVE_OCAML_GETTEXT_TRUE@	rm $@-ml
 @HAVE_GNU_GETTEXT_TRUE@	mv $@-t $@
 
 @HAVE_GNU_GETTEXT_TRUE@%.po: $(DOMAIN).pot

@@ -331,6 +331,13 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   if (qemu_supports (g, data, "-nodefconfig"))
     ADD_CMDLINE ("-nodefconfig");
 
+  /* This oddly named option doesn't actually enable FIPS.  It just
+   * causes qemu to do the right thing if FIPS is enabled in the
+   * kernel.  So like libvirt, we pass it unconditionally.
+   */
+  if (qemu_supports (g, data, "-enable-fips"))
+    ADD_CMDLINE ("-enable-fips");
+
   /* Newer versions of qemu (from around 2009/12) changed the
    * behaviour of monitors so that an implicit '-monitor stdio' is
    * assumed if we are in -nographic mode and there is no other
@@ -347,6 +354,29 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
 #ifdef MACHINE_TYPE
   ADD_CMDLINE ("-M");
   ADD_CMDLINE (MACHINE_TYPE);
+#endif
+
+  /* If this is uncommented, then qemu won't start running the
+   * appliance immediately.  It will wait for you to connect to it
+   * using gdb:
+   *
+   *   $ gdb
+   *   (gdb) symbol-file /path/to/vmlinux
+   *   (gdb) target remote tcp::1234
+   *   (gdb) cont
+   *
+   * You can then debug the appliance kernel, which is useful to debug
+   * boot failures (especially ones where there are no debug messages
+   * printed - tip: look in the kernel log_buf).
+   *
+   * On Fedora, install kernel-debuginfo for the vmlinux file
+   * (containing symbols).  Make sure the symbols precisely match the
+   * kernel being used.
+   */
+#if 0
+  ADD_CMDLINE ("-S");
+  ADD_CMDLINE ("-s");
+  warning (g, "qemu debugging is enabled, connect gdb to tcp::1234 to begin");
 #endif
 
   /* Try to guess if KVM is available.  We are just checking that

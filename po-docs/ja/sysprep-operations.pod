@@ -37,6 +37,14 @@ kexec-tools により生成されたクラッシュデータを削除します�
 
 ユーザーの at ジョブおよび cron ジョブを削除します。
 
+=head2 B<delete> *
+
+Delete specified files or directories.
+
+Delete specified files or directories.
+
+Use the I<--delete> option to specify a path to remove.
+
 =head2 B<dhcp-client-state> *
 
 DHCP クライアントのリースを削除します。

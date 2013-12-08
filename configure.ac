@@ -25,8 +25,8 @@
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [24])
-m4_define([libguestfs_release], [2])
+m4_define([libguestfs_minor],   [25])
+m4_define([libguestfs_release], [13])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -557,6 +557,9 @@ fi
 if test -f /etc/SuSE-release; then
     DISTRO=SUSE
 fi
+if test -f /etc/frugalware-release; then
+    DISTRO=FRUGALWARE
+fi
 AC_MSG_RESULT([$DISTRO])
 AC_SUBST([DISTRO])
 
@@ -696,6 +699,31 @@ dnl Check for icoutils (optional).
 AC_PATH_PROGS([WRESTOOL],[wrestool],[no])
 if test "x$WRESTOOL" != "xno"; then
     AC_DEFINE_UNQUOTED([WRESTOOL],["$WRESTOOL"],[Name of wrestool program.])
+fi
+
+dnl Check for xzcat (required).
+AC_PATH_PROGS([XZCAT],[xzcat],[no])
+test "x$XZCAT" = "xno" && AC_MSG_ERROR([xzcat must be installed])
+AC_DEFINE_UNQUOTED([XZCAT],["$XZCAT"],[Name of xzcat program.])
+
+dnl liblzma can be used by virt-builder (optional).
+PKG_CHECK_MODULES([LIBLZMA], [liblzma],[
+    AC_SUBST([LIBLZMA_CFLAGS])
+    AC_SUBST([LIBLZMA_LIBS])
+    AC_DEFINE([HAVE_LIBLZMA],[1],[liblzma found at compile time.])
+],
+[AC_MSG_WARN([liblzma not found, virt-builder will be slower])])
+
+dnl (f)lex and bison for virt-builder (required).
+dnl XXX Could be optional with some work.
+AC_PROG_LEX
+AC_PROG_YACC
+dnl These macros don't fail, instead they set some useless defaults.
+if test "x$LEX" = "x:"; then
+    AC_MSG_FAILURE([GNU 'flex' is required.])
+fi
+if test "x$YACC" = "xyacc"; then
+    AC_MSG_FAILURE([GNU 'bison' is required (yacc won't work).])
 fi
 
 dnl Check for QEMU for running binaries on this $host_cpu, fall
