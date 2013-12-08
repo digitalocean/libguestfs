@@ -27,7 +27,7 @@ if [ $# -ne 1 ]; then
 fi
 
 version=$1
-output=fedora-$version
+output=centos-$version
 tmpname=tmp-$(tr -cd 'a-f0-9' < /dev/urandom | head -c 8)
 
 # We rebuild this every time there is a new 6.x release, and bump
@@ -84,18 +84,4 @@ virt-install \
     --nographics \
     --noreboot
 
-# Sysprep (removes logfiles and so on).
-# Note this also touches /.autorelabel so the further installation
-# changes that we make will be labelled properly at first boot.
-virt-sysprep -a $output
-
-# Sparsify.
-mv $output $output.old
-virt-sparsify $output.old $output
-rm $output.old
-
-# Compress.
-xz --best --block-size=16777216 $output
-
-# Result:
-ls -lh $output.xz
+source $(dirname "$0")/compress.sh $output

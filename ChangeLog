@@ -1,4 +1,60 @@
+2013-11-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.7.
+
+	builder/website: Add some missing files to EXTRA_DIST.
+
+2013-11-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Allow /tmp or /Temp to be symlinks to a directory.
+
+	builder: Allow upload to directory when target is a symlink to a directory.
+
+	Update TODO: Remove some things that we've done.
+
+2013-11-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder/website: Add support for RHEL 5 releases to internal RHEL script.
+
+	builder/website: Don't use http_proxy in internal RHEL script.
+
+	builder: After compressing the template, calculate the SHA-512 hash.
+
+	builder: Add a Scientific Linux 6 image.
+
+	builder: Old OCaml didn't have List.iteri, so add a utility function.
+
+	builder: Add script for making Red Hat Enterprise Linux instances.
+	This uses some internal Red Hat repositories so it's not generally
+	useful, but could be easily adapted by users.
+
+	builder: Fail if lex is not installed.
+	This completes the fix for commit a4800e2d4fc50f372a8b626333c4fbb9b8ca9633.
+
+	builder: Use common code to sysprep, sparsify and compress images.
+
+2013-11-06  Adam Huffman  <adam.huffman@gmail.com>
+
+	builder: Add script for making Scientific Linux instances.
+	RWMJ:
+	 - Renamed the script from sl.sh -> scientificlinux.sh
+	 - The output file is called scientificlinux-$version
+	 - I fixed some whitespace issues so it's now similar to the CentOS script.
+
 2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Fail if bison is not installed.
+	This partially fixes commit a4800e2d4fc50f372a8b626333c4fbb9b8ca9633.
+
+	builder: Add dependencies which automake doesn't generate correctly.
+	This is a further attempt, earlier commits:
+	commit e3ac293e869a4c69225e3d954b812e9bf21588a1
+	commit dfe97b352d6b398c3cb3ddb1c9984767722e514b
+
+	Update to latest gnulib to get hash relicensing change (thanks Jim Meyering).
+
+	builder: Fix centos script - output filename was wrong.
+	This fixes commit 2f3fb2420e7f2ccc19fdc863ecc7b7ce29dd6aa1.
 
 	Version 1.25.6.
 

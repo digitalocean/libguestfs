@@ -16,9 +16,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# This script was used to create the Fedora templates used by
-# virt-builder.
-
 unset CDPATH
 export LANG=C
 set -e
@@ -30,9 +27,12 @@ if [ $# -ne 1 ]; then
 fi
 
 version=$1
-tree=http://mirror.bytemark.co.uk/fedora/linux/releases/$version/Fedora/x86_64/os/
-output=fedora-$version
+output=scientificlinux-$version
 tmpname=tmp-$(tr -cd 'a-f0-9' < /dev/urandom | head -c 8)
+
+# We rebuild this every time there is a new 6.x release, and bump
+# the revision in the index.
+tree=http://www.mirrorservice.org/sites/ftp.scientificlinux.org/linux/scientific/$version/x86_64/os
 
 rm -f $output $output.old $output.xz
 
@@ -52,7 +52,9 @@ timezone --utc America/New_York
 bootloader --location=mbr --append="console=tty0 console=ttyS0,115200 rd_NO_PLYMOUTH"
 zerombr
 clearpart --all --initlabel
-autopart --type=plain
+part /boot --fstype=ext4 --size=512         --asprimary
+part swap                --size=1024        --asprimary
+part /     --fstype=ext4 --size=1024 --grow --asprimary
 
 # Halt the system once configuration has finished.
 poweroff
@@ -74,7 +76,7 @@ virt-install \
     --name=$tmpname \
     --ram=2048 \
     --cpu=host --vcpus=2 \
-    --os-type=linux --os-variant=fedora18 \
+    --os-type=linux --os-variant=rhel$version \
     --initrd-inject=$ks \
     --extra-args="ks=file:/`basename $ks` console=tty0 console=ttyS0,115200 proxy=$http_proxy" \
     --disk $(pwd)/$output,size=6 \

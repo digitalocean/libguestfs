@@ -2172,8 +2172,6 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@.ml.cmx:
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -c $< -o $@
 
-@HAVE_OCAML_TRUE@index-parser-c.o: index-parse.h
-
 @HAVE_OCAML_TRUE@virt-builder.1 $(top_builddir)/html/virt-builder.1.html: stamp-virt-builder.pod
 
 @HAVE_OCAML_TRUE@stamp-virt-builder.pod: virt-builder.pod
@@ -2206,8 +2204,6 @@ $(top_builddir)/generator/generator:
 
 .PHONY: depend docs
 
-index-validate.o: index-parse.h
-
 virt-index-validate.1 $(top_builddir)/html/virt-index-validate.1.html: stamp-virt-index-validate.pod
 
 stamp-virt-index-validate.pod: virt-index-validate.pod
@@ -2217,6 +2213,11 @@ stamp-virt-index-validate.pod: virt-index-validate.pod
 	  --license GPLv2+ \
 	  $<
 	touch $@
+
+# Fix dependencies which automake doesn't generate correctly.
+@HAVE_OCAML_TRUE@index-parser-c.o: index-parse.h
+@HAVE_OCAML_TRUE@index-scan.o: index-parse.h
+index-validate.o: index-parse.h
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

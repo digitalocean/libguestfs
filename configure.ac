@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [25])
-m4_define([libguestfs_release], [6])
+m4_define([libguestfs_release], [7])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -714,9 +714,17 @@ PKG_CHECK_MODULES([LIBLZMA], [liblzma],[
 ],
 [AC_MSG_WARN([liblzma not found, virt-builder will be slower])])
 
-dnl (f)lex and bison are required for virt-builder.
+dnl (f)lex and bison for virt-builder (required).
+dnl XXX Could be optional with some work.
 AC_PROG_LEX
 AC_PROG_YACC
+dnl These macros don't fail, instead they set some useless defaults.
+if test "x$LEX" = "x:"; then
+    AC_MSG_FAILURE([GNU 'flex' is required.])
+fi
+if test "x$YACC" = "xyacc"; then
+    AC_MSG_FAILURE([GNU 'bison' is required (yacc won't work).])
+fi
 
 dnl Check for QEMU for running binaries on this $host_cpu, fall
 dnl back to basic 'qemu'.  Allow the user to override it.

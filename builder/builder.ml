@@ -50,7 +50,7 @@ let main () =
     eprintf "command line:";
     List.iter (eprintf " %s") (Array.to_list Sys.argv);
     prerr_newline ();
-    List.iteri (
+    iteri (
       fun i (source, fingerprint) ->
         eprintf "source[%d] = (%S, %S)\n" i source fingerprint
     ) sources
@@ -489,9 +489,11 @@ let main () =
   let logfile =
     match g#inspect_get_type root with
     | "windows" | "dos" ->
-      if g#is_dir "/Temp" then "/Temp/builder.log" else "/builder.log"
+      if g#is_dir ~followsymlinks:true "/Temp" then "/Temp/builder.log"
+      else "/builder.log"
     | _ ->
-      if g#is_dir "/tmp" then "/tmp/builder.log" else "/builder.log" in
+      if g#is_dir ~followsymlinks:true "/tmp" then "/tmp/builder.log"
+      else "/builder.log" in
 
   (* Function to cat the log file, for debugging and error messages. *)
   let debug_logfile () =
@@ -595,7 +597,7 @@ exec >>%s 2>&1
     fun (file, dest) ->
       msg (f_"Uploading: %s to %s") file dest;
       let dest =
-        if g#is_dir dest then
+        if g#is_dir ~followsymlinks:true dest then
           dest ^ "/" ^ Filename.basename file
         else
           dest in
