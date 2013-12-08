@@ -1,3 +1,69 @@
+2013-12-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.13.
+
+2013-12-07  Hilko Bengen  <bengen@hilluzination.de>
+
+	Fix virt-builder tests for out-of-tree build
+
+	Fix installing man-pages from out-of-tree build
+
+2013-12-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add CentOS 6.5 image.
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	recipes: Add a recipe for masking a systemd service.
+
+2013-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	Revert half of "builder: translate more user-visible strings"
+	Don't change "os-version" to "OS version".  It's intended to be the
+	same as the virt-builder man page, which consistently calls this the
+	"os-version" string.
+
+	This partially reverts commit ee0e56f43e55307fefa1d04505ed6477d604d220.
+
+2013-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Pass -enable-fips option if qemu supports it.
+
+2013-12-05  Pino Toscano  <ptoscano@redhat.com>
+
+	po: fix dependencies for libguestfs.pot extraction
+	Fix the dependencies of the libguestfs.pot target: other than using the
+	right make variables holding the contents of the POTFILES, depend also
+	on the POTFILES themselves.
+
+	fish: improve the command error messages
+	- when a command needs no parameters, tell that explicitly instead of
+	  "command should have 0 parameters"
+	- use gettext's plural form when printing the number of required
+	  arguments
+	- improve the error message for a variable number of parameters limited
+	  only in the maximum number of them, using also a plural form
+
+2013-12-05  Pino Toscano  <ptoscano@redhat.com>
+
+	po: fix broken message extraction
+	Extracting separately the pot for the various languages and then
+	creating manually the global pot (by manually joining the above ones
+	after having stripped their headers) is wrong, since other than being
+	an hack it can create an invalid pot when the same message appears in
+	sources written in different languages.
+
+	Instead, a cleaner and safer solution is to first let ocaml-gettext
+	(if available) extract the messages for the ml files, and then use
+	xgettext to extract the messages for the other languages, joining the
+	new messages to the existing (or not) pot file.
+
+2013-12-04  Pino Toscano  <ptoscano@redhat.com>
+
+	builder: translate more user-visible strings
+	Translate also the "OS version" and "Notes" strings that appear in the
+	--long output.
+
 2013-12-02  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.25.12.

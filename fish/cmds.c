@@ -4744,7 +4744,7 @@ run_launch (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -4763,7 +4763,7 @@ run_kill_subprocess (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -4784,7 +4784,10 @@ run_add_cdrom (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -4806,7 +4809,10 @@ run_add_drive_ro (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -4829,7 +4835,10 @@ run_config (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -4853,7 +4862,10 @@ run_set_qemu (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -4874,7 +4886,7 @@ run_get_qemu (const char *cmd, size_t argc, char *argv[])
   const char *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -4896,7 +4908,10 @@ run_set_hv (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -4916,7 +4931,7 @@ run_get_hv (const char *cmd, size_t argc, char *argv[])
   char *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -4939,7 +4954,10 @@ run_set_path (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -4960,7 +4978,7 @@ run_get_path (const char *cmd, size_t argc, char *argv[])
   const char *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -4982,7 +5000,10 @@ run_set_append (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5003,7 +5024,7 @@ run_get_append (const char *cmd, size_t argc, char *argv[])
   const char *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5023,7 +5044,10 @@ run_set_autosync (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5048,7 +5072,7 @@ run_get_autosync (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5070,7 +5094,10 @@ run_set_verbose (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5095,7 +5122,7 @@ run_get_verbose (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5115,7 +5142,7 @@ run_is_config (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5137,7 +5164,10 @@ run_set_memsize (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5176,7 +5206,7 @@ run_get_memsize (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5196,7 +5226,7 @@ run_get_pid (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5216,7 +5246,7 @@ run_version (const char *cmd, size_t argc, char *argv[])
   struct guestfs_version *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5239,7 +5269,10 @@ run_set_selinux (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5264,7 +5297,7 @@ run_get_selinux (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5286,7 +5319,10 @@ run_set_trace (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5311,7 +5347,7 @@ run_get_trace (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5333,7 +5369,10 @@ run_set_direct (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5358,7 +5397,7 @@ run_get_direct (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5380,7 +5419,10 @@ run_set_recovery_proc (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5405,7 +5447,7 @@ run_get_recovery_proc (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5428,7 +5470,10 @@ run_add_drive_with_if (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5452,7 +5497,10 @@ run_add_drive_ro_with_if (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5475,7 +5523,10 @@ run_file_architecture (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5500,7 +5551,7 @@ run_inspect_os (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5523,7 +5574,10 @@ run_inspect_get_type (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5547,7 +5601,10 @@ run_inspect_get_arch (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5571,7 +5628,10 @@ run_inspect_get_distro (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5595,7 +5655,10 @@ run_inspect_get_major_version (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5618,7 +5681,10 @@ run_inspect_get_minor_version (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5641,7 +5707,10 @@ run_inspect_get_product_name (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5665,7 +5734,10 @@ run_inspect_get_mountpoints (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5689,7 +5761,10 @@ run_inspect_get_filesystems (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5713,7 +5788,10 @@ run_set_network (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5738,7 +5816,7 @@ run_get_network (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5758,7 +5836,7 @@ run_list_filesystems (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5882,7 +5960,10 @@ run_inspect_get_windows_systemroot (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5904,7 +5985,7 @@ run_inspect_get_roots (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5925,7 +6006,7 @@ run_debug_drives (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6034,7 +6115,10 @@ run_inspect_get_package_format (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6058,7 +6142,10 @@ run_inspect_get_package_management (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6082,7 +6169,10 @@ run_inspect_list_applications (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6106,7 +6196,10 @@ run_inspect_list_applications2 (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6130,7 +6223,10 @@ run_inspect_get_hostname (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6154,7 +6250,10 @@ run_inspect_get_format (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6178,7 +6277,10 @@ run_inspect_is_live (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6201,7 +6303,10 @@ run_inspect_is_netinst (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6224,7 +6329,10 @@ run_inspect_is_multipart (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6247,7 +6355,10 @@ run_set_attach_method (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6267,7 +6378,7 @@ run_get_attach_method (const char *cmd, size_t argc, char *argv[])
   char *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6290,7 +6401,10 @@ run_set_backend (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6310,7 +6424,7 @@ run_get_backend (const char *cmd, size_t argc, char *argv[])
   char *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6333,7 +6447,10 @@ run_inspect_get_product_variant (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6357,7 +6474,10 @@ run_inspect_get_windows_current_control_set (const char *cmd, size_t argc, char 
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6381,7 +6501,10 @@ run_inspect_get_drive_mappings (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6473,7 +6596,10 @@ run_set_pgroup (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6498,7 +6624,7 @@ run_get_pgroup (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6520,7 +6646,10 @@ run_set_smp (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6559,7 +6688,7 @@ run_get_smp (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6668,7 +6797,7 @@ run_mount_local_run (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6690,7 +6819,10 @@ run_umount_local (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc > 1) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 0, 1);
+    fprintf (stderr, ngettext("%s should have at most %d parameter\n",
+                              "%s should have at most %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6737,7 +6869,7 @@ run_max_disks (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6759,7 +6891,10 @@ run_canonical_device_name (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6781,7 +6916,7 @@ run_shutdown (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6802,7 +6937,10 @@ run_cat (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6829,7 +6967,10 @@ run_find (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6857,7 +6998,10 @@ run_read_file (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6888,7 +7032,10 @@ run_read_lines (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6917,7 +7064,10 @@ run_write (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6947,7 +7097,10 @@ run_write_append (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6976,7 +7129,10 @@ run_lstatlist (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7008,7 +7164,10 @@ run_lxattrlist (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7040,7 +7199,10 @@ run_readlinklist (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7071,7 +7233,10 @@ run_ls (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7098,7 +7263,10 @@ run_hivex_value_utf8 (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7135,7 +7303,10 @@ run_disk_format (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7159,7 +7330,10 @@ run_disk_virtual_size (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7182,7 +7356,10 @@ run_disk_has_backing_file (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7205,7 +7382,10 @@ run_remove_drive (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7227,7 +7407,10 @@ run_set_libvirt_supported_credentials (const char *cmd, size_t argc, char *argv[
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7250,7 +7433,7 @@ run_get_libvirt_requested_credentials (const char *cmd, size_t argc, char *argv[
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7273,7 +7456,10 @@ run_get_libvirt_requested_credential_prompt (const char *cmd, size_t argc, char 
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7316,7 +7502,10 @@ run_get_libvirt_requested_credential_challenge (const char *cmd, size_t argc, ch
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7359,7 +7548,10 @@ run_get_libvirt_requested_credential_defresult (const char *cmd, size_t argc, ch
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7404,7 +7596,10 @@ run_set_libvirt_requested_credential (const char *cmd, size_t argc, char *argv[]
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7446,7 +7641,7 @@ run_parse_environment (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7467,7 +7662,10 @@ run_parse_environment_list (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7492,7 +7690,10 @@ run_set_tmpdir (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7513,7 +7714,7 @@ run_get_tmpdir (const char *cmd, size_t argc, char *argv[])
   char *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7536,7 +7737,10 @@ run_set_cachedir (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7557,7 +7761,7 @@ run_get_cachedir (const char *cmd, size_t argc, char *argv[])
   char *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7578,7 +7782,7 @@ run_user_cancel (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7599,7 +7803,10 @@ run_set_program (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7619,7 +7826,7 @@ run_get_program (const char *cmd, size_t argc, char *argv[])
   const char *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7705,7 +7912,7 @@ run_journal_get (const char *cmd, size_t argc, char *argv[])
   struct guestfs_xattr_list *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7729,7 +7936,10 @@ run_mount (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7750,7 +7960,7 @@ run_sync (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7771,7 +7981,10 @@ run_touch (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7796,7 +8009,10 @@ run_ll (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7821,7 +8037,7 @@ run_list_devices (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7842,7 +8058,7 @@ run_list_partitions (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7863,7 +8079,7 @@ run_pvs (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7884,7 +8100,7 @@ run_vgs (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7905,7 +8121,7 @@ run_lvs (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7926,7 +8142,7 @@ run_pvs_full (const char *cmd, size_t argc, char *argv[])
   struct guestfs_lvm_pv_list *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7947,7 +8163,7 @@ run_vgs_full (const char *cmd, size_t argc, char *argv[])
   struct guestfs_lvm_vg_list *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7968,7 +8184,7 @@ run_lvs_full (const char *cmd, size_t argc, char *argv[])
   struct guestfs_lvm_lv_list *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7992,7 +8208,10 @@ run_aug_init (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8035,7 +8254,7 @@ run_aug_close (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8057,7 +8276,10 @@ run_aug_defvar (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8084,7 +8306,10 @@ run_aug_defnode (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8110,7 +8335,10 @@ run_aug_get (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8135,7 +8363,10 @@ run_aug_set (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8160,7 +8391,10 @@ run_aug_insert (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8189,7 +8423,10 @@ run_aug_rm (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8213,7 +8450,10 @@ run_aug_mv (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8236,7 +8476,10 @@ run_aug_match (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8258,7 +8501,7 @@ run_aug_save (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8277,7 +8520,7 @@ run_aug_load (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8298,7 +8541,10 @@ run_aug_ls (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8322,7 +8568,10 @@ run_rm (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8347,7 +8596,10 @@ run_rmdir (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8372,7 +8624,10 @@ run_rm_rf (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8397,7 +8652,10 @@ run_mkdir (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8422,7 +8680,10 @@ run_mkdir_p (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8448,7 +8709,10 @@ run_chmod (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8495,7 +8759,10 @@ run_chown (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8560,7 +8827,10 @@ run_exists (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8698,7 +8968,10 @@ run_pvcreate (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8721,7 +8994,10 @@ run_vgcreate (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8749,7 +9025,10 @@ run_lvcreate (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8796,7 +9075,10 @@ run_sfdisk (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 5) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 5);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              5),
+                     cmd, 5);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8884,7 +9166,10 @@ run_write_file (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -8992,7 +9277,7 @@ run_mounts (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9013,7 +9298,7 @@ run_umount_all (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9032,7 +9317,7 @@ run_lvm_remove_all (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9053,7 +9338,10 @@ run_file (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9080,7 +9368,10 @@ run_command (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9107,7 +9398,10 @@ run_command_lines (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9134,7 +9428,10 @@ run_stat (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9161,7 +9458,10 @@ run_lstat (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9188,7 +9488,10 @@ run_statvfs (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9215,7 +9518,10 @@ run_tune2fs_l (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9239,7 +9545,10 @@ run_blockdev_setro (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9261,7 +9570,10 @@ run_blockdev_setrw (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9283,7 +9595,10 @@ run_blockdev_getro (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9306,7 +9621,10 @@ run_blockdev_getss (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9329,7 +9647,10 @@ run_blockdev_getbsz (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9353,7 +9674,10 @@ run_blockdev_setbsz (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9395,7 +9719,10 @@ run_blockdev_getsz (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9418,7 +9745,10 @@ run_blockdev_getsize64 (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9441,7 +9771,10 @@ run_blockdev_flushbufs (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9463,7 +9796,10 @@ run_blockdev_rereadpt (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9486,7 +9822,10 @@ run_upload (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9516,7 +9855,10 @@ run_download (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9546,7 +9888,10 @@ run_checksum (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9702,7 +10047,10 @@ run_tgz_in (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9732,7 +10080,10 @@ run_tgz_out (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9762,7 +10113,10 @@ run_mount_ro (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9787,7 +10141,10 @@ run_mount_options (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9814,7 +10171,10 @@ run_mount_vfs (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 4) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              4),
+                     cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9840,7 +10200,10 @@ run_debug (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9868,7 +10231,10 @@ run_lvremove (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9890,7 +10256,10 @@ run_vgremove (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9912,7 +10281,10 @@ run_pvremove (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9935,7 +10307,10 @@ run_set_e2label (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9958,7 +10333,10 @@ run_get_e2label (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -9983,7 +10361,10 @@ run_set_e2uuid (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10006,7 +10387,10 @@ run_get_e2uuid (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10031,7 +10415,10 @@ run_fsck (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10055,7 +10442,10 @@ run_zero (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10078,7 +10468,10 @@ run_grub_install (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10105,7 +10498,10 @@ run_cp (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10135,7 +10531,10 @@ run_cp_a (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10165,7 +10564,10 @@ run_mv (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10194,7 +10596,10 @@ run_drop_caches (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10233,7 +10638,7 @@ run_dmesg (const char *cmd, size_t argc, char *argv[])
   char *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10254,7 +10659,7 @@ run_ping_daemon (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10276,7 +10681,10 @@ run_equal (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10306,7 +10714,10 @@ run_strings (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10334,7 +10745,10 @@ run_strings_e (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10362,7 +10776,10 @@ run_hexdump (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10389,7 +10806,10 @@ run_zerofree (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10411,7 +10831,10 @@ run_pvresize (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10438,7 +10861,10 @@ run_sfdisk_N (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 6) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 6);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              6),
+                     cmd, 6);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10541,7 +10967,10 @@ run_sfdisk_l (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10565,7 +10994,10 @@ run_sfdisk_kernel_geometry (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10589,7 +11021,10 @@ run_sfdisk_disk_geometry (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10613,7 +11048,10 @@ run_vg_activate_all (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10641,7 +11079,10 @@ run_vg_activate (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10673,7 +11114,10 @@ run_lvresize (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10715,7 +11159,10 @@ run_resize2fs (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10737,7 +11184,10 @@ run_e2fsck_f (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10759,7 +11209,10 @@ run_sleep (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10801,7 +11254,10 @@ run_ntfs_3g_probe (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10830,7 +11286,10 @@ run_sh (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10854,7 +11313,10 @@ run_sh_lines (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10878,7 +11340,10 @@ run_glob_expand (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10905,7 +11370,10 @@ run_scrub_device (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10927,7 +11395,10 @@ run_scrub_file (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10952,7 +11423,10 @@ run_scrub_freespace (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -10977,7 +11451,10 @@ run_mkdtemp (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11004,7 +11481,10 @@ run_wc_l (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11030,7 +11510,10 @@ run_wc_w (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11056,7 +11539,10 @@ run_wc_c (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11082,7 +11568,10 @@ run_head (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11110,7 +11599,10 @@ run_head_n (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11157,7 +11649,10 @@ run_tail (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11185,7 +11680,10 @@ run_tail_n (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11230,7 +11728,7 @@ run_df (const char *cmd, size_t argc, char *argv[])
   char *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11251,7 +11749,7 @@ run_df_h (const char *cmd, size_t argc, char *argv[])
   char *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11274,7 +11772,10 @@ run_du (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11300,7 +11801,10 @@ run_initrd_list (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11328,7 +11832,10 @@ run_mount_loop (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11411,7 +11918,10 @@ run_mkswap_L (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11435,7 +11945,10 @@ run_mkswap_U (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11461,7 +11974,10 @@ run_mknod (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 4) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              4),
+                     cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11547,7 +12063,10 @@ run_mkfifo (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11595,7 +12114,10 @@ run_mknod_b (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 4) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              4),
+                     cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11683,7 +12205,10 @@ run_mknod_c (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 4) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              4),
+                     cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11768,7 +12293,10 @@ run_umask (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11810,7 +12338,10 @@ run_readdir (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11838,7 +12369,10 @@ run_sfdiskM (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11865,7 +12399,10 @@ run_zfile (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11893,7 +12430,10 @@ run_getxattrs (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11920,7 +12460,10 @@ run_lgetxattrs (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -11950,7 +12493,10 @@ run_setxattr (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 4) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              4),
+                     cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12000,7 +12546,10 @@ run_lsetxattr (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 4) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              4),
+                     cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12048,7 +12597,10 @@ run_removexattr (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12075,7 +12627,10 @@ run_lremovexattr (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12099,7 +12654,7 @@ run_mountpoints (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12122,7 +12677,10 @@ run_mkmountpoint (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12144,7 +12702,10 @@ run_rmmountpoint (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12253,7 +12814,10 @@ run_egrep (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12282,7 +12846,10 @@ run_fgrep (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12311,7 +12878,10 @@ run_grepi (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12340,7 +12910,10 @@ run_egrepi (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12369,7 +12942,10 @@ run_fgrepi (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12398,7 +12974,10 @@ run_zgrep (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12427,7 +13006,10 @@ run_zegrep (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12456,7 +13038,10 @@ run_zfgrep (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12485,7 +13070,10 @@ run_zgrepi (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12514,7 +13102,10 @@ run_zegrepi (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12543,7 +13134,10 @@ run_zfgrepi (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12571,7 +13165,10 @@ run_realpath (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12599,7 +13196,10 @@ run_ln (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12626,7 +13226,10 @@ run_ln_f (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12653,7 +13256,10 @@ run_ln_s (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12680,7 +13286,10 @@ run_ln_sf (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12706,7 +13315,10 @@ run_readlink (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12734,7 +13346,10 @@ run_fallocate (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12779,7 +13394,10 @@ run_swapon_device (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12801,7 +13419,10 @@ run_swapoff_device (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12823,7 +13444,10 @@ run_swapon_file (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12848,7 +13472,10 @@ run_swapoff_file (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12873,7 +13500,10 @@ run_swapon_label (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12895,7 +13525,10 @@ run_swapoff_label (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12917,7 +13550,10 @@ run_swapon_uuid (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12939,7 +13575,10 @@ run_swapoff_uuid (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12961,7 +13600,10 @@ run_mkswap_file (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -12986,7 +13628,10 @@ run_inotify_init (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13028,7 +13673,10 @@ run_inotify_add_watch (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13074,7 +13722,10 @@ run_inotify_rm_watch (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13113,7 +13764,7 @@ run_inotify_read (const char *cmd, size_t argc, char *argv[])
   struct guestfs_inotify_event_list *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13134,7 +13785,7 @@ run_inotify_files (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13155,7 +13806,7 @@ run_inotify_close (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13176,7 +13827,10 @@ run_setcon (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13196,7 +13850,7 @@ run_getcon (const char *cmd, size_t argc, char *argv[])
   char *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13221,7 +13875,10 @@ run_mkfs_b (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13265,7 +13922,10 @@ run_mke2journal (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13309,7 +13969,10 @@ run_mke2journal_L (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13354,7 +14017,10 @@ run_mke2journal_U (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13400,7 +14066,10 @@ run_mke2fs_J (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 4) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              4),
+                     cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13447,7 +14116,10 @@ run_mke2fs_JL (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 4) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              4),
+                     cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13494,7 +14166,10 @@ run_mke2fs_JU (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 4) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              4),
+                     cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13538,7 +14213,10 @@ run_modprobe (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13560,7 +14238,10 @@ run_echo_daemon (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13588,7 +14269,10 @@ run_find0 (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13617,7 +14301,10 @@ run_case_sensitive_path (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13644,7 +14331,10 @@ run_vfs_type (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13668,7 +14358,10 @@ run_truncate (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13694,7 +14387,10 @@ run_truncate_size (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13737,7 +14433,10 @@ run_utimens (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 5) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 5);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              5),
+                     cmd, 5);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13819,7 +14518,10 @@ run_mkdir_mode (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13866,7 +14568,10 @@ run_lchown (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -13934,7 +14639,10 @@ run_pread (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14000,7 +14708,10 @@ run_part_init (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14026,7 +14737,10 @@ run_part_add (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 4) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              4),
+                     cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14078,7 +14792,10 @@ run_part_disk (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14103,7 +14820,10 @@ run_part_set_bootable (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14153,7 +14873,10 @@ run_part_set_name (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14196,7 +14919,10 @@ run_part_list (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14220,7 +14946,10 @@ run_part_get_parttype (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14246,7 +14975,10 @@ run_fill (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14311,7 +15043,10 @@ run_available (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14337,7 +15072,10 @@ run_dd (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14366,7 +15104,10 @@ run_filesize (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14393,7 +15134,10 @@ run_lvrename (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14417,7 +15161,10 @@ run_vgrename (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14442,7 +15189,10 @@ run_initrd_cat (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14474,7 +15224,10 @@ run_pvuuid (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14498,7 +15251,10 @@ run_vguuid (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14522,7 +15278,10 @@ run_lvuuid (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14546,7 +15305,10 @@ run_vgpvuuids (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14570,7 +15332,10 @@ run_vglvuuids (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14596,7 +15361,10 @@ run_copy_size (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14639,7 +15407,10 @@ run_zero_device (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14662,7 +15433,10 @@ run_txz_in (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14692,7 +15466,10 @@ run_txz_out (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14719,7 +15496,7 @@ run_vgscan (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14741,7 +15518,10 @@ run_part_del (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14784,7 +15564,10 @@ run_part_get_bootable (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14828,7 +15611,10 @@ run_part_get_mbr_id (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14873,7 +15659,10 @@ run_part_set_mbr_id (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14936,7 +15725,10 @@ run_checksum_device (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -14962,7 +15754,10 @@ run_lvresize_free (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15004,7 +15799,10 @@ run_aug_clear (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15024,7 +15822,7 @@ run_get_umask (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15048,7 +15846,10 @@ run_debug_upload (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15095,7 +15896,10 @@ run_base64_in (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15125,7 +15929,10 @@ run_base64_out (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15156,7 +15963,10 @@ run_checksums_out (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15188,7 +15998,10 @@ run_fill_pattern (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15237,7 +16050,10 @@ run_pwrite (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15281,7 +16097,10 @@ run_resize2fs_size (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15318,7 +16137,10 @@ run_pvresize_size (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15355,7 +16177,10 @@ run_ntfsresize_size (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15389,7 +16214,7 @@ run_available_all_groups (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15413,7 +16238,10 @@ run_fallocate64 (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15452,7 +16280,10 @@ run_vfs_label (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15476,7 +16307,10 @@ run_vfs_uuid (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15500,7 +16334,10 @@ run_lvm_set_filter (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15523,7 +16360,7 @@ run_lvm_clear_filter (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15546,7 +16383,10 @@ run_luks_open (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15577,7 +16417,10 @@ run_luks_open_ro (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15606,7 +16449,10 @@ run_luks_close (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15630,7 +16476,10 @@ run_luks_format (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15681,7 +16530,10 @@ run_luks_format_cipher (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15733,7 +16585,10 @@ run_luks_add_key (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15789,7 +16644,10 @@ run_luks_kill_slot (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15837,7 +16695,10 @@ run_is_lv (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15860,7 +16721,10 @@ run_findfs_uuid (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -15884,7 +16748,10 @@ run_findfs_label (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16076,7 +16943,10 @@ run_is_symlink (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16158,7 +17028,10 @@ run_part_to_dev (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16184,7 +17057,10 @@ run_upload_offset (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16230,7 +17106,10 @@ run_download_offset (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 4) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              4),
+                     cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16290,7 +17169,10 @@ run_pwrite_device (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16333,7 +17215,10 @@ run_pread_device (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16395,7 +17280,10 @@ run_lvm_canonical_lv_name (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16540,7 +17428,10 @@ run_getxattr (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16574,7 +17465,10 @@ run_lgetxattr (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16606,7 +17500,10 @@ run_resize2fs_M (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16628,7 +17525,10 @@ run_is_zero (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16654,7 +17554,10 @@ run_is_zero_device (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16675,7 +17578,7 @@ run_list_9p (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16746,7 +17649,7 @@ run_list_dm_devices (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -17050,7 +17953,10 @@ run_part_to_partnum (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -17841,7 +18747,7 @@ run_list_md_devices (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -17864,7 +18770,10 @@ run_md_detail (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -17888,7 +18797,10 @@ run_md_stop (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -17910,7 +18822,10 @@ run_blkid (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -17995,7 +18910,10 @@ run_llz (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18022,7 +18940,10 @@ run_wipefs (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18190,7 +19111,10 @@ run_ntfsclone_in (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18217,7 +19141,10 @@ run_set_label (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18240,7 +19167,10 @@ run_zero_free_space (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18267,7 +19197,10 @@ run_lvcreate_free (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18310,7 +19243,10 @@ run_isoinfo_device (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18334,7 +19270,10 @@ run_isoinfo (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18362,7 +19301,10 @@ run_vgmeta (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18390,7 +19332,10 @@ run_md_stat (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18578,7 +19523,10 @@ run_get_e2attrs (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18662,7 +19610,10 @@ run_get_e2generation (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18689,7 +19640,10 @@ run_set_e2generation (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18729,7 +19683,10 @@ run_btrfs_subvolume_snapshot (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18758,7 +19715,10 @@ run_btrfs_subvolume_delete (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18783,7 +19743,10 @@ run_btrfs_subvolume_create (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18808,7 +19771,10 @@ run_btrfs_subvolume_list (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18836,7 +19802,10 @@ run_btrfs_subvolume_set_default (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18875,7 +19844,10 @@ run_btrfs_filesystem_sync (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18900,7 +19872,10 @@ run_btrfs_filesystem_balance (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18926,7 +19901,10 @@ run_btrfs_device_add (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18956,7 +19934,10 @@ run_btrfs_device_delete (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -18986,7 +19967,10 @@ run_btrfs_set_seeding (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -19083,7 +20067,10 @@ run_filesystem_available (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -19203,7 +20190,10 @@ run_device_index (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -19224,7 +20214,7 @@ run_nr_devices (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -19246,7 +20236,10 @@ run_xfs_info (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -19273,7 +20266,10 @@ run_pvchange_uuid (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -19293,7 +20289,7 @@ run_pvchange_uuid_all (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -19314,7 +20310,10 @@ run_vgchange_uuid (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -19334,7 +20333,7 @@ run_vgchange_uuid_all (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -19353,7 +20352,7 @@ run_utsname (const char *cmd, size_t argc, char *argv[])
   struct guestfs_utsname *r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -19742,7 +20741,10 @@ run_ls0 (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -19772,7 +20774,10 @@ run_fill_dir (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -19986,7 +20991,7 @@ run_hivex_close (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -20005,7 +21010,7 @@ run_hivex_root (const char *cmd, size_t argc, char *argv[])
   int64_t r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -20027,7 +21032,10 @@ run_hivex_node_name (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -20064,7 +21072,10 @@ run_hivex_node_children (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -20102,7 +21113,10 @@ run_hivex_node_get_child (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -20139,7 +21153,10 @@ run_hivex_node_parent (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -20175,7 +21192,10 @@ run_hivex_node_values (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -20213,7 +21233,10 @@ run_hivex_node_get_value (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -20250,7 +21273,10 @@ run_hivex_value_key (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -20287,7 +21313,10 @@ run_hivex_value_type (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -20324,7 +21353,10 @@ run_hivex_value_value (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -20365,7 +21397,10 @@ run_hivex_commit (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -20389,7 +21424,10 @@ run_hivex_node_add_child (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -20426,7 +21464,10 @@ run_hivex_node_delete_child (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -20465,7 +21506,10 @@ run_hivex_node_set_value (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 4) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              4),
+                     cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -20679,7 +21723,10 @@ run_rm_f (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21183,7 +22230,7 @@ run_list_disk_labels (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21259,7 +22306,10 @@ run_mklost_and_found (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21285,7 +22335,10 @@ run_acl_get_file (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21315,7 +22368,10 @@ run_acl_set_file (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21342,7 +22398,10 @@ run_acl_delete_def_file (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21367,7 +22426,10 @@ run_cap_get_file (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21395,7 +22457,10 @@ run_cap_set_file (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21419,7 +22484,7 @@ run_list_ldm_volumes (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21440,7 +22505,7 @@ run_list_ldm_partitions (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21461,7 +22526,7 @@ run_ldmtool_create_all (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21480,7 +22545,7 @@ run_ldmtool_remove_all (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21499,7 +22564,7 @@ run_ldmtool_scan (const char *cmd, size_t argc, char *argv[])
   char **r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21522,7 +22587,10 @@ run_ldmtool_scan_devices (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21549,7 +22617,10 @@ run_ldmtool_diskgroup_name (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21573,7 +22644,10 @@ run_ldmtool_diskgroup_volumes (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21597,7 +22671,10 @@ run_ldmtool_diskgroup_disks (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21622,7 +22699,10 @@ run_ldmtool_volume_type (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21648,7 +22728,10 @@ run_ldmtool_volume_hint (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21674,7 +22757,10 @@ run_ldmtool_volume_partitions (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21701,7 +22787,10 @@ run_part_set_gpt_type (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21745,7 +22834,10 @@ run_part_get_gpt_type (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21790,7 +22882,10 @@ run_rename (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21819,7 +22914,10 @@ run_is_whole_device (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21842,7 +22940,10 @@ run_feature_available (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21916,7 +23017,10 @@ run_extlinux (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -21942,7 +23046,10 @@ run_cp_r (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -22027,7 +23134,10 @@ run_set_uuid (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -22050,7 +23160,10 @@ run_journal_open (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -22073,7 +23186,7 @@ run_journal_close (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -22092,7 +23205,7 @@ run_journal_next (const char *cmd, size_t argc, char *argv[])
   int r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -22114,7 +23227,10 @@ run_journal_skip (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -22148,7 +23264,7 @@ run_journal_get_data_threshold (const char *cmd, size_t argc, char *argv[])
   int64_t r;
 
   if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -22170,7 +23286,10 @@ run_journal_set_data_threshold (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -22207,7 +23326,10 @@ run_aug_setm (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 3) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              3),
+                     cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -22233,7 +23355,10 @@ run_aug_label (const char *cmd, size_t argc, char *argv[])
   size_t i = 0;
 
   if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
