@@ -1,3 +1,48 @@
+2013-12-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.12.
+
+2013-11-28  Pino Toscano  <ptoscano@redhat.com>
+
+	inspect: improve detection of FreeBSD install discs (RHBZ#1033207).
+	Check for /boot/loader.rc as "install disc" detection, using it to mark
+	FreeBSD install discs.
+	Also, check for /mfsroot.gz to see whether such disc is also a live one.
+
+	See also RHBZ#1033207.
+
+2013-11-28  Pino Toscano  <ptoscano@redhat.com>
+
+	inspect: ignore special CD devices on FreeBSD install discs
+	/etc/fstab in installation discs of FreeBSD can have an entry pointing
+	to the mounted CD itself; skip it as it is done with other CD devices in
+	check_fstab.
+
+	inspect: recognise Debian live images as such
+	Check for filesystem.squashfs also in /live, since it is where
+	live-build places it.
+
+2013-11-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Whitespace fix.
+
+2013-11-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: Print program and version as part of standard debug output when launching the handle.
+	There are a lot of cases where people post debugging output, but we're
+	not sure precisely which version they are using.
+
+	tests: Test that network drives are mapped to correct qemu -drive parameters.
+	Although this test only specifically tests the direct backend, the
+	same code is shared with the libvirt backend in some circumstances
+	(eg. creating readonly drives).  So this is testing a bit of both.
+
+	ocaml: Remove unused function prototype.
+
+	po-docs: If *.pod files are missing, tell user to run 'make update-po'.
+	I'm now fairly convinced it's not possible to do this automatically.
+	However we should at least tell the user what needs to be done.
+
 2013-11-23  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.25.11.

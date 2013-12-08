@@ -1388,10 +1388,12 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 TESTS = \
-	test-max-disks.pl
+	test-max-disks.pl \
+	test-qemu-drive.sh
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 EXTRA_DIST = \
+	debug-qemu.sh \
 	$(TESTS)
 
 all: all-am
