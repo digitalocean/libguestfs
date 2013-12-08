@@ -1,4 +1,5 @@
-# virt-builder
+#!/bin/bash -
+# libguestfs virt-builder validate index
 # Copyright (C) 2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,24 +16,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-install
-text
-reboot
-lang en_US.UTF-8
-keyboard us
-network --bootproto dhcp
-rootpw builder
-firewall --enabled --ssh
-selinux --enforcing
-timezone --utc America/New_York
-bootloader --location=mbr --append="console=tty0 console=ttyS0,115200 rd_NO_PLYMOUTH"
-zerombr
-clearpart --all --initlabel
-autopart --type=plain
+export LANG=C
+set -e
 
-# Halt the system once configuration has finished.
-poweroff
+../virt-index-validate index
+../virt-index-validate index.asc
 
-%packages
-@core
-%end

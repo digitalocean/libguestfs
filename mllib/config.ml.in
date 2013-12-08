@@ -18,9 +18,3 @@
 
 let package_name = "@PACKAGE_NAME@"
 let package_version = "@PACKAGE_VERSION@"
-
-let xzcat = "@XZCAT@"
-let pxzcat =
-  match "@PXZCAT@" with
-  | "no" -> None
-  | path -> Some path

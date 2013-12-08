@@ -161,7 +161,7 @@ DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 
 # OCaml tools.  Note 'mllib' contains random shared code used by
 # all of the OCaml tools.
-@HAVE_OCAML_TRUE@am__append_14 = mllib builder resize sparsify sysprep
+@HAVE_OCAML_TRUE@am__append_14 = mllib builder builder/website resize sparsify sysprep
 
 # Perl tools.
 @HAVE_TOOLS_TRUE@am__append_15 = tools
@@ -406,8 +406,8 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	perl perl/examples ocaml ocaml/examples python python/examples \
 	ruby ruby/examples java java/examples haskell php erlang \
 	erlang/examples lua lua/examples gobject golang \
-	golang/examples csharp mllib builder resize sparsify sysprep \
-	tools fuse po-docs
+	golang/examples csharp mllib builder builder/website resize \
+	sparsify sysprep tools fuse po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -1104,9 +1104,14 @@ JNI_INSTALL_DIR = @JNI_INSTALL_DIR@
 JNI_VERSION_INFO = @JNI_VERSION_INFO@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
+LEX = @LEX@
+LEXLIB = @LEXLIB@
+LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBCONFIG_CFLAGS = @LIBCONFIG_CFLAGS@
 LIBCONFIG_LIBS = @LIBCONFIG_LIBS@
 LIBINTL = @LIBINTL@
+LIBLZMA_CFLAGS = @LIBLZMA_CFLAGS@
+LIBLZMA_LIBS = @LIBLZMA_LIBS@
 LIBMULTITHREAD = @LIBMULTITHREAD@
 LIBOBJS = @LIBOBJS@
 LIBPTH = @LIBPTH@
@@ -1258,7 +1263,6 @@ PRIPTR_PREFIX = @PRIPTR_PREFIX@
 PRI_MACROS_BROKEN = @PRI_MACROS_BROKEN@
 PTHREAD_H_DEFINES_STRUCT_TIMESPEC = @PTHREAD_H_DEFINES_STRUCT_TIMESPEC@
 PTRDIFF_T_SUFFIX = @PTRDIFF_T_SUFFIX@
-PXZCAT = @PXZCAT@
 PYTHON = @PYTHON@
 PYTHON_CFLAGS = @PYTHON_CFLAGS@
 PYTHON_EXT_SUFFIX = @PYTHON_EXT_SUFFIX@
@@ -1457,8 +1461,10 @@ WRESTOOL = @WRESTOOL@
 XGETTEXT = @XGETTEXT@
 XMLLINT = @XMLLINT@
 XZCAT = @XZCAT@
+YACC = @YACC@
 YAJL_CFLAGS = @YAJL_CFLAGS@
 YAJL_LIBS = @YAJL_LIBS@
+YFLAGS = @YFLAGS@
 YIELD_LIB = @YIELD_LIB@
 abs_aux_dir = @abs_aux_dir@
 abs_builddir = @abs_builddir@
@@ -2272,7 +2278,7 @@ dist-hook:
 	$(top_srcdir)/update-bugs.sh > BUGS-t
 	mv BUGS-t BUGS
 	cp BUGS $(distdir)/BUGS
-	git shortlog -se | awk -F'\t' '{print $$2}' | sort -f > AUTHORS-t
+	git shortlog -s | awk -F'\t' '{print $$2}' | sort -f > AUTHORS-t
 	mv AUTHORS-t AUTHORS
 	cp AUTHORS $(distdir)/AUTHORS
 

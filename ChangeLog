@@ -1,4 +1,138 @@
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.6.
+
+	builder: Add dependency from index-parse.h to index-validate.
+	For some reason automake doesn't get this dependency right,
+	resulting in occasional build failures if yacc races the
+	rest of the build.
+
+	builder: Add some generated files to CLEANFILES.
+	This updates commit a4800e2d4fc50f372a8b626333c4fbb9b8ca9633.
+
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add missing dependency.
+	index-parser-c.c depends on index-parse.h being created first.
+	However without an explicit dependency, this is not done (and implicit
+	deps don't work because automake doesn't sufficiently understand OCaml
+	programs).
+
+	This fixes commit a4800e2d4fc50f372a8b626333c4fbb9b8ca9633.
+
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.5.
+
+	Don't include email addresses in AUTHORS file.
+	Some authors had duplicate entries because they had multiple
+	email addresses.
+
+	builder/website: Add validate.sh test script to EXTRA_DIST.
+	This fixes commit 154bfb7dd46e7998eed1d40ead95923590763739.
+
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Replace centos-6.sh with a single script.
+	Just use:
+
+	  ./centos.sh 6
+
+	Note that you don't need to be root.
+
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Replace debian-<NN>.sh with a single script.
+	Just use:
+
+	  ./debian.sh 6 squeeze
+
+	Note that you don't need to be root.
+
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Replace ubuntu-<NN>.sh with a single script.
+	Just use:
+
+	  ./ubuntu.sh 10.04 lucid
+
+	Note that you don't need to be root.
+
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Replace fedora-<NN> shell & kickstart with a single script.
+	Just use:
+
+	  ./fedora.sh 18
+
+	Note that you don't need to be root.
+
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Internal implementation of parallel xzcat (pxzcat).
+	Instead of calling out to the pxzcat program, use an internal
+	implementation.  This requires liblzma to be available at build time.
+	If it's not available, fall back to using regular xzcat.
+
+	It is intended that eventually this code will go away when regular
+	xzcat / unxz is able to use threads.
+
+2013-11-05  Nikos Skalkotos  <skalkoto@grnet.gr>
+
+	Fix fstab block device resolution for FreeBSD
+	The device name prefix for IDE hard drives used to be `ad' but now
+	is `ada' (http://www.freebsd.org/doc/handbook/disks-naming.html).
+	For virtio hard drives it is `vtbd'.
+
+	Under an MBR partition table a slice will be used, so the name of
+	the first partitions will be either `ada0s1a' or `vtbd0s1a'. Under a
+	GPT partition table, where no slice is needed, the name of the first
+	partition will be either `ada0p1' or `vtbd0p1'.
+
+2013-11-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder/website: Add index validation test script.
+
+	builder: Add an extra Makefile.am to builder/website.
+
+	builder: Fix missing files in EXTRA_DIST.
+	This fixes commit a4800e2d4fc50f372a8b626333c4fbb9b8ca9633.
+
+2013-11-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.4.
+
+	builder: Fix 'check-valgrind' so it does something in this directory.
+
+	builder: Add a real scanner/parser for index files.
+	This adds a tool called virt-index-validate to validate index files.
+
+	builder: Don't use git tree / libguestfs.git to refer to the source.
+	git is just a VCS.
+
+2013-11-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	df: Allow parallel test to be skipped.
+	It currently fails because of
+	https://bugzilla.redhat.com/show_bug.cgi?id=1025942
+
 2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Only warn about unknown fields in the index if -v option is used.
+	Allows us to add new fields in future without having pointless
+	warnings from old versions of virt-builder.
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Allow checksum= as an alias for checksum[sha512]=.
+	This is for backwards compatibility with virt-builder 1.24.0 which
+	could not parse a key that contains square brackets and numbers.
+
+	This updates commit 4b73e0be29302da0ae8c5c79a51e770cbe6ed7cf.
+
+2013-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Update TODO file with some more ideas.
 
 	Version 1.25.3.
 

@@ -949,7 +949,7 @@ out the information in this index file.
 
 The templates hosted on libguestfs.org were created using shell
 scripts, kickstart files and preseed files which can be found in the
-libguestfs source tree, in C<libguestfs.git/builder/website>.
+libguestfs source tree, in C<builder/website>.
 
 =head3 Setting up the repository
 
@@ -994,8 +994,7 @@ Also find the fingerprint of your key:
 There are many ways to create the templates.  For example you could
 clone existing guests (see L<virt-sysprep(1)>), or you could install a
 guest by hand (L<virt-install(1)>).  To see how the templates were
-created for virt-builder, look at the scripts in
-C<libguestfs.git/builder/website>
+created for virt-builder, look at the scripts in C<builder/website>
 
 For best results when compressing the templates, use the following xz
 options (see L<nbdkit-xz-plugin(1)> for further explanation):
@@ -1086,6 +1085,15 @@ downloaded.  To work out the signature, do:
 
 Note if you use this, you don't need to sign the file, ie. don't use
 C<sig>.  This option overrides C<sig>.
+
+=item C<checksum=7b882fe9b82eb0fef...>
+
+C<checksum> is an alias for C<checksum[sha512]>.
+
+If you need to interoperate with virt-builder = 1.24.0 then you have
+to use C<checksum> because that version would give a parse error with
+square brackets and numbers in the key of a field.  This is fixed in
+virt-builder E<ge> 1.24.1.
 
 =item C<revision=N>
 
@@ -1237,6 +1245,23 @@ For open source guests, provide a link to the source code in the
 C<notes> field and comply with other requirements (eg. around
 trademarks).
 
+=head3 Formal specification of the index file
+
+The index file format has a formal specification defined by the flex
+scanner and bison parser used to parse the file.  This can be found in
+the following files in the libguestfs source tree:
+
+ builder/index-scan.l
+ builder/index-parse.y
+
+A tool called L<virt-index-validate(1)> is available to validate the
+index file to ensure it is correct.
+
+Note that the parser and tool can work on either the signed or
+unsigned index file (ie. C<index> or C<index.asc>).
+
+The index is always encoded in UTF-8.
+
 =head2 CACHING
 
 Since the templates are usually very large, downloaded templates are
@@ -1372,10 +1397,9 @@ the output format is the same as the template format (usually raw).
 
 =head3 pxzcat
 
-Virt-builder can use C<pxzcat> (parallel xzcat) if available to
-uncompress the templates.  The default is to use regular C<xzcat>
-which is single-threaded.  Currently this has to be compiled in,
-ie. virt-builder will probably need to be recompiled to use pxzcat.
+Virt-builder uses an internal implementation of pxzcat (parallel
+xzcat) if liblzma was found at build time.  If liblzma was not found
+at build time, regular C<xzcat> is used which is single-threaded.
 
 =head3 User-Mode Linux
 

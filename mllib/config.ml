@@ -17,10 +17,4 @@
  *)
 
 let package_name = "libguestfs"
-let package_version = "1.25.3"
-
-let xzcat = "/usr/bin/xzcat"
-let pxzcat =
-  match "no" with
-  | "no" -> None
-  | path -> Some path
+let package_version = "1.25.6"

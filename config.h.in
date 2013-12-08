@@ -863,6 +863,9 @@
 /* libconfig found at compile time. */
 #undef HAVE_LIBCONFIG
 
+/* liblzma found at compile time. */
+#undef HAVE_LIBLZMA
+
 /* libmagic found at compile time. */
 #undef HAVE_LIBMAGIC
 
@@ -2403,6 +2406,13 @@
 
 /* Name of wrestool program. */
 #undef WRESTOOL
+
+/* Name of xzcat program. */
+#undef XZCAT
+
+/* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
+   `char[]'. */
+#undef YYTEXT_POINTER
 
 /* Enable large inode numbers on Mac OS X 10.5. */
 #undef _DARWIN_USE_64_BIT_INODE
