@@ -1648,6 +1648,7 @@ $(top_builddir)/generator/generator:
 
 @HAVE_GNU_GETTEXT_TRUE@$(DOMAIN).pot: Makefile POTFILES $(POTFILES) POTFILES-pl $(POTFILES_PL) POTFILES-ml $(POTFILES_ML)
 @HAVE_GNU_GETTEXT_TRUE@	rm -f $@-t
+@HAVE_GNU_GETTEXT_TRUE@	touch $@-t
 @HAVE_GNU_GETTEXT_TRUE@@HAVE_OCAML_GETTEXT_TRUE@	$(OCAML_GETTEXT) --action extract --extract-pot $@-t $(POTFILES_ML)
 @HAVE_GNU_GETTEXT_TRUE@	$(XGETTEXT) -j -o $@-t $(XGETTEXT_ARGS) \
 @HAVE_GNU_GETTEXT_TRUE@	  --files-from=$(abs_srcdir)/POTFILES

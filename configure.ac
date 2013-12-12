@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [25])
-m4_define([libguestfs_release], [13])
+m4_define([libguestfs_release], [14])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -797,16 +797,16 @@ working.
         AC_MSG_FAILURE([$QEMU version must be >= 1.0.])
     fi
 
-    AC_MSG_CHECKING([that $QEMU -nographic -machine accel=kvm:tcg -device ? works])
-    if $QEMU -nographic -machine accel=kvm:tcg -device \? >&AS_MESSAGE_LOG_FD 2>&1; then
+    AC_MSG_CHECKING([that $QEMU -display none -machine accel=kvm:tcg -device ? works])
+    if $QEMU -display none -machine accel=kvm:tcg -device \? >&AS_MESSAGE_LOG_FD 2>&1; then
         AC_MSG_RESULT([yes])
     else
         AC_MSG_RESULT([no])
-        AC_MSG_FAILURE([$QEMU -nographic -machine accel=kvm:tcg -device ? doesn't work.])
+        AC_MSG_FAILURE([$QEMU -display none -machine accel=kvm:tcg -device ? doesn't work.])
     fi
 
     AC_MSG_CHECKING([for virtio-serial support in $QEMU])
-    if $QEMU $QEMU_OPTIONS -nographic -machine accel=kvm:tcg -device \? 2>&1 | grep -sq virtio-serial; then
+    if $QEMU $QEMU_OPTIONS -display none -machine accel=kvm:tcg -device \? 2>&1 | grep -sq virtio-serial; then
         AC_MSG_RESULT([yes])
     else
         AC_MSG_RESULT([no])
