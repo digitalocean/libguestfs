@@ -9,6 +9,11 @@ RUBY_DEFAULT   := $(shell which ruby | xargs readlink -f | xargs basename)
 LUAS           := $(shell find /usr/bin/ -name 'lua5.?' | xargs -n1 readlink -f | xargs -n1 basename)
 LUA_DEFAULT    := $(shell which lua | xargs readlink -f | xargs basename)
 
+BUILDS         := $(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
+		  $(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
+		  $(filter-out $(LUA_DEFAULT), $(LUAS)) \
+		  default
+
 DEB_HOST_GNU_CPU := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU | sed -e 's,i[456]86,i386,')
 QEMU_SYSTEM      := qemu-system-$(DEB_HOST_GNU_CPU)
 
@@ -28,12 +33,7 @@ BARE_CONFIG_FLAGS = \
 	--disable-gobject --without-java
 
 override_dh_auto_clean:
-	set -e; for p in \
-		default \
-		$(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
-		$(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
-		$(filter-out $(LUA_DEFAULT), $(LUAS)) \
-	; do \
+	set -e; for p in $(BUILDS); do \
 		dh_auto_clean --builddir=$(CURDIR)/debian/build-$$p ; \
 	done
 
@@ -86,12 +86,7 @@ override_dh_strip:
 	dh_strip --dbg-package=libguestfs0-dbg
 
 override_dh_auto_build:
-	set -e; for p in \
-		$(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
-		$(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
-		$(filter-out $(LUA_DEFAULT), $(LUAS)) \
-		default \
-	; do \
+	set -e; for p in $(BUILDS); do \
 		dh_auto_build --builddir=$(CURDIR)/debian/build-$$p \
 			-- INSTALLDIRS=vendor LD_RUN_PATH="" \
 			   EXTRA_JAVAC_FLAGS+="-source 1.6 -target 1.6" ; \
@@ -106,12 +101,7 @@ override_dh_auto_build:
 		supermin.d/udev-rules.img
 
 override_dh_auto_test:
-	set -e; for p in \
-		default \
-		$(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
-		$(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
-		$(filter-out $(LUA_DEFAULT), $(LUAS)) \
-	; do \
+	set -e; for p in $(BUILDS); do \
 		dh_auto_test --builddir=$(CURDIR)/debian/build-$$p \
 			-- CFLAGS="$(filter-out -Werror=format-security,$(CFLAGS))"; \
 	done
@@ -120,12 +110,7 @@ override_dh_auto_install:
 # All build trees contain the library plus guestfish and C virt tools.
 # We assume that the Python version used for building the Python
 # bindings doesn't affect the outcome of those builds.
-	set -e; for p in \
-		$(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
-		$(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
-		$(filter-out $(LUA_DEFAULT), $(LUAS)) \
-		default \
-	; do \
+	set -e; for p in $(BUILDS); do \
 		dh_auto_install --builddir=$(CURDIR)/debian/build-$$p \
 			-- INSTALLDIRS=vendor; \
 	done
