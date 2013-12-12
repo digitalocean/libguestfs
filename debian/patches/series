@@ -3,6 +3,4 @@
 0003-remove-last-trace-of-ntfsprogs.patch
 0004-perl-revert-failed-attempt-at-building-out-of-tree-s.patch
 0005-Disable-gnulib-tests-by-default.patch
-0006-Fix-manpage-generation-in-out-of-tree-builds.patch
-0007-Fix-for-builder-website-test-in-out-of-tree-builds.patch
-0008-Create-an-empty-file-that-is-going-to-be-edited-by-x.patch
+0006-golang-Fix-for-out-of-tree-builds.patch
