@@ -1,0 +1,5 @@
+usr/share/man/man3/guestfs-golang.3*
+usr/share/man/*/man3/guestfs-golang.3*
+
+# Install directly from source tree
+golang/src/libguestfs.org/guestfs/guestfs.go usr/share/gocode/src/libguestfs.org/guestfs/

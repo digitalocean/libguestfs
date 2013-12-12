@@ -30,6 +30,7 @@ Build-Depends: debhelper (>= 9~), autotools-dev, aptitude,
   po4a,
   curl,
   flex, bison,
+  golang-go [i386 amd64],
 Homepage: http://libguestfs.org
 Standards-Version: 3.9.4
 Vcs-Git: git://git.debian.org/git/pkg-libvirt/libguestfs.git
@@ -320,3 +321,12 @@ Description: guest disk image management system - Lua bindings
  images.
  .
  This package contains the Lua bindings.
+
+Package: golang-guestfs-dev
+Architecture: all
+Depends: ${misc:Depends}, libguestfs-dev,
+Description: guest disk image management system - Golang bindings
+ The libguestfs library allows accessing and modifying guest disk
+ images.
+ .
+ This package contains source for the Golang bindings.

@@ -129,7 +129,8 @@ override_dh_install:
 
 	erlang-depends -perlang-guestfs
 
-	dh_install -X.la -X.so.owner -Xbindtests -Xguestfs-golang --fail-missing
+	dh_install -X.la -X.so.owner -Xbindtests -X/usr/lib/go/ \
+		--fail-missing
 
 override_dh_python3:
 	dh_python3 -p python3-guestfs
