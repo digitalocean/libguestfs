@@ -136,6 +136,7 @@ host_triplet = @host@
 DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am README
+@ENABLE_APPLIANCE_TRUE@@HAVE_GOLANG_TRUE@am__append_1 = -tags appliance
 subdir = golang
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1436,13 +1437,14 @@ EXTRA_DIST = \
 	run-bindtests \
 	run-tests
 
+@HAVE_GOLANG_TRUE@GOFLAGS = $(am__append_1)
 @HAVE_GOLANG_TRUE@golangpkgdir = $(GOROOT)/pkg/$(GOOS)_$(GOARCH)/$(pkg)
 @HAVE_GOLANG_TRUE@golangsrcdir = $(GOROOT)/src/pkg/$(pkg)
 @HAVE_GOLANG_TRUE@golangpkg_DATA = \
 @HAVE_GOLANG_TRUE@	pkg/$(GOOS)_$(GOARCH)/$(pkg).a
 
 @HAVE_GOLANG_TRUE@golangsrc_DATA = $(source_files)
-@HAVE_GOLANG_TRUE@TESTS_ENVIRONMENT = pkg=$(pkg) $(top_builddir)/run $(VG) # --test
+@HAVE_GOLANG_TRUE@TESTS_ENVIRONMENT = pkg=$(pkg) GOFLAGS="$(GOFLAGS)" $(top_builddir)/run $(VG) # --test
 @HAVE_GOLANG_TRUE@TESTS = run-bindtests run-tests
 CLEANFILES = *~ src/$(pkg)/*~
 all: all-am

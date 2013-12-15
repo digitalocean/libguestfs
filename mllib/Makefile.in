@@ -1430,6 +1430,8 @@ SOURCES = \
 	hostname.ml \
 	password.mli \
 	password.ml \
+	planner.mli \
+	planner.ml \
 	progress-c.c \
 	progress.mli \
 	progress.ml \
@@ -1470,7 +1472,8 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	progress.cmx \
 @HAVE_OCAML_TRUE@	uRI.cmx \
 @HAVE_OCAML_TRUE@	crypt.cmx \
-@HAVE_OCAML_TRUE@	password.cmx
+@HAVE_OCAML_TRUE@	password.cmx \
+@HAVE_OCAML_TRUE@	planner.cmx
 
 @HAVE_OCAML_TRUE@noinst_SCRIPTS = dummy
 

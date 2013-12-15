@@ -45,6 +45,11 @@ Delete specified files or directories.
 
 Use the I<--delete> option to specify a path to remove.
 
+You can use shell glob characters in the specified path; note that such
+metacharacters might require proper escape.  For example:
+
+ virt-sysprep --delete '/var/log/*.log'.
+
 =head2 B<dhcp-client-state> *
 
 Вилучити надані клієнтські адреси DHCP.
@@ -136,7 +141,13 @@ Linux.
 
 У Linux вилучено такі файли:
 
+ /etc/Pegasus/*.cnf
+ /etc/Pegasus/*.crt
+ /etc/Pegasus/*.csr
+ /etc/Pegasus/*.pem
+ /etc/Pegasus/*.srl
  /root/anaconda-ks.cfg
+ /root/anaconda-post.log
  /root/install.log
  /root/install.log.syslog
  /var/cache/fontconfig/*
@@ -147,6 +158,7 @@ Linux.
  /var/lib/logrotate.status
  /var/log/*.log*
  /var/log/BackupPC/LOG
+ /var/log/anaconda.syslog
  /var/log/apache2/*_log
  /var/log/apache2/*_log-*
  /var/log/audit/*
@@ -178,6 +190,7 @@ Linux.
  /var/log/spooler*
  /var/log/squid/*.log
  /var/log/tallylog*
+ /var/log/tuned/tuned.log
  /var/log/wtmp*
  /var/named/data/named.run
 

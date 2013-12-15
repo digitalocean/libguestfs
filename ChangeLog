@@ -1,3 +1,165 @@
+2013-12-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.15.
+
+	builder: Add a link to blog posting about the planner.
+	http://rwmj.wordpress.com/2013/12/14/writing-a-planner-to-solve-a-tricky-programming-optimization-problem/
+	should help people to understand how this code works.
+
+	builder: tests: Add test-virt-builder-planner.sh to EXTRA_DIST.
+	This fixes commit a27963b67ba1140c29c145a1ce14dbfc05f8d7da.
+
+	builder: tests: Fix virt-builder --list output.
+	This fixes commit a27963b67ba1140c29c145a1ce14dbfc05f8d7da.
+
+	builder: Add a test of the planner.
+	This tries out many combinations of size/format and ensures
+	that the planner can deal with them.
+
+	builder: Flush debug info after printing it.
+
+	builder: planner: Handle no format= in source case correctly.
+
+2013-12-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Use a planner to work out how to convert the template to the final image.
+	The original template might be, say, xz-compressed raw of a certain
+	size.  We need to work out how to convert it to, say, qcow2 with a
+	larger size, in as few operations as possible.
+
+	Instead of using a nasty aggregation of special cases to do this, use
+	a breadth-first search over all possible trees to try to find an
+	optimal plan.
+
+	(Actually the current implementation isn't optimal, but it's fine for
+	virt-builder.)
+
+2013-12-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Move is_block_device function into common utilities.
+	This is just code motion.
+
+	resize: Move roundup64 function into common utilities.
+	This is just code motion.
+
+2013-12-13  Hilko Bengen  <bengen@hilluzination.de>
+
+	golang: Don't run launch test if appliance has not been built.
+
+2013-12-13  Pino Toscano  <ptoscano@redhat.com>
+
+	sysprep: remove some Pegasus files, like certs (RHBZ#1041552).
+
+2013-12-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	golang: Add note about difficulty of parsing go version numbers.
+
+2013-12-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.14.
+
+2013-12-12  Pino Toscano  <ptoscano@redhat.com>
+
+	fuse: provide a stub "flush" implementation (RHBZ#660687).
+	It seems that FUSE can invoke flush to make sure the pending changes
+	(e.g. to the attributes) of a file are set. Since a missing flush
+	implementation is handled as if it were returning ENOSYS, this can cause
+	issues later.
+
+	To overcome this, just provide a stub implementation which does nothing,
+	since we have nothing to do and don't want to have FUSE error out.
+
+	Furthermore, uncomment the timestamp checks in test-fuse.sh, since now
+	they should be working fine.
+
+2013-12-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	recipes: Use new style -a/-d options in virt-edit example.
+
+2013-12-10  Hilko Bengen  <bengen@hilluzination.de>
+
+	po: Create empty files to be edited by xgettext
+	This avoids:
+
+	    xgettext: error while opening "libguestfs.pot-t" for reading: No such file or directory
+
+	which I observed with xgettext (GNU gettext-tools) 0.18.3
+
+2013-12-10  Hilko Bengen  <bengen@hilluzination.de>
+
+	Fix builder/website test in out-of-tree builds
+
+	Fix manpage generation in out-of-tree builds
+
+2013-12-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: mkfs: Use -I option to force mkfs.fat to write a filesystem over a whole device (RHBZ#1039995).
+	If you use virt-make-fs to create a partitionless FAT-formatted disk
+	image then currently you will get an error:
+
+	$ virt-make-fs --type=fat . /tmp/test.img
+	'mkfs' (create filesystem) operation failed.
+	Instead of 'fat', try 'vfat' (long filenames) or 'msdos' (short filenames).
+	mkfs: fat: /dev/sda: mkfs.fat: Device partition expected, not making filesystem on entire device '/dev/sda' (use -I to override) at /usr/bin/virt-make-fs line 508, <PIPE> line 1.
+	      ...propagated at /usr/bin/virt-make-fs line 518, <PIPE> line 1.
+
+	With this patch, the error goes away and partitionless disks can be
+	created.
+
+2013-12-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	proto: Remove another error message which hides earlier error.
+	When receive_file_data calls guestfs___recv_from_daemon, and that
+	function returns -1, it adds the following error to the handle:
+
+	  receive_file_data: parse error in reply callback
+
+	However this hides a more specific error message which was already
+	added by guestfs___recv_from_daemon.
+
+2013-12-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	proto: Remove error message which hides earlier error.
+	When chunked encoding fails, the following error is added to
+	the handle:
+
+	  [filename]: error in chunked encoding
+
+	However all paths returning -1 from receive_file_data already set a
+	more specific error, which this error hides.
+
+2013-12-10  Pino Toscano  <ptoscano@redhat.com>
+
+	lib: fix newline in error output (RHBZ#923355).
+
+2013-12-09  Pino Toscano  <ptoscano@redhat.com>
+
+	sysprep: mention globbing in help for --delete
+	Followup of ed4bcb119cb908e98ecc1107dcd8b740ee2f484f.
+
+2013-12-09  Pino Toscano  <ptoscano@redhat.com>
+
+	sysprep: allow to specify globbing for --delete
+	Adapt the globbing part from the old --remote-path work previously
+	proposed for sysprep [1], allowing --delete to perform globbing when
+	deleting paths.
+
+	[1] https://www.redhat.com/archives/libguestfs/2013-October/msg00045.html
+
+2013-12-09  Pino Toscano  <ptoscano@redhat.com>
+
+	launch: switch from -nographic to -display none
+	The latter is a better way to disable the qemu display output as we
+	need to, without enabling extra devices (which are disabled already,
+	anyway).
+
+	Also, related to the change above, ban the -display parameter from the
+	ones that can be supplied by the user.
+
+2013-12-09  Pino Toscano  <ptoscano@redhat.com>
+
+	sysprep: remove more anaconda and tuned logs (RHBZ#1039540).
+
 2013-12-08  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.25.13.

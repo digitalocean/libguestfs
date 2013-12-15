@@ -41,6 +41,7 @@ let globs = List.sort compare [
   "/var/log/apache2/*_log";
   "/var/log/apache2/*_log-*";
   "/var/log/ntp";
+  "/var/log/tuned/tuned.log";
 
   (* logfiles configured by /etc/logrotate.d/* *)
   "/var/log/BackupPC/LOG";
@@ -66,6 +67,8 @@ let globs = List.sort compare [
   "/root/install.log";
   "/root/install.log.syslog";
   "/root/anaconda-ks.cfg";
+  "/root/anaconda-post.log";
+  "/var/log/anaconda.syslog";
 
   (* GDM and session preferences. *)
   "/var/cache/gdm/*";
@@ -88,6 +91,13 @@ let globs = List.sort compare [
 
   (* log file of ntp *)
   "/var/log/ntpstats/*";
+
+  (* Pegasus certificates and other files *)
+  "/etc/Pegasus/*.cnf";
+  "/etc/Pegasus/*.crt";
+  "/etc/Pegasus/*.csr";
+  "/etc/Pegasus/*.pem";
+  "/etc/Pegasus/*.srl";
 ]
 let globs_as_pod = String.concat "\n" (List.map ((^) " ") globs)
 
