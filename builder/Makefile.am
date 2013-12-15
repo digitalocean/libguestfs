@@ -30,7 +30,8 @@ EXTRA_DIST = \
 	virt-builder.pod \
 	virt-index-validate.pod \
 	test-virt-builder.sh \
-	test-virt-builder-list.sh
+	test-virt-builder-list.sh \
+	test-virt-builder-planner.sh
 
 CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-builder
 
@@ -74,6 +75,7 @@ OBJECTS = \
 	$(top_builddir)/mllib/fsync-c.o \
 	$(top_builddir)/mllib/fsync.cmx \
 	$(top_builddir)/mllib/password.cmx \
+	$(top_builddir)/mllib/planner.cmx \
 	$(top_builddir)/mllib/config.cmx \
 	index-scan.o \
 	index-struct.o \
@@ -142,15 +144,28 @@ CLEANFILES += stamp-virt-builder.pod
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
-all_disk_images := debian.xz fedora.xz ubuntu.xz windows.xz
-disk_images := $(shell for f in $(all_disk_images); do b=`basename $$f .xz`; if [ -f "../tests/guests/$$b.img" ]; then echo $$f; fi; done)
+disk_images := \
+	$(shell for f in debian fedora ubuntu windows; do if [ -s "../tests/guests/$$f.img" ]; then echo $$f.xz; fi; done) \
+	$(shell if [ -s "../tests/guests/fedora.img" ]; then echo fedora.qcow2 fedora.qcow2.xz; fi)
 
-CLEANFILES += $(all_disk_images)
+CLEANFILES += *.qcow2 *.xz
 
 check_DATA = $(disk_images)
 
+fedora.qcow2: ../tests/guests/fedora.img
+	rm -f $@ $@-t
+	qemu-img convert -f raw -O qcow2 $< $@-t
+	mv $@-t $@
+
+fedora.qcow2.xz: fedora.qcow2
+	rm -f $@ $@-t
+	xz --best --block-size=16777216 -c $< > $@-t
+	mv $@-t $@
+
 %.xz: ../tests/guests/%.img
-	xz --best --block-size=16777216 -c $< > $@
+	rm -f $@ $@-t
+	xz --best --block-size=16777216 -c $< > $@-t
+	mv $@-t $@
 
 TESTS = test-virt-builder-list.sh
 
@@ -160,6 +175,9 @@ endif ENABLE_APPLIANCE
 
 check-valgrind:
 	$(MAKE) VG="$(top_builddir)/run @VG@" check
+
+check-slow:
+	$(MAKE) TESTS="test-virt-builder-planner.sh" check
 
 # Dependencies.
 depend: .depend

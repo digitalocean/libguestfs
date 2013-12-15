@@ -31,6 +31,9 @@ let ( /^ ) = Int64.div
 let ( &^ ) = Int64.logand
 let ( ~^ ) = Int64.lognot
 
+(* Return 'i' rounded up to the next multiple of 'a'. *)
+let roundup64 i a = let a = a -^ 1L in (i +^ a) &^ (~^ a)
+
 let int_of_le32 str =
   assert (String.length str = 4);
   let c0 = Char.code (String.unsafe_get str 0) in
@@ -387,3 +390,19 @@ let rm_rf_only_files (g : Guestfs.guestfs) dir =
     let files = List.filter g#is_file files in
     List.iter g#rm files
   )
+
+(* Detect compression of a file.
+ *
+ * Only detects the formats we need in virt-builder so far.
+ *)
+let detect_compression filename =
+  let chan = open_in filename in
+  let buf = String.create 6 in
+  really_input chan buf 0 6;
+  close_in chan;
+  if buf = "\2537zXZ\000" then `XZ
+  else `Unknown
+
+let is_block_device file =
+  try (Unix.stat file).Unix.st_kind = Unix.S_BLK
+  with Unix.Unix_error _ -> false

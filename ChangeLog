@@ -1,3 +1,59 @@
+2013-12-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.15.
+
+	builder: Add a link to blog posting about the planner.
+	http://rwmj.wordpress.com/2013/12/14/writing-a-planner-to-solve-a-tricky-programming-optimization-problem/
+	should help people to understand how this code works.
+
+	builder: tests: Add test-virt-builder-planner.sh to EXTRA_DIST.
+	This fixes commit a27963b67ba1140c29c145a1ce14dbfc05f8d7da.
+
+	builder: tests: Fix virt-builder --list output.
+	This fixes commit a27963b67ba1140c29c145a1ce14dbfc05f8d7da.
+
+	builder: Add a test of the planner.
+	This tries out many combinations of size/format and ensures
+	that the planner can deal with them.
+
+	builder: Flush debug info after printing it.
+
+	builder: planner: Handle no format= in source case correctly.
+
+2013-12-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Use a planner to work out how to convert the template to the final image.
+	The original template might be, say, xz-compressed raw of a certain
+	size.  We need to work out how to convert it to, say, qcow2 with a
+	larger size, in as few operations as possible.
+
+	Instead of using a nasty aggregation of special cases to do this, use
+	a breadth-first search over all possible trees to try to find an
+	optimal plan.
+
+	(Actually the current implementation isn't optimal, but it's fine for
+	virt-builder.)
+
+2013-12-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Move is_block_device function into common utilities.
+	This is just code motion.
+
+	resize: Move roundup64 function into common utilities.
+	This is just code motion.
+
+2013-12-13  Hilko Bengen  <bengen@hilluzination.de>
+
+	golang: Don't run launch test if appliance has not been built.
+
+2013-12-13  Pino Toscano  <ptoscano@redhat.com>
+
+	sysprep: remove some Pegasus files, like certs (RHBZ#1041552).
+
+2013-12-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	golang: Add note about difficulty of parsing go version numbers.
+
 2013-12-12  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.25.14.

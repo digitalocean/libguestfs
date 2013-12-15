@@ -135,6 +135,11 @@ Currently this can only set the hostname on Linux guests.
 
 Linux においては以下のファイルが削除されます:
 
+ /etc/Pegasus/*.cnf
+ /etc/Pegasus/*.crt
+ /etc/Pegasus/*.csr
+ /etc/Pegasus/*.pem
+ /etc/Pegasus/*.srl
  /root/anaconda-ks.cfg
  /root/anaconda-post.log
  /root/install.log

@@ -141,6 +141,11 @@ Linux.
 
 У Linux вилучено такі файли:
 
+ /etc/Pegasus/*.cnf
+ /etc/Pegasus/*.crt
+ /etc/Pegasus/*.csr
+ /etc/Pegasus/*.pem
+ /etc/Pegasus/*.srl
  /root/anaconda-ks.cfg
  /root/anaconda-post.log
  /root/install.log
