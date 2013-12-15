@@ -1,3 +1,14 @@
+libguestfs (1:1.25.15-1) experimental; urgency=low
+
+  * New upstream development version
+  * Removed patches that have been integrated upstream; added patches to
+    fix Golang bindings
+  * Added dependency for libsystemd-journal-dev
+  * Simplified debian/rules
+  * Added Golang bindings package
+
+ -- Hilko Bengen <bengen@debian.org>  Thu, 12 Dec 2013 23:46:22 +0100
+
 libguestfs (1:1.25.13-1) experimental; urgency=low
 
   * New upstream development version
