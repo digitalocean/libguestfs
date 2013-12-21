@@ -323,6 +323,7 @@ Description: guest disk image management system - Lua bindings
  This package contains the Lua bindings.
 
 Package: golang-guestfs-dev
+Section: devel
 Architecture: all
 Depends: ${misc:Depends}, libguestfs-dev,
 Description: guest disk image management system - Golang bindings
