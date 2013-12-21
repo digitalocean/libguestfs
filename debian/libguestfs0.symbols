@@ -81,6 +81,48 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_close@Base 1.10
  guestfs_command@Base 1.10
  guestfs_command_lines@Base 1.10
+ guestfs_compare_application2@Base 1:1.25.16
+ guestfs_compare_application2_list@Base 1:1.25.16
+ guestfs_compare_application@Base 1:1.25.16
+ guestfs_compare_application_list@Base 1:1.25.16
+ guestfs_compare_btrfssubvolume@Base 1:1.25.16
+ guestfs_compare_btrfssubvolume_list@Base 1:1.25.16
+ guestfs_compare_dirent@Base 1:1.25.16
+ guestfs_compare_dirent_list@Base 1:1.25.16
+ guestfs_compare_hivex_node@Base 1:1.25.16
+ guestfs_compare_hivex_node_list@Base 1:1.25.16
+ guestfs_compare_hivex_value@Base 1:1.25.16
+ guestfs_compare_hivex_value_list@Base 1:1.25.16
+ guestfs_compare_inotify_event@Base 1:1.25.16
+ guestfs_compare_inotify_event_list@Base 1:1.25.16
+ guestfs_compare_int_bool@Base 1:1.25.16
+ guestfs_compare_int_bool_list@Base 1:1.25.16
+ guestfs_compare_internal_mountable@Base 1:1.25.16
+ guestfs_compare_internal_mountable_list@Base 1:1.25.16
+ guestfs_compare_isoinfo@Base 1:1.25.16
+ guestfs_compare_isoinfo_list@Base 1:1.25.16
+ guestfs_compare_lvm_lv@Base 1:1.25.16
+ guestfs_compare_lvm_lv_list@Base 1:1.25.16
+ guestfs_compare_lvm_pv@Base 1:1.25.16
+ guestfs_compare_lvm_pv_list@Base 1:1.25.16
+ guestfs_compare_lvm_vg@Base 1:1.25.16
+ guestfs_compare_lvm_vg_list@Base 1:1.25.16
+ guestfs_compare_mdstat@Base 1:1.25.16
+ guestfs_compare_mdstat_list@Base 1:1.25.16
+ guestfs_compare_partition@Base 1:1.25.16
+ guestfs_compare_partition_list@Base 1:1.25.16
+ guestfs_compare_stat@Base 1:1.25.16
+ guestfs_compare_stat_list@Base 1:1.25.16
+ guestfs_compare_statvfs@Base 1:1.25.16
+ guestfs_compare_statvfs_list@Base 1:1.25.16
+ guestfs_compare_utsname@Base 1:1.25.16
+ guestfs_compare_utsname_list@Base 1:1.25.16
+ guestfs_compare_version@Base 1:1.25.16
+ guestfs_compare_version_list@Base 1:1.25.16
+ guestfs_compare_xattr@Base 1:1.25.16
+ guestfs_compare_xattr_list@Base 1:1.25.16
+ guestfs_compare_xfsinfo@Base 1:1.25.16
+ guestfs_compare_xfsinfo_list@Base 1:1.25.16
  guestfs_compress_device_out@Base 1.14
  guestfs_compress_device_out_argv@Base 1.14
  guestfs_compress_device_out_va@Base 1.14
@@ -88,19 +130,61 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_compress_out_argv@Base 1.14
  guestfs_compress_out_va@Base 1.14
  guestfs_config@Base 1.10
+ guestfs_copy_application2@Base 1:1.25.16
+ guestfs_copy_application2_list@Base 1:1.25.16
+ guestfs_copy_application@Base 1:1.25.16
+ guestfs_copy_application_list@Base 1:1.25.16
+ guestfs_copy_btrfssubvolume@Base 1:1.25.16
+ guestfs_copy_btrfssubvolume_list@Base 1:1.25.16
  guestfs_copy_device_to_device@Base 1.14
  guestfs_copy_device_to_device_argv@Base 1.14
  guestfs_copy_device_to_device_va@Base 1.14
  guestfs_copy_device_to_file@Base 1.14
  guestfs_copy_device_to_file_argv@Base 1.14
  guestfs_copy_device_to_file_va@Base 1.14
+ guestfs_copy_dirent@Base 1:1.25.16
+ guestfs_copy_dirent_list@Base 1:1.25.16
  guestfs_copy_file_to_device@Base 1.14
  guestfs_copy_file_to_device_argv@Base 1.14
  guestfs_copy_file_to_device_va@Base 1.14
  guestfs_copy_file_to_file@Base 1.14
  guestfs_copy_file_to_file_argv@Base 1.14
  guestfs_copy_file_to_file_va@Base 1.14
+ guestfs_copy_hivex_node@Base 1:1.25.16
+ guestfs_copy_hivex_node_list@Base 1:1.25.16
+ guestfs_copy_hivex_value@Base 1:1.25.16
+ guestfs_copy_hivex_value_list@Base 1:1.25.16
+ guestfs_copy_inotify_event@Base 1:1.25.16
+ guestfs_copy_inotify_event_list@Base 1:1.25.16
+ guestfs_copy_int_bool@Base 1:1.25.16
+ guestfs_copy_int_bool_list@Base 1:1.25.16
+ guestfs_copy_internal_mountable@Base 1:1.25.16
+ guestfs_copy_internal_mountable_list@Base 1:1.25.16
+ guestfs_copy_isoinfo@Base 1:1.25.16
+ guestfs_copy_isoinfo_list@Base 1:1.25.16
+ guestfs_copy_lvm_lv@Base 1:1.25.16
+ guestfs_copy_lvm_lv_list@Base 1:1.25.16
+ guestfs_copy_lvm_pv@Base 1:1.25.16
+ guestfs_copy_lvm_pv_list@Base 1:1.25.16
+ guestfs_copy_lvm_vg@Base 1:1.25.16
+ guestfs_copy_lvm_vg_list@Base 1:1.25.16
+ guestfs_copy_mdstat@Base 1:1.25.16
+ guestfs_copy_mdstat_list@Base 1:1.25.16
+ guestfs_copy_partition@Base 1:1.25.16
+ guestfs_copy_partition_list@Base 1:1.25.16
  guestfs_copy_size@Base 1.10
+ guestfs_copy_stat@Base 1:1.25.16
+ guestfs_copy_stat_list@Base 1:1.25.16
+ guestfs_copy_statvfs@Base 1:1.25.16
+ guestfs_copy_statvfs_list@Base 1:1.25.16
+ guestfs_copy_utsname@Base 1:1.25.16
+ guestfs_copy_utsname_list@Base 1:1.25.16
+ guestfs_copy_version@Base 1:1.25.16
+ guestfs_copy_version_list@Base 1:1.25.16
+ guestfs_copy_xattr@Base 1:1.25.16
+ guestfs_copy_xattr_list@Base 1:1.25.16
+ guestfs_copy_xfsinfo@Base 1:1.25.16
+ guestfs_copy_xfsinfo_list@Base 1:1.25.16
  guestfs_cp@Base 1.10
  guestfs_cp_a@Base 1.10
  guestfs_cp_r@Base 1:1.22
