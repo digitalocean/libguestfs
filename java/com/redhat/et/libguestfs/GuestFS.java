@@ -1277,11 +1277,11 @@ public class GuestFS {
    * This function adds a virtual CD-ROM disk image to the
    * guest.
    * <p>
-   * Do not use this function! ISO files are just ordinary
-   * read-only disk images. Use "g.add_drive_ro" instead.
+   * The image is added as read-only drive, so this function
+   * is equivalent of "g.add_drive_ro".
    * <p>
    * *This function is deprecated.* In new code, use the
-   * "add_drive" call instead.
+   * "add_drive_ro" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
    * but the fact that they are deprecated indicates that

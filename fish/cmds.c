@@ -681,7 +681,7 @@ struct command_entry kill_subprocess_cmd_entry = {
 
 struct command_entry add_cdrom_cmd_entry = {
   .name = "add-cdrom",
-  .help = "NAME\n    add-cdrom - add a CD-ROM disk image to examine\n\nSYNOPSIS\n     add-cdrom filename\n\nDESCRIPTION\n    This function adds a virtual CD-ROM disk image to the guest.\n\n    Do not use this function! ISO files are just ordinary read-only disk\n    images. Use \"add_drive_ro\" instead.\n\n    *This function is deprecated.* In new code, use the \"add-drive\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    add-cdrom - add a CD-ROM disk image to examine\n\nSYNOPSIS\n     add-cdrom filename\n\nDESCRIPTION\n    This function adds a virtual CD-ROM disk image to the guest.\n\n    The image is added as read-only drive, so this function is equivalent of\n    \"add_drive_ro\".\n\n    *This function is deprecated.* In new code, use the \"add-drive-ro\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_add_cdrom
 };
 

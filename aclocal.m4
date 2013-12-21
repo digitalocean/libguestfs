@@ -1285,6 +1285,7 @@ AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
 m4_include([m4/00gnulib.m4])
+m4_include([m4/absolute-header.m4])
 m4_include([m4/accept4.m4])
 m4_include([m4/alloca.m4])
 m4_include([m4/arpa_inet_h.m4])

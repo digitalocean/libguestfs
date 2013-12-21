@@ -174,6 +174,7 @@ DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
+	$(top_srcdir)/m4/absolute-header.m4 \
 	$(top_srcdir)/m4/accept4.m4 $(top_srcdir)/m4/alloca.m4 \
 	$(top_srcdir)/m4/arpa_inet_h.m4 $(top_srcdir)/m4/btowc.m4 \
 	$(top_srcdir)/m4/byteswap.m4 $(top_srcdir)/m4/chdir-long.m4 \
@@ -402,10 +403,10 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	tests/mount-local tests/9p tests/rsync tests/bigdirs \
 	tests/disk-labels tests/hotplug tests/nbd tests/http \
 	tests/syslinux tests/journal tests/fuzz tests/regressions \
-	test-tool fish align cat df edit format inspector rescue bash \
-	perl perl/examples ocaml ocaml/examples python python/examples \
-	ruby ruby/examples java java/examples haskell php erlang \
-	erlang/examples lua lua/examples gobject golang \
+	test-tool fish align cat diff df edit format inspector rescue \
+	bash perl perl/examples ocaml ocaml/examples python \
+	python/examples ruby ruby/examples java java/examples haskell \
+	php erlang erlang/examples lua lua/examples gobject golang \
 	golang/examples csharp mllib builder builder/website resize \
 	sparsify sysprep tools fuse po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -1312,6 +1313,7 @@ REPLACE_GETLINE = @REPLACE_GETLINE@
 REPLACE_GETLOGIN_R = @REPLACE_GETLOGIN_R@
 REPLACE_GETPAGESIZE = @REPLACE_GETPAGESIZE@
 REPLACE_GETTIMEOFDAY = @REPLACE_GETTIMEOFDAY@
+REPLACE_GMTIME = @REPLACE_GMTIME@
 REPLACE_INET_NTOP = @REPLACE_INET_NTOP@
 REPLACE_INET_PTON = @REPLACE_INET_PTON@
 REPLACE_IOCTL = @REPLACE_IOCTL@
@@ -1323,6 +1325,7 @@ REPLACE_LCHOWN = @REPLACE_LCHOWN@
 REPLACE_LINK = @REPLACE_LINK@
 REPLACE_LINKAT = @REPLACE_LINKAT@
 REPLACE_LOCALECONV = @REPLACE_LOCALECONV@
+REPLACE_LOCALTIME = @REPLACE_LOCALTIME@
 REPLACE_LOCALTIME_R = @REPLACE_LOCALTIME_R@
 REPLACE_LSEEK = @REPLACE_LSEEK@
 REPLACE_LSTAT = @REPLACE_LSTAT@
@@ -1545,7 +1548,7 @@ ACLOCAL_AMFLAGS = -I m4
 # Unconditional because nothing is built yet.
 SUBDIRS = gnulib/lib gnulib/tests tests/data generator src examples po \
 	$(am__append_1) appliance $(am__append_2) test-tool fish align \
-	cat df edit format inspector rescue bash $(am__append_3) \
+	cat diff df edit format inspector rescue bash $(am__append_3) \
 	$(am__append_4) $(am__append_5) $(am__append_6) \
 	$(am__append_7) $(am__append_8) $(am__append_9) \
 	$(am__append_10) $(am__append_11) $(am__append_12) \
@@ -1639,6 +1642,7 @@ HTMLFILES = \
 	html/virt-copy-in.1.html \
 	html/virt-copy-out.1.html \
 	html/virt-df.1.html \
+	html/virt-diff.1.html \
 	html/virt-edit.1.html \
 	html/virt-filesystems.1.html \
 	html/virt-format.1.html \

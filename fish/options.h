@@ -97,44 +97,50 @@ struct mp {
 /* in config.c */
 extern void parse_config (void);
 
+/* in domain.c */
+extern int add_libvirt_drives (guestfs_h *g, const char *guest);
+
 /* in inspect.c */
-extern void inspect_mount (void);
+extern void inspect_mount_handle (guestfs_h *g);
+#define inspect_mount() inspect_mount_handle (g)
+
+#if COMPILING_GUESTFISH
 extern void print_inspect_prompt (void);
+#endif
+
+#if COMPILING_VIRT_INSPECTOR
 /* (low-level inspection functions, used by virt-inspector only) */
-extern void inspect_do_decrypt (void);
-extern void inspect_mount_root (const char *root);
+extern void inspect_do_decrypt (guestfs_h *g);
+extern void inspect_mount_root (guestfs_h *g, const char *root);
+#endif
 
 /* in key.c */
 extern char *read_key (const char *param);
 
 /* in options.c */
 extern void option_a (const char *arg, const char *format, struct drv **drvsp);
-extern char add_drives (struct drv *drv, char next_drive);
+extern void option_d (const char *arg, struct drv **drvsp);
+extern char add_drives_handle (guestfs_h *g, struct drv *drv, char next_drive);
+#define add_drives(drv, next_drive) add_drives_handle (g, drv, next_drive)
 extern void mount_mps (struct mp *mp);
 extern void free_drives (struct drv *drv);
 extern void free_mps (struct mp *mp);
 extern void display_long_options (const struct option *) __attribute__((noreturn));
 
-/* in virt.c */
-extern int add_libvirt_drives (const char *guest);
-
 #define OPTION_a                                \
   option_a (optarg, format, &drvs)
+
+#define OPTION_A                                \
+  option_a (optarg, format, &drvs2)
 
 #define OPTION_c                                \
   libvirt_uri = optarg
 
 #define OPTION_d                                \
-  drv = calloc (1, sizeof (struct drv));        \
-  if (!drv) {                                   \
-    perror ("malloc");                          \
-    exit (EXIT_FAILURE);                        \
-  }                                             \
-  drv->type = drv_d;                            \
-  drv->nr_drives = -1;                          \
-  drv->d.guest = optarg;                        \
-  drv->next = drvs;                             \
-  drvs = drv
+  option_d (optarg, &drvs)
+
+#define OPTION_D                                \
+  option_d (optarg, &drvs2)
 
 #define OPTION_i                                \
   inspector = 1

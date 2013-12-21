@@ -1,0 +1,254 @@
+=encoding utf8
+
+=head1 名前
+
+virt-diff - Differences between files in two virtual machines
+
+=head1 書式
+
+ virt-diff [--options] -d domain1 -D domain2
+
+ virt-diff [--options] -a disk1.img [-a ...] -A disk2.img [-A ...]
+
+=head1 説明
+
+C<virt-diff> lists the differences between files in two virtual machines or
+disk images.  The usual use case is to show the changes in a VM after it has
+been running for a while, by taking a snapshot, running the VM, and then
+using this tool to show what changed between the new VM state and the old
+snapshot.
+
+This tool will find differences in filenames, file sizes, checksums,
+extended attributes, file content and more from a virtual machine or disk
+image.  However it B<does not> look at the boot loader, unused space between
+partitions or within filesystems, "hidden" sectors and so on.  In other
+words, it is not a security or forensics tool.
+
+To specify two guests, you have to use the I<-a> or I<-d> option(s)  for the
+first guest, and the I<-A> or I<-D> option(s) for the second guest.  The
+common case is:
+
+ virt-diff -a old.img -A new.img
+
+or using names known to libvirt:
+
+ virt-diff -d oldguest -D newguest
+
+=head1 オプション
+
+=over 4
+
+=item B<--help>
+
+簡単なヘルプを表示します。
+
+=item B<-a> file
+
+=item B<--add> file
+
+Add I<file> which should be a disk image from the first virtual machine.  If
+the virtual machine has multiple block devices, you must supply all of them
+with separate I<-a> options.
+
+ディスクイメージの形式は自動検知されます。 これを上書きして強制的に特定の形式を使用する場合、 I<--format=..> オプションを使用します。
+
+=item B<-a> URI
+
+=item B<--add> URI
+
+リモートディスクを追加します。 L<guestfish(1)/リモートストレージの追加> 参照。
+
+=item B<--all>
+
+Same as I<--extra-stats> I<--times> I<--uids> I<--xattrs>.
+
+=item B<--atime>
+
+The default is to ignore changes in file access times, since those are
+unlikely to be interesting.  Using this flag shows atime differences as
+well.
+
+=item B<-A> file
+
+=item B<-A> URI
+
+Add a disk image from the second virtual machine.
+
+=item B<--checksum>
+
+=item B<--checksum=crc|md5|sha1|sha224|sha256|sha384|sha512>
+
+Use a checksum over file contents to detect when regular files have changed
+content.
+
+With no argument, this defaults to using I<md5>.  Using an argument, you can
+select the checksum type to use.  If the flag is omitted then file times and
+size are used to determine if a file has changed.
+
+=item B<-c> URI
+
+=item B<--connect> URI
+
+libvirt を使用していると、指定された I<URI> に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
+
+ゲストのブロックデバイスを直接指定していると（(I<-a>)）、libvirt は何も使用されません。
+
+=item B<--csv>
+
+Write out the results in CSV format (comma-separated values).  This format
+can be imported easily into databases and spreadsheets, but read L</NOTE
+ABOUT CSV FORMAT> below.
+
+=item B<--dir-links>
+
+The default is to ignore changed in the number of links in directory
+entries, since those are unlikely to be interesting.  Using this flag shows
+changes to the nlink field of directories.
+
+=item B<--dir-times>
+
+The default is to ignore changed times on directory entries, since those are
+unlikely to be interesting.  Using this flag shows changes to the time
+fields of directories.
+
+=item B<-d> guest
+
+=item B<--domain> guest
+
+Add all the disks from the named libvirt guest, as the first guest.  Domain
+UUIDs can be used instead of names.
+
+=item B<-D> guest
+
+Add all the disks from the named libvirt guest, as the second guest.  Domain
+UUIDs can be used instead of names.
+
+=item B<--echo-keys>
+
+When prompting for keys and passphrases, virt-diff normally turns echoing
+off so you cannot see what you are typing.  If you are not worried about
+Tempest attacks and there is no one else in the room you can specify this
+flag to see what you are typing.
+
+=item B<--extra-stats>
+
+Display extra stats.
+
+=item B<--format=raw|qcow2|..>
+
+=item B<--format>
+
+The default for the I<-a>/I<-A> option is to auto-detect the format of the
+disk image.  Using this forces the disk format for I<-a>/I<-A> options which
+follow on the command line.  Using I<--format> with no argument switches
+back to auto-detection for subsequent I<-a>/I<-A> options.
+
+例:
+
+ virt-diff --format=raw -a disk.img [...]
+
+強制的に C<disk.img> を raw 形式にします (自動検出しません)。
+
+ virt-diff --format=raw -a disk.img --format -a another.img [...]
+
+強制的に C<disk.img> を raw 形式にし (自動検知なし)、 C<another.img> に対して自動検知に戻します。
+
+仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
+これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。
+
+=item B<-h>
+
+=item B<--human-readable>
+
+読みやすい形式でファイル容量を表示します。
+
+このオプションは I<-lR> 出力モードにおいてのみ効果があります。  上の L</RECURSIVE LONG LISTING> 参照。
+
+=item B<--keys-from-stdin>
+
+標準入力からキーまたはパスフレーズのパラメーターを読み込みます。 標準で C</dev/tty> を開いているユーザーから読み込もうとします。
+
+=item B<--times>
+
+時間の項目を表示します。
+
+=item B<--time-days>
+
+Display time fields as days before now (negative if in the future).
+
+Note that C<0> in output means "up to 1 day before now", or that the age of
+the file is between 0 and 86399 seconds.
+
+=item B<--time-relative>
+
+Display time fields as seconds before now (negative if in the future).
+
+=item B<--time-t>
+
+Display time fields as seconds since the Unix epoch.
+
+=item B<--uids>
+
+UID と GID の項目を表示します。
+
+=item B<-v>
+
+=item B<--verbose>
+
+デバッグ用の冗長なメッセージを有効にします。
+
+=item B<-V>
+
+=item B<--version>
+
+バージョン番号を表示して終了します。
+
+=item B<-x>
+
+libguestfs API 呼び出しのトレースを有効にします。
+
+=item B<--xattrs>
+
+Display extended attributes.
+
+=back
+
+=head1 CSV 形式に関する注意
+
+Comma-separated values (CSV) is a deceptive format.  It I<seems> like it
+should be easy to parse, but it is definitely not easy to parse.
+
+神話: ただコンマで項目を区切る。 真実: これは正しく動き I<ません>。この例は 2 つの列があります:
+
+ "foo,bar",baz
+
+神話: 同時にファイルの 1 行を読み込みます。 真実: これは正しく動き I<ません>。この例は 1 つの行があります:
+
+ "foo
+ bar",baz
+
+For shell scripts, use C<csvtool> (L<http://merjis.com/developers/csv> also
+packaged in major Linux distributions).
+
+For other languages, use a CSV processing library (eg. C<Text::CSV> for Perl
+or Python's built-in csv library).
+
+Most spreadsheets and databases can import CSV directly.
+
+=head1 終了ステータス
+
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
+
+=head1 関連項目
+
+L<guestfs(3)>, L<guestfish(1)>, L<virt-cat(1)>, L<virt-copy-out(1)>,
+L<virt-ls(1)>, L<virt-tar-out(1)>, L<http://libguestfs.org/>.
+
+=head1 著者
+
+Richard W.M. Jones L<http://people.redhat.com/~rjones/>
+
+=head1 COPYRIGHT
+
+Copyright (C) 2009-2013 Red Hat Inc.
+

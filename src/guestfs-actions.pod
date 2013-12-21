@@ -97,7 +97,7 @@ This function returns 0 on success or -1 on error.
                     const char *filename);
 
 I<This function is deprecated.>
-In new code, use the L</guestfs_add_drive> call instead.
+In new code, use the L</guestfs_add_drive_ro> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -105,8 +105,8 @@ with correct use of these functions.
 
 This function adds a virtual CD-ROM disk image to the guest.
 
-B<Do not use this function!>  ISO files are just ordinary
-read-only disk images.  Use C<guestfs_add_drive_ro> instead.
+The image is added as read-only drive, so this function is equivalent
+of C<guestfs_add_drive_ro>.
 
 This function returns 0 on success or -1 on error.
 

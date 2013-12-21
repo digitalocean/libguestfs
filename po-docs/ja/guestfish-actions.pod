@@ -74,10 +74,11 @@ the correct numeric ID in the context of the guest, use the Augeas functions
 
 この関数は仮想 CD-ROM ディスクイメージを仮想マシンに追加します。
 
-B<この関数を使用しないでください!> ISO ファイルは通常読み込み専用のディスクイメージです。代わりに L</add-drive-ro>
-を使用してください。
+The image is added as read-only drive, so this function is equivalent of
+L</add-drive-ro>.
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</add-drive> を使用してください。
+I<This function is deprecated.> In new code, use the L</add-drive-ro> call
+instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of

@@ -2254,8 +2254,8 @@ guestfs_session_kill_subprocess(GuestfsSession *session, GError **err)
  *
  * This function adds a virtual CD-ROM disk image to the guest.
  * 
- * Do not use this function! ISO files are just ordinary read-only disk
- * images. Use guestfs_session_add_drive_ro() instead.
+ * The image is added as read-only drive, so this function is equivalent of
+ * guestfs_session_add_drive_ro().
  * 
  * Returns: true on success, false on error
  */

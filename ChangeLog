@@ -1,4 +1,168 @@
+2013-12-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.18.
+
+2013-12-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/regressions: Remove regression tests rhbz563450*.
+	These two tests failed 'make check-release' (particularly the
+	UML tests).
+
+	This partially reverts commit 2392fae6803b9de4a4761509007c160339d57f50.
+
+2013-12-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.17.
+
+	fish: Fix memory leak in inspect/-i code (detected by valgrind).
+	This only manifested in the new virt-diff tool.
+
+	Version 1.25.16.
+
+	builder: Change how EXTRA_DIST is generated.
+	So that we don't need to change this every time we upload
+	a new operating system signature.
+
+	Update to latest gnulib.
+
+	appliance: Create an /etc/resolv.conf file referring to qemu user network nameserver (RHBZ#1044585).
+
+	New tool: virt-diff.
+	This tool can be used to show the differences between two
+	disk images.
+
+	daemon: Sort extended attributes when returning them.
+	A single file can have multiple xattrs.  Previously these were
+	returned in the same order as the kernel returns them.  However it is
+	more useful if they are sorted by attribute name.
+
+2013-12-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-ls: visit: Fix a bug with handling of extended attributes.
+	The wrong pointer was passed to the visitor_function, resulting in it
+	seeing the placeholder xattr entry (the one which stores the length of
+	the list of xattrs - see
+	http://libguestfs.org/guestfs.3.html#guestfs_lxattrlist ).
+
+	virt-ls doesn't list xattrs at the moment, hence this bug was not seen
+	before.
+
+2013-12-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-ls: visit: Add an opaque pointer to the visitor function.
+	Useful for passing around data, but not used by virt-ls.  It
+	will be used by virt-diff.
+
+	virt-ls: Move visit and other functions to common code library.
+	This will allow us to reuse these functions in virt-diff.
+
+	fish: options: Add alternate add_drives_handle and inspect_mount_handle.
+	These functions don't use the implicit 'g' global variable, but
+	take a handle argument instead.
+
+	fish: Add option parsing for -A and -D options.
+	Same as -a and -d except these add the drives to a second list
+	of drives (drvs2).
+
+2013-12-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Move -d option parsing to common function.
+	This is essentially just code motion, except:
+
+	(1) It cleans up a few variable declarations which were implicitly
+	used by the old macro that aren't needed any more.
+
+	(2) The options are reordered alphabetically.
+
+2013-12-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Deprecate the -D option (prefer --no-dest-paths instead).
+	This option will now print a warning:
+	guestfish: warning: -D option is deprecated, use --no-dest-paths instead
+
+	lib: Export guestfs_compare_* functions for comparing structs and lists of structs.
+
+	lib: Export guestfs_copy_* functions for copying structs and lists of structs.
+	These complement the guestfs_free_* functions.
+
+	lib: Rename cleanup-structs.c -> structs-cleanup.c and free-structs.c -> structs-free.c.
+	Just renaming generated files, no other effects.
+
+	daemon: Improve error message for readlink call.
+
+2013-12-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Fix bug in documentation of guestfs_free_* functions.
+	These appeared in the documentation as:
+
+	 void guestfs_free_int_bool (struct guestfs_free_int_bool *);
+	                                            ^^^^
+
+	which is obviously wrong.
+
+2013-12-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Ensure print_inspect_prompt can only be called by guestfish.
+	Code clean-up.
+
+	inspector: Ensure low-level inspection functions can only be called by virt-inspector.
+	Code clean-up.
+
+	fish: options: Fix incorrect comment.
+
+	virt-cat, virt-filesystems, virt-ls don't use libconfig.
+	So it doesn't need to be linked in.
+
+	tests: guests: Add /etc/motd test file to Fedora test image.
+
+	builder: no_proxy environment variable should be passed to the appliance.
+
+2013-12-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add Fedora 20 image.
+
+2013-12-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Remove blank line.
+
+2013-12-16  Pino Toscano  <ptoscano@redhat.com>
+
+	drives: add CD-ROM disk images as read-only drives (RHBZ#563450).
+	The current add_cdrom way basically appends a new raw "-cdrom /path"
+	parameter to the qemu invocation (even when using libvirt as backend),
+	hence such images are seen as "CD-ROM drives" inside the appliance.
+	However, there is no need for such particular behaviour, as they need to
+	be handled as normal (read-only) drives.
+
+	Adding CD-ROM disk images as drives also changes the device names used
+	for them inside the appliance from /dev/srN to the usual e.g. /dev/sdX.
+
+	These changes fix different issues:
+	- it is possible to start guestfish without adding disks with -a, then
+	  just add-cdrom and run
+	- list-devices does not cause guestfsd to crash when sorting the list
+	  of devices (exposed by the test case in RHBZ#563450)
+	- the result of list-devices now reflects the order images were added
+	  (RHBZ#563450)
+
+	add_cdrom is still deprecated, but now in favour of add_drive_ro
+	(instead of add_drive), with its documentation reflecting that.
+
+	Add two small regression tests for the fixes described above.
+
 2013-12-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Refuse to write to a char device or /dev/null.
+	virt-builder --output /dev/null is tempting, but not possible, and
+	might result in /dev/null being deleted(!)  Check for this case and
+	prevent it happening.
+
+	builder: Only use virt-resize --no-sparse when writing to a block device.
+	Previously we would use the virt-resize --no-sparse option if the
+	final output file was a block device.  This is safe, but unnecessary
+	for example if virt-resize was used as an intermediate step.  So only
+	use this option if virt-resize is actually writing to the block
+	device.
 
 	Version 1.25.15.
 
