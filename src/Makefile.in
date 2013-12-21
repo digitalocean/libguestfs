@@ -148,6 +148,7 @@ DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
+	$(top_srcdir)/m4/absolute-header.m4 \
 	$(top_srcdir)/m4/accept4.m4 $(top_srcdir)/m4/alloca.m4 \
 	$(top_srcdir)/m4/arpa_inet_h.m4 $(top_srcdir)/m4/btowc.m4 \
 	$(top_srcdir)/m4/byteswap.m4 $(top_srcdir)/m4/chdir-long.m4 \
@@ -341,10 +342,10 @@ am_libguestfs_la_OBJECTS = libguestfs_la-actions-0.lo \
 	libguestfs_la-drives.lo libguestfs_la-errors.lo \
 	libguestfs_la-event-string.lo libguestfs_la-events.lo \
 	libguestfs_la-file.lo libguestfs_la-filearch.lo \
-	libguestfs_la-free-structs.lo libguestfs_la-fuse.lo \
-	libguestfs_la-handle.lo libguestfs_la-info.lo \
-	libguestfs_la-inspect.lo libguestfs_la-inspect-apps.lo \
-	libguestfs_la-inspect-fs.lo libguestfs_la-inspect-fs-cd.lo \
+	libguestfs_la-fuse.lo libguestfs_la-handle.lo \
+	libguestfs_la-info.lo libguestfs_la-inspect.lo \
+	libguestfs_la-inspect-apps.lo libguestfs_la-inspect-fs.lo \
+	libguestfs_la-inspect-fs-cd.lo \
 	libguestfs_la-inspect-fs-unix.lo \
 	libguestfs_la-inspect-fs-windows.lo \
 	libguestfs_la-inspect-icon.lo libguestfs_la-journal.lo \
@@ -355,7 +356,8 @@ am_libguestfs_la_OBJECTS = libguestfs_la-actions-0.lo \
 	libguestfs_la-lpj.lo libguestfs_la-match.lo \
 	libguestfs_la-osinfo.lo libguestfs_la-private-data.lo \
 	libguestfs_la-proto.lo libguestfs_la-stringsbuf.lo \
-	libguestfs_la-tmpdirs.lo
+	libguestfs_la-structs-compare.lo libguestfs_la-structs-copy.lo \
+	libguestfs_la-structs-free.lo libguestfs_la-tmpdirs.lo
 libguestfs_la_OBJECTS = $(am_libguestfs_la_OBJECTS)
 libguestfs_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libguestfs_la_CFLAGS) \
@@ -369,7 +371,7 @@ libprotocol_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$@
 libutils_la_LIBADD =
 am_libutils_la_OBJECTS = libutils_la-cleanup.lo \
-	libutils_la-cleanup-structs.lo libutils_la-utils.lo
+	libutils_la-structs-cleanup.lo libutils_la-utils.lo
 libutils_la_OBJECTS = $(am_libutils_la_OBJECTS)
 libutils_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libutils_la_CFLAGS) \
@@ -1304,6 +1306,7 @@ REPLACE_GETLINE = @REPLACE_GETLINE@
 REPLACE_GETLOGIN_R = @REPLACE_GETLOGIN_R@
 REPLACE_GETPAGESIZE = @REPLACE_GETPAGESIZE@
 REPLACE_GETTIMEOFDAY = @REPLACE_GETTIMEOFDAY@
+REPLACE_GMTIME = @REPLACE_GMTIME@
 REPLACE_INET_NTOP = @REPLACE_INET_NTOP@
 REPLACE_INET_PTON = @REPLACE_INET_PTON@
 REPLACE_IOCTL = @REPLACE_IOCTL@
@@ -1315,6 +1318,7 @@ REPLACE_LCHOWN = @REPLACE_LCHOWN@
 REPLACE_LINK = @REPLACE_LINK@
 REPLACE_LINKAT = @REPLACE_LINKAT@
 REPLACE_LOCALECONV = @REPLACE_LOCALECONV@
+REPLACE_LOCALTIME = @REPLACE_LOCALTIME@
 REPLACE_LOCALTIME_R = @REPLACE_LOCALTIME_R@
 REPLACE_LSEEK = @REPLACE_LSEEK@
 REPLACE_LSTAT = @REPLACE_LSTAT@
@@ -1535,16 +1539,18 @@ generator_built = \
 	actions-6.c \
 	actions-variants.c \
 	bindtests.c \
-	cleanup-structs.c \
 	errnostring-gperf.gperf \
 	errnostring.c \
 	errnostring.h \
 	event-string.c \
-	free-structs.c \
 	guestfs-actions.pod \
 	guestfs-availability.pod \
 	guestfs-structs.pod \
-	libguestfs.syms
+	libguestfs.syms \
+	structs-cleanup.c \
+	structs-compare.c \
+	structs-copy.c \
+	structs-free.c
 
 BUILT_SOURCES = \
 	$(generator_built) \
@@ -1593,7 +1599,6 @@ libguestfs_la_SOURCES = \
 	events.c \
 	file.c \
 	filearch.c \
-	free-structs.c \
 	fuse.c \
 	handle.c \
 	info.c \
@@ -1619,6 +1624,9 @@ libguestfs_la_SOURCES = \
 	private-data.c \
 	proto.c \
 	stringsbuf.c \
+	structs-compare.c \
+	structs-copy.c \
+	structs-free.c \
 	tmpdirs.c \
 	libguestfs.syms
 
@@ -1671,7 +1679,7 @@ libprotocol_la_CFLAGS = \
 # included in tools and bindings.
 libutils_la_SOURCES = \
 	cleanup.c \
-	cleanup-structs.c \
+	structs-cleanup.c \
 	utils.c
 
 libutils_la_CPPFLAGS = $(libguestfs_la_CPPFLAGS)
@@ -1811,7 +1819,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-events.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-filearch.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-free-structs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-fuse.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-handle.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-info.Plo@am__quote@
@@ -1837,10 +1844,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-private-data.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-proto.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-stringsbuf.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-structs-compare.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-structs-copy.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-structs-free.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-tmpdirs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libprotocol_la-guestfs_protocol.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-cleanup-structs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-cleanup.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-structs-cleanup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-utils.Plo@am__quote@
 
 .c.o:
@@ -2032,13 +2042,6 @@ libguestfs_la-filearch.lo: filearch.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-filearch.lo `test -f 'filearch.c' || echo '$(srcdir)/'`filearch.c
 
-libguestfs_la-free-structs.lo: free-structs.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-free-structs.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-free-structs.Tpo -c -o libguestfs_la-free-structs.lo `test -f 'free-structs.c' || echo '$(srcdir)/'`free-structs.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-free-structs.Tpo $(DEPDIR)/libguestfs_la-free-structs.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='free-structs.c' object='libguestfs_la-free-structs.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-free-structs.lo `test -f 'free-structs.c' || echo '$(srcdir)/'`free-structs.c
-
 libguestfs_la-fuse.lo: fuse.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-fuse.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-fuse.Tpo -c -o libguestfs_la-fuse.lo `test -f 'fuse.c' || echo '$(srcdir)/'`fuse.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-fuse.Tpo $(DEPDIR)/libguestfs_la-fuse.Plo
@@ -2214,6 +2217,27 @@ libguestfs_la-stringsbuf.lo: stringsbuf.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-stringsbuf.lo `test -f 'stringsbuf.c' || echo '$(srcdir)/'`stringsbuf.c
 
+libguestfs_la-structs-compare.lo: structs-compare.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-structs-compare.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-structs-compare.Tpo -c -o libguestfs_la-structs-compare.lo `test -f 'structs-compare.c' || echo '$(srcdir)/'`structs-compare.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-structs-compare.Tpo $(DEPDIR)/libguestfs_la-structs-compare.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='structs-compare.c' object='libguestfs_la-structs-compare.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-structs-compare.lo `test -f 'structs-compare.c' || echo '$(srcdir)/'`structs-compare.c
+
+libguestfs_la-structs-copy.lo: structs-copy.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-structs-copy.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-structs-copy.Tpo -c -o libguestfs_la-structs-copy.lo `test -f 'structs-copy.c' || echo '$(srcdir)/'`structs-copy.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-structs-copy.Tpo $(DEPDIR)/libguestfs_la-structs-copy.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='structs-copy.c' object='libguestfs_la-structs-copy.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-structs-copy.lo `test -f 'structs-copy.c' || echo '$(srcdir)/'`structs-copy.c
+
+libguestfs_la-structs-free.lo: structs-free.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-structs-free.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-structs-free.Tpo -c -o libguestfs_la-structs-free.lo `test -f 'structs-free.c' || echo '$(srcdir)/'`structs-free.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-structs-free.Tpo $(DEPDIR)/libguestfs_la-structs-free.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='structs-free.c' object='libguestfs_la-structs-free.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-structs-free.lo `test -f 'structs-free.c' || echo '$(srcdir)/'`structs-free.c
+
 libguestfs_la-tmpdirs.lo: tmpdirs.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-tmpdirs.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-tmpdirs.Tpo -c -o libguestfs_la-tmpdirs.lo `test -f 'tmpdirs.c' || echo '$(srcdir)/'`tmpdirs.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-tmpdirs.Tpo $(DEPDIR)/libguestfs_la-tmpdirs.Plo
@@ -2235,12 +2259,12 @@ libutils_la-cleanup.lo: cleanup.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -c -o libutils_la-cleanup.lo `test -f 'cleanup.c' || echo '$(srcdir)/'`cleanup.c
 
-libutils_la-cleanup-structs.lo: cleanup-structs.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -MT libutils_la-cleanup-structs.lo -MD -MP -MF $(DEPDIR)/libutils_la-cleanup-structs.Tpo -c -o libutils_la-cleanup-structs.lo `test -f 'cleanup-structs.c' || echo '$(srcdir)/'`cleanup-structs.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutils_la-cleanup-structs.Tpo $(DEPDIR)/libutils_la-cleanup-structs.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cleanup-structs.c' object='libutils_la-cleanup-structs.lo' libtool=yes @AMDEPBACKSLASH@
+libutils_la-structs-cleanup.lo: structs-cleanup.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -MT libutils_la-structs-cleanup.lo -MD -MP -MF $(DEPDIR)/libutils_la-structs-cleanup.Tpo -c -o libutils_la-structs-cleanup.lo `test -f 'structs-cleanup.c' || echo '$(srcdir)/'`structs-cleanup.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutils_la-structs-cleanup.Tpo $(DEPDIR)/libutils_la-structs-cleanup.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='structs-cleanup.c' object='libutils_la-structs-cleanup.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -c -o libutils_la-cleanup-structs.lo `test -f 'cleanup-structs.c' || echo '$(srcdir)/'`cleanup-structs.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -c -o libutils_la-structs-cleanup.lo `test -f 'structs-cleanup.c' || echo '$(srcdir)/'`structs-cleanup.c
 
 libutils_la-utils.lo: utils.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -MT libutils_la-utils.lo -MD -MP -MF $(DEPDIR)/libutils_la-utils.Tpo -c -o libutils_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c

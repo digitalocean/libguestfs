@@ -56,7 +56,6 @@ let main () =
     ) sources
   );
 
-
   (* Handle some modes here, some later on. *)
   let mode =
     match mode with
@@ -279,6 +278,11 @@ let main () =
     exit 1
   );
 
+  if is_char_device output_filename then (
+    eprintf (f_"%s: cannot output to a character device or /dev/null\n") prog;
+    exit 1
+  );
+
   let goal =
     (* MUST *)
     let goal_must = [
@@ -491,7 +495,7 @@ let main () =
       let cmd =
         sprintf "virt-resize%s%s%s --output-format %s%s%s %s %s"
           (if debug then " --verbose" else " --quiet")
-          (if output_is_block_dev then " --no-sparse" else "")
+          (if is_block_device ofile then " --no-sparse" else "")
           (match iformat with
           | None -> ""
           | Some iformat -> sprintf " --format %s" (quote iformat))
@@ -645,7 +649,7 @@ let main () =
         fun name ->
           try Some (sprintf "export %s=%s" name (quote (Sys.getenv name)))
           with Not_found -> None
-      ) [ "http_proxy"; "https_proxy"; "ftp_proxy" ] in
+      ) [ "http_proxy"; "https_proxy"; "ftp_proxy"; "no_proxy" ] in
     let env_vars = String.concat "\n" env_vars ^ "\n" in
 
     let cmd = sprintf "\

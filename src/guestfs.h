@@ -202,6 +202,12 @@ struct guestfs_int_bool_list {
   struct guestfs_int_bool *val;
 };
 
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_int_bool (const struct guestfs_int_bool *, const struct guestfs_int_bool *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_int_bool_list (const struct guestfs_int_bool_list *, const struct guestfs_int_bool_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_int_bool *guestfs_copy_int_bool (const struct guestfs_int_bool *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_int_bool_list *guestfs_copy_int_bool_list (const struct guestfs_int_bool_list *);
+
 extern GUESTFS_DLL_PUBLIC void guestfs_free_int_bool (struct guestfs_int_bool *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_int_bool_list (struct guestfs_int_bool_list *);
 
@@ -226,6 +232,12 @@ struct guestfs_lvm_pv_list {
   uint32_t len;
   struct guestfs_lvm_pv *val;
 };
+
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_lvm_pv (const struct guestfs_lvm_pv *, const struct guestfs_lvm_pv *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_lvm_pv_list (const struct guestfs_lvm_pv_list *, const struct guestfs_lvm_pv_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_pv *guestfs_copy_lvm_pv (const struct guestfs_lvm_pv *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_pv_list *guestfs_copy_lvm_pv_list (const struct guestfs_lvm_pv_list *);
 
 extern GUESTFS_DLL_PUBLIC void guestfs_free_lvm_pv (struct guestfs_lvm_pv *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_lvm_pv_list (struct guestfs_lvm_pv_list *);
@@ -257,6 +269,12 @@ struct guestfs_lvm_vg_list {
   struct guestfs_lvm_vg *val;
 };
 
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_lvm_vg (const struct guestfs_lvm_vg *, const struct guestfs_lvm_vg *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_lvm_vg_list (const struct guestfs_lvm_vg_list *, const struct guestfs_lvm_vg_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_vg *guestfs_copy_lvm_vg (const struct guestfs_lvm_vg *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_vg_list *guestfs_copy_lvm_vg_list (const struct guestfs_lvm_vg_list *);
+
 extern GUESTFS_DLL_PUBLIC void guestfs_free_lvm_vg (struct guestfs_lvm_vg *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_lvm_vg_list (struct guestfs_lvm_vg_list *);
 
@@ -284,6 +302,12 @@ struct guestfs_lvm_lv_list {
   struct guestfs_lvm_lv *val;
 };
 
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_lvm_lv (const struct guestfs_lvm_lv *, const struct guestfs_lvm_lv *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_lvm_lv_list (const struct guestfs_lvm_lv_list *, const struct guestfs_lvm_lv_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_lv *guestfs_copy_lvm_lv (const struct guestfs_lvm_lv *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_lv_list *guestfs_copy_lvm_lv_list (const struct guestfs_lvm_lv_list *);
+
 extern GUESTFS_DLL_PUBLIC void guestfs_free_lvm_lv (struct guestfs_lvm_lv *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_lvm_lv_list (struct guestfs_lvm_lv_list *);
 
@@ -308,6 +332,12 @@ struct guestfs_stat_list {
   struct guestfs_stat *val;
 };
 
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_stat (const struct guestfs_stat *, const struct guestfs_stat *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_stat_list (const struct guestfs_stat_list *, const struct guestfs_stat_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_stat *guestfs_copy_stat (const struct guestfs_stat *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_stat_list *guestfs_copy_stat_list (const struct guestfs_stat_list *);
+
 extern GUESTFS_DLL_PUBLIC void guestfs_free_stat (struct guestfs_stat *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_stat_list (struct guestfs_stat_list *);
 
@@ -330,6 +360,12 @@ struct guestfs_statvfs_list {
   struct guestfs_statvfs *val;
 };
 
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_statvfs (const struct guestfs_statvfs *, const struct guestfs_statvfs *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_statvfs_list (const struct guestfs_statvfs_list *, const struct guestfs_statvfs_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_statvfs *guestfs_copy_statvfs (const struct guestfs_statvfs *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_statvfs_list *guestfs_copy_statvfs_list (const struct guestfs_statvfs_list *);
+
 extern GUESTFS_DLL_PUBLIC void guestfs_free_statvfs (struct guestfs_statvfs *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_statvfs_list (struct guestfs_statvfs_list *);
 
@@ -343,6 +379,12 @@ struct guestfs_dirent_list {
   uint32_t len;
   struct guestfs_dirent *val;
 };
+
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_dirent (const struct guestfs_dirent *, const struct guestfs_dirent *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_dirent_list (const struct guestfs_dirent_list *, const struct guestfs_dirent_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_dirent *guestfs_copy_dirent (const struct guestfs_dirent *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_dirent_list *guestfs_copy_dirent_list (const struct guestfs_dirent_list *);
 
 extern GUESTFS_DLL_PUBLIC void guestfs_free_dirent (struct guestfs_dirent *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_dirent_list (struct guestfs_dirent_list *);
@@ -359,6 +401,12 @@ struct guestfs_version_list {
   struct guestfs_version *val;
 };
 
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_version (const struct guestfs_version *, const struct guestfs_version *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_version_list (const struct guestfs_version_list *, const struct guestfs_version_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_version *guestfs_copy_version (const struct guestfs_version *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_version_list *guestfs_copy_version_list (const struct guestfs_version_list *);
+
 extern GUESTFS_DLL_PUBLIC void guestfs_free_version (struct guestfs_version *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_version_list (struct guestfs_version_list *);
 
@@ -372,6 +420,12 @@ struct guestfs_xattr_list {
   uint32_t len;
   struct guestfs_xattr *val;
 };
+
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_xattr (const struct guestfs_xattr *, const struct guestfs_xattr *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_xattr_list (const struct guestfs_xattr_list *, const struct guestfs_xattr_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_xattr *guestfs_copy_xattr (const struct guestfs_xattr *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_xattr_list *guestfs_copy_xattr_list (const struct guestfs_xattr_list *);
 
 extern GUESTFS_DLL_PUBLIC void guestfs_free_xattr (struct guestfs_xattr *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_xattr_list (struct guestfs_xattr_list *);
@@ -388,6 +442,12 @@ struct guestfs_inotify_event_list {
   struct guestfs_inotify_event *val;
 };
 
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_inotify_event (const struct guestfs_inotify_event *, const struct guestfs_inotify_event *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_inotify_event_list (const struct guestfs_inotify_event_list *, const struct guestfs_inotify_event_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_inotify_event *guestfs_copy_inotify_event (const struct guestfs_inotify_event *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_inotify_event_list *guestfs_copy_inotify_event_list (const struct guestfs_inotify_event_list *);
+
 extern GUESTFS_DLL_PUBLIC void guestfs_free_inotify_event (struct guestfs_inotify_event *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_inotify_event_list (struct guestfs_inotify_event_list *);
 
@@ -402,6 +462,12 @@ struct guestfs_partition_list {
   uint32_t len;
   struct guestfs_partition *val;
 };
+
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_partition (const struct guestfs_partition *, const struct guestfs_partition *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_partition_list (const struct guestfs_partition_list *, const struct guestfs_partition_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_partition *guestfs_copy_partition (const struct guestfs_partition *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_partition_list *guestfs_copy_partition_list (const struct guestfs_partition_list *);
 
 extern GUESTFS_DLL_PUBLIC void guestfs_free_partition (struct guestfs_partition *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_partition_list (struct guestfs_partition_list *);
@@ -425,6 +491,12 @@ struct guestfs_application_list {
   uint32_t len;
   struct guestfs_application *val;
 };
+
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_application (const struct guestfs_application *, const struct guestfs_application *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_application_list (const struct guestfs_application_list *, const struct guestfs_application_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_application *guestfs_copy_application (const struct guestfs_application *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_application_list *guestfs_copy_application_list (const struct guestfs_application_list *);
 
 extern GUESTFS_DLL_PUBLIC void guestfs_free_application (struct guestfs_application *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_application_list (struct guestfs_application_list *);
@@ -454,6 +526,12 @@ struct guestfs_application2_list {
   struct guestfs_application2 *val;
 };
 
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_application2 (const struct guestfs_application2 *, const struct guestfs_application2 *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_application2_list (const struct guestfs_application2_list *, const struct guestfs_application2_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_application2 *guestfs_copy_application2 (const struct guestfs_application2 *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_application2_list *guestfs_copy_application2_list (const struct guestfs_application2_list *);
+
 extern GUESTFS_DLL_PUBLIC void guestfs_free_application2 (struct guestfs_application2 *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_application2_list (struct guestfs_application2_list *);
 
@@ -482,6 +560,12 @@ struct guestfs_isoinfo_list {
   struct guestfs_isoinfo *val;
 };
 
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_isoinfo (const struct guestfs_isoinfo *, const struct guestfs_isoinfo *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_isoinfo_list (const struct guestfs_isoinfo_list *, const struct guestfs_isoinfo_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_isoinfo *guestfs_copy_isoinfo (const struct guestfs_isoinfo *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_isoinfo_list *guestfs_copy_isoinfo_list (const struct guestfs_isoinfo_list *);
+
 extern GUESTFS_DLL_PUBLIC void guestfs_free_isoinfo (struct guestfs_isoinfo *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_isoinfo_list (struct guestfs_isoinfo_list *);
 
@@ -496,6 +580,12 @@ struct guestfs_mdstat_list {
   struct guestfs_mdstat *val;
 };
 
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_mdstat (const struct guestfs_mdstat *, const struct guestfs_mdstat *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_mdstat_list (const struct guestfs_mdstat_list *, const struct guestfs_mdstat_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_mdstat *guestfs_copy_mdstat (const struct guestfs_mdstat *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_mdstat_list *guestfs_copy_mdstat_list (const struct guestfs_mdstat_list *);
+
 extern GUESTFS_DLL_PUBLIC void guestfs_free_mdstat (struct guestfs_mdstat *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_mdstat_list (struct guestfs_mdstat_list *);
 
@@ -509,6 +599,12 @@ struct guestfs_btrfssubvolume_list {
   uint32_t len;
   struct guestfs_btrfssubvolume *val;
 };
+
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_btrfssubvolume (const struct guestfs_btrfssubvolume *, const struct guestfs_btrfssubvolume *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_btrfssubvolume_list (const struct guestfs_btrfssubvolume_list *, const struct guestfs_btrfssubvolume_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_btrfssubvolume *guestfs_copy_btrfssubvolume (const struct guestfs_btrfssubvolume *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_btrfssubvolume_list *guestfs_copy_btrfssubvolume_list (const struct guestfs_btrfssubvolume_list *);
 
 extern GUESTFS_DLL_PUBLIC void guestfs_free_btrfssubvolume (struct guestfs_btrfssubvolume *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_btrfssubvolume_list (struct guestfs_btrfssubvolume_list *);
@@ -546,6 +642,12 @@ struct guestfs_xfsinfo_list {
   struct guestfs_xfsinfo *val;
 };
 
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_xfsinfo (const struct guestfs_xfsinfo *, const struct guestfs_xfsinfo *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_xfsinfo_list (const struct guestfs_xfsinfo_list *, const struct guestfs_xfsinfo_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_xfsinfo *guestfs_copy_xfsinfo (const struct guestfs_xfsinfo *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_xfsinfo_list *guestfs_copy_xfsinfo_list (const struct guestfs_xfsinfo_list *);
+
 extern GUESTFS_DLL_PUBLIC void guestfs_free_xfsinfo (struct guestfs_xfsinfo *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_xfsinfo_list (struct guestfs_xfsinfo_list *);
 
@@ -561,6 +663,12 @@ struct guestfs_utsname_list {
   struct guestfs_utsname *val;
 };
 
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_utsname (const struct guestfs_utsname *, const struct guestfs_utsname *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_utsname_list (const struct guestfs_utsname_list *, const struct guestfs_utsname_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_utsname *guestfs_copy_utsname (const struct guestfs_utsname *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_utsname_list *guestfs_copy_utsname_list (const struct guestfs_utsname_list *);
+
 extern GUESTFS_DLL_PUBLIC void guestfs_free_utsname (struct guestfs_utsname *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_utsname_list (struct guestfs_utsname_list *);
 
@@ -573,6 +681,12 @@ struct guestfs_hivex_node_list {
   struct guestfs_hivex_node *val;
 };
 
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_hivex_node (const struct guestfs_hivex_node *, const struct guestfs_hivex_node *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_hivex_node_list (const struct guestfs_hivex_node_list *, const struct guestfs_hivex_node_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_hivex_node *guestfs_copy_hivex_node (const struct guestfs_hivex_node *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_hivex_node_list *guestfs_copy_hivex_node_list (const struct guestfs_hivex_node_list *);
+
 extern GUESTFS_DLL_PUBLIC void guestfs_free_hivex_node (struct guestfs_hivex_node *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_hivex_node_list (struct guestfs_hivex_node_list *);
 
@@ -584,6 +698,12 @@ struct guestfs_hivex_value_list {
   uint32_t len;
   struct guestfs_hivex_value *val;
 };
+
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_hivex_value (const struct guestfs_hivex_value *, const struct guestfs_hivex_value *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_hivex_value_list (const struct guestfs_hivex_value_list *, const struct guestfs_hivex_value_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_hivex_value *guestfs_copy_hivex_value (const struct guestfs_hivex_value *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_hivex_value_list *guestfs_copy_hivex_value_list (const struct guestfs_hivex_value_list *);
 
 extern GUESTFS_DLL_PUBLIC void guestfs_free_hivex_value (struct guestfs_hivex_value *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_hivex_value_list (struct guestfs_hivex_value_list *);
@@ -599,7 +719,7 @@ extern GUESTFS_DLL_PUBLIC char *guestfs_acl_get_file (guestfs_h *g, const char *
 extern GUESTFS_DLL_PUBLIC int guestfs_acl_set_file (guestfs_h *g, const char *path, const char *acltype, const char *acl);
 
 extern GUESTFS_DLL_PUBLIC int guestfs_add_cdrom (guestfs_h *g, const char *filename)
-  GUESTFS_DEPRECATED_BY ("add_drive");
+  GUESTFS_DEPRECATED_BY ("add_drive_ro");
 
 #define GUESTFS_HAVE_ADD_DOMAIN 1
 #define GUESTFS_ADD_DOMAIN_LIBVIRTURI 0
@@ -3371,6 +3491,12 @@ struct guestfs_internal_mountable_list {
   uint32_t len;
   struct guestfs_internal_mountable *val;
 };
+
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_internal_mountable (const struct guestfs_internal_mountable *, const struct guestfs_internal_mountable *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_internal_mountable_list (const struct guestfs_internal_mountable_list *, const struct guestfs_internal_mountable_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_internal_mountable *guestfs_copy_internal_mountable (const struct guestfs_internal_mountable *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_internal_mountable_list *guestfs_copy_internal_mountable_list (const struct guestfs_internal_mountable_list *);
 
 extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable (struct guestfs_internal_mountable *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct guestfs_internal_mountable_list *);

@@ -207,13 +207,6 @@ I<--listen> オプションと csh 系シェルを使用している場合、 �
 フラグを指定した場合、C<readonly:true> が付きます。 I<--format=...> フラグを指定した場合、C<format:...>
 が付きます。
 
-=item B<-D>
-
-=item B<--no-dest-paths>
-
-ゲストのファイルシステムのパスをタブ補完しません。 この機能は、ゲストのファイルシステムのパスを補完する ためにタブキーを使えるようになり、有用です。
-しかし、別の「隠し」guestfs コールを呼び出す可能性があります。 そのため、この機能を無効化するために、このオプションがあります。
-
 =item B<--echo-keys>
 
 キーやパスフレーズを入力するとき、通常 guestfish はエコーを無効化します。 そのため、入力内容を確認できません。 テンペスト攻撃の心配がなく、
@@ -336,6 +329,11 @@ L</list-filesystems>, L</lvs> コマンド参照)。 または、 L<virt-filesys
 =item B<--no-sync>
 
 自動同期を無効化します。 これは標準で有効化されています。 L<guestfs(3)> マニュアルページの自動同期に関する記載を 参照してください。
+
+=item B<--no-dest-paths>
+
+ゲストのファイルシステムのパスをタブ補完しません。 この機能は、ゲストのファイルシステムのパスを補完する ためにタブキーを使えるようになり、有用です。
+しかし、別の「隠し」guestfs コールを呼び出す可能性があります。 そのため、この機能を無効化するために、このオプションがあります。
 
 =item B<--pipe-error>
 
@@ -1484,7 +1482,7 @@ using the C<filename=> prefix.
 
 L<guestfs(3)>, L<http://libguestfs.org/>, L<virt-alignment-scan(1)>,
 L<virt-builder(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>,
-L<virt-df(1)>, L<virt-edit(1)>, L<virt-filesystems(1)>,
+L<virt-df(1)>, L<virt-diff(1)>, L<virt-edit(1)>, L<virt-filesystems(1)>,
 L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
 L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
 L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,

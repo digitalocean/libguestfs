@@ -96,8 +96,8 @@ the correct numeric ID in the context of the guest, use the Augeas functions
  guestfs_add_cdrom (guestfs_h *g,
                     const char *filename);
 
-I<This function is deprecated.> In new code, use the L</guestfs_add_drive>
-call instead.
+I<This function is deprecated.> In new code, use the
+L</guestfs_add_drive_ro> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -105,8 +105,8 @@ these functions.
 
 This function adds a virtual CD-ROM disk image to the guest.
 
-B<Do not use this function!> ISO files are just ordinary read-only disk
-images.  Use C<guestfs_add_drive_ro> instead.
+The image is added as read-only drive, so this function is equivalent of
+C<guestfs_add_drive_ro>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 

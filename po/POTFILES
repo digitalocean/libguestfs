@@ -8,6 +8,7 @@ builder/pxzcat-c.c
 cat/cat.c
 cat/filesystems.c
 cat/ls.c
+cat/visit.c
 daemon/9p.c
 daemon/acl.c
 daemon/augeas.c
@@ -111,6 +112,7 @@ df/estimate-max-threads.c
 df/main.c
 df/output.c
 df/parallel.c
+diff/diff.c
 edit/edit.c
 erlang/erl-guestfs-proto.c
 erlang/erl-guestfs.c
@@ -261,7 +263,6 @@ src/alloc.c
 src/appliance.c
 src/bindtests.c
 src/canonical-name.c
-src/cleanup-structs.c
 src/cleanup.c
 src/command.c
 src/conn-socket.c
@@ -274,7 +275,6 @@ src/event-string.c
 src/events.c
 src/file.c
 src/filearch.c
-src/free-structs.c
 src/fuse.c
 src/handle.c
 src/info.c
@@ -300,6 +300,10 @@ src/osinfo.c
 src/private-data.c
 src/proto.c
 src/stringsbuf.c
+src/structs-cleanup.c
+src/structs-compare.c
+src/structs-copy.c
+src/structs-free.c
 src/tmpdirs.c
 src/utils.c
 test-tool/test-tool.c

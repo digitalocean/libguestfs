@@ -142,6 +142,7 @@ bin_PROGRAMS = virt-cat$(EXEEXT) virt-filesystems$(EXEEXT) \
 subdir = cat
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
+	$(top_srcdir)/m4/absolute-header.m4 \
 	$(top_srcdir)/m4/accept4.m4 $(top_srcdir)/m4/alloca.m4 \
 	$(top_srcdir)/m4/arpa_inet_h.m4 $(top_srcdir)/m4/btowc.m4 \
 	$(top_srcdir)/m4/byteswap.m4 $(top_srcdir)/m4/chdir-long.m4 \
@@ -272,14 +273,13 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__objects_1 = virt_cat-config.$(OBJEXT) virt_cat-domain.$(OBJEXT) \
-	virt_cat-inspect.$(OBJEXT) virt_cat-keys.$(OBJEXT) \
-	virt_cat-options.$(OBJEXT) virt_cat-uri.$(OBJEXT)
+am__objects_1 = virt_cat-domain.$(OBJEXT) virt_cat-inspect.$(OBJEXT) \
+	virt_cat-keys.$(OBJEXT) virt_cat-options.$(OBJEXT) \
+	virt_cat-uri.$(OBJEXT)
 am_virt_cat_OBJECTS = $(am__objects_1) virt_cat-cat.$(OBJEXT)
 virt_cat_OBJECTS = $(am_virt_cat_OBJECTS)
 am__DEPENDENCIES_1 =
-virt_cat_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(top_builddir)/src/libutils.la \
+virt_cat_DEPENDENCIES = $(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -289,8 +289,7 @@ am__v_lt_1 =
 virt_cat_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(virt_cat_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am__objects_2 = virt_filesystems-config.$(OBJEXT) \
-	virt_filesystems-domain.$(OBJEXT) \
+am__objects_2 = virt_filesystems-domain.$(OBJEXT) \
 	virt_filesystems-inspect.$(OBJEXT) \
 	virt_filesystems-keys.$(OBJEXT) \
 	virt_filesystems-options.$(OBJEXT) \
@@ -298,21 +297,20 @@ am__objects_2 = virt_filesystems-config.$(OBJEXT) \
 am_virt_filesystems_OBJECTS = $(am__objects_2) \
 	virt_filesystems-filesystems.$(OBJEXT)
 virt_filesystems_OBJECTS = $(am_virt_filesystems_OBJECTS)
-virt_filesystems_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(top_builddir)/src/libutils.la \
+virt_filesystems_DEPENDENCIES = $(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la
 virt_filesystems_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(virt_filesystems_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-am__objects_3 = virt_ls-config.$(OBJEXT) virt_ls-domain.$(OBJEXT) \
-	virt_ls-inspect.$(OBJEXT) virt_ls-keys.$(OBJEXT) \
-	virt_ls-options.$(OBJEXT) virt_ls-uri.$(OBJEXT)
-am_virt_ls_OBJECTS = $(am__objects_3) virt_ls-ls.$(OBJEXT)
+am__objects_3 = virt_ls-domain.$(OBJEXT) virt_ls-inspect.$(OBJEXT) \
+	virt_ls-keys.$(OBJEXT) virt_ls-options.$(OBJEXT) \
+	virt_ls-uri.$(OBJEXT)
+am_virt_ls_OBJECTS = $(am__objects_3) virt_ls-ls.$(OBJEXT) \
+	virt_ls-visit.$(OBJEXT)
 virt_ls_OBJECTS = $(am_virt_ls_OBJECTS)
-virt_ls_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(top_builddir)/src/libutils.la \
+virt_ls_DEPENDENCIES = $(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la
 virt_ls_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -1296,6 +1294,7 @@ REPLACE_GETLINE = @REPLACE_GETLINE@
 REPLACE_GETLOGIN_R = @REPLACE_GETLOGIN_R@
 REPLACE_GETPAGESIZE = @REPLACE_GETPAGESIZE@
 REPLACE_GETTIMEOFDAY = @REPLACE_GETTIMEOFDAY@
+REPLACE_GMTIME = @REPLACE_GMTIME@
 REPLACE_INET_NTOP = @REPLACE_INET_NTOP@
 REPLACE_INET_PTON = @REPLACE_INET_PTON@
 REPLACE_IOCTL = @REPLACE_IOCTL@
@@ -1307,6 +1306,7 @@ REPLACE_LCHOWN = @REPLACE_LCHOWN@
 REPLACE_LINK = @REPLACE_LINK@
 REPLACE_LINKAT = @REPLACE_LINKAT@
 REPLACE_LOCALECONV = @REPLACE_LOCALECONV@
+REPLACE_LOCALTIME = @REPLACE_LOCALTIME@
 REPLACE_LOCALTIME_R = @REPLACE_LOCALTIME_R@
 REPLACE_LSEEK = @REPLACE_LSEEK@
 REPLACE_LSTAT = @REPLACE_LSTAT@
@@ -1522,7 +1522,6 @@ EXTRA_DIST = \
 
 CLEANFILES = stamp-virt-cat.pod stamp-virt-ls.pod stamp-virt-filesystems.pod
 SHARED_SOURCE_FILES = \
-	../fish/config.c \
 	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \
@@ -1545,11 +1544,9 @@ virt_cat_CPPFLAGS = \
 virt_cat_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
-	$(LIBCONFIG_CFLAGS) \
 	$(LIBXML2_CFLAGS)
 
 virt_cat_LDADD = \
-	$(LIBCONFIG_LIBS) \
 	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
 	$(LIBXML2_LIBS) \
@@ -1570,11 +1567,9 @@ virt_filesystems_CPPFLAGS = \
 virt_filesystems_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
-	$(LIBCONFIG_CFLAGS) \
 	$(LIBXML2_CFLAGS)
 
 virt_filesystems_LDADD = \
-	$(LIBCONFIG_LIBS) \
 	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
 	$(LIBXML2_LIBS) \
@@ -1583,7 +1578,9 @@ virt_filesystems_LDADD = \
 
 virt_ls_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
-	ls.c
+	ls.c \
+	visit.c \
+	visit.h
 
 virt_ls_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
@@ -1595,11 +1592,9 @@ virt_ls_CPPFLAGS = \
 virt_ls_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
-	$(LIBCONFIG_CFLAGS) \
 	$(LIBXML2_CFLAGS)
 
 virt_ls_LDADD = \
-	$(LIBCONFIG_LIBS) \
 	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
 	$(LIBXML2_LIBS) \
@@ -1726,26 +1721,24 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_cat-cat.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_cat-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_cat-domain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_cat-inspect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_cat-keys.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_cat-options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_cat-uri.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_filesystems-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_filesystems-domain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_filesystems-filesystems.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_filesystems-inspect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_filesystems-keys.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_filesystems-options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_filesystems-uri.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_ls-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_ls-domain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_ls-inspect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_ls-keys.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_ls-ls.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_ls-options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_ls-uri.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_ls-visit.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1767,20 +1760,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
-
-virt_cat-config.o: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_cat_CPPFLAGS) $(CPPFLAGS) $(virt_cat_CFLAGS) $(CFLAGS) -MT virt_cat-config.o -MD -MP -MF $(DEPDIR)/virt_cat-config.Tpo -c -o virt_cat-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_cat-config.Tpo $(DEPDIR)/virt_cat-config.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='virt_cat-config.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_cat_CPPFLAGS) $(CPPFLAGS) $(virt_cat_CFLAGS) $(CFLAGS) -c -o virt_cat-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
-
-virt_cat-config.obj: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_cat_CPPFLAGS) $(CPPFLAGS) $(virt_cat_CFLAGS) $(CFLAGS) -MT virt_cat-config.obj -MD -MP -MF $(DEPDIR)/virt_cat-config.Tpo -c -o virt_cat-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_cat-config.Tpo $(DEPDIR)/virt_cat-config.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='virt_cat-config.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_cat_CPPFLAGS) $(CPPFLAGS) $(virt_cat_CFLAGS) $(CFLAGS) -c -o virt_cat-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
 
 virt_cat-domain.o: ../fish/domain.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_cat_CPPFLAGS) $(CPPFLAGS) $(virt_cat_CFLAGS) $(CFLAGS) -MT virt_cat-domain.o -MD -MP -MF $(DEPDIR)/virt_cat-domain.Tpo -c -o virt_cat-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
@@ -1866,20 +1845,6 @@ virt_cat-cat.obj: cat.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_cat_CPPFLAGS) $(CPPFLAGS) $(virt_cat_CFLAGS) $(CFLAGS) -c -o virt_cat-cat.obj `if test -f 'cat.c'; then $(CYGPATH_W) 'cat.c'; else $(CYGPATH_W) '$(srcdir)/cat.c'; fi`
 
-virt_filesystems-config.o: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_filesystems_CPPFLAGS) $(CPPFLAGS) $(virt_filesystems_CFLAGS) $(CFLAGS) -MT virt_filesystems-config.o -MD -MP -MF $(DEPDIR)/virt_filesystems-config.Tpo -c -o virt_filesystems-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_filesystems-config.Tpo $(DEPDIR)/virt_filesystems-config.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='virt_filesystems-config.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_filesystems_CPPFLAGS) $(CPPFLAGS) $(virt_filesystems_CFLAGS) $(CFLAGS) -c -o virt_filesystems-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
-
-virt_filesystems-config.obj: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_filesystems_CPPFLAGS) $(CPPFLAGS) $(virt_filesystems_CFLAGS) $(CFLAGS) -MT virt_filesystems-config.obj -MD -MP -MF $(DEPDIR)/virt_filesystems-config.Tpo -c -o virt_filesystems-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_filesystems-config.Tpo $(DEPDIR)/virt_filesystems-config.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='virt_filesystems-config.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_filesystems_CPPFLAGS) $(CPPFLAGS) $(virt_filesystems_CFLAGS) $(CFLAGS) -c -o virt_filesystems-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
-
 virt_filesystems-domain.o: ../fish/domain.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_filesystems_CPPFLAGS) $(CPPFLAGS) $(virt_filesystems_CFLAGS) $(CFLAGS) -MT virt_filesystems-domain.o -MD -MP -MF $(DEPDIR)/virt_filesystems-domain.Tpo -c -o virt_filesystems-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_filesystems-domain.Tpo $(DEPDIR)/virt_filesystems-domain.Po
@@ -1964,20 +1929,6 @@ virt_filesystems-filesystems.obj: filesystems.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_filesystems_CPPFLAGS) $(CPPFLAGS) $(virt_filesystems_CFLAGS) $(CFLAGS) -c -o virt_filesystems-filesystems.obj `if test -f 'filesystems.c'; then $(CYGPATH_W) 'filesystems.c'; else $(CYGPATH_W) '$(srcdir)/filesystems.c'; fi`
 
-virt_ls-config.o: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -MT virt_ls-config.o -MD -MP -MF $(DEPDIR)/virt_ls-config.Tpo -c -o virt_ls-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_ls-config.Tpo $(DEPDIR)/virt_ls-config.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='virt_ls-config.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -c -o virt_ls-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
-
-virt_ls-config.obj: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -MT virt_ls-config.obj -MD -MP -MF $(DEPDIR)/virt_ls-config.Tpo -c -o virt_ls-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_ls-config.Tpo $(DEPDIR)/virt_ls-config.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='virt_ls-config.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -c -o virt_ls-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
-
 virt_ls-domain.o: ../fish/domain.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -MT virt_ls-domain.o -MD -MP -MF $(DEPDIR)/virt_ls-domain.Tpo -c -o virt_ls-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_ls-domain.Tpo $(DEPDIR)/virt_ls-domain.Po
@@ -2061,6 +2012,20 @@ virt_ls-ls.obj: ls.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ls.c' object='virt_ls-ls.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -c -o virt_ls-ls.obj `if test -f 'ls.c'; then $(CYGPATH_W) 'ls.c'; else $(CYGPATH_W) '$(srcdir)/ls.c'; fi`
+
+virt_ls-visit.o: visit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -MT virt_ls-visit.o -MD -MP -MF $(DEPDIR)/virt_ls-visit.Tpo -c -o virt_ls-visit.o `test -f 'visit.c' || echo '$(srcdir)/'`visit.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_ls-visit.Tpo $(DEPDIR)/virt_ls-visit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='visit.c' object='virt_ls-visit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -c -o virt_ls-visit.o `test -f 'visit.c' || echo '$(srcdir)/'`visit.c
+
+virt_ls-visit.obj: visit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -MT virt_ls-visit.obj -MD -MP -MF $(DEPDIR)/virt_ls-visit.Tpo -c -o virt_ls-visit.obj `if test -f 'visit.c'; then $(CYGPATH_W) 'visit.c'; else $(CYGPATH_W) '$(srcdir)/visit.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_ls-visit.Tpo $(DEPDIR)/virt_ls-visit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='visit.c' object='virt_ls-visit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -c -o virt_ls-visit.obj `if test -f 'visit.c'; then $(CYGPATH_W) 'visit.c'; else $(CYGPATH_W) '$(srcdir)/visit.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

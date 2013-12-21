@@ -356,11 +356,11 @@ guest, use the Augeas functions (see C<$g-E<gt>aug_init>).
 
 This function adds a virtual CD-ROM disk image to the guest.
 
-B<Do not use this function!>  ISO files are just ordinary
-read-only disk images.  Use C<$g-E<gt>add_drive_ro> instead.
+The image is added as read-only drive, so this function is equivalent
+of C<$g-E<gt>add_drive_ro>.
 
 I<This function is deprecated.>
-In new code, use the L</add_drive> call instead.
+In new code, use the L</add_drive_ro> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems

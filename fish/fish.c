@@ -117,7 +117,6 @@ usage (int status)
              "  -c|--connect uri     Specify libvirt URI for -d option\n"
              "  --csh                Make --listen csh-compatible\n"
              "  -d|--domain guest    Add disks from libvirt guest\n"
-             "  -D|--no-dest-paths   Don't tab-complete paths from guest fs\n"
              "  --echo-keys          Don't turn off echo for passphrases\n"
              "  -f|--file file       Read commands from file\n"
              "  --format[=raw|..]    Force disk format for -a option\n"
@@ -131,6 +130,7 @@ usage (int status)
              "  -N|--new [filename=]type\n"
              "                       Create prepared disk (test<N>.img or filename)\n"
              "  -n|--no-sync         Don't autosync\n"
+             "  --no-dest-paths      Don't tab-complete paths from guest fs\n"
              "  --pipe-error         Pipe commands can detect write errors\n"
              "  --progress-bars      Enable progress bars even when not interactive\n"
              "  --no-progress-bars   Disable progress bars\n"
@@ -194,7 +194,7 @@ main (int argc, char *argv[])
     { "mount", 1, 0, 'm' },
     { "network", 0, 0, 0 },
     { "new", 1, 0, 'N' },
-    { "no-dest-paths", 0, 0, 'D' },
+    { "no-dest-paths", 0, 0, 0 },
     { "no-sync", 0, 0, 'n' },
     { "pipe-error", 0, 0, 0 },
     { "progress-bars", 0, 0, 0 },
@@ -286,6 +286,8 @@ main (int argc, char *argv[])
       } else if (STREQ (long_options[option_index].name, "network")) {
         if (guestfs_set_network (g, 1) == -1)
           exit (EXIT_FAILURE);
+      } else if (STREQ (long_options[option_index].name, "no-dest-paths")) {
+        complete_dest_paths = 0;
       } else {
         fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
                  program_name, long_options[option_index].name, option_index);
@@ -306,6 +308,8 @@ main (int argc, char *argv[])
       break;
 
     case 'D':
+      fprintf (stderr, _("%s: warning: -D option is deprecated, use --no-dest-paths instead\n"),
+               program_name);
       complete_dest_paths = 0;
       break;
 

@@ -360,7 +360,7 @@ val acl_set_file : t -> string -> string -> string -> unit
 val add_cdrom : t -> string -> unit
 (** add a CD-ROM disk image to examine
 
-    @deprecated Use {!add_drive} instead
+    @deprecated Use {!add_drive_ro} instead
  *)
 
 val add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> string -> int

@@ -9,9 +9,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_int_bool *val; /* Elements. */
  };
+
+ int guestfs_compare_int_bool (const struct guestfs_int_bool *, const struct guestfs_int_bool *);
+ int guestfs_compare_int_bool_list (const struct guestfs_int_bool_list *, const struct guestfs_int_bool_list *);
  
- void guestfs_free_int_bool (struct guestfs_free_int_bool *);
- void guestfs_free_int_bool_list (struct guestfs_free_int_bool_list *);
+ struct guestfs_int_bool *guestfs_copy_int_bool (const struct guestfs_int_bool *);
+ struct guestfs_int_bool_list *guestfs_copy_int_bool_list (const struct guestfs_int_bool_list *);
+ 
+ void guestfs_free_int_bool (struct guestfs_int_bool *);
+ void guestfs_free_int_bool_list (struct guestfs_int_bool_list *);
 
 =head2 guestfs_lvm_pv
 
@@ -37,9 +43,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_lvm_pv *val; /* Elements. */
  };
+
+ int guestfs_compare_lvm_pv (const struct guestfs_lvm_pv *, const struct guestfs_lvm_pv *);
+ int guestfs_compare_lvm_pv_list (const struct guestfs_lvm_pv_list *, const struct guestfs_lvm_pv_list *);
  
- void guestfs_free_lvm_pv (struct guestfs_free_lvm_pv *);
- void guestfs_free_lvm_pv_list (struct guestfs_free_lvm_pv_list *);
+ struct guestfs_lvm_pv *guestfs_copy_lvm_pv (const struct guestfs_lvm_pv *);
+ struct guestfs_lvm_pv_list *guestfs_copy_lvm_pv_list (const struct guestfs_lvm_pv_list *);
+ 
+ void guestfs_free_lvm_pv (struct guestfs_lvm_pv *);
+ void guestfs_free_lvm_pv_list (struct guestfs_lvm_pv_list *);
 
 =head2 guestfs_lvm_vg
 
@@ -70,9 +82,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_lvm_vg *val; /* Elements. */
  };
+
+ int guestfs_compare_lvm_vg (const struct guestfs_lvm_vg *, const struct guestfs_lvm_vg *);
+ int guestfs_compare_lvm_vg_list (const struct guestfs_lvm_vg_list *, const struct guestfs_lvm_vg_list *);
  
- void guestfs_free_lvm_vg (struct guestfs_free_lvm_vg *);
- void guestfs_free_lvm_vg_list (struct guestfs_free_lvm_vg_list *);
+ struct guestfs_lvm_vg *guestfs_copy_lvm_vg (const struct guestfs_lvm_vg *);
+ struct guestfs_lvm_vg_list *guestfs_copy_lvm_vg_list (const struct guestfs_lvm_vg_list *);
+ 
+ void guestfs_free_lvm_vg (struct guestfs_lvm_vg *);
+ void guestfs_free_lvm_vg_list (struct guestfs_lvm_vg_list *);
 
 =head2 guestfs_lvm_lv
 
@@ -102,9 +120,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_lvm_lv *val; /* Elements. */
  };
+
+ int guestfs_compare_lvm_lv (const struct guestfs_lvm_lv *, const struct guestfs_lvm_lv *);
+ int guestfs_compare_lvm_lv_list (const struct guestfs_lvm_lv_list *, const struct guestfs_lvm_lv_list *);
  
- void guestfs_free_lvm_lv (struct guestfs_free_lvm_lv *);
- void guestfs_free_lvm_lv_list (struct guestfs_free_lvm_lv_list *);
+ struct guestfs_lvm_lv *guestfs_copy_lvm_lv (const struct guestfs_lvm_lv *);
+ struct guestfs_lvm_lv_list *guestfs_copy_lvm_lv_list (const struct guestfs_lvm_lv_list *);
+ 
+ void guestfs_free_lvm_lv (struct guestfs_lvm_lv *);
+ void guestfs_free_lvm_lv_list (struct guestfs_lvm_lv_list *);
 
 =head2 guestfs_stat
 
@@ -128,9 +152,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_stat *val; /* Elements. */
  };
+
+ int guestfs_compare_stat (const struct guestfs_stat *, const struct guestfs_stat *);
+ int guestfs_compare_stat_list (const struct guestfs_stat_list *, const struct guestfs_stat_list *);
  
- void guestfs_free_stat (struct guestfs_free_stat *);
- void guestfs_free_stat_list (struct guestfs_free_stat_list *);
+ struct guestfs_stat *guestfs_copy_stat (const struct guestfs_stat *);
+ struct guestfs_stat_list *guestfs_copy_stat_list (const struct guestfs_stat_list *);
+ 
+ void guestfs_free_stat (struct guestfs_stat *);
+ void guestfs_free_stat_list (struct guestfs_stat_list *);
 
 =head2 guestfs_statvfs
 
@@ -152,9 +182,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_statvfs *val; /* Elements. */
  };
+
+ int guestfs_compare_statvfs (const struct guestfs_statvfs *, const struct guestfs_statvfs *);
+ int guestfs_compare_statvfs_list (const struct guestfs_statvfs_list *, const struct guestfs_statvfs_list *);
  
- void guestfs_free_statvfs (struct guestfs_free_statvfs *);
- void guestfs_free_statvfs_list (struct guestfs_free_statvfs_list *);
+ struct guestfs_statvfs *guestfs_copy_statvfs (const struct guestfs_statvfs *);
+ struct guestfs_statvfs_list *guestfs_copy_statvfs_list (const struct guestfs_statvfs_list *);
+ 
+ void guestfs_free_statvfs (struct guestfs_statvfs *);
+ void guestfs_free_statvfs_list (struct guestfs_statvfs_list *);
 
 =head2 guestfs_dirent
 
@@ -168,9 +204,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_dirent *val; /* Elements. */
  };
+
+ int guestfs_compare_dirent (const struct guestfs_dirent *, const struct guestfs_dirent *);
+ int guestfs_compare_dirent_list (const struct guestfs_dirent_list *, const struct guestfs_dirent_list *);
  
- void guestfs_free_dirent (struct guestfs_free_dirent *);
- void guestfs_free_dirent_list (struct guestfs_free_dirent_list *);
+ struct guestfs_dirent *guestfs_copy_dirent (const struct guestfs_dirent *);
+ struct guestfs_dirent_list *guestfs_copy_dirent_list (const struct guestfs_dirent_list *);
+ 
+ void guestfs_free_dirent (struct guestfs_dirent *);
+ void guestfs_free_dirent_list (struct guestfs_dirent_list *);
 
 =head2 guestfs_version
 
@@ -185,9 +227,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_version *val; /* Elements. */
  };
+
+ int guestfs_compare_version (const struct guestfs_version *, const struct guestfs_version *);
+ int guestfs_compare_version_list (const struct guestfs_version_list *, const struct guestfs_version_list *);
  
- void guestfs_free_version (struct guestfs_free_version *);
- void guestfs_free_version_list (struct guestfs_free_version_list *);
+ struct guestfs_version *guestfs_copy_version (const struct guestfs_version *);
+ struct guestfs_version_list *guestfs_copy_version_list (const struct guestfs_version_list *);
+ 
+ void guestfs_free_version (struct guestfs_version *);
+ void guestfs_free_version_list (struct guestfs_version_list *);
 
 =head2 guestfs_xattr
 
@@ -202,9 +250,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_xattr *val; /* Elements. */
  };
+
+ int guestfs_compare_xattr (const struct guestfs_xattr *, const struct guestfs_xattr *);
+ int guestfs_compare_xattr_list (const struct guestfs_xattr_list *, const struct guestfs_xattr_list *);
  
- void guestfs_free_xattr (struct guestfs_free_xattr *);
- void guestfs_free_xattr_list (struct guestfs_free_xattr_list *);
+ struct guestfs_xattr *guestfs_copy_xattr (const struct guestfs_xattr *);
+ struct guestfs_xattr_list *guestfs_copy_xattr_list (const struct guestfs_xattr_list *);
+ 
+ void guestfs_free_xattr (struct guestfs_xattr *);
+ void guestfs_free_xattr_list (struct guestfs_xattr_list *);
 
 =head2 guestfs_inotify_event
 
@@ -219,9 +273,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_inotify_event *val; /* Elements. */
  };
+
+ int guestfs_compare_inotify_event (const struct guestfs_inotify_event *, const struct guestfs_inotify_event *);
+ int guestfs_compare_inotify_event_list (const struct guestfs_inotify_event_list *, const struct guestfs_inotify_event_list *);
  
- void guestfs_free_inotify_event (struct guestfs_free_inotify_event *);
- void guestfs_free_inotify_event_list (struct guestfs_free_inotify_event_list *);
+ struct guestfs_inotify_event *guestfs_copy_inotify_event (const struct guestfs_inotify_event *);
+ struct guestfs_inotify_event_list *guestfs_copy_inotify_event_list (const struct guestfs_inotify_event_list *);
+ 
+ void guestfs_free_inotify_event (struct guestfs_inotify_event *);
+ void guestfs_free_inotify_event_list (struct guestfs_inotify_event_list *);
 
 =head2 guestfs_partition
 
@@ -236,9 +296,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_partition *val; /* Elements. */
  };
+
+ int guestfs_compare_partition (const struct guestfs_partition *, const struct guestfs_partition *);
+ int guestfs_compare_partition_list (const struct guestfs_partition_list *, const struct guestfs_partition_list *);
  
- void guestfs_free_partition (struct guestfs_free_partition *);
- void guestfs_free_partition_list (struct guestfs_free_partition_list *);
+ struct guestfs_partition *guestfs_copy_partition (const struct guestfs_partition *);
+ struct guestfs_partition_list *guestfs_copy_partition_list (const struct guestfs_partition_list *);
+ 
+ void guestfs_free_partition (struct guestfs_partition *);
+ void guestfs_free_partition_list (struct guestfs_partition_list *);
 
 =head2 guestfs_application
 
@@ -261,9 +327,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_application *val; /* Elements. */
  };
+
+ int guestfs_compare_application (const struct guestfs_application *, const struct guestfs_application *);
+ int guestfs_compare_application_list (const struct guestfs_application_list *, const struct guestfs_application_list *);
  
- void guestfs_free_application (struct guestfs_free_application *);
- void guestfs_free_application_list (struct guestfs_free_application_list *);
+ struct guestfs_application *guestfs_copy_application (const struct guestfs_application *);
+ struct guestfs_application_list *guestfs_copy_application_list (const struct guestfs_application_list *);
+ 
+ void guestfs_free_application (struct guestfs_application *);
+ void guestfs_free_application_list (struct guestfs_application_list *);
 
 =head2 guestfs_application2
 
@@ -291,9 +363,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_application2 *val; /* Elements. */
  };
+
+ int guestfs_compare_application2 (const struct guestfs_application2 *, const struct guestfs_application2 *);
+ int guestfs_compare_application2_list (const struct guestfs_application2_list *, const struct guestfs_application2_list *);
  
- void guestfs_free_application2 (struct guestfs_free_application2 *);
- void guestfs_free_application2_list (struct guestfs_free_application2_list *);
+ struct guestfs_application2 *guestfs_copy_application2 (const struct guestfs_application2 *);
+ struct guestfs_application2_list *guestfs_copy_application2_list (const struct guestfs_application2_list *);
+ 
+ void guestfs_free_application2 (struct guestfs_application2 *);
+ void guestfs_free_application2_list (struct guestfs_application2_list *);
 
 =head2 guestfs_isoinfo
 
@@ -321,9 +399,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_isoinfo *val; /* Elements. */
  };
+
+ int guestfs_compare_isoinfo (const struct guestfs_isoinfo *, const struct guestfs_isoinfo *);
+ int guestfs_compare_isoinfo_list (const struct guestfs_isoinfo_list *, const struct guestfs_isoinfo_list *);
  
- void guestfs_free_isoinfo (struct guestfs_free_isoinfo *);
- void guestfs_free_isoinfo_list (struct guestfs_free_isoinfo_list *);
+ struct guestfs_isoinfo *guestfs_copy_isoinfo (const struct guestfs_isoinfo *);
+ struct guestfs_isoinfo_list *guestfs_copy_isoinfo_list (const struct guestfs_isoinfo_list *);
+ 
+ void guestfs_free_isoinfo (struct guestfs_isoinfo *);
+ void guestfs_free_isoinfo_list (struct guestfs_isoinfo_list *);
 
 =head2 guestfs_mdstat
 
@@ -337,9 +421,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_mdstat *val; /* Elements. */
  };
+
+ int guestfs_compare_mdstat (const struct guestfs_mdstat *, const struct guestfs_mdstat *);
+ int guestfs_compare_mdstat_list (const struct guestfs_mdstat_list *, const struct guestfs_mdstat_list *);
  
- void guestfs_free_mdstat (struct guestfs_free_mdstat *);
- void guestfs_free_mdstat_list (struct guestfs_free_mdstat_list *);
+ struct guestfs_mdstat *guestfs_copy_mdstat (const struct guestfs_mdstat *);
+ struct guestfs_mdstat_list *guestfs_copy_mdstat_list (const struct guestfs_mdstat_list *);
+ 
+ void guestfs_free_mdstat (struct guestfs_mdstat *);
+ void guestfs_free_mdstat_list (struct guestfs_mdstat_list *);
 
 =head2 guestfs_btrfssubvolume
 
@@ -353,9 +443,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_btrfssubvolume *val; /* Elements. */
  };
+
+ int guestfs_compare_btrfssubvolume (const struct guestfs_btrfssubvolume *, const struct guestfs_btrfssubvolume *);
+ int guestfs_compare_btrfssubvolume_list (const struct guestfs_btrfssubvolume_list *, const struct guestfs_btrfssubvolume_list *);
  
- void guestfs_free_btrfssubvolume (struct guestfs_free_btrfssubvolume *);
- void guestfs_free_btrfssubvolume_list (struct guestfs_free_btrfssubvolume_list *);
+ struct guestfs_btrfssubvolume *guestfs_copy_btrfssubvolume (const struct guestfs_btrfssubvolume *);
+ struct guestfs_btrfssubvolume_list *guestfs_copy_btrfssubvolume_list (const struct guestfs_btrfssubvolume_list *);
+ 
+ void guestfs_free_btrfssubvolume (struct guestfs_btrfssubvolume *);
+ void guestfs_free_btrfssubvolume_list (struct guestfs_btrfssubvolume_list *);
 
 =head2 guestfs_xfsinfo
 
@@ -391,9 +487,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_xfsinfo *val; /* Elements. */
  };
+
+ int guestfs_compare_xfsinfo (const struct guestfs_xfsinfo *, const struct guestfs_xfsinfo *);
+ int guestfs_compare_xfsinfo_list (const struct guestfs_xfsinfo_list *, const struct guestfs_xfsinfo_list *);
  
- void guestfs_free_xfsinfo (struct guestfs_free_xfsinfo *);
- void guestfs_free_xfsinfo_list (struct guestfs_free_xfsinfo_list *);
+ struct guestfs_xfsinfo *guestfs_copy_xfsinfo (const struct guestfs_xfsinfo *);
+ struct guestfs_xfsinfo_list *guestfs_copy_xfsinfo_list (const struct guestfs_xfsinfo_list *);
+ 
+ void guestfs_free_xfsinfo (struct guestfs_xfsinfo *);
+ void guestfs_free_xfsinfo_list (struct guestfs_xfsinfo_list *);
 
 =head2 guestfs_utsname
 
@@ -408,9 +510,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_utsname *val; /* Elements. */
  };
+
+ int guestfs_compare_utsname (const struct guestfs_utsname *, const struct guestfs_utsname *);
+ int guestfs_compare_utsname_list (const struct guestfs_utsname_list *, const struct guestfs_utsname_list *);
  
- void guestfs_free_utsname (struct guestfs_free_utsname *);
- void guestfs_free_utsname_list (struct guestfs_free_utsname_list *);
+ struct guestfs_utsname *guestfs_copy_utsname (const struct guestfs_utsname *);
+ struct guestfs_utsname_list *guestfs_copy_utsname_list (const struct guestfs_utsname_list *);
+ 
+ void guestfs_free_utsname (struct guestfs_utsname *);
+ void guestfs_free_utsname_list (struct guestfs_utsname_list *);
 
 =head2 guestfs_hivex_node
 
@@ -422,9 +530,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_hivex_node *val; /* Elements. */
  };
+
+ int guestfs_compare_hivex_node (const struct guestfs_hivex_node *, const struct guestfs_hivex_node *);
+ int guestfs_compare_hivex_node_list (const struct guestfs_hivex_node_list *, const struct guestfs_hivex_node_list *);
  
- void guestfs_free_hivex_node (struct guestfs_free_hivex_node *);
- void guestfs_free_hivex_node_list (struct guestfs_free_hivex_node_list *);
+ struct guestfs_hivex_node *guestfs_copy_hivex_node (const struct guestfs_hivex_node *);
+ struct guestfs_hivex_node_list *guestfs_copy_hivex_node_list (const struct guestfs_hivex_node_list *);
+ 
+ void guestfs_free_hivex_node (struct guestfs_hivex_node *);
+ void guestfs_free_hivex_node_list (struct guestfs_hivex_node_list *);
 
 =head2 guestfs_hivex_value
 
@@ -436,9 +550,15 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_hivex_value *val; /* Elements. */
  };
+
+ int guestfs_compare_hivex_value (const struct guestfs_hivex_value *, const struct guestfs_hivex_value *);
+ int guestfs_compare_hivex_value_list (const struct guestfs_hivex_value_list *, const struct guestfs_hivex_value_list *);
  
- void guestfs_free_hivex_value (struct guestfs_free_hivex_value *);
- void guestfs_free_hivex_value_list (struct guestfs_free_hivex_value_list *);
+ struct guestfs_hivex_value *guestfs_copy_hivex_value (const struct guestfs_hivex_value *);
+ struct guestfs_hivex_value_list *guestfs_copy_hivex_value_list (const struct guestfs_hivex_value_list *);
+ 
+ void guestfs_free_hivex_value (struct guestfs_hivex_value *);
+ void guestfs_free_hivex_value_list (struct guestfs_hivex_value_list *);
 
 =head2 guestfs_internal_mountable
 
@@ -452,7 +572,13 @@
    uint32_t len; /* Number of elements in list. */
    struct guestfs_internal_mountable *val; /* Elements. */
  };
+
+ int guestfs_compare_internal_mountable (const struct guestfs_internal_mountable *, const struct guestfs_internal_mountable *);
+ int guestfs_compare_internal_mountable_list (const struct guestfs_internal_mountable_list *, const struct guestfs_internal_mountable_list *);
  
- void guestfs_free_internal_mountable (struct guestfs_free_internal_mountable *);
- void guestfs_free_internal_mountable_list (struct guestfs_free_internal_mountable_list *);
+ struct guestfs_internal_mountable *guestfs_copy_internal_mountable (const struct guestfs_internal_mountable *);
+ struct guestfs_internal_mountable_list *guestfs_copy_internal_mountable_list (const struct guestfs_internal_mountable_list *);
+ 
+ void guestfs_free_internal_mountable (struct guestfs_internal_mountable *);
+ void guestfs_free_internal_mountable_list (struct guestfs_internal_mountable_list *);
 

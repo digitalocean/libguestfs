@@ -220,12 +220,10 @@ src/actions-5.c
 src/actions-6.c
 src/actions-variants.c
 src/bindtests.c
-src/cleanup-structs.c
 src/errnostring-gperf.gperf
 src/errnostring.c
 src/errnostring.h
 src/event-string.c
-src/free-structs.c
 src/guestfs-actions.pod
 src/guestfs-availability.pod
 src/guestfs-internal-actions.h
@@ -234,4 +232,8 @@ src/guestfs-structs.pod
 src/guestfs.h
 src/guestfs_protocol.x
 src/libguestfs.syms
+src/structs-cleanup.c
+src/structs-compare.c
+src/structs-copy.c
+src/structs-free.c
 tests/c-api/tests.c
