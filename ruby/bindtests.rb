@@ -3,7 +3,7 @@
 #   generator/ *.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2013 Red Hat Inc.
+# Copyright (C) 2009-2014 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 
 require 'guestfs'
 
-g = Guestfs::create()
+g = Guestfs::Guestfs.new()
 g.internal_test("abc", "def", [], false, 0, 0, "123", "456", "abc\0abc", {:obool => true, :oint => 1, :oint64 => 9223372036854775807})
 g.internal_test("abc", nil, [], false, 0, 0, "123", "456", "abc\0abc", {:oint64 => 1, :ostring => "string"})
 g.internal_test("", "def", [], false, 0, 0, "123", "456", "abc\0abc", {:obool => false, :oint64 => -9223372036854775808})

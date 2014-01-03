@@ -1,3 +1,137 @@
+2014-01-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.19.
+
+	Update copyright dates for 2014.
+
+2014-01-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	Allow ./configure --without-qemu.
+	This means there will be no default hypervisor, and effectively the
+	user will always have to specify one (eg. by setting LIBGUESTFS_HV or
+	calling guestfs_set_hv).
+
+	This is useful on platforms where qemu doesn't work, or where qemu is
+	not needed (eg. if you want to use UML, or you just want to compile
+	libguestfs without using/testing it).
+
+2013-12-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	ruby: Fix .new method (RHBZ#1046509).
+	The .new method was unintentionally broken in
+	commit 9466060201600db47016133d80af22eb38091a49.
+
+	This fixes the .new method and allows it to be called with multiple
+	parameters, so you can use:
+
+	  Guestfs::Guestfs.new
+	  Guestfs::Guestfs.new()
+	  Guestfs::Guestfs.new(:close_on_exit => false)
+	  etc.
+
+	For backwards compatibility, Guestfs::create may still be used.
+
+	This commit also adds regression tests:
+
+	 - Use .new method in regular tests.  (Because this was not done
+	   before, we didn't catch the breakage.)
+
+	 - Test that ::create still works.
+
+	 - Test that args can be passed to .new method.
+
+2013-12-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	RHEL 6: ruby: Fix fallback to rake/rdoctask for old rake.
+
+	RHEL 6: builder: Use iteri instead of List.iteri.
+	RHEL 6 OCaml did not have List.iteri, so use the version from
+	Common_utils instead.
+
+2013-12-23  Pino Toscano  <ptoscano@redhat.com>
+
+	tests/mountable: skip if btrfs is not available
+	This test uses btrfs, so skip it if either the "btrfs" feature or the
+	btrfs filesystem is not available.
+
+2013-12-20  Pino Toscano  <ptoscano@redhat.com>
+
+	inspect: fix detection of newer CirrOS versions (RHBZ#1045450).
+	Add an own case for CirrOS, based on the /etc/cirros/version file
+	provided in newer version instead of the Buildroot-generated
+	/etc/br-version.
+
+2013-12-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add support for RHEL 7.0 beta 1 (public beta) to the script.
+
+2013-12-20  Pino Toscano  <ptoscano@redhat.com>
+
+	Re-add regression tests for rh#563450
+	Added in 2392fae6803b9de4a4761509007c160339d57f50 and removed in
+	be025369ad622867ecf08d5c9170e8e59d2d6294; now they should work with any
+	backend, as the device names are normalised and not change the guestfish
+	output depending on the used backend.
+
+	Thanks Richard for the hints.
+
+2013-12-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Clearer message when libvirt screws up.
+	Instead of:
+
+	libguestfs: error: could not create appliance through libvirt.
+	Try using the direct backend to run qemu directly without libvirt,
+	by setting the LIBGUESTFS_BACKEND=direct environment variable.: internal error: process exited while connecting to monitor: qemu-system-x86_64: -drive file=/tmp/libguestfs3RnJSd/snapshot2,if=none,id=drive-scsi0-0-0-0,format=qcow2,cache=writeback: could not open disk image /tmp/libguestfs3RnJSd/snapshot2: Could not open backing file: Could not open '/home/lsm5/fimagebuilder/fedora-imagebuilder/fedora-imagebuilder-sda.qcow2': Permission denied
+
+	it will now say:
+
+	libguestfs: error: could not create appliance through libvirt.
+
+	Try running qemu directly without libvirt using this environment variable:
+	export LIBGUESTFS_BACKEND=direct
+
+	Original error from libvirt: internal error: process exited while connecting to monitor: qemu-system-x86_64: -drive file=/tmp/libguestfs3RnJSd/snapshot2,if=none,id=drive-scsi0-0-0-0,format=qcow2,cache=writeback: could not open disk image /tmp/libguestfs3RnJSd/snapshot2: Could not open backing file: Could not open '/home/lsm5/fimagebuilder/fedora-imagebuilder/fedora-imagebuilder-sda.qcow2': Permission denied
+
+2013-12-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Don't default to using NULL for libvirt connection URI (RHBZ#1045033).
+	NULL means that libvirt gets to guess what connection URI we meant.
+	Currently it guesses qemu:///session for non-root and qemu:///system
+	for root.  Except if LIBVIRT_DEFAULT_URI is set in which case this is
+	used even if it's not appropriate.  Except if Xen is installed in
+	which case it guesses xen:/// which is not helpful at all.
+
+	Instead use qemu:///session (or qemu:///system for root -- that's
+	likely to be wrong, but we can't help that).
+
+	If the user really wants to use NULL and let libvirt guess, then they
+	can now specify the libvirt:null backend.
+
+	See:
+
+	https://bugzilla.redhat.com/show_bug.cgi?id=1045033
+	https://bugzilla.redhat.com/show_bug.cgi?id=886915
+
+	A good way to test this is:
+
+	LIBVIRT_DEFAULT_URI=iambroken libguestfs-test-tool
+
+	The libguestfs libvirt backend should (after this commit) ignore
+	LIBVIRT_DEFAULT_URI.  However other parts of libguestfs will still use
+	it, eg. guestfs_add_drive_opts, guestfish '-d' option.
+
+2013-12-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add --update option to update template/core packages.
+
+2013-12-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	run: Use timeout --foreground option.
+	If timeout doesn't have this option (RHEL 6) don't use timeout at all.
+
+	Attempt to fix RHBZ#1025269.
+
 2013-12-18  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.25.18.

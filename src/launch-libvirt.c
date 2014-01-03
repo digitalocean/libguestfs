@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2013 Red Hat Inc.
+ * Copyright (C) 2009-2014 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -216,6 +216,16 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   if (g->verbose)
     guestfs___print_timestamped_message (g, "connect to libvirt");
 
+  /* Decode the URI string. */
+  if (!libvirt_uri) {           /* "libvirt" */
+    if (!params.current_proc_is_root)
+      libvirt_uri = "qemu:///session";
+    else
+      libvirt_uri = "qemu:///system";
+  } else if (STREQ (libvirt_uri, "null")) { /* libvirt:null */
+    libvirt_uri = NULL;
+  } /* else nothing */
+
   /* Connect to libvirt, get capabilities. */
   conn = guestfs___open_libvirt_connection (g, libvirt_uri, 0);
   if (!conn) {
@@ -407,8 +417,11 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   if (!dom) {
     libvirt_error (g, _(
       "could not create appliance through libvirt.\n"
-      "Try using the direct backend to run qemu directly without libvirt,\n"
-      "by setting the LIBGUESTFS_BACKEND=direct environment variable."));
+      "\n"
+      "Try running qemu directly without libvirt using this environment variable:\n"
+      "export LIBGUESTFS_BACKEND=direct\n"
+      "\n"
+      "Original error from libvirt"));
     goto cleanup;
   }
 
@@ -609,7 +622,11 @@ parse_capabilities (guestfs_h *g, const char *capabilities_xml,
 static int
 is_custom_hv (guestfs_h *g)
 {
+#ifdef QEMU
   return g->hv && STRNEQ (g->hv, QEMU);
+#else
+  return 1;
+#endif
 }
 
 #if HAVE_LIBSELINUX

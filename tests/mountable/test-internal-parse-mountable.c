@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2012-2013 Red Hat Inc.
+ * Copyright (C) 2012-2014 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ main (int argc, char *argv[])
   guestfs_h *g;
   struct guestfs_internal_mountable *mountable;
   const char *devices[] = { "/dev/VG/LV", NULL };
+  const char *feature[] = { "btrfs", NULL };
 
   g = guestfs_create ();
   if (g == NULL) {
@@ -47,6 +48,18 @@ main (int argc, char *argv[])
   }
 
   if (guestfs_launch (g) == -1) goto error;
+
+  if (!guestfs_feature_available (g, (char **) feature)) {
+    printf ("skipping test because btrfs is not available\n");
+    guestfs_close (g);
+    exit (77);
+  }
+
+  if (!guestfs_filesystem_available (g, "btrfs")) {
+    printf ("skipping test because btrfs filesystem is not available\n");
+    guestfs_close (g);
+    exit (77);
+  }
 
   if (guestfs_part_disk (g, "/dev/sda", "mbr") == -1) goto error;
 

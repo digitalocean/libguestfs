@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2013 Red Hat Inc.
+ * Copyright (C) 2009-2014 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15365,7 +15365,7 @@ luaopen_guestfs (lua_State *L)
 
   /* Add _COPYRIGHT, etc. fields to the module namespace. */
   lua_pushliteral (L, "_COPYRIGHT");
-  lua_pushliteral (L, "Copyright (C) 2009-2013 Red Hat Inc.");
+  lua_pushliteral (L, "Copyright (C) 2009-2014 Red Hat Inc.");
   lua_settable (L, -3);
 
   lua_pushliteral (L, "_DESCRIPTION");
