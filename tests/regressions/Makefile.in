@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs
-# Copyright (C) 2009-2013 Red Hat Inc.
+# Copyright (C) 2009-2014 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2013 Red Hat Inc.
+# Copyright (C) 2009-2014 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -136,10 +136,11 @@ DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am $(top_srcdir)/build-aux/depcomp
 TESTS = rhbz501893$(EXEEXT) rhbz503169c13.sh rhbz557655.sh \
-	rhbz576879.sh rhbz578407.sh rhbz580246.sh rhbz602997.sh \
-	rhbz690819.sh rhbz789960.sh rhbz790721$(EXEEXT) rhbz811649.sh \
-	rhbz895904.sh rhbz914931$(EXEEXT) rhbz957772.sh rhbz975797.sh \
-	rhbz1001875.sh test-noexec-stack.pl
+	rhbz563450.sh rhbz563450b.sh rhbz576879.sh rhbz578407.sh \
+	rhbz580246.sh rhbz602997.sh rhbz690819.sh rhbz789960.sh \
+	rhbz790721$(EXEEXT) rhbz811649.sh rhbz895904.sh \
+	rhbz914931$(EXEEXT) rhbz957772.sh rhbz975797.sh rhbz1001875.sh \
+	test-noexec-stack.pl
 check_PROGRAMS = rhbz501893$(EXEEXT) rhbz790721$(EXEEXT) \
 	rhbz914931$(EXEEXT)
 subdir = tests/regressions

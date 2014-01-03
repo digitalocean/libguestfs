@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2013 Red Hat Inc.
+# Copyright (C) 2009-2014 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@ TESTS = \
 	rhbz501893 \
 	rhbz503169c13.sh \
 	rhbz557655.sh \
+	rhbz563450.sh \
+	rhbz563450b.sh \
 	rhbz576879.sh \
 	rhbz578407.sh \
 	rhbz580246.sh \

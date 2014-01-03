@@ -1,6 +1,6 @@
 /* Regression test for RHBZ#501893.
  * Test that String parameters are checked for != NULL.
- * Copyright (C) 2009-2013 Red Hat Inc.
+ * Copyright (C) 2009-2014 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,9 @@ main (int argc, char *argv[])
 
   assert (guestfs_set_path (g, NULL) == 0);
   assert (guestfs_set_append (g, NULL) == 0);
+#ifdef QEMU
   assert (guestfs_set_qemu (g, NULL) == 0);
+#endif
 
   guestfs_close (g);
   exit (EXIT_SUCCESS);

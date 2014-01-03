@@ -1,5 +1,5 @@
 # libguestfs Ruby bindings -*- ruby -*-
-# Copyright (C) 2009-2013 Red Hat Inc.
+# Copyright (C) 2009-2014 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ require 'guestfs'
 
 class TestLoad < Test::Unit::TestCase
   def test_launch
-    g = Guestfs::create()
+    g = Guestfs::Guestfs.new()
 
     g.add_drive_scratch(500*1024*1024)
     g.launch()
