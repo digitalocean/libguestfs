@@ -1494,6 +1494,7 @@ operations = \
 	ssh_hostkeys \
 	ssh_userdir \
 	sssd_db_log \
+	timezone \
 	tmp_files \
 	udev_persistent_net \
 	user_account \
@@ -1521,6 +1522,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/password.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/random_seed.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/hostname.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/timezone.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/firstboot.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmx \
 @HAVE_OCAML_TRUE@	sysprep_operation.cmx \

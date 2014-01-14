@@ -123,3 +123,7 @@ B<Note:> C<SCRIPTDIR> B<must> be an absolute path.
 
 Якщо I<--scriptdir> не вказано, буде створено тимчасову точку монтування
 
+=item B<--timezone> TIMEZONE (see C<timezone> below)
+
+Change the timezone.  Use a location string such as C<Europe/London>
+

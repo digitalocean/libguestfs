@@ -1,3 +1,132 @@
+2014-01-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.20.
+
+	builder/website: Add CirrOS signature file to EXTRA_DIST.
+	This fixes commit 40b88fdbc76515fd21b33f54587c7f4f7b6e9715.
+
+2014-01-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Fix virt-builder test.
+	Add Europe/London timezone to phony Fedora guest.
+
+	This fixes commit dd1bfea513658368afd3728e0c5bf8ab6041cd1f.
+
+2014-01-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Document how to set Japanese language support in Fedora 20.
+	This updates/fixes commit 7e8ad13e863a5c87e3da47288bcecdb88ca0e4cb.
+
+	builder: Document that SELinux guests will reboot for autorelabel.
+
+	builder: Document how to set up local mirrors for performance and reliability.
+
+	builder: Document how to change the language/locale of a new guest.
+
+2014-01-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add --link option for creating symbolic links.
+	This is useful for configuring systemd services.
+
+	builder: List --install packages in the same order as on the command line.
+	Previously the list was reversed.  Note this doesn't have any effect
+	on how the packages are installed since the guest package manager
+	doesn't care about the order.
+
+2014-01-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Document how to change keyboard layout.
+	This is too complex to implement directly in virt-builder.
+
+	Instead we just document how to do it for some common Linux distros
+	using --run-command, --edit etc.
+
+2014-01-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: docs: Remove confusing reference to timezone.
+
+2014-01-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep, builder: Add --timezone option to set timezone of guest.
+	You can use it like this:
+
+	  virt-sysprep --timezone Europe/London ...
+	  virt-builder --timezone Europe/London ...
+
+2014-01-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: xattr: Remove unused variable.
+	Revealed by using ./configure --enable-gcc-warnings.
+
+2014-01-10  Pino Toscano  <ptoscano@redhat.com>
+
+	daemon: xattr: move the listxattrs code in an own function
+	Move in an own function the code that does the (l)listxattrs allocating
+	the buffer of the right legth, as it will be useful later.
+
+	No functional changes, just code motion.
+
+2014-01-09  Pino Toscano  <ptoscano@redhat.com>
+
+	daemon: xattr: simplify the enabling of the linuxxattrs features
+	Instead of enable them when having one of the two headers for it but
+	still checking for the HAVE_* availability of each *xattr() function
+	used, just enable the linuxxattrs as a whole when having any of the
+	needed headers (like before) and all the needed functions.
+
+	This might cause the linuxxattrs to not be available anymore on systems
+	without the whole set of *xattr() functions implemented, but OTOH it
+	simplifies the xattr.c implementations.
+
+2014-01-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add a regression test for libvirt authentication (RHBZ#1044014).
+	This tests the virConnectAuthPtrDefault wrapper path.
+
+2014-01-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add a regression test of libvirt authentication events.
+	This requires a change to libvirt (in libvirt >= 1.2.1), see:
+
+	https://www.redhat.com/archives/libvir-list/2014-January/msg00378.html
+
+2014-01-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	libvirt-auth: Provide a friendlier wrapper around virConnectAuthPtrDefault (RHBZ#1044014).
+
+2014-01-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Fix handling of --size parameter.
+	It now matches the documentation:
+
+	  "Select the size of the output disk, [...]
+
+	  Virt-builder will resize filesystems inside the disk image
+	  automatically.
+
+	  If the size is not specified, then one of two things happens.  If
+	  the output is a file, then the size is the same as the template.  If
+	  the output is a device, partition, etc then the size of that device
+	  is used."
+
+	This also adds checks to make sure that users don't try to shrink a
+	disk (which is not possible), and they don't try to resize larger than
+	the output block device.
+
+2014-01-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	mllib: Add library function to run external command and slurp up the output.
+	This also changes a couple of functions to use this new library
+	function.
+
+	builder: Pass ~prog global (program name) around.
+
+	builder: Note in man page how to specify size in bytes.
+
+2014-01-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add CirrOS 0.3.1 disk image.
+
 2014-01-02  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.25.19.

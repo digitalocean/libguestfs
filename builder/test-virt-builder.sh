@@ -53,12 +53,15 @@ $VG ./virt-builder phony-fedora \
     -v --no-cache --no-check-signature $no_network \
     -o $output --size 2G --format $format \
     --hostname test.example.com \
+    --timezone Europe/London \
     --root-password password:123456 \
     --mkdir /etc/foo/bar/baz \
     --write '/etc/foo/bar/baz/foo:Hello World' \
     --upload Makefile:/Makefile \
     --upload Makefile:/etc/foo/bar/baz \
     --delete /Makefile \
+    --link /etc/foo/bar/baz/foo:/foo \
+    --link /etc/foo/bar/baz/foo:/foo1:/foo2:/foo3 \
     --firstboot Makefile --firstboot-command 'echo "hello"' \
     --firstboot-install "minicom,inkscape"
 

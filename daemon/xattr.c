@@ -27,7 +27,15 @@
 #include "actions.h"
 #include "optgroups.h"
 
-#if defined(HAVE_ATTR_XATTR_H) || defined(HAVE_SYS_XATTR_H)
+#if (defined(HAVE_ATTR_XATTR_H) || defined(HAVE_SYS_XATTR_H)) && \
+    defined(HAVE_LISTXATTR) && defined(HAVE_LLISTXATTR) && \
+    defined(HAVE_GETXATTR) && defined(HAVE_LGETXATTR) && \
+    defined(HAVE_REMOVEXATTR) && defined(HAVE_LREMOVEXATTR) && \
+    defined(HAVE_SETXATTR) && defined(HAVE_LSETXATTR)
+# define HAVE_LINUX_XATTRS
+#endif
+
+#ifdef HAVE_LINUX_XATTRS
 
 # ifdef HAVE_ATTR_XATTR_H
 #  include <attr/xattr.h>
@@ -46,71 +54,42 @@ optgroup_linuxxattrs_available (void)
 static guestfs_int_xattr_list *getxattrs (const char *path, ssize_t (*listxattr) (const char *path, char *list, size_t size), ssize_t (*getxattr) (const char *path, const char *name, void *value, size_t size));
 static int _setxattr (const char *xattr, const char *val, int vallen, const char *path, int (*setxattr) (const char *path, const char *name, const void *value, size_t size, int flags));
 static int _removexattr (const char *xattr, const char *path, int (*removexattr) (const char *path, const char *name));
+static char *_listxattrs (const char *path, ssize_t (*listxattr) (const char *path, char *list, size_t size), ssize_t *size);
 
 guestfs_int_xattr_list *
 do_getxattrs (const char *path)
 {
-#if defined(HAVE_LISTXATTR) && defined(HAVE_GETXATTR)
   return getxattrs (path, listxattr, getxattr);
-#else
-  reply_with_error ("no support for listxattr and getxattr");
-  return NULL;
-#endif
 }
 
 guestfs_int_xattr_list *
 do_lgetxattrs (const char *path)
 {
-#if defined(HAVE_LLISTXATTR) && defined(HAVE_LGETXATTR)
   return getxattrs (path, llistxattr, lgetxattr);
-#else
-  reply_with_error ("no support for llistxattr and lgetxattr");
-  return NULL;
-#endif
 }
 
 int
 do_setxattr (const char *xattr, const char *val, int vallen, const char *path)
 {
-#if defined(HAVE_SETXATTR)
   return _setxattr (xattr, val, vallen, path, setxattr);
-#else
-  reply_with_error ("no support for setxattr");
-  return -1;
-#endif
 }
 
 int
 do_lsetxattr (const char *xattr, const char *val, int vallen, const char *path)
 {
-#if defined(HAVE_LSETXATTR)
   return _setxattr (xattr, val, vallen, path, lsetxattr);
-#else
-  reply_with_error ("no support for lsetxattr");
-  return -1;
-#endif
 }
 
 int
 do_removexattr (const char *xattr, const char *path)
 {
-#if defined(HAVE_REMOVEXATTR)
   return _removexattr (xattr, path, removexattr);
-#else
-  reply_with_error ("no support for removexattr");
-  return -1;
-#endif
 }
 
 int
 do_lremovexattr (const char *xattr, const char *path)
 {
-#if defined(HAVE_LREMOVEXATTR)
   return _removexattr (xattr, path, lremovexattr);
-#else
-  reply_with_error ("no support for lremovexattr");
-  return -1;
-#endif
 }
 
 static int
@@ -133,27 +112,10 @@ getxattrs (const char *path,
   size_t i, j;
   guestfs_int_xattr_list *r = NULL;
 
-  CHROOT_IN;
-  len = listxattr (path, NULL, 0);
-  CHROOT_OUT;
-  if (len == -1) {
-    reply_with_perror ("listxattr: %s", path);
+  buf = _listxattrs (path, listxattr, &len);
+  if (buf == NULL)
+    /* _listxattrs issues reply_with_perror already. */
     goto error;
-  }
-
-  buf = malloc (len);
-  if (buf == NULL) {
-    reply_with_perror ("malloc");
-    goto error;
-  }
-
-  CHROOT_IN;
-  len = listxattr (path, buf, len);
-  CHROOT_OUT;
-  if (len == -1) {
-    reply_with_perror ("listxattr: %s", path);
-    goto error;
-  }
 
   r = calloc (1, sizeof (*r));
   if (r == NULL) {
@@ -274,10 +236,48 @@ _removexattr (const char *xattr, const char *path,
   return 0;
 }
 
+static char *
+_listxattrs (const char *path,
+             ssize_t (*listxattr) (const char *path, char *list, size_t size),
+             ssize_t *size)
+{
+  char *buf = NULL;
+  ssize_t len;
+
+  CHROOT_IN;
+  len = listxattr (path, NULL, 0);
+  CHROOT_OUT;
+  if (len == -1) {
+    reply_with_perror ("listxattr: %s", path);
+    goto error;
+  }
+
+  buf = malloc (len);
+  if (buf == NULL) {
+    reply_with_perror ("malloc");
+    goto error;
+  }
+
+  CHROOT_IN;
+  len = listxattr (path, buf, len);
+  CHROOT_OUT;
+  if (len == -1) {
+    reply_with_perror ("listxattr: %s", path);
+    goto error;
+  }
+
+  if (size)
+    *size = len;
+  return buf;
+
+ error:
+  free (buf);
+  return NULL;
+}
+
 guestfs_int_xattr_list *
 do_internal_lxattrlist (const char *path, char *const *names)
 {
-#if defined(HAVE_LLISTXATTR) && defined(HAVE_LGETXATTR)
   guestfs_int_xattr_list *ret = NULL;
   size_t i, j;
   size_t k, m, nr_attrs;
@@ -443,10 +443,6 @@ do_internal_lxattrlist (const char *path, char *const *names)
     free (ret);
   }
   return NULL;
-#else
-  reply_with_error ("no support for llistxattr and lgetxattr");
-  return NULL;
-#endif
 }
 
 char *
@@ -545,8 +541,8 @@ do_lgetxattr (const char *path, const char *name, size_t *size_r)
   return buf; /* caller frees */
 }
 
-#else /* no xattr.h */
+#else /* no HAVE_LINUX_XATTRS */
 
 OPTGROUP_LINUXXATTRS_NOT_AVAILABLE
 
-#endif /* no xattr.h */
+#endif /* no HAVE_LINUX_XATTRS */

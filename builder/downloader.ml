@@ -43,19 +43,19 @@ let create ~debug ~curl ~cache = {
   cache = cache;
 }
 
-let rec download t ?template ?progress_bar uri =
+let rec download ~prog t ?template ?progress_bar uri =
   match template with
   | None ->                       (* no cache, simple download *)
     (* Create a temporary name. *)
     let tmpfile = Filename.temp_file "vbcache" ".txt" in
-    download_to t ?progress_bar uri tmpfile;
+    download_to ~prog t ?progress_bar uri tmpfile;
     (tmpfile, true)
 
   | Some (name, revision) ->
     match t.cache with
     | None ->
       (* Not using the cache at all? *)
-      download t ?progress_bar uri
+      download t ~prog ?progress_bar uri
 
     | Some cachedir ->
       let filename = cache_of_name cachedir name revision in
@@ -64,34 +64,23 @@ let rec download t ?template ?progress_bar uri =
        * If not, download it.
        *)
       if not (Sys.file_exists filename) then
-        download_to t ?progress_bar uri filename;
+        download_to ~prog t ?progress_bar uri filename;
 
       (filename, false)
 
-and download_to t ?(progress_bar = false) uri filename =
+and download_to ~prog t ?(progress_bar = false) uri filename =
   (* Get the status code first to ensure the file exists. *)
   let cmd = sprintf "%s%s -g -o /dev/null -I -w '%%{http_code}' %s"
     t.curl
     (if t.debug then "" else " -s -S")
     (quote uri) in
   if t.debug then eprintf "%s\n%!" cmd;
-  let chan = open_process_in cmd in
-  let status_code = input_line chan in
-  let stat = close_process_in chan in
-  (match stat with
-  | WEXITED 0 -> ()
-  | WEXITED i ->
-    eprintf (f_"virt-builder: curl (download) command failed downloading '%s'\n") uri;
-    exit 1
-  | WSIGNALED i ->
-    eprintf (f_"virt-builder: external command '%s' killed by signal %d\n")
-      cmd i;
-    exit 1
-  | WSTOPPED i ->
-    eprintf (f_"virt-builder: external command '%s' stopped by signal %d\n")
-      cmd i;
+  let lines = external_command ~prog cmd in
+  if List.length lines < 1 then (
+    eprintf (f_"%s: unexpected output from curl command, enable debug and look at previous messages\n") prog;
     exit 1
   );
+  let status_code = List.hd lines in
   let bad_status_code = function
     | "" -> true
     | s when s.[0] = '4' -> true (* 4xx *)
@@ -99,8 +88,8 @@ and download_to t ?(progress_bar = false) uri filename =
     | _ -> false
   in
   if bad_status_code status_code then (
-    eprintf (f_"virt-builder: failed to download %s: HTTP status code %s\n")
-      uri status_code;
+    eprintf (f_"%s: failed to download %s: HTTP status code %s\n")
+      prog uri status_code;
     exit 1
   );
 
@@ -120,7 +109,8 @@ and download_to t ?(progress_bar = false) uri filename =
   if t.debug then eprintf "%s\n%!" cmd;
   let r = Sys.command cmd in
   if r <> 0 then (
-    eprintf (f_"virt-builder: curl (download) command failed downloading '%s'\n") uri;
+    eprintf (f_"%s: curl (download) command failed downloading '%s'\n")
+      prog uri;
     exit 1
   );
 

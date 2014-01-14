@@ -17,11 +17,13 @@ virt-builder - Build virtual machine images quickly
     [--attach ISOFILE]
     [--root-password SELECTOR]
     [--hostname HOSTNAME]
+    [--timezone TIMEZONE]
     [--update]
     [--install PKG,[PKG...]]
     [--mkdir DIR]
     [--write FILE:CONTENT]
     [--upload FILE:DEST]
+    [--link TARGET:LINK[:LINK]]
     [--edit FILE:EXPR]
     [--delete FILE] [--scrub FILE]
     [--run SCRIPT] [--run-command 'CMD ARGS ...']
@@ -352,6 +354,13 @@ L</INSTALLING PACKAGES>.
 
 See also I<--update>.
 
+=item B<--link TARGET:LINK>
+
+=item B<--link TARGET:LINK[:LINK...]>
+
+Create symbolic link(s) in the guest, starting at C<LINK> and
+pointing at C<TARGET>.
+
 =item B<-l>
 
 =item B<--list>
@@ -560,6 +569,9 @@ output is a file, then the size is the same as the template.  If the
 output is a device, partition, etc then the size of that device is
 used.
 
+To specify size in bytes, the number must be followed by the lowercase
+letter I<b>, eg: S<C<--size 10737418240b>>.
+
 =item B<--smp> N
 
 Enable N E<ge> 2 virtual CPUs for I<--run> scripts to use.
@@ -579,6 +591,11 @@ You can also set the C<VIRT_BUILDER_SOURCE> environment variable.
 Note that you should not point I<--source> to sources that you don't
 trust (unless the source is signed by someone you do trust).  See also
 the I<--no-network> option.
+
+=item B<--timezone> TIMEZONE
+
+Set the default timezone of the guest to C<TIMEZONE>.  Use a location
+string like C<Europe/London>
 
 =item B<--update>
 
@@ -770,6 +787,72 @@ The above command will create an C<rjones> account with no password,
 and force the user to set a password when they first log in.  There
 are other ways to manage passwords, see L<useradd(8)> for details.
 
+=head2 KEYBOARD LAYOUT
+
+Because there are so many different ways to set the keyboard layout in
+Linux distributions, virt-builder does not yet attempt to have a
+simple command line option.  This section describes how to set the
+keyboard for some common Linux distributions.
+
+=head3 Keyboard layout with systemd
+
+For distros that use systemd C<localectl>, use a command like this:
+
+ virt-builder fedora-20 \
+   --firstboot-command 'localectl set-keymap uk'
+
+See L<localectl(1)> and
+L<https://www.happyassassin.net/2013/11/23/keyboard-layouts-in-fedora-20-and-previously/>
+for more details.
+
+=head3 Keyboard layout using C</etc/sysconfig/keyboard>
+
+For RHEL E<le> 6, Fedora E<le> 18 and similar, upload or modify the
+keyboard configuration file using the I<--upload>, I<--write> or
+I<--edit> options.  For example:
+
+ virt-builder centos-6 \
+   --edit '/etc/sysconfig/keyboard: s/^KEYTABLE=.*/KEYTABLE="uk"/'
+
+The format of this file can be found documented in many places online.
+
+=head3 Keyboard layout with Debian-derived distros
+
+For Debian-derived distros using C</etc/default/keyboard>, upload or
+modify the keyboard file using the I<--upload>, I<--write> or
+I<--edit> options.  For example:
+
+ virt-builder debian-7 \
+   --edit '/etc/default/keyboard: s/^XKBLAYOUT=.*/XKBLAYOUT="gb"/'
+
+See L<https://wiki.debian.org/Keyboard>.
+
+=head2 LANGUAGE
+
+Most Linux distributions support multiple locale settings so that you
+can have guest messages printed in another language such as Russian.
+
+However there is no single setting which controls this, since extra
+packages may need to be installed to support console and X fonts, and
+keyboard input methods.  The packages required, and their
+configuration is highly distro-specific, and it is outside the scope
+of virt-builder to do this.
+
+This section contains examples for some common Linux distributions.
+
+=head3 Setting Japanese in Fedora 20
+
+ virt-builder fedora-20 \
+   --size 20G \
+   --update \
+   --install @japanese-support \
+   --install @xfce \
+   --install xorg-x11-server-Xorg,xorg-x11-drivers,rsyslog \
+   --link /usr/lib/systemd/system/graphical.target:/etc/systemd/system/default.target \
+   --firstboot-command 'localectl set-locale LANG=ja_JP.utf8' \
+   --firstboot-command 'localectl set-keymap jp' \
+   --firstboot-command 'systemctl isolate graphical.target'
+
 =head2 LOG FILE
 
 Scripts and package installation that runs at build time (I<--run>,
@@ -831,7 +914,7 @@ A new random seed is generated for the guest.
 
 =item *
 
-The hostname is set (I<--hostname>).
+The hostname and timezone are set (I<--hostname>, I<--timezone>).
 
 =item *
 
@@ -864,6 +947,10 @@ Files are edited (I<--edit>).
 =item *
 
 Files are deleted (I<--delete>, I<--scrub>).
+
+=item *
+
+Symbolic links are created (I<--link).
 
 =item *
 
@@ -1224,8 +1311,8 @@ least one character of whitespace (even on blank lines):
  notes=This image was prepared using
   the following kickstart script:
                                 <-- one space at beginning of line
-  timezone Europe/London
   part /boot --fstype ext3
+  ...
 
 =item C<hidden=true>
 
@@ -1319,6 +1406,8 @@ The index is always encoded in UTF-8.
 
 =head2 CACHING
 
+=head3 Caching templates
+
 Since the templates are usually very large, downloaded templates are
 cached in the user's home directory.
 
@@ -1343,11 +1432,55 @@ To disable the template cache, use I<--no-cache>.
 Only templates are cached.  The index and detached digital signatures
 are not cached.
 
+=head3 Caching packages
+
 Virt-builder uses L<curl(1)> to download files and it also uses the
 current C<http_proxy> (etc) settings when installing packages
-(I<--install>, I<--update>).  You may therefore want to set those
-environment variables in order to maximize the amount of local caching
-that happens.  See L</ENVIRONMENT VARIABLES> and L<curl(1)>.
+(I<--install>, I<--update>).
+
+You may therefore want to set those environment variables in order to
+maximize the amount of local caching that happens.  See
+L</ENVIRONMENT VARIABLES> and L<curl(1)>.
+
+=head3 Local mirrors
+
+To increase both speed and reliability of installing packages, you can
+set up a local mirror of the target distribution, and point the guest
+package manager at that.
+
+Because of the order in which each phase of installation happens, you
+cannot use I<--write> (to point the package manager at a repo)
+followed by I<--install> (to install from that repo).  The I<--write>
+and I<--install> steps run in the opposite order, regardless of their
+order on the command line.  You have to do this using I<--run-command>
+instead of I<--install>.
+
+=head4 Using a local mirror with Fedora
+
+To install a Fedora guest using a local mirror:
+
+ virt-builder fedora 20 \
+   --edit '/etc/yum.repos.d/fedora.repo:
+       s{.*baseurl=.*}{baseurl=http://example.com/mirror/};
+       s{.*metalink=.*}{};
+   ' \
+   --edit '/etc/yum.repos.d/fedora-updates.repo:
+       s{.*baseurl=.*}{baseurl=http://example.com/mirror-updates/};
+       s{.*metalink=.*}{};
+   ' \
+   --run-command 'yum -y update' \
+   --run-command 'yum -y install pkg1 pkg2 ...'
+
+=head4 Using a local mirror with Debian
+
+Assuming that you are using C<apt-proxy> to mirror the repository, you
+should create a new C<sources.list> file to point to your proxy (see
+L<https://help.ubuntu.com/community/AptProxy>) and then do:
+
+ virt-builder fedora 20 \
+   --upload sources.list:/etc/apt/sources.list \
+   --run-command 'apt-get -y update' \
+   --run-command 'apt-get -y install pkg1 pkg2 ...'
 
 =head2 DIGITAL SIGNATURES
 
@@ -1469,6 +1602,18 @@ fixed in a future version.
 
 The qcow2 output format is not supported by UML.  You can only create
 raw-format guests.
+
+=head2 SELINUX
+
+Guests which use SELinux (such as Fedora and Red Hat Enterprise Linux)
+require that each file has a correct SELinux label.
+
+Since virt-builder does not know how to give new files a correct
+label, it touches C</.autorelabel> in the guest and relies on the
+guest to relabel itself at first boot.
+
+This usually means that these guests will reboot themselves once the
+first time you use them.  This is normal, and harmless.
 
 =head1 ENVIRONMENT VARIABLES
 

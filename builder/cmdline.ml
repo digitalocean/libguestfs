@@ -117,6 +117,17 @@ let parse_cmdline () =
     install := pkgs @ !install
   in
 
+  let links = ref [] in
+  let add_link arg =
+    let target, lns =
+      match string_nsplit ":" arg with
+      | [] | [_] ->
+        eprintf (f_"%s: invalid --link format, see the man page.\n") prog;
+        exit 1
+      | target :: lns -> target, lns in
+    links := (target, lns) :: !links
+  in
+
   let list_long = ref false in
 
   let memsize = ref None in
@@ -169,6 +180,10 @@ let parse_cmdline () =
   let add_source arg = sources := arg :: !sources in
 
   let sync = ref true in
+
+  let timezone = ref None in
+  let set_timezone s = timezone := Some s in
+
   let update = ref false in
 
   let upload = ref [] in
@@ -233,6 +248,7 @@ let parse_cmdline () =
     "--gpg",    Arg.Set_string gpg,         "gpg" ^ " " ^ s_"Set GPG binary/command";
     "--hostname", Arg.String set_hostname,  "hostname" ^ " " ^ s_"Set the hostname";
     "--install", Arg.String add_install,    "pkg,pkg" ^ " " ^ s_"Add package(s) to install";
+    "--link",    Arg.String add_link,       "target:link.." ^ " " ^ s_"Create symbolic links";
     "-l",        Arg.Unit list_mode,        " " ^ s_"List available templates";
     "--list",    Arg.Unit list_mode,        ditto;
     "--long",    Arg.Set list_long,         ditto;
@@ -260,6 +276,7 @@ let parse_cmdline () =
     "--smp",     Arg.Int set_smp,           "vcpus" ^ " " ^ s_"Set number of vCPUs";
     "--source",  Arg.String add_source,     "URL" ^ " " ^ s_"Set source URL";
     "--no-sync", Arg.Clear sync,            " " ^ s_"Do not fsync output file on exit";
+    "--timezone",Arg.String set_timezone,   "timezone" ^ " " ^ s_"Set the default timezone";
     "--update",  Arg.Set update,            " " ^ s_"Update core packages";
     "--upload",  Arg.String add_upload,     "file:dest" ^ " " ^ s_"Upload file to dest";
     "-v",        Arg.Set debug,             " " ^ s_"Enable debugging messages";
@@ -306,8 +323,9 @@ read the man page virt-builder(1).
   let format = match !format with "" -> None | s -> Some s in
   let gpg = !gpg in
   let hostname = !hostname in
-  let install = !install in
+  let install = List.rev !install in
   let list_long = !list_long in
+  let links = List.rev !links in
   let memsize = !memsize in
   let mkdirs = List.rev !mkdirs in
   let network = !network in
@@ -321,6 +339,7 @@ read the man page virt-builder(1).
   let smp = !smp in
   let sources = List.rev !sources in
   let sync = !sync in
+  let timezone = !timezone in
   let update = !update in
   let upload = List.rev !upload in
   let writes = List.rev !writes in
@@ -419,6 +438,8 @@ read the man page virt-builder(1).
 
   mode, arg,
   attach, cache, check_signature, curl, debug, delete, edit,
-  firstboot, run, format, gpg, hostname, install, list_long, memsize, mkdirs,
+  firstboot, run, format, gpg, hostname, install, list_long, links,
+  memsize, mkdirs,
   network, output, password_crypto, quiet, root_password, scrub,
-  scrub_logfile, size, smp, sources, sync, update, upload, writes
+  scrub_logfile, size, smp, sources, sync, timezone, update, upload,
+  writes

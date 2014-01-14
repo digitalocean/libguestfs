@@ -347,6 +347,23 @@ removed.
 
 SSSD のデータベースとログファイルを削除します。
 
+=head2 B<timezone> *
+
+Change the default timezone of the guest.
+
+This operation changes the default timezone of the guest to the value given
+in the I<--timezone> parameter.
+
+If the I<--timezone> parameter is not given, then the timezone is not
+changed.
+
+This parameter affects the default timezone that users see when they log in,
+but they can still change their timezone per-user account.
+
+=head3 Notes on timezone
+
+Currently this can only set the timezone on Linux guests.
+
 =head2 B<tmp-files> *
 
 Remove temporary files.
