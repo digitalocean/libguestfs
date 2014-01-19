@@ -1,3 +1,174 @@
+2014-01-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.23.
+
+	uml: Fix rule which disables relative-paths test on UML.
+	This fixes commit e22bd2dcd26ffe822a68c23852bbafe4767d98f0.
+
+	Version 1.25.22.
+
+2014-01-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add a test of relative paths, to make sure we don't break them.
+	In some places we turn relative paths passed by the caller into
+	absolute paths: for example in the libvirt backend, all relative paths
+	to disk images have to be turned into absolute paths (by calling
+	realpath) because otherwise libvirt doesn't work.
+
+	This has the potential to break things, especially considering that
+	qemu uses the path passed to it in order to resolve the relative paths
+	of backing files.
+
+	For example consider the case where 'overlay' is a symbolic link to
+	/dev/dm-1, but /dev/dm-1 contains a qcow2 which references './backing'
+	as its backing file.  If we rewrote 'overlay' to '/dev/dm-1', then
+	qemu would try to look up '/dev/backing' for the backing file and
+	fail.
+
+	See also:
+
+	https://bugzilla.redhat.com/show_bug.cgi?id=1053684
+	https://www.redhat.com/archives/libguestfs/2014-January/thread.html#00087
+
+2014-01-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Use C macros to simplify XML generation.
+	This commit implements some hairy C macros to simplify
+	XML generation.
+
+	Given the target XML:
+
+	  <cpu mode="host-passthrough">
+	    <model fallback="allow"/>
+	  </cpu>
+
+	The old code would have looked like this:
+
+	   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "cpu"));
+	   XMLERROR (-1,
+	            xmlTextWriterWriteAttribute (xo, BAD_CAST "mode",
+	                                         BAD_CAST "host-passthrough"));
+	   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "model"));
+	   XMLERROR (-1,
+	            xmlTextWriterWriteAttribute (xo, BAD_CAST "fallback",
+	                                         BAD_CAST "allow"));
+	   XMLERROR (-1, xmlTextWriterEndElement (xo));
+	   XMLERROR (-1, xmlTextWriterEndElement (xo));
+
+	The new code looks like this:
+
+	   start_element ("cpu") {
+	     attribute ("mode", "host-passthrough");
+	     start_element ("model") {
+	       attribute ("fallback", "allow");
+	     } end_element ();
+	   } end_element ();
+
+2014-01-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	drives: Avoid double-free along error path.
+	This fixes commit 4a0f5ed38233393e75ea69ff0595936aed0e8abb.
+
+	A simple test of this:
+
+	  guestfish <<EOF
+	  add-drive "" readonly:1 format:raw protocol:nbd server:localhost:10000
+	  EOF
+
+	which would core dump.
+
+2014-01-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	Minimum libvirt version is >= 1.1.1.
+	Note this is the version in RHEL 7.
+
+2014-01-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	drives: Centrally create overlays for read-only drives.
+	qemu has broken snapshot=on ... again.
+
+	Change the way that drives are created so that the backend no longer
+	has to use snapshot=on, <transient/> (which never worked), or UML's
+	corresponding COW-creation feature (also broken).
+
+	Instead of that, the src/drives.c code will create overlays when
+	required by calling into a new backend operation 'create_cow_overlay'.
+	This operation runs 'qemu-img create -b' or 'uml_mkcow' as determined
+	by the backend, and returns the name of the overlay.
+
+	The format of the overlay is still backend-specific because qemu needs
+	to use qcow2 and UML needs to use COW.
+
+	This patch also includes some factorization of the libvirt XML code.
+
+	This also drops the drv->priv (private per-drive data) field, since it
+	is no longer used by any backend.
+
+	This also moves the guestfs___drive_source_qemu_param utility
+	function, used & shared by the direct & libvirt backends only, into
+	src/launch-direct.c (from src/drives.c).
+
+2014-01-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Fix tests that specified qcow2 format, but passed a raw format disk.
+	In some tests we were specifying qcow2 as the image format when adding
+	a disk, but actually passing a raw format image.
+
+	Libguestfs previously did not detect this until guestfs_launch, but it
+	was still a bug to pass an incorrect format to guestfs_add_drive_opts.
+
+	It only worked because these tests never call guestfs_launch.
+
+	A later commit in this series will cause this to be detected
+	(sometimes) during guestfs_add_drive_opts.
+
+2014-01-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Fix unterminated I<...> in man page.
+	Thanks: Lukas Zapletal.
+
+2014-01-16  Pino Toscano  <ptoscano@redhat.com>
+
+	builder: add a JSON output for --list
+	Simple JSON output for sources and templates, to be able to query them
+	with no need to parse unstructured outputs like the "--list-format long"
+	one.
+
+	builder: add --list-format
+	Add a --list-format which allows to choose which in format should be the
+	output of --list.
+
+	builder: small refactor of the list output
+	Switch from a boolean for the short/long list output to labels for the
+	actual format. Also, split the output of each list format to an own
+	function for easier maintaineance.
+
+2014-01-15  Pino Toscano  <ptoscano@redhat.com>
+
+	fuse: clear stat structs (RHBZ#660687).
+	Not all the fields of struct stat are actually filled by us. This caused
+	rubbish to appear in the microseconds fields, which were then used as
+	base when changing atime/ctime (with e.g. touch), triggering EINVAL by
+	futimens/utimensat when those rubbish values were out of the range
+	allowed for microseconds.
+
+	fuse: remove extra trailing \n in debug messages
+	debug() adds it already.
+
+2014-01-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	builder: Add documentation for how to import images into OpenStack.
+
+2014-01-14  Pino Toscano  <ptoscano@redhat.com>
+
+	builder: test-virt-builder: check some results
+	Check at least some basic modifications in the image created with
+	virt-builder.
+
+	builder, edit, fish: use copy-attributes
+	Make use of the new copy-attributes command to properly copy all file
+	attributes from a file to the new version of it.
+
 2014-01-13  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.25.21.

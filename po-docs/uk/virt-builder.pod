@@ -31,7 +31,7 @@ virt-builder - Build virtual machine images quickly
     [--firstboot SCRIPT] [--firstboot-command 'CMD ARGS ...']
     [--firstboot-install PKG,[PKG...]]
 
- virt-builder -l|--list [--long]
+ virt-builder -l|--list [--long] [--list-format short|long|json]
 
  virt-builder --notes os-version
 
@@ -367,12 +367,40 @@ C<TARGET>.
 
 =item B<--list>
 
+=item B<--list --format> format
+
 =item B<--list --long>
 
 List available templates.
 
-The alternative I<--list --long> form shows lots more details about each
-operating system option.
+It is possible to choose with I<--format> the output format for the list
+templates:
+
+=over 4
+
+=item B<short>
+
+The default format, prints only the template identifier and, next to it, its
+short description.
+
+=item B<long>
+
+Prints a textual list with the details of the available sources, followed by
+the details of the available templates.
+
+=item B<json>
+
+Prints a JSON object with the details of the available sources and the
+details of the available templates.
+
+The C<version> key in the main object represents the "compatibility
+version", and it is bumped every time the resulting JSON output is
+incompatible with the previous versions (for example the structure has
+changed, or non-optional keys are no more present).
+
+=back
+
+I<--long> is a shorthand for the C<long> format.
 
 See also: I<--source>, I<--notes>, L</CREATING YOUR OWN TEMPLATES>.
 
@@ -965,7 +993,7 @@ Files are deleted (I<--delete>, I<--scrub>).
 
 =item *
 
-Symbolic links are created (I<--link).
+Symbolic links are created (I<--link>).
 
 =item *
 
@@ -1013,13 +1041,30 @@ differently as well.
 
 =back
 
-=begin коментар
-
 =head3 Importing into OpenStack
 
-XXX
+Import the image into Glance (the OpenStack image store) by doing:
 
-=end коментар
+ glance image-create --name fedora-20-image --file fedora-20.img \
+   --disk-format raw --container-format bare \
+   --is-public True
+
+The I<--file> parameter is the virt-builder-generated disk image.  It should
+match virt-builder's I<--output> option.  The I<--disk-format> parameter
+should match virt-builder's I<--format> option (or C<raw> if you didn't use
+that option).  The I<--container-format> should always be C<bare> since
+virt-builder doesn't put images into containers.
+
+You can use the S<C<glance image-show I<fedora-20-image>>> command to
+display the properties of the image.
+
+To boot up an instance of your image on a Nova compute node, do:
+
+ nova boot fedora-20-server --image fedora-20-image \
+   --flavor m1.medium
+
+Use S<C<nova flavor-list>> to list possible machine flavors.  Use S<C<nova
+list>> to list running instances.
 
 =head3 Booting directly using qemu or KVM
 

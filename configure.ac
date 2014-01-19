@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [25])
-m4_define([libguestfs_release], [21])
+m4_define([libguestfs_release], [23])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1767,6 +1767,7 @@ AC_CONFIG_FILES([Makefile
                  tests/protocol/Makefile
                  tests/qemu/Makefile
                  tests/regressions/Makefile
+                 tests/relative-paths/Makefile
                  tests/rsync/Makefile
                  tests/selinux/Makefile
                  tests/syslinux/Makefile
