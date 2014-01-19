@@ -8944,3 +8944,37 @@ class GuestFS(object):
         r = libguestfsmod.aug_label (self._o, augpath)
         return r
 
+    def copy_attributes (self, src, dest, all=None, mode=None, xattributes=None, ownership=None):
+        """Copy the attributes of a path (which can be a file or a
+        directory) to another path.
+        
+        By default "no" attribute is copied, so make sure to
+        specify any (or "all" to copy everything).
+        
+        The optional arguments specify which attributes can be
+        copied:
+        
+        "mode"
+        Copy part of the file mode from "source" to
+        "destination". Only the UNIX permissions and the
+        sticky/setuid/setgid bits can be copied.
+        
+        "xattributes"
+        Copy the Linux extended attributes (xattrs) from
+        "source" to "destination". This flag does nothing if
+        the *linuxxattrs* feature is not available (see
+        "g.feature_available").
+        
+        "ownership"
+        Copy the owner uid and the group gid of "source" to
+        "destination".
+        
+        "all"
+        Copy all the attributes from "source" to
+        "destination". Enabling it enables all the other
+        flags, if they are not specified already.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.copy_attributes (self._o, src, dest, all, mode, xattributes, ownership)
+        return r
+

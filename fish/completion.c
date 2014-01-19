@@ -111,6 +111,7 @@ static const char *const commands[] = {
   "compress-device-out",
   "compress-out",
   "config",
+  "copy-attributes",
   "copy-device-to-device",
   "copy-device-to-file",
   "copy-file-to-device",

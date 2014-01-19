@@ -130,6 +130,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_compress_device_out, NULL)
   PHP_FE (guestfs_compress_out, NULL)
   PHP_FE (guestfs_config, NULL)
+  PHP_FE (guestfs_copy_attributes, NULL)
   PHP_FE (guestfs_copy_device_to_device, NULL)
   PHP_FE (guestfs_copy_device_to_file, NULL)
   PHP_FE (guestfs_copy_file_to_device, NULL)
@@ -3425,6 +3426,69 @@ PHP_FUNCTION (guestfs_config)
 
   int r;
   r = guestfs_config (g, hvparam, hvvalue);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_copy_attributes)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *src;
+  int src_size;
+  char *dest;
+  int dest_size;
+  struct guestfs_copy_attributes_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_copy_attributes_argv *optargs = &optargs_s;
+  zend_bool optargs_t_all = -1;
+  zend_bool optargs_t_mode = -1;
+  zend_bool optargs_t_xattributes = -1;
+  zend_bool optargs_t_ownership = -1;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss|bbbb",
+        &z_g, &src, &src_size, &dest, &dest_size, &optargs_t_all, &optargs_t_mode, &optargs_t_xattributes, &optargs_t_ownership) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (src) != src_size) {
+    fprintf (stderr, "libguestfs: copy_attributes: parameter 'src' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (strlen (dest) != dest_size) {
+    fprintf (stderr, "libguestfs: copy_attributes: parameter 'dest' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (optargs_t_all != (zend_bool)-1) {
+    optargs_s.all = optargs_t_all;
+    optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_ALL_BITMASK;
+  }
+  if (optargs_t_mode != (zend_bool)-1) {
+    optargs_s.mode = optargs_t_mode;
+    optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK;
+  }
+  if (optargs_t_xattributes != (zend_bool)-1) {
+    optargs_s.xattributes = optargs_t_xattributes;
+    optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK;
+  }
+  if (optargs_t_ownership != (zend_bool)-1) {
+    optargs_s.ownership = optargs_t_ownership;
+    optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK;
+  }
+
+  int r;
+  r = guestfs_copy_attributes_argv (g, src, dest, optargs);
 
   if (r == -1) {
     RETURN_FALSE;

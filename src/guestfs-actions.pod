@@ -1979,6 +1979,82 @@ This function returns 0 on success or -1 on error.
 
 (Added in 0.3)
 
+=head2 guestfs_copy_attributes
+
+ int
+ guestfs_copy_attributes (guestfs_h *g,
+                          const char *src,
+                          const char *dest,
+                          ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_COPY_ATTRIBUTES_ALL, int all,
+ GUESTFS_COPY_ATTRIBUTES_MODE, int mode,
+ GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES, int xattributes,
+ GUESTFS_COPY_ATTRIBUTES_OWNERSHIP, int ownership,
+
+Copy the attributes of a path (which can be a file or a directory)
+to another path.
+
+By default C<no> attribute is copied, so make sure to specify any
+(or C<all> to copy everything).
+
+The optional arguments specify which attributes can be copied:
+
+=over 4
+
+=item C<mode>
+
+Copy part of the file mode from C<source> to C<destination>. Only the
+UNIX permissions and the sticky/setuid/setgid bits can be copied.
+
+=item C<xattributes>
+
+Copy the Linux extended attributes (xattrs) from C<source> to C<destination>.
+This flag does nothing if the I<linuxxattrs> feature is not available
+(see C<guestfs_feature_available>).
+
+=item C<ownership>
+
+Copy the owner uid and the group gid of C<source> to C<destination>.
+
+=item C<all>
+
+Copy B<all> the attributes from C<source> to C<destination>. Enabling it
+enables all the other flags, if they are not specified already.
+
+=back
+
+This function returns 0 on success or -1 on error.
+
+=head2 guestfs_copy_attributes_va
+
+ int
+ guestfs_copy_attributes_va (guestfs_h *g,
+                             const char *src,
+                             const char *dest,
+                             va_list args);
+
+This is the "va_list variant" of L</guestfs_copy_attributes>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_copy_attributes_argv
+
+ int
+ guestfs_copy_attributes_argv (guestfs_h *g,
+                               const char *src,
+                               const char *dest,
+                               const struct guestfs_copy_attributes_argv *optargs);
+
+This is the "argv variant" of L</guestfs_copy_attributes>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
 =head2 guestfs_copy_device_to_device
 
  int

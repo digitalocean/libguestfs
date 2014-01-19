@@ -2397,6 +2397,61 @@ func (g *Guestfs) Config (hvparam string, hvvalue *string) *GuestfsError {
     return nil
 }
 
+/* Struct carrying optional arguments for Copy_attributes */
+type OptargsCopy_attributes struct {
+    /* All field is ignored unless All_is_set == true */
+    All_is_set bool
+    All bool
+    /* Mode field is ignored unless Mode_is_set == true */
+    Mode_is_set bool
+    Mode bool
+    /* Xattributes field is ignored unless Xattributes_is_set == true */
+    Xattributes_is_set bool
+    Xattributes bool
+    /* Ownership field is ignored unless Ownership_is_set == true */
+    Ownership_is_set bool
+    Ownership bool
+}
+
+/* copy_attributes : copy the attributes of a path (file/directory) to another */
+func (g *Guestfs) Copy_attributes (src string, dest string, optargs *OptargsCopy_attributes) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("copy_attributes")
+    }
+
+    c_src := C.CString (src)
+    defer C.free (unsafe.Pointer (c_src))
+
+    c_dest := C.CString (dest)
+    defer C.free (unsafe.Pointer (c_dest))
+    c_optargs := C.struct_guestfs_copy_attributes_argv{}
+    if optargs != nil {
+        if optargs.All_is_set {
+            c_optargs.bitmask |= C.GUESTFS_COPY_ATTRIBUTES_ALL_BITMASK
+            if optargs.All { c_optargs.all = 1 } else { c_optargs.all = 0}
+        }
+        if optargs.Mode_is_set {
+            c_optargs.bitmask |= C.GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK
+            if optargs.Mode { c_optargs.mode = 1 } else { c_optargs.mode = 0}
+        }
+        if optargs.Xattributes_is_set {
+            c_optargs.bitmask |= C.GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK
+            if optargs.Xattributes { c_optargs.xattributes = 1 } else { c_optargs.xattributes = 0}
+        }
+        if optargs.Ownership_is_set {
+            c_optargs.bitmask |= C.GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK
+            if optargs.Ownership { c_optargs.ownership = 1 } else { c_optargs.ownership = 0}
+        }
+    }
+
+    r := C.guestfs_copy_attributes_argv (g.g, c_src, c_dest, &c_optargs)
+
+    if r == -1 {
+        return get_error_from_handle (g, "copy_attributes")
+    }
+    return nil
+}
+
 /* Struct carrying optional arguments for Copy_device_to_device */
 type OptargsCopy_device_to_device struct {
     /* Srcoffset field is ignored unless Srcoffset_is_set == true */

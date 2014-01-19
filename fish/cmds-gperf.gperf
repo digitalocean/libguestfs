@@ -104,6 +104,7 @@ extern struct command_entry command_lines_cmd_entry;
 extern struct command_entry compress_device_out_cmd_entry;
 extern struct command_entry compress_out_cmd_entry;
 extern struct command_entry config_cmd_entry;
+extern struct command_entry copy_attributes_cmd_entry;
 extern struct command_entry copy_device_to_device_cmd_entry;
 extern struct command_entry copy_device_to_file_cmd_entry;
 extern struct command_entry copy_file_to_device_cmd_entry;
@@ -697,6 +698,8 @@ compress-device-out, &compress_device_out_cmd_entry
 compress_out, &compress_out_cmd_entry
 compress-out, &compress_out_cmd_entry
 config, &config_cmd_entry
+copy_attributes, &copy_attributes_cmd_entry
+copy-attributes, &copy_attributes_cmd_entry
 copy_device_to_device, &copy_device_to_device_cmd_entry
 copy-device-to-device, &copy_device_to_device_cmd_entry
 copy_device_to_file, &copy_device_to_file_cmd_entry

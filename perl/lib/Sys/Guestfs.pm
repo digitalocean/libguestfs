@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.414';
+$VERSION = '0.415';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -1431,6 +1431,40 @@ parameters that we use.
 The first character of C<hvparam> string must be a C<-> (dash).
 
 C<hvvalue> can be NULL.
+
+=item $g->copy_attributes ($src, $dest [, all => $all] [, mode => $mode] [, xattributes => $xattributes] [, ownership => $ownership]);
+
+Copy the attributes of a path (which can be a file or a directory)
+to another path.
+
+By default C<no> attribute is copied, so make sure to specify any
+(or C<all> to copy everything).
+
+The optional arguments specify which attributes can be copied:
+
+=over 4
+
+=item C<mode>
+
+Copy part of the file mode from C<source> to C<destination>. Only the
+UNIX permissions and the sticky/setuid/setgid bits can be copied.
+
+=item C<xattributes>
+
+Copy the Linux extended attributes (xattrs) from C<source> to C<destination>.
+This flag does nothing if the I<linuxxattrs> feature is not available
+(see C<$g-E<gt>feature_available>).
+
+=item C<ownership>
+
+Copy the owner uid and the group gid of C<source> to C<destination>.
+
+=item C<all>
+
+Copy B<all> the attributes from C<source> to C<destination>. Enabling it
+enables all the other flags, if they are not specified already.
+
+=back
 
 =item $g->copy_device_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse]);
 
@@ -7966,6 +8000,21 @@ use vars qw(%guestfs_introspection);
     ],
     name => "config",
     description => "add hypervisor parameters",
+  },
+  "copy_attributes" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string(path)', 0 ],
+      [ 'dest', 'string(path)', 1 ],
+    ],
+    optargs => {
+      all => [ 'all', 'bool', 0 ],
+      mode => [ 'mode', 'bool', 1 ],
+      xattributes => [ 'xattributes', 'bool', 2 ],
+      ownership => [ 'ownership', 'bool', 3 ],
+    },
+    name => "copy_attributes",
+    description => "copy the attributes of a path (file/directory) to another",
   },
   "copy_device_to_device" => {
     ret => 'void',

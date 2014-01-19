@@ -104,6 +104,7 @@ PHP_FUNCTION (guestfs_command_lines);
 PHP_FUNCTION (guestfs_compress_device_out);
 PHP_FUNCTION (guestfs_compress_out);
 PHP_FUNCTION (guestfs_config);
+PHP_FUNCTION (guestfs_copy_attributes);
 PHP_FUNCTION (guestfs_copy_device_to_device);
 PHP_FUNCTION (guestfs_copy_device_to_file);
 PHP_FUNCTION (guestfs_copy_file_to_device);

@@ -1969,6 +1969,11 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
 <span class="returnvalue">gchar</span> *             <a class="link" href="GuestfsSession.html#guestfs-session-aug-label" title="guestfs_session_aug_label ()">guestfs_session_aug_label</a>           (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *augpath</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-copy-attributes" title="guestfs_session_copy_attributes ()">guestfs_session_copy_attributes</a>     (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *src</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *dest</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GuestfsCopyAttributes.html" title="GuestfsCopyAttributes"><span class="type">GuestfsCopyAttributes</span></a> *optargs</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 </pre>
 </div>
 <div class="refsect1">
@@ -29672,6 +29677,85 @@ function returns an error.
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>the returned string, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
 </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-copy-attributes"></a><h3>guestfs_session_copy_attributes ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_copy_attributes     (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *src</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *dest</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GuestfsCopyAttributes.html" title="GuestfsCopyAttributes"><span class="type">GuestfsCopyAttributes</span></a> *optargs</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+copy the attributes of a path (file/directory) to another
+</p>
+<p>
+Copy the attributes of a path (which can be a file or a directory) to
+another path.
+</p>
+<p>
+By default <em class="parameter"><code>no</code></em> attribute is copied, so make sure to specify any (or <em class="parameter"><code>all</code></em>
+to copy everything).
+</p>
+<p>
+The optional arguments specify which attributes can be copied:
+</p>
+<p>
+<em class="parameter"><code>mode</code></em>
+Copy part of the file mode from <em class="parameter"><code>source</code></em> to <em class="parameter"><code>destination</code></em>. Only the
+UNIX permissions and the sticky/setuid/setgid bits can be copied.
+</p>
+<p>
+<em class="parameter"><code>xattributes</code></em>
+Copy the Linux extended attributes (xattrs) from <em class="parameter"><code>source</code></em> to
+<em class="parameter"><code>destination</code></em>. This flag does nothing if the *linuxxattrs* feature is
+not available (see <a class="link" href="GuestfsSession.html#guestfs-session-feature-available" title="guestfs_session_feature_available ()"><code class="function">guestfs_session_feature_available()</code></a>).
+</p>
+<p>
+<em class="parameter"><code>ownership</code></em>
+Copy the owner uid and the group gid of <em class="parameter"><code>source</code></em> to <em class="parameter"><code>destination</code></em>.
+</p>
+<p>
+<em class="parameter"><code>all</code></em>
+Copy all the attributes from <em class="parameter"><code>source</code></em> to <em class="parameter"><code>destination</code></em>. Enabling it
+enables all the other flags, if they are not specified already.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>src</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>dest</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>optargs</code></em> :</span></p></td>
+<td>a GuestfsCopyAttributes containing optional arguments. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
 </tr>
 </tbody>
 </table></div>

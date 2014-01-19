@@ -92,6 +92,7 @@
 -export([compress_device_out/4, compress_device_out/5]).
 -export([compress_out/4, compress_out/5]).
 -export([config/3]).
+-export([copy_attributes/3, copy_attributes/4]).
 -export([copy_device_to_device/3, copy_device_to_device/4]).
 -export([copy_device_to_file/3, copy_device_to_file/4]).
 -export([copy_file_to_device/3, copy_file_to_device/4]).
@@ -831,6 +832,11 @@ compress_out(G, Ctype, File, Zfile) ->
 
 config(G, Hvparam, Hvvalue) ->
   call_port(G, {config, Hvparam, Hvvalue}).
+
+copy_attributes(G, Src, Dest, Optargs) ->
+  call_port(G, {copy_attributes, Src, Dest, Optargs}).
+copy_attributes(G, Src, Dest) ->
+  copy_attributes(G, Src, Dest, []).
 
 copy_device_to_device(G, Src, Dest, Optargs) ->
   call_port(G, {copy_device_to_device, Src, Dest, Optargs}).

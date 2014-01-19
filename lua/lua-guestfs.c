@@ -2102,6 +2102,51 @@ guestfs_lua_config (lua_State *L)
 }
 
 static int
+guestfs_lua_copy_attributes (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *src;
+  const char *dest;
+  struct guestfs_copy_attributes_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_copy_attributes_argv *optargs = &optargs_s;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "copy_attributes");
+
+  src = luaL_checkstring (L, 2);
+  dest = luaL_checkstring (L, 3);
+
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 4) == LUA_TTABLE) {
+    OPTARG_IF_SET (4, "all",
+      optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_ALL_BITMASK;
+      optargs_s.all = lua_toboolean (L, -1);
+    );
+    OPTARG_IF_SET (4, "mode",
+      optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK;
+      optargs_s.mode = lua_toboolean (L, -1);
+    );
+    OPTARG_IF_SET (4, "xattributes",
+      optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK;
+      optargs_s.xattributes = lua_toboolean (L, -1);
+    );
+    OPTARG_IF_SET (4, "ownership",
+      optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK;
+      optargs_s.ownership = lua_toboolean (L, -1);
+    );
+  }
+
+  r = guestfs_copy_attributes_argv (g, src, dest, optargs);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_copy_device_to_device (lua_State *L)
 {
   int r;
@@ -14836,6 +14881,7 @@ static luaL_Reg methods[] = {
   { "compress_device_out", guestfs_lua_compress_device_out },
   { "compress_out", guestfs_lua_compress_out },
   { "config", guestfs_lua_config },
+  { "copy_attributes", guestfs_lua_copy_attributes },
   { "copy_device_to_device", guestfs_lua_copy_device_to_device },
   { "copy_device_to_file", guestfs_lua_copy_device_to_file },
   { "copy_file_to_device", guestfs_lua_copy_file_to_device },

@@ -566,6 +566,9 @@ val compress_out : t -> ?level:int -> string -> string -> string -> unit
 val config : t -> string -> string option -> unit
 (** add hypervisor parameters *)
 
+val copy_attributes : t -> ?all:bool -> ?mode:bool -> ?xattributes:bool -> ?ownership:bool -> string -> string -> unit
+(** copy the attributes of a path (file/directory) to another *)
+
 val copy_device_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
 (** copy from source device to destination device *)
 
@@ -2195,6 +2198,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method compress_device_out : ?level:int -> string -> string -> string -> unit
   method compress_out : ?level:int -> string -> string -> string -> unit
   method config : string -> string option -> unit
+  method copy_attributes : ?all:bool -> ?mode:bool -> ?xattributes:bool -> ?ownership:bool -> string -> string -> unit
   method copy_device_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
   method copy_device_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
   method copy_file_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit

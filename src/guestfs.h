@@ -1034,6 +1034,28 @@ extern GUESTFS_DLL_PUBLIC int guestfs_compress_out_argv (guestfs_h *g, const cha
 #define GUESTFS_HAVE_CONFIG 1
 extern GUESTFS_DLL_PUBLIC int guestfs_config (guestfs_h *g, const char *hvparam, const char *hvvalue);
 
+#define GUESTFS_HAVE_COPY_ATTRIBUTES 1
+#define GUESTFS_COPY_ATTRIBUTES_ALL 0
+#define GUESTFS_COPY_ATTRIBUTES_MODE 1
+#define GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES 2
+#define GUESTFS_COPY_ATTRIBUTES_OWNERSHIP 3
+extern GUESTFS_DLL_PUBLIC int guestfs_copy_attributes (guestfs_h *g, const char *src, const char *dest, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_copy_attributes_va (guestfs_h *g, const char *src, const char *dest, va_list args);
+
+struct guestfs_copy_attributes_argv {
+  uint64_t bitmask;
+# define GUESTFS_COPY_ATTRIBUTES_ALL_BITMASK (UINT64_C(1)<<0)
+  int all;
+# define GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK (UINT64_C(1)<<1)
+  int mode;
+# define GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK (UINT64_C(1)<<2)
+  int xattributes;
+# define GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK (UINT64_C(1)<<3)
+  int ownership;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_copy_attributes_argv (guestfs_h *g, const char *src, const char *dest, const struct guestfs_copy_attributes_argv *optargs);
+
 #define GUESTFS_HAVE_COPY_DEVICE_TO_DEVICE 1
 #define GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET 0
 #define GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET 1
@@ -3587,6 +3609,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_COMPRESS_DEVICE_OUT 1
 #define LIBGUESTFS_HAVE_COMPRESS_OUT 1
 #define LIBGUESTFS_HAVE_CONFIG 1
+#define LIBGUESTFS_HAVE_COPY_ATTRIBUTES 1
 #define LIBGUESTFS_HAVE_COPY_DEVICE_TO_DEVICE 1
 #define LIBGUESTFS_HAVE_COPY_DEVICE_TO_FILE 1
 #define LIBGUESTFS_HAVE_COPY_FILE_TO_DEVICE 1

@@ -75,6 +75,7 @@
       <sub name="GuestfsMktemp" link="GuestfsMktemp.html"/>
       <sub name="GuestfsSyslinux" link="GuestfsSyslinux.html"/>
       <sub name="GuestfsRemount" link="GuestfsRemount.html"/>
+      <sub name="GuestfsCopyAttributes" link="GuestfsCopyAttributes.html"/>
     </sub>
     <sub name="Object Hierarchy" link="object-tree.html"/>
     <sub name="API Index" link="api-index-full.html"/>
@@ -621,6 +622,7 @@
     <keyword type="function" name="guestfs_session_journal_set_data_threshold ()" link="GuestfsSession.html#guestfs-session-journal-set-data-threshold"/>
     <keyword type="function" name="guestfs_session_aug_setm ()" link="GuestfsSession.html#guestfs-session-aug-setm"/>
     <keyword type="function" name="guestfs_session_aug_label ()" link="GuestfsSession.html#guestfs-session-aug-label"/>
+    <keyword type="function" name="guestfs_session_copy_attributes ()" link="GuestfsSession.html#guestfs-session-copy-attributes"/>
     <keyword type="signal" name="The &quot;appliance&quot; signal" link="GuestfsSession.html#GuestfsSession-appliance"/>
     <keyword type="signal" name="The &quot;close&quot; signal" link="GuestfsSession.html#GuestfsSession-close"/>
     <keyword type="signal" name="The &quot;enter&quot; signal" link="GuestfsSession.html#GuestfsSession-enter"/>
@@ -1050,6 +1052,13 @@
     <keyword type="struct" name="struct GuestfsRemountClass" link="GuestfsRemount.html#GuestfsRemountClass"/>
     <keyword type="function" name="guestfs_remount_new ()" link="GuestfsRemount.html#guestfs-remount-new"/>
     <keyword type="property" name="The &quot;rw&quot; property" link="GuestfsRemount.html#GuestfsRemount--rw"/>
+    <keyword type="struct" name="struct GuestfsCopyAttributes" link="GuestfsCopyAttributes.html#GuestfsCopyAttributes-struct"/>
+    <keyword type="struct" name="struct GuestfsCopyAttributesClass" link="GuestfsCopyAttributes.html#GuestfsCopyAttributesClass"/>
+    <keyword type="function" name="guestfs_copy_attributes_new ()" link="GuestfsCopyAttributes.html#guestfs-copy-attributes-new"/>
+    <keyword type="property" name="The &quot;all&quot; property" link="GuestfsCopyAttributes.html#GuestfsCopyAttributes--all"/>
+    <keyword type="property" name="The &quot;mode&quot; property" link="GuestfsCopyAttributes.html#GuestfsCopyAttributes--mode"/>
+    <keyword type="property" name="The &quot;ownership&quot; property" link="GuestfsCopyAttributes.html#GuestfsCopyAttributes--ownership"/>
+    <keyword type="property" name="The &quot;xattributes&quot; property" link="GuestfsCopyAttributes.html#GuestfsCopyAttributes--xattributes"/>
     <keyword type="constant" name="GUESTFS_SESSION_EVENT_CLOSE" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-CLOSE:CAPS"/>
     <keyword type="constant" name="GUESTFS_SESSION_EVENT_SUBPROCESS_QUIT" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-SUBPROCESS-QUIT:CAPS"/>
     <keyword type="constant" name="GUESTFS_SESSION_EVENT_LAUNCH_DONE" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-LAUNCH-DONE:CAPS"/>

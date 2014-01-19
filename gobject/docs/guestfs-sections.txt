@@ -118,6 +118,23 @@ guestfs_compress_out_get_type
 </SECTION>
 
 <SECTION>
+<FILE>optargs-copy_attributes</FILE>
+<TITLE>GuestfsCopyAttributes</TITLE>
+GuestfsCopyAttributes
+GuestfsCopyAttributesClass
+guestfs_copy_attributes_new
+<SUBSECTION Standard>
+GUESTFS_COPY_ATTRIBUTES
+GUESTFS_COPY_ATTRIBUTES_CLASS
+GUESTFS_COPY_ATTRIBUTES_GET_CLASS
+GUESTFS_IS_COPY_ATTRIBUTES
+GUESTFS_IS_COPY_ATTRIBUTES_CLASS
+GUESTFS_TYPE_COPY_ATTRIBUTES
+GuestfsCopyAttributesPrivate
+guestfs_copy_attributes_get_type
+</SECTION>
+
+<SECTION>
 <FILE>optargs-copy_device_to_device</FILE>
 <TITLE>GuestfsCopyDeviceToDevice</TITLE>
 GuestfsCopyDeviceToDevice
@@ -1390,6 +1407,7 @@ guestfs_session_journal_get_data_threshold
 guestfs_session_journal_set_data_threshold
 guestfs_session_aug_setm
 guestfs_session_aug_label
+guestfs_session_copy_attributes
 <SUBSECTION Standard>
 GUESTFS_IS_SESSION
 GUESTFS_IS_SESSION_CLASS

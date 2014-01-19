@@ -1,3 +1,38 @@
+2014-01-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.21.
+
+	fish: Add test-file-attrs.sh to EXTRA_DIST.
+	This fixes commit efb5f1841524ec75d765368b447270b8a3aff8ac.
+
+	builder: planner: Whitespace change.
+
+	builder: For performance, recommend using the --no-sync option.
+
+	builder: Add --no-delete-on-failure option to aid debugging.
+	This lets you debug failures in virt-builder, especially when scripts
+	or installing packages fails.
+
+	builder: Minor documentation fix to manual page.
+
+	Update generated files for new copy-attributes API.
+	This updates commit efb5f1841524ec75d765368b447270b8a3aff8ac.
+
+	builder: Fix documentation for --attach option.
+
+	builder: Document how to set Japanese in Debian 7.
+
+2014-01-13  Pino Toscano  <ptoscano@redhat.com>
+
+	New API: copy-attributes.
+	This allows one to copy attributes (like permissions, xattrs,
+	ownership) from a file to another.
+
+	sysprep: add --operations
+	Add a new --operation parameter which, similarly to --enable, can be
+	used to enable operations, but also to remove them, and to add/remove
+	the default operations and all the available ones.
+
 2014-01-12  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.25.20.

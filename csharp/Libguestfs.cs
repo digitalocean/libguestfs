@@ -1333,6 +1333,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_copy_attributes_argv (IntPtr h, [In] string src, [In] string dest, void *);
+
+    /// <summary>
+    /// copy the attributes of a path (file/directory) to another
+    /// </summary>
+    public void copy_attributes (string src, string dest)
+    {
+      int r;
+      r = guestfs_copy_attributes_argv (_handle, src, dest, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_copy_device_to_device_argv (IntPtr h, [In] string src, [In] string dest, void *);
 
     /// <summary>

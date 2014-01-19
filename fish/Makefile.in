@@ -145,6 +145,7 @@ bin_PROGRAMS = guestfish$(EXEEXT)
 @ENABLE_APPLIANCE_TRUE@am__append_3 = \
 @ENABLE_APPLIANCE_TRUE@	test-copy.sh \
 @ENABLE_APPLIANCE_TRUE@	test-edit.sh \
+@ENABLE_APPLIANCE_TRUE@	test-file-attrs.sh \
 @ENABLE_APPLIANCE_TRUE@	test-find0.sh \
 @ENABLE_APPLIANCE_TRUE@	test-inspect.sh \
 @ENABLE_APPLIANCE_TRUE@	test-glob.sh \
@@ -1571,11 +1572,11 @@ EXTRA_DIST = $(BUILT_SOURCES) rc_protocol.x guestfish.pod \
 	virt-copy-out virt-tar-in virt-tar-out virt-copy-in.pod \
 	virt-copy-out.pod virt-tar-in.pod virt-tar-out.pod test-a.sh \
 	test-add-domain.sh test-add-uri.sh test-copy.sh test-d.sh \
-	test-edit.sh test-escapes.sh test-events.sh test-find0.sh \
-	test-glob.sh test-inspect.sh test-mount-local.sh test-prep.sh \
-	test-read-file.sh test-remote.sh test-remote-events.sh \
-	test-reopen.sh test-run.sh test-stringlist.sh test-tilde.sh \
-	test-upload-to-dir.sh
+	test-edit.sh test-escapes.sh test-events.sh test-file-attrs.sh \
+	test-find0.sh test-glob.sh test-inspect.sh test-mount-local.sh \
+	test-prep.sh test-read-file.sh test-remote.sh \
+	test-remote-events.sh test-reopen.sh test-run.sh \
+	test-stringlist.sh test-tilde.sh test-upload-to-dir.sh
 
 # These source files (mostly related to option parsing) are shared
 # between guestfish, guestmount and some other virt tools.  Keep a

@@ -6263,3 +6263,16 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_copy_attributes ##### -->
+<para>
+
+</para>
+
+@session: 
+@src: 
+@dest: 
+@optargs: 
+@err: 
+@Returns: 
+
+

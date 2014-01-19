@@ -1784,6 +1784,53 @@ run_config (ETERM *message)
 }
 
 static ETERM *
+run_copy_attributes (ETERM *message)
+{
+  CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
+
+  struct guestfs_copy_attributes_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_copy_attributes_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (2);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "all")) {
+      optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_ALL_BITMASK;
+      optargs_s.all = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "mode")) {
+      optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK;
+      optargs_s.mode = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "xattributes")) {
+      optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK;
+      optargs_s.xattributes = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "ownership")) {
+      optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK;
+      optargs_s.ownership = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("copy_attributes", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_copy_attributes_argv (g, src, dest, optargs);
+  if (r == -1)
+    return make_error ("copy_attributes");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_copy_device_to_device (ETERM *message)
 {
   CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
@@ -10296,6 +10343,8 @@ dispatch (ETERM *message)
     return run_compress_out (message);
   else if (atom_equals (fun, "config"))
     return run_config (message);
+  else if (atom_equals (fun, "copy_attributes"))
+    return run_copy_attributes (message);
   else if (atom_equals (fun, "copy_device_to_device"))
     return run_copy_device_to_device (message);
   else if (atom_equals (fun, "copy_device_to_file"))

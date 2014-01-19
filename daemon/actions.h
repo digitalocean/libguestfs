@@ -182,6 +182,10 @@
 #define GUESTFS_MKTEMP_SUFFIX_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_SYSLINUX_DIRECTORY_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_REMOUNT_RW_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_COPY_ATTRIBUTES_ALL_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK (UINT64_C(1)<<3)
 extern int do_mount (const mountable_t *mountable, const char *mountpoint);
 extern int do_sync (void);
 extern int do_touch (const char *path);
@@ -589,5 +593,6 @@ extern int do_aug_setm (const char *base, const char *sub, const char *val);
 extern char *do_aug_label (const char *augpath);
 extern int do_internal_upload (const char *tmpname, int mode);
 extern int do_internal_exit (void);
+extern int do_copy_attributes (const char *src, const char *dest, int all, int mode, int xattributes, int ownership);
 
 #endif /* GUESTFSD_ACTIONS_H */

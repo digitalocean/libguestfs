@@ -156,6 +156,9 @@
         guestfs_copy_application2;
         guestfs_copy_application2_list;
         guestfs_copy_application_list;
+        guestfs_copy_attributes;
+        guestfs_copy_attributes_argv;
+        guestfs_copy_attributes_va;
         guestfs_copy_btrfssubvolume;
         guestfs_copy_btrfssubvolume_list;
         guestfs_copy_device_to_device;

@@ -10000,3 +10000,48 @@ PREINIT:
  OUTPUT:
       RETVAL
 
+void
+copy_attributes (g, src, dest, ...)
+      guestfs_h *g;
+      char *src;
+      char *dest;
+PREINIT:
+      int r;
+      struct guestfs_copy_attributes_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_copy_attributes_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "all")) {
+          optargs_s.all = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_ATTRIBUTES_ALL_BITMASK;
+        }
+        else if (STREQ (this_arg, "mode")) {
+          optargs_s.mode = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK;
+        }
+        else if (STREQ (this_arg, "xattributes")) {
+          optargs_s.xattributes = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK;
+        }
+        else if (STREQ (this_arg, "ownership")) {
+          optargs_s.ownership = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_copy_attributes_argv (g, src, dest, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+

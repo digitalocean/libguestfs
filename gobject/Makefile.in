@@ -402,7 +402,8 @@ am__objects_1 = libguestfs_gobject_1_0_la-session.lo \
 	libguestfs_gobject_1_0_la-optargs-mke2fs.lo \
 	libguestfs_gobject_1_0_la-optargs-mktemp.lo \
 	libguestfs_gobject_1_0_la-optargs-syslinux.lo \
-	libguestfs_gobject_1_0_la-optargs-remount.lo
+	libguestfs_gobject_1_0_la-optargs-remount.lo \
+	libguestfs_gobject_1_0_la-optargs-copy_attributes.lo
 am_libguestfs_gobject_1_0_la_OBJECTS = $(am__objects_1)
 libguestfs_gobject_1_0_la_OBJECTS =  \
 	$(am_libguestfs_gobject_1_0_la_OBJECTS)
@@ -1695,7 +1696,8 @@ guestfs_gobject_headers = \
   include/guestfs-gobject/optargs-mke2fs.h \
   include/guestfs-gobject/optargs-mktemp.h \
   include/guestfs-gobject/optargs-syslinux.h \
-  include/guestfs-gobject/optargs-remount.h
+  include/guestfs-gobject/optargs-remount.h \
+  include/guestfs-gobject/optargs-copy_attributes.h
 
 guestfs_gobject_sources = \
   src/session.c \
@@ -1769,7 +1771,8 @@ guestfs_gobject_sources = \
   src/optargs-mke2fs.c \
   src/optargs-mktemp.c \
   src/optargs-syslinux.c \
-  src/optargs-remount.c
+  src/optargs-remount.c \
+  src/optargs-copy_attributes.c
 
 generator_built = \
 	$(guestfs_gobject_headers) \
@@ -1911,6 +1914,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_fsck.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-compress_device_out.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-compress_out.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-copy_attributes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-copy_device_to_device.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-copy_device_to_file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-copy_file_to_device.Plo@am__quote@
@@ -2501,6 +2505,13 @@ libguestfs_gobject_1_0_la-optargs-remount.lo: src/optargs-remount.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-remount.c' object='libguestfs_gobject_1_0_la-optargs-remount.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-remount.lo `test -f 'src/optargs-remount.c' || echo '$(srcdir)/'`src/optargs-remount.c
+
+libguestfs_gobject_1_0_la-optargs-copy_attributes.lo: src/optargs-copy_attributes.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-copy_attributes.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-copy_attributes.Tpo -c -o libguestfs_gobject_1_0_la-optargs-copy_attributes.lo `test -f 'src/optargs-copy_attributes.c' || echo '$(srcdir)/'`src/optargs-copy_attributes.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-copy_attributes.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-copy_attributes.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-copy_attributes.c' object='libguestfs_gobject_1_0_la-optargs-copy_attributes.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-copy_attributes.lo `test -f 'src/optargs-copy_attributes.c' || echo '$(srcdir)/'`src/optargs-copy_attributes.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

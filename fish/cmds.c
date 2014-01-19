@@ -546,6 +546,7 @@ static int run_journal_get_data_threshold (const char *cmd, size_t argc, char *a
 static int run_journal_set_data_threshold (const char *cmd, size_t argc, char *argv[]);
 static int run_aug_setm (const char *cmd, size_t argc, char *argv[]);
 static int run_aug_label (const char *cmd, size_t argc, char *argv[]);
+static int run_copy_attributes (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -3679,6 +3680,12 @@ struct command_entry aug_label_cmd_entry = {
   .run = run_aug_label
 };
 
+struct command_entry copy_attributes_cmd_entry = {
+  .name = "copy-attributes",
+  .help = "NAME\n    copy-attributes - copy the attributes of a path (file/directory) to\n    another\n\nSYNOPSIS\n     copy-attributes src dest [all:true|false] [mode:true|false] [xattributes:true|false] [ownership:true|false]\n\nDESCRIPTION\n    Copy the attributes of a path (which can be a file or a directory) to\n    another path.\n\n    By default \"no\" attribute is copied, so make sure to specify any (or\n    \"all\" to copy everything).\n\n    The optional arguments specify which attributes can be copied:\n\n    \"mode\"\n        Copy part of the file mode from \"source\" to \"destination\". Only the\n        UNIX permissions and the sticky/setuid/setgid bits can be copied.\n\n    \"xattributes\"\n        Copy the Linux extended attributes (xattrs) from \"source\" to\n        \"destination\". This flag does nothing if the *linuxxattrs* feature\n        is not available (see \"feature_available\").\n\n    \"ownership\"\n        Copy the owner uid and the group gid of \"source\" to \"destination\".\n\n    \"all\"\n        Copy all the attributes from \"source\" to \"destination\". Enabling it\n        enables all the other flags, if they are not specified already.\n\n",
+  .run = run_copy_attributes
+};
+
 void
 list_commands (void)
 {
@@ -3753,6 +3760,7 @@ list_commands (void)
   printf ("%-20s %s\n", "compress-device-out", _("output compressed device"));
   printf ("%-20s %s\n", "compress-out", _("output compressed file"));
   printf ("%-20s %s\n", "config", _("add hypervisor parameters"));
+  printf ("%-20s %s\n", "copy-attributes", _("copy the attributes of a path (file/directory) to another"));
   printf ("%-20s %s\n", "copy-device-to-device", _("copy from source device to destination device"));
   printf ("%-20s %s\n", "copy-device-to-file", _("copy from source device to destination file"));
   printf ("%-20s %s\n", "copy-file-to-device", _("copy from source file to destination device"));
@@ -23369,6 +23377,93 @@ run_aug_label (const char *cmd, size_t argc, char *argv[])
   printf ("%s\n", r);
   free (r);
  out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_copy_attributes (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *src;
+  char *dest;
+  struct guestfs_copy_attributes_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_copy_attributes_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 6) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 6);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  src = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (src == NULL) goto out_src;
+  dest = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (dest == NULL) goto out_dest;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "all:")) {
+      switch (is_true (&argv[i][4])) {
+        case -1: goto out;
+        case 0:  optargs_s.all = 0; break;
+        default: optargs_s.all = 1;
+      }
+      this_mask = GUESTFS_COPY_ATTRIBUTES_ALL_BITMASK;
+      this_arg = "all";
+    }
+    else if (STRPREFIX (argv[i], "mode:")) {
+      switch (is_true (&argv[i][5])) {
+        case -1: goto out;
+        case 0:  optargs_s.mode = 0; break;
+        default: optargs_s.mode = 1;
+      }
+      this_mask = GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK;
+      this_arg = "mode";
+    }
+    else if (STRPREFIX (argv[i], "xattributes:")) {
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.xattributes = 0; break;
+        default: optargs_s.xattributes = 1;
+      }
+      this_mask = GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK;
+      this_arg = "xattributes";
+    }
+    else if (STRPREFIX (argv[i], "ownership:")) {
+      switch (is_true (&argv[i][10])) {
+        case -1: goto out;
+        case 0:  optargs_s.ownership = 0; break;
+        default: optargs_s.ownership = 1;
+      }
+      this_mask = GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK;
+      this_arg = "ownership";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_copy_attributes_argv (g, src, dest, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (dest);
+ out_dest:
+  free (src);
+ out_src:
  out_noargs:
   return ret;
 }

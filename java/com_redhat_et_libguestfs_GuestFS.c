@@ -13979,3 +13979,33 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1label  (JNIEnv *env, jobject obj, j
   return jr;
 }
 
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1copy_1attributes  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest, jlong joptargs_bitmask, jboolean jall, jboolean jmode, jboolean jxattributes, jboolean jownership)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *src;
+  const char *dest;
+  struct guestfs_copy_attributes_argv optargs_s;
+  const struct guestfs_copy_attributes_argv *optargs = &optargs_s;
+
+  src = (*env)->GetStringUTFChars (env, jsrc, NULL);
+  dest = (*env)->GetStringUTFChars (env, jdest, NULL);
+
+  optargs_s.all = jall;
+  optargs_s.mode = jmode;
+  optargs_s.xattributes = jxattributes;
+  optargs_s.ownership = jownership;
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_copy_attributes_argv (g, src, dest, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jsrc, src);
+  (*env)->ReleaseStringUTFChars (env, jdest, dest);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
