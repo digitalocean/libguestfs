@@ -7193,6 +7193,101 @@ ruby_guestfs_journal_get (VALUE gv)
 
 /*
  * call-seq:
+ *   g.set_backend_settings(settings) -> nil
+ *
+ * set per-backend settings
+ *
+ * Set a list of zero or more settings which are passed
+ * through to the current backend. Each setting is a string
+ * which is interpreted in a backend-specific way, or
+ * ignored if not understood by the backend.
+ * 
+ * The default value is an empty list, unless the
+ * environment variable "LIBGUESTFS_BACKEND_SETTINGS" was
+ * set when the handle was created. This environment
+ * variable contains a colon-separated list of settings.
+ * 
+ * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+ * guestfs(3).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_backend_settings+[http://libguestfs.org/guestfs.3.html#guestfs_set_backend_settings]).
+ */
+static VALUE
+ruby_guestfs_set_backend_settings (VALUE gv, VALUE settingsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_backend_settings");
+
+  char **settings;
+  Check_Type (settingsv, T_ARRAY);
+  {
+    size_t i, len;
+    len = RARRAY_LEN (settingsv);
+    settings = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE v = rb_ary_entry (settingsv, i);
+      settings[i] = StringValueCStr (v);
+    }
+    settings[len] = NULL;
+  }
+
+  int r;
+
+  r = guestfs_set_backend_settings (g, settings);
+  free (settings);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.get_backend_settings() -> list
+ *
+ * get per-backend settings
+ *
+ * Return the current backend settings.
+ * 
+ * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+ * guestfs(3).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_backend_settings+[http://libguestfs.org/guestfs.3.html#guestfs_get_backend_settings]).
+ */
+static VALUE
+ruby_guestfs_get_backend_settings (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_backend_settings");
+
+
+  char **r;
+
+  r = guestfs_get_backend_settings (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  volatile VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
  *   g.mount(mountable, mountpoint) -> nil
  *
  * mount a guest disk at a position in the filesystem
@@ -25517,6 +25612,10 @@ Init__guestfs (void)
         ruby_guestfs_add_drive_scratch, -1);
   rb_define_method (c_guestfs, "journal_get",
         ruby_guestfs_journal_get, 0);
+  rb_define_method (c_guestfs, "set_backend_settings",
+        ruby_guestfs_set_backend_settings, 1);
+  rb_define_method (c_guestfs, "get_backend_settings",
+        ruby_guestfs_get_backend_settings, 0);
   rb_define_method (c_guestfs, "mount",
         ruby_guestfs_mount, 2);
   rb_define_method (c_guestfs, "sync",

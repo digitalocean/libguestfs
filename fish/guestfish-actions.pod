@@ -2179,6 +2179,14 @@ This handle property was previously called the "attach method".
 
 See L</set-backend> and L<guestfs(3)/BACKEND>.
 
+=head2 get-backend-settings
+
+ get-backend-settings
+
+Return the current backend settings.
+
+See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+
 =head2 get-cachedir
 
  get-cachedir
@@ -6400,6 +6408,22 @@ guestfsd daemon.
 This handle property was previously called the "attach method".
 
 See L<guestfs(3)/BACKEND>.
+
+=head2 set-backend-settings
+
+ set-backend-settings 'settings ...'
+
+Set a list of zero or more settings which are passed through to
+the current backend.  Each setting is a string which is interpreted
+in a backend-specific way, or ignored if not understood by the
+backend.
+
+The default value is an empty list, unless the environment
+variable C<LIBGUESTFS_BACKEND_SETTINGS> was set when the handle
+was created.  This environment variable contains a colon-separated
+list of settings.
+
+See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
 
 =head2 set-cachedir
 

@@ -162,6 +162,8 @@
 <ANCHOR id="guestfs-session-get-program" href="guestfs/GuestfsSession.html#guestfs-session-get-program">
 <ANCHOR id="guestfs-session-add-drive-scratch" href="guestfs/GuestfsSession.html#guestfs-session-add-drive-scratch">
 <ANCHOR id="guestfs-session-journal-get" href="guestfs/GuestfsSession.html#guestfs-session-journal-get">
+<ANCHOR id="guestfs-session-set-backend-settings" href="guestfs/GuestfsSession.html#guestfs-session-set-backend-settings">
+<ANCHOR id="guestfs-session-get-backend-settings" href="guestfs/GuestfsSession.html#guestfs-session-get-backend-settings">
 <ANCHOR id="guestfs-session-mount" href="guestfs/GuestfsSession.html#guestfs-session-mount">
 <ANCHOR id="guestfs-session-sync" href="guestfs/GuestfsSession.html#guestfs-session-sync">
 <ANCHOR id="guestfs-session-touch" href="guestfs/GuestfsSession.html#guestfs-session-touch">

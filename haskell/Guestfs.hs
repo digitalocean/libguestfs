@@ -140,6 +140,8 @@ module Guestfs (
   user_cancel,
   set_program,
   get_program,
+  set_backend_settings,
+  get_backend_settings,
   mount,
   sync,
   touch,
@@ -1924,6 +1926,30 @@ get_program h = do
       err <- last_error h
       fail err
     else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_set_backend_settings" c_set_backend_settings
+  :: GuestfsP -> Ptr CString -> IO CInt
+
+set_backend_settings :: GuestfsH -> [String] -> IO ()
+set_backend_settings h settings = do
+  r <- withMany withCString settings $ \settings -> withArray0 nullPtr settings $ \settings -> withForeignPtr h (\p -> c_set_backend_settings p settings)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_get_backend_settings" c_get_backend_settings
+  :: GuestfsP -> IO (Ptr CString)
+
+get_backend_settings :: GuestfsH -> IO [String]
+get_backend_settings h = do
+  r <- withForeignPtr h (\p -> c_get_backend_settings p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
 
 foreign import ccall unsafe "guestfs.h guestfs_mount" c_mount
   :: GuestfsP -> CString -> CString -> IO CInt

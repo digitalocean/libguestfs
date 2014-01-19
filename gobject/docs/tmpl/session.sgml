@@ -1679,6 +1679,27 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_set_backend_settings ##### -->
+<para>
+
+</para>
+
+@session: 
+@settings: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_get_backend_settings ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_mount ##### -->
 <para>
 

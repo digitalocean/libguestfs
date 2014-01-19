@@ -3474,6 +3474,27 @@ guestfs_lua_get_backend (lua_State *L)
 }
 
 static int
+guestfs_lua_get_backend_settings (lua_State *L)
+{
+  char **r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "get_backend_settings");
+
+
+  r = guestfs_get_backend_settings (g);
+  if (r == NULL)
+    return last_error (L, g);
+
+  push_string_list (L, r);
+  guestfs___free_string_list (r);
+  return 1;
+}
+
+static int
 guestfs_lua_get_cachedir (lua_State *L)
 {
   char *r;
@@ -11033,6 +11054,28 @@ guestfs_lua_set_backend (lua_State *L)
 }
 
 static int
+guestfs_lua_set_backend_settings (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  char **settings;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "set_backend_settings");
+
+  settings = get_string_list (L, 2);
+
+  r = guestfs_set_backend_settings (g, settings);
+  free (settings);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_set_cachedir (lua_State *L)
 {
   int r;
@@ -14935,6 +14978,7 @@ static luaL_Reg methods[] = {
   { "get_attach_method", guestfs_lua_get_attach_method },
   { "get_autosync", guestfs_lua_get_autosync },
   { "get_backend", guestfs_lua_get_backend },
+  { "get_backend_settings", guestfs_lua_get_backend_settings },
   { "get_cachedir", guestfs_lua_get_cachedir },
   { "get_direct", guestfs_lua_get_direct },
   { "get_e2attrs", guestfs_lua_get_e2attrs },
@@ -15236,6 +15280,7 @@ static luaL_Reg methods[] = {
   { "set_attach_method", guestfs_lua_set_attach_method },
   { "set_autosync", guestfs_lua_set_autosync },
   { "set_backend", guestfs_lua_set_backend },
+  { "set_backend_settings", guestfs_lua_set_backend_settings },
   { "set_cachedir", guestfs_lua_set_cachedir },
   { "set_direct", guestfs_lua_set_direct },
   { "set_e2attrs", guestfs_lua_set_e2attrs },

@@ -597,6 +597,7 @@ parse_capabilities (guestfs_h *g, const char *capabilities_xml,
   xmlNodeSetPtr nodes;
   xmlAttrPtr attr;
   size_t seen_qemu, seen_kvm;
+  bool force_tcg;
 
   doc = xmlParseMemory (capabilities_xml, strlen (capabilities_xml));
   if (doc == NULL) {
@@ -663,7 +664,13 @@ parse_capabilities (guestfs_h *g, const char *capabilities_xml,
     return -1;
   }
 
-  params->is_kvm = seen_kvm;
+  force_tcg = guestfs___get_backend_setting_bool (g, "force_tcg");
+
+  if (!force_tcg)
+    params->is_kvm = seen_kvm;
+  else
+    params->is_kvm = 0;
+
   return 0;
 }
 
@@ -837,9 +844,17 @@ static int construct_libvirt_xml_appliance (guestfs_h *g, const struct libvirt_x
 
 /* key=value attribute of the current element. */
 #define attribute(key,value)                                            \
-  if (xmlTextWriterWriteAttribute (xo, BAD_CAST (key), BAD_CAST (value)) == -1) { \
-    xml_error ("xmlTextWriterWriteAttribute"); \
-    return -1;                                 \
+  if (xmlTextWriterWriteAttribute (xo, BAD_CAST (key), BAD_CAST (value)) == -1){\
+    xml_error ("xmlTextWriterWriteAttribute");                          \
+    return -1;                                                          \
+  }
+
+/* key=value, but value is a printf-style format string. */
+#define attribute_format(key,fs,...)                                    \
+  if (xmlTextWriterWriteFormatAttribute (xo, BAD_CAST (key),            \
+                                         fs, ##__VA_ARGS__) == -1) {    \
+    xml_error ("xmlTextWriterWriteFormatAttribute");                    \
+    return -1;                                                          \
   }
 
 /* attribute with namespace. */
@@ -851,13 +866,15 @@ static int construct_libvirt_xml_appliance (guestfs_h *g, const struct libvirt_x
     return -1;                                                          \
   }
 
-#define write_string(str)                                               \
+/* A string, eg. within an element. */
+#define string(str)                                                     \
   if (xmlTextWriterWriteString (xo, BAD_CAST (str)) == -1) {            \
     xml_error ("xmlTextWriterWriteString");                             \
     return -1;                                                          \
   }
 
-#define write_format_string(fs,...)                                     \
+/* A string, using printf-style formatting. */
+#define string_format(fs,...)                                           \
   if (xmlTextWriterWriteFormatString (xo, fs, ##__VA_ARGS__) == -1) {   \
     xml_error ("xmlTextWriterWriteFormatString");                       \
     return -1;                                                          \
@@ -955,7 +972,7 @@ construct_libvirt_xml_name (guestfs_h *g,
                             xmlTextWriterPtr xo)
 {
   start_element ("name") {
-    write_string (params->data->name);
+    string (params->data->name);
   } end_element ();
 
   return 0;
@@ -969,12 +986,12 @@ construct_libvirt_xml_cpu (guestfs_h *g,
 {
   start_element ("memory") {
     attribute ("unit", "MiB");
-    write_format_string ("%d", g->memsize);
+    string_format ("%d", g->memsize);
   } end_element ();
 
   start_element ("currentMemory") {
     attribute ("unit", "MiB");
-    write_format_string ("%d", g->memsize);
+    string_format ("%d", g->memsize);
   } end_element ();
 
 #ifndef __arm__
@@ -994,14 +1011,23 @@ construct_libvirt_xml_cpu (guestfs_h *g,
 #endif
 
   start_element ("vcpu") {
-    write_format_string ("%d", g->smp);
+    string_format ("%d", g->smp);
   } end_element ();
 
   start_element ("clock") {
     attribute ("offset", "utc");
+    /* These are recommended settings, see RHBZ#1053847. */
     start_element ("timer") {
-      attribute ("name", "kvmclock");
-      attribute ("present", "yes");
+      attribute ("name", "rtc");
+      attribute ("tickpolicy", "catchup");
+    } end_element ();
+    start_element ("timer") {
+      attribute ("name", "pit");
+      attribute ("tickpolicy", "delay");
+    } end_element ();
+    start_element ("timer") {
+      attribute ("name", "hpet");
+      attribute ("present", "no");
     } end_element ();
   } end_element ();
 
@@ -1028,25 +1054,25 @@ construct_libvirt_xml_boot (guestfs_h *g,
 #ifdef MACHINE_TYPE
       attribute ("machine", MACHINE_TYPE);
 #endif
-      write_string ("hvm");
+      string ("hvm");
     } end_element ();
 
     start_element ("kernel") {
-      write_string (params->kernel);
+      string (params->kernel);
     } end_element ();
 
     if (params->dtb) {
       start_element ("dtb") {
-        write_string (params->dtb);
+        string (params->dtb);
       } end_element ();
     }
 
     start_element ("initrd") {
-      write_string (params->initrd);
+      string (params->initrd);
     } end_element ();
 
     start_element ("cmdline") {
-      write_string (cmdline);
+      string (cmdline);
     } end_element ();
 
   } end_element ();
@@ -1075,10 +1101,10 @@ construct_libvirt_xml_seclabel (guestfs_h *g,
       attribute ("model", "selinux");
       attribute ("relabel", "yes");
       start_element ("label") {
-        write_string (params->data->selinux_label);
+        string (params->data->selinux_label);
       } end_element ();
       start_element ("imagelabel") {
-        write_string (params->data->selinux_imagelabel);
+        string (params->data->selinux_imagelabel);
       } end_element ();
     } end_element ();
   }
@@ -1093,7 +1119,7 @@ construct_libvirt_xml_lifecycle (guestfs_h *g,
                                  xmlTextWriterPtr xo)
 {
   start_element ("on_reboot") {
-    write_string ("destroy");
+    string ("destroy");
   } end_element ();
 
   return 0;
@@ -1115,7 +1141,7 @@ construct_libvirt_xml_devices (guestfs_h *g,
      */
     if (is_custom_hv (g)) {
       start_element ("emulator") {
-        write_string (g->hv);
+        string (g->hv);
       } end_element ();
     }
 #ifdef __arm__
@@ -1124,7 +1150,7 @@ construct_libvirt_xml_devices (guestfs_h *g,
      */
     else {
       start_element ("emulator") {
-        write_string (QEMU);
+        string (QEMU);
       } end_element ();
     }
 #endif
@@ -1358,7 +1384,7 @@ construct_libvirt_xml_disk (guestfs_h *g,
 
     if (drv->disk_label) {
       start_element ("serial") {
-        write_string (drv->disk_label);
+        string (drv->disk_label);
       } end_element ();
     }
 
@@ -1404,15 +1430,11 @@ static int
 construct_libvirt_xml_disk_address (guestfs_h *g, xmlTextWriterPtr xo,
                                     size_t drv_index)
 {
-  char scsi_target[64];
-
-  snprintf (scsi_target, sizeof scsi_target, "%zu", drv_index);
-
   start_element ("address") {
     attribute ("type", "drive");
     attribute ("controller", "0");
     attribute ("bus", "0");
-    attribute ("target", scsi_target);
+    attribute_format ("target", "%zu", drv_index);
     attribute ("unit", "0");
   } end_element ();
 
@@ -1431,25 +1453,15 @@ construct_libvirt_xml_disk_source_hosts (guestfs_h *g,
       switch (src->servers[i].transport) {
       case drive_transport_none:
       case drive_transport_tcp: {
-        const char *hostname = src->servers[i].u.hostname;
-        int port = src->servers[i].port;
-
-        attribute ("name", hostname);
-
-        if (port > 0) {
-          char port_str[64];
-
-          snprintf (port_str, sizeof port_str, "%d", port);
-          attribute ("port", port_str);
-        }
+        attribute ("name", src->servers[i].u.hostname);
+        if (src->servers[i].port > 0)
+          attribute_format ("port", "%d", src->servers[i].port);
         break;
       }
 
       case drive_transport_unix: {
-        const char *socket = src->servers[i].u.socket;
-
         attribute ("transport", "unix");
-        attribute ("socket", socket);
+        attribute ("socket", src->servers[i].u.socket);
         break;
       }
       }

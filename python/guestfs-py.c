@@ -6205,6 +6205,65 @@ py_guestfs_journal_get (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_set_backend_settings (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  PyObject *py_settings;
+  char **settings = NULL;
+
+  if (!PyArg_ParseTuple (args, (char *) "OO:guestfs_set_backend_settings",
+                         &py_g, &py_settings))
+    goto out;
+  g = get_handle (py_g);
+  settings = get_string_list (py_settings);
+  if (!settings) goto out;
+
+  r = guestfs_set_backend_settings (g, settings);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  free (settings);
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_get_backend_settings (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  char **r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_get_backend_settings",
+                         &py_g))
+    goto out;
+  g = get_handle (py_g);
+
+  r = guestfs_get_backend_settings (g);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = put_string_list (r);
+  guestfs___free_string_list (r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_mount (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -21872,6 +21931,8 @@ static PyMethodDef methods[] = {
   { (char *) "get_program", py_guestfs_get_program, METH_VARARGS, NULL },
   { (char *) "add_drive_scratch", py_guestfs_add_drive_scratch, METH_VARARGS, NULL },
   { (char *) "journal_get", py_guestfs_journal_get, METH_VARARGS, NULL },
+  { (char *) "set_backend_settings", py_guestfs_set_backend_settings, METH_VARARGS, NULL },
+  { (char *) "get_backend_settings", py_guestfs_get_backend_settings, METH_VARARGS, NULL },
   { (char *) "mount", py_guestfs_mount, METH_VARARGS, NULL },
   { (char *) "sync", py_guestfs_sync, METH_VARARGS, NULL },
   { (char *) "touch", py_guestfs_touch, METH_VARARGS, NULL },

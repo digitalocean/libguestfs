@@ -2844,6 +2844,37 @@ class GuestFS(object):
         r = libguestfsmod.journal_get (self._o)
         return r
 
+    def set_backend_settings (self, settings):
+        """Set a list of zero or more settings which are passed
+        through to the current backend. Each setting is a string
+        which is interpreted in a backend-specific way, or
+        ignored if not understood by the backend.
+        
+        The default value is an empty list, unless the
+        environment variable "LIBGUESTFS_BACKEND_SETTINGS" was
+        set when the handle was created. This environment
+        variable contains a colon-separated list of settings.
+        
+        See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+        guestfs(3).
+        """
+        settings = list (settings)
+        self._check_not_closed ()
+        r = libguestfsmod.set_backend_settings (self._o, settings)
+        return r
+
+    def get_backend_settings (self):
+        """Return the current backend settings.
+        
+        See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+        guestfs(3).
+        
+        This function returns a list of strings.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.get_backend_settings (self._o)
+        return r
+
     def mount (self, mountable, mountpoint):
         """Mount a guest disk at a position in the filesystem.
         Block devices are named "/dev/sda", "/dev/sdb" and so

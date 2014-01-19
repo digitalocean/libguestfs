@@ -1,3 +1,83 @@
+2014-01-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.25.24.
+
+	init: Display clocksource (only when debugging is enabled).
+
+	launch: direct: Make sure we pass lpj= parameter when using TCG.
+	I have verified that 'refined-jiffies' is the clock source when using
+	TCG (ie. not kvm-clock which seems only to be used for KVM).
+
+2014-01-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Add force_tcg backend setting.
+	By using:
+
+	  export LIBGUESTFS_BACKEND_SETTINGS=force_tcg
+
+	you can force the libvirt backend to use TCG (software emulation)
+	instead of KVM (hardware accelerated virtualization).
+
+2014-01-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Add force_tcg backend setting.
+	By using:
+
+	  export LIBGUESTFS_BACKEND=direct
+	  export LIBGUESTFS_BACKEND_SETTINGS=force_tcg
+
+	you can force the direct backend to use TCG (software emulation)
+	instead of KVM (hardware accelerated virtualization).
+
+	This is sometimes useful, especially if you are trying to use
+	nested KVM on Intel.
+
+2014-01-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	New API: set-backend-settings, get-backend-settings.
+	Allow settings (an arbitrary list of strings) to be passed to the
+	current backend.  This will allow us to tweak how the backend works,
+	eg. by forcing TCG.
+
+	utils: Add regression test for C utility functions.
+
+	utils: Add utility function to split string into list of strings.
+
+	utils: Add utility function to copy string lists.
+
+	test-tool: Use size_t instead of int for array index.
+
+2014-01-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/nbd: Move wait for qemu-nbd to start up earlier.
+	tests/nbd/test-nbd.pl contains a hack (a call to sleep) to wait
+	for qemu-nbd to start up in another process.
+
+	This sleep was previously located before the call to $g->launch()
+	since that is where (previous to commit 4a0f5ed382) the backend would
+	have connected to the NBD server.
+
+	However in the new code, an initial NBD connection test is done when
+	the drive is added (ie. $g->add_drive (..., protocol=>"nbd")), which
+	duly failed intermittently because the qemu-nbd server had not opened
+	its socket yet.
+
+	Move the wait earlier -- just after the fork -- to avoid this.
+
+	This updates commit 4a0f5ed38233393e75ea69ff0595936aed0e8abb.
+
+2014-01-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	Use recommended timer settings for KVM (RHBZ#1053847).
+	See: https://bugzilla.redhat.com/show_bug.cgi?id=1053847#c0
+
+	Thanks: Cole Robinson, and several QEMU developers.
+
+2014-01-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Slightly simplify the XML generation code further.
+	This updates commit 96737fc5b7a0c9f92896f4a7d0f738a66c56d3b0.
+
 2014-01-17  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.25.23.

@@ -2771,6 +2771,21 @@ run_get_backend (ETERM *message)
 }
 
 static ETERM *
+run_get_backend_settings (ETERM *message)
+{
+  char **r;
+
+  r = guestfs_get_backend_settings (g);
+  if (r == NULL)
+    return make_error ("get_backend_settings");
+
+  ETERM *rt = make_string_list (r);
+  guestfs___free_string_list (r);
+
+  return rt;
+}
+
+static ETERM *
 run_get_cachedir (ETERM *message)
 {
   char *r;
@@ -8236,6 +8251,19 @@ run_set_backend (ETERM *message)
 }
 
 static ETERM *
+run_set_backend_settings (ETERM *message)
+{
+  CLEANUP_FREE_STRING_LIST char **settings = get_string_list (ARG (0));
+  int r;
+
+  r = guestfs_set_backend_settings (g, settings);
+  if (r == -1)
+    return make_error ("set_backend_settings");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_set_cachedir (ETERM *message)
 {
   CLEANUP_FREE char *cachedir;
@@ -10451,6 +10479,8 @@ dispatch (ETERM *message)
     return run_get_autosync (message);
   else if (atom_equals (fun, "get_backend"))
     return run_get_backend (message);
+  else if (atom_equals (fun, "get_backend_settings"))
+    return run_get_backend_settings (message);
   else if (atom_equals (fun, "get_cachedir"))
     return run_get_cachedir (message);
   else if (atom_equals (fun, "get_direct"))
@@ -11053,6 +11083,8 @@ dispatch (ETERM *message)
     return run_set_autosync (message);
   else if (atom_equals (fun, "set_backend"))
     return run_set_backend (message);
+  else if (atom_equals (fun, "set_backend_settings"))
+    return run_set_backend_settings (message);
   else if (atom_equals (fun, "set_cachedir"))
     return run_set_cachedir (message);
   else if (atom_equals (fun, "set_direct"))

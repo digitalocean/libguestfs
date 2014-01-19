@@ -1317,6 +1317,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_get_autosync (guestfs_h *g);
 #define GUESTFS_HAVE_GET_BACKEND 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_get_backend (guestfs_h *g);
 
+#define GUESTFS_HAVE_GET_BACKEND_SETTINGS 1
+extern GUESTFS_DLL_PUBLIC char **guestfs_get_backend_settings (guestfs_h *g);
+
 #define GUESTFS_HAVE_GET_CACHEDIR 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_get_cachedir (guestfs_h *g);
 
@@ -2616,6 +2619,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_set_autosync (guestfs_h *g, int autosync);
 #define GUESTFS_HAVE_SET_BACKEND 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_backend (guestfs_h *g, const char *backend);
 
+#define GUESTFS_HAVE_SET_BACKEND_SETTINGS 1
+extern GUESTFS_DLL_PUBLIC int guestfs_set_backend_settings (guestfs_h *g, char *const *settings);
+
 #define GUESTFS_HAVE_SET_CACHEDIR 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_cachedir (guestfs_h *g, const char *cachedir);
 
@@ -3663,6 +3669,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_GET_ATTACH_METHOD 1
 #define LIBGUESTFS_HAVE_GET_AUTOSYNC 1
 #define LIBGUESTFS_HAVE_GET_BACKEND 1
+#define LIBGUESTFS_HAVE_GET_BACKEND_SETTINGS 1
 #define LIBGUESTFS_HAVE_GET_CACHEDIR 1
 #define LIBGUESTFS_HAVE_GET_DIRECT 1
 #define LIBGUESTFS_HAVE_GET_E2ATTRS 1
@@ -3937,6 +3944,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_SET_ATTACH_METHOD 1
 #define LIBGUESTFS_HAVE_SET_AUTOSYNC 1
 #define LIBGUESTFS_HAVE_SET_BACKEND 1
+#define LIBGUESTFS_HAVE_SET_BACKEND_SETTINGS 1
 #define LIBGUESTFS_HAVE_SET_CACHEDIR 1
 #define LIBGUESTFS_HAVE_SET_DIRECT 1
 #define LIBGUESTFS_HAVE_SET_E2ATTRS 1

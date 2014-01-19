@@ -2189,6 +2189,12 @@ This handle property was previously called the "attach method".
 
 See C<$g-E<gt>set_backend> and L<guestfs(3)/BACKEND>.
 
+=item @settings = $g->get_backend_settings ();
+
+Return the current backend settings.
+
+See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+
 =item $cachedir = $g->get_cachedir ();
 
 Get the directory used by the handle to store the appliance cache.
@@ -5915,6 +5921,20 @@ This handle property was previously called the "attach method".
 
 See L<guestfs(3)/BACKEND>.
 
+=item $g->set_backend_settings (\@settings);
+
+Set a list of zero or more settings which are passed through to
+the current backend.  Each setting is a string which is interpreted
+in a backend-specific way, or ignored if not understood by the
+backend.
+
+The default value is an empty list, unless the environment
+variable C<LIBGUESTFS_BACKEND_SETTINGS> was set when the handle
+was created.  This environment variable contains a colon-separated
+list of settings.
+
+See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+
 =item $g->set_cachedir ($cachedir);
 
 Set the directory used by the handle to store the appliance
@@ -8495,6 +8515,13 @@ use vars qw(%guestfs_introspection);
     ],
     name => "get_backend",
     description => "get the backend",
+  },
+  "get_backend_settings" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "get_backend_settings",
+    description => "get per-backend settings",
   },
   "get_cachedir" => {
     ret => 'string',
@@ -11179,6 +11206,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "set_backend",
     description => "set the backend",
+  },
+  "set_backend_settings" => {
+    ret => 'void',
+    args => [
+      [ 'settings', 'string list', 0 ],
+    ],
+    name => "set_backend_settings",
+    description => "set per-backend settings",
   },
   "set_cachedir" => {
     ret => 'void',

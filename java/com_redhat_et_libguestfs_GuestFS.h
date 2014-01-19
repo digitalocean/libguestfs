@@ -1199,6 +1199,22 @@ JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1journal_1
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _set_backend_settings
+ * Signature: (J[Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1backend_1settings
+  (JNIEnv *, jobject, jlong, jobjectArray);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _get_backend_settings
+ * Signature: (J)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1backend_1settings
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _mount
  * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */

@@ -5336,6 +5336,58 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * set per-backend settings
+   * <p>
+   * Set a list of zero or more settings which are passed
+   * through to the current backend. Each setting is a string
+   * which is interpreted in a backend-specific way, or
+   * ignored if not understood by the backend.
+   * <p>
+   * The default value is an empty list, unless the
+   * environment variable "LIBGUESTFS_BACKEND_SETTINGS" was
+   * set when the handle was created. This environment
+   * variable contains a colon-separated list of settings.
+   * <p>
+   * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+   * guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_backend_settings (String[] settings)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_backend_settings: handle is closed");
+
+    _set_backend_settings (g, settings);
+  }
+
+  private native void _set_backend_settings (long g, String[] settings)
+    throws LibGuestFSException;
+
+  /**
+   * get per-backend settings
+   * <p>
+   * Return the current backend settings.
+   * <p>
+   * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+   * guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] get_backend_settings ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_backend_settings: handle is closed");
+
+    return _get_backend_settings (g);
+  }
+
+  private native String[] _get_backend_settings (long g)
+    throws LibGuestFSException;
+
+  /**
    * mount a guest disk at a position in the filesystem
    * <p>
    * Mount a guest disk at a position in the filesystem.

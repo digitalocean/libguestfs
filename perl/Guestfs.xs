@@ -2971,6 +2971,36 @@ PREINIT:
       guestfs_free_xattr_list (r);
 
 void
+set_backend_settings (g, settings)
+      guestfs_h *g;
+      char **settings;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_backend_settings (g, settings);
+      free (settings);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+get_backend_settings (g)
+      guestfs_h *g;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_get_backend_settings (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
 mount (g, mountable, mountpoint)
       guestfs_h *g;
       char *mountable;

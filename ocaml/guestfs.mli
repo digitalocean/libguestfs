@@ -752,6 +752,9 @@ val get_autosync : t -> bool
 val get_backend : t -> string
 (** get the backend *)
 
+val get_backend_settings : t -> string array
+(** get per-backend settings *)
+
 val get_cachedir : t -> string
 (** get the appliance cache directory *)
 
@@ -1699,6 +1702,9 @@ val set_autosync : t -> bool -> unit
 val set_backend : t -> string -> unit
 (** set the backend *)
 
+val set_backend_settings : t -> string array -> unit
+(** set per-backend settings *)
+
 val set_cachedir : t -> string option -> unit
 (** set the appliance cache directory *)
 
@@ -2252,6 +2258,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method get_attach_method : unit -> string
   method get_autosync : unit -> bool
   method get_backend : unit -> string
+  method get_backend_settings : unit -> string array
   method get_cachedir : unit -> string
   method get_direct : unit -> bool
   method get_e2attrs : string -> string
@@ -2563,6 +2570,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method set_attach_method : string -> unit
   method set_autosync : bool -> unit
   method set_backend : string -> unit
+  method set_backend_settings : string array -> unit
   method set_cachedir : string option -> unit
   method set_direct : bool -> unit
   method set_e2attrs : ?clear:bool -> string -> string -> unit

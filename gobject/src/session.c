@@ -7560,6 +7560,79 @@ guestfs_session_journal_get(GuestfsSession *session, GError **err)
 }
 
 /**
+ * guestfs_session_set_backend_settings:
+ * @session: (transfer none): A GuestfsSession object
+ * @settings: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
+ * @err: A GError object to receive any generated errors
+ *
+ * set per-backend settings
+ *
+ * Set a list of zero or more settings which are passed through to the
+ * current backend. Each setting is a string which is interpreted in a
+ * backend-specific way, or ignored if not understood by the backend.
+ * 
+ * The default value is an empty list, unless the environment variable
+ * @LIBGUESTFS_BACKEND_SETTINGS was set when the handle was created. This
+ * environment variable contains a colon-separated list of settings.
+ * 
+ * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_set_backend_settings(GuestfsSession *session, gchar *const *settings, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_backend_settings");
+    return FALSE;
+  }
+
+  int ret = guestfs_set_backend_settings (g, settings);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_get_backend_settings:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * get per-backend settings
+ *
+ * Return the current backend settings.
+ * 
+ * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ */
+gchar **
+guestfs_session_get_backend_settings(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_backend_settings");
+    return NULL;
+  }
+
+  char **ret = guestfs_get_backend_settings (g);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
  * guestfs_session_mount:
  * @session: (transfer none): A GuestfsSession object
  * @mountable: (transfer none) (type filename):

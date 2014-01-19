@@ -3597,6 +3597,21 @@ func (g *Guestfs) Get_backend () (string, *GuestfsError) {
     return C.GoString (r), nil
 }
 
+/* get_backend_settings : get per-backend settings */
+func (g *Guestfs) Get_backend_settings () ([]string, *GuestfsError) {
+    if g.g == nil {
+        return nil, closed_handle_error ("get_backend_settings")
+    }
+
+    r := C.guestfs_get_backend_settings (g.g)
+
+    if r == nil {
+        return nil, get_error_from_handle (g, "get_backend_settings")
+    }
+    defer free_string_list (r)
+    return return_string_list (r), nil
+}
+
 /* get_cachedir : get the appliance cache directory */
 func (g *Guestfs) Get_cachedir () (string, *GuestfsError) {
     if g.g == nil {
@@ -10174,6 +10189,23 @@ func (g *Guestfs) Set_backend (backend string) *GuestfsError {
 
     if r == -1 {
         return get_error_from_handle (g, "set_backend")
+    }
+    return nil
+}
+
+/* set_backend_settings : set per-backend settings */
+func (g *Guestfs) Set_backend_settings (settings []string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("set_backend_settings")
+    }
+
+    c_settings := arg_string_list (settings)
+    defer free_string_list (c_settings)
+
+    r := C.guestfs_set_backend_settings (g.g, c_settings)
+
+    if r == -1 {
+        return get_error_from_handle (g, "set_backend_settings")
     }
     return nil
 }

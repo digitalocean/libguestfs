@@ -503,6 +503,13 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <a class="link" href="GuestfsXAttr.html" title="GuestfsXAttr"><span class="returnvalue">GuestfsXAttr</span></a> **     <a class="link" href="GuestfsSession.html#guestfs-session-journal-get" title="guestfs_session_journal_get ()">guestfs_session_journal_get</a>         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-backend-settings" title="guestfs_session_set_backend_settings ()">guestfs_session_set_backend_settings</a>
+                                                        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">gchar</span> *const *settings</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gchar</span> **            <a class="link" href="GuestfsSession.html#guestfs-session-get-backend-settings" title="guestfs_session_get_backend_settings ()">guestfs_session_get_backend_settings</a>
+                                                        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-mount" title="guestfs_session_mount ()">guestfs_session_mount</a>               (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *mountpoint</code></em>,
@@ -9672,6 +9679,94 @@ protocol.
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>an array of XAttr objects, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> GuestfsXAttr]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-set-backend-settings"></a><h3>guestfs_session_set_backend_settings ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_set_backend_settings
+                                                        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">gchar</span> *const *settings</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+set per-backend settings
+</p>
+<p>
+Set a list of zero or more settings which are passed through to the
+current backend. Each setting is a string which is interpreted in a
+backend-specific way, or ignored if not understood by the backend.
+</p>
+<p>
+The default value is an empty list, unless the environment variable
+<em class="parameter"><code>LIBGUESTFS_BACKEND_SETTINGS</code></em> was set when the handle was created. This
+environment variable contains a colon-separated list of settings.
+</p>
+<p>
+See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>settings</code></em> :</span></p></td>
+<td>an array of strings. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-get-backend-settings"></a><h3>guestfs_session_get_backend_settings ()</h3>
+<pre class="programlisting"><span class="returnvalue">gchar</span> **            guestfs_session_get_backend_settings
+                                                        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+get per-backend settings
+</p>
+<p>
+Return the current backend settings.
+</p>
+<p>
+See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an array of returned strings, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span>
 </td>
 </tr>
 </tbody>

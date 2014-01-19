@@ -276,6 +276,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   CLEANUP_FREE_STRINGSBUF DECLARE_STRINGSBUF (cmdline);
   int daemon_accept_sock = -1, console_sock = -1;
   int r;
+  int flags;
   int sv[2];
   char guestfsd_sock[256];
   struct sockaddr_un addr;
@@ -290,6 +291,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   int virtio_scsi;
   struct hv_param *hp;
   bool has_kvm;
+  bool force_tcg;
 
   /* At present you must add drives before starting the appliance.  In
    * future when we enable hotplugging you won't need to do this.
@@ -299,7 +301,10 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
     return -1;
   }
 
-  debian_kvm_warning (g);
+  force_tcg = guestfs___get_backend_setting_bool (g, "force_tcg");
+
+  if (!force_tcg)
+    debian_kvm_warning (g);
 
   guestfs___launch_send_progress (g, 0);
 
@@ -446,7 +451,10 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
    */
   if (qemu_supports (g, data, "-machine")) {
     ADD_CMDLINE ("-machine");
-    ADD_CMDLINE ("accel=kvm:tcg");
+    if (!force_tcg)
+      ADD_CMDLINE ("accel=kvm:tcg");
+    else
+      ADD_CMDLINE ("accel=tcg");
   } else {
     /* qemu sometimes needs this option to enable hardware
      * virtualization, but some versions of 'qemu-kvm' will use KVM
@@ -456,22 +464,9 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
      * available will cause qemu to fail.  A giant clusterfuck with
      * the qemu command line, again.
      */
-    if (qemu_supports (g, data, "-enable-kvm") && has_kvm)
+    if (has_kvm && !force_tcg && qemu_supports (g, data, "-enable-kvm"))
       ADD_CMDLINE ("-enable-kvm");
   }
-
-#if defined(__i386__) || defined (__x86_64__)
-  /* -cpu host only works if KVM is available. */
-  if (has_kvm) {
-    /* Specify the host CPU for speed, and kvmclock for stability. */
-    ADD_CMDLINE ("-cpu");
-    ADD_CMDLINE ("host,+kvmclock");
-  } else {
-    /* Specify default CPU for speed, and kvmclock for stability. */
-    ADD_CMDLINE ("-cpu");
-    ADD_CMDLINE_PRINTF ("qemu%d,+kvmclock", SIZEOF_LONG*8);
-  }
-#endif
 
   if (g->smp > 1) {
     ADD_CMDLINE ("-smp");
@@ -484,7 +479,9 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   /* Force exit instead of reboot on panic */
   ADD_CMDLINE ("-no-reboot");
 
-  /* These options recommended by KVM developers to improve reliability. */
+  /* These are recommended settings, see RHBZ#1053847. */
+  ADD_CMDLINE ("-rtc");
+  ADD_CMDLINE ("driftfix=slew");
 #ifndef __arm__
   /* qemu-system-arm advertises the -no-hpet option but if you try
    * to use it, it usefully says:
@@ -492,12 +489,9 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
    * Cheers qemu developers.  How many years have we been asking for
    * capabilities?  Could be 3 or 4 years, I forget.
    */
-  if (qemu_supports (g, data, "-no-hpet"))
-    ADD_CMDLINE ("-no-hpet");
+  ADD_CMDLINE ("-no-hpet");
 #endif
-
-  if (qemu_supports (g, data, "-rtc-td-hack"))
-    ADD_CMDLINE ("-rtc-td-hack");
+  ADD_CMDLINE ("-no-kvm-pit-reinjection");
 
   ADD_CMDLINE ("-kernel");
   ADD_CMDLINE (kernel);
@@ -642,7 +636,11 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   }
 
   ADD_CMDLINE ("-append");
-  ADD_CMDLINE_STRING_NODUP (guestfs___appliance_command_line (g, appliance_dev, 0));
+  flags = 0;
+  if (!has_kvm || force_tcg)
+    flags |= APPLIANCE_COMMAND_LINE_IS_TCG;
+  ADD_CMDLINE_STRING_NODUP (guestfs___appliance_command_line (g, appliance_dev,
+                                                              flags));
 
   /* Note: custom command line parameters must come last so that
    * qemu -set parameters can modify previously added options.

@@ -146,6 +146,7 @@
 -export([get_attach_method/1]).
 -export([get_autosync/1]).
 -export([get_backend/1]).
+-export([get_backend_settings/1]).
 -export([get_cachedir/1]).
 -export([get_direct/1]).
 -export([get_e2attrs/2]).
@@ -457,6 +458,7 @@
 -export([set_attach_method/2]).
 -export([set_autosync/2]).
 -export([set_backend/2]).
+-export([set_backend_settings/2]).
 -export([set_cachedir/2]).
 -export([set_direct/2]).
 -export([set_e2attrs/3, set_e2attrs/4]).
@@ -1008,6 +1010,9 @@ get_autosync(G) ->
 
 get_backend(G) ->
   call_port(G, {get_backend}).
+
+get_backend_settings(G) ->
+  call_port(G, {get_backend_settings}).
 
 get_cachedir(G) ->
   call_port(G, {get_cachedir}).
@@ -2005,6 +2010,9 @@ set_autosync(G, Autosync) ->
 
 set_backend(G, Backend) ->
   call_port(G, {set_backend, Backend}).
+
+set_backend_settings(G, Settings) ->
+  call_port(G, {set_backend_settings, Settings}).
 
 set_cachedir(G, Cachedir) ->
   call_port(G, {set_cachedir, Cachedir}).

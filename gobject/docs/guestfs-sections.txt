@@ -1014,6 +1014,8 @@ guestfs_session_set_program
 guestfs_session_get_program
 guestfs_session_add_drive_scratch
 guestfs_session_journal_get
+guestfs_session_set_backend_settings
+guestfs_session_get_backend_settings
 guestfs_session_mount
 guestfs_session_sync
 guestfs_session_touch

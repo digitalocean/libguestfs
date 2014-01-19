@@ -5133,6 +5133,36 @@ ocaml_guestfs_get_backend (value gv)
 }
 
 /* Automatically generated wrapper for function
+ * val get_backend_settings : t -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_get_backend_settings (value gv);
+
+value
+ocaml_guestfs_get_backend_settings (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_backend_settings");
+
+  size_t i;
+  char **r;
+
+  r = guestfs_get_backend_settings (g);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "get_backend_settings");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val get_cachedir : t -> string
  */
 
@@ -15456,6 +15486,35 @@ ocaml_guestfs_set_backend (value gv, value backendv)
   free (backend);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "set_backend");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_backend_settings : t -> string array -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_set_backend_settings (value gv, value settingsv);
+
+value
+ocaml_guestfs_set_backend_settings (value gv, value settingsv)
+{
+  CAMLparam2 (gv, settingsv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_backend_settings");
+
+  char **settings = ocaml_guestfs_strings_val (g, settingsv);
+  int r;
+
+  r = guestfs_set_backend_settings (g, settings);
+  guestfs___free_string_list (settings);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_backend_settings");
 
   rv = Val_unit;
   CAMLreturn (rv);

@@ -2119,6 +2119,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_get_backend_settings (IntPtr h);
+
+    /// <summary>
+    /// get per-backend settings
+    /// </summary>
+    public string[] get_backend_settings ()
+    {
+      string[] r;
+      r = guestfs_get_backend_settings (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string guestfs_get_cachedir (IntPtr h);
 
     /// <summary>
@@ -6579,6 +6594,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_set_backend (_handle, backend);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_backend_settings (IntPtr h, [In] string[] settings);
+
+    /// <summary>
+    /// set per-backend settings
+    /// </summary>
+    public void set_backend_settings (string[] settings)
+    {
+      int r;
+      r = guestfs_set_backend_settings (_handle, settings);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
