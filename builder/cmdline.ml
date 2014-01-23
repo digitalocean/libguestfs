@@ -72,6 +72,8 @@ let parse_cmdline () =
   let delete = ref [] in
   let add_delete s = delete := s :: !delete in
 
+  let delete_on_failure = ref true in
+
   let edit = ref [] in
   let add_edit arg =
     let i =
@@ -117,7 +119,27 @@ let parse_cmdline () =
     install := pkgs @ !install
   in
 
-  let list_long = ref false in
+  let links = ref [] in
+  let add_link arg =
+    let target, lns =
+      match string_nsplit ":" arg with
+      | [] | [_] ->
+        eprintf (f_"%s: invalid --link format, see the man page.\n") prog;
+        exit 1
+      | target :: lns -> target, lns in
+    links := (target, lns) :: !links
+  in
+
+  let list_format = ref `Short in
+  let list_set_long () = list_format := `Long in
+  let list_set_format arg =
+    list_format := match arg with
+    | "short" -> `Short
+    | "long" -> `Long
+    | "json" -> `Json
+    | fmt ->
+      eprintf (f_"%s: invalid --list-format type '%s', see the man page.\n") prog fmt;
+      exit 1 in
 
   let memsize = ref None in
   let set_memsize arg = memsize := Some arg in
@@ -169,6 +191,10 @@ let parse_cmdline () =
   let add_source arg = sources := arg :: !sources in
 
   let sync = ref true in
+
+  let timezone = ref None in
+  let set_timezone s = timezone := Some s in
+
   let update = ref false in
 
   let upload = ref [] in
@@ -220,6 +246,8 @@ let parse_cmdline () =
     "--delete",  Arg.String add_delete,     "name" ^ " " ^ s_"Delete a file or dir";
     "--delete-cache", Arg.Unit delete_cache_mode,
                                             " " ^ s_"Delete the template cache";
+    "--no-delete-on-failure", Arg.Clear delete_on_failure,
+                                            " " ^ s_"Don't delete output file on failure";
     "--edit",    Arg.String add_edit,       "file:expr" ^ " " ^ s_"Edit file with Perl expr";
     "--fingerprint", Arg.String add_fingerprint,
                                             "AAAA.." ^ " " ^ s_"Fingerprint of valid signing key";
@@ -233,9 +261,12 @@ let parse_cmdline () =
     "--gpg",    Arg.Set_string gpg,         "gpg" ^ " " ^ s_"Set GPG binary/command";
     "--hostname", Arg.String set_hostname,  "hostname" ^ " " ^ s_"Set the hostname";
     "--install", Arg.String add_install,    "pkg,pkg" ^ " " ^ s_"Add package(s) to install";
+    "--link",    Arg.String add_link,       "target:link.." ^ " " ^ s_"Create symbolic links";
     "-l",        Arg.Unit list_mode,        " " ^ s_"List available templates";
     "--list",    Arg.Unit list_mode,        ditto;
-    "--long",    Arg.Set list_long,         ditto;
+    "--long",    Arg.Unit list_set_long,    " " ^ s_"Shortcut for --list-format short";
+    "--list-format", Arg.String list_set_format,
+                                            "short|long|json" ^ " " ^ s_"Set the format for --list (default: short)";
     "--no-logfile", Arg.Set scrub_logfile,  " " ^ s_"Scrub build log file";
     "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
     "-m",        Arg.Int set_memsize,       "mb" ^ " " ^ s_"Set memory size";
@@ -260,6 +291,7 @@ let parse_cmdline () =
     "--smp",     Arg.Int set_smp,           "vcpus" ^ " " ^ s_"Set number of vCPUs";
     "--source",  Arg.String add_source,     "URL" ^ " " ^ s_"Set source URL";
     "--no-sync", Arg.Clear sync,            " " ^ s_"Do not fsync output file on exit";
+    "--timezone",Arg.String set_timezone,   "timezone" ^ " " ^ s_"Set the default timezone";
     "--update",  Arg.Set update,            " " ^ s_"Update core packages";
     "--upload",  Arg.String add_upload,     "file:dest" ^ " " ^ s_"Upload file to dest";
     "-v",        Arg.Set debug,             " " ^ s_"Enable debugging messages";
@@ -299,6 +331,7 @@ read the man page virt-builder(1).
   let curl = !curl in
   let debug = !debug in
   let delete = List.rev !delete in
+  let delete_on_failure = !delete_on_failure in
   let edit = List.rev !edit in
   let fingerprints = List.rev !fingerprints in
   let firstboot = List.rev !firstboot in
@@ -306,8 +339,9 @@ read the man page virt-builder(1).
   let format = match !format with "" -> None | s -> Some s in
   let gpg = !gpg in
   let hostname = !hostname in
-  let install = !install in
-  let list_long = !list_long in
+  let install = List.rev !install in
+  let list_format = !list_format in
+  let links = List.rev !links in
   let memsize = !memsize in
   let mkdirs = List.rev !mkdirs in
   let network = !network in
@@ -321,6 +355,7 @@ read the man page virt-builder(1).
   let smp = !smp in
   let sources = List.rev !sources in
   let sync = !sync in
+  let timezone = !timezone in
   let update = !update in
   let upload = List.rev !upload in
   let writes = List.rev !writes in
@@ -418,7 +453,9 @@ read the man page virt-builder(1).
     List.combine sources fingerprints in
 
   mode, arg,
-  attach, cache, check_signature, curl, debug, delete, edit,
-  firstboot, run, format, gpg, hostname, install, list_long, memsize, mkdirs,
+  attach, cache, check_signature, curl, debug, delete, delete_on_failure,
+  edit, firstboot, run, format, gpg, hostname, install, list_format, links,
+  memsize, mkdirs,
   network, output, password_crypto, quiet, root_password, scrub,
-  scrub_logfile, size, smp, sources, sync, update, upload, writes
+  scrub_logfile, size, smp, sources, sync, timezone, update, upload,
+  writes

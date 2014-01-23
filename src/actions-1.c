@@ -6844,3 +6844,150 @@ guestfs_syslinux_argv (guestfs_h *g,
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_copy_attributes_argv (guestfs_h *g,
+                              const char *src,
+                              const char *dest,
+                              const struct guestfs_copy_attributes_argv *optargs)
+{
+  struct guestfs_copy_attributes_argv optargs_null;
+  if (!optargs) {
+    optargs_null.bitmask = 0;
+    optargs = &optargs_null;
+  }
+
+  struct guestfs_copy_attributes_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "copy_attributes", 15);
+  if (src == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "copy_attributes", "src");
+    return -1;
+  }
+  if (dest == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "copy_attributes", "dest");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffff0)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "copy_attributes", "copy_attributes");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "copy_attributes");
+    fprintf (trace_buffer.fp, " \"%s\"", src);
+    fprintf (trace_buffer.fp, " \"%s\"", dest);
+    if (optargs->bitmask & GUESTFS_COPY_ATTRIBUTES_ALL_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "all", optargs->all ? "true" : "false");
+    }
+    if (optargs->bitmask & GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "mode", optargs->mode ? "true" : "false");
+    }
+    if (optargs->bitmask & GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "xattributes", optargs->xattributes ? "true" : "false");
+    }
+    if (optargs->bitmask & GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "ownership", optargs->ownership ? "true" : "false");
+    }
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "copy_attributes") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "copy_attributes", "-1");
+    return -1;
+  }
+
+  args.src = (char *) src;
+  args.dest = (char *) dest;
+  if (optargs->bitmask & GUESTFS_COPY_ATTRIBUTES_ALL_BITMASK) {
+    args.all = optargs->all;
+  } else {
+    args.all = 0;
+  }
+  if (optargs->bitmask & GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK) {
+    args.mode = optargs->mode;
+  } else {
+    args.mode = 0;
+  }
+  if (optargs->bitmask & GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK) {
+    args.xattributes = optargs->xattributes;
+  } else {
+    args.xattributes = 0;
+  }
+  if (optargs->bitmask & GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK) {
+    args.ownership = optargs->ownership;
+  } else {
+    args.ownership = 0;
+  }
+  serial = guestfs___send (g, GUESTFS_PROC_COPY_ATTRIBUTES,
+                           progress_hint, optargs->bitmask,
+                           (xdrproc_t) xdr_guestfs_copy_attributes_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "copy_attributes", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "copy_attributes", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "copy_attributes", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_COPY_ATTRIBUTES, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "copy_attributes", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "copy_attributes", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "copy_attributes", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "copy_attributes",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "copy_attributes");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+

@@ -434,6 +434,65 @@ guestfs_compress_out_va (guestfs_h *g,
 }
 
 int
+guestfs_copy_attributes (guestfs_h *g,
+                         const char *src,
+                         const char *dest,
+                         ...)
+{
+  va_list optargs;
+
+  va_start (optargs, dest);
+  int r = guestfs_copy_attributes_va (g, src, dest, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_copy_attributes_va (guestfs_h *g,
+                            const char *src,
+                            const char *dest,
+                            va_list args)
+{
+  struct guestfs_copy_attributes_argv optargs_s;
+  struct guestfs_copy_attributes_argv *optargs = &optargs_s;
+  int i;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_COPY_ATTRIBUTES_ALL:
+      optargs_s.all = va_arg (args, int);
+      break;
+    case GUESTFS_COPY_ATTRIBUTES_MODE:
+      optargs_s.mode = va_arg (args, int);
+      break;
+    case GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES:
+      optargs_s.xattributes = va_arg (args, int);
+      break;
+    case GUESTFS_COPY_ATTRIBUTES_OWNERSHIP:
+      optargs_s.ownership = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "copy_attributes", i);
+      return -1;
+    }
+
+    uint64_t i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "copy_attributes");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_copy_attributes_argv (g, src, dest, optargs);
+}
+
+int
 guestfs_copy_device_to_device (guestfs_h *g,
                                const char *src,
                                const char *dest,

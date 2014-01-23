@@ -17,6 +17,32 @@
 
 include $(top_srcdir)/subdir-rules.mk
 
+EXTRA_DIST = \
+	rhbz503169c13.sh \
+	rhbz557655.sh \
+	rhbz557655-expected.stdout \
+	rhbz557655-expected.stderr \
+	rhbz563450.sh \
+	rhbz563450b.sh \
+	rhbz576879.sh \
+	rhbz578407.sh \
+	rhbz580246.sh \
+	rhbz602997.sh \
+	rhbz690819.sh \
+	rhbz727178.sh \
+	rhbz789960.sh \
+	rhbz811649.sh \
+	rhbz895904.sh \
+	rhbz909624.sh \
+	rhbz957772.sh \
+	rhbz975797.sh \
+	rhbz1001875.sh \
+	rhbz1044014.sh \
+	rhbz1044014.in \
+	rhbz1044014.xml \
+	rhbz1054761.sh \
+	test-noexec-stack.pl
+
 TESTS = \
 	rhbz501893 \
 	rhbz503169c13.sh \
@@ -36,7 +62,13 @@ TESTS = \
 	rhbz957772.sh \
 	rhbz975797.sh \
 	rhbz1001875.sh \
+	rhbz1054761.sh \
+	rhbz1055452 \
 	test-noexec-stack.pl
+
+if HAVE_LIBVIRT
+TESTS += rhbz1044014.sh
+endif
 
 tests_not_run = \
 	rhbz727178.sh \
@@ -49,7 +81,12 @@ TESTS_ENVIRONMENT = \
 check_PROGRAMS = \
 	rhbz501893 \
 	rhbz790721 \
-	rhbz914931
+	rhbz914931 \
+	rhbz1055452
+
+if HAVE_LIBVIRT
+check_PROGRAMS += rhbz1044014
+endif
 
 rhbz501893_SOURCES = rhbz501893.c
 rhbz501893_CPPFLAGS = \
@@ -81,11 +118,33 @@ rhbz914931_CFLAGS = \
 rhbz914931_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
-EXTRA_DIST = \
-	$(TESTS) \
-	$(tests_not_run) \
-	rhbz557655-expected.stdout \
-	rhbz557655-expected.stderr
+if HAVE_LIBVIRT
+rhbz1044014_SOURCES = rhbz1044014.c
+rhbz1044014_CPPFLAGS = \
+	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+rhbz1044014_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
+	$(LIBVIRT_CFLAGS)
+rhbz1044014_LDADD = \
+        $(top_builddir)/src/libutils.la \
+        $(top_builddir)/src/libguestfs.la \
+        $(LIBVIRT_LIBS) \
+        $(LIBXML2_LIBS) \
+        $(top_builddir)/gnulib/lib/libgnu.la
+endif
+
+rhbz1055452_SOURCES = rhbz1055452.c
+rhbz1055452_CPPFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-DGUESTFS_PRIVATE=1
+rhbz1055452_CFLAGS = \
+	-pthread \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+rhbz1055452_LDADD = \
+	$(top_builddir)/src/libguestfs.la
 
 check-slow:
 	$(MAKE) TESTS="rhbz909624.sh" check

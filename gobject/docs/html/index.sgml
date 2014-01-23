@@ -162,6 +162,8 @@
 <ANCHOR id="guestfs-session-get-program" href="guestfs/GuestfsSession.html#guestfs-session-get-program">
 <ANCHOR id="guestfs-session-add-drive-scratch" href="guestfs/GuestfsSession.html#guestfs-session-add-drive-scratch">
 <ANCHOR id="guestfs-session-journal-get" href="guestfs/GuestfsSession.html#guestfs-session-journal-get">
+<ANCHOR id="guestfs-session-set-backend-settings" href="guestfs/GuestfsSession.html#guestfs-session-set-backend-settings">
+<ANCHOR id="guestfs-session-get-backend-settings" href="guestfs/GuestfsSession.html#guestfs-session-get-backend-settings">
 <ANCHOR id="guestfs-session-mount" href="guestfs/GuestfsSession.html#guestfs-session-mount">
 <ANCHOR id="guestfs-session-sync" href="guestfs/GuestfsSession.html#guestfs-session-sync">
 <ANCHOR id="guestfs-session-touch" href="guestfs/GuestfsSession.html#guestfs-session-touch">
@@ -555,6 +557,7 @@
 <ANCHOR id="guestfs-session-journal-set-data-threshold" href="guestfs/GuestfsSession.html#guestfs-session-journal-set-data-threshold">
 <ANCHOR id="guestfs-session-aug-setm" href="guestfs/GuestfsSession.html#guestfs-session-aug-setm">
 <ANCHOR id="guestfs-session-aug-label" href="guestfs/GuestfsSession.html#guestfs-session-aug-label">
+<ANCHOR id="guestfs-session-copy-attributes" href="guestfs/GuestfsSession.html#guestfs-session-copy-attributes">
 <ANCHOR id="GuestfsSession.signal-details" href="guestfs/GuestfsSession.html#GuestfsSession.signal-details">
 <ANCHOR id="GuestfsSession-appliance" href="guestfs/GuestfsSession.html#GuestfsSession-appliance">
 <ANCHOR id="GuestfsSession-close" href="guestfs/GuestfsSession.html#GuestfsSession-close">
@@ -1443,6 +1446,20 @@
 <ANCHOR id="guestfs-remount-new" href="guestfs/GuestfsRemount.html#guestfs-remount-new">
 <ANCHOR id="GuestfsRemount.property-details" href="guestfs/GuestfsRemount.html#GuestfsRemount.property-details">
 <ANCHOR id="GuestfsRemount--rw" href="guestfs/GuestfsRemount.html#GuestfsRemount--rw">
+<ANCHOR id="GuestfsCopyAttributes" href="guestfs/GuestfsCopyAttributes.html">
+<ANCHOR id="GuestfsCopyAttributes.synopsis" href="guestfs/GuestfsCopyAttributes.html#GuestfsCopyAttributes.synopsis">
+<ANCHOR id="GuestfsCopyAttributes.object-hierarchy" href="guestfs/GuestfsCopyAttributes.html#GuestfsCopyAttributes.object-hierarchy">
+<ANCHOR id="GuestfsCopyAttributes.properties" href="guestfs/GuestfsCopyAttributes.html#GuestfsCopyAttributes.properties">
+<ANCHOR id="GuestfsCopyAttributes.description" href="guestfs/GuestfsCopyAttributes.html#GuestfsCopyAttributes.description">
+<ANCHOR id="GuestfsCopyAttributes.details" href="guestfs/GuestfsCopyAttributes.html#GuestfsCopyAttributes.details">
+<ANCHOR id="GuestfsCopyAttributes-struct" href="guestfs/GuestfsCopyAttributes.html#GuestfsCopyAttributes-struct">
+<ANCHOR id="GuestfsCopyAttributesClass" href="guestfs/GuestfsCopyAttributes.html#GuestfsCopyAttributesClass">
+<ANCHOR id="guestfs-copy-attributes-new" href="guestfs/GuestfsCopyAttributes.html#guestfs-copy-attributes-new">
+<ANCHOR id="GuestfsCopyAttributes.property-details" href="guestfs/GuestfsCopyAttributes.html#GuestfsCopyAttributes.property-details">
+<ANCHOR id="GuestfsCopyAttributes--all" href="guestfs/GuestfsCopyAttributes.html#GuestfsCopyAttributes--all">
+<ANCHOR id="GuestfsCopyAttributes--mode" href="guestfs/GuestfsCopyAttributes.html#GuestfsCopyAttributes--mode">
+<ANCHOR id="GuestfsCopyAttributes--ownership" href="guestfs/GuestfsCopyAttributes.html#GuestfsCopyAttributes--ownership">
+<ANCHOR id="GuestfsCopyAttributes--xattributes" href="guestfs/GuestfsCopyAttributes.html#GuestfsCopyAttributes--xattributes">
 <ANCHOR id="annotation-glossterm-allow-none" href="guestfs/annotation-glossary.html#annotation-glossterm-allow-none">
 <ANCHOR id="annotation-glossterm-array" href="guestfs/annotation-glossary.html#annotation-glossterm-array">
 <ANCHOR id="annotation-glossterm-element-type" href="guestfs/annotation-glossary.html#annotation-glossterm-element-type">

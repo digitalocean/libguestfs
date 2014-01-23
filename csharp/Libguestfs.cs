@@ -1333,6 +1333,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_copy_attributes_argv (IntPtr h, [In] string src, [In] string dest, void *);
+
+    /// <summary>
+    /// copy the attributes of a path (file/directory) to another
+    /// </summary>
+    public void copy_attributes (string src, string dest)
+    {
+      int r;
+      r = guestfs_copy_attributes_argv (_handle, src, dest, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_copy_device_to_device_argv (IntPtr h, [In] string src, [In] string dest, void *);
 
     /// <summary>
@@ -2099,6 +2113,21 @@ namespace Guestfs
     {
       string r;
       r = guestfs_get_backend (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_get_backend_settings (IntPtr h);
+
+    /// <summary>
+    /// get per-backend settings
+    /// </summary>
+    public string[] get_backend_settings ()
+    {
+      string[] r;
+      r = guestfs_get_backend_settings (_handle);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
@@ -6565,6 +6594,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_set_backend (_handle, backend);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_backend_settings (IntPtr h, [In] string[] settings);
+
+    /// <summary>
+    /// set per-backend settings
+    /// </summary>
+    public void set_backend_settings (string[] settings)
+    {
+      int r;
+      r = guestfs_set_backend_settings (_handle, settings);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }

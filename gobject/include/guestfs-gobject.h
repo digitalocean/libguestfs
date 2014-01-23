@@ -92,3 +92,4 @@
 #include <guestfs-gobject/optargs-mktemp.h>
 #include <guestfs-gobject/optargs-syslinux.h>
 #include <guestfs-gobject/optargs-remount.h>
+#include <guestfs-gobject/optargs-copy_attributes.h>

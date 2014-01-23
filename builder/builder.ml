@@ -36,10 +36,12 @@ let prog = Filename.basename Sys.executable_name
 let main () =
   (* Command line argument parsing - see cmdline.ml. *)
   let mode, arg,
-    attach, cache, check_signature, curl, debug, delete, edit,
-    firstboot, run, format, gpg, hostname, install, list_long, memsize, mkdirs,
+    attach, cache, check_signature, curl, debug, delete, delete_on_failure,
+    edit, firstboot, run, format, gpg, hostname, install, list_format, links,
+    memsize, mkdirs,
     network, output, password_crypto, quiet, root_password, scrub,
-    scrub_logfile, size, smp, sources, sync, update, upload, writes =
+    scrub_logfile, size, smp, sources, sync, timezone, update, upload,
+    writes =
     parse_cmdline () in
 
   (* Timestamped messages in ordinary, non-debug non-quiet mode. *)
@@ -138,7 +140,7 @@ let main () =
         fun (source, fingerprint) ->
           let sigchecker =
             Sigchecker.create ~debug ~gpg ~fingerprint ~check_signature in
-          Index_parser.get_index ~debug ~downloader ~sigchecker source
+          Index_parser.get_index ~prog ~debug ~downloader ~sigchecker source
       ) sources
     ) in
 
@@ -146,7 +148,7 @@ let main () =
   let mode =
     match mode with
     | `List ->                          (* --list *)
-      List_entries.list_entries ~list_long ~sources index;
+      List_entries.list_entries ~list_format ~sources index;
       exit 0
 
     | `Print_cache ->                   (* --print-cache *)
@@ -178,7 +180,7 @@ let main () =
             let template = name, revision in
             msg (f_"Downloading: %s") file_uri;
             let progress_bar = not quiet in
-            ignore (Downloader.download downloader ~template ~progress_bar
+            ignore (Downloader.download ~prog downloader ~template ~progress_bar
                       file_uri)
         ) index;
         exit 0
@@ -218,7 +220,7 @@ let main () =
       let template = arg, revision in
       msg (f_"Downloading: %s") file_uri;
       let progress_bar = not quiet in
-      Downloader.download downloader ~template ~progress_bar file_uri in
+      Downloader.download ~prog downloader ~template ~progress_bar file_uri in
     if delete_on_exit then unlink_on_exit template;
     template in
 
@@ -236,7 +238,7 @@ let main () =
         | { Index_parser.signature_uri = None } -> None
         | { Index_parser.signature_uri = Some signature_uri } ->
           let sigfile, delete_on_exit =
-            Downloader.download downloader signature_uri in
+            Downloader.download ~prog downloader signature_uri in
           if delete_on_exit then unlink_on_exit sigfile;
           Some sigfile in
 
@@ -261,9 +263,6 @@ let main () =
       format_tag @ compression_tag in
 
   (* Planner: Goal. *)
-  let output_size =
-    let { Index_parser.size = default_size } = entry in
-    match size with None -> default_size | Some size -> size in
   let output_filename, output_format =
     match output, format with
     | None, None -> sprintf "%s.img" arg, "raw"
@@ -271,17 +270,45 @@ let main () =
     | None, Some format -> sprintf "%s.%s" arg format, format
     | Some output, None -> output, "raw"
     | Some output, Some format -> output, format in
-  let output_is_block_dev = is_block_device output_filename in
-
-  if output_is_block_dev && size <> None then (
-    eprintf (f_"%s: you cannot use --size option with block devices\n") prog;
-    exit 1
-  );
 
   if is_char_device output_filename then (
     eprintf (f_"%s: cannot output to a character device or /dev/null\n") prog;
     exit 1
   );
+
+  let blockdev_getsize64 dev =
+    let cmd = sprintf "blockdev --getsize64 %s" (quote dev) in
+    let lines = external_command ~prog cmd in
+    assert (List.length lines >= 1);
+    Int64.of_string (List.hd lines)
+  in
+  let output_is_block_dev, blockdev_size =
+    let b = is_block_device output_filename in
+    let sz = if b then blockdev_getsize64 output_filename else 0L in
+    b, sz in
+
+  let output_size =
+    let { Index_parser.size = original_image_size } = entry in
+
+    let size =
+      match size with
+      | Some size -> size
+      (* --size parameter missing, output to file: use original image size *)
+      | None when not output_is_block_dev -> original_image_size
+      (* --size parameter missing, block device: use block device size *)
+      | None -> blockdev_size in
+
+    if size < original_image_size then (
+      eprintf (f_"%s: images cannot be shrunk, the output size is too small for this image.  Requested size = %s, minimum size = %s\n")
+        prog (human_size size) (human_size original_image_size);
+      exit 1
+    )
+    else if output_is_block_dev && output_format = "raw" && size > blockdev_size then (
+      eprintf (f_"%s: output size is too large for this block device.  Requested size = %s, output block device = %s, output block device size = %s\n")
+        prog (human_size size) output_filename (human_size blockdev_size);
+      exit 1
+    );
+    size in
 
   let goal =
     (* MUST *)
@@ -440,9 +467,10 @@ let main () =
   );
 
   (* Delete the output file before we finish.  However don't delete it
-   * if it's block device.
+   * if it's block device, or if --no-delete-on-failure is set.
    *)
-  let delete_output_file = ref (not output_is_block_dev) in
+  let delete_output_file =
+    ref (delete_on_failure && not output_is_block_dev) in
   let delete_file () =
     if !delete_output_file then
       try unlink output_filename with _ -> ()
@@ -592,6 +620,15 @@ let main () =
     msg (f_"Setting the hostname: %s") hostname;
     if not (Hostname.set_hostname g root hostname) then
       eprintf (f_"%s: warning: hostname could not be set for this type of guest\n%!") prog
+  );
+
+  (* Set the timezone. *)
+  (match timezone with
+  | None -> ()
+  | Some timezone ->
+    msg (f_"Setting the timezone: %s") timezone;
+    if not (Timezone.set_timezone ~prog g root timezone) then
+      eprintf (f_"%s: warning: timezone could not be set for this type of guest\n%!") prog
   );
 
   (* Root password.
@@ -801,6 +838,16 @@ exec >>%s 2>&1
       msg (f_"Deleting: %s") file;
       g#rm_rf file
   ) delete;
+
+  (* Symbolic links. *)
+  List.iter (
+    fun (target, links) ->
+      List.iter (
+        fun link ->
+          msg (f_"Linking: %s -> %s") link target;
+          g#ln_sf target link
+      ) links
+  ) links;
 
   (* Scrub files. *)
   List.iter (

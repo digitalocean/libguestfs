@@ -7999,6 +7999,73 @@ xdr_guestfs_internal_upload_args (XDR *xdrs, guestfs_internal_upload_args *objp)
 }
 
 bool_t
+xdr_guestfs_copy_attributes_args (XDR *xdrs, guestfs_copy_attributes_args *objp)
+{
+	register int32_t *buf;
+
+
+	if (xdrs->x_op == XDR_ENCODE) {
+		 if (!xdr_string (xdrs, &objp->src, ~0))
+			 return FALSE;
+		 if (!xdr_string (xdrs, &objp->dest, ~0))
+			 return FALSE;
+		buf = XDR_INLINE (xdrs, 4 * BYTES_PER_XDR_UNIT);
+		if (buf == NULL) {
+			 if (!xdr_bool (xdrs, &objp->all))
+				 return FALSE;
+			 if (!xdr_bool (xdrs, &objp->mode))
+				 return FALSE;
+			 if (!xdr_bool (xdrs, &objp->xattributes))
+				 return FALSE;
+			 if (!xdr_bool (xdrs, &objp->ownership))
+				 return FALSE;
+		} else {
+			IXDR_PUT_BOOL(buf, objp->all);
+			IXDR_PUT_BOOL(buf, objp->mode);
+			IXDR_PUT_BOOL(buf, objp->xattributes);
+			IXDR_PUT_BOOL(buf, objp->ownership);
+		}
+		return TRUE;
+	} else if (xdrs->x_op == XDR_DECODE) {
+		 if (!xdr_string (xdrs, &objp->src, ~0))
+			 return FALSE;
+		 if (!xdr_string (xdrs, &objp->dest, ~0))
+			 return FALSE;
+		buf = XDR_INLINE (xdrs, 4 * BYTES_PER_XDR_UNIT);
+		if (buf == NULL) {
+			 if (!xdr_bool (xdrs, &objp->all))
+				 return FALSE;
+			 if (!xdr_bool (xdrs, &objp->mode))
+				 return FALSE;
+			 if (!xdr_bool (xdrs, &objp->xattributes))
+				 return FALSE;
+			 if (!xdr_bool (xdrs, &objp->ownership))
+				 return FALSE;
+		} else {
+			objp->all = IXDR_GET_BOOL(buf);
+			objp->mode = IXDR_GET_BOOL(buf);
+			objp->xattributes = IXDR_GET_BOOL(buf);
+			objp->ownership = IXDR_GET_BOOL(buf);
+		}
+	 return TRUE;
+	}
+
+	 if (!xdr_string (xdrs, &objp->src, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->dest, ~0))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->all))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->mode))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->xattributes))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->ownership))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

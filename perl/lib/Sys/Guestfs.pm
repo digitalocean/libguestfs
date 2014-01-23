@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.414';
+$VERSION = '0.415';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -1432,6 +1432,40 @@ The first character of C<hvparam> string must be a C<-> (dash).
 
 C<hvvalue> can be NULL.
 
+=item $g->copy_attributes ($src, $dest [, all => $all] [, mode => $mode] [, xattributes => $xattributes] [, ownership => $ownership]);
+
+Copy the attributes of a path (which can be a file or a directory)
+to another path.
+
+By default C<no> attribute is copied, so make sure to specify any
+(or C<all> to copy everything).
+
+The optional arguments specify which attributes can be copied:
+
+=over 4
+
+=item C<mode>
+
+Copy part of the file mode from C<source> to C<destination>. Only the
+UNIX permissions and the sticky/setuid/setgid bits can be copied.
+
+=item C<xattributes>
+
+Copy the Linux extended attributes (xattrs) from C<source> to C<destination>.
+This flag does nothing if the I<linuxxattrs> feature is not available
+(see C<$g-E<gt>feature_available>).
+
+=item C<ownership>
+
+Copy the owner uid and the group gid of C<source> to C<destination>.
+
+=item C<all>
+
+Copy B<all> the attributes from C<source> to C<destination>. Enabling it
+enables all the other flags, if they are not specified already.
+
+=back
+
 =item $g->copy_device_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse]);
 
 The four calls C<$g-E<gt>copy_device_to_device>,
@@ -2154,6 +2188,12 @@ Return the current backend.
 This handle property was previously called the "attach method".
 
 See C<$g-E<gt>set_backend> and L<guestfs(3)/BACKEND>.
+
+=item @settings = $g->get_backend_settings ();
+
+Return the current backend settings.
+
+See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
 
 =item $cachedir = $g->get_cachedir ();
 
@@ -5881,6 +5921,20 @@ This handle property was previously called the "attach method".
 
 See L<guestfs(3)/BACKEND>.
 
+=item $g->set_backend_settings (\@settings);
+
+Set a list of zero or more settings which are passed through to
+the current backend.  Each setting is a string which is interpreted
+in a backend-specific way, or ignored if not understood by the
+backend.
+
+The default value is an empty list, unless the environment
+variable C<LIBGUESTFS_BACKEND_SETTINGS> was set when the handle
+was created.  This environment variable contains a colon-separated
+list of settings.
+
+See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+
 =item $g->set_cachedir ($cachedir);
 
 Set the directory used by the handle to store the appliance
@@ -6209,7 +6263,7 @@ C<$g-E<gt>set_event_callback>).
 
 =item $g->set_uuid ($device, $uuid);
 
-Set the filesystem UIUD on C<device> to C<label>.
+Set the filesystem UUID on C<device> to C<uuid>.
 
 Only some filesystem types support setting UUIDs.
 
@@ -7967,6 +8021,21 @@ use vars qw(%guestfs_introspection);
     name => "config",
     description => "add hypervisor parameters",
   },
+  "copy_attributes" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string(path)', 0 ],
+      [ 'dest', 'string(path)', 1 ],
+    ],
+    optargs => {
+      all => [ 'all', 'bool', 0 ],
+      mode => [ 'mode', 'bool', 1 ],
+      xattributes => [ 'xattributes', 'bool', 2 ],
+      ownership => [ 'ownership', 'bool', 3 ],
+    },
+    name => "copy_attributes",
+    description => "copy the attributes of a path (file/directory) to another",
+  },
   "copy_device_to_device" => {
     ret => 'void',
     args => [
@@ -8446,6 +8515,13 @@ use vars qw(%guestfs_introspection);
     ],
     name => "get_backend",
     description => "get the backend",
+  },
+  "get_backend_settings" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "get_backend_settings",
+    description => "get per-backend settings",
   },
   "get_cachedir" => {
     ret => 'string',
@@ -11130,6 +11206,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "set_backend",
     description => "set the backend",
+  },
+  "set_backend_settings" => {
+    ret => 'void',
+    args => [
+      [ 'settings', 'string list', 0 ],
+    ],
+    name => "set_backend_settings",
+    description => "set per-backend settings",
   },
   "set_cachedir" => {
     ret => 'void',

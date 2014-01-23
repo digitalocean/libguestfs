@@ -429,16 +429,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  10
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   13
+#define YYLAST   17
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  9
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  7
+#define YYNNTS  8
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  11
+#define YYNRULES  13
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  18
+#define YYNSTATES  22
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
@@ -484,23 +484,24 @@ static const yytype_uint8 yytranslate[] =
    YYRHS.  */
 static const yytype_uint8 yyprhs[] =
 {
-       0,     0,     3,     5,     9,    11,    15,    18,    19,    22,
-      25,    26
+       0,     0,     3,     5,     9,    12,    17,    20,    21,    24,
+      27,    28,    31,    32
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
       10,     0,    -1,    11,    -1,     7,    11,     8,    -1,    12,
-      -1,    12,     6,    11,    -1,     3,    13,    -1,    -1,    14,
-      13,    -1,     4,    15,    -1,    -1,     5,    15,    -1
+      16,    -1,    12,     6,    16,    11,    -1,     3,    13,    -1,
+      -1,    14,    13,    -1,     4,    15,    -1,    -1,     5,    15,
+      -1,    -1,     6,    16,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
        0,    77,    77,    79,    83,    85,    89,    97,    98,   101,
-     110,   111
+     110,   111,   118,   119
 };
 #endif
 
@@ -511,7 +512,7 @@ static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "SECTION_HEADER", "FIELD", "VALUE_CONT",
   "EMPTY_LINE", "PGP_PROLOGUE", "PGP_EPILOGUE", "$accept", "index",
-  "sections", "section", "fields", "field", "continuations", YY_NULL
+  "sections", "section", "fields", "field", "continuations", "emptylines", YY_NULL
 };
 #endif
 
@@ -528,14 +529,14 @@ static const yytype_uint16 yytoknum[] =
 static const yytype_uint8 yyr1[] =
 {
        0,     9,    10,    10,    11,    11,    12,    13,    13,    14,
-      15,    15
+      15,    15,    16,    16
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     3,     1,     3,     2,     0,     2,     2,
-       0,     2
+       0,     2,     1,     3,     2,     4,     2,     0,     2,     2,
+       0,     2,     0,     2
 };
 
 /* YYDEFACT[STATE-NAME] -- Default reduction number in state STATE-NUM.
@@ -543,29 +544,31 @@ static const yytype_uint8 yyr2[] =
    means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     7,     0,     0,     2,     4,    10,     6,     7,     0,
-       1,     0,    10,     9,     8,     3,     5,    11
+       0,     7,     0,     0,     2,    12,    10,     6,     7,     0,
+       1,    12,     4,    10,     9,     8,     3,    12,    13,    11,
+      13,     5
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     3,     4,     5,     7,     8,    13
+      -1,     3,     4,     5,     7,     8,    14,    12
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -8
+#define YYPACT_NINF -11
 static const yytype_int8 yypact[] =
 {
-      -1,    -3,     0,     4,    -8,     1,     3,    -8,    -3,     2,
-      -8,     0,     3,    -8,    -8,    -8,    -8,    -8
+      -1,     0,     2,     3,   -11,     4,     6,   -11,     0,     1,
+     -11,     7,   -11,     6,   -11,   -11,   -11,     7,     2,   -11,
+     -11,   -11
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -8,    -8,    -2,    -8,     5,    -8,    -7
+     -11,   -11,    -2,   -11,     9,   -11,    -5,   -10
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -574,20 +577,20 @@ static const yytype_int8 yypgoto[] =
 #define YYTABLE_NINF -1
 static const yytype_uint8 yytable[] =
 {
-       9,     6,     1,     1,    10,    17,     2,    11,    12,    16,
-      15,     0,     0,    14
+       9,    18,     1,    10,     6,     1,     2,    20,    19,    16,
+      11,    13,     0,    17,     0,     0,    21,    15
 };
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-8)))
+  (!!((Yystate) == (-11)))
 
 #define yytable_value_is_error(Yytable_value) \
   YYID (0)
 
 static const yytype_int8 yycheck[] =
 {
-       2,     4,     3,     3,     0,    12,     7,     6,     5,    11,
-       8,    -1,    -1,     8
+       2,    11,     3,     0,     4,     3,     7,    17,    13,     8,
+       6,     5,    -1,     6,    -1,    -1,    18,     8
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -595,7 +598,8 @@ static const yytype_int8 yycheck[] =
 static const yytype_uint8 yystos[] =
 {
        0,     3,     7,    10,    11,    12,     4,    13,    14,    11,
-       0,     6,     5,    15,    13,     8,    11,    15
+       0,     6,    16,     5,    15,    13,     8,     6,    16,    15,
+      16,    11
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1517,13 +1521,13 @@ yyreduce:
   case 4:
 /* Line 1792 of yacc.c  */
 #line 84 "index-parse.y"
-    { (yyval.section) = (yyvsp[(1) - (1)].section); }
+    { (yyval.section) = (yyvsp[(1) - (2)].section); }
     break;
 
   case 5:
 /* Line 1792 of yacc.c  */
 #line 86 "index-parse.y"
-    { (yyval.section) = (yyvsp[(1) - (3)].section); (yyval.section)->next = (yyvsp[(3) - (3)].section); }
+    { (yyval.section) = (yyvsp[(1) - (4)].section); (yyval.section)->next = (yyvsp[(4) - (4)].section); }
     break;
 
   case 6:
@@ -1571,9 +1575,21 @@ yyreduce:
           free ((yyvsp[(2) - (2)].str)); }
     break;
 
+  case 12:
+/* Line 1792 of yacc.c  */
+#line 118 "index-parse.y"
+    {}
+    break;
+
+  case 13:
+/* Line 1792 of yacc.c  */
+#line 120 "index-parse.y"
+    {}
+    break;
+
 
 /* Line 1792 of yacc.c  */
-#line 1577 "index-parse.c"
+#line 1593 "index-parse.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1812,7 +1828,7 @@ yyreturn:
 
 
 /* Line 2055 of yacc.c  */
-#line 116 "index-parse.y"
+#line 122 "index-parse.y"
 
 
 void

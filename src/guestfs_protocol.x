@@ -2855,6 +2855,15 @@ struct guestfs_internal_upload_args {
   int mode;
 };
 
+struct guestfs_copy_attributes_args {
+  string src<>;
+  string dest<>;
+  bool all;
+  bool mode;
+  bool xattributes;
+  bool ownership;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3263,10 +3272,11 @@ enum guestfs_procedure {
   GUESTFS_PROC_AUG_SETM = 411,
   GUESTFS_PROC_AUG_LABEL = 412,
   GUESTFS_PROC_INTERNAL_UPLOAD = 413,
-  GUESTFS_PROC_INTERNAL_EXIT = 414
+  GUESTFS_PROC_INTERNAL_EXIT = 414,
+  GUESTFS_PROC_COPY_ATTRIBUTES = 415
 };
 
-const GUESTFS_MAX_PROC_NR = 414;
+const GUESTFS_MAX_PROC_NR = 415;
 
 /* The remote procedure call protocol. */
 

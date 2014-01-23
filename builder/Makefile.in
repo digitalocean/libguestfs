@@ -1556,6 +1556,7 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/urandom.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/random_seed.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/hostname.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/timezone.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/firstboot.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/crypt-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/crypt.cmx \
@@ -2237,7 +2238,7 @@ stamp-virt-index-validate.pod: virt-index-validate.pod
 	touch $@
 
 # Fix dependencies which automake doesn't generate correctly.
-@HAVE_OCAML_TRUE@index-parser-c.o: index-parse.h
+@HAVE_OCAML_TRUE@index-parser-c.o: index-parse.h index-struct.h
 @HAVE_OCAML_TRUE@index-scan.o: index-parse.h
 index-validate.o: index-parse.h
 

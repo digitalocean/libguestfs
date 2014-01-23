@@ -268,6 +268,8 @@ gboolean guestfs_session_set_program(GuestfsSession *session, const gchar *progr
 const gchar *guestfs_session_get_program(GuestfsSession *session, GError **err);
 gboolean guestfs_session_add_drive_scratch(GuestfsSession *session, gint64 size, GuestfsAddDriveScratch *optargs, GError **err);
 GuestfsXAttr **guestfs_session_journal_get(GuestfsSession *session, GError **err);
+gboolean guestfs_session_set_backend_settings(GuestfsSession *session, gchar *const *settings, GError **err);
+gchar **guestfs_session_get_backend_settings(GuestfsSession *session, GError **err);
 gboolean guestfs_session_mount(GuestfsSession *session, const gchar *mountable, const gchar *mountpoint, GError **err);
 gboolean guestfs_session_sync(GuestfsSession *session, GError **err);
 gboolean guestfs_session_touch(GuestfsSession *session, const gchar *path, GError **err);
@@ -661,6 +663,7 @@ gint64 guestfs_session_journal_get_data_threshold(GuestfsSession *session, GErro
 gboolean guestfs_session_journal_set_data_threshold(GuestfsSession *session, gint64 threshold, GError **err);
 gint32 guestfs_session_aug_setm(GuestfsSession *session, const gchar *base, const gchar *sub, const gchar *val, GError **err);
 gchar *guestfs_session_aug_label(GuestfsSession *session, const gchar *augpath, GError **err);
+gboolean guestfs_session_copy_attributes(GuestfsSession *session, const gchar *src, const gchar *dest, GuestfsCopyAttributes *optargs, GError **err);
 
 G_END_DECLS
 

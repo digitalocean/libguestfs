@@ -7193,6 +7193,101 @@ ruby_guestfs_journal_get (VALUE gv)
 
 /*
  * call-seq:
+ *   g.set_backend_settings(settings) -> nil
+ *
+ * set per-backend settings
+ *
+ * Set a list of zero or more settings which are passed
+ * through to the current backend. Each setting is a string
+ * which is interpreted in a backend-specific way, or
+ * ignored if not understood by the backend.
+ * 
+ * The default value is an empty list, unless the
+ * environment variable "LIBGUESTFS_BACKEND_SETTINGS" was
+ * set when the handle was created. This environment
+ * variable contains a colon-separated list of settings.
+ * 
+ * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+ * guestfs(3).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_backend_settings+[http://libguestfs.org/guestfs.3.html#guestfs_set_backend_settings]).
+ */
+static VALUE
+ruby_guestfs_set_backend_settings (VALUE gv, VALUE settingsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_backend_settings");
+
+  char **settings;
+  Check_Type (settingsv, T_ARRAY);
+  {
+    size_t i, len;
+    len = RARRAY_LEN (settingsv);
+    settings = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE v = rb_ary_entry (settingsv, i);
+      settings[i] = StringValueCStr (v);
+    }
+    settings[len] = NULL;
+  }
+
+  int r;
+
+  r = guestfs_set_backend_settings (g, settings);
+  free (settings);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.get_backend_settings() -> list
+ *
+ * get per-backend settings
+ *
+ * Return the current backend settings.
+ * 
+ * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+ * guestfs(3).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_backend_settings+[http://libguestfs.org/guestfs.3.html#guestfs_get_backend_settings]).
+ */
+static VALUE
+ruby_guestfs_get_backend_settings (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_backend_settings");
+
+
+  char **r;
+
+  r = guestfs_get_backend_settings (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  volatile VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
  *   g.mount(mountable, mountpoint) -> nil
  *
  * mount a guest disk at a position in the filesystem
@@ -24763,7 +24858,7 @@ ruby_guestfs_remount (int argc, VALUE *argv, VALUE gv)
  *
  * set the filesystem UUID
  *
- * Set the filesystem UIUD on "device" to "label".
+ * Set the filesystem UUID on "device" to "uuid".
  * 
  * Only some filesystem types support setting UUIDs.
  * 
@@ -25082,6 +25177,101 @@ ruby_guestfs_aug_label (VALUE gv, VALUE augpathv)
   volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
+}
+
+/*
+ * call-seq:
+ *   g.copy_attributes(src, dest, {optargs...}) -> nil
+ *
+ * copy the attributes of a path (file/directory) to another
+ *
+ * Copy the attributes of a path (which can be a file or a
+ * directory) to another path.
+ * 
+ * By default "no" attribute is copied, so make sure to
+ * specify any (or "all" to copy everything).
+ * 
+ * The optional arguments specify which attributes can be
+ * copied:
+ * 
+ * "mode"
+ * Copy part of the file mode from "source" to
+ * "destination". Only the UNIX permissions and the
+ * sticky/setuid/setgid bits can be copied.
+ * 
+ * "xattributes"
+ * Copy the Linux extended attributes (xattrs) from
+ * "source" to "destination". This flag does nothing if
+ * the *linuxxattrs* feature is not available (see
+ * "g.feature_available").
+ * 
+ * "ownership"
+ * Copy the owner uid and the group gid of "source" to
+ * "destination".
+ * 
+ * "all"
+ * Copy all the attributes from "source" to
+ * "destination". Enabling it enables all the other
+ * flags, if they are not specified already.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_copy_attributes+[http://libguestfs.org/guestfs.3.html#guestfs_copy_attributes]).
+ */
+static VALUE
+ruby_guestfs_copy_attributes (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "copy_attributes");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE srcv = argv[0];
+  volatile VALUE destv = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
+
+  const char *src = StringValueCStr (srcv);
+  const char *dest = StringValueCStr (destv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_copy_attributes_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_copy_attributes_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("all")));
+  if (v != Qnil) {
+    optargs_s.all = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_ALL_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("mode")));
+  if (v != Qnil) {
+    optargs_s.mode = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("xattributes")));
+  if (v != Qnil) {
+    optargs_s.xattributes = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("ownership")));
+  if (v != Qnil) {
+    optargs_s.ownership = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_copy_attributes_argv (g, src, dest, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
 }
 
 extern void Init__guestfs (void); /* keep GCC warnings happy */
@@ -25422,6 +25612,10 @@ Init__guestfs (void)
         ruby_guestfs_add_drive_scratch, -1);
   rb_define_method (c_guestfs, "journal_get",
         ruby_guestfs_journal_get, 0);
+  rb_define_method (c_guestfs, "set_backend_settings",
+        ruby_guestfs_set_backend_settings, 1);
+  rb_define_method (c_guestfs, "get_backend_settings",
+        ruby_guestfs_get_backend_settings, 0);
   rb_define_method (c_guestfs, "mount",
         ruby_guestfs_mount, 2);
   rb_define_method (c_guestfs, "sync",
@@ -26234,4 +26428,6 @@ Init__guestfs (void)
         ruby_guestfs_aug_setm, 3);
   rb_define_method (c_guestfs, "aug_label",
         ruby_guestfs_aug_label, 1);
+  rb_define_method (c_guestfs, "copy_attributes",
+        ruby_guestfs_copy_attributes, -1);
 }

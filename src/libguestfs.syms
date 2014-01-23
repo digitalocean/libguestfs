@@ -156,6 +156,9 @@
         guestfs_copy_application2;
         guestfs_copy_application2_list;
         guestfs_copy_application_list;
+        guestfs_copy_attributes;
+        guestfs_copy_attributes_argv;
+        guestfs_copy_attributes_va;
         guestfs_copy_btrfssubvolume;
         guestfs_copy_btrfssubvolume_list;
         guestfs_copy_device_to_device;
@@ -306,6 +309,7 @@
         guestfs_get_attach_method;
         guestfs_get_autosync;
         guestfs_get_backend;
+        guestfs_get_backend_settings;
         guestfs_get_cachedir;
         guestfs_get_direct;
         guestfs_get_e2attrs;
@@ -695,6 +699,7 @@
         guestfs_set_attach_method;
         guestfs_set_autosync;
         guestfs_set_backend;
+        guestfs_set_backend_settings;
         guestfs_set_cachedir;
         guestfs_set_close_callback;
         guestfs_set_direct;

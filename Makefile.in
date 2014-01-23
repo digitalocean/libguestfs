@@ -144,7 +144,7 @@ DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 @ENABLE_APPLIANCE_TRUE@	tests/bigdirs tests/disk-labels \
 @ENABLE_APPLIANCE_TRUE@	tests/hotplug tests/nbd tests/http \
 @ENABLE_APPLIANCE_TRUE@	tests/syslinux tests/journal tests/fuzz \
-@ENABLE_APPLIANCE_TRUE@	tests/regressions
+@ENABLE_APPLIANCE_TRUE@	tests/relative-paths tests/regressions
 
 # Language bindings.
 @HAVE_PERL_TRUE@am__append_3 = perl perl/examples
@@ -402,13 +402,13 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	tests/btrfs tests/xfs tests/charsets tests/xml \
 	tests/mount-local tests/9p tests/rsync tests/bigdirs \
 	tests/disk-labels tests/hotplug tests/nbd tests/http \
-	tests/syslinux tests/journal tests/fuzz tests/regressions \
-	test-tool fish align cat diff df edit format inspector rescue \
-	bash perl perl/examples ocaml ocaml/examples python \
-	python/examples ruby ruby/examples java java/examples haskell \
-	php erlang erlang/examples lua lua/examples gobject golang \
-	golang/examples csharp mllib builder builder/website resize \
-	sparsify sysprep tools fuse po-docs
+	tests/syslinux tests/journal tests/fuzz tests/relative-paths \
+	tests/regressions test-tool fish align cat diff df edit format \
+	inspector rescue bash perl perl/examples ocaml ocaml/examples \
+	python python/examples ruby ruby/examples java java/examples \
+	haskell php erlang erlang/examples lua lua/examples gobject \
+	golang golang/examples csharp mllib builder builder/website \
+	resize sparsify sysprep tools fuse po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -2277,7 +2277,7 @@ website: $(HTMLFILES) $(HTMLSUPPORTFILES) $(TEXTFILES) $(BUILDERFILES)
 
 # When doing 'make dist' update a few files automatically.
 dist-hook:
-	$(top_srcdir)/build-aux/gitlog-to-changelog > ChangeLog
+	git log --decorate=false > ChangeLog
 	cp ChangeLog $(distdir)/ChangeLog
 	$(top_srcdir)/update-bugs.sh > BUGS-t
 	mv BUGS-t BUGS

@@ -69,6 +69,7 @@ OBJECTS = \
 	$(top_builddir)/mllib/urandom.cmx \
 	$(top_builddir)/mllib/random_seed.cmx \
 	$(top_builddir)/mllib/hostname.cmx \
+	$(top_builddir)/mllib/timezone.cmx \
 	$(top_builddir)/mllib/firstboot.cmx \
 	$(top_builddir)/mllib/crypt-c.o \
 	$(top_builddir)/mllib/crypt.cmx \
@@ -230,7 +231,7 @@ CLEANFILES += \
 
 # Fix dependencies which automake doesn't generate correctly.
 if HAVE_OCAML
-index-parser-c.o: index-parse.h
+index-parser-c.o: index-parse.h index-struct.h
 index-scan.o: index-parse.h
 endif
 index-validate.o: index-parse.h

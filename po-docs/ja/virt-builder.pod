@@ -13,23 +13,25 @@ virt-builder - Build virtual machine images quickly
 
 =head1 書式
 
- virt-builder [-o|--output DISKIMAGE] [--size SIZE] [--format raw|qcow2]
+ virt-builder os-version
+    [-o|--output DISKIMAGE] [--size SIZE] [--format raw|qcow2]
     [--attach ISOFILE]
     [--root-password SELECTOR]
     [--hostname HOSTNAME]
+    [--timezone TIMEZONE]
     [--update]
     [--install PKG,[PKG...]]
     [--mkdir DIR]
     [--write FILE:CONTENT]
     [--upload FILE:DEST]
+    [--link TARGET:LINK[:LINK]]
     [--edit FILE:EXPR]
     [--delete FILE] [--scrub FILE]
     [--run SCRIPT] [--run-command 'CMD ARGS ...']
     [--firstboot SCRIPT] [--firstboot-command 'CMD ARGS ...']
     [--firstboot-install PKG,[PKG...]]
-    os-version
 
- virt-builder -l|--list [--long]
+ virt-builder -l|--list [--long] [--list-format short|long|json]
 
  virt-builder --notes os-version
 
@@ -190,7 +192,7 @@ You can have multiple I<--attach> options, and the format can be any disk
 format (not just an ISO).
 
 See also: I<--run>, L</Installing packages at build time from a side
-repository>, L<virt-make-fs(1)>.
+repository>, L<genisoimage(1)>, L<virt-make-fs(1)>.
 
 =item B<--attach-format> FORMAT
 
@@ -243,6 +245,14 @@ See also: I<--upload>, I<--scrub>.
 =item B<--delete-cache>
 
 Delete the template cache.  See L</CACHING>.
+
+=item B<--no-delete-on-failure>
+
+Don't delete the output file on failure to build.  You can use this to debug
+failures to run scripts.  See L</DEBUGGING BUILDS> for ways to debug images.
+
+The default is to delete the output file if virt-builder fails (or, for
+example, some script that it runs fails).
 
 =item B<--edit> FILE:EXPR
 
@@ -345,16 +355,51 @@ PACKAGES>.
 
 See also I<--update>.
 
+=item B<--link TARGET:LINK>
+
+=item B<--link TARGET:LINK[:LINK...]>
+
+Create symbolic link(s) in the guest, starting at C<LINK> and pointing at
+C<TARGET>.
+
 =item B<-l>
 
 =item B<--list>
+
+=item B<--list --format> format
 
 =item B<--list --long>
 
 List available templates.
 
-The alternative I<--list --long> form shows lots more details about each
-operating system option.
+It is possible to choose with I<--format> the output format for the list
+templates:
+
+=over 4
+
+=item B<short>
+
+The default format, prints only the template identifier and, next to it, its
+short description.
+
+=item B<long>
+
+Prints a textual list with the details of the available sources, followed by
+the details of the available templates.
+
+=item B<json>
+
+Prints a JSON object with the details of the available sources and the
+details of the available templates.
+
+The C<version> key in the main object represents the "compatibility
+version", and it is bumped every time the resulting JSON output is
+incompatible with the previous versions (for example the structure has
+changed, or non-optional keys are no more present).
+
+=back
+
+I<--long> is a shorthand for the C<long> format.
 
 See also: I<--source>, I<--notes>, L</CREATING YOUR OWN TEMPLATES>.
 
@@ -547,6 +592,9 @@ If the size is not specified, then one of two things happens.  If the output
 is a file, then the size is the same as the template.  If the output is a
 device, partition, etc then the size of that device is used.
 
+To specify size in bytes, the number must be followed by the lowercase
+letter I<b>, eg: S<C<--size 10737418240b>>.
+
 =item B<--smp> N
 
 Enable N E<ge> 2 virtual CPUs for I<--run> scripts to use.
@@ -565,6 +613,11 @@ You can also set the C<VIRT_BUILDER_SOURCE> environment variable.
 Note that you should not point I<--source> to sources that you don't trust
 (unless the source is signed by someone you do trust).  See also the
 I<--no-network> option.
+
+=item B<--timezone> TIMEZONE
+
+Set the default timezone of the guest to C<TIMEZONE>.  Use a location string
+like C<Europe/London>
 
 =item B<--update>
 
@@ -658,12 +711,15 @@ If the software you want to install is not available in the main package
 repository of the guest, then you can add a side repository.  Usually this
 is presented as an ISO (CD disk image) file containing extra packages.
 
+You can create the disk image using either L<genisoimage(1)> or
+L<virt-make-fs(1)>.  For genisoimage, use a command like this:
+
+ genisoimage -o extra-packages.iso -R -J -V EXTRA cdcontents/
+
 Create a script that mounts the ISO and sets up the repository.  For yum,
 create /tmp/install.sh containing:
 
  mkdir /tmp/mount
- 
- # Assume the volume label of the CD is 'EXTRA':
  mount LABEL=EXTRA /tmp/mount
  
  cat <<'EOF' > /etc/yum.repos.d/extra.repo
@@ -678,16 +734,17 @@ create /tmp/install.sh containing:
 For apt, create /tmp/install.sh containing:
 
  mkdir /tmp/mount
- 
- # Assume the volume label of the CD is 'EXTRA':
  mount LABEL=EXTRA /tmp/mount
  
  apt-cdrom -d=/tmp/mount add
  apt-get -y install famousdatabase
 
-Use the I<--attach> option to attach the CD:
+Use the I<--attach> option to attach the CD / disk image and the I<--run>
+option to run the script:
 
- virt-builder fedora 20 --attach extra.iso --run /tmp/install.sh
+ virt-builder fedora-20 \
+   --attach extra-packages.iso \
+   --run /tmp/install.sh
 
 =head2 USERS AND PASSWORDS
 
@@ -751,6 +808,92 @@ The above command will create an C<rjones> account with no password, and
 force the user to set a password when they first log in.  There are other
 ways to manage passwords, see L<useradd(8)> for details.
 
+=head2 KEYBOARD LAYOUT
+
+Because there are so many different ways to set the keyboard layout in Linux
+distributions, virt-builder does not yet attempt to have a simple command
+line option.  This section describes how to set the keyboard for some common
+Linux distributions.
+
+=head3 Keyboard layout with systemd
+
+For distros that use systemd C<localectl>, use a command like this:
+
+ virt-builder fedora-20 \
+   --firstboot-command 'localectl set-keymap uk'
+
+See L<localectl(1)> and
+L<https://www.happyassassin.net/2013/11/23/keyboard-layouts-in-fedora-20-and-previously/>
+for more details.
+
+=head3 Keyboard layout using C</etc/sysconfig/keyboard>
+
+For RHEL E<le> 6, Fedora E<le> 18 and similar, upload or modify the keyboard
+configuration file using the I<--upload>, I<--write> or I<--edit> options.
+For example:
+
+ virt-builder centos-6 \
+   --edit '/etc/sysconfig/keyboard: s/^KEYTABLE=.*/KEYTABLE="uk"/'
+
+The format of this file can be found documented in many places online.
+
+=head3 Keyboard layout with Debian-derived distros
+
+For Debian-derived distros using C</etc/default/keyboard>, upload or modify
+the keyboard file using the I<--upload>, I<--write> or I<--edit> options.
+For example:
+
+ virt-builder debian-7 \
+   --edit '/etc/default/keyboard: s/^XKBLAYOUT=.*/XKBLAYOUT="gb"/'
+
+See L<https://wiki.debian.org/Keyboard>.
+
+=head2 LANGUAGE
+
+Most Linux distributions support multiple locale settings so that you can
+have guest messages printed in another language such as Russian.
+
+However there is no single setting which controls this, since extra packages
+may need to be installed to support console and X fonts, and keyboard input
+methods.  The packages required, and their configuration is highly
+distro-specific, and it is outside the scope of virt-builder to do this.
+
+This section contains examples for some common Linux distributions.
+
+=head3 Setting Japanese in Fedora 20
+
+ virt-builder fedora-20 \
+   --size 20G \
+   --update \
+   --install @japanese-support \
+   --install @xfce \
+   --install xorg-x11-server-Xorg,xorg-x11-drivers,rsyslog \
+   --link /usr/lib/systemd/system/graphical.target:/etc/systemd/system/default.target \
+   --firstboot-command 'localectl set-locale LANG=ja_JP.utf8' \
+   --firstboot-command 'localectl set-keymap jp' \
+   --firstboot-command 'systemctl isolate graphical.target'
+
+=head3 Setting Japanese in Debian 7 (Wheezy)
+
+Note that although this enables Japanese in the text console too, it is
+unlikely that you will see properly rendered Japanese there.  However
+Japanese is properly rendered in X applications and terminals.
+
+ pkgs=locales,xfce4,\
+ ibus,ibus-anthy,\
+ ttf-sazanami-gothic,ttf-sazanami-mincho,\
+ fonts-takao-mincho,\
+ xfonts-intl-japanese,xfonts-intl-japanese-big,\
+ iceweasel-l10n-ja,manpages-ja
+ 
+ virt-builder debian-7 \
+   --size 20G \
+   --install $pkgs \
+   --edit '/etc/inittab: s,^#([1-9].*respawn.*/sbin/getty.*),$1,' \
+   --edit '/etc/locale.gen: s,^#\s*ja,ja,' \
+   --write '/etc/default/locale:LANG="ja_JP.UTF-8"' \
+   --run-command "locale-gen"
+
 =head2 LOG FILE
 
 Scripts and package installation that runs at build time (I<--run>,
@@ -811,7 +954,7 @@ A new random seed is generated for the guest.
 
 =item *
 
-The hostname is set (I<--hostname>).
+The hostname and timezone are set (I<--hostname>, I<--timezone>).
 
 =item *
 
@@ -844,6 +987,10 @@ Files are edited (I<--edit>).
 =item *
 
 Files are deleted (I<--delete>, I<--scrub>).
+
+=item *
+
+Symbolic links are created (I<--link>).
 
 =item *
 
@@ -891,13 +1038,30 @@ differently as well.
 
 =back
 
-=begin コメント
-
 =head3 Importing into OpenStack
 
-XXX
+Import the image into Glance (the OpenStack image store) by doing:
 
-=end コメント
+ glance image-create --name fedora-20-image --file fedora-20.img \
+   --disk-format raw --container-format bare \
+   --is-public True
+
+The I<--file> parameter is the virt-builder-generated disk image.  It should
+match virt-builder's I<--output> option.  The I<--disk-format> parameter
+should match virt-builder's I<--format> option (or C<raw> if you didn't use
+that option).  The I<--container-format> should always be C<bare> since
+virt-builder doesn't put images into containers.
+
+You can use the S<C<glance image-show I<fedora-20-image>>> command to
+display the properties of the image.
+
+To boot up an instance of your image on a Nova compute node, do:
+
+ nova boot fedora-20-server --image fedora-20-image \
+   --flavor m1.medium
+
+Use S<C<nova flavor-list>> to list possible machine flavors.  Use S<C<nova
+list>> to list running instances.
 
 =head3 Booting directly using qemu or KVM
 
@@ -916,8 +1080,12 @@ will be C<raw> unless the I<--format> option was used.
 
 =head2 DEBUGGING BUILDS
 
-If virt-builder fails with an error, then enable debugging (I<-v>) and
-report a bug (see L</BUGS> below).
+If virt-builder itself fails, then enable debugging (I<-v>) and report a bug
+(see L</BUGS> below).
+
+If virt-builder fails because some script or package it is installing fails,
+try using I<--no-delete-on-failure> to preserve the output file, and
+continue reading this section.
 
 If virt-builder is successful but the image doesn't work, here are some
 things to try:
@@ -1200,8 +1368,8 @@ one character of whitespace (even on blank lines):
  notes=This image was prepared using
   the following kickstart script:
                                 <-- one space at beginning of line
-  timezone Europe/London
   part /boot --fstype ext3
+  ...
 
 =item C<hidden=true>
 
@@ -1294,6 +1462,8 @@ The index is always encoded in UTF-8.
 
 =head2 CACHING
 
+=head3 Caching templates
+
 Since the templates are usually very large, downloaded templates are cached
 in the user's home directory.
 
@@ -1318,11 +1488,54 @@ To disable the template cache, use I<--no-cache>.
 Only templates are cached.  The index and detached digital signatures are
 not cached.
 
+=head3 Caching packages
+
 Virt-builder uses L<curl(1)> to download files and it also uses the current
 C<http_proxy> (etc) settings when installing packages (I<--install>,
-I<--update>).  You may therefore want to set those environment variables in
-order to maximize the amount of local caching that happens.  See
-L</ENVIRONMENT VARIABLES> and L<curl(1)>.
+I<--update>).
+
+You may therefore want to set those environment variables in order to
+maximize the amount of local caching that happens.  See L</ENVIRONMENT
+VARIABLES> and L<curl(1)>.
+
+=head3 Local mirrors
+
+To increase both speed and reliability of installing packages, you can set
+up a local mirror of the target distribution, and point the guest package
+manager at that.
+
+Because of the order in which each phase of installation happens, you cannot
+use I<--write> (to point the package manager at a repo)  followed by
+I<--install> (to install from that repo).  The I<--write> and I<--install>
+steps run in the opposite order, regardless of their order on the command
+line.  You have to do this using I<--run-command> instead of I<--install>.
+
+=head4 Using a local mirror with Fedora
+
+To install a Fedora guest using a local mirror:
+
+ virt-builder fedora 20 \
+   --edit '/etc/yum.repos.d/fedora.repo:
+       s{.*baseurl=.*}{baseurl=http://example.com/mirror/};
+       s{.*metalink=.*}{};
+   ' \
+   --edit '/etc/yum.repos.d/fedora-updates.repo:
+       s{.*baseurl=.*}{baseurl=http://example.com/mirror-updates/};
+       s{.*metalink=.*}{};
+   ' \
+   --run-command 'yum -y update' \
+   --run-command 'yum -y install pkg1 pkg2 ...'
+
+=head4 Using a local mirror with Debian
+
+Assuming that you are using C<apt-proxy> to mirror the repository, you
+should create a new C<sources.list> file to point to your proxy (see
+L<https://help.ubuntu.com/community/AptProxy>) and then do:
+
+ virt-builder fedora 20 \
+   --upload sources.list:/etc/apt/sources.list \
+   --run-command 'apt-get -y update' \
+   --run-command 'apt-get -y install pkg1 pkg2 ...'
 
 =head2 DIGITAL SIGNATURES
 
@@ -1387,6 +1600,23 @@ truly random when the guest boots.
 
 You should check digital signatures and not ignore any signing errors.
 
+=head2 CLONES
+
+If you wish to create many new guests of the same type, it is tempting to
+run virt-builder once and then copy the output file.  You should B<not> do
+this.  You should run virt-builder once for each new guest you need.
+
+The reason is that each clone needs to have (at least) a separate random
+seed, and possibly other unique features (such as filesystem UUIDs) in
+future versions of virt-builder.
+
+Another thing you should I<not> do is to boot the guest, then clone the
+booted disk image.  The reason is that some guests create unique machine
+IDs, SSH host keys and so on at first boot, and you would not want clones to
+have duplicate identities.
+
+See also: L<virt-sysprep(1)>.
+
 =head2 PERFORMANCE
 
 The most important aspect of getting good performance is caching.  Templates
@@ -1400,6 +1630,11 @@ C<https_proxy> and C<ftp_proxy> environment variables to point to a local
 web cache may ensure they only need to be downloaded once.  You can also try
 using a local package repository, although this can be complex to set up and
 varies according to which Linux distro you are trying to install.
+
+=head3 Using I<--no-sync>
+
+Use I<--no-sync>.  However read the caveats in the L</OPTIONS> section
+above, since this can cause disk corruption if not used correctly.
 
 =head3 Skipping virt-resize
 
@@ -1442,6 +1677,35 @@ in a future version.
 
 The qcow2 output format is not supported by UML.  You can only create
 raw-format guests.
+
+=head2 SELinux
+
+Guests which use SELinux (such as Fedora and Red Hat Enterprise Linux)
+require that each file has a correct SELinux label.
+
+Since virt-builder does not know how to give new files a correct label, the
+guest templates have an empty file C</.autorelabel> and this causes the
+guest to relabel itself at first boot.
+
+This usually means that these guests will reboot themselves once the first
+time you use them.  B<This is normal, and harmless.> However if you want to
+perform the relabelling at build time instead of delaying it to the first
+boot, you can boot the guest with the qemu I<-no-reboot> option (which means
+it will shut down after the relabel is complete without booting "for
+real").  Only do this if you are sure it is an SELinux guest:
+
+ qemu-system-x86_64 \
+   -no-reboot \
+   -nographic \
+   -machine accel=kvm:tcg \
+   -cpu host \
+   -m 2048 \
+   -drive file=disk.img,format=raw,if=virtio \
+   -serial stdio \
+   -monitor none
+
+(For further information on the topic of SELinux labelling, see:
+L<https://www.redhat.com/archives/libguestfs/2014-January/msg00183.html>)
 
 =head1 環境変数
 
@@ -1488,7 +1752,7 @@ Used to determine the location of the template cache.  See L</CACHING>.
 L<guestfs(3)>, L<guestfish(1)>, L<guestmount(1)>, L<virt-copy-out(1)>,
 L<virt-install(1)>, L<virt-rescue(1)>, L<virt-resize(1)>,
 L<virt-sysprep(1)>, L<oz-install(1)>, L<gpg(1)>, L<curl(1)>,
-L<http://libguestfs.org/>.
+L<virt-make-fs(1)>, L<genisoimage(1)>, L<http://libguestfs.org/>.
 
 =head1 著者
 

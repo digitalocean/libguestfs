@@ -209,6 +209,9 @@ struct drive_server {
 struct drive_source {
   enum drive_protocol protocol;
 
+  /* Format (eg. raw, qcow2).  NULL = autodetect. */
+  char *format;
+
   /* This field is always non-NULL.  It may be an empty string. */
   union {
     char *path;                 /* path to file (file) */
@@ -228,19 +231,27 @@ struct drive_source {
   char *secret;
 };
 
+/* There is one 'struct drive' per drive, including hot-plugged drives. */
 struct drive {
+  /* Original source of the drive, eg. file:..., http:... */
   struct drive_source src;
 
+  /* If the drive is readonly, then an overlay [a local file] is
+   * created before launch to protect the original drive content, and
+   * the filename is stored here.  Backends should open this file if
+   * it is non-NULL, else consult the original source above.
+   *
+   * Note that the overlay is in a backend-specific format, probably
+   * different from the source format.  eg. qcow2, UML COW.
+   */
+  char *overlay;
+
+  /* Various per-drive flags. */
   bool readonly;
-  char *format;
   char *iface;
   char *name;
   char *disk_label;
   char *cachemode;
-
-  /* Data used by the backend. */
-  void *priv;
-  void (*free_priv) (void *);
 };
 
 /* Extra hv parameters (from guestfs_config). */
@@ -261,6 +272,12 @@ struct backend_ops {
    * shutdown.
    */
   size_t data_size;
+
+  /* Create a COW overlay on top of a drive.  This must be a local
+   * file, created in the temporary directory.  This is called when
+   * the drive is added to the handle.
+   */
+  char *(*create_cow_overlay) (guestfs_h *g, void *data, struct drive *drv);
 
   /* Launch and shut down. */
   int (*launch) (guestfs_h *g, void *data, const char *arg);
@@ -390,6 +407,7 @@ struct guestfs_h
   char *backend_arg;            /* Pointer to the argument part. */
   const struct backend_ops *backend_ops;
   void *backend_data;           /* Per-handle data. */
+  char **backend_settings;      /* Backend settings (can be NULL). */
 
   /**** Runtime information. ****/
   char *last_error;             /* Last error on handle. */
@@ -469,6 +487,7 @@ struct guestfs_h
   unsigned int nr_supported_credentials;
   int supported_credentials[NR_CREDENTIAL_TYPES];
   const char *saved_libvirt_uri; /* Doesn't need to be freed. */
+  bool wrapper_warning_done;
   unsigned int nr_requested_credentials;
   virConnectCredentialPtr requested_credentials;
 #endif
@@ -694,9 +713,6 @@ extern size_t guestfs___checkpoint_drives (guestfs_h *g);
 extern void guestfs___rollback_drives (guestfs_h *g, size_t);
 extern void guestfs___add_dummy_appliance_drive (guestfs_h *g);
 extern void guestfs___free_drives (guestfs_h *g);
-extern void guestfs___copy_drive_source (guestfs_h *g, const struct drive_source *src, struct drive_source *dest);
-extern char *guestfs___drive_source_qemu_param (guestfs_h *g, const struct drive_source *src);
-extern void guestfs___free_drive_source (struct drive_source *src);
 
 /* appliance.c */
 extern int guestfs___build_appliance (guestfs_h *g, char **kernel, char **dtb, char **initrd, char **appliance);
@@ -709,6 +725,8 @@ extern char *guestfs___appliance_command_line (guestfs_h *g, const char *applian
 #define APPLIANCE_COMMAND_LINE_IS_TCG 1
 extern void guestfs___register_backend (const char *name, const struct backend_ops *);
 extern int guestfs___set_backend (guestfs_h *g, const char *method);
+extern const char *guestfs___get_backend_setting (guestfs_h *g, const char *name);
+extern int guestfs___get_backend_setting_bool (guestfs_h *g, const char *name);
 
 /* inspect.c */
 extern void guestfs___free_inspect_info (guestfs_h *g);
@@ -811,5 +829,8 @@ extern void guestfs___cmd_close (struct command *);
 #define CLEANUP_CMD_CLOSE
 #endif
 extern void guestfs___cleanup_cmd_close (struct command **);
+
+/* launch-direct.c */
+extern char *guestfs___drive_source_qemu_param (guestfs_h *g, const struct drive_source *src);
 
 #endif /* GUESTFS_INTERNAL_H_ */

@@ -87,9 +87,10 @@ main (int argc, char *argv[])
   };
   int c;
   int option_index;
-  int i;
+  size_t i;
   struct guestfs_version *vers;
   char *p;
+  char **pp;
   guestfs_h *g;
   char *qemu = NULL;
   int qemu_use_wrapper;
@@ -227,10 +228,20 @@ main (int argc, char *argv[])
   }
 
   printf ("guestfs_get_append: %s\n", guestfs_get_append (g) ? : "(null)");
+  printf ("guestfs_get_autosync: %d\n", guestfs_get_autosync (g));
   p = guestfs_get_backend (g);
   printf ("guestfs_get_backend: %s\n", p ? : "(null)");
   free (p);
-  printf ("guestfs_get_autosync: %d\n", guestfs_get_autosync (g));
+  pp = guestfs_get_backend_settings (g);
+  printf ("guestfs_get_backend_settings: [");
+  for (i = 0; pp[i] != NULL; ++i) {
+    if (i > 0)
+      printf (", ");
+    printf ("%s", pp[i]);
+    free (pp[i]);
+  }
+  printf ("]\n");
+  free (pp);
   p = guestfs_get_cachedir (g);
   printf ("guestfs_get_cachedir: %s\n", p ? : "(null)");
   free (p);

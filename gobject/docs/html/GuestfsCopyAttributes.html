@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsCopyAttributes</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsRemount.html" title="GuestfsRemount">
+<link rel="next" href="object-tree.html" title="Object Hierarchy">
+<meta name="generator" content="GTK-Doc V1.19 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsRemount.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="object-tree.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsCopyAttributes.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsCopyAttributes.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsCopyAttributes.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsCopyAttributes.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsCopyAttributes"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsCopyAttributes.top_of_page"></a>GuestfsCopyAttributes</span></h2>
+<p>GuestfsCopyAttributes — An object encapsulating optional arguments for guestfs_session_copy_attributes</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsCopyAttributes.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsCopyAttributes.html#GuestfsCopyAttributes-struct" title="struct GuestfsCopyAttributes">GuestfsCopyAttributes</a>;
+struct              <a class="link" href="GuestfsCopyAttributes.html#GuestfsCopyAttributesClass" title="struct GuestfsCopyAttributesClass">GuestfsCopyAttributesClass</a>;
+<a class="link" href="GuestfsCopyAttributes.html" title="GuestfsCopyAttributes"><span class="returnvalue">GuestfsCopyAttributes</span></a> * <a class="link" href="GuestfsCopyAttributes.html#guestfs-copy-attributes-new" title="guestfs_copy_attributes_new ()">guestfs_copy_attributes_new</a>     (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsCopyAttributes.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GuestfsCopyAttributes
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsCopyAttributes.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsCopyAttributes.html#GuestfsCopyAttributes--all" title='The "all" property'>all</a>"                      <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsCopyAttributes.html#GuestfsCopyAttributes--mode" title='The "mode" property'>mode</a>"                     <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsCopyAttributes.html#GuestfsCopyAttributes--ownership" title='The "ownership" property'>ownership</a>"                <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsCopyAttributes.html#GuestfsCopyAttributes--xattributes" title='The "xattributes" property'>xattributes</a>"              <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsCopyAttributes.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_copy_attributes
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsCopyAttributes.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsCopyAttributes-struct"></a><h3>struct GuestfsCopyAttributes</h3>
+<pre class="programlisting">struct GuestfsCopyAttributes;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_copy_attributes.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsCopyAttributesClass"></a><h3>struct GuestfsCopyAttributesClass</h3>
+<pre class="programlisting">struct GuestfsCopyAttributesClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsCopyAttributes.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsCopyAttributesClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsCopyAttributesClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-copy-attributes-new"></a><h3>guestfs_copy_attributes_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsCopyAttributes.html" title="GuestfsCopyAttributes"><span class="returnvalue">GuestfsCopyAttributes</span></a> * guestfs_copy_attributes_new     (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsCopyAttributes object
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsCopyAttributes object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsCopyAttributes.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsCopyAttributes--all"></a><h3>The <code class="literal">"all"</code> property</h3>
+<pre class="programlisting">  "all"                      <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsCopyAttributes--mode"></a><h3>The <code class="literal">"mode"</code> property</h3>
+<pre class="programlisting">  "mode"                     <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsCopyAttributes--ownership"></a><h3>The <code class="literal">"ownership"</code> property</h3>
+<pre class="programlisting">  "ownership"                <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsCopyAttributes--xattributes"></a><h3>The <code class="literal">"xattributes"</code> property</h3>
+<pre class="programlisting">  "xattributes"              <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.19</div>
+</body>
+</html>

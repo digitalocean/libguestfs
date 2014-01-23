@@ -433,4 +433,5 @@ const char *function_names[] = {
   [412] = "aug_label",
   [413] = "internal_upload",
   [414] = "internal_exit",
+  [415] = "copy_attributes",
 };

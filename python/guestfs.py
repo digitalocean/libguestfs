@@ -2844,6 +2844,37 @@ class GuestFS(object):
         r = libguestfsmod.journal_get (self._o)
         return r
 
+    def set_backend_settings (self, settings):
+        """Set a list of zero or more settings which are passed
+        through to the current backend. Each setting is a string
+        which is interpreted in a backend-specific way, or
+        ignored if not understood by the backend.
+        
+        The default value is an empty list, unless the
+        environment variable "LIBGUESTFS_BACKEND_SETTINGS" was
+        set when the handle was created. This environment
+        variable contains a colon-separated list of settings.
+        
+        See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+        guestfs(3).
+        """
+        settings = list (settings)
+        self._check_not_closed ()
+        r = libguestfsmod.set_backend_settings (self._o, settings)
+        return r
+
+    def get_backend_settings (self):
+        """Return the current backend settings.
+        
+        See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+        guestfs(3).
+        
+        This function returns a list of strings.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.get_backend_settings (self._o)
+        return r
+
     def mount (self, mountable, mountpoint):
         """Mount a guest disk at a position in the filesystem.
         Block devices are named "/dev/sda", "/dev/sdb" and so
@@ -8836,7 +8867,7 @@ class GuestFS(object):
         return r
 
     def set_uuid (self, device, uuid):
-        """Set the filesystem UIUD on "device" to "label".
+        """Set the filesystem UUID on "device" to "uuid".
         
         Only some filesystem types support setting UUIDs.
         
@@ -8942,5 +8973,39 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.aug_label (self._o, augpath)
+        return r
+
+    def copy_attributes (self, src, dest, all=None, mode=None, xattributes=None, ownership=None):
+        """Copy the attributes of a path (which can be a file or a
+        directory) to another path.
+        
+        By default "no" attribute is copied, so make sure to
+        specify any (or "all" to copy everything).
+        
+        The optional arguments specify which attributes can be
+        copied:
+        
+        "mode"
+        Copy part of the file mode from "source" to
+        "destination". Only the UNIX permissions and the
+        sticky/setuid/setgid bits can be copied.
+        
+        "xattributes"
+        Copy the Linux extended attributes (xattrs) from
+        "source" to "destination". This flag does nothing if
+        the *linuxxattrs* feature is not available (see
+        "g.feature_available").
+        
+        "ownership"
+        Copy the owner uid and the group gid of "source" to
+        "destination".
+        
+        "all"
+        Copy all the attributes from "source" to
+        "destination". Enabling it enables all the other
+        flags, if they are not specified already.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.copy_attributes (self._o, src, dest, all, mode, xattributes, ownership)
         return r
 

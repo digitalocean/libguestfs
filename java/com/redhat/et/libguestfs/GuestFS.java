@@ -5336,6 +5336,58 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * set per-backend settings
+   * <p>
+   * Set a list of zero or more settings which are passed
+   * through to the current backend. Each setting is a string
+   * which is interpreted in a backend-specific way, or
+   * ignored if not understood by the backend.
+   * <p>
+   * The default value is an empty list, unless the
+   * environment variable "LIBGUESTFS_BACKEND_SETTINGS" was
+   * set when the handle was created. This environment
+   * variable contains a colon-separated list of settings.
+   * <p>
+   * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+   * guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_backend_settings (String[] settings)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_backend_settings: handle is closed");
+
+    _set_backend_settings (g, settings);
+  }
+
+  private native void _set_backend_settings (long g, String[] settings)
+    throws LibGuestFSException;
+
+  /**
+   * get per-backend settings
+   * <p>
+   * Return the current backend settings.
+   * <p>
+   * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+   * guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] get_backend_settings ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_backend_settings: handle is closed");
+
+    return _get_backend_settings (g);
+  }
+
+  private native String[] _get_backend_settings (long g)
+    throws LibGuestFSException;
+
+  /**
    * mount a guest disk at a position in the filesystem
    * <p>
    * Mount a guest disk at a position in the filesystem.
@@ -17746,7 +17798,7 @@ public class GuestFS {
   /**
    * set the filesystem UUID
    * <p>
-   * Set the filesystem UIUD on "device" to "label".
+   * Set the filesystem UUID on "device" to "uuid".
    * <p>
    * Only some filesystem types support setting UUIDs.
    * <p>
@@ -17958,6 +18010,99 @@ public class GuestFS {
   }
 
   private native String _aug_label (long g, String augpath)
+    throws LibGuestFSException;
+
+  /**
+   * copy the attributes of a path (file/directory) to another
+   * <p>
+   * Copy the attributes of a path (which can be a file or a
+   * directory) to another path.
+   * <p>
+   * By default "no" attribute is copied, so make sure to
+   * specify any (or "all" to copy everything).
+   * <p>
+   * The optional arguments specify which attributes can be
+   * copied:
+   * <p>
+   * "mode"
+   * Copy part of the file mode from "source" to
+   * "destination". Only the UNIX permissions and the
+   * sticky/setuid/setgid bits can be copied.
+   * <p>
+   * "xattributes"
+   * Copy the Linux extended attributes (xattrs) from
+   * "source" to "destination". This flag does nothing if
+   * the *linuxxattrs* feature is not available (see
+   * "g.feature_available").
+   * <p>
+   * "ownership"
+   * Copy the owner uid and the group gid of "source" to
+   * "destination".
+   * <p>
+   * "all"
+   * Copy all the attributes from "source" to
+   * "destination". Enabling it enables all the other
+   * flags, if they are not specified already.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void copy_attributes (String src, String dest, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("copy_attributes: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean all = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("all");
+    if (_optobj != null) {
+      all = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+    boolean mode = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("mode");
+    if (_optobj != null) {
+      mode = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2L;
+    }
+    boolean xattributes = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("xattributes");
+    if (_optobj != null) {
+      xattributes = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 4L;
+    }
+    boolean ownership = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("ownership");
+    if (_optobj != null) {
+      ownership = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8L;
+    }
+
+    _copy_attributes (g, src, dest, _optargs_bitmask, all, mode, xattributes, ownership);
+  }
+
+  public void copy_attributes (String src, String dest)
+    throws LibGuestFSException
+  {
+    copy_attributes (src, dest, null);
+  }
+
+  private native void _copy_attributes (long g, String src, String dest, long _optargs_bitmask, boolean all, boolean mode, boolean xattributes, boolean ownership)
     throws LibGuestFSException;
 
 }

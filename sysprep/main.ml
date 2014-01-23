@@ -87,6 +87,40 @@ let debug_gc, operations, g, selinux_relabel, quiet, mount_opts =
           exit 1
     ) Sysprep_operation.empty_set ops in
     operations := Some opset
+  and set_operations op_string =
+    let currentopset =
+      match !operations with
+      | Some x -> x
+      | None -> Sysprep_operation.empty_set
+    in
+    let ops = string_nsplit "," op_string in
+    let opset = List.fold_left (
+      fun opset op_name ->
+        let op =
+          if string_prefix op_name "-" then
+            `Remove (String.sub op_name 1 (String.length op_name - 1))
+          else
+            `Add op_name in
+        match op with
+        | `Add "" | `Remove "" ->
+          eprintf (f_"%s: --operations: empty operation name\n")
+            prog;
+          exit 1
+        | `Add "defaults" -> Sysprep_operation.add_defaults_to_set opset
+        | `Remove "defaults" -> Sysprep_operation.remove_defaults_from_set opset
+        | `Add "all" -> Sysprep_operation.add_all_to_set opset
+        | `Remove "all" -> Sysprep_operation.remove_all_from_set opset
+        | `Add n | `Remove n ->
+          let f = match op with
+          | `Add n -> Sysprep_operation.add_to_set
+          | `Remove n -> Sysprep_operation.remove_from_set in
+          try f n opset with
+          | Not_found ->
+            eprintf (f_"%s: --operations: '%s' is not a known operation\n")
+              prog n;
+            exit 1
+    ) currentopset ops in
+    operations := Some opset
   and force_selinux_relabel () =
     selinux_relabel := `Force
   and no_force_selinux_relabel () =
@@ -114,6 +148,8 @@ let debug_gc, operations, g, selinux_relabel, quiet, mount_opts =
     "--list-operations", Arg.Unit list_operations, " " ^ s_"List supported operations";
     "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
     "--mount-options", Arg.Set_string mount_opts, s_"opts" ^ " " ^ s_"Set mount options (eg /:noatime;/var:rw,noatime)";
+    "--operation",  Arg.String set_operations, " " ^ s_"Enable/disable specific operations";
+    "--operations", Arg.String set_operations, " " ^ s_"Enable/disable specific operations";
     "-q",        Arg.Set quiet,             " " ^ s_"Don't print log messages";
     "--quiet",   Arg.Set quiet,             " " ^ s_"Don't print log messages";
     "--selinux-relabel", Arg.Unit force_selinux_relabel, " " ^ s_"Force SELinux relabel";
@@ -227,23 +263,21 @@ let do_sysprep () =
             with Guestfs.Error msg -> eprintf (f_"%s (ignored)\n") msg
         ) mps;
 
-        (* Perform the filesystem operations. *)
-        let flags =
-          Sysprep_operation.perform_operations_on_filesystems
-            ?operations ~quiet g root in
+        let side_effects = new Sysprep_operation.filesystem_side_effects in
 
-        (* Parse flags. *)
-        let relabel = ref false in
-        List.iter (function
-        | `Created_files -> relabel := true
-        ) flags;
+        (* Perform the filesystem operations. *)
+        Sysprep_operation.perform_operations_on_filesystems
+          ?operations ~quiet g root side_effects;
+
+        (* Check side-effects. *)
+        let created_files = side_effects#get_created_file in
 
         (* SELinux relabel? *)
         let relabel =
-          match selinux_relabel, !relabel with
+          match selinux_relabel, created_files with
           | `Force, _ -> true
           | `Never, _ -> false
-          | `Auto, relabel -> relabel in
+          | `Auto, created_files -> created_files in
         if relabel then (
           let typ = g#inspect_get_type root in
           let distro = g#inspect_get_distro root in
@@ -257,13 +291,11 @@ let do_sysprep () =
         (* Unmount everything in this guest. *)
         g#umount_all ();
 
-        (* Perform the block device operations. *)
-        let flags =
-          Sysprep_operation.perform_operations_on_devices
-            ?operations ~quiet g root in
+        let side_effects = new Sysprep_operation.device_side_effects in
 
-        (* At present we don't support any flags from perform_on_devices. *)
-        assert (flags = [])
+        (* Perform the block device operations. *)
+        Sysprep_operation.perform_operations_on_devices
+          ?operations ~quiet g root side_effects;
     ) roots
 
 (* Finished. *)

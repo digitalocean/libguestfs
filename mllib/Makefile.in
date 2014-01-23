@@ -1440,6 +1440,8 @@ SOURCES = \
 	progress.ml \
 	random_seed.mli \
 	random_seed.ml \
+	timezone.mli \
+	timezone.ml \
 	tty-c.c \
 	tTY.mli \
 	tTY.ml \
@@ -1469,6 +1471,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	urandom.cmx \
 @HAVE_OCAML_TRUE@	random_seed.cmx \
 @HAVE_OCAML_TRUE@	hostname.cmx \
+@HAVE_OCAML_TRUE@	timezone.cmx \
 @HAVE_OCAML_TRUE@	firstboot.cmx \
 @HAVE_OCAML_TRUE@	tTY.cmx \
 @HAVE_OCAML_TRUE@	fsync.cmx \

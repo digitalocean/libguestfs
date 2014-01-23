@@ -7560,6 +7560,79 @@ guestfs_session_journal_get(GuestfsSession *session, GError **err)
 }
 
 /**
+ * guestfs_session_set_backend_settings:
+ * @session: (transfer none): A GuestfsSession object
+ * @settings: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
+ * @err: A GError object to receive any generated errors
+ *
+ * set per-backend settings
+ *
+ * Set a list of zero or more settings which are passed through to the
+ * current backend. Each setting is a string which is interpreted in a
+ * backend-specific way, or ignored if not understood by the backend.
+ * 
+ * The default value is an empty list, unless the environment variable
+ * @LIBGUESTFS_BACKEND_SETTINGS was set when the handle was created. This
+ * environment variable contains a colon-separated list of settings.
+ * 
+ * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_set_backend_settings(GuestfsSession *session, gchar *const *settings, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_backend_settings");
+    return FALSE;
+  }
+
+  int ret = guestfs_set_backend_settings (g, settings);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_get_backend_settings:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * get per-backend settings
+ *
+ * Return the current backend settings.
+ * 
+ * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ */
+gchar **
+guestfs_session_get_backend_settings(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_backend_settings");
+    return NULL;
+  }
+
+  char **ret = guestfs_get_backend_settings (g);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
  * guestfs_session_mount:
  * @session: (transfer none): A GuestfsSession object
  * @mountable: (transfer none) (type filename):
@@ -24565,7 +24638,7 @@ guestfs_session_remount(GuestfsSession *session, const gchar *mountpoint, Guestf
  *
  * set the filesystem UUID
  *
- * Set the filesystem UIUD on @device to @label.
+ * Set the filesystem UUID on @device to @uuid.
  * 
  * Only some filesystem types support setting UUIDs.
  * 
@@ -24883,4 +24956,100 @@ guestfs_session_aug_label(GuestfsSession *session, const gchar *augpath, GError 
   }
 
   return ret;
+}
+
+/**
+ * guestfs_session_copy_attributes:
+ * @session: (transfer none): A GuestfsSession object
+ * @src: (transfer none) (type filename):
+ * @dest: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsCopyAttributes containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * copy the attributes of a path (file/directory) to another
+ *
+ * Copy the attributes of a path (which can be a file or a directory) to
+ * another path.
+ * 
+ * By default @no attribute is copied, so make sure to specify any (or @all
+ * to copy everything).
+ * 
+ * The optional arguments specify which attributes can be copied:
+ * 
+ * @mode
+ * Copy part of the file mode from @source to @destination. Only the
+ * UNIX permissions and the sticky/setuid/setgid bits can be copied.
+ * 
+ * @xattributes
+ * Copy the Linux extended attributes (xattrs) from @source to
+ * @destination. This flag does nothing if the *linuxxattrs* feature is
+ * not available (see guestfs_session_feature_available()).
+ * 
+ * @ownership
+ * Copy the owner uid and the group gid of @source to @destination.
+ * 
+ * @all
+ * Copy all the attributes from @source to @destination. Enabling it
+ * enables all the other flags, if they are not specified already.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_copy_attributes(GuestfsSession *session, const gchar *src, const gchar *dest, GuestfsCopyAttributes *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "copy_attributes");
+    return FALSE;
+  }
+
+  struct guestfs_copy_attributes_argv argv;
+  struct guestfs_copy_attributes_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue all_v = {0, };
+    g_value_init(&all_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "all", &all_v);
+    GuestfsTristate all = g_value_get_enum(&all_v);
+    if (all != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_COPY_ATTRIBUTES_ALL_BITMASK;
+      argv.all = all;
+    }
+    GValue mode_v = {0, };
+    g_value_init(&mode_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "mode", &mode_v);
+    GuestfsTristate mode = g_value_get_enum(&mode_v);
+    if (mode != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK;
+      argv.mode = mode;
+    }
+    GValue xattributes_v = {0, };
+    g_value_init(&xattributes_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "xattributes", &xattributes_v);
+    GuestfsTristate xattributes = g_value_get_enum(&xattributes_v);
+    if (xattributes != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK;
+      argv.xattributes = xattributes;
+    }
+    GValue ownership_v = {0, };
+    g_value_init(&ownership_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "ownership", &ownership_v);
+    GuestfsTristate ownership = g_value_get_enum(&ownership_v);
+    if (ownership != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK;
+      argv.ownership = ownership;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_copy_attributes_argv (g, src, dest, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
 }

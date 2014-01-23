@@ -6205,6 +6205,65 @@ py_guestfs_journal_get (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_set_backend_settings (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  PyObject *py_settings;
+  char **settings = NULL;
+
+  if (!PyArg_ParseTuple (args, (char *) "OO:guestfs_set_backend_settings",
+                         &py_g, &py_settings))
+    goto out;
+  g = get_handle (py_g);
+  settings = get_string_list (py_settings);
+  if (!settings) goto out;
+
+  r = guestfs_set_backend_settings (g, settings);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  free (settings);
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_get_backend_settings (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  char **r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_get_backend_settings",
+                         &py_g))
+    goto out;
+  g = get_handle (py_g);
+
+  r = guestfs_get_backend_settings (g);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = put_string_list (r);
+  guestfs___free_string_list (r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_mount (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -21657,6 +21716,71 @@ py_guestfs_aug_label (PyObject *self, PyObject *args)
   return py_r;
 }
 
+static PyObject *
+py_guestfs_copy_attributes (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_copy_attributes_argv optargs_s;
+  struct guestfs_copy_attributes_argv *optargs = &optargs_s;
+  int r;
+  const char *src;
+  const char *dest;
+  PyObject *py_all;
+  PyObject *py_mode;
+  PyObject *py_xattributes;
+  PyObject *py_ownership;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OssOOOO:guestfs_copy_attributes",
+                         &py_g, &src, &dest, &py_all, &py_mode, &py_xattributes, &py_ownership))
+    goto out;
+  g = get_handle (py_g);
+
+  if (py_all != Py_None) {
+    optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_ALL_BITMASK;
+    optargs_s.all = PyLong_AsLong (py_all);
+    if (PyErr_Occurred ()) goto out;
+  }
+  if (py_mode != Py_None) {
+    optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK;
+    optargs_s.mode = PyLong_AsLong (py_mode);
+    if (PyErr_Occurred ()) goto out;
+  }
+  if (py_xattributes != Py_None) {
+    optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK;
+    optargs_s.xattributes = PyLong_AsLong (py_xattributes);
+    if (PyErr_Occurred ()) goto out;
+  }
+  if (py_ownership != Py_None) {
+    optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK;
+    optargs_s.ownership = PyLong_AsLong (py_ownership);
+    if (PyErr_Occurred ()) goto out;
+  }
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_copy_attributes_argv (g, src, dest, optargs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
 static PyMethodDef methods[] = {
   { (char *) "create", py_guestfs_create, METH_VARARGS, NULL },
   { (char *) "close", py_guestfs_close, METH_VARARGS, NULL },
@@ -21807,6 +21931,8 @@ static PyMethodDef methods[] = {
   { (char *) "get_program", py_guestfs_get_program, METH_VARARGS, NULL },
   { (char *) "add_drive_scratch", py_guestfs_add_drive_scratch, METH_VARARGS, NULL },
   { (char *) "journal_get", py_guestfs_journal_get, METH_VARARGS, NULL },
+  { (char *) "set_backend_settings", py_guestfs_set_backend_settings, METH_VARARGS, NULL },
+  { (char *) "get_backend_settings", py_guestfs_get_backend_settings, METH_VARARGS, NULL },
   { (char *) "mount", py_guestfs_mount, METH_VARARGS, NULL },
   { (char *) "sync", py_guestfs_sync, METH_VARARGS, NULL },
   { (char *) "touch", py_guestfs_touch, METH_VARARGS, NULL },
@@ -22200,6 +22326,7 @@ static PyMethodDef methods[] = {
   { (char *) "journal_set_data_threshold", py_guestfs_journal_set_data_threshold, METH_VARARGS, NULL },
   { (char *) "aug_setm", py_guestfs_aug_setm, METH_VARARGS, NULL },
   { (char *) "aug_label", py_guestfs_aug_label, METH_VARARGS, NULL },
+  { (char *) "copy_attributes", py_guestfs_copy_attributes, METH_VARARGS, NULL },
   { NULL, NULL, 0, NULL }
 };
 

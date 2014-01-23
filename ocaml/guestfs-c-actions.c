@@ -3235,6 +3235,67 @@ ocaml_guestfs_config (value gv, value hvparamv, value hvvaluev)
 }
 
 /* Automatically generated wrapper for function
+ * val copy_attributes : t -> ?all:bool -> ?mode:bool -> ?xattributes:bool -> ?ownership:bool -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_copy_attributes (value gv, value allv, value modev, value xattributesv, value ownershipv, value srcv, value destv);
+
+value
+ocaml_guestfs_copy_attributes (value gv, value allv, value modev, value xattributesv, value ownershipv, value srcv, value destv)
+{
+  CAMLparam5 (gv, allv, modev, xattributesv, ownershipv);
+  CAMLxparam2 (srcv, destv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("copy_attributes");
+
+  char *src = guestfs___safe_strdup (g, String_val (srcv));
+  char *dest = guestfs___safe_strdup (g, String_val (destv));
+  struct guestfs_copy_attributes_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_copy_attributes_argv *optargs = &optargs_s;
+  if (allv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_ALL_BITMASK;
+    optargs_s.all = Bool_val (Field (allv, 0));
+  }
+  if (modev != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK;
+    optargs_s.mode = Bool_val (Field (modev, 0));
+  }
+  if (xattributesv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK;
+    optargs_s.xattributes = Bool_val (Field (xattributesv, 0));
+  }
+  if (ownershipv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK;
+    optargs_s.ownership = Bool_val (Field (ownershipv, 0));
+  }
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_copy_attributes_argv (g, src, dest, optargs);
+  caml_leave_blocking_section ();
+  free (src);
+  free (dest);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "copy_attributes");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_copy_attributes_byte (value *argv, int argn);
+
+value
+ocaml_guestfs_copy_attributes_byte (value *argv, int argn ATTRIBUTE_UNUSED)
+{
+  return ocaml_guestfs_copy_attributes (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
+}
+
+/* Automatically generated wrapper for function
  * val copy_device_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
  */
 
@@ -5067,6 +5128,36 @@ ocaml_guestfs_get_backend (value gv)
     ocaml_guestfs_raise_error (g, "get_backend");
 
   rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_backend_settings : t -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_get_backend_settings (value gv);
+
+value
+ocaml_guestfs_get_backend_settings (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_backend_settings");
+
+  size_t i;
+  char **r;
+
+  r = guestfs_get_backend_settings (g);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "get_backend_settings");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
   free (r);
   CAMLreturn (rv);
 }
@@ -15395,6 +15486,35 @@ ocaml_guestfs_set_backend (value gv, value backendv)
   free (backend);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "set_backend");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_backend_settings : t -> string array -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_set_backend_settings (value gv, value settingsv);
+
+value
+ocaml_guestfs_set_backend_settings (value gv, value settingsv)
+{
+  CAMLparam2 (gv, settingsv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_backend_settings");
+
+  char **settings = ocaml_guestfs_strings_val (g, settingsv);
+  int r;
+
+  r = guestfs_set_backend_settings (g, settings);
+  guestfs___free_string_list (settings);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_backend_settings");
 
   rv = Val_unit;
   CAMLreturn (rv);

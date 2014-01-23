@@ -3060,6 +3060,39 @@ If you set the data threshold to unlimited (C<0>) then this call
 can read a journal entry of any size, ie. it is not limited by
 the libguestfs protocol." };
 
+  { defaults with
+    name = "set_backend_settings";
+    style = RErr, [StringList "settings"], [];
+    config_only = true;
+    blocking = false;
+    shortdesc = "set per-backend settings";
+    longdesc = "\
+Set a list of zero or more settings which are passed through to
+the current backend.  Each setting is a string which is interpreted
+in a backend-specific way, or ignored if not understood by the
+backend.
+
+The default value is an empty list, unless the environment
+variable C<LIBGUESTFS_BACKEND_SETTINGS> was set when the handle
+was created.  This environment variable contains a colon-separated
+list of settings.
+
+See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>." };
+
+  { defaults with
+    name = "get_backend_settings";
+    style = RStringList "settings", [], [];
+    blocking = false;
+    tests = [
+      InitNone, Always, TestRun (
+        [["get_backend_settings"]]), []
+    ];
+    shortdesc = "get per-backend settings";
+    longdesc = "\
+Return the current backend settings.
+
+See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>." };
+
 ]
 
 (* daemon_functions are any functions which cause some action
@@ -11477,7 +11510,7 @@ parameter.  In future we may allow other flags to be adjusted." };
       ]);
     shortdesc = "set the filesystem UUID";
     longdesc = "\
-Set the filesystem UIUD on C<device> to C<label>.
+Set the filesystem UUID on C<device> to C<uuid>.
 
 Only some filesystem types support setting UUIDs.
 
@@ -11646,6 +11679,44 @@ This function is used internally when setting up the appliance." };
     longdesc = "\
 This function is used internally when closing the appliance.  Note
 it's only called when ./configure --enable-valgrind-daemon is used." };
+
+  { defaults with
+    name = "copy_attributes";
+    style = RErr, [Pathname "src"; Pathname "dest"], [OBool "all"; OBool "mode"; OBool "xattributes"; OBool "ownership"];
+    proc_nr = Some 415;
+    shortdesc = "copy the attributes of a path (file/directory) to another";
+    longdesc = "\
+Copy the attributes of a path (which can be a file or a directory)
+to another path.
+
+By default C<no> attribute is copied, so make sure to specify any
+(or C<all> to copy everything).
+
+The optional arguments specify which attributes can be copied:
+
+=over 4
+
+=item C<mode>
+
+Copy part of the file mode from C<source> to C<destination>. Only the
+UNIX permissions and the sticky/setuid/setgid bits can be copied.
+
+=item C<xattributes>
+
+Copy the Linux extended attributes (xattrs) from C<source> to C<destination>.
+This flag does nothing if the I<linuxxattrs> feature is not available
+(see C<guestfs_feature_available>).
+
+=item C<ownership>
+
+Copy the owner uid and the group gid of C<source> to C<destination>.
+
+=item C<all>
+
+Copy B<all> the attributes from C<source> to C<destination>. Enabling it
+enables all the other flags, if they are not specified already.
+
+=back" };
 
 ]
 

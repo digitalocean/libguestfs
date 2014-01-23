@@ -866,10 +866,17 @@ case 4:
 YY_RULE_SETUP
 #line 60 "index-scan.l"
 {
-                      size_t i = strcspn (yytext, "=");
+                      size_t i = strcspn (yytext, "=[");
                       yylval.field = malloc (sizeof (struct field));
                       yylval.field->next = NULL;
                       yylval.field->key = strndup (yytext, i);
+                      if (yytext[i] == '[') {
+                        size_t j = strcspn (yytext+i+1, "]");
+                        yylval.field->subkey = strndup (yytext+i+1, j);
+                        i += 1+j+1;
+                      } else {
+                        yylval.field->subkey = NULL;
+                      }
                       /* Note we chop the final \n off here. */
                       yylval.field->value = strndup (yytext+i+1, yyleng-(i+2));
                       return FIELD;
@@ -879,7 +886,7 @@ YY_RULE_SETUP
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 71 "index-scan.l"
+#line 78 "index-scan.l"
 {
                       yylval.str = strndup (yytext+1, yyleng-2);
                       return VALUE_CONT;
@@ -889,7 +896,7 @@ YY_RULE_SETUP
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 77 "index-scan.l"
+#line 84 "index-scan.l"
 {
   int c, prevnl = 0;
 
@@ -907,7 +914,7 @@ YY_RULE_SETUP
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
-#line 91 "index-scan.l"
+#line 98 "index-scan.l"
 {
   /* Eat everything to the end of the file. */
   while (input () != EOF)
@@ -919,7 +926,7 @@ YY_RULE_SETUP
 /* anything else is an error */
 case 8:
 YY_RULE_SETUP
-#line 100 "index-scan.l"
+#line 107 "index-scan.l"
 {
   yyerror ("unexpected character in input");
   exit (EXIT_FAILURE);
@@ -927,10 +934,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 104 "index-scan.l"
+#line 111 "index-scan.l"
 ECHO;
 	YY_BREAK
-#line 934 "index-scan.c"
+#line 941 "index-scan.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1938,4 +1945,4 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 104 "index-scan.l"
+#line 111 "index-scan.l"

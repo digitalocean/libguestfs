@@ -421,6 +421,7 @@ Makefile.in
 /src/structs-compare.c
 /src/structs-copy.c
 /src/structs-free.c
+/src/test-utils
 /stamp-guestfs-release-notes.pod
 /stamp-h1
 /sysprep/.depend
@@ -467,6 +468,7 @@ Makefile.in
 /tests/data/initrd-x86_64.img.gz
 /tests/data/test-grep.txt.gz
 /tests/data/test.iso
+/tests/events/test-libvirt-auth-callbacks
 /tests/guests/blank-*.img
 /tests/guests/debian.img
 /tests/guests/fedora.img
@@ -488,6 +490,9 @@ Makefile.in
 /tests/regressions/rhbz501893
 /tests/regressions/rhbz790721
 /tests/regressions/rhbz914931
+/tests/regressions/rhbz1044014
+/tests/regressions/rhbz1044014.out
+/tests/regressions/rhbz1055452
 /tests/rsync/rsyncd.pid
 /tests/syslinux/extlinux-guest.img
 /tests/syslinux/syslinux-guest.img

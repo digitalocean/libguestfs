@@ -92,6 +92,7 @@
 -export([compress_device_out/4, compress_device_out/5]).
 -export([compress_out/4, compress_out/5]).
 -export([config/3]).
+-export([copy_attributes/3, copy_attributes/4]).
 -export([copy_device_to_device/3, copy_device_to_device/4]).
 -export([copy_device_to_file/3, copy_device_to_file/4]).
 -export([copy_file_to_device/3, copy_file_to_device/4]).
@@ -145,6 +146,7 @@
 -export([get_attach_method/1]).
 -export([get_autosync/1]).
 -export([get_backend/1]).
+-export([get_backend_settings/1]).
 -export([get_cachedir/1]).
 -export([get_direct/1]).
 -export([get_e2attrs/2]).
@@ -456,6 +458,7 @@
 -export([set_attach_method/2]).
 -export([set_autosync/2]).
 -export([set_backend/2]).
+-export([set_backend_settings/2]).
 -export([set_cachedir/2]).
 -export([set_direct/2]).
 -export([set_e2attrs/3, set_e2attrs/4]).
@@ -832,6 +835,11 @@ compress_out(G, Ctype, File, Zfile) ->
 config(G, Hvparam, Hvvalue) ->
   call_port(G, {config, Hvparam, Hvvalue}).
 
+copy_attributes(G, Src, Dest, Optargs) ->
+  call_port(G, {copy_attributes, Src, Dest, Optargs}).
+copy_attributes(G, Src, Dest) ->
+  copy_attributes(G, Src, Dest, []).
+
 copy_device_to_device(G, Src, Dest, Optargs) ->
   call_port(G, {copy_device_to_device, Src, Dest, Optargs}).
 copy_device_to_device(G, Src, Dest) ->
@@ -1002,6 +1010,9 @@ get_autosync(G) ->
 
 get_backend(G) ->
   call_port(G, {get_backend}).
+
+get_backend_settings(G) ->
+  call_port(G, {get_backend_settings}).
 
 get_cachedir(G) ->
   call_port(G, {get_cachedir}).
@@ -1999,6 +2010,9 @@ set_autosync(G, Autosync) ->
 
 set_backend(G, Backend) ->
   call_port(G, {set_backend, Backend}).
+
+set_backend_settings(G, Settings) ->
+  call_port(G, {set_backend_settings, Settings}).
 
 set_cachedir(G, Cachedir) ->
   call_port(G, {set_cachedir, Cachedir}).
