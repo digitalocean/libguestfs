@@ -6412,7 +6412,7 @@ callback to send them somewhere else (see L</set-event-callback>).
 
  set-uuid device uuid
 
-Set the filesystem UIUD on C<device> to C<label>.
+Set the filesystem UUID on C<device> to C<uuid>.
 
 Only some filesystem types support setting UUIDs.
 

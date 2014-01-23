@@ -10564,7 +10564,7 @@ callback to send them somewhere else (see C<guestfs_set_event_callback>).
                    const char *device,
                    const char *uuid);
 
-Set the filesystem UIUD on C<device> to C<label>.
+Set the filesystem UUID on C<device> to C<uuid>.
 
 Only some filesystem types support setting UUIDs.
 

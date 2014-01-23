@@ -11068,7 +11068,7 @@ This function returns 0 on success or -1 on error.
                    const char *device,
                    const char *uuid);
 
-Set the filesystem UIUD on C<device> to C<label>.
+Set the filesystem UUID on C<device> to C<uuid>.
 
 Only some filesystem types support setting UUIDs.
 

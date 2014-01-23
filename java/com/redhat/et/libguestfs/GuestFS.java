@@ -17798,7 +17798,7 @@ public class GuestFS {
   /**
    * set the filesystem UUID
    * <p>
-   * Set the filesystem UIUD on "device" to "label".
+   * Set the filesystem UUID on "device" to "uuid".
    * <p>
    * Only some filesystem types support setting UUIDs.
    * <p>

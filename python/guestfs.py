@@ -8867,7 +8867,7 @@ class GuestFS(object):
         return r
 
     def set_uuid (self, device, uuid):
-        """Set the filesystem UIUD on "device" to "label".
+        """Set the filesystem UUID on "device" to "uuid".
         
         Only some filesystem types support setting UUIDs.
         

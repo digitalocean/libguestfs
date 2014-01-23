@@ -1,3 +1,75 @@
+commit 2541563a18309f0adf4c2e48bd16ccc39d4b76b9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 22 18:01:17 2014 +0000
+
+    Version 1.25.26.
+
+commit 629cb87b6d3cdf1d2d80754c5cd4241c7781bcf4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 22 17:13:00 2014 +0000
+
+    tests/regressions: Don't include binaries in EXTRA_DIST.
+    
+    Because EXTRA_DIST simply used $(TESTS), and because the list of tests
+    includes C binaries, these were included in the tarball (actually not
+    binaries, but libtool scripts, but it's still undesirable).
+
+commit 7d8d065feee46337a2c4a3b4736f57878de84928
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 22 17:00:43 2014 +0000
+
+    tests: Add a regression test for RHBZ#1054761.
+
+commit aa2ca8ba703254267939dfcd8d276cbd6f651858
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 22 17:10:09 2014 +0000
+
+    daemon: lvm2: Ignore "unknown device" output when a PV is missing (RHBZ#1054761).
+
+commit 49c3d819c184f71ac98cd436fb9435f5b3bbddda
+Author: Colin Walters <walters@verbum.org>
+Date:   Wed Jan 22 15:45:08 2014 +0000
+
+    generator/set-uuid: Fix two typos in documentation
+
+commit 9e4357ca54282c1ab053dd5a8ebd64a323830cf4
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jan 22 15:34:22 2014 +0100
+
+    builder: fix small regression in subkey parsing
+    
+    Introduced in 5cbdf35d651b6c730d62d9af4876039faa122efc, it caused the
+    first character of the value to be skipped if the key has a subkey.
+
+commit 13bca32e4ec9213e69ea55e837dea846719fb67e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 22 13:10:08 2014 +0000
+
+    sparsify: Prevent overwriting block or char output devices (RHBZ#1056290).
+    
+    virt-sparsify doesn't work if the output is a block device, and cannot
+    possibly work if the output is a char device.  Currently if you try
+    this it actually overwrites (deletes) the output device which is not
+    exactly desirable.  Therefore throw an error and exit.
+
+commit c6ec6cde27ef87480b9b38f13b08b39eb1400f4b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 22 12:55:52 2014 +0000
+
+    builder: Add -monitor none to example command line.
+
+commit 873051e108eddfdd79205d0c8daf2654ad40e5d6
+Author: Dan Lipsitt <danlipsitt@gmail.com>
+Date:   Tue Jan 21 11:26:27 2014 -0800
+
+    remove non-portable chmod
+    
+    'chmod --reference' is not available on Mac OS X.
+    
+    Keeping the original file and directing edits into it preserves permissions and removes the need to chmod.
+    
+    (Tried 'sed -i' for inplace editing but unfortunately it isn't portable either.)
+
 commit ebb04b64a2c630089f7d6e8261f4cb2b93e12724
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Jan 21 18:37:26 2014 +0000

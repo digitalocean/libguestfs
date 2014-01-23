@@ -3642,7 +3642,7 @@ struct command_entry remount_cmd_entry = {
 
 struct command_entry set_uuid_cmd_entry = {
   .name = "set-uuid",
-  .help = "NAME\n    set-uuid - set the filesystem UUID\n\nSYNOPSIS\n     set-uuid device uuid\n\nDESCRIPTION\n    Set the filesystem UIUD on \"device\" to \"label\".\n\n    Only some filesystem types support setting UUIDs.\n\n    To read the UUID on a filesystem, call \"vfs_uuid\".\n\n",
+  .help = "NAME\n    set-uuid - set the filesystem UUID\n\nSYNOPSIS\n     set-uuid device uuid\n\nDESCRIPTION\n    Set the filesystem UUID on \"device\" to \"uuid\".\n\n    Only some filesystem types support setting UUIDs.\n\n    To read the UUID on a filesystem, call \"vfs_uuid\".\n\n",
   .run = run_set_uuid
 };
 
