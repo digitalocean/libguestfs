@@ -134,6 +134,9 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_copy_application2_list@Base 1:1.25.16
  guestfs_copy_application@Base 1:1.25.16
  guestfs_copy_application_list@Base 1:1.25.16
+ guestfs_copy_attributes@Base 1:1.25.21
+ guestfs_copy_attributes_argv@Base 1:1.25.21
+ guestfs_copy_attributes_va@Base 1:1.25.21
  guestfs_copy_btrfssubvolume@Base 1:1.25.16
  guestfs_copy_btrfssubvolume_list@Base 1:1.25.16
  guestfs_copy_device_to_device@Base 1.14
@@ -284,6 +287,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_get_attach_method@Base 1.10
  guestfs_get_autosync@Base 1.10
  guestfs_get_backend@Base 1:1.22
+ guestfs_get_backend_settings@Base 1:1.25.24
  guestfs_get_cachedir@Base 1:1.20
  guestfs_get_direct@Base 1.10
  guestfs_get_e2attrs@Base 1:1.18
@@ -673,6 +677,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_set_attach_method@Base 1.10
  guestfs_set_autosync@Base 1.10
  guestfs_set_backend@Base 1:1.22
+ guestfs_set_backend_settings@Base 1:1.25.24
  guestfs_set_cachedir@Base 1:1.20
  guestfs_set_close_callback@Base 1.10
  guestfs_set_direct@Base 1.10
