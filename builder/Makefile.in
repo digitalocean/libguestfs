@@ -2238,7 +2238,7 @@ stamp-virt-index-validate.pod: virt-index-validate.pod
 	touch $@
 
 # Fix dependencies which automake doesn't generate correctly.
-@HAVE_OCAML_TRUE@index-parser-c.o: index-parse.h
+@HAVE_OCAML_TRUE@index-parser-c.o: index-parse.h index-struct.h
 @HAVE_OCAML_TRUE@index-scan.o: index-parse.h
 index-validate.o: index-parse.h
 
