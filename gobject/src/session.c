@@ -4366,7 +4366,7 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * 
  * <![CDATA[nbd            Exactly one]]>
  * 
- * <![CDATA[rbd            One or more]]>
+ * <![CDATA[rbd            Zero or more]]>
  * 
  * <![CDATA[sheepdog       Zero or more]]>
  * 

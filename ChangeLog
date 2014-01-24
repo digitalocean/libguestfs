@@ -1,3 +1,147 @@
+commit 870f076bddbc540b793670990dc504ef36fb2f41
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 19:35:23 2014 +0000
+
+    Version 1.25.27.
+
+commit 3331db84bc0e720abec0dfbc82bba15ccae00b6e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 14:14:26 2014 +0000
+
+    resize: Don't truncate libguestfs error messages.
+    
+    If we rely on OCaml's internal exception printing, then it will
+    truncate error messages like this:
+    
+      Fatal error: exception Guestfs.Error("could not create appliance
+      through libvirt.
+    
+      Try running qemu directly without libvirt using this environment
+      variable: export LIBGUESTFS_BACKEND=direct
+    
+      Original error from libvirt: unable to set security context
+      'unconfined_u:object_r:svi
+    note the truncation here ^^^^^^^
+    
+    Instead of using the internal exception printing, wrap the whole
+    program in a 'main ()' function and add an exception handler.
+    
+    This large change is non-functional apart from the addition of the
+    exception handlers at the end.
+
+commit e8c10670213076b10bad2d0aac181637acd150b0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 13:31:11 2014 +0000
+
+    launch: direct: Stop using deprecated -no-kvm-pit-reinjection if qemu is new enough (RHBZ#1053847).
+
+commit 1d6ba35e6f57b3424b01bb0fe0debe57808b5abd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 10:48:57 2014 +0000
+
+    tests: Add a test of libvirt domain XML to qemu command line (RHBZ#1026688).
+    
+    This tests that libvirt domain XML (ie. guestfish -d option) is parsed
+    correctly and results in the correct qemu command line when using the
+    direct backend.
+    
+    This is a good end-to-end test of various layers.
+
+commit 1ed0ce3ef8877012d0909c5ae2ef5c29c61cf123
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 11:40:27 2014 +0000
+
+    libvirt domain: Allow network drives with no <source name="..."> attr.
+    
+    This is valid for some network drives, for example:
+    
+      <source protocol='nbd'>
+        <host name='foo' port='1234'/>
+      </source>
+    
+    We pass an empty string as path to the guestfs_add_drive_opts API in
+    this case.
+
+commit 1d2e74414b04d69ed48984a7a4e809be502c7999
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 11:31:40 2014 +0000
+
+    libvirt-domain: Remove unnecessary and wrongly indented parens.
+
+commit 58ada01783ccac13e4ad86b71210d44e7084b8a5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 11:05:01 2014 +0000
+
+    libvirt domain: Allow network drives with no <host> elements.
+    
+    This is valid for some network drives:
+    
+    <source protocol='rbd' name='abc-def/ghi-jkl'/>
+    
+    instead of this:
+    
+    <source protocol='rbd' name='abc-def/ghi-jkl'>
+      <host name='foo' port='1234'/>
+    </source>
+    
+    Allow both forms.
+
+commit 992a6b297023711862229aabe4e23b6a1c94c1cc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 08:30:12 2014 +0000
+
+    fish: Handle Ceph/rbd URIs and convert them to paths properly (RHBZ#1026688).
+    
+    The path at the API level (for guestfs_add_drive_opts) is:
+    
+      pool/disk
+    
+    The URI syntax is either rbd:///pool/disk or rbd://server:port/pool/disk.
+    Because of the way URI parsing works we may need to remove a leading
+    '/' character before passing the path down to the API.
+
+commit 53a3ff9c005fd69e773fdb18461a635c2502df1b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 08:28:09 2014 +0000
+
+    lib: Handle Ceph/rbd paths properly (RHBZ#1026688).
+    
+    The path at the protocol level is:
+    
+      pool/disk
+    
+    (with no leading '/' character).  This is now what you have to pass to
+    guestfs_add_drive_opts.
+    
+    Also Ceph can be called with no explicit servers (it uses the contents
+    of /etc/ceph/ceph.conf instead).  So allow zero servers to be used.
+
+commit b93a1d50ad1dfe44e6ad2434dbc3f0c71fda7141
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 08:27:30 2014 +0000
+
+    fish/uri: Tidy up error messages.
+
+commit b7cd63fc1dc031914e110a46de3faa431387d959
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 23 15:36:15 2014 +0100
+
+    builder: read all the available notes from the index
+    
+    Switch the internal storage for the notes of each entry to a sorted list
+    with all the subkeys available (which should represent the translations
+    to various languages).
+    The current outputs are the same (i.e. still the untranslated notes), so
+    this is just internal refactoring/preparation.
+
+commit 958e84d69960faf5b321bdec92283a0b37abd858
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jan 22 23:13:24 2014 +0100
+
+    builder: small code simplification
+    
+    No actual behaviour changes, just remove extra match statements.
+
 commit 2541563a18309f0adf4c2e48bd16ccc39d4b76b9
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Jan 22 18:01:17 2014 +0000

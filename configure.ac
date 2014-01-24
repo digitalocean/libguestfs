@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [25])
-m4_define([libguestfs_release], [26])
+m4_define([libguestfs_release], [27])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1747,6 +1747,7 @@ AC_CONFIG_FILES([Makefile
                  tests/charsets/Makefile
                  tests/data/Makefile
                  tests/disks/Makefile
+                 tests/disks/test-qemu-drive-libvirt.xml
                  tests/disk-labels/Makefile
                  tests/events/Makefile
                  tests/fuzz/Makefile

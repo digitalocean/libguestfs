@@ -134,7 +134,7 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
-	$(srcdir)/Makefile.am
+	$(srcdir)/Makefile.am $(srcdir)/test-qemu-drive-libvirt.xml.in
 subdir = tests/disks
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -265,7 +265,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = test-qemu-drive-libvirt.xml
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -1392,11 +1392,16 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 TESTS = \
 	test-max-disks.pl \
+	test-qemu-drive-libvirt.sh \
 	test-qemu-drive.sh
 
-TESTS_ENVIRONMENT = $(top_builddir)/run --test
+TESTS_ENVIRONMENT = \
+	abs_srcdir=$(abs_srcdir) \
+	$(top_builddir)/run --test
+
 EXTRA_DIST = \
 	debug-qemu.sh \
+	test-qemu-drive-libvirt.xml \
 	$(TESTS)
 
 all: all-am
@@ -1433,6 +1438,8 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+test-qemu-drive-libvirt.xml: $(top_builddir)/config.status $(srcdir)/test-qemu-drive-libvirt.xml.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 mostlyclean-libtool:
 	-rm -f *.lo

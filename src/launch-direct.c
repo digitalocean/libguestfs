@@ -491,7 +491,14 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
    */
   ADD_CMDLINE ("-no-hpet");
 #endif
-  ADD_CMDLINE ("-no-kvm-pit-reinjection");
+  if (data->qemu_version_major < 1 ||
+      (data->qemu_version_major == 1 && data->qemu_version_minor <= 2))
+    ADD_CMDLINE ("-no-kvm-pit-reinjection");
+  else {
+    /* New non-deprecated way, added in qemu >= 1.3. */
+    ADD_CMDLINE ("-global");
+    ADD_CMDLINE ("kvm-pit.lost_tick_policy=discard");
+  }
 
   ADD_CMDLINE ("-kernel");
   ADD_CMDLINE (kernel);
@@ -1299,12 +1306,12 @@ guestfs___drive_source_qemu_param (guestfs_h *g, const struct drive_source *src)
   }
 
   case drive_protocol_rbd: {
-    /* build the list of all the mon hosts */
     CLEANUP_FREE char *mon_host = NULL, *username = NULL, *secret = NULL;
     const char *auth;
     size_t n = 0;
     size_t i, j;
 
+    /* build the list of all the mon hosts */
     for (i = 0; i < src->nr_servers; i++) {
       n += strlen (src->servers[i].u.hostname);
       n += 8; /* for slashes, colons, & port numbers */
@@ -1340,10 +1347,10 @@ guestfs___drive_source_qemu_param (guestfs_h *g, const struct drive_source *src)
     else
         auth = ":auth_supported=none";
 
-    /* Skip the mandatory leading '/' character on exportname. */
-    return safe_asprintf (g, "rbd:%s:mon_host=%s%s%s%s",
-                          &src->u.exportname[1],
-                          mon_host,
+    return safe_asprintf (g, "rbd:%s%s%s%s%s%s",
+                          src->u.exportname,
+                          src->nr_servers > 0 ? ":mon_host=" : "",
+                          src->nr_servers > 0 ? mon_host : "",
                           username ? username : "",
                           auth,
                           secret ? secret : "");
