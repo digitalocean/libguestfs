@@ -1,3 +1,127 @@
+commit de7a8336cd7c8806231e22e12c29b93463308065
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 25 12:04:37 2014 +0000
+
+    Version 1.25.29.
+
+commit 4e18712562fe69cae8901e9534dbbcf0d4d87192
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 25 11:56:40 2014 +0000
+
+    tests/disks/test-qemu-drive-libvirt: Include test data.
+    
+    This was inadvertantly deleted.
+    
+    This fixes commit 01d27033bdd12974f850ff7a8e5de8f6b790379d.
+
+commit 24e61492cc2db3aeb2943da84e4c07acfbcce2a0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 25 10:59:03 2014 +0000
+
+    Version 1.25.28.
+
+commit 080300dfec1dd603da2f7d53e72dd3e056317fb8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 24 19:43:05 2014 +0000
+
+    builder: Add documentation for enabling Puppet (agent) in a guest.
+
+commit 90e23b4e566f88595ac697b45d2531de851be6df
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 24 19:38:26 2014 +0000
+
+    builder: Add --selinux-relabel option to perform SELinux relabelling.
+    
+    This adds the --selinux-relabel option which enables selinux in the
+    appliance and runs:
+    
+      if load_policy && fixfiles restore; then
+        rm -f /.autorelabel
+      else
+        touch /.autorelabel
+      fi
+    
+    at the end of installation.
+    
+    When possible this fixes SELinux labels in the guest and makes the
+    autorelabel step unnecessary.
+    
+    Notes:
+    
+     - The previous commit is required so that load_policy works.
+    
+     - During the build, SELinux is enabled but no policy is loaded.  This
+       works because SELinux is in permissive mode.
+    
+     - This flag does not work if the appliance kernel and the guest have
+       greatly differing versions, eg. a RHEL 6 guest with a Fedora 20
+       appliance.  This is because SELinux changes the policy format and
+       breaks backwards compatibility.  You would see errors like this:
+    
+       libsepol.policydb_write: policy version 15 cannot support MLS
+       libsepol.policydb_to_image: could not compute policy length
+       libsepol.policydb_to_image: could not create policy image
+       SELinux:  Could not downgrade policy file /etc/selinux/targeted/policy/policy.24, searching for an older version.
+       SELinux:  Could not open policy file <= /etc/selinux/targeted/policy/policy.24:  No such file or directory
+    
+       These errors are ignored (they go to the log file) and relabelling
+       is done at boot instead.
+    
+     - It's not clear if loading guest policy is safe.  You should trust
+       the virt-builder templates and to use libguestfs confinement for
+       additional protection.
+
+commit ab33653ef312e18042be08854aa0dec2c7254fc2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 24 19:36:33 2014 +0000
+
+    daemon: Bind-mount /sys/fs/selinux into sysroot when running commands.
+    
+    Even though we are already bind-mounting /sys, it is necessary to also
+    bind-mount /sys/fs/selinux in order for SELinux commands (in
+    particular, 'load_policy') to work.
+    
+    This fixes/reverts commit 7367729ec7a5d016878dd00b32cce45cec372931.
+
+commit 0e2489974b91e4728d544fe2aa08c2a1c9deb365
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 24 10:20:14 2014 +0000
+
+    fuse: In mount-local-run, test if root filesystem has been mounted (RHBZ#1057504).
+    
+    It is never normally valid to use the mount-local* APIs when you
+    haven't mounted some filesystems in the libguestfs namespace.
+    
+    If you try it, it results in some odd errors.  The mount-local-run
+    call is successful, but subsequent operations fail:
+    
+    $ mkdir -p /tmp/mnt
+    $ guestfish -x -N fs mount-local /tmp/mnt : mount-local-run
+    libguestfs: error: lstat: lstat_stub: you must call 'mount' first to mount the root filesystem
+    libguestfs: error: lstat: lstat_stub: you must call 'mount' first to mount the root filesystem
+    
+    With this commit, the mount-local-run call gives an error:
+    
+    libguestfs: error: you must call 'guestfs_mount' first to mount a filesystem on '/'.
+    Note: '/tmp/mnt' is still mounted.  Use 'guestunmount /tmp/mnt' to clean up.
+    
+    The error is implemented by calling guestfs_exists (g, "/") which has
+    the side effect of running the NEED_ROOT macro in the daemon.  (There
+    is no simple equivalent of NEED_ROOT on the library side.)
+
+commit 01d27033bdd12974f850ff7a8e5de8f6b790379d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 21:49:16 2014 +0000
+
+    lib, fish: Handle Gluster, NBD, iSCSI and Sheepdog paths properly.
+    
+    This fixes the handling of paths for the protocols named above, with
+    respect to leading '/' (or not) on the volume/export name.
+    
+    See previous commits which did the same fixes for Ceph:
+    commit 53a3ff9c005fd69e773fdb18461a635c2502df1b
+    commit 992a6b297023711862229aabe4e23b6a1c94c1cc
+
 commit 870f076bddbc540b793670990dc504ef36fb2f41
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Jan 23 19:35:23 2014 +0000
