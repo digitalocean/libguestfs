@@ -121,14 +121,6 @@ to build another image from scratch.
 
 Показати коротку довідку.
 
-=item B<--version>
-
-Показати дані щодо версії і завершити роботу.
-
-=item B<--debug>
-
-Увімкнути виведення діагностичних даних.
-
 =item B<--floppy>
 
 Create a virtual floppy disk.
@@ -172,9 +164,6 @@ Choose the output disk image format.
 
 The default is C<raw> (raw sparse disk image).
 
-For other choices, see the L<qemu-img(1)> manpage.  The only other choice
-that would really make sense here is C<qcow2>.
-
 =item B<--type=E<lt>fsE<gt>>
 
 =item B<-t E<lt>fsE<gt>>
@@ -199,8 +188,8 @@ image.
 You can change the partition table type, eg. I<--partition=gpt> for large
 disks.
 
-Note that if you just use a lonesome I<--partition>, the Perl option parser
-might consider the next parameter to be the partition type.  For example:
+Note that if you just use a lonesome I<--partition>, the option parser might
+consider the next parameter to be the partition type.  For example:
 
  virt-make-fs --partition input.tar output.img
 
@@ -212,21 +201,29 @@ dash) between options and the input and output arguments:
 
 For MBR, virt-make-fs sets the partition type byte automatically.
 
+=item B<-v>
+
+=item B<--verbose>
+
+Увімкнути виведення діагностичних даних.
+
+=item B<-V>
+
+=item B<--version>
+
+Показати дані щодо версії і завершити роботу.
+
+=item B<-x>
+
+Enable libguestfs trace.
+
 =back
-
-=head1 ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ
-
-Libvirt guest names can contain arbitrary characters, some of which have
-meaning to the shell such as C<#> and space.  You may need to quote or
-escape these characters on the command line.  See the shell manual page
-L<sh(1)> for details.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<guestfish(1)>, L<virt-format(1)>, L<virt-resize(1)>, L<virt-tar-in(1)>,
 L<mkisofs(1)>, L<genisoimage(1)>, L<mksquashfs(1)>, L<mke2fs(8)>,
-L<resize2fs(8)>, L<guestfs(3)>, L<Sys::Guestfs(3)>,
-L<http://libguestfs.org/>.
+L<resize2fs(8)>, L<guestfs(3)>, L<http://libguestfs.org/>.
 
 =head1 АВТОР
 
@@ -234,5 +231,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2010–2012
+Copyright (C) 2010-2014 Red Hat Inc.
 

@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [25])
-m4_define([libguestfs_release], [29])
+m4_define([libguestfs_release], [31])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1714,6 +1714,7 @@ AC_CONFIG_FILES([Makefile
                  java/examples/Makefile
                  lua/Makefile
                  lua/examples/Makefile
+                 make-fs/Makefile
                  mllib/Makefile
                  mllib/config.ml
                  ocaml/META
@@ -1745,6 +1746,7 @@ AC_CONFIG_FILES([Makefile
                  tests/btrfs/Makefile
                  tests/c-api/Makefile
                  tests/charsets/Makefile
+                 tests/create/Makefile
                  tests/data/Makefile
                  tests/disks/Makefile
                  tests/disks/test-qemu-drive-libvirt.xml

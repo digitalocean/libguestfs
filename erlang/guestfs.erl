@@ -108,6 +108,7 @@
 -export([device_index/2]).
 -export([df/1]).
 -export([df_h/1]).
+-export([disk_create/4, disk_create/5]).
 -export([disk_format/2]).
 -export([disk_has_backing_file/2]).
 -export([disk_virtual_size/2]).
@@ -892,6 +893,11 @@ df(G) ->
 
 df_h(G) ->
   call_port(G, {df_h}).
+
+disk_create(G, Filename, Format, Size, Optargs) ->
+  call_port(G, {disk_create, Filename, Format, Size, Optargs}).
+disk_create(G, Filename, Format, Size) ->
+  disk_create(G, Filename, Format, Size, []).
 
 disk_format(G, Filename) ->
   call_port(G, {disk_format, Filename}).

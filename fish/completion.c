@@ -130,6 +130,7 @@ static const char *const commands[] = {
   "device-index",
   "df",
   "df-h",
+  "disk-create",
   "disk-format",
   "disk-has-backing-file",
   "disk-virtual-size",

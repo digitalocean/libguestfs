@@ -1174,6 +1174,31 @@ extern GUESTFS_DLL_PUBLIC char *guestfs_df (guestfs_h *g);
 #define GUESTFS_HAVE_DF_H 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_df_h (guestfs_h *g);
 
+#define GUESTFS_HAVE_DISK_CREATE 1
+#define GUESTFS_DISK_CREATE_BACKINGFILE 0
+#define GUESTFS_DISK_CREATE_BACKINGFORMAT 1
+#define GUESTFS_DISK_CREATE_PREALLOCATION 2
+#define GUESTFS_DISK_CREATE_COMPAT 3
+#define GUESTFS_DISK_CREATE_CLUSTERSIZE 4
+extern GUESTFS_DLL_PUBLIC int guestfs_disk_create (guestfs_h *g, const char *filename, const char *format, int64_t size, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_disk_create_va (guestfs_h *g, const char *filename, const char *format, int64_t size, va_list args);
+
+struct guestfs_disk_create_argv {
+  uint64_t bitmask;
+# define GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK (UINT64_C(1)<<0)
+  const char *backingfile;
+# define GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK (UINT64_C(1)<<1)
+  const char *backingformat;
+# define GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK (UINT64_C(1)<<2)
+  const char *preallocation;
+# define GUESTFS_DISK_CREATE_COMPAT_BITMASK (UINT64_C(1)<<3)
+  const char *compat;
+# define GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK (UINT64_C(1)<<4)
+  int clustersize;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_disk_create_argv (guestfs_h *g, const char *filename, const char *format, int64_t size, const struct guestfs_disk_create_argv *optargs);
+
 #define GUESTFS_HAVE_DISK_FORMAT 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_disk_format (guestfs_h *g, const char *filename);
 
@@ -3631,6 +3656,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_DEVICE_INDEX 1
 #define LIBGUESTFS_HAVE_DF 1
 #define LIBGUESTFS_HAVE_DF_H 1
+#define LIBGUESTFS_HAVE_DISK_CREATE 1
 #define LIBGUESTFS_HAVE_DISK_FORMAT 1
 #define LIBGUESTFS_HAVE_DISK_HAS_BACKING_FILE 1
 #define LIBGUESTFS_HAVE_DISK_VIRTUAL_SIZE 1

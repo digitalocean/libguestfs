@@ -617,6 +617,9 @@ val df : t -> string
 val df_h : t -> string
 (** report file system disk space usage (human readable) *)
 
+val disk_create : t -> ?backingfile:string -> ?backingformat:string -> ?preallocation:string -> ?compat:string -> ?clustersize:int -> string -> string -> int64 -> unit
+(** create a blank disk image *)
+
 val disk_format : t -> string -> string
 (** detect the disk format of a disk image *)
 
@@ -2220,6 +2223,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method device_index : string -> int
   method df : unit -> string
   method df_h : unit -> string
+  method disk_create : ?backingfile:string -> ?backingformat:string -> ?preallocation:string -> ?compat:string -> ?clustersize:int -> string -> string -> int64 -> unit
   method disk_format : string -> string
   method disk_has_backing_file : string -> bool
   method disk_virtual_size : string -> int64

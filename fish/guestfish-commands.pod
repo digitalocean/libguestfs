@@ -7,7 +7,7 @@
 This creates an empty (zeroed) file of the given size, and then adds
 so it can be further examined.
 
-For more advanced image creation, see L<qemu-img(1)> utility.
+For more advanced image creation, see L</disk-create>.
 
 Size can be specified using standard suffixes, eg. C<1M>.
 
@@ -240,7 +240,7 @@ not assigned to the file until they are needed.  Sparse disk files
 only use space when written to, but they are slower and there is a
 danger you could run out of real disk space during a write operation.
 
-For more advanced image creation, see L<qemu-img(1)> utility.
+For more advanced image creation, see L</disk-create>.
 
 Size can be specified using standard suffixes, eg. C<1M>.
 

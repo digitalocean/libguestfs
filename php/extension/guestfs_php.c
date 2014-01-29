@@ -146,6 +146,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_device_index, NULL)
   PHP_FE (guestfs_df, NULL)
   PHP_FE (guestfs_df_h, NULL)
+  PHP_FE (guestfs_disk_create, NULL)
   PHP_FE (guestfs_disk_format, NULL)
   PHP_FE (guestfs_disk_has_backing_file, NULL)
   PHP_FE (guestfs_disk_virtual_size, NULL)
@@ -4179,6 +4180,79 @@ PHP_FUNCTION (guestfs_df_h)
   char *r_copy = estrdup (r);
   free (r);
   RETURN_STRING (r_copy, 0);
+}
+
+PHP_FUNCTION (guestfs_disk_create)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *filename;
+  int filename_size;
+  char *format;
+  int format_size;
+  long size;
+  struct guestfs_disk_create_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_disk_create_argv *optargs = &optargs_s;
+  char *optargs_t_backingfile = NULL;
+  int optargs_t_backingfile_size = -1;
+  char *optargs_t_backingformat = NULL;
+  int optargs_t_backingformat_size = -1;
+  char *optargs_t_preallocation = NULL;
+  int optargs_t_preallocation_size = -1;
+  char *optargs_t_compat = NULL;
+  int optargs_t_compat_size = -1;
+  long optargs_t_clustersize = -1;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rssl|ssssl",
+        &z_g, &filename, &filename_size, &format, &format_size, &size, &optargs_t_backingfile, &optargs_t_backingfile_size, &optargs_t_backingformat, &optargs_t_backingformat_size, &optargs_t_preallocation, &optargs_t_preallocation_size, &optargs_t_compat, &optargs_t_compat_size, &optargs_t_clustersize) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (filename) != filename_size) {
+    fprintf (stderr, "libguestfs: disk_create: parameter 'filename' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (strlen (format) != format_size) {
+    fprintf (stderr, "libguestfs: disk_create: parameter 'format' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (optargs_t_backingfile != NULL) {
+    optargs_s.backingfile = optargs_t_backingfile;
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK;
+  }
+  if (optargs_t_backingformat != NULL) {
+    optargs_s.backingformat = optargs_t_backingformat;
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK;
+  }
+  if (optargs_t_preallocation != NULL) {
+    optargs_s.preallocation = optargs_t_preallocation;
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK;
+  }
+  if (optargs_t_compat != NULL) {
+    optargs_s.compat = optargs_t_compat;
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_COMPAT_BITMASK;
+  }
+  if (optargs_t_clustersize != -1) {
+    optargs_s.clustersize = optargs_t_clustersize;
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK;
+  }
+
+  int r;
+  r = guestfs_disk_create_argv (g, filename, format, size, optargs);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
 }
 
 PHP_FUNCTION (guestfs_disk_format)

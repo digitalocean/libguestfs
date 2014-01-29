@@ -7633,6 +7633,119 @@ guestfs_session_get_backend_settings(GuestfsSession *session, GError **err)
 }
 
 /**
+ * guestfs_session_disk_create:
+ * @session: (transfer none): A GuestfsSession object
+ * @filename: (transfer none) (type utf8):
+ * @format: (transfer none) (type utf8):
+ * @size: (type gint64):
+ * @optargs: (transfer none) (allow-none): a GuestfsDiskCreate containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * create a blank disk image
+ *
+ * Create a blank disk image called @filename (a host file) with format
+ * @format (usually @raw or @qcow2). The size is @size bytes.
+ * 
+ * If used with the optional @backingfile parameter, then a snapshot is
+ * created on top of the backing file. In this case, @size must be passed
+ * as @-1. The size of the snapshot is the same as the size of the backing
+ * file, which is discovered automatically. You are encouraged to also pass
+ * @backingformat to describe the format of @backingfile.
+ * 
+ * The other optional parameters are:
+ * 
+ * @preallocation
+ * If format is @raw, then this can be either @sparse or @full to
+ * create a sparse or fully allocated file respectively. The default is
+ * @sparse.
+ * 
+ * If format is @qcow2, then this can be either @off or @metadata.
+ * Preallocating metadata can be faster when doing lots of writes, but
+ * uses more space. The default is @off.
+ * 
+ * @compat
+ * @qcow2 only: Pass the string 1.1 to use the advanced qcow2 format
+ * supported by qemu &ge; 1.1.
+ * 
+ * @clustersize
+ * @qcow2 only: Change the qcow2 cluster size. The default is 65536
+ * (bytes) and this setting may be any power of two between 512 and
+ * 2097152.
+ * 
+ * Note that this call does not add the new disk to the handle. You may
+ * need to call guestfs_session_add_drive_opts() separately.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_disk_create(GuestfsSession *session, const gchar *filename, const gchar *format, gint64 size, GuestfsDiskCreate *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "disk_create");
+    return FALSE;
+  }
+
+  struct guestfs_disk_create_argv argv;
+  struct guestfs_disk_create_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue backingfile_v = {0, };
+    g_value_init(&backingfile_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "backingfile", &backingfile_v);
+    const gchar *backingfile = g_value_get_string(&backingfile_v);
+    if (backingfile != NULL) {
+      argv.bitmask |= GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK;
+      argv.backingfile = backingfile;
+    }
+    GValue backingformat_v = {0, };
+    g_value_init(&backingformat_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "backingformat", &backingformat_v);
+    const gchar *backingformat = g_value_get_string(&backingformat_v);
+    if (backingformat != NULL) {
+      argv.bitmask |= GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK;
+      argv.backingformat = backingformat;
+    }
+    GValue preallocation_v = {0, };
+    g_value_init(&preallocation_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "preallocation", &preallocation_v);
+    const gchar *preallocation = g_value_get_string(&preallocation_v);
+    if (preallocation != NULL) {
+      argv.bitmask |= GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK;
+      argv.preallocation = preallocation;
+    }
+    GValue compat_v = {0, };
+    g_value_init(&compat_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "compat", &compat_v);
+    const gchar *compat = g_value_get_string(&compat_v);
+    if (compat != NULL) {
+      argv.bitmask |= GUESTFS_DISK_CREATE_COMPAT_BITMASK;
+      argv.compat = compat;
+    }
+    GValue clustersize_v = {0, };
+    g_value_init(&clustersize_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "clustersize", &clustersize_v);
+    gint32 clustersize = g_value_get_int(&clustersize_v);
+    if (clustersize != -1) {
+      argv.bitmask |= GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK;
+      argv.clustersize = clustersize;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_disk_create_argv (g, filename, format, size, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_mount:
  * @session: (transfer none): A GuestfsSession object
  * @mountable: (transfer none) (type filename):

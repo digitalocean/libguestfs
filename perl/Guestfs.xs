@@ -3001,6 +3001,56 @@ PREINIT:
       free (r);
 
 void
+disk_create (g, filename, format, size, ...)
+      guestfs_h *g;
+      char *filename;
+      char *format;
+      int64_t size;
+PREINIT:
+      int r;
+      struct guestfs_disk_create_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_disk_create_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 4) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 4; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "backingfile")) {
+          optargs_s.backingfile = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK;
+        }
+        else if (STREQ (this_arg, "backingformat")) {
+          optargs_s.backingformat = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK;
+        }
+        else if (STREQ (this_arg, "preallocation")) {
+          optargs_s.preallocation = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK;
+        }
+        else if (STREQ (this_arg, "compat")) {
+          optargs_s.compat = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_DISK_CREATE_COMPAT_BITMASK;
+        }
+        else if (STREQ (this_arg, "clustersize")) {
+          optargs_s.clustersize = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_disk_create_argv (g, filename, format, size, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
 mount (g, mountable, mountpoint)
       guestfs_h *g;
       char *mountable;

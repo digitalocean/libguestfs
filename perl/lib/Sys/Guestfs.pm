@@ -1594,6 +1594,50 @@ This command is mostly useful for interactive sessions.  It
 is I<not> intended that you try to parse the output string.
 Use C<$g-E<gt>statvfs> from programs.
 
+=item $g->disk_create ($filename, $format, $size [, backingfile => $backingfile] [, backingformat => $backingformat] [, preallocation => $preallocation] [, compat => $compat] [, clustersize => $clustersize]);
+
+Create a blank disk image called C<filename> (a host file)
+with format C<format> (usually C<raw> or C<qcow2>).
+The size is C<size> bytes.
+
+If used with the optional C<backingfile> parameter, then a snapshot
+is created on top of the backing file.  In this case, C<size> must
+be passed as C<-1>.  The size of the snapshot is the same as the
+size of the backing file, which is discovered automatically.  You
+are encouraged to also pass C<backingformat> to describe the format
+of C<backingfile>.
+
+The other optional parameters are:
+
+=over 4
+
+=item C<preallocation>
+
+If format is C<raw>, then this can be either C<sparse> or C<full>
+to create a sparse or fully allocated file respectively.  The default
+is C<sparse>.
+
+If format is C<qcow2>, then this can be either C<off> or
+C<metadata>.  Preallocating metadata can be faster when doing lots
+of writes, but uses more space.  The default is C<off>.
+
+=item C<compat>
+
+C<qcow2> only:
+Pass the string C<1.1> to use the advanced qcow2 format supported
+by qemu E<ge> 1.1.
+
+=item C<clustersize>
+
+C<qcow2> only:
+Change the qcow2 cluster size.  The default is 65536 (bytes) and
+this setting may be any power of two between 512 and 2097152.
+
+=back
+
+Note that this call does not add the new disk to the handle.  You
+may need to call C<$g-E<gt>add_drive_opts> separately.
+
 =item $format = $g->disk_format ($filename);
 
 Detect and return the format of the disk image called C<filename>.
@@ -8189,6 +8233,23 @@ use vars qw(%guestfs_introspection);
     ],
     name => "df_h",
     description => "report file system disk space usage (human readable)",
+  },
+  "disk_create" => {
+    ret => 'void',
+    args => [
+      [ 'filename', 'string', 0 ],
+      [ 'format', 'string', 1 ],
+      [ 'size', 'int64', 2 ],
+    ],
+    optargs => {
+      backingfile => [ 'backingfile', 'string', 0 ],
+      backingformat => [ 'backingformat', 'string', 1 ],
+      preallocation => [ 'preallocation', 'string', 2 ],
+      compat => [ 'compat', 'string', 3 ],
+      clustersize => [ 'clustersize', 'int', 4 ],
+    },
+    name => "disk_create",
+    description => "create a blank disk image",
   },
   "disk_format" => {
     ret => 'string',

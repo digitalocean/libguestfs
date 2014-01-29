@@ -1215,6 +1215,14 @@ JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1back
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _disk_create
+ * Signature: (JLjava/lang/String;Ljava/lang/String;JJLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1disk_1create
+  (JNIEnv *, jobject, jlong, jstring, jstring, jlong, jlong, jstring, jstring, jstring, jstring, jint);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _mount
  * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */

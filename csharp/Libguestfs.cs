@@ -1562,6 +1562,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_disk_create_argv (IntPtr h, [In] string filename, [In] string format, long size, void *);
+
+    /// <summary>
+    /// create a blank disk image
+    /// </summary>
+    public void disk_create (string filename, string format, long size)
+    {
+      int r;
+      r = guestfs_disk_create_argv (_handle, filename, format, size, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string guestfs_disk_format (IntPtr h, [In] string filename);
 
     /// <summary>

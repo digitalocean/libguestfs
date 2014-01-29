@@ -270,6 +270,7 @@ gboolean guestfs_session_add_drive_scratch(GuestfsSession *session, gint64 size,
 GuestfsXAttr **guestfs_session_journal_get(GuestfsSession *session, GError **err);
 gboolean guestfs_session_set_backend_settings(GuestfsSession *session, gchar *const *settings, GError **err);
 gchar **guestfs_session_get_backend_settings(GuestfsSession *session, GError **err);
+gboolean guestfs_session_disk_create(GuestfsSession *session, const gchar *filename, const gchar *format, gint64 size, GuestfsDiskCreate *optargs, GError **err);
 gboolean guestfs_session_mount(GuestfsSession *session, const gchar *mountable, const gchar *mountpoint, GError **err);
 gboolean guestfs_session_sync(GuestfsSession *session, GError **err);
 gboolean guestfs_session_touch(GuestfsSession *session, const gchar *path, GError **err);

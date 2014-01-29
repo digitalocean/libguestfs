@@ -510,6 +510,12 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
 <span class="returnvalue">gchar</span> **            <a class="link" href="GuestfsSession.html#guestfs-session-get-backend-settings" title="guestfs_session_get_backend_settings ()">guestfs_session_get_backend_settings</a>
                                                         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-disk-create" title="guestfs_session_disk_create ()">guestfs_session_disk_create</a>         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *filename</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *format</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> size</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GuestfsDiskCreate.html" title="GuestfsDiskCreate"><span class="type">GuestfsDiskCreate</span></a> *optargs</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-mount" title="guestfs_session_mount ()">guestfs_session_mount</a>               (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *mountpoint</code></em>,
@@ -9768,6 +9774,100 @@ See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>an array of returned strings, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span>
 </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-disk-create"></a><h3>guestfs_session_disk_create ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_disk_create         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *filename</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *format</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> size</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GuestfsDiskCreate.html" title="GuestfsDiskCreate"><span class="type">GuestfsDiskCreate</span></a> *optargs</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+create a blank disk image
+</p>
+<p>
+Create a blank disk image called <em class="parameter"><code>filename</code></em> (a host file) with format
+<em class="parameter"><code>format</code></em> (usually <em class="parameter"><code>raw</code></em> or <em class="parameter"><code>qcow2</code></em>). The size is <em class="parameter"><code>size</code></em> bytes.
+</p>
+<p>
+If used with the optional <em class="parameter"><code>backingfile</code></em> parameter, then a snapshot is
+created on top of the backing file. In this case, <em class="parameter"><code>size</code></em> must be passed
+as @-1. The size of the snapshot is the same as the size of the backing
+file, which is discovered automatically. You are encouraged to also pass
+<em class="parameter"><code>backingformat</code></em> to describe the format of <em class="parameter"><code>backingfile</code></em>.
+</p>
+<p>
+The other optional parameters are:
+</p>
+<p>
+<em class="parameter"><code>preallocation</code></em>
+If format is <em class="parameter"><code>raw</code></em>, then this can be either <em class="parameter"><code>sparse</code></em> or <em class="parameter"><code>full</code></em> to
+create a sparse or fully allocated file respectively. The default is
+<em class="parameter"><code>sparse</code></em>.
+</p>
+<p>
+If format is <em class="parameter"><code>qcow2</code></em>, then this can be either <em class="parameter"><code>off</code></em> or <em class="parameter"><code>metadata</code></em>.
+Preallocating metadata can be faster when doing lots of writes, but
+uses more space. The default is <em class="parameter"><code>off</code></em>.
+</p>
+<p>
+<em class="parameter"><code>compat</code></em>
+<em class="parameter"><code>qcow2</code></em> only: Pass the string 1.1 to use the advanced qcow2 format
+supported by qemu ≥ 1.1.
+</p>
+<p>
+<em class="parameter"><code>clustersize</code></em>
+<em class="parameter"><code>qcow2</code></em> only: Change the qcow2 cluster size. The default is 65536
+(bytes) and this setting may be any power of two between 512 and
+2097152.
+</p>
+<p>
+Note that this call does not add the new disk to the handle. You may
+need to call <code class="function">guestfs_session_add_drive_opts()</code> separately.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>filename</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>format</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>size</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> gint64]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>optargs</code></em> :</span></p></td>
+<td>a GuestfsDiskCreate containing optional arguments. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
 </tr>
 </tbody>
 </table></div>

@@ -2875,6 +2875,72 @@ func (g *Guestfs) Df_h () (string, *GuestfsError) {
     return C.GoString (r), nil
 }
 
+/* Struct carrying optional arguments for Disk_create */
+type OptargsDisk_create struct {
+    /* Backingfile field is ignored unless Backingfile_is_set == true */
+    Backingfile_is_set bool
+    Backingfile string
+    /* Backingformat field is ignored unless Backingformat_is_set == true */
+    Backingformat_is_set bool
+    Backingformat string
+    /* Preallocation field is ignored unless Preallocation_is_set == true */
+    Preallocation_is_set bool
+    Preallocation string
+    /* Compat field is ignored unless Compat_is_set == true */
+    Compat_is_set bool
+    Compat string
+    /* Clustersize field is ignored unless Clustersize_is_set == true */
+    Clustersize_is_set bool
+    Clustersize int
+}
+
+/* disk_create : create a blank disk image */
+func (g *Guestfs) Disk_create (filename string, format string, size int64, optargs *OptargsDisk_create) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("disk_create")
+    }
+
+    c_filename := C.CString (filename)
+    defer C.free (unsafe.Pointer (c_filename))
+
+    c_format := C.CString (format)
+    defer C.free (unsafe.Pointer (c_format))
+    c_optargs := C.struct_guestfs_disk_create_argv{}
+    if optargs != nil {
+        if optargs.Backingfile_is_set {
+            c_optargs.bitmask |= C.GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK
+            c_optargs.backingfile = C.CString (optargs.Backingfile)
+            defer C.free (unsafe.Pointer (c_optargs.backingfile))
+        }
+        if optargs.Backingformat_is_set {
+            c_optargs.bitmask |= C.GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK
+            c_optargs.backingformat = C.CString (optargs.Backingformat)
+            defer C.free (unsafe.Pointer (c_optargs.backingformat))
+        }
+        if optargs.Preallocation_is_set {
+            c_optargs.bitmask |= C.GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK
+            c_optargs.preallocation = C.CString (optargs.Preallocation)
+            defer C.free (unsafe.Pointer (c_optargs.preallocation))
+        }
+        if optargs.Compat_is_set {
+            c_optargs.bitmask |= C.GUESTFS_DISK_CREATE_COMPAT_BITMASK
+            c_optargs.compat = C.CString (optargs.Compat)
+            defer C.free (unsafe.Pointer (c_optargs.compat))
+        }
+        if optargs.Clustersize_is_set {
+            c_optargs.bitmask |= C.GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK
+            c_optargs.clustersize = C.int (optargs.Clustersize)
+        }
+    }
+
+    r := C.guestfs_disk_create_argv (g.g, c_filename, c_format, C.int64_t (size), &c_optargs)
+
+    if r == -1 {
+        return get_error_from_handle (g, "disk_create")
+    }
+    return nil
+}
+
 /* disk_format : detect the disk format of a disk image */
 func (g *Guestfs) Disk_format (filename string) (string, *GuestfsError) {
     if g.g == nil {

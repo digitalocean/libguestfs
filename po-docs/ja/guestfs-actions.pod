@@ -2339,6 +2339,90 @@ from programs.
 
 (1.0.54 において追加)
 
+=head2 guestfs_disk_create
+
+ int
+ guestfs_disk_create (guestfs_h *g,
+                      const char *filename,
+                      const char *format,
+                      int64_t size,
+                      ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_DISK_CREATE_BACKINGFILE, const char *backingfile,
+ GUESTFS_DISK_CREATE_BACKINGFORMAT, const char *backingformat,
+ GUESTFS_DISK_CREATE_PREALLOCATION, const char *preallocation,
+ GUESTFS_DISK_CREATE_COMPAT, const char *compat,
+ GUESTFS_DISK_CREATE_CLUSTERSIZE, int clustersize,
+
+Create a blank disk image called C<filename> (a host file)  with format
+C<format> (usually C<raw> or C<qcow2>).  The size is C<size> bytes.
+
+If used with the optional C<backingfile> parameter, then a snapshot is
+created on top of the backing file.  In this case, C<size> must be passed as
+C<-1>.  The size of the snapshot is the same as the size of the backing
+file, which is discovered automatically.  You are encouraged to also pass
+C<backingformat> to describe the format of C<backingfile>.
+
+The other optional parameters are:
+
+=over 4
+
+=item C<preallocation>
+
+If format is C<raw>, then this can be either C<sparse> or C<full> to create
+a sparse or fully allocated file respectively.  The default is C<sparse>.
+
+If format is C<qcow2>, then this can be either C<off> or C<metadata>.
+Preallocating metadata can be faster when doing lots of writes, but uses
+more space.  The default is C<off>.
+
+=item C<compat>
+
+C<qcow2> only: Pass the string C<1.1> to use the advanced qcow2 format
+supported by qemu E<ge> 1.1.
+
+=item C<clustersize>
+
+C<qcow2> only: Change the qcow2 cluster size.  The default is 65536 (bytes)
+and this setting may be any power of two between 512 and 2097152.
+
+=back
+
+Note that this call does not add the new disk to the handle.  You may need
+to call C<guestfs_add_drive_opts> separately.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_disk_create_va
+
+ int
+ guestfs_disk_create_va (guestfs_h *g,
+                         const char *filename,
+                         const char *format,
+                         int64_t size,
+                         va_list args);
+
+This is the "va_list variant" of L</guestfs_disk_create>.
+
+L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
+
+=head2 guestfs_disk_create_argv
+
+ int
+ guestfs_disk_create_argv (guestfs_h *g,
+                           const char *filename,
+                           const char *format,
+                           int64_t size,
+                           const struct guestfs_disk_create_argv *optargs);
+
+This is the "argv variant" of L</guestfs_disk_create>.
+
+L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
+
 =head2 guestfs_disk_format
 
  char *

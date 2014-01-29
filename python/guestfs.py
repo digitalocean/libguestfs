@@ -2875,6 +2875,48 @@ class GuestFS(object):
         r = libguestfsmod.get_backend_settings (self._o)
         return r
 
+    def disk_create (self, filename, format, size, backingfile=None, backingformat=None, preallocation=None, compat=None, clustersize=None):
+        """Create a blank disk image called "filename" (a host
+        file) with format "format" (usually "raw" or "qcow2").
+        The size is "size" bytes.
+        
+        If used with the optional "backingfile" parameter, then
+        a snapshot is created on top of the backing file. In
+        this case, "size" must be passed as -1. The size of the
+        snapshot is the same as the size of the backing file,
+        which is discovered automatically. You are encouraged to
+        also pass "backingformat" to describe the format of
+        "backingfile".
+        
+        The other optional parameters are:
+        
+        "preallocation"
+        If format is "raw", then this can be either "sparse"
+        or "full" to create a sparse or fully allocated file
+        respectively. The default is "sparse".
+        
+        If format is "qcow2", then this can be either "off"
+        or "metadata". Preallocating metadata can be faster
+        when doing lots of writes, but uses more space. The
+        default is "off".
+        
+        "compat"
+        "qcow2" only: Pass the string 1.1 to use the
+        advanced qcow2 format supported by qemu ≥ 1.1.
+        
+        "clustersize"
+        "qcow2" only: Change the qcow2 cluster size. The
+        default is 65536 (bytes) and this setting may be any
+        power of two between 512 and 2097152.
+        
+        Note that this call does not add the new disk to the
+        handle. You may need to call "g.add_drive_opts"
+        separately.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.disk_create (self._o, filename, format, size, backingfile, backingformat, preallocation, compat, clustersize)
+        return r
+
     def mount (self, mountable, mountpoint):
         """Mount a guest disk at a position in the filesystem.
         Block devices are named "/dev/sda", "/dev/sdb" and so

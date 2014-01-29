@@ -203,6 +203,23 @@ guestfs_copy_file_to_file_get_type
 </SECTION>
 
 <SECTION>
+<FILE>optargs-disk_create</FILE>
+<TITLE>GuestfsDiskCreate</TITLE>
+GuestfsDiskCreate
+GuestfsDiskCreateClass
+guestfs_disk_create_new
+<SUBSECTION Standard>
+GUESTFS_DISK_CREATE
+GUESTFS_DISK_CREATE_CLASS
+GUESTFS_DISK_CREATE_GET_CLASS
+GUESTFS_IS_DISK_CREATE
+GUESTFS_IS_DISK_CREATE_CLASS
+GUESTFS_TYPE_DISK_CREATE
+GuestfsDiskCreatePrivate
+guestfs_disk_create_get_type
+</SECTION>
+
+<SECTION>
 <FILE>optargs-e2fsck</FILE>
 <TITLE>GuestfsE2fsck</TITLE>
 GuestfsE2fsck
@@ -1016,6 +1033,7 @@ guestfs_session_add_drive_scratch
 guestfs_session_journal_get
 guestfs_session_set_backend_settings
 guestfs_session_get_backend_settings
+guestfs_session_disk_create
 guestfs_session_mount
 guestfs_session_sync
 guestfs_session_touch

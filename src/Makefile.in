@@ -72,6 +72,7 @@
 
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -139,12 +140,17 @@ DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am $(srcdir)/libguestfs.pc.in \
 	$(top_srcdir)/build-aux/depcomp $(include_HEADERS)
+noinst_PROGRAMS = $(am__EXEEXT_1)
 
 # XXX Unfortunately FUSE_CFLAGS defines _FILE_OFFSET_BITS=64.
 @HAVE_FUSE_TRUE@am__append_1 = $(FUSE_CFLAGS)
 @HAVE_FUSE_TRUE@am__append_2 = $(FUSE_LIBS)
 @HAVE_RPCGEN_TRUE@@HAVE_XDR_U_INT64_T_TRUE@am__append_3 = -DHAVE_XDR_U_INT64_T=1
 @HAVE_RPCGEN_TRUE@@HAVE_XDR_UINT64_T_TRUE@@HAVE_XDR_U_INT64_T_FALSE@am__append_4 = -DHAVE_XDR_UINT64_T=1
+
+# Small utility to check for a needed libvirt version;
+# to be used in shell/script-based tests.
+@HAVE_LIBVIRT_TRUE@am__append_5 = libvirt-is-version
 TESTS = test-utils$(EXEEXT)
 check_PROGRAMS = test-utils$(EXEEXT)
 subdir = src
@@ -339,15 +345,15 @@ am_libguestfs_la_OBJECTS = libguestfs_la-actions-0.lo \
 	libguestfs_la-actions-support.lo \
 	libguestfs_la-actions-variants.lo libguestfs_la-alloc.lo \
 	libguestfs_la-appliance.lo libguestfs_la-bindtests.lo \
-	libguestfs_la-command.lo libguestfs_la-canonical-name.lo \
-	libguestfs_la-conn-socket.lo libguestfs_la-dbdump.lo \
-	libguestfs_la-drives.lo libguestfs_la-errors.lo \
-	libguestfs_la-event-string.lo libguestfs_la-events.lo \
-	libguestfs_la-file.lo libguestfs_la-filearch.lo \
-	libguestfs_la-fuse.lo libguestfs_la-handle.lo \
-	libguestfs_la-info.lo libguestfs_la-inspect.lo \
-	libguestfs_la-inspect-apps.lo libguestfs_la-inspect-fs.lo \
-	libguestfs_la-inspect-fs-cd.lo \
+	libguestfs_la-canonical-name.lo libguestfs_la-command.lo \
+	libguestfs_la-conn-socket.lo libguestfs_la-create.lo \
+	libguestfs_la-dbdump.lo libguestfs_la-drives.lo \
+	libguestfs_la-errors.lo libguestfs_la-event-string.lo \
+	libguestfs_la-events.lo libguestfs_la-file.lo \
+	libguestfs_la-filearch.lo libguestfs_la-fuse.lo \
+	libguestfs_la-handle.lo libguestfs_la-info.lo \
+	libguestfs_la-inspect.lo libguestfs_la-inspect-apps.lo \
+	libguestfs_la-inspect-fs.lo libguestfs_la-inspect-fs-cd.lo \
 	libguestfs_la-inspect-fs-unix.lo \
 	libguestfs_la-inspect-fs-windows.lo \
 	libguestfs_la-inspect-icon.lo libguestfs_la-journal.lo \
@@ -378,6 +384,17 @@ libutils_la_OBJECTS = $(am_libutils_la_OBJECTS)
 libutils_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libutils_la_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+@HAVE_LIBVIRT_TRUE@am__EXEEXT_1 = libvirt-is-version$(EXEEXT)
+PROGRAMS = $(noinst_PROGRAMS)
+am__libvirt_is_version_SOURCES_DIST = libvirt-is-version.c
+@HAVE_LIBVIRT_TRUE@am_libvirt_is_version_OBJECTS = libvirt_is_version-libvirt-is-version.$(OBJEXT)
+libvirt_is_version_OBJECTS = $(am_libvirt_is_version_OBJECTS)
+@HAVE_LIBVIRT_TRUE@libvirt_is_version_DEPENDENCIES =  \
+@HAVE_LIBVIRT_TRUE@	$(am__DEPENDENCIES_1)
+libvirt_is_version_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(libvirt_is_version_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am_test_utils_OBJECTS = test_utils-test-utils.$(OBJEXT)
 test_utils_OBJECTS = $(am_test_utils_OBJECTS)
 test_utils_DEPENDENCIES = libutils.la \
@@ -421,10 +438,10 @@ am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(liberrnostring_la_SOURCES) $(libguestfs_la_SOURCES) \
 	$(libprotocol_la_SOURCES) $(libutils_la_SOURCES) \
-	$(test_utils_SOURCES)
+	$(libvirt_is_version_SOURCES) $(test_utils_SOURCES)
 DIST_SOURCES = $(liberrnostring_la_SOURCES) $(libguestfs_la_SOURCES) \
 	$(libprotocol_la_SOURCES) $(libutils_la_SOURCES) \
-	$(test_utils_SOURCES)
+	$(am__libvirt_is_version_SOURCES_DIST) $(test_utils_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1622,9 +1639,10 @@ libguestfs_la_SOURCES = \
 	alloc.c \
 	appliance.c \
 	bindtests.c \
-	command.c \
 	canonical-name.c \
+	command.c \
 	conn-socket.c \
+	create.c \
 	dbdump.c \
 	drives.c \
 	errors.c \
@@ -1717,6 +1735,14 @@ libutils_la_SOURCES = \
 
 libutils_la_CPPFLAGS = $(libguestfs_la_CPPFLAGS)
 libutils_la_CFLAGS = $(libguestfs_la_CFLAGS)
+@HAVE_LIBVIRT_TRUE@libvirt_is_version_SOURCES = libvirt-is-version.c
+@HAVE_LIBVIRT_TRUE@libvirt_is_version_LDADD = \
+@HAVE_LIBVIRT_TRUE@	$(LIBVIRT_LIBS)
+
+@HAVE_LIBVIRT_TRUE@libvirt_is_version_CFLAGS = \
+@HAVE_LIBVIRT_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+@HAVE_LIBVIRT_TRUE@	$(LIBVIRT_CFLAGS)
+
 
 # Tests: main tests are in tests/c-api.  Here we just have some
 # internal tests of utility functions.
@@ -1848,6 +1874,19 @@ clean-checkPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
+clean-noinstPROGRAMS:
+	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
+
+libvirt-is-version$(EXEEXT): $(libvirt_is_version_OBJECTS) $(libvirt_is_version_DEPENDENCIES) $(EXTRA_libvirt_is_version_DEPENDENCIES) 
+	@rm -f libvirt-is-version$(EXEEXT)
+	$(AM_V_CCLD)$(libvirt_is_version_LINK) $(libvirt_is_version_OBJECTS) $(libvirt_is_version_LDADD) $(LIBS)
+
 test-utils$(EXEEXT): $(test_utils_OBJECTS) $(test_utils_DEPENDENCIES) $(EXTRA_test_utils_DEPENDENCIES) 
 	@rm -f test-utils$(EXEEXT)
 	$(AM_V_CCLD)$(test_utils_LINK) $(test_utils_OBJECTS) $(test_utils_LDADD) $(LIBS)
@@ -1875,6 +1914,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-canonical-name.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-command.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-conn-socket.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-create.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-dbdump.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-drives.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-errors.Plo@am__quote@
@@ -1915,6 +1955,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-cleanup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-structs-cleanup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-utils.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libvirt_is_version-libvirt-is-version.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_utils-test-utils.Po@am__quote@
 
 .c.o:
@@ -2036,13 +2077,6 @@ libguestfs_la-bindtests.lo: bindtests.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-bindtests.lo `test -f 'bindtests.c' || echo '$(srcdir)/'`bindtests.c
 
-libguestfs_la-command.lo: command.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-command.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-command.Tpo -c -o libguestfs_la-command.lo `test -f 'command.c' || echo '$(srcdir)/'`command.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-command.Tpo $(DEPDIR)/libguestfs_la-command.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='command.c' object='libguestfs_la-command.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-command.lo `test -f 'command.c' || echo '$(srcdir)/'`command.c
-
 libguestfs_la-canonical-name.lo: canonical-name.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-canonical-name.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-canonical-name.Tpo -c -o libguestfs_la-canonical-name.lo `test -f 'canonical-name.c' || echo '$(srcdir)/'`canonical-name.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-canonical-name.Tpo $(DEPDIR)/libguestfs_la-canonical-name.Plo
@@ -2050,12 +2084,26 @@ libguestfs_la-canonical-name.lo: canonical-name.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-canonical-name.lo `test -f 'canonical-name.c' || echo '$(srcdir)/'`canonical-name.c
 
+libguestfs_la-command.lo: command.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-command.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-command.Tpo -c -o libguestfs_la-command.lo `test -f 'command.c' || echo '$(srcdir)/'`command.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-command.Tpo $(DEPDIR)/libguestfs_la-command.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='command.c' object='libguestfs_la-command.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-command.lo `test -f 'command.c' || echo '$(srcdir)/'`command.c
+
 libguestfs_la-conn-socket.lo: conn-socket.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-conn-socket.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-conn-socket.Tpo -c -o libguestfs_la-conn-socket.lo `test -f 'conn-socket.c' || echo '$(srcdir)/'`conn-socket.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-conn-socket.Tpo $(DEPDIR)/libguestfs_la-conn-socket.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='conn-socket.c' object='libguestfs_la-conn-socket.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-conn-socket.lo `test -f 'conn-socket.c' || echo '$(srcdir)/'`conn-socket.c
+
+libguestfs_la-create.lo: create.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-create.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-create.Tpo -c -o libguestfs_la-create.lo `test -f 'create.c' || echo '$(srcdir)/'`create.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-create.Tpo $(DEPDIR)/libguestfs_la-create.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='create.c' object='libguestfs_la-create.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-create.lo `test -f 'create.c' || echo '$(srcdir)/'`create.c
 
 libguestfs_la-dbdump.lo: dbdump.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-dbdump.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-dbdump.Tpo -c -o libguestfs_la-dbdump.lo `test -f 'dbdump.c' || echo '$(srcdir)/'`dbdump.c
@@ -2336,6 +2384,20 @@ libutils_la-utils.lo: utils.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='libutils_la-utils.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -c -o libutils_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+
+libvirt_is_version-libvirt-is-version.o: libvirt-is-version.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libvirt_is_version_CFLAGS) $(CFLAGS) -MT libvirt_is_version-libvirt-is-version.o -MD -MP -MF $(DEPDIR)/libvirt_is_version-libvirt-is-version.Tpo -c -o libvirt_is_version-libvirt-is-version.o `test -f 'libvirt-is-version.c' || echo '$(srcdir)/'`libvirt-is-version.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libvirt_is_version-libvirt-is-version.Tpo $(DEPDIR)/libvirt_is_version-libvirt-is-version.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libvirt-is-version.c' object='libvirt_is_version-libvirt-is-version.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libvirt_is_version_CFLAGS) $(CFLAGS) -c -o libvirt_is_version-libvirt-is-version.o `test -f 'libvirt-is-version.c' || echo '$(srcdir)/'`libvirt-is-version.c
+
+libvirt_is_version-libvirt-is-version.obj: libvirt-is-version.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libvirt_is_version_CFLAGS) $(CFLAGS) -MT libvirt_is_version-libvirt-is-version.obj -MD -MP -MF $(DEPDIR)/libvirt_is_version-libvirt-is-version.Tpo -c -o libvirt_is_version-libvirt-is-version.obj `if test -f 'libvirt-is-version.c'; then $(CYGPATH_W) 'libvirt-is-version.c'; else $(CYGPATH_W) '$(srcdir)/libvirt-is-version.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libvirt_is_version-libvirt-is-version.Tpo $(DEPDIR)/libvirt_is_version-libvirt-is-version.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libvirt-is-version.c' object='libvirt_is_version-libvirt-is-version.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libvirt_is_version_CFLAGS) $(CFLAGS) -c -o libvirt_is_version-libvirt-is-version.obj `if test -f 'libvirt-is-version.c'; then $(CYGPATH_W) 'libvirt-is-version.c'; else $(CYGPATH_W) '$(srcdir)/libvirt-is-version.c'; fi`
 
 test_utils-test-utils.o: test-utils.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_utils_CPPFLAGS) $(CPPFLAGS) $(test_utils_CFLAGS) $(CFLAGS) -MT test_utils-test-utils.o -MD -MP -MF $(DEPDIR)/test_utils-test-utils.Tpo -c -o test_utils-test-utils.o `test -f 'test-utils.c' || echo '$(srcdir)/'`test-utils.c
@@ -2622,7 +2684,7 @@ check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-am
-all-am: Makefile $(LTLIBRARIES) $(MANS) $(DATA) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(MANS) $(DATA) $(HEADERS)
 installdirs:
 	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(man3dir)" "$(DESTDIR)$(pkgconfigdir)" "$(DESTDIR)$(includedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -2663,7 +2725,8 @@ maintainer-clean-generic:
 clean: clean-am
 
 clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
-	clean-libtool clean-noinstLTLIBRARIES mostlyclean-am
+	clean-libtool clean-noinstLTLIBRARIES clean-noinstPROGRAMS \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -2739,12 +2802,12 @@ uninstall-man: uninstall-man3
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
 	clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
-	clean-libtool clean-noinstLTLIBRARIES cscopelist-am ctags \
-	ctags-am distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am \
+	clean-libtool clean-noinstLTLIBRARIES clean-noinstPROGRAMS \
+	cscopelist-am ctags ctags-am distclean distclean-compile \
+	distclean-generic distclean-libtool distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
 	install-includeHEADERS install-info install-info-am \
 	install-libLTLIBRARIES install-man install-man3 install-pdf \
 	install-pdf-am install-pkgconfigDATA install-ps install-ps-am \

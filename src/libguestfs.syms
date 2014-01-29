@@ -223,6 +223,9 @@
         guestfs_device_index;
         guestfs_df;
         guestfs_df_h;
+        guestfs_disk_create;
+        guestfs_disk_create_argv;
+        guestfs_disk_create_va;
         guestfs_disk_format;
         guestfs_disk_has_backing_file;
         guestfs_disk_virtual_size;

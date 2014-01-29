@@ -14,6 +14,7 @@ guestfs_copy_device_to_file_get_type
 guestfs_copy_file_to_device_get_type
 guestfs_copy_file_to_file_get_type
 guestfs_dirent_get_type
+guestfs_disk_create_get_type
 guestfs_e2fsck_get_type
 guestfs_fstrim_get_type
 guestfs_grep_get_type

@@ -876,6 +876,109 @@ guestfs_get_backend_settings (guestfs_h *g)
   return r;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_disk_create_argv (guestfs_h *g,
+                          const char *filename,
+                          const char *format,
+                          int64_t size,
+                          const struct guestfs_disk_create_argv *optargs)
+{
+  struct guestfs_disk_create_argv optargs_null;
+  if (!optargs) {
+    optargs_null.bitmask = 0;
+    optargs = &optargs_null;
+  }
+
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "disk_create", 11);
+  if (filename == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "disk_create", "filename");
+    return -1;
+  }
+  if (format == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "disk_create", "format");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK) &&
+      optargs->backingfile == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "disk_create", "backingfile");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK) &&
+      optargs->backingformat == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "disk_create", "backingformat");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK) &&
+      optargs->preallocation == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "disk_create", "preallocation");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_DISK_CREATE_COMPAT_BITMASK) &&
+      optargs->compat == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "disk_create", "compat");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xffffffffffffffe0)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "disk_create", "disk_create");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "disk_create");
+    fprintf (trace_buffer.fp, " \"%s\"", filename);
+    fprintf (trace_buffer.fp, " \"%s\"", format);
+    fprintf (trace_buffer.fp, " %" PRIi64, size);
+    if (optargs->bitmask & GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "backingfile", optargs->backingfile);
+    }
+    if (optargs->bitmask & GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "backingformat", optargs->backingformat);
+    }
+    if (optargs->bitmask & GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "preallocation", optargs->preallocation);
+    }
+    if (optargs->bitmask & GUESTFS_DISK_CREATE_COMPAT_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "compat", optargs->compat);
+    }
+    if (optargs->bitmask & GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%d\"", "clustersize", optargs->clustersize);
+    }
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__disk_create (g, filename, format, size, optargs);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "disk_create");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "disk_create", "-1");
+  }
+
+  return r;
+}
+
 GUESTFS_DLL_PUBLIC char **
 guestfs_list_devices (guestfs_h *g)
 {

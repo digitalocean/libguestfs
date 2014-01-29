@@ -3909,6 +3909,43 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1backend_1settings  (JNIEnv *env, jo
 }
 
 JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1disk_1create  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jstring jformat, jlong jsize, jlong joptargs_bitmask, jstring jbackingfile, jstring jbackingformat, jstring jpreallocation, jstring jcompat, jint jclustersize)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *filename;
+  const char *format;
+  int64_t size;
+  struct guestfs_disk_create_argv optargs_s;
+  const struct guestfs_disk_create_argv *optargs = &optargs_s;
+
+  filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
+  format = (*env)->GetStringUTFChars (env, jformat, NULL);
+  size = jsize;
+
+  optargs_s.backingfile = (*env)->GetStringUTFChars (env, jbackingfile, NULL);
+  optargs_s.backingformat = (*env)->GetStringUTFChars (env, jbackingformat, NULL);
+  optargs_s.preallocation = (*env)->GetStringUTFChars (env, jpreallocation, NULL);
+  optargs_s.compat = (*env)->GetStringUTFChars (env, jcompat, NULL);
+  optargs_s.clustersize = jclustersize;
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_disk_create_argv (g, filename, format, size, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jfilename, filename);
+  (*env)->ReleaseStringUTFChars (env, jformat, format);
+  (*env)->ReleaseStringUTFChars (env, jbackingfile, optargs_s.backingfile);
+  (*env)->ReleaseStringUTFChars (env, jbackingformat, optargs_s.backingformat);
+  (*env)->ReleaseStringUTFChars (env, jpreallocation, optargs_s.preallocation);
+  (*env)->ReleaseStringUTFChars (env, jcompat, optargs_s.compat);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1mount  (JNIEnv *env, jobject obj, jlong jg, jstring jmountable, jstring jmountpoint)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;

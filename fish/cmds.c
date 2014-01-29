@@ -155,6 +155,7 @@ static int run_add_drive_scratch (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_get (const char *cmd, size_t argc, char *argv[]);
 static int run_set_backend_settings (const char *cmd, size_t argc, char *argv[]);
 static int run_get_backend_settings (const char *cmd, size_t argc, char *argv[]);
+static int run_disk_create (const char *cmd, size_t argc, char *argv[]);
 static int run_mount (const char *cmd, size_t argc, char *argv[]);
 static int run_sync (const char *cmd, size_t argc, char *argv[]);
 static int run_touch (const char *cmd, size_t argc, char *argv[]);
@@ -552,7 +553,7 @@ static int run_copy_attributes (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
-  .help = "NAME\n    alloc - allocate and add a disk file\n\nDESCRIPTION\n     alloc filename size\n\n    This creates an empty (zeroed) file of the given size, and then adds so\n    it can be further examined.\n\n    For more advanced image creation, see qemu-img(1) utility.\n\n    Size can be specified using standard suffixes, eg. \"1M\".\n\n    To create a sparse file, use \"sparse\" instead. To create a prepared disk\n    image, see \"PREPARED DISK IMAGES\".\n\n    You can use 'allocate' as an alias for this command.\n\n",
+  .help = "NAME\n    alloc - allocate and add a disk file\n\nDESCRIPTION\n     alloc filename size\n\n    This creates an empty (zeroed) file of the given size, and then adds so\n    it can be further examined.\n\n    For more advanced image creation, see \"disk-create\".\n\n    Size can be specified using standard suffixes, eg. \"1M\".\n\n    To create a sparse file, use \"sparse\" instead. To create a prepared disk\n    image, see \"PREPARED DISK IMAGES\".\n\n    You can use 'allocate' as an alias for this command.\n\n",
   .run = run_alloc
 };
 
@@ -648,7 +649,7 @@ struct command_entry setenv_cmd_entry = {
 
 struct command_entry sparse_cmd_entry = {
   .name = "sparse",
-  .help = "NAME\n    sparse - create a sparse disk image and add\n\nDESCRIPTION\n     sparse filename size\n\n    This creates an empty sparse file of the given size, and then adds so it\n    can be further examined.\n\n    In all respects it works the same as the \"alloc\" command, except that\n    the image file is allocated sparsely, which means that disk blocks are\n    not assigned to the file until they are needed. Sparse disk files only\n    use space when written to, but they are slower and there is a danger you\n    could run out of real disk space during a write operation.\n\n    For more advanced image creation, see qemu-img(1) utility.\n\n    Size can be specified using standard suffixes, eg. \"1M\".\n\n    See also the guestfish \"scratch\" command.\n\n",
+  .help = "NAME\n    sparse - create a sparse disk image and add\n\nDESCRIPTION\n     sparse filename size\n\n    This creates an empty sparse file of the given size, and then adds so it\n    can be further examined.\n\n    In all respects it works the same as the \"alloc\" command, except that\n    the image file is allocated sparsely, which means that disk blocks are\n    not assigned to the file until they are needed. Sparse disk files only\n    use space when written to, but they are slower and there is a danger you\n    could run out of real disk space during a write operation.\n\n    For more advanced image creation, see \"disk-create\".\n\n    Size can be specified using standard suffixes, eg. \"1M\".\n\n    See also the guestfish \"scratch\" command.\n\n",
   .run = run_sparse
 };
 
@@ -1334,6 +1335,12 @@ struct command_entry get_backend_settings_cmd_entry = {
   .name = "get-backend-settings",
   .help = "NAME\n    get-backend-settings - get per-backend settings\n\nSYNOPSIS\n     get-backend-settings\n\nDESCRIPTION\n    Return the current backend settings.\n\n    See \"BACKEND\" in guestfs(3), \"BACKEND SETTINGS\" in guestfs(3).\n\n",
   .run = run_get_backend_settings
+};
+
+struct command_entry disk_create_cmd_entry = {
+  .name = "disk-create",
+  .help = "NAME\n    disk-create - create a blank disk image\n\nSYNOPSIS\n     disk-create filename format size [backingfile:..] [backingformat:..] [preallocation:..] [compat:..] [clustersize:N]\n\nDESCRIPTION\n    Create a blank disk image called \"filename\" (a host file) with format\n    \"format\" (usually \"raw\" or \"qcow2\"). The size is \"size\" bytes.\n\n    If used with the optional \"backingfile\" parameter, then a snapshot is\n    created on top of the backing file. In this case, \"size\" must be passed\n    as -1. The size of the snapshot is the same as the size of the backing\n    file, which is discovered automatically. You are encouraged to also pass\n    \"backingformat\" to describe the format of \"backingfile\".\n\n    The other optional parameters are:\n\n    \"preallocation\"\n        If format is \"raw\", then this can be either \"sparse\" or \"full\" to\n        create a sparse or fully allocated file respectively. The default is\n        \"sparse\".\n\n        If format is \"qcow2\", then this can be either \"off\" or \"metadata\".\n        Preallocating metadata can be faster when doing lots of writes, but\n        uses more space. The default is \"off\".\n\n    \"compat\"\n        \"qcow2\" only: Pass the string 1.1 to use the advanced qcow2 format\n        supported by qemu ≥ 1.1.\n\n    \"clustersize\"\n        \"qcow2\" only: Change the qcow2 cluster size. The default is 65536\n        (bytes) and this setting may be any power of two between 512 and\n        2097152.\n\n    Note that this call does not add the new disk to the handle. You may\n    need to call \"add_drive_opts\" separately.\n\n",
+  .run = run_disk_create
 };
 
 struct command_entry mount_cmd_entry = {
@@ -3793,6 +3800,7 @@ list_commands (void)
   printf ("%-20s %s\n", "device-index", _("convert device to index"));
   printf ("%-20s %s\n", "df", _("report file system disk space usage"));
   printf ("%-20s %s\n", "df-h", _("report file system disk space usage (human readable)"));
+  printf ("%-20s %s\n", "disk-create", _("create a blank disk image"));
   printf ("%-20s %s\n", "disk-format", _("detect the disk format of a disk image"));
   printf ("%-20s %s\n", "disk-has-backing-file", _("return whether disk has a backing file"));
   printf ("%-20s %s\n", "disk-virtual-size", _("return virtual size of a disk"));
@@ -7995,6 +8003,109 @@ run_get_backend_settings (const char *cmd, size_t argc, char *argv[])
   print_strings (r);
   guestfs___free_string_list (r);
  out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_disk_create (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *filename;
+  const char *format;
+  int64_t size;
+  struct guestfs_disk_create_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_disk_create_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 3 || argc > 8) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 3, 8);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  filename = argv[i++];
+  format = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "size", "xstrtoll", xerr);
+      goto out_size;
+    }
+    size = r;
+  }
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "backingfile:")) {
+      optargs_s.backingfile = &argv[i][12];
+      this_mask = GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK;
+      this_arg = "backingfile";
+    }
+    else if (STRPREFIX (argv[i], "backingformat:")) {
+      optargs_s.backingformat = &argv[i][14];
+      this_mask = GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK;
+      this_arg = "backingformat";
+    }
+    else if (STRPREFIX (argv[i], "preallocation:")) {
+      optargs_s.preallocation = &argv[i][14];
+      this_mask = GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK;
+      this_arg = "preallocation";
+    }
+    else if (STRPREFIX (argv[i], "compat:")) {
+      optargs_s.compat = &argv[i][7];
+      this_mask = GUESTFS_DISK_CREATE_COMPAT_BITMASK;
+      this_arg = "compat";
+    }
+    else if (STRPREFIX (argv[i], "clustersize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][12], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.clustersize", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.clustersize");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.clustersize = r;
+      }
+      this_mask = GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK;
+      this_arg = "clustersize";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_disk_create_argv (g, filename, format, size, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_size:
  out_noargs:
   return ret;
 }

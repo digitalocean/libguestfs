@@ -123,6 +123,7 @@ extern struct command_entry delete_event_cmd_entry;
 extern struct command_entry device_index_cmd_entry;
 extern struct command_entry df_cmd_entry;
 extern struct command_entry df_h_cmd_entry;
+extern struct command_entry disk_create_cmd_entry;
 extern struct command_entry disk_format_cmd_entry;
 extern struct command_entry disk_has_backing_file_cmd_entry;
 extern struct command_entry disk_virtual_size_cmd_entry;
@@ -734,6 +735,8 @@ device-index, &device_index_cmd_entry
 df, &df_cmd_entry
 df_h, &df_h_cmd_entry
 df-h, &df_h_cmd_entry
+disk_create, &disk_create_cmd_entry
+disk-create, &disk_create_cmd_entry
 disk_format, &disk_format_cmd_entry
 disk-format, &disk_format_cmd_entry
 disk_has_backing_file, &disk_has_backing_file_cmd_entry

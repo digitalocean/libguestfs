@@ -282,6 +282,9 @@ Makefile.in
 /m4/ltsugar.m4
 /m4/ltversion.m4
 /maint.mk
+/make-fs/stamp-virt-make-fs.pod
+/make-fs/virt-make-fs
+/make-fs/virt-make-fs.1
 /missing
 /mllib/.depend
 /mllib/common_gettext.ml
@@ -416,6 +419,7 @@ Makefile.in
 /src/libguestfs.pc
 /src/libguestfs.syms
 /src/.libs/libguestfs.so
+/src/libvirt-is-version
 /src/stamp-guestfs.pod
 /src/structs-cleanup.c
 /src/structs-compare.c
@@ -427,6 +431,7 @@ Makefile.in
 /sysprep/.depend
 /sysprep/stamp-script1.sh
 /sysprep/stamp-script2.sh
+/sysprep/stamp-script4.sh
 /sysprep/stamp-virt-sysprep.pod
 /sysprep/sysprep-extra-options.pod
 /sysprep/sysprep-operations.pod
@@ -491,7 +496,6 @@ Makefile.in
 /tests/regressions/rhbz501893
 /tests/regressions/rhbz790721
 /tests/regressions/rhbz914931
-/tests/regressions/rhbz1044014
 /tests/regressions/rhbz1044014.out
 /tests/regressions/rhbz1055452
 /tests/rsync/rsyncd.pid

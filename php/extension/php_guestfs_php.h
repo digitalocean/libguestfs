@@ -120,6 +120,7 @@ PHP_FUNCTION (guestfs_debug_upload);
 PHP_FUNCTION (guestfs_device_index);
 PHP_FUNCTION (guestfs_df);
 PHP_FUNCTION (guestfs_df_h);
+PHP_FUNCTION (guestfs_disk_create);
 PHP_FUNCTION (guestfs_disk_format);
 PHP_FUNCTION (guestfs_disk_has_backing_file);
 PHP_FUNCTION (guestfs_disk_virtual_size);
