@@ -1,3 +1,174 @@
+commit eab810f7786d7d3a500a912c74ea85468825f0f8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 4 08:50:43 2014 +0000
+
+    Version 1.25.32.
+
+commit d5b540153fa91230524133c09c879199b8e2d902
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 3 13:56:13 2014 +0000
+
+    Remove bogus license file from daemon subdirectory.
+    
+    It was left over from when the daemon was a separate autoconf
+    directory, and in any case the daemon has never been GPLv3 (it is
+    GPLv2+).
+
+commit d93e3c50eb3062263792b0be5022abe8504604d9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 3 09:08:12 2014 +0100
+
+    fish: Additional GUESTFISH_* environment variables to control the prompt.
+    
+    This adds:
+    
+     - GUESTFISH_INIT
+     - GUESTFISH_OUTPUT
+     - GUESTFISH_RESTORE
+    
+    which along with existing GUESTFISH_PS1 allow you to fine control the
+    colour of the output.
+
+commit bed8a168c0ed76e784adcc046256432f615e3314
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 30 17:06:42 2014 +0100
+
+    builder: remove unused variables
+    
+    Leftovers of the list_entries_short+list_entries_long split done in
+    commit 91aae893c70b3877b31803800ba77836fd7a45e8.
+
+commit 07ef60c63f5fd635306d199622d36f9089c75ecc
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 30 17:05:34 2014 +0100
+
+    builder: output translated notes
+    
+    Output all the translations available for the notes in the "verbose"
+    output and the JSON output, while trying to match the system langauge in
+    the "show notes" output.
+    
+    The JSON output is slightly changed to handle translations, with the
+    "untranslated" notes being matched as "C". The version is not bumped
+    though, since there have been no stable releases with the former output
+    yet.
+
+commit 49014f81f350484da725f5ee2bc62bb24268a334
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 14:50:55 2014 +0000
+
+    sysprep: Deprecate --selinux-relabel in favour of --autorelabel.
+    
+    virt-builder added a --selinux-relabel option with a slightly
+    different meaning.
+    
+    This commit keeps the old --selinux-relabel / --no-selinux-relabel
+    options in virt-sysprep, but deprecates them and replaces them with
+    --autorelabel and --no-autorelabel.
+
+commit fc6d3e6a9a920446fecc347a0521a1e3eda183d8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 14:46:05 2014 +0000
+
+    sysprep: Add a reference to virt-builder from the manual page.
+    
+    The whole "COPYING AND CLONING" section really needs to be overhauled
+    too, but first we need to make virt-builder work properly for
+    customizing templates.
+
+commit 5db1a28461cc42f09532e8b98150e716040d3aa0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 14:38:50 2014 +0000
+
+    sysprep: Add --scrub option.
+    
+    This works like the option in virt-builder with the same name.
+
+commit 2595fa5069383522741ffea3afbe99253e3899b2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 14:03:45 2014 +0000
+
+    builder: Move Perl_edit module into common code.
+    
+    There is no functional change.
+
+commit c841d08d7084db69e81614d54423686cf0566ad6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 09:31:24 2014 +0000
+
+    appliance: Create checksum file with mode 0644 instead of 0755.
+    
+    Initial commit 4beb2844091310012b5e28971707397d1d51d833 used mode 0755
+    for no reason.  It seems to have been a mistake.
+
+commit f0f95bd0385874de976e58875aefc1279814d0bc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 08:45:19 2014 +0000
+
+    perl: Data::Dumper and String::ShellQuote modules are no longer required.
+    
+    They used to be used by old Perl virt-make-fs.  Nothing else uses
+    them.
+    
+    This updates commit d3512deb6728dffbb3a958c7168b81dbde56d748.
+
+commit 32cbd7ca0d90d0013f92f64c3c5755ebed2fb960
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 08:19:32 2014 +0000
+
+    make-fs: Remove warning from man page about lone --partition argument.
+    
+    C's getopt_long has no problem with this.
+
+commit a8a655a85900297f0ddb3d599a09b80b9be8581a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 08:18:05 2014 +0000
+
+    make-fs: Ensure --partition (on its own) creates an MBR partition.
+    
+    This fixes commit d3512deb6728dffbb3a958c7168b81dbde56d748.
+
+commit 90d33787783c8bf383003ca99ba58068b2935a6c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 08:11:37 2014 +0000
+
+    make-fs: Refactor debug stats code.
+    
+    Code motion, no functional change.
+
+commit 5bf8c81d7d5bf438b13f3866750362d002847129
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 08:08:33 2014 +0000
+
+    make-fs: Use an anonymous pipe instead of a named pipe.
+    
+    The previous translation from Perl slavishly followed the Perl code a
+    bit too much and used a named pipe to communicate between the
+    uncompressing subprocess and libguestfs tar-in.  From C we can use an
+    anonymous pipe instead.
+    
+    This updates commit d3512deb6728dffbb3a958c7168b81dbde56d748.
+
+commit c86fcc0fd4dde908bce41f9a5ca90b5fcd89f7e9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 08:00:55 2014 +0000
+
+    make-fs: Make check-valgrind do something.
+
+commit f5bc913434e5f895c52037231e1b018c57f01949
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 08:00:30 2014 +0000
+
+    make-fs: Run virt-make-fs in test from builddir, not srcdir.
+
+commit 59fce974e29110ca2831c22191456af0cc4b8f8f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 22:17:12 2014 +0000
+
+    pod: Remove stray +x (executable) mode on various POD files.
+    
+    find -name '*.pod' -perm /0111 -exec chmod -x {} \;
+
 commit 1771e1f2b2dc4b06896c13adf919b0ddb39e47c9
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Jan 28 22:10:25 2014 +0000

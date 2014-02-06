@@ -58,6 +58,16 @@ Windows sysprepping in a future version, and we already have code to do it.
 Add a remote disk.  The URI format is compatible with guestfish.  See
 L<guestfish(1)/ADDING REMOTE STORAGE>.
 
+=item B<--autorelabel>
+
+=item B<--no-autorelabel>
+
+I<--autorelabel> forces SELinux relabelling next time the guest boots.
+I<--no-autorelabel> disables relabelling.
+
+The default is to try to detect if SELinux relabelling is required.  See
+L</SELINUX RELABELLING> below for more details.
+
 =item B<-c> URI
 
 =item B<--connect> URI
@@ -203,16 +213,6 @@ will do the same, plus mount C</var> with C<rw,nodiratime>.
 ログメッセージを表示しません。
 
 To enable detailed logging of individual file operations, use I<-x>.
-
-=item B<--selinux-relabel>
-
-=item B<--no-selinux-relabel>
-
-I<--selinux-relabel> forces SELinux relabelling next time the guest boots.
-I<--no-selinux-relabel> disables relabelling.
-
-The default is to try to detect if SELinux relabelling is required.  See
-L</SELINUX RELABELLING> below for more details.
 
 =item B<-v>
 
@@ -470,8 +470,9 @@ does not pretend to remove all of it.  You should examine the L</OPERATIONS>
 above and the guest afterwards.
 
 Sensitive files are simply removed.  The data they contained may still exist
-on the disk, easily recovered with a hex editor or undelete tool.  Use
-L<virt-sparsify(1)> as one way to remove this content.  See also the
+on the disk, easily recovered with a hex editor or undelete tool.  The
+I<--scrub> option can be used to scrub files instead of just deleting them.
+L<virt-sparsify(1)> is another way to remove this content.  See also the
 L<scrub(1)> command to get rid of deleted content in directory entries and
 inodes.
 
@@ -502,9 +503,11 @@ C</.autorelabel> so that these will be correctly labelled by SELinux the
 next time the guest is booted.  This process interrupts boot and can take
 some time.
 
-I<--selinux-relabel> オプションを指定することにより、すべての仮想マシンに対して強制的に再ラベルできます。
+You can force relabelling for all guests by supplying the I<--autorelabel>
+option.
 
-I<--no-selinux-relabel> オプションを指定することにより、すべての仮想マシンに対して強制的に再ラベルできます。
+You can disable relabelling entirely by supplying the I<--no-autorelabel>
+option.
 
 =head1 WINDOWS 8
 
@@ -524,9 +527,9 @@ L<sh(1)> for details.
 
 =head1 関連項目
 
-L<guestfs(3)>, L<guestfish(1)>, L<virt-clone(1)>, L<virt-rescue(1)>,
-L<virt-resize(1)>, L<virt-sparsify(1)>, L<virsh(1)>, L<lvcreate(8)>,
-L<qemu-img(1)>, L<scrub(1)>, L<http://libguestfs.org/>,
+L<guestfs(3)>, L<guestfish(1)>, L<virt-builder(1)>, L<virt-clone(1)>,
+L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>, L<virsh(1)>,
+L<lvcreate(8)>, L<qemu-img(1)>, L<scrub(1)>, L<http://libguestfs.org/>,
 L<http://libvirt.org/>.
 
 =head1 著者

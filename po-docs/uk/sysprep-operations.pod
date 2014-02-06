@@ -39,16 +39,19 @@ history removed.
 
 =head2 B<delete> *
 
-Delete specified files or directories.
-
-Delete specified files or directories.
+Delete or scrub specified files or directories.
 
 Use the I<--delete> option to specify a path to remove.
 
 You can use shell glob characters in the specified path; note that such
 metacharacters might require proper escape.  For example:
 
- virt-sysprep --delete '/var/log/*.log'.
+ virt-sysprep --delete '/var/log/*.log'
+
+An alternative option, I<--scrub>, can be used to scrub files.  This only
+works for files (not directories) and cannot use globs.
+
+You can use both options as many times as you want.
 
 =head2 B<dhcp-client-state> *
 

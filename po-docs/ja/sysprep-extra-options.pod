@@ -121,6 +121,12 @@ B<Note:> C<SCRIPTDIR> B<must> be an absolute path.
 If I<--scriptdir> is not specified then a temporary mountpoint will be
 created.
 
+=item B<--scrub> PATHNAME (see C<delete> below)
+
+Scrub (aggressively overwrite then remove) the specified file called
+C<PATHNAME> in the guest.  Only single files can be specified using this
+argument.
+
 =item B<--timezone> TIMEZONE (see C<timezone> below)
 
 Change the timezone.  Use a location string such as C<Europe/London>

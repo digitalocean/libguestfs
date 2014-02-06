@@ -1536,11 +1536,12 @@ SOURCES = \
 	index-parser-c.c \
 	list_entries.mli \
 	list_entries.ml \
-	perl_edit.ml \
-	perl_edit.mli \
 	pxzcat.ml \
 	pxzcat.mli \
 	pxzcat-c.c \
+	setlocale.ml \
+	setlocale.mli \
+	setlocale-c.c \
 	sigchecker.mli \
 	sigchecker.ml
 
@@ -1558,6 +1559,7 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/hostname.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/timezone.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/firstboot.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/perl_edit.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/crypt-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/crypt.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/fsync-c.o \
@@ -1571,12 +1573,13 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	index-parser-c.o \
 @HAVE_OCAML_TRUE@	pxzcat-c.o \
 @HAVE_OCAML_TRUE@	pxzcat.cmx \
+@HAVE_OCAML_TRUE@	setlocale-c.o \
+@HAVE_OCAML_TRUE@	setlocale.cmx \
 @HAVE_OCAML_TRUE@	get_kernel.cmx \
 @HAVE_OCAML_TRUE@	downloader.cmx \
 @HAVE_OCAML_TRUE@	sigchecker.cmx \
 @HAVE_OCAML_TRUE@	index_parser.cmx \
 @HAVE_OCAML_TRUE@	list_entries.cmx \
-@HAVE_OCAML_TRUE@	perl_edit.cmx \
 @HAVE_OCAML_TRUE@	cmdline.cmx \
 @HAVE_OCAML_TRUE@	builder.cmx
 

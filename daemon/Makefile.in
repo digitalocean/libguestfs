@@ -137,7 +137,7 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
-	$(srcdir)/Makefile.am $(top_srcdir)/build-aux/depcomp COPYING
+	$(srcdir)/Makefile.am $(top_srcdir)/build-aux/depcomp
 @INSTALL_DAEMON_TRUE@sbin_PROGRAMS = guestfsd$(EXEEXT)
 @INSTALL_DAEMON_FALSE@noinst_PROGRAMS = guestfsd$(EXEEXT)
 subdir = daemon
