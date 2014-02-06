@@ -2884,7 +2884,7 @@ public class GuestFS {
    * gluster        Exactly one
    * iscsi          Exactly one
    * nbd            Exactly one
-   * rbd            One or more
+   * rbd            Zero or more
    * sheepdog       Zero or more
    * ssh            Exactly one
    * <p>
@@ -5385,6 +5385,115 @@ public class GuestFS {
   }
 
   private native String[] _get_backend_settings (long g)
+    throws LibGuestFSException;
+
+  /**
+   * create a blank disk image
+   * <p>
+   * Create a blank disk image called "filename" (a host
+   * file) with format "format" (usually "raw" or "qcow2").
+   * The size is "size" bytes.
+   * <p>
+   * If used with the optional "backingfile" parameter, then
+   * a snapshot is created on top of the backing file. In
+   * this case, "size" must be passed as -1. The size of the
+   * snapshot is the same as the size of the backing file,
+   * which is discovered automatically. You are encouraged to
+   * also pass "backingformat" to describe the format of
+   * "backingfile".
+   * <p>
+   * The other optional parameters are:
+   * <p>
+   * "preallocation"
+   * If format is "raw", then this can be either "sparse"
+   * or "full" to create a sparse or fully allocated file
+   * respectively. The default is "sparse".
+   * <p>
+   * If format is "qcow2", then this can be either "off"
+   * or "metadata". Preallocating metadata can be faster
+   * when doing lots of writes, but uses more space. The
+   * default is "off".
+   * <p>
+   * "compat"
+   * "qcow2" only: Pass the string 1.1 to use the
+   * advanced qcow2 format supported by qemu ≥ 1.1.
+   * <p>
+   * "clustersize"
+   * "qcow2" only: Change the qcow2 cluster size. The
+   * default is 65536 (bytes) and this setting may be any
+   * power of two between 512 and 2097152.
+   * <p>
+   * Note that this call does not add the new disk to the
+   * handle. You may need to call "g.add_drive_opts"
+   * separately.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void disk_create (String filename, String format, long size, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("disk_create: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    String backingfile = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("backingfile");
+    if (_optobj != null) {
+      backingfile = ((String) _optobj);
+      _optargs_bitmask |= 1L;
+    }
+    String backingformat = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("backingformat");
+    if (_optobj != null) {
+      backingformat = ((String) _optobj);
+      _optargs_bitmask |= 2L;
+    }
+    String preallocation = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("preallocation");
+    if (_optobj != null) {
+      preallocation = ((String) _optobj);
+      _optargs_bitmask |= 4L;
+    }
+    String compat = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("compat");
+    if (_optobj != null) {
+      compat = ((String) _optobj);
+      _optargs_bitmask |= 8L;
+    }
+    int clustersize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("clustersize");
+    if (_optobj != null) {
+      clustersize = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 16L;
+    }
+
+    _disk_create (g, filename, format, size, _optargs_bitmask, backingfile, backingformat, preallocation, compat, clustersize);
+  }
+
+  public void disk_create (String filename, String format, long size)
+    throws LibGuestFSException
+  {
+    disk_create (filename, format, size, null);
+  }
+
+  private native void _disk_create (long g, String filename, String format, long size, long _optargs_bitmask, String backingfile, String backingformat, String preallocation, String compat, int clustersize)
     throws LibGuestFSException;
 
   /**
@@ -18103,6 +18212,31 @@ public class GuestFS {
   }
 
   private native void _copy_attributes (long g, String src, String dest, long _optargs_bitmask, boolean all, boolean mode, boolean xattributes, boolean ownership)
+    throws LibGuestFSException;
+
+  /**
+   * get partition name
+   * <p>
+   * This gets the partition name on partition numbered
+   * "partnum" on device "device". Note that partitions are
+   * numbered from 1.
+   * <p>
+   * The partition name can only be read on certain types of
+   * partition table. This works on "gpt" but not on "mbr"
+   * partitions.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String part_get_name (String device, int partnum)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_get_name: handle is closed");
+
+    return _part_get_name (g, device, partnum);
+  }
+
+  private native String _part_get_name (long g, String device, int partnum)
     throws LibGuestFSException;
 
 }

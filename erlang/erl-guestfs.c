@@ -2177,6 +2177,67 @@ run_df_h (ETERM *message)
 }
 
 static ETERM *
+run_disk_create (ETERM *message)
+{
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *format = erl_iolist_to_string (ARG (1));
+  int64_t size = get_int64 (ARG (2));
+
+  struct guestfs_disk_create_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_disk_create_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (3);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "backingfile")) {
+      optargs_s.bitmask |= GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK;
+      optargs_s.backingfile = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "backingformat")) {
+      optargs_s.bitmask |= GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK;
+      optargs_s.backingformat = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "preallocation")) {
+      optargs_s.bitmask |= GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK;
+      optargs_s.preallocation = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "compat")) {
+      optargs_s.bitmask |= GUESTFS_DISK_CREATE_COMPAT_BITMASK;
+      optargs_s.compat = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "clustersize")) {
+      optargs_s.bitmask |= GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK;
+      optargs_s.clustersize = get_int (hd_value);
+    }
+    else
+      return unknown_optarg ("disk_create", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_disk_create_argv (g, filename, format, size, optargs);
+  if ((optargs_s.bitmask & GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK))
+    free ((char *) optargs_s.backingfile);
+  if ((optargs_s.bitmask & GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK))
+    free ((char *) optargs_s.backingformat);
+  if ((optargs_s.bitmask & GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK))
+    free ((char *) optargs_s.preallocation);
+  if ((optargs_s.bitmask & GUESTFS_DISK_CREATE_COMPAT_BITMASK))
+    free ((char *) optargs_s.compat);
+  if (r == -1)
+    return make_error ("disk_create");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_disk_format (ETERM *message)
 {
   CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
@@ -7438,6 +7499,22 @@ run_part_get_mbr_id (ETERM *message)
 }
 
 static ETERM *
+run_part_get_name (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int partnum = get_int (ARG (1));
+  char *r;
+
+  r = guestfs_part_get_name (g, device, partnum);
+  if (r == NULL)
+    return make_error ("part_get_name");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
 run_part_get_parttype (ETERM *message)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
@@ -10403,6 +10480,8 @@ dispatch (ETERM *message)
     return run_df (message);
   else if (atom_equals (fun, "df_h"))
     return run_df_h (message);
+  else if (atom_equals (fun, "disk_create"))
+    return run_disk_create (message);
   else if (atom_equals (fun, "disk_format"))
     return run_disk_format (message);
   else if (atom_equals (fun, "disk_has_backing_file"))
@@ -10981,6 +11060,8 @@ dispatch (ETERM *message)
     return run_part_get_gpt_type (message);
   else if (atom_equals (fun, "part_get_mbr_id"))
     return run_part_get_mbr_id (message);
+  else if (atom_equals (fun, "part_get_name"))
+    return run_part_get_name (message);
   else if (atom_equals (fun, "part_get_parttype"))
     return run_part_get_parttype (message);
   else if (atom_equals (fun, "part_init"))

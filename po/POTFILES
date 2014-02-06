@@ -5,6 +5,7 @@ builder/index-scan.c
 builder/index-struct.c
 builder/index-validate.c
 builder/pxzcat-c.c
+builder/setlocale-c.c
 cat/cat.c
 cat/filesystems.c
 cat/ls.c
@@ -170,6 +171,7 @@ gobject/src/optargs-copy_device_to_device.c
 gobject/src/optargs-copy_device_to_file.c
 gobject/src/optargs-copy_file_to_device.c
 gobject/src/optargs-copy_file_to_file.c
+gobject/src/optargs-disk_create.c
 gobject/src/optargs-e2fsck.c
 gobject/src/optargs-fstrim.c
 gobject/src/optargs-grep.c
@@ -234,6 +236,7 @@ gobject/src/tristate.c
 inspector/inspector.c
 java/com_redhat_et_libguestfs_GuestFS.c
 lua/lua-guestfs.c
+make-fs/make-fs.c
 mllib/crypt-c.c
 mllib/fsync-c.c
 mllib/progress-c.c
@@ -267,6 +270,7 @@ src/canonical-name.c
 src/cleanup.c
 src/command.c
 src/conn-socket.c
+src/create.c
 src/dbdump.c
 src/drives.c
 src/errnostring-gperf.c
@@ -294,6 +298,7 @@ src/launch-unix.c
 src/launch.c
 src/libvirt-auth.c
 src/libvirt-domain.c
+src/libvirt-is-version.c
 src/listfs.c
 src/lpj.c
 src/match.c

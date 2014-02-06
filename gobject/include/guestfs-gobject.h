@@ -51,6 +51,7 @@
 #include <guestfs-gobject/optargs-mount_local.h>
 #include <guestfs-gobject/optargs-umount_local.h>
 #include <guestfs-gobject/optargs-add_drive_scratch.h>
+#include <guestfs-gobject/optargs-disk_create.h>
 #include <guestfs-gobject/optargs-is_file.h>
 #include <guestfs-gobject/optargs-is_dir.h>
 #include <guestfs-gobject/optargs-umount.h>

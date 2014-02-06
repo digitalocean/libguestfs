@@ -34,6 +34,7 @@
       <sub name="GuestfsMountLocal" link="GuestfsMountLocal.html"/>
       <sub name="GuestfsUmountLocal" link="GuestfsUmountLocal.html"/>
       <sub name="GuestfsAddDriveScratch" link="GuestfsAddDriveScratch.html"/>
+      <sub name="GuestfsDiskCreate" link="GuestfsDiskCreate.html"/>
       <sub name="GuestfsIsFile" link="GuestfsIsFile.html"/>
       <sub name="GuestfsIsDir" link="GuestfsIsDir.html"/>
       <sub name="GuestfsUmount" link="GuestfsUmount.html"/>
@@ -231,6 +232,7 @@
     <keyword type="function" name="guestfs_session_journal_get ()" link="GuestfsSession.html#guestfs-session-journal-get"/>
     <keyword type="function" name="guestfs_session_set_backend_settings ()" link="GuestfsSession.html#guestfs-session-set-backend-settings"/>
     <keyword type="function" name="guestfs_session_get_backend_settings ()" link="GuestfsSession.html#guestfs-session-get-backend-settings"/>
+    <keyword type="function" name="guestfs_session_disk_create ()" link="GuestfsSession.html#guestfs-session-disk-create"/>
     <keyword type="function" name="guestfs_session_mount ()" link="GuestfsSession.html#guestfs-session-mount"/>
     <keyword type="function" name="guestfs_session_sync ()" link="GuestfsSession.html#guestfs-session-sync"/>
     <keyword type="function" name="guestfs_session_touch ()" link="GuestfsSession.html#guestfs-session-touch"/>
@@ -625,6 +627,7 @@
     <keyword type="function" name="guestfs_session_aug_setm ()" link="GuestfsSession.html#guestfs-session-aug-setm"/>
     <keyword type="function" name="guestfs_session_aug_label ()" link="GuestfsSession.html#guestfs-session-aug-label"/>
     <keyword type="function" name="guestfs_session_copy_attributes ()" link="GuestfsSession.html#guestfs-session-copy-attributes"/>
+    <keyword type="function" name="guestfs_session_part_get_name ()" link="GuestfsSession.html#guestfs-session-part-get-name"/>
     <keyword type="signal" name="The &quot;appliance&quot; signal" link="GuestfsSession.html#GuestfsSession-appliance"/>
     <keyword type="signal" name="The &quot;close&quot; signal" link="GuestfsSession.html#GuestfsSession-close"/>
     <keyword type="signal" name="The &quot;enter&quot; signal" link="GuestfsSession.html#GuestfsSession-enter"/>
@@ -775,6 +778,14 @@
     <keyword type="function" name="guestfs_add_drive_scratch_new ()" link="GuestfsAddDriveScratch.html#guestfs-add-drive-scratch-new"/>
     <keyword type="property" name="The &quot;label&quot; property" link="GuestfsAddDriveScratch.html#GuestfsAddDriveScratch--label"/>
     <keyword type="property" name="The &quot;name&quot; property" link="GuestfsAddDriveScratch.html#GuestfsAddDriveScratch--name"/>
+    <keyword type="struct" name="struct GuestfsDiskCreate" link="GuestfsDiskCreate.html#GuestfsDiskCreate-struct"/>
+    <keyword type="struct" name="struct GuestfsDiskCreateClass" link="GuestfsDiskCreate.html#GuestfsDiskCreateClass"/>
+    <keyword type="function" name="guestfs_disk_create_new ()" link="GuestfsDiskCreate.html#guestfs-disk-create-new"/>
+    <keyword type="property" name="The &quot;backingfile&quot; property" link="GuestfsDiskCreate.html#GuestfsDiskCreate--backingfile"/>
+    <keyword type="property" name="The &quot;backingformat&quot; property" link="GuestfsDiskCreate.html#GuestfsDiskCreate--backingformat"/>
+    <keyword type="property" name="The &quot;clustersize&quot; property" link="GuestfsDiskCreate.html#GuestfsDiskCreate--clustersize"/>
+    <keyword type="property" name="The &quot;compat&quot; property" link="GuestfsDiskCreate.html#GuestfsDiskCreate--compat"/>
+    <keyword type="property" name="The &quot;preallocation&quot; property" link="GuestfsDiskCreate.html#GuestfsDiskCreate--preallocation"/>
     <keyword type="struct" name="struct GuestfsIsFile" link="GuestfsIsFile.html#GuestfsIsFile-struct"/>
     <keyword type="struct" name="struct GuestfsIsFileClass" link="GuestfsIsFile.html#GuestfsIsFileClass"/>
     <keyword type="function" name="guestfs_is_file_new ()" link="GuestfsIsFile.html#guestfs-is-file-new"/>

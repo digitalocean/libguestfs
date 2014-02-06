@@ -168,5 +168,6 @@ extern int guestfs__add_drive_scratch (guestfs_h *g, int64_t size, const struct 
 extern struct guestfs_xattr_list *guestfs__journal_get (guestfs_h *g);
 extern int guestfs__set_backend_settings (guestfs_h *g, char *const *settings);
 extern char **guestfs__get_backend_settings (guestfs_h *g);
+extern int guestfs__disk_create (guestfs_h *g, const char *filename, const char *format, int64_t size, const struct guestfs_disk_create_argv *optargs);
 
 #endif /* GUESTFS_INTERNAL_ACTIONS_H_ */

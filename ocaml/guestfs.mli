@@ -617,6 +617,9 @@ val df : t -> string
 val df_h : t -> string
 (** report file system disk space usage (human readable) *)
 
+val disk_create : t -> ?backingfile:string -> ?backingformat:string -> ?preallocation:string -> ?compat:string -> ?clustersize:int -> string -> string -> int64 -> unit
+(** create a blank disk image *)
+
 val disk_format : t -> string -> string
 (** detect the disk format of a disk image *)
 
@@ -1546,6 +1549,9 @@ val part_get_gpt_type : t -> string -> int -> string
 val part_get_mbr_id : t -> string -> int -> int
 (** get the MBR type byte (ID byte) from a partition *)
 
+val part_get_name : t -> string -> int -> string
+(** get partition name *)
+
 val part_get_parttype : t -> string -> string
 (** get the partition table type *)
 
@@ -2220,6 +2226,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method device_index : string -> int
   method df : unit -> string
   method df_h : unit -> string
+  method disk_create : ?backingfile:string -> ?backingformat:string -> ?preallocation:string -> ?compat:string -> ?clustersize:int -> string -> string -> int64 -> unit
   method disk_format : string -> string
   method disk_has_backing_file : string -> bool
   method disk_virtual_size : string -> int64
@@ -2519,6 +2526,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method part_get_bootable : string -> int -> bool
   method part_get_gpt_type : string -> int -> string
   method part_get_mbr_id : string -> int -> int
+  method part_get_name : string -> int -> string
   method part_get_parttype : string -> string
   method part_init : string -> string -> unit
   method part_list : string -> partition array

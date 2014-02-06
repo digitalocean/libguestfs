@@ -1,3 +1,719 @@
+commit 758d021b41bd23700ec6ee00b8c2cdd94d894fe3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 5 15:18:49 2014 +0000
+
+    Version 1.25.33.
+
+commit 798b539a1f95465391f5ab8781ada1e5e63c4355
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Feb 5 11:42:17 2014 +0100
+
+    appliance/init: provide a symlink /var/lock
+    
+    Provide /var/lock as symlink to /run/lock, as it might be used by
+    applications.
+
+commit 59eb9bff87895a2cd779890de73652cb2a0ce503
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 4 15:49:13 2014 +0100
+
+    resize: preserve GPT partition names (RHBZ#1060404).
+    
+    Save the partition names/labels of the source partitions, and restore
+    them after the partition copy.
+
+commit 820b87016794116c783bd224f2e776cfdf65108e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 4 14:48:14 2014 +0100
+
+    New API: part-get-name (RHBZ#593511).
+    
+    Counterpart of part-set-name, it uses sgdisk (hence needs the "gdisk"
+    feature) to query for the label/name of a partition in a GPT layout.
+
+commit 78c21ce912a9c251ade8e35b63e82e97c96236cd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 4 13:49:37 2014 +0100
+
+    daemon: parted: refactor sgdisk info parsing code
+    
+    Isolate in an own function the code that runs sgdisk and parse a field
+    of it (using an extraction function passed as parameter), using it for
+    the GUID type.
+    
+    This is just code motion, no actual behaviour changes.
+
+commit 170b64337de32b930b992a0cd584745fb22569ad
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 4 13:27:34 2014 +0000
+
+    resize: Try to remove a few more _ -> .. cases.
+    
+    This allows the compiler to catch missing cases more effectively,
+    especially if we update the types with more cases in future.
+
+commit ef7ac043a640c0dc82260e97fb7ce1f438f7ee2d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 4 13:32:28 2014 +0100
+
+    resize: properly restore GPT partition types
+    
+    If there is a GPT partition layout, then what should be read and
+    restored for each partition is the GPT type and not the MBR ID.
+    
+    Related to RHBZ#1060404.
+
+commit eab810f7786d7d3a500a912c74ea85468825f0f8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 4 08:50:43 2014 +0000
+
+    Version 1.25.32.
+
+commit d5b540153fa91230524133c09c879199b8e2d902
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 3 13:56:13 2014 +0000
+
+    Remove bogus license file from daemon subdirectory.
+    
+    It was left over from when the daemon was a separate autoconf
+    directory, and in any case the daemon has never been GPLv3 (it is
+    GPLv2+).
+
+commit d93e3c50eb3062263792b0be5022abe8504604d9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 3 09:08:12 2014 +0100
+
+    fish: Additional GUESTFISH_* environment variables to control the prompt.
+    
+    This adds:
+    
+     - GUESTFISH_INIT
+     - GUESTFISH_OUTPUT
+     - GUESTFISH_RESTORE
+    
+    which along with existing GUESTFISH_PS1 allow you to fine control the
+    colour of the output.
+
+commit bed8a168c0ed76e784adcc046256432f615e3314
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 30 17:06:42 2014 +0100
+
+    builder: remove unused variables
+    
+    Leftovers of the list_entries_short+list_entries_long split done in
+    commit 91aae893c70b3877b31803800ba77836fd7a45e8.
+
+commit 07ef60c63f5fd635306d199622d36f9089c75ecc
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 30 17:05:34 2014 +0100
+
+    builder: output translated notes
+    
+    Output all the translations available for the notes in the "verbose"
+    output and the JSON output, while trying to match the system langauge in
+    the "show notes" output.
+    
+    The JSON output is slightly changed to handle translations, with the
+    "untranslated" notes being matched as "C". The version is not bumped
+    though, since there have been no stable releases with the former output
+    yet.
+
+commit 49014f81f350484da725f5ee2bc62bb24268a334
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 14:50:55 2014 +0000
+
+    sysprep: Deprecate --selinux-relabel in favour of --autorelabel.
+    
+    virt-builder added a --selinux-relabel option with a slightly
+    different meaning.
+    
+    This commit keeps the old --selinux-relabel / --no-selinux-relabel
+    options in virt-sysprep, but deprecates them and replaces them with
+    --autorelabel and --no-autorelabel.
+
+commit fc6d3e6a9a920446fecc347a0521a1e3eda183d8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 14:46:05 2014 +0000
+
+    sysprep: Add a reference to virt-builder from the manual page.
+    
+    The whole "COPYING AND CLONING" section really needs to be overhauled
+    too, but first we need to make virt-builder work properly for
+    customizing templates.
+
+commit 5db1a28461cc42f09532e8b98150e716040d3aa0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 14:38:50 2014 +0000
+
+    sysprep: Add --scrub option.
+    
+    This works like the option in virt-builder with the same name.
+
+commit 2595fa5069383522741ffea3afbe99253e3899b2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 14:03:45 2014 +0000
+
+    builder: Move Perl_edit module into common code.
+    
+    There is no functional change.
+
+commit c841d08d7084db69e81614d54423686cf0566ad6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 09:31:24 2014 +0000
+
+    appliance: Create checksum file with mode 0644 instead of 0755.
+    
+    Initial commit 4beb2844091310012b5e28971707397d1d51d833 used mode 0755
+    for no reason.  It seems to have been a mistake.
+
+commit f0f95bd0385874de976e58875aefc1279814d0bc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 08:45:19 2014 +0000
+
+    perl: Data::Dumper and String::ShellQuote modules are no longer required.
+    
+    They used to be used by old Perl virt-make-fs.  Nothing else uses
+    them.
+    
+    This updates commit d3512deb6728dffbb3a958c7168b81dbde56d748.
+
+commit 32cbd7ca0d90d0013f92f64c3c5755ebed2fb960
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 08:19:32 2014 +0000
+
+    make-fs: Remove warning from man page about lone --partition argument.
+    
+    C's getopt_long has no problem with this.
+
+commit a8a655a85900297f0ddb3d599a09b80b9be8581a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 08:18:05 2014 +0000
+
+    make-fs: Ensure --partition (on its own) creates an MBR partition.
+    
+    This fixes commit d3512deb6728dffbb3a958c7168b81dbde56d748.
+
+commit 90d33787783c8bf383003ca99ba58068b2935a6c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 08:11:37 2014 +0000
+
+    make-fs: Refactor debug stats code.
+    
+    Code motion, no functional change.
+
+commit 5bf8c81d7d5bf438b13f3866750362d002847129
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 08:08:33 2014 +0000
+
+    make-fs: Use an anonymous pipe instead of a named pipe.
+    
+    The previous translation from Perl slavishly followed the Perl code a
+    bit too much and used a named pipe to communicate between the
+    uncompressing subprocess and libguestfs tar-in.  From C we can use an
+    anonymous pipe instead.
+    
+    This updates commit d3512deb6728dffbb3a958c7168b81dbde56d748.
+
+commit c86fcc0fd4dde908bce41f9a5ca90b5fcd89f7e9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 08:00:55 2014 +0000
+
+    make-fs: Make check-valgrind do something.
+
+commit f5bc913434e5f895c52037231e1b018c57f01949
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 29 08:00:30 2014 +0000
+
+    make-fs: Run virt-make-fs in test from builddir, not srcdir.
+
+commit 59fce974e29110ca2831c22191456af0cc4b8f8f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 22:17:12 2014 +0000
+
+    pod: Remove stray +x (executable) mode on various POD files.
+    
+    find -name '*.pod' -perm /0111 -exec chmod -x {} \;
+
+commit 1771e1f2b2dc4b06896c13adf919b0ddb39e47c9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 22:10:25 2014 +0000
+
+    Version 1.25.31.
+
+commit 233d5410e5539c638ea186b81d43cf114c2ce217
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 21:56:18 2014 +0000
+
+    sysprep: Add script4.sh (test script) to EXTRA_DIST.
+    
+    This fixes commit ce9d4d335b0c13f3ea75048666ccf5b63de29f8e.
+
+commit dc91bf723174c486c3568d0098cf990482ef97fa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 21:01:48 2014 +0000
+
+    Version 1.25.30.
+
+commit 642cf4c5dc9af340173ff9aee2c432d6e69f480a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 20:26:42 2014 +0000
+
+    tests: Test --label and other options in virt-make-fs.
+
+commit d3512deb6728dffbb3a958c7168b81dbde56d748
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 27 13:29:54 2014 +0000
+
+    Rewrite virt-make-fs in C (originally Perl).
+    
+    It should be very compatible with the Perl version.
+
+commit 40512c66af562886311b5eff50a505b95c5fbadd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 18:53:25 2014 +0000
+
+    daemon: Always pass -F option to mkfs.ntfs.
+    
+    Otherwise it moans about:
+    
+      mkfs: ntfs: /dev/sda: /dev/sda is entire device, not just one partition.
+      Refusing to make a filesystem here!
+    
+    This has been happening for a while, so I don't know why we didn't
+    notice it before.  It even happens on RHEL 6.
+    
+    A simple reproducer is:
+    
+      virt-make-fs -t ntfs any-tarball.tar.gz test.img
+
+commit 9015d5ac1491a7a1fa662deab007f3fee7e4e53e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 15:08:16 2014 +0000
+
+    virt-make-fs: Use disk-create API instead of calling qemu-img create.
+    
+    Strictly speaking this reduces the number of formats that virt-make-fs
+    can output to, but it's likely that no one cares and if they do we can
+    add new formats in future.
+
+commit a594b7f90a682e2a9327b142138edb76ad8ba8ff
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 15:07:33 2014 +0000
+
+    sparsify: Use new disk-create API instead of calling qemu-img.
+    
+    disk-create doesn't support the lazy_refcounts option.
+
+commit 40261e4adcdef7b209954d003e2a1b0774e800b0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 15:07:26 2014 +0000
+
+    rescue: Note that we're not using add-drive-scratch here, and maybe we should be.
+
+commit f02fddc26bedd28d7b7e35e4c3a2e86d78c7b9ae
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 15:06:39 2014 +0000
+
+    tests: Update miscellaneous tests to use disk-create API.
+    
+    Instead of calling out to qemu-img / truncate.
+
+commit bd12e784e78ec041b3c984620168269d716312d3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 15:05:58 2014 +0000
+
+    builder: Use disk-create API instead of calling qemu-img create.
+
+commit d60e6a23a6c8996a23336a33d120fcbee56010f7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 15:04:59 2014 +0000
+
+    examples: Update various examples to use new disk-create API.
+
+commit 2794eac7390f8d7eb7b76cb0c374b4b2266d98a9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 15:04:09 2014 +0000
+
+    fish: Use disk-create API to implement guestfish 'alloc' and 'sparse' commands.
+
+commit 1e5eb0aebb80c2a37dfca018f589f0d84ee6e6ea
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 15:03:09 2014 +0000
+
+    lib: Use disk-create API instead of qemu-img/truncate inside the library.
+
+commit 588af1953e5f7ab74009b9175cc5d3efb8bb651a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 13:09:06 2014 +0000
+
+    New API: disk-create for creating blank disks.
+    
+    This is a wrapper around either 'qemu-img create' or calls to open,
+    truncate and posix_fallocate which litter and complicate existing
+    code.
+
+commit 65fc841ea68f0739ad1cd40c213b55200df6ceb8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 28 13:08:38 2014 +0000
+
+    src/Makefile.am: Reorder SOURCES into alphabetical order.
+
+commit e3f72805d108c601280b889692c47d7d825e6079
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 27 21:58:42 2014 +0000
+
+    run: Actually use timeout --foreground option (RHBZ#1025269).
+    
+    The following commit managed to not actually add the --foreground
+    option to the timeout command, just test for it.  Add it this time.
+    
+      commit 681488877456b83f039dc518861f29ab4e1857f0
+      Author: Richard W.M. Jones <rjones@redhat.com>
+      Date:   Thu Dec 19 08:21:53 2013 +0000
+    
+        run: Use timeout --foreground option.
+    
+        If timeout doesn't have this option (RHEL 6) don't use timeout at all.
+    
+        Attempt to fix RHBZ#1025269.
+
+commit d9cd2dc9b0e847fda3831c9ff13def616ca5043d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 27 21:20:32 2014 +0000
+
+    daemon: Add a note about how 'mount --rbind' doesn't work.
+
+commit 9df50877f8b61106248acd2375d011acc209c6b5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 27 20:22:23 2014 +0000
+
+    daemon: If /selinux exists in the guest, bind-mount /sys/fs/selinux to there.
+    
+    Commit 72afcf450a78b7e58f65b4a7aaf94d71cd25fca5 was partially
+    incorrect.  If the guest userspace is expecting /selinux to exist,
+    then we should bind-mount /sys/fs/selinux from the appliance kernel
+    there.
+
+commit ce9d4d335b0c13f3ea75048666ccf5b63de29f8e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 28 15:04:38 2014 +0100
+
+    builder, sysprep: initialise the random generator
+    
+    virt-builder and virt-sysprep may make use of
+    Common_utils.string_random8 (which uses Random.int) for constructing
+    temporary paths; not initialising the random generator means that every
+    invocation will reuse the same name used previously (!).
+    Thus just call Random.self_init, just like virt-sparsify already does.
+    
+    Expand the test-virt-sysprep-script.sh test to ensure that virt-sysprep
+    is not affected again by this issue.
+
+commit 95f8144cb605b70d4cb9ab3ca0976c1e1428b3d0
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jan 27 17:25:55 2014 +0100
+
+    tests/regressions: remove C part of rhbz1044014
+    
+    All it did was checking for a libvirt version, which is what
+    libvirt-is-version now does; hence remove the C part, and use guestfish,
+    ignoring the launch failure (as the C test did).
+
+commit 4310f8f1753dc923ba5012f243014f54709f30fb
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jan 27 16:33:22 2014 +0100
+
+    tests/disks: skip test-qemu-drive-libvirt.sh if libvirt is < 1.1.3
+    
+    This test relies on the <test:runstate> element in the domain XML, which
+    has been introduced in libvirt 1.1.3.
+
+commit c01fb37839d28678dd8f5e33ec7fa376b03e8d71
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jan 27 16:31:32 2014 +0100
+
+    tests: add a a simple libvirt-is-version test tool
+    
+    libvirt-is-version returns successfully in case the available version of
+    libvirt is greater or equal than the specified major/minor/release
+    values.
+
+commit f66d6a85b633f0e79d14c311db4020e22709117a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jan 27 14:25:47 2014 +0100
+
+    tests/mountable: add missing space in test-mountable-inspect.sh
+    
+    No actual behaviour, other than getting rid of a bash warning.
+
+commit de7a8336cd7c8806231e22e12c29b93463308065
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 25 12:04:37 2014 +0000
+
+    Version 1.25.29.
+
+commit 4e18712562fe69cae8901e9534dbbcf0d4d87192
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 25 11:56:40 2014 +0000
+
+    tests/disks/test-qemu-drive-libvirt: Include test data.
+    
+    This was inadvertantly deleted.
+    
+    This fixes commit 01d27033bdd12974f850ff7a8e5de8f6b790379d.
+
+commit 24e61492cc2db3aeb2943da84e4c07acfbcce2a0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 25 10:59:03 2014 +0000
+
+    Version 1.25.28.
+
+commit 080300dfec1dd603da2f7d53e72dd3e056317fb8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 24 19:43:05 2014 +0000
+
+    builder: Add documentation for enabling Puppet (agent) in a guest.
+
+commit 90e23b4e566f88595ac697b45d2531de851be6df
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 24 19:38:26 2014 +0000
+
+    builder: Add --selinux-relabel option to perform SELinux relabelling.
+    
+    This adds the --selinux-relabel option which enables selinux in the
+    appliance and runs:
+    
+      if load_policy && fixfiles restore; then
+        rm -f /.autorelabel
+      else
+        touch /.autorelabel
+      fi
+    
+    at the end of installation.
+    
+    When possible this fixes SELinux labels in the guest and makes the
+    autorelabel step unnecessary.
+    
+    Notes:
+    
+     - The previous commit is required so that load_policy works.
+    
+     - During the build, SELinux is enabled but no policy is loaded.  This
+       works because SELinux is in permissive mode.
+    
+     - This flag does not work if the appliance kernel and the guest have
+       greatly differing versions, eg. a RHEL 6 guest with a Fedora 20
+       appliance.  This is because SELinux changes the policy format and
+       breaks backwards compatibility.  You would see errors like this:
+    
+       libsepol.policydb_write: policy version 15 cannot support MLS
+       libsepol.policydb_to_image: could not compute policy length
+       libsepol.policydb_to_image: could not create policy image
+       SELinux:  Could not downgrade policy file /etc/selinux/targeted/policy/policy.24, searching for an older version.
+       SELinux:  Could not open policy file <= /etc/selinux/targeted/policy/policy.24:  No such file or directory
+    
+       These errors are ignored (they go to the log file) and relabelling
+       is done at boot instead.
+    
+     - It's not clear if loading guest policy is safe.  You should trust
+       the virt-builder templates and to use libguestfs confinement for
+       additional protection.
+
+commit ab33653ef312e18042be08854aa0dec2c7254fc2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 24 19:36:33 2014 +0000
+
+    daemon: Bind-mount /sys/fs/selinux into sysroot when running commands.
+    
+    Even though we are already bind-mounting /sys, it is necessary to also
+    bind-mount /sys/fs/selinux in order for SELinux commands (in
+    particular, 'load_policy') to work.
+    
+    This fixes/reverts commit 7367729ec7a5d016878dd00b32cce45cec372931.
+
+commit 0e2489974b91e4728d544fe2aa08c2a1c9deb365
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 24 10:20:14 2014 +0000
+
+    fuse: In mount-local-run, test if root filesystem has been mounted (RHBZ#1057504).
+    
+    It is never normally valid to use the mount-local* APIs when you
+    haven't mounted some filesystems in the libguestfs namespace.
+    
+    If you try it, it results in some odd errors.  The mount-local-run
+    call is successful, but subsequent operations fail:
+    
+    $ mkdir -p /tmp/mnt
+    $ guestfish -x -N fs mount-local /tmp/mnt : mount-local-run
+    libguestfs: error: lstat: lstat_stub: you must call 'mount' first to mount the root filesystem
+    libguestfs: error: lstat: lstat_stub: you must call 'mount' first to mount the root filesystem
+    
+    With this commit, the mount-local-run call gives an error:
+    
+    libguestfs: error: you must call 'guestfs_mount' first to mount a filesystem on '/'.
+    Note: '/tmp/mnt' is still mounted.  Use 'guestunmount /tmp/mnt' to clean up.
+    
+    The error is implemented by calling guestfs_exists (g, "/") which has
+    the side effect of running the NEED_ROOT macro in the daemon.  (There
+    is no simple equivalent of NEED_ROOT on the library side.)
+
+commit 01d27033bdd12974f850ff7a8e5de8f6b790379d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 21:49:16 2014 +0000
+
+    lib, fish: Handle Gluster, NBD, iSCSI and Sheepdog paths properly.
+    
+    This fixes the handling of paths for the protocols named above, with
+    respect to leading '/' (or not) on the volume/export name.
+    
+    See previous commits which did the same fixes for Ceph:
+    commit 53a3ff9c005fd69e773fdb18461a635c2502df1b
+    commit 992a6b297023711862229aabe4e23b6a1c94c1cc
+
+commit 870f076bddbc540b793670990dc504ef36fb2f41
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 19:35:23 2014 +0000
+
+    Version 1.25.27.
+
+commit 3331db84bc0e720abec0dfbc82bba15ccae00b6e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 14:14:26 2014 +0000
+
+    resize: Don't truncate libguestfs error messages.
+    
+    If we rely on OCaml's internal exception printing, then it will
+    truncate error messages like this:
+    
+      Fatal error: exception Guestfs.Error("could not create appliance
+      through libvirt.
+    
+      Try running qemu directly without libvirt using this environment
+      variable: export LIBGUESTFS_BACKEND=direct
+    
+      Original error from libvirt: unable to set security context
+      'unconfined_u:object_r:svi
+    note the truncation here ^^^^^^^
+    
+    Instead of using the internal exception printing, wrap the whole
+    program in a 'main ()' function and add an exception handler.
+    
+    This large change is non-functional apart from the addition of the
+    exception handlers at the end.
+
+commit e8c10670213076b10bad2d0aac181637acd150b0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 13:31:11 2014 +0000
+
+    launch: direct: Stop using deprecated -no-kvm-pit-reinjection if qemu is new enough (RHBZ#1053847).
+
+commit 1d6ba35e6f57b3424b01bb0fe0debe57808b5abd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 10:48:57 2014 +0000
+
+    tests: Add a test of libvirt domain XML to qemu command line (RHBZ#1026688).
+    
+    This tests that libvirt domain XML (ie. guestfish -d option) is parsed
+    correctly and results in the correct qemu command line when using the
+    direct backend.
+    
+    This is a good end-to-end test of various layers.
+
+commit 1ed0ce3ef8877012d0909c5ae2ef5c29c61cf123
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 11:40:27 2014 +0000
+
+    libvirt domain: Allow network drives with no <source name="..."> attr.
+    
+    This is valid for some network drives, for example:
+    
+      <source protocol='nbd'>
+        <host name='foo' port='1234'/>
+      </source>
+    
+    We pass an empty string as path to the guestfs_add_drive_opts API in
+    this case.
+
+commit 1d2e74414b04d69ed48984a7a4e809be502c7999
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 11:31:40 2014 +0000
+
+    libvirt-domain: Remove unnecessary and wrongly indented parens.
+
+commit 58ada01783ccac13e4ad86b71210d44e7084b8a5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 11:05:01 2014 +0000
+
+    libvirt domain: Allow network drives with no <host> elements.
+    
+    This is valid for some network drives:
+    
+    <source protocol='rbd' name='abc-def/ghi-jkl'/>
+    
+    instead of this:
+    
+    <source protocol='rbd' name='abc-def/ghi-jkl'>
+      <host name='foo' port='1234'/>
+    </source>
+    
+    Allow both forms.
+
+commit 992a6b297023711862229aabe4e23b6a1c94c1cc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 08:30:12 2014 +0000
+
+    fish: Handle Ceph/rbd URIs and convert them to paths properly (RHBZ#1026688).
+    
+    The path at the API level (for guestfs_add_drive_opts) is:
+    
+      pool/disk
+    
+    The URI syntax is either rbd:///pool/disk or rbd://server:port/pool/disk.
+    Because of the way URI parsing works we may need to remove a leading
+    '/' character before passing the path down to the API.
+
+commit 53a3ff9c005fd69e773fdb18461a635c2502df1b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 08:28:09 2014 +0000
+
+    lib: Handle Ceph/rbd paths properly (RHBZ#1026688).
+    
+    The path at the protocol level is:
+    
+      pool/disk
+    
+    (with no leading '/' character).  This is now what you have to pass to
+    guestfs_add_drive_opts.
+    
+    Also Ceph can be called with no explicit servers (it uses the contents
+    of /etc/ceph/ceph.conf instead).  So allow zero servers to be used.
+
+commit b93a1d50ad1dfe44e6ad2434dbc3f0c71fda7141
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 23 08:27:30 2014 +0000
+
+    fish/uri: Tidy up error messages.
+
+commit b7cd63fc1dc031914e110a46de3faa431387d959
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 23 15:36:15 2014 +0100
+
+    builder: read all the available notes from the index
+    
+    Switch the internal storage for the notes of each entry to a sorted list
+    with all the subkeys available (which should represent the translations
+    to various languages).
+    The current outputs are the same (i.e. still the untranslated notes), so
+    this is just internal refactoring/preparation.
+
+commit 958e84d69960faf5b321bdec92283a0b37abd858
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jan 22 23:13:24 2014 +0100
+
+    builder: small code simplification
+    
+    No actual behaviour changes, just remove extra match statements.
+
 commit 2541563a18309f0adf4c2e48bd16ccc39d4b76b9
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Jan 22 18:01:17 2014 +0000

@@ -155,6 +155,7 @@ static int run_add_drive_scratch (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_get (const char *cmd, size_t argc, char *argv[]);
 static int run_set_backend_settings (const char *cmd, size_t argc, char *argv[]);
 static int run_get_backend_settings (const char *cmd, size_t argc, char *argv[]);
+static int run_disk_create (const char *cmd, size_t argc, char *argv[]);
 static int run_mount (const char *cmd, size_t argc, char *argv[]);
 static int run_sync (const char *cmd, size_t argc, char *argv[]);
 static int run_touch (const char *cmd, size_t argc, char *argv[]);
@@ -549,10 +550,11 @@ static int run_journal_set_data_threshold (const char *cmd, size_t argc, char *a
 static int run_aug_setm (const char *cmd, size_t argc, char *argv[]);
 static int run_aug_label (const char *cmd, size_t argc, char *argv[]);
 static int run_copy_attributes (const char *cmd, size_t argc, char *argv[]);
+static int run_part_get_name (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
-  .help = "NAME\n    alloc - allocate and add a disk file\n\nDESCRIPTION\n     alloc filename size\n\n    This creates an empty (zeroed) file of the given size, and then adds so\n    it can be further examined.\n\n    For more advanced image creation, see qemu-img(1) utility.\n\n    Size can be specified using standard suffixes, eg. \"1M\".\n\n    To create a sparse file, use \"sparse\" instead. To create a prepared disk\n    image, see \"PREPARED DISK IMAGES\".\n\n    You can use 'allocate' as an alias for this command.\n\n",
+  .help = "NAME\n    alloc - allocate and add a disk file\n\nDESCRIPTION\n     alloc filename size\n\n    This creates an empty (zeroed) file of the given size, and then adds so\n    it can be further examined.\n\n    For more advanced image creation, see \"disk-create\".\n\n    Size can be specified using standard suffixes, eg. \"1M\".\n\n    To create a sparse file, use \"sparse\" instead. To create a prepared disk\n    image, see \"PREPARED DISK IMAGES\".\n\n    You can use 'allocate' as an alias for this command.\n\n",
   .run = run_alloc
 };
 
@@ -648,7 +650,7 @@ struct command_entry setenv_cmd_entry = {
 
 struct command_entry sparse_cmd_entry = {
   .name = "sparse",
-  .help = "NAME\n    sparse - create a sparse disk image and add\n\nDESCRIPTION\n     sparse filename size\n\n    This creates an empty sparse file of the given size, and then adds so it\n    can be further examined.\n\n    In all respects it works the same as the \"alloc\" command, except that\n    the image file is allocated sparsely, which means that disk blocks are\n    not assigned to the file until they are needed. Sparse disk files only\n    use space when written to, but they are slower and there is a danger you\n    could run out of real disk space during a write operation.\n\n    For more advanced image creation, see qemu-img(1) utility.\n\n    Size can be specified using standard suffixes, eg. \"1M\".\n\n    See also the guestfish \"scratch\" command.\n\n",
+  .help = "NAME\n    sparse - create a sparse disk image and add\n\nDESCRIPTION\n     sparse filename size\n\n    This creates an empty sparse file of the given size, and then adds so it\n    can be further examined.\n\n    In all respects it works the same as the \"alloc\" command, except that\n    the image file is allocated sparsely, which means that disk blocks are\n    not assigned to the file until they are needed. Sparse disk files only\n    use space when written to, but they are slower and there is a danger you\n    could run out of real disk space during a write operation.\n\n    For more advanced image creation, see \"disk-create\".\n\n    Size can be specified using standard suffixes, eg. \"1M\".\n\n    See also the guestfish \"scratch\" command.\n\n",
   .run = run_sparse
 };
 
@@ -942,7 +944,7 @@ struct command_entry list_filesystems_cmd_entry = {
 
 struct command_entry add_drive_cmd_entry = {
   .name = "add-drive",
-  .help = "NAME\n    add-drive - add an image to examine or modify\n\nSYNOPSIS\n     add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..] [secret:..] [cachemode:..]\n\nDESCRIPTION\n    This function adds a disk image called \"filename\" to the handle.\n    \"filename\" may be a regular host file or a host device.\n\n    When this function is called before \"launch\" (the usual case) then the\n    first time you call this function, the disk appears in the API as\n    \"/dev/sda\", the second time as \"/dev/sdb\", and so on.\n\n    In libguestfs ≥ 1.20 you can also call this function after launch (with\n    some restrictions). This is called \"hotplugging\". When hotplugging, you\n    must specify a \"label\" so that the new disk gets a predictable name. For\n    more information see \"HOTPLUGGING\" in guestfs(3).\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that \"filename\" exists.\n\n    \"filename\" may be the special string \"/dev/null\". See \"NULL DISKS\" in\n    guestfs(3).\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. \"/dev/sdb\". This\n        is used as a hint to the guest inspection process if it is\n        available.\n\n    \"label\"\n        Give the disk a label. The label should be a unique, short string\n        using *only* ASCII characters \"[a-zA-Z]\". As well as its usual name\n        in the API (such as \"/dev/sda\"), the drive will also be named\n        \"/dev/disk/guestfs/*label*\".\n\n        See \"DISK LABELS\" in guestfs(3).\n\n    \"protocol\"\n        The optional protocol argument can be used to select an alternate\n        source protocol.\n\n        See also: \"REMOTE STORAGE\" in guestfs(3).\n\n        \"protocol = \"file\"\"\n            \"filename\" is interpreted as a local file or device. This is the\n            default if the optional protocol parameter is omitted.\n\n        \"protocol = \"ftp\"|\"ftps\"|\"http\"|\"https\"|\"tftp\"\"\n            Connect to a remote FTP, HTTP or TFTP server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"FTP, HTTP AND TFTP\" in guestfs(3)\n\n        \"protocol = \"gluster\"\"\n            Connect to the GlusterFS server. The \"server\" parameter must\n            also be supplied - see below.\n\n            See also: \"GLUSTER\" in guestfs(3)\n\n        \"protocol = \"iscsi\"\"\n            Connect to the iSCSI server. The \"server\" parameter must also be\n            supplied - see below.\n\n            See also: \"ISCSI\" in guestfs(3).\n\n        \"protocol = \"nbd\"\"\n            Connect to the Network Block Device server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"NETWORK BLOCK DEVICE\" in guestfs(3).\n\n        \"protocol = \"rbd\"\"\n            Connect to the Ceph (librbd/RBD) server. The \"server\" parameter\n            must also be supplied - see below. The \"username\" parameter may\n            be supplied. See below. The \"secret\" parameter may be supplied.\n            See below.\n\n            See also: \"CEPH\" in guestfs(3).\n\n        \"protocol = \"sheepdog\"\"\n            Connect to the Sheepdog server. The \"server\" parameter may also\n            be supplied - see below.\n\n            See also: \"SHEEPDOG\" in guestfs(3).\n\n        \"protocol = \"ssh\"\"\n            Connect to the Secure Shell (ssh) server.\n\n            The \"server\" parameter must be supplied. The \"username\"\n            parameter may be supplied. See below.\n\n            See also: \"SSH\" in guestfs(3).\n\n    \"server\"\n        For protocols which require access to a remote server, this is a\n        list of server(s).\n\n         Protocol       Number of servers required\n         --------       --------------------------\n         file           List must be empty or param not used at all\n         ftp|ftps|http|https|tftp  Exactly one\n         gluster        Exactly one\n         iscsi          Exactly one\n         nbd            Exactly one\n         rbd            One or more\n         sheepdog       Zero or more\n         ssh            Exactly one\n\n        Each list element is a string specifying a server. The string must\n        be in one of the following formats:\n\n         hostname\n         hostname:port\n         tcp:hostname\n         tcp:hostname:port\n         unix:/path/to/socket\n\n        If the port number is omitted, then the standard port number for the\n        protocol is used (see \"/etc/services\").\n\n    \"username\"\n        For the \"ftp\", \"ftps\", \"http\", \"https\", \"iscsi\", \"rbd\", \"ssh\" and\n        \"tftp\" protocols, this specifies the remote username.\n\n        If not given, then the local username is used for \"ssh\", and no\n        authentication is attempted for ceph. But note this sometimes may\n        give unexpected results, for example if using the libvirt backend\n        and if the libvirt backend is configured to start the qemu appliance\n        as a special user such as \"qemu.qemu\". If in doubt, specify the\n        remote username you want.\n\n    \"secret\"\n        For the \"rbd\" protocol only, this specifies the 'secret' to use when\n        connecting to the remote device.\n\n        If not given, then a secret matching the given username will be\n        looked up in the default keychain locations, or if no username is\n        given, then no authentication will be used.\n\n    \"cachemode\"\n        Choose whether or not libguestfs will obey sync operations (safe but\n        slow) or not (unsafe but fast). The possible values for this string\n        are:\n\n        \"cachemode = \"writeback\"\"\n            This is the default.\n\n            Write operations in the API do not return until a write(2) call\n            has completed in the host [but note this does not imply that\n            anything gets written to disk].\n\n            Sync operations in the API, including implicit syncs caused by\n            filesystem journalling, will not return until an fdatasync(2)\n            call has completed in the host, indicating that data has been\n            committed to disk.\n\n        \"cachemode = \"unsafe\"\"\n            In this mode, there are no guarantees. Libguestfs may cache\n            anything and ignore sync requests. This is suitable only for\n            scratch or temporary disks.\n\n    You can use 'add' or 'add-drive-opts' as an alias for this command.\n\n",
+  .help = "NAME\n    add-drive - add an image to examine or modify\n\nSYNOPSIS\n     add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..] [secret:..] [cachemode:..]\n\nDESCRIPTION\n    This function adds a disk image called \"filename\" to the handle.\n    \"filename\" may be a regular host file or a host device.\n\n    When this function is called before \"launch\" (the usual case) then the\n    first time you call this function, the disk appears in the API as\n    \"/dev/sda\", the second time as \"/dev/sdb\", and so on.\n\n    In libguestfs ≥ 1.20 you can also call this function after launch (with\n    some restrictions). This is called \"hotplugging\". When hotplugging, you\n    must specify a \"label\" so that the new disk gets a predictable name. For\n    more information see \"HOTPLUGGING\" in guestfs(3).\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that \"filename\" exists.\n\n    \"filename\" may be the special string \"/dev/null\". See \"NULL DISKS\" in\n    guestfs(3).\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. \"/dev/sdb\". This\n        is used as a hint to the guest inspection process if it is\n        available.\n\n    \"label\"\n        Give the disk a label. The label should be a unique, short string\n        using *only* ASCII characters \"[a-zA-Z]\". As well as its usual name\n        in the API (such as \"/dev/sda\"), the drive will also be named\n        \"/dev/disk/guestfs/*label*\".\n\n        See \"DISK LABELS\" in guestfs(3).\n\n    \"protocol\"\n        The optional protocol argument can be used to select an alternate\n        source protocol.\n\n        See also: \"REMOTE STORAGE\" in guestfs(3).\n\n        \"protocol = \"file\"\"\n            \"filename\" is interpreted as a local file or device. This is the\n            default if the optional protocol parameter is omitted.\n\n        \"protocol = \"ftp\"|\"ftps\"|\"http\"|\"https\"|\"tftp\"\"\n            Connect to a remote FTP, HTTP or TFTP server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"FTP, HTTP AND TFTP\" in guestfs(3)\n\n        \"protocol = \"gluster\"\"\n            Connect to the GlusterFS server. The \"server\" parameter must\n            also be supplied - see below.\n\n            See also: \"GLUSTER\" in guestfs(3)\n\n        \"protocol = \"iscsi\"\"\n            Connect to the iSCSI server. The \"server\" parameter must also be\n            supplied - see below.\n\n            See also: \"ISCSI\" in guestfs(3).\n\n        \"protocol = \"nbd\"\"\n            Connect to the Network Block Device server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"NETWORK BLOCK DEVICE\" in guestfs(3).\n\n        \"protocol = \"rbd\"\"\n            Connect to the Ceph (librbd/RBD) server. The \"server\" parameter\n            must also be supplied - see below. The \"username\" parameter may\n            be supplied. See below. The \"secret\" parameter may be supplied.\n            See below.\n\n            See also: \"CEPH\" in guestfs(3).\n\n        \"protocol = \"sheepdog\"\"\n            Connect to the Sheepdog server. The \"server\" parameter may also\n            be supplied - see below.\n\n            See also: \"SHEEPDOG\" in guestfs(3).\n\n        \"protocol = \"ssh\"\"\n            Connect to the Secure Shell (ssh) server.\n\n            The \"server\" parameter must be supplied. The \"username\"\n            parameter may be supplied. See below.\n\n            See also: \"SSH\" in guestfs(3).\n\n    \"server\"\n        For protocols which require access to a remote server, this is a\n        list of server(s).\n\n         Protocol       Number of servers required\n         --------       --------------------------\n         file           List must be empty or param not used at all\n         ftp|ftps|http|https|tftp  Exactly one\n         gluster        Exactly one\n         iscsi          Exactly one\n         nbd            Exactly one\n         rbd            Zero or more\n         sheepdog       Zero or more\n         ssh            Exactly one\n\n        Each list element is a string specifying a server. The string must\n        be in one of the following formats:\n\n         hostname\n         hostname:port\n         tcp:hostname\n         tcp:hostname:port\n         unix:/path/to/socket\n\n        If the port number is omitted, then the standard port number for the\n        protocol is used (see \"/etc/services\").\n\n    \"username\"\n        For the \"ftp\", \"ftps\", \"http\", \"https\", \"iscsi\", \"rbd\", \"ssh\" and\n        \"tftp\" protocols, this specifies the remote username.\n\n        If not given, then the local username is used for \"ssh\", and no\n        authentication is attempted for ceph. But note this sometimes may\n        give unexpected results, for example if using the libvirt backend\n        and if the libvirt backend is configured to start the qemu appliance\n        as a special user such as \"qemu.qemu\". If in doubt, specify the\n        remote username you want.\n\n    \"secret\"\n        For the \"rbd\" protocol only, this specifies the 'secret' to use when\n        connecting to the remote device.\n\n        If not given, then a secret matching the given username will be\n        looked up in the default keychain locations, or if no username is\n        given, then no authentication will be used.\n\n    \"cachemode\"\n        Choose whether or not libguestfs will obey sync operations (safe but\n        slow) or not (unsafe but fast). The possible values for this string\n        are:\n\n        \"cachemode = \"writeback\"\"\n            This is the default.\n\n            Write operations in the API do not return until a write(2) call\n            has completed in the host [but note this does not imply that\n            anything gets written to disk].\n\n            Sync operations in the API, including implicit syncs caused by\n            filesystem journalling, will not return until an fdatasync(2)\n            call has completed in the host, indicating that data has been\n            committed to disk.\n\n        \"cachemode = \"unsafe\"\"\n            In this mode, there are no guarantees. Libguestfs may cache\n            anything and ignore sync requests. This is suitable only for\n            scratch or temporary disks.\n\n    You can use 'add' or 'add-drive-opts' as an alias for this command.\n\n",
   .run = run_add_drive
 };
 
@@ -1334,6 +1336,12 @@ struct command_entry get_backend_settings_cmd_entry = {
   .name = "get-backend-settings",
   .help = "NAME\n    get-backend-settings - get per-backend settings\n\nSYNOPSIS\n     get-backend-settings\n\nDESCRIPTION\n    Return the current backend settings.\n\n    See \"BACKEND\" in guestfs(3), \"BACKEND SETTINGS\" in guestfs(3).\n\n",
   .run = run_get_backend_settings
+};
+
+struct command_entry disk_create_cmd_entry = {
+  .name = "disk-create",
+  .help = "NAME\n    disk-create - create a blank disk image\n\nSYNOPSIS\n     disk-create filename format size [backingfile:..] [backingformat:..] [preallocation:..] [compat:..] [clustersize:N]\n\nDESCRIPTION\n    Create a blank disk image called \"filename\" (a host file) with format\n    \"format\" (usually \"raw\" or \"qcow2\"). The size is \"size\" bytes.\n\n    If used with the optional \"backingfile\" parameter, then a snapshot is\n    created on top of the backing file. In this case, \"size\" must be passed\n    as -1. The size of the snapshot is the same as the size of the backing\n    file, which is discovered automatically. You are encouraged to also pass\n    \"backingformat\" to describe the format of \"backingfile\".\n\n    The other optional parameters are:\n\n    \"preallocation\"\n        If format is \"raw\", then this can be either \"sparse\" or \"full\" to\n        create a sparse or fully allocated file respectively. The default is\n        \"sparse\".\n\n        If format is \"qcow2\", then this can be either \"off\" or \"metadata\".\n        Preallocating metadata can be faster when doing lots of writes, but\n        uses more space. The default is \"off\".\n\n    \"compat\"\n        \"qcow2\" only: Pass the string 1.1 to use the advanced qcow2 format\n        supported by qemu ≥ 1.1.\n\n    \"clustersize\"\n        \"qcow2\" only: Change the qcow2 cluster size. The default is 65536\n        (bytes) and this setting may be any power of two between 512 and\n        2097152.\n\n    Note that this call does not add the new disk to the handle. You may\n    need to call \"add_drive_opts\" separately.\n\n",
+  .run = run_disk_create
 };
 
 struct command_entry mount_cmd_entry = {
@@ -3700,6 +3708,12 @@ struct command_entry copy_attributes_cmd_entry = {
   .run = run_copy_attributes
 };
 
+struct command_entry part_get_name_cmd_entry = {
+  .name = "part-get-name",
+  .help = "NAME\n    part-get-name - get partition name\n\nSYNOPSIS\n     part-get-name device partnum\n\nDESCRIPTION\n    This gets the partition name on partition numbered \"partnum\" on device\n    \"device\". Note that partitions are numbered from 1.\n\n    The partition name can only be read on certain types of partition table.\n    This works on \"gpt\" but not on \"mbr\" partitions.\n\n",
+  .run = run_part_get_name
+};
+
 void
 list_commands (void)
 {
@@ -3793,6 +3807,7 @@ list_commands (void)
   printf ("%-20s %s\n", "device-index", _("convert device to index"));
   printf ("%-20s %s\n", "df", _("report file system disk space usage"));
   printf ("%-20s %s\n", "df-h", _("report file system disk space usage (human readable)"));
+  printf ("%-20s %s\n", "disk-create", _("create a blank disk image"));
   printf ("%-20s %s\n", "disk-format", _("detect the disk format of a disk image"));
   printf ("%-20s %s\n", "disk-has-backing-file", _("return whether disk has a backing file"));
   printf ("%-20s %s\n", "disk-virtual-size", _("return virtual size of a disk"));
@@ -4061,6 +4076,7 @@ list_commands (void)
   printf ("%-20s %s\n", "part-get-bootable", _("return true if a partition is bootable"));
   printf ("%-20s %s\n", "part-get-gpt-type", _("get the type GUID of a GPT partition"));
   printf ("%-20s %s\n", "part-get-mbr-id", _("get the MBR type byte (ID byte) from a partition"));
+  printf ("%-20s %s\n", "part-get-name", _("get partition name"));
   printf ("%-20s %s\n", "part-get-parttype", _("get the partition table type"));
   printf ("%-20s %s\n", "part-init", _("create an empty partition table"));
   printf ("%-20s %s\n", "part-list", _("list partitions on a device"));
@@ -7995,6 +8011,109 @@ run_get_backend_settings (const char *cmd, size_t argc, char *argv[])
   print_strings (r);
   guestfs___free_string_list (r);
  out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_disk_create (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *filename;
+  const char *format;
+  int64_t size;
+  struct guestfs_disk_create_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_disk_create_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 3 || argc > 8) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 3, 8);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  filename = argv[i++];
+  format = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "size", "xstrtoll", xerr);
+      goto out_size;
+    }
+    size = r;
+  }
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "backingfile:")) {
+      optargs_s.backingfile = &argv[i][12];
+      this_mask = GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK;
+      this_arg = "backingfile";
+    }
+    else if (STRPREFIX (argv[i], "backingformat:")) {
+      optargs_s.backingformat = &argv[i][14];
+      this_mask = GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK;
+      this_arg = "backingformat";
+    }
+    else if (STRPREFIX (argv[i], "preallocation:")) {
+      optargs_s.preallocation = &argv[i][14];
+      this_mask = GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK;
+      this_arg = "preallocation";
+    }
+    else if (STRPREFIX (argv[i], "compat:")) {
+      optargs_s.compat = &argv[i][7];
+      this_mask = GUESTFS_DISK_CREATE_COMPAT_BITMASK;
+      this_arg = "compat";
+    }
+    else if (STRPREFIX (argv[i], "clustersize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][12], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.clustersize", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.clustersize");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.clustersize = r;
+      }
+      this_mask = GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK;
+      this_arg = "clustersize";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_disk_create_argv (g, filename, format, size, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_size:
  out_noargs:
   return ret;
 }
@@ -23529,6 +23648,54 @@ run_copy_attributes (const char *cmd, size_t argc, char *argv[])
  out_dest:
   free (src);
  out_src:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_part_get_name (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  const char *device;
+  int partnum;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "partnum", "xstrtoll", xerr);
+      goto out_partnum;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
+      goto out_partnum;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    partnum = r;
+  }
+  r = guestfs_part_get_name (g, device, partnum);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_partnum:
  out_noargs:
   return ret;
 }

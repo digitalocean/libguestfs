@@ -1428,7 +1428,6 @@ top_srcdir = @top_srcdir@
 tools = \
 	list-filesystems \
 	list-partitions \
-	make-fs \
 	tar \
 	win-reg
 
@@ -1452,7 +1451,6 @@ EXTRA_DIST = \
 # Tests.
 @HAVE_TOOLS_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
 @ENABLE_APPLIANCE_TRUE@@HAVE_TOOLS_TRUE@TESTS = test-virt-list-filesystems.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_TOOLS_TRUE@	test-virt-make-fs.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_TOOLS_TRUE@	test-virt-tar.sh
 
 all: all-am

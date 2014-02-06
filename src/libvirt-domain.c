@@ -489,43 +489,44 @@ for_each_disk (guestfs_h *g,
                                              xpathCtx);
         if (xpfilename == NULL ||
             xpfilename->nodesetval == NULL ||
-            xpfilename->nodesetval->nodeNr == 0) {
+            xpfilename->nodesetval->nodeNr == 0)
           continue;           /* disk filename not found, skip this */
-      }
       } else if (STREQ (type, "block")) { /* type = "block", use source/@dev */
         xpathCtx->node = nodes->nodeTab[i];
         xpfilename = xmlXPathEvalExpression (BAD_CAST "./source/@dev",
                                              xpathCtx);
         if (xpfilename == NULL ||
             xpfilename->nodesetval == NULL ||
-            xpfilename->nodesetval->nodeNr == 0) {
+            xpfilename->nodesetval->nodeNr == 0)
           continue;           /* disk filename not found, skip this */
-        }
       } else if (STREQ (type, "network")) { /* type = "network", use source/@name */
         int hi;
 
         debug (g, _("disk[%zu]: network device"), i);
         xpathCtx->node = nodes->nodeTab[i];
-        xpfilename = xmlXPathEvalExpression (BAD_CAST "./source/@name",
-                                             xpathCtx);
-        if (xpfilename == NULL ||
-            xpfilename->nodesetval == NULL ||
-            xpfilename->nodesetval->nodeNr == 0)
-          continue;
 
+        /* Get the protocol (e.g. "rbd").  Required. */
         xpprotocol = xmlXPathEvalExpression (BAD_CAST "./source/@protocol",
                                              xpathCtx);
-        /* Get the protocol (e.g. "rbd"). */
         if (xpprotocol == NULL ||
             xpprotocol->nodesetval == NULL ||
             xpprotocol->nodesetval->nodeNr == 0)
           continue;
         assert (xpprotocol->nodesetval->nodeTab[0]);
-        assert (xpprotocol->nodesetval->nodeTab[0]->type == XML_ATTRIBUTE_NODE);
+        assert (xpprotocol->nodesetval->nodeTab[0]->type ==
+                XML_ATTRIBUTE_NODE);
         attr = (xmlAttrPtr) xpprotocol->nodesetval->nodeTab[0];
         protocol = (char *) xmlNodeListGetString (doc, attr->children, 1);
         debug (g, _("disk[%zu]: protocol: %s"), i, protocol);
 
+        /* <source name="..."> is the path/exportname.  Optional. */
+        xpfilename = xmlXPathEvalExpression (BAD_CAST "./source/@name",
+                                             xpathCtx);
+        if (xpfilename == NULL ||
+            xpfilename->nodesetval == NULL)
+          continue;
+
+        /* <auth username="...">.  Optional. */
         xpusername = xmlXPathEvalExpression (BAD_CAST "./auth/@username",
                                              xpathCtx);
         if (xpusername != NULL &&
@@ -541,8 +542,7 @@ for_each_disk (guestfs_h *g,
         xphost = xmlXPathEvalExpression (BAD_CAST "./source/host",
                                              xpathCtx);
         if (xphost == NULL ||
-            xphost->nodesetval == NULL ||
-            xphost->nodesetval->nodeNr == 0)
+            xphost->nodesetval == NULL)
           continue;
 
         /* This gives us a list of <host> elements, which each have a
@@ -574,15 +574,21 @@ for_each_disk (guestfs_h *g,
          * ./auth/secret/@usage || ./auth/secret/@uuid
          */
       } else
-        continue;             /* type <> "file", "block", or "network", skip it */
+        continue; /* type <> "file", "block", or "network", skip it */
 
       assert (xpfilename);
       assert (xpfilename->nodesetval);
-      assert (xpfilename->nodesetval->nodeTab[0]);
-      assert (xpfilename->nodesetval->nodeTab[0]->type == XML_ATTRIBUTE_NODE);
-      attr = (xmlAttrPtr) xpfilename->nodesetval->nodeTab[0];
-      filename = (char *) xmlNodeListGetString (doc, attr->children, 1);
-      debug (g, _("disk[%zu]: filename: %s"), i, filename);
+      if (xpfilename->nodesetval->nodeNr > 0) {
+        assert (xpfilename->nodesetval->nodeTab[0]);
+        assert (xpfilename->nodesetval->nodeTab[0]->type ==
+                XML_ATTRIBUTE_NODE);
+        attr = (xmlAttrPtr) xpfilename->nodesetval->nodeTab[0];
+        filename = (char *) xmlNodeListGetString (doc, attr->children, 1);
+        debug (g, _("disk[%zu]: filename: %s"), i, filename);
+      }
+      else
+        /* For network protocols (eg. nbd), name may be omitted. */
+        filename = safe_strdup (g, "");
 
       /* Get the disk format (may not be set). */
       xpathCtx->node = nodes->nodeTab[i];

@@ -6264,6 +6264,98 @@ py_guestfs_get_backend_settings (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_disk_create (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_disk_create_argv optargs_s;
+  struct guestfs_disk_create_argv *optargs = &optargs_s;
+  int r;
+  const char *filename;
+  const char *format;
+  long long size;
+  PyObject *py_backingfile;
+  PyObject *py_backingformat;
+  PyObject *py_preallocation;
+  PyObject *py_compat;
+  PyObject *py_clustersize;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OssLOOOOO:guestfs_disk_create",
+                         &py_g, &filename, &format, &size, &py_backingfile, &py_backingformat, &py_preallocation, &py_compat, &py_clustersize))
+    goto out;
+  g = get_handle (py_g);
+
+  if (py_backingfile != Py_None) {
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.backingfile = PyString_AsString (py_backingfile);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_backingfile);
+    optargs_s.backingfile = PyBytes_AS_STRING (bytes);
+#endif
+  }
+  if (py_backingformat != Py_None) {
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.backingformat = PyString_AsString (py_backingformat);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_backingformat);
+    optargs_s.backingformat = PyBytes_AS_STRING (bytes);
+#endif
+  }
+  if (py_preallocation != Py_None) {
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.preallocation = PyString_AsString (py_preallocation);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_preallocation);
+    optargs_s.preallocation = PyBytes_AS_STRING (bytes);
+#endif
+  }
+  if (py_compat != Py_None) {
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_COMPAT_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.compat = PyString_AsString (py_compat);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_compat);
+    optargs_s.compat = PyBytes_AS_STRING (bytes);
+#endif
+  }
+  if (py_clustersize != Py_None) {
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK;
+    optargs_s.clustersize = PyLong_AsLong (py_clustersize);
+    if (PyErr_Occurred ()) goto out;
+  }
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_disk_create_argv (g, filename, format, size, optargs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_mount (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -21781,6 +21873,46 @@ py_guestfs_copy_attributes (PyObject *self, PyObject *args)
   return py_r;
 }
 
+static PyObject *
+py_guestfs_part_get_name (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  char *r;
+  const char *device;
+  int partnum;
+
+  if (!PyArg_ParseTuple (args, (char *) "Osi:guestfs_part_get_name",
+                         &py_g, &device, &partnum))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_part_get_name (g, device, partnum);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
+  free (r);
+
+ out:
+  return py_r;
+}
+
 static PyMethodDef methods[] = {
   { (char *) "create", py_guestfs_create, METH_VARARGS, NULL },
   { (char *) "close", py_guestfs_close, METH_VARARGS, NULL },
@@ -21933,6 +22065,7 @@ static PyMethodDef methods[] = {
   { (char *) "journal_get", py_guestfs_journal_get, METH_VARARGS, NULL },
   { (char *) "set_backend_settings", py_guestfs_set_backend_settings, METH_VARARGS, NULL },
   { (char *) "get_backend_settings", py_guestfs_get_backend_settings, METH_VARARGS, NULL },
+  { (char *) "disk_create", py_guestfs_disk_create, METH_VARARGS, NULL },
   { (char *) "mount", py_guestfs_mount, METH_VARARGS, NULL },
   { (char *) "sync", py_guestfs_sync, METH_VARARGS, NULL },
   { (char *) "touch", py_guestfs_touch, METH_VARARGS, NULL },
@@ -22327,6 +22460,7 @@ static PyMethodDef methods[] = {
   { (char *) "aug_setm", py_guestfs_aug_setm, METH_VARARGS, NULL },
   { (char *) "aug_label", py_guestfs_aug_label, METH_VARARGS, NULL },
   { (char *) "copy_attributes", py_guestfs_copy_attributes, METH_VARARGS, NULL },
+  { (char *) "part_get_name", py_guestfs_part_get_name, METH_VARARGS, NULL },
   { NULL, NULL, 0, NULL }
 };
 

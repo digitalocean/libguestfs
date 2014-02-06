@@ -74,7 +74,7 @@ fi
 
 # Set the PATH to contain all the libguestfs binaries.  There are a
 # lot of binaries, so a lot of path entries.
-PATH="$b/align:$b/builder:$b/cat:$b/df:$b/diff:$b/edit:$b/erlang:$b/fish:$b/format:$b/fuse:$b/rescue:$b/resize:$b/sparsify:$b/sysprep:$b/test-tool:$b/tools:$PATH"
+PATH="$b/align:$b/builder:$b/cat:$b/df:$b/diff:$b/edit:$b/erlang:$b/fish:$b/format:$b/fuse:$b/make-fs:$b/rescue:$b/resize:$b/sparsify:$b/sysprep:$b/test-tool:$b/tools:$PATH"
 export PATH
 
 # Set LD_LIBRARY_PATH to contain library.
@@ -231,7 +231,7 @@ if timeout --help >/dev/null 2>&1; then
     if timeout --foreground 2 sleep 0 >/dev/null 2>&1; then
         # Does this version of timeout have the -k option?  (Not on RHEL 6)
         if timeout -k 10s 10s true >/dev/null 2>&1; then
-            timeout="timeout -k $timeout_kill $timeout_period"
+            timeout="timeout --foreground -k $timeout_kill $timeout_period"
         fi
     fi
 fi

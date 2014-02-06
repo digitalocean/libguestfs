@@ -1440,7 +1440,7 @@ is a list of server(s).
  gluster        Exactly one
  iscsi          Exactly one
  nbd            Exactly one
- rbd            One or more
+ rbd            Zero or more
  sheepdog       Zero or more
  ssh            Exactly one
 
@@ -3092,6 +3092,54 @@ See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>." };
 Return the current backend settings.
 
 See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>." };
+
+  { defaults with
+    name = "disk_create";
+    style = RErr, [String "filename"; String "format"; Int64 "size"], [OString "backingfile"; OString "backingformat"; OString "preallocation"; OString "compat"; OInt "clustersize"];
+    test_excuse = "tests in tests/create subdirectory";
+    shortdesc = "create a blank disk image";
+    longdesc = "\
+Create a blank disk image called C<filename> (a host file)
+with format C<format> (usually C<raw> or C<qcow2>).
+The size is C<size> bytes.
+
+If used with the optional C<backingfile> parameter, then a snapshot
+is created on top of the backing file.  In this case, C<size> must
+be passed as C<-1>.  The size of the snapshot is the same as the
+size of the backing file, which is discovered automatically.  You
+are encouraged to also pass C<backingformat> to describe the format
+of C<backingfile>.
+
+The other optional parameters are:
+
+=over 4
+
+=item C<preallocation>
+
+If format is C<raw>, then this can be either C<sparse> or C<full>
+to create a sparse or fully allocated file respectively.  The default
+is C<sparse>.
+
+If format is C<qcow2>, then this can be either C<off> or
+C<metadata>.  Preallocating metadata can be faster when doing lots
+of writes, but uses more space.  The default is C<off>.
+
+=item C<compat>
+
+C<qcow2> only:
+Pass the string C<1.1> to use the advanced qcow2 format supported
+by qemu E<ge> 1.1.
+
+=item C<clustersize>
+
+C<qcow2> only:
+Change the qcow2 cluster size.  The default is 65536 (bytes) and
+this setting may be any power of two between 512 and 2097152.
+
+=back
+
+Note that this call does not add the new disk to the handle.  You
+may need to call C<guestfs_add_drive_opts> separately." };
 
 ]
 
@@ -11718,6 +11766,19 @@ enables all the other flags, if they are not specified already.
 
 =back" };
 
+  { defaults with
+    name = "part_get_name";
+    style = RString "name", [Device "device"; Int "partnum"], [];
+    proc_nr = Some 416;
+    optional = Some "gdisk";
+    shortdesc = "get partition name";
+    longdesc = "\
+This gets the partition name on partition numbered C<partnum> on
+device C<device>.  Note that partitions are numbered from 1.
+
+The partition name can only be read on certain types of partition
+table.  This works on C<gpt> but not on C<mbr> partitions." };
+
 ]
 
 (* Non-API meta-commands available only in guestfish.
@@ -11739,7 +11800,7 @@ let fish_commands = [
 This creates an empty (zeroed) file of the given size, and then adds
 so it can be further examined.
 
-For more advanced image creation, see L<qemu-img(1)> utility.
+For more advanced image creation, see L</disk-create>.
 
 Size can be specified using standard suffixes, eg. C<1M>.
 
@@ -11983,7 +12044,7 @@ not assigned to the file until they are needed.  Sparse disk files
 only use space when written to, but they are slower and there is a
 danger you could run out of real disk space during a write operation.
 
-For more advanced image creation, see L<qemu-img(1)> utility.
+For more advanced image creation, see L</disk-create>.
 
 Size can be specified using standard suffixes, eg. C<1M>.
 

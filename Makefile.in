@@ -135,7 +135,7 @@ DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 @ENABLE_APPLIANCE_TRUE@am__append_2 = tests/qemu tests/guests \
 @ENABLE_APPLIANCE_TRUE@	tests/c-api tests/tmpdirs \
 @ENABLE_APPLIANCE_TRUE@	tests/protocol tests/events \
-@ENABLE_APPLIANCE_TRUE@	tests/parallel tests/disks \
+@ENABLE_APPLIANCE_TRUE@	tests/parallel tests/create tests/disks \
 @ENABLE_APPLIANCE_TRUE@	tests/mountable tests/network tests/lvm \
 @ENABLE_APPLIANCE_TRUE@	tests/luks tests/md tests/selinux \
 @ENABLE_APPLIANCE_TRUE@	tests/ntfsclone tests/btrfs tests/xfs \
@@ -397,18 +397,19 @@ CSCOPE = cscope
 DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	examples po daemon appliance tests/qemu tests/guests \
 	tests/c-api tests/tmpdirs tests/protocol tests/events \
-	tests/parallel tests/disks tests/mountable tests/network \
-	tests/lvm tests/luks tests/md tests/selinux tests/ntfsclone \
-	tests/btrfs tests/xfs tests/charsets tests/xml \
+	tests/parallel tests/create tests/disks tests/mountable \
+	tests/network tests/lvm tests/luks tests/md tests/selinux \
+	tests/ntfsclone tests/btrfs tests/xfs tests/charsets tests/xml \
 	tests/mount-local tests/9p tests/rsync tests/bigdirs \
 	tests/disk-labels tests/hotplug tests/nbd tests/http \
 	tests/syslinux tests/journal tests/fuzz tests/relative-paths \
 	tests/regressions test-tool fish align cat diff df edit format \
-	inspector rescue bash perl perl/examples ocaml ocaml/examples \
-	python python/examples ruby ruby/examples java java/examples \
-	haskell php erlang erlang/examples lua lua/examples gobject \
-	golang golang/examples csharp mllib builder builder/website \
-	resize sparsify sysprep tools fuse po-docs
+	inspector make-fs rescue bash perl perl/examples ocaml \
+	ocaml/examples python python/examples ruby ruby/examples java \
+	java/examples haskell php erlang erlang/examples lua \
+	lua/examples gobject golang golang/examples csharp mllib \
+	builder builder/website resize sparsify sysprep tools fuse \
+	po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -1548,12 +1549,12 @@ ACLOCAL_AMFLAGS = -I m4
 # Unconditional because nothing is built yet.
 SUBDIRS = gnulib/lib gnulib/tests tests/data generator src examples po \
 	$(am__append_1) appliance $(am__append_2) test-tool fish align \
-	cat diff df edit format inspector rescue bash $(am__append_3) \
-	$(am__append_4) $(am__append_5) $(am__append_6) \
-	$(am__append_7) $(am__append_8) $(am__append_9) \
-	$(am__append_10) $(am__append_11) $(am__append_12) \
-	$(am__append_13) csharp $(am__append_14) $(am__append_15) \
-	$(am__append_16) $(am__append_17)
+	cat diff df edit format inspector make-fs rescue bash \
+	$(am__append_3) $(am__append_4) $(am__append_5) \
+	$(am__append_6) $(am__append_7) $(am__append_8) \
+	$(am__append_9) $(am__append_10) $(am__append_11) \
+	$(am__append_12) $(am__append_13) csharp $(am__append_14) \
+	$(am__append_15) $(am__append_16) $(am__append_17)
 EXTRA_DIST = \
 	BUGS HACKING ROADMAP TODO \
 	.gitignore \

@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsDiskCreate</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsAddDriveScratch.html" title="GuestfsAddDriveScratch">
+<link rel="next" href="GuestfsIsFile.html" title="GuestfsIsFile">
+<meta name="generator" content="GTK-Doc V1.19 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsAddDriveScratch.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsIsFile.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsDiskCreate.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsDiskCreate.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsDiskCreate.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsDiskCreate.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsDiskCreate"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsDiskCreate.top_of_page"></a>GuestfsDiskCreate</span></h2>
+<p>GuestfsDiskCreate — An object encapsulating optional arguments for guestfs_session_disk_create</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsDiskCreate.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsDiskCreate.html#GuestfsDiskCreate-struct" title="struct GuestfsDiskCreate">GuestfsDiskCreate</a>;
+struct              <a class="link" href="GuestfsDiskCreate.html#GuestfsDiskCreateClass" title="struct GuestfsDiskCreateClass">GuestfsDiskCreateClass</a>;
+<a class="link" href="GuestfsDiskCreate.html" title="GuestfsDiskCreate"><span class="returnvalue">GuestfsDiskCreate</span></a> * <a class="link" href="GuestfsDiskCreate.html#guestfs-disk-create-new" title="guestfs_disk_create_new ()">guestfs_disk_create_new</a>             (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsDiskCreate.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GuestfsDiskCreate
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsDiskCreate.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsDiskCreate.html#GuestfsDiskCreate--backingfile" title='The "backingfile" property'>backingfile</a>"              <span class="type">gchar</span>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsDiskCreate.html#GuestfsDiskCreate--backingformat" title='The "backingformat" property'>backingformat</a>"            <span class="type">gchar</span>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsDiskCreate.html#GuestfsDiskCreate--clustersize" title='The "clustersize" property'>clustersize</a>"              <span class="type">gint</span>                  : Read / Write / Construct
+  "<a class="link" href="GuestfsDiskCreate.html#GuestfsDiskCreate--compat" title='The "compat" property'>compat</a>"                   <span class="type">gchar</span>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsDiskCreate.html#GuestfsDiskCreate--preallocation" title='The "preallocation" property'>preallocation</a>"            <span class="type">gchar</span>*                : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsDiskCreate.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_disk_create
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsDiskCreate.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsDiskCreate-struct"></a><h3>struct GuestfsDiskCreate</h3>
+<pre class="programlisting">struct GuestfsDiskCreate;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_disk_create.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsDiskCreateClass"></a><h3>struct GuestfsDiskCreateClass</h3>
+<pre class="programlisting">struct GuestfsDiskCreateClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsDiskCreate.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsDiskCreateClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsDiskCreateClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-disk-create-new"></a><h3>guestfs_disk_create_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsDiskCreate.html" title="GuestfsDiskCreate"><span class="returnvalue">GuestfsDiskCreate</span></a> * guestfs_disk_create_new             (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsDiskCreate object
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsDiskCreate object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsDiskCreate.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsDiskCreate--backingfile"></a><h3>The <code class="literal">"backingfile"</code> property</h3>
+<pre class="programlisting">  "backingfile"              <span class="type">gchar</span>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsDiskCreate--backingformat"></a><h3>The <code class="literal">"backingformat"</code> property</h3>
+<pre class="programlisting">  "backingformat"            <span class="type">gchar</span>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsDiskCreate--clustersize"></a><h3>The <code class="literal">"clustersize"</code> property</h3>
+<pre class="programlisting">  "clustersize"              <span class="type">gint</span>                  : Read / Write / Construct</pre>
+<p>
+A 32-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsDiskCreate--compat"></a><h3>The <code class="literal">"compat"</code> property</h3>
+<pre class="programlisting">  "compat"                   <span class="type">gchar</span>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsDiskCreate--preallocation"></a><h3>The <code class="literal">"preallocation"</code> property</h3>
+<pre class="programlisting">  "preallocation"            <span class="type">gchar</span>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.19</div>
+</body>
+</html>

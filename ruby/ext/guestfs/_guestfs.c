@@ -3809,7 +3809,7 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * gluster        Exactly one
  * iscsi          Exactly one
  * nbd            Exactly one
- * rbd            One or more
+ * rbd            Zero or more
  * sheepdog       Zero or more
  * ssh            Exactly one
  * 
@@ -7284,6 +7284,116 @@ ruby_guestfs_get_backend_settings (VALUE gv)
   }
   free (r);
   return rv;
+}
+
+/*
+ * call-seq:
+ *   g.disk_create(filename, format, size, {optargs...}) -> nil
+ *
+ * create a blank disk image
+ *
+ * Create a blank disk image called "filename" (a host
+ * file) with format "format" (usually "raw" or "qcow2").
+ * The size is "size" bytes.
+ * 
+ * If used with the optional "backingfile" parameter, then
+ * a snapshot is created on top of the backing file. In
+ * this case, "size" must be passed as -1. The size of the
+ * snapshot is the same as the size of the backing file,
+ * which is discovered automatically. You are encouraged to
+ * also pass "backingformat" to describe the format of
+ * "backingfile".
+ * 
+ * The other optional parameters are:
+ * 
+ * "preallocation"
+ * If format is "raw", then this can be either "sparse"
+ * or "full" to create a sparse or fully allocated file
+ * respectively. The default is "sparse".
+ * 
+ * If format is "qcow2", then this can be either "off"
+ * or "metadata". Preallocating metadata can be faster
+ * when doing lots of writes, but uses more space. The
+ * default is "off".
+ * 
+ * "compat"
+ * "qcow2" only: Pass the string 1.1 to use the
+ * advanced qcow2 format supported by qemu ≥ 1.1.
+ * 
+ * "clustersize"
+ * "qcow2" only: Change the qcow2 cluster size. The
+ * default is 65536 (bytes) and this setting may be any
+ * power of two between 512 and 2097152.
+ * 
+ * Note that this call does not add the new disk to the
+ * handle. You may need to call "g.add_drive_opts"
+ * separately.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_disk_create+[http://libguestfs.org/guestfs.3.html#guestfs_disk_create]).
+ */
+static VALUE
+ruby_guestfs_disk_create (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "disk_create");
+
+  if (argc < 3 || argc > 4)
+    rb_raise (rb_eArgError, "expecting 3 or 4 arguments");
+
+  volatile VALUE filenamev = argv[0];
+  volatile VALUE formatv = argv[1];
+  volatile VALUE sizev = argv[2];
+  volatile VALUE optargsv = argc > 3 ? argv[3] : rb_hash_new ();
+
+  const char *filename = StringValueCStr (filenamev);
+  const char *format = StringValueCStr (formatv);
+  long long size = NUM2LL (sizev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_disk_create_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_disk_create_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("backingfile")));
+  if (v != Qnil) {
+    optargs_s.backingfile = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("backingformat")));
+  if (v != Qnil) {
+    optargs_s.backingformat = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("preallocation")));
+  if (v != Qnil) {
+    optargs_s.preallocation = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("compat")));
+  if (v != Qnil) {
+    optargs_s.compat = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_COMPAT_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("clustersize")));
+  if (v != Qnil) {
+    optargs_s.clustersize = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_disk_create_argv (g, filename, format, size, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
 }
 
 /*
@@ -25274,6 +25384,46 @@ ruby_guestfs_copy_attributes (int argc, VALUE *argv, VALUE gv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.part_get_name(device, partnum) -> string
+ *
+ * get partition name
+ *
+ * This gets the partition name on partition numbered
+ * "partnum" on device "device". Note that partitions are
+ * numbered from 1.
+ * 
+ * The partition name can only be read on certain types of
+ * partition table. This works on "gpt" but not on "mbr"
+ * partitions.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_part_get_name+[http://libguestfs.org/guestfs.3.html#guestfs_part_get_name]).
+ */
+static VALUE
+ruby_guestfs_part_get_name (VALUE gv, VALUE devicev, VALUE partnumv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_get_name");
+
+  const char *device = StringValueCStr (devicev);
+  int partnum = NUM2INT (partnumv);
+
+  char *r;
+
+  r = guestfs_part_get_name (g, device, partnum);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
 extern void Init__guestfs (void); /* keep GCC warnings happy */
 
 /* Initialize the module. */
@@ -25616,6 +25766,8 @@ Init__guestfs (void)
         ruby_guestfs_set_backend_settings, 1);
   rb_define_method (c_guestfs, "get_backend_settings",
         ruby_guestfs_get_backend_settings, 0);
+  rb_define_method (c_guestfs, "disk_create",
+        ruby_guestfs_disk_create, -1);
   rb_define_method (c_guestfs, "mount",
         ruby_guestfs_mount, 2);
   rb_define_method (c_guestfs, "sync",
@@ -26430,4 +26582,6 @@ Init__guestfs (void)
         ruby_guestfs_aug_label, 1);
   rb_define_method (c_guestfs, "copy_attributes",
         ruby_guestfs_copy_attributes, -1);
+  rb_define_method (c_guestfs, "part_get_name",
+        ruby_guestfs_part_get_name, 2);
 }

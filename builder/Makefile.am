@@ -48,11 +48,12 @@ SOURCES = \
 	index-parser-c.c \
 	list_entries.mli \
 	list_entries.ml \
-	perl_edit.ml \
-	perl_edit.mli \
 	pxzcat.ml \
 	pxzcat.mli \
 	pxzcat-c.c \
+	setlocale.ml \
+	setlocale.mli \
+	setlocale-c.c \
 	sigchecker.mli \
 	sigchecker.ml
 
@@ -71,6 +72,7 @@ OBJECTS = \
 	$(top_builddir)/mllib/hostname.cmx \
 	$(top_builddir)/mllib/timezone.cmx \
 	$(top_builddir)/mllib/firstboot.cmx \
+	$(top_builddir)/mllib/perl_edit.cmx \
 	$(top_builddir)/mllib/crypt-c.o \
 	$(top_builddir)/mllib/crypt.cmx \
 	$(top_builddir)/mllib/fsync-c.o \
@@ -84,12 +86,13 @@ OBJECTS = \
 	index-parser-c.o \
 	pxzcat-c.o \
 	pxzcat.cmx \
+	setlocale-c.o \
+	setlocale.cmx \
 	get_kernel.cmx \
 	downloader.cmx \
 	sigchecker.cmx \
 	index_parser.cmx \
 	list_entries.cmx \
-	perl_edit.cmx \
 	cmdline.cmx \
 	builder.cmx
 

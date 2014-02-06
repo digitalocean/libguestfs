@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [25])
-m4_define([libguestfs_release], [26])
+m4_define([libguestfs_release], [33])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1563,7 +1563,7 @@ AM_CONDITIONAL([HAVE_GOLANG],[test "x$GOLANG" != "xno"])
 dnl Check for Perl modules needed by Perl virt tools (virt-df, etc.)
 AS_IF([test "x$PERL" != "xno"],[
     missing_perl_modules=no
-    for pm in Pod::Usage Getopt::Long Sys::Virt Data::Dumper Locale::TextDomain Win::Hivex Win::Hivex::Regedit String::ShellQuote; do
+    for pm in Pod::Usage Getopt::Long Sys::Virt Locale::TextDomain Win::Hivex Win::Hivex::Regedit ; do
         AC_MSG_CHECKING([for $pm])
         if ! $PERL -M$pm -e1 >&AS_MESSAGE_LOG_FD 2>&1; then
             AC_MSG_RESULT([no])
@@ -1714,6 +1714,7 @@ AC_CONFIG_FILES([Makefile
                  java/examples/Makefile
                  lua/Makefile
                  lua/examples/Makefile
+                 make-fs/Makefile
                  mllib/Makefile
                  mllib/config.ml
                  ocaml/META
@@ -1745,8 +1746,10 @@ AC_CONFIG_FILES([Makefile
                  tests/btrfs/Makefile
                  tests/c-api/Makefile
                  tests/charsets/Makefile
+                 tests/create/Makefile
                  tests/data/Makefile
                  tests/disks/Makefile
+                 tests/disks/test-qemu-drive-libvirt.xml
                  tests/disk-labels/Makefile
                  tests/events/Makefile
                  tests/fuzz/Makefile

@@ -108,6 +108,7 @@
 -export([device_index/2]).
 -export([df/1]).
 -export([df_h/1]).
+-export([disk_create/4, disk_create/5]).
 -export([disk_format/2]).
 -export([disk_has_backing_file/2]).
 -export([disk_virtual_size/2]).
@@ -407,6 +408,7 @@
 -export([part_get_bootable/3]).
 -export([part_get_gpt_type/3]).
 -export([part_get_mbr_id/3]).
+-export([part_get_name/3]).
 -export([part_get_parttype/2]).
 -export([part_init/3]).
 -export([part_list/2]).
@@ -892,6 +894,11 @@ df(G) ->
 
 df_h(G) ->
   call_port(G, {df_h}).
+
+disk_create(G, Filename, Format, Size, Optargs) ->
+  call_port(G, {disk_create, Filename, Format, Size, Optargs}).
+disk_create(G, Filename, Format, Size) ->
+  disk_create(G, Filename, Format, Size, []).
 
 disk_format(G, Filename) ->
   call_port(G, {disk_format, Filename}).
@@ -1849,6 +1856,9 @@ part_get_gpt_type(G, Device, Partnum) ->
 
 part_get_mbr_id(G, Device, Partnum) ->
   call_port(G, {part_get_mbr_id, Device, Partnum}).
+
+part_get_name(G, Device, Partnum) ->
+  call_port(G, {part_get_name, Device, Partnum}).
 
 part_get_parttype(G, Device) ->
   call_port(G, {part_get_parttype, Device}).

@@ -144,8 +144,7 @@ TESTS = rhbz501893$(EXEEXT) rhbz503169c13.sh rhbz557655.sh \
 	$(am__append_1)
 @HAVE_LIBVIRT_TRUE@am__append_1 = rhbz1044014.sh
 check_PROGRAMS = rhbz501893$(EXEEXT) rhbz790721$(EXEEXT) \
-	rhbz914931$(EXEEXT) rhbz1055452$(EXEEXT) $(am__EXEEXT_1)
-@HAVE_LIBVIRT_TRUE@am__append_2 = rhbz1044014
+	rhbz914931$(EXEEXT) rhbz1055452$(EXEEXT)
 subdir = tests/regressions
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -278,27 +277,13 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@HAVE_LIBVIRT_TRUE@am__EXEEXT_1 = rhbz1044014$(EXEEXT)
-am__rhbz1044014_SOURCES_DIST = rhbz1044014.c
-@HAVE_LIBVIRT_TRUE@am_rhbz1044014_OBJECTS =  \
-@HAVE_LIBVIRT_TRUE@	rhbz1044014-rhbz1044014.$(OBJEXT)
-rhbz1044014_OBJECTS = $(am_rhbz1044014_OBJECTS)
-am__DEPENDENCIES_1 =
-@HAVE_LIBVIRT_TRUE@rhbz1044014_DEPENDENCIES =  \
-@HAVE_LIBVIRT_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_LIBVIRT_TRUE@	$(top_builddir)/src/libguestfs.la \
-@HAVE_LIBVIRT_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-@HAVE_LIBVIRT_TRUE@	$(top_builddir)/gnulib/lib/libgnu.la
+am_rhbz1055452_OBJECTS = rhbz1055452-rhbz1055452.$(OBJEXT)
+rhbz1055452_OBJECTS = $(am_rhbz1055452_OBJECTS)
+rhbz1055452_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-rhbz1044014_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(rhbz1044014_CFLAGS) \
-	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_rhbz1055452_OBJECTS = rhbz1055452-rhbz1055452.$(OBJEXT)
-rhbz1055452_OBJECTS = $(am_rhbz1055452_OBJECTS)
-rhbz1055452_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
 rhbz1055452_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(rhbz1055452_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
@@ -354,12 +339,10 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(rhbz1044014_SOURCES) $(rhbz1055452_SOURCES) \
-	$(rhbz501893_SOURCES) $(rhbz790721_SOURCES) \
-	$(rhbz914931_SOURCES)
-DIST_SOURCES = $(am__rhbz1044014_SOURCES_DIST) $(rhbz1055452_SOURCES) \
-	$(rhbz501893_SOURCES) $(rhbz790721_SOURCES) \
-	$(rhbz914931_SOURCES)
+SOURCES = $(rhbz1055452_SOURCES) $(rhbz501893_SOURCES) \
+	$(rhbz790721_SOURCES) $(rhbz914931_SOURCES)
+DIST_SOURCES = $(rhbz1055452_SOURCES) $(rhbz501893_SOURCES) \
+	$(rhbz790721_SOURCES) $(rhbz914931_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1557,23 +1540,6 @@ rhbz914931_CFLAGS = \
 rhbz914931_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
-@HAVE_LIBVIRT_TRUE@rhbz1044014_SOURCES = rhbz1044014.c
-@HAVE_LIBVIRT_TRUE@rhbz1044014_CPPFLAGS = \
-@HAVE_LIBVIRT_TRUE@	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
-@HAVE_LIBVIRT_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src
-
-@HAVE_LIBVIRT_TRUE@rhbz1044014_CFLAGS = \
-@HAVE_LIBVIRT_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-@HAVE_LIBVIRT_TRUE@	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
-@HAVE_LIBVIRT_TRUE@	$(LIBVIRT_CFLAGS)
-
-@HAVE_LIBVIRT_TRUE@rhbz1044014_LDADD = \
-@HAVE_LIBVIRT_TRUE@        $(top_builddir)/src/libutils.la \
-@HAVE_LIBVIRT_TRUE@        $(top_builddir)/src/libguestfs.la \
-@HAVE_LIBVIRT_TRUE@        $(LIBVIRT_LIBS) \
-@HAVE_LIBVIRT_TRUE@        $(LIBXML2_LIBS) \
-@HAVE_LIBVIRT_TRUE@        $(top_builddir)/gnulib/lib/libgnu.la
-
 rhbz1055452_SOURCES = rhbz1055452.c
 rhbz1055452_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
@@ -1632,10 +1598,6 @@ clean-checkPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
-rhbz1044014$(EXEEXT): $(rhbz1044014_OBJECTS) $(rhbz1044014_DEPENDENCIES) $(EXTRA_rhbz1044014_DEPENDENCIES) 
-	@rm -f rhbz1044014$(EXEEXT)
-	$(AM_V_CCLD)$(rhbz1044014_LINK) $(rhbz1044014_OBJECTS) $(rhbz1044014_LDADD) $(LIBS)
-
 rhbz1055452$(EXEEXT): $(rhbz1055452_OBJECTS) $(rhbz1055452_DEPENDENCIES) $(EXTRA_rhbz1055452_DEPENDENCIES) 
 	@rm -f rhbz1055452$(EXEEXT)
 	$(AM_V_CCLD)$(rhbz1055452_LINK) $(rhbz1055452_OBJECTS) $(rhbz1055452_LDADD) $(LIBS)
@@ -1658,7 +1620,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rhbz1044014-rhbz1044014.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rhbz1055452-rhbz1055452.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rhbz501893-rhbz501893.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rhbz790721-rhbz790721.Po@am__quote@
@@ -1684,20 +1645,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
-
-rhbz1044014-rhbz1044014.o: rhbz1044014.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rhbz1044014_CPPFLAGS) $(CPPFLAGS) $(rhbz1044014_CFLAGS) $(CFLAGS) -MT rhbz1044014-rhbz1044014.o -MD -MP -MF $(DEPDIR)/rhbz1044014-rhbz1044014.Tpo -c -o rhbz1044014-rhbz1044014.o `test -f 'rhbz1044014.c' || echo '$(srcdir)/'`rhbz1044014.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rhbz1044014-rhbz1044014.Tpo $(DEPDIR)/rhbz1044014-rhbz1044014.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rhbz1044014.c' object='rhbz1044014-rhbz1044014.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rhbz1044014_CPPFLAGS) $(CPPFLAGS) $(rhbz1044014_CFLAGS) $(CFLAGS) -c -o rhbz1044014-rhbz1044014.o `test -f 'rhbz1044014.c' || echo '$(srcdir)/'`rhbz1044014.c
-
-rhbz1044014-rhbz1044014.obj: rhbz1044014.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rhbz1044014_CPPFLAGS) $(CPPFLAGS) $(rhbz1044014_CFLAGS) $(CFLAGS) -MT rhbz1044014-rhbz1044014.obj -MD -MP -MF $(DEPDIR)/rhbz1044014-rhbz1044014.Tpo -c -o rhbz1044014-rhbz1044014.obj `if test -f 'rhbz1044014.c'; then $(CYGPATH_W) 'rhbz1044014.c'; else $(CYGPATH_W) '$(srcdir)/rhbz1044014.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rhbz1044014-rhbz1044014.Tpo $(DEPDIR)/rhbz1044014-rhbz1044014.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rhbz1044014.c' object='rhbz1044014-rhbz1044014.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rhbz1044014_CPPFLAGS) $(CPPFLAGS) $(rhbz1044014_CFLAGS) $(CFLAGS) -c -o rhbz1044014-rhbz1044014.obj `if test -f 'rhbz1044014.c'; then $(CYGPATH_W) 'rhbz1044014.c'; else $(CYGPATH_W) '$(srcdir)/rhbz1044014.c'; fi`
 
 rhbz1055452-rhbz1055452.o: rhbz1055452.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rhbz1055452_CPPFLAGS) $(CPPFLAGS) $(rhbz1055452_CFLAGS) $(CFLAGS) -MT rhbz1055452-rhbz1055452.o -MD -MP -MF $(DEPDIR)/rhbz1055452-rhbz1055452.Tpo -c -o rhbz1055452-rhbz1055452.o `test -f 'rhbz1055452.c' || echo '$(srcdir)/'`rhbz1055452.c

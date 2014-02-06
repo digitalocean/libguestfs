@@ -39,6 +39,7 @@ SUBDIRS += tests/tmpdirs
 SUBDIRS += tests/protocol
 SUBDIRS += tests/events
 SUBDIRS += tests/parallel
+SUBDIRS += tests/create
 SUBDIRS += tests/disks
 SUBDIRS += tests/mountable
 SUBDIRS += tests/network
@@ -73,7 +74,7 @@ SUBDIRS += test-tool
 SUBDIRS += fish
 
 # virt-tools in C.
-SUBDIRS += align cat diff df edit format inspector rescue
+SUBDIRS += align cat diff df edit format inspector make-fs rescue
 
 # bash-completion
 SUBDIRS += bash

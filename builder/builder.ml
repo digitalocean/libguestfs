@@ -33,6 +33,8 @@ let quote = Filename.quote
 
 let prog = Filename.basename Sys.executable_name
 
+let () = Random.self_init ()
+
 let main () =
   (* Command line argument parsing - see cmdline.ml. *)
   let mode, arg,
@@ -40,8 +42,8 @@ let main () =
     edit, firstboot, run, format, gpg, hostname, install, list_format, links,
     memsize, mkdirs,
     network, output, password_crypto, quiet, root_password, scrub,
-    scrub_logfile, size, smp, sources, sync, timezone, update, upload,
-    writes =
+    scrub_logfile, selinux_relabel, size, smp, sources, sync, timezone,
+    update, upload, writes =
     parse_cmdline () in
 
   (* Timestamped messages in ordinary, non-debug non-quiet mode. *)
@@ -200,9 +202,10 @@ let main () =
   (match mode with
   | `Notes ->                           (* --notes *)
     (match entry with
-    | { Index_parser.notes = Some notes } ->
+    | { Index_parser.notes = ("", notes) :: _ } ->
       print_endline notes;
-    | { Index_parser.notes = None } ->
+    | { Index_parser.notes = _ :: _ }
+    | { Index_parser.notes = [] } ->
       printf (f_"There are no notes for %s\n") arg
     );
     exit 0
@@ -512,14 +515,8 @@ let main () =
       let { Index_parser.expand = expand; lvexpand = lvexpand } = entry in
       msg (f_"Resizing (using virt-resize) to expand the disk to %s")
         (human_size osize);
-      let cmd =
-        sprintf "qemu-img create -f %s%s %s %Ld%s"
-          (quote oformat)
-          (if oformat = "qcow2" then " -o preallocation=metadata" else "")
-          (quote ofile) osize
-          (if debug then "" else " >/dev/null 2>&1") in
-      if debug then eprintf "%s\n%!" cmd;
-      if Sys.command cmd <> 0 then exit 1;
+      let preallocation = if oformat = "qcow2" then Some "metadata" else None in
+      (new G.guestfs ())#disk_create ?preallocation ofile oformat osize;
       let cmd =
         sprintf "virt-resize%s%s%s --output-format %s%s%s %s %s"
           (if debug then " --verbose" else " --quiet")
@@ -576,6 +573,8 @@ let main () =
     (match memsize with None -> () | Some memsize -> g#set_memsize memsize);
     (match smp with None -> () | Some smp -> g#set_smp smp);
     g#set_network network;
+
+    g#set_selinux selinux_relabel;
 
     (* The output disk is being created, so use cache=unsafe here. *)
     g#add_drive_opts ~format:output_format ~cachemode:"unsafe" output_filename;
@@ -888,6 +887,19 @@ exec >>%s 2>&1
       msg (f_"Running: %s") cmd;
       do_run ~display:cmd cmd
   ) run;
+
+  if selinux_relabel then (
+    msg (f_"SELinux relabelling");
+    let cmd = sprintf "
+      if load_policy && fixfiles restore; then
+        rm -f /.autorelabel
+      else
+        touch /.autorelabel
+        echo '%s: SELinux relabelling failed, will relabel at boot instead.'
+      fi
+    " prog in
+    do_run ~display:"load_policy && fixfiles restore" cmd
+  );
 
   (* Clean up the log file:
    *

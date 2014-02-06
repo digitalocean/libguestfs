@@ -3895,6 +3895,80 @@ ocaml_guestfs_df_h (value gv)
 }
 
 /* Automatically generated wrapper for function
+ * val disk_create : t -> ?backingfile:string -> ?backingformat:string -> ?preallocation:string -> ?compat:string -> ?clustersize:int -> string -> string -> int64 -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_disk_create (value gv, value backingfilev, value backingformatv, value preallocationv, value compatv, value clustersizev, value filenamev, value formatv, value sizev);
+
+value
+ocaml_guestfs_disk_create (value gv, value backingfilev, value backingformatv, value preallocationv, value compatv, value clustersizev, value filenamev, value formatv, value sizev)
+{
+  CAMLparam5 (gv, backingfilev, backingformatv, preallocationv, compatv);
+  CAMLxparam4 (clustersizev, filenamev, formatv, sizev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("disk_create");
+
+  char *filename = guestfs___safe_strdup (g, String_val (filenamev));
+  char *format = guestfs___safe_strdup (g, String_val (formatv));
+  int64_t size = Int64_val (sizev);
+  struct guestfs_disk_create_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_disk_create_argv *optargs = &optargs_s;
+  if (backingfilev != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK;
+    optargs_s.backingfile = guestfs___safe_strdup (g, String_val (Field (backingfilev, 0)));
+  }
+  if (backingformatv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK;
+    optargs_s.backingformat = guestfs___safe_strdup (g, String_val (Field (backingformatv, 0)));
+  }
+  if (preallocationv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK;
+    optargs_s.preallocation = guestfs___safe_strdup (g, String_val (Field (preallocationv, 0)));
+  }
+  if (compatv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_COMPAT_BITMASK;
+    optargs_s.compat = guestfs___safe_strdup (g, String_val (Field (compatv, 0)));
+  }
+  if (clustersizev != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK;
+    optargs_s.clustersize = Int_val (Field (clustersizev, 0));
+  }
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_disk_create_argv (g, filename, format, size, optargs);
+  caml_leave_blocking_section ();
+  free (filename);
+  free (format);
+  if (backingfilev != Val_int (0))
+    free ((char *) optargs_s.backingfile);
+  if (backingformatv != Val_int (0))
+    free ((char *) optargs_s.backingformat);
+  if (preallocationv != Val_int (0))
+    free ((char *) optargs_s.preallocation);
+  if (compatv != Val_int (0))
+    free ((char *) optargs_s.compat);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "disk_create");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_disk_create_byte (value *argv, int argn);
+
+value
+ocaml_guestfs_disk_create_byte (value *argv, int argn ATTRIBUTE_UNUSED)
+{
+  return ocaml_guestfs_disk_create (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8]);
+}
+
+/* Automatically generated wrapper for function
  * val disk_format : t -> string -> string
  */
 
@@ -13824,6 +13898,39 @@ ocaml_guestfs_part_get_mbr_id (value gv, value devicev, value partnumv)
     ocaml_guestfs_raise_error (g, "part_get_mbr_id");
 
   rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val part_get_name : t -> string -> int -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_part_get_name (value gv, value devicev, value partnumv);
+
+value
+ocaml_guestfs_part_get_name (value gv, value devicev, value partnumv)
+{
+  CAMLparam3 (gv, devicev, partnumv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("part_get_name");
+
+  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  int partnum = Int_val (partnumv);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_get_name (g, device, partnum);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "part_get_name");
+
+  rv = caml_copy_string (r);
+  free (r);
   CAMLreturn (rv);
 }
 

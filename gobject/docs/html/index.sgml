@@ -164,6 +164,7 @@
 <ANCHOR id="guestfs-session-journal-get" href="guestfs/GuestfsSession.html#guestfs-session-journal-get">
 <ANCHOR id="guestfs-session-set-backend-settings" href="guestfs/GuestfsSession.html#guestfs-session-set-backend-settings">
 <ANCHOR id="guestfs-session-get-backend-settings" href="guestfs/GuestfsSession.html#guestfs-session-get-backend-settings">
+<ANCHOR id="guestfs-session-disk-create" href="guestfs/GuestfsSession.html#guestfs-session-disk-create">
 <ANCHOR id="guestfs-session-mount" href="guestfs/GuestfsSession.html#guestfs-session-mount">
 <ANCHOR id="guestfs-session-sync" href="guestfs/GuestfsSession.html#guestfs-session-sync">
 <ANCHOR id="guestfs-session-touch" href="guestfs/GuestfsSession.html#guestfs-session-touch">
@@ -558,6 +559,7 @@
 <ANCHOR id="guestfs-session-aug-setm" href="guestfs/GuestfsSession.html#guestfs-session-aug-setm">
 <ANCHOR id="guestfs-session-aug-label" href="guestfs/GuestfsSession.html#guestfs-session-aug-label">
 <ANCHOR id="guestfs-session-copy-attributes" href="guestfs/GuestfsSession.html#guestfs-session-copy-attributes">
+<ANCHOR id="guestfs-session-part-get-name" href="guestfs/GuestfsSession.html#guestfs-session-part-get-name">
 <ANCHOR id="GuestfsSession.signal-details" href="guestfs/GuestfsSession.html#GuestfsSession.signal-details">
 <ANCHOR id="GuestfsSession-appliance" href="guestfs/GuestfsSession.html#GuestfsSession-appliance">
 <ANCHOR id="GuestfsSession-close" href="guestfs/GuestfsSession.html#GuestfsSession-close">
@@ -880,6 +882,21 @@
 <ANCHOR id="GuestfsAddDriveScratch.property-details" href="guestfs/GuestfsAddDriveScratch.html#GuestfsAddDriveScratch.property-details">
 <ANCHOR id="GuestfsAddDriveScratch--label" href="guestfs/GuestfsAddDriveScratch.html#GuestfsAddDriveScratch--label">
 <ANCHOR id="GuestfsAddDriveScratch--name" href="guestfs/GuestfsAddDriveScratch.html#GuestfsAddDriveScratch--name">
+<ANCHOR id="GuestfsDiskCreate" href="guestfs/GuestfsDiskCreate.html">
+<ANCHOR id="GuestfsDiskCreate.synopsis" href="guestfs/GuestfsDiskCreate.html#GuestfsDiskCreate.synopsis">
+<ANCHOR id="GuestfsDiskCreate.object-hierarchy" href="guestfs/GuestfsDiskCreate.html#GuestfsDiskCreate.object-hierarchy">
+<ANCHOR id="GuestfsDiskCreate.properties" href="guestfs/GuestfsDiskCreate.html#GuestfsDiskCreate.properties">
+<ANCHOR id="GuestfsDiskCreate.description" href="guestfs/GuestfsDiskCreate.html#GuestfsDiskCreate.description">
+<ANCHOR id="GuestfsDiskCreate.details" href="guestfs/GuestfsDiskCreate.html#GuestfsDiskCreate.details">
+<ANCHOR id="GuestfsDiskCreate-struct" href="guestfs/GuestfsDiskCreate.html#GuestfsDiskCreate-struct">
+<ANCHOR id="GuestfsDiskCreateClass" href="guestfs/GuestfsDiskCreate.html#GuestfsDiskCreateClass">
+<ANCHOR id="guestfs-disk-create-new" href="guestfs/GuestfsDiskCreate.html#guestfs-disk-create-new">
+<ANCHOR id="GuestfsDiskCreate.property-details" href="guestfs/GuestfsDiskCreate.html#GuestfsDiskCreate.property-details">
+<ANCHOR id="GuestfsDiskCreate--backingfile" href="guestfs/GuestfsDiskCreate.html#GuestfsDiskCreate--backingfile">
+<ANCHOR id="GuestfsDiskCreate--backingformat" href="guestfs/GuestfsDiskCreate.html#GuestfsDiskCreate--backingformat">
+<ANCHOR id="GuestfsDiskCreate--clustersize" href="guestfs/GuestfsDiskCreate.html#GuestfsDiskCreate--clustersize">
+<ANCHOR id="GuestfsDiskCreate--compat" href="guestfs/GuestfsDiskCreate.html#GuestfsDiskCreate--compat">
+<ANCHOR id="GuestfsDiskCreate--preallocation" href="guestfs/GuestfsDiskCreate.html#GuestfsDiskCreate--preallocation">
 <ANCHOR id="GuestfsIsFile" href="guestfs/GuestfsIsFile.html">
 <ANCHOR id="GuestfsIsFile.synopsis" href="guestfs/GuestfsIsFile.html#GuestfsIsFile.synopsis">
 <ANCHOR id="GuestfsIsFile.object-hierarchy" href="guestfs/GuestfsIsFile.html#GuestfsIsFile.object-hierarchy">

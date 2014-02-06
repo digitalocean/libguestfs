@@ -107,48 +107,35 @@ static char *qemu_escape_param (guestfs_h *g, const char *param);
 static char *
 create_cow_overlay_direct (guestfs_h *g, void *datav, struct drive *drv)
 {
-  char *overlay = NULL;
+  char *overlay;
   CLEANUP_FREE char *backing_drive = NULL;
-  CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
-  int r;
+  struct guestfs_disk_create_argv optargs;
 
   backing_drive = guestfs___drive_source_qemu_param (g, &drv->src);
   if (!backing_drive)
-    goto error;
+    return NULL;
 
   if (guestfs___lazy_make_tmpdir (g) == -1)
-    goto error;
+    return NULL;
 
   overlay = safe_asprintf (g, "%s/overlay%d", g->tmpdir, ++g->unique);
 
-  guestfs___cmd_add_arg (cmd, "qemu-img");
-  guestfs___cmd_add_arg (cmd, "create");
-  guestfs___cmd_add_arg (cmd, "-f");
-  guestfs___cmd_add_arg (cmd, "qcow2");
-  guestfs___cmd_add_arg (cmd, "-b");
-  guestfs___cmd_add_arg (cmd, backing_drive);
+  optargs.bitmask = GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK;
+  optargs.backingfile = backing_drive;
   if (drv->src.format) {
-    guestfs___cmd_add_arg (cmd, "-o");
-    guestfs___cmd_add_arg_format (cmd, "backing_fmt=%s", drv->src.format);
+    optargs.bitmask |= GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK;
+    optargs.backingformat = drv->src.format;
   }
-  guestfs___cmd_add_arg (cmd, overlay);
-  r = guestfs___cmd_run (cmd);
-  if (r == -1)
-    goto error;
-  if (!WIFEXITED (r) || WEXITSTATUS (r) != 0) {
-    guestfs___external_command_failed (g, r, "qemu-img create", backing_drive);
-    goto error;
+
+  if (guestfs_disk_create_argv (g, overlay, "qcow2", -1, &optargs) == -1) {
+    free (overlay);
+    return NULL;
   }
 
   /* Caller sets g->overlay in the handle to this, and then manages
    * the memory.
    */
   return overlay;
-
- error:
-  free (overlay);
-
-  return NULL;
 }
 
 #ifdef QEMU_OPTIONS
@@ -491,7 +478,14 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
    */
   ADD_CMDLINE ("-no-hpet");
 #endif
-  ADD_CMDLINE ("-no-kvm-pit-reinjection");
+  if (data->qemu_version_major < 1 ||
+      (data->qemu_version_major == 1 && data->qemu_version_minor <= 2))
+    ADD_CMDLINE ("-no-kvm-pit-reinjection");
+  else {
+    /* New non-deprecated way, added in qemu >= 1.3. */
+    ADD_CMDLINE ("-global");
+    ADD_CMDLINE ("kvm-pit.lost_tick_policy=discard");
+  }
 
   ADD_CMDLINE ("-kernel");
   ADD_CMDLINE (kernel);
@@ -1195,9 +1189,17 @@ make_uri (guestfs_h *g, const char *scheme, const char *user,
           struct drive_server *server, const char *path)
 {
   xmlURI uri = { .scheme = (char *) scheme,
-                 .path = (char *) path,
                  .user = (char *) user };
   CLEANUP_FREE char *query = NULL;
+  CLEANUP_FREE char *pathslash = NULL;
+
+  /* Need to add a leading '/' to URI paths since xmlSaveUri doesn't. */
+  if (path[0] != '/') {
+    pathslash = safe_asprintf (g, "/%s", path);
+    uri.path = pathslash;
+  }
+  else
+    uri.path = (char *) path;
 
   switch (server->transport) {
   case drive_transport_none:
@@ -1292,19 +1294,18 @@ guestfs___drive_source_qemu_param (guestfs_h *g, const struct drive_source *src)
     if (STREQ (src->u.exportname, ""))
       ret = safe_strdup (g, p);
     else
-      /* Skip the mandatory leading '/' character. */
-      ret = safe_asprintf (g, "%s:exportname=%s", p, &src->u.exportname[1]);
+      ret = safe_asprintf (g, "%s:exportname=%s", p, src->u.exportname);
 
     return ret;
   }
 
   case drive_protocol_rbd: {
-    /* build the list of all the mon hosts */
     CLEANUP_FREE char *mon_host = NULL, *username = NULL, *secret = NULL;
     const char *auth;
     size_t n = 0;
     size_t i, j;
 
+    /* build the list of all the mon hosts */
     for (i = 0; i < src->nr_servers; i++) {
       n += strlen (src->servers[i].u.hostname);
       n += 8; /* for slashes, colons, & port numbers */
@@ -1340,23 +1341,22 @@ guestfs___drive_source_qemu_param (guestfs_h *g, const struct drive_source *src)
     else
         auth = ":auth_supported=none";
 
-    /* Skip the mandatory leading '/' character on exportname. */
-    return safe_asprintf (g, "rbd:%s:mon_host=%s%s%s%s",
-                          &src->u.exportname[1],
-                          mon_host,
+    return safe_asprintf (g, "rbd:%s%s%s%s%s%s",
+                          src->u.exportname,
+                          src->nr_servers > 0 ? ":mon_host=" : "",
+                          src->nr_servers > 0 ? mon_host : "",
                           username ? username : "",
                           auth,
                           secret ? secret : "");
   }
 
   case drive_protocol_sheepdog:
-    /* Skip the mandatory leading '/' character on exportname. */
     if (src->nr_servers == 0)
-      return safe_asprintf (g, "sheepdog:%s", &src->u.exportname[1]);
+      return safe_asprintf (g, "sheepdog:%s", src->u.exportname);
     else                        /* XXX How to pass multiple hosts? */
       return safe_asprintf (g, "sheepdog:%s:%d:%s",
                             src->servers[0].u.hostname, src->servers[0].port,
-                            &src->u.exportname[1]);
+                            src->u.exportname);
 
   case drive_protocol_ssh:
     return make_uri (g, "ssh", src->username,

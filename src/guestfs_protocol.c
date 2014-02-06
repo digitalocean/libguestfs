@@ -8066,6 +8066,28 @@ xdr_guestfs_copy_attributes_args (XDR *xdrs, guestfs_copy_attributes_args *objp)
 }
 
 bool_t
+xdr_guestfs_part_get_name_args (XDR *xdrs, guestfs_part_get_name_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->partnum))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_part_get_name_ret (XDR *xdrs, guestfs_part_get_name_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->name, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

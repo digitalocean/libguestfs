@@ -613,7 +613,7 @@ To do this, set the optional C<protocol> and C<server> parameters of
 L</guestfs_add_drive_opts> like this:
 
  char **servers = { "ceph1.example.org:3000", /* ... */, NULL };
- guestfs_add_drive_opts (g, "/pool/image",
+ guestfs_add_drive_opts (g, "pool/image",
                          GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
                          GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "rbd",
                          GUESTFS_ADD_DRIVE_OPTS_SERVER, servers,
@@ -657,7 +657,7 @@ To do this, set the optional C<protocol> and C<server> parameters of
 L</guestfs_add_drive_opts> like this:
 
  char **servers = { "gluster.example.org:24007", NULL };
- guestfs_add_drive_opts (g, "/volname/image",
+ guestfs_add_drive_opts (g, "volname/image",
                          GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
                          GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "gluster",
                          GUESTFS_ADD_DRIVE_OPTS_SERVER, servers,
@@ -678,7 +678,7 @@ Libguestfs can access iSCSI disks remotely.
 To do this, set the optional C<protocol> and C<server> parameters like this:
 
  char **server = { "iscsi.example.org:3000", NULL };
- guestfs_add_drive_opts (g, "/target-iqn-name/lun",
+ guestfs_add_drive_opts (g, "target-iqn-name/lun",
                          GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
                          GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "iscsi",
                          GUESTFS_ADD_DRIVE_OPTS_SERVER, server,
@@ -755,7 +755,7 @@ To do this, set the optional C<protocol> and C<server> parameters of
 L</guestfs_add_drive_opts> like this:
 
  char **servers = { /* optional servers ... */ NULL };
- guestfs_add_drive_opts (g, "/volume",
+ guestfs_add_drive_opts (g, "volume",
                          GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
                          GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "sheepdog",
                          GUESTFS_ADD_DRIVE_OPTS_SERVER, servers,
@@ -4098,6 +4098,10 @@ Logo used on the website.  The fish is called Arthur by the way.
 =item C<m4>
 
 autoconf により使用される M4 マクロ。
+
+=item C<make-fs>
+
+L<virt-make-fs(1)> command and documentation.
 
 =item C<mllib>
 

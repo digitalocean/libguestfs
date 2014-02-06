@@ -1700,6 +1700,20 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_disk_create ##### -->
+<para>
+
+</para>
+
+@session: 
+@filename: 
+@format: 
+@size: 
+@optargs: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_mount ##### -->
 <para>
 
@@ -6293,6 +6307,18 @@ GuestfsSession
 @src: 
 @dest: 
 @optargs: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_part_get_name ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@partnum: 
 @err: 
 @Returns: 
 
