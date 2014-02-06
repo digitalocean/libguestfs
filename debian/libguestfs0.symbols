@@ -201,6 +201,9 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_device_index@Base 1:1.18
  guestfs_df@Base 1.10
  guestfs_df_h@Base 1.10
+ guestfs_disk_create@Base 1:1.25.31
+ guestfs_disk_create_argv@Base 1:1.25.31
+ guestfs_disk_create_va@Base 1:1.25.31
  guestfs_disk_format@Base 1:1.20
  guestfs_disk_has_backing_file@Base 1:1.20
  guestfs_disk_virtual_size@Base 1:1.20
@@ -616,6 +619,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_part_get_bootable@Base 1.10
  guestfs_part_get_gpt_type@Base 1:1.22
  guestfs_part_get_mbr_id@Base 1.10
+ guestfs_part_get_name@Base 1:1.25.33
  guestfs_part_get_parttype@Base 1.10
  guestfs_part_init@Base 1.10
  guestfs_part_list@Base 1.10
