@@ -1,3 +1,68 @@
+commit 758d021b41bd23700ec6ee00b8c2cdd94d894fe3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 5 15:18:49 2014 +0000
+
+    Version 1.25.33.
+
+commit 798b539a1f95465391f5ab8781ada1e5e63c4355
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Feb 5 11:42:17 2014 +0100
+
+    appliance/init: provide a symlink /var/lock
+    
+    Provide /var/lock as symlink to /run/lock, as it might be used by
+    applications.
+
+commit 59eb9bff87895a2cd779890de73652cb2a0ce503
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 4 15:49:13 2014 +0100
+
+    resize: preserve GPT partition names (RHBZ#1060404).
+    
+    Save the partition names/labels of the source partitions, and restore
+    them after the partition copy.
+
+commit 820b87016794116c783bd224f2e776cfdf65108e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 4 14:48:14 2014 +0100
+
+    New API: part-get-name (RHBZ#593511).
+    
+    Counterpart of part-set-name, it uses sgdisk (hence needs the "gdisk"
+    feature) to query for the label/name of a partition in a GPT layout.
+
+commit 78c21ce912a9c251ade8e35b63e82e97c96236cd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 4 13:49:37 2014 +0100
+
+    daemon: parted: refactor sgdisk info parsing code
+    
+    Isolate in an own function the code that runs sgdisk and parse a field
+    of it (using an extraction function passed as parameter), using it for
+    the GUID type.
+    
+    This is just code motion, no actual behaviour changes.
+
+commit 170b64337de32b930b992a0cd584745fb22569ad
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 4 13:27:34 2014 +0000
+
+    resize: Try to remove a few more _ -> .. cases.
+    
+    This allows the compiler to catch missing cases more effectively,
+    especially if we update the types with more cases in future.
+
+commit ef7ac043a640c0dc82260e97fb7ce1f438f7ee2d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 4 13:32:28 2014 +0100
+
+    resize: properly restore GPT partition types
+    
+    If there is a GPT partition layout, then what should be read and
+    restored for each partition is the GPT type and not the MBR ID.
+    
+    Related to RHBZ#1060404.
+
 commit eab810f7786d7d3a500a912c74ea85468825f0f8
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Feb 4 08:50:43 2014 +0000

@@ -5882,6 +5882,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_part_get_name (IntPtr h, [In] string device, int partnum);
+
+    /// <summary>
+    /// get partition name
+    /// </summary>
+    public string part_get_name (string device, int partnum)
+    {
+      string r;
+      r = guestfs_part_get_name (_handle, device, partnum);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string guestfs_part_get_parttype (IntPtr h, [In] string device);
 
     /// <summary>

@@ -7499,6 +7499,22 @@ run_part_get_mbr_id (ETERM *message)
 }
 
 static ETERM *
+run_part_get_name (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int partnum = get_int (ARG (1));
+  char *r;
+
+  r = guestfs_part_get_name (g, device, partnum);
+  if (r == NULL)
+    return make_error ("part_get_name");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
 run_part_get_parttype (ETERM *message)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
@@ -11044,6 +11060,8 @@ dispatch (ETERM *message)
     return run_part_get_gpt_type (message);
   else if (atom_equals (fun, "part_get_mbr_id"))
     return run_part_get_mbr_id (message);
+  else if (atom_equals (fun, "part_get_name"))
+    return run_part_get_name (message);
   else if (atom_equals (fun, "part_get_parttype"))
     return run_part_get_parttype (message);
   else if (atom_equals (fun, "part_init"))

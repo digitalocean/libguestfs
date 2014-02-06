@@ -9098,6 +9098,22 @@ C<guestfs_part_get_parttype>).
 
 (Додано у 1.3.2)
 
+=head2 guestfs_part_get_name
+
+ char *
+ guestfs_part_get_name (guestfs_h *g,
+                        const char *device,
+                        int partnum);
+
+This gets the partition name on partition numbered C<partnum> on device
+C<device>.  Note that partitions are numbered from 1.
+
+The partition name can only be read on certain types of partition table.
+This works on C<gpt> but not on C<mbr> partitions.
+
+This function returns a string, or NULL on error.  I<The caller must free
+the returned string after use>.
+
 =head2 guestfs_part_get_parttype
 
  char *

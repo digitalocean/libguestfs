@@ -6311,3 +6311,15 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_part_get_name ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@partnum: 
+@err: 
+@Returns: 
+
+

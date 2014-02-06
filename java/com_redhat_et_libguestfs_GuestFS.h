@@ -4373,6 +4373,14 @@ JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1aug_1label
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1copy_1attributes
   (JNIEnv *, jobject, jlong, jstring, jstring, jlong, jboolean, jboolean, jboolean, jboolean);
 
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _part_get_name
+ * Signature: (JLjava/lang/String;I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1name
+  (JNIEnv *, jobject, jlong, jstring, jint);
+
 #ifdef __cplusplus
 }
 #endif

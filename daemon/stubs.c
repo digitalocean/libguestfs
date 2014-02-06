@@ -16169,6 +16169,53 @@ done_no_free:
   return;
 }
 
+static void
+part_get_name_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_part_get_name_args args;
+  CLEANUP_FREE char *device = NULL;
+  int partnum;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_gdisk_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "gdisk");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_part_get_name_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.device, device, , goto done);
+  partnum = args.partnum;
+
+  r = do_part_get_name (device, partnum);
+  if (r == NULL)
+    /* do_part_get_name has already called reply_with_error */
+    goto done;
+
+  struct guestfs_part_get_name_ret ret;
+  ret.name = r;
+  reply ((xdrproc_t) &xdr_guestfs_part_get_name_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_part_get_name_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -17395,6 +17442,9 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_COPY_ATTRIBUTES:
       copy_attributes_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PART_GET_NAME:
+      part_get_name_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

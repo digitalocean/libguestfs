@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.415';
+$VERSION = '0.416';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -5328,6 +5328,14 @@ the numbered partition C<partnum>.
 Note that only MBR (old DOS-style) partitions have type bytes.
 You will get undefined results for other partition table
 types (see C<$g-E<gt>part_get_parttype>).
+
+=item $name = $g->part_get_name ($device, $partnum);
+
+This gets the partition name on partition numbered C<partnum> on
+device C<device>.  Note that partitions are numbered from 1.
+
+The partition name can only be read on certain types of partition
+table.  This works on C<gpt> but not on C<mbr> partitions.
 
 =item $parttype = $g->part_get_parttype ($device);
 
@@ -10823,6 +10831,15 @@ use vars qw(%guestfs_introspection);
     ],
     name => "part_get_mbr_id",
     description => "get the MBR type byte (ID byte) from a partition",
+  },
+  "part_get_name" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'partnum', 'int', 1 ],
+    ],
+    name => "part_get_name",
+    description => "get partition name",
   },
   "part_get_parttype" => {
     ret => 'string',

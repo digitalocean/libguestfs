@@ -18214,4 +18214,29 @@ public class GuestFS {
   private native void _copy_attributes (long g, String src, String dest, long _optargs_bitmask, boolean all, boolean mode, boolean xattributes, boolean ownership)
     throws LibGuestFSException;
 
+  /**
+   * get partition name
+   * <p>
+   * This gets the partition name on partition numbered
+   * "partnum" on device "device". Note that partitions are
+   * numbered from 1.
+   * <p>
+   * The partition name can only be read on certain types of
+   * partition table. This works on "gpt" but not on "mbr"
+   * partitions.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String part_get_name (String device, int partnum)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_get_name: handle is closed");
+
+    return _part_get_name (g, device, partnum);
+  }
+
+  private native String _part_get_name (long g, String device, int partnum)
+    throws LibGuestFSException;
+
 }

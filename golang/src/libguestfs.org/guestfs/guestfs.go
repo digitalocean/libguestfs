@@ -9258,6 +9258,24 @@ func (g *Guestfs) Part_get_mbr_id (device string, partnum int) (int, *GuestfsErr
     return int (r), nil
 }
 
+/* part_get_name : get partition name */
+func (g *Guestfs) Part_get_name (device string, partnum int) (string, *GuestfsError) {
+    if g.g == nil {
+        return "", closed_handle_error ("part_get_name")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_part_get_name (g.g, c_device, C.int (partnum))
+
+    if r == nil {
+        return "", get_error_from_handle (g, "part_get_name")
+    }
+    defer C.free (unsafe.Pointer (r))
+    return C.GoString (r), nil
+}
+
 /* part_get_parttype : get the partition table type */
 func (g *Guestfs) Part_get_parttype (device string) (string, *GuestfsError) {
     if g.g == nil {

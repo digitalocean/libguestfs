@@ -415,6 +415,7 @@ static const char *const commands[] = {
   "part-get-bootable",
   "part-get-gpt-type",
   "part-get-mbr-id",
+  "part-get-name",
   "part-get-parttype",
   "part-init",
   "part-list",

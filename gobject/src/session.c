@@ -25166,3 +25166,40 @@ guestfs_session_copy_attributes(GuestfsSession *session, const gchar *src, const
 
   return TRUE;
 }
+
+/**
+ * guestfs_session_part_get_name:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @partnum: (type gint32):
+ * @err: A GError object to receive any generated errors
+ *
+ * get partition name
+ *
+ * This gets the partition name on partition numbered @partnum on device
+ * @device. Note that partitions are numbered from 1.
+ * 
+ * The partition name can only be read on certain types of partition table.
+ * This works on @gpt but not on @mbr partitions.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_part_get_name(GuestfsSession *session, const gchar *device, gint32 partnum, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_get_name");
+    return NULL;
+  }
+
+  char *ret = guestfs_part_get_name (g, device, partnum);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}

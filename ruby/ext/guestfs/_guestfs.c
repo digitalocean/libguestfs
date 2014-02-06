@@ -25384,6 +25384,46 @@ ruby_guestfs_copy_attributes (int argc, VALUE *argv, VALUE gv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.part_get_name(device, partnum) -> string
+ *
+ * get partition name
+ *
+ * This gets the partition name on partition numbered
+ * "partnum" on device "device". Note that partitions are
+ * numbered from 1.
+ * 
+ * The partition name can only be read on certain types of
+ * partition table. This works on "gpt" but not on "mbr"
+ * partitions.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_part_get_name+[http://libguestfs.org/guestfs.3.html#guestfs_part_get_name]).
+ */
+static VALUE
+ruby_guestfs_part_get_name (VALUE gv, VALUE devicev, VALUE partnumv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_get_name");
+
+  const char *device = StringValueCStr (devicev);
+  int partnum = NUM2INT (partnumv);
+
+  char *r;
+
+  r = guestfs_part_get_name (g, device, partnum);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
 extern void Init__guestfs (void); /* keep GCC warnings happy */
 
 /* Initialize the module. */
@@ -26542,4 +26582,6 @@ Init__guestfs (void)
         ruby_guestfs_aug_label, 1);
   rb_define_method (c_guestfs, "copy_attributes",
         ruby_guestfs_copy_attributes, -1);
+  rb_define_method (c_guestfs, "part_get_name",
+        ruby_guestfs_part_get_name, 2);
 }

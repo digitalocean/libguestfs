@@ -1549,6 +1549,9 @@ val part_get_gpt_type : t -> string -> int -> string
 val part_get_mbr_id : t -> string -> int -> int
 (** get the MBR type byte (ID byte) from a partition *)
 
+val part_get_name : t -> string -> int -> string
+(** get partition name *)
+
 val part_get_parttype : t -> string -> string
 (** get the partition table type *)
 
@@ -2523,6 +2526,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method part_get_bootable : string -> int -> bool
   method part_get_gpt_type : string -> int -> string
   method part_get_mbr_id : string -> int -> int
+  method part_get_name : string -> int -> string
   method part_get_parttype : string -> string
   method part_init : string -> string -> unit
   method part_list : string -> partition array

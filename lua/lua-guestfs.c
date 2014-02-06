@@ -9903,6 +9903,31 @@ guestfs_lua_part_get_mbr_id (lua_State *L)
 }
 
 static int
+guestfs_lua_part_get_name (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  int partnum;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "part_get_name");
+
+  device = luaL_checkstring (L, 2);
+  partnum = luaL_checkint (L, 3);
+
+  r = guestfs_part_get_name (g, device, partnum);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
+  return 1;
+}
+
+static int
 guestfs_lua_part_get_parttype (lua_State *L)
 {
   char *r;
@@ -15281,6 +15306,7 @@ static luaL_Reg methods[] = {
   { "part_get_bootable", guestfs_lua_part_get_bootable },
   { "part_get_gpt_type", guestfs_lua_part_get_gpt_type },
   { "part_get_mbr_id", guestfs_lua_part_get_mbr_id },
+  { "part_get_name", guestfs_lua_part_get_name },
   { "part_get_parttype", guestfs_lua_part_get_parttype },
   { "part_init", guestfs_lua_part_init },
   { "part_list", guestfs_lua_part_list },

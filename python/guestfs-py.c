@@ -21873,6 +21873,46 @@ py_guestfs_copy_attributes (PyObject *self, PyObject *args)
   return py_r;
 }
 
+static PyObject *
+py_guestfs_part_get_name (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  char *r;
+  const char *device;
+  int partnum;
+
+  if (!PyArg_ParseTuple (args, (char *) "Osi:guestfs_part_get_name",
+                         &py_g, &device, &partnum))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_part_get_name (g, device, partnum);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
+  free (r);
+
+ out:
+  return py_r;
+}
+
 static PyMethodDef methods[] = {
   { (char *) "create", py_guestfs_create, METH_VARARGS, NULL },
   { (char *) "close", py_guestfs_close, METH_VARARGS, NULL },
@@ -22420,6 +22460,7 @@ static PyMethodDef methods[] = {
   { (char *) "aug_setm", py_guestfs_aug_setm, METH_VARARGS, NULL },
   { (char *) "aug_label", py_guestfs_aug_label, METH_VARARGS, NULL },
   { (char *) "copy_attributes", py_guestfs_copy_attributes, METH_VARARGS, NULL },
+  { (char *) "part_get_name", py_guestfs_part_get_name, METH_VARARGS, NULL },
   { NULL, NULL, 0, NULL }
 };
 

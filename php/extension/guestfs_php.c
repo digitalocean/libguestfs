@@ -436,6 +436,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_part_get_bootable, NULL)
   PHP_FE (guestfs_part_get_gpt_type, NULL)
   PHP_FE (guestfs_part_get_mbr_id, NULL)
+  PHP_FE (guestfs_part_get_name, NULL)
   PHP_FE (guestfs_part_get_parttype, NULL)
   PHP_FE (guestfs_part_init, NULL)
   PHP_FE (guestfs_part_list, NULL)
@@ -15534,6 +15535,42 @@ PHP_FUNCTION (guestfs_part_get_mbr_id)
   }
 
   RETURN_LONG (r);
+}
+
+PHP_FUNCTION (guestfs_part_get_name)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  int device_size;
+  long partnum;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rsl",
+        &z_g, &device, &device_size, &partnum) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: part_get_name: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  char *r;
+  r = guestfs_part_get_name (g, device, partnum);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  char *r_copy = estrdup (r);
+  free (r);
+  RETURN_STRING (r_copy, 0);
 }
 
 PHP_FUNCTION (guestfs_part_get_parttype)

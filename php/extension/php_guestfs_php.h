@@ -410,6 +410,7 @@ PHP_FUNCTION (guestfs_part_disk);
 PHP_FUNCTION (guestfs_part_get_bootable);
 PHP_FUNCTION (guestfs_part_get_gpt_type);
 PHP_FUNCTION (guestfs_part_get_mbr_id);
+PHP_FUNCTION (guestfs_part_get_name);
 PHP_FUNCTION (guestfs_part_get_parttype);
 PHP_FUNCTION (guestfs_part_init);
 PHP_FUNCTION (guestfs_part_list);

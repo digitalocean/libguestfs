@@ -2442,6 +2442,9 @@ extern GUESTFS_DLL_PUBLIC char *guestfs_part_get_gpt_type (guestfs_h *g, const c
 #define GUESTFS_HAVE_PART_GET_MBR_ID 1
 extern GUESTFS_DLL_PUBLIC int guestfs_part_get_mbr_id (guestfs_h *g, const char *device, int partnum);
 
+#define GUESTFS_HAVE_PART_GET_NAME 1
+extern GUESTFS_DLL_PUBLIC char *guestfs_part_get_name (guestfs_h *g, const char *device, int partnum);
+
 #define GUESTFS_HAVE_PART_GET_PARTTYPE 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_part_get_parttype (guestfs_h *g, const char *device);
 
@@ -3919,6 +3922,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_PART_GET_BOOTABLE 1
 #define LIBGUESTFS_HAVE_PART_GET_GPT_TYPE 1
 #define LIBGUESTFS_HAVE_PART_GET_MBR_ID 1
+#define LIBGUESTFS_HAVE_PART_GET_NAME 1
 #define LIBGUESTFS_HAVE_PART_GET_PARTTYPE 1
 #define LIBGUESTFS_HAVE_PART_INIT 1
 #define LIBGUESTFS_HAVE_PART_LIST 1

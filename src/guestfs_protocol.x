@@ -2864,6 +2864,15 @@ struct guestfs_copy_attributes_args {
   bool ownership;
 };
 
+struct guestfs_part_get_name_args {
+  string device<>;
+  int partnum;
+};
+
+struct guestfs_part_get_name_ret {
+  string name<>;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3273,10 +3282,11 @@ enum guestfs_procedure {
   GUESTFS_PROC_AUG_LABEL = 412,
   GUESTFS_PROC_INTERNAL_UPLOAD = 413,
   GUESTFS_PROC_INTERNAL_EXIT = 414,
-  GUESTFS_PROC_COPY_ATTRIBUTES = 415
+  GUESTFS_PROC_COPY_ATTRIBUTES = 415,
+  GUESTFS_PROC_PART_GET_NAME = 416
 };
 
-const GUESTFS_MAX_PROC_NR = 415;
+const GUESTFS_MAX_PROC_NR = 416;
 
 /* The remote procedure call protocol. */
 

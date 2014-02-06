@@ -9051,3 +9051,16 @@ class GuestFS(object):
         r = libguestfsmod.copy_attributes (self._o, src, dest, all, mode, xattributes, ownership)
         return r
 
+    def part_get_name (self, device, partnum):
+        """This gets the partition name on partition numbered
+        "partnum" on device "device". Note that partitions are
+        numbered from 1.
+        
+        The partition name can only be read on certain types of
+        partition table. This works on "gpt" but not on "mbr"
+        partitions.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.part_get_name (self._o, device, partnum)
+        return r
+

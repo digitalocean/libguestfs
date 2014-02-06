@@ -5703,6 +5703,16 @@ Note that only MBR (old DOS-style) partitions have type bytes.
 You will get undefined results for other partition table
 types (see L</part-get-parttype>).
 
+=head2 part-get-name
+
+ part-get-name device partnum
+
+This gets the partition name on partition numbered C<partnum> on
+device C<device>.  Note that partitions are numbered from 1.
+
+The partition name can only be read on certain types of partition
+table.  This works on C<gpt> but not on C<mbr> partitions.
+
 =head2 part-get-parttype
 
  part-get-parttype device

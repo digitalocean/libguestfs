@@ -408,6 +408,7 @@
 -export([part_get_bootable/3]).
 -export([part_get_gpt_type/3]).
 -export([part_get_mbr_id/3]).
+-export([part_get_name/3]).
 -export([part_get_parttype/2]).
 -export([part_init/3]).
 -export([part_list/2]).
@@ -1855,6 +1856,9 @@ part_get_gpt_type(G, Device, Partnum) ->
 
 part_get_mbr_id(G, Device, Partnum) ->
   call_port(G, {part_get_mbr_id, Device, Partnum}).
+
+part_get_name(G, Device, Partnum) ->
+  call_port(G, {part_get_name, Device, Partnum}).
 
 part_get_parttype(G, Device) ->
   call_port(G, {part_get_parttype, Device}).

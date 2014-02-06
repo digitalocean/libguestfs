@@ -466,7 +466,8 @@ module Guestfs (
   journal_get_data_threshold,
   journal_set_data_threshold,
   aug_setm,
-  aug_label
+  aug_label,
+  part_get_name
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -5860,6 +5861,18 @@ foreign import ccall unsafe "guestfs.h guestfs_aug_label" c_aug_label
 aug_label :: GuestfsH -> String -> IO String
 aug_label h augpath = do
   r <- withCString augpath $ \augpath -> withForeignPtr h (\p -> c_aug_label p augpath)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_part_get_name" c_part_get_name
+  :: GuestfsP -> CString -> CInt -> IO CString
+
+part_get_name :: GuestfsH -> String -> Int -> IO String
+part_get_name h device partnum = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_get_name p device (fromIntegral partnum))
   if (r == nullPtr)
     then do
       err <- last_error h

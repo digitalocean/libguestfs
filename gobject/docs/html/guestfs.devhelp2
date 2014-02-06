@@ -627,6 +627,7 @@
     <keyword type="function" name="guestfs_session_aug_setm ()" link="GuestfsSession.html#guestfs-session-aug-setm"/>
     <keyword type="function" name="guestfs_session_aug_label ()" link="GuestfsSession.html#guestfs-session-aug-label"/>
     <keyword type="function" name="guestfs_session_copy_attributes ()" link="GuestfsSession.html#guestfs-session-copy-attributes"/>
+    <keyword type="function" name="guestfs_session_part_get_name ()" link="GuestfsSession.html#guestfs-session-part-get-name"/>
     <keyword type="signal" name="The &quot;appliance&quot; signal" link="GuestfsSession.html#GuestfsSession-appliance"/>
     <keyword type="signal" name="The &quot;close&quot; signal" link="GuestfsSession.html#GuestfsSession-close"/>
     <keyword type="signal" name="The &quot;enter&quot; signal" link="GuestfsSession.html#GuestfsSession-enter"/>

@@ -13902,6 +13902,39 @@ ocaml_guestfs_part_get_mbr_id (value gv, value devicev, value partnumv)
 }
 
 /* Automatically generated wrapper for function
+ * val part_get_name : t -> string -> int -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_part_get_name (value gv, value devicev, value partnumv);
+
+value
+ocaml_guestfs_part_get_name (value gv, value devicev, value partnumv)
+{
+  CAMLparam3 (gv, devicev, partnumv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("part_get_name");
+
+  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  int partnum = Int_val (partnumv);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_get_name (g, device, partnum);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "part_get_name");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val part_get_parttype : t -> string -> string
  */
 

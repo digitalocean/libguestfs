@@ -47,8 +47,9 @@ type partition = {
   p_name : string;               (* Device name, like /dev/sda1. *)
   p_part : G.partition;          (* SOURCE partition data from libguestfs. *)
   p_bootable : bool;             (* Is it bootable? *)
-  p_mbr_id : int option;         (* MBR ID, if it has one. *)
+  p_id : partition_id;           (* Partition (MBR/GPT) ID. *)
   p_type : partition_content;    (* Content type and content size. *)
+  p_label : string option;       (* Label/name. *)
 
   (* What we're going to do: *)
   mutable p_operation : partition_operation;
@@ -67,6 +68,10 @@ and partition_operation =
                                     copy any content) *)
   | OpDelete                     (* delete it *)
   | OpResize of int64            (* resize it to the new size *)
+and partition_id =
+  | No_ID                        (* No identifier. *)
+  | MBR_ID of int                (* MBR ID. *)
+  | GPT_Type of string           (* GPT UUID. *)
 
 let rec debug_partition p =
   eprintf "%s:\n" p.p_name;
@@ -75,8 +80,17 @@ let rec debug_partition p =
     p.p_part.G.part_size;
   eprintf "\tbootable: %b\n" p.p_bootable;
   eprintf "\tpartition ID: %s\n"
-    (match p.p_mbr_id with None -> "(none)" | Some i -> sprintf "0x%x" i);
-  eprintf "\tcontent: %s\n" (string_of_partition_content p.p_type)
+    (match p.p_id with
+    | No_ID -> "(none)"
+    | MBR_ID i -> sprintf "0x%x" i
+    | GPT_Type i -> i
+    );
+  eprintf "\tcontent: %s\n" (string_of_partition_content p.p_type);
+  eprintf "\tlabel: %s\n"
+    (match p.p_label with
+    | Some label -> label
+    | None -> "(none)"
+    )
 and string_of_partition_content = function
   | ContentUnknown -> "unknown data"
   | ContentPV sz -> sprintf "LVM PV (%Ld bytes)" sz
@@ -414,8 +428,8 @@ read the man page virt-resize(1).
   in
 
   let is_extended_partition = function
-    | Some (0x05|0x0f) -> true
-    | _ -> false
+    | MBR_ID (0x05|0x0f) -> true
+    | MBR_ID _ | GPT_Type _ | No_ID -> false
   in
 
   let partitions : partition list =
@@ -440,15 +454,24 @@ read the man page virt-resize(1).
           let part_num = Int32.to_int part_num in
           let name = sprintf "/dev/sda%d" part_num in
           let bootable = g#part_get_bootable "/dev/sda" part_num in
-          let mbr_id =
-            try Some (g#part_get_mbr_id "/dev/sda" part_num)
-            with G.Error _ -> None in
+          let id =
+            match parttype with
+            | GPT ->
+              (try GPT_Type (g#part_get_gpt_type "/dev/sda" part_num)
+              with G.Error _ -> No_ID)
+            | MBR ->
+              (try MBR_ID (g#part_get_mbr_id "/dev/sda" part_num)
+              with G.Error _ -> No_ID) in
           let typ =
-            if is_extended_partition mbr_id then ContentExtendedPartition
+            if is_extended_partition id then ContentExtendedPartition
             else get_partition_content name in
+          let label =
+            try Some (g#part_get_name "/dev/sda" part_num)
+            with G.Error _ -> None in
 
           { p_name = name; p_part = part;
-            p_bootable = bootable; p_mbr_id = mbr_id; p_type = typ;
+            p_bootable = bootable; p_id = id; p_type = typ;
+            p_label = label;
             p_operation = OpCopy; p_target_partnum = 0;
             p_target_start = 0L; p_target_end = 0L }
       ) parts in
@@ -497,8 +520,9 @@ read the man page virt-resize(1).
       fun name ->
         let typ = get_partition_content name in
         assert (
-          match typ with ContentPV _ | ContentExtendedPartition -> false
-          | _ -> true
+          match typ with
+          | ContentPV _ | ContentExtendedPartition -> false
+          | ContentUnknown | ContentFS _ -> true
         );
 
         { lv_name = name; lv_type = typ; lv_operation = LVOpNone }
@@ -1025,7 +1049,8 @@ read the man page virt-resize(1).
             p_name = "";
             p_part = { G.part_num = 0l; part_start = 0L; part_end = 0L;
                        part_size = 0L };
-            p_bootable = false; p_mbr_id = None; p_type = ContentUnknown;
+            p_bootable = false; p_id = No_ID; p_type = ContentUnknown;
+            p_label = None;
 
             (* Target information is meaningful. *)
             p_operation = OpIgnore;
@@ -1091,7 +1116,7 @@ read the man page virt-resize(1).
            let srcoffset = p.p_part.G.part_start in
            g#copy_device_to_device ~srcoffset ~size:copysize "/dev/sda" target
         )
-      | _ -> ()
+      | OpIgnore | OpDelete -> ()
   ) partitions;
 
   (* Set bootable and MBR IDs.  Do this *after* copying over the data,
@@ -1103,11 +1128,18 @@ read the man page virt-resize(1).
       if p.p_bootable then
         g#part_set_bootable "/dev/sdb" p.p_target_partnum true;
 
-      (match p.p_mbr_id with
+      (match p.p_label with
+      | Some label ->
+        g#part_set_name "/dev/sdb" p.p_target_partnum label;
       | None -> ()
-      | Some mbr_id ->
-        g#part_set_mbr_id "/dev/sdb" p.p_target_partnum mbr_id
       );
+
+      match parttype, p.p_id with
+      | GPT, GPT_Type gpt_type ->
+        g#part_set_gpt_type "/dev/sdb" p.p_target_partnum gpt_type
+      | MBR, MBR_ID mbr_id ->
+        g#part_set_mbr_id "/dev/sdb" p.p_target_partnum mbr_id
+      | GPT, (No_ID|MBR_ID _) | MBR, (No_ID|GPT_Type _) -> ()
   ) partitions;
 
   (* Fix the bootloader if we aligned the first partition. *)
@@ -1141,7 +1173,10 @@ read the man page virt-resize(1).
         ignore (g#pwrite_device target new_hidden 0x1c_L)
       )
 
-    | _ -> ()
+    | { p_type =
+        (ContentFS _|ContentUnknown|ContentPV _
+            |ContentExtendedPartition) } :: _
+    | [] -> ()
   );
 
   (* After copying the data over we must shut down and restart the
@@ -1156,13 +1191,13 @@ read the man page virt-resize(1).
       function
       | ({ p_operation = OpResize _ } as p) ->
         can_expand_content p.p_type
-      | _ -> false
+      | { p_operation = (OpCopy | OpIgnore | OpDelete) } -> false
     ) partitions
     || List.exists (
       function
       | ({ lv_operation = LVOpExpand } as lv) ->
         can_expand_content lv.lv_type
-      | _ -> false
+      | { lv_operation = LVOpNone } -> false
     ) lvs in
 
   let g =
@@ -1214,7 +1249,8 @@ read the man page virt-resize(1).
               (string_of_expand_content_method meth);
 
           do_expand_content target meth
-      | _ -> ()
+      | { p_operation = (OpCopy | OpIgnore | OpDelete | OpResize _) }
+        -> ()
     ) partitions;
 
     (* Expand logical volume content as required. *)
@@ -1235,7 +1271,7 @@ read the man page virt-resize(1).
 
           (* Then expand the content in the LV. *)
           do_expand_content name meth
-      | _ -> ()
+      | { lv_operation = (LVOpExpand | LVOpNone) } -> ()
     ) lvs
   );
 

@@ -1428,6 +1428,7 @@ guestfs_session_journal_set_data_threshold
 guestfs_session_aug_setm
 guestfs_session_aug_label
 guestfs_session_copy_attributes
+guestfs_session_part_get_name
 <SUBSECTION Standard>
 GUESTFS_IS_SESSION
 GUESTFS_IS_SESSION_CLASS

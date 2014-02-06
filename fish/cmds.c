@@ -550,6 +550,7 @@ static int run_journal_set_data_threshold (const char *cmd, size_t argc, char *a
 static int run_aug_setm (const char *cmd, size_t argc, char *argv[]);
 static int run_aug_label (const char *cmd, size_t argc, char *argv[]);
 static int run_copy_attributes (const char *cmd, size_t argc, char *argv[]);
+static int run_part_get_name (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -3707,6 +3708,12 @@ struct command_entry copy_attributes_cmd_entry = {
   .run = run_copy_attributes
 };
 
+struct command_entry part_get_name_cmd_entry = {
+  .name = "part-get-name",
+  .help = "NAME\n    part-get-name - get partition name\n\nSYNOPSIS\n     part-get-name device partnum\n\nDESCRIPTION\n    This gets the partition name on partition numbered \"partnum\" on device\n    \"device\". Note that partitions are numbered from 1.\n\n    The partition name can only be read on certain types of partition table.\n    This works on \"gpt\" but not on \"mbr\" partitions.\n\n",
+  .run = run_part_get_name
+};
+
 void
 list_commands (void)
 {
@@ -4069,6 +4076,7 @@ list_commands (void)
   printf ("%-20s %s\n", "part-get-bootable", _("return true if a partition is bootable"));
   printf ("%-20s %s\n", "part-get-gpt-type", _("get the type GUID of a GPT partition"));
   printf ("%-20s %s\n", "part-get-mbr-id", _("get the MBR type byte (ID byte) from a partition"));
+  printf ("%-20s %s\n", "part-get-name", _("get partition name"));
   printf ("%-20s %s\n", "part-get-parttype", _("get the partition table type"));
   printf ("%-20s %s\n", "part-init", _("create an empty partition table"));
   printf ("%-20s %s\n", "part-list", _("list partitions on a device"));
@@ -23640,6 +23648,54 @@ run_copy_attributes (const char *cmd, size_t argc, char *argv[])
  out_dest:
   free (src);
  out_src:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_part_get_name (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  const char *device;
+  int partnum;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "partnum", "xstrtoll", xerr);
+      goto out_partnum;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
+      goto out_partnum;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    partnum = r;
+  }
+  r = guestfs_part_get_name (g, device, partnum);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_partnum:
  out_noargs:
   return ret;
 }
