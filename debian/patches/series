@@ -4,4 +4,3 @@
 0004-perl-revert-failed-attempt-at-building-out-of-tree-s.patch
 0005-Disable-gnulib-tests-by-default.patch
 0006-golang-Fix-for-out-of-tree-builds.patch
-0007-Don-t-use-module-init-tools-which-has-been-a-metapac.patch

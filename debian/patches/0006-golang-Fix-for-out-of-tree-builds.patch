@@ -8,10 +8,10 @@ Subject: golang: Fix for out-of-tree builds
  2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/configure.ac b/configure.ac
-index 8320295..8bf1436 100644
+index 874f3ad..e367eff 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1530,7 +1530,7 @@ AS_IF([test "x$enable_golang" != "xno"],[
+@@ -1541,7 +1541,7 @@ AS_IF([test "x$enable_golang" != "xno"],[
      AC_CHECK_PROG([GOLANG],[go],[go],[no])
      AS_IF([test "x$GOLANG" != "xno"],[
          AC_MSG_CHECKING([if $GOLANG is usable])
@@ -21,20 +21,20 @@ index 8320295..8bf1436 100644
  
              # Substitute some golang environment.
 diff --git a/golang/Makefile.am b/golang/Makefile.am
-index a7dd1b2..a60c9ba 100644
+index 58cafc6..ba13691 100644
 --- a/golang/Makefile.am
 +++ b/golang/Makefile.am
-@@ -44,6 +44,7 @@ golangpkg_DATA = \
+@@ -49,6 +49,7 @@ golangpkg_DATA = \
  	pkg/$(GOOS)_$(GOARCH)/$(pkg).a
  
  pkg/$(GOOS)_$(GOARCH)/$(pkg).a: src/$(pkg)/guestfs.go
-+	-[ $(srcdir) != $(builddir) ] && cp -rsu $(abs_srcdir)/src $(builddir)/src
++	-[ $(srcdir) != $(builddir) ] && ln -s $(abs_srcdir)/src $(builddir)/src
  	$(top_builddir)/run $(GOLANG) install $(pkg)
  
  golangsrc_DATA = $(source_files)
-@@ -57,4 +58,5 @@ endif
+@@ -62,4 +63,5 @@ endif
  CLEANFILES = *~ src/$(pkg)/*~
  
  clean-local:
-+	-[ $(srcdir) != $(builddir) ] && rm -rf $(builddir)/src
++	-[ $(srcdir) != $(builddir) ] && rm -f $(builddir)/src
  	rm -rf pkg
