@@ -1,3 +1,121 @@
+commit dcd5edd5d40757acd5515b57113a34555dfb52e3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 12 22:47:53 2014 +0000
+
+    Version 1.25.34.
+
+commit 3d4cc3cf576c5bf6105f5693eda87e5c6f775f5e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Feb 12 15:12:19 2014 +0100
+
+    mllib: hostname: add a newline in /etc/hostname
+    
+    /etc/hostname usually has an ending newline, so add it when changing it.
+
+commit 82a4a8f02c5706979d961ad6c4ac767a37a3a7c9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 12 09:32:08 2014 +0000
+
+    FAQ: Another common problem is permission denied errors when running as root.
+
+commit 37aead588efc258472ebb923abb7804257d5ce0d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 12 09:30:39 2014 +0000
+
+    FAQ: Add another common Ubuntu appliance problem.
+
+commit d70ceb4cbea165c960710576efac5a5716055486
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 11 20:08:43 2014 +0000
+
+    list-filesystems: Do not segfault if guestfs_btrfs_subvolume_list returns an error (RHBZ#1064008).
+    
+    If calling guestfs_list_filesystems with a disk image containing a
+    corrupt btrfs volume, the library would segfault.  There was a missing
+    check for a NULL return from guestfs_btrfs_subvolume_list.
+    
+    This adds a check, returning the real error up through the stack and
+    out of guestfs_list_filesystems.
+    
+    This is potentially a denial of service if processing disk images from
+    untrusted sources, but is not exploitable.
+    
+    Thanks: Jeff Bastian for reporting the bug.
+
+commit 76e3e15d031df77db71b11ac1c40199eff80fa4d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 11 12:52:10 2014 +0100
+
+    builder: do a copy when downloading local files
+    
+    Instead of spawning curl even to "download" file:// URIs, just copy
+    them.
+
+commit ba3569704cf5f381c618b6b07c8b001bac88e18a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 11 12:39:56 2014 +0100
+
+    builder: prepare for different per-protocol download actions
+    
+    Small refactor of Downloader.download_to to allow different download
+    actions depending on the protocol of the URI (which is now parsed).
+    
+    No actual behaviour changes, just mostly code motion.
+
+commit c66cec6ffac2af400487b7fb4ff437eddc6e7aa7
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 11 10:40:31 2014 +0100
+
+    builder: isolate C libraries in an own OCAMLCLIBS
+    
+    Just moving stuff within Makefile.am, no functional changes.
+
+commit a948389ce9c76bf7e8997bb27f3daac06cb20c50
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 10 11:00:09 2014 +0100
+
+    actions/part_set_gpt_type: set type of "guid" parameter as "GUID" (RHBZ#1008417).
+    
+    Switch the type of the "guid" parameter from "String" to "GUID"; this
+    adds the validation of the GUID as such, rejecting straight away invalid
+    GUIDs which otherwise could be handled badly by low-level tools (such as
+    sgdisk).
+    
+    Add a couple of easy tests (taken from RHBZ#1008417) to
+    part_set_gpt_type about this.
+
+commit 775cad63a3f2156b38e7d8360b88ed11615779e8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 6 20:02:51 2014 +0100
+
+    generator: generate code for parameter validation
+    
+    Implemented only in the C output, since every binding uses it anyway,
+    and just for the "GUID" type (since its format is well-known).
+
+commit b10dd601fb07eb3d8bf76b5f9fcac1c7fe59d4d5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 6 17:43:04 2014 +0100
+
+    generator: add a GUID parameter type
+    
+    At the moment it is basically the change as String, and it is mapped as
+    if it was such.
+
+commit beef77403cd9d634b6ff6daa9f33d292e2d320a7
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 6 15:57:09 2014 +0100
+
+    utils: add a function to validate a GUID string
+
+commit ed912a54d6d356e3c22617fd20e3595dd81a7b50
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 5 19:39:28 2014 +0000
+
+    libguestfs-make-fixed-appliance: All supported versions of libguestfs should work.
+    
+    We're not supporting anything < 1.20 now.
+
 commit 758d021b41bd23700ec6ee00b8c2cdd94d894fe3
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Feb 5 15:18:49 2014 +0000

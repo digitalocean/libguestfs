@@ -80,6 +80,9 @@ OBJECTS = \
 	$(top_builddir)/mllib/password.cmx \
 	$(top_builddir)/mllib/planner.cmx \
 	$(top_builddir)/mllib/config.cmx \
+	$(top_builddir)/fish/guestfish-uri.o \
+	$(top_builddir)/mllib/uri-c.o \
+	$(top_builddir)/mllib/uRI.cmx \
 	index-scan.o \
 	index-struct.o \
 	index-parse.o \
@@ -113,10 +116,18 @@ endif
 OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
 OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 
+OCAMLCLIBS  = \
+	$(LIBLZMA_LIBS) \
+	$(LIBXML2_LIBS) \
+	-L../src/.libs -lutils \
+	-L../gnulib/lib/.libs -lgnu \
+	-pthread -lpthread \
+	-lncurses -lcrypt
+
 virt-builder: $(OBJECTS)
 	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
 	  mlguestfs.cmxa -linkpkg $^ \
-	  -cclib '-pthread $(LIBLZMA_LIBS) -lncurses -lcrypt -lpthread' \
+	  -cclib '$(OCAMLCLIBS)' \
 	  $(OCAML_GCOV_LDFLAGS) \
 	  -o $@
 

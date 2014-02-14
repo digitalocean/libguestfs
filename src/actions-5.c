@@ -7613,6 +7613,12 @@ guestfs_part_set_gpt_type (guestfs_h *g,
     return -1;
   }
 
+  if (!guestfs___validate_guid (guid)) {
+    error (g, "%s: %s: parameter is not a valid GUID",
+           "part_set_gpt_type", "guid");
+    return -1;
+  }
+
   if (trace_flag) {
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "part_set_gpt_type");
