@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_FSTRIM (guestfs_fstrim_get_type())
-#define GUESTFS_FSTRIM(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_FSTRIM, GuestfsFstrim))
-#define GUESTFS_FSTRIM_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_FSTRIM, GuestfsFstrimClass))
-#define GUESTFS_IS_FSTRIM(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_FSTRIM))
-#define GUESTFS_IS_FSTRIM_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_FSTRIM))
-#define GUESTFS_FSTRIM_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_FSTRIM, GuestfsFstrimClass))
+#define GUESTFS_TYPE_FSTRIM (guestfs_fstrim_get_type ())
+#define GUESTFS_FSTRIM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_FSTRIM, GuestfsFstrim))
+#define GUESTFS_FSTRIM_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_FSTRIM, GuestfsFstrimClass))
+#define GUESTFS_IS_FSTRIM(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_FSTRIM))
+#define GUESTFS_IS_FSTRIM_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_FSTRIM))
+#define GUESTFS_FSTRIM_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_FSTRIM, GuestfsFstrimClass))
 
 typedef struct _GuestfsFstrimPrivate GuestfsFstrimPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsFstrimClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_fstrim_get_type(void);
-GuestfsFstrim *guestfs_fstrim_new(void);
+GType guestfs_fstrim_get_type (void);
+GuestfsFstrim *guestfs_fstrim_new (void);
 
 G_END_DECLS
 

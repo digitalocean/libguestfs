@@ -31,15 +31,15 @@
  */
 
 static GuestfsHivexValue *
-guestfs_hivex_value_copy(GuestfsHivexValue *src)
+guestfs_hivex_value_copy (GuestfsHivexValue *src)
 {
-  return g_slice_dup(GuestfsHivexValue, src);
+  return g_slice_dup (GuestfsHivexValue, src);
 }
 
 static void
-guestfs_hivex_value_free(GuestfsHivexValue *src)
+guestfs_hivex_value_free (GuestfsHivexValue *src)
 {
-  g_slice_free(GuestfsHivexValue, src);
+  g_slice_free (GuestfsHivexValue, src);
 }
 
-G_DEFINE_BOXED_TYPE(GuestfsHivexValue, guestfs_hivex_value, guestfs_hivex_value_copy, guestfs_hivex_value_free)
+G_DEFINE_BOXED_TYPE (GuestfsHivexValue, guestfs_hivex_value, guestfs_hivex_value_copy, guestfs_hivex_value_free)

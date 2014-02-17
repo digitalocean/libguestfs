@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_MOUNT_9P (guestfs_mount_9p_get_type())
-#define GUESTFS_MOUNT_9P(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_MOUNT_9P, GuestfsMount9P))
-#define GUESTFS_MOUNT_9P_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_MOUNT_9P, GuestfsMount9PClass))
-#define GUESTFS_IS_MOUNT_9P(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_MOUNT_9P))
-#define GUESTFS_IS_MOUNT_9P_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_MOUNT_9P))
-#define GUESTFS_MOUNT_9P_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_MOUNT_9P, GuestfsMount9PClass))
+#define GUESTFS_TYPE_MOUNT_9P (guestfs_mount_9p_get_type ())
+#define GUESTFS_MOUNT_9P(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_MOUNT_9P, GuestfsMount9P))
+#define GUESTFS_MOUNT_9P_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_MOUNT_9P, GuestfsMount9PClass))
+#define GUESTFS_IS_MOUNT_9P(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_MOUNT_9P))
+#define GUESTFS_IS_MOUNT_9P_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_MOUNT_9P))
+#define GUESTFS_MOUNT_9P_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_MOUNT_9P, GuestfsMount9PClass))
 
 typedef struct _GuestfsMount9PPrivate GuestfsMount9PPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsMount9PClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_mount_9p_get_type(void);
-GuestfsMount9P *guestfs_mount_9p_new(void);
+GType guestfs_mount_9p_get_type (void);
+GuestfsMount9P *guestfs_mount_9p_new (void);
 
 G_END_DECLS
 

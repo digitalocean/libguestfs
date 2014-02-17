@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_XFS_REPAIR (guestfs_xfs_repair_get_type())
-#define GUESTFS_XFS_REPAIR(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_XFS_REPAIR, GuestfsXfsRepair))
-#define GUESTFS_XFS_REPAIR_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_XFS_REPAIR, GuestfsXfsRepairClass))
-#define GUESTFS_IS_XFS_REPAIR(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_XFS_REPAIR))
-#define GUESTFS_IS_XFS_REPAIR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_XFS_REPAIR))
-#define GUESTFS_XFS_REPAIR_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_XFS_REPAIR, GuestfsXfsRepairClass))
+#define GUESTFS_TYPE_XFS_REPAIR (guestfs_xfs_repair_get_type ())
+#define GUESTFS_XFS_REPAIR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_XFS_REPAIR, GuestfsXfsRepair))
+#define GUESTFS_XFS_REPAIR_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_XFS_REPAIR, GuestfsXfsRepairClass))
+#define GUESTFS_IS_XFS_REPAIR(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_XFS_REPAIR))
+#define GUESTFS_IS_XFS_REPAIR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_XFS_REPAIR))
+#define GUESTFS_XFS_REPAIR_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_XFS_REPAIR, GuestfsXfsRepairClass))
 
 typedef struct _GuestfsXfsRepairPrivate GuestfsXfsRepairPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsXfsRepairClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_xfs_repair_get_type(void);
-GuestfsXfsRepair *guestfs_xfs_repair_new(void);
+GType guestfs_xfs_repair_get_type (void);
+GuestfsXfsRepair *guestfs_xfs_repair_new (void);
 
 G_END_DECLS
 

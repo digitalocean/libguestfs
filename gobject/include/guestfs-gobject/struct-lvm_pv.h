@@ -65,7 +65,7 @@ struct _GuestfsPV {
   gint64 pv_mda_count;
   guint64 pv_mda_free;
 };
-GType guestfs_lvm_pv_get_type(void);
+GType guestfs_lvm_pv_get_type (void);
 
 G_END_DECLS
 

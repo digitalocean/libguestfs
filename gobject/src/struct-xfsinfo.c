@@ -31,15 +31,15 @@
  */
 
 static GuestfsXFSInfo *
-guestfs_xfsinfo_copy(GuestfsXFSInfo *src)
+guestfs_xfsinfo_copy (GuestfsXFSInfo *src)
 {
-  return g_slice_dup(GuestfsXFSInfo, src);
+  return g_slice_dup (GuestfsXFSInfo, src);
 }
 
 static void
-guestfs_xfsinfo_free(GuestfsXFSInfo *src)
+guestfs_xfsinfo_free (GuestfsXFSInfo *src)
 {
-  g_slice_free(GuestfsXFSInfo, src);
+  g_slice_free (GuestfsXFSInfo, src);
 }
 
-G_DEFINE_BOXED_TYPE(GuestfsXFSInfo, guestfs_xfsinfo, guestfs_xfsinfo_copy, guestfs_xfsinfo_free)
+G_DEFINE_BOXED_TYPE (GuestfsXFSInfo, guestfs_xfsinfo, guestfs_xfsinfo_copy, guestfs_xfsinfo_free)

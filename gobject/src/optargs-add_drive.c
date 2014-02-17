@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_ADD_DRIVE_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_ADD_DRIVE, GuestfsAddDrivePrivate))
+#define GUESTFS_ADD_DRIVE_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_ADD_DRIVE, GuestfsAddDrivePrivate))
 
 struct _GuestfsAddDrivePrivate {
   GuestfsTristate readonly;
@@ -49,7 +49,7 @@ struct _GuestfsAddDrivePrivate {
   gchar *cachemode;
 };
 
-G_DEFINE_TYPE(GuestfsAddDrive, guestfs_add_drive, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsAddDrive, guestfs_add_drive, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_ADD_DRIVE_PROP0,
@@ -68,7 +68,7 @@ enum {
 static void
 guestfs_add_drive_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsAddDrive *self = GUESTFS_ADD_DRIVE(object);
+  GuestfsAddDrive *self = GUESTFS_ADD_DRIVE (object);
   GuestfsAddDrivePrivate *priv = self->priv;
 
   switch (property_id) {
@@ -77,122 +77,121 @@ guestfs_add_drive_set_property(GObject *object, guint property_id, const GValue 
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_FORMAT:
-      g_free(priv->format);
+      g_free (priv->format);
       priv->format = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_IFACE:
-      g_free(priv->iface);
+      g_free (priv->iface);
       priv->iface = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_NAME:
-      g_free(priv->name);
+      g_free (priv->name);
       priv->name = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_LABEL:
-      g_free(priv->label);
+      g_free (priv->label);
       priv->label = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_PROTOCOL:
-      g_free(priv->protocol);
+      g_free (priv->protocol);
       priv->protocol = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_USERNAME:
-      g_free(priv->username);
+      g_free (priv->username);
       priv->username = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_SECRET:
-      g_free(priv->secret);
+      g_free (priv->secret);
       priv->secret = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_CACHEMODE:
-      g_free(priv->cachemode);
+      g_free (priv->cachemode);
       priv->cachemode = g_value_dup_string (value);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_add_drive_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsAddDrive *self = GUESTFS_ADD_DRIVE(object);
+  GuestfsAddDrive *self = GUESTFS_ADD_DRIVE (object);
   GuestfsAddDrivePrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_ADD_DRIVE_READONLY:
-      g_value_set_enum(value, priv->readonly);
+      g_value_set_enum (value, priv->readonly);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_FORMAT:
-      g_value_set_string(value, priv->format);
+      g_value_set_string (value, priv->format);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_IFACE:
-      g_value_set_string(value, priv->iface);
+      g_value_set_string (value, priv->iface);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_NAME:
-      g_value_set_string(value, priv->name);
+      g_value_set_string (value, priv->name);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_LABEL:
-      g_value_set_string(value, priv->label);
+      g_value_set_string (value, priv->label);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_PROTOCOL:
-      g_value_set_string(value, priv->protocol);
+      g_value_set_string (value, priv->protocol);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_USERNAME:
-      g_value_set_string(value, priv->username);
+      g_value_set_string (value, priv->username);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_SECRET:
-      g_value_set_string(value, priv->secret);
+      g_value_set_string (value, priv->secret);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_CACHEMODE:
-      g_value_set_string(value, priv->cachemode);
+      g_value_set_string (value, priv->cachemode);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_add_drive_finalize(GObject *object)
+guestfs_add_drive_finalize (GObject *object)
 {
-  GuestfsAddDrive *self = GUESTFS_ADD_DRIVE(object);
+  GuestfsAddDrive *self = GUESTFS_ADD_DRIVE (object);
   GuestfsAddDrivePrivate *priv = self->priv;
 
-  g_free(priv->format);
-  g_free(priv->iface);
-  g_free(priv->name);
-  g_free(priv->label);
-  g_free(priv->protocol);
-  g_free(priv->username);
-  g_free(priv->secret);
-  g_free(priv->cachemode);
-
-  G_OBJECT_CLASS(guestfs_add_drive_parent_class)->finalize(object);
+  g_free (priv->format);
+  g_free (priv->iface);
+  g_free (priv->name);
+  g_free (priv->label);
+  g_free (priv->protocol);
+  g_free (priv->username);
+  g_free (priv->secret);
+  g_free (priv->cachemode);
+  G_OBJECT_CLASS (guestfs_add_drive_parent_class)->finalize (object);
 }
 
 static void
-guestfs_add_drive_class_init(GuestfsAddDriveClass *klass)
+guestfs_add_drive_class_init (GuestfsAddDriveClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_add_drive_set_property;
   object_class->get_property = guestfs_add_drive_get_property;
 
@@ -201,10 +200,10 @@ guestfs_add_drive_class_init(GuestfsAddDriveClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_ADD_DRIVE_READONLY,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "readonly",
       "readonly",
       "A boolean.",
@@ -218,10 +217,10 @@ guestfs_add_drive_class_init(GuestfsAddDriveClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_ADD_DRIVE_FORMAT,
-    g_param_spec_string(
+    g_param_spec_string (
       "format",
       "format",
       "A string.",
@@ -235,10 +234,10 @@ guestfs_add_drive_class_init(GuestfsAddDriveClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_ADD_DRIVE_IFACE,
-    g_param_spec_string(
+    g_param_spec_string (
       "iface",
       "iface",
       "A string.",
@@ -252,10 +251,10 @@ guestfs_add_drive_class_init(GuestfsAddDriveClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_ADD_DRIVE_NAME,
-    g_param_spec_string(
+    g_param_spec_string (
       "name",
       "name",
       "A string.",
@@ -269,10 +268,10 @@ guestfs_add_drive_class_init(GuestfsAddDriveClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_ADD_DRIVE_LABEL,
-    g_param_spec_string(
+    g_param_spec_string (
       "label",
       "label",
       "A string.",
@@ -286,10 +285,10 @@ guestfs_add_drive_class_init(GuestfsAddDriveClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_ADD_DRIVE_PROTOCOL,
-    g_param_spec_string(
+    g_param_spec_string (
       "protocol",
       "protocol",
       "A string.",
@@ -303,10 +302,10 @@ guestfs_add_drive_class_init(GuestfsAddDriveClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_ADD_DRIVE_USERNAME,
-    g_param_spec_string(
+    g_param_spec_string (
       "username",
       "username",
       "A string.",
@@ -320,10 +319,10 @@ guestfs_add_drive_class_init(GuestfsAddDriveClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_ADD_DRIVE_SECRET,
-    g_param_spec_string(
+    g_param_spec_string (
       "secret",
       "secret",
       "A string.",
@@ -337,10 +336,10 @@ guestfs_add_drive_class_init(GuestfsAddDriveClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_ADD_DRIVE_CACHEMODE,
-    g_param_spec_string(
+    g_param_spec_string (
       "cachemode",
       "cachemode",
       "A string.",
@@ -350,15 +349,15 @@ guestfs_add_drive_class_init(GuestfsAddDriveClass *klass)
   );
 
   object_class->finalize = guestfs_add_drive_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsAddDrivePrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsAddDrivePrivate));
 }
 
 static void
-guestfs_add_drive_init(GuestfsAddDrive *o)
+guestfs_add_drive_init (GuestfsAddDrive *o)
 {
-  o->priv = GUESTFS_ADD_DRIVE_GET_PRIVATE(o);
+  o->priv = GUESTFS_ADD_DRIVE_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsAddDrivePrivate));
+  memset (o->priv, 0, sizeof (GuestfsAddDrivePrivate));
 }
 
 /**
@@ -369,7 +368,7 @@ guestfs_add_drive_init(GuestfsAddDrive *o)
  * Returns: (transfer full): a new GuestfsAddDrive object
  */
 GuestfsAddDrive *
-guestfs_add_drive_new(void)
+guestfs_add_drive_new (void)
 {
-  return GUESTFS_ADD_DRIVE(g_object_new(GUESTFS_TYPE_ADD_DRIVE, NULL));
+  return GUESTFS_ADD_DRIVE (g_object_new (GUESTFS_TYPE_ADD_DRIVE, NULL));
 }

@@ -1,3 +1,240 @@
+commit 22f6c79b32ab281e1f025f6b20fbf1b4407ef08a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 17 10:08:38 2014 +0000
+
+    Version 1.25.36.
+
+commit 360abeebda97e9940a4045a331ce181d1a370719
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 17 09:13:42 2014 +0000
+
+    builder: Fix dependencies which are not generated correctly by automake.
+    
+    See the error messages here:
+    https://www.redhat.com/archives/libguestfs/2014-February/msg00148.html
+    
+    This fixes commit e2cc8b6465a400024fe2f0fcce0d0ff5f7e7719c.
+
+commit 8f767f4caadbd5e964e4136a8361bcb32f2f63ea
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Feb 16 22:34:56 2014 +0000
+
+    Version 1.25.35.
+
+commit b987be513a919e91b79a045095f9b84db625165f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Feb 16 19:20:40 2014 +0000
+
+    FAQ: Remove obsolete entry about libguestfs <= 1.13 and slow writes.
+    
+    Long since not a problem.
+
+commit 728ba9b33fa6002de7da72629ff59a7ea99807b5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Feb 16 19:09:33 2014 +0000
+
+    FAQ: Add several common problems with opening disk images.
+
+commit c16d5d3de49e3cddce07f161a3316873304adc9c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Feb 16 13:30:25 2014 +0000
+
+    FAQ: Create new section about problems opening disk images.
+    
+    Move the stuff about encoding problems here, because these are not
+    really common problems.
+
+commit 6594e88d80cbd49f798e393cad207d989adf7bc9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Feb 16 19:15:29 2014 +0000
+
+    FAQ: Remove old RHEL 6.5 section.
+
+commit 6cc521dc4533d10659214cc660f31239de9e28e7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Feb 15 20:27:12 2014 +0000
+
+    generator: Sort most output.
+    
+    Look for use of external_functions and fish_functions and replace with
+    use of external_functions_sorted and fish_functions_sorted where
+    possible.  This ensures that the output of the generator is sorted as
+    far as possible.
+    
+    I also checked for uses of internal_functions and documented_functions
+    but those are not used.  The *_sorted versions are always used
+    instead.
+
+commit bbfb9f9480baf3bbf62c6a07252bad9030bdc4a1
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Fri Feb 14 09:09:47 2014 +0100
+
+    podwrapper: Recognize git-style dates in ChangeLog
+
+commit bf8d75590c3924c3ebe343bf354e93ec7e84ccf9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 13 21:45:47 2014 +0000
+
+    test: Use = instead of == for testing string equality in bash script.
+    
+    Found by make syntax-check.
+
+commit d56b8bcb2c6509b5644fb4d79abb3a4211191388
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 13 21:45:31 2014 +0000
+
+    Remove some unused header files.
+    
+    Found by make syntax-check.
+
+commit f5de589966ae7f22a83d6ef6be6140ae68551a7b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 13 21:41:12 2014 +0000
+
+    src/drives.c: Remove useless if-before-free.
+    
+    Found by make syntax-check.
+
+commit 9018356a67eb644126814e4ef41555c56e884a79
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 13 21:39:50 2014 +0000
+
+    Use bindtextdomain in some programs where it was missing.
+    
+    Found by make syntax-check.
+
+commit e3d23cccf4099680a4335db97fe2ccf2d3c950f4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 13 21:38:42 2014 +0000
+
+    builder: Suppress warning about unused yyunput.
+    
+      CC       virt_index_validate-index-validate.o
+    index-scan.c:1270:17: warning: 'yyunput' defined but not used [-Wunused-function]
+         static void yyunput (int c, register char * yy_bp )
+                     ^
+      CCLD     virt-index-validate
+    
+    By using %option nounput we can prevent this from being generated in
+    the first place.
+
+commit 9df9c871477d31ebd12c851069ba29ace352c584
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 13 21:07:40 2014 +0000
+
+    configure: Move ocaml-gettext writing boilerplate to separate m4 module.
+    
+    This is just code motion.
+    
+    NOTE that after this commit you have to do:
+    
+      aclocal -I m4
+      autoconf
+    
+    as 'make' may not do this automatically.
+
+commit e4fe09c5ae28ee34d87bceecf58f72cc43af6249
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 13 17:48:06 2014 +0000
+
+    builder: pxzcat: Fix char * signedness warning.
+
+commit f8bac1329e845734333bf9ab13909a5364a1fa53
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 13 17:47:26 2014 +0000
+
+    mllib/uri-c.c: Remove unused variable.
+
+commit 72713825c44b0aa2587a96cf9e1bf089e3227660
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 13 17:39:58 2014 +0000
+
+    gobject: Remove some more warnings from session.c code.
+
+commit e74c957a2b2a293290b54e23fb5a7b16f845917b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 13 15:24:57 2014 +0000
+
+    gobject: Clean up some warnings about unused variables.
+
+commit 23d6d53633fa9cd1c5cd03fbed3aa954d5da2661
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 13 15:01:51 2014 +0000
+
+    gobject: Don't direct error messages to /dev/null.
+    
+    We might want to see them.
+
+commit 99ce50e0a0f9aa8b2c7459cc38e7d4e8760b19d2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 13 14:34:56 2014 +0000
+
+    gobject: Use spaces between function name and call parameters.
+    
+    This is just a whitespace change.
+    
+    This was done by running the following command and then fixing a
+    couple of places where it got it wrong:
+    
+    perl -pi.bak -e 'unless (m/#define/) { s/([a-zA-Z0-9])\(/$1 (/g }' \
+      generator/gobject.ml
+
+commit cd9f7411741290add87910d531a9cd8685b3be91
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 13 13:37:55 2014 +0000
+
+    fish/uri: Initialize some variables to avoid a warning.
+    
+    The warning only appears when we set CFLAGS to be the same as used by
+    RPM, which you can do by setting:
+    
+      CFLAGS="$(rpm --eval '%{__global_cflags}')"
+    
+    before running ./configure.
+    
+    FWIW the current value of that RPM expression (in Fedora 20) is:
+    
+      -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches
+    
+    It is not clear which option precisely enables the warning.
+
+commit 2954541fdd6bd419c43e861c187f4f384996b54d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 13 13:16:39 2014 +0000
+
+    java: Avoid warnings in the tests and examples.
+    
+    Avoid warnings about missing serial version, and fix a warning about
+    raw types.
+
+commit ab2df2e6598d421067d600f89a3d225162424d9b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 13 14:52:50 2014 +0100
+
+    mllib: hostname: on Debian replace it also in /etc/hosts (RHBZ#953907).
+    
+    In Debian/Ubuntu systems, read the previous hostname from /etc/hostname
+    before replacing it, and replace it in /etc/hosts with the new hostname.
+
+commit 4ca4eef0cc6877a595c3d71c09d3dc18a803b638
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 13 10:57:31 2014 +0100
+
+    sysprep: remove RH subscription manager files
+    
+    Add a new operation for it, which should do what
+    `subscription-manager clean` does.
+    
+    Part of RHBZ#1063374.
+
+commit f78877c77e502ac829ccbc11207b807bb1688420
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 13 10:50:15 2014 +0100
+
+    sysprep: remove RH subscription manager log files
+    
+    Part of RHBZ#1063374.
+
 commit dcd5edd5d40757acd5515b57113a34555dfb52e3
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Feb 12 22:47:53 2014 +0000

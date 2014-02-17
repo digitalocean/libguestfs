@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_TAR_OUT_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_TAR_OUT, GuestfsTarOutPrivate))
+#define GUESTFS_TAR_OUT_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_TAR_OUT, GuestfsTarOutPrivate))
 
 struct _GuestfsTarOutPrivate {
   gchar *compress;
@@ -42,7 +42,7 @@ struct _GuestfsTarOutPrivate {
   /* OStringList not implemented yet */
 };
 
-G_DEFINE_TYPE(GuestfsTarOut, guestfs_tar_out, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsTarOut, guestfs_tar_out, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_TAR_OUT_PROP0,
@@ -54,12 +54,12 @@ enum {
 static void
 guestfs_tar_out_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsTarOut *self = GUESTFS_TAR_OUT(object);
+  GuestfsTarOut *self = GUESTFS_TAR_OUT (object);
   GuestfsTarOutPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_TAR_OUT_COMPRESS:
-      g_free(priv->compress);
+      g_free (priv->compress);
       priv->compress = g_value_dup_string (value);
       break;
 
@@ -69,46 +69,45 @@ guestfs_tar_out_set_property(GObject *object, guint property_id, const GValue *v
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_tar_out_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsTarOut *self = GUESTFS_TAR_OUT(object);
+  GuestfsTarOut *self = GUESTFS_TAR_OUT (object);
   GuestfsTarOutPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_TAR_OUT_COMPRESS:
-      g_value_set_string(value, priv->compress);
+      g_value_set_string (value, priv->compress);
       break;
 
     case PROP_GUESTFS_TAR_OUT_NUMERICOWNER:
-      g_value_set_enum(value, priv->numericowner);
+      g_value_set_enum (value, priv->numericowner);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_tar_out_finalize(GObject *object)
+guestfs_tar_out_finalize (GObject *object)
 {
-  GuestfsTarOut *self = GUESTFS_TAR_OUT(object);
+  GuestfsTarOut *self = GUESTFS_TAR_OUT (object);
   GuestfsTarOutPrivate *priv = self->priv;
 
-  g_free(priv->compress);
-
-  G_OBJECT_CLASS(guestfs_tar_out_parent_class)->finalize(object);
+  g_free (priv->compress);
+  G_OBJECT_CLASS (guestfs_tar_out_parent_class)->finalize (object);
 }
 
 static void
-guestfs_tar_out_class_init(GuestfsTarOutClass *klass)
+guestfs_tar_out_class_init (GuestfsTarOutClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_tar_out_set_property;
   object_class->get_property = guestfs_tar_out_get_property;
 
@@ -117,10 +116,10 @@ guestfs_tar_out_class_init(GuestfsTarOutClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_TAR_OUT_COMPRESS,
-    g_param_spec_string(
+    g_param_spec_string (
       "compress",
       "compress",
       "A string.",
@@ -134,10 +133,10 @@ guestfs_tar_out_class_init(GuestfsTarOutClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_TAR_OUT_NUMERICOWNER,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "numericowner",
       "numericowner",
       "A boolean.",
@@ -147,15 +146,15 @@ guestfs_tar_out_class_init(GuestfsTarOutClass *klass)
   );
 
   object_class->finalize = guestfs_tar_out_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsTarOutPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsTarOutPrivate));
 }
 
 static void
-guestfs_tar_out_init(GuestfsTarOut *o)
+guestfs_tar_out_init (GuestfsTarOut *o)
 {
-  o->priv = GUESTFS_TAR_OUT_GET_PRIVATE(o);
+  o->priv = GUESTFS_TAR_OUT_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsTarOutPrivate));
+  memset (o->priv, 0, sizeof (GuestfsTarOutPrivate));
 }
 
 /**
@@ -166,7 +165,7 @@ guestfs_tar_out_init(GuestfsTarOut *o)
  * Returns: (transfer full): a new GuestfsTarOut object
  */
 GuestfsTarOut *
-guestfs_tar_out_new(void)
+guestfs_tar_out_new (void)
 {
-  return GUESTFS_TAR_OUT(g_object_new(GUESTFS_TYPE_TAR_OUT, NULL));
+  return GUESTFS_TAR_OUT (g_object_new (GUESTFS_TYPE_TAR_OUT, NULL));
 }

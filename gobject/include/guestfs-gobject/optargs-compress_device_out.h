@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_COMPRESS_DEVICE_OUT (guestfs_compress_device_out_get_type())
-#define GUESTFS_COMPRESS_DEVICE_OUT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_COMPRESS_DEVICE_OUT, GuestfsCompressDeviceOut))
-#define GUESTFS_COMPRESS_DEVICE_OUT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_COMPRESS_DEVICE_OUT, GuestfsCompressDeviceOutClass))
-#define GUESTFS_IS_COMPRESS_DEVICE_OUT(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_COMPRESS_DEVICE_OUT))
-#define GUESTFS_IS_COMPRESS_DEVICE_OUT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_COMPRESS_DEVICE_OUT))
-#define GUESTFS_COMPRESS_DEVICE_OUT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_COMPRESS_DEVICE_OUT, GuestfsCompressDeviceOutClass))
+#define GUESTFS_TYPE_COMPRESS_DEVICE_OUT (guestfs_compress_device_out_get_type ())
+#define GUESTFS_COMPRESS_DEVICE_OUT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_COMPRESS_DEVICE_OUT, GuestfsCompressDeviceOut))
+#define GUESTFS_COMPRESS_DEVICE_OUT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_COMPRESS_DEVICE_OUT, GuestfsCompressDeviceOutClass))
+#define GUESTFS_IS_COMPRESS_DEVICE_OUT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_COMPRESS_DEVICE_OUT))
+#define GUESTFS_IS_COMPRESS_DEVICE_OUT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_COMPRESS_DEVICE_OUT))
+#define GUESTFS_COMPRESS_DEVICE_OUT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_COMPRESS_DEVICE_OUT, GuestfsCompressDeviceOutClass))
 
 typedef struct _GuestfsCompressDeviceOutPrivate GuestfsCompressDeviceOutPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsCompressDeviceOutClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_compress_device_out_get_type(void);
-GuestfsCompressDeviceOut *guestfs_compress_device_out_new(void);
+GType guestfs_compress_device_out_get_type (void);
+GuestfsCompressDeviceOut *guestfs_compress_device_out_new (void);
 
 G_END_DECLS
 

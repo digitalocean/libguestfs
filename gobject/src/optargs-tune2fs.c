@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_TUNE2FS_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_TUNE2FS, GuestfsTune2FSPrivate))
+#define GUESTFS_TUNE2FS_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_TUNE2FS, GuestfsTune2FSPrivate))
 
 struct _GuestfsTune2FSPrivate {
   GuestfsTristate force;
@@ -49,7 +49,7 @@ struct _GuestfsTune2FSPrivate {
   gint64 user;
 };
 
-G_DEFINE_TYPE(GuestfsTune2FS, guestfs_tune2fs, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsTune2FS, guestfs_tune2fs, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_TUNE2FS_PROP0,
@@ -68,7 +68,7 @@ enum {
 static void
 guestfs_tune2fs_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsTune2FS *self = GUESTFS_TUNE2FS(object);
+  GuestfsTune2FS *self = GUESTFS_TUNE2FS (object);
   GuestfsTune2FSPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -85,7 +85,7 @@ guestfs_tune2fs_set_property(GObject *object, guint property_id, const GValue *v
       break;
 
     case PROP_GUESTFS_TUNE2FS_ERRORBEHAVIOR:
-      g_free(priv->errorbehavior);
+      g_free (priv->errorbehavior);
       priv->errorbehavior = g_value_dup_string (value);
       break;
 
@@ -102,7 +102,7 @@ guestfs_tune2fs_set_property(GObject *object, guint property_id, const GValue *v
       break;
 
     case PROP_GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY:
-      g_free(priv->lastmounteddirectory);
+      g_free (priv->lastmounteddirectory);
       priv->lastmounteddirectory = g_value_dup_string (value);
       break;
 
@@ -116,79 +116,78 @@ guestfs_tune2fs_set_property(GObject *object, guint property_id, const GValue *v
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_tune2fs_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsTune2FS *self = GUESTFS_TUNE2FS(object);
+  GuestfsTune2FS *self = GUESTFS_TUNE2FS (object);
   GuestfsTune2FSPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_TUNE2FS_FORCE:
-      g_value_set_enum(value, priv->force);
+      g_value_set_enum (value, priv->force);
       break;
 
     case PROP_GUESTFS_TUNE2FS_MAXMOUNTCOUNT:
-      g_value_set_int(value, priv->maxmountcount);
+      g_value_set_int (value, priv->maxmountcount);
       break;
 
     case PROP_GUESTFS_TUNE2FS_MOUNTCOUNT:
-      g_value_set_int(value, priv->mountcount);
+      g_value_set_int (value, priv->mountcount);
       break;
 
     case PROP_GUESTFS_TUNE2FS_ERRORBEHAVIOR:
-      g_value_set_string(value, priv->errorbehavior);
+      g_value_set_string (value, priv->errorbehavior);
       break;
 
     case PROP_GUESTFS_TUNE2FS_GROUP:
-      g_value_set_int64(value, priv->group);
+      g_value_set_int64 (value, priv->group);
       break;
 
     case PROP_GUESTFS_TUNE2FS_INTERVALBETWEENCHECKS:
-      g_value_set_int(value, priv->intervalbetweenchecks);
+      g_value_set_int (value, priv->intervalbetweenchecks);
       break;
 
     case PROP_GUESTFS_TUNE2FS_RESERVEDBLOCKSPERCENTAGE:
-      g_value_set_int(value, priv->reservedblockspercentage);
+      g_value_set_int (value, priv->reservedblockspercentage);
       break;
 
     case PROP_GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY:
-      g_value_set_string(value, priv->lastmounteddirectory);
+      g_value_set_string (value, priv->lastmounteddirectory);
       break;
 
     case PROP_GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT:
-      g_value_set_int64(value, priv->reservedblockscount);
+      g_value_set_int64 (value, priv->reservedblockscount);
       break;
 
     case PROP_GUESTFS_TUNE2FS_USER:
-      g_value_set_int64(value, priv->user);
+      g_value_set_int64 (value, priv->user);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_tune2fs_finalize(GObject *object)
+guestfs_tune2fs_finalize (GObject *object)
 {
-  GuestfsTune2FS *self = GUESTFS_TUNE2FS(object);
+  GuestfsTune2FS *self = GUESTFS_TUNE2FS (object);
   GuestfsTune2FSPrivate *priv = self->priv;
 
-  g_free(priv->errorbehavior);
-  g_free(priv->lastmounteddirectory);
-
-  G_OBJECT_CLASS(guestfs_tune2fs_parent_class)->finalize(object);
+  g_free (priv->errorbehavior);
+  g_free (priv->lastmounteddirectory);
+  G_OBJECT_CLASS (guestfs_tune2fs_parent_class)->finalize (object);
 }
 
 static void
-guestfs_tune2fs_class_init(GuestfsTune2FSClass *klass)
+guestfs_tune2fs_class_init (GuestfsTune2FSClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_tune2fs_set_property;
   object_class->get_property = guestfs_tune2fs_get_property;
 
@@ -197,10 +196,10 @@ guestfs_tune2fs_class_init(GuestfsTune2FSClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_TUNE2FS_FORCE,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "force",
       "force",
       "A boolean.",
@@ -214,10 +213,10 @@ guestfs_tune2fs_class_init(GuestfsTune2FSClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_TUNE2FS_MAXMOUNTCOUNT,
-    g_param_spec_int(
+    g_param_spec_int (
       "maxmountcount",
       "maxmountcount",
       "A 32-bit integer.",
@@ -231,10 +230,10 @@ guestfs_tune2fs_class_init(GuestfsTune2FSClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_TUNE2FS_MOUNTCOUNT,
-    g_param_spec_int(
+    g_param_spec_int (
       "mountcount",
       "mountcount",
       "A 32-bit integer.",
@@ -248,10 +247,10 @@ guestfs_tune2fs_class_init(GuestfsTune2FSClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_TUNE2FS_ERRORBEHAVIOR,
-    g_param_spec_string(
+    g_param_spec_string (
       "errorbehavior",
       "errorbehavior",
       "A string.",
@@ -265,10 +264,10 @@ guestfs_tune2fs_class_init(GuestfsTune2FSClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_TUNE2FS_GROUP,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "group",
       "group",
       "A 64-bit integer.",
@@ -282,10 +281,10 @@ guestfs_tune2fs_class_init(GuestfsTune2FSClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_TUNE2FS_INTERVALBETWEENCHECKS,
-    g_param_spec_int(
+    g_param_spec_int (
       "intervalbetweenchecks",
       "intervalbetweenchecks",
       "A 32-bit integer.",
@@ -299,10 +298,10 @@ guestfs_tune2fs_class_init(GuestfsTune2FSClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_TUNE2FS_RESERVEDBLOCKSPERCENTAGE,
-    g_param_spec_int(
+    g_param_spec_int (
       "reservedblockspercentage",
       "reservedblockspercentage",
       "A 32-bit integer.",
@@ -316,10 +315,10 @@ guestfs_tune2fs_class_init(GuestfsTune2FSClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY,
-    g_param_spec_string(
+    g_param_spec_string (
       "lastmounteddirectory",
       "lastmounteddirectory",
       "A string.",
@@ -333,10 +332,10 @@ guestfs_tune2fs_class_init(GuestfsTune2FSClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "reservedblockscount",
       "reservedblockscount",
       "A 64-bit integer.",
@@ -350,10 +349,10 @@ guestfs_tune2fs_class_init(GuestfsTune2FSClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_TUNE2FS_USER,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "user",
       "user",
       "A 64-bit integer.",
@@ -363,15 +362,15 @@ guestfs_tune2fs_class_init(GuestfsTune2FSClass *klass)
   );
 
   object_class->finalize = guestfs_tune2fs_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsTune2FSPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsTune2FSPrivate));
 }
 
 static void
-guestfs_tune2fs_init(GuestfsTune2FS *o)
+guestfs_tune2fs_init (GuestfsTune2FS *o)
 {
-  o->priv = GUESTFS_TUNE2FS_GET_PRIVATE(o);
+  o->priv = GUESTFS_TUNE2FS_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsTune2FSPrivate));
+  memset (o->priv, 0, sizeof (GuestfsTune2FSPrivate));
 }
 
 /**
@@ -382,7 +381,7 @@ guestfs_tune2fs_init(GuestfsTune2FS *o)
  * Returns: (transfer full): a new GuestfsTune2FS object
  */
 GuestfsTune2FS *
-guestfs_tune2fs_new(void)
+guestfs_tune2fs_new (void)
 {
-  return GUESTFS_TUNE2FS(g_object_new(GUESTFS_TYPE_TUNE2FS, NULL));
+  return GUESTFS_TUNE2FS (g_object_new (GUESTFS_TYPE_TUNE2FS, NULL));
 }

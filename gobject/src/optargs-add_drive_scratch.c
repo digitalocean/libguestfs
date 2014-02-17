@@ -34,14 +34,14 @@
 
 #include <string.h>
 
-#define GUESTFS_ADD_DRIVE_SCRATCH_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_ADD_DRIVE_SCRATCH, GuestfsAddDriveScratchPrivate))
+#define GUESTFS_ADD_DRIVE_SCRATCH_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_ADD_DRIVE_SCRATCH, GuestfsAddDriveScratchPrivate))
 
 struct _GuestfsAddDriveScratchPrivate {
   gchar *name;
   gchar *label;
 };
 
-G_DEFINE_TYPE(GuestfsAddDriveScratch, guestfs_add_drive_scratch, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsAddDriveScratch, guestfs_add_drive_scratch, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_ADD_DRIVE_SCRATCH_PROP0,
@@ -52,63 +52,62 @@ enum {
 static void
 guestfs_add_drive_scratch_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsAddDriveScratch *self = GUESTFS_ADD_DRIVE_SCRATCH(object);
+  GuestfsAddDriveScratch *self = GUESTFS_ADD_DRIVE_SCRATCH (object);
   GuestfsAddDriveScratchPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_ADD_DRIVE_SCRATCH_NAME:
-      g_free(priv->name);
+      g_free (priv->name);
       priv->name = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_SCRATCH_LABEL:
-      g_free(priv->label);
+      g_free (priv->label);
       priv->label = g_value_dup_string (value);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_add_drive_scratch_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsAddDriveScratch *self = GUESTFS_ADD_DRIVE_SCRATCH(object);
+  GuestfsAddDriveScratch *self = GUESTFS_ADD_DRIVE_SCRATCH (object);
   GuestfsAddDriveScratchPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_ADD_DRIVE_SCRATCH_NAME:
-      g_value_set_string(value, priv->name);
+      g_value_set_string (value, priv->name);
       break;
 
     case PROP_GUESTFS_ADD_DRIVE_SCRATCH_LABEL:
-      g_value_set_string(value, priv->label);
+      g_value_set_string (value, priv->label);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_add_drive_scratch_finalize(GObject *object)
+guestfs_add_drive_scratch_finalize (GObject *object)
 {
-  GuestfsAddDriveScratch *self = GUESTFS_ADD_DRIVE_SCRATCH(object);
+  GuestfsAddDriveScratch *self = GUESTFS_ADD_DRIVE_SCRATCH (object);
   GuestfsAddDriveScratchPrivate *priv = self->priv;
 
-  g_free(priv->name);
-  g_free(priv->label);
-
-  G_OBJECT_CLASS(guestfs_add_drive_scratch_parent_class)->finalize(object);
+  g_free (priv->name);
+  g_free (priv->label);
+  G_OBJECT_CLASS (guestfs_add_drive_scratch_parent_class)->finalize (object);
 }
 
 static void
-guestfs_add_drive_scratch_class_init(GuestfsAddDriveScratchClass *klass)
+guestfs_add_drive_scratch_class_init (GuestfsAddDriveScratchClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_add_drive_scratch_set_property;
   object_class->get_property = guestfs_add_drive_scratch_get_property;
 
@@ -117,10 +116,10 @@ guestfs_add_drive_scratch_class_init(GuestfsAddDriveScratchClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_ADD_DRIVE_SCRATCH_NAME,
-    g_param_spec_string(
+    g_param_spec_string (
       "name",
       "name",
       "A string.",
@@ -134,10 +133,10 @@ guestfs_add_drive_scratch_class_init(GuestfsAddDriveScratchClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_ADD_DRIVE_SCRATCH_LABEL,
-    g_param_spec_string(
+    g_param_spec_string (
       "label",
       "label",
       "A string.",
@@ -147,15 +146,15 @@ guestfs_add_drive_scratch_class_init(GuestfsAddDriveScratchClass *klass)
   );
 
   object_class->finalize = guestfs_add_drive_scratch_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsAddDriveScratchPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsAddDriveScratchPrivate));
 }
 
 static void
-guestfs_add_drive_scratch_init(GuestfsAddDriveScratch *o)
+guestfs_add_drive_scratch_init (GuestfsAddDriveScratch *o)
 {
-  o->priv = GUESTFS_ADD_DRIVE_SCRATCH_GET_PRIVATE(o);
+  o->priv = GUESTFS_ADD_DRIVE_SCRATCH_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsAddDriveScratchPrivate));
+  memset (o->priv, 0, sizeof (GuestfsAddDriveScratchPrivate));
 }
 
 /**
@@ -166,7 +165,7 @@ guestfs_add_drive_scratch_init(GuestfsAddDriveScratch *o)
  * Returns: (transfer full): a new GuestfsAddDriveScratch object
  */
 GuestfsAddDriveScratch *
-guestfs_add_drive_scratch_new(void)
+guestfs_add_drive_scratch_new (void)
 {
-  return GUESTFS_ADD_DRIVE_SCRATCH(g_object_new(GUESTFS_TYPE_ADD_DRIVE_SCRATCH, NULL));
+  return GUESTFS_ADD_DRIVE_SCRATCH (g_object_new (GUESTFS_TYPE_ADD_DRIVE_SCRATCH, NULL));
 }

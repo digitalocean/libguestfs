@@ -60,7 +60,7 @@ struct _GuestfsApplication {
   gchar *app_summary;
   gchar *app_description;
 };
-GType guestfs_application_get_type(void);
+GType guestfs_application_get_type (void);
 
 G_END_DECLS
 

@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_BTRFS_FILESYSTEM_RESIZE (guestfs_btrfs_filesystem_resize_get_type())
-#define GUESTFS_BTRFS_FILESYSTEM_RESIZE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_BTRFS_FILESYSTEM_RESIZE, GuestfsBTRFSFilesystemResize))
-#define GUESTFS_BTRFS_FILESYSTEM_RESIZE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_BTRFS_FILESYSTEM_RESIZE, GuestfsBTRFSFilesystemResizeClass))
-#define GUESTFS_IS_BTRFS_FILESYSTEM_RESIZE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_BTRFS_FILESYSTEM_RESIZE))
-#define GUESTFS_IS_BTRFS_FILESYSTEM_RESIZE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_BTRFS_FILESYSTEM_RESIZE))
-#define GUESTFS_BTRFS_FILESYSTEM_RESIZE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_BTRFS_FILESYSTEM_RESIZE, GuestfsBTRFSFilesystemResizeClass))
+#define GUESTFS_TYPE_BTRFS_FILESYSTEM_RESIZE (guestfs_btrfs_filesystem_resize_get_type ())
+#define GUESTFS_BTRFS_FILESYSTEM_RESIZE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_BTRFS_FILESYSTEM_RESIZE, GuestfsBTRFSFilesystemResize))
+#define GUESTFS_BTRFS_FILESYSTEM_RESIZE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_BTRFS_FILESYSTEM_RESIZE, GuestfsBTRFSFilesystemResizeClass))
+#define GUESTFS_IS_BTRFS_FILESYSTEM_RESIZE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_BTRFS_FILESYSTEM_RESIZE))
+#define GUESTFS_IS_BTRFS_FILESYSTEM_RESIZE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_BTRFS_FILESYSTEM_RESIZE))
+#define GUESTFS_BTRFS_FILESYSTEM_RESIZE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_BTRFS_FILESYSTEM_RESIZE, GuestfsBTRFSFilesystemResizeClass))
 
 typedef struct _GuestfsBTRFSFilesystemResizePrivate GuestfsBTRFSFilesystemResizePrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsBTRFSFilesystemResizeClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_btrfs_filesystem_resize_get_type(void);
-GuestfsBTRFSFilesystemResize *guestfs_btrfs_filesystem_resize_new(void);
+GType guestfs_btrfs_filesystem_resize_get_type (void);
+GuestfsBTRFSFilesystemResize *guestfs_btrfs_filesystem_resize_new (void);
 
 G_END_DECLS
 

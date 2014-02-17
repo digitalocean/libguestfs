@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_SYSLINUX (guestfs_syslinux_get_type())
-#define GUESTFS_SYSLINUX(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_SYSLINUX, GuestfsSyslinux))
-#define GUESTFS_SYSLINUX_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_SYSLINUX, GuestfsSyslinuxClass))
-#define GUESTFS_IS_SYSLINUX(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_SYSLINUX))
-#define GUESTFS_IS_SYSLINUX_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_SYSLINUX))
-#define GUESTFS_SYSLINUX_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_SYSLINUX, GuestfsSyslinuxClass))
+#define GUESTFS_TYPE_SYSLINUX (guestfs_syslinux_get_type ())
+#define GUESTFS_SYSLINUX(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_SYSLINUX, GuestfsSyslinux))
+#define GUESTFS_SYSLINUX_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_SYSLINUX, GuestfsSyslinuxClass))
+#define GUESTFS_IS_SYSLINUX(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_SYSLINUX))
+#define GUESTFS_IS_SYSLINUX_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_SYSLINUX))
+#define GUESTFS_SYSLINUX_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_SYSLINUX, GuestfsSyslinuxClass))
 
 typedef struct _GuestfsSyslinuxPrivate GuestfsSyslinuxPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsSyslinuxClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_syslinux_get_type(void);
-GuestfsSyslinux *guestfs_syslinux_new(void);
+GType guestfs_syslinux_get_type (void);
+GuestfsSyslinux *guestfs_syslinux_new (void);
 
 G_END_DECLS
 

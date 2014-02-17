@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_INSPECT_GET_ICON (guestfs_inspect_get_icon_get_type())
-#define GUESTFS_INSPECT_GET_ICON(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_INSPECT_GET_ICON, GuestfsInspectGetIcon))
-#define GUESTFS_INSPECT_GET_ICON_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_INSPECT_GET_ICON, GuestfsInspectGetIconClass))
-#define GUESTFS_IS_INSPECT_GET_ICON(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_INSPECT_GET_ICON))
-#define GUESTFS_IS_INSPECT_GET_ICON_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_INSPECT_GET_ICON))
-#define GUESTFS_INSPECT_GET_ICON_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_INSPECT_GET_ICON, GuestfsInspectGetIconClass))
+#define GUESTFS_TYPE_INSPECT_GET_ICON (guestfs_inspect_get_icon_get_type ())
+#define GUESTFS_INSPECT_GET_ICON(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_INSPECT_GET_ICON, GuestfsInspectGetIcon))
+#define GUESTFS_INSPECT_GET_ICON_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_INSPECT_GET_ICON, GuestfsInspectGetIconClass))
+#define GUESTFS_IS_INSPECT_GET_ICON(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_INSPECT_GET_ICON))
+#define GUESTFS_IS_INSPECT_GET_ICON_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_INSPECT_GET_ICON))
+#define GUESTFS_INSPECT_GET_ICON_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_INSPECT_GET_ICON, GuestfsInspectGetIconClass))
 
 typedef struct _GuestfsInspectGetIconPrivate GuestfsInspectGetIconPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsInspectGetIconClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_inspect_get_icon_get_type(void);
-GuestfsInspectGetIcon *guestfs_inspect_get_icon_new(void);
+GType guestfs_inspect_get_icon_get_type (void);
+GuestfsInspectGetIcon *guestfs_inspect_get_icon_new (void);
 
 G_END_DECLS
 

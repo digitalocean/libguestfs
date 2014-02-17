@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_TAR_OUT (guestfs_tar_out_get_type())
-#define GUESTFS_TAR_OUT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_TAR_OUT, GuestfsTarOut))
-#define GUESTFS_TAR_OUT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_TAR_OUT, GuestfsTarOutClass))
-#define GUESTFS_IS_TAR_OUT(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_TAR_OUT))
-#define GUESTFS_IS_TAR_OUT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_TAR_OUT))
-#define GUESTFS_TAR_OUT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_TAR_OUT, GuestfsTarOutClass))
+#define GUESTFS_TYPE_TAR_OUT (guestfs_tar_out_get_type ())
+#define GUESTFS_TAR_OUT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_TAR_OUT, GuestfsTarOut))
+#define GUESTFS_TAR_OUT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_TAR_OUT, GuestfsTarOutClass))
+#define GUESTFS_IS_TAR_OUT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_TAR_OUT))
+#define GUESTFS_IS_TAR_OUT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_TAR_OUT))
+#define GUESTFS_TAR_OUT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_TAR_OUT, GuestfsTarOutClass))
 
 typedef struct _GuestfsTarOutPrivate GuestfsTarOutPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsTarOutClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_tar_out_get_type(void);
-GuestfsTarOut *guestfs_tar_out_new(void);
+GType guestfs_tar_out_get_type (void);
+GuestfsTarOut *guestfs_tar_out_new (void);
 
 G_END_DECLS
 

@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_TAR_IN (guestfs_tar_in_get_type())
-#define GUESTFS_TAR_IN(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_TAR_IN, GuestfsTarIn))
-#define GUESTFS_TAR_IN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_TAR_IN, GuestfsTarInClass))
-#define GUESTFS_IS_TAR_IN(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_TAR_IN))
-#define GUESTFS_IS_TAR_IN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_TAR_IN))
-#define GUESTFS_TAR_IN_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_TAR_IN, GuestfsTarInClass))
+#define GUESTFS_TYPE_TAR_IN (guestfs_tar_in_get_type ())
+#define GUESTFS_TAR_IN(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_TAR_IN, GuestfsTarIn))
+#define GUESTFS_TAR_IN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_TAR_IN, GuestfsTarInClass))
+#define GUESTFS_IS_TAR_IN(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_TAR_IN))
+#define GUESTFS_IS_TAR_IN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_TAR_IN))
+#define GUESTFS_TAR_IN_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_TAR_IN, GuestfsTarInClass))
 
 typedef struct _GuestfsTarInPrivate GuestfsTarInPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsTarInClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_tar_in_get_type(void);
-GuestfsTarIn *guestfs_tar_in_new(void);
+GType guestfs_tar_in_get_type (void);
+GuestfsTarIn *guestfs_tar_in_new (void);
 
 G_END_DECLS
 

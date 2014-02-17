@@ -31,15 +31,15 @@
  */
 
 static GuestfsHivexNode *
-guestfs_hivex_node_copy(GuestfsHivexNode *src)
+guestfs_hivex_node_copy (GuestfsHivexNode *src)
 {
-  return g_slice_dup(GuestfsHivexNode, src);
+  return g_slice_dup (GuestfsHivexNode, src);
 }
 
 static void
-guestfs_hivex_node_free(GuestfsHivexNode *src)
+guestfs_hivex_node_free (GuestfsHivexNode *src)
 {
-  g_slice_free(GuestfsHivexNode, src);
+  g_slice_free (GuestfsHivexNode, src);
 }
 
-G_DEFINE_BOXED_TYPE(GuestfsHivexNode, guestfs_hivex_node, guestfs_hivex_node_copy, guestfs_hivex_node_free)
+G_DEFINE_BOXED_TYPE (GuestfsHivexNode, guestfs_hivex_node, guestfs_hivex_node_copy, guestfs_hivex_node_free)

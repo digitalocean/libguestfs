@@ -606,8 +606,6 @@ extern int yywrap (void );
 #endif
 #endif
 
-    static void yyunput (int c,char *buf_ptr  );
-    
 #ifndef yytext_ptr
 static void yy_flex_strncpy (char *,yyconst char *,int );
 #endif
@@ -732,7 +730,7 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 38 "index-scan.l"
+#line 39 "index-scan.l"
 
 
  /* Apart from the PGP prologue/epilogue which is a hack, the
@@ -743,7 +741,7 @@ YY_DECL
   */
 
   /* Ignore comments - '#' MUST appear at the start of a line. */
-#line 747 "index-scan.c"
+#line 745 "index-scan.c"
 
 	if ( !(yy_init) )
 		{
@@ -840,21 +838,21 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 48 "index-scan.l"
+#line 49 "index-scan.l"
 { seen_comments++; }
 	YY_BREAK
 /* An empty line is significant. */
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 51 "index-scan.l"
+#line 52 "index-scan.l"
 { return EMPTY_LINE; }
 	YY_BREAK
 /* [...] marks beginning of a section. */
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 54 "index-scan.l"
+#line 55 "index-scan.l"
 {
                       yylval.str = strndup (yytext+1, yyleng-3);
                       return SECTION_HEADER;
@@ -864,7 +862,7 @@ YY_RULE_SETUP
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 60 "index-scan.l"
+#line 61 "index-scan.l"
 {
                       size_t i = strcspn (yytext, "=[");
                       yylval.field = malloc (sizeof (struct field));
@@ -886,7 +884,7 @@ YY_RULE_SETUP
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 78 "index-scan.l"
+#line 79 "index-scan.l"
 {
                       yylval.str = strndup (yytext+1, yyleng-2);
                       return VALUE_CONT;
@@ -896,7 +894,7 @@ YY_RULE_SETUP
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 84 "index-scan.l"
+#line 85 "index-scan.l"
 {
   int c, prevnl = 0;
 
@@ -914,7 +912,7 @@ YY_RULE_SETUP
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
-#line 98 "index-scan.l"
+#line 99 "index-scan.l"
 {
   /* Eat everything to the end of the file. */
   while (input () != EOF)
@@ -926,7 +924,7 @@ YY_RULE_SETUP
 /* anything else is an error */
 case 8:
 YY_RULE_SETUP
-#line 107 "index-scan.l"
+#line 108 "index-scan.l"
 {
   yyerror ("unexpected character in input");
   exit (EXIT_FAILURE);
@@ -934,10 +932,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 111 "index-scan.l"
+#line 112 "index-scan.l"
 ECHO;
 	YY_BREAK
-#line 941 "index-scan.c"
+#line 939 "index-scan.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1265,47 +1263,6 @@ static int yy_get_next_buffer (void)
 	yy_is_jam = (yy_current_state == 71);
 
 		return yy_is_jam ? 0 : yy_current_state;
-}
-
-    static void yyunput (int c, register char * yy_bp )
-{
-	register char *yy_cp;
-    
-    yy_cp = (yy_c_buf_p);
-
-	/* undo effects of setting up yytext */
-	*yy_cp = (yy_hold_char);
-
-	if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
-		{ /* need to shift things up to make room */
-		/* +2 for EOB chars. */
-		register yy_size_t number_to_move = (yy_n_chars) + 2;
-		register char *dest = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[
-					YY_CURRENT_BUFFER_LVALUE->yy_buf_size + 2];
-		register char *source =
-				&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move];
-
-		while ( source > YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
-			*--dest = *--source;
-
-		yy_cp += (int) (dest - source);
-		yy_bp += (int) (dest - source);
-		YY_CURRENT_BUFFER_LVALUE->yy_n_chars =
-			(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_buf_size;
-
-		if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
-			YY_FATAL_ERROR( "flex scanner push-back overflow" );
-		}
-
-	*--yy_cp = (char) c;
-
-    if ( c == '\n' ){
-        --yylineno;
-    }
-
-	(yytext_ptr) = yy_bp;
-	(yy_hold_char) = *yy_cp;
-	(yy_c_buf_p) = yy_cp;
 }
 
 #ifndef YY_NO_INPUT
@@ -1945,4 +1902,4 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 111 "index-scan.l"
+#line 112 "index-scan.l"

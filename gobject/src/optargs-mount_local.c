@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_MOUNT_LOCAL_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_MOUNT_LOCAL, GuestfsMountLocalPrivate))
+#define GUESTFS_MOUNT_LOCAL_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_MOUNT_LOCAL, GuestfsMountLocalPrivate))
 
 struct _GuestfsMountLocalPrivate {
   GuestfsTristate readonly;
@@ -43,7 +43,7 @@ struct _GuestfsMountLocalPrivate {
   GuestfsTristate debugcalls;
 };
 
-G_DEFINE_TYPE(GuestfsMountLocal, guestfs_mount_local, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsMountLocal, guestfs_mount_local, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_MOUNT_LOCAL_PROP0,
@@ -56,7 +56,7 @@ enum {
 static void
 guestfs_mount_local_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsMountLocal *self = GUESTFS_MOUNT_LOCAL(object);
+  GuestfsMountLocal *self = GUESTFS_MOUNT_LOCAL (object);
   GuestfsMountLocalPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -65,7 +65,7 @@ guestfs_mount_local_set_property(GObject *object, guint property_id, const GValu
       break;
 
     case PROP_GUESTFS_MOUNT_LOCAL_OPTIONS:
-      g_free(priv->options);
+      g_free (priv->options);
       priv->options = g_value_dup_string (value);
       break;
 
@@ -79,54 +79,53 @@ guestfs_mount_local_set_property(GObject *object, guint property_id, const GValu
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_mount_local_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsMountLocal *self = GUESTFS_MOUNT_LOCAL(object);
+  GuestfsMountLocal *self = GUESTFS_MOUNT_LOCAL (object);
   GuestfsMountLocalPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_MOUNT_LOCAL_READONLY:
-      g_value_set_enum(value, priv->readonly);
+      g_value_set_enum (value, priv->readonly);
       break;
 
     case PROP_GUESTFS_MOUNT_LOCAL_OPTIONS:
-      g_value_set_string(value, priv->options);
+      g_value_set_string (value, priv->options);
       break;
 
     case PROP_GUESTFS_MOUNT_LOCAL_CACHETIMEOUT:
-      g_value_set_int(value, priv->cachetimeout);
+      g_value_set_int (value, priv->cachetimeout);
       break;
 
     case PROP_GUESTFS_MOUNT_LOCAL_DEBUGCALLS:
-      g_value_set_enum(value, priv->debugcalls);
+      g_value_set_enum (value, priv->debugcalls);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_mount_local_finalize(GObject *object)
+guestfs_mount_local_finalize (GObject *object)
 {
-  GuestfsMountLocal *self = GUESTFS_MOUNT_LOCAL(object);
+  GuestfsMountLocal *self = GUESTFS_MOUNT_LOCAL (object);
   GuestfsMountLocalPrivate *priv = self->priv;
 
-  g_free(priv->options);
-
-  G_OBJECT_CLASS(guestfs_mount_local_parent_class)->finalize(object);
+  g_free (priv->options);
+  G_OBJECT_CLASS (guestfs_mount_local_parent_class)->finalize (object);
 }
 
 static void
-guestfs_mount_local_class_init(GuestfsMountLocalClass *klass)
+guestfs_mount_local_class_init (GuestfsMountLocalClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_mount_local_set_property;
   object_class->get_property = guestfs_mount_local_get_property;
 
@@ -135,10 +134,10 @@ guestfs_mount_local_class_init(GuestfsMountLocalClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MOUNT_LOCAL_READONLY,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "readonly",
       "readonly",
       "A boolean.",
@@ -152,10 +151,10 @@ guestfs_mount_local_class_init(GuestfsMountLocalClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MOUNT_LOCAL_OPTIONS,
-    g_param_spec_string(
+    g_param_spec_string (
       "options",
       "options",
       "A string.",
@@ -169,10 +168,10 @@ guestfs_mount_local_class_init(GuestfsMountLocalClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MOUNT_LOCAL_CACHETIMEOUT,
-    g_param_spec_int(
+    g_param_spec_int (
       "cachetimeout",
       "cachetimeout",
       "A 32-bit integer.",
@@ -186,10 +185,10 @@ guestfs_mount_local_class_init(GuestfsMountLocalClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MOUNT_LOCAL_DEBUGCALLS,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "debugcalls",
       "debugcalls",
       "A boolean.",
@@ -199,15 +198,15 @@ guestfs_mount_local_class_init(GuestfsMountLocalClass *klass)
   );
 
   object_class->finalize = guestfs_mount_local_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsMountLocalPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsMountLocalPrivate));
 }
 
 static void
-guestfs_mount_local_init(GuestfsMountLocal *o)
+guestfs_mount_local_init (GuestfsMountLocal *o)
 {
-  o->priv = GUESTFS_MOUNT_LOCAL_GET_PRIVATE(o);
+  o->priv = GUESTFS_MOUNT_LOCAL_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsMountLocalPrivate));
+  memset (o->priv, 0, sizeof (GuestfsMountLocalPrivate));
 }
 
 /**
@@ -218,7 +217,7 @@ guestfs_mount_local_init(GuestfsMountLocal *o)
  * Returns: (transfer full): a new GuestfsMountLocal object
  */
 GuestfsMountLocal *
-guestfs_mount_local_new(void)
+guestfs_mount_local_new (void)
 {
-  return GUESTFS_MOUNT_LOCAL(g_object_new(GUESTFS_TYPE_MOUNT_LOCAL, NULL));
+  return GUESTFS_MOUNT_LOCAL (g_object_new (GUESTFS_TYPE_MOUNT_LOCAL, NULL));
 }

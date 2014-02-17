@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_MKE2FS_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_MKE2FS, GuestfsMke2fsPrivate))
+#define GUESTFS_MKE2FS_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_MKE2FS, GuestfsMke2fsPrivate))
 
 struct _GuestfsMke2fsPrivate {
   gint64 blockscount;
@@ -77,7 +77,7 @@ struct _GuestfsMke2fsPrivate {
   GuestfsTristate uninitbg;
 };
 
-G_DEFINE_TYPE(GuestfsMke2fs, guestfs_mke2fs, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsMke2fs, guestfs_mke2fs, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_MKE2FS_PROP0,
@@ -124,7 +124,7 @@ enum {
 static void
 guestfs_mke2fs_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsMke2fs *self = GUESTFS_MKE2FS(object);
+  GuestfsMke2fs *self = GUESTFS_MKE2FS (object);
   GuestfsMke2fsPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -185,37 +185,37 @@ guestfs_mke2fs_set_property(GObject *object, guint property_id, const GValue *va
       break;
 
     case PROP_GUESTFS_MKE2FS_JOURNALDEVICE:
-      g_free(priv->journaldevice);
+      g_free (priv->journaldevice);
       priv->journaldevice = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_MKE2FS_LABEL:
-      g_free(priv->label);
+      g_free (priv->label);
       priv->label = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_MKE2FS_LASTMOUNTEDDIR:
-      g_free(priv->lastmounteddir);
+      g_free (priv->lastmounteddir);
       priv->lastmounteddir = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_MKE2FS_CREATOROS:
-      g_free(priv->creatoros);
+      g_free (priv->creatoros);
       priv->creatoros = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_MKE2FS_FSTYPE:
-      g_free(priv->fstype);
+      g_free (priv->fstype);
       priv->fstype = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_MKE2FS_USAGETYPE:
-      g_free(priv->usagetype);
+      g_free (priv->usagetype);
       priv->usagetype = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_MKE2FS_UUID:
-      g_free(priv->uuid);
+      g_free (priv->uuid);
       priv->uuid = g_value_dup_string (value);
       break;
 
@@ -289,196 +289,195 @@ guestfs_mke2fs_set_property(GObject *object, guint property_id, const GValue *va
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_mke2fs_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsMke2fs *self = GUESTFS_MKE2FS(object);
+  GuestfsMke2fs *self = GUESTFS_MKE2FS (object);
   GuestfsMke2fsPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_MKE2FS_BLOCKSCOUNT:
-      g_value_set_int64(value, priv->blockscount);
+      g_value_set_int64 (value, priv->blockscount);
       break;
 
     case PROP_GUESTFS_MKE2FS_BLOCKSIZE:
-      g_value_set_int64(value, priv->blocksize);
+      g_value_set_int64 (value, priv->blocksize);
       break;
 
     case PROP_GUESTFS_MKE2FS_FRAGSIZE:
-      g_value_set_int64(value, priv->fragsize);
+      g_value_set_int64 (value, priv->fragsize);
       break;
 
     case PROP_GUESTFS_MKE2FS_BLOCKSPERGROUP:
-      g_value_set_int64(value, priv->blockspergroup);
+      g_value_set_int64 (value, priv->blockspergroup);
       break;
 
     case PROP_GUESTFS_MKE2FS_NUMBEROFGROUPS:
-      g_value_set_int64(value, priv->numberofgroups);
+      g_value_set_int64 (value, priv->numberofgroups);
       break;
 
     case PROP_GUESTFS_MKE2FS_BYTESPERINODE:
-      g_value_set_int64(value, priv->bytesperinode);
+      g_value_set_int64 (value, priv->bytesperinode);
       break;
 
     case PROP_GUESTFS_MKE2FS_INODESIZE:
-      g_value_set_int64(value, priv->inodesize);
+      g_value_set_int64 (value, priv->inodesize);
       break;
 
     case PROP_GUESTFS_MKE2FS_JOURNALSIZE:
-      g_value_set_int64(value, priv->journalsize);
+      g_value_set_int64 (value, priv->journalsize);
       break;
 
     case PROP_GUESTFS_MKE2FS_NUMBEROFINODES:
-      g_value_set_int64(value, priv->numberofinodes);
+      g_value_set_int64 (value, priv->numberofinodes);
       break;
 
     case PROP_GUESTFS_MKE2FS_STRIDESIZE:
-      g_value_set_int64(value, priv->stridesize);
+      g_value_set_int64 (value, priv->stridesize);
       break;
 
     case PROP_GUESTFS_MKE2FS_STRIPEWIDTH:
-      g_value_set_int64(value, priv->stripewidth);
+      g_value_set_int64 (value, priv->stripewidth);
       break;
 
     case PROP_GUESTFS_MKE2FS_MAXONLINERESIZE:
-      g_value_set_int64(value, priv->maxonlineresize);
+      g_value_set_int64 (value, priv->maxonlineresize);
       break;
 
     case PROP_GUESTFS_MKE2FS_RESERVEDBLOCKSPERCENTAGE:
-      g_value_set_int(value, priv->reservedblockspercentage);
+      g_value_set_int (value, priv->reservedblockspercentage);
       break;
 
     case PROP_GUESTFS_MKE2FS_MMPUPDATEINTERVAL:
-      g_value_set_int(value, priv->mmpupdateinterval);
+      g_value_set_int (value, priv->mmpupdateinterval);
       break;
 
     case PROP_GUESTFS_MKE2FS_JOURNALDEVICE:
-      g_value_set_string(value, priv->journaldevice);
+      g_value_set_string (value, priv->journaldevice);
       break;
 
     case PROP_GUESTFS_MKE2FS_LABEL:
-      g_value_set_string(value, priv->label);
+      g_value_set_string (value, priv->label);
       break;
 
     case PROP_GUESTFS_MKE2FS_LASTMOUNTEDDIR:
-      g_value_set_string(value, priv->lastmounteddir);
+      g_value_set_string (value, priv->lastmounteddir);
       break;
 
     case PROP_GUESTFS_MKE2FS_CREATOROS:
-      g_value_set_string(value, priv->creatoros);
+      g_value_set_string (value, priv->creatoros);
       break;
 
     case PROP_GUESTFS_MKE2FS_FSTYPE:
-      g_value_set_string(value, priv->fstype);
+      g_value_set_string (value, priv->fstype);
       break;
 
     case PROP_GUESTFS_MKE2FS_USAGETYPE:
-      g_value_set_string(value, priv->usagetype);
+      g_value_set_string (value, priv->usagetype);
       break;
 
     case PROP_GUESTFS_MKE2FS_UUID:
-      g_value_set_string(value, priv->uuid);
+      g_value_set_string (value, priv->uuid);
       break;
 
     case PROP_GUESTFS_MKE2FS_FORCECREATE:
-      g_value_set_enum(value, priv->forcecreate);
+      g_value_set_enum (value, priv->forcecreate);
       break;
 
     case PROP_GUESTFS_MKE2FS_WRITESBANDGROUPONLY:
-      g_value_set_enum(value, priv->writesbandgrouponly);
+      g_value_set_enum (value, priv->writesbandgrouponly);
       break;
 
     case PROP_GUESTFS_MKE2FS_LAZYITABLEINIT:
-      g_value_set_enum(value, priv->lazyitableinit);
+      g_value_set_enum (value, priv->lazyitableinit);
       break;
 
     case PROP_GUESTFS_MKE2FS_LAZYJOURNALINIT:
-      g_value_set_enum(value, priv->lazyjournalinit);
+      g_value_set_enum (value, priv->lazyjournalinit);
       break;
 
     case PROP_GUESTFS_MKE2FS_TESTFS:
-      g_value_set_enum(value, priv->testfs);
+      g_value_set_enum (value, priv->testfs);
       break;
 
     case PROP_GUESTFS_MKE2FS_DISCARD:
-      g_value_set_enum(value, priv->discard);
+      g_value_set_enum (value, priv->discard);
       break;
 
     case PROP_GUESTFS_MKE2FS_QUOTATYPE:
-      g_value_set_enum(value, priv->quotatype);
+      g_value_set_enum (value, priv->quotatype);
       break;
 
     case PROP_GUESTFS_MKE2FS_EXTENT:
-      g_value_set_enum(value, priv->extent);
+      g_value_set_enum (value, priv->extent);
       break;
 
     case PROP_GUESTFS_MKE2FS_FILETYPE:
-      g_value_set_enum(value, priv->filetype);
+      g_value_set_enum (value, priv->filetype);
       break;
 
     case PROP_GUESTFS_MKE2FS_FLEXBG:
-      g_value_set_enum(value, priv->flexbg);
+      g_value_set_enum (value, priv->flexbg);
       break;
 
     case PROP_GUESTFS_MKE2FS_HASJOURNAL:
-      g_value_set_enum(value, priv->hasjournal);
+      g_value_set_enum (value, priv->hasjournal);
       break;
 
     case PROP_GUESTFS_MKE2FS_JOURNALDEV:
-      g_value_set_enum(value, priv->journaldev);
+      g_value_set_enum (value, priv->journaldev);
       break;
 
     case PROP_GUESTFS_MKE2FS_LARGEFILE:
-      g_value_set_enum(value, priv->largefile);
+      g_value_set_enum (value, priv->largefile);
       break;
 
     case PROP_GUESTFS_MKE2FS_QUOTA:
-      g_value_set_enum(value, priv->quota);
+      g_value_set_enum (value, priv->quota);
       break;
 
     case PROP_GUESTFS_MKE2FS_RESIZEINODE:
-      g_value_set_enum(value, priv->resizeinode);
+      g_value_set_enum (value, priv->resizeinode);
       break;
 
     case PROP_GUESTFS_MKE2FS_SPARSESUPER:
-      g_value_set_enum(value, priv->sparsesuper);
+      g_value_set_enum (value, priv->sparsesuper);
       break;
 
     case PROP_GUESTFS_MKE2FS_UNINITBG:
-      g_value_set_enum(value, priv->uninitbg);
+      g_value_set_enum (value, priv->uninitbg);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_mke2fs_finalize(GObject *object)
+guestfs_mke2fs_finalize (GObject *object)
 {
-  GuestfsMke2fs *self = GUESTFS_MKE2FS(object);
+  GuestfsMke2fs *self = GUESTFS_MKE2FS (object);
   GuestfsMke2fsPrivate *priv = self->priv;
 
-  g_free(priv->journaldevice);
-  g_free(priv->label);
-  g_free(priv->lastmounteddir);
-  g_free(priv->creatoros);
-  g_free(priv->fstype);
-  g_free(priv->usagetype);
-  g_free(priv->uuid);
-
-  G_OBJECT_CLASS(guestfs_mke2fs_parent_class)->finalize(object);
+  g_free (priv->journaldevice);
+  g_free (priv->label);
+  g_free (priv->lastmounteddir);
+  g_free (priv->creatoros);
+  g_free (priv->fstype);
+  g_free (priv->usagetype);
+  g_free (priv->uuid);
+  G_OBJECT_CLASS (guestfs_mke2fs_parent_class)->finalize (object);
 }
 
 static void
-guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
+guestfs_mke2fs_class_init (GuestfsMke2fsClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_mke2fs_set_property;
   object_class->get_property = guestfs_mke2fs_get_property;
 
@@ -487,10 +486,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_BLOCKSCOUNT,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "blockscount",
       "blockscount",
       "A 64-bit integer.",
@@ -504,10 +503,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_BLOCKSIZE,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "blocksize",
       "blocksize",
       "A 64-bit integer.",
@@ -521,10 +520,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_FRAGSIZE,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "fragsize",
       "fragsize",
       "A 64-bit integer.",
@@ -538,10 +537,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_BLOCKSPERGROUP,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "blockspergroup",
       "blockspergroup",
       "A 64-bit integer.",
@@ -555,10 +554,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_NUMBEROFGROUPS,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "numberofgroups",
       "numberofgroups",
       "A 64-bit integer.",
@@ -572,10 +571,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_BYTESPERINODE,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "bytesperinode",
       "bytesperinode",
       "A 64-bit integer.",
@@ -589,10 +588,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_INODESIZE,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "inodesize",
       "inodesize",
       "A 64-bit integer.",
@@ -606,10 +605,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_JOURNALSIZE,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "journalsize",
       "journalsize",
       "A 64-bit integer.",
@@ -623,10 +622,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_NUMBEROFINODES,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "numberofinodes",
       "numberofinodes",
       "A 64-bit integer.",
@@ -640,10 +639,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_STRIDESIZE,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "stridesize",
       "stridesize",
       "A 64-bit integer.",
@@ -657,10 +656,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_STRIPEWIDTH,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "stripewidth",
       "stripewidth",
       "A 64-bit integer.",
@@ -674,10 +673,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_MAXONLINERESIZE,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "maxonlineresize",
       "maxonlineresize",
       "A 64-bit integer.",
@@ -691,10 +690,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_RESERVEDBLOCKSPERCENTAGE,
-    g_param_spec_int(
+    g_param_spec_int (
       "reservedblockspercentage",
       "reservedblockspercentage",
       "A 32-bit integer.",
@@ -708,10 +707,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_MMPUPDATEINTERVAL,
-    g_param_spec_int(
+    g_param_spec_int (
       "mmpupdateinterval",
       "mmpupdateinterval",
       "A 32-bit integer.",
@@ -725,10 +724,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_JOURNALDEVICE,
-    g_param_spec_string(
+    g_param_spec_string (
       "journaldevice",
       "journaldevice",
       "A string.",
@@ -742,10 +741,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_LABEL,
-    g_param_spec_string(
+    g_param_spec_string (
       "label",
       "label",
       "A string.",
@@ -759,10 +758,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_LASTMOUNTEDDIR,
-    g_param_spec_string(
+    g_param_spec_string (
       "lastmounteddir",
       "lastmounteddir",
       "A string.",
@@ -776,10 +775,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_CREATOROS,
-    g_param_spec_string(
+    g_param_spec_string (
       "creatoros",
       "creatoros",
       "A string.",
@@ -793,10 +792,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_FSTYPE,
-    g_param_spec_string(
+    g_param_spec_string (
       "fstype",
       "fstype",
       "A string.",
@@ -810,10 +809,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_USAGETYPE,
-    g_param_spec_string(
+    g_param_spec_string (
       "usagetype",
       "usagetype",
       "A string.",
@@ -827,10 +826,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_UUID,
-    g_param_spec_string(
+    g_param_spec_string (
       "uuid",
       "uuid",
       "A string.",
@@ -844,10 +843,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_FORCECREATE,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "forcecreate",
       "forcecreate",
       "A boolean.",
@@ -861,10 +860,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_WRITESBANDGROUPONLY,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "writesbandgrouponly",
       "writesbandgrouponly",
       "A boolean.",
@@ -878,10 +877,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_LAZYITABLEINIT,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "lazyitableinit",
       "lazyitableinit",
       "A boolean.",
@@ -895,10 +894,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_LAZYJOURNALINIT,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "lazyjournalinit",
       "lazyjournalinit",
       "A boolean.",
@@ -912,10 +911,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_TESTFS,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "testfs",
       "testfs",
       "A boolean.",
@@ -929,10 +928,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_DISCARD,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "discard",
       "discard",
       "A boolean.",
@@ -946,10 +945,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_QUOTATYPE,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "quotatype",
       "quotatype",
       "A boolean.",
@@ -963,10 +962,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_EXTENT,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "extent",
       "extent",
       "A boolean.",
@@ -980,10 +979,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_FILETYPE,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "filetype",
       "filetype",
       "A boolean.",
@@ -997,10 +996,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_FLEXBG,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "flexbg",
       "flexbg",
       "A boolean.",
@@ -1014,10 +1013,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_HASJOURNAL,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "hasjournal",
       "hasjournal",
       "A boolean.",
@@ -1031,10 +1030,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_JOURNALDEV,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "journaldev",
       "journaldev",
       "A boolean.",
@@ -1048,10 +1047,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_LARGEFILE,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "largefile",
       "largefile",
       "A boolean.",
@@ -1065,10 +1064,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_QUOTA,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "quota",
       "quota",
       "A boolean.",
@@ -1082,10 +1081,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_RESIZEINODE,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "resizeinode",
       "resizeinode",
       "A boolean.",
@@ -1099,10 +1098,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_SPARSESUPER,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "sparsesuper",
       "sparsesuper",
       "A boolean.",
@@ -1116,10 +1115,10 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKE2FS_UNINITBG,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "uninitbg",
       "uninitbg",
       "A boolean.",
@@ -1129,15 +1128,15 @@ guestfs_mke2fs_class_init(GuestfsMke2fsClass *klass)
   );
 
   object_class->finalize = guestfs_mke2fs_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsMke2fsPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsMke2fsPrivate));
 }
 
 static void
-guestfs_mke2fs_init(GuestfsMke2fs *o)
+guestfs_mke2fs_init (GuestfsMke2fs *o)
 {
-  o->priv = GUESTFS_MKE2FS_GET_PRIVATE(o);
+  o->priv = GUESTFS_MKE2FS_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsMke2fsPrivate));
+  memset (o->priv, 0, sizeof (GuestfsMke2fsPrivate));
 }
 
 /**
@@ -1148,7 +1147,7 @@ guestfs_mke2fs_init(GuestfsMke2fs *o)
  * Returns: (transfer full): a new GuestfsMke2fs object
  */
 GuestfsMke2fs *
-guestfs_mke2fs_new(void)
+guestfs_mke2fs_new (void)
 {
-  return GUESTFS_MKE2FS(g_object_new(GUESTFS_TYPE_MKE2FS, NULL));
+  return GUESTFS_MKE2FS (g_object_new (GUESTFS_TYPE_MKE2FS, NULL));
 }

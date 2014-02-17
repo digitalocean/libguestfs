@@ -44,7 +44,7 @@ struct _GuestfsVersion {
   gint64 release;
   gchar *extra;
 };
-GType guestfs_version_get_type(void);
+GType guestfs_version_get_type (void);
 
 G_END_DECLS
 

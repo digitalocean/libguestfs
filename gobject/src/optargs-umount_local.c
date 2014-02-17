@@ -34,13 +34,13 @@
 
 #include <string.h>
 
-#define GUESTFS_UMOUNT_LOCAL_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_UMOUNT_LOCAL, GuestfsUmountLocalPrivate))
+#define GUESTFS_UMOUNT_LOCAL_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_UMOUNT_LOCAL, GuestfsUmountLocalPrivate))
 
 struct _GuestfsUmountLocalPrivate {
   GuestfsTristate retry;
 };
 
-G_DEFINE_TYPE(GuestfsUmountLocal, guestfs_umount_local, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsUmountLocal, guestfs_umount_local, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_UMOUNT_LOCAL_PROP0,
@@ -50,7 +50,7 @@ enum {
 static void
 guestfs_umount_local_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsUmountLocal *self = GUESTFS_UMOUNT_LOCAL(object);
+  GuestfsUmountLocal *self = GUESTFS_UMOUNT_LOCAL (object);
   GuestfsUmountLocalPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -60,41 +60,37 @@ guestfs_umount_local_set_property(GObject *object, guint property_id, const GVal
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_umount_local_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsUmountLocal *self = GUESTFS_UMOUNT_LOCAL(object);
+  GuestfsUmountLocal *self = GUESTFS_UMOUNT_LOCAL (object);
   GuestfsUmountLocalPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_UMOUNT_LOCAL_RETRY:
-      g_value_set_enum(value, priv->retry);
+      g_value_set_enum (value, priv->retry);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_umount_local_finalize(GObject *object)
+guestfs_umount_local_finalize (GObject *object)
 {
-  GuestfsUmountLocal *self = GUESTFS_UMOUNT_LOCAL(object);
-  GuestfsUmountLocalPrivate *priv = self->priv;
-
-
-  G_OBJECT_CLASS(guestfs_umount_local_parent_class)->finalize(object);
+  G_OBJECT_CLASS (guestfs_umount_local_parent_class)->finalize (object);
 }
 
 static void
-guestfs_umount_local_class_init(GuestfsUmountLocalClass *klass)
+guestfs_umount_local_class_init (GuestfsUmountLocalClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_umount_local_set_property;
   object_class->get_property = guestfs_umount_local_get_property;
 
@@ -103,10 +99,10 @@ guestfs_umount_local_class_init(GuestfsUmountLocalClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_UMOUNT_LOCAL_RETRY,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "retry",
       "retry",
       "A boolean.",
@@ -116,15 +112,15 @@ guestfs_umount_local_class_init(GuestfsUmountLocalClass *klass)
   );
 
   object_class->finalize = guestfs_umount_local_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsUmountLocalPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsUmountLocalPrivate));
 }
 
 static void
-guestfs_umount_local_init(GuestfsUmountLocal *o)
+guestfs_umount_local_init (GuestfsUmountLocal *o)
 {
-  o->priv = GUESTFS_UMOUNT_LOCAL_GET_PRIVATE(o);
+  o->priv = GUESTFS_UMOUNT_LOCAL_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsUmountLocalPrivate));
+  memset (o->priv, 0, sizeof (GuestfsUmountLocalPrivate));
 }
 
 /**
@@ -135,7 +131,7 @@ guestfs_umount_local_init(GuestfsUmountLocal *o)
  * Returns: (transfer full): a new GuestfsUmountLocal object
  */
 GuestfsUmountLocal *
-guestfs_umount_local_new(void)
+guestfs_umount_local_new (void)
 {
-  return GUESTFS_UMOUNT_LOCAL(g_object_new(GUESTFS_TYPE_UMOUNT_LOCAL, NULL));
+  return GUESTFS_UMOUNT_LOCAL (g_object_new (GUESTFS_TYPE_UMOUNT_LOCAL, NULL));
 }

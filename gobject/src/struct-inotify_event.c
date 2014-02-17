@@ -31,15 +31,15 @@
  */
 
 static GuestfsINotifyEvent *
-guestfs_inotify_event_copy(GuestfsINotifyEvent *src)
+guestfs_inotify_event_copy (GuestfsINotifyEvent *src)
 {
-  return g_slice_dup(GuestfsINotifyEvent, src);
+  return g_slice_dup (GuestfsINotifyEvent, src);
 }
 
 static void
-guestfs_inotify_event_free(GuestfsINotifyEvent *src)
+guestfs_inotify_event_free (GuestfsINotifyEvent *src)
 {
-  g_slice_free(GuestfsINotifyEvent, src);
+  g_slice_free (GuestfsINotifyEvent, src);
 }
 
-G_DEFINE_BOXED_TYPE(GuestfsINotifyEvent, guestfs_inotify_event, guestfs_inotify_event_copy, guestfs_inotify_event_free)
+G_DEFINE_BOXED_TYPE (GuestfsINotifyEvent, guestfs_inotify_event, guestfs_inotify_event_copy, guestfs_inotify_event_free)

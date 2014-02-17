@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_MKSWAP (guestfs_mkswap_get_type())
-#define GUESTFS_MKSWAP(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_MKSWAP, GuestfsMkswap))
-#define GUESTFS_MKSWAP_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_MKSWAP, GuestfsMkswapClass))
-#define GUESTFS_IS_MKSWAP(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_MKSWAP))
-#define GUESTFS_IS_MKSWAP_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_MKSWAP))
-#define GUESTFS_MKSWAP_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_MKSWAP, GuestfsMkswapClass))
+#define GUESTFS_TYPE_MKSWAP (guestfs_mkswap_get_type ())
+#define GUESTFS_MKSWAP(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_MKSWAP, GuestfsMkswap))
+#define GUESTFS_MKSWAP_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_MKSWAP, GuestfsMkswapClass))
+#define GUESTFS_IS_MKSWAP(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_MKSWAP))
+#define GUESTFS_IS_MKSWAP_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_MKSWAP))
+#define GUESTFS_MKSWAP_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_MKSWAP, GuestfsMkswapClass))
 
 typedef struct _GuestfsMkswapPrivate GuestfsMkswapPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsMkswapClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_mkswap_get_type(void);
-GuestfsMkswap *guestfs_mkswap_new(void);
+GType guestfs_mkswap_get_type (void);
+GuestfsMkswap *guestfs_mkswap_new (void);
 
 G_END_DECLS
 

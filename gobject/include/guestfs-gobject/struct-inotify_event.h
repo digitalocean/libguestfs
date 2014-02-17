@@ -44,7 +44,7 @@ struct _GuestfsINotifyEvent {
   guint32 in_cookie;
   gchar *in_name;
 };
-GType guestfs_inotify_event_get_type(void);
+GType guestfs_inotify_event_get_type (void);
 
 G_END_DECLS
 

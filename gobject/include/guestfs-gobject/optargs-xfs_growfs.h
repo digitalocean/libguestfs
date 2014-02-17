@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_XFS_GROWFS (guestfs_xfs_growfs_get_type())
-#define GUESTFS_XFS_GROWFS(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_XFS_GROWFS, GuestfsXfsGrowfs))
-#define GUESTFS_XFS_GROWFS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_XFS_GROWFS, GuestfsXfsGrowfsClass))
-#define GUESTFS_IS_XFS_GROWFS(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_XFS_GROWFS))
-#define GUESTFS_IS_XFS_GROWFS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_XFS_GROWFS))
-#define GUESTFS_XFS_GROWFS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_XFS_GROWFS, GuestfsXfsGrowfsClass))
+#define GUESTFS_TYPE_XFS_GROWFS (guestfs_xfs_growfs_get_type ())
+#define GUESTFS_XFS_GROWFS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_XFS_GROWFS, GuestfsXfsGrowfs))
+#define GUESTFS_XFS_GROWFS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_XFS_GROWFS, GuestfsXfsGrowfsClass))
+#define GUESTFS_IS_XFS_GROWFS(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_XFS_GROWFS))
+#define GUESTFS_IS_XFS_GROWFS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_XFS_GROWFS))
+#define GUESTFS_XFS_GROWFS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_XFS_GROWFS, GuestfsXfsGrowfsClass))
 
 typedef struct _GuestfsXfsGrowfsPrivate GuestfsXfsGrowfsPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsXfsGrowfsClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_xfs_growfs_get_type(void);
-GuestfsXfsGrowfs *guestfs_xfs_growfs_new(void);
+GType guestfs_xfs_growfs_get_type (void);
+GuestfsXfsGrowfs *guestfs_xfs_growfs_new (void);
 
 G_END_DECLS
 

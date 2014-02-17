@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_UMOUNT_LOCAL (guestfs_umount_local_get_type())
-#define GUESTFS_UMOUNT_LOCAL(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_UMOUNT_LOCAL, GuestfsUmountLocal))
-#define GUESTFS_UMOUNT_LOCAL_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_UMOUNT_LOCAL, GuestfsUmountLocalClass))
-#define GUESTFS_IS_UMOUNT_LOCAL(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_UMOUNT_LOCAL))
-#define GUESTFS_IS_UMOUNT_LOCAL_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_UMOUNT_LOCAL))
-#define GUESTFS_UMOUNT_LOCAL_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_UMOUNT_LOCAL, GuestfsUmountLocalClass))
+#define GUESTFS_TYPE_UMOUNT_LOCAL (guestfs_umount_local_get_type ())
+#define GUESTFS_UMOUNT_LOCAL(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_UMOUNT_LOCAL, GuestfsUmountLocal))
+#define GUESTFS_UMOUNT_LOCAL_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_UMOUNT_LOCAL, GuestfsUmountLocalClass))
+#define GUESTFS_IS_UMOUNT_LOCAL(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_UMOUNT_LOCAL))
+#define GUESTFS_IS_UMOUNT_LOCAL_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_UMOUNT_LOCAL))
+#define GUESTFS_UMOUNT_LOCAL_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_UMOUNT_LOCAL, GuestfsUmountLocalClass))
 
 typedef struct _GuestfsUmountLocalPrivate GuestfsUmountLocalPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsUmountLocalClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_umount_local_get_type(void);
-GuestfsUmountLocal *guestfs_umount_local_new(void);
+GType guestfs_umount_local_get_type (void);
+GuestfsUmountLocal *guestfs_umount_local_new (void);
 
 G_END_DECLS
 

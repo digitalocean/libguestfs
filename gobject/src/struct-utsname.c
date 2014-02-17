@@ -31,15 +31,15 @@
  */
 
 static GuestfsUTSName *
-guestfs_utsname_copy(GuestfsUTSName *src)
+guestfs_utsname_copy (GuestfsUTSName *src)
 {
-  return g_slice_dup(GuestfsUTSName, src);
+  return g_slice_dup (GuestfsUTSName, src);
 }
 
 static void
-guestfs_utsname_free(GuestfsUTSName *src)
+guestfs_utsname_free (GuestfsUTSName *src)
 {
-  g_slice_free(GuestfsUTSName, src);
+  g_slice_free (GuestfsUTSName, src);
 }
 
-G_DEFINE_BOXED_TYPE(GuestfsUTSName, guestfs_utsname, guestfs_utsname_copy, guestfs_utsname_free)
+G_DEFINE_BOXED_TYPE (GuestfsUTSName, guestfs_utsname, guestfs_utsname_copy, guestfs_utsname_free)

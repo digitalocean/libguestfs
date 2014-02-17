@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_MOUNT_LOCAL (guestfs_mount_local_get_type())
-#define GUESTFS_MOUNT_LOCAL(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_MOUNT_LOCAL, GuestfsMountLocal))
-#define GUESTFS_MOUNT_LOCAL_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_MOUNT_LOCAL, GuestfsMountLocalClass))
-#define GUESTFS_IS_MOUNT_LOCAL(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_MOUNT_LOCAL))
-#define GUESTFS_IS_MOUNT_LOCAL_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_MOUNT_LOCAL))
-#define GUESTFS_MOUNT_LOCAL_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_MOUNT_LOCAL, GuestfsMountLocalClass))
+#define GUESTFS_TYPE_MOUNT_LOCAL (guestfs_mount_local_get_type ())
+#define GUESTFS_MOUNT_LOCAL(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_MOUNT_LOCAL, GuestfsMountLocal))
+#define GUESTFS_MOUNT_LOCAL_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_MOUNT_LOCAL, GuestfsMountLocalClass))
+#define GUESTFS_IS_MOUNT_LOCAL(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_MOUNT_LOCAL))
+#define GUESTFS_IS_MOUNT_LOCAL_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_MOUNT_LOCAL))
+#define GUESTFS_MOUNT_LOCAL_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_MOUNT_LOCAL, GuestfsMountLocalClass))
 
 typedef struct _GuestfsMountLocalPrivate GuestfsMountLocalPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsMountLocalClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_mount_local_get_type(void);
-GuestfsMountLocal *guestfs_mount_local_new(void);
+GType guestfs_mount_local_get_type (void);
+GuestfsMountLocal *guestfs_mount_local_new (void);
 
 G_END_DECLS
 

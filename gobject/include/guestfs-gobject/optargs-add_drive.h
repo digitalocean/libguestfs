@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_ADD_DRIVE (guestfs_add_drive_get_type())
-#define GUESTFS_ADD_DRIVE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_ADD_DRIVE, GuestfsAddDrive))
-#define GUESTFS_ADD_DRIVE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_ADD_DRIVE, GuestfsAddDriveClass))
-#define GUESTFS_IS_ADD_DRIVE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_ADD_DRIVE))
-#define GUESTFS_IS_ADD_DRIVE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_ADD_DRIVE))
-#define GUESTFS_ADD_DRIVE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_ADD_DRIVE, GuestfsAddDriveClass))
+#define GUESTFS_TYPE_ADD_DRIVE (guestfs_add_drive_get_type ())
+#define GUESTFS_ADD_DRIVE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_ADD_DRIVE, GuestfsAddDrive))
+#define GUESTFS_ADD_DRIVE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_ADD_DRIVE, GuestfsAddDriveClass))
+#define GUESTFS_IS_ADD_DRIVE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_ADD_DRIVE))
+#define GUESTFS_IS_ADD_DRIVE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_ADD_DRIVE))
+#define GUESTFS_ADD_DRIVE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_ADD_DRIVE, GuestfsAddDriveClass))
 
 typedef struct _GuestfsAddDrivePrivate GuestfsAddDrivePrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsAddDriveClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_add_drive_get_type(void);
-GuestfsAddDrive *guestfs_add_drive_new(void);
+GType guestfs_add_drive_get_type (void);
+GuestfsAddDrive *guestfs_add_drive_new (void);
 
 G_END_DECLS
 

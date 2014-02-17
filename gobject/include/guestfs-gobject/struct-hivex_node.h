@@ -38,7 +38,7 @@ typedef struct _GuestfsHivexNode GuestfsHivexNode;
 struct _GuestfsHivexNode {
   gint64 hivex_node_h;
 };
-GType guestfs_hivex_node_get_type(void);
+GType guestfs_hivex_node_get_type (void);
 
 G_END_DECLS
 

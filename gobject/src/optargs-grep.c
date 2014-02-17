@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_GREP_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_GREP, GuestfsGrepPrivate))
+#define GUESTFS_GREP_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_GREP, GuestfsGrepPrivate))
 
 struct _GuestfsGrepPrivate {
   GuestfsTristate extended;
@@ -43,7 +43,7 @@ struct _GuestfsGrepPrivate {
   GuestfsTristate compressed;
 };
 
-G_DEFINE_TYPE(GuestfsGrep, guestfs_grep, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsGrep, guestfs_grep, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_GREP_PROP0,
@@ -56,7 +56,7 @@ enum {
 static void
 guestfs_grep_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsGrep *self = GUESTFS_GREP(object);
+  GuestfsGrep *self = GUESTFS_GREP (object);
   GuestfsGrepPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -78,53 +78,49 @@ guestfs_grep_set_property(GObject *object, guint property_id, const GValue *valu
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_grep_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsGrep *self = GUESTFS_GREP(object);
+  GuestfsGrep *self = GUESTFS_GREP (object);
   GuestfsGrepPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_GREP_EXTENDED:
-      g_value_set_enum(value, priv->extended);
+      g_value_set_enum (value, priv->extended);
       break;
 
     case PROP_GUESTFS_GREP_FIXED:
-      g_value_set_enum(value, priv->fixed);
+      g_value_set_enum (value, priv->fixed);
       break;
 
     case PROP_GUESTFS_GREP_INSENSITIVE:
-      g_value_set_enum(value, priv->insensitive);
+      g_value_set_enum (value, priv->insensitive);
       break;
 
     case PROP_GUESTFS_GREP_COMPRESSED:
-      g_value_set_enum(value, priv->compressed);
+      g_value_set_enum (value, priv->compressed);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_grep_finalize(GObject *object)
+guestfs_grep_finalize (GObject *object)
 {
-  GuestfsGrep *self = GUESTFS_GREP(object);
-  GuestfsGrepPrivate *priv = self->priv;
-
-
-  G_OBJECT_CLASS(guestfs_grep_parent_class)->finalize(object);
+  G_OBJECT_CLASS (guestfs_grep_parent_class)->finalize (object);
 }
 
 static void
-guestfs_grep_class_init(GuestfsGrepClass *klass)
+guestfs_grep_class_init (GuestfsGrepClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_grep_set_property;
   object_class->get_property = guestfs_grep_get_property;
 
@@ -133,10 +129,10 @@ guestfs_grep_class_init(GuestfsGrepClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_GREP_EXTENDED,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "extended",
       "extended",
       "A boolean.",
@@ -150,10 +146,10 @@ guestfs_grep_class_init(GuestfsGrepClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_GREP_FIXED,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "fixed",
       "fixed",
       "A boolean.",
@@ -167,10 +163,10 @@ guestfs_grep_class_init(GuestfsGrepClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_GREP_INSENSITIVE,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "insensitive",
       "insensitive",
       "A boolean.",
@@ -184,10 +180,10 @@ guestfs_grep_class_init(GuestfsGrepClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_GREP_COMPRESSED,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "compressed",
       "compressed",
       "A boolean.",
@@ -197,15 +193,15 @@ guestfs_grep_class_init(GuestfsGrepClass *klass)
   );
 
   object_class->finalize = guestfs_grep_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsGrepPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsGrepPrivate));
 }
 
 static void
-guestfs_grep_init(GuestfsGrep *o)
+guestfs_grep_init (GuestfsGrep *o)
 {
-  o->priv = GUESTFS_GREP_GET_PRIVATE(o);
+  o->priv = GUESTFS_GREP_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsGrepPrivate));
+  memset (o->priv, 0, sizeof (GuestfsGrepPrivate));
 }
 
 /**
@@ -216,7 +212,7 @@ guestfs_grep_init(GuestfsGrep *o)
  * Returns: (transfer full): a new GuestfsGrep object
  */
 GuestfsGrep *
-guestfs_grep_new(void)
+guestfs_grep_new (void)
 {
-  return GUESTFS_GREP(g_object_new(GUESTFS_TYPE_GREP, NULL));
+  return GUESTFS_GREP (g_object_new (GUESTFS_TYPE_GREP, NULL));
 }

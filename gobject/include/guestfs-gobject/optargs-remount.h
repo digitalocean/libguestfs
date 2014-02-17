@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_REMOUNT (guestfs_remount_get_type())
-#define GUESTFS_REMOUNT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_REMOUNT, GuestfsRemount))
-#define GUESTFS_REMOUNT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_REMOUNT, GuestfsRemountClass))
-#define GUESTFS_IS_REMOUNT(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_REMOUNT))
-#define GUESTFS_IS_REMOUNT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_REMOUNT))
-#define GUESTFS_REMOUNT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_REMOUNT, GuestfsRemountClass))
+#define GUESTFS_TYPE_REMOUNT (guestfs_remount_get_type ())
+#define GUESTFS_REMOUNT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_REMOUNT, GuestfsRemount))
+#define GUESTFS_REMOUNT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_REMOUNT, GuestfsRemountClass))
+#define GUESTFS_IS_REMOUNT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_REMOUNT))
+#define GUESTFS_IS_REMOUNT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_REMOUNT))
+#define GUESTFS_REMOUNT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_REMOUNT, GuestfsRemountClass))
 
 typedef struct _GuestfsRemountPrivate GuestfsRemountPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsRemountClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_remount_get_type(void);
-GuestfsRemount *guestfs_remount_new(void);
+GType guestfs_remount_get_type (void);
+GuestfsRemount *guestfs_remount_new (void);
 
 G_END_DECLS
 

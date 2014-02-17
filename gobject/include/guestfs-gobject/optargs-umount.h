@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_UMOUNT (guestfs_umount_get_type())
-#define GUESTFS_UMOUNT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_UMOUNT, GuestfsUmount))
-#define GUESTFS_UMOUNT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_UMOUNT, GuestfsUmountClass))
-#define GUESTFS_IS_UMOUNT(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_UMOUNT))
-#define GUESTFS_IS_UMOUNT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_UMOUNT))
-#define GUESTFS_UMOUNT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_UMOUNT, GuestfsUmountClass))
+#define GUESTFS_TYPE_UMOUNT (guestfs_umount_get_type ())
+#define GUESTFS_UMOUNT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_UMOUNT, GuestfsUmount))
+#define GUESTFS_UMOUNT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_UMOUNT, GuestfsUmountClass))
+#define GUESTFS_IS_UMOUNT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_UMOUNT))
+#define GUESTFS_IS_UMOUNT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_UMOUNT))
+#define GUESTFS_UMOUNT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_UMOUNT, GuestfsUmountClass))
 
 typedef struct _GuestfsUmountPrivate GuestfsUmountPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsUmountClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_umount_get_type(void);
-GuestfsUmount *guestfs_umount_new(void);
+GType guestfs_umount_get_type (void);
+GuestfsUmount *guestfs_umount_new (void);
 
 G_END_DECLS
 

@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_COPY_DEVICE_TO_DEVICE_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_COPY_DEVICE_TO_DEVICE, GuestfsCopyDeviceToDevicePrivate))
+#define GUESTFS_COPY_DEVICE_TO_DEVICE_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_COPY_DEVICE_TO_DEVICE, GuestfsCopyDeviceToDevicePrivate))
 
 struct _GuestfsCopyDeviceToDevicePrivate {
   gint64 srcoffset;
@@ -43,7 +43,7 @@ struct _GuestfsCopyDeviceToDevicePrivate {
   GuestfsTristate sparse;
 };
 
-G_DEFINE_TYPE(GuestfsCopyDeviceToDevice, guestfs_copy_device_to_device, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsCopyDeviceToDevice, guestfs_copy_device_to_device, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_COPY_DEVICE_TO_DEVICE_PROP0,
@@ -56,7 +56,7 @@ enum {
 static void
 guestfs_copy_device_to_device_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsCopyDeviceToDevice *self = GUESTFS_COPY_DEVICE_TO_DEVICE(object);
+  GuestfsCopyDeviceToDevice *self = GUESTFS_COPY_DEVICE_TO_DEVICE (object);
   GuestfsCopyDeviceToDevicePrivate *priv = self->priv;
 
   switch (property_id) {
@@ -78,53 +78,49 @@ guestfs_copy_device_to_device_set_property(GObject *object, guint property_id, c
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_copy_device_to_device_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsCopyDeviceToDevice *self = GUESTFS_COPY_DEVICE_TO_DEVICE(object);
+  GuestfsCopyDeviceToDevice *self = GUESTFS_COPY_DEVICE_TO_DEVICE (object);
   GuestfsCopyDeviceToDevicePrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET:
-      g_value_set_int64(value, priv->srcoffset);
+      g_value_set_int64 (value, priv->srcoffset);
       break;
 
     case PROP_GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET:
-      g_value_set_int64(value, priv->destoffset);
+      g_value_set_int64 (value, priv->destoffset);
       break;
 
     case PROP_GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE:
-      g_value_set_int64(value, priv->size);
+      g_value_set_int64 (value, priv->size);
       break;
 
     case PROP_GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE:
-      g_value_set_enum(value, priv->sparse);
+      g_value_set_enum (value, priv->sparse);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_copy_device_to_device_finalize(GObject *object)
+guestfs_copy_device_to_device_finalize (GObject *object)
 {
-  GuestfsCopyDeviceToDevice *self = GUESTFS_COPY_DEVICE_TO_DEVICE(object);
-  GuestfsCopyDeviceToDevicePrivate *priv = self->priv;
-
-
-  G_OBJECT_CLASS(guestfs_copy_device_to_device_parent_class)->finalize(object);
+  G_OBJECT_CLASS (guestfs_copy_device_to_device_parent_class)->finalize (object);
 }
 
 static void
-guestfs_copy_device_to_device_class_init(GuestfsCopyDeviceToDeviceClass *klass)
+guestfs_copy_device_to_device_class_init (GuestfsCopyDeviceToDeviceClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_copy_device_to_device_set_property;
   object_class->get_property = guestfs_copy_device_to_device_get_property;
 
@@ -133,10 +129,10 @@ guestfs_copy_device_to_device_class_init(GuestfsCopyDeviceToDeviceClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "srcoffset",
       "srcoffset",
       "A 64-bit integer.",
@@ -150,10 +146,10 @@ guestfs_copy_device_to_device_class_init(GuestfsCopyDeviceToDeviceClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "destoffset",
       "destoffset",
       "A 64-bit integer.",
@@ -167,10 +163,10 @@ guestfs_copy_device_to_device_class_init(GuestfsCopyDeviceToDeviceClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "size",
       "size",
       "A 64-bit integer.",
@@ -184,10 +180,10 @@ guestfs_copy_device_to_device_class_init(GuestfsCopyDeviceToDeviceClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "sparse",
       "sparse",
       "A boolean.",
@@ -197,15 +193,15 @@ guestfs_copy_device_to_device_class_init(GuestfsCopyDeviceToDeviceClass *klass)
   );
 
   object_class->finalize = guestfs_copy_device_to_device_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsCopyDeviceToDevicePrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsCopyDeviceToDevicePrivate));
 }
 
 static void
-guestfs_copy_device_to_device_init(GuestfsCopyDeviceToDevice *o)
+guestfs_copy_device_to_device_init (GuestfsCopyDeviceToDevice *o)
 {
-  o->priv = GUESTFS_COPY_DEVICE_TO_DEVICE_GET_PRIVATE(o);
+  o->priv = GUESTFS_COPY_DEVICE_TO_DEVICE_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsCopyDeviceToDevicePrivate));
+  memset (o->priv, 0, sizeof (GuestfsCopyDeviceToDevicePrivate));
 }
 
 /**
@@ -216,7 +212,7 @@ guestfs_copy_device_to_device_init(GuestfsCopyDeviceToDevice *o)
  * Returns: (transfer full): a new GuestfsCopyDeviceToDevice object
  */
 GuestfsCopyDeviceToDevice *
-guestfs_copy_device_to_device_new(void)
+guestfs_copy_device_to_device_new (void)
 {
-  return GUESTFS_COPY_DEVICE_TO_DEVICE(g_object_new(GUESTFS_TYPE_COPY_DEVICE_TO_DEVICE, NULL));
+  return GUESTFS_COPY_DEVICE_TO_DEVICE (g_object_new (GUESTFS_TYPE_COPY_DEVICE_TO_DEVICE, NULL));
 }

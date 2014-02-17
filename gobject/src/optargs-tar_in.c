@@ -34,13 +34,13 @@
 
 #include <string.h>
 
-#define GUESTFS_TAR_IN_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_TAR_IN, GuestfsTarInPrivate))
+#define GUESTFS_TAR_IN_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_TAR_IN, GuestfsTarInPrivate))
 
 struct _GuestfsTarInPrivate {
   gchar *compress;
 };
 
-G_DEFINE_TYPE(GuestfsTarIn, guestfs_tar_in, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsTarIn, guestfs_tar_in, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_TAR_IN_PROP0,
@@ -50,53 +50,52 @@ enum {
 static void
 guestfs_tar_in_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsTarIn *self = GUESTFS_TAR_IN(object);
+  GuestfsTarIn *self = GUESTFS_TAR_IN (object);
   GuestfsTarInPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_TAR_IN_COMPRESS:
-      g_free(priv->compress);
+      g_free (priv->compress);
       priv->compress = g_value_dup_string (value);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_tar_in_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsTarIn *self = GUESTFS_TAR_IN(object);
+  GuestfsTarIn *self = GUESTFS_TAR_IN (object);
   GuestfsTarInPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_TAR_IN_COMPRESS:
-      g_value_set_string(value, priv->compress);
+      g_value_set_string (value, priv->compress);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_tar_in_finalize(GObject *object)
+guestfs_tar_in_finalize (GObject *object)
 {
-  GuestfsTarIn *self = GUESTFS_TAR_IN(object);
+  GuestfsTarIn *self = GUESTFS_TAR_IN (object);
   GuestfsTarInPrivate *priv = self->priv;
 
-  g_free(priv->compress);
-
-  G_OBJECT_CLASS(guestfs_tar_in_parent_class)->finalize(object);
+  g_free (priv->compress);
+  G_OBJECT_CLASS (guestfs_tar_in_parent_class)->finalize (object);
 }
 
 static void
-guestfs_tar_in_class_init(GuestfsTarInClass *klass)
+guestfs_tar_in_class_init (GuestfsTarInClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_tar_in_set_property;
   object_class->get_property = guestfs_tar_in_get_property;
 
@@ -105,10 +104,10 @@ guestfs_tar_in_class_init(GuestfsTarInClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_TAR_IN_COMPRESS,
-    g_param_spec_string(
+    g_param_spec_string (
       "compress",
       "compress",
       "A string.",
@@ -118,15 +117,15 @@ guestfs_tar_in_class_init(GuestfsTarInClass *klass)
   );
 
   object_class->finalize = guestfs_tar_in_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsTarInPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsTarInPrivate));
 }
 
 static void
-guestfs_tar_in_init(GuestfsTarIn *o)
+guestfs_tar_in_init (GuestfsTarIn *o)
 {
-  o->priv = GUESTFS_TAR_IN_GET_PRIVATE(o);
+  o->priv = GUESTFS_TAR_IN_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsTarInPrivate));
+  memset (o->priv, 0, sizeof (GuestfsTarInPrivate));
 }
 
 /**
@@ -137,7 +136,7 @@ guestfs_tar_in_init(GuestfsTarIn *o)
  * Returns: (transfer full): a new GuestfsTarIn object
  */
 GuestfsTarIn *
-guestfs_tar_in_new(void)
+guestfs_tar_in_new (void)
 {
-  return GUESTFS_TAR_IN(g_object_new(GUESTFS_TYPE_TAR_IN, NULL));
+  return GUESTFS_TAR_IN (g_object_new (GUESTFS_TYPE_TAR_IN, NULL));
 }

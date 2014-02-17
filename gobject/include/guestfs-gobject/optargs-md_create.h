@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_MD_CREATE (guestfs_md_create_get_type())
-#define GUESTFS_MD_CREATE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_MD_CREATE, GuestfsMDCreate))
-#define GUESTFS_MD_CREATE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_MD_CREATE, GuestfsMDCreateClass))
-#define GUESTFS_IS_MD_CREATE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_MD_CREATE))
-#define GUESTFS_IS_MD_CREATE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_MD_CREATE))
-#define GUESTFS_MD_CREATE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_MD_CREATE, GuestfsMDCreateClass))
+#define GUESTFS_TYPE_MD_CREATE (guestfs_md_create_get_type ())
+#define GUESTFS_MD_CREATE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_MD_CREATE, GuestfsMDCreate))
+#define GUESTFS_MD_CREATE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_MD_CREATE, GuestfsMDCreateClass))
+#define GUESTFS_IS_MD_CREATE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_MD_CREATE))
+#define GUESTFS_IS_MD_CREATE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_MD_CREATE))
+#define GUESTFS_MD_CREATE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_MD_CREATE, GuestfsMDCreateClass))
 
 typedef struct _GuestfsMDCreatePrivate GuestfsMDCreatePrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsMDCreateClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_md_create_get_type(void);
-GuestfsMDCreate *guestfs_md_create_new(void);
+GType guestfs_md_create_get_type (void);
+GuestfsMDCreate *guestfs_md_create_new (void);
 
 G_END_DECLS
 

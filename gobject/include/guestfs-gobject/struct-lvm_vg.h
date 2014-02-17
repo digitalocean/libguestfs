@@ -75,7 +75,7 @@ struct _GuestfsVG {
   gint64 vg_mda_count;
   guint64 vg_mda_free;
 };
-GType guestfs_lvm_vg_get_type(void);
+GType guestfs_lvm_vg_get_type (void);
 
 G_END_DECLS
 

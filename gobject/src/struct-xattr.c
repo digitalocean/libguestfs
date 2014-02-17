@@ -31,15 +31,15 @@
  */
 
 static GuestfsXAttr *
-guestfs_xattr_copy(GuestfsXAttr *src)
+guestfs_xattr_copy (GuestfsXAttr *src)
 {
-  return g_slice_dup(GuestfsXAttr, src);
+  return g_slice_dup (GuestfsXAttr, src);
 }
 
 static void
-guestfs_xattr_free(GuestfsXAttr *src)
+guestfs_xattr_free (GuestfsXAttr *src)
 {
-  g_slice_free(GuestfsXAttr, src);
+  g_slice_free (GuestfsXAttr, src);
 }
 
-G_DEFINE_BOXED_TYPE(GuestfsXAttr, guestfs_xattr, guestfs_xattr_copy, guestfs_xattr_free)
+G_DEFINE_BOXED_TYPE (GuestfsXAttr, guestfs_xattr, guestfs_xattr_copy, guestfs_xattr_free)

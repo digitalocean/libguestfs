@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_XFS_REPAIR_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_XFS_REPAIR, GuestfsXfsRepairPrivate))
+#define GUESTFS_XFS_REPAIR_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_XFS_REPAIR, GuestfsXfsRepairPrivate))
 
 struct _GuestfsXfsRepairPrivate {
   GuestfsTristate forcelogzero;
@@ -49,7 +49,7 @@ struct _GuestfsXfsRepairPrivate {
   gchar *rtdev;
 };
 
-G_DEFINE_TYPE(GuestfsXfsRepair, guestfs_xfs_repair, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsXfsRepair, guestfs_xfs_repair, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_XFS_REPAIR_PROP0,
@@ -68,7 +68,7 @@ enum {
 static void
 guestfs_xfs_repair_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsXfsRepair *self = GUESTFS_XFS_REPAIR(object);
+  GuestfsXfsRepair *self = GUESTFS_XFS_REPAIR (object);
   GuestfsXfsRepairPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -105,90 +105,89 @@ guestfs_xfs_repair_set_property(GObject *object, guint property_id, const GValue
       break;
 
     case PROP_GUESTFS_XFS_REPAIR_LOGDEV:
-      g_free(priv->logdev);
+      g_free (priv->logdev);
       priv->logdev = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_XFS_REPAIR_RTDEV:
-      g_free(priv->rtdev);
+      g_free (priv->rtdev);
       priv->rtdev = g_value_dup_string (value);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_xfs_repair_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsXfsRepair *self = GUESTFS_XFS_REPAIR(object);
+  GuestfsXfsRepair *self = GUESTFS_XFS_REPAIR (object);
   GuestfsXfsRepairPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_XFS_REPAIR_FORCELOGZERO:
-      g_value_set_enum(value, priv->forcelogzero);
+      g_value_set_enum (value, priv->forcelogzero);
       break;
 
     case PROP_GUESTFS_XFS_REPAIR_NOMODIFY:
-      g_value_set_enum(value, priv->nomodify);
+      g_value_set_enum (value, priv->nomodify);
       break;
 
     case PROP_GUESTFS_XFS_REPAIR_NOPREFETCH:
-      g_value_set_enum(value, priv->noprefetch);
+      g_value_set_enum (value, priv->noprefetch);
       break;
 
     case PROP_GUESTFS_XFS_REPAIR_FORCEGEOMETRY:
-      g_value_set_enum(value, priv->forcegeometry);
+      g_value_set_enum (value, priv->forcegeometry);
       break;
 
     case PROP_GUESTFS_XFS_REPAIR_MAXMEM:
-      g_value_set_int64(value, priv->maxmem);
+      g_value_set_int64 (value, priv->maxmem);
       break;
 
     case PROP_GUESTFS_XFS_REPAIR_IHASHSIZE:
-      g_value_set_int64(value, priv->ihashsize);
+      g_value_set_int64 (value, priv->ihashsize);
       break;
 
     case PROP_GUESTFS_XFS_REPAIR_BHASHSIZE:
-      g_value_set_int64(value, priv->bhashsize);
+      g_value_set_int64 (value, priv->bhashsize);
       break;
 
     case PROP_GUESTFS_XFS_REPAIR_AGSTRIDE:
-      g_value_set_int64(value, priv->agstride);
+      g_value_set_int64 (value, priv->agstride);
       break;
 
     case PROP_GUESTFS_XFS_REPAIR_LOGDEV:
-      g_value_set_string(value, priv->logdev);
+      g_value_set_string (value, priv->logdev);
       break;
 
     case PROP_GUESTFS_XFS_REPAIR_RTDEV:
-      g_value_set_string(value, priv->rtdev);
+      g_value_set_string (value, priv->rtdev);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_xfs_repair_finalize(GObject *object)
+guestfs_xfs_repair_finalize (GObject *object)
 {
-  GuestfsXfsRepair *self = GUESTFS_XFS_REPAIR(object);
+  GuestfsXfsRepair *self = GUESTFS_XFS_REPAIR (object);
   GuestfsXfsRepairPrivate *priv = self->priv;
 
-  g_free(priv->logdev);
-  g_free(priv->rtdev);
-
-  G_OBJECT_CLASS(guestfs_xfs_repair_parent_class)->finalize(object);
+  g_free (priv->logdev);
+  g_free (priv->rtdev);
+  G_OBJECT_CLASS (guestfs_xfs_repair_parent_class)->finalize (object);
 }
 
 static void
-guestfs_xfs_repair_class_init(GuestfsXfsRepairClass *klass)
+guestfs_xfs_repair_class_init (GuestfsXfsRepairClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_xfs_repair_set_property;
   object_class->get_property = guestfs_xfs_repair_get_property;
 
@@ -197,10 +196,10 @@ guestfs_xfs_repair_class_init(GuestfsXfsRepairClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_REPAIR_FORCELOGZERO,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "forcelogzero",
       "forcelogzero",
       "A boolean.",
@@ -214,10 +213,10 @@ guestfs_xfs_repair_class_init(GuestfsXfsRepairClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_REPAIR_NOMODIFY,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "nomodify",
       "nomodify",
       "A boolean.",
@@ -231,10 +230,10 @@ guestfs_xfs_repair_class_init(GuestfsXfsRepairClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_REPAIR_NOPREFETCH,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "noprefetch",
       "noprefetch",
       "A boolean.",
@@ -248,10 +247,10 @@ guestfs_xfs_repair_class_init(GuestfsXfsRepairClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_REPAIR_FORCEGEOMETRY,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "forcegeometry",
       "forcegeometry",
       "A boolean.",
@@ -265,10 +264,10 @@ guestfs_xfs_repair_class_init(GuestfsXfsRepairClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_REPAIR_MAXMEM,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "maxmem",
       "maxmem",
       "A 64-bit integer.",
@@ -282,10 +281,10 @@ guestfs_xfs_repair_class_init(GuestfsXfsRepairClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_REPAIR_IHASHSIZE,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "ihashsize",
       "ihashsize",
       "A 64-bit integer.",
@@ -299,10 +298,10 @@ guestfs_xfs_repair_class_init(GuestfsXfsRepairClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_REPAIR_BHASHSIZE,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "bhashsize",
       "bhashsize",
       "A 64-bit integer.",
@@ -316,10 +315,10 @@ guestfs_xfs_repair_class_init(GuestfsXfsRepairClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_REPAIR_AGSTRIDE,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "agstride",
       "agstride",
       "A 64-bit integer.",
@@ -333,10 +332,10 @@ guestfs_xfs_repair_class_init(GuestfsXfsRepairClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_REPAIR_LOGDEV,
-    g_param_spec_string(
+    g_param_spec_string (
       "logdev",
       "logdev",
       "A string.",
@@ -350,10 +349,10 @@ guestfs_xfs_repair_class_init(GuestfsXfsRepairClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_REPAIR_RTDEV,
-    g_param_spec_string(
+    g_param_spec_string (
       "rtdev",
       "rtdev",
       "A string.",
@@ -363,15 +362,15 @@ guestfs_xfs_repair_class_init(GuestfsXfsRepairClass *klass)
   );
 
   object_class->finalize = guestfs_xfs_repair_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsXfsRepairPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsXfsRepairPrivate));
 }
 
 static void
-guestfs_xfs_repair_init(GuestfsXfsRepair *o)
+guestfs_xfs_repair_init (GuestfsXfsRepair *o)
 {
-  o->priv = GUESTFS_XFS_REPAIR_GET_PRIVATE(o);
+  o->priv = GUESTFS_XFS_REPAIR_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsXfsRepairPrivate));
+  memset (o->priv, 0, sizeof (GuestfsXfsRepairPrivate));
 }
 
 /**
@@ -382,7 +381,7 @@ guestfs_xfs_repair_init(GuestfsXfsRepair *o)
  * Returns: (transfer full): a new GuestfsXfsRepair object
  */
 GuestfsXfsRepair *
-guestfs_xfs_repair_new(void)
+guestfs_xfs_repair_new (void)
 {
-  return GUESTFS_XFS_REPAIR(g_object_new(GUESTFS_TYPE_XFS_REPAIR, NULL));
+  return GUESTFS_XFS_REPAIR (g_object_new (GUESTFS_TYPE_XFS_REPAIR, NULL));
 }

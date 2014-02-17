@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_TUNE2FS (guestfs_tune2fs_get_type())
-#define GUESTFS_TUNE2FS(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_TUNE2FS, GuestfsTune2FS))
-#define GUESTFS_TUNE2FS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_TUNE2FS, GuestfsTune2FSClass))
-#define GUESTFS_IS_TUNE2FS(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_TUNE2FS))
-#define GUESTFS_IS_TUNE2FS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_TUNE2FS))
-#define GUESTFS_TUNE2FS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_TUNE2FS, GuestfsTune2FSClass))
+#define GUESTFS_TYPE_TUNE2FS (guestfs_tune2fs_get_type ())
+#define GUESTFS_TUNE2FS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_TUNE2FS, GuestfsTune2FS))
+#define GUESTFS_TUNE2FS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_TUNE2FS, GuestfsTune2FSClass))
+#define GUESTFS_IS_TUNE2FS(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_TUNE2FS))
+#define GUESTFS_IS_TUNE2FS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_TUNE2FS))
+#define GUESTFS_TUNE2FS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_TUNE2FS, GuestfsTune2FSClass))
 
 typedef struct _GuestfsTune2FSPrivate GuestfsTune2FSPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsTune2FSClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_tune2fs_get_type(void);
-GuestfsTune2FS *guestfs_tune2fs_new(void);
+GType guestfs_tune2fs_get_type (void);
+GuestfsTune2FS *guestfs_tune2fs_new (void);
 
 G_END_DECLS
 

@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_IS_BLOCKDEV (guestfs_is_blockdev_get_type())
-#define GUESTFS_IS_BLOCKDEV(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_IS_BLOCKDEV, GuestfsIsBlockdev))
-#define GUESTFS_IS_BLOCKDEV_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_IS_BLOCKDEV, GuestfsIsBlockdevClass))
-#define GUESTFS_IS_IS_BLOCKDEV(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_IS_BLOCKDEV))
-#define GUESTFS_IS_IS_BLOCKDEV_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_IS_BLOCKDEV))
-#define GUESTFS_IS_BLOCKDEV_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_IS_BLOCKDEV, GuestfsIsBlockdevClass))
+#define GUESTFS_TYPE_IS_BLOCKDEV (guestfs_is_blockdev_get_type ())
+#define GUESTFS_IS_BLOCKDEV(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_IS_BLOCKDEV, GuestfsIsBlockdev))
+#define GUESTFS_IS_BLOCKDEV_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_IS_BLOCKDEV, GuestfsIsBlockdevClass))
+#define GUESTFS_IS_IS_BLOCKDEV(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_IS_BLOCKDEV))
+#define GUESTFS_IS_IS_BLOCKDEV_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_IS_BLOCKDEV))
+#define GUESTFS_IS_BLOCKDEV_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_IS_BLOCKDEV, GuestfsIsBlockdevClass))
 
 typedef struct _GuestfsIsBlockdevPrivate GuestfsIsBlockdevPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsIsBlockdevClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_is_blockdev_get_type(void);
-GuestfsIsBlockdev *guestfs_is_blockdev_new(void);
+GType guestfs_is_blockdev_get_type (void);
+GuestfsIsBlockdev *guestfs_is_blockdev_new (void);
 
 G_END_DECLS
 

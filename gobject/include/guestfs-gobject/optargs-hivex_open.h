@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_HIVEX_OPEN (guestfs_hivex_open_get_type())
-#define GUESTFS_HIVEX_OPEN(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_HIVEX_OPEN, GuestfsHivexOpen))
-#define GUESTFS_HIVEX_OPEN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_HIVEX_OPEN, GuestfsHivexOpenClass))
-#define GUESTFS_IS_HIVEX_OPEN(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_HIVEX_OPEN))
-#define GUESTFS_IS_HIVEX_OPEN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_HIVEX_OPEN))
-#define GUESTFS_HIVEX_OPEN_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_HIVEX_OPEN, GuestfsHivexOpenClass))
+#define GUESTFS_TYPE_HIVEX_OPEN (guestfs_hivex_open_get_type ())
+#define GUESTFS_HIVEX_OPEN(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_HIVEX_OPEN, GuestfsHivexOpen))
+#define GUESTFS_HIVEX_OPEN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_HIVEX_OPEN, GuestfsHivexOpenClass))
+#define GUESTFS_IS_HIVEX_OPEN(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_HIVEX_OPEN))
+#define GUESTFS_IS_HIVEX_OPEN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_HIVEX_OPEN))
+#define GUESTFS_HIVEX_OPEN_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_HIVEX_OPEN, GuestfsHivexOpenClass))
 
 typedef struct _GuestfsHivexOpenPrivate GuestfsHivexOpenPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsHivexOpenClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_hivex_open_get_type(void);
-GuestfsHivexOpen *guestfs_hivex_open_new(void);
+GType guestfs_hivex_open_get_type (void);
+GuestfsHivexOpen *guestfs_hivex_open_new (void);
 
 G_END_DECLS
 

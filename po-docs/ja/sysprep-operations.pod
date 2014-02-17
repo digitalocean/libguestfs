@@ -181,6 +181,7 @@ Linux においては以下のファイルが削除されます:
  /var/log/ntp
  /var/log/ntpstats/*
  /var/log/ppp/connect-errors
+ /var/log/rhsm/*
  /var/log/sa/*
  /var/log/secure*
  /var/log/setroubleshoot/*.log
@@ -273,6 +274,10 @@ Write some random bytes from the host into the random seed file of the
 guest.
 
 以下の L</RANDOM SEED> を参照してください。
+
+=head2 B<rh-subscription-manager> *
+
+Remove the RH subscription manager files.
 
 =head2 B<rhn-systemid> *
 

@@ -224,6 +224,9 @@ virt_index_validate_SOURCES = \
 	index-struct.c \
 	index-validate.c
 
+virt_index_validate_CPPFLAGS = \
+	-DLOCALEBASEDIR=\""$(datadir)/locale"\"
+
 man_MANS += virt-index-validate.1
 noinst_DATA += $(top_builddir)/html/virt-index-validate.1.html
 
@@ -243,9 +246,11 @@ CLEANFILES += \
 	index-scan.c \
 	stamp-virt-index-validate.pod
 
-# Fix dependencies which automake doesn't generate correctly.
 if HAVE_OCAML
-index-parser-c.o: index-parse.h index-struct.h
-index-scan.o: index-parse.h
+# Automake-generated makefile has a rule ".l.c:" but lacks a rule ".l.h:".
+# Also it doesn't generate dependencies for the C files that include
+# index-parse.h.
+index-parser-c.c index-scan.c index-validate.c: index-parse.h
+index-parse.h: index-parse.y
+	$(MAKE) index-parse.c
 endif
-index-validate.o: index-parse.h

@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_IS_FILE (guestfs_is_file_get_type())
-#define GUESTFS_IS_FILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_IS_FILE, GuestfsIsFile))
-#define GUESTFS_IS_FILE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_IS_FILE, GuestfsIsFileClass))
-#define GUESTFS_IS_IS_FILE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_IS_FILE))
-#define GUESTFS_IS_IS_FILE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_IS_FILE))
-#define GUESTFS_IS_FILE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_IS_FILE, GuestfsIsFileClass))
+#define GUESTFS_TYPE_IS_FILE (guestfs_is_file_get_type ())
+#define GUESTFS_IS_FILE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_IS_FILE, GuestfsIsFile))
+#define GUESTFS_IS_FILE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_IS_FILE, GuestfsIsFileClass))
+#define GUESTFS_IS_IS_FILE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_IS_FILE))
+#define GUESTFS_IS_IS_FILE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_IS_FILE))
+#define GUESTFS_IS_FILE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_IS_FILE, GuestfsIsFileClass))
 
 typedef struct _GuestfsIsFilePrivate GuestfsIsFilePrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsIsFileClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_is_file_get_type(void);
-GuestfsIsFile *guestfs_is_file_new(void);
+GType guestfs_is_file_get_type (void);
+GuestfsIsFile *guestfs_is_file_new (void);
 
 G_END_DECLS
 

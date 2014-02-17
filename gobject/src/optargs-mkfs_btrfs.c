@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_MKFS_BTRFS_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_MKFS_BTRFS, GuestfsMkfsBtrfsPrivate))
+#define GUESTFS_MKFS_BTRFS_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_MKFS_BTRFS, GuestfsMkfsBtrfsPrivate))
 
 struct _GuestfsMkfsBtrfsPrivate {
   gint64 allocstart;
@@ -47,7 +47,7 @@ struct _GuestfsMkfsBtrfsPrivate {
   gint sectorsize;
 };
 
-G_DEFINE_TYPE(GuestfsMkfsBtrfs, guestfs_mkfs_btrfs, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsMkfsBtrfs, guestfs_mkfs_btrfs, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_MKFS_BTRFS_PROP0,
@@ -64,7 +64,7 @@ enum {
 static void
 guestfs_mkfs_btrfs_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsMkfsBtrfs *self = GUESTFS_MKFS_BTRFS(object);
+  GuestfsMkfsBtrfs *self = GUESTFS_MKFS_BTRFS (object);
   GuestfsMkfsBtrfsPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -77,7 +77,7 @@ guestfs_mkfs_btrfs_set_property(GObject *object, guint property_id, const GValue
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_DATATYPE:
-      g_free(priv->datatype);
+      g_free (priv->datatype);
       priv->datatype = g_value_dup_string (value);
       break;
 
@@ -86,12 +86,12 @@ guestfs_mkfs_btrfs_set_property(GObject *object, guint property_id, const GValue
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_LABEL:
-      g_free(priv->label);
+      g_free (priv->label);
       priv->label = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_METADATA:
-      g_free(priv->metadata);
+      g_free (priv->metadata);
       priv->metadata = g_value_dup_string (value);
       break;
 
@@ -105,72 +105,71 @@ guestfs_mkfs_btrfs_set_property(GObject *object, guint property_id, const GValue
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_mkfs_btrfs_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsMkfsBtrfs *self = GUESTFS_MKFS_BTRFS(object);
+  GuestfsMkfsBtrfs *self = GUESTFS_MKFS_BTRFS (object);
   GuestfsMkfsBtrfsPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_MKFS_BTRFS_ALLOCSTART:
-      g_value_set_int64(value, priv->allocstart);
+      g_value_set_int64 (value, priv->allocstart);
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_BYTECOUNT:
-      g_value_set_int64(value, priv->bytecount);
+      g_value_set_int64 (value, priv->bytecount);
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_DATATYPE:
-      g_value_set_string(value, priv->datatype);
+      g_value_set_string (value, priv->datatype);
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_LEAFSIZE:
-      g_value_set_int(value, priv->leafsize);
+      g_value_set_int (value, priv->leafsize);
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_LABEL:
-      g_value_set_string(value, priv->label);
+      g_value_set_string (value, priv->label);
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_METADATA:
-      g_value_set_string(value, priv->metadata);
+      g_value_set_string (value, priv->metadata);
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_NODESIZE:
-      g_value_set_int(value, priv->nodesize);
+      g_value_set_int (value, priv->nodesize);
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_SECTORSIZE:
-      g_value_set_int(value, priv->sectorsize);
+      g_value_set_int (value, priv->sectorsize);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_mkfs_btrfs_finalize(GObject *object)
+guestfs_mkfs_btrfs_finalize (GObject *object)
 {
-  GuestfsMkfsBtrfs *self = GUESTFS_MKFS_BTRFS(object);
+  GuestfsMkfsBtrfs *self = GUESTFS_MKFS_BTRFS (object);
   GuestfsMkfsBtrfsPrivate *priv = self->priv;
 
-  g_free(priv->datatype);
-  g_free(priv->label);
-  g_free(priv->metadata);
-
-  G_OBJECT_CLASS(guestfs_mkfs_btrfs_parent_class)->finalize(object);
+  g_free (priv->datatype);
+  g_free (priv->label);
+  g_free (priv->metadata);
+  G_OBJECT_CLASS (guestfs_mkfs_btrfs_parent_class)->finalize (object);
 }
 
 static void
-guestfs_mkfs_btrfs_class_init(GuestfsMkfsBtrfsClass *klass)
+guestfs_mkfs_btrfs_class_init (GuestfsMkfsBtrfsClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_mkfs_btrfs_set_property;
   object_class->get_property = guestfs_mkfs_btrfs_get_property;
 
@@ -179,10 +178,10 @@ guestfs_mkfs_btrfs_class_init(GuestfsMkfsBtrfsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKFS_BTRFS_ALLOCSTART,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "allocstart",
       "allocstart",
       "A 64-bit integer.",
@@ -196,10 +195,10 @@ guestfs_mkfs_btrfs_class_init(GuestfsMkfsBtrfsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKFS_BTRFS_BYTECOUNT,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "bytecount",
       "bytecount",
       "A 64-bit integer.",
@@ -213,10 +212,10 @@ guestfs_mkfs_btrfs_class_init(GuestfsMkfsBtrfsClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKFS_BTRFS_DATATYPE,
-    g_param_spec_string(
+    g_param_spec_string (
       "datatype",
       "datatype",
       "A string.",
@@ -230,10 +229,10 @@ guestfs_mkfs_btrfs_class_init(GuestfsMkfsBtrfsClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKFS_BTRFS_LEAFSIZE,
-    g_param_spec_int(
+    g_param_spec_int (
       "leafsize",
       "leafsize",
       "A 32-bit integer.",
@@ -247,10 +246,10 @@ guestfs_mkfs_btrfs_class_init(GuestfsMkfsBtrfsClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKFS_BTRFS_LABEL,
-    g_param_spec_string(
+    g_param_spec_string (
       "label",
       "label",
       "A string.",
@@ -264,10 +263,10 @@ guestfs_mkfs_btrfs_class_init(GuestfsMkfsBtrfsClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKFS_BTRFS_METADATA,
-    g_param_spec_string(
+    g_param_spec_string (
       "metadata",
       "metadata",
       "A string.",
@@ -281,10 +280,10 @@ guestfs_mkfs_btrfs_class_init(GuestfsMkfsBtrfsClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKFS_BTRFS_NODESIZE,
-    g_param_spec_int(
+    g_param_spec_int (
       "nodesize",
       "nodesize",
       "A 32-bit integer.",
@@ -298,10 +297,10 @@ guestfs_mkfs_btrfs_class_init(GuestfsMkfsBtrfsClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKFS_BTRFS_SECTORSIZE,
-    g_param_spec_int(
+    g_param_spec_int (
       "sectorsize",
       "sectorsize",
       "A 32-bit integer.",
@@ -311,15 +310,15 @@ guestfs_mkfs_btrfs_class_init(GuestfsMkfsBtrfsClass *klass)
   );
 
   object_class->finalize = guestfs_mkfs_btrfs_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsMkfsBtrfsPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsMkfsBtrfsPrivate));
 }
 
 static void
-guestfs_mkfs_btrfs_init(GuestfsMkfsBtrfs *o)
+guestfs_mkfs_btrfs_init (GuestfsMkfsBtrfs *o)
 {
-  o->priv = GUESTFS_MKFS_BTRFS_GET_PRIVATE(o);
+  o->priv = GUESTFS_MKFS_BTRFS_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsMkfsBtrfsPrivate));
+  memset (o->priv, 0, sizeof (GuestfsMkfsBtrfsPrivate));
 }
 
 /**
@@ -330,7 +329,7 @@ guestfs_mkfs_btrfs_init(GuestfsMkfsBtrfs *o)
  * Returns: (transfer full): a new GuestfsMkfsBtrfs object
  */
 GuestfsMkfsBtrfs *
-guestfs_mkfs_btrfs_new(void)
+guestfs_mkfs_btrfs_new (void)
 {
-  return GUESTFS_MKFS_BTRFS(g_object_new(GUESTFS_TYPE_MKFS_BTRFS, NULL));
+  return GUESTFS_MKFS_BTRFS (g_object_new (GUESTFS_TYPE_MKFS_BTRFS, NULL));
 }
