@@ -34,14 +34,14 @@
 
 #include <string.h>
 
-#define GUESTFS_MKSWAP_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_MKSWAP, GuestfsMkswapPrivate))
+#define GUESTFS_MKSWAP_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_MKSWAP, GuestfsMkswapPrivate))
 
 struct _GuestfsMkswapPrivate {
   gchar *label;
   gchar *uuid;
 };
 
-G_DEFINE_TYPE(GuestfsMkswap, guestfs_mkswap, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsMkswap, guestfs_mkswap, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_MKSWAP_PROP0,
@@ -52,63 +52,62 @@ enum {
 static void
 guestfs_mkswap_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsMkswap *self = GUESTFS_MKSWAP(object);
+  GuestfsMkswap *self = GUESTFS_MKSWAP (object);
   GuestfsMkswapPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_MKSWAP_LABEL:
-      g_free(priv->label);
+      g_free (priv->label);
       priv->label = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_MKSWAP_UUID:
-      g_free(priv->uuid);
+      g_free (priv->uuid);
       priv->uuid = g_value_dup_string (value);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_mkswap_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsMkswap *self = GUESTFS_MKSWAP(object);
+  GuestfsMkswap *self = GUESTFS_MKSWAP (object);
   GuestfsMkswapPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_MKSWAP_LABEL:
-      g_value_set_string(value, priv->label);
+      g_value_set_string (value, priv->label);
       break;
 
     case PROP_GUESTFS_MKSWAP_UUID:
-      g_value_set_string(value, priv->uuid);
+      g_value_set_string (value, priv->uuid);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_mkswap_finalize(GObject *object)
+guestfs_mkswap_finalize (GObject *object)
 {
-  GuestfsMkswap *self = GUESTFS_MKSWAP(object);
+  GuestfsMkswap *self = GUESTFS_MKSWAP (object);
   GuestfsMkswapPrivate *priv = self->priv;
 
-  g_free(priv->label);
-  g_free(priv->uuid);
-
-  G_OBJECT_CLASS(guestfs_mkswap_parent_class)->finalize(object);
+  g_free (priv->label);
+  g_free (priv->uuid);
+  G_OBJECT_CLASS (guestfs_mkswap_parent_class)->finalize (object);
 }
 
 static void
-guestfs_mkswap_class_init(GuestfsMkswapClass *klass)
+guestfs_mkswap_class_init (GuestfsMkswapClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_mkswap_set_property;
   object_class->get_property = guestfs_mkswap_get_property;
 
@@ -117,10 +116,10 @@ guestfs_mkswap_class_init(GuestfsMkswapClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKSWAP_LABEL,
-    g_param_spec_string(
+    g_param_spec_string (
       "label",
       "label",
       "A string.",
@@ -134,10 +133,10 @@ guestfs_mkswap_class_init(GuestfsMkswapClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKSWAP_UUID,
-    g_param_spec_string(
+    g_param_spec_string (
       "uuid",
       "uuid",
       "A string.",
@@ -147,15 +146,15 @@ guestfs_mkswap_class_init(GuestfsMkswapClass *klass)
   );
 
   object_class->finalize = guestfs_mkswap_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsMkswapPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsMkswapPrivate));
 }
 
 static void
-guestfs_mkswap_init(GuestfsMkswap *o)
+guestfs_mkswap_init (GuestfsMkswap *o)
 {
-  o->priv = GUESTFS_MKSWAP_GET_PRIVATE(o);
+  o->priv = GUESTFS_MKSWAP_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsMkswapPrivate));
+  memset (o->priv, 0, sizeof (GuestfsMkswapPrivate));
 }
 
 /**
@@ -166,7 +165,7 @@ guestfs_mkswap_init(GuestfsMkswap *o)
  * Returns: (transfer full): a new GuestfsMkswap object
  */
 GuestfsMkswap *
-guestfs_mkswap_new(void)
+guestfs_mkswap_new (void)
 {
-  return GUESTFS_MKSWAP(g_object_new(GUESTFS_TYPE_MKSWAP, NULL));
+  return GUESTFS_MKSWAP (g_object_new (GUESTFS_TYPE_MKSWAP, NULL));
 }

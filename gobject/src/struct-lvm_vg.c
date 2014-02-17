@@ -31,15 +31,15 @@
  */
 
 static GuestfsVG *
-guestfs_lvm_vg_copy(GuestfsVG *src)
+guestfs_lvm_vg_copy (GuestfsVG *src)
 {
-  return g_slice_dup(GuestfsVG, src);
+  return g_slice_dup (GuestfsVG, src);
 }
 
 static void
-guestfs_lvm_vg_free(GuestfsVG *src)
+guestfs_lvm_vg_free (GuestfsVG *src)
 {
-  g_slice_free(GuestfsVG, src);
+  g_slice_free (GuestfsVG, src);
 }
 
-G_DEFINE_BOXED_TYPE(GuestfsVG, guestfs_lvm_vg, guestfs_lvm_vg_copy, guestfs_lvm_vg_free)
+G_DEFINE_BOXED_TYPE (GuestfsVG, guestfs_lvm_vg, guestfs_lvm_vg_copy, guestfs_lvm_vg_free)

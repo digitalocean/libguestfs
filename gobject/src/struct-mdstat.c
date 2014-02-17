@@ -31,15 +31,15 @@
  */
 
 static GuestfsMDStat *
-guestfs_mdstat_copy(GuestfsMDStat *src)
+guestfs_mdstat_copy (GuestfsMDStat *src)
 {
-  return g_slice_dup(GuestfsMDStat, src);
+  return g_slice_dup (GuestfsMDStat, src);
 }
 
 static void
-guestfs_mdstat_free(GuestfsMDStat *src)
+guestfs_mdstat_free (GuestfsMDStat *src)
 {
-  g_slice_free(GuestfsMDStat, src);
+  g_slice_free (GuestfsMDStat, src);
 }
 
-G_DEFINE_BOXED_TYPE(GuestfsMDStat, guestfs_mdstat, guestfs_mdstat_copy, guestfs_mdstat_free)
+G_DEFINE_BOXED_TYPE (GuestfsMDStat, guestfs_mdstat, guestfs_mdstat_copy, guestfs_mdstat_free)

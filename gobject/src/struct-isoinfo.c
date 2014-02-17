@@ -31,15 +31,15 @@
  */
 
 static GuestfsISOInfo *
-guestfs_isoinfo_copy(GuestfsISOInfo *src)
+guestfs_isoinfo_copy (GuestfsISOInfo *src)
 {
-  return g_slice_dup(GuestfsISOInfo, src);
+  return g_slice_dup (GuestfsISOInfo, src);
 }
 
 static void
-guestfs_isoinfo_free(GuestfsISOInfo *src)
+guestfs_isoinfo_free (GuestfsISOInfo *src)
 {
-  g_slice_free(GuestfsISOInfo, src);
+  g_slice_free (GuestfsISOInfo, src);
 }
 
-G_DEFINE_BOXED_TYPE(GuestfsISOInfo, guestfs_isoinfo, guestfs_isoinfo_copy, guestfs_isoinfo_free)
+G_DEFINE_BOXED_TYPE (GuestfsISOInfo, guestfs_isoinfo, guestfs_isoinfo_copy, guestfs_isoinfo_free)

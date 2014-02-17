@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_IS_SOCKET (guestfs_is_socket_get_type())
-#define GUESTFS_IS_SOCKET(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_IS_SOCKET, GuestfsIsSocket))
-#define GUESTFS_IS_SOCKET_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_IS_SOCKET, GuestfsIsSocketClass))
-#define GUESTFS_IS_IS_SOCKET(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_IS_SOCKET))
-#define GUESTFS_IS_IS_SOCKET_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_IS_SOCKET))
-#define GUESTFS_IS_SOCKET_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_IS_SOCKET, GuestfsIsSocketClass))
+#define GUESTFS_TYPE_IS_SOCKET (guestfs_is_socket_get_type ())
+#define GUESTFS_IS_SOCKET(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_IS_SOCKET, GuestfsIsSocket))
+#define GUESTFS_IS_SOCKET_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_IS_SOCKET, GuestfsIsSocketClass))
+#define GUESTFS_IS_IS_SOCKET(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_IS_SOCKET))
+#define GUESTFS_IS_IS_SOCKET_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_IS_SOCKET))
+#define GUESTFS_IS_SOCKET_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_IS_SOCKET, GuestfsIsSocketClass))
 
 typedef struct _GuestfsIsSocketPrivate GuestfsIsSocketPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsIsSocketClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_is_socket_get_type(void);
-GuestfsIsSocket *guestfs_is_socket_new(void);
+GType guestfs_is_socket_get_type (void);
+GuestfsIsSocket *guestfs_is_socket_new (void);
 
 G_END_DECLS
 

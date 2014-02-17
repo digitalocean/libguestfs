@@ -48,8 +48,8 @@ typedef enum
   GUESTFS_TRISTATE_NONE
 } GuestfsTristate;
 
-GType guestfs_tristate_get_type(void);
-#define GUESTFS_TYPE_TRISTATE (guestfs_tristate_get_type())
+GType guestfs_tristate_get_type (void);
+#define GUESTFS_TYPE_TRISTATE (guestfs_tristate_get_type ())
 
 G_END_DECLS
 

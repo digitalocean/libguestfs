@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_COPY_ATTRIBUTES_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_COPY_ATTRIBUTES, GuestfsCopyAttributesPrivate))
+#define GUESTFS_COPY_ATTRIBUTES_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_COPY_ATTRIBUTES, GuestfsCopyAttributesPrivate))
 
 struct _GuestfsCopyAttributesPrivate {
   GuestfsTristate all;
@@ -43,7 +43,7 @@ struct _GuestfsCopyAttributesPrivate {
   GuestfsTristate ownership;
 };
 
-G_DEFINE_TYPE(GuestfsCopyAttributes, guestfs_copy_attributes, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsCopyAttributes, guestfs_copy_attributes, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_COPY_ATTRIBUTES_PROP0,
@@ -56,7 +56,7 @@ enum {
 static void
 guestfs_copy_attributes_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsCopyAttributes *self = GUESTFS_COPY_ATTRIBUTES(object);
+  GuestfsCopyAttributes *self = GUESTFS_COPY_ATTRIBUTES (object);
   GuestfsCopyAttributesPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -78,53 +78,49 @@ guestfs_copy_attributes_set_property(GObject *object, guint property_id, const G
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_copy_attributes_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsCopyAttributes *self = GUESTFS_COPY_ATTRIBUTES(object);
+  GuestfsCopyAttributes *self = GUESTFS_COPY_ATTRIBUTES (object);
   GuestfsCopyAttributesPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_COPY_ATTRIBUTES_ALL:
-      g_value_set_enum(value, priv->all);
+      g_value_set_enum (value, priv->all);
       break;
 
     case PROP_GUESTFS_COPY_ATTRIBUTES_MODE:
-      g_value_set_enum(value, priv->mode);
+      g_value_set_enum (value, priv->mode);
       break;
 
     case PROP_GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES:
-      g_value_set_enum(value, priv->xattributes);
+      g_value_set_enum (value, priv->xattributes);
       break;
 
     case PROP_GUESTFS_COPY_ATTRIBUTES_OWNERSHIP:
-      g_value_set_enum(value, priv->ownership);
+      g_value_set_enum (value, priv->ownership);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_copy_attributes_finalize(GObject *object)
+guestfs_copy_attributes_finalize (GObject *object)
 {
-  GuestfsCopyAttributes *self = GUESTFS_COPY_ATTRIBUTES(object);
-  GuestfsCopyAttributesPrivate *priv = self->priv;
-
-
-  G_OBJECT_CLASS(guestfs_copy_attributes_parent_class)->finalize(object);
+  G_OBJECT_CLASS (guestfs_copy_attributes_parent_class)->finalize (object);
 }
 
 static void
-guestfs_copy_attributes_class_init(GuestfsCopyAttributesClass *klass)
+guestfs_copy_attributes_class_init (GuestfsCopyAttributesClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_copy_attributes_set_property;
   object_class->get_property = guestfs_copy_attributes_get_property;
 
@@ -133,10 +129,10 @@ guestfs_copy_attributes_class_init(GuestfsCopyAttributesClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_COPY_ATTRIBUTES_ALL,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "all",
       "all",
       "A boolean.",
@@ -150,10 +146,10 @@ guestfs_copy_attributes_class_init(GuestfsCopyAttributesClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_COPY_ATTRIBUTES_MODE,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "mode",
       "mode",
       "A boolean.",
@@ -167,10 +163,10 @@ guestfs_copy_attributes_class_init(GuestfsCopyAttributesClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "xattributes",
       "xattributes",
       "A boolean.",
@@ -184,10 +180,10 @@ guestfs_copy_attributes_class_init(GuestfsCopyAttributesClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_COPY_ATTRIBUTES_OWNERSHIP,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "ownership",
       "ownership",
       "A boolean.",
@@ -197,15 +193,15 @@ guestfs_copy_attributes_class_init(GuestfsCopyAttributesClass *klass)
   );
 
   object_class->finalize = guestfs_copy_attributes_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsCopyAttributesPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsCopyAttributesPrivate));
 }
 
 static void
-guestfs_copy_attributes_init(GuestfsCopyAttributes *o)
+guestfs_copy_attributes_init (GuestfsCopyAttributes *o)
 {
-  o->priv = GUESTFS_COPY_ATTRIBUTES_GET_PRIVATE(o);
+  o->priv = GUESTFS_COPY_ATTRIBUTES_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsCopyAttributesPrivate));
+  memset (o->priv, 0, sizeof (GuestfsCopyAttributesPrivate));
 }
 
 /**
@@ -216,7 +212,7 @@ guestfs_copy_attributes_init(GuestfsCopyAttributes *o)
  * Returns: (transfer full): a new GuestfsCopyAttributes object
  */
 GuestfsCopyAttributes *
-guestfs_copy_attributes_new(void)
+guestfs_copy_attributes_new (void)
 {
-  return GUESTFS_COPY_ATTRIBUTES(g_object_new(GUESTFS_TYPE_COPY_ATTRIBUTES, NULL));
+  return GUESTFS_COPY_ATTRIBUTES (g_object_new (GUESTFS_TYPE_COPY_ATTRIBUTES, NULL));
 }

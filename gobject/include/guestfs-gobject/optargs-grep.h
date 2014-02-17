@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_GREP (guestfs_grep_get_type())
-#define GUESTFS_GREP(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_GREP, GuestfsGrep))
-#define GUESTFS_GREP_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_GREP, GuestfsGrepClass))
-#define GUESTFS_IS_GREP(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_GREP))
-#define GUESTFS_IS_GREP_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_GREP))
-#define GUESTFS_GREP_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_GREP, GuestfsGrepClass))
+#define GUESTFS_TYPE_GREP (guestfs_grep_get_type ())
+#define GUESTFS_GREP(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_GREP, GuestfsGrep))
+#define GUESTFS_GREP_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_GREP, GuestfsGrepClass))
+#define GUESTFS_IS_GREP(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_GREP))
+#define GUESTFS_IS_GREP_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_GREP))
+#define GUESTFS_GREP_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_GREP, GuestfsGrepClass))
 
 typedef struct _GuestfsGrepPrivate GuestfsGrepPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsGrepClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_grep_get_type(void);
-GuestfsGrep *guestfs_grep_new(void);
+GType guestfs_grep_get_type (void);
+GuestfsGrep *guestfs_grep_new (void);
 
 G_END_DECLS
 

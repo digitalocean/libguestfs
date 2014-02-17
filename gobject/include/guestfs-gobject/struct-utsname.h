@@ -44,7 +44,7 @@ struct _GuestfsUTSName {
   gchar *uts_version;
   gchar *uts_machine;
 };
-GType guestfs_utsname_get_type(void);
+GType guestfs_utsname_get_type (void);
 
 G_END_DECLS
 

@@ -40,7 +40,7 @@ struct _GuestfsXAttr {
   gchar *attrname;
   GByteArray *attrval;
 };
-GType guestfs_xattr_get_type(void);
+GType guestfs_xattr_get_type (void);
 
 G_END_DECLS
 

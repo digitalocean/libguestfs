@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_XFS_ADMIN (guestfs_xfs_admin_get_type())
-#define GUESTFS_XFS_ADMIN(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_XFS_ADMIN, GuestfsXfsAdmin))
-#define GUESTFS_XFS_ADMIN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_XFS_ADMIN, GuestfsXfsAdminClass))
-#define GUESTFS_IS_XFS_ADMIN(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_XFS_ADMIN))
-#define GUESTFS_IS_XFS_ADMIN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_XFS_ADMIN))
-#define GUESTFS_XFS_ADMIN_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_XFS_ADMIN, GuestfsXfsAdminClass))
+#define GUESTFS_TYPE_XFS_ADMIN (guestfs_xfs_admin_get_type ())
+#define GUESTFS_XFS_ADMIN(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_XFS_ADMIN, GuestfsXfsAdmin))
+#define GUESTFS_XFS_ADMIN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_XFS_ADMIN, GuestfsXfsAdminClass))
+#define GUESTFS_IS_XFS_ADMIN(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_XFS_ADMIN))
+#define GUESTFS_IS_XFS_ADMIN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_XFS_ADMIN))
+#define GUESTFS_XFS_ADMIN_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_XFS_ADMIN, GuestfsXfsAdminClass))
 
 typedef struct _GuestfsXfsAdminPrivate GuestfsXfsAdminPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsXfsAdminClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_xfs_admin_get_type(void);
-GuestfsXfsAdmin *guestfs_xfs_admin_new(void);
+GType guestfs_xfs_admin_get_type (void);
+GuestfsXfsAdmin *guestfs_xfs_admin_new (void);
 
 G_END_DECLS
 

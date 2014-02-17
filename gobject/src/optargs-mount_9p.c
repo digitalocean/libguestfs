@@ -34,13 +34,13 @@
 
 #include <string.h>
 
-#define GUESTFS_MOUNT_9P_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_MOUNT_9P, GuestfsMount9PPrivate))
+#define GUESTFS_MOUNT_9P_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_MOUNT_9P, GuestfsMount9PPrivate))
 
 struct _GuestfsMount9PPrivate {
   gchar *options;
 };
 
-G_DEFINE_TYPE(GuestfsMount9P, guestfs_mount_9p, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsMount9P, guestfs_mount_9p, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_MOUNT_9P_PROP0,
@@ -50,53 +50,52 @@ enum {
 static void
 guestfs_mount_9p_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsMount9P *self = GUESTFS_MOUNT_9P(object);
+  GuestfsMount9P *self = GUESTFS_MOUNT_9P (object);
   GuestfsMount9PPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_MOUNT_9P_OPTIONS:
-      g_free(priv->options);
+      g_free (priv->options);
       priv->options = g_value_dup_string (value);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_mount_9p_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsMount9P *self = GUESTFS_MOUNT_9P(object);
+  GuestfsMount9P *self = GUESTFS_MOUNT_9P (object);
   GuestfsMount9PPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_MOUNT_9P_OPTIONS:
-      g_value_set_string(value, priv->options);
+      g_value_set_string (value, priv->options);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_mount_9p_finalize(GObject *object)
+guestfs_mount_9p_finalize (GObject *object)
 {
-  GuestfsMount9P *self = GUESTFS_MOUNT_9P(object);
+  GuestfsMount9P *self = GUESTFS_MOUNT_9P (object);
   GuestfsMount9PPrivate *priv = self->priv;
 
-  g_free(priv->options);
-
-  G_OBJECT_CLASS(guestfs_mount_9p_parent_class)->finalize(object);
+  g_free (priv->options);
+  G_OBJECT_CLASS (guestfs_mount_9p_parent_class)->finalize (object);
 }
 
 static void
-guestfs_mount_9p_class_init(GuestfsMount9PClass *klass)
+guestfs_mount_9p_class_init (GuestfsMount9PClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_mount_9p_set_property;
   object_class->get_property = guestfs_mount_9p_get_property;
 
@@ -105,10 +104,10 @@ guestfs_mount_9p_class_init(GuestfsMount9PClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MOUNT_9P_OPTIONS,
-    g_param_spec_string(
+    g_param_spec_string (
       "options",
       "options",
       "A string.",
@@ -118,15 +117,15 @@ guestfs_mount_9p_class_init(GuestfsMount9PClass *klass)
   );
 
   object_class->finalize = guestfs_mount_9p_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsMount9PPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsMount9PPrivate));
 }
 
 static void
-guestfs_mount_9p_init(GuestfsMount9P *o)
+guestfs_mount_9p_init (GuestfsMount9P *o)
 {
-  o->priv = GUESTFS_MOUNT_9P_GET_PRIVATE(o);
+  o->priv = GUESTFS_MOUNT_9P_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsMount9PPrivate));
+  memset (o->priv, 0, sizeof (GuestfsMount9PPrivate));
 }
 
 /**
@@ -137,7 +136,7 @@ guestfs_mount_9p_init(GuestfsMount9P *o)
  * Returns: (transfer full): a new GuestfsMount9P object
  */
 GuestfsMount9P *
-guestfs_mount_9p_new(void)
+guestfs_mount_9p_new (void)
 {
-  return GUESTFS_MOUNT_9P(g_object_new(GUESTFS_TYPE_MOUNT_9P, NULL));
+  return GUESTFS_MOUNT_9P (g_object_new (GUESTFS_TYPE_MOUNT_9P, NULL));
 }

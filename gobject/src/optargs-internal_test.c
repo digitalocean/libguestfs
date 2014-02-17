@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_INTERNAL_TEST_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_INTERNAL_TEST, GuestfsInternalTestPrivate))
+#define GUESTFS_INTERNAL_TEST_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_INTERNAL_TEST, GuestfsInternalTestPrivate))
 
 struct _GuestfsInternalTestPrivate {
   GuestfsTristate obool;
@@ -44,7 +44,7 @@ struct _GuestfsInternalTestPrivate {
   /* OStringList not implemented yet */
 };
 
-G_DEFINE_TYPE(GuestfsInternalTest, guestfs_internal_test, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsInternalTest, guestfs_internal_test, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_INTERNAL_TEST_PROP0,
@@ -58,7 +58,7 @@ enum {
 static void
 guestfs_internal_test_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsInternalTest *self = GUESTFS_INTERNAL_TEST(object);
+  GuestfsInternalTest *self = GUESTFS_INTERNAL_TEST (object);
   GuestfsInternalTestPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -75,60 +75,59 @@ guestfs_internal_test_set_property(GObject *object, guint property_id, const GVa
       break;
 
     case PROP_GUESTFS_INTERNAL_TEST_OSTRING:
-      g_free(priv->ostring);
+      g_free (priv->ostring);
       priv->ostring = g_value_dup_string (value);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_internal_test_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsInternalTest *self = GUESTFS_INTERNAL_TEST(object);
+  GuestfsInternalTest *self = GUESTFS_INTERNAL_TEST (object);
   GuestfsInternalTestPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_INTERNAL_TEST_OBOOL:
-      g_value_set_enum(value, priv->obool);
+      g_value_set_enum (value, priv->obool);
       break;
 
     case PROP_GUESTFS_INTERNAL_TEST_OINT:
-      g_value_set_int(value, priv->oint);
+      g_value_set_int (value, priv->oint);
       break;
 
     case PROP_GUESTFS_INTERNAL_TEST_OINT64:
-      g_value_set_int64(value, priv->oint64);
+      g_value_set_int64 (value, priv->oint64);
       break;
 
     case PROP_GUESTFS_INTERNAL_TEST_OSTRING:
-      g_value_set_string(value, priv->ostring);
+      g_value_set_string (value, priv->ostring);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_internal_test_finalize(GObject *object)
+guestfs_internal_test_finalize (GObject *object)
 {
-  GuestfsInternalTest *self = GUESTFS_INTERNAL_TEST(object);
+  GuestfsInternalTest *self = GUESTFS_INTERNAL_TEST (object);
   GuestfsInternalTestPrivate *priv = self->priv;
 
-  g_free(priv->ostring);
-
-  G_OBJECT_CLASS(guestfs_internal_test_parent_class)->finalize(object);
+  g_free (priv->ostring);
+  G_OBJECT_CLASS (guestfs_internal_test_parent_class)->finalize (object);
 }
 
 static void
-guestfs_internal_test_class_init(GuestfsInternalTestClass *klass)
+guestfs_internal_test_class_init (GuestfsInternalTestClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_internal_test_set_property;
   object_class->get_property = guestfs_internal_test_get_property;
 
@@ -137,10 +136,10 @@ guestfs_internal_test_class_init(GuestfsInternalTestClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_INTERNAL_TEST_OBOOL,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "obool",
       "obool",
       "A boolean.",
@@ -154,10 +153,10 @@ guestfs_internal_test_class_init(GuestfsInternalTestClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_INTERNAL_TEST_OINT,
-    g_param_spec_int(
+    g_param_spec_int (
       "oint",
       "oint",
       "A 32-bit integer.",
@@ -171,10 +170,10 @@ guestfs_internal_test_class_init(GuestfsInternalTestClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_INTERNAL_TEST_OINT64,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "oint64",
       "oint64",
       "A 64-bit integer.",
@@ -188,10 +187,10 @@ guestfs_internal_test_class_init(GuestfsInternalTestClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_INTERNAL_TEST_OSTRING,
-    g_param_spec_string(
+    g_param_spec_string (
       "ostring",
       "ostring",
       "A string.",
@@ -201,15 +200,15 @@ guestfs_internal_test_class_init(GuestfsInternalTestClass *klass)
   );
 
   object_class->finalize = guestfs_internal_test_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsInternalTestPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsInternalTestPrivate));
 }
 
 static void
-guestfs_internal_test_init(GuestfsInternalTest *o)
+guestfs_internal_test_init (GuestfsInternalTest *o)
 {
-  o->priv = GUESTFS_INTERNAL_TEST_GET_PRIVATE(o);
+  o->priv = GUESTFS_INTERNAL_TEST_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsInternalTestPrivate));
+  memset (o->priv, 0, sizeof (GuestfsInternalTestPrivate));
 }
 
 /**
@@ -220,7 +219,7 @@ guestfs_internal_test_init(GuestfsInternalTest *o)
  * Returns: (transfer full): a new GuestfsInternalTest object
  */
 GuestfsInternalTest *
-guestfs_internal_test_new(void)
+guestfs_internal_test_new (void)
 {
-  return GUESTFS_INTERNAL_TEST(g_object_new(GUESTFS_TYPE_INTERNAL_TEST, NULL));
+  return GUESTFS_INTERNAL_TEST (g_object_new (GUESTFS_TYPE_INTERNAL_TEST, NULL));
 }

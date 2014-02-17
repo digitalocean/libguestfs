@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_COPY_DEVICE_TO_DEVICE (guestfs_copy_device_to_device_get_type())
-#define GUESTFS_COPY_DEVICE_TO_DEVICE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_COPY_DEVICE_TO_DEVICE, GuestfsCopyDeviceToDevice))
-#define GUESTFS_COPY_DEVICE_TO_DEVICE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_COPY_DEVICE_TO_DEVICE, GuestfsCopyDeviceToDeviceClass))
-#define GUESTFS_IS_COPY_DEVICE_TO_DEVICE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_COPY_DEVICE_TO_DEVICE))
-#define GUESTFS_IS_COPY_DEVICE_TO_DEVICE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_COPY_DEVICE_TO_DEVICE))
-#define GUESTFS_COPY_DEVICE_TO_DEVICE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_COPY_DEVICE_TO_DEVICE, GuestfsCopyDeviceToDeviceClass))
+#define GUESTFS_TYPE_COPY_DEVICE_TO_DEVICE (guestfs_copy_device_to_device_get_type ())
+#define GUESTFS_COPY_DEVICE_TO_DEVICE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_COPY_DEVICE_TO_DEVICE, GuestfsCopyDeviceToDevice))
+#define GUESTFS_COPY_DEVICE_TO_DEVICE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_COPY_DEVICE_TO_DEVICE, GuestfsCopyDeviceToDeviceClass))
+#define GUESTFS_IS_COPY_DEVICE_TO_DEVICE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_COPY_DEVICE_TO_DEVICE))
+#define GUESTFS_IS_COPY_DEVICE_TO_DEVICE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_COPY_DEVICE_TO_DEVICE))
+#define GUESTFS_COPY_DEVICE_TO_DEVICE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_COPY_DEVICE_TO_DEVICE, GuestfsCopyDeviceToDeviceClass))
 
 typedef struct _GuestfsCopyDeviceToDevicePrivate GuestfsCopyDeviceToDevicePrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsCopyDeviceToDeviceClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_copy_device_to_device_get_type(void);
-GuestfsCopyDeviceToDevice *guestfs_copy_device_to_device_new(void);
+GType guestfs_copy_device_to_device_get_type (void);
+GuestfsCopyDeviceToDevice *guestfs_copy_device_to_device_new (void);
 
 G_END_DECLS
 

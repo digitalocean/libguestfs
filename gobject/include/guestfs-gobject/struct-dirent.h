@@ -42,7 +42,7 @@ struct _GuestfsDirent {
   gchar ftyp;
   gchar *name;
 };
-GType guestfs_dirent_get_type(void);
+GType guestfs_dirent_get_type (void);
 
 G_END_DECLS
 

@@ -31,15 +31,15 @@
  */
 
 static GuestfsVersion *
-guestfs_version_copy(GuestfsVersion *src)
+guestfs_version_copy (GuestfsVersion *src)
 {
-  return g_slice_dup(GuestfsVersion, src);
+  return g_slice_dup (GuestfsVersion, src);
 }
 
 static void
-guestfs_version_free(GuestfsVersion *src)
+guestfs_version_free (GuestfsVersion *src)
 {
-  g_slice_free(GuestfsVersion, src);
+  g_slice_free (GuestfsVersion, src);
 }
 
-G_DEFINE_BOXED_TYPE(GuestfsVersion, guestfs_version, guestfs_version_copy, guestfs_version_free)
+G_DEFINE_BOXED_TYPE (GuestfsVersion, guestfs_version, guestfs_version_copy, guestfs_version_free)

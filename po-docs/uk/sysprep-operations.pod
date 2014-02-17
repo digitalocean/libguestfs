@@ -187,6 +187,7 @@ Linux.
  /var/log/ntp
  /var/log/ntpstats/*
  /var/log/ppp/connect-errors
+ /var/log/rhsm/*
  /var/log/sa/*
  /var/log/secure*
  /var/log/setroubleshoot/*.log
@@ -281,6 +282,10 @@ at least one I<--root-password> or I<--password> argument given.
 псевдовипадкових чисел у гостьовій системі.
 
 Див. L</RANDOM SEED> нижче.
+
+=head2 B<rh-subscription-manager> *
+
+Remove the RH subscription manager files.
 
 =head2 B<rhn-systemid> *
 

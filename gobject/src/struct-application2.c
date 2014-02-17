@@ -31,15 +31,15 @@
  */
 
 static GuestfsApplication2 *
-guestfs_application2_copy(GuestfsApplication2 *src)
+guestfs_application2_copy (GuestfsApplication2 *src)
 {
-  return g_slice_dup(GuestfsApplication2, src);
+  return g_slice_dup (GuestfsApplication2, src);
 }
 
 static void
-guestfs_application2_free(GuestfsApplication2 *src)
+guestfs_application2_free (GuestfsApplication2 *src)
 {
-  g_slice_free(GuestfsApplication2, src);
+  g_slice_free (GuestfsApplication2, src);
 }
 
-G_DEFINE_BOXED_TYPE(GuestfsApplication2, guestfs_application2, guestfs_application2_copy, guestfs_application2_free)
+G_DEFINE_BOXED_TYPE (GuestfsApplication2, guestfs_application2, guestfs_application2_copy, guestfs_application2_free)

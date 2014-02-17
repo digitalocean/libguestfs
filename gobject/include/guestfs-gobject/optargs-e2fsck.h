@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_E2FSCK (guestfs_e2fsck_get_type())
-#define GUESTFS_E2FSCK(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_E2FSCK, GuestfsE2fsck))
-#define GUESTFS_E2FSCK_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_E2FSCK, GuestfsE2fsckClass))
-#define GUESTFS_IS_E2FSCK(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_E2FSCK))
-#define GUESTFS_IS_E2FSCK_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_E2FSCK))
-#define GUESTFS_E2FSCK_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_E2FSCK, GuestfsE2fsckClass))
+#define GUESTFS_TYPE_E2FSCK (guestfs_e2fsck_get_type ())
+#define GUESTFS_E2FSCK(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_E2FSCK, GuestfsE2fsck))
+#define GUESTFS_E2FSCK_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_E2FSCK, GuestfsE2fsckClass))
+#define GUESTFS_IS_E2FSCK(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_E2FSCK))
+#define GUESTFS_IS_E2FSCK_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_E2FSCK))
+#define GUESTFS_E2FSCK_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_E2FSCK, GuestfsE2fsckClass))
 
 typedef struct _GuestfsE2fsckPrivate GuestfsE2fsckPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsE2fsckClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_e2fsck_get_type(void);
-GuestfsE2fsck *guestfs_e2fsck_new(void);
+GType guestfs_e2fsck_get_type (void);
+GuestfsE2fsck *guestfs_e2fsck_new (void);
 
 G_END_DECLS
 

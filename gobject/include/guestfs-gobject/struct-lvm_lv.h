@@ -71,7 +71,7 @@ struct _GuestfsLV {
   gchar *mirror_log;
   gchar *modules;
 };
-GType guestfs_lvm_lv_get_type(void);
+GType guestfs_lvm_lv_get_type (void);
 
 G_END_DECLS
 

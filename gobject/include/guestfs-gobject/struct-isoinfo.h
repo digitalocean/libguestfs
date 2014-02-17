@@ -70,7 +70,7 @@ struct _GuestfsISOInfo {
   gint64 iso_volume_expiration_t;
   gint64 iso_volume_effective_t;
 };
-GType guestfs_isoinfo_get_type(void);
+GType guestfs_isoinfo_get_type (void);
 
 G_END_DECLS
 

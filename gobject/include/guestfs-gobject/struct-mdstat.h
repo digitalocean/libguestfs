@@ -42,7 +42,7 @@ struct _GuestfsMDStat {
   gint32 mdstat_index;
   gchar *mdstat_flags;
 };
-GType guestfs_mdstat_get_type(void);
+GType guestfs_mdstat_get_type (void);
 
 G_END_DECLS
 

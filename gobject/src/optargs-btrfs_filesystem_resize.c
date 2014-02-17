@@ -34,13 +34,13 @@
 
 #include <string.h>
 
-#define GUESTFS_BTRFS_FILESYSTEM_RESIZE_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_BTRFS_FILESYSTEM_RESIZE, GuestfsBTRFSFilesystemResizePrivate))
+#define GUESTFS_BTRFS_FILESYSTEM_RESIZE_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_BTRFS_FILESYSTEM_RESIZE, GuestfsBTRFSFilesystemResizePrivate))
 
 struct _GuestfsBTRFSFilesystemResizePrivate {
   gint64 size;
 };
 
-G_DEFINE_TYPE(GuestfsBTRFSFilesystemResize, guestfs_btrfs_filesystem_resize, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsBTRFSFilesystemResize, guestfs_btrfs_filesystem_resize, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_BTRFS_FILESYSTEM_RESIZE_PROP0,
@@ -50,7 +50,7 @@ enum {
 static void
 guestfs_btrfs_filesystem_resize_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsBTRFSFilesystemResize *self = GUESTFS_BTRFS_FILESYSTEM_RESIZE(object);
+  GuestfsBTRFSFilesystemResize *self = GUESTFS_BTRFS_FILESYSTEM_RESIZE (object);
   GuestfsBTRFSFilesystemResizePrivate *priv = self->priv;
 
   switch (property_id) {
@@ -60,41 +60,37 @@ guestfs_btrfs_filesystem_resize_set_property(GObject *object, guint property_id,
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_btrfs_filesystem_resize_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsBTRFSFilesystemResize *self = GUESTFS_BTRFS_FILESYSTEM_RESIZE(object);
+  GuestfsBTRFSFilesystemResize *self = GUESTFS_BTRFS_FILESYSTEM_RESIZE (object);
   GuestfsBTRFSFilesystemResizePrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE:
-      g_value_set_int64(value, priv->size);
+      g_value_set_int64 (value, priv->size);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_btrfs_filesystem_resize_finalize(GObject *object)
+guestfs_btrfs_filesystem_resize_finalize (GObject *object)
 {
-  GuestfsBTRFSFilesystemResize *self = GUESTFS_BTRFS_FILESYSTEM_RESIZE(object);
-  GuestfsBTRFSFilesystemResizePrivate *priv = self->priv;
-
-
-  G_OBJECT_CLASS(guestfs_btrfs_filesystem_resize_parent_class)->finalize(object);
+  G_OBJECT_CLASS (guestfs_btrfs_filesystem_resize_parent_class)->finalize (object);
 }
 
 static void
-guestfs_btrfs_filesystem_resize_class_init(GuestfsBTRFSFilesystemResizeClass *klass)
+guestfs_btrfs_filesystem_resize_class_init (GuestfsBTRFSFilesystemResizeClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_btrfs_filesystem_resize_set_property;
   object_class->get_property = guestfs_btrfs_filesystem_resize_get_property;
 
@@ -103,10 +99,10 @@ guestfs_btrfs_filesystem_resize_class_init(GuestfsBTRFSFilesystemResizeClass *kl
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "size",
       "size",
       "A 64-bit integer.",
@@ -116,15 +112,15 @@ guestfs_btrfs_filesystem_resize_class_init(GuestfsBTRFSFilesystemResizeClass *kl
   );
 
   object_class->finalize = guestfs_btrfs_filesystem_resize_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsBTRFSFilesystemResizePrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsBTRFSFilesystemResizePrivate));
 }
 
 static void
-guestfs_btrfs_filesystem_resize_init(GuestfsBTRFSFilesystemResize *o)
+guestfs_btrfs_filesystem_resize_init (GuestfsBTRFSFilesystemResize *o)
 {
-  o->priv = GUESTFS_BTRFS_FILESYSTEM_RESIZE_GET_PRIVATE(o);
+  o->priv = GUESTFS_BTRFS_FILESYSTEM_RESIZE_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsBTRFSFilesystemResizePrivate));
+  memset (o->priv, 0, sizeof (GuestfsBTRFSFilesystemResizePrivate));
 }
 
 /**
@@ -135,7 +131,7 @@ guestfs_btrfs_filesystem_resize_init(GuestfsBTRFSFilesystemResize *o)
  * Returns: (transfer full): a new GuestfsBTRFSFilesystemResize object
  */
 GuestfsBTRFSFilesystemResize *
-guestfs_btrfs_filesystem_resize_new(void)
+guestfs_btrfs_filesystem_resize_new (void)
 {
-  return GUESTFS_BTRFS_FILESYSTEM_RESIZE(g_object_new(GUESTFS_TYPE_BTRFS_FILESYSTEM_RESIZE, NULL));
+  return GUESTFS_BTRFS_FILESYSTEM_RESIZE (g_object_new (GUESTFS_TYPE_BTRFS_FILESYSTEM_RESIZE, NULL));
 }

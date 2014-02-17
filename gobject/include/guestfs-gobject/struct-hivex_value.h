@@ -38,7 +38,7 @@ typedef struct _GuestfsHivexValue GuestfsHivexValue;
 struct _GuestfsHivexValue {
   gint64 hivex_value_h;
 };
-GType guestfs_hivex_value_get_type(void);
+GType guestfs_hivex_value_get_type (void);
 
 G_END_DECLS
 

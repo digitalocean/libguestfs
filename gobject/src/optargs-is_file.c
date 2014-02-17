@@ -34,13 +34,13 @@
 
 #include <string.h>
 
-#define GUESTFS_IS_FILE_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_IS_FILE, GuestfsIsFilePrivate))
+#define GUESTFS_IS_FILE_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_IS_FILE, GuestfsIsFilePrivate))
 
 struct _GuestfsIsFilePrivate {
   GuestfsTristate followsymlinks;
 };
 
-G_DEFINE_TYPE(GuestfsIsFile, guestfs_is_file, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsIsFile, guestfs_is_file, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_IS_FILE_PROP0,
@@ -50,7 +50,7 @@ enum {
 static void
 guestfs_is_file_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsIsFile *self = GUESTFS_IS_FILE(object);
+  GuestfsIsFile *self = GUESTFS_IS_FILE (object);
   GuestfsIsFilePrivate *priv = self->priv;
 
   switch (property_id) {
@@ -60,41 +60,37 @@ guestfs_is_file_set_property(GObject *object, guint property_id, const GValue *v
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_is_file_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsIsFile *self = GUESTFS_IS_FILE(object);
+  GuestfsIsFile *self = GUESTFS_IS_FILE (object);
   GuestfsIsFilePrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_IS_FILE_FOLLOWSYMLINKS:
-      g_value_set_enum(value, priv->followsymlinks);
+      g_value_set_enum (value, priv->followsymlinks);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_is_file_finalize(GObject *object)
+guestfs_is_file_finalize (GObject *object)
 {
-  GuestfsIsFile *self = GUESTFS_IS_FILE(object);
-  GuestfsIsFilePrivate *priv = self->priv;
-
-
-  G_OBJECT_CLASS(guestfs_is_file_parent_class)->finalize(object);
+  G_OBJECT_CLASS (guestfs_is_file_parent_class)->finalize (object);
 }
 
 static void
-guestfs_is_file_class_init(GuestfsIsFileClass *klass)
+guestfs_is_file_class_init (GuestfsIsFileClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_is_file_set_property;
   object_class->get_property = guestfs_is_file_get_property;
 
@@ -103,10 +99,10 @@ guestfs_is_file_class_init(GuestfsIsFileClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_IS_FILE_FOLLOWSYMLINKS,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "followsymlinks",
       "followsymlinks",
       "A boolean.",
@@ -116,15 +112,15 @@ guestfs_is_file_class_init(GuestfsIsFileClass *klass)
   );
 
   object_class->finalize = guestfs_is_file_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsIsFilePrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsIsFilePrivate));
 }
 
 static void
-guestfs_is_file_init(GuestfsIsFile *o)
+guestfs_is_file_init (GuestfsIsFile *o)
 {
-  o->priv = GUESTFS_IS_FILE_GET_PRIVATE(o);
+  o->priv = GUESTFS_IS_FILE_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsIsFilePrivate));
+  memset (o->priv, 0, sizeof (GuestfsIsFilePrivate));
 }
 
 /**
@@ -135,7 +131,7 @@ guestfs_is_file_init(GuestfsIsFile *o)
  * Returns: (transfer full): a new GuestfsIsFile object
  */
 GuestfsIsFile *
-guestfs_is_file_new(void)
+guestfs_is_file_new (void)
 {
-  return GUESTFS_IS_FILE(g_object_new(GUESTFS_TYPE_IS_FILE, NULL));
+  return GUESTFS_IS_FILE (g_object_new (GUESTFS_TYPE_IS_FILE, NULL));
 }

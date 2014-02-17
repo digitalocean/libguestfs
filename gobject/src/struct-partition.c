@@ -31,15 +31,15 @@
  */
 
 static GuestfsPartition *
-guestfs_partition_copy(GuestfsPartition *src)
+guestfs_partition_copy (GuestfsPartition *src)
 {
-  return g_slice_dup(GuestfsPartition, src);
+  return g_slice_dup (GuestfsPartition, src);
 }
 
 static void
-guestfs_partition_free(GuestfsPartition *src)
+guestfs_partition_free (GuestfsPartition *src)
 {
-  g_slice_free(GuestfsPartition, src);
+  g_slice_free (GuestfsPartition, src);
 }
 
-G_DEFINE_BOXED_TYPE(GuestfsPartition, guestfs_partition, guestfs_partition_copy, guestfs_partition_free)
+G_DEFINE_BOXED_TYPE (GuestfsPartition, guestfs_partition, guestfs_partition_copy, guestfs_partition_free)

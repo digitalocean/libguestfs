@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_COPY_FILE_TO_FILE (guestfs_copy_file_to_file_get_type())
-#define GUESTFS_COPY_FILE_TO_FILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_COPY_FILE_TO_FILE, GuestfsCopyFileToFile))
-#define GUESTFS_COPY_FILE_TO_FILE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_COPY_FILE_TO_FILE, GuestfsCopyFileToFileClass))
-#define GUESTFS_IS_COPY_FILE_TO_FILE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_COPY_FILE_TO_FILE))
-#define GUESTFS_IS_COPY_FILE_TO_FILE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_COPY_FILE_TO_FILE))
-#define GUESTFS_COPY_FILE_TO_FILE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_COPY_FILE_TO_FILE, GuestfsCopyFileToFileClass))
+#define GUESTFS_TYPE_COPY_FILE_TO_FILE (guestfs_copy_file_to_file_get_type ())
+#define GUESTFS_COPY_FILE_TO_FILE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_COPY_FILE_TO_FILE, GuestfsCopyFileToFile))
+#define GUESTFS_COPY_FILE_TO_FILE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_COPY_FILE_TO_FILE, GuestfsCopyFileToFileClass))
+#define GUESTFS_IS_COPY_FILE_TO_FILE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_COPY_FILE_TO_FILE))
+#define GUESTFS_IS_COPY_FILE_TO_FILE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_COPY_FILE_TO_FILE))
+#define GUESTFS_COPY_FILE_TO_FILE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_COPY_FILE_TO_FILE, GuestfsCopyFileToFileClass))
 
 typedef struct _GuestfsCopyFileToFilePrivate GuestfsCopyFileToFilePrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsCopyFileToFileClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_copy_file_to_file_get_type(void);
-GuestfsCopyFileToFile *guestfs_copy_file_to_file_new(void);
+GType guestfs_copy_file_to_file_get_type (void);
+GuestfsCopyFileToFile *guestfs_copy_file_to_file_new (void);
 
 G_END_DECLS
 

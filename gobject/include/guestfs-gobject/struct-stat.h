@@ -62,7 +62,7 @@ struct _GuestfsStat {
   gint64 mtime;
   gint64 ctime;
 };
-GType guestfs_stat_get_type(void);
+GType guestfs_stat_get_type (void);
 
 G_END_DECLS
 

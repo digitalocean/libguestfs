@@ -80,7 +80,7 @@ let generate_fish_cmds () =
     fun { name = name } ->
       pr "static int run_%s (const char *cmd, size_t argc, char *argv[]);\n"
         name
-  ) fish_functions;
+  ) fish_functions_sorted;
 
   pr "\n";
 
@@ -170,7 +170,7 @@ Guestfish will prompt for these separately."
       pr "  .run = run_%s\n" name;
       pr "};\n";
       pr "\n";
-  ) fish_functions;
+  ) fish_functions_sorted;
 
   (* list_commands function, which implements guestfish -h *)
   pr "void\n";
@@ -326,7 +326,8 @@ Guestfish will prompt for these separately."
         function
         | Device n | Mountable n
         | String n
-        | OptString n -> pr "  const char *%s;\n" n
+        | OptString n
+        | GUID n -> pr "  const char *%s;\n" n
         | Pathname n
         | Dev_or_Path n | Mountable_or_Path n
         | FileIn n
@@ -420,7 +421,7 @@ Guestfish will prompt for these separately."
       List.iter (
         function
         | Device name | Mountable name
-        | String name ->
+        | String name | GUID name ->
             pr "  %s = argv[i++];\n" name
         | Pathname name
         | Dev_or_Path name | Mountable_or_Path name ->
@@ -633,7 +634,8 @@ Guestfish will prompt for these separately."
         function
         | Device _ | Mountable _ | String _
         | OptString _
-        | BufferIn _ -> ()
+        | BufferIn _
+        | GUID _ -> ()
         | Bool name
         | Int name | Int64 name ->
             pr " out_%s:\n" name
@@ -655,7 +657,7 @@ Guestfish will prompt for these separately."
       pr "  return ret;\n";
       pr "}\n";
       pr "\n"
-  ) fish_functions;
+  ) fish_functions_sorted;
 
   (* run_action function *)
   pr "int\n";
@@ -865,7 +867,8 @@ and generate_fish_actions_pod () =
       List.iter (
         function
         | Pathname n | Device n | Mountable n
-        | Dev_or_Path n | Mountable_or_Path n | String n ->
+        | Dev_or_Path n | Mountable_or_Path n | String n
+        | GUID n ->
             pr " %s" n
         | OptString n -> pr " %s" n
         | StringList n | DeviceList n -> pr " '%s ...'" n

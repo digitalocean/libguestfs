@@ -193,6 +193,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
 	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
+	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
 	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
 	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/include_next.m4 \
 	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
@@ -1739,6 +1740,9 @@ libutils_la_CFLAGS = $(libguestfs_la_CFLAGS)
 @HAVE_LIBVIRT_TRUE@libvirt_is_version_LDADD = \
 @HAVE_LIBVIRT_TRUE@	$(LIBVIRT_LIBS)
 
+@HAVE_LIBVIRT_TRUE@libvirt_is_version_CPPFLAGS = \
+@HAVE_LIBVIRT_TRUE@	-DLOCALEBASEDIR=\""$(datadir)/locale"\"
+
 @HAVE_LIBVIRT_TRUE@libvirt_is_version_CFLAGS = \
 @HAVE_LIBVIRT_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 @HAVE_LIBVIRT_TRUE@	$(LIBVIRT_CFLAGS)
@@ -2386,18 +2390,18 @@ libutils_la-utils.lo: utils.c
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -c -o libutils_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
 
 libvirt_is_version-libvirt-is-version.o: libvirt-is-version.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libvirt_is_version_CFLAGS) $(CFLAGS) -MT libvirt_is_version-libvirt-is-version.o -MD -MP -MF $(DEPDIR)/libvirt_is_version-libvirt-is-version.Tpo -c -o libvirt_is_version-libvirt-is-version.o `test -f 'libvirt-is-version.c' || echo '$(srcdir)/'`libvirt-is-version.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvirt_is_version_CPPFLAGS) $(CPPFLAGS) $(libvirt_is_version_CFLAGS) $(CFLAGS) -MT libvirt_is_version-libvirt-is-version.o -MD -MP -MF $(DEPDIR)/libvirt_is_version-libvirt-is-version.Tpo -c -o libvirt_is_version-libvirt-is-version.o `test -f 'libvirt-is-version.c' || echo '$(srcdir)/'`libvirt-is-version.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libvirt_is_version-libvirt-is-version.Tpo $(DEPDIR)/libvirt_is_version-libvirt-is-version.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libvirt-is-version.c' object='libvirt_is_version-libvirt-is-version.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libvirt_is_version_CFLAGS) $(CFLAGS) -c -o libvirt_is_version-libvirt-is-version.o `test -f 'libvirt-is-version.c' || echo '$(srcdir)/'`libvirt-is-version.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvirt_is_version_CPPFLAGS) $(CPPFLAGS) $(libvirt_is_version_CFLAGS) $(CFLAGS) -c -o libvirt_is_version-libvirt-is-version.o `test -f 'libvirt-is-version.c' || echo '$(srcdir)/'`libvirt-is-version.c
 
 libvirt_is_version-libvirt-is-version.obj: libvirt-is-version.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libvirt_is_version_CFLAGS) $(CFLAGS) -MT libvirt_is_version-libvirt-is-version.obj -MD -MP -MF $(DEPDIR)/libvirt_is_version-libvirt-is-version.Tpo -c -o libvirt_is_version-libvirt-is-version.obj `if test -f 'libvirt-is-version.c'; then $(CYGPATH_W) 'libvirt-is-version.c'; else $(CYGPATH_W) '$(srcdir)/libvirt-is-version.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvirt_is_version_CPPFLAGS) $(CPPFLAGS) $(libvirt_is_version_CFLAGS) $(CFLAGS) -MT libvirt_is_version-libvirt-is-version.obj -MD -MP -MF $(DEPDIR)/libvirt_is_version-libvirt-is-version.Tpo -c -o libvirt_is_version-libvirt-is-version.obj `if test -f 'libvirt-is-version.c'; then $(CYGPATH_W) 'libvirt-is-version.c'; else $(CYGPATH_W) '$(srcdir)/libvirt-is-version.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libvirt_is_version-libvirt-is-version.Tpo $(DEPDIR)/libvirt_is_version-libvirt-is-version.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libvirt-is-version.c' object='libvirt_is_version-libvirt-is-version.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libvirt_is_version_CFLAGS) $(CFLAGS) -c -o libvirt_is_version-libvirt-is-version.obj `if test -f 'libvirt-is-version.c'; then $(CYGPATH_W) 'libvirt-is-version.c'; else $(CYGPATH_W) '$(srcdir)/libvirt-is-version.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvirt_is_version_CPPFLAGS) $(CPPFLAGS) $(libvirt_is_version_CFLAGS) $(CFLAGS) -c -o libvirt_is_version-libvirt-is-version.obj `if test -f 'libvirt-is-version.c'; then $(CYGPATH_W) 'libvirt-is-version.c'; else $(CYGPATH_W) '$(srcdir)/libvirt-is-version.c'; fi`
 
 test_utils-test-utils.o: test-utils.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_utils_CPPFLAGS) $(CPPFLAGS) $(test_utils_CFLAGS) $(CFLAGS) -MT test_utils-test-utils.o -MD -MP -MF $(DEPDIR)/test_utils-test-utils.Tpo -c -o test_utils-test-utils.o `test -f 'test-utils.c' || echo '$(srcdir)/'`test-utils.c

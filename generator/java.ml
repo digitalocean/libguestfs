@@ -389,7 +389,7 @@ public class GuestFS {
       generate_java_prototype ~privat:true ~native:true f.name f.style;
       pr "\n";
       pr "\n";
-  ) external_functions;
+  ) external_functions_sorted;
 
   pr "}\n"
 
@@ -452,7 +452,8 @@ and generate_java_prototype ?(public=false) ?(privat=false) ?(native=false)
       | OptString n
       | FileIn n
       | FileOut n
-      | Key n ->
+      | Key n
+      | GUID n ->
           pr "String %s" n
       | BufferIn n ->
           pr "byte[] %s" n
@@ -812,7 +813,8 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
         | OptString n
         | FileIn n
         | FileOut n
-        | Key n ->
+        | Key n
+        | GUID n ->
             pr ", jstring j%s" n
         | BufferIn n ->
             pr ", jbyteArray j%s" n
@@ -881,7 +883,8 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
         | OptString n
         | FileIn n
         | FileOut n
-        | Key n ->
+        | Key n
+        | GUID n ->
             pr "  const char *%s;\n" n
         | BufferIn n ->
             pr "  char *%s;\n" n;
@@ -937,7 +940,8 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
         | String n
         | FileIn n
         | FileOut n
-        | Key n ->
+        | Key n
+        | GUID n ->
             pr "  %s = (*env)->GetStringUTFChars (env, j%s, NULL);\n" n n
         | OptString n ->
             (* This is completely undocumented, but Java null becomes
@@ -1004,7 +1008,8 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
         | String n
         | FileIn n
         | FileOut n
-        | Key n ->
+        | Key n
+        | GUID n ->
             pr "  (*env)->ReleaseStringUTFChars (env, j%s, %s);\n" n n
         | OptString n ->
             pr "  if (j%s)\n" n;
@@ -1109,7 +1114,7 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
 
       pr "}\n";
       pr "\n"
-  ) external_functions
+  ) external_functions_sorted
 
 and generate_java_struct_return typ jtyp cols =
   pr "  cl = (*env)->FindClass (env, \"com/redhat/et/libguestfs/%s\");\n" jtyp;

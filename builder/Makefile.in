@@ -188,6 +188,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
 	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
+	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
 	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
 	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/include_next.m4 \
 	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
@@ -283,9 +284,11 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_virt_index_validate_OBJECTS = index-parse.$(OBJEXT) \
-	index-scan.$(OBJEXT) index-struct.$(OBJEXT) \
-	index-validate.$(OBJEXT)
+am_virt_index_validate_OBJECTS =  \
+	virt_index_validate-index-parse.$(OBJEXT) \
+	virt_index_validate-index-scan.$(OBJEXT) \
+	virt_index_validate-index-struct.$(OBJEXT) \
+	virt_index_validate-index-validate.$(OBJEXT)
 virt_index_validate_OBJECTS = $(am_virt_index_validate_OBJECTS)
 virt_index_validate_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -1567,6 +1570,9 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/password.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/planner.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uri-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmx \
 @HAVE_OCAML_TRUE@	index-scan.o \
 @HAVE_OCAML_TRUE@	index-struct.o \
 @HAVE_OCAML_TRUE@	index-parse.o \
@@ -1594,6 +1600,14 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib $(am__append_1)
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
+@HAVE_OCAML_TRUE@OCAMLCLIBS = \
+@HAVE_OCAML_TRUE@	$(LIBLZMA_LIBS) \
+@HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) \
+@HAVE_OCAML_TRUE@	-L../src/.libs -lutils \
+@HAVE_OCAML_TRUE@	-L../gnulib/lib/.libs -lgnu \
+@HAVE_OCAML_TRUE@	-pthread -lpthread \
+@HAVE_OCAML_TRUE@	-lncurses -lcrypt
+
 
 # Tests.
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
@@ -1610,6 +1624,9 @@ virt_index_validate_SOURCES = \
 	index-struct.h \
 	index-struct.c \
 	index-validate.c
+
+virt_index_validate_CPPFLAGS = \
+	-DLOCALEBASEDIR=\""$(datadir)/locale"\"
 
 all: all-am
 
@@ -1697,9 +1714,9 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-index-parse.h: index-parse.c
-	@if test ! -f $@; then rm -f index-parse.c; else :; fi
-	@if test ! -f $@; then $(MAKE) $(AM_MAKEFLAGS) index-parse.c; else :; fi
+@HAVE_OCAML_FALSE@index-parse.h: index-parse.c
+@HAVE_OCAML_FALSE@	@if test ! -f $@; then rm -f index-parse.c; else :; fi
+@HAVE_OCAML_FALSE@	@if test ! -f $@; then $(MAKE) $(AM_MAKEFLAGS) index-parse.c; else :; fi
 
 virt-index-validate$(EXEEXT): $(virt_index_validate_OBJECTS) $(virt_index_validate_DEPENDENCIES) $(EXTRA_virt_index_validate_DEPENDENCIES) 
 	@rm -f virt-index-validate$(EXEEXT)
@@ -1746,10 +1763,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/index-parse.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/index-scan.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/index-struct.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/index-validate.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_index_validate-index-parse.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_index_validate-index-scan.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_index_validate-index-struct.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_index_validate-index-validate.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1771,6 +1788,62 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+virt_index_validate-index-parse.o: index-parse.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT virt_index_validate-index-parse.o -MD -MP -MF $(DEPDIR)/virt_index_validate-index-parse.Tpo -c -o virt_index_validate-index-parse.o `test -f 'index-parse.c' || echo '$(srcdir)/'`index-parse.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_index_validate-index-parse.Tpo $(DEPDIR)/virt_index_validate-index-parse.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-parse.c' object='virt_index_validate-index-parse.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o virt_index_validate-index-parse.o `test -f 'index-parse.c' || echo '$(srcdir)/'`index-parse.c
+
+virt_index_validate-index-parse.obj: index-parse.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT virt_index_validate-index-parse.obj -MD -MP -MF $(DEPDIR)/virt_index_validate-index-parse.Tpo -c -o virt_index_validate-index-parse.obj `if test -f 'index-parse.c'; then $(CYGPATH_W) 'index-parse.c'; else $(CYGPATH_W) '$(srcdir)/index-parse.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_index_validate-index-parse.Tpo $(DEPDIR)/virt_index_validate-index-parse.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-parse.c' object='virt_index_validate-index-parse.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o virt_index_validate-index-parse.obj `if test -f 'index-parse.c'; then $(CYGPATH_W) 'index-parse.c'; else $(CYGPATH_W) '$(srcdir)/index-parse.c'; fi`
+
+virt_index_validate-index-scan.o: index-scan.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT virt_index_validate-index-scan.o -MD -MP -MF $(DEPDIR)/virt_index_validate-index-scan.Tpo -c -o virt_index_validate-index-scan.o `test -f 'index-scan.c' || echo '$(srcdir)/'`index-scan.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_index_validate-index-scan.Tpo $(DEPDIR)/virt_index_validate-index-scan.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-scan.c' object='virt_index_validate-index-scan.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o virt_index_validate-index-scan.o `test -f 'index-scan.c' || echo '$(srcdir)/'`index-scan.c
+
+virt_index_validate-index-scan.obj: index-scan.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT virt_index_validate-index-scan.obj -MD -MP -MF $(DEPDIR)/virt_index_validate-index-scan.Tpo -c -o virt_index_validate-index-scan.obj `if test -f 'index-scan.c'; then $(CYGPATH_W) 'index-scan.c'; else $(CYGPATH_W) '$(srcdir)/index-scan.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_index_validate-index-scan.Tpo $(DEPDIR)/virt_index_validate-index-scan.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-scan.c' object='virt_index_validate-index-scan.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o virt_index_validate-index-scan.obj `if test -f 'index-scan.c'; then $(CYGPATH_W) 'index-scan.c'; else $(CYGPATH_W) '$(srcdir)/index-scan.c'; fi`
+
+virt_index_validate-index-struct.o: index-struct.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT virt_index_validate-index-struct.o -MD -MP -MF $(DEPDIR)/virt_index_validate-index-struct.Tpo -c -o virt_index_validate-index-struct.o `test -f 'index-struct.c' || echo '$(srcdir)/'`index-struct.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_index_validate-index-struct.Tpo $(DEPDIR)/virt_index_validate-index-struct.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-struct.c' object='virt_index_validate-index-struct.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o virt_index_validate-index-struct.o `test -f 'index-struct.c' || echo '$(srcdir)/'`index-struct.c
+
+virt_index_validate-index-struct.obj: index-struct.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT virt_index_validate-index-struct.obj -MD -MP -MF $(DEPDIR)/virt_index_validate-index-struct.Tpo -c -o virt_index_validate-index-struct.obj `if test -f 'index-struct.c'; then $(CYGPATH_W) 'index-struct.c'; else $(CYGPATH_W) '$(srcdir)/index-struct.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_index_validate-index-struct.Tpo $(DEPDIR)/virt_index_validate-index-struct.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-struct.c' object='virt_index_validate-index-struct.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o virt_index_validate-index-struct.obj `if test -f 'index-struct.c'; then $(CYGPATH_W) 'index-struct.c'; else $(CYGPATH_W) '$(srcdir)/index-struct.c'; fi`
+
+virt_index_validate-index-validate.o: index-validate.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT virt_index_validate-index-validate.o -MD -MP -MF $(DEPDIR)/virt_index_validate-index-validate.Tpo -c -o virt_index_validate-index-validate.o `test -f 'index-validate.c' || echo '$(srcdir)/'`index-validate.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_index_validate-index-validate.Tpo $(DEPDIR)/virt_index_validate-index-validate.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-validate.c' object='virt_index_validate-index-validate.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o virt_index_validate-index-validate.o `test -f 'index-validate.c' || echo '$(srcdir)/'`index-validate.c
+
+virt_index_validate-index-validate.obj: index-validate.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT virt_index_validate-index-validate.obj -MD -MP -MF $(DEPDIR)/virt_index_validate-index-validate.Tpo -c -o virt_index_validate-index-validate.obj `if test -f 'index-validate.c'; then $(CYGPATH_W) 'index-validate.c'; else $(CYGPATH_W) '$(srcdir)/index-validate.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_index_validate-index-validate.Tpo $(DEPDIR)/virt_index_validate-index-validate.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-validate.c' object='virt_index_validate-index-validate.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o virt_index_validate-index-validate.obj `if test -f 'index-validate.c'; then $(CYGPATH_W) 'index-validate.c'; else $(CYGPATH_W) '$(srcdir)/index-validate.c'; fi`
 
 .l.c:
 	$(AM_V_LEX)$(am__skiplex) $(SHELL) $(YLWRAP) $< $(LEX_OUTPUT_ROOT).c $@ -- $(LEXCOMPILE)
@@ -2172,7 +2245,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@virt-builder: $(OBJECTS)
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
 @HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ \
-@HAVE_OCAML_TRUE@	  -cclib '-pthread $(LIBLZMA_LIBS) -lncurses -lcrypt -lpthread' \
+@HAVE_OCAML_TRUE@	  -cclib '$(OCAMLCLIBS)' \
 @HAVE_OCAML_TRUE@	  $(OCAML_GCOV_LDFLAGS) \
 @HAVE_OCAML_TRUE@	  -o $@
 
@@ -2240,10 +2313,12 @@ stamp-virt-index-validate.pod: virt-index-validate.pod
 	  $<
 	touch $@
 
-# Fix dependencies which automake doesn't generate correctly.
-@HAVE_OCAML_TRUE@index-parser-c.o: index-parse.h index-struct.h
-@HAVE_OCAML_TRUE@index-scan.o: index-parse.h
-index-validate.o: index-parse.h
+# Automake-generated makefile has a rule ".l.c:" but lacks a rule ".l.h:".
+# Also it doesn't generate dependencies for the C files that include
+# index-parse.h.
+@HAVE_OCAML_TRUE@index-parser-c.c index-scan.c index-validate.c: index-parse.h
+@HAVE_OCAML_TRUE@index-parse.h: index-parse.y
+@HAVE_OCAML_TRUE@	$(MAKE) index-parse.c
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

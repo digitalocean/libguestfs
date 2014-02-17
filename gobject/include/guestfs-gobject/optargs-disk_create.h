@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_DISK_CREATE (guestfs_disk_create_get_type())
-#define GUESTFS_DISK_CREATE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_DISK_CREATE, GuestfsDiskCreate))
-#define GUESTFS_DISK_CREATE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_DISK_CREATE, GuestfsDiskCreateClass))
-#define GUESTFS_IS_DISK_CREATE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_DISK_CREATE))
-#define GUESTFS_IS_DISK_CREATE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_DISK_CREATE))
-#define GUESTFS_DISK_CREATE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_DISK_CREATE, GuestfsDiskCreateClass))
+#define GUESTFS_TYPE_DISK_CREATE (guestfs_disk_create_get_type ())
+#define GUESTFS_DISK_CREATE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_DISK_CREATE, GuestfsDiskCreate))
+#define GUESTFS_DISK_CREATE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_DISK_CREATE, GuestfsDiskCreateClass))
+#define GUESTFS_IS_DISK_CREATE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_DISK_CREATE))
+#define GUESTFS_IS_DISK_CREATE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_DISK_CREATE))
+#define GUESTFS_DISK_CREATE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_DISK_CREATE, GuestfsDiskCreateClass))
 
 typedef struct _GuestfsDiskCreatePrivate GuestfsDiskCreatePrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsDiskCreateClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_disk_create_get_type(void);
-GuestfsDiskCreate *guestfs_disk_create_new(void);
+GType guestfs_disk_create_get_type (void);
+GuestfsDiskCreate *guestfs_disk_create_new (void);
 
 G_END_DECLS
 

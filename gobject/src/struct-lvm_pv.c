@@ -31,15 +31,15 @@
  */
 
 static GuestfsPV *
-guestfs_lvm_pv_copy(GuestfsPV *src)
+guestfs_lvm_pv_copy (GuestfsPV *src)
 {
-  return g_slice_dup(GuestfsPV, src);
+  return g_slice_dup (GuestfsPV, src);
 }
 
 static void
-guestfs_lvm_pv_free(GuestfsPV *src)
+guestfs_lvm_pv_free (GuestfsPV *src)
 {
-  g_slice_free(GuestfsPV, src);
+  g_slice_free (GuestfsPV, src);
 }
 
-G_DEFINE_BOXED_TYPE(GuestfsPV, guestfs_lvm_pv, guestfs_lvm_pv_copy, guestfs_lvm_pv_free)
+G_DEFINE_BOXED_TYPE (GuestfsPV, guestfs_lvm_pv, guestfs_lvm_pv_copy, guestfs_lvm_pv_free)

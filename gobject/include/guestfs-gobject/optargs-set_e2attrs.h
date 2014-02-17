@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_SET_E2ATTRS (guestfs_set_e2attrs_get_type())
-#define GUESTFS_SET_E2ATTRS(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_SET_E2ATTRS, GuestfsSetE2attrs))
-#define GUESTFS_SET_E2ATTRS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_SET_E2ATTRS, GuestfsSetE2attrsClass))
-#define GUESTFS_IS_SET_E2ATTRS(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_SET_E2ATTRS))
-#define GUESTFS_IS_SET_E2ATTRS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_SET_E2ATTRS))
-#define GUESTFS_SET_E2ATTRS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_SET_E2ATTRS, GuestfsSetE2attrsClass))
+#define GUESTFS_TYPE_SET_E2ATTRS (guestfs_set_e2attrs_get_type ())
+#define GUESTFS_SET_E2ATTRS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_SET_E2ATTRS, GuestfsSetE2attrs))
+#define GUESTFS_SET_E2ATTRS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_SET_E2ATTRS, GuestfsSetE2attrsClass))
+#define GUESTFS_IS_SET_E2ATTRS(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_SET_E2ATTRS))
+#define GUESTFS_IS_SET_E2ATTRS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_SET_E2ATTRS))
+#define GUESTFS_SET_E2ATTRS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_SET_E2ATTRS, GuestfsSetE2attrsClass))
 
 typedef struct _GuestfsSetE2attrsPrivate GuestfsSetE2attrsPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsSetE2attrsClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_set_e2attrs_get_type(void);
-GuestfsSetE2attrs *guestfs_set_e2attrs_new(void);
+GType guestfs_set_e2attrs_get_type (void);
+GuestfsSetE2attrs *guestfs_set_e2attrs_new (void);
 
 G_END_DECLS
 

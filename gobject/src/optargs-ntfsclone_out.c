@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_NTFSCLONE_OUT_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_NTFSCLONE_OUT, GuestfsNtfscloneOutPrivate))
+#define GUESTFS_NTFSCLONE_OUT_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_NTFSCLONE_OUT, GuestfsNtfscloneOutPrivate))
 
 struct _GuestfsNtfscloneOutPrivate {
   GuestfsTristate metadataonly;
@@ -44,7 +44,7 @@ struct _GuestfsNtfscloneOutPrivate {
   GuestfsTristate force;
 };
 
-G_DEFINE_TYPE(GuestfsNtfscloneOut, guestfs_ntfsclone_out, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsNtfscloneOut, guestfs_ntfsclone_out, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_NTFSCLONE_OUT_PROP0,
@@ -58,7 +58,7 @@ enum {
 static void
 guestfs_ntfsclone_out_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsNtfscloneOut *self = GUESTFS_NTFSCLONE_OUT(object);
+  GuestfsNtfscloneOut *self = GUESTFS_NTFSCLONE_OUT (object);
   GuestfsNtfscloneOutPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -84,57 +84,53 @@ guestfs_ntfsclone_out_set_property(GObject *object, guint property_id, const GVa
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_ntfsclone_out_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsNtfscloneOut *self = GUESTFS_NTFSCLONE_OUT(object);
+  GuestfsNtfscloneOut *self = GUESTFS_NTFSCLONE_OUT (object);
   GuestfsNtfscloneOutPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_NTFSCLONE_OUT_METADATAONLY:
-      g_value_set_enum(value, priv->metadataonly);
+      g_value_set_enum (value, priv->metadataonly);
       break;
 
     case PROP_GUESTFS_NTFSCLONE_OUT_RESCUE:
-      g_value_set_enum(value, priv->rescue);
+      g_value_set_enum (value, priv->rescue);
       break;
 
     case PROP_GUESTFS_NTFSCLONE_OUT_IGNOREFSCHECK:
-      g_value_set_enum(value, priv->ignorefscheck);
+      g_value_set_enum (value, priv->ignorefscheck);
       break;
 
     case PROP_GUESTFS_NTFSCLONE_OUT_PRESERVETIMESTAMPS:
-      g_value_set_enum(value, priv->preservetimestamps);
+      g_value_set_enum (value, priv->preservetimestamps);
       break;
 
     case PROP_GUESTFS_NTFSCLONE_OUT_FORCE:
-      g_value_set_enum(value, priv->force);
+      g_value_set_enum (value, priv->force);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_ntfsclone_out_finalize(GObject *object)
+guestfs_ntfsclone_out_finalize (GObject *object)
 {
-  GuestfsNtfscloneOut *self = GUESTFS_NTFSCLONE_OUT(object);
-  GuestfsNtfscloneOutPrivate *priv = self->priv;
-
-
-  G_OBJECT_CLASS(guestfs_ntfsclone_out_parent_class)->finalize(object);
+  G_OBJECT_CLASS (guestfs_ntfsclone_out_parent_class)->finalize (object);
 }
 
 static void
-guestfs_ntfsclone_out_class_init(GuestfsNtfscloneOutClass *klass)
+guestfs_ntfsclone_out_class_init (GuestfsNtfscloneOutClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_ntfsclone_out_set_property;
   object_class->get_property = guestfs_ntfsclone_out_get_property;
 
@@ -143,10 +139,10 @@ guestfs_ntfsclone_out_class_init(GuestfsNtfscloneOutClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_NTFSCLONE_OUT_METADATAONLY,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "metadataonly",
       "metadataonly",
       "A boolean.",
@@ -160,10 +156,10 @@ guestfs_ntfsclone_out_class_init(GuestfsNtfscloneOutClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_NTFSCLONE_OUT_RESCUE,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "rescue",
       "rescue",
       "A boolean.",
@@ -177,10 +173,10 @@ guestfs_ntfsclone_out_class_init(GuestfsNtfscloneOutClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_NTFSCLONE_OUT_IGNOREFSCHECK,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "ignorefscheck",
       "ignorefscheck",
       "A boolean.",
@@ -194,10 +190,10 @@ guestfs_ntfsclone_out_class_init(GuestfsNtfscloneOutClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_NTFSCLONE_OUT_PRESERVETIMESTAMPS,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "preservetimestamps",
       "preservetimestamps",
       "A boolean.",
@@ -211,10 +207,10 @@ guestfs_ntfsclone_out_class_init(GuestfsNtfscloneOutClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_NTFSCLONE_OUT_FORCE,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "force",
       "force",
       "A boolean.",
@@ -224,15 +220,15 @@ guestfs_ntfsclone_out_class_init(GuestfsNtfscloneOutClass *klass)
   );
 
   object_class->finalize = guestfs_ntfsclone_out_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsNtfscloneOutPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsNtfscloneOutPrivate));
 }
 
 static void
-guestfs_ntfsclone_out_init(GuestfsNtfscloneOut *o)
+guestfs_ntfsclone_out_init (GuestfsNtfscloneOut *o)
 {
-  o->priv = GUESTFS_NTFSCLONE_OUT_GET_PRIVATE(o);
+  o->priv = GUESTFS_NTFSCLONE_OUT_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsNtfscloneOutPrivate));
+  memset (o->priv, 0, sizeof (GuestfsNtfscloneOutPrivate));
 }
 
 /**
@@ -243,7 +239,7 @@ guestfs_ntfsclone_out_init(GuestfsNtfscloneOut *o)
  * Returns: (transfer full): a new GuestfsNtfscloneOut object
  */
 GuestfsNtfscloneOut *
-guestfs_ntfsclone_out_new(void)
+guestfs_ntfsclone_out_new (void)
 {
-  return GUESTFS_NTFSCLONE_OUT(g_object_new(GUESTFS_TYPE_NTFSCLONE_OUT, NULL));
+  return GUESTFS_NTFSCLONE_OUT (g_object_new (GUESTFS_TYPE_NTFSCLONE_OUT, NULL));
 }

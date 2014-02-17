@@ -34,13 +34,13 @@
 
 #include <string.h>
 
-#define GUESTFS_SYSLINUX_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_SYSLINUX, GuestfsSyslinuxPrivate))
+#define GUESTFS_SYSLINUX_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_SYSLINUX, GuestfsSyslinuxPrivate))
 
 struct _GuestfsSyslinuxPrivate {
   gchar *directory;
 };
 
-G_DEFINE_TYPE(GuestfsSyslinux, guestfs_syslinux, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsSyslinux, guestfs_syslinux, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_SYSLINUX_PROP0,
@@ -50,53 +50,52 @@ enum {
 static void
 guestfs_syslinux_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsSyslinux *self = GUESTFS_SYSLINUX(object);
+  GuestfsSyslinux *self = GUESTFS_SYSLINUX (object);
   GuestfsSyslinuxPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_SYSLINUX_DIRECTORY:
-      g_free(priv->directory);
+      g_free (priv->directory);
       priv->directory = g_value_dup_string (value);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_syslinux_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsSyslinux *self = GUESTFS_SYSLINUX(object);
+  GuestfsSyslinux *self = GUESTFS_SYSLINUX (object);
   GuestfsSyslinuxPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_SYSLINUX_DIRECTORY:
-      g_value_set_string(value, priv->directory);
+      g_value_set_string (value, priv->directory);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_syslinux_finalize(GObject *object)
+guestfs_syslinux_finalize (GObject *object)
 {
-  GuestfsSyslinux *self = GUESTFS_SYSLINUX(object);
+  GuestfsSyslinux *self = GUESTFS_SYSLINUX (object);
   GuestfsSyslinuxPrivate *priv = self->priv;
 
-  g_free(priv->directory);
-
-  G_OBJECT_CLASS(guestfs_syslinux_parent_class)->finalize(object);
+  g_free (priv->directory);
+  G_OBJECT_CLASS (guestfs_syslinux_parent_class)->finalize (object);
 }
 
 static void
-guestfs_syslinux_class_init(GuestfsSyslinuxClass *klass)
+guestfs_syslinux_class_init (GuestfsSyslinuxClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_syslinux_set_property;
   object_class->get_property = guestfs_syslinux_get_property;
 
@@ -105,10 +104,10 @@ guestfs_syslinux_class_init(GuestfsSyslinuxClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_SYSLINUX_DIRECTORY,
-    g_param_spec_string(
+    g_param_spec_string (
       "directory",
       "directory",
       "A string.",
@@ -118,15 +117,15 @@ guestfs_syslinux_class_init(GuestfsSyslinuxClass *klass)
   );
 
   object_class->finalize = guestfs_syslinux_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsSyslinuxPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsSyslinuxPrivate));
 }
 
 static void
-guestfs_syslinux_init(GuestfsSyslinux *o)
+guestfs_syslinux_init (GuestfsSyslinux *o)
 {
-  o->priv = GUESTFS_SYSLINUX_GET_PRIVATE(o);
+  o->priv = GUESTFS_SYSLINUX_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsSyslinuxPrivate));
+  memset (o->priv, 0, sizeof (GuestfsSyslinuxPrivate));
 }
 
 /**
@@ -137,7 +136,7 @@ guestfs_syslinux_init(GuestfsSyslinux *o)
  * Returns: (transfer full): a new GuestfsSyslinux object
  */
 GuestfsSyslinux *
-guestfs_syslinux_new(void)
+guestfs_syslinux_new (void)
 {
-  return GUESTFS_SYSLINUX(g_object_new(GUESTFS_TYPE_SYSLINUX, NULL));
+  return GUESTFS_SYSLINUX (g_object_new (GUESTFS_TYPE_SYSLINUX, NULL));
 }

@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_COMPRESS_OUT (guestfs_compress_out_get_type())
-#define GUESTFS_COMPRESS_OUT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_COMPRESS_OUT, GuestfsCompressOut))
-#define GUESTFS_COMPRESS_OUT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_COMPRESS_OUT, GuestfsCompressOutClass))
-#define GUESTFS_IS_COMPRESS_OUT(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_COMPRESS_OUT))
-#define GUESTFS_IS_COMPRESS_OUT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_COMPRESS_OUT))
-#define GUESTFS_COMPRESS_OUT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_COMPRESS_OUT, GuestfsCompressOutClass))
+#define GUESTFS_TYPE_COMPRESS_OUT (guestfs_compress_out_get_type ())
+#define GUESTFS_COMPRESS_OUT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_COMPRESS_OUT, GuestfsCompressOut))
+#define GUESTFS_COMPRESS_OUT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_COMPRESS_OUT, GuestfsCompressOutClass))
+#define GUESTFS_IS_COMPRESS_OUT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_COMPRESS_OUT))
+#define GUESTFS_IS_COMPRESS_OUT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_COMPRESS_OUT))
+#define GUESTFS_COMPRESS_OUT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_COMPRESS_OUT, GuestfsCompressOutClass))
 
 typedef struct _GuestfsCompressOutPrivate GuestfsCompressOutPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsCompressOutClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_compress_out_get_type(void);
-GuestfsCompressOut *guestfs_compress_out_new(void);
+GType guestfs_compress_out_get_type (void);
+GuestfsCompressOut *guestfs_compress_out_new (void);
 
 G_END_DECLS
 

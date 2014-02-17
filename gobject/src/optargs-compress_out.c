@@ -34,13 +34,13 @@
 
 #include <string.h>
 
-#define GUESTFS_COMPRESS_OUT_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_COMPRESS_OUT, GuestfsCompressOutPrivate))
+#define GUESTFS_COMPRESS_OUT_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_COMPRESS_OUT, GuestfsCompressOutPrivate))
 
 struct _GuestfsCompressOutPrivate {
   gint level;
 };
 
-G_DEFINE_TYPE(GuestfsCompressOut, guestfs_compress_out, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsCompressOut, guestfs_compress_out, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_COMPRESS_OUT_PROP0,
@@ -50,7 +50,7 @@ enum {
 static void
 guestfs_compress_out_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsCompressOut *self = GUESTFS_COMPRESS_OUT(object);
+  GuestfsCompressOut *self = GUESTFS_COMPRESS_OUT (object);
   GuestfsCompressOutPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -60,41 +60,37 @@ guestfs_compress_out_set_property(GObject *object, guint property_id, const GVal
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_compress_out_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsCompressOut *self = GUESTFS_COMPRESS_OUT(object);
+  GuestfsCompressOut *self = GUESTFS_COMPRESS_OUT (object);
   GuestfsCompressOutPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_COMPRESS_OUT_LEVEL:
-      g_value_set_int(value, priv->level);
+      g_value_set_int (value, priv->level);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_compress_out_finalize(GObject *object)
+guestfs_compress_out_finalize (GObject *object)
 {
-  GuestfsCompressOut *self = GUESTFS_COMPRESS_OUT(object);
-  GuestfsCompressOutPrivate *priv = self->priv;
-
-
-  G_OBJECT_CLASS(guestfs_compress_out_parent_class)->finalize(object);
+  G_OBJECT_CLASS (guestfs_compress_out_parent_class)->finalize (object);
 }
 
 static void
-guestfs_compress_out_class_init(GuestfsCompressOutClass *klass)
+guestfs_compress_out_class_init (GuestfsCompressOutClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_compress_out_set_property;
   object_class->get_property = guestfs_compress_out_get_property;
 
@@ -103,10 +99,10 @@ guestfs_compress_out_class_init(GuestfsCompressOutClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_COMPRESS_OUT_LEVEL,
-    g_param_spec_int(
+    g_param_spec_int (
       "level",
       "level",
       "A 32-bit integer.",
@@ -116,15 +112,15 @@ guestfs_compress_out_class_init(GuestfsCompressOutClass *klass)
   );
 
   object_class->finalize = guestfs_compress_out_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsCompressOutPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsCompressOutPrivate));
 }
 
 static void
-guestfs_compress_out_init(GuestfsCompressOut *o)
+guestfs_compress_out_init (GuestfsCompressOut *o)
 {
-  o->priv = GUESTFS_COMPRESS_OUT_GET_PRIVATE(o);
+  o->priv = GUESTFS_COMPRESS_OUT_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsCompressOutPrivate));
+  memset (o->priv, 0, sizeof (GuestfsCompressOutPrivate));
 }
 
 /**
@@ -135,7 +131,7 @@ guestfs_compress_out_init(GuestfsCompressOut *o)
  * Returns: (transfer full): a new GuestfsCompressOut object
  */
 GuestfsCompressOut *
-guestfs_compress_out_new(void)
+guestfs_compress_out_new (void)
 {
-  return GUESTFS_COMPRESS_OUT(g_object_new(GUESTFS_TYPE_COMPRESS_OUT, NULL));
+  return GUESTFS_COMPRESS_OUT (g_object_new (GUESTFS_TYPE_COMPRESS_OUT, NULL));
 }

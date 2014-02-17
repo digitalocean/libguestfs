@@ -44,7 +44,7 @@ struct _GuestfsPartition {
   guint64 part_end;
   guint64 part_size;
 };
-GType guestfs_partition_get_type(void);
+GType guestfs_partition_get_type (void);
 
 G_END_DECLS
 

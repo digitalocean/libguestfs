@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_INTERNAL_TEST (guestfs_internal_test_get_type())
-#define GUESTFS_INTERNAL_TEST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_INTERNAL_TEST, GuestfsInternalTest))
-#define GUESTFS_INTERNAL_TEST_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_INTERNAL_TEST, GuestfsInternalTestClass))
-#define GUESTFS_IS_INTERNAL_TEST(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_INTERNAL_TEST))
-#define GUESTFS_IS_INTERNAL_TEST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_INTERNAL_TEST))
-#define GUESTFS_INTERNAL_TEST_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_INTERNAL_TEST, GuestfsInternalTestClass))
+#define GUESTFS_TYPE_INTERNAL_TEST (guestfs_internal_test_get_type ())
+#define GUESTFS_INTERNAL_TEST(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_INTERNAL_TEST, GuestfsInternalTest))
+#define GUESTFS_INTERNAL_TEST_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_INTERNAL_TEST, GuestfsInternalTestClass))
+#define GUESTFS_IS_INTERNAL_TEST(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_INTERNAL_TEST))
+#define GUESTFS_IS_INTERNAL_TEST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_INTERNAL_TEST))
+#define GUESTFS_INTERNAL_TEST_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_INTERNAL_TEST, GuestfsInternalTestClass))
 
 typedef struct _GuestfsInternalTestPrivate GuestfsInternalTestPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsInternalTestClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_internal_test_get_type(void);
-GuestfsInternalTest *guestfs_internal_test_new(void);
+GType guestfs_internal_test_get_type (void);
+GuestfsInternalTest *guestfs_internal_test_new (void);
 
 G_END_DECLS
 

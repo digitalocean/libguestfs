@@ -34,13 +34,13 @@
 
 #include <string.h>
 
-#define GUESTFS_NTFSFIX_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_NTFSFIX, GuestfsNtfsfixPrivate))
+#define GUESTFS_NTFSFIX_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_NTFSFIX, GuestfsNtfsfixPrivate))
 
 struct _GuestfsNtfsfixPrivate {
   GuestfsTristate clearbadsectors;
 };
 
-G_DEFINE_TYPE(GuestfsNtfsfix, guestfs_ntfsfix, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsNtfsfix, guestfs_ntfsfix, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_NTFSFIX_PROP0,
@@ -50,7 +50,7 @@ enum {
 static void
 guestfs_ntfsfix_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsNtfsfix *self = GUESTFS_NTFSFIX(object);
+  GuestfsNtfsfix *self = GUESTFS_NTFSFIX (object);
   GuestfsNtfsfixPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -60,41 +60,37 @@ guestfs_ntfsfix_set_property(GObject *object, guint property_id, const GValue *v
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_ntfsfix_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsNtfsfix *self = GUESTFS_NTFSFIX(object);
+  GuestfsNtfsfix *self = GUESTFS_NTFSFIX (object);
   GuestfsNtfsfixPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_NTFSFIX_CLEARBADSECTORS:
-      g_value_set_enum(value, priv->clearbadsectors);
+      g_value_set_enum (value, priv->clearbadsectors);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_ntfsfix_finalize(GObject *object)
+guestfs_ntfsfix_finalize (GObject *object)
 {
-  GuestfsNtfsfix *self = GUESTFS_NTFSFIX(object);
-  GuestfsNtfsfixPrivate *priv = self->priv;
-
-
-  G_OBJECT_CLASS(guestfs_ntfsfix_parent_class)->finalize(object);
+  G_OBJECT_CLASS (guestfs_ntfsfix_parent_class)->finalize (object);
 }
 
 static void
-guestfs_ntfsfix_class_init(GuestfsNtfsfixClass *klass)
+guestfs_ntfsfix_class_init (GuestfsNtfsfixClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_ntfsfix_set_property;
   object_class->get_property = guestfs_ntfsfix_get_property;
 
@@ -103,10 +99,10 @@ guestfs_ntfsfix_class_init(GuestfsNtfsfixClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_NTFSFIX_CLEARBADSECTORS,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "clearbadsectors",
       "clearbadsectors",
       "A boolean.",
@@ -116,15 +112,15 @@ guestfs_ntfsfix_class_init(GuestfsNtfsfixClass *klass)
   );
 
   object_class->finalize = guestfs_ntfsfix_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsNtfsfixPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsNtfsfixPrivate));
 }
 
 static void
-guestfs_ntfsfix_init(GuestfsNtfsfix *o)
+guestfs_ntfsfix_init (GuestfsNtfsfix *o)
 {
-  o->priv = GUESTFS_NTFSFIX_GET_PRIVATE(o);
+  o->priv = GUESTFS_NTFSFIX_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsNtfsfixPrivate));
+  memset (o->priv, 0, sizeof (GuestfsNtfsfixPrivate));
 }
 
 /**
@@ -135,7 +131,7 @@ guestfs_ntfsfix_init(GuestfsNtfsfix *o)
  * Returns: (transfer full): a new GuestfsNtfsfix object
  */
 GuestfsNtfsfix *
-guestfs_ntfsfix_new(void)
+guestfs_ntfsfix_new (void)
 {
-  return GUESTFS_NTFSFIX(g_object_new(GUESTFS_TYPE_NTFSFIX, NULL));
+  return GUESTFS_NTFSFIX (g_object_new (GUESTFS_TYPE_NTFSFIX, NULL));
 }

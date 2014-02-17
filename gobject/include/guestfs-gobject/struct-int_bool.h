@@ -40,7 +40,7 @@ struct _GuestfsIntBool {
   gint32 i;
   gint32 b;
 };
-GType guestfs_int_bool_get_type(void);
+GType guestfs_int_bool_get_type (void);
 
 G_END_DECLS
 

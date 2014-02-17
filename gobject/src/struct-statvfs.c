@@ -31,15 +31,15 @@
  */
 
 static GuestfsStatVFS *
-guestfs_statvfs_copy(GuestfsStatVFS *src)
+guestfs_statvfs_copy (GuestfsStatVFS *src)
 {
-  return g_slice_dup(GuestfsStatVFS, src);
+  return g_slice_dup (GuestfsStatVFS, src);
 }
 
 static void
-guestfs_statvfs_free(GuestfsStatVFS *src)
+guestfs_statvfs_free (GuestfsStatVFS *src)
 {
-  g_slice_free(GuestfsStatVFS, src);
+  g_slice_free (GuestfsStatVFS, src);
 }
 
-G_DEFINE_BOXED_TYPE(GuestfsStatVFS, guestfs_statvfs, guestfs_statvfs_copy, guestfs_statvfs_free)
+G_DEFINE_BOXED_TYPE (GuestfsStatVFS, guestfs_statvfs, guestfs_statvfs_copy, guestfs_statvfs_free)

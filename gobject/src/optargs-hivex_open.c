@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_HIVEX_OPEN_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_HIVEX_OPEN, GuestfsHivexOpenPrivate))
+#define GUESTFS_HIVEX_OPEN_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_HIVEX_OPEN, GuestfsHivexOpenPrivate))
 
 struct _GuestfsHivexOpenPrivate {
   GuestfsTristate verbose;
@@ -42,7 +42,7 @@ struct _GuestfsHivexOpenPrivate {
   GuestfsTristate write;
 };
 
-G_DEFINE_TYPE(GuestfsHivexOpen, guestfs_hivex_open, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsHivexOpen, guestfs_hivex_open, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_HIVEX_OPEN_PROP0,
@@ -54,7 +54,7 @@ enum {
 static void
 guestfs_hivex_open_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsHivexOpen *self = GUESTFS_HIVEX_OPEN(object);
+  GuestfsHivexOpen *self = GUESTFS_HIVEX_OPEN (object);
   GuestfsHivexOpenPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -72,49 +72,45 @@ guestfs_hivex_open_set_property(GObject *object, guint property_id, const GValue
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_hivex_open_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsHivexOpen *self = GUESTFS_HIVEX_OPEN(object);
+  GuestfsHivexOpen *self = GUESTFS_HIVEX_OPEN (object);
   GuestfsHivexOpenPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_HIVEX_OPEN_VERBOSE:
-      g_value_set_enum(value, priv->verbose);
+      g_value_set_enum (value, priv->verbose);
       break;
 
     case PROP_GUESTFS_HIVEX_OPEN_DEBUG:
-      g_value_set_enum(value, priv->debug);
+      g_value_set_enum (value, priv->debug);
       break;
 
     case PROP_GUESTFS_HIVEX_OPEN_WRITE:
-      g_value_set_enum(value, priv->write);
+      g_value_set_enum (value, priv->write);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_hivex_open_finalize(GObject *object)
+guestfs_hivex_open_finalize (GObject *object)
 {
-  GuestfsHivexOpen *self = GUESTFS_HIVEX_OPEN(object);
-  GuestfsHivexOpenPrivate *priv = self->priv;
-
-
-  G_OBJECT_CLASS(guestfs_hivex_open_parent_class)->finalize(object);
+  G_OBJECT_CLASS (guestfs_hivex_open_parent_class)->finalize (object);
 }
 
 static void
-guestfs_hivex_open_class_init(GuestfsHivexOpenClass *klass)
+guestfs_hivex_open_class_init (GuestfsHivexOpenClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_hivex_open_set_property;
   object_class->get_property = guestfs_hivex_open_get_property;
 
@@ -123,10 +119,10 @@ guestfs_hivex_open_class_init(GuestfsHivexOpenClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_HIVEX_OPEN_VERBOSE,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "verbose",
       "verbose",
       "A boolean.",
@@ -140,10 +136,10 @@ guestfs_hivex_open_class_init(GuestfsHivexOpenClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_HIVEX_OPEN_DEBUG,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "debug",
       "debug",
       "A boolean.",
@@ -157,10 +153,10 @@ guestfs_hivex_open_class_init(GuestfsHivexOpenClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_HIVEX_OPEN_WRITE,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "write",
       "write",
       "A boolean.",
@@ -170,15 +166,15 @@ guestfs_hivex_open_class_init(GuestfsHivexOpenClass *klass)
   );
 
   object_class->finalize = guestfs_hivex_open_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsHivexOpenPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsHivexOpenPrivate));
 }
 
 static void
-guestfs_hivex_open_init(GuestfsHivexOpen *o)
+guestfs_hivex_open_init (GuestfsHivexOpen *o)
 {
-  o->priv = GUESTFS_HIVEX_OPEN_GET_PRIVATE(o);
+  o->priv = GUESTFS_HIVEX_OPEN_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsHivexOpenPrivate));
+  memset (o->priv, 0, sizeof (GuestfsHivexOpenPrivate));
 }
 
 /**
@@ -189,7 +185,7 @@ guestfs_hivex_open_init(GuestfsHivexOpen *o)
  * Returns: (transfer full): a new GuestfsHivexOpen object
  */
 GuestfsHivexOpen *
-guestfs_hivex_open_new(void)
+guestfs_hivex_open_new (void)
 {
-  return GUESTFS_HIVEX_OPEN(g_object_new(GUESTFS_TYPE_HIVEX_OPEN, NULL));
+  return GUESTFS_HIVEX_OPEN (g_object_new (GUESTFS_TYPE_HIVEX_OPEN, NULL));
 }

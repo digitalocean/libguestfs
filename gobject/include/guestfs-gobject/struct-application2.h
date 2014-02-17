@@ -70,7 +70,7 @@ struct _GuestfsApplication2 {
   gchar *app2_spare3;
   gchar *app2_spare4;
 };
-GType guestfs_application2_get_type(void);
+GType guestfs_application2_get_type (void);
 
 G_END_DECLS
 

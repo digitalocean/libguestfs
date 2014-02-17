@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_MKFS_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_MKFS, GuestfsMkfsPrivate))
+#define GUESTFS_MKFS_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_MKFS, GuestfsMkfsPrivate))
 
 struct _GuestfsMkfsPrivate {
   gint blocksize;
@@ -43,7 +43,7 @@ struct _GuestfsMkfsPrivate {
   gint sectorsize;
 };
 
-G_DEFINE_TYPE(GuestfsMkfs, guestfs_mkfs, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsMkfs, guestfs_mkfs, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_MKFS_PROP0,
@@ -56,7 +56,7 @@ enum {
 static void
 guestfs_mkfs_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsMkfs *self = GUESTFS_MKFS(object);
+  GuestfsMkfs *self = GUESTFS_MKFS (object);
   GuestfsMkfsPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -65,7 +65,7 @@ guestfs_mkfs_set_property(GObject *object, guint property_id, const GValue *valu
       break;
 
     case PROP_GUESTFS_MKFS_FEATURES:
-      g_free(priv->features);
+      g_free (priv->features);
       priv->features = g_value_dup_string (value);
       break;
 
@@ -79,54 +79,53 @@ guestfs_mkfs_set_property(GObject *object, guint property_id, const GValue *valu
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_mkfs_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsMkfs *self = GUESTFS_MKFS(object);
+  GuestfsMkfs *self = GUESTFS_MKFS (object);
   GuestfsMkfsPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_MKFS_BLOCKSIZE:
-      g_value_set_int(value, priv->blocksize);
+      g_value_set_int (value, priv->blocksize);
       break;
 
     case PROP_GUESTFS_MKFS_FEATURES:
-      g_value_set_string(value, priv->features);
+      g_value_set_string (value, priv->features);
       break;
 
     case PROP_GUESTFS_MKFS_INODE:
-      g_value_set_int(value, priv->inode);
+      g_value_set_int (value, priv->inode);
       break;
 
     case PROP_GUESTFS_MKFS_SECTORSIZE:
-      g_value_set_int(value, priv->sectorsize);
+      g_value_set_int (value, priv->sectorsize);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_mkfs_finalize(GObject *object)
+guestfs_mkfs_finalize (GObject *object)
 {
-  GuestfsMkfs *self = GUESTFS_MKFS(object);
+  GuestfsMkfs *self = GUESTFS_MKFS (object);
   GuestfsMkfsPrivate *priv = self->priv;
 
-  g_free(priv->features);
-
-  G_OBJECT_CLASS(guestfs_mkfs_parent_class)->finalize(object);
+  g_free (priv->features);
+  G_OBJECT_CLASS (guestfs_mkfs_parent_class)->finalize (object);
 }
 
 static void
-guestfs_mkfs_class_init(GuestfsMkfsClass *klass)
+guestfs_mkfs_class_init (GuestfsMkfsClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_mkfs_set_property;
   object_class->get_property = guestfs_mkfs_get_property;
 
@@ -135,10 +134,10 @@ guestfs_mkfs_class_init(GuestfsMkfsClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKFS_BLOCKSIZE,
-    g_param_spec_int(
+    g_param_spec_int (
       "blocksize",
       "blocksize",
       "A 32-bit integer.",
@@ -152,10 +151,10 @@ guestfs_mkfs_class_init(GuestfsMkfsClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKFS_FEATURES,
-    g_param_spec_string(
+    g_param_spec_string (
       "features",
       "features",
       "A string.",
@@ -169,10 +168,10 @@ guestfs_mkfs_class_init(GuestfsMkfsClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKFS_INODE,
-    g_param_spec_int(
+    g_param_spec_int (
       "inode",
       "inode",
       "A 32-bit integer.",
@@ -186,10 +185,10 @@ guestfs_mkfs_class_init(GuestfsMkfsClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_MKFS_SECTORSIZE,
-    g_param_spec_int(
+    g_param_spec_int (
       "sectorsize",
       "sectorsize",
       "A 32-bit integer.",
@@ -199,15 +198,15 @@ guestfs_mkfs_class_init(GuestfsMkfsClass *klass)
   );
 
   object_class->finalize = guestfs_mkfs_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsMkfsPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsMkfsPrivate));
 }
 
 static void
-guestfs_mkfs_init(GuestfsMkfs *o)
+guestfs_mkfs_init (GuestfsMkfs *o)
 {
-  o->priv = GUESTFS_MKFS_GET_PRIVATE(o);
+  o->priv = GUESTFS_MKFS_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsMkfsPrivate));
+  memset (o->priv, 0, sizeof (GuestfsMkfsPrivate));
 }
 
 /**
@@ -218,7 +217,7 @@ guestfs_mkfs_init(GuestfsMkfs *o)
  * Returns: (transfer full): a new GuestfsMkfs object
  */
 GuestfsMkfs *
-guestfs_mkfs_new(void)
+guestfs_mkfs_new (void)
 {
-  return GUESTFS_MKFS(g_object_new(GUESTFS_TYPE_MKFS, NULL));
+  return GUESTFS_MKFS (g_object_new (GUESTFS_TYPE_MKFS, NULL));
 }

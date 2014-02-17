@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_MKFS (guestfs_mkfs_get_type())
-#define GUESTFS_MKFS(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_MKFS, GuestfsMkfs))
-#define GUESTFS_MKFS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_MKFS, GuestfsMkfsClass))
-#define GUESTFS_IS_MKFS(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_MKFS))
-#define GUESTFS_IS_MKFS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_MKFS))
-#define GUESTFS_MKFS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_MKFS, GuestfsMkfsClass))
+#define GUESTFS_TYPE_MKFS (guestfs_mkfs_get_type ())
+#define GUESTFS_MKFS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_MKFS, GuestfsMkfs))
+#define GUESTFS_MKFS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_MKFS, GuestfsMkfsClass))
+#define GUESTFS_IS_MKFS(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_MKFS))
+#define GUESTFS_IS_MKFS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_MKFS))
+#define GUESTFS_MKFS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_MKFS, GuestfsMkfsClass))
 
 typedef struct _GuestfsMkfsPrivate GuestfsMkfsPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsMkfsClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_mkfs_get_type(void);
-GuestfsMkfs *guestfs_mkfs_new(void);
+GType guestfs_mkfs_get_type (void);
+GuestfsMkfs *guestfs_mkfs_new (void);
 
 G_END_DECLS
 

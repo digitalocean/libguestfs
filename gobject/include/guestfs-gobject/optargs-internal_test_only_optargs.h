@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_INTERNAL_TEST_ONLY_OPTARGS (guestfs_internal_test_only_optargs_get_type())
-#define GUESTFS_INTERNAL_TEST_ONLY_OPTARGS(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_INTERNAL_TEST_ONLY_OPTARGS, GuestfsInternalTestOnlyOptargs))
-#define GUESTFS_INTERNAL_TEST_ONLY_OPTARGS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_INTERNAL_TEST_ONLY_OPTARGS, GuestfsInternalTestOnlyOptargsClass))
-#define GUESTFS_IS_INTERNAL_TEST_ONLY_OPTARGS(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_INTERNAL_TEST_ONLY_OPTARGS))
-#define GUESTFS_IS_INTERNAL_TEST_ONLY_OPTARGS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_INTERNAL_TEST_ONLY_OPTARGS))
-#define GUESTFS_INTERNAL_TEST_ONLY_OPTARGS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_INTERNAL_TEST_ONLY_OPTARGS, GuestfsInternalTestOnlyOptargsClass))
+#define GUESTFS_TYPE_INTERNAL_TEST_ONLY_OPTARGS (guestfs_internal_test_only_optargs_get_type ())
+#define GUESTFS_INTERNAL_TEST_ONLY_OPTARGS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_INTERNAL_TEST_ONLY_OPTARGS, GuestfsInternalTestOnlyOptargs))
+#define GUESTFS_INTERNAL_TEST_ONLY_OPTARGS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_INTERNAL_TEST_ONLY_OPTARGS, GuestfsInternalTestOnlyOptargsClass))
+#define GUESTFS_IS_INTERNAL_TEST_ONLY_OPTARGS(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_INTERNAL_TEST_ONLY_OPTARGS))
+#define GUESTFS_IS_INTERNAL_TEST_ONLY_OPTARGS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_INTERNAL_TEST_ONLY_OPTARGS))
+#define GUESTFS_INTERNAL_TEST_ONLY_OPTARGS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_INTERNAL_TEST_ONLY_OPTARGS, GuestfsInternalTestOnlyOptargsClass))
 
 typedef struct _GuestfsInternalTestOnlyOptargsPrivate GuestfsInternalTestOnlyOptargsPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsInternalTestOnlyOptargsClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_internal_test_only_optargs_get_type(void);
-GuestfsInternalTestOnlyOptargs *guestfs_internal_test_only_optargs_new(void);
+GType guestfs_internal_test_only_optargs_get_type (void);
+GuestfsInternalTestOnlyOptargs *guestfs_internal_test_only_optargs_new (void);
 
 G_END_DECLS
 

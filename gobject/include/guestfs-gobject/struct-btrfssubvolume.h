@@ -42,7 +42,7 @@ struct _GuestfsBTRFSSubvolume {
   guint64 btrfssubvolume_top_level_id;
   gchar *btrfssubvolume_path;
 };
-GType guestfs_btrfssubvolume_get_type(void);
+GType guestfs_btrfssubvolume_get_type (void);
 
 G_END_DECLS
 

@@ -32,7 +32,7 @@
  */
 
 GType
-guestfs_tristate_get_type(void)
+guestfs_tristate_get_type (void)
 {
   static GType etype = 0;
   if (etype == 0) {
@@ -42,7 +42,7 @@ guestfs_tristate_get_type(void)
       { GUESTFS_TRISTATE_NONE,  "GUESTFS_TRISTATE_NONE",  "none" },
       { 0, NULL, NULL }
     };
-    etype = g_enum_register_static("GuestfsTristate", values);
+    etype = g_enum_register_static ("GuestfsTristate", values);
   }
   return etype;
 }

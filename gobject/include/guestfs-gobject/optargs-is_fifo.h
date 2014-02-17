@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_IS_FIFO (guestfs_is_fifo_get_type())
-#define GUESTFS_IS_FIFO(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_IS_FIFO, GuestfsIsFifo))
-#define GUESTFS_IS_FIFO_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_IS_FIFO, GuestfsIsFifoClass))
-#define GUESTFS_IS_IS_FIFO(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_IS_FIFO))
-#define GUESTFS_IS_IS_FIFO_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_IS_FIFO))
-#define GUESTFS_IS_FIFO_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_IS_FIFO, GuestfsIsFifoClass))
+#define GUESTFS_TYPE_IS_FIFO (guestfs_is_fifo_get_type ())
+#define GUESTFS_IS_FIFO(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_IS_FIFO, GuestfsIsFifo))
+#define GUESTFS_IS_FIFO_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_IS_FIFO, GuestfsIsFifoClass))
+#define GUESTFS_IS_IS_FIFO(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_IS_FIFO))
+#define GUESTFS_IS_IS_FIFO_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_IS_FIFO))
+#define GUESTFS_IS_FIFO_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_IS_FIFO, GuestfsIsFifoClass))
 
 typedef struct _GuestfsIsFifoPrivate GuestfsIsFifoPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsIsFifoClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_is_fifo_get_type(void);
-GuestfsIsFifo *guestfs_is_fifo_new(void);
+GType guestfs_is_fifo_get_type (void);
+GuestfsIsFifo *guestfs_is_fifo_new (void);
 
 G_END_DECLS
 

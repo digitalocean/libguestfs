@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_FSTRIM_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_FSTRIM, GuestfsFstrimPrivate))
+#define GUESTFS_FSTRIM_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_FSTRIM, GuestfsFstrimPrivate))
 
 struct _GuestfsFstrimPrivate {
   gint64 offset;
@@ -42,7 +42,7 @@ struct _GuestfsFstrimPrivate {
   gint64 minimumfreeextent;
 };
 
-G_DEFINE_TYPE(GuestfsFstrim, guestfs_fstrim, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsFstrim, guestfs_fstrim, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_FSTRIM_PROP0,
@@ -54,7 +54,7 @@ enum {
 static void
 guestfs_fstrim_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsFstrim *self = GUESTFS_FSTRIM(object);
+  GuestfsFstrim *self = GUESTFS_FSTRIM (object);
   GuestfsFstrimPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -72,49 +72,45 @@ guestfs_fstrim_set_property(GObject *object, guint property_id, const GValue *va
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_fstrim_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsFstrim *self = GUESTFS_FSTRIM(object);
+  GuestfsFstrim *self = GUESTFS_FSTRIM (object);
   GuestfsFstrimPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_FSTRIM_OFFSET:
-      g_value_set_int64(value, priv->offset);
+      g_value_set_int64 (value, priv->offset);
       break;
 
     case PROP_GUESTFS_FSTRIM_LENGTH:
-      g_value_set_int64(value, priv->length);
+      g_value_set_int64 (value, priv->length);
       break;
 
     case PROP_GUESTFS_FSTRIM_MINIMUMFREEEXTENT:
-      g_value_set_int64(value, priv->minimumfreeextent);
+      g_value_set_int64 (value, priv->minimumfreeextent);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_fstrim_finalize(GObject *object)
+guestfs_fstrim_finalize (GObject *object)
 {
-  GuestfsFstrim *self = GUESTFS_FSTRIM(object);
-  GuestfsFstrimPrivate *priv = self->priv;
-
-
-  G_OBJECT_CLASS(guestfs_fstrim_parent_class)->finalize(object);
+  G_OBJECT_CLASS (guestfs_fstrim_parent_class)->finalize (object);
 }
 
 static void
-guestfs_fstrim_class_init(GuestfsFstrimClass *klass)
+guestfs_fstrim_class_init (GuestfsFstrimClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_fstrim_set_property;
   object_class->get_property = guestfs_fstrim_get_property;
 
@@ -123,10 +119,10 @@ guestfs_fstrim_class_init(GuestfsFstrimClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_FSTRIM_OFFSET,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "offset",
       "offset",
       "A 64-bit integer.",
@@ -140,10 +136,10 @@ guestfs_fstrim_class_init(GuestfsFstrimClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_FSTRIM_LENGTH,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "length",
       "length",
       "A 64-bit integer.",
@@ -157,10 +153,10 @@ guestfs_fstrim_class_init(GuestfsFstrimClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_FSTRIM_MINIMUMFREEEXTENT,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "minimumfreeextent",
       "minimumfreeextent",
       "A 64-bit integer.",
@@ -170,15 +166,15 @@ guestfs_fstrim_class_init(GuestfsFstrimClass *klass)
   );
 
   object_class->finalize = guestfs_fstrim_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsFstrimPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsFstrimPrivate));
 }
 
 static void
-guestfs_fstrim_init(GuestfsFstrim *o)
+guestfs_fstrim_init (GuestfsFstrim *o)
 {
-  o->priv = GUESTFS_FSTRIM_GET_PRIVATE(o);
+  o->priv = GUESTFS_FSTRIM_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsFstrimPrivate));
+  memset (o->priv, 0, sizeof (GuestfsFstrimPrivate));
 }
 
 /**
@@ -189,7 +185,7 @@ guestfs_fstrim_init(GuestfsFstrim *o)
  * Returns: (transfer full): a new GuestfsFstrim object
  */
 GuestfsFstrim *
-guestfs_fstrim_new(void)
+guestfs_fstrim_new (void)
 {
-  return GUESTFS_FSTRIM(g_object_new(GUESTFS_TYPE_FSTRIM, NULL));
+  return GUESTFS_FSTRIM (g_object_new (GUESTFS_TYPE_FSTRIM, NULL));
 }

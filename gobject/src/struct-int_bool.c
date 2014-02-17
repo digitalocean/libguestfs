@@ -31,15 +31,15 @@
  */
 
 static GuestfsIntBool *
-guestfs_int_bool_copy(GuestfsIntBool *src)
+guestfs_int_bool_copy (GuestfsIntBool *src)
 {
-  return g_slice_dup(GuestfsIntBool, src);
+  return g_slice_dup (GuestfsIntBool, src);
 }
 
 static void
-guestfs_int_bool_free(GuestfsIntBool *src)
+guestfs_int_bool_free (GuestfsIntBool *src)
 {
-  g_slice_free(GuestfsIntBool, src);
+  g_slice_free (GuestfsIntBool, src);
 }
 
-G_DEFINE_BOXED_TYPE(GuestfsIntBool, guestfs_int_bool, guestfs_int_bool_copy, guestfs_int_bool_free)
+G_DEFINE_BOXED_TYPE (GuestfsIntBool, guestfs_int_bool, guestfs_int_bool_copy, guestfs_int_bool_free)

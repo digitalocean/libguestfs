@@ -31,15 +31,15 @@
  */
 
 static GuestfsBTRFSSubvolume *
-guestfs_btrfssubvolume_copy(GuestfsBTRFSSubvolume *src)
+guestfs_btrfssubvolume_copy (GuestfsBTRFSSubvolume *src)
 {
-  return g_slice_dup(GuestfsBTRFSSubvolume, src);
+  return g_slice_dup (GuestfsBTRFSSubvolume, src);
 }
 
 static void
-guestfs_btrfssubvolume_free(GuestfsBTRFSSubvolume *src)
+guestfs_btrfssubvolume_free (GuestfsBTRFSSubvolume *src)
 {
-  g_slice_free(GuestfsBTRFSSubvolume, src);
+  g_slice_free (GuestfsBTRFSSubvolume, src);
 }
 
-G_DEFINE_BOXED_TYPE(GuestfsBTRFSSubvolume, guestfs_btrfssubvolume, guestfs_btrfssubvolume_copy, guestfs_btrfssubvolume_free)
+G_DEFINE_BOXED_TYPE (GuestfsBTRFSSubvolume, guestfs_btrfssubvolume, guestfs_btrfssubvolume_copy, guestfs_btrfssubvolume_free)

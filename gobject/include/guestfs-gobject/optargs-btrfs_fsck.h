@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_BTRFS_FSCK (guestfs_btrfs_fsck_get_type())
-#define GUESTFS_BTRFS_FSCK(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_BTRFS_FSCK, GuestfsBtrfsFsck))
-#define GUESTFS_BTRFS_FSCK_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_BTRFS_FSCK, GuestfsBtrfsFsckClass))
-#define GUESTFS_IS_BTRFS_FSCK(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_BTRFS_FSCK))
-#define GUESTFS_IS_BTRFS_FSCK_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_BTRFS_FSCK))
-#define GUESTFS_BTRFS_FSCK_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_BTRFS_FSCK, GuestfsBtrfsFsckClass))
+#define GUESTFS_TYPE_BTRFS_FSCK (guestfs_btrfs_fsck_get_type ())
+#define GUESTFS_BTRFS_FSCK(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_BTRFS_FSCK, GuestfsBtrfsFsck))
+#define GUESTFS_BTRFS_FSCK_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_BTRFS_FSCK, GuestfsBtrfsFsckClass))
+#define GUESTFS_IS_BTRFS_FSCK(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_BTRFS_FSCK))
+#define GUESTFS_IS_BTRFS_FSCK_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_BTRFS_FSCK))
+#define GUESTFS_BTRFS_FSCK_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_BTRFS_FSCK, GuestfsBtrfsFsckClass))
 
 typedef struct _GuestfsBtrfsFsckPrivate GuestfsBtrfsFsckPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsBtrfsFsckClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_btrfs_fsck_get_type(void);
-GuestfsBtrfsFsck *guestfs_btrfs_fsck_new(void);
+GType guestfs_btrfs_fsck_get_type (void);
+GuestfsBtrfsFsck *guestfs_btrfs_fsck_new (void);
 
 G_END_DECLS
 

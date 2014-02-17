@@ -34,14 +34,14 @@
 
 #include <string.h>
 
-#define GUESTFS_RSYNC_OUT_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_RSYNC_OUT, GuestfsRsyncOutPrivate))
+#define GUESTFS_RSYNC_OUT_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_RSYNC_OUT, GuestfsRsyncOutPrivate))
 
 struct _GuestfsRsyncOutPrivate {
   GuestfsTristate archive;
   GuestfsTristate deletedest;
 };
 
-G_DEFINE_TYPE(GuestfsRsyncOut, guestfs_rsync_out, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsRsyncOut, guestfs_rsync_out, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_RSYNC_OUT_PROP0,
@@ -52,7 +52,7 @@ enum {
 static void
 guestfs_rsync_out_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsRsyncOut *self = GUESTFS_RSYNC_OUT(object);
+  GuestfsRsyncOut *self = GUESTFS_RSYNC_OUT (object);
   GuestfsRsyncOutPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -66,45 +66,41 @@ guestfs_rsync_out_set_property(GObject *object, guint property_id, const GValue 
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_rsync_out_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsRsyncOut *self = GUESTFS_RSYNC_OUT(object);
+  GuestfsRsyncOut *self = GUESTFS_RSYNC_OUT (object);
   GuestfsRsyncOutPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_RSYNC_OUT_ARCHIVE:
-      g_value_set_enum(value, priv->archive);
+      g_value_set_enum (value, priv->archive);
       break;
 
     case PROP_GUESTFS_RSYNC_OUT_DELETEDEST:
-      g_value_set_enum(value, priv->deletedest);
+      g_value_set_enum (value, priv->deletedest);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_rsync_out_finalize(GObject *object)
+guestfs_rsync_out_finalize (GObject *object)
 {
-  GuestfsRsyncOut *self = GUESTFS_RSYNC_OUT(object);
-  GuestfsRsyncOutPrivate *priv = self->priv;
-
-
-  G_OBJECT_CLASS(guestfs_rsync_out_parent_class)->finalize(object);
+  G_OBJECT_CLASS (guestfs_rsync_out_parent_class)->finalize (object);
 }
 
 static void
-guestfs_rsync_out_class_init(GuestfsRsyncOutClass *klass)
+guestfs_rsync_out_class_init (GuestfsRsyncOutClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_rsync_out_set_property;
   object_class->get_property = guestfs_rsync_out_get_property;
 
@@ -113,10 +109,10 @@ guestfs_rsync_out_class_init(GuestfsRsyncOutClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_RSYNC_OUT_ARCHIVE,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "archive",
       "archive",
       "A boolean.",
@@ -130,10 +126,10 @@ guestfs_rsync_out_class_init(GuestfsRsyncOutClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_RSYNC_OUT_DELETEDEST,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "deletedest",
       "deletedest",
       "A boolean.",
@@ -143,15 +139,15 @@ guestfs_rsync_out_class_init(GuestfsRsyncOutClass *klass)
   );
 
   object_class->finalize = guestfs_rsync_out_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsRsyncOutPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsRsyncOutPrivate));
 }
 
 static void
-guestfs_rsync_out_init(GuestfsRsyncOut *o)
+guestfs_rsync_out_init (GuestfsRsyncOut *o)
 {
-  o->priv = GUESTFS_RSYNC_OUT_GET_PRIVATE(o);
+  o->priv = GUESTFS_RSYNC_OUT_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsRsyncOutPrivate));
+  memset (o->priv, 0, sizeof (GuestfsRsyncOutPrivate));
 }
 
 /**
@@ -162,7 +158,7 @@ guestfs_rsync_out_init(GuestfsRsyncOut *o)
  * Returns: (transfer full): a new GuestfsRsyncOut object
  */
 GuestfsRsyncOut *
-guestfs_rsync_out_new(void)
+guestfs_rsync_out_new (void)
 {
-  return GUESTFS_RSYNC_OUT(g_object_new(GUESTFS_TYPE_RSYNC_OUT, NULL));
+  return GUESTFS_RSYNC_OUT (g_object_new (GUESTFS_TYPE_RSYNC_OUT, NULL));
 }

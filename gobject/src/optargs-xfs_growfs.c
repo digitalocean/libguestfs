@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_XFS_GROWFS_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_XFS_GROWFS, GuestfsXfsGrowfsPrivate))
+#define GUESTFS_XFS_GROWFS_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_XFS_GROWFS, GuestfsXfsGrowfsPrivate))
 
 struct _GuestfsXfsGrowfsPrivate {
   GuestfsTristate datasec;
@@ -47,7 +47,7 @@ struct _GuestfsXfsGrowfsPrivate {
   gint maxpct;
 };
 
-G_DEFINE_TYPE(GuestfsXfsGrowfs, guestfs_xfs_growfs, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsXfsGrowfs, guestfs_xfs_growfs, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_XFS_GROWFS_PROP0,
@@ -64,7 +64,7 @@ enum {
 static void
 guestfs_xfs_growfs_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsXfsGrowfs *self = GUESTFS_XFS_GROWFS(object);
+  GuestfsXfsGrowfs *self = GUESTFS_XFS_GROWFS (object);
   GuestfsXfsGrowfsPrivate *priv = self->priv;
 
   switch (property_id) {
@@ -102,69 +102,65 @@ guestfs_xfs_growfs_set_property(GObject *object, guint property_id, const GValue
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_xfs_growfs_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsXfsGrowfs *self = GUESTFS_XFS_GROWFS(object);
+  GuestfsXfsGrowfs *self = GUESTFS_XFS_GROWFS (object);
   GuestfsXfsGrowfsPrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_XFS_GROWFS_DATASEC:
-      g_value_set_enum(value, priv->datasec);
+      g_value_set_enum (value, priv->datasec);
       break;
 
     case PROP_GUESTFS_XFS_GROWFS_LOGSEC:
-      g_value_set_enum(value, priv->logsec);
+      g_value_set_enum (value, priv->logsec);
       break;
 
     case PROP_GUESTFS_XFS_GROWFS_RTSEC:
-      g_value_set_enum(value, priv->rtsec);
+      g_value_set_enum (value, priv->rtsec);
       break;
 
     case PROP_GUESTFS_XFS_GROWFS_DATASIZE:
-      g_value_set_int64(value, priv->datasize);
+      g_value_set_int64 (value, priv->datasize);
       break;
 
     case PROP_GUESTFS_XFS_GROWFS_LOGSIZE:
-      g_value_set_int64(value, priv->logsize);
+      g_value_set_int64 (value, priv->logsize);
       break;
 
     case PROP_GUESTFS_XFS_GROWFS_RTSIZE:
-      g_value_set_int64(value, priv->rtsize);
+      g_value_set_int64 (value, priv->rtsize);
       break;
 
     case PROP_GUESTFS_XFS_GROWFS_RTEXTSIZE:
-      g_value_set_int64(value, priv->rtextsize);
+      g_value_set_int64 (value, priv->rtextsize);
       break;
 
     case PROP_GUESTFS_XFS_GROWFS_MAXPCT:
-      g_value_set_int(value, priv->maxpct);
+      g_value_set_int (value, priv->maxpct);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_xfs_growfs_finalize(GObject *object)
+guestfs_xfs_growfs_finalize (GObject *object)
 {
-  GuestfsXfsGrowfs *self = GUESTFS_XFS_GROWFS(object);
-  GuestfsXfsGrowfsPrivate *priv = self->priv;
-
-
-  G_OBJECT_CLASS(guestfs_xfs_growfs_parent_class)->finalize(object);
+  G_OBJECT_CLASS (guestfs_xfs_growfs_parent_class)->finalize (object);
 }
 
 static void
-guestfs_xfs_growfs_class_init(GuestfsXfsGrowfsClass *klass)
+guestfs_xfs_growfs_class_init (GuestfsXfsGrowfsClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_xfs_growfs_set_property;
   object_class->get_property = guestfs_xfs_growfs_get_property;
 
@@ -173,10 +169,10 @@ guestfs_xfs_growfs_class_init(GuestfsXfsGrowfsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_GROWFS_DATASEC,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "datasec",
       "datasec",
       "A boolean.",
@@ -190,10 +186,10 @@ guestfs_xfs_growfs_class_init(GuestfsXfsGrowfsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_GROWFS_LOGSEC,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "logsec",
       "logsec",
       "A boolean.",
@@ -207,10 +203,10 @@ guestfs_xfs_growfs_class_init(GuestfsXfsGrowfsClass *klass)
    *
    * A boolean.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_GROWFS_RTSEC,
-    g_param_spec_enum(
+    g_param_spec_enum (
       "rtsec",
       "rtsec",
       "A boolean.",
@@ -224,10 +220,10 @@ guestfs_xfs_growfs_class_init(GuestfsXfsGrowfsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_GROWFS_DATASIZE,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "datasize",
       "datasize",
       "A 64-bit integer.",
@@ -241,10 +237,10 @@ guestfs_xfs_growfs_class_init(GuestfsXfsGrowfsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_GROWFS_LOGSIZE,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "logsize",
       "logsize",
       "A 64-bit integer.",
@@ -258,10 +254,10 @@ guestfs_xfs_growfs_class_init(GuestfsXfsGrowfsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_GROWFS_RTSIZE,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "rtsize",
       "rtsize",
       "A 64-bit integer.",
@@ -275,10 +271,10 @@ guestfs_xfs_growfs_class_init(GuestfsXfsGrowfsClass *klass)
    *
    * A 64-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_GROWFS_RTEXTSIZE,
-    g_param_spec_int64(
+    g_param_spec_int64 (
       "rtextsize",
       "rtextsize",
       "A 64-bit integer.",
@@ -292,10 +288,10 @@ guestfs_xfs_growfs_class_init(GuestfsXfsGrowfsClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_XFS_GROWFS_MAXPCT,
-    g_param_spec_int(
+    g_param_spec_int (
       "maxpct",
       "maxpct",
       "A 32-bit integer.",
@@ -305,15 +301,15 @@ guestfs_xfs_growfs_class_init(GuestfsXfsGrowfsClass *klass)
   );
 
   object_class->finalize = guestfs_xfs_growfs_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsXfsGrowfsPrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsXfsGrowfsPrivate));
 }
 
 static void
-guestfs_xfs_growfs_init(GuestfsXfsGrowfs *o)
+guestfs_xfs_growfs_init (GuestfsXfsGrowfs *o)
 {
-  o->priv = GUESTFS_XFS_GROWFS_GET_PRIVATE(o);
+  o->priv = GUESTFS_XFS_GROWFS_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsXfsGrowfsPrivate));
+  memset (o->priv, 0, sizeof (GuestfsXfsGrowfsPrivate));
 }
 
 /**
@@ -324,7 +320,7 @@ guestfs_xfs_growfs_init(GuestfsXfsGrowfs *o)
  * Returns: (transfer full): a new GuestfsXfsGrowfs object
  */
 GuestfsXfsGrowfs *
-guestfs_xfs_growfs_new(void)
+guestfs_xfs_growfs_new (void)
 {
-  return GUESTFS_XFS_GROWFS(g_object_new(GUESTFS_TYPE_XFS_GROWFS, NULL));
+  return GUESTFS_XFS_GROWFS (g_object_new (GUESTFS_TYPE_XFS_GROWFS, NULL));
 }

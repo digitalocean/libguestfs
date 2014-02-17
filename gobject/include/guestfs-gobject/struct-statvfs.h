@@ -58,7 +58,7 @@ struct _GuestfsStatVFS {
   gint64 flag;
   gint64 namemax;
 };
-GType guestfs_statvfs_get_type(void);
+GType guestfs_statvfs_get_type (void);
 
 G_END_DECLS
 

@@ -80,6 +80,9 @@ OBJECTS = \
 	$(top_builddir)/mllib/password.cmx \
 	$(top_builddir)/mllib/planner.cmx \
 	$(top_builddir)/mllib/config.cmx \
+	$(top_builddir)/fish/guestfish-uri.o \
+	$(top_builddir)/mllib/uri-c.o \
+	$(top_builddir)/mllib/uRI.cmx \
 	index-scan.o \
 	index-struct.o \
 	index-parse.o \
@@ -113,10 +116,18 @@ endif
 OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
 OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 
+OCAMLCLIBS  = \
+	$(LIBLZMA_LIBS) \
+	$(LIBXML2_LIBS) \
+	-L../src/.libs -lutils \
+	-L../gnulib/lib/.libs -lgnu \
+	-pthread -lpthread \
+	-lncurses -lcrypt
+
 virt-builder: $(OBJECTS)
 	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
 	  mlguestfs.cmxa -linkpkg $^ \
-	  -cclib '-pthread $(LIBLZMA_LIBS) -lncurses -lcrypt -lpthread' \
+	  -cclib '$(OCAMLCLIBS)' \
 	  $(OCAML_GCOV_LDFLAGS) \
 	  -o $@
 
@@ -213,6 +224,9 @@ virt_index_validate_SOURCES = \
 	index-struct.c \
 	index-validate.c
 
+virt_index_validate_CPPFLAGS = \
+	-DLOCALEBASEDIR=\""$(datadir)/locale"\"
+
 man_MANS += virt-index-validate.1
 noinst_DATA += $(top_builddir)/html/virt-index-validate.1.html
 
@@ -232,9 +246,11 @@ CLEANFILES += \
 	index-scan.c \
 	stamp-virt-index-validate.pod
 
-# Fix dependencies which automake doesn't generate correctly.
 if HAVE_OCAML
-index-parser-c.o: index-parse.h index-struct.h
-index-scan.o: index-parse.h
+# Automake-generated makefile has a rule ".l.c:" but lacks a rule ".l.h:".
+# Also it doesn't generate dependencies for the C files that include
+# index-parse.h.
+index-parser-c.c index-scan.c index-validate.c: index-parse.h
+index-parse.h: index-parse.y
+	$(MAKE) index-parse.c
 endif
-index-validate.o: index-parse.h

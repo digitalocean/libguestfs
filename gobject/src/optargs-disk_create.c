@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#define GUESTFS_DISK_CREATE_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), GUESTFS_TYPE_DISK_CREATE, GuestfsDiskCreatePrivate))
+#define GUESTFS_DISK_CREATE_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GUESTFS_TYPE_DISK_CREATE, GuestfsDiskCreatePrivate))
 
 struct _GuestfsDiskCreatePrivate {
   gchar *backingfile;
@@ -44,7 +44,7 @@ struct _GuestfsDiskCreatePrivate {
   gint clustersize;
 };
 
-G_DEFINE_TYPE(GuestfsDiskCreate, guestfs_disk_create, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GuestfsDiskCreate, guestfs_disk_create, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_DISK_CREATE_PROP0,
@@ -58,27 +58,27 @@ enum {
 static void
 guestfs_disk_create_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-  GuestfsDiskCreate *self = GUESTFS_DISK_CREATE(object);
+  GuestfsDiskCreate *self = GUESTFS_DISK_CREATE (object);
   GuestfsDiskCreatePrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_DISK_CREATE_BACKINGFILE:
-      g_free(priv->backingfile);
+      g_free (priv->backingfile);
       priv->backingfile = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_DISK_CREATE_BACKINGFORMAT:
-      g_free(priv->backingformat);
+      g_free (priv->backingformat);
       priv->backingformat = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_DISK_CREATE_PREALLOCATION:
-      g_free(priv->preallocation);
+      g_free (priv->preallocation);
       priv->preallocation = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_DISK_CREATE_COMPAT:
-      g_free(priv->compat);
+      g_free (priv->compat);
       priv->compat = g_value_dup_string (value);
       break;
 
@@ -88,61 +88,60 @@ guestfs_disk_create_set_property(GObject *object, guint property_id, const GValu
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
 guestfs_disk_create_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-  GuestfsDiskCreate *self = GUESTFS_DISK_CREATE(object);
+  GuestfsDiskCreate *self = GUESTFS_DISK_CREATE (object);
   GuestfsDiskCreatePrivate *priv = self->priv;
 
   switch (property_id) {
     case PROP_GUESTFS_DISK_CREATE_BACKINGFILE:
-      g_value_set_string(value, priv->backingfile);
+      g_value_set_string (value, priv->backingfile);
       break;
 
     case PROP_GUESTFS_DISK_CREATE_BACKINGFORMAT:
-      g_value_set_string(value, priv->backingformat);
+      g_value_set_string (value, priv->backingformat);
       break;
 
     case PROP_GUESTFS_DISK_CREATE_PREALLOCATION:
-      g_value_set_string(value, priv->preallocation);
+      g_value_set_string (value, priv->preallocation);
       break;
 
     case PROP_GUESTFS_DISK_CREATE_COMPAT:
-      g_value_set_string(value, priv->compat);
+      g_value_set_string (value, priv->compat);
       break;
 
     case PROP_GUESTFS_DISK_CREATE_CLUSTERSIZE:
-      g_value_set_int(value, priv->clustersize);
+      g_value_set_int (value, priv->clustersize);
       break;
 
     default:
       /* Invalid property */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
   }
 }
 
 static void
-guestfs_disk_create_finalize(GObject *object)
+guestfs_disk_create_finalize (GObject *object)
 {
-  GuestfsDiskCreate *self = GUESTFS_DISK_CREATE(object);
+  GuestfsDiskCreate *self = GUESTFS_DISK_CREATE (object);
   GuestfsDiskCreatePrivate *priv = self->priv;
 
-  g_free(priv->backingfile);
-  g_free(priv->backingformat);
-  g_free(priv->preallocation);
-  g_free(priv->compat);
-
-  G_OBJECT_CLASS(guestfs_disk_create_parent_class)->finalize(object);
+  g_free (priv->backingfile);
+  g_free (priv->backingformat);
+  g_free (priv->preallocation);
+  g_free (priv->compat);
+  G_OBJECT_CLASS (guestfs_disk_create_parent_class)->finalize (object);
 }
 
 static void
-guestfs_disk_create_class_init(GuestfsDiskCreateClass *klass)
+guestfs_disk_create_class_init (GuestfsDiskCreateClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->set_property = guestfs_disk_create_set_property;
   object_class->get_property = guestfs_disk_create_get_property;
 
@@ -151,10 +150,10 @@ guestfs_disk_create_class_init(GuestfsDiskCreateClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_DISK_CREATE_BACKINGFILE,
-    g_param_spec_string(
+    g_param_spec_string (
       "backingfile",
       "backingfile",
       "A string.",
@@ -168,10 +167,10 @@ guestfs_disk_create_class_init(GuestfsDiskCreateClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_DISK_CREATE_BACKINGFORMAT,
-    g_param_spec_string(
+    g_param_spec_string (
       "backingformat",
       "backingformat",
       "A string.",
@@ -185,10 +184,10 @@ guestfs_disk_create_class_init(GuestfsDiskCreateClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_DISK_CREATE_PREALLOCATION,
-    g_param_spec_string(
+    g_param_spec_string (
       "preallocation",
       "preallocation",
       "A string.",
@@ -202,10 +201,10 @@ guestfs_disk_create_class_init(GuestfsDiskCreateClass *klass)
    *
    * A string.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_DISK_CREATE_COMPAT,
-    g_param_spec_string(
+    g_param_spec_string (
       "compat",
       "compat",
       "A string.",
@@ -219,10 +218,10 @@ guestfs_disk_create_class_init(GuestfsDiskCreateClass *klass)
    *
    * A 32-bit integer.
    */
-  g_object_class_install_property(
+  g_object_class_install_property (
     object_class,
     PROP_GUESTFS_DISK_CREATE_CLUSTERSIZE,
-    g_param_spec_int(
+    g_param_spec_int (
       "clustersize",
       "clustersize",
       "A 32-bit integer.",
@@ -232,15 +231,15 @@ guestfs_disk_create_class_init(GuestfsDiskCreateClass *klass)
   );
 
   object_class->finalize = guestfs_disk_create_finalize;
-  g_type_class_add_private(klass, sizeof(GuestfsDiskCreatePrivate));
+  g_type_class_add_private (klass, sizeof (GuestfsDiskCreatePrivate));
 }
 
 static void
-guestfs_disk_create_init(GuestfsDiskCreate *o)
+guestfs_disk_create_init (GuestfsDiskCreate *o)
 {
-  o->priv = GUESTFS_DISK_CREATE_GET_PRIVATE(o);
+  o->priv = GUESTFS_DISK_CREATE_GET_PRIVATE (o);
   /* XXX: Find out if gobject already zeroes private structs */
-  memset(o->priv, 0, sizeof(GuestfsDiskCreatePrivate));
+  memset (o->priv, 0, sizeof (GuestfsDiskCreatePrivate));
 }
 
 /**
@@ -251,7 +250,7 @@ guestfs_disk_create_init(GuestfsDiskCreate *o)
  * Returns: (transfer full): a new GuestfsDiskCreate object
  */
 GuestfsDiskCreate *
-guestfs_disk_create_new(void)
+guestfs_disk_create_new (void)
 {
-  return GUESTFS_DISK_CREATE(g_object_new(GUESTFS_TYPE_DISK_CREATE, NULL));
+  return GUESTFS_DISK_CREATE (g_object_new (GUESTFS_TYPE_DISK_CREATE, NULL));
 }

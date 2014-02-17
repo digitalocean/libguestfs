@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_IS_DIR (guestfs_is_dir_get_type())
-#define GUESTFS_IS_DIR(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_IS_DIR, GuestfsIsDir))
-#define GUESTFS_IS_DIR_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_IS_DIR, GuestfsIsDirClass))
-#define GUESTFS_IS_IS_DIR(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_IS_DIR))
-#define GUESTFS_IS_IS_DIR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_IS_DIR))
-#define GUESTFS_IS_DIR_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_IS_DIR, GuestfsIsDirClass))
+#define GUESTFS_TYPE_IS_DIR (guestfs_is_dir_get_type ())
+#define GUESTFS_IS_DIR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_IS_DIR, GuestfsIsDir))
+#define GUESTFS_IS_DIR_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_IS_DIR, GuestfsIsDirClass))
+#define GUESTFS_IS_IS_DIR(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_IS_DIR))
+#define GUESTFS_IS_IS_DIR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_IS_DIR))
+#define GUESTFS_IS_DIR_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_IS_DIR, GuestfsIsDirClass))
 
 typedef struct _GuestfsIsDirPrivate GuestfsIsDirPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsIsDirClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_is_dir_get_type(void);
-GuestfsIsDir *guestfs_is_dir_new(void);
+GType guestfs_is_dir_get_type (void);
+GuestfsIsDir *guestfs_is_dir_new (void);
 
 G_END_DECLS
 

@@ -1,9 +1,5 @@
-/* libguestfs generated file
- * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/ *.ml
- * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
- *
- * Copyright (C) 2009-2014 Red Hat Inc.
+(* virt-sysprep
+ * Copyright (C) 2014 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,28 +14,29 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
+ *)
 
-#include <config.h>
+open Sysprep_operation
+open Common_gettext.Gettext
 
-#include "guestfs-gobject.h"
+module G = Guestfs
 
-/**
- * SECTION:struct-dirent
- * @title: GuestfsDirent
- * @include: guestfs-gobject.h
- */
+let rh_subscription_manager_perform g root side_effects =
+  let typ = g#inspect_get_type root in
+  let distro = g#inspect_get_distro root in
 
-static GuestfsDirent *
-guestfs_dirent_copy (GuestfsDirent *src)
-{
-  return g_slice_dup (GuestfsDirent, src);
+  match typ, distro with
+  | "linux", "rhel" ->
+    Array.iter g#rm_rf (g#glob_expand "/etc/pki/consumer/*");
+    Array.iter g#rm_rf (g#glob_expand "/etc/pki/entitlement/*")
+  | _ -> ()
+
+let op = {
+  defaults with
+    name = "rh-subscription-manager";
+    enabled_by_default = true;
+    heading = s_"Remove the RH subscription manager files";
+    perform_on_filesystems = Some rh_subscription_manager_perform;
 }
 
-static void
-guestfs_dirent_free (GuestfsDirent *src)
-{
-  g_slice_free (GuestfsDirent, src);
-}
-
-G_DEFINE_BOXED_TYPE (GuestfsDirent, guestfs_dirent, guestfs_dirent_copy, guestfs_dirent_free)
+let () = register_operation op

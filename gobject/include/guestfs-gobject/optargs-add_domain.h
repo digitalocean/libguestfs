@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_ADD_DOMAIN (guestfs_add_domain_get_type())
-#define GUESTFS_ADD_DOMAIN(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_ADD_DOMAIN, GuestfsAddDomain))
-#define GUESTFS_ADD_DOMAIN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_ADD_DOMAIN, GuestfsAddDomainClass))
-#define GUESTFS_IS_ADD_DOMAIN(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_ADD_DOMAIN))
-#define GUESTFS_IS_ADD_DOMAIN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_ADD_DOMAIN))
-#define GUESTFS_ADD_DOMAIN_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_ADD_DOMAIN, GuestfsAddDomainClass))
+#define GUESTFS_TYPE_ADD_DOMAIN (guestfs_add_domain_get_type ())
+#define GUESTFS_ADD_DOMAIN(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_ADD_DOMAIN, GuestfsAddDomain))
+#define GUESTFS_ADD_DOMAIN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_ADD_DOMAIN, GuestfsAddDomainClass))
+#define GUESTFS_IS_ADD_DOMAIN(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_ADD_DOMAIN))
+#define GUESTFS_IS_ADD_DOMAIN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_ADD_DOMAIN))
+#define GUESTFS_ADD_DOMAIN_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_ADD_DOMAIN, GuestfsAddDomainClass))
 
 typedef struct _GuestfsAddDomainPrivate GuestfsAddDomainPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsAddDomainClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_add_domain_get_type(void);
-GuestfsAddDomain *guestfs_add_domain_new(void);
+GType guestfs_add_domain_get_type (void);
+GuestfsAddDomain *guestfs_add_domain_new (void);
 
 G_END_DECLS
 

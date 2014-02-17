@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_RSYNC_IN (guestfs_rsync_in_get_type())
-#define GUESTFS_RSYNC_IN(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_RSYNC_IN, GuestfsRsyncIn))
-#define GUESTFS_RSYNC_IN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_RSYNC_IN, GuestfsRsyncInClass))
-#define GUESTFS_IS_RSYNC_IN(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_RSYNC_IN))
-#define GUESTFS_IS_RSYNC_IN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_RSYNC_IN))
-#define GUESTFS_RSYNC_IN_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_RSYNC_IN, GuestfsRsyncInClass))
+#define GUESTFS_TYPE_RSYNC_IN (guestfs_rsync_in_get_type ())
+#define GUESTFS_RSYNC_IN(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_RSYNC_IN, GuestfsRsyncIn))
+#define GUESTFS_RSYNC_IN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_RSYNC_IN, GuestfsRsyncInClass))
+#define GUESTFS_IS_RSYNC_IN(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_RSYNC_IN))
+#define GUESTFS_IS_RSYNC_IN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_RSYNC_IN))
+#define GUESTFS_RSYNC_IN_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_RSYNC_IN, GuestfsRsyncInClass))
 
 typedef struct _GuestfsRsyncInPrivate GuestfsRsyncInPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsRsyncInClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_rsync_in_get_type(void);
-GuestfsRsyncIn *guestfs_rsync_in_new(void);
+GType guestfs_rsync_in_get_type (void);
+GuestfsRsyncIn *guestfs_rsync_in_new (void);
 
 G_END_DECLS
 

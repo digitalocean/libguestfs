@@ -86,7 +86,7 @@ struct _GuestfsXFSInfo {
   guint64 xfs_rtblocks;
   guint64 xfs_rtextents;
 };
-GType guestfs_xfsinfo_get_type(void);
+GType guestfs_xfsinfo_get_type (void);
 
 G_END_DECLS
 

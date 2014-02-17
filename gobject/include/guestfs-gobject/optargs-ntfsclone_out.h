@@ -30,12 +30,12 @@
 
 G_BEGIN_DECLS
 
-#define GUESTFS_TYPE_NTFSCLONE_OUT (guestfs_ntfsclone_out_get_type())
-#define GUESTFS_NTFSCLONE_OUT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), GUESTFS_TYPE_NTFSCLONE_OUT, GuestfsNtfscloneOut))
-#define GUESTFS_NTFSCLONE_OUT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), GUESTFS_TYPE_NTFSCLONE_OUT, GuestfsNtfscloneOutClass))
-#define GUESTFS_IS_NTFSCLONE_OUT(obj) (G_TYPE_CHECK_INSTANCE_TYPE((klass), GUESTFS_TYPE_NTFSCLONE_OUT))
-#define GUESTFS_IS_NTFSCLONE_OUT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), GUESTFS_TYPE_NTFSCLONE_OUT))
-#define GUESTFS_NTFSCLONE_OUT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GUESTFS_TYPE_NTFSCLONE_OUT, GuestfsNtfscloneOutClass))
+#define GUESTFS_TYPE_NTFSCLONE_OUT (guestfs_ntfsclone_out_get_type ())
+#define GUESTFS_NTFSCLONE_OUT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GUESTFS_TYPE_NTFSCLONE_OUT, GuestfsNtfscloneOut))
+#define GUESTFS_NTFSCLONE_OUT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GUESTFS_TYPE_NTFSCLONE_OUT, GuestfsNtfscloneOutClass))
+#define GUESTFS_IS_NTFSCLONE_OUT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), GUESTFS_TYPE_NTFSCLONE_OUT))
+#define GUESTFS_IS_NTFSCLONE_OUT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GUESTFS_TYPE_NTFSCLONE_OUT))
+#define GUESTFS_NTFSCLONE_OUT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GUESTFS_TYPE_NTFSCLONE_OUT, GuestfsNtfscloneOutClass))
 
 typedef struct _GuestfsNtfscloneOutPrivate GuestfsNtfscloneOutPrivate;
 
@@ -61,8 +61,8 @@ struct _GuestfsNtfscloneOutClass {
   GObjectClass parent_class;
 };
 
-GType guestfs_ntfsclone_out_get_type(void);
-GuestfsNtfscloneOut *guestfs_ntfsclone_out_new(void);
+GType guestfs_ntfsclone_out_get_type (void);
+GuestfsNtfscloneOut *guestfs_ntfsclone_out_new (void);
 
 G_END_DECLS
 
