@@ -1001,6 +1001,7 @@ construct_libvirt_xml_cpu (guestfs_h *g,
 
   start_element ("clock") {
     attribute ("offset", "utc");
+
     /* These are recommended settings, see RHBZ#1053847. */
     start_element ("timer") {
       attribute ("name", "rtc");
@@ -1010,10 +1011,16 @@ construct_libvirt_xml_cpu (guestfs_h *g,
       attribute ("name", "pit");
       attribute ("tickpolicy", "delay");
     } end_element ();
+
+    /* libvirt has a bug (RHBZ#1066145) where it adds the -no-hpet
+     * flag on ARM & ppc64.
+     */
+#if !defined(__arm__) && !defined(__powerpc__)
     start_element ("timer") {
       attribute ("name", "hpet");
       attribute ("present", "no");
     } end_element ();
+#endif
   } end_element ();
 
   return 0;

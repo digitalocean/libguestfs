@@ -1539,6 +1539,7 @@ SOURCES = \
 	index-parser-c.c \
 	list_entries.mli \
 	list_entries.ml \
+	paths.ml \
 	pxzcat.ml \
 	pxzcat.mli \
 	pxzcat-c.c \
@@ -1573,6 +1574,8 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uri-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp.cmx \
 @HAVE_OCAML_TRUE@	index-scan.o \
 @HAVE_OCAML_TRUE@	index-struct.o \
 @HAVE_OCAML_TRUE@	index-parse.o \
@@ -1581,6 +1584,7 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	pxzcat.cmx \
 @HAVE_OCAML_TRUE@	setlocale-c.o \
 @HAVE_OCAML_TRUE@	setlocale.cmx \
+@HAVE_OCAML_TRUE@	paths.cmx \
 @HAVE_OCAML_TRUE@	get_kernel.cmx \
 @HAVE_OCAML_TRUE@	downloader.cmx \
 @HAVE_OCAML_TRUE@	sigchecker.cmx \

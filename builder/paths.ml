@@ -1,5 +1,5 @@
-(* configuration for mllib.
- * Copyright (C) 2013 Red Hat Inc.
+(* virt-builder
+ * Copyright (C) 2014 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,5 +16,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-let package_name = "libguestfs"
-let package_version = "1.25.37"
+open Common_utils
+
+let xdg_cache_home =
+  try Some (Sys.getenv "XDG_CACHE_HOME" // "virt-builder")
+  with Not_found ->
+    try Some (Sys.getenv "HOME" // ".cache" // "virt-builder")
+    with Not_found ->
+      None (* no cache directory *)

@@ -34,95 +34,126 @@
 
 #ifdef HAVE_LIBCONFIG
 
+#define GLOBAL_CONFIG_FILENAME "libguestfs-tools.conf"
 static const char *home_filename = /* $HOME/ */ ".libguestfs-tools.rc";
-static const char *etc_filename = "/etc/libguestfs-tools.conf";
+static const char *etc_filename = "/etc/" GLOBAL_CONFIG_FILENAME;
 
 /* Note that parse_config is called very early, before command line
  * parsing, before the verbose flag has been set, even before the
  * global handle 'g' is opened.
  */
 
-void
-parse_config (void)
+static void
+read_config_from_file (const char *filename)
 {
-  const char *home;
   FILE *fp;
-  config_t conf;
 
-  config_init (&conf);
-
-  /* Try $HOME first. */
-  home = getenv ("HOME");
-  if (home != NULL) {
-    CLEANUP_FREE char *path = NULL;
-
-    if (asprintf (&path, "%s/%s", home, home_filename) == -1) {
-      perror ("asprintf");
-      exit (EXIT_FAILURE);
-    }
-
-    fp = fopen (path, "r");
-    if (fp != NULL) {
-      /*
-      if (verbose)
-        fprintf (stderr, "%s: reading configuration from %s\n",
-                 program_name, path);
-      */
-
-      if (config_read (&conf, fp) == CONFIG_FALSE) {
-        fprintf (stderr,
-                 _("%s: %s: line %d: error parsing configuration file: %s\n"),
-                 program_name, path, config_error_line (&conf),
-                 config_error_text (&conf));
-        exit (EXIT_FAILURE);
-      }
-
-      if (fclose (fp) == -1) {
-        perror (path);
-        exit (EXIT_FAILURE);
-      }
-
-      /* Notes:
-       *
-       * (1) It's not obvious from the documentation, that config_read
-       * completely resets the 'conf' structure.  This means we cannot
-       * call config_read twice on the two possible configuration
-       * files, but instead have to copy out settings into our
-       * variables between calls.
-       *
-       * (2) If the next call fails then 'read_only' variable is not
-       * updated.  Failure could happen just because the setting is
-       * missing from the configuration file, so we ignore it here.
-       */
-      config_lookup_bool (&conf, "read_only", &read_only);
-    }
-  }
-
-  fp = fopen (etc_filename, "r");
+  fp = fopen (filename, "r");
   if (fp != NULL) {
+    config_t conf;
+
+    config_init (&conf);
+
     /*
     if (verbose)
       fprintf (stderr, "%s: reading configuration from %s\n",
-               program_name, etc_filename);
+               program_name, filename);
     */
 
     if (config_read (&conf, fp) == CONFIG_FALSE) {
       fprintf (stderr,
                _("%s: %s: line %d: error parsing configuration file: %s\n"),
-               program_name, etc_filename, config_error_line (&conf),
+               program_name, filename, config_error_line (&conf),
                config_error_text (&conf));
       exit (EXIT_FAILURE);
     }
 
     if (fclose (fp) == -1) {
-      perror (etc_filename);
+      perror (filename);
       exit (EXIT_FAILURE);
     }
 
     config_lookup_bool (&conf, "read_only", &read_only);
+
+    config_destroy (&conf);
+  }
+}
+
+void
+parse_config (void)
+{
+  const char *home;
+
+  /* Try the global configuration first. */
+  read_config_from_file (etc_filename);
+
+  {
+    /* Then read the configuration from XDG system paths. */
+    const char *xdg_env, *var;
+    CLEANUP_FREE_STRING_LIST char **xdg_config_dirs = NULL;
+    size_t xdg_config_dirs_count;
+
+    xdg_env = getenv ("XDG_CONFIG_DIRS");
+    var = xdg_env != NULL && xdg_env[0] != 0 ? xdg_env : "/etc/xdg";
+    xdg_config_dirs = guestfs___split_string (':', var);
+    xdg_config_dirs_count = guestfs___count_strings (xdg_config_dirs);
+    for (size_t i = xdg_config_dirs_count; i > 0; --i) {
+      CLEANUP_FREE char *path = NULL;
+      const char *dir = xdg_config_dirs[i - 1];
+
+      if (asprintf (&path, "%s/libguestfs/" GLOBAL_CONFIG_FILENAME, dir) == -1) {
+        perror ("asprintf");
+        exit (EXIT_FAILURE);
+      }
+
+      read_config_from_file (path);
+    }
   }
 
-  config_destroy (&conf);
+  /* Read the configuration from $HOME, to override system settings. */
+  home = getenv ("HOME");
+  if (home != NULL) {
+    {
+      /* Old-style configuration file first. */
+      CLEANUP_FREE char *path = NULL;
+
+      if (asprintf (&path, "%s/%s", home, home_filename) == -1) {
+        perror ("asprintf");
+        exit (EXIT_FAILURE);
+      }
+
+      read_config_from_file (path);
+    }
+
+    {
+      /* Then, XDG_CONFIG_HOME path. */
+      CLEANUP_FREE char *path = NULL;
+      CLEANUP_FREE char *home_copy = strdup (home);
+      const char *xdg_env;
+
+      if (home_copy == NULL) {
+        perror ("strdup");
+        exit (EXIT_FAILURE);
+      }
+
+      xdg_env = getenv ("XDG_CONFIG_HOME");
+      if (xdg_env == NULL) {
+        if (asprintf (&path, "%s/.config/libguestfs/" GLOBAL_CONFIG_FILENAME,
+                      home_copy) == -1) {
+          perror ("asprintf");
+          exit (EXIT_FAILURE);
+        }
+      } else {
+        if (asprintf (&path, "%s/libguestfs/" GLOBAL_CONFIG_FILENAME,
+                      xdg_env) == -1) {
+          perror ("asprintf");
+          exit (EXIT_FAILURE);
+        }
+      }
+
+      read_config_from_file (path);
+    }
+  }
 }
 
 #else /* !HAVE_LIBCONFIG */

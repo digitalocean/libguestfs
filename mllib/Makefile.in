@@ -1430,6 +1430,9 @@ SOURCES = \
 	fsync-c.c \
 	fsync.mli \
 	fsync.ml \
+	mkdtemp.mli \
+	mkdtemp.ml \
+	mkdtemp-c.c \
 	hostname.mli \
 	hostname.ml \
 	password.mli \
@@ -1467,6 +1470,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	progress-c.o \
 @HAVE_OCAML_TRUE@	uri-c.o \
 @HAVE_OCAML_TRUE@	crypt-c.o \
+@HAVE_OCAML_TRUE@	mkdtemp-c.o \
 @HAVE_OCAML_TRUE@	config.cmx \
 @HAVE_OCAML_TRUE@	libdir.cmx \
 @HAVE_OCAML_TRUE@	common_gettext.cmx \
@@ -1483,6 +1487,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	uRI.cmx \
 @HAVE_OCAML_TRUE@	crypt.cmx \
 @HAVE_OCAML_TRUE@	password.cmx \
+@HAVE_OCAML_TRUE@	mkdtemp.cmx \
 @HAVE_OCAML_TRUE@	planner.cmx
 
 @HAVE_OCAML_TRUE@noinst_SCRIPTS = dummy
