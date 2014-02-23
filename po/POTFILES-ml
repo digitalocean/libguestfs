@@ -4,6 +4,7 @@ builder/downloader.ml
 builder/get_kernel.ml
 builder/index_parser.ml
 builder/list_entries.ml
+builder/paths.ml
 builder/pxzcat.ml
 builder/setlocale.ml
 builder/sigchecker.ml
@@ -16,6 +17,7 @@ mllib/firstboot.ml
 mllib/fsync.ml
 mllib/hostname.ml
 mllib/libdir.ml
+mllib/mkdtemp.ml
 mllib/password.ml
 mllib/perl_edit.ml
 mllib/planner.ml

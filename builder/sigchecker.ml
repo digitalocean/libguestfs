@@ -95,25 +95,98 @@ ZvXkQ3FVJwZoLmHw47vvlVpLD/4gi1SuHWieRvZ+UdDq00E348pm
 =neBW
 -----END PGP PUBLIC KEY BLOCK-----
 "
-let key_imported = ref false
+
+type gpgkey_type =
+  | Fingerprint of string
+  | KeyFile of string
 
 type t = {
   debug : bool;
   gpg : string;
   fingerprint : string;
   check_signature : bool;
+  gpghome : string;
 }
 
-let create ~debug ~gpg ~fingerprint ~check_signature =
+(* Import the specified key file. *)
+let import_keyfile ~gpg ~gpghome ~debug keyfile =
+  let status_file = Filename.temp_file "vbstat" ".txt" in
+  unlink_on_exit status_file;
+  let cmd = sprintf "%s --homedir %s --status-file %s --import %s%s"
+    gpg gpghome (quote status_file) (quote keyfile)
+    (if debug then "" else " >/dev/null 2>&1") in
+  if debug then eprintf "%s\n%!" cmd;
+  let r = Sys.command cmd in
+  if r <> 0 then (
+    eprintf (f_"virt-builder: error: could not import public key\nUse the '-v' option and look for earlier error messages.\n");
+    exit 1
+  );
+  status_file
+
+let rec create ~debug ~gpg ~gpgkey ~check_signature =
+  (* Create a temporary directory for gnupg. *)
+  let tmpdir = Mkdtemp.mkdtemp (Filename.temp_dir_name // "vb.gpghome.XXXXXX") in
+  rmdir_on_exit tmpdir;
+  let fingerprint =
+    if check_signature then (
+      (* Run gpg so it can setup its own home directory, failing if it
+       * cannot.
+       *)
+      let cmd = sprintf "%s --homedir %s --list-keys%s"
+        gpg tmpdir (if debug then "" else " >/dev/null 2>&1") in
+      if debug then eprintf "%s\n%!" cmd;
+      let r = Sys.command cmd in
+      if r <> 0 then (
+        eprintf (f_"virt-builder: error: GPG failure: could not run GPG the first time\nUse the '-v' option and look for earlier error messages.\n");
+        exit 1
+      );
+      match gpgkey with
+      | KeyFile kf ->
+        let status_file = import_keyfile gpg tmpdir debug kf in
+        let status = read_whole_file status_file in
+        let status = string_nsplit "\n" status in
+        let fingerprint = ref "" in
+        List.iter (
+          fun line ->
+            let line = string_nsplit " " line in
+            match line with
+            | "[GNUPG:]" :: "IMPORT_OK" :: _ :: fp :: _ -> fingerprint := fp
+            | _ -> ()
+        ) status;
+        !fingerprint
+      | Fingerprint fp when equal_fingerprints default_fingerprint fp ->
+        let filename, chan = Filename.open_temp_file "vbpubkey" ".asc" in
+        unlink_on_exit filename;
+        output_string chan default_pubkey;
+        close_out chan;
+        ignore (import_keyfile gpg tmpdir debug filename);
+        fp
+      | Fingerprint fp ->
+        let filename = Filename.temp_file "vbpubkey" ".asc" in
+        unlink_on_exit filename;
+        let cmd = sprintf "%s --yes --armor --output %s --export %s%s"
+          gpg (quote filename) (quote fp)
+          (if debug then "" else " >/dev/null 2>&1") in
+        if debug then eprintf "%s\n%!" cmd;
+        let r = Sys.command cmd in
+        if r <> 0 then (
+          eprintf (f_"virt-builder: error: could not export public key\nUse the '-v' option and look for earlier error messages.\n");
+          exit 1
+        );
+        ignore (import_keyfile gpg tmpdir debug filename);
+        fp
+    ) else
+      "" in
   {
     debug = debug;
     gpg = gpg;
     fingerprint = fingerprint;
     check_signature = check_signature;
+    gpghome = tmpdir;
   }
 
 (* Compare two strings of hex digits ignoring whitespace and case. *)
-let rec equal_fingerprints fp1 fp2 =
+and equal_fingerprints fp1 fp2 =
   let len1 = String.length fp1 and len2 = String.length fp2 in
   let rec loop i j =
     if i = len1 && j = len2 then true (* match! *)
@@ -154,13 +227,12 @@ and verify_detached t filename sigfile =
   )
 
 and do_verify t args =
-  import_key t;
-
   let status_file = Filename.temp_file "vbstat" ".txt" in
   unlink_on_exit status_file;
   let cmd =
-    sprintf "%s --verify%s --status-file %s %s"
-        t.gpg (if t.debug then "" else " -q --logger-file /dev/null")
+    sprintf "%s --homedir %s --verify%s --status-file %s %s"
+        t.gpg t.gpghome
+        (if t.debug then "" else " -q --logger-file /dev/null")
         (quote status_file) args in
   if t.debug then eprintf "%s\n%!" cmd;
   let r = Sys.command cmd in
@@ -186,25 +258,6 @@ and do_verify t args =
     eprintf (f_"virt-builder: error: fingerprint of signature does not match the expected fingerprint!\n  found fingerprint: %s\n  expected fingerprint: %s\n")
       !fingerprint t.fingerprint;
     exit 1
-  )
-
-(* Import the default public key. *)
-and import_key t =
-  if not !key_imported then (
-    let filename, chan = Filename.open_temp_file "vbpubkey" ".asc" in
-    unlink_on_exit filename;
-    output_string chan default_pubkey;
-    close_out chan;
-
-    let cmd = sprintf "%s --import %s%s"
-      t.gpg (quote filename)
-      (if t.debug then "" else " >/dev/null 2>&1") in
-    let r = Sys.command cmd in
-    if r <> 0 then (
-      eprintf (f_"virt-builder: error: could not import public key\nUse the '-v' option and look for earlier error messages.\n");
-      exit 1
-    );
-    key_imported := true
   )
 
 type csum_t = SHA512 of string

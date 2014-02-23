@@ -48,6 +48,7 @@ SOURCES = \
 	index-parser-c.c \
 	list_entries.mli \
 	list_entries.ml \
+	paths.ml \
 	pxzcat.ml \
 	pxzcat.mli \
 	pxzcat-c.c \
@@ -83,6 +84,8 @@ OBJECTS = \
 	$(top_builddir)/fish/guestfish-uri.o \
 	$(top_builddir)/mllib/uri-c.o \
 	$(top_builddir)/mllib/uRI.cmx \
+	$(top_builddir)/mllib/mkdtemp-c.o \
+	$(top_builddir)/mllib/mkdtemp.cmx \
 	index-scan.o \
 	index-struct.o \
 	index-parse.o \
@@ -91,6 +94,7 @@ OBJECTS = \
 	pxzcat.cmx \
 	setlocale-c.o \
 	setlocale.cmx \
+	paths.cmx \
 	get_kernel.cmx \
 	downloader.cmx \
 	sigchecker.cmx \

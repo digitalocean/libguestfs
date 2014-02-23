@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [25])
-m4_define([libguestfs_release], [36])
+m4_define([libguestfs_release], [37])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1573,6 +1573,10 @@ PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0], [
     AC_MSG_WARN([bash-completion not installed])
 ])
 AM_CONDITIONAL([HAVE_BASH_COMPLETION],[test "x$bash_completion" = "xyes"])
+
+dnl For search paths.
+AC_DEFINE_UNQUOTED([PATH_SEPARATOR],["$PATH_SEPARATOR"],
+                   [Character that separates path elements in search paths])
 
 dnl Library versioning.
 MAX_PROC_NR=`cat $srcdir/src/MAX_PROC_NR`

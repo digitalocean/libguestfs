@@ -1,3 +1,136 @@
+commit 838a3c997c664d8a28e6563baf7119480c1f0bd3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 21 16:46:14 2014 +0000
+
+    Version 1.25.37.
+
+commit 35e53c0381acc51908211fc6058c552029371e3e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Feb 21 15:21:08 2014 +0100
+
+    builder: allow Sigchecker to import keys from file
+    
+    Extend Sigchecker so it allows both fingerprints (to be imported from
+    user's keyring, as before) and keys stored in files. To simplify this
+    process (and have the fingerprint always around), the key is imported
+    on Sigchecker.create time, instead of lazily at the first verification.
+
+commit dd03d38be39fdf195ae3e4943b53921a28cc4536
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Feb 21 14:39:57 2014 +0100
+
+    builder: use a disposable GPG keyring for every Sigchecker
+    
+    Create a temporary directory and tell gpg to use it as homedir, so
+    imported keys do not get into the user's keyring. This also avoid
+    importing the default key  when a different one is needed to check the
+    signature.
+    
+    The only exception is when a non-default fingerprint is used: in this
+    case, that key is read from the user's keyring, since it is where it is.
+
+commit c79c62a3b0f007d5952a75b1cae3f793bd63132f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Feb 21 14:34:36 2014 +0100
+
+    mllib: add a binding for mkdtemp
+    
+    It seems OCaml has no way to safely create a temporary directory, so add
+    a new binding to C's mkdtemp which does that.
+
+commit 7794d9a187b47799055f8206fa18608c5247823f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 21 08:31:34 2014 +0000
+
+    builder: Add ScientificLinux 6.5.
+
+commit 7f77f4fb28ca3320fd63c157537a332ef97533ac
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 20 11:37:49 2014 +0100
+
+    mllib: add an hook to cleanup directories on exit
+    
+    Much similar to unlink_on_exit, but recursively cleaning directories.
+
+commit 4c5a6afc848b556999fee1c0ebd246496cdb023b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Feb 19 16:40:00 2014 +0100
+
+    builder: accept also '_' in group names
+
+commit 482fefa5d846f63e39e2ef64c419ab32e12e3b05
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 18 17:43:06 2014 +0000
+
+    ppc64: Don't add -no-hpet with the direct backend either.
+    
+    Related changes in commit 479665e4fc31b94cd9372394bb9c97e8f87b6ab5
+    and commit 62cb3a606d4b349d45f2d178945a998a90d1e130.
+
+commit 479665e4fc31b94cd9372394bb9c97e8f87b6ab5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 18 15:12:13 2014 +0000
+
+    ppc64: Disable hpet fragment in libvirt XML.
+    
+    Related change in commit 62cb3a606d4b349d45f2d178945a998a90d1e130.
+
+commit bb35e725035d3d8e73604a95a8b055cc1073416a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 18 12:54:23 2014 +0100
+
+    builder: move the XDG path handling in an own file
+    
+    Just code motion and renaming, no actual behaviour changes.
+
+commit 8b1f1c15f5dfdeea122784d8c4d97e75b335989a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 18 10:44:49 2014 +0100
+
+    fish: use XDG paths for the config file
+    
+    Read the configuration file from XDG paths for both global and
+    user-local locations, keeping the old paths as fallback.
+
+commit 62cb3a606d4b349d45f2d178945a998a90d1e130
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 17 15:17:27 2014 -0500
+
+    launch: libvirt: Don't include hpet XML fragment on ARM.
+    
+    See comment and https://bugzilla.redhat.com/show_bug.cgi?id=1066145
+    for explanation.
+
+commit 8577aded9851731ae146643631eda0002bac1e20
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 17 16:24:41 2014 +0100
+
+    fish: change order of config files being read
+    
+    First read the global configuration and then the local one in user's
+    HOME, so the latter can really override system settings.
+
+commit 5d2b0d1366fc72a79b842ee4bccaa99a16cab754
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 17 16:21:18 2014 +0100
+
+    fish: small refactor of config reading code
+    
+    Even though so far there is just one possible setting to read, isolate
+    in an own function the code to parse a configuration file and read the
+    settings out of it.
+    
+    Now there's a new config_t handle used every time, but since config_read
+    would reset an handle completely, there is no behaviour change.
+
+commit 6b71b81a5f4b1bfbf9fb4efa576fe7e7ae2368a8
+Author: Or Goshen <oberonc@gmail.com>
+Date:   Mon Feb 17 14:51:56 2014 +0000
+
+    appliance: Use configurable separator character for LIBGUESTFS_PATH.
+    
+    On Windows, the path separator character will be ';' instead.
+
 commit 22f6c79b32ab281e1f025f6b20fbf1b4407ef08a
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon Feb 17 10:08:38 2014 +0000

@@ -1,5 +1,5 @@
-(* configuration for mllib.
- * Copyright (C) 2013 Red Hat Inc.
+(* virt-builder
+ * Copyright (C) 2014 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,5 +16,5 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-let package_name = "libguestfs"
-let package_version = "1.25.37"
+val mkdtemp : string -> string
+(** [mkdtemp pattern] Tiny wrapper to the C [mkdtemp]. *)

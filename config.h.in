@@ -2176,6 +2176,9 @@
 /* Name of pamcut program. */
 #undef PAMCUT
 
+/* Character that separates path elements in search paths */
+#undef PATH_SEPARATOR
+
 /* Name of pbmtext program. */
 #undef PBMTEXT
 
