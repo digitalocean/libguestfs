@@ -7,10 +7,10 @@ Subject: Fix for systemd-based Debian systems
  1 file changed, 3 insertions(+)
 
 diff --git a/appliance/make.sh.in b/appliance/make.sh.in
-index 8ba1fa4..81ba395 100755
+index 7fa494e..5907b01 100755
 --- a/appliance/make.sh.in
 +++ b/appliance/make.sh.in
-@@ -64,4 +64,7 @@ if grep -q /usr/share/augeas/lenses supermin.d/hostfiles-t; then
+@@ -58,4 +58,7 @@ if grep -q /usr/share/augeas/lenses supermin.d/hostfiles-t; then
      echo "/usr/share/augeas/lenses/*.aug" >> supermin.d/hostfiles-t
  fi
  

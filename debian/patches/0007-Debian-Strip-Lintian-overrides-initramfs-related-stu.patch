@@ -1,0 +1,22 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Sat, 22 Feb 2014 12:26:40 +0100
+Subject: Debian: Strip Lintian overrides,
+ initramfs-related stuff from appliance
+
+---
+ appliance/make.sh.in | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/appliance/make.sh.in b/appliance/make.sh.in
+index 5907b01..abfef14 100755
+--- a/appliance/make.sh.in
++++ b/appliance/make.sh.in
+@@ -51,6 +51,8 @@ grep -v '^/usr/share/doc/' |
+ grep -v '^/usr/share/info/' |
+ grep -v '^/usr/share/gnome/help/' |
+ grep -v '^/usr/share/cracklib/' |
++grep -v '^/usr/share/lintian/' |
++grep -v '^/\(usr/share\|etc\)/initramfs-tools/' |
+ grep -v '^/usr/share/i18n/' > supermin.d/hostfiles-t
+ 
+ # Include any Augeas lenses from the host.

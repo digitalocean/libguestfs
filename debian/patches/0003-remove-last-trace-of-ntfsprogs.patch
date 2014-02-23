@@ -1,4 +1,4 @@
-From: =?UTF-8?q?Bastien=20ROUCARI=C3=88S?= <roucaries.bastien@gmail.com>
+From: =?utf-8?q?Bastien_ROUCARI=C3=88S?= <roucaries.bastien@gmail.com>
 Date: Fri, 17 May 2013 10:11:37 +0200
 Subject: remove last trace of ntfsprogs
 
@@ -7,10 +7,10 @@ Subject: remove last trace of ntfsprogs
  1 file changed, 1 deletion(-)
 
 diff --git a/appliance/packagelist.in b/appliance/packagelist.in
-index 8a4a5ea..54895b8 100644
+index 2963033..19dd291 100644
 --- a/appliance/packagelist.in
 +++ b/appliance/packagelist.in
-@@ -79,7 +79,6 @@
+@@ -78,7 +78,6 @@
    mtools
    nilfs-tools
    ntfs-3g

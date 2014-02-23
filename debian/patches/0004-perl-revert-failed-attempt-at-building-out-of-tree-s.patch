@@ -1,7 +1,7 @@
 From: Hilko Bengen <bengen@debian.org>
 Date: Thu, 23 May 2013 19:20:17 +0200
-Subject: perl: revert failed attempt at building out-of-tree, set PERL5LIB
- correctly for bindtests
+Subject: perl: revert failed attempt at building out-of-tree,
+ set PERL5LIB correctly for bindtests
 
 ---
  perl/Makefile.am | 3 +--
