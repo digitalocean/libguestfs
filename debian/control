@@ -3,17 +3,24 @@ Section: libs
 Priority: extra
 Maintainer: Debian Libvirt Maintainers <pkg-libvirt-maintainers@lists.alioth.debian.org>
 Uploaders: Richard Jones <rjones@redhat.com>, Guido Günther <agx@sigxcpu.org>, Hilko Bengen <bengen@debian.org>
-Build-Depends: debhelper (>= 9~), autotools-dev, aptitude,
+Build-Depends: debhelper (>= 9),
   dh-autoreconf,
   po-debconf, bash-completion,
-  supermin (>= 4.1.5-2~),
+  supermin (>= 5),
   libreadline-dev, libaugeas-dev (>= 1.0.0), libselinux1-dev, libhivex-dev, libvirt-dev,
   liblzma-dev, libmagic-dev, libncurses5-dev, libpcre3-dev, libxml2-dev,
-  libconfig-dev, libc-dev-bin, systemtap-sdt-dev,
+  libconfig-dev, libc-dev-bin,
+  systemtap-sdt-dev [amd64 armel armhf i386 powerpc],
   libcap-dev, libacl1-dev, libyajl-dev, libsystemd-journal-dev,
   automake, autoconf, libtool,
   gperf, libxml2-utils,
-  qemu-system-x86 [i386 amd64], qemu-utils,
+  qemu-system-arm [armel armhf],
+  qemu-system-mips [mips mipsel],
+  qemu-system-misc [s390x],
+  qemu-system-ppc [powerpc],
+  qemu-system-sparc [sparc],
+  qemu-system-x86 [i386 amd64],
+  qemu-utils,
   genisoimage, pkg-config,
   erlang-dev,
   dh-lua,
@@ -30,7 +37,7 @@ Build-Depends: debhelper (>= 9~), autotools-dev, aptitude,
   po4a,
   curl,
   flex, bison,
-  golang-go [i386 amd64],
+  golang-go [i386 amd64 armel armhf],
 Homepage: http://libguestfs.org
 Standards-Version: 3.9.5
 Vcs-Git: git://git.debian.org/git/pkg-libvirt/libguestfs.git
@@ -38,7 +45,7 @@ Vcs-Browser: http://git.debian.org/?p=pkg-libvirt/libguestfs.git
 XS-Ruby-Versions: all
 
 Package: guestfsd
-Architecture: i386 amd64
+Architecture: linux-any
 Depends: ${shlibs:Depends}, ${misc:Depends},
   bsdmainutils,
   diffutils,
@@ -68,7 +75,7 @@ Description: Daemon to access to guest virtual machine through virtio serial
 
 Package: libguestfs-dev
 Section: libdevel
-Architecture: i386 amd64
+Architecture: linux-any
 Multi-Arch: same
 Depends: libguestfs0 (= ${binary:Version}), ${misc:Depends}
 Conflicts: libguestfs0 (<< 1:1.14.9-1~)
@@ -80,11 +87,16 @@ Description: guest disk image management system - development headers
 
 Package: libguestfs0
 Section: libs
-Architecture: i386 amd64
+Architecture: linux-any
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
-  supermin (>= 4.1.5-2~),
+  supermin (>= 5),
+  qemu-system-arm [armel armhf],
+  qemu-system-mips [mips mipsel],
+  qemu-system-misc [s390x],
+  qemu-system-ppc [powerpc],
+  qemu-system-sparc [sparc],
   qemu-system-x86 [i386 amd64],
   bsdmainutils,
   btrfs-tools,
@@ -142,7 +154,7 @@ Description: guest disk image management system - shared library
 
 Package: libguestfs-tools
 Section: admin
-Architecture: i386 amd64
+Architecture: linux-any
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
  libsys-virt-perl, libguestfs-perl (= ${binary:Version}),
  libwin-hivex-perl,
@@ -164,7 +176,7 @@ Description: guest disk image management system - tools
 
 Package: libguestfs0-dbg
 Section: debug
-Architecture: i386 amd64
+Architecture: linux-any
 Multi-Arch: same
 Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version})
 Description: guest disk image management system - debug symbols
@@ -175,7 +187,7 @@ Description: guest disk image management system - debug symbols
 
 Package: python-guestfs
 Section: python
-Architecture: i386 amd64
+Architecture: linux-any
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, libguestfs0 (= ${binary:Version})
 Provides: python-libguestfs
 Conflicts: python-libguestfs, libguestfs-dev (<< 1:1.14.9-1~)
@@ -187,7 +199,7 @@ Description: guest disk image management system - Python bindings
  
 Package: python3-guestfs
 Section: python
-Architecture: i386 amd64
+Architecture: linux-any
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}
 Breaks: python-guestfs (<< 1:1.22.2-1~)
 Description: guest disk image management system - Python 3 bindings
@@ -198,12 +210,12 @@ Description: guest disk image management system - Python 3 bindings
 
 Package: libguestfs-perl
 Section: perl
-Architecture: i386 amd64
+Architecture: linux-any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version}),
  ${perl:Depends},
  libxml-xpath-perl,
  libwin-hivex-perl,
- libsys-virt-perl
+ libsys-virt-perl,
 Description: guest disk image management system - Perl bindings
  The libguestfs library allows accessing and modifying guest disk
  images.
@@ -212,7 +224,7 @@ Description: guest disk image management system - Perl bindings
  
 Package: libguestfs-ocaml
 Section: ocaml
-Architecture: i386 amd64
+Architecture: linux-any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version}),
  ${ocaml:Depends}
 Provides: ${ocaml:Provides}
@@ -224,7 +236,7 @@ Description: guest disk image management system - OCaml bindings
  
 Package: libguestfs-ocaml-dev
 Section: ocaml
-Architecture: i386 amd64
+Architecture: linux-any
 Depends: ${shlibs:Depends}, ${misc:Depends},
  libguestfs0 (= ${binary:Version}),
  libguestfs-dev (= ${binary:Version}), 
@@ -240,7 +252,7 @@ Description: guest disk image management system - OCaml development files
 
 Package: erlang-guestfs
 Section: interpreters
-Architecture: i386 amd64
+Architecture: linux-any
 Depends: ${erlang-base:Depends}, ${erlang-abi:Depends}, ${shlibs:Depends}, ${misc:Depends}
 Conflicts: libguestfs-dev (<< 1:1.14.9-1~)
 Description: guest disk image management system - Erlang bindings
@@ -251,7 +263,7 @@ Description: guest disk image management system - Erlang bindings
 
 Package: libguestfs-java
 Section: java
-Architecture: i386 amd64
+Architecture: linux-any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Conflicts: libguestfs-dev (<< 1:1.15.15-1~)
 Description: guest disk image management system - Java bindings
@@ -263,7 +275,7 @@ Description: guest disk image management system - Java bindings
 Package: ruby-guestfs
 Section: ruby
 XB-Ruby-Versions: ${ruby:Versions}
-Architecture: i386 amd64
+Architecture: linux-any
 Depends: ${shlibs:Depends}, ${misc:Depends}, ruby | ruby-interpreter
 Conflicts: libguestfs-dev (<< 1:1.15.15-1~)
 Description: guest disk image management system - Ruby bindings
@@ -274,7 +286,7 @@ Description: guest disk image management system - Ruby bindings
 
 Package: libguestfs-gobject-1.0-0
 Section: libs
-Architecture: i386 amd64
+Architecture: linux-any
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
@@ -287,7 +299,7 @@ Description: guest disk image management system - GObject bindings
 
 Package: libguestfs-gobject-dev
 Section: libdevel
-Architecture: i386 amd64
+Architecture: linux-any
 Multi-Arch: same
 Depends: libguestfs-gobject-1.0-0 (= ${binary:Version}), ${misc:Depends}
 Conflicts: libguestfs0 (<< 1:1.14.9-1~)
@@ -300,7 +312,7 @@ Description: guest disk image management system - GObject development headers
 
 Package: gir1.2-guestfs-1.0
 Section: introspection
-Architecture: i386 amd64
+Architecture: linux-any
 Depends: libguestfs-gobject-1.0-0 (= ${binary:Version}), ${gir:Depends}, ${misc:Depends}
 Conflicts: libguestfs0 (<< 1:1.14.9-1~)
 Description: guest disk image management system - GObject introspection files
@@ -310,7 +322,7 @@ Description: guest disk image management system - GObject introspection files
  This package contains the GObject introspection data.
 
 Package: lua-guestfs
-Architecture: i386 amd64
+Architecture: linux-any
 Multi-Arch: same
 Pre-Depends: multiarch-support
 Depends: ${shlibs:Depends}, ${misc:Depends}

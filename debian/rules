@@ -14,8 +14,8 @@ BUILDS         := $(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
 		  $(filter-out $(LUA_DEFAULT), $(LUAS)) \
 		  default
 
-DEB_HOST_GNU_CPU := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU | sed -e 's,i[456]86,i386,')
-QEMU_SYSTEM      := qemu-system-$(DEB_HOST_GNU_CPU)
+QEMU_CPU := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU \
+		    | sed -e 's,i[456]86,i386,;s,sparc,sparc64,;s,powerpc,ppc,;s,arm.*,arm,')
 
 DEFAULT_CONFIG_FLAGS = \
 	--disable-appliance        \
@@ -23,7 +23,7 @@ DEFAULT_CONFIG_FLAGS = \
 	--disable-haskell          \
 	--disable-php	           \
 	--enable-gtk-doc           \
-	--with-qemu=$(QEMU_SYSTEM)
+	--with-qemu=qemu-system-$(QEMU_CPU)
 
 BARE_CONFIG_FLAGS = \
 	$(DEFAULT_CONFIG_FLAGS) \
