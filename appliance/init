@@ -47,7 +47,6 @@ if [ -z "$UDEVD" ]; then
   echo "udev not found!  Things will probably not work ..."
 fi
 
-echo -e '\000\000\000\000' > /proc/sys/kernel/hotplug
 $UDEVD --daemon
 udevadm trigger
 udevadm settle --timeout=600
@@ -90,8 +89,7 @@ mdadm -As --auto=yes --run
 modprobe dm_mod ||:
 lvmetad ||:
 
-lvm vgscan --ignorelockingfailure
-lvm vgchange -ay --ignorelockingfailure
+lvm vgchange -aay --sysinit
 
 # Scan for Windows dynamic disks.
 ldmtool create all

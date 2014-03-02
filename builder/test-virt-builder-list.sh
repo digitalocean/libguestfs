@@ -23,7 +23,7 @@ set -e
 
 abs_builddir=$(pwd)
 
-export VIRT_BUILDER_SOURCE=file://$abs_builddir/test-index
+export XDG_CONFIG_DIRS="$abs_builddir/test-config"
 
 short_list=$($VG ./virt-builder --no-check-signature --no-cache --list)
 
@@ -41,11 +41,11 @@ fi
 
 long_list=$(./virt-builder --no-check-signature --no-cache --list --long)
 
-if [ "$long_list" != "Source URI: $VIRT_BUILDER_SOURCE
-Fingerprint: F777 4FB1 AD07 4A7E 8C87 67EA 9173 8F73 E1B7 68A0
+if [ "$long_list" != "Source URI: file://$abs_builddir/test-index
 
 os-version:              phony-debian
 Full name:               Phony Debian
+Architecture:            x86_64
 Minimum/default size:    512.0M
 
 Notes:
@@ -54,6 +54,7 @@ Phony Debian look-alike used for testing.
 
 os-version:              phony-fedora
 Full name:               Phony Fedora
+Architecture:            x86_64
 Minimum/default size:    1.0G
 
 Notes:
@@ -62,6 +63,7 @@ Phony Fedora look-alike used for testing.
 
 os-version:              phony-fedora-qcow2
 Full name:               Phony Fedora qcow2
+Architecture:            x86_64
 Minimum/default size:    1.0G
 
 Notes:
@@ -70,6 +72,7 @@ Phony Fedora look-alike used for testing.
 
 os-version:              phony-fedora-qcow2-uncompressed
 Full name:               Phony Fedora qcow2 uncompressed
+Architecture:            x86_64
 Minimum/default size:    1.0G
 
 Notes:
@@ -78,6 +81,7 @@ Phony Fedora look-alike used for testing.
 
 os-version:              phony-fedora-no-format
 Full name:               Phony Fedora
+Architecture:            x86_64
 Minimum/default size:    1.0G
 
 Notes:
@@ -86,6 +90,7 @@ Phony Fedora look-alike used for testing.
 
 os-version:              phony-ubuntu
 Full name:               Phony Ubuntu
+Architecture:            x86_64
 Minimum/default size:    512.0M
 
 Notes:
@@ -94,6 +99,7 @@ Phony Ubuntu look-alike used for testing.
 
 os-version:              phony-windows
 Full name:               Phony Windows
+Architecture:            x86_64
 Minimum/default size:    512.0M
 
 Notes:
@@ -110,14 +116,14 @@ if [ "$json_list" != "{
   \"version\": 1,
   \"sources\": [
   {
-    \"uri\": \"$VIRT_BUILDER_SOURCE\",
-    \"fingerprint\": \"F777 4FB1 AD07 4A7E 8C87 67EA 9173 8F73 E1B7 68A0\"
+    \"uri\": \"file://$abs_builddir/test-index\"
   }
   ],
   \"templates\": [
   {
     \"os-version\": \"phony-debian\",
     \"full-name\": \"Phony Debian\",
+    \"arch\": \"x86_64\",
     \"size\": 536870912,
     \"notes\": {
       \"C\": \"Phony Debian look-alike used for testing.\"
@@ -127,6 +133,7 @@ if [ "$json_list" != "{
   {
     \"os-version\": \"phony-fedora\",
     \"full-name\": \"Phony Fedora\",
+    \"arch\": \"x86_64\",
     \"size\": 1073741824,
     \"notes\": {
       \"C\": \"Phony Fedora look-alike used for testing.\"
@@ -136,6 +143,7 @@ if [ "$json_list" != "{
   {
     \"os-version\": \"phony-fedora-qcow2\",
     \"full-name\": \"Phony Fedora qcow2\",
+    \"arch\": \"x86_64\",
     \"size\": 1073741824,
     \"notes\": {
       \"C\": \"Phony Fedora look-alike used for testing.\"
@@ -145,6 +153,7 @@ if [ "$json_list" != "{
   {
     \"os-version\": \"phony-fedora-qcow2-uncompressed\",
     \"full-name\": \"Phony Fedora qcow2 uncompressed\",
+    \"arch\": \"x86_64\",
     \"size\": 1073741824,
     \"notes\": {
       \"C\": \"Phony Fedora look-alike used for testing.\"
@@ -154,6 +163,7 @@ if [ "$json_list" != "{
   {
     \"os-version\": \"phony-fedora-no-format\",
     \"full-name\": \"Phony Fedora\",
+    \"arch\": \"x86_64\",
     \"size\": 1073741824,
     \"notes\": {
       \"C\": \"Phony Fedora look-alike used for testing.\"
@@ -163,6 +173,7 @@ if [ "$json_list" != "{
   {
     \"os-version\": \"phony-ubuntu\",
     \"full-name\": \"Phony Ubuntu\",
+    \"arch\": \"x86_64\",
     \"size\": 536870912,
     \"notes\": {
       \"C\": \"Phony Ubuntu look-alike used for testing.\"
@@ -172,6 +183,7 @@ if [ "$json_list" != "{
   {
     \"os-version\": \"phony-windows\",
     \"full-name\": \"Phony Windows\",
+    \"arch\": \"x86_64\",
     \"size\": 536870912,
     \"notes\": {
       \"C\": \"Phony Windows look-alike used for testing.\"

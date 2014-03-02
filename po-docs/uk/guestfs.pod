@@ -3353,14 +3353,14 @@ In order to follow the stages involved below, enable libguestfs debugging
 
 =item Create the appliance
 
-C<supermin-helper> is invoked to create the kernel, a small initrd and the
+C<supermin --build> is invoked to create the kernel, a small initrd and the
 appliance.
 
 The appliance is cached in C</var/tmp/.guestfs-E<lt>UIDE<gt>> (or in another
 directory if C<LIBGUESTFS_CACHEDIR> or C<TMPDIR> are set).
 
 For a complete description of how the appliance is created and cached, read
-the L<supermin(1)> and L<supermin-helper(1)> man pages.
+the L<supermin(1)> man page.
 
 =item Start qemu and boot the kernel
 
@@ -3368,12 +3368,12 @@ qemu is invoked to boot the kernel.
 
 =item Run the initrd
 
-C<supermin-helper> builds a small initrd.  The initrd is not the appliance.
-The purpose of the initrd is to load enough kernel modules in order that the
-appliance itself can be mounted and started.
+C<supermin --build> builds a small initrd.  The initrd is not the
+appliance.  The purpose of the initrd is to load enough kernel modules in
+order that the appliance itself can be mounted and started.
 
 The initrd is a cpio archive called
-C</var/tmp/.guestfs-E<lt>UIDE<gt>/initrd>.
+C</var/tmp/.guestfs-E<lt>UIDE<gt>/appliance.d/initrd>.
 
 When the initrd has started you will see messages showing that kernel
 modules are being loaded, similar to this:
@@ -3387,7 +3387,7 @@ modules are being loaded, similar to this:
 
 The appliance is a sparse file containing an ext2 filesystem which contains
 a familiar (although reduced in size) Linux operating system.  It would
-normally be called C</var/tmp/.guestfs-E<lt>UIDE<gt>/root>.
+normally be called C</var/tmp/.guestfs-E<lt>UIDE<gt>/appliance.d/root>.
 
 The regular disks being inspected by libguestfs are the first devices
 exposed by qemu (eg. as C</dev/vda>).
@@ -4558,7 +4558,7 @@ everything.
 These two environment variables allow the kernel that libguestfs uses in the
 appliance to be selected.  If C<$SUPERMIN_KERNEL> is not set, then the most
 recent host kernel is chosen.  For more information about kernel selection,
-see L<supermin-helper(1)>.  This feature is only available in supermin /
+see L<supermin(1)>.  This feature is only available in supermin /
 febootstrap E<ge> 3.8.
 
 =item TMPDIR
@@ -4582,8 +4582,8 @@ L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
 L<virt-win-reg(1)>, L<guestfs-faq(1)>, L<guestfs-performance(1)>,
 L<guestfs-release-notes(1)>, L<guestfs-testing(1)>,
 L<libguestfs-test-tool(1)>, L<libguestfs-make-fixed-appliance(1)>,
-L<supermin(1)>, L<supermin-helper(1)>, L<qemu(1)>, L<hivex(3)>, L<stap(1)>,
-L<sd-journal(3)>, L<http://libguestfs.org/>.
+L<supermin(1)>, L<qemu(1)>, L<hivex(3)>, L<stap(1)>, L<sd-journal(3)>,
+L<http://libguestfs.org/>.
 
 Tools with a similar purpose: L<fdisk(8)>, L<parted(8)>, L<kpartx(8)>,
 L<lvm(8)>, L<disktype(1)>.
