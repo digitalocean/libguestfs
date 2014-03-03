@@ -32,6 +32,16 @@ BARE_CONFIG_FLAGS = \
 	--disable-erlang --with-java=no \
 	--disable-gobject --without-java
 
+# needed as input for supermin(8)
+APPLIANCE_PREREQ = make.sh packagelist
+# added after supermin --prepare
+APPLIANCE_EXTRA = \
+	hostfiles excludefiles \
+	daemon.tar.gz          \
+	init.tar.gz            \
+	udev-rules.tar.gz
+APPLIANCE = $(APPLIANCE_PREREQ) $(APPLIANCE_EXTRA)
+
 override_dh_auto_clean:
 	set -e; for p in $(BUILDS); do \
 		dh_auto_clean --builddir=$(CURDIR)/debian/build-$$p ; \
@@ -94,11 +104,9 @@ override_dh_auto_build:
 
 	# also build part of appliance
 	$(MAKE) -C $(CURDIR)/debian/build-default/appliance \
-		make.sh \
-		packagelist excludelist \
-		supermin.d/daemon.img.gz \
-		supermin.d/init.img \
-		supermin.d/udev-rules.img
+		$(APPLIANCE)                      \
+		libguestfs-make-fixed-appliance   \
+		libguestfs-make-fixed-appliance.1
 
 override_dh_auto_test:
 	set -e; for p in $(BUILDS); do \
@@ -116,16 +124,25 @@ override_dh_auto_install:
 	done
 
 override_dh_install:
-# We do not install supermin.d/base.img, but ship make.sh which can be
+# We do not install supermin.d/base.*, but ship make.sh which can be
 # used to build it.
-	mkdir -p debian/tmp/usr/lib/guestfs/supermin.d
-	install -m755 debian/build-default/appliance/make.sh \
-		debian/tmp/usr/lib/guestfs
-	install -m644 debian/build-default/appliance/*list \
-		debian/tmp/usr/lib/guestfs
+	mkdir -p debian/tmp/usr/lib/guestfs \
+		debian/tmp/usr/sbin/ \
+		debian/tmp/usr/share/man/man1 \
+		debian/tmp/lib/udev/rules.d/appliance/
 	install -m644 \
-		debian/build-default/appliance/supermin.d/*.img* \
-		debian/tmp/usr/lib/guestfs/supermin.d/
+		$(patsubst %,debian/build-default/appliance/%,$(APPLIANCE)) \
+		debian/tmp/usr/lib/guestfs/
+	chmod 755 debian/tmp/usr/lib/guestfs/make.sh
+	install -m755 \
+		debian/build-default/appliance/libguestfs-make-fixed-appliance \
+		debian/tmp/usr/sbin/
+	install -m644 \
+		debian/build-default/appliance/libguestfs-make-fixed-appliance.1 \
+		debian/tmp/usr/share/man/man1/
+	install -m644 \
+		appliance/99-guestfs-serial.rules \
+		debian/tmp/lib/udev/rules.d/
 
 	erlang-depends -perlang-guestfs
 

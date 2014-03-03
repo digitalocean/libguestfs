@@ -5,6 +5,9 @@ usr/share/man/*/man1/virt-*
 usr/share/bash-completion/completions/virt-*
 
 etc/libguestfs-tools.conf
+etc/xdg/virt-builder
+etc/virt-builder
+
 usr/share/man/man5/libguestfs-tools.conf*
 usr/share/man/*/man5/libguestfs-tools.conf*
 
