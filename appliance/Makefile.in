@@ -138,16 +138,7 @@ DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am \
 	$(srcdir)/libguestfs-make-fixed-appliance.in
-@ENABLE_DAEMON_TRUE@am__append_1 = \
-@ENABLE_DAEMON_TRUE@	supermin.d/daemon.tar.gz
-
-@ENABLE_APPLIANCE_TRUE@am__append_2 = \
-@ENABLE_APPLIANCE_TRUE@	supermin.d/base.tar.gz \
-@ENABLE_APPLIANCE_TRUE@	supermin.d/packages \
-@ENABLE_APPLIANCE_TRUE@	supermin.d/excludefiles \
-@ENABLE_APPLIANCE_TRUE@	supermin.d/hostfiles
-
-@VALGRIND_DAEMON_TRUE@am__append_3 = -DVALGRIND_DAEMON=1
+@VALGRIND_DAEMON_TRUE@am__append_1 = -DVALGRIND_DAEMON=1
 subdir = appliance
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1431,10 +1422,12 @@ EXTRA_DIST = \
 fsdir = $(libdir)/guestfs
 superminfsdir = $(libdir)/guestfs/supermin.d
 fs_DATA = 
-superminfs_DATA = supermin.d/init.tar.gz supermin.d/udev-rules.tar.gz \
-	$(am__append_1) $(am__append_2)
+superminfs_DATA = \
+	supermin.d/init.tar.gz \
+	supermin.d/udev-rules.tar.gz
+
 PACKAGELIST_CPP_FLAGS = -D$(DISTRO)=1 \
-	-DEXTRA_PACKAGES="$(EXTRA_PACKAGES)" $(am__append_3)
+	-DEXTRA_PACKAGES="$(EXTRA_PACKAGES)" $(am__append_1)
 
 # If installing the daemon, install the udev rules too.
 @INSTALL_DAEMON_TRUE@udevrulesdir = /lib/udev/rules.d
@@ -1835,6 +1828,11 @@ $(top_builddir)/generator/generator:
 	else \
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
+	supermin.d/daemon.tar.gz \
+	supermin.d/base.tar.gz \
+	supermin.d/packages \
+	supermin.d/excludefiles \
+	supermin.d/hostfiles
 
 supermin.d/base.tar.gz \
 supermin.d/daemon.tar.gz \

@@ -1,3 +1,91 @@
+commit 3acb4343eaf14c7286e1d762bce4fb0ef535ceb4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 3 17:20:43 2014 +0000
+
+    Version 1.25.40.
+
+commit d37dd9b055142607a353269f8ea80581bc03fc96
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 3 17:21:55 2014 +0000
+
+    Add new logo to EXTRA_DIST.
+    
+    This fixes commit d73531a0aa691ff961366afee4db2c99a40510b6.
+
+commit 0a966727abc83550d2026886eac2440c99e6cb5e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 3 13:43:35 2014 +0000
+
+    appliance: Remove conditionals in appliance/Makefile.am.
+    
+    If appliance is disabled, the whole appliance/ subdirectory is
+    skipped.
+    
+    If appliance is enabled, we can assume that the daemon is enabled too
+    (see previous commit) so we don't need the conditional code.  That
+    conditional code didn't work since the supermin 5 rewrite.
+
+commit a6d72be984498e07f455c643e07a51b977603fc2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 3 13:41:59 2014 +0000
+
+    build: Don't allow --disable-daemon and --enable-appliance together.
+    
+    This makes no sense, since the daemon is contained in the appliance so
+    you cannot build a (meaningful) appliance without having a daemon.
+
+commit 631c7d9241febcc7889d0fcb88aa07858174dbe1
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Mar 3 16:28:14 2014 +0100
+
+    builder: install a $sysconfdir/virt-builder -> xdg-virt-builder symlink
+    
+    This way "virt-builder" appears directly in the sysconfdir.
+
+commit 6a5052a4092912684d4934716fd543038ce7e758
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Mar 3 14:25:12 2014 +0100
+
+    run: add the builddir of inspector to $PATH
+
+commit 31b16a9dda6d66b54a0965a987f9af5ad95fbf58
+Author: Hilko Bengen <bengen@debian.org>
+Date:   Sat Feb 22 12:26:40 2014 +0100
+
+    Debian: Strip Lintian overrides, initramfs-related stuff from appliance
+
+commit 7adc60d955260dab7bbc4242a4140041a2bd2870
+Author: Bastien ROUCARIÈS <roucaries.bastien@gmail.com>
+Date:   Fri May 17 10:11:37 2013 +0200
+
+    remove last trace of ntfsprogs
+
+commit 2b4e2eb97d8e60758a8b944927ec7cb278e8dd87
+Author: Hilko Bengen <bengen@debian.org>
+Date:   Thu Aug 11 00:24:11 2011 +0200
+
+    Fix for systemd-based Debian systems
+
+commit e0124b9a91b49dbb34b121f09cfc1789305c1362
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 3 12:08:21 2014 +0000
+
+    logo: Make the 5 years text larger and more readable for website.
+    
+    This fixes commit d73531a0aa691ff961366afee4db2c99a40510b6.
+
+commit d73531a0aa691ff961366afee4db2c99a40510b6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 3 11:55:01 2014 +0000
+
+    logo: Add fish logo with 5 years star.
+
+commit b88f98849a43761f38702de9e2a4da7fb69a75b7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 2 19:30:28 2014 +0000
+
+    appliance: Cosmetic change to the order of command line arguments of 'supermin'.
+
 commit 49209b3f965f65da8041fa70a30ae3df5b892535
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sat Mar 1 16:26:12 2014 +0000
