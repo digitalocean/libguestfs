@@ -85,7 +85,7 @@ SOURCES = \
 if HAVE_OCAML
 
 # Note this list must be in dependency order.
-OBJECTS = \
+deps = \
 	$(top_builddir)/mllib/common_gettext.cmx \
 	$(top_builddir)/mllib/common_utils.cmx \
 	$(top_builddir)/fish/guestfish-uri.o \
@@ -100,9 +100,17 @@ OBJECTS = \
 	$(top_builddir)/mllib/timezone.cmx \
 	$(top_builddir)/mllib/firstboot.cmx \
 	$(top_builddir)/mllib/config.cmx \
+	$(top_builddir)/mllib/mkdtemp-c.o \
+	$(top_builddir)/mllib/mkdtemp.cmx \
 	sysprep_operation.cmx \
 	$(patsubst %,sysprep_operation_%.cmx,$(operations)) \
 	main.cmx
+
+if HAVE_OCAMLOPT
+OBJECTS = $(deps)
+else
+OBJECTS = $(patsubst %.cmx,%.cmo,$(deps))
+endif
 
 bin_SCRIPTS = virt-sysprep
 
@@ -126,12 +134,22 @@ OCAMLCLIBS  = \
 	-L../src/.libs -lutils \
 	-L../gnulib/lib/.libs -lgnu
 
+if HAVE_OCAMLOPT
 virt-sysprep: $(OBJECTS)
 	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
 	  mlguestfs.cmxa -linkpkg $^ \
 	  -cclib '$(OCAMLCLIBS)' \
 	  $(OCAML_GCOV_LDFLAGS) \
 	  -o $@
+else
+virt-sysprep: $(OBJECTS)
+	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) \
+	  mlguestfs.cma -linkpkg $^ \
+	  -cclib '$(OCAMLCLIBS)' \
+	  -custom \
+	  $(OCAML_GCOV_LDFLAGS) \
+	  -o $@
+endif
 
 .mli.cmi:
 	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@

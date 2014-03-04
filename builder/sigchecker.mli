@@ -16,11 +16,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-val default_fingerprint : string
-
 type t
 
 type gpgkey_type =
+  | No_Key
   | Fingerprint of string
   | KeyFile of string
 

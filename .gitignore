@@ -37,7 +37,10 @@ Makefile.in
 /align/stamp-virt-alignment-scan.pod
 /align/virt-alignment-scan
 /align/virt-alignment-scan.1
-/appliance/excludelist
+/appliance/daemon.tar.gz
+/appliance/excludefiles
+/appliance/hostfiles
+/appliance/init.tar.gz
 /appliance/libguestfs-make-fixed-appliance
 /appliance/libguestfs-make-fixed-appliance.1
 /appliance/make.sh
@@ -45,6 +48,7 @@ Makefile.in
 /appliance/stamp-libguestfs-make-fixed-appliance.pod
 /appliance/stamp-supermin
 /appliance/supermin.d
+/appliance/udev-rules.tar.gz
 /autom4te.cache
 /bash/virt-builder
 /bash/virt-cat
@@ -61,10 +65,13 @@ Makefile.in
 /builder/index-parse.c
 /builder/index-parse.h
 /builder/index-scan.c
+/builder/libguestfs.conf
 /builder/*.qcow2
 /builder/stamp-virt-builder.pod
 /builder/stamp-virt-index-validate.pod
+/builder/test-config/virt-builder/repos.d/test-index.conf
 /builder/test-index
+/builder/test-website/virt-builder/repos.d/libguestfs.conf
 /builder/virt-builder
 /builder/virt-builder.1
 /builder/virt-index-validate

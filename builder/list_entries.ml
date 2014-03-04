@@ -65,14 +65,21 @@ and list_entries_long ~sources index =
   | Some locale -> split_locale locale in
 
   List.iter (
-    fun (source, fingerprint) ->
+    fun (source, key) ->
       printf (f_"Source URI: %s\n") source;
-      printf (f_"Fingerprint: %s\n") fingerprint;
+      (match key with
+      | Sigchecker.No_Key -> ()
+      | Sigchecker.Fingerprint fp ->
+        printf (f_"Fingerprint: %s\n") fp;
+      | Sigchecker.KeyFile kf ->
+        printf (f_"Key: %s\n") kf;
+      );
       printf "\n"
   ) sources;
 
   List.iter (
     fun (name, { Index_parser.printable_name = printable_name;
+                 arch = arch;
                  size = size;
                  compressed_size = compressed_size;
                  notes = notes;
@@ -83,6 +90,7 @@ and list_entries_long ~sources index =
         | None -> ()
         | Some name -> printf "%-24s %s\n" (s_"Full name:") name;
         );
+        printf "%-24s %s\n" (s_"Architecture:") arch;
         printf "%-24s %s\n" (s_"Minimum/default size:") (human_size size);
         (match compressed_size with
         | None -> ()
@@ -158,16 +166,23 @@ and list_entries_json ~sources index =
   printf "  \"version\": %d,\n" 1;
   printf "  \"sources\": [\n";
   iteri (
-    fun i (source, fingerprint) ->
+    fun i (source, key) ->
       printf "  {\n";
-      printf "    \"uri\": \"%s\",\n" source;
-      printf "    \"fingerprint\": \"%s\"\n" fingerprint;
+      (match key with
+      | Sigchecker.No_Key -> ()
+      | Sigchecker.Fingerprint fp ->
+        printf "    \"fingerprint\": \"%s\",\n" fp;
+      | Sigchecker.KeyFile kf ->
+        printf "    \"key\": \"%s\",\n" kf;
+      );
+      printf "    \"uri\": \"%s\"\n" source;
       printf "  }%s\n" (trailing_comma i (List.length sources))
   ) sources;
   printf "  ],\n";
   printf "  \"templates\": [\n";
   iteri (
     fun i (name, { Index_parser.printable_name = printable_name;
+                   arch = arch;
                    size = size;
                    compressed_size = compressed_size;
                    notes = notes;
@@ -175,6 +190,7 @@ and list_entries_json ~sources index =
       printf "  {\n";
       printf "    \"os-version\": \"%s\",\n" name;
       json_optional_printf_string "full-name" printable_name;
+      printf "    \"arch\": \"%s\",\n" arch;
       printf "    \"size\": %Ld,\n" size;
       json_optional_printf_int64 "compressed-size" compressed_size;
       print_notes notes;

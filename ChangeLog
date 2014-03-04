@@ -1,3 +1,355 @@
+commit 0b285e07a01329bfb8d27f086c939a2ba552a342
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 3 22:06:58 2014 +0000
+
+    Version 1.25.41.
+
+commit e87e377cfb1e5bf506cc51d4b535fab8cc1a2533
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 3 21:58:42 2014 +0000
+
+    appliance: Ensure that supermin.d directory is installed properly.
+    
+    Commit 0a966727abc83550d2026886eac2440c99e6cb5e had a missing
+    backslash in the list of files, so that 'make install' didn't install
+    all the files.
+
+commit 3acb4343eaf14c7286e1d762bce4fb0ef535ceb4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 3 17:20:43 2014 +0000
+
+    Version 1.25.40.
+
+commit d37dd9b055142607a353269f8ea80581bc03fc96
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 3 17:21:55 2014 +0000
+
+    Add new logo to EXTRA_DIST.
+    
+    This fixes commit d73531a0aa691ff961366afee4db2c99a40510b6.
+
+commit 0a966727abc83550d2026886eac2440c99e6cb5e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 3 13:43:35 2014 +0000
+
+    appliance: Remove conditionals in appliance/Makefile.am.
+    
+    If appliance is disabled, the whole appliance/ subdirectory is
+    skipped.
+    
+    If appliance is enabled, we can assume that the daemon is enabled too
+    (see previous commit) so we don't need the conditional code.  That
+    conditional code didn't work since the supermin 5 rewrite.
+
+commit a6d72be984498e07f455c643e07a51b977603fc2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 3 13:41:59 2014 +0000
+
+    build: Don't allow --disable-daemon and --enable-appliance together.
+    
+    This makes no sense, since the daemon is contained in the appliance so
+    you cannot build a (meaningful) appliance without having a daemon.
+
+commit 631c7d9241febcc7889d0fcb88aa07858174dbe1
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Mar 3 16:28:14 2014 +0100
+
+    builder: install a $sysconfdir/virt-builder -> xdg-virt-builder symlink
+    
+    This way "virt-builder" appears directly in the sysconfdir.
+
+commit 6a5052a4092912684d4934716fd543038ce7e758
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Mar 3 14:25:12 2014 +0100
+
+    run: add the builddir of inspector to $PATH
+
+commit 31b16a9dda6d66b54a0965a987f9af5ad95fbf58
+Author: Hilko Bengen <bengen@debian.org>
+Date:   Sat Feb 22 12:26:40 2014 +0100
+
+    Debian: Strip Lintian overrides, initramfs-related stuff from appliance
+
+commit 7adc60d955260dab7bbc4242a4140041a2bd2870
+Author: Bastien ROUCARIÈS <roucaries.bastien@gmail.com>
+Date:   Fri May 17 10:11:37 2013 +0200
+
+    remove last trace of ntfsprogs
+
+commit 2b4e2eb97d8e60758a8b944927ec7cb278e8dd87
+Author: Hilko Bengen <bengen@debian.org>
+Date:   Thu Aug 11 00:24:11 2011 +0200
+
+    Fix for systemd-based Debian systems
+
+commit e0124b9a91b49dbb34b121f09cfc1789305c1362
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 3 12:08:21 2014 +0000
+
+    logo: Make the 5 years text larger and more readable for website.
+    
+    This fixes commit d73531a0aa691ff961366afee4db2c99a40510b6.
+
+commit d73531a0aa691ff961366afee4db2c99a40510b6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 3 11:55:01 2014 +0000
+
+    logo: Add fish logo with 5 years star.
+
+commit b88f98849a43761f38702de9e2a4da7fb69a75b7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 2 19:30:28 2014 +0000
+
+    appliance: Cosmetic change to the order of command line arguments of 'supermin'.
+
+commit 49209b3f965f65da8041fa70a30ae3df5b892535
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 1 16:26:12 2014 +0000
+
+    Version 1.25.39.
+
+commit 0c4fae7cb31243c49fa319f0102dbe61b97b7601
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 1 15:49:54 2014 +0000
+
+    configure: supermin should be listed as AC_PATH_PROG, since it is used at run time.
+    
+    See top of configure.ac:
+    
+     > # NB: AC_CHECK_PROG(S) or AC_PATH_PROG(S)?
+     > # Use AC_CHECK_PROG(S) for programs which are only used during build.
+     > # Use AC_PATH_PROG(S) for program names which are compiled into the
+     > # binary and used at run time.  The reason is so that we know which
+     > # programs the binary actually uses.
+
+commit 01a018a9de1db36f01d70cb6892b21e804d93673
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 28 22:48:20 2014 +0000
+
+    mageia: Add distro setting and extra packages needed by Mageia.
+
+commit 962837650cfb95e50d3c44578cbf47f7ec625271
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Feb 28 14:20:08 2014 +0100
+
+    builder: add libguestfs.gpg to EXTRA_DIST
+    
+    It needs to be in EXTRA_DIST, otherwise it is not put in the dist.
+
+commit 12bdd94f7e2916830bed109dd503910f96fa3f2b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Feb 28 13:14:33 2014 +0100
+
+    tests/luks: disable if luks is not available
+
+commit f75142c577255b30f2a8e1d27baa5fd185594197
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Fri Feb 28 14:35:56 2014 +0100
+
+    Fix building on architectures where ocamlopt is not available
+
+commit a4be4231cc0c27eb9daa6adbce24e11844fe23a0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 28 13:36:05 2014 +0000
+
+    launch: libvirt: Fix unused variable when libselinux is not installed.
+
+commit 7c8af234305f0fe2cb5a9042bd58fe3735e8cd73
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 27 12:36:13 2014 +0000
+
+    appliance: init: Don't write to /proc/sys/kernel/hotplug when starting udev (RHBZ#1020806).
+    
+    /proc/sys/kernel/hotplug is an obsolete interface for processing
+    hotplug events.  It is not used by modern kernels, which should set
+    this path to the empty string (because they have
+    CONFIG_UEVENT_HELPER_PATH="").
+    
+    Unfortunately our udev initialization code did:
+    
+      echo -e '\000\000\000\000' > /proc/sys/kernel/hotplug
+    
+    which was intended to set this file to \0 bytes.  However on Debian,
+    where /bin/sh is "dash", not "bash", this writes "-e" to this file,
+    which breaks udev events.
+    
+    Thanks: Peter Rajnoha for solving this.
+    
+    https://bugzilla.redhat.com/show_bug.cgi?id=1020806#c10
+
+commit 963b0341e26ddc4ddc0e0f0fa13deacecdd5ab0f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 25 17:29:13 2014 +0100
+
+    builder: update documentation
+    
+    Update the documentation according to the new .conf files structure, the
+    drop of VIRT_BUILDER_SOURCE and VIRT_BUILDER_FINGERPRINT, the drop of
+    hardcoded source and its key, etc.
+
+commit 47538865f2e6d82f7fff6e0ef0f48cba48acfc64
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 25 17:29:12 2014 +0100
+
+    builder: remove the default fingerprint/pubkey
+    
+    Sigchecker can still import keys from the user's keyring, so there is no
+    need to hardcode fingerprint and key of the index hosted on
+    libguestfs.org (which is now pointed to using a .conf file).
+
+commit 573cae45c3490ddbd04a39aaf63dbe0cd0518cb1
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 25 17:29:11 2014 +0100
+
+    builder: remove VIRT_BUILDER_SOURCE and VIRT_BUILDER_FINGERPRINT
+    
+    Drop these two environment variables, and the implicit hardcoded source
+    hosted at libguestfs.org.
+    This means all the sources must be provided as .conf files, or at each
+    invocation with --source.
+
+commit f4990bef1c2cffb878f472023b01895ee326e4b3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 25 17:29:10 2014 +0100
+
+    builder: switch sources to .conf files
+    
+    Introduce and use simple .conf files to configure the sources of indexes
+    for virt-builder. The location of these files is in XDG_CONFIG_DIRS /
+    XDG_CONFIG_HOME, so it can be easily overridden.
+    
+    There are three .conf(.in) files shipped with this commit:
+    - "test-index.conf.in" (in "test-config"), which points to the
+      "test-index" index (used in tests only); the tests are adapted to
+      point to the hierarchy containing this .conf
+    - "libguestfs.conf.in" (in "test-website"), which points to the local
+      "index.asc" (i.e. the offline copy of the libguestfs.org index);
+      run(.in) will point to the hierarchy providing this .conf
+    - "libguestfs.conf.in" (directly among the other sources), which points
+      to the online "index.asc" and it is installed in sysconfdir, along
+      with the key of this repository
+    
+    The tests are adapted, other than to the different way to pick sources,
+    to the different output of --list, as "test-index" is not signed.
+
+commit a3f1ac9a2dacd96003688e8125dae7d012d3b942
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 25 17:29:09 2014 +0100
+
+    builder: extract the default key to file
+    
+    This is basically default_pubkey from sigchecker.ml, just extracted as
+    file. Not used right now, but will be in the future.
+
+commit a21da3c8013e2658b41de962c4fb98df3c8896e4
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 25 17:29:08 2014 +0100
+
+    builder: add functions to read XDG_CONFIG_DIRS and XDG_CONFIG_PATH
+
+commit ad38e68c34d3d15fb02901e3fbdd68bfe9887ebf
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 25 17:29:07 2014 +0100
+
+    builder: use Sigchecker.gpgkey_type for the fingerprint
+    
+    Use Sigchecker.gpgkey_type instead of just string as type in the
+    sources list; adapt the listing code (and its expected output) to that.
+    
+    No behaviour change which eases a bit the addition of new sources with
+    other key types.
+
+commit c09f5bbc708bbed772570ba63a706efcedf68cac
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 25 17:29:06 2014 +0100
+
+    builder: allow "no key" as key in Sigchecker
+    
+    Additional way to distinguish no actual key available for signature
+    checking; make sure to not allow signing in such situation.
+
+commit fbe4dad2dedd89d1dae76df0393147398cfa1440
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 27 09:58:47 2014 +0000
+
+    appliance: init: Initialize LVM in the same way as done on physical machines.
+    
+    Running vgscan appears to be unnecessary.
+    
+    The -aa option of vgchange activates LVs.
+    
+    The --sysinit option disables locking.
+
+commit 06011270eca5b4a3149143b8c2c15cd8d9c9c7c0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 26 19:41:07 2014 +0000
+
+    Version 1.25.38.
+
+commit eb81df93d0b01211014132d196d95a88c762a399
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 26 10:10:20 2014 -0500
+
+    appliance: Initialize local variables because gcc cannot track that they are not used uninitialized.
+
+commit b13c22668d956df4cb8e82aaf1d0d3941581b715
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 25 16:08:13 2014 +0000
+
+    appliance: Use supermin >= 5.
+    
+    This requires the new version of supermin (5.1.0).
+
+commit d353b4a3c84fd828dc8e226a17d0daa69d85683c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 24 20:13:41 2014 +0000
+
+    builder: Add arch= entry for Cirros.
+    
+    Thanks: Pino Toscano.
+
+commit 9124730df27fa9e0709637dfe9271e01e11466b0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 24 15:43:13 2014 +0000
+
+    builder: Add arch=x86_64 entries.
+
+commit 0f3898b2f5587c9cdd9b26d51dac44b5c3f36055
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 24 15:40:29 2014 +0100
+
+    sysprep: use Mkdtemp to create the temporary directory
+    
+    Use the safer mkdtemp instead of manually creating a path.
+
+commit 8ed905c7e6a837887a758417bdfd1822b86a214f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 24 15:08:03 2014 +0100
+
+    builder: split INI C <-> OCaml glue code in own module
+    
+    Move in an own module the code which calls the C
+    virt_builder_parse_index and does the array -> list conversion of the
+    result. This way this code can be easily called also in places different
+    than Index_parser without the need to copy the types mapping, etc.
+    
+    Just code motion, no actual behaviour changes.
+
+commit 61323fabafdcab10abaf6b7002e5e1bb38ddbc5e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 24 11:31:35 2014 +0100
+
+    builder: add a mandatory 'arch' key in index files
+    
+    Introduce a mandatory arch= key in all the entries of index files, to
+    identify which architecture is each. Adapt the long and JSON list
+    outputs to print also this new field.
+    
+    This introduces an incompatibility with index files created with
+    virt-builder < 1.26, as they will be rejected until entries will have
+    the arch= key added (which is ignored by older virt-builder, so adding
+    it will not create backward-compatibility issues).
+
 commit 838a3c997c664d8a28e6563baf7119480c1f0bd3
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Feb 21 16:46:14 2014 +0000

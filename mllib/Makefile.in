@@ -136,7 +136,9 @@ host_triplet = @host@
 DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am $(srcdir)/config.ml.in
-@HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = $(patsubst %,%.cmx,$(ocaml_modules))
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@am__append_2 = $(patsubst %,%.cmo,$(ocaml_modules))
+@HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_3 = -package gettext-stub
 subdir = mllib
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1319,8 +1321,8 @@ STDINT_H = @STDINT_H@
 STRIP = @STRIP@
 SUPERMIN = @SUPERMIN@
 SUPERMIN_EXTRA_OPTIONS = @SUPERMIN_EXTRA_OPTIONS@
-SUPERMIN_HELPER = @SUPERMIN_HELPER@
 SUPERMIN_PACKAGER_CONFIG = @SUPERMIN_PACKAGER_CONFIG@
+SYSCONFDIR = @SYSCONFDIR@
 SYS_IOCTL_H_HAVE_WINSOCK2_H = @SYS_IOCTL_H_HAVE_WINSOCK2_H@
 SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC = @SYS_TIME_H_DEFINES_STRUCT_TIMESPEC@
@@ -1462,34 +1464,29 @@ SOURCES = \
 # - We're not actually building a functioning program here, we're just
 #   linking everything together to check all the modules build OK.
 # - This list must be in dependency order.
-@HAVE_OCAML_TRUE@OBJECTS = \
-@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-progress.o \
-@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
-@HAVE_OCAML_TRUE@	tty-c.o \
-@HAVE_OCAML_TRUE@	fsync-c.o \
-@HAVE_OCAML_TRUE@	progress-c.o \
-@HAVE_OCAML_TRUE@	uri-c.o \
-@HAVE_OCAML_TRUE@	crypt-c.o \
-@HAVE_OCAML_TRUE@	mkdtemp-c.o \
-@HAVE_OCAML_TRUE@	config.cmx \
-@HAVE_OCAML_TRUE@	libdir.cmx \
-@HAVE_OCAML_TRUE@	common_gettext.cmx \
-@HAVE_OCAML_TRUE@	common_utils.cmx \
-@HAVE_OCAML_TRUE@	urandom.cmx \
-@HAVE_OCAML_TRUE@	random_seed.cmx \
-@HAVE_OCAML_TRUE@	hostname.cmx \
-@HAVE_OCAML_TRUE@	timezone.cmx \
-@HAVE_OCAML_TRUE@	firstboot.cmx \
-@HAVE_OCAML_TRUE@	perl_edit.cmx \
-@HAVE_OCAML_TRUE@	tTY.cmx \
-@HAVE_OCAML_TRUE@	fsync.cmx \
-@HAVE_OCAML_TRUE@	progress.cmx \
-@HAVE_OCAML_TRUE@	uRI.cmx \
-@HAVE_OCAML_TRUE@	crypt.cmx \
-@HAVE_OCAML_TRUE@	password.cmx \
-@HAVE_OCAML_TRUE@	mkdtemp.cmx \
-@HAVE_OCAML_TRUE@	planner.cmx
+@HAVE_OCAML_TRUE@ocaml_modules = config \
+@HAVE_OCAML_TRUE@	libdir \
+@HAVE_OCAML_TRUE@	common_gettext \
+@HAVE_OCAML_TRUE@	common_utils \
+@HAVE_OCAML_TRUE@	urandom \
+@HAVE_OCAML_TRUE@	random_seed \
+@HAVE_OCAML_TRUE@	hostname \
+@HAVE_OCAML_TRUE@	timezone \
+@HAVE_OCAML_TRUE@	firstboot \
+@HAVE_OCAML_TRUE@	perl_edit \
+@HAVE_OCAML_TRUE@	tTY \
+@HAVE_OCAML_TRUE@	fsync \
+@HAVE_OCAML_TRUE@	progress \
+@HAVE_OCAML_TRUE@	uRI \
+@HAVE_OCAML_TRUE@	crypt \
+@HAVE_OCAML_TRUE@	password \
+@HAVE_OCAML_TRUE@	mkdtemp \
+@HAVE_OCAML_TRUE@	planner
 
+@HAVE_OCAML_TRUE@OBJECTS = $(top_builddir)/fish/guestfish-progress.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o tty-c.o \
+@HAVE_OCAML_TRUE@	fsync-c.o progress-c.o uri-c.o crypt-c.o \
+@HAVE_OCAML_TRUE@	mkdtemp-c.o $(am__append_1) $(am__append_2)
 @HAVE_OCAML_TRUE@noinst_SCRIPTS = dummy
 
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
@@ -1497,7 +1494,7 @@ SOURCES = \
 # installed copy of libguestfs.
 @HAVE_OCAML_TRUE@OCAMLPACKAGES = -package str,unix -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I ../ocaml \
-@HAVE_OCAML_TRUE@	$(am__append_1)
+@HAVE_OCAML_TRUE@	$(am__append_3)
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@OCAMLCLIBS = \
@@ -1893,11 +1890,17 @@ $(top_builddir)/generator/generator:
 	fi
 
 @HAVE_OCAML_TRUE@dummy: $(OBJECTS)
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
-@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ \
-@HAVE_OCAML_TRUE@	  -cclib '$(OCAMLCLIBS)' \
-@HAVE_OCAML_TRUE@	  $(OCAML_GCOV_LDFLAGS) \
-@HAVE_OCAML_TRUE@	  -o $@
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ \
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  -cclib '$(OCAMLCLIBS)' \
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  $(OCAML_GCOV_LDFLAGS) \
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  -o $@
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) \
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  mlguestfs.cma -linkpkg $^ \
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  -cclib '$(OCAMLCLIBS)' \
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  -custom \
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  $(OCAML_GCOV_LDFLAGS) \
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  -o $@
 
 @HAVE_OCAML_TRUE@.mli.cmi:
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
@@ -1916,9 +1919,12 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@.c.o:
 @HAVE_OCAML_TRUE@	$(CC) $(CFLAGS) $(PROF_CFLAGS) $(DEFAULT_INCLUDES) -c $< -o $@
 
-@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmx common_utils.cmx common_utils_tests.cmx
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
-@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib -lncurses -o $@
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmx common_utils.cmx common_utils_tests.cmx
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib -lncurses -o $@
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmo common_utils.cmo common_utils_tests.cmo
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) \
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  mlguestfs.cma -linkpkg $^ -cclib -lncurses -o $@
 
 @HAVE_OCAML_TRUE@check-valgrind:
 @HAVE_OCAML_TRUE@	$(MAKE) VG="$(top_builddir)/run @VG@" check

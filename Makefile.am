@@ -28,7 +28,9 @@ SUBDIRS += tests/data generator src examples po
 if ENABLE_DAEMON
 SUBDIRS += daemon
 endif
+if ENABLE_APPLIANCE
 SUBDIRS += appliance
+endif
 
 # Tests - order is important.
 if ENABLE_APPLIANCE
@@ -182,6 +184,7 @@ EXTRA_DIST = \
 	html/virt-builder.svg \
 	libtool-kill-dependency_libs.sh \
 	logo/fish.svg logo/fish.png \
+	logo/fish-5yrs.svg logo/fish-5yrs.png \
 	logo/virt-builder.svg \
 	m4/.gitignore \
 	tmp/.gitignore \

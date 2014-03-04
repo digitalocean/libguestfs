@@ -27,6 +27,7 @@ AM_CFLAGS = \
 
 EXTRA_DIST = \
 	$(SOURCES) \
+	libguestfs.gpg \
 	virt-builder.pod \
 	virt-index-validate.pod \
 	test-virt-builder.sh \
@@ -46,6 +47,8 @@ SOURCES = \
 	index_parser.mli \
 	index_parser.ml \
 	index-parser-c.c \
+	ini_reader.mli \
+	ini_reader.ml \
 	list_entries.mli \
 	list_entries.ml \
 	paths.ml \
@@ -56,7 +59,9 @@ SOURCES = \
 	setlocale.mli \
 	setlocale-c.c \
 	sigchecker.mli \
-	sigchecker.ml
+	sigchecker.ml \
+	sources.mli \
+	sources.ml
 
 man_MANS =
 noinst_DATA =
@@ -64,7 +69,7 @@ noinst_DATA =
 if HAVE_OCAML
 
 # Note this list must be in dependency order.
-OBJECTS = \
+deps = \
 	$(top_builddir)/mllib/libdir.cmx \
 	$(top_builddir)/mllib/common_gettext.cmx \
 	$(top_builddir)/mllib/common_utils.cmx \
@@ -94,14 +99,22 @@ OBJECTS = \
 	pxzcat.cmx \
 	setlocale-c.o \
 	setlocale.cmx \
+	ini_reader.cmx \
 	paths.cmx \
 	get_kernel.cmx \
 	downloader.cmx \
 	sigchecker.cmx \
 	index_parser.cmx \
 	list_entries.cmx \
+	sources.cmx \
 	cmdline.cmx \
 	builder.cmx
+
+if HAVE_OCAMLOPT
+OBJECTS = $(deps)
+else
+OBJECTS = $(patsubst %.cmx,%.cmo,$(deps))
+endif
 
 bin_SCRIPTS = virt-builder
 
@@ -128,12 +141,22 @@ OCAMLCLIBS  = \
 	-pthread -lpthread \
 	-lncurses -lcrypt
 
+if HAVE_OCAMLOPT
 virt-builder: $(OBJECTS)
 	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
 	  mlguestfs.cmxa -linkpkg $^ \
 	  -cclib '$(OCAMLCLIBS)' \
 	  $(OCAML_GCOV_LDFLAGS) \
 	  -o $@
+else
+virt-builder: $(OBJECTS)
+	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) \
+	  mlguestfs.cma -linkpkg $^ \
+	  -cclib '$(OCAMLCLIBS)' \
+	  -custom \
+	  $(OCAML_GCOV_LDFLAGS) \
+	  -o $@
+endif
 
 .mli.cmi:
 	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
@@ -217,6 +240,14 @@ endif
 DISTCLEANFILES = .depend
 
 .PHONY: depend docs
+
+# virt-builder's default repository
+
+repoconfdir = $(sysconfdir)/xdg/virt-builder/repos.d
+repoconf_DATA = libguestfs.conf libguestfs.gpg
+
+install-exec-hook:
+	$(LN_S) xdg/virt-builder $(DESTDIR)$(sysconfdir)/virt-builder
 
 # Build a small C index validator program.
 bin_PROGRAMS = virt-index-validate

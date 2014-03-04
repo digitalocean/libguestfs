@@ -2307,11 +2307,8 @@
 /* Define to 1 if strerror_r returns char *. */
 #undef STRERROR_R_CHAR_P
 
-/* Name of supermin-helper program. */
-#undef SUPERMIN_HELPER
-
-/* Define to 1 if you have supermin-helper >= 4.1.5. */
-#undef SUPERMIN_HELPER_NEW_STYLE_SYNTAX
+/* Name of supermin program */
+#undef SUPERMIN
 
 /* Define to 1 if the type of the st_atim member of a struct stat is struct
    timespec. */

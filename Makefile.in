@@ -118,8 +118,11 @@ DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am $(top_srcdir)/configure \
 	$(am__configure_deps) $(srcdir)/config.h.in \
 	$(srcdir)/pick-guests.pl.in $(srcdir)/podwrapper.pl.in \
-	$(srcdir)/run.in $(top_srcdir)/ruby/ext/guestfs/extconf.rb.in \
-	AUTHORS COPYING COPYING.LIB README TODO build-aux/compile \
+	$(srcdir)/run.in \
+	$(top_srcdir)/builder/test-config/virt-builder/repos.d/test-index.conf.in \
+	$(top_srcdir)/builder/test-website/virt-builder/repos.d/libguestfs.conf.in \
+	$(top_srcdir)/ruby/ext/guestfs/extconf.rb.in AUTHORS COPYING \
+	COPYING.LIB README TODO build-aux/compile \
 	build-aux/config.guess build-aux/config.rpath \
 	build-aux/config.sub build-aux/install-sh build-aux/missing \
 	build-aux/ltmain.sh $(top_srcdir)/build-aux/compile \
@@ -132,8 +135,8 @@ DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 @ENABLE_DAEMON_TRUE@am__append_1 = daemon
 
 # Tests - order is important.
-@ENABLE_APPLIANCE_TRUE@am__append_2 = tests/qemu tests/guests \
-@ENABLE_APPLIANCE_TRUE@	tests/c-api tests/tmpdirs \
+@ENABLE_APPLIANCE_TRUE@am__append_2 = appliance tests/qemu \
+@ENABLE_APPLIANCE_TRUE@	tests/guests tests/c-api tests/tmpdirs \
 @ENABLE_APPLIANCE_TRUE@	tests/protocol tests/events \
 @ENABLE_APPLIANCE_TRUE@	tests/parallel tests/create tests/disks \
 @ENABLE_APPLIANCE_TRUE@	tests/mountable tests/network tests/lvm \
@@ -305,6 +308,8 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = pick-guests.pl podwrapper.pl run \
+	builder/test-config/virt-builder/repos.d/test-index.conf \
+	builder/test-website/virt-builder/repos.d/libguestfs.conf \
 	ruby/ext/guestfs/extconf.rb
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
@@ -1441,8 +1446,8 @@ STDINT_H = @STDINT_H@
 STRIP = @STRIP@
 SUPERMIN = @SUPERMIN@
 SUPERMIN_EXTRA_OPTIONS = @SUPERMIN_EXTRA_OPTIONS@
-SUPERMIN_HELPER = @SUPERMIN_HELPER@
 SUPERMIN_PACKAGER_CONFIG = @SUPERMIN_PACKAGER_CONFIG@
+SYSCONFDIR = @SYSCONFDIR@
 SYS_IOCTL_H_HAVE_WINSOCK2_H = @SYS_IOCTL_H_HAVE_WINSOCK2_H@
 SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC = @SYS_TIME_H_DEFINES_STRUCT_TIMESPEC@
@@ -1549,13 +1554,13 @@ ACLOCAL_AMFLAGS = -I m4
 
 # Unconditional because nothing is built yet.
 SUBDIRS = gnulib/lib gnulib/tests tests/data generator src examples po \
-	$(am__append_1) appliance $(am__append_2) test-tool fish align \
-	cat diff df edit format inspector make-fs rescue bash \
-	$(am__append_3) $(am__append_4) $(am__append_5) \
-	$(am__append_6) $(am__append_7) $(am__append_8) \
-	$(am__append_9) $(am__append_10) $(am__append_11) \
-	$(am__append_12) $(am__append_13) csharp $(am__append_14) \
-	$(am__append_15) $(am__append_16) $(am__append_17)
+	$(am__append_1) $(am__append_2) test-tool fish align cat diff \
+	df edit format inspector make-fs rescue bash $(am__append_3) \
+	$(am__append_4) $(am__append_5) $(am__append_6) \
+	$(am__append_7) $(am__append_8) $(am__append_9) \
+	$(am__append_10) $(am__append_11) $(am__append_12) \
+	$(am__append_13) csharp $(am__append_14) $(am__append_15) \
+	$(am__append_16) $(am__append_17)
 EXTRA_DIST = \
 	BUGS HACKING ROADMAP TODO \
 	.gitignore \
@@ -1600,6 +1605,7 @@ EXTRA_DIST = \
 	html/virt-builder.svg \
 	libtool-kill-dependency_libs.sh \
 	logo/fish.svg logo/fish.png \
+	logo/fish-5yrs.svg logo/fish-5yrs.png \
 	logo/virt-builder.svg \
 	m4/.gitignore \
 	tmp/.gitignore \
@@ -1775,6 +1781,10 @@ pick-guests.pl: $(top_builddir)/config.status $(srcdir)/pick-guests.pl.in
 podwrapper.pl: $(top_builddir)/config.status $(srcdir)/podwrapper.pl.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 run: $(top_builddir)/config.status $(srcdir)/run.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+builder/test-config/virt-builder/repos.d/test-index.conf: $(top_builddir)/config.status $(top_srcdir)/builder/test-config/virt-builder/repos.d/test-index.conf.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+builder/test-website/virt-builder/repos.d/libguestfs.conf: $(top_builddir)/config.status $(top_srcdir)/builder/test-website/virt-builder/repos.d/libguestfs.conf.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 ruby/ext/guestfs/extconf.rb: $(top_builddir)/config.status $(top_srcdir)/ruby/ext/guestfs/extconf.rb.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
