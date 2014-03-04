@@ -9,10 +9,10 @@ The supermin appliance files are not installed to the multiarch lib directory.
  2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/appliance/Makefile.am b/appliance/Makefile.am
-index a9cc9fe..85f3b91 100644
+index 7077d37..ef8af5e 100644
 --- a/appliance/Makefile.am
 +++ b/appliance/Makefile.am
-@@ -27,8 +27,8 @@ EXTRA_DIST = \
+@@ -28,8 +28,8 @@ EXTRA_DIST = \
  	make.sh.in \
  	packagelist.in
  
