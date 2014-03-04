@@ -1,3 +1,19 @@
+commit 0b285e07a01329bfb8d27f086c939a2ba552a342
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 3 22:06:58 2014 +0000
+
+    Version 1.25.41.
+
+commit e87e377cfb1e5bf506cc51d4b535fab8cc1a2533
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 3 21:58:42 2014 +0000
+
+    appliance: Ensure that supermin.d directory is installed properly.
+    
+    Commit 0a966727abc83550d2026886eac2440c99e6cb5e had a missing
+    backslash in the list of files, so that 'make install' didn't install
+    all the files.
+
 commit 3acb4343eaf14c7286e1d762bce4fb0ef535ceb4
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon Mar 3 17:20:43 2014 +0000
