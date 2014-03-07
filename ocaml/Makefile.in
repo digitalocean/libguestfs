@@ -150,7 +150,8 @@ DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@am__append_5 = $(test_progs_opt)
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@am__append_6 = bindtests.opt
-@HAVE_OCAML_TRUE@am__append_7 = $(noinst_DATA)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@am__append_7 = *.cmx *.cmxa
+@HAVE_OCAML_TRUE@am__append_8 = $(noinst_DATA)
 subdir = ocaml
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1482,7 +1483,7 @@ EXTRA_DIST = \
 	t/*.ml
 
 CLEANFILES = *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so t/*.cmi \
-	t/*.cmo t/*.cmx t/*.o t/*.a t/*.so $(am__append_7)
+	t/*.cmo t/*.cmx t/*.o t/*.a t/*.so $(am__append_8)
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@noinst_DATA = mlguestfs.cma META $(am__append_1) \
@@ -1531,6 +1532,10 @@ CLEANFILES = *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so t/*.cmi \
 @HAVE_OCAML_TRUE@test_progs_all = $(test_progs_bc) $(am__append_5)
 @HAVE_OCAML_TRUE@TESTS = run-bindtests $(test_progs_all)
 @HAVE_OCAML_TRUE@SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly
+
+# Do the installation by hand, because we want to run ocamlfind.
+@HAVE_OCAML_TRUE@data_hook_files = META *.so *.a *.cma *.cmi \
+@HAVE_OCAML_TRUE@	$(srcdir)/*.mli $(am__append_7)
 all: all-am
 
 .SUFFIXES:
@@ -2041,14 +2046,13 @@ $(top_builddir)/generator/generator:
 
 @HAVE_OCAML_TRUE@-include .depend
 
-# Do the installation by hand, because we want to run ocamlfind.
 @HAVE_OCAML_TRUE@install-data-hook:
 @HAVE_OCAML_TRUE@	mkdir -p $(DESTDIR)$(OCAMLLIB)
 @HAVE_OCAML_TRUE@	mkdir -p $(DESTDIR)$(OCAMLLIB)/stublibs
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) install \
 @HAVE_OCAML_TRUE@	  -ldconf ignore -destdir $(DESTDIR)$(OCAMLLIB) \
 @HAVE_OCAML_TRUE@	  guestfs \
-@HAVE_OCAML_TRUE@	  META *.so *.a *.cma *.cmx *.cmxa *.cmi $(srcdir)/*.mli
+@HAVE_OCAML_TRUE@	  $(data_hook_files)
 @HAVE_OCAML_TRUE@	rm $(DESTDIR)$(OCAMLLIB)/guestfs/bindtests.*
 @HAVE_OCAML_TRUE@	rm $(DESTDIR)$(OCAMLLIB)/guestfs/libguestfsocaml.a
 
