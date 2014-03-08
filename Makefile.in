@@ -132,10 +132,11 @@ DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 	$(top_srcdir)/build-aux/install-sh \
 	$(top_srcdir)/build-aux/ltmain.sh \
 	$(top_srcdir)/build-aux/missing
-@ENABLE_DAEMON_TRUE@am__append_1 = daemon
+@ENABLE_GNULIB_TESTS_TRUE@am__append_1 = gnulib/tests
+@ENABLE_DAEMON_TRUE@am__append_2 = daemon
 
 # Tests - order is important.
-@ENABLE_APPLIANCE_TRUE@am__append_2 = appliance tests/qemu \
+@ENABLE_APPLIANCE_TRUE@am__append_3 = appliance tests/qemu \
 @ENABLE_APPLIANCE_TRUE@	tests/guests tests/c-api tests/tmpdirs \
 @ENABLE_APPLIANCE_TRUE@	tests/protocol tests/events \
 @ENABLE_APPLIANCE_TRUE@	tests/parallel tests/create tests/disks \
@@ -150,30 +151,30 @@ DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 @ENABLE_APPLIANCE_TRUE@	tests/relative-paths tests/regressions
 
 # Language bindings.
-@HAVE_PERL_TRUE@am__append_3 = perl perl/examples
-@HAVE_OCAML_TRUE@am__append_4 = ocaml ocaml/examples
-@HAVE_PYTHON_TRUE@am__append_5 = python python/examples
-@HAVE_RUBY_TRUE@am__append_6 = ruby ruby/examples
-@HAVE_JAVA_TRUE@am__append_7 = java java/examples
-@HAVE_HASKELL_TRUE@am__append_8 = haskell
-@HAVE_PHP_TRUE@am__append_9 = php
-@HAVE_ERLANG_TRUE@am__append_10 = erlang erlang/examples
-@HAVE_LUA_TRUE@am__append_11 = lua lua/examples
-@HAVE_GOBJECT_TRUE@am__append_12 = gobject
-@HAVE_GOLANG_TRUE@am__append_13 = golang golang/examples
+@HAVE_PERL_TRUE@am__append_4 = perl perl/examples
+@HAVE_OCAML_TRUE@am__append_5 = ocaml ocaml/examples
+@HAVE_PYTHON_TRUE@am__append_6 = python python/examples
+@HAVE_RUBY_TRUE@am__append_7 = ruby ruby/examples
+@HAVE_JAVA_TRUE@am__append_8 = java java/examples
+@HAVE_HASKELL_TRUE@am__append_9 = haskell
+@HAVE_PHP_TRUE@am__append_10 = php
+@HAVE_ERLANG_TRUE@am__append_11 = erlang erlang/examples
+@HAVE_LUA_TRUE@am__append_12 = lua lua/examples
+@HAVE_GOBJECT_TRUE@am__append_13 = gobject
+@HAVE_GOLANG_TRUE@am__append_14 = golang golang/examples
 
 # OCaml tools.  Note 'mllib' contains random shared code used by
 # all of the OCaml tools.
-@HAVE_OCAML_TRUE@am__append_14 = mllib builder builder/website resize sparsify sysprep
+@HAVE_OCAML_TRUE@am__append_15 = mllib builder builder/website resize sparsify sysprep
 
 # Perl tools.
-@HAVE_TOOLS_TRUE@am__append_15 = tools
+@HAVE_TOOLS_TRUE@am__append_16 = tools
 
 # guestmount
-@HAVE_FUSE_TRUE@am__append_16 = fuse
+@HAVE_FUSE_TRUE@am__append_17 = fuse
 
 # po-docs must come after tools, inspector.
-@HAVE_PO4A_TRUE@am__append_17 = po-docs
+@HAVE_PO4A_TRUE@am__append_18 = po-docs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1553,14 +1554,14 @@ ACLOCAL_AMFLAGS = -I m4
 # bash-completion
 
 # Unconditional because nothing is built yet.
-SUBDIRS = gnulib/lib gnulib/tests tests/data generator src examples po \
-	$(am__append_1) $(am__append_2) test-tool fish align cat diff \
-	df edit format inspector make-fs rescue bash $(am__append_3) \
+SUBDIRS = gnulib/lib $(am__append_1) tests/data generator src examples \
+	po $(am__append_2) $(am__append_3) test-tool fish align cat \
+	diff df edit format inspector make-fs rescue bash \
 	$(am__append_4) $(am__append_5) $(am__append_6) \
 	$(am__append_7) $(am__append_8) $(am__append_9) \
 	$(am__append_10) $(am__append_11) $(am__append_12) \
-	$(am__append_13) csharp $(am__append_14) $(am__append_15) \
-	$(am__append_16) $(am__append_17)
+	$(am__append_13) $(am__append_14) csharp $(am__append_15) \
+	$(am__append_16) $(am__append_17) $(am__append_18)
 EXTRA_DIST = \
 	BUGS HACKING ROADMAP TODO \
 	.gitignore \
