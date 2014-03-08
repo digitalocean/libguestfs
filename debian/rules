@@ -19,6 +19,7 @@ QEMU_CPU := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU \
 
 DEFAULT_CONFIG_FLAGS = \
 	--disable-appliance        \
+	--disable-gnulib-tests     \
 	--with-readline	           \
 	--disable-haskell          \
 	--disable-php	           \
