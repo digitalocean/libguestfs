@@ -91,6 +91,28 @@ print_strings (guestfs_h *g, char *const *argv)
   fprintf (fp, "]\n");
 }
 
+/* Fill an lvm_pv struct with known data.  Used by
+ * guestfs_internal_test_rstruct & guestfs_internal_test_rstructlist.
+ */
+static void
+fill_lvm_pv (guestfs_h *g, struct guestfs_lvm_pv *pv, size_t i)
+{
+  pv->pv_name = safe_asprintf (g, "pv%zu", i);
+  memcpy (pv->pv_uuid, "12345678901234567890123456789012", 32);
+  pv->pv_fmt = safe_strdup (g, "unknown");
+  pv->pv_size = i;
+  pv->dev_size = i;
+  pv->pv_free = i;
+  pv->pv_used = i;
+  pv->pv_attr = safe_asprintf (g, "attr%zu", i);
+  pv->pv_pe_count = i;
+  pv->pv_pe_alloc_count = i;
+  pv->pv_tags = safe_asprintf (g, "tag%zu", i);
+  pv->pe_start = i;
+  pv->pv_mda_count = i;
+  pv->pv_mda_free = i;
+}
+
 /* The internal_test function prints its parameters to stdout or the
  * file set by internal_test_set_output.
  */
@@ -711,7 +733,8 @@ guestfs__internal_test_rstruct (guestfs_h *g,
                                 const char *val)
 {
   struct guestfs_lvm_pv *r;
-  r = safe_calloc (g, sizeof *r, 1);
+  r = safe_malloc (g, sizeof *r);
+  fill_lvm_pv (g, r, 0);
   return r;
 }
 
@@ -734,12 +757,11 @@ guestfs__internal_test_rstructlist (guestfs_h *g,
     error (g, "%s: expecting uint32 argument", "internal_test_rstructlist");
     return NULL;
   }
-  r = safe_calloc (g, sizeof *r, 1);
+  r = safe_malloc (g, sizeof *r);
   r->len = len;
-  r->val = safe_calloc (g, r->len, sizeof *r->val);
-  for (size_t i = 0; i < r->len; i++) {
-    r->val[i].pv_size = i;
-  }
+  r->val = safe_malloc (g, r->len * sizeof (*r->val));
+  for (size_t i = 0; i < r->len; i++)
+    fill_lvm_pv (g, &r->val[i], i);
   return r;
 }
 

@@ -1,3 +1,96 @@
+commit 596955c1b52d8dd6a095254f7878da451a4bbb91
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 8 12:57:23 2014 +0000
+
+    Version 1.25.43.
+
+commit 29440e2fbcdee45d64eb6c5d5eb0cffca4a8ac23
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 8 12:41:20 2014 +0000
+
+    java: Complete test suite.
+
+commit 6fa9e5dac7c2381fc91c87152dc15c49ba38d377
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 8 12:29:00 2014 +0000
+
+    java: Document how to compile and run Java programs.
+
+commit 2b3131cf4053b7e39c5185c85ebaef78ce4d586e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 8 12:13:46 2014 +0000
+
+    java: Document how to use optional parameters in the guestfs-java(3) man page.
+
+commit 1ba2e3e14aa6d58bff26646a1328969fda44610f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 7 15:04:13 2014 +0000
+
+    java: Add regression test for RStruct/RStructList (RHBZ#1073906).
+
+commit ebf8a3654ac4a691d48199adb8e92e182012a8c2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 7 15:04:47 2014 +0000
+
+    bindtests: Fill in all fields in dummy lvm_pv struct.
+    
+    Used for testing RStruct/RStructList return values, but only
+    in GObject and Java bindings.
+
+commit dff35285e491d1905d38c90d83fed98932cbc3b3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 7 14:34:55 2014 +0000
+
+    java: Use correct Set*Field JNI accessors to set fields of the appropriate type.
+    
+    Using the wrong accessors (somehow - I have no idea how) caused other
+    fields in the struct to contain incorrect values.
+
+commit 7a0e71f7331540809db5f539d1a9fe2af050c56a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 7 14:25:14 2014 +0000
+
+    java: Factor out common field code in RStructList.
+    
+    No functional change.
+
+commit 8c219636a272c4288f22392ff27b9c04580aecb4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 7 14:01:28 2014 +0000
+
+    java: Split long lines in generated output, and add other whitespace.
+    
+    No functional change.
+
+commit d00840d727e4040a7958ecc613599d6ec2851e53
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 7 13:49:52 2014 +0000
+
+    java: Fix bogus construction of all RStructList returned values (RHBZ#1073906).
+    
+    Thanks Maarten on IRC for spotting the problem.
+
+commit 6aa64ee3a3f1c990b5f9ce537f2b840273c3c1ba
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 7 13:26:16 2014 +0000
+
+    java: run: Add java/.libs to LD_LIBRARY_PATH so JVM finds the right JNI file.
+
+commit 16954981e2fa9b8a6d8553ac622dd3777e5d02ef
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Sat Jun 1 15:12:27 2013 +0200
+
+    Allow gnulib tests to be disabled.
+    
+    RWMJ:
+    
+     - Patch taken from Debian downstream package.
+    
+     - The default in the original patch was to disable the tests.  I have
+       changed this to default to enable them instead.
+    
+     - Removed AC_SUBST as the variable was not being used.
+
 commit 96f6a8f57ce2d452efa35588a734fc170346b975
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Mar 6 15:59:35 2014 +0000

@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [25])
-m4_define([libguestfs_release], [42])
+m4_define([libguestfs_release], [43])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1552,6 +1552,14 @@ AM_CONDITIONAL([HAVE_BASH_COMPLETION],[test "x$bash_completion" = "xyes"])
 dnl For search paths.
 AC_DEFINE_UNQUOTED([PATH_SEPARATOR],["$PATH_SEPARATOR"],
                    [Character that separates path elements in search paths])
+
+AC_ARG_ENABLE([gnulib-tests],
+    [AS_HELP_STRING([--disable-gnulib-tests],
+        [disable running GNU Portability library tests @<:@default=yes@:>@])],
+        [ENABLE_GNULIB_TESTS="$enableval"],
+        [ENABLE_GNULIB_TESTS=yes])
+AM_CONDITIONAL([ENABLE_GNULIB_TESTS],[test "x$ENABLE_GNULIB_TESTS" = "xyes"])
+AC_MSG_RESULT([$ENABLE_GNULIB_TESTS])
 
 dnl Library versioning.
 MAX_PROC_NR=`cat $srcdir/src/MAX_PROC_NR`

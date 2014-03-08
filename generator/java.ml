@@ -1146,13 +1146,13 @@ and generate_java_struct_return typ jtyp cols =
         pr "  (*env)->SetLongField (env, jr, fl, r->%s);\n" name;
     | name, (FUInt32|FInt32) ->
         pr "  fl = (*env)->GetFieldID (env, cl, \"%s\", \"I\");\n" name;
-        pr "  (*env)->SetLongField (env, jr, fl, r->%s);\n" name;
+        pr "  (*env)->SetIntField (env, jr, fl, r->%s);\n" name;
     | name, FOptPercent ->
         pr "  fl = (*env)->GetFieldID (env, cl, \"%s\", \"F\");\n" name;
         pr "  (*env)->SetFloatField (env, jr, fl, r->%s);\n" name;
     | name, FChar ->
         pr "  fl = (*env)->GetFieldID (env, cl, \"%s\", \"C\");\n" name;
-        pr "  (*env)->SetLongField (env, jr, fl, r->%s);\n" name;
+        pr "  (*env)->SetCharField (env, jr, fl, r->%s);\n" name;
   ) cols;
   pr "  free (r);\n";
   pr "  return jr;\n"
@@ -1160,45 +1160,57 @@ and generate_java_struct_return typ jtyp cols =
 and generate_java_struct_list_return typ jtyp cols =
   pr "  cl = (*env)->FindClass (env, \"com/redhat/et/libguestfs/%s\");\n" jtyp;
   pr "  jr = (*env)->NewObjectArray (env, r->len, cl, NULL);\n";
+  pr "\n";
   pr "  for (i = 0; i < r->len; ++i) {\n";
   pr "    jfl = (*env)->AllocObject (env, cl);\n";
+  pr "\n";
   List.iter (
-    function
-    | name, FString ->
-        pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"Ljava/lang/String;\");\n" name;
-        pr "    (*env)->SetObjectField (env, jfl, fl, (*env)->NewStringUTF (env, r->val[i].%s));\n" name;
-    | name, FUUID ->
+    fun (name, ftyp) ->
+      (* Get the field ID in 'fl'. *)
+      let java_field_type = match ftyp with
+        | FString | FUUID | FBuffer -> "Ljava/lang/String;"
+        | FBytes | FUInt64 | FInt64 -> "J"
+        | FUInt32 | FInt32 -> "I"
+        | FOptPercent -> "F"
+        | FChar -> "C" in
+      pr "    fl = (*env)->GetFieldID (env, cl, \"%s\",\n" name;
+      pr "                             \"%s\");\n" java_field_type;
+
+      (* Assign the value to this field. *)
+      match ftyp with
+      | FString ->
+        pr "    (*env)->SetObjectField (env, jfl, fl,\n";
+        pr "                            (*env)->NewStringUTF (env, r->val[i].%s));\n" name;
+      | FUUID ->
         pr "    {\n";
         pr "      char s[33];\n";
         pr "      memcpy (s, r->val[i].%s, 32);\n" name;
         pr "      s[32] = 0;\n";
-        pr "      fl = (*env)->GetFieldID (env, cl, \"%s\", \"Ljava/lang/String;\");\n" name;
-        pr "      (*env)->SetObjectField (env, jfl, fl, (*env)->NewStringUTF (env, s));\n";
+        pr "      (*env)->SetObjectField (env, jfl, fl,\n";
+        pr "                              (*env)->NewStringUTF (env, s));\n";
         pr "    }\n";
-    | name, FBuffer ->
+      | FBuffer ->
         pr "    {\n";
         pr "      size_t len = r->val[i].%s_len;\n" name;
         pr "      char s[len+1];\n";
         pr "      memcpy (s, r->val[i].%s, len);\n" name;
         pr "      s[len] = 0;\n";
-        pr "      fl = (*env)->GetFieldID (env, cl, \"%s\", \"Ljava/lang/String;\");\n" name;
-        pr "      (*env)->SetObjectField (env, jfl, fl, (*env)->NewStringUTF (env, s));\n";
+        pr "      (*env)->SetObjectField (env, jfl, fl,\n";
+        pr "                              (*env)->NewStringUTF (env, s));\n";
         pr "    }\n";
-    | name, (FBytes|FUInt64|FInt64) ->
-        pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"J\");\n" name;
+      | FBytes|FUInt64|FInt64 ->
         pr "    (*env)->SetLongField (env, jfl, fl, r->val[i].%s);\n" name;
-    | name, (FUInt32|FInt32) ->
-        pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"I\");\n" name;
-        pr "    (*env)->SetLongField (env, jfl, fl, r->val[i].%s);\n" name;
-    | name, FOptPercent ->
-        pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"F\");\n" name;
+      | FUInt32|FInt32 ->
+        pr "    (*env)->SetIntField (env, jfl, fl, r->val[i].%s);\n" name;
+      | FOptPercent ->
         pr "    (*env)->SetFloatField (env, jfl, fl, r->val[i].%s);\n" name;
-    | name, FChar ->
-        pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"C\");\n" name;
-        pr "    (*env)->SetLongField (env, jfl, fl, r->val[i].%s);\n" name;
+      | FChar ->
+        pr "    (*env)->SetCharField (env, jfl, fl, r->val[i].%s);\n" name;
   ) cols;
-  pr "    (*env)->SetObjectArrayElement (env, jfl, i, jfl);\n";
+  pr "\n";
+  pr "    (*env)->SetObjectArrayElement (env, jr, i, jfl);\n";
   pr "  }\n";
+  pr "\n";
   pr "  guestfs_free_%s_list (r);\n" typ;
   pr "  return jr;\n"
 
