@@ -1,9 +1,0 @@
-libguestfs for Debian
-=====================
-
-libguestfs needs a supermin appliance to perform its work. To generate
-or update it, simply run:
-
-# update-guestfs-appliance
-
- -- Hilko Bengen <bengen@debian.org>, Sun,  7 Aug 2011 13:34:13 +0200

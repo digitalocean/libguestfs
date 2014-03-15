@@ -1,3 +1,2 @@
-0001-Fix-guestfs-supermin-appliance-path.patch
-0002-perl-revert-failed-attempt-at-building-out-of-tree-s.patch
-0003-golang-Fix-for-out-of-tree-builds.patch
+0001-perl-revert-failed-attempt-at-building-out-of-tree-s.patch
+0002-golang-Fix-for-out-of-tree-builds.patch

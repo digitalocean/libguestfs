@@ -1,0 +1,5 @@
+# Lintian should not complain about files in arch-specific directories.
+libguestfs0: gzip-file-is-not-multi-arch-same-safe usr/lib/x86_64-linux-gnu/guestfs/supermin.d/base.tar.gz
+libguestfs0: gzip-file-is-not-multi-arch-same-safe usr/lib/x86_64-linux-gnu/guestfs/supermin.d/daemon.tar.gz
+libguestfs0: gzip-file-is-not-multi-arch-same-safe usr/lib/x86_64-linux-gnu/guestfs/supermin.d/init.tar.gz
+libguestfs0: gzip-file-is-not-multi-arch-same-safe usr/lib/x86_64-linux-gnu/guestfs/supermin.d/udev-rules.tar.gz

@@ -1,4 +1,5 @@
 usr/lib/*-*/libguestfs.so.*
+usr/lib/*-*/guestfs/*
 usr/share/man/man1/guestfs-*
 usr/share/man/*/man1/guestfs-*
 usr/share/locale/*/LC_MESSAGES/libguestfs.mo

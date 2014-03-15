@@ -4,11 +4,7 @@ set -e
 
 case "$1" in
     configure|reconfigure)
-        . /usr/share/debconf/confmodule
-        db_get libguestfs/update-appliance
-        if [ "$RET" = true ]; then
-            update-guestfs-appliance >&2 || true
-        fi
+        rm -f /usr/lib/guestfs/supermin.d/base.img.gz
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
