@@ -41,6 +41,8 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_available_all_groups@Base 1.10
  guestfs_base64_in@Base 1.10
  guestfs_base64_out@Base 1.10
+ guestfs_blkdiscard@Base 1:1.25.44
+ guestfs_blkdiscardzeroes@Base 1:1.25.44
  guestfs_blkid@Base 1:1.16
  guestfs_blockdev_flushbufs@Base 1.10
  guestfs_blockdev_getbsz@Base 1.10
