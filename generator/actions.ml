@@ -1286,7 +1286,7 @@ not all belong to a single logical operating system
 
   { defaults with
     name = "add_drive";
-    style = RErr, [String "filename"], [OBool "readonly"; OString "format"; OString "iface"; OString "name"; OString "label"; OString "protocol"; OStringList "server"; OString "username"; OString "secret"; OString "cachemode"];
+    style = RErr, [String "filename"], [OBool "readonly"; OString "format"; OString "iface"; OString "name"; OString "label"; OString "protocol"; OStringList "server"; OString "username"; OString "secret"; OString "cachemode"; OString "discard"];
     once_had_no_optargs = true;
     blocking = false;
     fish_alias = ["add"];
@@ -1504,6 +1504,36 @@ for scratch or temporary disks.
 
 =back
 
+=item C<discard>
+
+Enable or disable discard (a.k.a. trim or unmap) support on this
+drive.  If enabled, operations such as C<guestfs_fstrim> will be able
+to discard / make thin / punch holes in the underlying host file
+or device.
+
+Possible discard settings are:
+
+=over 4
+
+=item C<discard = \"disable\">
+
+Disable discard support.  This is the default.
+
+=item C<discard = \"enable\">
+
+Enable discard support.  Fail if discard is not possible.
+
+=item C<discard = \"besteffort\">
+
+Enable discard support if possible, but don't fail if it is not
+supported.
+
+Since not all backends and not all underlying systems support
+discard, this is a good choice if you want to use discard if
+possible, but don't mind if it doesn't work.
+
+=back
+
 =back" };
 
   { defaults with
@@ -1546,7 +1576,7 @@ not part of the formal API and can be removed or changed at any time." };
 
   { defaults with
     name = "add_domain";
-    style = RInt "nrdisks", [String "dom"], [OString "libvirturi"; OBool "readonly"; OString "iface"; OBool "live"; OBool "allowuuid"; OString "readonlydisk"];
+    style = RInt "nrdisks", [String "dom"], [OString "libvirturi"; OBool "readonly"; OString "iface"; OBool "live"; OBool "allowuuid"; OString "readonlydisk"; OString "cachemode"; OString "discard"];
     fish_alias = ["domain"]; config_only = true;
     shortdesc = "add the disk(s) from a named libvirt domain";
     longdesc = "\
@@ -1638,7 +1668,7 @@ C<guestfs_add_drive_opts>." };
 This interface is not quite baked yet. -- RWMJ 2010-11-11
   { defaults with
     name = "add_libvirt_dom";
-    style = RInt "nrdisks", [Pointer ("virDomainPtr", "dom")], [Bool "readonly"; String "iface"; Bool "live"; String "readonlydisk"];
+    style = RInt "nrdisks", [Pointer ("virDomainPtr", "dom")], [Bool "readonly"; String "iface"; Bool "live"; String "readonlydisk"; OString "cachemode"; OString "discard"];
     in_fish = false;
     shortdesc = "add the disk(s) from a libvirt domain";
     longdesc = "\
@@ -11787,6 +11817,36 @@ device C<device>.  Note that partitions are numbered from 1.
 
 The partition name can only be read on certain types of partition
 table.  This works on C<gpt> but not on C<mbr> partitions." };
+
+  { defaults with
+    name = "blkdiscard";
+    style = RErr, [Device "device"], [];
+    proc_nr = Some 417;
+    optional = Some "blkdiscard";
+    shortdesc = "discard all blocks on a device";
+    longdesc = "\
+This discards all blocks on the block device C<device>, giving
+the free space back to the host.
+
+This operation requires support in libguestfs, the host filesystem,
+qemu and the host kernel.  If this support isn't present it may give
+an error or even appear to run but do nothing.  You must also
+set the C<discard> attribute on the underlying drive (see
+C<guestfs_add_drive_opts>)." };
+
+  { defaults with
+    name = "blkdiscardzeroes";
+    style = RBool "zeroes", [Device "device"], [];
+    proc_nr = Some 418;
+    optional = Some "blkdiscardzeroes";
+    shortdesc = "return true if discarded blocks are read as zeroes";
+    longdesc = "\
+This call returns true if blocks on C<device> that have been
+discarded by a call to C<guestfs_blkdiscard> are returned as
+blocks of zero bytes when read the next time.
+
+If it returns false, then it may be that discarded blocks are
+read as stale or random data." };
 
 ]
 

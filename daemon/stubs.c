@@ -16216,6 +16216,92 @@ done_no_free:
   return;
 }
 
+static void
+blkdiscard_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_blkdiscard_args args;
+  CLEANUP_FREE char *device = NULL;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_blkdiscard_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "blkdiscard");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_blkdiscard_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.device, device, , goto done);
+
+  r = do_blkdiscard (device);
+  if (r == -1)
+    /* do_blkdiscard has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_blkdiscard_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+blkdiscardzeroes_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_blkdiscardzeroes_args args;
+  CLEANUP_FREE char *device = NULL;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_blkdiscardzeroes_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "blkdiscardzeroes");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_blkdiscardzeroes_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.device, device, , goto done);
+
+  r = do_blkdiscardzeroes (device);
+  if (r == -1)
+    /* do_blkdiscardzeroes has already called reply_with_error */
+    goto done;
+
+  struct guestfs_blkdiscardzeroes_ret ret;
+  ret.zeroes = r;
+  reply ((xdrproc_t) &xdr_guestfs_blkdiscardzeroes_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_blkdiscardzeroes_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -17445,6 +17531,12 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_PART_GET_NAME:
       part_get_name_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BLKDISCARD:
+      blkdiscard_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BLKDISCARDZEROES:
+      blkdiscardzeroes_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

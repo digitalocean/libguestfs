@@ -88,7 +88,7 @@ with correct use of these functions.
 
 =head2 domain
 
- add-domain dom [libvirturi:..] [readonly:true|false] [iface:..] [live:true|false] [allowuuid:true|false] [readonlydisk:..]
+ add-domain dom [libvirturi:..] [readonly:true|false] [iface:..] [live:true|false] [allowuuid:true|false] [readonlydisk:..] [cachemode:..] [discard:..]
 
 This function adds the disk(s) attached to the named libvirt
 domain C<dom>.  It works by connecting to libvirt, requesting
@@ -182,7 +182,7 @@ This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 
 =head2 add-drive-opts
 
- add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..] [secret:..] [cachemode:..]
+ add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..] [secret:..] [cachemode:..] [discard:..]
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -393,6 +393,36 @@ committed to disk.
 In this mode, there are no guarantees.  Libguestfs may cache
 anything and ignore sync requests.  This is suitable only
 for scratch or temporary disks.
+
+=back
+
+=item C<discard>
+
+Enable or disable discard (a.k.a. trim or unmap) support on this
+drive.  If enabled, operations such as L</fstrim> will be able
+to discard / make thin / punch holes in the underlying host file
+or device.
+
+Possible discard settings are:
+
+=over 4
+
+=item C<discard = "disable">
+
+Disable discard support.  This is the default.
+
+=item C<discard = "enable">
+
+Enable discard support.  Fail if discard is not possible.
+
+=item C<discard = "besteffort">
+
+Enable discard support if possible, but don't fail if it is not
+supported.
+
+Since not all backends and not all underlying systems support
+discard, this is a good choice if you want to use discard if
+possible, but don't mind if it doesn't work.
 
 =back
 
@@ -750,6 +780,30 @@ This command downloads the contents of C<filename>, writing
 it out to local file C<base64file> encoded as base64.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
+
+=head2 blkdiscard
+
+ blkdiscard device
+
+This discards all blocks on the block device C<device>, giving
+the free space back to the host.
+
+This operation requires support in libguestfs, the host filesystem,
+qemu and the host kernel.  If this support isn't present it may give
+an error or even appear to run but do nothing.  You must also
+set the C<discard> attribute on the underlying drive (see
+L</add-drive-opts>).
+
+=head2 blkdiscardzeroes
+
+ blkdiscardzeroes device
+
+This call returns true if blocks on C<device> that have been
+discarded by a call to L</blkdiscard> are returned as
+blocks of zero bytes when read the next time.
+
+If it returns false, then it may be that discarded blocks are
+read as stale or random data.
 
 =head2 blkid
 

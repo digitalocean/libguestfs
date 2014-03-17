@@ -1448,13 +1448,17 @@ top_srcdir = @top_srcdir@
 EXTRA_DIST = \
 	$(SOURCES) \
 	virt-sparsify.pod \
-	test-virt-sparsify.sh
+	test-virt-sparsify.sh \
+	test-virt-sparsify-in-place.sh
 
 CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify \
 	$(am__append_2)
 
 # Alphabetical order.
 SOURCES = \
+	cmdline.ml \
+	copying.ml \
+	in_place.ml \
 	sparsify.ml \
 	statvfs-c.c
 
@@ -1470,6 +1474,9 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/progress.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmx \
 @HAVE_OCAML_TRUE@	statvfs-c.o \
+@HAVE_OCAML_TRUE@	cmdline.cmx \
+@HAVE_OCAML_TRUE@	copying.cmx \
+@HAVE_OCAML_TRUE@	in_place.cmx \
 @HAVE_OCAML_TRUE@	sparsify.cmx
 
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OBJECTS = $(patsubst %.cmx,%.cmo,$(deps))
@@ -1502,7 +1509,10 @@ SOURCES = \
 
 # Tests.
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@TESTS = test-virt-sparsify.sh
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@TESTS = \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-virt-sparsify.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-virt-sparsify-in-place.sh
+
 DISTCLEANFILES = .depend
 all: all-am
 

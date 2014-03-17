@@ -63,6 +63,8 @@
         guestfs_available_all_groups;
         guestfs_base64_in;
         guestfs_base64_out;
+        guestfs_blkdiscard;
+        guestfs_blkdiscardzeroes;
         guestfs_blkid;
         guestfs_blockdev_flushbufs;
         guestfs_blockdev_getbsz;

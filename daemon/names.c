@@ -435,4 +435,6 @@ const char *function_names[] = {
   [414] = "internal_exit",
   [415] = "copy_attributes",
   [416] = "part_get_name",
+  [417] = "blkdiscard",
+  [418] = "blkdiscardzeroes",
 };

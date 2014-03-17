@@ -50,6 +50,8 @@ module Guestfs (
   available_all_groups,
   base64_in,
   base64_out,
+  blkdiscard,
+  blkdiscardzeroes,
   blkid,
   blockdev_flushbufs,
   blockdev_getbsz,
@@ -832,6 +834,30 @@ base64_out h filename base64file = do
       err <- last_error h
       fail err
     else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_blkdiscard" c_blkdiscard
+  :: GuestfsP -> CString -> IO CInt
+
+blkdiscard :: GuestfsH -> String -> IO ()
+blkdiscard h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_blkdiscard p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_blkdiscardzeroes" c_blkdiscardzeroes
+  :: GuestfsP -> CString -> IO CInt
+
+blkdiscardzeroes :: GuestfsH -> String -> IO Bool
+blkdiscardzeroes h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_blkdiscardzeroes p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
 
 foreign import ccall unsafe "guestfs.h guestfs_blkid" c_blkid
   :: GuestfsP -> CString -> IO (Ptr CString)

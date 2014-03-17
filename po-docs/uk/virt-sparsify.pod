@@ -8,6 +8,8 @@ virt-sparsify - Make a virtual machine disk sparse
 
  virt-sparsify [--options] indisk outdisk
 
+ virt-sparsify [--options] --in-place disk
+
 =head1 ОПИС
 
 Virt-sparsify is a tool which can make a virtual machine disk (or any disk
@@ -44,12 +46,6 @@ check the output size using a tool that understands sparseness> such as C<du
 
 =item *
 
-Virt-sparsify does not do in-place modifications.  It copies from a source
-image to a destination image, leaving the source unchanged.  I<Check that
-the sparsification was successful before deleting the source image>.
-
-=item *
-
 The virtual machine I<must be shut down> before using this tool.
 
 =item *
@@ -57,6 +53,9 @@ The virtual machine I<must be shut down> before using this tool.
 Virt-sparsify may require up to 2x the virtual size of the source disk image
 (1 temporary copy + 1 destination image).  This is in the worst case and
 usually much less space is required.
+
+If you are using the I<--in-place> option, then large amounts of temporary
+space are B<not> required.
 
 =item *
 
@@ -101,6 +100,11 @@ free space on) certain filesystems by doing:
 
 See L<virt-filesystems(1)> to get a list of filesystems within a disk image.
 
+Since virt-sparsify E<ge> 1.26, you can now sparsify a disk image in place
+by doing:
+
+ virt-sparsify --in-place disk.img
+
 =head1 ПАРАМЕТРИ
 
 =over 4
@@ -143,10 +147,14 @@ B<fail> and exit.
 
 =back
 
+You cannot use this option and I<--in-place> together.
+
 =item B<--compress>
 
 Compress the output file.  This I<only> works if the output format is
 C<qcow2>.
+
+You cannot use this option and I<--in-place> together.
 
 =item B<--convert> raw
 
@@ -167,6 +175,8 @@ virt-sparsify doesn't need to try to guess the input format.
 
 For fine-tuning the output format, see: I<--compress>, I<-o>.
 
+You cannot use this option and I<--in-place> together.
+
 =item B<--debug-gc>
 
 Debug garbage collection and memory allocation.  This is only useful when
@@ -186,13 +196,22 @@ the format is always specified.
 
 =item B<--ignore> група_томів
 
-Ignore the named filesystem.  Free space on the filesystem will not be
+Ignore the named filesystem.
+
+When not using I<--in-place>: Free space on the filesystem will not be
 zeroed, but existing blocks of zeroes will still be sparsified.
+
+When using I<--in-place>, the filesystem is ignored completely.
 
 In the second form, this ignores the named volume group.  Use the volume
 group name without the C</dev/> prefix, eg. I<--ignore vg_foo>
 
 Цей параметр можна вказувати декілька разів.
+
+=item B<--in-place>
+
+Do in-place sparsification instead of copying sparsification.  See
+L</IN-PLACE SPARSIFICATION> below.
 
 =item B<--machine-readable>
 
@@ -210,6 +229,8 @@ with commas, eg:
 
  virt-sparsify --convert qcow2 \
    -o cluster_size=512,preallocation=metadata ...
+
+You cannot use this option and I<--in-place> together.
 
 =item B<-q>
 
@@ -242,6 +263,25 @@ All data on the device is lost, but sparsification is excellent! You can
 give this option multiple times.
 
 =back
+
+=head1 IN-PLACE SPARSIFICATION
+
+Since virt-sparsify E<ge> 1.26, the tool is able to do in-place
+sparsification (instead of copying from an input disk to an output disk).
+This is more efficient.  However it requires special support in libguestfs,
+the kernel and qemu, and it is not able to recover quite as much space as
+copying sparsification.  So in-place sparsification is considered to be
+experimental at this time.
+
+To use this mode, specify a disk image which will be modified in place:
+
+ virt-sparsify --in-place disk.img
+
+Some options are not compatible with this mode: I<--convert>, I<--compress>
+and I<-o> because they require wholesale disk format changes;
+I<--check-tmpdir> because large amounts of temporary space are not required.
+
+In-place sparsification works using discard (a.k.a trim or unmap)  support.
 
 =head1 MACHINE READABLE OUTPUT
 
@@ -326,6 +366,9 @@ mountpoint, eg:
 
  mount -o remount,size=10G /tmp
 
+If you are using the I<--in-place> option, then large amounts of temporary
+space are B<not> required.
+
 =back
 
 Опис інших змінних середовища наведено у розділі L<guestfs(3)/ENVIRONMENT
@@ -343,5 +386,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2011–2012
+Copyright (C) 2011-2014 Red Hat Inc.
 

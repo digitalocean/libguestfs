@@ -728,6 +728,8 @@ extern GUESTFS_DLL_PUBLIC int guestfs_add_cdrom (guestfs_h *g, const char *filen
 #define GUESTFS_ADD_DOMAIN_LIVE 3
 #define GUESTFS_ADD_DOMAIN_ALLOWUUID 4
 #define GUESTFS_ADD_DOMAIN_READONLYDISK 5
+#define GUESTFS_ADD_DOMAIN_CACHEMODE 6
+#define GUESTFS_ADD_DOMAIN_DISCARD 7
 extern GUESTFS_DLL_PUBLIC int guestfs_add_domain (guestfs_h *g, const char *dom, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_add_domain_va (guestfs_h *g, const char *dom, va_list args);
 
@@ -745,6 +747,10 @@ struct guestfs_add_domain_argv {
   int allowuuid;
 # define GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK (UINT64_C(1)<<5)
   const char *readonlydisk;
+# define GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK (UINT64_C(1)<<6)
+  const char *cachemode;
+# define GUESTFS_ADD_DOMAIN_DISCARD_BITMASK (UINT64_C(1)<<7)
+  const char *discard;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_add_domain_argv (guestfs_h *g, const char *dom, const struct guestfs_add_domain_argv *optargs);
@@ -763,6 +769,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_add_drive (guestfs_h *g, const char *filen
 #define GUESTFS_ADD_DRIVE_OPTS_USERNAME 7
 #define GUESTFS_ADD_DRIVE_OPTS_SECRET 8
 #define GUESTFS_ADD_DRIVE_OPTS_CACHEMODE 9
+#define GUESTFS_ADD_DRIVE_OPTS_DISCARD 10
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts (guestfs_h *g, const char *filename, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts_va (guestfs_h *g, const char *filename, va_list args);
 
@@ -788,6 +795,8 @@ struct guestfs_add_drive_opts_argv {
   const char *secret;
 # define GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK (UINT64_C(1)<<9)
   const char *cachemode;
+# define GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK (UINT64_C(1)<<10)
+  const char *discard;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts_argv (guestfs_h *g, const char *filename, const struct guestfs_add_drive_opts_argv *optargs);
@@ -876,6 +885,12 @@ extern GUESTFS_DLL_PUBLIC int guestfs_base64_in (guestfs_h *g, const char *base6
 
 #define GUESTFS_HAVE_BASE64_OUT 1
 extern GUESTFS_DLL_PUBLIC int guestfs_base64_out (guestfs_h *g, const char *filename, const char *base64file);
+
+#define GUESTFS_HAVE_BLKDISCARD 1
+extern GUESTFS_DLL_PUBLIC int guestfs_blkdiscard (guestfs_h *g, const char *device);
+
+#define GUESTFS_HAVE_BLKDISCARDZEROES 1
+extern GUESTFS_DLL_PUBLIC int guestfs_blkdiscardzeroes (guestfs_h *g, const char *device);
 
 #define GUESTFS_HAVE_BLKID 1
 extern GUESTFS_DLL_PUBLIC char **guestfs_blkid (guestfs_h *g, const char *device);
@@ -3605,6 +3620,8 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_AVAILABLE_ALL_GROUPS 1
 #define LIBGUESTFS_HAVE_BASE64_IN 1
 #define LIBGUESTFS_HAVE_BASE64_OUT 1
+#define LIBGUESTFS_HAVE_BLKDISCARD 1
+#define LIBGUESTFS_HAVE_BLKDISCARDZEROES 1
 #define LIBGUESTFS_HAVE_BLKID 1
 #define LIBGUESTFS_HAVE_BLOCKDEV_FLUSHBUFS 1
 #define LIBGUESTFS_HAVE_BLOCKDEV_GETBSZ 1

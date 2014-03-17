@@ -2873,6 +2873,18 @@ struct guestfs_part_get_name_ret {
   string name<>;
 };
 
+struct guestfs_blkdiscard_args {
+  string device<>;
+};
+
+struct guestfs_blkdiscardzeroes_args {
+  string device<>;
+};
+
+struct guestfs_blkdiscardzeroes_ret {
+  bool zeroes;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3283,10 +3295,12 @@ enum guestfs_procedure {
   GUESTFS_PROC_INTERNAL_UPLOAD = 413,
   GUESTFS_PROC_INTERNAL_EXIT = 414,
   GUESTFS_PROC_COPY_ATTRIBUTES = 415,
-  GUESTFS_PROC_PART_GET_NAME = 416
+  GUESTFS_PROC_PART_GET_NAME = 416,
+  GUESTFS_PROC_BLKDISCARD = 417,
+  GUESTFS_PROC_BLKDISCARDZEROES = 418
 };
 
-const GUESTFS_MAX_PROC_NR = 416;
+const GUESTFS_MAX_PROC_NR = 418;
 
 /* The remote procedure call protocol. */
 

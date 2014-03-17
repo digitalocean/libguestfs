@@ -33,6 +33,11 @@ GuestfsAddDrive
 
 </para>
 
+<!-- ##### ARG GuestfsAddDrive:discard ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GuestfsAddDrive:format ##### -->
 <para>
 

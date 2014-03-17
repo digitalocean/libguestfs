@@ -157,6 +157,8 @@ gboolean guestfs_session_available (GuestfsSession *session, gchar *const *group
 gchar **guestfs_session_available_all_groups (GuestfsSession *session, GError **err);
 gboolean guestfs_session_base64_in (GuestfsSession *session, const gchar *base64file, const gchar *filename, GCancellable *cancellable, GError **err);
 gboolean guestfs_session_base64_out (GuestfsSession *session, const gchar *filename, const gchar *base64file, GCancellable *cancellable, GError **err);
+gboolean guestfs_session_blkdiscard (GuestfsSession *session, const gchar *device, GError **err);
+gint8 guestfs_session_blkdiscardzeroes (GuestfsSession *session, const gchar *device, GError **err);
 GHashTable *guestfs_session_blkid (GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_blockdev_flushbufs (GuestfsSession *session, const gchar *device, GError **err);
 gint32 guestfs_session_blockdev_getbsz (GuestfsSession *session, const gchar *device, GError **err);

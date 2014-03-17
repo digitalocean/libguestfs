@@ -74,6 +74,8 @@ static int run_available (const char *cmd, size_t argc, char *argv[]);
 static int run_available_all_groups (const char *cmd, size_t argc, char *argv[]);
 static int run_base64_in (const char *cmd, size_t argc, char *argv[]);
 static int run_base64_out (const char *cmd, size_t argc, char *argv[]);
+static int run_blkdiscard (const char *cmd, size_t argc, char *argv[]);
+static int run_blkdiscardzeroes (const char *cmd, size_t argc, char *argv[]);
 static int run_blkid (const char *cmd, size_t argc, char *argv[]);
 static int run_blockdev_flushbufs (const char *cmd, size_t argc, char *argv[]);
 static int run_blockdev_getbsz (const char *cmd, size_t argc, char *argv[]);
@@ -698,13 +700,13 @@ struct command_entry add_cdrom_cmd_entry = {
 
 struct command_entry add_domain_cmd_entry = {
   .name = "add-domain",
-  .help = "NAME\n    add-domain - add the disk(s) from a named libvirt domain\n\nSYNOPSIS\n     add-domain dom [libvirturi:..] [readonly:true|false] [iface:..] [live:true|false] [allowuuid:true|false] [readonlydisk:..]\n\nDESCRIPTION\n    This function adds the disk(s) attached to the named libvirt domain\n    \"dom\". It works by connecting to libvirt, requesting the domain and\n    domain XML from libvirt, parsing it for disks, and calling\n    \"add_drive_opts\" on each one.\n\n    The number of disks added is returned. This operation is atomic: if an\n    error is returned, then no disks are added.\n\n    This function does some minimal checks to make sure the libvirt domain\n    is not running (unless \"readonly\" is true). In a future version we will\n    try to acquire the libvirt lock on each disk.\n\n    Disks must be accessible locally. This often means that adding disks\n    from a remote libvirt connection (see <http://libvirt.org/remote.html>)\n    will fail unless those disks are accessible via the same device path\n    locally too.\n\n    The optional \"libvirturi\" parameter sets the libvirt URI (see\n    <http://libvirt.org/uri.html>). If this is not set then we connect to\n    the default libvirt URI (or one set through an environment variable, see\n    the libvirt documentation for full details).\n\n    The optional \"live\" flag controls whether this call will try to connect\n    to a running virtual machine \"guestfsd\" process if it sees a suitable\n    <channel> element in the libvirt XML definition. The default (if the\n    flag is omitted) is never to try. See \"ATTACHING TO RUNNING DAEMONS\" in\n    guestfs(3) for more information.\n\n    If the \"allowuuid\" flag is true (default is false) then a UUID *may* be\n    passed instead of the domain name. The \"dom\" string is treated as a UUID\n    first and looked up, and if that lookup fails then we treat \"dom\" as a\n    name as usual.\n\n    The optional \"readonlydisk\" parameter controls what we do for disks\n    which are marked <readonly/> in the libvirt XML. Possible values are:\n\n    readonlydisk = \"error\"\n        If \"readonly\" is false:\n\n        The whole call is aborted with an error if any disk with the\n        <readonly/> flag is found.\n\n        If \"readonly\" is true:\n\n        Disks with the <readonly/> flag are added read-only.\n\n    readonlydisk = \"read\"\n        If \"readonly\" is false:\n\n        Disks with the <readonly/> flag are added read-only. Other disks are\n        added read/write.\n\n        If \"readonly\" is true:\n\n        Disks with the <readonly/> flag are added read-only.\n\n    readonlydisk = \"write\" (default)\n        If \"readonly\" is false:\n\n        Disks with the <readonly/> flag are added read/write.\n\n        If \"readonly\" is true:\n\n        Disks with the <readonly/> flag are added read-only.\n\n    readonlydisk = \"ignore\"\n        If \"readonly\" is true or false:\n\n        Disks with the <readonly/> flag are skipped.\n\n    The other optional parameters are passed directly through to\n    \"add_drive_opts\".\n\n    You can use 'domain' as an alias for this command.\n\n",
+  .help = "NAME\n    add-domain - add the disk(s) from a named libvirt domain\n\nSYNOPSIS\n     add-domain dom [libvirturi:..] [readonly:true|false] [iface:..] [live:true|false] [allowuuid:true|false] [readonlydisk:..] [cachemode:..] [discard:..]\n\nDESCRIPTION\n    This function adds the disk(s) attached to the named libvirt domain\n    \"dom\". It works by connecting to libvirt, requesting the domain and\n    domain XML from libvirt, parsing it for disks, and calling\n    \"add_drive_opts\" on each one.\n\n    The number of disks added is returned. This operation is atomic: if an\n    error is returned, then no disks are added.\n\n    This function does some minimal checks to make sure the libvirt domain\n    is not running (unless \"readonly\" is true). In a future version we will\n    try to acquire the libvirt lock on each disk.\n\n    Disks must be accessible locally. This often means that adding disks\n    from a remote libvirt connection (see <http://libvirt.org/remote.html>)\n    will fail unless those disks are accessible via the same device path\n    locally too.\n\n    The optional \"libvirturi\" parameter sets the libvirt URI (see\n    <http://libvirt.org/uri.html>). If this is not set then we connect to\n    the default libvirt URI (or one set through an environment variable, see\n    the libvirt documentation for full details).\n\n    The optional \"live\" flag controls whether this call will try to connect\n    to a running virtual machine \"guestfsd\" process if it sees a suitable\n    <channel> element in the libvirt XML definition. The default (if the\n    flag is omitted) is never to try. See \"ATTACHING TO RUNNING DAEMONS\" in\n    guestfs(3) for more information.\n\n    If the \"allowuuid\" flag is true (default is false) then a UUID *may* be\n    passed instead of the domain name. The \"dom\" string is treated as a UUID\n    first and looked up, and if that lookup fails then we treat \"dom\" as a\n    name as usual.\n\n    The optional \"readonlydisk\" parameter controls what we do for disks\n    which are marked <readonly/> in the libvirt XML. Possible values are:\n\n    readonlydisk = \"error\"\n        If \"readonly\" is false:\n\n        The whole call is aborted with an error if any disk with the\n        <readonly/> flag is found.\n\n        If \"readonly\" is true:\n\n        Disks with the <readonly/> flag are added read-only.\n\n    readonlydisk = \"read\"\n        If \"readonly\" is false:\n\n        Disks with the <readonly/> flag are added read-only. Other disks are\n        added read/write.\n\n        If \"readonly\" is true:\n\n        Disks with the <readonly/> flag are added read-only.\n\n    readonlydisk = \"write\" (default)\n        If \"readonly\" is false:\n\n        Disks with the <readonly/> flag are added read/write.\n\n        If \"readonly\" is true:\n\n        Disks with the <readonly/> flag are added read-only.\n\n    readonlydisk = \"ignore\"\n        If \"readonly\" is true or false:\n\n        Disks with the <readonly/> flag are skipped.\n\n    The other optional parameters are passed directly through to\n    \"add_drive_opts\".\n\n    You can use 'domain' as an alias for this command.\n\n",
   .run = run_add_domain
 };
 
 struct command_entry add_drive_cmd_entry = {
   .name = "add-drive",
-  .help = "NAME\n    add-drive - add an image to examine or modify\n\nSYNOPSIS\n     add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..] [secret:..] [cachemode:..]\n\nDESCRIPTION\n    This function adds a disk image called \"filename\" to the handle.\n    \"filename\" may be a regular host file or a host device.\n\n    When this function is called before \"launch\" (the usual case) then the\n    first time you call this function, the disk appears in the API as\n    \"/dev/sda\", the second time as \"/dev/sdb\", and so on.\n\n    In libguestfs ≥ 1.20 you can also call this function after launch (with\n    some restrictions). This is called \"hotplugging\". When hotplugging, you\n    must specify a \"label\" so that the new disk gets a predictable name. For\n    more information see \"HOTPLUGGING\" in guestfs(3).\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that \"filename\" exists.\n\n    \"filename\" may be the special string \"/dev/null\". See \"NULL DISKS\" in\n    guestfs(3).\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. \"/dev/sdb\". This\n        is used as a hint to the guest inspection process if it is\n        available.\n\n    \"label\"\n        Give the disk a label. The label should be a unique, short string\n        using *only* ASCII characters \"[a-zA-Z]\". As well as its usual name\n        in the API (such as \"/dev/sda\"), the drive will also be named\n        \"/dev/disk/guestfs/*label*\".\n\n        See \"DISK LABELS\" in guestfs(3).\n\n    \"protocol\"\n        The optional protocol argument can be used to select an alternate\n        source protocol.\n\n        See also: \"REMOTE STORAGE\" in guestfs(3).\n\n        \"protocol = \"file\"\"\n            \"filename\" is interpreted as a local file or device. This is the\n            default if the optional protocol parameter is omitted.\n\n        \"protocol = \"ftp\"|\"ftps\"|\"http\"|\"https\"|\"tftp\"\"\n            Connect to a remote FTP, HTTP or TFTP server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"FTP, HTTP AND TFTP\" in guestfs(3)\n\n        \"protocol = \"gluster\"\"\n            Connect to the GlusterFS server. The \"server\" parameter must\n            also be supplied - see below.\n\n            See also: \"GLUSTER\" in guestfs(3)\n\n        \"protocol = \"iscsi\"\"\n            Connect to the iSCSI server. The \"server\" parameter must also be\n            supplied - see below.\n\n            See also: \"ISCSI\" in guestfs(3).\n\n        \"protocol = \"nbd\"\"\n            Connect to the Network Block Device server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"NETWORK BLOCK DEVICE\" in guestfs(3).\n\n        \"protocol = \"rbd\"\"\n            Connect to the Ceph (librbd/RBD) server. The \"server\" parameter\n            must also be supplied - see below. The \"username\" parameter may\n            be supplied. See below. The \"secret\" parameter may be supplied.\n            See below.\n\n            See also: \"CEPH\" in guestfs(3).\n\n        \"protocol = \"sheepdog\"\"\n            Connect to the Sheepdog server. The \"server\" parameter may also\n            be supplied - see below.\n\n            See also: \"SHEEPDOG\" in guestfs(3).\n\n        \"protocol = \"ssh\"\"\n            Connect to the Secure Shell (ssh) server.\n\n            The \"server\" parameter must be supplied. The \"username\"\n            parameter may be supplied. See below.\n\n            See also: \"SSH\" in guestfs(3).\n\n    \"server\"\n        For protocols which require access to a remote server, this is a\n        list of server(s).\n\n         Protocol       Number of servers required\n         --------       --------------------------\n         file           List must be empty or param not used at all\n         ftp|ftps|http|https|tftp  Exactly one\n         gluster        Exactly one\n         iscsi          Exactly one\n         nbd            Exactly one\n         rbd            Zero or more\n         sheepdog       Zero or more\n         ssh            Exactly one\n\n        Each list element is a string specifying a server. The string must\n        be in one of the following formats:\n\n         hostname\n         hostname:port\n         tcp:hostname\n         tcp:hostname:port\n         unix:/path/to/socket\n\n        If the port number is omitted, then the standard port number for the\n        protocol is used (see \"/etc/services\").\n\n    \"username\"\n        For the \"ftp\", \"ftps\", \"http\", \"https\", \"iscsi\", \"rbd\", \"ssh\" and\n        \"tftp\" protocols, this specifies the remote username.\n\n        If not given, then the local username is used for \"ssh\", and no\n        authentication is attempted for ceph. But note this sometimes may\n        give unexpected results, for example if using the libvirt backend\n        and if the libvirt backend is configured to start the qemu appliance\n        as a special user such as \"qemu.qemu\". If in doubt, specify the\n        remote username you want.\n\n    \"secret\"\n        For the \"rbd\" protocol only, this specifies the 'secret' to use when\n        connecting to the remote device.\n\n        If not given, then a secret matching the given username will be\n        looked up in the default keychain locations, or if no username is\n        given, then no authentication will be used.\n\n    \"cachemode\"\n        Choose whether or not libguestfs will obey sync operations (safe but\n        slow) or not (unsafe but fast). The possible values for this string\n        are:\n\n        \"cachemode = \"writeback\"\"\n            This is the default.\n\n            Write operations in the API do not return until a write(2) call\n            has completed in the host [but note this does not imply that\n            anything gets written to disk].\n\n            Sync operations in the API, including implicit syncs caused by\n            filesystem journalling, will not return until an fdatasync(2)\n            call has completed in the host, indicating that data has been\n            committed to disk.\n\n        \"cachemode = \"unsafe\"\"\n            In this mode, there are no guarantees. Libguestfs may cache\n            anything and ignore sync requests. This is suitable only for\n            scratch or temporary disks.\n\n    You can use 'add' or 'add-drive-opts' as an alias for this command.\n\n",
+  .help = "NAME\n    add-drive - add an image to examine or modify\n\nSYNOPSIS\n     add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..] [secret:..] [cachemode:..] [discard:..]\n\nDESCRIPTION\n    This function adds a disk image called \"filename\" to the handle.\n    \"filename\" may be a regular host file or a host device.\n\n    When this function is called before \"launch\" (the usual case) then the\n    first time you call this function, the disk appears in the API as\n    \"/dev/sda\", the second time as \"/dev/sdb\", and so on.\n\n    In libguestfs ≥ 1.20 you can also call this function after launch (with\n    some restrictions). This is called \"hotplugging\". When hotplugging, you\n    must specify a \"label\" so that the new disk gets a predictable name. For\n    more information see \"HOTPLUGGING\" in guestfs(3).\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that \"filename\" exists.\n\n    \"filename\" may be the special string \"/dev/null\". See \"NULL DISKS\" in\n    guestfs(3).\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. \"/dev/sdb\". This\n        is used as a hint to the guest inspection process if it is\n        available.\n\n    \"label\"\n        Give the disk a label. The label should be a unique, short string\n        using *only* ASCII characters \"[a-zA-Z]\". As well as its usual name\n        in the API (such as \"/dev/sda\"), the drive will also be named\n        \"/dev/disk/guestfs/*label*\".\n\n        See \"DISK LABELS\" in guestfs(3).\n\n    \"protocol\"\n        The optional protocol argument can be used to select an alternate\n        source protocol.\n\n        See also: \"REMOTE STORAGE\" in guestfs(3).\n\n        \"protocol = \"file\"\"\n            \"filename\" is interpreted as a local file or device. This is the\n            default if the optional protocol parameter is omitted.\n\n        \"protocol = \"ftp\"|\"ftps\"|\"http\"|\"https\"|\"tftp\"\"\n            Connect to a remote FTP, HTTP or TFTP server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"FTP, HTTP AND TFTP\" in guestfs(3)\n\n        \"protocol = \"gluster\"\"\n            Connect to the GlusterFS server. The \"server\" parameter must\n            also be supplied - see below.\n\n            See also: \"GLUSTER\" in guestfs(3)\n\n        \"protocol = \"iscsi\"\"\n            Connect to the iSCSI server. The \"server\" parameter must also be\n            supplied - see below.\n\n            See also: \"ISCSI\" in guestfs(3).\n\n        \"protocol = \"nbd\"\"\n            Connect to the Network Block Device server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"NETWORK BLOCK DEVICE\" in guestfs(3).\n\n        \"protocol = \"rbd\"\"\n            Connect to the Ceph (librbd/RBD) server. The \"server\" parameter\n            must also be supplied - see below. The \"username\" parameter may\n            be supplied. See below. The \"secret\" parameter may be supplied.\n            See below.\n\n            See also: \"CEPH\" in guestfs(3).\n\n        \"protocol = \"sheepdog\"\"\n            Connect to the Sheepdog server. The \"server\" parameter may also\n            be supplied - see below.\n\n            See also: \"SHEEPDOG\" in guestfs(3).\n\n        \"protocol = \"ssh\"\"\n            Connect to the Secure Shell (ssh) server.\n\n            The \"server\" parameter must be supplied. The \"username\"\n            parameter may be supplied. See below.\n\n            See also: \"SSH\" in guestfs(3).\n\n    \"server\"\n        For protocols which require access to a remote server, this is a\n        list of server(s).\n\n         Protocol       Number of servers required\n         --------       --------------------------\n         file           List must be empty or param not used at all\n         ftp|ftps|http|https|tftp  Exactly one\n         gluster        Exactly one\n         iscsi          Exactly one\n         nbd            Exactly one\n         rbd            Zero or more\n         sheepdog       Zero or more\n         ssh            Exactly one\n\n        Each list element is a string specifying a server. The string must\n        be in one of the following formats:\n\n         hostname\n         hostname:port\n         tcp:hostname\n         tcp:hostname:port\n         unix:/path/to/socket\n\n        If the port number is omitted, then the standard port number for the\n        protocol is used (see \"/etc/services\").\n\n    \"username\"\n        For the \"ftp\", \"ftps\", \"http\", \"https\", \"iscsi\", \"rbd\", \"ssh\" and\n        \"tftp\" protocols, this specifies the remote username.\n\n        If not given, then the local username is used for \"ssh\", and no\n        authentication is attempted for ceph. But note this sometimes may\n        give unexpected results, for example if using the libvirt backend\n        and if the libvirt backend is configured to start the qemu appliance\n        as a special user such as \"qemu.qemu\". If in doubt, specify the\n        remote username you want.\n\n    \"secret\"\n        For the \"rbd\" protocol only, this specifies the 'secret' to use when\n        connecting to the remote device.\n\n        If not given, then a secret matching the given username will be\n        looked up in the default keychain locations, or if no username is\n        given, then no authentication will be used.\n\n    \"cachemode\"\n        Choose whether or not libguestfs will obey sync operations (safe but\n        slow) or not (unsafe but fast). The possible values for this string\n        are:\n\n        \"cachemode = \"writeback\"\"\n            This is the default.\n\n            Write operations in the API do not return until a write(2) call\n            has completed in the host [but note this does not imply that\n            anything gets written to disk].\n\n            Sync operations in the API, including implicit syncs caused by\n            filesystem journalling, will not return until an fdatasync(2)\n            call has completed in the host, indicating that data has been\n            committed to disk.\n\n        \"cachemode = \"unsafe\"\"\n            In this mode, there are no guarantees. Libguestfs may cache\n            anything and ignore sync requests. This is suitable only for\n            scratch or temporary disks.\n\n    \"discard\"\n        Enable or disable discard (a.k.a. trim or unmap) support on this\n        drive. If enabled, operations such as \"fstrim\" will be able to\n        discard / make thin / punch holes in the underlying host file or\n        device.\n\n        Possible discard settings are:\n\n        \"discard = \"disable\"\"\n            Disable discard support. This is the default.\n\n        \"discard = \"enable\"\"\n            Enable discard support. Fail if discard is not possible.\n\n        \"discard = \"besteffort\"\"\n            Enable discard support if possible, but don't fail if it is not\n            supported.\n\n            Since not all backends and not all underlying systems support\n            discard, this is a good choice if you want to use discard if\n            possible, but don't mind if it doesn't work.\n\n    You can use 'add' or 'add-drive-opts' as an alias for this command.\n\n",
   .run = run_add_drive
 };
 
@@ -850,6 +852,18 @@ struct command_entry base64_out_cmd_entry = {
   .name = "base64-out",
   .help = "NAME\n    base64-out - download file and encode as base64\n\nSYNOPSIS\n     base64-out filename base64file\n\nDESCRIPTION\n    This command downloads the contents of \"filename\", writing it out to\n    local file \"base64file\" encoded as base64.\n\n",
   .run = run_base64_out
+};
+
+struct command_entry blkdiscard_cmd_entry = {
+  .name = "blkdiscard",
+  .help = "NAME\n    blkdiscard - discard all blocks on a device\n\nSYNOPSIS\n     blkdiscard device\n\nDESCRIPTION\n    This discards all blocks on the block device \"device\", giving the free\n    space back to the host.\n\n    This operation requires support in libguestfs, the host filesystem, qemu\n    and the host kernel. If this support isn't present it may give an error\n    or even appear to run but do nothing. You must also set the \"discard\"\n    attribute on the underlying drive (see \"add_drive_opts\").\n\n",
+  .run = run_blkdiscard
+};
+
+struct command_entry blkdiscardzeroes_cmd_entry = {
+  .name = "blkdiscardzeroes",
+  .help = "NAME\n    blkdiscardzeroes - return true if discarded blocks are read as zeroes\n\nSYNOPSIS\n     blkdiscardzeroes device\n\nDESCRIPTION\n    This call returns true if blocks on \"device\" that have been discarded by\n    a call to \"blkdiscard\" are returned as blocks of zero bytes when read\n    the next time.\n\n    If it returns false, then it may be that discarded blocks are read as\n    stale or random data.\n\n",
+  .run = run_blkdiscardzeroes
 };
 
 struct command_entry blkid_cmd_entry = {
@@ -3750,6 +3764,8 @@ list_commands (void)
   printf ("%-20s %s\n", "available-all-groups", _("return a list of all optional groups"));
   printf ("%-20s %s\n", "base64-in", _("upload base64-encoded data to file"));
   printf ("%-20s %s\n", "base64-out", _("download file and encode as base64"));
+  printf ("%-20s %s\n", "blkdiscard", _("discard all blocks on a device"));
+  printf ("%-20s %s\n", "blkdiscardzeroes", _("return true if discarded blocks are read as zeroes"));
   printf ("%-20s %s\n", "blkid", _("print block device attributes"));
   printf ("%-20s %s\n", "blockdev-flushbufs", _("flush device buffers"));
   printf ("%-20s %s\n", "blockdev-getbsz", _("get blocksize of block device"));
@@ -4904,8 +4920,8 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
   struct guestfs_add_domain_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 1 || argc > 7) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 7);
+  if (argc < 1 || argc > 9) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 9);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -4957,6 +4973,16 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
       this_mask = GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK;
       this_arg = "readonlydisk";
     }
+    else if (STRPREFIX (argv[i], "cachemode:")) {
+      optargs_s.cachemode = &argv[i][10];
+      this_mask = GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK;
+      this_arg = "cachemode";
+    }
+    else if (STRPREFIX (argv[i], "discard:")) {
+      optargs_s.discard = &argv[i][8];
+      this_mask = GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
+      this_arg = "discard";
+    }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
@@ -4990,8 +5016,8 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
   struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 1 || argc > 11) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 11);
+  if (argc < 1 || argc > 12) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 12);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5055,6 +5081,11 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
       optargs_s.cachemode = &argv[i][10];
       this_mask = GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
       this_arg = "cachemode";
+    }
+    else if (STRPREFIX (argv[i], "discard:")) {
+      optargs_s.discard = &argv[i][8];
+      this_mask = GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
+      this_arg = "discard";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
@@ -5781,6 +5812,57 @@ run_base64_out (const char *cmd, size_t argc, char *argv[])
  out_base64file:
   free (filename);
  out_filename:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_blkdiscard (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_blkdiscard (g, device);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_blkdiscardzeroes (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_blkdiscardzeroes (g, device);
+  if (r == -1) goto out;
+  ret = 0;
+  if (r) printf ("true\n"); else printf ("false\n");
+ out:
  out_noargs:
   return ret;
 }

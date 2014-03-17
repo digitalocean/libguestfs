@@ -16,6 +16,14 @@ L</guestfs_aug_load> L</guestfs_aug_ls> L</guestfs_aug_match>
 L</guestfs_aug_mv> L</guestfs_aug_rm> L</guestfs_aug_save>
 L</guestfs_aug_set> L</guestfs_aug_setm>
 
+=item B<blkdiscard>
+
+The following functions: L</guestfs_blkdiscard>
+
+=item B<blkdiscardzeroes>
+
+The following functions: L</guestfs_blkdiscardzeroes>
+
 =item B<btrfs>
 
 Такі функції: L</guestfs_btrfs_device_add> L</guestfs_btrfs_device_delete>

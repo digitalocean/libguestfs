@@ -704,8 +704,20 @@ guestfs_add_domain_argv (guestfs_h *g,
            "add_domain", "readonlydisk");
     return -1;
   }
+  if ((optargs->bitmask & GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK) &&
+      optargs->cachemode == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_domain", "cachemode");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_DOMAIN_DISCARD_BITMASK) &&
+      optargs->discard == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_domain", "discard");
+    return -1;
+  }
 
-  if (optargs->bitmask & UINT64_C(0xffffffffffffffc0)) {
+  if (optargs->bitmask & UINT64_C(0xffffffffffffff00)) {
     error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
            "add_domain", "add_domain");
     return -1;
@@ -732,6 +744,12 @@ guestfs_add_domain_argv (guestfs_h *g,
     }
     if (optargs->bitmask & GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK) {
       fprintf (trace_buffer.fp, " \"%s:%s\"", "readonlydisk", optargs->readonlydisk);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "cachemode", optargs->cachemode);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DOMAIN_DISCARD_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "discard", optargs->discard);
     }
     guestfs___trace_send_line (g, &trace_buffer);
   }

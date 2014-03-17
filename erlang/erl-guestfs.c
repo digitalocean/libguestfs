@@ -683,6 +683,16 @@ run_add_domain (ETERM *message)
       optargs_s.readonlydisk = erl_iolist_to_string (hd_value);
     }
     else
+    if (atom_equals (hd_name, "cachemode")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK;
+      optargs_s.cachemode = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "discard")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
+      optargs_s.discard = erl_iolist_to_string (hd_value);
+    }
+    else
       return unknown_optarg ("add_domain", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
@@ -696,6 +706,10 @@ run_add_domain (ETERM *message)
     free ((char *) optargs_s.iface);
   if ((optargs_s.bitmask & GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK))
     free ((char *) optargs_s.readonlydisk);
+  if ((optargs_s.bitmask & GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK))
+    free ((char *) optargs_s.cachemode);
+  if ((optargs_s.bitmask & GUESTFS_ADD_DOMAIN_DISCARD_BITMASK))
+    free ((char *) optargs_s.discard);
   if (r == -1)
     return make_error ("add_domain");
 
@@ -765,6 +779,11 @@ run_add_drive (ETERM *message)
       optargs_s.cachemode = erl_iolist_to_string (hd_value);
     }
     else
+    if (atom_equals (hd_name, "discard")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
+      optargs_s.discard = erl_iolist_to_string (hd_value);
+    }
+    else
       return unknown_optarg ("add_drive", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
@@ -790,6 +809,8 @@ run_add_drive (ETERM *message)
     free ((char *) optargs_s.secret);
   if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK))
     free ((char *) optargs_s.cachemode);
+  if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK))
+    free ((char *) optargs_s.discard);
   if (r == -1)
     return make_error ("add_drive");
 
@@ -1166,6 +1187,32 @@ run_base64_out (ETERM *message)
     return make_error ("base64_out");
 
   return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_blkdiscard (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_blkdiscard (g, device);
+  if (r == -1)
+    return make_error ("blkdiscard");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_blkdiscardzeroes (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_blkdiscardzeroes (g, device);
+  if (r == -1)
+    return make_error ("blkdiscardzeroes");
+
+  return make_bool (r);
 }
 
 static ETERM *
@@ -10372,6 +10419,10 @@ dispatch (ETERM *message)
     return run_base64_in (message);
   else if (atom_equals (fun, "base64_out"))
     return run_base64_out (message);
+  else if (atom_equals (fun, "blkdiscard"))
+    return run_blkdiscard (message);
+  else if (atom_equals (fun, "blkdiscardzeroes"))
+    return run_blkdiscardzeroes (message);
   else if (atom_equals (fun, "blkid"))
     return run_blkid (message);
   else if (atom_equals (fun, "blockdev_flushbufs"))

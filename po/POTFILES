@@ -6,6 +6,7 @@ builder/index-struct.c
 builder/index-validate.c
 builder/pxzcat-c.c
 builder/setlocale-c.c
+builder/uname-c.c
 cat/cat.c
 cat/filesystems.c
 cat/ls.c
@@ -15,6 +16,7 @@ daemon/acl.c
 daemon/augeas.c
 daemon/available.c
 daemon/base64.c
+daemon/blkdiscard.c
 daemon/blkid.c
 daemon/blockdev.c
 daemon/btrfs.c

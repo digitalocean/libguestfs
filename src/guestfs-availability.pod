@@ -27,6 +27,16 @@ L</guestfs_aug_save>
 L</guestfs_aug_set>
 L</guestfs_aug_setm>
 
+=item B<blkdiscard>
+
+The following functions:
+L</guestfs_blkdiscard>
+
+=item B<blkdiscardzeroes>
+
+The following functions:
+L</guestfs_blkdiscardzeroes>
+
 =item B<btrfs>
 
 The following functions:

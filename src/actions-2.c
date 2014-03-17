@@ -488,8 +488,14 @@ guestfs_add_drive_opts_argv (guestfs_h *g,
            "add_drive_opts", "cachemode");
     return -1;
   }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK) &&
+      optargs->discard == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_opts", "discard");
+    return -1;
+  }
 
-  if (optargs->bitmask & UINT64_C(0xfffffffffffffc00)) {
+  if (optargs->bitmask & UINT64_C(0xfffffffffffff800)) {
     error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
            "add_drive_opts", "add_drive_opts");
     return -1;
@@ -535,6 +541,9 @@ guestfs_add_drive_opts_argv (guestfs_h *g,
     }
     if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK) {
       fprintf (trace_buffer.fp, " \"%s:%s\"", "cachemode", optargs->cachemode);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "discard", optargs->discard);
     }
     guestfs___trace_send_line (g, &trace_buffer);
   }
@@ -5935,6 +5944,102 @@ guestfs_aug_label (guestfs_h *g,
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "aug_label");
     fprintf (trace_buffer.fp, "\"%s\"", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_blkdiscardzeroes (guestfs_h *g,
+                          const char *device)
+{
+  struct guestfs_blkdiscardzeroes_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_blkdiscardzeroes_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "blkdiscardzeroes", 16);
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "blkdiscardzeroes", "device");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "blkdiscardzeroes");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "blkdiscardzeroes") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "blkdiscardzeroes", "-1");
+    return -1;
+  }
+
+  args.device = (char *) device;
+  serial = guestfs___send (g, GUESTFS_PROC_BLKDISCARDZEROES,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_blkdiscardzeroes_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "blkdiscardzeroes", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "blkdiscardzeroes", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_blkdiscardzeroes_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "blkdiscardzeroes", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_BLKDISCARDZEROES, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "blkdiscardzeroes", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "blkdiscardzeroes", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "blkdiscardzeroes", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "blkdiscardzeroes",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = ret.zeroes;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "blkdiscardzeroes");
+    fprintf (trace_buffer.fp, "%d", ret_v);
     guestfs___trace_send_line (g, &trace_buffer);
   }
 

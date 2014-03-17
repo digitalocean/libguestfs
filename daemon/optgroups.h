@@ -25,6 +25,8 @@
 
 extern int optgroup_acl_available (void);
 extern int optgroup_augeas_available (void);
+extern int optgroup_blkdiscard_available (void);
+extern int optgroup_blkdiscardzeroes_available (void);
 extern int optgroup_btrfs_available (void);
 extern int optgroup_extlinux_available (void);
 extern int optgroup_fstrim_available (void);
@@ -86,6 +88,14 @@ extern int optgroup_zerofree_available (void);
   int __attribute__((noreturn)) do_aug_set (const char *augpath, const char *val) { abort (); } \
   int __attribute__((noreturn)) do_aug_setm (const char *base, const char *sub, const char *val) { abort (); } \
   int optgroup_augeas_available (void) { return 0; }
+
+#define OPTGROUP_BLKDISCARD_NOT_AVAILABLE \
+  int __attribute__((noreturn)) do_blkdiscard (const char *device) { abort (); } \
+  int optgroup_blkdiscard_available (void) { return 0; }
+
+#define OPTGROUP_BLKDISCARDZEROES_NOT_AVAILABLE \
+  int __attribute__((noreturn)) do_blkdiscardzeroes (const char *device) { abort (); } \
+  int optgroup_blkdiscardzeroes_available (void) { return 0; }
 
 #define OPTGROUP_BTRFS_NOT_AVAILABLE \
   int __attribute__((noreturn)) do_btrfs_device_add (char *const *devices, const char *fs) { abort (); } \

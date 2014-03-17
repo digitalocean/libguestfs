@@ -368,7 +368,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1cdrom  (JNIEnv *env, jobject obj, j
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1add_1domain  (JNIEnv *env, jobject obj, jlong jg, jstring jdom, jlong joptargs_bitmask, jstring jlibvirturi, jboolean jreadonly, jstring jiface, jboolean jlive, jboolean jallowuuid, jstring jreadonlydisk)
+Java_com_redhat_et_libguestfs_GuestFS__1add_1domain  (JNIEnv *env, jobject obj, jlong jg, jstring jdom, jlong joptargs_bitmask, jstring jlibvirturi, jboolean jreadonly, jstring jiface, jboolean jlive, jboolean jallowuuid, jstring jreadonlydisk, jstring jcachemode, jstring jdiscard)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -384,6 +384,8 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1domain  (JNIEnv *env, jobject obj, 
   optargs_s.live = jlive;
   optargs_s.allowuuid = jallowuuid;
   optargs_s.readonlydisk = (*env)->GetStringUTFChars (env, jreadonlydisk, NULL);
+  optargs_s.cachemode = (*env)->GetStringUTFChars (env, jcachemode, NULL);
+  optargs_s.discard = (*env)->GetStringUTFChars (env, jdiscard, NULL);
   optargs_s.bitmask = joptargs_bitmask;
 
   r = guestfs_add_domain_argv (g, dom, optargs);
@@ -392,6 +394,8 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1domain  (JNIEnv *env, jobject obj, 
   (*env)->ReleaseStringUTFChars (env, jlibvirturi, optargs_s.libvirturi);
   (*env)->ReleaseStringUTFChars (env, jiface, optargs_s.iface);
   (*env)->ReleaseStringUTFChars (env, jreadonlydisk, optargs_s.readonlydisk);
+  (*env)->ReleaseStringUTFChars (env, jcachemode, optargs_s.cachemode);
+  (*env)->ReleaseStringUTFChars (env, jdiscard, optargs_s.discard);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -401,7 +405,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1domain  (JNIEnv *env, jobject obj, 
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jlong joptargs_bitmask, jboolean jreadonly, jstring jformat, jstring jiface, jstring jname, jstring jlabel, jstring jprotocol, jobjectArray jserver, jstring jusername, jstring jsecret, jstring jcachemode)
+Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jlong joptargs_bitmask, jboolean jreadonly, jstring jformat, jstring jiface, jstring jname, jstring jlabel, jstring jprotocol, jobjectArray jserver, jstring jusername, jstring jsecret, jstring jcachemode, jstring jdiscard)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -431,6 +435,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, j
   optargs_s.username = (*env)->GetStringUTFChars (env, jusername, NULL);
   optargs_s.secret = (*env)->GetStringUTFChars (env, jsecret, NULL);
   optargs_s.cachemode = (*env)->GetStringUTFChars (env, jcachemode, NULL);
+  optargs_s.discard = (*env)->GetStringUTFChars (env, jdiscard, NULL);
   optargs_s.bitmask = joptargs_bitmask;
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);
@@ -449,6 +454,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, j
   (*env)->ReleaseStringUTFChars (env, jusername, optargs_s.username);
   (*env)->ReleaseStringUTFChars (env, jsecret, optargs_s.secret);
   (*env)->ReleaseStringUTFChars (env, jcachemode, optargs_s.cachemode);
+  (*env)->ReleaseStringUTFChars (env, jdiscard, optargs_s.discard);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -1029,6 +1035,45 @@ Java_com_redhat_et_libguestfs_GuestFS__1base64_1out  (JNIEnv *env, jobject obj, 
     throw_exception (env, guestfs_last_error (g));
     return;
   }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1blkdiscard  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *device;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
+  r = guestfs_blkdiscard (g, device);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1blkdiscardzeroes  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *device;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
+  r = guestfs_blkdiscardzeroes (g, device);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return -1;
+  }
+  return (jboolean) r;
 }
 
 JNIEXPORT jobject JNICALL
