@@ -545,8 +545,24 @@ public class GuestFS {
       readonlydisk = ((String) _optobj);
       _optargs_bitmask |= 32L;
     }
+    String cachemode = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("cachemode");
+    if (_optobj != null) {
+      cachemode = ((String) _optobj);
+      _optargs_bitmask |= 64L;
+    }
+    String discard = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("discard");
+    if (_optobj != null) {
+      discard = ((String) _optobj);
+      _optargs_bitmask |= 128L;
+    }
 
-    return _add_domain (g, dom, _optargs_bitmask, libvirturi, readonly, iface, live, allowuuid, readonlydisk);
+    return _add_domain (g, dom, _optargs_bitmask, libvirturi, readonly, iface, live, allowuuid, readonlydisk, cachemode, discard);
   }
 
   public int add_domain (String dom)
@@ -555,7 +571,7 @@ public class GuestFS {
     return add_domain (dom, null);
   }
 
-  private native int _add_domain (long g, String dom, long _optargs_bitmask, String libvirturi, boolean readonly, String iface, boolean live, boolean allowuuid, String readonlydisk)
+  private native int _add_domain (long g, String dom, long _optargs_bitmask, String libvirturi, boolean readonly, String iface, boolean live, boolean allowuuid, String readonlydisk, String cachemode, String discard)
     throws LibGuestFSException;
 
   /**
@@ -763,6 +779,30 @@ public class GuestFS {
    * requests. This is suitable only for scratch or
    * temporary disks.
    * <p>
+   * "discard"
+   * Enable or disable discard (a.k.a. trim or unmap)
+   * support on this drive. If enabled, operations such
+   * as "g.fstrim" will be able to discard / make thin /
+   * punch holes in the underlying host file or device.
+   * <p>
+   * Possible discard settings are:
+   * <p>
+   * "discard = "disable""
+   * Disable discard support. This is the default.
+   * <p>
+   * "discard = "enable""
+   * Enable discard support. Fail if discard is not
+   * possible.
+   * <p>
+   * "discard = "besteffort""
+   * Enable discard support if possible, but don't
+   * fail if it is not supported.
+   * <p>
+   * Since not all backends and not all underlying
+   * systems support discard, this is a good choice
+   * if you want to use discard if possible, but
+   * don't mind if it doesn't work.
+   * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
@@ -859,8 +899,16 @@ public class GuestFS {
       cachemode = ((String) _optobj);
       _optargs_bitmask |= 512L;
     }
+    String discard = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("discard");
+    if (_optobj != null) {
+      discard = ((String) _optobj);
+      _optargs_bitmask |= 1024L;
+    }
 
-    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server, username, secret, cachemode);
+    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server, username, secret, cachemode, discard);
   }
 
   public void add_drive (String filename)
@@ -881,7 +929,7 @@ public class GuestFS {
     add_drive (filename, null);
   }
 
-  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String[] server, String username, String secret, String cachemode)
+  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String[] server, String username, String secret, String cachemode, String discard)
     throws LibGuestFSException;
 
   /**
@@ -1559,6 +1607,57 @@ public class GuestFS {
   }
 
   private native void _base64_out (long g, String filename, String base64file)
+    throws LibGuestFSException;
+
+  /**
+   * discard all blocks on a device
+   * <p>
+   * This discards all blocks on the block device "device",
+   * giving the free space back to the host.
+   * <p>
+   * This operation requires support in libguestfs, the host
+   * filesystem, qemu and the host kernel. If this support
+   * isn't present it may give an error or even appear to run
+   * but do nothing. You must also set the "discard"
+   * attribute on the underlying drive (see
+   * "g.add_drive_opts").
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void blkdiscard (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("blkdiscard: handle is closed");
+
+    _blkdiscard (g, device);
+  }
+
+  private native void _blkdiscard (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * return true if discarded blocks are read as zeroes
+   * <p>
+   * This call returns true if blocks on "device" that have
+   * been discarded by a call to "g.blkdiscard" are returned
+   * as blocks of zero bytes when read the next time.
+   * <p>
+   * If it returns false, then it may be that discarded
+   * blocks are read as stale or random data.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean blkdiscardzeroes (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("blkdiscardzeroes: handle is closed");
+
+    return _blkdiscardzeroes (g, device);
+  }
+
+  private native boolean _blkdiscardzeroes (long g, String device)
     throws LibGuestFSException;
 
   /**

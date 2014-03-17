@@ -117,6 +117,7 @@ host_triplet = @host@
 DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am $(top_srcdir)/configure \
 	$(am__configure_deps) $(srcdir)/config.h.in \
+	$(top_srcdir)/php/extension/php-for-tests.sh.in \
 	$(srcdir)/pick-guests.pl.in $(srcdir)/podwrapper.pl.in \
 	$(srcdir)/run.in \
 	$(top_srcdir)/builder/test-config/virt-builder/repos.d/test-index.conf.in \
@@ -140,14 +141,15 @@ DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 @ENABLE_APPLIANCE_TRUE@	tests/guests tests/c-api tests/tmpdirs \
 @ENABLE_APPLIANCE_TRUE@	tests/protocol tests/events \
 @ENABLE_APPLIANCE_TRUE@	tests/parallel tests/create tests/disks \
-@ENABLE_APPLIANCE_TRUE@	tests/mountable tests/network tests/lvm \
-@ENABLE_APPLIANCE_TRUE@	tests/luks tests/md tests/selinux \
-@ENABLE_APPLIANCE_TRUE@	tests/ntfsclone tests/btrfs tests/xfs \
-@ENABLE_APPLIANCE_TRUE@	tests/charsets tests/xml \
-@ENABLE_APPLIANCE_TRUE@	tests/mount-local tests/9p tests/rsync \
-@ENABLE_APPLIANCE_TRUE@	tests/bigdirs tests/disk-labels \
-@ENABLE_APPLIANCE_TRUE@	tests/hotplug tests/nbd tests/http \
-@ENABLE_APPLIANCE_TRUE@	tests/syslinux tests/journal tests/fuzz \
+@ENABLE_APPLIANCE_TRUE@	tests/discard tests/mountable \
+@ENABLE_APPLIANCE_TRUE@	tests/network tests/lvm tests/luks \
+@ENABLE_APPLIANCE_TRUE@	tests/md tests/selinux tests/ntfsclone \
+@ENABLE_APPLIANCE_TRUE@	tests/btrfs tests/xfs tests/charsets \
+@ENABLE_APPLIANCE_TRUE@	tests/xml tests/mount-local tests/9p \
+@ENABLE_APPLIANCE_TRUE@	tests/rsync tests/bigdirs \
+@ENABLE_APPLIANCE_TRUE@	tests/disk-labels tests/hotplug \
+@ENABLE_APPLIANCE_TRUE@	tests/nbd tests/http tests/syslinux \
+@ENABLE_APPLIANCE_TRUE@	tests/journal tests/fuzz \
 @ENABLE_APPLIANCE_TRUE@	tests/relative-paths tests/regressions
 
 # Language bindings.
@@ -308,7 +310,8 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = pick-guests.pl podwrapper.pl run \
+CONFIG_CLEAN_FILES = php/extension/php-for-tests.sh pick-guests.pl \
+	podwrapper.pl run \
 	builder/test-config/virt-builder/repos.d/test-index.conf \
 	builder/test-website/virt-builder/repos.d/libguestfs.conf \
 	ruby/ext/guestfs/extconf.rb
@@ -404,19 +407,19 @@ CSCOPE = cscope
 DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	examples po daemon appliance tests/qemu tests/guests \
 	tests/c-api tests/tmpdirs tests/protocol tests/events \
-	tests/parallel tests/create tests/disks tests/mountable \
-	tests/network tests/lvm tests/luks tests/md tests/selinux \
-	tests/ntfsclone tests/btrfs tests/xfs tests/charsets tests/xml \
-	tests/mount-local tests/9p tests/rsync tests/bigdirs \
-	tests/disk-labels tests/hotplug tests/nbd tests/http \
-	tests/syslinux tests/journal tests/fuzz tests/relative-paths \
-	tests/regressions test-tool fish align cat diff df edit format \
-	inspector make-fs rescue bash perl perl/examples ocaml \
-	ocaml/examples python python/examples ruby ruby/examples java \
-	java/examples haskell php erlang erlang/examples lua \
-	lua/examples gobject golang golang/examples csharp mllib \
-	builder builder/website resize sparsify sysprep tools fuse \
-	po-docs
+	tests/parallel tests/create tests/disks tests/discard \
+	tests/mountable tests/network tests/lvm tests/luks tests/md \
+	tests/selinux tests/ntfsclone tests/btrfs tests/xfs \
+	tests/charsets tests/xml tests/mount-local tests/9p \
+	tests/rsync tests/bigdirs tests/disk-labels tests/hotplug \
+	tests/nbd tests/http tests/syslinux tests/journal tests/fuzz \
+	tests/relative-paths tests/regressions test-tool fish align \
+	cat diff df edit format inspector make-fs rescue bash perl \
+	perl/examples ocaml ocaml/examples python python/examples ruby \
+	ruby/examples java java/examples haskell php erlang \
+	erlang/examples lua lua/examples gobject golang \
+	golang/examples csharp mllib builder builder/website resize \
+	sparsify sysprep tools fuse po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -1609,6 +1612,8 @@ EXTRA_DIST = \
 	logo/fish-5yrs.svg logo/fish-5yrs.png \
 	logo/virt-builder.svg \
 	m4/.gitignore \
+	tests/run-xml-to-junit.sh \
+	tests/run-xml-to-junit.xsl \
 	tmp/.gitignore \
 	tx-pull.sh \
 	update-bugs.sh \
@@ -1777,6 +1782,8 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
+php/extension/php-for-tests.sh: $(top_builddir)/config.status $(top_srcdir)/php/extension/php-for-tests.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 pick-guests.pl: $(top_builddir)/config.status $(srcdir)/pick-guests.pl.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 podwrapper.pl: $(top_builddir)/config.status $(srcdir)/podwrapper.pl.in

@@ -161,6 +161,12 @@ struct              <a class="link" href="GuestfsSession.html#GuestfsSessionClas
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *base64file</code></em>,
                                                          <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-blkdiscard" title="guestfs_session_blkdiscard ()">guestfs_session_blkdiscard</a>          (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gint8</span>               <a class="link" href="GuestfsSession.html#guestfs-session-blkdiscardzeroes" title="guestfs_session_blkdiscardzeroes ()">guestfs_session_blkdiscardzeroes</a>    (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">GHashTable</span> *        <a class="link" href="GuestfsSession.html#guestfs-session-blkid" title="guestfs_session_blkid ()">guestfs_session_blkid</a>               (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
@@ -2863,6 +2869,34 @@ In this mode, there are no guarantees. Libguestfs may cache
 anything and ignore sync requests. This is suitable only for
 scratch or temporary disks.
 </p>
+<p>
+<em class="parameter"><code>discard</code></em>
+Enable or disable discard (a.k.a. trim or unmap) support on this
+drive. If enabled, operations such as <a class="link" href="GuestfsSession.html#guestfs-session-fstrim" title="guestfs_session_fstrim ()"><code class="function">guestfs_session_fstrim()</code></a> will
+be able to discard / make thin / punch holes in the underlying host
+file or device.
+</p>
+<p>
+Possible discard settings are:
+</p>
+<p>
+"discard = "disable""
+Disable discard support. This is the default.
+</p>
+<p>
+"discard = "enable""
+Enable discard support. Fail if discard is not possible.
+</p>
+<p>
+"discard = "besteffort""
+Enable discard support if possible, but don't fail if it is not
+supported.
+</p>
+<p>
+Since not all backends and not all underlying systems support
+discard, this is a good choice if you want to use discard if
+possible, but don't mind if it doesn't work.
+</p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
 <col align="left" valign="top">
@@ -4093,6 +4127,98 @@ local file <em class="parameter"><code>base64file</code></em> encoded as base64.
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-blkdiscard"></a><h3>guestfs_session_blkdiscard ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_blkdiscard          (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+discard all blocks on a device
+</p>
+<p>
+This discards all blocks on the block device <em class="parameter"><code>device</code></em>, giving the free
+space back to the host.
+</p>
+<p>
+This operation requires support in libguestfs, the host filesystem, qemu
+and the host kernel. If this support isn't present it may give an error
+or even appear to run but do nothing. You must also set the <em class="parameter"><code>discard</code></em>
+attribute on the underlying drive (see
+<code class="function">guestfs_session_add_drive_opts()</code>).
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-blkdiscardzeroes"></a><h3>guestfs_session_blkdiscardzeroes ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint8</span>               guestfs_session_blkdiscardzeroes    (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+return true if discarded blocks are read as zeroes
+</p>
+<p>
+This call returns true if blocks on <em class="parameter"><code>device</code></em> that have been discarded by
+a call to <a class="link" href="GuestfsSession.html#guestfs-session-blkdiscard" title="guestfs_session_blkdiscard ()"><code class="function">guestfs_session_blkdiscard()</code></a> are returned as blocks of zero
+bytes when read the next time.
+</p>
+<p>
+If it returns false, then it may be that discarded blocks are read as
+stale or random data.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned value, or -1 on error</td>
 </tr>
 </tbody>
 </table></div>

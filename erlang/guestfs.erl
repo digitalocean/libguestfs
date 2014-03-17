@@ -54,6 +54,8 @@
 -export([available_all_groups/1]).
 -export([base64_in/3]).
 -export([base64_out/3]).
+-export([blkdiscard/2]).
+-export([blkdiscardzeroes/2]).
 -export([blkid/2]).
 -export([blockdev_flushbufs/2]).
 -export([blockdev_getbsz/2]).
@@ -714,6 +716,12 @@ base64_in(G, Base64file, Filename) ->
 
 base64_out(G, Filename, Base64file) ->
   call_port(G, {base64_out, Filename, Base64file}).
+
+blkdiscard(G, Device) ->
+  call_port(G, {blkdiscard, Device}).
+
+blkdiscardzeroes(G, Device) ->
+  call_port(G, {blkdiscardzeroes, Device}).
 
 blkid(G, Device) ->
   call_port(G, {blkid, Device}).

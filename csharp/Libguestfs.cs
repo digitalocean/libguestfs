@@ -783,6 +783,35 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_blkdiscard (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// discard all blocks on a device
+    /// </summary>
+    public void blkdiscard (string device)
+    {
+      int r;
+      r = guestfs_blkdiscard (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_blkdiscardzeroes (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// return true if discarded blocks are read as zeroes
+    /// </summary>
+    public bool blkdiscardzeroes (string device)
+    {
+      int r;
+      r = guestfs_blkdiscardzeroes (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string[] guestfs_blkid (IntPtr h, [In] string device);
 
     /// <summary>

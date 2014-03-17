@@ -76,6 +76,12 @@ guestfs_add_domain_va (guestfs_h *g,
     case GUESTFS_ADD_DOMAIN_READONLYDISK:
       optargs_s.readonlydisk = va_arg (args, const char *);
       break;
+    case GUESTFS_ADD_DOMAIN_CACHEMODE:
+      optargs_s.cachemode = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_DOMAIN_DISCARD:
+      optargs_s.discard = va_arg (args, const char *);
+      break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
              "add_domain", i);
@@ -150,6 +156,9 @@ guestfs_add_drive_opts_va (guestfs_h *g,
       break;
     case GUESTFS_ADD_DRIVE_OPTS_CACHEMODE:
       optargs_s.cachemode = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_DRIVE_OPTS_DISCARD:
+      optargs_s.discard = va_arg (args, const char *);
       break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",

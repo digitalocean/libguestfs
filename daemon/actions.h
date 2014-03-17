@@ -595,5 +595,7 @@ extern int do_internal_upload (const char *tmpname, int mode);
 extern int do_internal_exit (void);
 extern int do_copy_attributes (const char *src, const char *dest, int all, int mode, int xattributes, int ownership);
 extern char *do_part_get_name (const char *device, int partnum);
+extern int do_blkdiscard (const char *device);
+extern int do_blkdiscardzeroes (const char *device);
 
 #endif /* GUESTFSD_ACTIONS_H */

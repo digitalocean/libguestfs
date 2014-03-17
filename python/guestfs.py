@@ -253,7 +253,7 @@ class GuestFS(object):
         r = libguestfsmod.add_cdrom (self._o, filename)
         return r
 
-    def add_domain (self, dom, libvirturi=None, readonly=None, iface=None, live=None, allowuuid=None, readonlydisk=None):
+    def add_domain (self, dom, libvirturi=None, readonly=None, iface=None, live=None, allowuuid=None, readonlydisk=None, cachemode=None, discard=None):
         """This function adds the disk(s) attached to the named
         libvirt domain "dom". It works by connecting to libvirt,
         requesting the domain and domain XML from libvirt,
@@ -337,10 +337,10 @@ class GuestFS(object):
         through to "g.add_drive_opts".
         """
         self._check_not_closed ()
-        r = libguestfsmod.add_domain (self._o, dom, libvirturi, readonly, iface, live, allowuuid, readonlydisk)
+        r = libguestfsmod.add_domain (self._o, dom, libvirturi, readonly, iface, live, allowuuid, readonlydisk, cachemode, discard)
         return r
 
-    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None, username=None, secret=None, cachemode=None):
+    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None, username=None, secret=None, cachemode=None, discard=None):
         """This function adds a disk image called "filename" to the
         handle. "filename" may be a regular host file or a host
         device.
@@ -542,9 +542,33 @@ class GuestFS(object):
         Libguestfs may cache anything and ignore sync
         requests. This is suitable only for scratch or
         temporary disks.
+        
+        "discard"
+        Enable or disable discard (a.k.a. trim or unmap)
+        support on this drive. If enabled, operations such
+        as "g.fstrim" will be able to discard / make thin /
+        punch holes in the underlying host file or device.
+        
+        Possible discard settings are:
+        
+        "discard = "disable""
+        Disable discard support. This is the default.
+        
+        "discard = "enable""
+        Enable discard support. Fail if discard is not
+        possible.
+        
+        "discard = "besteffort""
+        Enable discard support if possible, but don't
+        fail if it is not supported.
+        
+        Since not all backends and not all underlying
+        systems support discard, this is a good choice
+        if you want to use discard if possible, but
+        don't mind if it doesn't work.
         """
         self._check_not_closed ()
-        r = libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label, protocol, server, username, secret, cachemode)
+        r = libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label, protocol, server, username, secret, cachemode, discard)
         return r
 
     add_drive_opts = add_drive
@@ -915,6 +939,33 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.base64_out (self._o, filename, base64file)
+        return r
+
+    def blkdiscard (self, device):
+        """This discards all blocks on the block device "device",
+        giving the free space back to the host.
+        
+        This operation requires support in libguestfs, the host
+        filesystem, qemu and the host kernel. If this support
+        isn't present it may give an error or even appear to run
+        but do nothing. You must also set the "discard"
+        attribute on the underlying drive (see
+        "g.add_drive_opts").
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.blkdiscard (self._o, device)
+        return r
+
+    def blkdiscardzeroes (self, device):
+        """This call returns true if blocks on "device" that have
+        been discarded by a call to "g.blkdiscard" are returned
+        as blocks of zero bytes when read the next time.
+        
+        If it returns false, then it may be that discarded
+        blocks are read as stale or random data.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.blkdiscardzeroes (self._o, device)
         return r
 
     def blkid (self, device):

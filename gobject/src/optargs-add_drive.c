@@ -47,6 +47,7 @@ struct _GuestfsAddDrivePrivate {
   gchar *username;
   gchar *secret;
   gchar *cachemode;
+  gchar *discard;
 };
 
 G_DEFINE_TYPE (GuestfsAddDrive, guestfs_add_drive, G_TYPE_OBJECT);
@@ -62,7 +63,8 @@ enum {
   PROP_GUESTFS_ADD_DRIVE_SERVER,
   PROP_GUESTFS_ADD_DRIVE_USERNAME,
   PROP_GUESTFS_ADD_DRIVE_SECRET,
-  PROP_GUESTFS_ADD_DRIVE_CACHEMODE
+  PROP_GUESTFS_ADD_DRIVE_CACHEMODE,
+  PROP_GUESTFS_ADD_DRIVE_DISCARD
 };
 
 static void
@@ -116,6 +118,11 @@ guestfs_add_drive_set_property(GObject *object, guint property_id, const GValue 
       priv->cachemode = g_value_dup_string (value);
       break;
 
+    case PROP_GUESTFS_ADD_DRIVE_DISCARD:
+      g_free (priv->discard);
+      priv->discard = g_value_dup_string (value);
+      break;
+
     default:
       /* Invalid property */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -165,6 +172,10 @@ guestfs_add_drive_get_property(GObject *object, guint property_id, GValue *value
       g_value_set_string (value, priv->cachemode);
       break;
 
+    case PROP_GUESTFS_ADD_DRIVE_DISCARD:
+      g_value_set_string (value, priv->discard);
+      break;
+
     default:
       /* Invalid property */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -185,6 +196,7 @@ guestfs_add_drive_finalize (GObject *object)
   g_free (priv->username);
   g_free (priv->secret);
   g_free (priv->cachemode);
+  g_free (priv->discard);
   G_OBJECT_CLASS (guestfs_add_drive_parent_class)->finalize (object);
 }
 
@@ -342,6 +354,23 @@ guestfs_add_drive_class_init (GuestfsAddDriveClass *klass)
     g_param_spec_string (
       "cachemode",
       "cachemode",
+      "A string.",
+      NULL,
+      G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+    )
+  );
+
+  /**
+   * GuestfsAddDrive:discard:
+   *
+   * A string.
+   */
+  g_object_class_install_property (
+    object_class,
+    PROP_GUESTFS_ADD_DRIVE_DISCARD,
+    g_param_spec_string (
+      "discard",
+      "discard",
       "A string.",
       NULL,
       G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS

@@ -1530,6 +1530,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-builder \
 
 # Alphabetical order.
 SOURCES = \
+	architecture.ml \
 	builder.ml \
 	cmdline.ml \
 	downloader.mli \
@@ -1541,6 +1542,8 @@ SOURCES = \
 	index-parser-c.c \
 	ini_reader.mli \
 	ini_reader.ml \
+	languages.mli \
+	languages.ml \
 	list_entries.mli \
 	list_entries.ml \
 	paths.ml \
@@ -1553,7 +1556,10 @@ SOURCES = \
 	sigchecker.mli \
 	sigchecker.ml \
 	sources.mli \
-	sources.ml
+	sources.ml \
+	uname.ml \
+	uname.mli \
+	uname-c.c
 
 man_MANS = $(am__append_2) virt-index-validate.1
 noinst_DATA = $(am__append_3) \
@@ -1590,8 +1596,12 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	pxzcat.cmx \
 @HAVE_OCAML_TRUE@	setlocale-c.o \
 @HAVE_OCAML_TRUE@	setlocale.cmx \
+@HAVE_OCAML_TRUE@	uname-c.o \
+@HAVE_OCAML_TRUE@	uname.cmx \
+@HAVE_OCAML_TRUE@	architecture.cmx \
 @HAVE_OCAML_TRUE@	ini_reader.cmx \
 @HAVE_OCAML_TRUE@	paths.cmx \
+@HAVE_OCAML_TRUE@	languages.cmx \
 @HAVE_OCAML_TRUE@	get_kernel.cmx \
 @HAVE_OCAML_TRUE@	downloader.cmx \
 @HAVE_OCAML_TRUE@	sigchecker.cmx \

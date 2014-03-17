@@ -20,12 +20,16 @@ include $(top_srcdir)/subdir-rules.mk
 EXTRA_DIST = \
 	$(SOURCES) \
 	virt-sparsify.pod \
-	test-virt-sparsify.sh
+	test-virt-sparsify.sh \
+	test-virt-sparsify-in-place.sh
 
 CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify
 
 # Alphabetical order.
 SOURCES = \
+	cmdline.ml \
+	copying.ml \
+	in_place.ml \
 	sparsify.ml \
 	statvfs-c.c
 
@@ -42,6 +46,9 @@ deps = \
 	$(top_builddir)/mllib/progress.cmx \
 	$(top_builddir)/mllib/config.cmx \
 	statvfs-c.o \
+	cmdline.cmx \
+	copying.cmx \
+	in_place.cmx \
 	sparsify.cmx
 
 if HAVE_OCAMLOPT
@@ -127,7 +134,9 @@ CLEANFILES += stamp-virt-sparsify.pod
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 if ENABLE_APPLIANCE
-TESTS = test-virt-sparsify.sh
+TESTS = \
+	test-virt-sparsify.sh \
+	test-virt-sparsify-in-place.sh
 endif ENABLE_APPLIANCE
 
 check-valgrind:

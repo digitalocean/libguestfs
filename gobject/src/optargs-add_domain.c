@@ -43,6 +43,8 @@ struct _GuestfsAddDomainPrivate {
   GuestfsTristate live;
   GuestfsTristate allowuuid;
   gchar *readonlydisk;
+  gchar *cachemode;
+  gchar *discard;
 };
 
 G_DEFINE_TYPE (GuestfsAddDomain, guestfs_add_domain, G_TYPE_OBJECT);
@@ -54,7 +56,9 @@ enum {
   PROP_GUESTFS_ADD_DOMAIN_IFACE,
   PROP_GUESTFS_ADD_DOMAIN_LIVE,
   PROP_GUESTFS_ADD_DOMAIN_ALLOWUUID,
-  PROP_GUESTFS_ADD_DOMAIN_READONLYDISK
+  PROP_GUESTFS_ADD_DOMAIN_READONLYDISK,
+  PROP_GUESTFS_ADD_DOMAIN_CACHEMODE,
+  PROP_GUESTFS_ADD_DOMAIN_DISCARD
 };
 
 static void
@@ -89,6 +93,16 @@ guestfs_add_domain_set_property(GObject *object, guint property_id, const GValue
     case PROP_GUESTFS_ADD_DOMAIN_READONLYDISK:
       g_free (priv->readonlydisk);
       priv->readonlydisk = g_value_dup_string (value);
+      break;
+
+    case PROP_GUESTFS_ADD_DOMAIN_CACHEMODE:
+      g_free (priv->cachemode);
+      priv->cachemode = g_value_dup_string (value);
+      break;
+
+    case PROP_GUESTFS_ADD_DOMAIN_DISCARD:
+      g_free (priv->discard);
+      priv->discard = g_value_dup_string (value);
       break;
 
     default:
@@ -128,6 +142,14 @@ guestfs_add_domain_get_property(GObject *object, guint property_id, GValue *valu
       g_value_set_string (value, priv->readonlydisk);
       break;
 
+    case PROP_GUESTFS_ADD_DOMAIN_CACHEMODE:
+      g_value_set_string (value, priv->cachemode);
+      break;
+
+    case PROP_GUESTFS_ADD_DOMAIN_DISCARD:
+      g_value_set_string (value, priv->discard);
+      break;
+
     default:
       /* Invalid property */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -143,6 +165,8 @@ guestfs_add_domain_finalize (GObject *object)
   g_free (priv->libvirturi);
   g_free (priv->iface);
   g_free (priv->readonlydisk);
+  g_free (priv->cachemode);
+  g_free (priv->discard);
   G_OBJECT_CLASS (guestfs_add_domain_parent_class)->finalize (object);
 }
 
@@ -249,6 +273,40 @@ guestfs_add_domain_class_init (GuestfsAddDomainClass *klass)
     g_param_spec_string (
       "readonlydisk",
       "readonlydisk",
+      "A string.",
+      NULL,
+      G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+    )
+  );
+
+  /**
+   * GuestfsAddDomain:cachemode:
+   *
+   * A string.
+   */
+  g_object_class_install_property (
+    object_class,
+    PROP_GUESTFS_ADD_DOMAIN_CACHEMODE,
+    g_param_spec_string (
+      "cachemode",
+      "cachemode",
+      "A string.",
+      NULL,
+      G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+    )
+  );
+
+  /**
+   * GuestfsAddDomain:discard:
+   *
+   * A string.
+   */
+  g_object_class_install_property (
+    object_class,
+    PROP_GUESTFS_ADD_DOMAIN_DISCARD,
+    g_param_spec_string (
+      "discard",
+      "discard",
       "A string.",
       NULL,
       G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS

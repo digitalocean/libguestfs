@@ -33,6 +33,16 @@ GuestfsAddDomain
 
 </para>
 
+<!-- ##### ARG GuestfsAddDomain:cachemode ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsAddDomain:discard ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GuestfsAddDomain:iface ##### -->
 <para>
 

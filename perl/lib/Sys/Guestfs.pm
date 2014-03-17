@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.416';
+$VERSION = '0.418';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -366,7 +366,7 @@ Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
 
-=item $nrdisks = $g->add_domain ($dom [, libvirturi => $libvirturi] [, readonly => $readonly] [, iface => $iface] [, live => $live] [, allowuuid => $allowuuid] [, readonlydisk => $readonlydisk]);
+=item $nrdisks = $g->add_domain ($dom [, libvirturi => $libvirturi] [, readonly => $readonly] [, iface => $iface] [, live => $live] [, allowuuid => $allowuuid] [, readonlydisk => $readonlydisk] [, cachemode => $cachemode] [, discard => $discard]);
 
 This function adds the disk(s) attached to the named libvirt
 domain C<dom>.  It works by connecting to libvirt, requesting
@@ -452,7 +452,7 @@ Disks with the E<lt>readonly/E<gt> flag are skipped.
 The other optional parameters are passed directly through to
 C<$g-E<gt>add_drive_opts>.
 
-=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret] [, cachemode => $cachemode]);
+=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret] [, cachemode => $cachemode] [, discard => $discard]);
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -666,9 +666,39 @@ for scratch or temporary disks.
 
 =back
 
+=item C<discard>
+
+Enable or disable discard (a.k.a. trim or unmap) support on this
+drive.  If enabled, operations such as C<$g-E<gt>fstrim> will be able
+to discard / make thin / punch holes in the underlying host file
+or device.
+
+Possible discard settings are:
+
+=over 4
+
+=item C<discard = "disable">
+
+Disable discard support.  This is the default.
+
+=item C<discard = "enable">
+
+Enable discard support.  Fail if discard is not possible.
+
+=item C<discard = "besteffort">
+
+Enable discard support if possible, but don't fail if it is not
+supported.
+
+Since not all backends and not all underlying systems support
+discard, this is a good choice if you want to use discard if
+possible, but don't mind if it doesn't work.
+
 =back
 
-=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret] [, cachemode => $cachemode]);
+=back
+
+=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret] [, cachemode => $cachemode] [, discard => $discard]);
 
 This is an alias of L</add_drive>.
 
@@ -972,6 +1002,26 @@ to C<filename>.
 
 This command downloads the contents of C<filename>, writing
 it out to local file C<base64file> encoded as base64.
+
+=item $g->blkdiscard ($device);
+
+This discards all blocks on the block device C<device>, giving
+the free space back to the host.
+
+This operation requires support in libguestfs, the host filesystem,
+qemu and the host kernel.  If this support isn't present it may give
+an error or even appear to run but do nothing.  You must also
+set the C<discard> attribute on the underlying drive (see
+C<$g-E<gt>add_drive_opts>).
+
+=item $zeroes = $g->blkdiscardzeroes ($device);
+
+This call returns true if blocks on C<device> that have been
+discarded by a call to C<$g-E<gt>blkdiscard> are returned as
+blocks of zero bytes when read the next time.
+
+If it returns false, then it may be that discarded blocks are
+read as stale or random data.
 
 =item %info = $g->blkid ($device);
 
@@ -7507,6 +7557,8 @@ use vars qw(%guestfs_introspection);
       live => [ 'live', 'bool', 3 ],
       allowuuid => [ 'allowuuid', 'bool', 4 ],
       readonlydisk => [ 'readonlydisk', 'string', 5 ],
+      cachemode => [ 'cachemode', 'string', 6 ],
+      discard => [ 'discard', 'string', 7 ],
     },
     name => "add_domain",
     description => "add the disk(s) from a named libvirt domain",
@@ -7527,6 +7579,7 @@ use vars qw(%guestfs_introspection);
       username => [ 'username', 'string', 7 ],
       secret => [ 'secret', 'string', 8 ],
       cachemode => [ 'cachemode', 'string', 9 ],
+      discard => [ 'discard', 'string', 10 ],
     },
     name => "add_drive",
     description => "add an image to examine or modify",
@@ -7736,6 +7789,22 @@ use vars qw(%guestfs_introspection);
     ],
     name => "base64_out",
     description => "download file and encode as base64",
+  },
+  "blkdiscard" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "blkdiscard",
+    description => "discard all blocks on a device",
+  },
+  "blkdiscardzeroes" => {
+    ret => 'bool',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "blkdiscardzeroes",
+    description => "return true if discarded blocks are read as zeroes",
   },
   "blkid" => {
     ret => 'hash',

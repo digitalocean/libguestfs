@@ -46,8 +46,14 @@ do_fstrim (const char *path,
   const char *argv[MAX_ARGS];
   size_t i = 0;
   char offset_s[64], length_s[64], mfe_s[64];
-  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *buf = NULL;
+  CLEANUP_FREE char *out = NULL, *err = NULL;
   int r;
+
+  /* Suggested by Paolo Bonzini to fix fstrim problem.
+   * https://lists.gnu.org/archive/html/qemu-devel/2014-03/msg02978.html
+   */
+  sync_disks ();
 
   ADD_ARG (argv, i, str_fstrim);
 
@@ -84,14 +90,27 @@ do_fstrim (const char *path,
     ADD_ARG (argv, i, mfe_s);
   }
 
-  ADD_ARG (argv, i, path);
+  /* When running in debug mode, use -v, capture stdout and print it below. */
+  if (verbose)
+    ADD_ARG (argv, i, "-v");
+
+  buf = sysroot_path (path);
+  if (!buf) {
+    reply_with_error ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, buf);
   ADD_ARG (argv, i, NULL);
 
-  r = commandv (NULL, &err, argv);
+  r = commandv (&out, &err, argv);
   if (r == -1) {
     reply_with_error ("%s", err);
     return -1;
   }
+
+  if (verbose)
+    fprintf (stderr, "%s\n", out);
 
   return 0;
 }

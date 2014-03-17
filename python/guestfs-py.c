@@ -1272,11 +1272,13 @@ py_guestfs_add_domain (PyObject *self, PyObject *args)
   PyObject *py_live;
   PyObject *py_allowuuid;
   PyObject *py_readonlydisk;
+  PyObject *py_cachemode;
+  PyObject *py_discard;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OsOOOOOO:guestfs_add_domain",
-                         &py_g, &dom, &py_libvirturi, &py_readonly, &py_iface, &py_live, &py_allowuuid, &py_readonlydisk))
+  if (!PyArg_ParseTuple (args, (char *) "OsOOOOOOOO:guestfs_add_domain",
+                         &py_g, &dom, &py_libvirturi, &py_readonly, &py_iface, &py_live, &py_allowuuid, &py_readonlydisk, &py_cachemode, &py_discard))
     goto out;
   g = get_handle (py_g);
 
@@ -1325,6 +1327,26 @@ py_guestfs_add_domain (PyObject *self, PyObject *args)
     optargs_s.readonlydisk = PyBytes_AS_STRING (bytes);
 #endif
   }
+  if (py_cachemode != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.cachemode = PyString_AsString (py_cachemode);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_cachemode);
+    optargs_s.cachemode = PyBytes_AS_STRING (bytes);
+#endif
+  }
+  if (py_discard != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.discard = PyString_AsString (py_discard);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_discard);
+    optargs_s.discard = PyBytes_AS_STRING (bytes);
+#endif
+  }
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -1365,11 +1387,12 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
   PyObject *py_username;
   PyObject *py_secret;
   PyObject *py_cachemode;
+  PyObject *py_discard;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OsOOOOOOOOOO:guestfs_add_drive",
-                         &py_g, &filename, &py_readonly, &py_format, &py_iface, &py_name, &py_label, &py_protocol, &py_server, &py_username, &py_secret, &py_cachemode))
+  if (!PyArg_ParseTuple (args, (char *) "OsOOOOOOOOOOO:guestfs_add_drive",
+                         &py_g, &filename, &py_readonly, &py_format, &py_iface, &py_name, &py_label, &py_protocol, &py_server, &py_username, &py_secret, &py_cachemode, &py_discard))
     goto out;
   g = get_handle (py_g);
 
@@ -1461,6 +1484,16 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
     PyObject *bytes;
     bytes = PyUnicode_AsUTF8String (py_cachemode);
     optargs_s.cachemode = PyBytes_AS_STRING (bytes);
+#endif
+  }
+  if (py_discard != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.discard = PyString_AsString (py_discard);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_discard);
+    optargs_s.discard = PyBytes_AS_STRING (bytes);
 #endif
   }
 
@@ -2333,6 +2366,75 @@ py_guestfs_base64_out (PyObject *self, PyObject *args)
 
   Py_INCREF (Py_None);
   py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_blkdiscard (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *device;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_blkdiscard",
+                         &py_g, &device))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_blkdiscard (g, device);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_blkdiscardzeroes (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *device;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_blkdiscardzeroes",
+                         &py_g, &device))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_blkdiscardzeroes (g, device);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = PyLong_FromLong ((long) r);
 
  out:
   return py_r;
@@ -21952,6 +22054,8 @@ static PyMethodDef methods[] = {
   { (char *) "available_all_groups", py_guestfs_available_all_groups, METH_VARARGS, NULL },
   { (char *) "base64_in", py_guestfs_base64_in, METH_VARARGS, NULL },
   { (char *) "base64_out", py_guestfs_base64_out, METH_VARARGS, NULL },
+  { (char *) "blkdiscard", py_guestfs_blkdiscard, METH_VARARGS, NULL },
+  { (char *) "blkdiscardzeroes", py_guestfs_blkdiscardzeroes, METH_VARARGS, NULL },
   { (char *) "blkid", py_guestfs_blkid, METH_VARARGS, NULL },
   { (char *) "blockdev_flushbufs", py_guestfs_blockdev_flushbufs, METH_VARARGS, NULL },
   { (char *) "blockdev_getbsz", py_guestfs_blockdev_getbsz, METH_VARARGS, NULL },

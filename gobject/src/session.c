@@ -739,6 +739,22 @@ guestfs_session_add_domain (GuestfsSession *session, const gchar *dom, GuestfsAd
       argv.bitmask |= GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK;
       argv.readonlydisk = readonlydisk;
     }
+    GValue cachemode_v = {0, };
+    g_value_init (&cachemode_v, G_TYPE_STRING);
+    g_object_get_property (G_OBJECT (optargs), "cachemode", &cachemode_v);
+    const gchar *cachemode = g_value_get_string (&cachemode_v);
+    if (cachemode != NULL) {
+      argv.bitmask |= GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK;
+      argv.cachemode = cachemode;
+    }
+    GValue discard_v = {0, };
+    g_value_init (&discard_v, G_TYPE_STRING);
+    g_object_get_property (G_OBJECT (optargs), "discard", &discard_v);
+    const gchar *discard = g_value_get_string (&discard_v);
+    if (discard != NULL) {
+      argv.bitmask |= GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
+      argv.discard = discard;
+    }
     argvp = &argv;
   }
   int ret = guestfs_add_domain_argv (g, dom, argvp);
@@ -955,6 +971,28 @@ guestfs_session_add_domain (GuestfsSession *session, const gchar *dom, GuestfsAd
  * anything and ignore sync requests. This is suitable only for
  * scratch or temporary disks.
  * 
+ * @discard
+ * Enable or disable discard (a.k.a. trim or unmap) support on this
+ * drive. If enabled, operations such as guestfs_session_fstrim() will
+ * be able to discard / make thin / punch holes in the underlying host
+ * file or device.
+ * 
+ * Possible discard settings are:
+ * 
+ * "discard = "disable""
+ * Disable discard support. This is the default.
+ * 
+ * "discard = "enable""
+ * Enable discard support. Fail if discard is not possible.
+ * 
+ * "discard = "besteffort""
+ * Enable discard support if possible, but don't fail if it is not
+ * supported.
+ * 
+ * Since not all backends and not all underlying systems support
+ * discard, this is a good choice if you want to use discard if
+ * possible, but don't mind if it doesn't work.
+ * 
  * Returns: true on success, false on error
  */
 gboolean
@@ -1045,6 +1083,14 @@ guestfs_session_add_drive (GuestfsSession *session, const gchar *filename, Guest
     if (cachemode != NULL) {
       argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
       argv.cachemode = cachemode;
+    }
+    GValue discard_v = {0, };
+    g_value_init (&discard_v, G_TYPE_STRING);
+    g_object_get_property (G_OBJECT (optargs), "discard", &discard_v);
+    const gchar *discard = g_value_get_string (&discard_v);
+    if (discard != NULL) {
+      argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
+      argv.discard = discard;
     }
     argvp = &argv;
   }
@@ -2034,6 +2080,82 @@ guestfs_session_base64_out (GuestfsSession *session, const gchar *filename, cons
   }
 
   return TRUE;
+}
+
+/**
+ * guestfs_session_blkdiscard:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * discard all blocks on a device
+ *
+ * This discards all blocks on the block device @device, giving the free
+ * space back to the host.
+ * 
+ * This operation requires support in libguestfs, the host filesystem, qemu
+ * and the host kernel. If this support isn't present it may give an error
+ * or even appear to run but do nothing. You must also set the @discard
+ * attribute on the underlying drive (see
+ * guestfs_session_add_drive_opts()).
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_blkdiscard (GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "blkdiscard");
+    return FALSE;
+  }
+
+  int ret = guestfs_blkdiscard (g, device);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_blkdiscardzeroes:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * return true if discarded blocks are read as zeroes
+ *
+ * This call returns true if blocks on @device that have been discarded by
+ * a call to guestfs_session_blkdiscard() are returned as blocks of zero
+ * bytes when read the next time.
+ * 
+ * If it returns false, then it may be that discarded blocks are read as
+ * stale or random data.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint8
+guestfs_session_blkdiscardzeroes (GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "blkdiscardzeroes");
+    return -1;
+  }
+
+  int ret = guestfs_blkdiscardzeroes (g, device);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return -1;
+  }
+
+  return ret;
 }
 
 /**

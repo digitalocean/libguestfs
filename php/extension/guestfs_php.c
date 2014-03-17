@@ -92,6 +92,8 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_available_all_groups, NULL)
   PHP_FE (guestfs_base64_in, NULL)
   PHP_FE (guestfs_base64_out, NULL)
+  PHP_FE (guestfs_blkdiscard, NULL)
+  PHP_FE (guestfs_blkdiscardzeroes, NULL)
   PHP_FE (guestfs_blkid, NULL)
   PHP_FE (guestfs_blockdev_flushbufs, NULL)
   PHP_FE (guestfs_blockdev_getbsz, NULL)
@@ -833,9 +835,13 @@ PHP_FUNCTION (guestfs_add_domain)
   zend_bool optargs_t_allowuuid = -1;
   char *optargs_t_readonlydisk = NULL;
   int optargs_t_readonlydisk_size = -1;
+  char *optargs_t_cachemode = NULL;
+  int optargs_t_cachemode_size = -1;
+  char *optargs_t_discard = NULL;
+  int optargs_t_discard_size = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|sbsbbs",
-        &z_g, &dom, &dom_size, &optargs_t_libvirturi, &optargs_t_libvirturi_size, &optargs_t_readonly, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_live, &optargs_t_allowuuid, &optargs_t_readonlydisk, &optargs_t_readonlydisk_size) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|sbsbbsss",
+        &z_g, &dom, &dom_size, &optargs_t_libvirturi, &optargs_t_libvirturi_size, &optargs_t_readonly, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_live, &optargs_t_allowuuid, &optargs_t_readonlydisk, &optargs_t_readonlydisk_size, &optargs_t_cachemode, &optargs_t_cachemode_size, &optargs_t_discard, &optargs_t_discard_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -874,6 +880,14 @@ PHP_FUNCTION (guestfs_add_domain)
     optargs_s.readonlydisk = optargs_t_readonlydisk;
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK;
   }
+  if (optargs_t_cachemode != NULL) {
+    optargs_s.cachemode = optargs_t_cachemode;
+    optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK;
+  }
+  if (optargs_t_discard != NULL) {
+    optargs_s.discard = optargs_t_discard;
+    optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
+  }
 
   int r;
   r = guestfs_add_domain_argv (g, dom, optargs);
@@ -904,16 +918,18 @@ PHP_FUNCTION (guestfs_add_drive)
   int optargs_t_label_size = -1;
   char *optargs_t_protocol = NULL;
   int optargs_t_protocol_size = -1;
-  zval *optargs_t_server;
+  zval *optargs_t_server = NULL;
   char *optargs_t_username = NULL;
   int optargs_t_username_size = -1;
   char *optargs_t_secret = NULL;
   int optargs_t_secret_size = -1;
   char *optargs_t_cachemode = NULL;
   int optargs_t_cachemode_size = -1;
+  char *optargs_t_discard = NULL;
+  int optargs_t_discard_size = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bsssssa!sss",
-        &z_g, &filename, &filename_size, &optargs_t_readonly, &optargs_t_format, &optargs_t_format_size, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_name, &optargs_t_name_size, &optargs_t_label, &optargs_t_label_size, &optargs_t_protocol, &optargs_t_protocol_size, &optargs_t_server, &optargs_t_username, &optargs_t_username_size, &optargs_t_secret, &optargs_t_secret_size, &optargs_t_cachemode, &optargs_t_cachemode_size) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bsssssa!ssss",
+        &z_g, &filename, &filename_size, &optargs_t_readonly, &optargs_t_format, &optargs_t_format_size, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_name, &optargs_t_name_size, &optargs_t_label, &optargs_t_label_size, &optargs_t_protocol, &optargs_t_protocol_size, &optargs_t_server, &optargs_t_username, &optargs_t_username_size, &optargs_t_secret, &optargs_t_secret_size, &optargs_t_cachemode, &optargs_t_cachemode_size, &optargs_t_discard, &optargs_t_discard_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -991,6 +1007,10 @@ PHP_FUNCTION (guestfs_add_drive)
   if (optargs_t_cachemode != NULL) {
     optargs_s.cachemode = optargs_t_cachemode;
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
+  }
+  if (optargs_t_discard != NULL) {
+    optargs_s.discard = optargs_t_discard;
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
   }
 
   int r;
@@ -1910,6 +1930,72 @@ PHP_FUNCTION (guestfs_base64_out)
   }
 
   RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_blkdiscard)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  int device_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &device, &device_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: blkdiscard: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_blkdiscard (g, device);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_blkdiscardzeroes)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  int device_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &device, &device_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: blkdiscardzeroes: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_blkdiscardzeroes (g, device);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_BOOL (r);
 }
 
 PHP_FUNCTION (guestfs_blkid)
@@ -8589,7 +8675,7 @@ PHP_FUNCTION (guestfs_internal_test)
   long optargs_t_oint64 = -1;
   char *optargs_t_ostring = NULL;
   int optargs_t_ostring_size = -1;
-  zval *optargs_t_ostringlist;
+  zval *optargs_t_ostringlist = NULL;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss!abllsss|bllsa!",
         &z_g, &str, &str_size, &optstr, &optstr_size, &z_strlist, &b, &integer, &integer64, &filein, &filein_size, &fileout, &fileout_size, &bufferin, &bufferin_size, &optargs_t_obool, &optargs_t_oint, &optargs_t_oint64, &optargs_t_ostring, &optargs_t_ostring_size, &optargs_t_ostringlist) == FAILURE) {
@@ -19425,7 +19511,7 @@ PHP_FUNCTION (guestfs_tar_out)
   char *optargs_t_compress = NULL;
   int optargs_t_compress_size = -1;
   zend_bool optargs_t_numericowner = -1;
-  zval *optargs_t_excludes;
+  zval *optargs_t_excludes = NULL;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss|sba!",
         &z_g, &directory, &directory_size, &tarfile, &tarfile_size, &optargs_t_compress, &optargs_t_compress_size, &optargs_t_numericowner, &optargs_t_excludes) == FAILURE) {

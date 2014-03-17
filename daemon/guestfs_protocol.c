@@ -8088,6 +8088,36 @@ xdr_guestfs_part_get_name_ret (XDR *xdrs, guestfs_part_get_name_ret *objp)
 }
 
 bool_t
+xdr_guestfs_blkdiscard_args (XDR *xdrs, guestfs_blkdiscard_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_blkdiscardzeroes_args (XDR *xdrs, guestfs_blkdiscardzeroes_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_blkdiscardzeroes_ret (XDR *xdrs, guestfs_blkdiscardzeroes_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_bool (xdrs, &objp->zeroes))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

@@ -398,6 +398,14 @@ PREINIT:
           optargs_s.readonlydisk = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK;
         }
+        else if (STREQ (this_arg, "cachemode")) {
+          optargs_s.cachemode = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK;
+        }
+        else if (STREQ (this_arg, "discard")) {
+          optargs_s.discard = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
+        }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
           croak ("optional argument '%s' given twice",
@@ -488,6 +496,10 @@ PREINIT:
         else if (STREQ (this_arg, "cachemode")) {
           optargs_s.cachemode = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
+        }
+        else if (STREQ (this_arg, "discard")) {
+          optargs_s.discard = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
@@ -846,6 +858,31 @@ PREINIT:
       r = guestfs_base64_out (g, filename, base64file);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
+
+void
+blkdiscard (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_blkdiscard (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+blkdiscardzeroes (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_blkdiscardzeroes (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
 
 void
 blkid (g, device)

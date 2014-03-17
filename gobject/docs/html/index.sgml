@@ -52,6 +52,8 @@
 <ANCHOR id="guestfs-session-available-all-groups" href="guestfs/GuestfsSession.html#guestfs-session-available-all-groups">
 <ANCHOR id="guestfs-session-base64-in" href="guestfs/GuestfsSession.html#guestfs-session-base64-in">
 <ANCHOR id="guestfs-session-base64-out" href="guestfs/GuestfsSession.html#guestfs-session-base64-out">
+<ANCHOR id="guestfs-session-blkdiscard" href="guestfs/GuestfsSession.html#guestfs-session-blkdiscard">
+<ANCHOR id="guestfs-session-blkdiscardzeroes" href="guestfs/GuestfsSession.html#guestfs-session-blkdiscardzeroes">
 <ANCHOR id="guestfs-session-blkid" href="guestfs/GuestfsSession.html#guestfs-session-blkid">
 <ANCHOR id="guestfs-session-blockdev-flushbufs" href="guestfs/GuestfsSession.html#guestfs-session-blockdev-flushbufs">
 <ANCHOR id="guestfs-session-blockdev-getbsz" href="guestfs/GuestfsSession.html#guestfs-session-blockdev-getbsz">
@@ -711,6 +713,8 @@
 <ANCHOR id="guestfs-add-domain-new" href="guestfs/GuestfsAddDomain.html#guestfs-add-domain-new">
 <ANCHOR id="GuestfsAddDomain.property-details" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain.property-details">
 <ANCHOR id="GuestfsAddDomain--allowuuid" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain--allowuuid">
+<ANCHOR id="GuestfsAddDomain--cachemode" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain--cachemode">
+<ANCHOR id="GuestfsAddDomain--discard" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain--discard">
 <ANCHOR id="GuestfsAddDomain--iface" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain--iface">
 <ANCHOR id="GuestfsAddDomain--libvirturi" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain--libvirturi">
 <ANCHOR id="GuestfsAddDomain--live" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain--live">
@@ -727,6 +731,7 @@
 <ANCHOR id="guestfs-add-drive-new" href="guestfs/GuestfsAddDrive.html#guestfs-add-drive-new">
 <ANCHOR id="GuestfsAddDrive.property-details" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive.property-details">
 <ANCHOR id="GuestfsAddDrive--cachemode" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--cachemode">
+<ANCHOR id="GuestfsAddDrive--discard" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--discard">
 <ANCHOR id="GuestfsAddDrive--format" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--format">
 <ANCHOR id="GuestfsAddDrive--iface" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--iface">
 <ANCHOR id="GuestfsAddDrive--label" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--label">

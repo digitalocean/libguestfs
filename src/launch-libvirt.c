@@ -106,6 +106,8 @@ struct backend_libvirt_data {
   char *selinux_imagelabel;
   bool selinux_norelabel_disks;
   char name[DOMAIN_NAME_LEN];   /* random name */
+  bool is_kvm;                  /* false = qemu, true = kvm (from capabilities)*/
+  unsigned long qemu_version;   /* qemu version (from libvirt) */
 };
 
 /* Parameters passed to construct_libvirt_xml and subfunctions.  We
@@ -122,15 +124,15 @@ struct libvirt_xml_params {
   char guestfsd_path[UNIX_PATH_MAX]; /* paths to sockets */
   char console_path[UNIX_PATH_MAX];
   bool enable_svirt;            /* false if we decided to disable sVirt */
-  bool is_kvm;                  /* false = qemu, true = kvm */
   bool current_proc_is_root;    /* true = euid is root */
 };
 
-static int parse_capabilities (guestfs_h *g, const char *capabilities_xml, struct libvirt_xml_params *params);
+static int parse_capabilities (guestfs_h *g, const char *capabilities_xml, struct backend_libvirt_data *data);
 static xmlChar *construct_libvirt_xml (guestfs_h *g, const struct libvirt_xml_params *params);
 static void debug_appliance_permissions (guestfs_h *g);
 static void debug_socket_permissions (guestfs_h *g);
 static void libvirt_error (guestfs_h *g, const char *fs, ...) __attribute__((format (printf,2,3)));
+static void libvirt_debug (guestfs_h *g, const char *fs, ...) __attribute__((format (printf,2,3)));
 static int is_custom_hv (guestfs_h *g);
 static int is_blk (const char *path);
 static void ignore_errors (void *ignore, virErrorPtr ignore2);
@@ -283,6 +285,19 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
    */
   virConnSetErrorFunc (conn, NULL, ignore_errors);
 
+  /* Get hypervisor (hopefully qemu) version. */
+  if (virConnectGetVersion (conn, &data->qemu_version) == 0) {
+    debug (g, "qemu version (reported by libvirt) = %lu (%lu.%lu.%lu)",
+           data->qemu_version,
+           data->qemu_version / 1000000UL,
+           data->qemu_version / 1000UL % 1000UL,
+           data->qemu_version % 1000UL);
+  }
+  else {
+    libvirt_debug (g, "unable to read qemu version from libvirt");
+    data->qemu_version = 0;
+  }
+
   if (g->verbose)
     guestfs___print_timestamped_message (g, "get libvirt capabilities");
 
@@ -299,7 +314,7 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   if (g->verbose)
     guestfs___print_timestamped_message (g, "parsing capabilities XML");
 
-  if (parse_capabilities (g, capabilities_xml, &params) == -1)
+  if (parse_capabilities (g, capabilities_xml, data) == -1)
     goto cleanup;
 
   /* Locate and/or build the appliance. */
@@ -575,7 +590,7 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
 
 static int
 parse_capabilities (guestfs_h *g, const char *capabilities_xml,
-                    struct libvirt_xml_params *params)
+                    struct backend_libvirt_data *data)
 {
   CLEANUP_XMLFREEDOC xmlDocPtr doc = NULL;
   CLEANUP_XMLXPATHFREECONTEXT xmlXPathContextPtr xpathCtx = NULL;
@@ -654,9 +669,9 @@ parse_capabilities (guestfs_h *g, const char *capabilities_xml,
   force_tcg = guestfs___get_backend_setting_bool (g, "force_tcg");
 
   if (!force_tcg)
-    params->is_kvm = seen_kvm;
+    data->is_kvm = seen_kvm;
   else
-    params->is_kvm = 0;
+    data->is_kvm = 0;
 
   return 0;
 }
@@ -789,7 +804,7 @@ static int construct_libvirt_xml_devices (guestfs_h *g, const struct libvirt_xml
 static int construct_libvirt_xml_qemu_cmdline (guestfs_h *g, const struct libvirt_xml_params *params, xmlTextWriterPtr xo);
 static int construct_libvirt_xml_disk (guestfs_h *g, const struct backend_libvirt_data *data, xmlTextWriterPtr xo, struct drive *drv, size_t drv_index);
 static int construct_libvirt_xml_disk_target (guestfs_h *g, xmlTextWriterPtr xo, size_t drv_index);
-static int construct_libvirt_xml_disk_driver_qemu (guestfs_h *g, xmlTextWriterPtr xo, const char *format, const char *cachemode);
+static int construct_libvirt_xml_disk_driver_qemu (guestfs_h *g, const struct backend_libvirt_data *data, struct drive *drv, xmlTextWriterPtr xo, const char *format, const char *cachemode, enum discard discard);
 static int construct_libvirt_xml_disk_address (guestfs_h *g, xmlTextWriterPtr xo, size_t drv_index);
 static int construct_libvirt_xml_disk_source_hosts (guestfs_h *g, xmlTextWriterPtr xo, const struct drive_source *src);
 static int construct_libvirt_xml_disk_source_seclabel (guestfs_h *g, const struct backend_libvirt_data *data, xmlTextWriterPtr xo);
@@ -929,7 +944,7 @@ construct_libvirt_xml_domain (guestfs_h *g,
                               xmlTextWriterPtr xo)
 {
   start_element ("domain") {
-    attribute ("type", params->is_kvm ? "kvm" : "qemu");
+    attribute ("type", params->data->is_kvm ? "kvm" : "qemu");
     attribute_ns ("xmlns", "qemu", NULL,
                   "http://libvirt.org/schemas/domain/qemu/1.0");
 
@@ -987,7 +1002,7 @@ construct_libvirt_xml_cpu (guestfs_h *g,
    * Only do this with KVM.  It is broken in subtle ways on TCG, and
    * fairly pointless anyway.
    */
-  if (params->is_kvm) {
+  if (params->data->is_kvm) {
     start_element ("cpu") {
       attribute ("mode", "host-passthrough");
       start_element ("model") {
@@ -1039,7 +1054,7 @@ construct_libvirt_xml_boot (guestfs_h *g,
 
   /* Linux kernel command line. */
   flags = 0;
-  if (!params->is_kvm)
+  if (!params->data->is_kvm)
     flags |= APPLIANCE_COMMAND_LINE_IS_TCG;
   cmdline = guestfs___appliance_command_line (g, params->appliance_dev, flags);
 
@@ -1233,7 +1248,9 @@ construct_libvirt_xml_disk (guestfs_h *g,
       if (construct_libvirt_xml_disk_target (g, xo, drv_index) == -1)
         return -1;
 
-      if (construct_libvirt_xml_disk_driver_qemu (g, xo, "qcow2", "unsafe")
+      if (construct_libvirt_xml_disk_driver_qemu (g, data, drv,
+                                                  xo, "qcow2", "unsafe",
+                                                  discard_disable)
           == -1)
         return -1;
     }
@@ -1370,8 +1387,9 @@ construct_libvirt_xml_disk (guestfs_h *g,
         return -1;
       }
 
-      if (construct_libvirt_xml_disk_driver_qemu (g, xo, format,
-                                                  drv->cachemode ? : "writeback")
+      if (construct_libvirt_xml_disk_driver_qemu (g, data, drv, xo, format,
+                                                  drv->cachemode ? : "writeback",
+                                                  drv->discard)
           == -1)
         return -1;
     }
@@ -1407,14 +1425,46 @@ construct_libvirt_xml_disk_target (guestfs_h *g, xmlTextWriterPtr xo,
 }
 
 static int
-construct_libvirt_xml_disk_driver_qemu (guestfs_h *g, xmlTextWriterPtr xo,
+construct_libvirt_xml_disk_driver_qemu (guestfs_h *g,
+                                        const struct backend_libvirt_data *data,
+                                        struct drive *drv,
+                                        xmlTextWriterPtr xo,
                                         const char *format,
-                                        const char *cachemode)
+                                        const char *cachemode,
+                                        enum discard discard)
 {
+  bool discard_unmap = false;
+
+  /* When adding the appliance disk, we don't have a 'drv' struct.
+   * However the caller will use discard_disable, so we don't need it.
+   */
+  assert (discard == discard_disable || drv != NULL);
+
+  switch (discard) {
+  case discard_disable:
+    /* Since the default is always discard=ignore, don't specify it
+     * in the XML.
+     */
+    break;
+  case discard_enable:
+    if (!guestfs___discard_possible (g, drv, data->qemu_version))
+      return -1;
+    /*FALLTHROUGH*/
+  case discard_besteffort:
+    /* I believe from reading the code that this is always safe as
+     * long as qemu >= 1.5.
+     */
+    if (data->qemu_version >= 1005000)
+      discard_unmap = true;
+    break;
+  }
+
   start_element ("driver") {
     attribute ("name", "qemu");
     attribute ("type", format);
     attribute ("cache", cachemode);
+    if (discard_unmap)
+      attribute ("discard", "unmap");
   } end_element ();
 
   return 0;
@@ -1499,7 +1549,9 @@ construct_libvirt_xml_appliance (guestfs_h *g,
       attribute ("bus", "scsi");
     } end_element ();
 
-    if (construct_libvirt_xml_disk_driver_qemu (g, xo, "qcow2", "unsafe") == -1)
+    if (construct_libvirt_xml_disk_driver_qemu (g, params->data, NULL, xo,
+                                                "qcow2", "unsafe",
+                                                discard_disable) == -1)
       return -1;
 
     if (construct_libvirt_xml_disk_address (g, xo, params->appliance_index)
@@ -1654,6 +1706,39 @@ libvirt_error (guestfs_h *g, const char *fs, ...)
            msg, err->message, err->code, err->domain);
   else
     error (g, "%s", msg);
+
+  /* NB. 'err' must not be freed! */
+  free (msg);
+}
+
+/* Same as 'libvirt_error' but calls debug instead. */
+static void
+libvirt_debug (guestfs_h *g, const char *fs, ...)
+{
+  va_list args;
+  char *msg;
+  int len;
+  virErrorPtr err;
+
+  if (!g->verbose)
+    return;
+
+  va_start (args, fs);
+  len = vasprintf (&msg, fs, args);
+  va_end (args);
+
+  if (len < 0)
+    msg = safe_asprintf (g,
+                         _("%s: internal error forming error message"),
+                         __func__);
+
+  /* In all recent libvirt, this retrieves the thread-local error. */
+  err = virGetLastError ();
+  if (err)
+    debug (g, "%s: %s [code=%d domain=%d]",
+           msg, err->message, err->code, err->domain);
+  else
+    debug (g, "%s", msg);
 
   /* NB. 'err' must not be freed! */
   free (msg);

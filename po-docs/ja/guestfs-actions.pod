@@ -128,6 +128,8 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_ADD_DOMAIN_LIVE, int live,
  GUESTFS_ADD_DOMAIN_ALLOWUUID, int allowuuid,
  GUESTFS_ADD_DOMAIN_READONLYDISK, const char *readonlydisk,
+ GUESTFS_ADD_DOMAIN_CACHEMODE, const char *cachemode,
+ GUESTFS_ADD_DOMAIN_DISCARD, const char *discard,
 
 This function adds the disk(s) attached to the named libvirt domain C<dom>.
 It works by connecting to libvirt, requesting the domain and domain XML from
@@ -268,6 +270,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_ADD_DRIVE_OPTS_USERNAME, const char *username,
  GUESTFS_ADD_DRIVE_OPTS_SECRET, const char *secret,
  GUESTFS_ADD_DRIVE_OPTS_CACHEMODE, const char *cachemode,
+ GUESTFS_ADD_DRIVE_OPTS_DISCARD, const char *discard,
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -469,6 +472,34 @@ the host, indicating that data has been committed to disk.
 
 In this mode, there are no guarantees.  Libguestfs may cache anything and
 ignore sync requests.  This is suitable only for scratch or temporary disks.
+
+=back
+
+=item C<discard>
+
+Enable or disable discard (a.k.a. trim or unmap) support on this drive.  If
+enabled, operations such as C<guestfs_fstrim> will be able to discard / make
+thin / punch holes in the underlying host file or device.
+
+Possible discard settings are:
+
+=over 4
+
+=item C<discard = "disable">
+
+Disable discard support.  This is the default.
+
+=item C<discard = "enable">
+
+Enable discard support.  Fail if discard is not possible.
+
+=item C<discard = "besteffort">
+
+Enable discard support if possible, but don't fail if it is not supported.
+
+Since not all backends and not all underlying systems support discard, this
+is a good choice if you want to use discard if possible, but don't mind if
+it doesn't work.
 
 =back
 
@@ -1006,6 +1037,37 @@ file C<base64file> encoded as base64.
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (1.3.5 において追加)
+
+=head2 guestfs_blkdiscard
+
+ int
+ guestfs_blkdiscard (guestfs_h *g,
+                     const char *device);
+
+This discards all blocks on the block device C<device>, giving the free
+space back to the host.
+
+This operation requires support in libguestfs, the host filesystem, qemu and
+the host kernel.  If this support isn't present it may give an error or even
+appear to run but do nothing.  You must also set the C<discard> attribute on
+the underlying drive (see C<guestfs_add_drive_opts>).
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_blkdiscardzeroes
+
+ int
+ guestfs_blkdiscardzeroes (guestfs_h *g,
+                           const char *device);
+
+This call returns true if blocks on C<device> that have been discarded by a
+call to C<guestfs_blkdiscard> are returned as blocks of zero bytes when read
+the next time.
+
+If it returns false, then it may be that discarded blocks are read as stale
+or random data.
+
+This function returns a C truth value on success or -1 on error.
 
 =head2 guestfs_blkid
 

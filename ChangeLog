@@ -1,3 +1,447 @@
+commit 996c0a286820cd131c7d53e208816665380b87a2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 16 22:55:52 2014 +0000
+
+    Version 1.25.45.
+
+commit 455ccc15c3c9f71b1001fa45788a53d39c359aa6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 16 22:55:24 2014 +0000
+
+    Add tests/run-xml-to-junit.* to EXTRA_DIST.
+
+commit 7fe365eee68b49972a1c528ddd78101215e1defd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 16 22:44:03 2014 +0000
+
+    tests/regressions/rhbz895904.sh: Rewrite without multi-line expression.
+    
+    RHEL 6-era bash cannot handle the multi-line $(...) expression in the
+    original code.  Rewrite the test so it is semantically the same but
+    doesn't have the expression that old bash can't handle.
+
+commit 93335b5c4aa55eeba01625459b3c9c8c0df96059
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 15 15:46:54 2014 +0000
+
+    appliance: init: Remove unnecessary comment, whitespace changes.
+
+commit bae2134aefdfdad5c9955c69a0c9f0772c90e95e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 14 13:20:22 2014 +0000
+
+    tests/discard: sync before close isn't necessary.
+    
+    However we should be calling shutdown, since we're writing to the disk
+    and need to catch qemu errors.
+
+commit d46ceea6014006ab19b6f795e2e28a7360d90b2c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 14 13:14:24 2014 +0000
+
+    tests: fstrim: Sync before running fstrim.
+    
+    This makes fstrim work.  It's not clear why exactly.
+    
+    Thanks: Paolo Bonzini.
+
+commit 55730f6118aa947a8e81d36cd6a9cb28ce0bb7dd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 14 13:00:43 2014 +0000
+
+    Revert "tests: fstrim: Remount the disk."
+    
+    This reverts commit accf1b66aa835714690a2979e990c49243875dab.
+
+commit 56efdb29bf5a2aad1e5326c9a378155858fc579e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 14 11:24:22 2014 +0100
+
+    tests: skip the output of test-virt-rescue.pl from RUN_OUTPUT_FILE
+    
+    The output of test-virt-rescue.pl contains non-ASCII chars which give
+    troubles when being XSLT-transformed, so just avoid its output to leave
+    the rest of the resulting XML well-formed.
+
+commit 38fbda9d37ab1bf57d6c4c0c6be51aa44f110ff5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 14 10:37:36 2014 +0100
+
+    tests: provide a simple way to extract the tests data from run
+    
+    If the RUN_OUTPUT_FILE environment variable is set, "run" will output
+    to the file indicated by that snippets of XML with the results and
+    outputs of the tests run.
+    
+    Together with the run-xml-to-junit.sh (and its associated
+    run-xml-to-junit.xsl style sheet) it is possible to convert that output
+    file to a jUnit-like XML file, which could be used in CI systems.
+
+commit accf1b66aa835714690a2979e990c49243875dab
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 14 10:09:47 2014 +0000
+
+    tests: fstrim: Remount the disk.
+    
+    This makes fstrim work.  It's not clear why exactly.
+
+commit 9b883d3c3ec0ff93bbea776572afb54d2a9b3524
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 14 09:15:49 2014 +0000
+
+    tests/discard: Ensure a significant number of blocks are freed up on the host.
+    
+    It's reasonable to expect megabytes will be freed up and given back to
+    the host.  Previously we just tested that at least 1 block was
+    released.  This test checks that at least 1000 blocks are released
+    (since stat(2) returns blocks of 512 bytes: 512 bytes * 1000 = approx 0.5 MB).
+
+commit 8584c8cadf4fdf9067457e07529aa74c715e03fa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 13 13:50:23 2014 +0000
+
+    gobject: Don't ignore old generated files.
+    
+    This was ignoring an old generated file (gobject/guestfs-gobject.h)
+    which, if still around, would break the build.
+
+commit b96dfa60d3e7a4409fc2de9134f7bf828f34fa57
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 13 13:01:14 2014 +0000
+
+    gitignore: appliance: Don't ignore some files which are now obsolete and should be removed.
+
+commit bd226af94bd63e28c303a588c12f78b27cb15698
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 13 10:56:29 2014 +0000
+
+    Version 1.25.44.
+
+commit 083203c635d9b4c9852e46caf9135817cac3c29f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Mar 13 10:24:04 2014 +0100
+
+    php: fix crash with OStringList optional arguments
+    
+    Properly initialize the variables for them to NULL, so there is no crash
+    because of trying to use rubbish pointers.
+    
+    Kind of followup of commit 289fd29f0bfbb94566d9780dd8ac3fe15e55541d.
+
+commit e411cf8269b1c8b1334500ebd80e5348fc0b0c8c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 12 19:29:56 2014 +0100
+
+    php: remove the custom "env" loading in tests
+    
+    Other than being too late for changing environment variables like
+    LD_LIBRARY_PATH, now it is no more needed.
+
+commit 5fbbfe7440009aff3a6a8f584a1cea777ef2b5dc
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 12 19:24:39 2014 +0100
+
+    php: add a custom PHP runner for tests
+    
+    Since the default PHP test runner ignores a good number of environment
+    variables to potentially tampering the test suite execution, create a
+    custom php-for-tests.sh script which does nothing more than sourcing the
+    custom environment that our run-php-tests.sh outputs and running the
+    actual "php" executable (the one found by configure).
+    
+    This fixes the loading of the guestfs_php.so module in the test suite,
+    as the libguestfs.so.0 library can be found by that module.
+
+commit 04aaa6ddfce98870b0c0a71f7cd27e629a81fcda
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 13 09:13:04 2014 +0000
+
+    appliance: Fix 'make clean' in appliance subdirectory.
+    
+    Commit 71dfd73042db24217329d815bf5eab26f413d97f broke 'make clean' in
+    the appliance subdirectory, so it would remove all the supermin.d/*
+    files, but without removing stamp-supermin so you couldn't rebuild
+    supermin.d/ with a 'make' afterwards.
+    
+    In any case, 'make clean' is not supposed to delete the appliance
+    (which is expensive to rebuild).
+    
+    Fix this so that 'make clean' doesn't remove supermin.d/* files.
+    'make distclean' can be used to delete this, and since it also removes
+    stamp-supermin, it will be recreated properly by 'make'.
+
+commit a13109c2608dd1984eeb57013cf1dacdf4338210
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 12 21:41:08 2014 +0000
+
+    FAQ: Make issues which will be fixed in libguestfs >= 1.26 / supermin >= 5.
+
+commit 8df1c472697d1a1227dd6d8d9bfbba0bcfee5b82
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 12 21:40:16 2014 +0000
+
+    FAQ: Remove section that only applied to obsolete Fedora & RHEL releases.
+    
+    Since this is fixed in all currently supported versions of Fedora
+    & RHEL, there's no need to document the problem in the FAQ.
+
+commit 80d77e934ffc10413f1b100a461e6ddfd23fc384
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 12 21:39:18 2014 +0000
+
+    FAQ: Document virt-sparsify >= 1.26 can do in-place sparsification.
+
+commit b7cec3e8f46a727c3c8d83e5b54be7469f2e4f1d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 19:10:52 2014 +0000
+
+    sparsify: Add a test of the virt-sparsify --in-place option.
+
+commit e3a32f95d03cd29bf713f790994deca34e79bafc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 18:28:49 2014 +0000
+
+    sparsify: Add virt-sparsify --in-place mode.
+
+commit b48e8850047f240dc67e1610757229e096ed9e25
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 14:29:38 2014 +0000
+
+    sysprep: Add disks with discard = "besteffort".
+    
+    Since virt-sysprep tends to delete a lot of files, adding discard
+    support to it makes some sense.
+    
+    Note that this probably won't have any effect for most filesystems
+    since:
+    
+    (a) ext4 mounts also need to use -o discard,
+    
+    (b) ext4, and maybe others, require you to call fstrim explicitly,
+    they don't discard automatically (except for userspace tools like
+    mkfs.ext4 but that doesn't apply in this case).
+
+commit fb3afdff475db07fa904548ea2eeca29243a29c2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 14:20:53 2014 +0000
+
+    virt-format: Discard the data on the disks.
+    
+    If possible, this means that the host will be able to reclaim most of
+    the space used by formatted disks.
+
+commit 93f1bfcad74946824c6a12a456dbd01cee9a0571
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 14:40:38 2014 +0000
+
+    Pass discard parameter from add-domain to add-drive.
+    
+    Allow callers to specify that all the disks from a domain are added
+    with a specific discard mode (instead of always having discard
+    disabled).
+
+commit 3106789d81cea27f0860ff78d7e15f71b7007949
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 14:40:38 2014 +0000
+
+    Pass cachemode parameter from add-domain to add-drive.
+    
+    Allow callers to specify that all the disks from a domain are added
+    with a specific cachemode (instead of always having to use the
+    default, writeback).
+
+commit a9fc09366aa69d6f371b93ad948c4a2c70166fd1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 10 14:17:49 2014 +0000
+
+    tests: Add tests of discard support.
+    
+    Test that blkdiscard, -o discard, and fstrim work in reality, end-to-end.
+
+commit b408419791c2fc895f6d1168f53cd92729c037fd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 19:01:35 2014 +0000
+
+    New API: blkdiscardzeroes - do discarded blocks read back as zeroes?
+
+commit 452b228b46834a49744459cfb6b872903abe60ef
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 13:14:23 2014 +0000
+
+    New API: blkdiscard - discard all blocks on a block device.
+
+commit 499b9ee416d15f1713558b63b2e975343afcc88f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 9 15:24:31 2014 +0000
+
+    New API parameter: Add discard parameter to guestfs_add_drive_opts.
+    
+    This adds a discard parameter to guestfs_add_drive_opts which
+    approximately maps to the discard=ignore|unmap parameter supported by
+    qemu.
+    
+    If discard is set to "enable" then we force discard=unmap (and try to
+    fail if it is not possible).  If discard is set to the more useful
+    "besteffort" option, then we enable discard if possible.  The default
+    is "disable".
+
+commit 53afa03af9175f127c77c221ea27b2a4a12d1fea
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 12 16:07:55 2014 +0100
+
+    builder: fix typo in comment
+    
+    Followup of commit b1cf6246f3c80762cf27dbdb24168589a34daf00.
+
+commit 2489692067a51c9ba39ae8992ee19975f41a55ba
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 18:03:13 2014 +0000
+
+    sparsify: Move copying-mode code to a separate file.
+    
+    This is just code motion.
+
+commit a665a570a3dd574a90c3d75c70ddb698c46f5a68
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 16:00:40 2014 +0000
+
+    sparsify: Refactor command line parsing to pass back a mode.
+    
+    This is just code motion, but sets the ground-work for adding a second
+    mode (in-place image modification).
+
+commit 63e836881ec15a7380ad7db54615a4d595377c0f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 15:40:17 2014 +0000
+
+    sparsify: Move command line parsing code to separate file.
+    
+    This is just code motion.
+
+commit d263a301bfe082fc78f4548566a6644b48bf51ae
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 15:39:57 2014 +0000
+
+    sparsify: Remove unused 'open' directive.
+
+commit 8df13884dfc028021ac94de8006cf30100b2968e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 15:32:35 2014 +0000
+
+    sparsify: Capture any exceptions and display nicer error messages.
+    
+    This is just code motion, there is no functional change.
+
+commit 073f90e681c87238d54b94ebcfd8889a6af7a8a4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 15:32:04 2014 +0000
+
+    sparsify: Remove unused variable definition.
+
+commit 2b4baf34782107bd6b4436737242f3156f57448c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 9 19:18:52 2014 +0000
+
+    launch: libvirt: Move the is_kvm flag (derived from libvirt capabilities) to backend data struct.
+    
+    This is just rearranging the data between structs.  There should be no
+    functional change.
+
+commit 5e105e06be4cc6c88b5d3fc5cf79acb48947e197
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 12 13:41:39 2014 +0000
+
+    daemon: fstrim: Fix fstrim so it trims the correct filesystem.
+    
+    We didn't call sysroot_path, so it was trimming the appliance instead
+    of the guest filesystem.
+
+commit 46e30c1f7c90f8f24d1261a9bc37e05f9ef2a552
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 21:54:13 2014 +0000
+
+    daemon: fstrim: When debugging, capture and print fstrim -v output.
+
+commit b1cf6246f3c80762cf27dbdb24168589a34daf00
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 12 15:06:55 2014 +0100
+
+    builder: complete architecture handling
+    
+    Add the possibility to choose which architecture use to build the wanted
+    image (--arch). Since this implies that running commands on the guest is
+    usually not possible when the architecture is different than the host
+    one, virt-builder will nevertheless try to check whether the host is
+    compatible with the guest, allowing to run commands only in that case.
+    
+    The caching scheme is adapted to account for the architecture (with
+    --print-cache showing the architecture as well).
+
+commit cc495247f2f274d24086862d38af6047c380939d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 12 15:05:24 2014 +0100
+
+    builder: show the architecture in the short --list output
+    
+    Just like the other --list output formats provide the architecture, show
+    them also in the short format.
+
+commit 7942cbf537ac50ec29b45f30bc5f0deff510c8fe
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 12 14:50:15 2014 +0100
+
+    drivers: group drive creation params in an own struct
+    
+    Group together all the various parameters (except the guestfs handle)
+    passed to the create_drive_*, to avoid passing all of them at every
+    function call.
+    
+    This is mostly an internal refatoring with no behaviour change.
+
+commit 013ed9f94bf6f572d9622ad0dfbd211729451e92
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 22:11:32 2014 +0000
+
+    appliance: Cosmetic rearrangement of supermin.d/* targets.
+    
+    No functional change.
+
+commit 71dfd73042db24217329d815bf5eab26f413d97f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 11 22:10:43 2014 +0000
+
+    appliance: Don't rebuild everything if just the daemon changes.
+
+commit 72d1a6335e6a7071e87566d464b5f804f9e760ee
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Mar 11 15:57:35 2014 +0100
+
+    builder: add languages.ml to POTFILES-ml
+    
+    Followup of commit 3cffc28834d40d1debe8ebb826b8a5564ce8479b.
+
+commit 6379c85d1f2bbf0e1c7e8165ddeda8efa18f8344
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Mar 11 14:25:39 2014 +0100
+
+    builder: output translated notes also in --notes
+
+commit 3cffc28834d40d1debe8ebb826b8a5564ce8479b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Mar 11 14:20:22 2014 +0100
+
+    builder: move some language-related code into a Languages module
+    
+    Mostly code motion, no behaviour changes.
+
+commit 8ba31e69dc359f2b22e47bfeb5230e72ba95699b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Mar 10 13:42:16 2014 +0100
+
+    builder: use Filename.check_suffix
+    
+    ... instead of manually extracting and checking the suffix by ourselves
+
 commit 596955c1b52d8dd6a095254f7878da451a4bbb91
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sat Mar 8 12:57:23 2014 +0000

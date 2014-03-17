@@ -8,6 +8,8 @@ virt-sparsify - 仮想マシンのディスクをスパースにします
 
  virt-sparsify [--options] indisk outdisk
 
+ virt-sparsify [--options] --in-place disk
+
 =head1 説明
 
 Virt-sparsify is a tool which can make a virtual machine disk (or any disk
@@ -44,12 +46,6 @@ check the output size using a tool that understands sparseness> such as C<du
 
 =item *
 
-Virt-sparsify does not do in-place modifications.  It copies from a source
-image to a destination image, leaving the source unchanged.  I<Check that
-the sparsification was successful before deleting the source image>.
-
-=item *
-
 The virtual machine I<must be shut down> before using this tool.
 
 =item *
@@ -57,6 +53,9 @@ The virtual machine I<must be shut down> before using this tool.
 Virt-sparsify may require up to 2x the virtual size of the source disk image
 (1 temporary copy + 1 destination image).  This is in the worst case and
 usually much less space is required.
+
+If you are using the I<--in-place> option, then large amounts of temporary
+space are B<not> required.
 
 =item *
 
@@ -101,6 +100,11 @@ free space on) certain filesystems by doing:
 
 ディスクイメージにあるファイルシステムの一覧を取得するには L<virt-filesystems(1)> を参照してください。
 
+Since virt-sparsify E<ge> 1.26, you can now sparsify a disk image in place
+by doing:
+
+ virt-sparsify --in-place disk.img
+
 =head1 オプション
 
 =over 4
@@ -143,9 +147,13 @@ B<fail> and exit.
 
 =back
 
+You cannot use this option and I<--in-place> together.
+
 =item B<--compress>
 
 出力ファイルを圧縮します。これは 出力形式が C<qcow2> の場合 I<のみ> 機能します。
+
+You cannot use this option and I<--in-place> together.
 
 =item B<--convert> raw
 
@@ -166,6 +174,8 @@ virt-sparsify doesn't need to try to guess the input format.
 
 出力形式を詳細に調整します。関連項目: I<--compress>, I<-o>.
 
+You cannot use this option and I<--in-place> together.
+
 =item B<--debug-gc>
 
 ガベージコレクションおよびメモリー割り当てをデバッグします。これは virt-sparsify におけるメモリー問題または OCaml
@@ -185,13 +195,22 @@ the format is always specified.
 
 =item B<--ignore> volgroup
 
-Ignore the named filesystem.  Free space on the filesystem will not be
+Ignore the named filesystem.
+
+When not using I<--in-place>: Free space on the filesystem will not be
 zeroed, but existing blocks of zeroes will still be sparsified.
+
+When using I<--in-place>, the filesystem is ignored completely.
 
 In the second form, this ignores the named volume group.  Use the volume
 group name without the C</dev/> prefix, eg. I<--ignore vg_foo>
 
 このオプションは複数回指定できます。
+
+=item B<--in-place>
+
+Do in-place sparsification instead of copying sparsification.  See
+L</IN-PLACE SPARSIFICATION> below.
 
 =item B<--machine-readable>
 
@@ -208,6 +227,8 @@ with commas, eg:
 
  virt-sparsify --convert qcow2 \
    -o cluster_size=512,preallocation=metadata ...
+
+You cannot use this option and I<--in-place> together.
 
 =item B<-q>
 
@@ -238,6 +259,25 @@ libguestfs API 呼び出しのトレースを有効にします。
 仮想マシンにある名前付きパーティションまたは論理ボリュームの内容をゼロ上書きします。デバイスにあるすべてのデータは失われます。しかし、スパース化は素晴らしいことです！このオプションを複数回指定できます。
 
 =back
+
+=head1 IN-PLACE SPARSIFICATION
+
+Since virt-sparsify E<ge> 1.26, the tool is able to do in-place
+sparsification (instead of copying from an input disk to an output disk).
+This is more efficient.  However it requires special support in libguestfs,
+the kernel and qemu, and it is not able to recover quite as much space as
+copying sparsification.  So in-place sparsification is considered to be
+experimental at this time.
+
+To use this mode, specify a disk image which will be modified in place:
+
+ virt-sparsify --in-place disk.img
+
+Some options are not compatible with this mode: I<--convert>, I<--compress>
+and I<-o> because they require wholesale disk format changes;
+I<--check-tmpdir> because large amounts of temporary space are not required.
+
+In-place sparsification works using discard (a.k.a trim or unmap)  support.
 
 =head1 マシン可読な出力
 
@@ -321,6 +361,9 @@ mountpoint, eg:
 
  mount -o remount,size=10G /tmp
 
+If you are using the I<--in-place> option, then large amounts of temporary
+space are B<not> required.
+
 =back
 
 他の環境変数は L<guestfs(3)/環境変数> を参照してください。
@@ -337,5 +380,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2011-2012 Red Hat Inc.
+Copyright (C) 2011-2014 Red Hat Inc.
 

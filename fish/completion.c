@@ -73,6 +73,8 @@ static const char *const commands[] = {
   "available-all-groups",
   "base64-in",
   "base64-out",
+  "blkdiscard",
+  "blkdiscardzeroes",
   "blkid",
   "blockdev-flushbufs",
   "blockdev-getbsz",

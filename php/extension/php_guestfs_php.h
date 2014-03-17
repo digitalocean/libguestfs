@@ -66,6 +66,8 @@ PHP_FUNCTION (guestfs_available);
 PHP_FUNCTION (guestfs_available_all_groups);
 PHP_FUNCTION (guestfs_base64_in);
 PHP_FUNCTION (guestfs_base64_out);
+PHP_FUNCTION (guestfs_blkdiscard);
+PHP_FUNCTION (guestfs_blkdiscardzeroes);
 PHP_FUNCTION (guestfs_blkid);
 PHP_FUNCTION (guestfs_blockdev_flushbufs);
 PHP_FUNCTION (guestfs_blockdev_getbsz);

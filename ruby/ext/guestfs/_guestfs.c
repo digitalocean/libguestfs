@@ -774,6 +774,16 @@ ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
     optargs_s.readonlydisk = StringValueCStr (v);
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK;
   }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("cachemode")));
+  if (v != Qnil) {
+    optargs_s.cachemode = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("discard")));
+  if (v != Qnil) {
+    optargs_s.discard = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
+  }
 
   int r;
 
@@ -992,6 +1002,30 @@ ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
  * requests. This is suitable only for scratch or
  * temporary disks.
  * 
+ * "discard"
+ * Enable or disable discard (a.k.a. trim or unmap)
+ * support on this drive. If enabled, operations such
+ * as "g.fstrim" will be able to discard / make thin /
+ * punch holes in the underlying host file or device.
+ * 
+ * Possible discard settings are:
+ * 
+ * "discard = "disable""
+ * Disable discard support. This is the default.
+ * 
+ * "discard = "enable""
+ * Enable discard support. Fail if discard is not
+ * possible.
+ * 
+ * "discard = "besteffort""
+ * Enable discard support if possible, but don't
+ * fail if it is not supported.
+ * 
+ * Since not all backends and not all underlying
+ * systems support discard, this is a good choice
+ * if you want to use discard if possible, but
+ * don't mind if it doesn't work.
+ * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
  * value. Pass an empty {} for no optional arguments.
@@ -1082,6 +1116,11 @@ ruby_guestfs_add_drive (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.cachemode = StringValueCStr (v);
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("discard")));
+  if (v != Qnil) {
+    optargs_s.discard = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
   }
 
   int r;
@@ -2104,6 +2143,81 @@ ruby_guestfs_base64_out (VALUE gv, VALUE filenamev, VALUE base64filev)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.blkdiscard(device) -> nil
+ *
+ * discard all blocks on a device
+ *
+ * This discards all blocks on the block device "device",
+ * giving the free space back to the host.
+ * 
+ * This operation requires support in libguestfs, the host
+ * filesystem, qemu and the host kernel. If this support
+ * isn't present it may give an error or even appear to run
+ * but do nothing. You must also set the "discard"
+ * attribute on the underlying drive (see
+ * "g.add_drive_opts").
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_blkdiscard+[http://libguestfs.org/guestfs.3.html#guestfs_blkdiscard]).
+ */
+static VALUE
+ruby_guestfs_blkdiscard (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "blkdiscard");
+
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_blkdiscard (g, device);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.blkdiscardzeroes(device) -> [True|False]
+ *
+ * return true if discarded blocks are read as zeroes
+ *
+ * This call returns true if blocks on "device" that have
+ * been discarded by a call to "g.blkdiscard" are returned
+ * as blocks of zero bytes when read the next time.
+ * 
+ * If it returns false, then it may be that discarded
+ * blocks are read as stale or random data.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_blkdiscardzeroes+[http://libguestfs.org/guestfs.3.html#guestfs_blkdiscardzeroes]).
+ */
+static VALUE
+ruby_guestfs_blkdiscardzeroes (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "blkdiscardzeroes");
+
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_blkdiscardzeroes (g, device);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
 }
 
 /*
@@ -25540,6 +25654,10 @@ Init__guestfs (void)
         ruby_guestfs_base64_in, 2);
   rb_define_method (c_guestfs, "base64_out",
         ruby_guestfs_base64_out, 2);
+  rb_define_method (c_guestfs, "blkdiscard",
+        ruby_guestfs_blkdiscard, 1);
+  rb_define_method (c_guestfs, "blkdiscardzeroes",
+        ruby_guestfs_blkdiscardzeroes, 1);
   rb_define_method (c_guestfs, "blkid",
         ruby_guestfs_blkid, 1);
   rb_define_method (c_guestfs, "blockdev_flushbufs",

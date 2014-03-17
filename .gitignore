@@ -37,10 +37,6 @@ Makefile.in
 /align/stamp-virt-alignment-scan.pod
 /align/virt-alignment-scan
 /align/virt-alignment-scan.1
-/appliance/daemon.tar.gz
-/appliance/excludefiles
-/appliance/hostfiles
-/appliance/init.tar.gz
 /appliance/libguestfs-make-fixed-appliance
 /appliance/libguestfs-make-fixed-appliance.1
 /appliance/make.sh
@@ -48,7 +44,6 @@ Makefile.in
 /appliance/stamp-libguestfs-make-fixed-appliance.pod
 /appliance/stamp-supermin
 /appliance/supermin.d
-/appliance/udev-rules.tar.gz
 /autom4te.cache
 /bash/virt-builder
 /bash/virt-cat
@@ -196,8 +191,6 @@ Makefile.in
 /gobject/bindtests.js
 /gobject/Guestfs-1.0.gir
 /gobject/Guestfs-1.0.typelib
-/gobject/guestfs-gobject*.c
-/gobject/guestfs-gobject*.h
 /golang/bindtests.go
 /golang/examples/guestfs-golang.3
 /golang/examples/stamp-guestfs-golang.pod
@@ -360,6 +353,7 @@ Makefile.in
 /php/extension/mkinstalldirs
 /php/extension/missing
 /php/extension/modules/
+/php/extension/php-for-tests.sh
 /php/extension/php_guestfs_php.h
 /php/extension/run-tests.php
 /php/extension/tmp-php.ini

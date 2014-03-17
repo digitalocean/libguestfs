@@ -1026,17 +1026,17 @@ ocaml_guestfs_add_cdrom (value gv, value filenamev)
 }
 
 /* Automatically generated wrapper for function
- * val add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> string -> int
+ * val add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> ?cachemode:string -> ?discard:string -> string -> int
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_add_domain (value gv, value libvirturiv, value readonlyv, value ifacev, value livev, value allowuuidv, value readonlydiskv, value domv);
+value ocaml_guestfs_add_domain (value gv, value libvirturiv, value readonlyv, value ifacev, value livev, value allowuuidv, value readonlydiskv, value cachemodev, value discardv, value domv);
 
 value
-ocaml_guestfs_add_domain (value gv, value libvirturiv, value readonlyv, value ifacev, value livev, value allowuuidv, value readonlydiskv, value domv)
+ocaml_guestfs_add_domain (value gv, value libvirturiv, value readonlyv, value ifacev, value livev, value allowuuidv, value readonlydiskv, value cachemodev, value discardv, value domv)
 {
   CAMLparam5 (gv, libvirturiv, readonlyv, ifacev, livev);
-  CAMLxparam3 (allowuuidv, readonlydiskv, domv);
+  CAMLxparam5 (allowuuidv, readonlydiskv, cachemodev, discardv, domv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -1070,6 +1070,14 @@ ocaml_guestfs_add_domain (value gv, value libvirturiv, value readonlyv, value if
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK;
     optargs_s.readonlydisk = guestfs___safe_strdup (g, String_val (Field (readonlydiskv, 0)));
   }
+  if (cachemodev != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK;
+    optargs_s.cachemode = guestfs___safe_strdup (g, String_val (Field (cachemodev, 0)));
+  }
+  if (discardv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
+    optargs_s.discard = guestfs___safe_strdup (g, String_val (Field (discardv, 0)));
+  }
   int r;
 
   caml_enter_blocking_section ();
@@ -1082,6 +1090,10 @@ ocaml_guestfs_add_domain (value gv, value libvirturiv, value readonlyv, value if
     free ((char *) optargs_s.iface);
   if (readonlydiskv != Val_int (0))
     free ((char *) optargs_s.readonlydisk);
+  if (cachemodev != Val_int (0))
+    free ((char *) optargs_s.cachemode);
+  if (discardv != Val_int (0))
+    free ((char *) optargs_s.discard);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "add_domain");
 
@@ -1095,22 +1107,22 @@ value ocaml_guestfs_add_domain_byte (value *argv, int argn);
 value
 ocaml_guestfs_add_domain_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_add_domain (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7]);
+  return ocaml_guestfs_add_domain (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9]);
 }
 
 /* Automatically generated wrapper for function
- * val add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> string -> unit
+ * val add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> ?discard:string -> string -> unit
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev, value namev, value labelv, value protocolv, value serverv, value usernamev, value secretv, value cachemodev, value filenamev);
+value ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev, value namev, value labelv, value protocolv, value serverv, value usernamev, value secretv, value cachemodev, value discardv, value filenamev);
 
 value
-ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev, value namev, value labelv, value protocolv, value serverv, value usernamev, value secretv, value cachemodev, value filenamev)
+ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev, value namev, value labelv, value protocolv, value serverv, value usernamev, value secretv, value cachemodev, value discardv, value filenamev)
 {
   CAMLparam5 (gv, readonlyv, formatv, ifacev, namev);
   CAMLxparam5 (labelv, protocolv, serverv, usernamev, secretv);
-  CAMLxparam2 (cachemodev, filenamev);
+  CAMLxparam3 (cachemodev, discardv, filenamev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -1161,6 +1173,10 @@ ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev,
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
     optargs_s.cachemode = guestfs___safe_strdup (g, String_val (Field (cachemodev, 0)));
   }
+  if (discardv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
+    optargs_s.discard = guestfs___safe_strdup (g, String_val (Field (discardv, 0)));
+  }
   int r;
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);
@@ -1183,6 +1199,8 @@ ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev,
     free ((char *) optargs_s.secret);
   if (cachemodev != Val_int (0))
     free ((char *) optargs_s.cachemode);
+  if (discardv != Val_int (0))
+    free ((char *) optargs_s.discard);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "add_drive");
 
@@ -1196,7 +1214,7 @@ value ocaml_guestfs_add_drive_byte (value *argv, int argn);
 value
 ocaml_guestfs_add_drive_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_add_drive (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9], argv[10], argv[11]);
+  return ocaml_guestfs_add_drive (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9], argv[10], argv[11], argv[12]);
 }
 
 /* Automatically generated wrapper for function
@@ -1979,6 +1997,68 @@ ocaml_guestfs_base64_out (value gv, value filenamev, value base64filev)
     ocaml_guestfs_raise_error (g, "base64_out");
 
   rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val blkdiscard : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_blkdiscard (value gv, value devicev);
+
+value
+ocaml_guestfs_blkdiscard (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("blkdiscard");
+
+  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_blkdiscard (g, device);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "blkdiscard");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val blkdiscardzeroes : t -> string -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_blkdiscardzeroes (value gv, value devicev);
+
+value
+ocaml_guestfs_blkdiscardzeroes (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("blkdiscardzeroes");
+
+  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_blkdiscardzeroes (g, device);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "blkdiscardzeroes");
+
+  rv = Val_bool (r);
   CAMLreturn (rv);
 }
 

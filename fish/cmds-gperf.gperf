@@ -66,6 +66,8 @@ extern struct command_entry available_cmd_entry;
 extern struct command_entry available_all_groups_cmd_entry;
 extern struct command_entry base64_in_cmd_entry;
 extern struct command_entry base64_out_cmd_entry;
+extern struct command_entry blkdiscard_cmd_entry;
+extern struct command_entry blkdiscardzeroes_cmd_entry;
 extern struct command_entry blkid_cmd_entry;
 extern struct command_entry blockdev_flushbufs_cmd_entry;
 extern struct command_entry blockdev_getbsz_cmd_entry;
@@ -633,6 +635,8 @@ base64_in, &base64_in_cmd_entry
 base64-in, &base64_in_cmd_entry
 base64_out, &base64_out_cmd_entry
 base64-out, &base64_out_cmd_entry
+blkdiscard, &blkdiscard_cmd_entry
+blkdiscardzeroes, &blkdiscardzeroes_cmd_entry
 blkid, &blkid_cmd_entry
 blockdev_flushbufs, &blockdev_flushbufs_cmd_entry
 blockdev-flushbufs, &blockdev_flushbufs_cmd_entry

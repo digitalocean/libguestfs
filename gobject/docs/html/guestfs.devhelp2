@@ -120,6 +120,8 @@
     <keyword type="function" name="guestfs_session_available_all_groups ()" link="GuestfsSession.html#guestfs-session-available-all-groups"/>
     <keyword type="function" name="guestfs_session_base64_in ()" link="GuestfsSession.html#guestfs-session-base64-in"/>
     <keyword type="function" name="guestfs_session_base64_out ()" link="GuestfsSession.html#guestfs-session-base64-out"/>
+    <keyword type="function" name="guestfs_session_blkdiscard ()" link="GuestfsSession.html#guestfs-session-blkdiscard"/>
+    <keyword type="function" name="guestfs_session_blkdiscardzeroes ()" link="GuestfsSession.html#guestfs-session-blkdiscardzeroes"/>
     <keyword type="function" name="guestfs_session_blkid ()" link="GuestfsSession.html#guestfs-session-blkid"/>
     <keyword type="function" name="guestfs_session_blockdev_flushbufs ()" link="GuestfsSession.html#guestfs-session-blockdev-flushbufs"/>
     <keyword type="function" name="guestfs_session_blockdev_getbsz ()" link="GuestfsSession.html#guestfs-session-blockdev-getbsz"/>
@@ -663,6 +665,8 @@
     <keyword type="struct" name="struct GuestfsAddDomainClass" link="GuestfsAddDomain.html#GuestfsAddDomainClass"/>
     <keyword type="function" name="guestfs_add_domain_new ()" link="GuestfsAddDomain.html#guestfs-add-domain-new"/>
     <keyword type="property" name="The &quot;allowuuid&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--allowuuid"/>
+    <keyword type="property" name="The &quot;cachemode&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--cachemode"/>
+    <keyword type="property" name="The &quot;discard&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--discard"/>
     <keyword type="property" name="The &quot;iface&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--iface"/>
     <keyword type="property" name="The &quot;libvirturi&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--libvirturi"/>
     <keyword type="property" name="The &quot;live&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--live"/>
@@ -672,6 +676,7 @@
     <keyword type="struct" name="struct GuestfsAddDriveClass" link="GuestfsAddDrive.html#GuestfsAddDriveClass"/>
     <keyword type="function" name="guestfs_add_drive_new ()" link="GuestfsAddDrive.html#guestfs-add-drive-new"/>
     <keyword type="property" name="The &quot;cachemode&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--cachemode"/>
+    <keyword type="property" name="The &quot;discard&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--discard"/>
     <keyword type="property" name="The &quot;format&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--format"/>
     <keyword type="property" name="The &quot;iface&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--iface"/>
     <keyword type="property" name="The &quot;label&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--label"/>

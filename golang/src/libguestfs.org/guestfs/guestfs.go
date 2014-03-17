@@ -1014,6 +1014,12 @@ type OptargsAdd_domain struct {
     /* Readonlydisk field is ignored unless Readonlydisk_is_set == true */
     Readonlydisk_is_set bool
     Readonlydisk string
+    /* Cachemode field is ignored unless Cachemode_is_set == true */
+    Cachemode_is_set bool
+    Cachemode string
+    /* Discard field is ignored unless Discard_is_set == true */
+    Discard_is_set bool
+    Discard string
 }
 
 /* add_domain : add the disk(s) from a named libvirt domain */
@@ -1052,6 +1058,16 @@ func (g *Guestfs) Add_domain (dom string, optargs *OptargsAdd_domain) (int, *Gue
             c_optargs.bitmask |= C.GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK
             c_optargs.readonlydisk = C.CString (optargs.Readonlydisk)
             defer C.free (unsafe.Pointer (c_optargs.readonlydisk))
+        }
+        if optargs.Cachemode_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK
+            c_optargs.cachemode = C.CString (optargs.Cachemode)
+            defer C.free (unsafe.Pointer (c_optargs.cachemode))
+        }
+        if optargs.Discard_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_DOMAIN_DISCARD_BITMASK
+            c_optargs.discard = C.CString (optargs.Discard)
+            defer C.free (unsafe.Pointer (c_optargs.discard))
         }
     }
 
@@ -1095,6 +1111,9 @@ type OptargsAdd_drive struct {
     /* Cachemode field is ignored unless Cachemode_is_set == true */
     Cachemode_is_set bool
     Cachemode string
+    /* Discard field is ignored unless Discard_is_set == true */
+    Discard_is_set bool
+    Discard string
 }
 
 /* add_drive : add an image to examine or modify */
@@ -1155,6 +1174,11 @@ func (g *Guestfs) Add_drive (filename string, optargs *OptargsAdd_drive) *Guestf
             c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK
             c_optargs.cachemode = C.CString (optargs.Cachemode)
             defer C.free (unsafe.Pointer (c_optargs.cachemode))
+        }
+        if optargs.Discard_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK
+            c_optargs.discard = C.CString (optargs.Discard)
+            defer C.free (unsafe.Pointer (c_optargs.discard))
         }
     }
 
@@ -1631,6 +1655,40 @@ func (g *Guestfs) Base64_out (filename string, base64file string) *GuestfsError 
         return get_error_from_handle (g, "base64_out")
     }
     return nil
+}
+
+/* blkdiscard : discard all blocks on a device */
+func (g *Guestfs) Blkdiscard (device string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("blkdiscard")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_blkdiscard (g.g, c_device)
+
+    if r == -1 {
+        return get_error_from_handle (g, "blkdiscard")
+    }
+    return nil
+}
+
+/* blkdiscardzeroes : return true if discarded blocks are read as zeroes */
+func (g *Guestfs) Blkdiscardzeroes (device string) (bool, *GuestfsError) {
+    if g.g == nil {
+        return false, closed_handle_error ("blkdiscardzeroes")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_blkdiscardzeroes (g.g, c_device)
+
+    if r == -1 {
+        return false, get_error_from_handle (g, "blkdiscardzeroes")
+    }
+    return r != 0, nil
 }
 
 /* blkid : print block device attributes */

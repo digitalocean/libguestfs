@@ -560,6 +560,14 @@ guestfs_lua_add_domain (lua_State *L)
       optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK;
       optargs_s.readonlydisk = luaL_checkstring (L, -1);
     );
+    OPTARG_IF_SET (3, "cachemode",
+      optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK;
+      optargs_s.cachemode = luaL_checkstring (L, -1);
+    );
+    OPTARG_IF_SET (3, "discard",
+      optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
+      optargs_s.discard = luaL_checkstring (L, -1);
+    );
   }
 
   r = guestfs_add_domain_argv (g, dom, optargs);
@@ -627,6 +635,10 @@ guestfs_lua_add_drive (lua_State *L)
     OPTARG_IF_SET (3, "cachemode",
       optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
       optargs_s.cachemode = luaL_checkstring (L, -1);
+    );
+    OPTARG_IF_SET (3, "discard",
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
+      optargs_s.discard = luaL_checkstring (L, -1);
     );
   }
 
@@ -1190,6 +1202,49 @@ guestfs_lua_base64_out (lua_State *L)
     return last_error (L, g);
 
   return 0;
+}
+
+static int
+guestfs_lua_blkdiscard (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "blkdiscard");
+
+  device = luaL_checkstring (L, 2);
+
+  r = guestfs_blkdiscard (g, device);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_blkdiscardzeroes (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "blkdiscardzeroes");
+
+  device = luaL_checkstring (L, 2);
+
+  r = guestfs_blkdiscardzeroes (g, device);
+  if (r == -1)
+    return last_error (L, g);
+
+  lua_pushboolean (L, r);
+  return 1;
 }
 
 static int
@@ -14962,6 +15017,8 @@ static luaL_Reg methods[] = {
   { "available_all_groups", guestfs_lua_available_all_groups },
   { "base64_in", guestfs_lua_base64_in },
   { "base64_out", guestfs_lua_base64_out },
+  { "blkdiscard", guestfs_lua_blkdiscard },
+  { "blkdiscardzeroes", guestfs_lua_blkdiscardzeroes },
   { "blkid", guestfs_lua_blkid },
   { "blockdev_flushbufs", guestfs_lua_blockdev_flushbufs },
   { "blockdev_getbsz", guestfs_lua_blockdev_getbsz },

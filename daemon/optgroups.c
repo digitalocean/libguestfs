@@ -28,6 +28,8 @@
 struct optgroup optgroups[] = {
   { "acl", optgroup_acl_available },
   { "augeas", optgroup_augeas_available },
+  { "blkdiscard", optgroup_blkdiscard_available },
+  { "blkdiscardzeroes", optgroup_blkdiscardzeroes_available },
   { "btrfs", optgroup_btrfs_available },
   { "extlinux", optgroup_extlinux_available },
   { "fstrim", optgroup_fstrim_available },

@@ -363,13 +363,13 @@ val add_cdrom : t -> string -> unit
     @deprecated Use {!add_drive_ro} instead
  *)
 
-val add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> string -> int
+val add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> ?cachemode:string -> ?discard:string -> string -> int
 (** add the disk(s) from a named libvirt domain *)
 
-val add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> string -> unit
+val add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> ?discard:string -> string -> unit
 (** add an image to examine or modify *)
 
-val add_drive_opts : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> string -> unit
+val add_drive_opts : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> ?discard:string -> string -> unit
 
 val add_drive_ro : t -> string -> unit
 (** add a drive in snapshot mode (read-only) *)
@@ -448,6 +448,12 @@ val base64_in : t -> string -> string -> unit
 
 val base64_out : t -> string -> string -> unit
 (** download file and encode as base64 *)
+
+val blkdiscard : t -> string -> unit
+(** discard all blocks on a device *)
+
+val blkdiscardzeroes : t -> string -> bool
+(** return true if discarded blocks are read as zeroes *)
 
 val blkid : t -> string -> (string * string) list
 (** print block device attributes *)
@@ -2145,9 +2151,9 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method acl_get_file : string -> string -> string
   method acl_set_file : string -> string -> string -> unit
   method add_cdrom : string -> unit
-  method add_domain : ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> string -> int
-  method add_drive : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> string -> unit
-  method add_drive_opts : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> string -> unit
+  method add_domain : ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> ?cachemode:string -> ?discard:string -> string -> int
+  method add_drive : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> ?discard:string -> string -> unit
+  method add_drive_opts : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> ?discard:string -> string -> unit
   method add_drive_ro : string -> unit
   method add_drive_ro_with_if : string -> string -> unit
   method add_drive_scratch : ?name:string -> ?label:string -> int64 -> unit
@@ -2172,6 +2178,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method available_all_groups : unit -> string array
   method base64_in : string -> string -> unit
   method base64_out : string -> string -> unit
+  method blkdiscard : string -> unit
+  method blkdiscardzeroes : string -> bool
   method blkid : string -> (string * string) list
   method blockdev_flushbufs : string -> unit
   method blockdev_getbsz : string -> int
