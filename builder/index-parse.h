@@ -39,6 +39,19 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+/* Line 2058 of yacc.c  */
+#line 60 "index-parse.y"
+
+#include "index-parse.h"
+#ifndef YY_TYPEDEF_YY_SCANNER_T
+#define YY_TYPEDEF_YY_SCANNER_T
+typedef void *yyscan_t;
+#endif
+
+
+/* Line 2058 of yacc.c  */
+#line 55 "index-parse.h"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -68,7 +81,7 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 2058 of yacc.c  */
-#line 57 "index-parse.y"
+#line 70 "index-parse.y"
 
   struct section *section;
   struct field *field;
@@ -76,7 +89,7 @@ typedef union YYSTYPE
 
 
 /* Line 2058 of yacc.c  */
-#line 80 "index-parse.h"
+#line 93 "index-parse.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -96,8 +109,7 @@ typedef struct YYLTYPE
 # define YYLTYPE_IS_TRIVIAL 1
 #endif
 
-extern YYSTYPE yylval;
-extern YYLTYPE yylloc;
+
 #ifdef YYPARSE_PARAM
 #if defined __STDC__ || defined __cplusplus
 int yyparse (void *YYPARSE_PARAM);
@@ -106,7 +118,7 @@ int yyparse ();
 #endif
 #else /* ! YYPARSE_PARAM */
 #if defined __STDC__ || defined __cplusplus
-int yyparse (void);
+int yyparse (yyscan_t scanner, struct parse_context *context);
 #else
 int yyparse ();
 #endif

@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [25])
-m4_define([libguestfs_release], [45])
+m4_define([libguestfs_release], [46])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -146,9 +146,8 @@ if test "$gl_gcc_warnings" = yes; then
     gl_WARN_ADD([-Werror], [WERROR_CFLAGS])
     AC_SUBST([WERROR_CFLAGS])
 
-    nw=
     # This, $nw, is the list of warnings we disable.
-    nw="$nw -Wdeclaration-after-statement" # too useful to forbid
+    nw=
     nw="$nw -Waggregate-return"      # anachronistic
     nw="$nw -Wc++-compat"            # We don't care about C++ compilers
     nw="$nw -Wundef"                 # Warns on '#if GNULIB_FOO' etc in gnulib
@@ -159,8 +158,6 @@ if test "$gl_gcc_warnings" = yes; then
     nw="$nw -Wsign-conversion"       # Not an error
     nw="$nw -Wtraditional-conversion" # Don't care about pre-ANSI compilers
     nw="$nw -Wpadded"                # Our structs are not padded
-    nw="$nw -Wredundant-decls"       # openat.h declares e.g., mkdirat
-    nw="$nw -Wlogical-op"            # any use of fwrite provokes this
     nw="$nw -Wvla"                   # two warnings in mount.c
     # things I might fix soon:
     nw="$nw -Wmissing-format-attribute" # daemon.h's asprintf_nowarn

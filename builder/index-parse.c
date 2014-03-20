@@ -50,7 +50,7 @@
 #define YYSKELETON_NAME "yacc.c"
 
 /* Pure parsers.  */
-#define YYPURE 0
+#define YYPURE 1
 
 /* Push parsers.  */
 #define YYPUSH 0
@@ -72,9 +72,14 @@
 #include <string.h>
 
 #include "index-struct.h"
+#include "index-parse.h"
 
-extern void yyerror (const char *);
-extern int yylex (void);
+#define YY_EXTRA_TYPE struct parse_context *
+
+extern void yyerror (YYLTYPE * yylloc, yyscan_t scanner, struct parse_context *context, const char *msg);
+extern int yylex (YYSTYPE * yylval, YYLTYPE * yylloc, yyscan_t scanner);
+extern void scanner_init (yyscan_t *scanner, struct parse_context *context, FILE *in);
+extern void scanner_destroy (yyscan_t scanner);
 
 /* Join two strings with \n */
 static char *
@@ -100,7 +105,7 @@ concat_newline (const char *str1, const char *str2)
 
 
 /* Line 371 of yacc.c  */
-#line 104 "index-parse.c"
+#line 109 "index-parse.c"
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -129,6 +134,19 @@ concat_newline (const char *str1, const char *str2)
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+/* Line 387 of yacc.c  */
+#line 60 "index-parse.y"
+
+#include "index-parse.h"
+#ifndef YY_TYPEDEF_YY_SCANNER_T
+#define YY_TYPEDEF_YY_SCANNER_T
+typedef void *yyscan_t;
+#endif
+
+
+/* Line 387 of yacc.c  */
+#line 150 "index-parse.c"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -158,7 +176,7 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 387 of yacc.c  */
-#line 57 "index-parse.y"
+#line 70 "index-parse.y"
 
   struct section *section;
   struct field *field;
@@ -166,7 +184,7 @@ typedef union YYSTYPE
 
 
 /* Line 387 of yacc.c  */
-#line 170 "index-parse.c"
+#line 188 "index-parse.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -186,8 +204,7 @@ typedef struct YYLTYPE
 # define YYLTYPE_IS_TRIVIAL 1
 #endif
 
-extern YYSTYPE yylval;
-extern YYLTYPE yylloc;
+
 #ifdef YYPARSE_PARAM
 #if defined __STDC__ || defined __cplusplus
 int yyparse (void *YYPARSE_PARAM);
@@ -196,7 +213,7 @@ int yyparse ();
 #endif
 #else /* ! YYPARSE_PARAM */
 #if defined __STDC__ || defined __cplusplus
-int yyparse (void);
+int yyparse (yyscan_t scanner, struct parse_context *context);
 #else
 int yyparse ();
 #endif
@@ -207,7 +224,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 211 "index-parse.c"
+#line 228 "index-parse.c"
 
 #ifdef short
 # undef short
@@ -500,8 +517,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    77,    77,    79,    83,    85,    89,    97,    98,   101,
-     110,   111,   118,   119
+       0,   101,   101,   103,   107,   109,   113,   121,   122,   125,
+     134,   135,   142,   143
 };
 #endif
 
@@ -641,7 +658,7 @@ do                                                              \
     }                                                           \
   else                                                          \
     {                                                           \
-      yyerror (YY_("syntax error: cannot back up")); \
+      yyerror (&yylloc, scanner, context, YY_("syntax error: cannot back up")); \
       YYERROR;							\
     }								\
 while (YYID (0))
@@ -732,9 +749,9 @@ yy_location_print_ (yyo, yylocp)
 
 /* YYLEX -- calling `yylex' with the right arguments.  */
 #ifdef YYLEX_PARAM
-# define YYLEX yylex (YYLEX_PARAM)
+# define YYLEX yylex (&yylval, &yylloc, YYLEX_PARAM)
 #else
-# define YYLEX yylex ()
+# define YYLEX yylex (&yylval, &yylloc, scanner)
 #endif
 
 /* Enable debugging if requested.  */
@@ -757,7 +774,7 @@ do {									  \
     {									  \
       YYFPRINTF (stderr, "%s ", Title);					  \
       yy_symbol_print (stderr,						  \
-		  Type, Value, Location); \
+		  Type, Value, Location, scanner, context); \
       YYFPRINTF (stderr, "\n");						  \
     }									  \
 } while (YYID (0))
@@ -771,14 +788,16 @@ do {									  \
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp)
+yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, yyscan_t scanner, struct parse_context *context)
 #else
 static void
-yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp)
+yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp, scanner, context)
     FILE *yyoutput;
     int yytype;
     YYSTYPE const * const yyvaluep;
     YYLTYPE const * const yylocationp;
+    yyscan_t scanner;
+    struct parse_context *context;
 #endif
 {
   FILE *yyo = yyoutput;
@@ -786,6 +805,8 @@ yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp)
   if (!yyvaluep)
     return;
   YYUSE (yylocationp);
+  YYUSE (scanner);
+  YYUSE (context);
 # ifdef YYPRINT
   if (yytype < YYNTOKENS)
     YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
@@ -807,14 +828,16 @@ yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp)
+yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, yyscan_t scanner, struct parse_context *context)
 #else
 static void
-yy_symbol_print (yyoutput, yytype, yyvaluep, yylocationp)
+yy_symbol_print (yyoutput, yytype, yyvaluep, yylocationp, scanner, context)
     FILE *yyoutput;
     int yytype;
     YYSTYPE const * const yyvaluep;
     YYLTYPE const * const yylocationp;
+    yyscan_t scanner;
+    struct parse_context *context;
 #endif
 {
   if (yytype < YYNTOKENS)
@@ -824,7 +847,7 @@ yy_symbol_print (yyoutput, yytype, yyvaluep, yylocationp)
 
   YY_LOCATION_PRINT (yyoutput, *yylocationp);
   YYFPRINTF (yyoutput, ": ");
-  yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp);
+  yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp, scanner, context);
   YYFPRINTF (yyoutput, ")");
 }
 
@@ -867,13 +890,15 @@ do {								\
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_reduce_print (YYSTYPE *yyvsp, YYLTYPE *yylsp, int yyrule)
+yy_reduce_print (YYSTYPE *yyvsp, YYLTYPE *yylsp, int yyrule, yyscan_t scanner, struct parse_context *context)
 #else
 static void
-yy_reduce_print (yyvsp, yylsp, yyrule)
+yy_reduce_print (yyvsp, yylsp, yyrule, scanner, context)
     YYSTYPE *yyvsp;
     YYLTYPE *yylsp;
     int yyrule;
+    yyscan_t scanner;
+    struct parse_context *context;
 #endif
 {
   int yynrhs = yyr2[yyrule];
@@ -887,7 +912,7 @@ yy_reduce_print (yyvsp, yylsp, yyrule)
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
 		       &(yyvsp[(yyi + 1) - (yynrhs)])
-		       , &(yylsp[(yyi + 1) - (yynrhs)])		       );
+		       , &(yylsp[(yyi + 1) - (yynrhs)])		       , scanner, context);
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -895,7 +920,7 @@ yy_reduce_print (yyvsp, yylsp, yyrule)
 # define YY_REDUCE_PRINT(Rule)		\
 do {					\
   if (yydebug)				\
-    yy_reduce_print (yyvsp, yylsp, Rule); \
+    yy_reduce_print (yyvsp, yylsp, Rule, scanner, context); \
 } while (YYID (0))
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
@@ -1175,18 +1200,22 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocationp)
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocationp, yyscan_t scanner, struct parse_context *context)
 #else
 static void
-yydestruct (yymsg, yytype, yyvaluep, yylocationp)
+yydestruct (yymsg, yytype, yyvaluep, yylocationp, scanner, context)
     const char *yymsg;
     int yytype;
     YYSTYPE *yyvaluep;
     YYLTYPE *yylocationp;
+    yyscan_t scanner;
+    struct parse_context *context;
 #endif
 {
   YYUSE (yyvaluep);
   YYUSE (yylocationp);
+  YYUSE (scanner);
+  YYUSE (context);
 
   if (!yymsg)
     yymsg = "Deleting";
@@ -1194,6 +1223,41 @@ yydestruct (yymsg, yytype, yyvaluep, yylocationp)
 
   switch (yytype)
     {
+      case 4: /* FIELD */
+/* Line 1398 of yacc.c  */
+#line 96 "index-parse.y"
+        { field_free (((*yyvaluep).field)); };
+/* Line 1398 of yacc.c  */
+#line 1232 "index-parse.c"
+        break;
+      case 11: /* sections */
+/* Line 1398 of yacc.c  */
+#line 94 "index-parse.y"
+        { section_free (((*yyvaluep).section)); };
+/* Line 1398 of yacc.c  */
+#line 1239 "index-parse.c"
+        break;
+      case 12: /* section */
+/* Line 1398 of yacc.c  */
+#line 94 "index-parse.y"
+        { section_free (((*yyvaluep).section)); };
+/* Line 1398 of yacc.c  */
+#line 1246 "index-parse.c"
+        break;
+      case 13: /* fields */
+/* Line 1398 of yacc.c  */
+#line 96 "index-parse.y"
+        { field_free (((*yyvaluep).field)); };
+/* Line 1398 of yacc.c  */
+#line 1253 "index-parse.c"
+        break;
+      case 14: /* field */
+/* Line 1398 of yacc.c  */
+#line 96 "index-parse.y"
+        { field_free (((*yyvaluep).field)); };
+/* Line 1398 of yacc.c  */
+#line 1260 "index-parse.c"
+        break;
 
       default:
         break;
@@ -1201,33 +1265,6 @@ yydestruct (yymsg, yytype, yyvaluep, yylocationp)
 }
 
 
-
-
-/* The lookahead symbol.  */
-int yychar;
-
-
-#ifndef YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-# define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-# define YY_IGNORE_MAYBE_UNINITIALIZED_END
-#endif
-#ifndef YY_INITIAL_VALUE
-# define YY_INITIAL_VALUE(Value) /* Nothing. */
-#endif
-
-/* The semantic value of the lookahead symbol.  */
-YYSTYPE yylval YY_INITIAL_VALUE(yyval_default);
-
-/* Location data for the lookahead symbol.  */
-YYLTYPE yylloc
-# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
-  = { 1, 1, 1, 1 }
-# endif
-;
-
-
-/* Number of syntax errors so far.  */
-int yynerrs;
 
 
 /*----------.
@@ -1248,14 +1285,56 @@ yyparse (YYPARSE_PARAM)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 int
-yyparse (void)
+yyparse (yyscan_t scanner, struct parse_context *context)
 #else
 int
-yyparse ()
-
+yyparse (scanner, context)
+    yyscan_t scanner;
+    struct parse_context *context;
 #endif
 #endif
 {
+/* The lookahead symbol.  */
+int yychar;
+
+
+#if defined __GNUC__ && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
+/* Suppress an incorrect diagnostic about yylval being uninitialized.  */
+# define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN \
+    _Pragma ("GCC diagnostic push") \
+    _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")\
+    _Pragma ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
+# define YY_IGNORE_MAYBE_UNINITIALIZED_END \
+    _Pragma ("GCC diagnostic pop")
+#else
+/* Default value used for initialization, for pacifying older GCCs
+   or non-GCC compilers.  */
+static YYSTYPE yyval_default;
+# define YY_INITIAL_VALUE(Value) = Value
+#endif
+static YYLTYPE yyloc_default
+# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
+  = { 1, 1, 1, 1 }
+# endif
+;
+#ifndef YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
+# define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
+# define YY_IGNORE_MAYBE_UNINITIALIZED_END
+#endif
+#ifndef YY_INITIAL_VALUE
+# define YY_INITIAL_VALUE(Value) /* Nothing. */
+#endif
+
+/* The semantic value of the lookahead symbol.  */
+YYSTYPE yylval YY_INITIAL_VALUE(yyval_default);
+
+/* Location data for the lookahead symbol.  */
+YYLTYPE yylloc = yyloc_default;
+
+
+    /* Number of syntax errors so far.  */
+    int yynerrs;
+
     int yystate;
     /* Number of tokens to shift before error messages enabled.  */
     int yyerrstatus;
@@ -1508,31 +1587,31 @@ yyreduce:
     {
         case 2:
 /* Line 1792 of yacc.c  */
-#line 78 "index-parse.y"
-    { parsed_index = (yyvsp[(1) - (1)].section); }
+#line 102 "index-parse.y"
+    { context->parsed_index = (yyvsp[(1) - (1)].section); }
     break;
 
   case 3:
 /* Line 1792 of yacc.c  */
-#line 80 "index-parse.y"
-    { parsed_index = (yyvsp[(2) - (3)].section); }
+#line 104 "index-parse.y"
+    { context->parsed_index = (yyvsp[(2) - (3)].section); }
     break;
 
   case 4:
 /* Line 1792 of yacc.c  */
-#line 84 "index-parse.y"
+#line 108 "index-parse.y"
     { (yyval.section) = (yyvsp[(1) - (2)].section); }
     break;
 
   case 5:
 /* Line 1792 of yacc.c  */
-#line 86 "index-parse.y"
+#line 110 "index-parse.y"
     { (yyval.section) = (yyvsp[(1) - (4)].section); (yyval.section)->next = (yyvsp[(4) - (4)].section); }
     break;
 
   case 6:
 /* Line 1792 of yacc.c  */
-#line 90 "index-parse.y"
+#line 114 "index-parse.y"
     { (yyval.section) = malloc (sizeof (struct section));
           (yyval.section)->next = NULL;
           (yyval.section)->name = (yyvsp[(1) - (2)].str);
@@ -1541,19 +1620,19 @@ yyreduce:
 
   case 7:
 /* Line 1792 of yacc.c  */
-#line 97 "index-parse.y"
+#line 121 "index-parse.y"
     { (yyval.field) = NULL; }
     break;
 
   case 8:
 /* Line 1792 of yacc.c  */
-#line 99 "index-parse.y"
+#line 123 "index-parse.y"
     { (yyval.field) = (yyvsp[(1) - (2)].field); (yyval.field)->next = (yyvsp[(2) - (2)].field); }
     break;
 
   case 9:
 /* Line 1792 of yacc.c  */
-#line 102 "index-parse.y"
+#line 126 "index-parse.y"
     { (yyval.field) = (yyvsp[(1) - (2)].field);
           char *old_value = (yyval.field)->value;
           (yyval.field)->value = concat_newline (old_value, (yyvsp[(2) - (2)].str));
@@ -1563,13 +1642,13 @@ yyreduce:
 
   case 10:
 /* Line 1792 of yacc.c  */
-#line 110 "index-parse.y"
+#line 134 "index-parse.y"
     { (yyval.str) = NULL; }
     break;
 
   case 11:
 /* Line 1792 of yacc.c  */
-#line 112 "index-parse.y"
+#line 136 "index-parse.y"
     { (yyval.str) = concat_newline ((yyvsp[(1) - (2)].str), (yyvsp[(2) - (2)].str));
           free ((yyvsp[(1) - (2)].str));
           free ((yyvsp[(2) - (2)].str)); }
@@ -1577,19 +1656,19 @@ yyreduce:
 
   case 12:
 /* Line 1792 of yacc.c  */
-#line 118 "index-parse.y"
+#line 142 "index-parse.y"
     {}
     break;
 
   case 13:
 /* Line 1792 of yacc.c  */
-#line 120 "index-parse.y"
+#line 144 "index-parse.y"
     {}
     break;
 
 
 /* Line 1792 of yacc.c  */
-#line 1593 "index-parse.c"
+#line 1672 "index-parse.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1640,7 +1719,7 @@ yyerrlab:
     {
       ++yynerrs;
 #if ! YYERROR_VERBOSE
-      yyerror (YY_("syntax error"));
+      yyerror (&yylloc, scanner, context, YY_("syntax error"));
 #else
 # define YYSYNTAX_ERROR yysyntax_error (&yymsg_alloc, &yymsg, \
                                         yyssp, yytoken)
@@ -1667,7 +1746,7 @@ yyerrlab:
                 yymsgp = yymsg;
               }
           }
-        yyerror (yymsgp);
+        yyerror (&yylloc, scanner, context, yymsgp);
         if (yysyntax_error_status == 2)
           goto yyexhaustedlab;
       }
@@ -1691,7 +1770,7 @@ yyerrlab:
       else
 	{
 	  yydestruct ("Error: discarding",
-		      yytoken, &yylval, &yylloc);
+		      yytoken, &yylval, &yylloc, scanner, context);
 	  yychar = YYEMPTY;
 	}
     }
@@ -1748,7 +1827,7 @@ yyerrlab1:
 
       yyerror_range[1] = *yylsp;
       yydestruct ("Error: popping",
-		  yystos[yystate], yyvsp, yylsp);
+		  yystos[yystate], yyvsp, yylsp, scanner, context);
       YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -1790,7 +1869,7 @@ yyabortlab:
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
 yyexhaustedlab:
-  yyerror (YY_("memory exhausted"));
+  yyerror (&yylloc, scanner, context, YY_("memory exhausted"));
   yyresult = 2;
   /* Fall through.  */
 #endif
@@ -1802,7 +1881,7 @@ yyreturn:
          user semantic actions for why this is necessary.  */
       yytoken = YYTRANSLATE (yychar);
       yydestruct ("Cleanup: discarding lookahead",
-                  yytoken, &yylval, &yylloc);
+                  yytoken, &yylval, &yylloc, scanner, context);
     }
   /* Do not reclaim the symbols of the rule which action triggered
      this YYABORT or YYACCEPT.  */
@@ -1811,7 +1890,7 @@ yyreturn:
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
-		  yystos[*yyssp], yyvsp, yylsp);
+		  yystos[*yyssp], yyvsp, yylsp, scanner, context);
       YYPOPSTACK (1);
     }
 #ifndef yyoverflow
@@ -1828,12 +1907,29 @@ yyreturn:
 
 
 /* Line 2055 of yacc.c  */
-#line 122 "index-parse.y"
+#line 146 "index-parse.y"
 
 
 void
-yyerror (const char *msg)
+yyerror (YYLTYPE * yylloc, yyscan_t scanner, struct parse_context *context, const char *msg)
 {
-  fprintf (stderr, "syntax error at line %d: %s\n",
-           yylloc.first_line, msg);
+  fprintf (stderr, "%s%s%s%ssyntax error at line %d: %s\n",
+           context->program_name ? context->program_name : "",
+           context->program_name ? ": " : "",
+           context->input_file ? context->input_file : "",
+           context->input_file ? ": " : "",
+           yylloc->first_line, msg);
+}
+
+int
+do_parse (struct parse_context *context, FILE *in)
+{
+  yyscan_t scanner;
+  int res;
+
+  scanner_init (&scanner, context, in);
+  res = yyparse (scanner, context);
+  scanner_destroy (scanner);
+
+  return res;
 }

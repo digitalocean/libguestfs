@@ -55,6 +55,7 @@ guestfs_copy_int_bool (const struct guestfs_int_bool *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_int_bool_list *
 guestfs_copy_int_bool_list (const struct guestfs_int_bool_list *inp)
 {
+  int err;
   struct guestfs_int_bool_list *ret;
   size_t i = 0;
 
@@ -74,7 +75,7 @@ guestfs_copy_int_bool_list (const struct guestfs_int_bool_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
+  err = errno;
   free (ret->val);
   free (ret);
   errno = err;
@@ -93,6 +94,8 @@ free_lvm_pv (struct guestfs_lvm_pv *s)
 static int
 copy_lvm_pv (const struct guestfs_lvm_pv *inp, struct guestfs_lvm_pv *out)
 {
+  int err;
+
   out->pv_name = NULL;
   out->pv_fmt = NULL;
   out->pv_attr = NULL;
@@ -118,7 +121,7 @@ copy_lvm_pv (const struct guestfs_lvm_pv *inp, struct guestfs_lvm_pv *out)
   return 0;
 
 error: ;
-  int err = errno;
+  err = errno;
   free_lvm_pv (out);
   errno = err;
   return -1;
@@ -134,7 +137,9 @@ guestfs_copy_lvm_pv (const struct guestfs_lvm_pv *inp)
     return NULL;
 
   if (copy_lvm_pv (inp, ret) == -1) {
-    int err = errno;
+    int err;
+
+    err = errno;
     free (ret);
     errno = err;
     return NULL;
@@ -146,8 +151,10 @@ guestfs_copy_lvm_pv (const struct guestfs_lvm_pv *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_lvm_pv_list *
 guestfs_copy_lvm_pv_list (const struct guestfs_lvm_pv_list *inp)
 {
+  int err;
   struct guestfs_lvm_pv_list *ret;
   size_t i = 0;
+  size_t j;
 
   ret = malloc (sizeof *ret);
   if (ret == NULL)
@@ -166,8 +173,7 @@ guestfs_copy_lvm_pv_list (const struct guestfs_lvm_pv_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
-  size_t j;
+  err = errno;
   for (j = 0; j < i; ++j)
     free_lvm_pv (&ret->val[j]);
   free (ret->val);
@@ -189,6 +195,8 @@ free_lvm_vg (struct guestfs_lvm_vg *s)
 static int
 copy_lvm_vg (const struct guestfs_lvm_vg *inp, struct guestfs_lvm_vg *out)
 {
+  int err;
+
   out->vg_name = NULL;
   out->vg_fmt = NULL;
   out->vg_attr = NULL;
@@ -221,7 +229,7 @@ copy_lvm_vg (const struct guestfs_lvm_vg *inp, struct guestfs_lvm_vg *out)
   return 0;
 
 error: ;
-  int err = errno;
+  err = errno;
   free_lvm_vg (out);
   errno = err;
   return -1;
@@ -237,7 +245,9 @@ guestfs_copy_lvm_vg (const struct guestfs_lvm_vg *inp)
     return NULL;
 
   if (copy_lvm_vg (inp, ret) == -1) {
-    int err = errno;
+    int err;
+
+    err = errno;
     free (ret);
     errno = err;
     return NULL;
@@ -249,8 +259,10 @@ guestfs_copy_lvm_vg (const struct guestfs_lvm_vg *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_lvm_vg_list *
 guestfs_copy_lvm_vg_list (const struct guestfs_lvm_vg_list *inp)
 {
+  int err;
   struct guestfs_lvm_vg_list *ret;
   size_t i = 0;
+  size_t j;
 
   ret = malloc (sizeof *ret);
   if (ret == NULL)
@@ -269,8 +281,7 @@ guestfs_copy_lvm_vg_list (const struct guestfs_lvm_vg_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
-  size_t j;
+  err = errno;
   for (j = 0; j < i; ++j)
     free_lvm_vg (&ret->val[j]);
   free (ret->val);
@@ -294,6 +305,8 @@ free_lvm_lv (struct guestfs_lvm_lv *s)
 static int
 copy_lvm_lv (const struct guestfs_lvm_lv *inp, struct guestfs_lvm_lv *out)
 {
+  int err;
+
   out->lv_name = NULL;
   out->lv_attr = NULL;
   out->origin = NULL;
@@ -327,7 +340,7 @@ copy_lvm_lv (const struct guestfs_lvm_lv *inp, struct guestfs_lvm_lv *out)
   return 0;
 
 error: ;
-  int err = errno;
+  err = errno;
   free_lvm_lv (out);
   errno = err;
   return -1;
@@ -343,7 +356,9 @@ guestfs_copy_lvm_lv (const struct guestfs_lvm_lv *inp)
     return NULL;
 
   if (copy_lvm_lv (inp, ret) == -1) {
-    int err = errno;
+    int err;
+
+    err = errno;
     free (ret);
     errno = err;
     return NULL;
@@ -355,8 +370,10 @@ guestfs_copy_lvm_lv (const struct guestfs_lvm_lv *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_lvm_lv_list *
 guestfs_copy_lvm_lv_list (const struct guestfs_lvm_lv_list *inp)
 {
+  int err;
   struct guestfs_lvm_lv_list *ret;
   size_t i = 0;
+  size_t j;
 
   ret = malloc (sizeof *ret);
   if (ret == NULL)
@@ -375,8 +392,7 @@ guestfs_copy_lvm_lv_list (const struct guestfs_lvm_lv_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
-  size_t j;
+  err = errno;
   for (j = 0; j < i; ++j)
     free_lvm_lv (&ret->val[j]);
   free (ret->val);
@@ -408,6 +424,7 @@ guestfs_copy_stat (const struct guestfs_stat *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_stat_list *
 guestfs_copy_stat_list (const struct guestfs_stat_list *inp)
 {
+  int err;
   struct guestfs_stat_list *ret;
   size_t i = 0;
 
@@ -427,7 +444,7 @@ guestfs_copy_stat_list (const struct guestfs_stat_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
+  err = errno;
   free (ret->val);
   free (ret);
   errno = err;
@@ -457,6 +474,7 @@ guestfs_copy_statvfs (const struct guestfs_statvfs *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_statvfs_list *
 guestfs_copy_statvfs_list (const struct guestfs_statvfs_list *inp)
 {
+  int err;
   struct guestfs_statvfs_list *ret;
   size_t i = 0;
 
@@ -476,7 +494,7 @@ guestfs_copy_statvfs_list (const struct guestfs_statvfs_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
+  err = errno;
   free (ret->val);
   free (ret);
   errno = err;
@@ -492,6 +510,8 @@ free_dirent (struct guestfs_dirent *s)
 static int
 copy_dirent (const struct guestfs_dirent *inp, struct guestfs_dirent *out)
 {
+  int err;
+
   out->name = NULL;
   out->ino = inp->ino;
   out->ftyp = inp->ftyp;
@@ -500,7 +520,7 @@ copy_dirent (const struct guestfs_dirent *inp, struct guestfs_dirent *out)
   return 0;
 
 error: ;
-  int err = errno;
+  err = errno;
   free_dirent (out);
   errno = err;
   return -1;
@@ -516,7 +536,9 @@ guestfs_copy_dirent (const struct guestfs_dirent *inp)
     return NULL;
 
   if (copy_dirent (inp, ret) == -1) {
-    int err = errno;
+    int err;
+
+    err = errno;
     free (ret);
     errno = err;
     return NULL;
@@ -528,8 +550,10 @@ guestfs_copy_dirent (const struct guestfs_dirent *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_dirent_list *
 guestfs_copy_dirent_list (const struct guestfs_dirent_list *inp)
 {
+  int err;
   struct guestfs_dirent_list *ret;
   size_t i = 0;
+  size_t j;
 
   ret = malloc (sizeof *ret);
   if (ret == NULL)
@@ -548,8 +572,7 @@ guestfs_copy_dirent_list (const struct guestfs_dirent_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
-  size_t j;
+  err = errno;
   for (j = 0; j < i; ++j)
     free_dirent (&ret->val[j]);
   free (ret->val);
@@ -567,6 +590,8 @@ free_version (struct guestfs_version *s)
 static int
 copy_version (const struct guestfs_version *inp, struct guestfs_version *out)
 {
+  int err;
+
   out->extra = NULL;
   out->major = inp->major;
   out->minor = inp->minor;
@@ -576,7 +601,7 @@ copy_version (const struct guestfs_version *inp, struct guestfs_version *out)
   return 0;
 
 error: ;
-  int err = errno;
+  err = errno;
   free_version (out);
   errno = err;
   return -1;
@@ -592,7 +617,9 @@ guestfs_copy_version (const struct guestfs_version *inp)
     return NULL;
 
   if (copy_version (inp, ret) == -1) {
-    int err = errno;
+    int err;
+
+    err = errno;
     free (ret);
     errno = err;
     return NULL;
@@ -604,8 +631,10 @@ guestfs_copy_version (const struct guestfs_version *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_version_list *
 guestfs_copy_version_list (const struct guestfs_version_list *inp)
 {
+  int err;
   struct guestfs_version_list *ret;
   size_t i = 0;
+  size_t j;
 
   ret = malloc (sizeof *ret);
   if (ret == NULL)
@@ -624,8 +653,7 @@ guestfs_copy_version_list (const struct guestfs_version_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
-  size_t j;
+  err = errno;
   for (j = 0; j < i; ++j)
     free_version (&ret->val[j]);
   free (ret->val);
@@ -644,6 +672,8 @@ free_xattr (struct guestfs_xattr *s)
 static int
 copy_xattr (const struct guestfs_xattr *inp, struct guestfs_xattr *out)
 {
+  int err;
+
   out->attrname = NULL;
   out->attrval = NULL;
   out->attrname = strdup (inp->attrname);
@@ -660,7 +690,7 @@ copy_xattr (const struct guestfs_xattr *inp, struct guestfs_xattr *out)
   return 0;
 
 error: ;
-  int err = errno;
+  err = errno;
   free_xattr (out);
   errno = err;
   return -1;
@@ -676,7 +706,9 @@ guestfs_copy_xattr (const struct guestfs_xattr *inp)
     return NULL;
 
   if (copy_xattr (inp, ret) == -1) {
-    int err = errno;
+    int err;
+
+    err = errno;
     free (ret);
     errno = err;
     return NULL;
@@ -688,8 +720,10 @@ guestfs_copy_xattr (const struct guestfs_xattr *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_xattr_list *
 guestfs_copy_xattr_list (const struct guestfs_xattr_list *inp)
 {
+  int err;
   struct guestfs_xattr_list *ret;
   size_t i = 0;
+  size_t j;
 
   ret = malloc (sizeof *ret);
   if (ret == NULL)
@@ -708,8 +742,7 @@ guestfs_copy_xattr_list (const struct guestfs_xattr_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
-  size_t j;
+  err = errno;
   for (j = 0; j < i; ++j)
     free_xattr (&ret->val[j]);
   free (ret->val);
@@ -727,6 +760,8 @@ free_inotify_event (struct guestfs_inotify_event *s)
 static int
 copy_inotify_event (const struct guestfs_inotify_event *inp, struct guestfs_inotify_event *out)
 {
+  int err;
+
   out->in_name = NULL;
   out->in_wd = inp->in_wd;
   out->in_mask = inp->in_mask;
@@ -736,7 +771,7 @@ copy_inotify_event (const struct guestfs_inotify_event *inp, struct guestfs_inot
   return 0;
 
 error: ;
-  int err = errno;
+  err = errno;
   free_inotify_event (out);
   errno = err;
   return -1;
@@ -752,7 +787,9 @@ guestfs_copy_inotify_event (const struct guestfs_inotify_event *inp)
     return NULL;
 
   if (copy_inotify_event (inp, ret) == -1) {
-    int err = errno;
+    int err;
+
+    err = errno;
     free (ret);
     errno = err;
     return NULL;
@@ -764,8 +801,10 @@ guestfs_copy_inotify_event (const struct guestfs_inotify_event *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_inotify_event_list *
 guestfs_copy_inotify_event_list (const struct guestfs_inotify_event_list *inp)
 {
+  int err;
   struct guestfs_inotify_event_list *ret;
   size_t i = 0;
+  size_t j;
 
   ret = malloc (sizeof *ret);
   if (ret == NULL)
@@ -784,8 +823,7 @@ guestfs_copy_inotify_event_list (const struct guestfs_inotify_event_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
-  size_t j;
+  err = errno;
   for (j = 0; j < i; ++j)
     free_inotify_event (&ret->val[j]);
   free (ret->val);
@@ -817,6 +855,7 @@ guestfs_copy_partition (const struct guestfs_partition *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_partition_list *
 guestfs_copy_partition_list (const struct guestfs_partition_list *inp)
 {
+  int err;
   struct guestfs_partition_list *ret;
   size_t i = 0;
 
@@ -836,7 +875,7 @@ guestfs_copy_partition_list (const struct guestfs_partition_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
+  err = errno;
   free (ret->val);
   free (ret);
   errno = err;
@@ -862,6 +901,8 @@ free_application (struct guestfs_application *s)
 static int
 copy_application (const struct guestfs_application *inp, struct guestfs_application *out)
 {
+  int err;
+
   out->app_name = NULL;
   out->app_display_name = NULL;
   out->app_version = NULL;
@@ -899,7 +940,7 @@ copy_application (const struct guestfs_application *inp, struct guestfs_applicat
   return 0;
 
 error: ;
-  int err = errno;
+  err = errno;
   free_application (out);
   errno = err;
   return -1;
@@ -915,7 +956,9 @@ guestfs_copy_application (const struct guestfs_application *inp)
     return NULL;
 
   if (copy_application (inp, ret) == -1) {
-    int err = errno;
+    int err;
+
+    err = errno;
     free (ret);
     errno = err;
     return NULL;
@@ -927,8 +970,10 @@ guestfs_copy_application (const struct guestfs_application *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_application_list *
 guestfs_copy_application_list (const struct guestfs_application_list *inp)
 {
+  int err;
   struct guestfs_application_list *ret;
   size_t i = 0;
+  size_t j;
 
   ret = malloc (sizeof *ret);
   if (ret == NULL)
@@ -947,8 +992,7 @@ guestfs_copy_application_list (const struct guestfs_application_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
-  size_t j;
+  err = errno;
   for (j = 0; j < i; ++j)
     free_application (&ret->val[j]);
   free (ret->val);
@@ -981,6 +1025,8 @@ free_application2 (struct guestfs_application2 *s)
 static int
 copy_application2 (const struct guestfs_application2 *inp, struct guestfs_application2 *out)
 {
+  int err;
+
   out->app2_name = NULL;
   out->app2_display_name = NULL;
   out->app2_version = NULL;
@@ -1033,7 +1079,7 @@ copy_application2 (const struct guestfs_application2 *inp, struct guestfs_applic
   return 0;
 
 error: ;
-  int err = errno;
+  err = errno;
   free_application2 (out);
   errno = err;
   return -1;
@@ -1049,7 +1095,9 @@ guestfs_copy_application2 (const struct guestfs_application2 *inp)
     return NULL;
 
   if (copy_application2 (inp, ret) == -1) {
-    int err = errno;
+    int err;
+
+    err = errno;
     free (ret);
     errno = err;
     return NULL;
@@ -1061,8 +1109,10 @@ guestfs_copy_application2 (const struct guestfs_application2 *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_application2_list *
 guestfs_copy_application2_list (const struct guestfs_application2_list *inp)
 {
+  int err;
   struct guestfs_application2_list *ret;
   size_t i = 0;
+  size_t j;
 
   ret = malloc (sizeof *ret);
   if (ret == NULL)
@@ -1081,8 +1131,7 @@ guestfs_copy_application2_list (const struct guestfs_application2_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
-  size_t j;
+  err = errno;
   for (j = 0; j < i; ++j)
     free_application2 (&ret->val[j]);
   free (ret->val);
@@ -1108,6 +1157,8 @@ free_isoinfo (struct guestfs_isoinfo *s)
 static int
 copy_isoinfo (const struct guestfs_isoinfo *inp, struct guestfs_isoinfo *out)
 {
+  int err;
+
   out->iso_system_id = NULL;
   out->iso_volume_id = NULL;
   out->iso_volume_set_id = NULL;
@@ -1146,7 +1197,7 @@ copy_isoinfo (const struct guestfs_isoinfo *inp, struct guestfs_isoinfo *out)
   return 0;
 
 error: ;
-  int err = errno;
+  err = errno;
   free_isoinfo (out);
   errno = err;
   return -1;
@@ -1162,7 +1213,9 @@ guestfs_copy_isoinfo (const struct guestfs_isoinfo *inp)
     return NULL;
 
   if (copy_isoinfo (inp, ret) == -1) {
-    int err = errno;
+    int err;
+
+    err = errno;
     free (ret);
     errno = err;
     return NULL;
@@ -1174,8 +1227,10 @@ guestfs_copy_isoinfo (const struct guestfs_isoinfo *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_isoinfo_list *
 guestfs_copy_isoinfo_list (const struct guestfs_isoinfo_list *inp)
 {
+  int err;
   struct guestfs_isoinfo_list *ret;
   size_t i = 0;
+  size_t j;
 
   ret = malloc (sizeof *ret);
   if (ret == NULL)
@@ -1194,8 +1249,7 @@ guestfs_copy_isoinfo_list (const struct guestfs_isoinfo_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
-  size_t j;
+  err = errno;
   for (j = 0; j < i; ++j)
     free_isoinfo (&ret->val[j]);
   free (ret->val);
@@ -1214,6 +1268,8 @@ free_mdstat (struct guestfs_mdstat *s)
 static int
 copy_mdstat (const struct guestfs_mdstat *inp, struct guestfs_mdstat *out)
 {
+  int err;
+
   out->mdstat_device = NULL;
   out->mdstat_flags = NULL;
   out->mdstat_device = strdup (inp->mdstat_device);
@@ -1224,7 +1280,7 @@ copy_mdstat (const struct guestfs_mdstat *inp, struct guestfs_mdstat *out)
   return 0;
 
 error: ;
-  int err = errno;
+  err = errno;
   free_mdstat (out);
   errno = err;
   return -1;
@@ -1240,7 +1296,9 @@ guestfs_copy_mdstat (const struct guestfs_mdstat *inp)
     return NULL;
 
   if (copy_mdstat (inp, ret) == -1) {
-    int err = errno;
+    int err;
+
+    err = errno;
     free (ret);
     errno = err;
     return NULL;
@@ -1252,8 +1310,10 @@ guestfs_copy_mdstat (const struct guestfs_mdstat *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_mdstat_list *
 guestfs_copy_mdstat_list (const struct guestfs_mdstat_list *inp)
 {
+  int err;
   struct guestfs_mdstat_list *ret;
   size_t i = 0;
+  size_t j;
 
   ret = malloc (sizeof *ret);
   if (ret == NULL)
@@ -1272,8 +1332,7 @@ guestfs_copy_mdstat_list (const struct guestfs_mdstat_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
-  size_t j;
+  err = errno;
   for (j = 0; j < i; ++j)
     free_mdstat (&ret->val[j]);
   free (ret->val);
@@ -1291,6 +1350,8 @@ free_btrfssubvolume (struct guestfs_btrfssubvolume *s)
 static int
 copy_btrfssubvolume (const struct guestfs_btrfssubvolume *inp, struct guestfs_btrfssubvolume *out)
 {
+  int err;
+
   out->btrfssubvolume_path = NULL;
   out->btrfssubvolume_id = inp->btrfssubvolume_id;
   out->btrfssubvolume_top_level_id = inp->btrfssubvolume_top_level_id;
@@ -1299,7 +1360,7 @@ copy_btrfssubvolume (const struct guestfs_btrfssubvolume *inp, struct guestfs_bt
   return 0;
 
 error: ;
-  int err = errno;
+  err = errno;
   free_btrfssubvolume (out);
   errno = err;
   return -1;
@@ -1315,7 +1376,9 @@ guestfs_copy_btrfssubvolume (const struct guestfs_btrfssubvolume *inp)
     return NULL;
 
   if (copy_btrfssubvolume (inp, ret) == -1) {
-    int err = errno;
+    int err;
+
+    err = errno;
     free (ret);
     errno = err;
     return NULL;
@@ -1327,8 +1390,10 @@ guestfs_copy_btrfssubvolume (const struct guestfs_btrfssubvolume *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_btrfssubvolume_list *
 guestfs_copy_btrfssubvolume_list (const struct guestfs_btrfssubvolume_list *inp)
 {
+  int err;
   struct guestfs_btrfssubvolume_list *ret;
   size_t i = 0;
+  size_t j;
 
   ret = malloc (sizeof *ret);
   if (ret == NULL)
@@ -1347,8 +1412,7 @@ guestfs_copy_btrfssubvolume_list (const struct guestfs_btrfssubvolume_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
-  size_t j;
+  err = errno;
   for (j = 0; j < i; ++j)
     free_btrfssubvolume (&ret->val[j]);
   free (ret->val);
@@ -1368,6 +1432,8 @@ free_xfsinfo (struct guestfs_xfsinfo *s)
 static int
 copy_xfsinfo (const struct guestfs_xfsinfo *inp, struct guestfs_xfsinfo *out)
 {
+  int err;
+
   out->xfs_mntpoint = NULL;
   out->xfs_logname = NULL;
   out->xfs_rtname = NULL;
@@ -1402,7 +1468,7 @@ copy_xfsinfo (const struct guestfs_xfsinfo *inp, struct guestfs_xfsinfo *out)
   return 0;
 
 error: ;
-  int err = errno;
+  err = errno;
   free_xfsinfo (out);
   errno = err;
   return -1;
@@ -1418,7 +1484,9 @@ guestfs_copy_xfsinfo (const struct guestfs_xfsinfo *inp)
     return NULL;
 
   if (copy_xfsinfo (inp, ret) == -1) {
-    int err = errno;
+    int err;
+
+    err = errno;
     free (ret);
     errno = err;
     return NULL;
@@ -1430,8 +1498,10 @@ guestfs_copy_xfsinfo (const struct guestfs_xfsinfo *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_xfsinfo_list *
 guestfs_copy_xfsinfo_list (const struct guestfs_xfsinfo_list *inp)
 {
+  int err;
   struct guestfs_xfsinfo_list *ret;
   size_t i = 0;
+  size_t j;
 
   ret = malloc (sizeof *ret);
   if (ret == NULL)
@@ -1450,8 +1520,7 @@ guestfs_copy_xfsinfo_list (const struct guestfs_xfsinfo_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
-  size_t j;
+  err = errno;
   for (j = 0; j < i; ++j)
     free_xfsinfo (&ret->val[j]);
   free (ret->val);
@@ -1472,6 +1541,8 @@ free_utsname (struct guestfs_utsname *s)
 static int
 copy_utsname (const struct guestfs_utsname *inp, struct guestfs_utsname *out)
 {
+  int err;
+
   out->uts_sysname = NULL;
   out->uts_release = NULL;
   out->uts_version = NULL;
@@ -1487,7 +1558,7 @@ copy_utsname (const struct guestfs_utsname *inp, struct guestfs_utsname *out)
   return 0;
 
 error: ;
-  int err = errno;
+  err = errno;
   free_utsname (out);
   errno = err;
   return -1;
@@ -1503,7 +1574,9 @@ guestfs_copy_utsname (const struct guestfs_utsname *inp)
     return NULL;
 
   if (copy_utsname (inp, ret) == -1) {
-    int err = errno;
+    int err;
+
+    err = errno;
     free (ret);
     errno = err;
     return NULL;
@@ -1515,8 +1588,10 @@ guestfs_copy_utsname (const struct guestfs_utsname *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_utsname_list *
 guestfs_copy_utsname_list (const struct guestfs_utsname_list *inp)
 {
+  int err;
   struct guestfs_utsname_list *ret;
   size_t i = 0;
+  size_t j;
 
   ret = malloc (sizeof *ret);
   if (ret == NULL)
@@ -1535,8 +1610,7 @@ guestfs_copy_utsname_list (const struct guestfs_utsname_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
-  size_t j;
+  err = errno;
   for (j = 0; j < i; ++j)
     free_utsname (&ret->val[j]);
   free (ret->val);
@@ -1568,6 +1642,7 @@ guestfs_copy_hivex_node (const struct guestfs_hivex_node *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_hivex_node_list *
 guestfs_copy_hivex_node_list (const struct guestfs_hivex_node_list *inp)
 {
+  int err;
   struct guestfs_hivex_node_list *ret;
   size_t i = 0;
 
@@ -1587,7 +1662,7 @@ guestfs_copy_hivex_node_list (const struct guestfs_hivex_node_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
+  err = errno;
   free (ret->val);
   free (ret);
   errno = err;
@@ -1617,6 +1692,7 @@ guestfs_copy_hivex_value (const struct guestfs_hivex_value *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_hivex_value_list *
 guestfs_copy_hivex_value_list (const struct guestfs_hivex_value_list *inp)
 {
+  int err;
   struct guestfs_hivex_value_list *ret;
   size_t i = 0;
 
@@ -1636,7 +1712,7 @@ guestfs_copy_hivex_value_list (const struct guestfs_hivex_value_list *inp)
   return ret;
 
 error: ;
-  int err = errno;
+  err = errno;
   free (ret->val);
   free (ret);
   errno = err;
@@ -1653,6 +1729,8 @@ free_internal_mountable (struct guestfs_internal_mountable *s)
 static int
 copy_internal_mountable (const struct guestfs_internal_mountable *inp, struct guestfs_internal_mountable *out)
 {
+  int err;
+
   out->im_device = NULL;
   out->im_volume = NULL;
   out->im_type = inp->im_type;
@@ -1663,7 +1741,7 @@ copy_internal_mountable (const struct guestfs_internal_mountable *inp, struct gu
   return 0;
 
 error: ;
-  int err = errno;
+  err = errno;
   free_internal_mountable (out);
   errno = err;
   return -1;
@@ -1679,7 +1757,9 @@ guestfs_copy_internal_mountable (const struct guestfs_internal_mountable *inp)
     return NULL;
 
   if (copy_internal_mountable (inp, ret) == -1) {
-    int err = errno;
+    int err;
+
+    err = errno;
     free (ret);
     errno = err;
     return NULL;
@@ -1691,8 +1771,10 @@ guestfs_copy_internal_mountable (const struct guestfs_internal_mountable *inp)
 GUESTFS_DLL_PUBLIC struct guestfs_internal_mountable_list *
 guestfs_copy_internal_mountable_list (const struct guestfs_internal_mountable_list *inp)
 {
+  int err;
   struct guestfs_internal_mountable_list *ret;
   size_t i = 0;
+  size_t j;
 
   ret = malloc (sizeof *ret);
   if (ret == NULL)
@@ -1711,8 +1793,7 @@ guestfs_copy_internal_mountable_list (const struct guestfs_internal_mountable_li
   return ret;
 
 error: ;
-  int err = errno;
-  size_t j;
+  err = errno;
   for (j = 0; j < i; ++j)
     free_internal_mountable (&ret->val[j]);
   free (ret->val);

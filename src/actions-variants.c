@@ -38,8 +38,10 @@ guestfs_add_domain (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, dom);
-  int r = guestfs_add_domain_va (g, dom, optargs);
+  r = guestfs_add_domain_va (g, dom, optargs);
   va_end (optargs);
 
   return r;
@@ -53,6 +55,7 @@ guestfs_add_domain_va (guestfs_h *g,
   struct guestfs_add_domain_argv optargs_s;
   struct guestfs_add_domain_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -88,7 +91,7 @@ guestfs_add_domain_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "add_domain");
@@ -107,8 +110,10 @@ guestfs_add_drive_opts (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, filename);
-  int r = guestfs_add_drive_opts_va (g, filename, optargs);
+  r = guestfs_add_drive_opts_va (g, filename, optargs);
   va_end (optargs);
 
   return r;
@@ -122,6 +127,7 @@ guestfs_add_drive_opts_va (guestfs_h *g,
   struct guestfs_add_drive_opts_argv optargs_s;
   struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -166,7 +172,7 @@ guestfs_add_drive_opts_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "add_drive");
@@ -195,8 +201,10 @@ guestfs_add_drive_scratch (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, size);
-  int r = guestfs_add_drive_scratch_va (g, size, optargs);
+  r = guestfs_add_drive_scratch_va (g, size, optargs);
   va_end (optargs);
 
   return r;
@@ -210,6 +218,7 @@ guestfs_add_drive_scratch_va (guestfs_h *g,
   struct guestfs_add_drive_scratch_argv optargs_s;
   struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -227,7 +236,7 @@ guestfs_add_drive_scratch_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "add_drive_scratch");
@@ -246,8 +255,10 @@ guestfs_btrfs_filesystem_resize (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, mountpoint);
-  int r = guestfs_btrfs_filesystem_resize_va (g, mountpoint, optargs);
+  r = guestfs_btrfs_filesystem_resize_va (g, mountpoint, optargs);
   va_end (optargs);
 
   return r;
@@ -261,6 +272,7 @@ guestfs_btrfs_filesystem_resize_va (guestfs_h *g,
   struct guestfs_btrfs_filesystem_resize_argv optargs_s;
   struct guestfs_btrfs_filesystem_resize_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -275,7 +287,7 @@ guestfs_btrfs_filesystem_resize_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "btrfs_filesystem_resize");
@@ -294,8 +306,10 @@ guestfs_btrfs_fsck (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, device);
-  int r = guestfs_btrfs_fsck_va (g, device, optargs);
+  r = guestfs_btrfs_fsck_va (g, device, optargs);
   va_end (optargs);
 
   return r;
@@ -309,6 +323,7 @@ guestfs_btrfs_fsck_va (guestfs_h *g,
   struct guestfs_btrfs_fsck_argv optargs_s;
   struct guestfs_btrfs_fsck_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -326,7 +341,7 @@ guestfs_btrfs_fsck_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "btrfs_fsck");
@@ -347,8 +362,10 @@ guestfs_compress_device_out (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, zdevice);
-  int r = guestfs_compress_device_out_va (g, ctype, device, zdevice, optargs);
+  r = guestfs_compress_device_out_va (g, ctype, device, zdevice, optargs);
   va_end (optargs);
 
   return r;
@@ -364,6 +381,7 @@ guestfs_compress_device_out_va (guestfs_h *g,
   struct guestfs_compress_device_out_argv optargs_s;
   struct guestfs_compress_device_out_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -378,7 +396,7 @@ guestfs_compress_device_out_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "compress_device_out");
@@ -399,8 +417,10 @@ guestfs_compress_out (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, zfile);
-  int r = guestfs_compress_out_va (g, ctype, file, zfile, optargs);
+  r = guestfs_compress_out_va (g, ctype, file, zfile, optargs);
   va_end (optargs);
 
   return r;
@@ -416,6 +436,7 @@ guestfs_compress_out_va (guestfs_h *g,
   struct guestfs_compress_out_argv optargs_s;
   struct guestfs_compress_out_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -430,7 +451,7 @@ guestfs_compress_out_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "compress_out");
@@ -450,8 +471,10 @@ guestfs_copy_attributes (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, dest);
-  int r = guestfs_copy_attributes_va (g, src, dest, optargs);
+  r = guestfs_copy_attributes_va (g, src, dest, optargs);
   va_end (optargs);
 
   return r;
@@ -466,6 +489,7 @@ guestfs_copy_attributes_va (guestfs_h *g,
   struct guestfs_copy_attributes_argv optargs_s;
   struct guestfs_copy_attributes_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -489,7 +513,7 @@ guestfs_copy_attributes_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "copy_attributes");
@@ -509,8 +533,10 @@ guestfs_copy_device_to_device (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, dest);
-  int r = guestfs_copy_device_to_device_va (g, src, dest, optargs);
+  r = guestfs_copy_device_to_device_va (g, src, dest, optargs);
   va_end (optargs);
 
   return r;
@@ -525,6 +551,7 @@ guestfs_copy_device_to_device_va (guestfs_h *g,
   struct guestfs_copy_device_to_device_argv optargs_s;
   struct guestfs_copy_device_to_device_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -548,7 +575,7 @@ guestfs_copy_device_to_device_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "copy_device_to_device");
@@ -568,8 +595,10 @@ guestfs_copy_device_to_file (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, dest);
-  int r = guestfs_copy_device_to_file_va (g, src, dest, optargs);
+  r = guestfs_copy_device_to_file_va (g, src, dest, optargs);
   va_end (optargs);
 
   return r;
@@ -584,6 +613,7 @@ guestfs_copy_device_to_file_va (guestfs_h *g,
   struct guestfs_copy_device_to_file_argv optargs_s;
   struct guestfs_copy_device_to_file_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -607,7 +637,7 @@ guestfs_copy_device_to_file_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "copy_device_to_file");
@@ -627,8 +657,10 @@ guestfs_copy_file_to_device (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, dest);
-  int r = guestfs_copy_file_to_device_va (g, src, dest, optargs);
+  r = guestfs_copy_file_to_device_va (g, src, dest, optargs);
   va_end (optargs);
 
   return r;
@@ -643,6 +675,7 @@ guestfs_copy_file_to_device_va (guestfs_h *g,
   struct guestfs_copy_file_to_device_argv optargs_s;
   struct guestfs_copy_file_to_device_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -666,7 +699,7 @@ guestfs_copy_file_to_device_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "copy_file_to_device");
@@ -686,8 +719,10 @@ guestfs_copy_file_to_file (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, dest);
-  int r = guestfs_copy_file_to_file_va (g, src, dest, optargs);
+  r = guestfs_copy_file_to_file_va (g, src, dest, optargs);
   va_end (optargs);
 
   return r;
@@ -702,6 +737,7 @@ guestfs_copy_file_to_file_va (guestfs_h *g,
   struct guestfs_copy_file_to_file_argv optargs_s;
   struct guestfs_copy_file_to_file_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -725,7 +761,7 @@ guestfs_copy_file_to_file_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "copy_file_to_file");
@@ -746,8 +782,10 @@ guestfs_disk_create (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, size);
-  int r = guestfs_disk_create_va (g, filename, format, size, optargs);
+  r = guestfs_disk_create_va (g, filename, format, size, optargs);
   va_end (optargs);
 
   return r;
@@ -763,6 +801,7 @@ guestfs_disk_create_va (guestfs_h *g,
   struct guestfs_disk_create_argv optargs_s;
   struct guestfs_disk_create_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -789,7 +828,7 @@ guestfs_disk_create_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "disk_create");
@@ -808,8 +847,10 @@ guestfs_e2fsck (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, device);
-  int r = guestfs_e2fsck_va (g, device, optargs);
+  r = guestfs_e2fsck_va (g, device, optargs);
   va_end (optargs);
 
   return r;
@@ -823,6 +864,7 @@ guestfs_e2fsck_va (guestfs_h *g,
   struct guestfs_e2fsck_argv optargs_s;
   struct guestfs_e2fsck_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -840,7 +882,7 @@ guestfs_e2fsck_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "e2fsck");
@@ -859,8 +901,10 @@ guestfs_fstrim (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, mountpoint);
-  int r = guestfs_fstrim_va (g, mountpoint, optargs);
+  r = guestfs_fstrim_va (g, mountpoint, optargs);
   va_end (optargs);
 
   return r;
@@ -874,6 +918,7 @@ guestfs_fstrim_va (guestfs_h *g,
   struct guestfs_fstrim_argv optargs_s;
   struct guestfs_fstrim_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -894,7 +939,7 @@ guestfs_fstrim_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "fstrim");
@@ -914,8 +959,10 @@ guestfs_grep_opts (guestfs_h *g,
 {
   va_list optargs;
 
+  char **r;
+
   va_start (optargs, path);
-  char **r = guestfs_grep_opts_va (g, regex, path, optargs);
+  r = guestfs_grep_opts_va (g, regex, path, optargs);
   va_end (optargs);
 
   return r;
@@ -930,6 +977,7 @@ guestfs_grep_opts_va (guestfs_h *g,
   struct guestfs_grep_opts_argv optargs_s;
   struct guestfs_grep_opts_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -953,7 +1001,7 @@ guestfs_grep_opts_va (guestfs_h *g,
       return NULL;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "grep");
@@ -983,8 +1031,10 @@ guestfs_hivex_open (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, filename);
-  int r = guestfs_hivex_open_va (g, filename, optargs);
+  r = guestfs_hivex_open_va (g, filename, optargs);
   va_end (optargs);
 
   return r;
@@ -998,6 +1048,7 @@ guestfs_hivex_open_va (guestfs_h *g,
   struct guestfs_hivex_open_argv optargs_s;
   struct guestfs_hivex_open_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -1018,7 +1069,7 @@ guestfs_hivex_open_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "hivex_open");
@@ -1038,8 +1089,10 @@ guestfs_inspect_get_icon (guestfs_h *g,
 {
   va_list optargs;
 
+  char *r;
+
   va_start (optargs, size_r);
-  char *r = guestfs_inspect_get_icon_va (g, root, size_r, optargs);
+  r = guestfs_inspect_get_icon_va (g, root, size_r, optargs);
   va_end (optargs);
 
   return r;
@@ -1054,6 +1107,7 @@ guestfs_inspect_get_icon_va (guestfs_h *g,
   struct guestfs_inspect_get_icon_argv optargs_s;
   struct guestfs_inspect_get_icon_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -1071,7 +1125,7 @@ guestfs_inspect_get_icon_va (guestfs_h *g,
       return NULL;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "inspect_get_icon");
@@ -1099,8 +1153,10 @@ guestfs_internal_test (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, bufferin_size);
-  int r = guestfs_internal_test_va (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, optargs);
+  r = guestfs_internal_test_va (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, optargs);
   va_end (optargs);
 
   return r;
@@ -1123,6 +1179,7 @@ guestfs_internal_test_va (guestfs_h *g,
   struct guestfs_internal_test_argv optargs_s;
   struct guestfs_internal_test_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -1149,7 +1206,7 @@ guestfs_internal_test_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "internal_test");
@@ -1167,8 +1224,10 @@ guestfs_internal_test_63_optargs (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, g);
-  int r = guestfs_internal_test_63_optargs_va (g, optargs);
+  r = guestfs_internal_test_63_optargs_va (g, optargs);
   va_end (optargs);
 
   return r;
@@ -1181,6 +1240,7 @@ guestfs_internal_test_63_optargs_va (guestfs_h *g,
   struct guestfs_internal_test_63_optargs_argv optargs_s;
   struct guestfs_internal_test_63_optargs_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -1381,7 +1441,7 @@ guestfs_internal_test_63_optargs_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "internal_test_63_optargs");
@@ -1399,8 +1459,10 @@ guestfs_internal_test_only_optargs (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, g);
-  int r = guestfs_internal_test_only_optargs_va (g, optargs);
+  r = guestfs_internal_test_only_optargs_va (g, optargs);
   va_end (optargs);
 
   return r;
@@ -1413,6 +1475,7 @@ guestfs_internal_test_only_optargs_va (guestfs_h *g,
   struct guestfs_internal_test_only_optargs_argv optargs_s;
   struct guestfs_internal_test_only_optargs_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -1427,7 +1490,7 @@ guestfs_internal_test_only_optargs_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "internal_test_only_optargs");
@@ -1446,8 +1509,10 @@ guestfs_is_blockdev_opts (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, path);
-  int r = guestfs_is_blockdev_opts_va (g, path, optargs);
+  r = guestfs_is_blockdev_opts_va (g, path, optargs);
   va_end (optargs);
 
   return r;
@@ -1461,6 +1526,7 @@ guestfs_is_blockdev_opts_va (guestfs_h *g,
   struct guestfs_is_blockdev_opts_argv optargs_s;
   struct guestfs_is_blockdev_opts_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -1475,7 +1541,7 @@ guestfs_is_blockdev_opts_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "is_blockdev");
@@ -1504,8 +1570,10 @@ guestfs_is_chardev_opts (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, path);
-  int r = guestfs_is_chardev_opts_va (g, path, optargs);
+  r = guestfs_is_chardev_opts_va (g, path, optargs);
   va_end (optargs);
 
   return r;
@@ -1519,6 +1587,7 @@ guestfs_is_chardev_opts_va (guestfs_h *g,
   struct guestfs_is_chardev_opts_argv optargs_s;
   struct guestfs_is_chardev_opts_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -1533,7 +1602,7 @@ guestfs_is_chardev_opts_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "is_chardev");
@@ -1562,8 +1631,10 @@ guestfs_is_dir_opts (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, path);
-  int r = guestfs_is_dir_opts_va (g, path, optargs);
+  r = guestfs_is_dir_opts_va (g, path, optargs);
   va_end (optargs);
 
   return r;
@@ -1577,6 +1648,7 @@ guestfs_is_dir_opts_va (guestfs_h *g,
   struct guestfs_is_dir_opts_argv optargs_s;
   struct guestfs_is_dir_opts_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -1591,7 +1663,7 @@ guestfs_is_dir_opts_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "is_dir");
@@ -1620,8 +1692,10 @@ guestfs_is_fifo_opts (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, path);
-  int r = guestfs_is_fifo_opts_va (g, path, optargs);
+  r = guestfs_is_fifo_opts_va (g, path, optargs);
   va_end (optargs);
 
   return r;
@@ -1635,6 +1709,7 @@ guestfs_is_fifo_opts_va (guestfs_h *g,
   struct guestfs_is_fifo_opts_argv optargs_s;
   struct guestfs_is_fifo_opts_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -1649,7 +1724,7 @@ guestfs_is_fifo_opts_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "is_fifo");
@@ -1678,8 +1753,10 @@ guestfs_is_file_opts (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, path);
-  int r = guestfs_is_file_opts_va (g, path, optargs);
+  r = guestfs_is_file_opts_va (g, path, optargs);
   va_end (optargs);
 
   return r;
@@ -1693,6 +1770,7 @@ guestfs_is_file_opts_va (guestfs_h *g,
   struct guestfs_is_file_opts_argv optargs_s;
   struct guestfs_is_file_opts_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -1707,7 +1785,7 @@ guestfs_is_file_opts_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "is_file");
@@ -1736,8 +1814,10 @@ guestfs_is_socket_opts (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, path);
-  int r = guestfs_is_socket_opts_va (g, path, optargs);
+  r = guestfs_is_socket_opts_va (g, path, optargs);
   va_end (optargs);
 
   return r;
@@ -1751,6 +1831,7 @@ guestfs_is_socket_opts_va (guestfs_h *g,
   struct guestfs_is_socket_opts_argv optargs_s;
   struct guestfs_is_socket_opts_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -1765,7 +1846,7 @@ guestfs_is_socket_opts_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "is_socket");
@@ -1795,8 +1876,10 @@ guestfs_md_create (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, devices);
-  int r = guestfs_md_create_va (g, name, devices, optargs);
+  r = guestfs_md_create_va (g, name, devices, optargs);
   va_end (optargs);
 
   return r;
@@ -1811,6 +1894,7 @@ guestfs_md_create_va (guestfs_h *g,
   struct guestfs_md_create_argv optargs_s;
   struct guestfs_md_create_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -1837,7 +1921,7 @@ guestfs_md_create_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "md_create");
@@ -1856,8 +1940,10 @@ guestfs_mke2fs (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, device);
-  int r = guestfs_mke2fs_va (g, device, optargs);
+  r = guestfs_mke2fs_va (g, device, optargs);
   va_end (optargs);
 
   return r;
@@ -1871,6 +1957,7 @@ guestfs_mke2fs_va (guestfs_h *g,
   struct guestfs_mke2fs_argv optargs_s;
   struct guestfs_mke2fs_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -1996,7 +2083,7 @@ guestfs_mke2fs_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "mke2fs");
@@ -2016,8 +2103,10 @@ guestfs_mkfs_opts (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, device);
-  int r = guestfs_mkfs_opts_va (g, fstype, device, optargs);
+  r = guestfs_mkfs_opts_va (g, fstype, device, optargs);
   va_end (optargs);
 
   return r;
@@ -2032,6 +2121,7 @@ guestfs_mkfs_opts_va (guestfs_h *g,
   struct guestfs_mkfs_opts_argv optargs_s;
   struct guestfs_mkfs_opts_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2055,7 +2145,7 @@ guestfs_mkfs_opts_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "mkfs");
@@ -2085,8 +2175,10 @@ guestfs_mkfs_btrfs (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, devices);
-  int r = guestfs_mkfs_btrfs_va (g, devices, optargs);
+  r = guestfs_mkfs_btrfs_va (g, devices, optargs);
   va_end (optargs);
 
   return r;
@@ -2100,6 +2192,7 @@ guestfs_mkfs_btrfs_va (guestfs_h *g,
   struct guestfs_mkfs_btrfs_argv optargs_s;
   struct guestfs_mkfs_btrfs_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2135,7 +2228,7 @@ guestfs_mkfs_btrfs_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "mkfs_btrfs");
@@ -2154,8 +2247,10 @@ guestfs_mkswap_opts (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, device);
-  int r = guestfs_mkswap_opts_va (g, device, optargs);
+  r = guestfs_mkswap_opts_va (g, device, optargs);
   va_end (optargs);
 
   return r;
@@ -2169,6 +2264,7 @@ guestfs_mkswap_opts_va (guestfs_h *g,
   struct guestfs_mkswap_opts_argv optargs_s;
   struct guestfs_mkswap_opts_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2186,7 +2282,7 @@ guestfs_mkswap_opts_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "mkswap");
@@ -2215,8 +2311,10 @@ guestfs_mktemp (guestfs_h *g,
 {
   va_list optargs;
 
+  char *r;
+
   va_start (optargs, tmpl);
-  char *r = guestfs_mktemp_va (g, tmpl, optargs);
+  r = guestfs_mktemp_va (g, tmpl, optargs);
   va_end (optargs);
 
   return r;
@@ -2230,6 +2328,7 @@ guestfs_mktemp_va (guestfs_h *g,
   struct guestfs_mktemp_argv optargs_s;
   struct guestfs_mktemp_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2244,7 +2343,7 @@ guestfs_mktemp_va (guestfs_h *g,
       return NULL;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "mktemp");
@@ -2264,8 +2363,10 @@ guestfs_mount_9p (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, mountpoint);
-  int r = guestfs_mount_9p_va (g, mounttag, mountpoint, optargs);
+  r = guestfs_mount_9p_va (g, mounttag, mountpoint, optargs);
   va_end (optargs);
 
   return r;
@@ -2280,6 +2381,7 @@ guestfs_mount_9p_va (guestfs_h *g,
   struct guestfs_mount_9p_argv optargs_s;
   struct guestfs_mount_9p_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2294,7 +2396,7 @@ guestfs_mount_9p_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "mount_9p");
@@ -2313,8 +2415,10 @@ guestfs_mount_local (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, localmountpoint);
-  int r = guestfs_mount_local_va (g, localmountpoint, optargs);
+  r = guestfs_mount_local_va (g, localmountpoint, optargs);
   va_end (optargs);
 
   return r;
@@ -2328,6 +2432,7 @@ guestfs_mount_local_va (guestfs_h *g,
   struct guestfs_mount_local_argv optargs_s;
   struct guestfs_mount_local_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2351,7 +2456,7 @@ guestfs_mount_local_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "mount_local");
@@ -2371,8 +2476,10 @@ guestfs_ntfsclone_out (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, backupfile);
-  int r = guestfs_ntfsclone_out_va (g, device, backupfile, optargs);
+  r = guestfs_ntfsclone_out_va (g, device, backupfile, optargs);
   va_end (optargs);
 
   return r;
@@ -2387,6 +2494,7 @@ guestfs_ntfsclone_out_va (guestfs_h *g,
   struct guestfs_ntfsclone_out_argv optargs_s;
   struct guestfs_ntfsclone_out_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2413,7 +2521,7 @@ guestfs_ntfsclone_out_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "ntfsclone_out");
@@ -2432,8 +2540,10 @@ guestfs_ntfsfix (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, device);
-  int r = guestfs_ntfsfix_va (g, device, optargs);
+  r = guestfs_ntfsfix_va (g, device, optargs);
   va_end (optargs);
 
   return r;
@@ -2447,6 +2557,7 @@ guestfs_ntfsfix_va (guestfs_h *g,
   struct guestfs_ntfsfix_argv optargs_s;
   struct guestfs_ntfsfix_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2461,7 +2572,7 @@ guestfs_ntfsfix_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "ntfsfix");
@@ -2480,8 +2591,10 @@ guestfs_ntfsresize_opts (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, device);
-  int r = guestfs_ntfsresize_opts_va (g, device, optargs);
+  r = guestfs_ntfsresize_opts_va (g, device, optargs);
   va_end (optargs);
 
   return r;
@@ -2495,6 +2608,7 @@ guestfs_ntfsresize_opts_va (guestfs_h *g,
   struct guestfs_ntfsresize_opts_argv optargs_s;
   struct guestfs_ntfsresize_opts_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2512,7 +2626,7 @@ guestfs_ntfsresize_opts_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "ntfsresize");
@@ -2541,8 +2655,10 @@ guestfs_remount (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, mountpoint);
-  int r = guestfs_remount_va (g, mountpoint, optargs);
+  r = guestfs_remount_va (g, mountpoint, optargs);
   va_end (optargs);
 
   return r;
@@ -2556,6 +2672,7 @@ guestfs_remount_va (guestfs_h *g,
   struct guestfs_remount_argv optargs_s;
   struct guestfs_remount_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2570,7 +2687,7 @@ guestfs_remount_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "remount");
@@ -2590,8 +2707,10 @@ guestfs_rsync (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, dest);
-  int r = guestfs_rsync_va (g, src, dest, optargs);
+  r = guestfs_rsync_va (g, src, dest, optargs);
   va_end (optargs);
 
   return r;
@@ -2606,6 +2725,7 @@ guestfs_rsync_va (guestfs_h *g,
   struct guestfs_rsync_argv optargs_s;
   struct guestfs_rsync_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2623,7 +2743,7 @@ guestfs_rsync_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "rsync");
@@ -2643,8 +2763,10 @@ guestfs_rsync_in (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, dest);
-  int r = guestfs_rsync_in_va (g, remote, dest, optargs);
+  r = guestfs_rsync_in_va (g, remote, dest, optargs);
   va_end (optargs);
 
   return r;
@@ -2659,6 +2781,7 @@ guestfs_rsync_in_va (guestfs_h *g,
   struct guestfs_rsync_in_argv optargs_s;
   struct guestfs_rsync_in_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2676,7 +2799,7 @@ guestfs_rsync_in_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "rsync_in");
@@ -2696,8 +2819,10 @@ guestfs_rsync_out (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, remote);
-  int r = guestfs_rsync_out_va (g, src, remote, optargs);
+  r = guestfs_rsync_out_va (g, src, remote, optargs);
   va_end (optargs);
 
   return r;
@@ -2712,6 +2837,7 @@ guestfs_rsync_out_va (guestfs_h *g,
   struct guestfs_rsync_out_argv optargs_s;
   struct guestfs_rsync_out_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2729,7 +2855,7 @@ guestfs_rsync_out_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "rsync_out");
@@ -2749,8 +2875,10 @@ guestfs_set_e2attrs (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, attrs);
-  int r = guestfs_set_e2attrs_va (g, file, attrs, optargs);
+  r = guestfs_set_e2attrs_va (g, file, attrs, optargs);
   va_end (optargs);
 
   return r;
@@ -2765,6 +2893,7 @@ guestfs_set_e2attrs_va (guestfs_h *g,
   struct guestfs_set_e2attrs_argv optargs_s;
   struct guestfs_set_e2attrs_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2779,7 +2908,7 @@ guestfs_set_e2attrs_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "set_e2attrs");
@@ -2798,8 +2927,10 @@ guestfs_syslinux (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, device);
-  int r = guestfs_syslinux_va (g, device, optargs);
+  r = guestfs_syslinux_va (g, device, optargs);
   va_end (optargs);
 
   return r;
@@ -2813,6 +2944,7 @@ guestfs_syslinux_va (guestfs_h *g,
   struct guestfs_syslinux_argv optargs_s;
   struct guestfs_syslinux_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2827,7 +2959,7 @@ guestfs_syslinux_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "syslinux");
@@ -2847,8 +2979,10 @@ guestfs_tar_in_opts (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, directory);
-  int r = guestfs_tar_in_opts_va (g, tarfile, directory, optargs);
+  r = guestfs_tar_in_opts_va (g, tarfile, directory, optargs);
   va_end (optargs);
 
   return r;
@@ -2863,6 +2997,7 @@ guestfs_tar_in_opts_va (guestfs_h *g,
   struct guestfs_tar_in_opts_argv optargs_s;
   struct guestfs_tar_in_opts_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2877,7 +3012,7 @@ guestfs_tar_in_opts_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "tar_in");
@@ -2908,8 +3043,10 @@ guestfs_tar_out_opts (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, tarfile);
-  int r = guestfs_tar_out_opts_va (g, directory, tarfile, optargs);
+  r = guestfs_tar_out_opts_va (g, directory, tarfile, optargs);
   va_end (optargs);
 
   return r;
@@ -2924,6 +3061,7 @@ guestfs_tar_out_opts_va (guestfs_h *g,
   struct guestfs_tar_out_opts_argv optargs_s;
   struct guestfs_tar_out_opts_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -2944,7 +3082,7 @@ guestfs_tar_out_opts_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "tar_out");
@@ -2974,8 +3112,10 @@ guestfs_tune2fs (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, device);
-  int r = guestfs_tune2fs_va (g, device, optargs);
+  r = guestfs_tune2fs_va (g, device, optargs);
   va_end (optargs);
 
   return r;
@@ -2989,6 +3129,7 @@ guestfs_tune2fs_va (guestfs_h *g,
   struct guestfs_tune2fs_argv optargs_s;
   struct guestfs_tune2fs_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -3030,7 +3171,7 @@ guestfs_tune2fs_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "tune2fs");
@@ -3049,8 +3190,10 @@ guestfs_umount_opts (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, pathordevice);
-  int r = guestfs_umount_opts_va (g, pathordevice, optargs);
+  r = guestfs_umount_opts_va (g, pathordevice, optargs);
   va_end (optargs);
 
   return r;
@@ -3064,6 +3207,7 @@ guestfs_umount_opts_va (guestfs_h *g,
   struct guestfs_umount_opts_argv optargs_s;
   struct guestfs_umount_opts_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -3081,7 +3225,7 @@ guestfs_umount_opts_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "umount");
@@ -3109,8 +3253,10 @@ guestfs_umount_local (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, g);
-  int r = guestfs_umount_local_va (g, optargs);
+  r = guestfs_umount_local_va (g, optargs);
   va_end (optargs);
 
   return r;
@@ -3123,6 +3269,7 @@ guestfs_umount_local_va (guestfs_h *g,
   struct guestfs_umount_local_argv optargs_s;
   struct guestfs_umount_local_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -3137,7 +3284,7 @@ guestfs_umount_local_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "umount_local");
@@ -3156,8 +3303,10 @@ guestfs_xfs_admin (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, device);
-  int r = guestfs_xfs_admin_va (g, device, optargs);
+  r = guestfs_xfs_admin_va (g, device, optargs);
   va_end (optargs);
 
   return r;
@@ -3171,6 +3320,7 @@ guestfs_xfs_admin_va (guestfs_h *g,
   struct guestfs_xfs_admin_argv optargs_s;
   struct guestfs_xfs_admin_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -3203,7 +3353,7 @@ guestfs_xfs_admin_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "xfs_admin");
@@ -3222,8 +3372,10 @@ guestfs_xfs_growfs (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, path);
-  int r = guestfs_xfs_growfs_va (g, path, optargs);
+  r = guestfs_xfs_growfs_va (g, path, optargs);
   va_end (optargs);
 
   return r;
@@ -3237,6 +3389,7 @@ guestfs_xfs_growfs_va (guestfs_h *g,
   struct guestfs_xfs_growfs_argv optargs_s;
   struct guestfs_xfs_growfs_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -3272,7 +3425,7 @@ guestfs_xfs_growfs_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "xfs_growfs");
@@ -3291,8 +3444,10 @@ guestfs_xfs_repair (guestfs_h *g,
 {
   va_list optargs;
 
+  int r;
+
   va_start (optargs, device);
-  int r = guestfs_xfs_repair_va (g, device, optargs);
+  r = guestfs_xfs_repair_va (g, device, optargs);
   va_end (optargs);
 
   return r;
@@ -3306,6 +3461,7 @@ guestfs_xfs_repair_va (guestfs_h *g,
   struct guestfs_xfs_repair_argv optargs_s;
   struct guestfs_xfs_repair_argv *optargs = &optargs_s;
   int i;
+  uint64_t i_mask;
 
   optargs_s.bitmask = 0;
 
@@ -3347,7 +3503,7 @@ guestfs_xfs_repair_va (guestfs_h *g,
       return -1;
     }
 
-    uint64_t i_mask = UINT64_C(1) << i;
+    i_mask = UINT64_C(1) << i;
     if (optargs_s.bitmask & i_mask) {
       error (g, "%s: same optional argument specified more than once",
              "xfs_repair");

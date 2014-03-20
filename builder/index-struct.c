@@ -20,37 +20,38 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "index-struct.h"
 
-struct section *parsed_index = NULL;
-int seen_comments = 0;
-
-static void free_section (struct section *section);
-static void free_field (struct field *field);
-
 void
-free_index (void)
+parse_context_init (struct parse_context *context)
 {
-  free_section (parsed_index);
+  memset (context, 0, sizeof *context);
 }
 
-static void
-free_section (struct section *section)
+void
+parse_context_free (struct parse_context *context)
+{
+  section_free (context->parsed_index);
+}
+
+void
+section_free (struct section *section)
 {
   if (section) {
-    free_section (section->next);
+    section_free (section->next);
     free (section->name);
-    free_field (section->fields);
+    field_free (section->fields);
     free (section);
   }
 }
 
-static void
-free_field (struct field *field)
+void
+field_free (struct field *field)
 {
   if (field) {
-    free_field (field->next);
+    field_free (field->next);
     free (field->key);
     free (field->subkey);
     free (field->value);
