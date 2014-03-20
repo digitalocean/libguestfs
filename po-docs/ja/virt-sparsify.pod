@@ -1,4 +1,3 @@
-=encoding utf8
 
 =head1 名前
 
@@ -367,6 +366,17 @@ space are B<not> required.
 =back
 
 他の環境変数は L<guestfs(3)/環境変数> を参照してください。
+
+=head1 終了ステータス
+
+This program returns 0 if the operation completed without errors.  (This
+doesn't necessarily mean that space could be freed up.)
+
+A non-zero exit code indicates an error.
+
+If the exit code is C<3> and the I<--in-place> option was used, that
+indicates that discard support is not available in libguestfs, so copying
+mode must be used instead.
 
 =head1 関連項目
 

@@ -1,4 +1,3 @@
-=encoding utf8
 
 =head2 B<abrt-data> *
 

@@ -1084,10 +1084,11 @@ guestfs_pvs_full (guestfs_h *g)
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "pvs_full", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -1179,10 +1180,11 @@ guestfs_mkdir (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "mkdir", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -1279,10 +1281,11 @@ guestfs_chown (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "chown", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -1362,10 +1365,11 @@ guestfs_umount_all (guestfs_h *g)
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "umount_all", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -1467,10 +1471,11 @@ guestfs_command (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "command", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -1563,10 +1568,11 @@ guestfs_blockdev_getss (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "blockdev_getss", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -1659,10 +1665,11 @@ guestfs_blockdev_getsize64 (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "blockdev_getsize64", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -1753,10 +1760,11 @@ guestfs_blockdev_rereadpt (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "blockdev_rereadpt", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -1866,10 +1874,11 @@ guestfs_debug (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "debug", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -1968,10 +1977,11 @@ guestfs_set_e2uuid (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "set_e2uuid", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -2070,10 +2080,11 @@ guestfs_grub_install (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "grub_install", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -2158,10 +2169,11 @@ guestfs_drop_caches (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "drop_caches", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -2252,10 +2264,11 @@ guestfs_pvresize (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "pvresize", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -2348,10 +2361,11 @@ guestfs_sfdisk_disk_geometry (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "sfdisk_disk_geometry", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -2442,10 +2456,11 @@ guestfs_resize2fs (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "resize2fs", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -2538,10 +2553,11 @@ guestfs_sh (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "sh", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -2634,10 +2650,11 @@ guestfs_glob_expand (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "glob_expand", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -2745,10 +2762,11 @@ guestfs_mkfifo (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "mkfifo", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -2841,10 +2859,11 @@ guestfs_readdir (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "readdir", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -2955,10 +2974,11 @@ guestfs_lsetxattr (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "lsetxattr", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -3059,10 +3079,11 @@ guestfs_egrep (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "egrep", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -3177,10 +3198,11 @@ guestfs_zgrep (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "zgrep", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -3287,10 +3309,11 @@ guestfs_readlink (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "readlink", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -3381,10 +3404,11 @@ guestfs_swapon_label (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "swapon_label", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -3475,10 +3499,11 @@ guestfs_modprobe (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "modprobe", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -3575,10 +3600,11 @@ guestfs_part_set_bootable (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "part_set_bootable", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -3671,10 +3697,11 @@ guestfs_part_list (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "part_list", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -3768,10 +3795,11 @@ guestfs_vgpvuuids (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "vgpvuuids", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -3883,10 +3911,11 @@ guestfs_txz_out (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "txz_out", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -3995,10 +4024,11 @@ guestfs_luks_kill_slot (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "luks_kill_slot", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -4091,10 +4121,11 @@ guestfs_is_lv (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "is_lv", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -4208,10 +4239,11 @@ guestfs_is_chardev_opts_argv (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "is_chardev", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -4325,10 +4357,11 @@ guestfs_is_socket_opts_argv (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "is_socket", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -4421,10 +4454,11 @@ guestfs_part_to_dev (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "part_to_dev", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -4543,10 +4577,11 @@ guestfs_upload_offset (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "upload_offset", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -4661,10 +4696,11 @@ guestfs_pwrite_device (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "pwrite_device", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -4808,10 +4844,11 @@ guestfs_copy_device_to_file_argv (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "copy_device_to_file", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -4904,10 +4941,11 @@ guestfs_get_e2attrs (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "get_e2attrs", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -5000,10 +5038,11 @@ guestfs_get_e2generation (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "get_e2generation", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -5097,10 +5136,11 @@ guestfs_btrfs_set_seeding (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "btrfs_set_seeding", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -5182,10 +5222,11 @@ guestfs_utsname (guestfs_h *g)
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "utsname", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -5314,10 +5355,11 @@ guestfs_rsync_in_argv (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "rsync_in", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -5413,10 +5455,11 @@ guestfs_hivex_node_get_value (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "hivex_node_get_value", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -5512,10 +5555,11 @@ guestfs_hivex_node_add_child (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "hivex_node_add_child", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -5617,10 +5661,11 @@ guestfs_ldmtool_scan_devices (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "ldmtool_scan_devices", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -5733,10 +5778,11 @@ guestfs_cp_r (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "cp_r", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -5827,10 +5873,11 @@ guestfs_journal_open (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "journal_open", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -5923,10 +5970,11 @@ guestfs_aug_label (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "aug_label", "NULL");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)
@@ -6019,10 +6067,11 @@ guestfs_blkdiscardzeroes (guestfs_h *g,
   }
 
   if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "blkdiscardzeroes", "-1");
-    int errnum = 0;
     if (err.errno_string[0] != '\0')
       errnum = guestfs___string_to_errno (err.errno_string);
     if (errnum <= 0)

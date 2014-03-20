@@ -68,6 +68,11 @@ external event_to_string : event list -> string
 
 external last_errno : t -> int = "ocaml_guestfs_last_errno"
 
+module Errno = struct
+  external enotsup : unit -> int = "ocaml_guestfs_get_ENOTSUP" "noalloc"
+  let errno_ENOTSUP = enotsup ()
+end
+
 (* Give the exceptions names, so they can be raised from the C code. *)
 let () =
   Callback.register_exception "ocaml_guestfs_error" (Error "");

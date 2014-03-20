@@ -1,3 +1,209 @@
+commit 37ed019f53959936daf784af87e772088675aaa9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 20 15:28:57 2014 +0000
+
+    Version 1.25.46.
+
+commit 4edf659aa0d06aff2c8490751596cb8db6d66743
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 20 15:24:34 2014 +0000
+
+    php: Include new location of tests in EXTRA_DIST.
+    
+    This fixes commit 251a1934c9bcfe9727b011a4d8bfc4b769b3b744.
+
+commit 62875c88be1cc88e05d41dfec13383ce1dbbbbbe
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Mar 20 14:47:04 2014 +0100
+
+    builder: clean the parsing structs on error
+
+commit c6c27620d0688f573c638711b6bcdb94204432cd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Mar 20 14:43:57 2014 +0100
+
+    builder: rename and make public the section/field free functions
+    
+    They will be needed also elsewhere.
+
+commit 87ed6365e47fea2112d62a32f234f63eab8a6b19
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Mar 20 12:40:16 2014 +0100
+
+    builder/virt-index-validate: try to cleanup in any occasion
+    
+    Always close the file (ignoring its result) after a parsing, and cleanup
+    the parse_context object before any exit().
+    
+    This eases the debugging of memory issues in the actual parser.
+
+commit c7639495d7af7a6c406d4413530fd6af9429a75d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 20 14:34:58 2014 +0000
+
+    Revert "appliance: Remove genisoimage from packagelist."
+    
+    This reverts commit cd996642e04ef3293e1d8de2df7222b4e8fe8bc1.
+    
+    The daemon uses 'isoinfo' which is part of this package.
+    
+    Thanks: Pino Toscano.
+
+commit cd996642e04ef3293e1d8de2df7222b4e8fe8bc1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 20 13:49:19 2014 +0000
+
+    appliance: Remove genisoimage from packagelist.
+    
+    It is not used by the daemon as far as I can tell.
+
+commit c4dc70f8c43a7faae2a8698027a4ed23d316dfa0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 18 15:30:03 2014 +0000
+
+    podwrapper: Remove =encoding from input files and add it back in podwrapper.
+    
+    This changes podwrapper so that the input (POD) files should not
+    contain an =encoding directive.  However they must be UTF-8.
+    Podwrapper then adds the '=encoding utf8' directive back during final
+    generation.
+    
+    This in particular avoids problems with nested =encoding directives in
+    fragments.  These break POD, and are undesirable anyway.
+
+commit ad33a5434cf80c567286d5598875aa23f544eeaa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 18 15:19:37 2014 +0000
+
+    po-docs: Filter the po4a warning and =encoding line.
+
+commit 420d324555111a0d60caf7bd451dbbd12f3153ea
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 18 15:06:44 2014 +0000
+
+    po-docs: There are no *.pl files in the po-docs subdirectories any longer.
+
+commit 01548fd5b7fcde221a7079cad7fab5f502f91e7a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 18 12:49:45 2014 +0000
+
+    generator: Generate copyright notice in generated POD fragments.
+    
+    Using =begin comment ... =end comment.
+
+commit d4129988c19a49c916c7b5f8ebb66e3e5761c145
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 18 12:43:34 2014 +0000
+
+    podwrapper: Give an error if an --insert or --verbatim pattern is not found in the input.
+
+commit 121c2894bc4d089142acb1652f30913b36807895
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 19 18:30:58 2014 +0100
+
+    tests/run-xml-to-junit.xsl: allow to define a different classname
+    
+    Read and use the classname attribute in each test if present, falling
+    back to "TestSuite" (used so far).
+
+commit 7c70429e2ed8652e865b6e4cc0cb77d54b775295
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 19 16:48:20 2014 +0100
+
+    builder: show the application name in errors of the index parser
+
+commit 15f04f21b9acb6ab5b48bceb0898d5c5955647a5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 19 16:14:34 2014 +0100
+
+    builder: show the file name in errors of the index parser
+
+commit c871ed6b50e8e7fbfc2bd6cab2ceeaacd8449d71
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 19 15:42:45 2014 +0100
+
+    builder: make the C index parser reentrant
+    
+    Switch the lex/yacc parser into reentrant mode, to ease the handling of
+    parsing-specific data; introduce a new parser_context struct for that,
+    which is added as extra data to the parser.
+    
+    This should cause no behaviour changes in the parsing, just no more
+    global variables used for getting data in/out the parser.
+
+commit 251a1934c9bcfe9727b011a4d8bfc4b769b3b744
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Mar 18 15:12:26 2014 +0100
+
+    php: move tests under a tests subdirectory
+    
+    This eases fixes the classname in the junit output of run-tests.php,
+    which now can be properly handled by junit XML consumers.
+
+commit 7fb823e4277148f61222b7174399e209b9cd576c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Mar 18 14:38:02 2014 +0100
+
+    php: make the test suite failures fatal
+    
+    So far the failure of some test would have not reported a non-zero
+    return value by run-tests.php. Since now all the PHP tests pass, we can
+    ask for failures to be fatal, by exporting REPORT_EXIT_STATUS=1 for
+    run-tests.php.
+
+commit d521f7c2e3d6ed8cbc47da36a376bb61f0b0c390
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 17 21:05:18 2014 +0000
+
+    build: Disable a couple more ineffective warnings.
+
+commit 19dcc0de1fd4988ff53d152297480462453e196b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 17 19:54:16 2014 +0000
+
+    Annual scavange to find mixed declarations and statements.
+    
+    Hopefully this is just code motion.
+
+commit 6035c764e67b9c142034848db7b3dd6390233420
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 17 18:56:57 2014 +0000
+
+    build: Remove -Wno-declaration-after-statement.
+    
+    We have generally forbidden declaration-after-statement in our code
+    (although there are plenty of places that do it).  In any case this
+    warning is not in the default set, so we don't need to turn off the
+    warning.
+
+commit 931aec5b8846ce63b0e2b6beba5861a019b5f694
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 17 12:02:58 2014 +0000
+
+    virt-sparsify --in-place: Exit with code 3 if discard is not supported.
+    
+    Also skip the test in this case instead of failing.
+
+commit 5e1fc4640dc369221e5e37013c9f9c7c065bbb8b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 17 12:21:39 2014 +0000
+
+    mllib: Allow exit code to be specified when calling 'error' function.
+
+commit 6e99530ea850d5fdd7d008b63ca518016cb9fe57
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 17 12:02:28 2014 +0000
+
+    launch: Return errno == ENOTSUP if discard is not supported.
+
+commit 0563405d2e3f3d81581cccfecdfd41f2bdd08a47
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 17 12:10:15 2014 +0000
+
+    ocaml: Add Guestfs.Errno submodule exposing useful raw errno numbers.
+    
+    For use when calling G.last_errno.
+
 commit 996c0a286820cd131c7d53e208816665380b87a2
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sun Mar 16 22:55:52 2014 +0000
