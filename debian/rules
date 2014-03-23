@@ -117,6 +117,16 @@ override_dh_python3:
 	dh_python3 -p python3-guestfs
 override_dh_python2:
 	dh_python2 -p python-guestfs -V 2.6-
+override_dh_shlibdeps:
+	dh_shlibdeps
+# Add libraries needed by guestfsd to libguestfs0 dependencies
+	dh_shlibdeps -p libguestfs0 -- -e debian/guestfsd/usr/sbin/guestfsd
+# Add packages (except essential packages) from appliance packagelist
+# to libguestfs0 dependencies
+	echo  -n 'appliance:Depends=' >> debian/libguestfs0.substvars
+	cat debian/libguestfs0/usr/lib/*/guestfs/supermin.d/packages | \
+		sed -e '/^\(bash\|coreutils\|e2fsprogs\|findutils\|grep\|gzip\|sed\|sysvinit\|tar\|util-linux\)$$/d' | \
+		tr '\n' ',' >> debian/libguestfs0.substvars
 
 # Workaround for Lintian warning
 # "{pre,post}inst-has-useless-call-to-ldconfig"
