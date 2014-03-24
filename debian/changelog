@@ -1,3 +1,9 @@
+libguestfs (1:1.25.46-2) experimental; urgency=medium
+
+  * Automatically add appliance dependencies to libguestfs0
+
+ -- Hilko Bengen <bengen@debian.org>  Mon, 24 Mar 2014 17:47:16 +0100
+
 libguestfs (1:1.25.46-1) experimental; urgency=medium
 
   * New upstream development version
