@@ -8,10 +8,10 @@ Subject: golang: Fix for out-of-tree builds
  2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/configure.ac b/configure.ac
-index 35460e2..42c435e 100644
+index 86cf440..fe92c16 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1445,7 +1445,7 @@ AS_IF([test "x$enable_golang" != "xno"],[
+@@ -1442,7 +1442,7 @@ AS_IF([test "x$enable_golang" != "xno"],[
      AC_CHECK_PROG([GOLANG],[go],[go],[no])
      AS_IF([test "x$GOLANG" != "xno"],[
          AC_MSG_CHECKING([if $GOLANG is usable])
