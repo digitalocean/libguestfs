@@ -1,4 +1,2 @@
 0001-perl-revert-failed-attempt-at-building-out-of-tree-s.patch
 0002-golang-Fix-for-out-of-tree-builds.patch
-0003-ocaml-Enable-parallel-builds.patch
-0004-Only-grub-install-is-needed.patch
