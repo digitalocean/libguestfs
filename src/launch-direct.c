@@ -469,7 +469,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   /* These are recommended settings, see RHBZ#1053847. */
   ADD_CMDLINE ("-rtc");
   ADD_CMDLINE ("driftfix=slew");
-#if !defined(__arm__) && !defined(__powerpc__)
+#if !defined(__arm__) && !defined(__aarch64__) && !defined(__powerpc__)
   /* qemu-system-arm and qemu-system-ppc64 advertises the -no-hpet option
    * but if you try to use it, it usefully says:
    *   "Option no-hpet not supported for this target".
@@ -568,7 +568,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
      */
     if (drv->iface && STREQ (drv->iface, "virtio")) /* virtio-blk */
       goto virtio_blk;
-#if defined(__arm__) || defined(__powerpc__)
+#if defined(__arm__) || defined(__aarch64__) || defined(__powerpc__)
     else if (drv->iface && STREQ (drv->iface, "ide")) {
       error (g, "'ide' interface does not work on ARM or PowerPC");
       goto cleanup0;

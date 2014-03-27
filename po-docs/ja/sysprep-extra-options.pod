@@ -1,92 +1,105 @@
 
-=item B<--delete> PATHNAME (see C<delete> below)
+=item B<--delete> PATH (see C<customize> below)
 
-Delete (recursively) the specified C<PATHNAME> in the guest.
+Delete a file from the guest.  Or delete a directory (and all its contents,
+recursively).
 
-=item B<--firstboot> SCRIPT (see C<firstboot> below)
+See also: I<--upload>, I<--scrub>.
 
-Run script(s) once next time the guest boots.  You can supply the
-I<--firstboot> option as many times as needed.
+=item B<--edit> FILE:EXPR (see C<customize> below)
 
-=item B<--hostname> HOSTNAME (see C<hostname> below)
+Edit C<FILE> using the Perl expression C<EXPR>.
 
-ホスト名を変更します。指定されないと、デフォルトで C<localhost.localdomain> になります。
+表現がシェルにより変更されるのを防ぐために、適切に引用符でくくるよう注意してください。
 
-=item B<--password> USERNAME:SELECTOR (see C<password> below)
+このオプションは Perl 5 がインストールされているときのみ利用可能であることに注意してください。
 
-Set a user password.  The user must exist already (this option does I<not>
-create users).
+See L<virt-edit(1)/NON-INTERACTIVE EDITING>.
 
-The I<--password> option takes C<USERNAME:SELECTOR>.  The I<--root-password>
-option takes just the C<SELECTOR>.  The format of the C<SELECTOR> is
-described below:
+=item B<--firstboot> SCRIPT (see C<customize> below)
 
-=over 4
+Install C<SCRIPT> inside the guest, so that when the guest first boots up,
+the script runs (as root, late in the boot process).
 
-=item B<--password USERNAME:file:FILENAME>
+The script is automatically chmod +x after installation in the guest.
 
-=item B<--root-password file:FILENAME>
+The alternative version I<--firstboot-command> is the same, but it
+conveniently wraps the command up in a single line script for you.
 
-Read the password from C<FILENAME>.  The whole first line of this file is
-the replacement password.  Any other lines are ignored.  You should create
-the file with mode 0600 to ensure no one else can read it.
+You can have multiple I<--firstboot> options.  They run in the same order
+that they appear on the command line.
 
-=item B<--password USERNAME:password:PASSWORD>
+See also I<--run>.
 
-=item B<--root-password password:PASSWORD>
+=item B<--firstboot-command> 'CMD+ARGS' (see C<customize> below)
 
-Set the password to the literal string C<PASSWORD>.
+Run command (and arguments) inside the guest when the guest first boots up
+(as root, late in the boot process).
 
-B<Note: this is not secure> since any user on the same machine can see the
-cleartext password using L<ps(1)>.
+You can have multiple I<--firstboot> options.  They run in the same order
+that they appear on the command line.
 
-=item B<--password USERNAME:random>
+See also I<--run>.
 
-=item B<--root-password random>
+=item B<--firstboot-install> PKG,PKG..  (see C<customize> below)
 
-Choose a random password, which is printed on stdout.  The password has
-approximately 120 bits of randomness.
+Install the named packages (a comma-separated list).  These are installed
+when the guest first boots using the guest's package manager (eg. apt, yum,
+etc.) and the guest's network connection.
 
-=item B<--password> USERNAME:disabled
+For an overview on the different ways to install packages, see
+L<virt-builder(1)/INSTALLING PACKAGES>.
 
-=item B<--root-password> disabled
+=item B<--hostname> HOSTNAME (see C<customize> below)
 
-The account password is disabled.  This is like putting C<*> in the password
-field.
+Set the hostname of the guest to C<HOSTNAME>.  You can use a dotted
+hostname.domainname (FQDN) if you want.
 
-=item B<--password> USERNAME:locked:file:FILENAME
+=item B<--install> PKG,PKG..  (see C<customize> below)
 
-=item B<--password> USERNAME:locked:password:PASSWORD
+Install the named packages (a comma-separated list).  These are installed
+during the image build using the guest's package manager (eg. apt, yum,
+etc.) and the host's network connection.
 
-=item B<--password> USERNAME:locked:random
+For an overview on the different ways to install packages, see
+L<virt-builder(1)/INSTALLING PACKAGES>.
 
-=item B<--root-password> locked:file:FILENAME
+See also I<--update>.
 
-=item B<--root-password> locked:password:PASSWORD
+=item B<--link> TARGET:LINK[:LINK..] (see C<customize> below)
 
-=item B<--root-password> locked:random
+Create symbolic link(s) in the guest, starting at C<LINK> and pointing at
+C<TARGET>.
 
-The account is locked, but a password is placed on the account.  If first
-unlocked (using C<passwd -u>) then logins will use the given password.
+=item B<--mkdir> DIR (see C<customize> below)
 
-=item B<--password> USERNAME:locked
+Create a directory in the guest.
 
-=item B<--password> USERNAME:locked:disabled
+This uses S<C<mkdir -p>> so any intermediate directories are created, and it
+also works if the directory already exists.
 
-=item B<--root-password> locked
+=item B<--no-logfile> (see C<customize> below)
 
-=item B<--root-password> locked:disabled
+Scrub C<builder.log> (log file from build commands) from the image after
+building is complete.  If you don't want to reveal precisely how the image
+was built, use this option.
 
-The account is locked I<and> password is disabled.
+See also: L</LOG FILE>.
 
-=back
+=item B<--password> USER:SELECTOR (see C<customize> below)
 
-=item B<--password-crypto> md5|sha256|sha512 (see C<password> below)
+Set the password for C<USER>.  (Note this option does I<not> create the user
+account).
+
+See L<virt-builder(1)/USERS AND PASSWORDS> for the format of the C<SELECTOR>
+field, and also how to set up user accounts.
+
+=item B<--password-crypto> md5|sha256|sha512 (see C<customize> below)
 
 Set the password encryption to C<md5>, C<sha256> or C<sha512>.
 
-C<sha256> and C<sha512> require glibc E<ge> 2.7 (check L<crypt(3)> inside
-the guest).
+C<sha256> and C<sha512> require glibc E<ge> 2.7 (check crypt(3) inside the
+guest).
 
 C<md5> will work with relatively old Linux guests (eg. RHEL 3), but is not
 secure against modern attacks.
@@ -95,10 +108,50 @@ The default is C<sha512> unless libguestfs detects an old guest that didn't
 have support for SHA-512, in which case it will use C<md5>.  You can
 override libguestfs by specifying this option.
 
-=item B<--root-password> SELECTOR (see C<password> below)
+=item B<--root-password> SELECTOR (see C<customize> below)
 
-Set the root password.  See I<--password> above for the format of
-C<SELECTOR>.
+Set the root password.
+
+See L<virt-builder(1)/USERS AND PASSWORDS> for the format of the C<SELECTOR>
+field, and also how to set up user accounts.
+
+Note: In virt-builder, if you I<don't> set I<--root-password> then the guest
+is given a I<random> root password.
+
+=item B<--run> SCRIPT (see C<customize> below)
+
+Run the shell script (or any program) called C<SCRIPT> on the disk image.
+The script runs virtualized inside a small appliance, chrooted into the
+guest filesystem.
+
+The script is automatically chmod +x.
+
+If libguestfs supports it then a limited network connection is available but
+it only allows outgoing network connections.  You can also attach data disks
+(eg. ISO files) as another way to provide data (eg. software packages) to
+the script without needing a network connection (I<--attach>).  You can also
+upload data files (I<--upload>).
+
+You can have multiple I<--run> options.  They run in the same order that
+they appear on the command line.
+
+See also: I<--firstboot>, I<--attach>, I<--upload>.
+
+=item B<--run-command> 'CMD+ARGS' (see C<customize> below)
+
+Run the command and arguments on the disk image.  The command runs
+virtualized inside a small appliance, chrooted into the guest filesystem.
+
+If libguestfs supports it then a limited network connection is available but
+it only allows outgoing network connections.  You can also attach data disks
+(eg. ISO files) as another way to provide data (eg. software packages) to
+the script without needing a network connection (I<--attach>).  You can also
+upload data files (I<--upload>).
+
+You can have multiple I<--run-command> options.  They run in the same order
+that they appear on the command line.
+
+See also: I<--firstboot>, I<--attach>, I<--upload>.
 
 =item B<--script> SCRIPT (see C<script> below)
 
@@ -120,13 +173,57 @@ B<Note:> C<SCRIPTDIR> B<must> be an absolute path.
 If I<--scriptdir> is not specified then a temporary mountpoint will be
 created.
 
-=item B<--scrub> PATHNAME (see C<delete> below)
+=item B<--scrub> FILE (see C<customize> below)
 
-Scrub (aggressively overwrite then remove) the specified file called
-C<PATHNAME> in the guest.  Only single files can be specified using this
-argument.
+Scrub a file from the guest.  This is like I<--delete> except that:
 
-=item B<--timezone> TIMEZONE (see C<timezone> below)
+=over 4
 
-Change the timezone.  Use a location string such as C<Europe/London>
+=item *
+
+It scrubs the data so a guest could not recover it.
+
+=item *
+
+It cannot delete directories, only regular files.
+
+=back
+
+=item B<--selinux-relabel> (see C<customize> below)
+
+Relabel files in the guest so that they have the correct SELinux label.
+
+You should only use this option for guests which support SELinux.
+
+=item B<--timezone> TIMEZONE (see C<customize> below)
+
+Set the default timezone of the guest to C<TIMEZONE>.  Use a location string
+like C<Europe/London>
+
+=item B<--update> (see C<customize> below)
+
+Do the equivalent of C<yum update>, C<apt-get upgrade>, or whatever command
+is required to update the packages already installed in the template to
+their latest versions.
+
+See also I<--install>.
+
+=item B<--upload> FILE:DEST (see C<customize> below)
+
+Upload local file C<FILE> to destination C<DEST> in the disk image.  File
+owner and permissions from the original are preserved, so you should set
+them to what you want them to be in the disk image.
+
+C<DEST> could be the final filename.  This can be used to rename the file on
+upload.
+
+If C<DEST> is a directory name (which must already exist in the guest)  then
+the file is uploaded into that directory, and it keeps the same name as on
+the local filesystem.
+
+See also: I<--mkdir>, I<--delete>, I<--scrub>.
+
+=item B<--write> FILE:CONTENT (see C<customize> below)
+
+Write C<CONTENT> to C<FILE>.
 

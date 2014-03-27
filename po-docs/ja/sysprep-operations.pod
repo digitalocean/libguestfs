@@ -36,21 +36,12 @@ kexec-tools により生成されたクラッシュデータを削除します�
 
 ユーザーの at ジョブおよび cron ジョブを削除します。
 
-=head2 B<delete> *
+=head2 B<customize> *
 
-Delete or scrub specified files or directories.
+Customize the guest.
 
-Use the I<--delete> option to specify a path to remove.
-
-You can use shell glob characters in the specified path; note that such
-metacharacters might require proper escape.  For example:
-
- virt-sysprep --delete '/var/log/*.log'
-
-An alternative option, I<--scrub>, can be used to scrub files.  This only
-works for files (not directories) and cannot use globs.
-
-You can use both options as many times as you want.
+Customize the guest by providing L<virt-customize(1)> options for installing
+packages, editing files and so on.
 
 =head2 B<dhcp-client-state> *
 
@@ -74,24 +65,6 @@ custom firewalld configuration in C</etc/firewalld/*/*>.
 Note this is I<not> enabled by default since it may expose guests to
 exploits.  Use with care.
 
-=head2 B<firstboot> *
-
-次回起動時に一度だけ実行するスクリプトを追加します。
-
-一つまたは複数のシェルスクリプトを指定します (I<--firstboot> オプション使用)。
-
-These are run the first time the guest boots, and then are deleted.  So
-these are useful for performing last minute configuration that must run in
-the context of the guest operating system, for example C<yum update>.
-
-Output or errors from the scripts are written to
-C<~root/virt-sysprep-firstboot.log> (in the guest).
-
-=head3 Notes on firstboot
-
-Currently this is only implemented for Linux guests using either
-SysVinit-style scripts, Upstart or systemd.
-
 =head2 B<flag-reconfiguration>
 
 Flag the system for reconfiguration.
@@ -113,19 +86,6 @@ C</etc/fstab> or the bootloader.  Enabling this operation is more likely
 than not to make your guest unbootable.
 
 See: L<https://bugzilla.redhat.com/show_bug.cgi?id=991641>
-
-=head2 B<hostname> *
-
-仮想マシンのホスト名を変更します。
-
-This operation changes the hostname of the guest to the value given in the
-I<--hostname> parameter.
-
-I<--hostname> パラメーターが指定されていないと、ホスト名が C<localhost.localdomain> に変更されます。
-
-=head3 Notes on hostname
-
-Currently this can only set the hostname on Linux guests.
 
 =head2 B<kerberos-data>
 
@@ -237,42 +197,9 @@ Fedora および Red Hat Enterprise Linux に対して、これは C<ifcfg-*> �
 
 ゲストにある PAM データを削除します。
 
-=head2 B<password> *
-
-Set root or user password.
-
-Set root or another user's password.
-
-Use the I<--root-password> option to specify a replacement root password for
-the guest.  You can only use this option once.
-
-Use the I<--password> option to specify replacement user password(s).  You
-can use this option as many times as you want.
-
-Use I<--password-crypto> to change the password encryption used.
-
-See L</OPTIONS> above for details of these options.
-
-This operation is enabled by default, but it only does something if there is
-at least one I<--root-password> or I<--password> argument given.
-
-=head3 Notes on password
-
-Currently this only works for glibc-based Linux guests that use shadow
-passwords.
-
 =head2 B<puppet-data-log> *
 
 Puppet のデータおよびログファイルを削除します。
-
-=head2 B<random-seed> *
-
-仮想マシンに対して乱数種を生成します。
-
-Write some random bytes from the host into the random seed file of the
-guest.
-
-以下の L</RANDOM SEED> を参照してください。
 
 =head2 B<rh-subscription-manager> *
 
@@ -353,23 +280,6 @@ removed.
 =head2 B<sssd-db-log> *
 
 SSSD のデータベースとログファイルを削除します。
-
-=head2 B<timezone> *
-
-Change the default timezone of the guest.
-
-This operation changes the default timezone of the guest to the value given
-in the I<--timezone> parameter.
-
-If the I<--timezone> parameter is not given, then the timezone is not
-changed.
-
-This parameter affects the default timezone that users see when they log in,
-but they can still change their timezone per-user account.
-
-=head3 Notes on timezone
-
-Currently this can only set the timezone on Linux guests.
 
 =head2 B<tmp-files> *
 

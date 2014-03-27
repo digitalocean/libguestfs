@@ -17,7 +17,7 @@ dnl
 dnl   ./configure --with-extra-packages="gdb valgrind [etc]"
 
 dnl Basically the same with a few minor tweaks.
-ifelse(UBUNTU,1,define(DEBIAN,1))
+ifelse(UBUNTU,1,`define(`DEBIAN',1)')
 
 ifelse(REDHAT,1,
   augeas-libs
@@ -62,7 +62,7 @@ ifelse(DEBIAN,1,
   genisoimage
   gfs-tools
   gfs2-tools
-  grub-pc
+  grub2-common
   hfsplus
   iproute
   libaugeas0

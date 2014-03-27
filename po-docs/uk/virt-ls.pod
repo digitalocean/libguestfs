@@ -436,7 +436,7 @@ LISTING> above.
 
 =head1 ПАРАМЕТРИ КОМАНДНОГО РЯДКА У ФОРМАТІ ПОПЕРЕДНІХ ВЕРСІЙ
 
-Previous versions of virt-ls allowed you to write either:
+У попередніх версіях virt-ls можна було використовувати або
 
  virt-ls диск.img [диск.img ...] /каталог
 
@@ -497,5 +497,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2013
+© Red Hat Inc., 2009–2014
 

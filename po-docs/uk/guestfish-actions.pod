@@ -6,21 +6,21 @@ libguestfs generated file
    generator/ *.ml
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
- Copyright (C) 2009-2014 Red Hat Inc.
+© Red Hat Inc., 2009–2014
 
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+ Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
+ змінювати її за умов дотримання GNU General Public License  утому вигляді, що
+ оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
+ забажаєте) будь-якої випущеної пізніше.
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
+ БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
+ ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
+ про це можна дізнатися з GNU General Public License.
 
- You should have received a copy of the GNU General Public License along
- with this program; if not, write to the Free Software Foundation, Inc.,
- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ Ви маєте отримати копію GNU General Public License разом з цією програмою;
+ якщо це не так, повідомте про факт за адресою Free Software Foundation, Inc.,
+ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 =end коментар
 
@@ -1424,7 +1424,7 @@ ARGUMENTS>.
 
 =head2 copy-size
 
- copy-size src dest size
+ copy-size джерело призначення розмір
 
 This command copies exactly C<size> bytes from one source device or file
 C<src> to another destination device or file C<dest>.
@@ -1455,7 +1455,7 @@ C<cp -a> command.
 
 =head2 cp-r
 
- cp-r src dest
+ cp-r джерело призначення
 
 This copies a file or directory from C<src> to C<dest> recursively using the
 C<cp -rP> command.
@@ -1485,7 +1485,7 @@ these functions.
 
 =head2 device-index
 
- device-index device
+ device-index пристрій
 
 This function takes a device name (eg. "/dev/sdb") and returns the index of
 the device in the list of devices.
@@ -1493,7 +1493,7 @@ the device in the list of devices.
 Index numbers start from 0.  The named device must exist, for example as a
 string returned from L</list-devices>.
 
-See also L</list-devices>, L</part-to-dev>.
+Див. також L</list-devices>, L</part-to-dev>.
 
 =head2 df
 
@@ -6128,7 +6128,7 @@ copied from C<src> to C<dest>.
 
 =item C<archive>
 
-Turns on archive mode.  This is the same as passing the I<--archive> flag to
+Вмикає режим архівування. Те саме, що передати параметр I<--archive> команді
 C<rsync>.
 
 =item C<deletedest>

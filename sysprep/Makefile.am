@@ -38,15 +38,13 @@ operations = \
 	ca_certificates \
 	crash_data \
 	cron_spool \
-	delete \
+	customize \
 	dhcp_client_state \
 	dhcp_server_state \
 	dovecot_data \
 	flag_reconfiguration \
 	firewall_rules \
-	firstboot \
 	fs_uuids \
-	hostname \
 	kerberos_data \
 	lvm_uuids \
 	logfiles \
@@ -57,9 +55,7 @@ operations = \
 	pacct_log \
 	package_manager_cache \
 	pam_data \
-	password \
 	puppet_data_log \
-	random_seed \
 	rh_subscription_manager \
 	rhn_systemid \
 	rpm_db \
@@ -69,7 +65,6 @@ operations = \
 	ssh_hostkeys \
 	ssh_userdir \
 	sssd_db_log \
-	timezone \
 	tmp_files \
 	udev_persistent_net \
 	user_account \
@@ -88,20 +83,23 @@ if HAVE_OCAML
 deps = \
 	$(top_builddir)/mllib/common_gettext.cmx \
 	$(top_builddir)/mllib/common_utils.cmx \
-	$(top_builddir)/fish/guestfish-uri.o \
 	$(top_builddir)/mllib/uri-c.o \
 	$(top_builddir)/mllib/uRI.cmx \
-	$(top_builddir)/mllib/crypt-c.o \
-	$(top_builddir)/mllib/crypt.cmx \
-	$(top_builddir)/mllib/urandom.cmx \
-	$(top_builddir)/mllib/password.cmx \
-	$(top_builddir)/mllib/random_seed.cmx \
-	$(top_builddir)/mllib/hostname.cmx \
-	$(top_builddir)/mllib/timezone.cmx \
-	$(top_builddir)/mllib/firstboot.cmx \
 	$(top_builddir)/mllib/config.cmx \
 	$(top_builddir)/mllib/mkdtemp-c.o \
 	$(top_builddir)/mllib/mkdtemp.cmx \
+	$(top_builddir)/customize/crypt-c.o \
+	$(top_builddir)/customize/crypt.cmx \
+	$(top_builddir)/customize/urandom.cmx \
+	$(top_builddir)/customize/password.cmx \
+	$(top_builddir)/customize/random_seed.cmx \
+	$(top_builddir)/customize/hostname.cmx \
+	$(top_builddir)/customize/timezone.cmx \
+	$(top_builddir)/customize/firstboot.cmx \
+	$(top_builddir)/customize/perl_edit.cmx \
+	$(top_builddir)/customize/customize_cmdline.cmx \
+	$(top_builddir)/customize/customize_run.cmx \
+	$(top_builddir)/fish/guestfish-uri.o \
 	sysprep_operation.cmx \
 	$(patsubst %,sysprep_operation_%.cmx,$(operations)) \
 	main.cmx
@@ -121,7 +119,8 @@ OCAMLPACKAGES = \
 	-package str,unix \
 	-I $(top_builddir)/src/.libs \
 	-I $(top_builddir)/ocaml \
-	-I $(top_builddir)/mllib
+	-I $(top_builddir)/mllib \
+	-I $(top_builddir)/customize
 if HAVE_OCAML_PKG_GETTEXT
 OCAMLPACKAGES += -package gettext-stub
 endif
@@ -225,7 +224,7 @@ depend: .depend
 
 .depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
 	rm -f $@ $@-t
-	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib $^ | \
+	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
 	  $(SED) 's/ *$$//' | \
 	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
 	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \

@@ -165,9 +165,16 @@ DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 @HAVE_GOBJECT_TRUE@am__append_13 = gobject
 @HAVE_GOLANG_TRUE@am__append_14 = golang golang/examples
 
-# OCaml tools.  Note 'mllib' contains random shared code used by
-# all of the OCaml tools.
-@HAVE_OCAML_TRUE@am__append_15 = mllib builder builder/website resize sparsify sysprep
+# OCaml tools.  Note 'mllib' and 'customize' contain shared code used
+# by other OCaml tools, so these must come first.
+@HAVE_OCAML_TRUE@am__append_15 = \
+@HAVE_OCAML_TRUE@	mllib \
+@HAVE_OCAML_TRUE@	customize \
+@HAVE_OCAML_TRUE@	builder builder/website \
+@HAVE_OCAML_TRUE@	resize \
+@HAVE_OCAML_TRUE@	sparsify \
+@HAVE_OCAML_TRUE@	sysprep
+
 
 # Perl tools.
 @HAVE_TOOLS_TRUE@am__append_16 = tools
@@ -418,8 +425,8 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	perl/examples ocaml ocaml/examples python python/examples ruby \
 	ruby/examples java java/examples haskell php erlang \
 	erlang/examples lua lua/examples gobject golang \
-	golang/examples csharp mllib builder builder/website resize \
-	sparsify sysprep tools fuse po-docs
+	golang/examples csharp mllib customize builder builder/website \
+	resize sparsify sysprep tools fuse po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -1655,6 +1662,7 @@ HTMLFILES = \
 	html/virt-cat.1.html \
 	html/virt-copy-in.1.html \
 	html/virt-copy-out.1.html \
+	html/virt-customize.1.html \
 	html/virt-df.1.html \
 	html/virt-diff.1.html \
 	html/virt-edit.1.html \

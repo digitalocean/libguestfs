@@ -28,37 +28,20 @@ SOURCES = \
 	common_utils.ml \
 	common_utils_tests.ml \
 	config.ml \
-	crypt-c.c \
-	crypt.ml \
-	crypt.mli \
-	firstboot.mli \
-	firstboot.ml \
 	fsync-c.c \
 	fsync.mli \
 	fsync.ml \
 	mkdtemp.mli \
 	mkdtemp.ml \
 	mkdtemp-c.c \
-	hostname.mli \
-	hostname.ml \
-	password.mli \
-	password.ml \
-	perl_edit.mli \
-	perl_edit.ml \
 	planner.mli \
 	planner.ml \
 	progress-c.c \
 	progress.mli \
 	progress.ml \
-	random_seed.mli \
-	random_seed.ml \
-	timezone.mli \
-	timezone.ml \
 	tty-c.c \
 	tTY.mli \
 	tTY.ml \
-	urandom.mli \
-	urandom.ml \
 	uri-c.c \
 	uRI.mli \
 	uRI.ml
@@ -73,18 +56,10 @@ ocaml_modules = config \
 	libdir \
 	common_gettext \
 	common_utils \
-	urandom \
-	random_seed \
-	hostname \
-	timezone \
-	firstboot \
-	perl_edit \
 	tTY \
 	fsync \
 	progress \
 	uRI \
-	crypt \
-	password \
 	mkdtemp \
 	planner
 
@@ -95,7 +70,6 @@ OBJECTS = \
 	fsync-c.o \
 	progress-c.o \
 	uri-c.o \
-	crypt-c.o \
 	mkdtemp-c.o
 
 if HAVE_OCAMLOPT

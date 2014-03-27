@@ -117,9 +117,9 @@ finalized.
 This means that scripts like the following have a nasty race condition:
 
  guestmount -a disk.img -i /mnt
- # copy things into /mnt
+ # скопіювати дані до /mnt
  guestunmount /mnt
- # immediately try to use 'disk.img' ** UNSAFE **
+ # негайно спробувати використати 'disk.img' ** НЕБЕЗПЕЧНО **
 
 The solution is to use the I<--pid-file> option to write the guestmount PID
 to a file, then after guestunmount spin waiting for this PID to exit.
@@ -251,7 +251,7 @@ passphrases from the user by opening C</dev/tty>.
 Connect to a live virtual machine.  (Experimental, see
 L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>).
 
-=item B<-m dev[:mountpoint[:options[:fstype]]>
+=item B<-m пристрій[:точка монтування[:параметри[:тип файлової системи]]>
 
 =item B<--mount пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]>
 
@@ -393,7 +393,7 @@ I<--no-fork>).
 This configuration file controls the default read-only or read-write mode
 (I<--ro> or I<--rw>).
 
-See L<libguestfs-tools.conf(5)>.
+Див. L<libguestfs-tools.conf(5)>.
 
 =back
 
@@ -415,5 +415,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2013
+© Red Hat Inc., 2009–2014
 

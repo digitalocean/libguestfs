@@ -6,21 +6,21 @@ libguestfs generated file
    generator/ *.ml
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
- Copyright (C) 2009-2014 Red Hat Inc.
+© Red Hat Inc., 2009–2014
 
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+ Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
+ змінювати її за умов дотримання GNU General Public License  утому вигляді, що
+ оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
+ забажаєте) будь-якої випущеної пізніше.
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
+ БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
+ ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
+ про це можна дізнатися з GNU General Public License.
 
- You should have received a copy of the GNU General Public License along
- with this program; if not, write to the Free Software Foundation, Inc.,
- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ Ви маєте отримати копію GNU General Public License разом з цією програмою;
+ якщо це не так, повідомте про факт за адресою Free Software Foundation, Inc.,
+ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 =end коментар
 
@@ -32,8 +32,8 @@ libguestfs generated file
  };
  
  struct guestfs_int_bool_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_int_bool *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_int_bool *val; /* Елементи.  */
  };
 
  int guestfs_compare_int_bool (const struct guestfs_int_bool *, const struct guestfs_int_bool *);
@@ -66,8 +66,8 @@ libguestfs generated file
  };
  
  struct guestfs_lvm_pv_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_lvm_pv *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_lvm_pv *val; /* Елементи.  */
  };
 
  int guestfs_compare_lvm_pv (const struct guestfs_lvm_pv *, const struct guestfs_lvm_pv *);
@@ -105,8 +105,8 @@ libguestfs generated file
  };
  
  struct guestfs_lvm_vg_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_lvm_vg *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_lvm_vg *val; /* Елементи.  */
  };
 
  int guestfs_compare_lvm_vg (const struct guestfs_lvm_vg *, const struct guestfs_lvm_vg *);
@@ -143,8 +143,8 @@ libguestfs generated file
  };
  
  struct guestfs_lvm_lv_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_lvm_lv *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_lvm_lv *val; /* Елементи.  */
  };
 
  int guestfs_compare_lvm_lv (const struct guestfs_lvm_lv *, const struct guestfs_lvm_lv *);
@@ -175,8 +175,8 @@ libguestfs generated file
  };
  
  struct guestfs_stat_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_stat *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_stat *val; /* Елементи.  */
  };
 
  int guestfs_compare_stat (const struct guestfs_stat *, const struct guestfs_stat *);
@@ -205,8 +205,8 @@ libguestfs generated file
  };
  
  struct guestfs_statvfs_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_statvfs *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_statvfs *val; /* Елементи.  */
  };
 
  int guestfs_compare_statvfs (const struct guestfs_statvfs *, const struct guestfs_statvfs *);
@@ -227,8 +227,8 @@ libguestfs generated file
  };
  
  struct guestfs_dirent_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_dirent *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_dirent *val; /* Елементи.  */
  };
 
  int guestfs_compare_dirent (const struct guestfs_dirent *, const struct guestfs_dirent *);
@@ -250,8 +250,8 @@ libguestfs generated file
  };
  
  struct guestfs_version_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_version *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_version *val; /* Елементи.  */
  };
 
  int guestfs_compare_version (const struct guestfs_version *, const struct guestfs_version *);
@@ -273,8 +273,8 @@ libguestfs generated file
  };
  
  struct guestfs_xattr_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_xattr *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_xattr *val; /* Елементи.  */
  };
 
  int guestfs_compare_xattr (const struct guestfs_xattr *, const struct guestfs_xattr *);
@@ -296,8 +296,8 @@ libguestfs generated file
  };
  
  struct guestfs_inotify_event_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_inotify_event *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_inotify_event *val; /* Елементи.  */
  };
 
  int guestfs_compare_inotify_event (const struct guestfs_inotify_event *, const struct guestfs_inotify_event *);
@@ -319,8 +319,8 @@ libguestfs generated file
  };
  
  struct guestfs_partition_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_partition *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_partition *val; /* Елементи.  */
  };
 
  int guestfs_compare_partition (const struct guestfs_partition *, const struct guestfs_partition *);
@@ -350,8 +350,8 @@ libguestfs generated file
  };
  
  struct guestfs_application_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_application *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_application *val; /* Елементи. */
  };
 
  int guestfs_compare_application (const struct guestfs_application *, const struct guestfs_application *);
@@ -386,8 +386,8 @@ libguestfs generated file
  };
  
  struct guestfs_application2_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_application2 *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_application2 *val; /* Елементи.  */
  };
 
  int guestfs_compare_application2 (const struct guestfs_application2 *, const struct guestfs_application2 *);
@@ -422,8 +422,8 @@ libguestfs generated file
  };
  
  struct guestfs_isoinfo_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_isoinfo *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_isoinfo *val; /* Елементи. */
  };
 
  int guestfs_compare_isoinfo (const struct guestfs_isoinfo *, const struct guestfs_isoinfo *);
@@ -444,8 +444,8 @@ libguestfs generated file
  };
  
  struct guestfs_mdstat_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_mdstat *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_mdstat *val; /* Елементи. */
  };
 
  int guestfs_compare_mdstat (const struct guestfs_mdstat *, const struct guestfs_mdstat *);
@@ -466,8 +466,8 @@ libguestfs generated file
  };
  
  struct guestfs_btrfssubvolume_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_btrfssubvolume *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_btrfssubvolume *val; /* Елементи. */
  };
 
  int guestfs_compare_btrfssubvolume (const struct guestfs_btrfssubvolume *, const struct guestfs_btrfssubvolume *);
@@ -510,8 +510,8 @@ libguestfs generated file
  };
  
  struct guestfs_xfsinfo_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_xfsinfo *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_xfsinfo *val; /* Елементи. */
  };
 
  int guestfs_compare_xfsinfo (const struct guestfs_xfsinfo *, const struct guestfs_xfsinfo *);
@@ -533,8 +533,8 @@ libguestfs generated file
  };
  
  struct guestfs_utsname_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_utsname *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_utsname *val; /* Елементи. */
  };
 
  int guestfs_compare_utsname (const struct guestfs_utsname *, const struct guestfs_utsname *);
@@ -553,8 +553,8 @@ libguestfs generated file
  };
  
  struct guestfs_hivex_node_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_hivex_node *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_hivex_node *val; /* Елементи. */
  };
 
  int guestfs_compare_hivex_node (const struct guestfs_hivex_node *, const struct guestfs_hivex_node *);
@@ -573,8 +573,8 @@ libguestfs generated file
  };
  
  struct guestfs_hivex_value_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_hivex_value *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_hivex_value *val; /* Елементи. */
  };
 
  int guestfs_compare_hivex_value (const struct guestfs_hivex_value *, const struct guestfs_hivex_value *);
@@ -595,8 +595,8 @@ libguestfs generated file
  };
  
  struct guestfs_internal_mountable_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_internal_mountable *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_internal_mountable *val; /* Елементи. */
  };
 
  int guestfs_compare_internal_mountable (const struct guestfs_internal_mountable *, const struct guestfs_internal_mountable *);

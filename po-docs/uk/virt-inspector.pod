@@ -153,7 +153,7 @@ the confusing case where a disk image might have the same name as a guest.
 З міркувань зворотної сумісності передбачено підтримку запису параметрів у
 застарілому форматі.
 
-=head1 XML FORMAT
+=head1 ФОРМАТ XML
 
 The virt-inspector XML is described precisely in a RELAX NG schema file
 C<virt-inspector.rng> which is supplied with libguestfs.  This section is

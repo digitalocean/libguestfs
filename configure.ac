@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [25])
-m4_define([libguestfs_release], [46])
+m4_define([libguestfs_release], [49])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1613,6 +1613,7 @@ AC_CONFIG_FILES([Makefile
                  builder/website/Makefile
                  cat/Makefile
                  csharp/Makefile
+                 customize/Makefile
                  daemon/Makefile
                  df/Makefile
                  diff/Makefile

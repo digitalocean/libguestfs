@@ -53,9 +53,9 @@ with separate I<-a> options.
 примусово використати певний формат, скористайтеся параметром
 I<--format=..>.
 
-=item B<-a> URI
+=item B<-a> адреса
 
-=item B<--add> URI
+=item B<--add> адреса
 
 Додати віддалений диск. Див. L<guestfish(1)/ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА>.
 
@@ -69,9 +69,9 @@ The default is to ignore changes in file access times, since those are
 unlikely to be interesting.  Using this flag shows atime differences as
 well.
 
-=item B<-A> file
+=item B<-A> файл
 
-=item B<-A> URI
+=item B<-A> адреса
 
 Add a disk image from the second virtual machine.
 
@@ -121,7 +121,7 @@ fields of directories.
 Add all the disks from the named libvirt guest, as the first guest.  Domain
 UUIDs can be used instead of names.
 
-=item B<-D> guest
+=item B<-D> гість
 
 Add all the disks from the named libvirt guest, as the second guest.  Domain
 UUIDs can be used instead of names.
@@ -262,5 +262,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2013
+© Red Hat Inc., 2009–2014
 

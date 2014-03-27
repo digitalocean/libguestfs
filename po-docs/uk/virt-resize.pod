@@ -170,7 +170,7 @@ Thoroughly test the new disk image I<before> discarding the old one.
 
 If you are using libvirt, edit the XML to point at the new disk:
 
- # virsh edit guestname
+ # virsh edit назва_гостьової_системи
 
 Change E<lt>source ...E<gt>, see
 L<http://libvirt.org/formatdomain.html#elementsDisks>

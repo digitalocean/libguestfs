@@ -123,7 +123,7 @@ flag to see what you are typing.
 
 =item B<-e> вираз
 
-=item B<--edit> EXPR
+=item B<--edit> ВИРАЗ
 
 =item B<--expr> вираз
 
@@ -369,5 +369,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2013
+© Red Hat Inc., 2009–2014
 

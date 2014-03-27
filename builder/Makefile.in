@@ -1568,26 +1568,28 @@ noinst_DATA = $(am__append_3) \
 # Note this list must be in dependency order.
 @HAVE_OCAML_TRUE@deps = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/libdir.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/urandom.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/random_seed.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/hostname.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/timezone.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/firstboot.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/perl_edit.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/crypt-c.o \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/crypt.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/fsync-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/fsync.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/password.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/planner.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uri-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/urandom.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/random_seed.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/hostname.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/timezone.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/firstboot.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/perl_edit.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/crypt-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/crypt.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/password.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_cmdline.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_run.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
 @HAVE_OCAML_TRUE@	index-scan.o \
 @HAVE_OCAML_TRUE@	index-struct.o \
 @HAVE_OCAML_TRUE@	index-parse.o \
@@ -1621,7 +1623,8 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@OCAMLPACKAGES = -package str,unix -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml -I \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib $(am__append_1)
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize $(am__append_1)
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@OCAMLCLIBS = \
@@ -2319,10 +2322,12 @@ $(top_builddir)/generator/generator:
 
 @HAVE_OCAML_TRUE@virt-builder.1 $(top_builddir)/html/virt-builder.1.html: stamp-virt-builder.pod
 
-@HAVE_OCAML_TRUE@stamp-virt-builder.pod: virt-builder.pod
+@HAVE_OCAML_TRUE@stamp-virt-builder.pod: virt-builder.pod $(top_srcdir)/customize/customize-synopsis.pod $(top_srcdir)/customize/customize-options.pod
 @HAVE_OCAML_TRUE@	$(PODWRAPPER) \
 @HAVE_OCAML_TRUE@	  --man virt-builder.1 \
 @HAVE_OCAML_TRUE@	  --html $(top_builddir)/html/virt-builder.1.html \
+@HAVE_OCAML_TRUE@	  --insert $(top_srcdir)/customize/customize-synopsis.pod:__CUSTOMIZE_SYNOPSIS__ \
+@HAVE_OCAML_TRUE@	  --insert $(top_srcdir)/customize/customize-options.pod:__CUSTOMIZE_OPTIONS__ \
 @HAVE_OCAML_TRUE@	  --license GPLv2+ \
 @HAVE_OCAML_TRUE@	  $<
 @HAVE_OCAML_TRUE@	touch $@
@@ -2353,7 +2358,7 @@ $(top_builddir)/generator/generator:
 
 @HAVE_OCAML_TRUE@.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib $^ | \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
 @HAVE_OCAML_TRUE@	  $(SED) 's/ *$$//' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
