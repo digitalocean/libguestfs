@@ -95,7 +95,7 @@ the appliance to make the daemon more verbose (it acts like the I<-v> flag
 on the command line).  Unrelated to the daemon, it also causes the appliance
 init script to print out a lot more debugging information.
 
-=item B<guestfs_channel=PATH>
+=item B<guestfs_channel=ШЛЯХ>
 
 Set the path to the virtio-serial channel to something other than the
 default (which is C</dev/virtio-ports/org.libguestfs.channel.0>).  This is
@@ -121,5 +121,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2013
+© Red Hat Inc., 2009–2014
 

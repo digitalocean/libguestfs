@@ -346,7 +346,7 @@ L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST STARTUP>.
 
 =over 4
 
-=item TMPDIR
+=item ТИМЧАСОВИЙ КАТАЛОГ
 
 Location of the temporary directory used for the potentially large temporary
 overlay file.

@@ -1,6 +1,6 @@
 ## DO NOT EDIT! GENERATED AUTOMATICALLY!
 ## Process this file with automake to produce Makefile.in.
-# Copyright (C) 2002-2013 Free Software Foundation, Inc.
+# Copyright (C) 2002-2014 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -884,7 +884,7 @@ EXTRA_libgnu_la_SOURCES += gettimeofday.c
 ## begin gnulib module gitlog-to-changelog
 
 
-EXTRA_DIST += $(top_srcdir)/build-aux/gitlog-to-changelog
+EXTRA_DIST += $(top_srcdir)/build-aux/gitlog-to-changelog $(top_srcdir)/build-aux/git-log-fix
 
 ## end   gnulib module gitlog-to-changelog
 

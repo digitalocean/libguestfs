@@ -52,7 +52,7 @@ This file is parsed by the libconfig library.  For more information about
 the format, see:
 L<http://www.hyperrealm.com/libconfig/libconfig_manual.html>
 
-=head1 FILE LOCATION
+=head1 АДРЕСА ФАЙЛА
 
 The order of the configuration files being read is, by importance:
 

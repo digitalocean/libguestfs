@@ -1,5 +1,5 @@
-(* virt-sysprep
- * Copyright (C) 2012 Red Hat Inc.
+(* virt-customize
+ * Copyright (C) 2014 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,28 +16,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-open Sysprep_operation
-open Common_gettext.Gettext
+(* After command line arguments have been parsed, call this function
+ * to perform the operations on a guest handle.
+ * 
+ * Note that inspection must have been done on the handle, and
+ * filesystems must be mounted up.
+ *)
 
-open Random_seed
-
-module G = Guestfs
-
-let random_seed_perform (g : Guestfs.guestfs) root side_effects =
-  if set_random_seed g root then
-    side_effects#created_file ()
-
-let op = {
-  defaults with
-    name = "random-seed";
-    enabled_by_default = true;
-    heading = s_"Generate random seed for guest";
-    pod_description = Some (s_"\
-Write some random bytes from the host into the random seed file of the
-guest.
-
-See L</RANDOM SEED> below.");
-    perform_on_filesystems = Some random_seed_perform;
-}
-
-let () = register_operation op
+val run : prog:string -> debug:bool -> quiet:bool -> Guestfs.guestfs -> string -> Customize_cmdline.ops -> unit

@@ -8,33 +8,18 @@
 
 =head1 НАЗВА
 
-virt-builder - Build virtual machine images quickly
+virt-builder — засіб швидкої побудови образів для віртуальної машини
 
 =head1 КОРОТКИЙ ОПИС
 
  virt-builder os-version
     [-o|--output DISKIMAGE] [--size SIZE] [--format raw|qcow2]
-    [--arch ARCHITECTURE]
-    [--attach ISOFILE]
-    [--root-password SELECTOR]
-    [--hostname HOSTNAME]
-    [--timezone TIMEZONE]
-    [--update]
-    [--install PKG,[PKG...]]
-    [--mkdir DIR]
-    [--write FILE:CONTENT]
-    [--upload FILE:DEST]
-    [--link TARGET:LINK[:LINK]]
-    [--edit FILE:EXPR]
-    [--delete FILE] [--scrub FILE]
-    [--selinux-relabel]
-    [--run SCRIPT] [--run-command 'CMD ARGS ...']
-    [--firstboot SCRIPT] [--firstboot-command 'CMD ARGS ...']
-    [--firstboot-install PKG,[PKG...]]
+    [--arch ARCHITECTURE] [--attach ISOFILE]
+__CUSTOMIZE_SYNOPSIS__
 
  virt-builder -l|--list [--long] [--list-format short|long|json]
 
- virt-builder --notes os-version
+ virt-builder --notes версія-ОС
 
  virt-builder --print-cache
 
@@ -63,7 +48,7 @@ section.
 
 =head1 ПРИКЛАДИ
 
-=head2 List the virtual machines available
+=head2 Показ списку доступних віртуальних машин
 
  virt-builder --list
 
@@ -76,7 +61,7 @@ installation notes:
 
  virt-builder --notes fedora-20
 
-=head2 Build a virtual machine
+=head2 Побудова віртуальної машини
 
  virt-builder fedora-20
 
@@ -113,7 +98,7 @@ is copied to the output (automatically, using L<virt-resize(1)>).
 
 As above, but using an i386 template, if available.
 
-=head2 Setting the root password
+=head2 Встановлення пароля root
 
  virt-builder fedora-20 --root-password file:/tmp/rootpw
 
@@ -125,13 +110,13 @@ I<random> root password.
 
 You can also create user accounts.  See L</USERS AND PASSWORDS> below.
 
-=head2 Set the hostname
+=head2 Встановити назву вузла
 
  virt-builder fedora-20 --hostname virt.example.com
 
-Set the hostname to C<virt.example.com>.
+Встановити назву вузла C<virt.example.com>.
 
-=head2 Installing software
+=head2 Встановлення програмного забезпечення
 
 To install packages from the ordinary (guest) software repository (eg. yum
 or apt):
@@ -151,7 +136,7 @@ may need to do SELinux relabelling after installing or updating packages
 
  virt-builder fedora-20 --update --selinux-relabel
 
-=head2 Customizing the installation
+=head2 Налаштовування встановленої системи
 
 There are many options that let you customize the installation.  These
 include: I<--run>/I<--run-command>, which run a shell script or command
@@ -168,14 +153,14 @@ I<--edit> to edit files.  I<--upload> to upload files.
  
  virt-builder fedora-20 --firstboot /tmp/yum-update.sh
 
-or simply:
+або просто:
 
  virt-builder fedora-20 --firstboot-command 'yum -y update'
 
 which makes the L<yum(8)> C<update> command run once the first time the
 guest boots.
 
-Or:
+або
 
  virt-builder fedora-20 --edit '/etc/yum.conf: s/gpgcheck=1/gpgcheck=0/'
 
@@ -192,14 +177,14 @@ You can combine these options, and have multiple options of all types.
 
 Показати довідкове повідомлення.
 
-=item B<--arch> ARCHITECTURE
+=item B<--arch> АРХІТЕКТУРА
 
 Use the specified architecture for the output image.  This means there must
 be sources providing the requested template for the requested architecture.
 
-See also L</ARCHITECTURE>.
+Див. також L</АРХІТЕКТУРА>.
 
-=item B<--attach> ISOFILE
+=item B<--attach> ФАЙЛ_ISO
 
 During the customization phase, the given disk is attached to the libguestfs
 appliance.  This is used to provide extra software repositories or other
@@ -215,15 +200,15 @@ label in your run-scripts:
 You can have multiple I<--attach> options, and the format can be any disk
 format (not just an ISO).
 
-See also: I<--run>, L</Installing packages at build time from a side
-repository>, L<genisoimage(1)>, L<virt-make-fs(1)>.
+Див. також I<--run>, L</Встановлення пакунків зі стороннього сховища під час
+збирання>, L<genisoimage(1)>, L<virt-make-fs(1)>.
 
-=item B<--attach-format> FORMAT
+=item B<--attach-format> ФОРМАТ
 
 Specify the disk format for the next I<--attach> option.  The C<FORMAT> is
 usually C<raw> or C<qcow2>.  Use C<raw> for ISOs.
 
-=item B<--cache> DIR
+=item B<--cache> КАТАЛОГ
 
 =item B<--no-cache>
 
@@ -231,11 +216,11 @@ I<--cache> DIR sets the directory to use/check for cached template files.
 If not set, defaults to either C<$XDG_CACHE_HOME/virt-builder/> or
 C<$HOME/.cache/virt-builder/>.
 
-I<--no-cache> disables template caching.
+I<--no-cache> вимикає кешування шаблонів.
 
 =item B<--cache-all-templates>
 
-Download all templates to the cache and then exit.  See L</CACHING>.
+Отримати усі шаблони до кешу і завершити роботу. Див. L</КЕШУВАННЯ>.
 
 Note this doesn't cache everything.  More templates might be uploaded.  Also
 this doesn't cache packages (the I<--install>, I<--update> options).
@@ -248,7 +233,7 @@ Check/don't check the digital signature of the OS template.  The default is
 to check the signature and exit if it is not correct.  Using
 I<--no-check-signature> bypasses this check.
 
-See also I<--fingerprint>.
+Див. також I<--fingerprint>.
 
 =item B<--curl> CURL
 
@@ -257,18 +242,9 @@ parameters, for example to disable https certificate checks:
 
  virt-builder --curl "curl --insecure" [...]
 
-=item B<--delete> FILE
-
-=item B<--delete> DIR
-
-Delete a file from the guest.  Or delete a directory (and all its contents,
-recursively).
-
-See also: I<--upload>, I<--scrub>.
-
 =item B<--delete-cache>
 
-Delete the template cache.  See L</CACHING>.
+Вилучити кеш шаблонів. Див. L</КЕШУВАННЯ>.
 
 =item B<--no-delete-on-failure>
 
@@ -277,17 +253,6 @@ failures to run scripts.  See L</DEBUGGING BUILDS> for ways to debug images.
 
 The default is to delete the output file if virt-builder fails (or, for
 example, some script that it runs fails).
-
-=item B<--edit> FILE:EXPR
-
-Edit C<FILE> using the Perl expression C<EXPR>.
-
-Be careful to properly quote the expression to prevent it from being altered
-by the shell.
-
-Note that this option is only available when Perl 5 is installed.
-
-See L<virt-edit(1)/NON-INTERACTIVE EDITING>.
 
 =item B<--fingerprint> 'AAAA BBBB ...'
 
@@ -299,32 +264,6 @@ You can give this option multiple times.  If you have multiple source URLs,
 then you can have either no fingerprint, one fingerprint or multiple
 fingerprints.  If you have multiple, then each must correspond 1-1 with a
 source URL.
-
-=item B<--firstboot> SCRIPT
-
-=item B<--firstboot-command> 'CMD ARGS ...'
-
-Install C<SCRIPT> inside the guest, so that when the guest first boots up,
-the script runs (as root, late in the boot process).
-
-The script is automatically chmod +x after installation in the guest.
-
-The alternative version I<--firstboot-command> is the same, but it
-conveniently wraps the command up in a single line script for you.
-
-You can have multiple I<--firstboot> and I<--firstboot-command> options.
-They run in the same order that they appear on the command line.
-
-See also I<--run>.
-
-=item B<--firstboot-install> PKG[,PKG,...]
-
-Install the named packages (a comma-separated list).  These are installed
-when the guest first boots using the guest's package manager (eg. apt, yum,
-etc.) and the guest's network connection.
-
-For an overview on the different ways to install packages, see L</INSTALLING
-PACKAGES>.
 
 =item B<--format> qcow2
 
@@ -359,29 +298,6 @@ directory:
 
  virt-builder --gpg "gpg --homedir /tmp" [...]
 
-=item B<--hostname> HOSTNAME
-
-Set the hostname of the guest to C<HOSTNAME>.  You can use a dotted
-hostname.domainname (FQDN) if you want.
-
-=item B<--install> PKG[,PKG,...]
-
-Install the named packages (a comma-separated list).  These are installed
-during the image build using the guest's package manager (eg. apt, yum,
-etc.) and the host's network connection.
-
-For an overview on the different ways to install packages, see L</INSTALLING
-PACKAGES>.
-
-See also I<--update>.
-
-=item B<--link TARGET:LINK>
-
-=item B<--link TARGET:LINK[:LINK...]>
-
-Create symbolic link(s) in the guest, starting at C<LINK> and pointing at
-C<TARGET>.
-
 =item B<-l>
 
 =item B<--list>
@@ -390,7 +306,7 @@ C<TARGET>.
 
 =item B<--list --long>
 
-List available templates.
+Показати список доступних шаблонів.
 
 It is possible to choose with I<--format> the output format for the list
 templates:
@@ -423,14 +339,6 @@ I<--long> is a shorthand for the C<long> format.
 
 See also: I<--source>, I<--notes>, L</SOURCES OF TEMPLATES>.
 
-=item B<--no-logfile>
-
-Scrub C<builder.log> (log file from build commands) from the image after
-building is complete.  If you don't want to reveal precisely how the image
-was built, use this option.
-
-See also: L</LOG FILE>.
-
 =item B<-m> MB
 
 =item B<--memsize> MB
@@ -442,13 +350,6 @@ memory.
 The default can be found with this command:
 
  guestfish get-memsize
-
-=item B<--mkdir> DIR
-
-Create a directory in the guest.
-
-This uses S<C<mkdir -p>> so any intermediate directories are created, and it
-also works if the directory already exists.
 
 =item B<--network>
 
@@ -529,22 +430,6 @@ volume.
 
 When used with I<--get-kernel>, this option specifies the output directory.
 
-=item B<--password-crypto> password-crypto
-
-Встановити спосіб шифрування паролів: C<md5>, C<sha256> або C<sha512>.
-
-C<sha256> and C<sha512> require glibc E<ge> 2.7 (check crypt(3) inside the
-guest).
-
-C<md5> працюватиме з відносно давніми гостьовими системами Linux
-(наприкладRHEL 3), але є незахищеним щодо новітніх способів атак.
-
-Типовим способом шифрування є C<sha512>. Він використовується, якщо
-libguestfs вдасться виявити у гостьовій системі підтримку SHA-512. Якщо
-такої підтримки не буде виявлено, використовуватиметься C<md5>. За допомогою
-цього параметра ви можете перевизначити автоматично визначений libguestfs
-спосіб шифрування.
-
 =item B<--print-cache>
 
 Print information about the template cache.  See L</CACHING>.
@@ -552,62 +437,6 @@ Print information about the template cache.  See L</CACHING>.
 =item B<--quiet>
 
 Don't print ordinary progress messages.
-
-=item B<--root-password> SELECTOR
-
-Set the root password.
-
-See L</USERS AND PASSWORDS> below for the format of the C<SELECTOR> field,
-and also how to set up user accounts.
-
-Note if you I<don't> set I<--root-password> then the guest is given a
-I<random> root password.
-
-=item B<--run> SCRIPT
-
-=item B<--run-command> 'CMD ARGS ...'
-
-Run the shell script (or any program) called C<SCRIPT> on the disk image.
-The script runs virtualized inside a small appliance, chrooted into the
-guest filesystem.
-
-The script is automatically chmod +x.
-
-If libguestfs supports it then a limited network connection is available but
-it only allows outgoing network connections.  You can also attach data disks
-(eg. ISO files) as another way to provide data (eg. software packages) to
-the script without needing a network connection (I<--attach>).  You can also
-upload data files (I<--upload>).
-
-The alternative version I<--run-command> is the same, but it conveniently
-wraps the command up in a single line script for you.
-
-You can have multiple I<--run> and I<--run-command> options.  They run in
-the same order that they appear on the command line.
-
-See also: I<--firstboot>, I<--attach>, I<--upload>.
-
-=item B<--scrub> FILE
-
-Scrub a file from the guest.  This is like I<--delete> except that:
-
-=over 4
-
-=item *
-
-It scrubs the data so a guest could not recover it.
-
-=item *
-
-It cannot delete directories, only regular files.
-
-=back
-
-=item B<--selinux-relabel>
-
-Relabel files in the guest so that they have the correct SELinux label.
-
-You should only use this option for guests which support SELinux.
 
 =item B<--size> SIZE
 
@@ -627,7 +456,7 @@ letter I<b>, eg: S<C<--size 10737418240b>>.
 
 Enable N E<ge> 2 virtual CPUs for I<--run> scripts to use.
 
-=item B<--source> URL
+=item B<--source> АДРЕСА
 
 Set the source URL to look for indexes.
 
@@ -638,34 +467,6 @@ See also L</SOURCES OF TEMPLATES> below.
 Note that you should not point I<--source> to sources that you don't trust
 (unless the source is signed by someone you do trust).  See also the
 I<--no-network> option.
-
-=item B<--timezone> TIMEZONE
-
-Set the default timezone of the guest to C<TIMEZONE>.  Use a location string
-like C<Europe/London>
-
-=item B<--update>
-
-Do the equivalent of C<yum update>, C<apt-get upgrade>, or whatever command
-is required to update the packages already installed in the template to
-their latest versions.
-
-See also I<--install>.
-
-=item B<--upload> FILE:DEST
-
-Upload local file C<FILE> to destination C<DEST> in the disk image.  File
-owner and permissions from the original are preserved, so you should set
-them to what you want them to be in the disk image.
-
-C<DEST> could be the final filename.  This can be used to rename the file on
-upload.
-
-If C<DEST> is a directory name (which must already exist in the guest)  then
-the file is uploaded into that directory, and it keeps the same name as on
-the local filesystem.
-
-See also: I<--mkdir>, I<--delete>, I<--scrub>.
 
 =item B<-v>
 
@@ -682,20 +483,20 @@ bug report.
 
 Показати дані щодо версії і завершити роботу.
 
-=item B<--write> FILE:CONTENT
-
-Write C<CONTENT> to C<FILE>.
-
 =back
 
-=head1 REFERENCE
+=head2 Customization options
 
-=head2 INSTALLING PACKAGES
+__CUSTOMIZE_OPTIONS__
+
+=head1 ДОВІДНИК
+
+=head2 ВСТАНОВЛЕННЯ ПАКУНКІВ
 
 There are several approaches to installing packages or applications in the
 guest which have different trade-offs.
 
-=head3 Installing packages at build time
+=head3 Встановлення пакунків під час збирання
 
 If the guest OS you are installing is similar to the host OS (eg.  both are
 Linux), and if libguestfs supports network connections, then you can use
@@ -705,7 +506,7 @@ I<--install> to install packages like this:
 
 This uses the guest's package manager and the host's network connection.
 
-=head3 Updating packages at build time
+=head3 Оновлення пакунків під час збирання
 
 To update the core set of packages in the template at build time:
 
@@ -717,7 +518,7 @@ which are up to date at the time the template is created, but could be out
 of date by the time you come to install an OS from the template.  This
 option updates those template packages.
 
-=head3 Installing packages at first boot
+=head3 Встановлення пакунків під час першого завантаження
 
 Another option is to install the packages when the guest first boots:
 
@@ -730,7 +531,7 @@ time, and there's nothing much you can do if package installation fails
 (eg. if a network problem means the guest can't reach the package
 repositories).
 
-=head3 Installing packages at build time from a side repository
+=head3 Встановлення пакунків зі стороннього сховища під час збирання
 
 If the software you want to install is not available in the main package
 repository of the guest, then you can add a side repository.  Usually this
@@ -771,7 +572,7 @@ option to run the script:
    --attach extra-packages.iso \
    --run /tmp/install.sh
 
-=head2 USERS AND PASSWORDS
+=head2 КОРИСТУВАЧІ І ПАРОЛІ
 
 The I<--root-password> option is used to change the root password (otherwise
 a random password is used).  This option takes a password C<SELECTOR> in one
@@ -779,13 +580,13 @@ of the following formats:
 
 =over 4
 
-=item B<--root-password> file:FILENAME
+=item B<--root-password> file:НАЗВА_ФАЙЛА
 
 Read the root password from C<FILENAME>.  The whole first line of this file
 is the replacement password.  Any other lines are ignored.  You should
 create the file with mode 0600 to ensure no one else can read it.
 
-=item B<--root-password> password:PASSWORD
+=item B<--root-password> password:ПАРОЛЬ
 
 Set the root password to the literal string C<PASSWORD>.
 
@@ -794,8 +595,8 @@ cleartext password using L<ps(1)>.
 
 =item B<--root-password> random
 
-Choose a random password, which is printed on stdout.  The password has
-approximately 120 bits of randomness.
+Вибрати випадковий пароль, який буде виведено до stdout. Випадковість пароля
+наближено відповідатиме 120-бітовій.
 
 Типове значення.
 
@@ -804,9 +605,9 @@ approximately 120 bits of randomness.
 The root account password is disabled.  This is like putting C<*> in the
 password field.
 
-=item B<--root-password> locked:file:FILENAME
+=item B<--root-password> locked:file:НАЗВА_ФАЙЛА
 
-=item B<--root-password> locked:password:PASSWORD
+=item B<--root-password> locked:password:ПАРОЛЬ
 
 =item B<--root-password> locked:random
 
@@ -821,7 +622,7 @@ The root account is locked I<and> password is disabled.
 
 =back
 
-=head3 Creating user accounts
+=head3 Створення облікових записів користувачів
 
 To create user accounts, use the L<useradd(8)> command with
 L<--firstboot-command> like this:
@@ -833,25 +634,24 @@ The above command will create an C<rjones> account with no password, and
 force the user to set a password when they first log in.  There are other
 ways to manage passwords, see L<useradd(8)> for details.
 
-=head2 KEYBOARD LAYOUT
+=head2 РОЗКЛАДКА КЛАВІАТУРИ
 
 Because there are so many different ways to set the keyboard layout in Linux
 distributions, virt-builder does not yet attempt to have a simple command
 line option.  This section describes how to set the keyboard for some common
 Linux distributions.
 
-=head3 Keyboard layout with systemd
+=head3 Визначення розкладки клавіатури за допомогою systemd
 
 For distros that use systemd C<localectl>, use a command like this:
 
  virt-builder fedora-20 \
    --firstboot-command 'localectl set-keymap uk'
 
-See L<localectl(1)> and
-L<https://www.happyassassin.net/2013/11/23/keyboard-layouts-in-fedora-20-and-previously/>
-for more details.
+Докладніший опис можна знайти за посиланнями L<localectl(1)> та
+L<https://www.happyassassin.net/2013/11/23/keyboard-layouts-in-fedora-20-and-previously/>.
 
-=head3 Keyboard layout using C</etc/sysconfig/keyboard>
+=head3 Визначення розкладки клавіатури за допомогою C</etc/sysconfig/keyboard>
 
 For RHEL E<le> 6, Fedora E<le> 18 and similar, upload or modify the keyboard
 configuration file using the I<--upload>, I<--write> or I<--edit> options.
@@ -871,9 +671,9 @@ For example:
  virt-builder debian-7 \
    --edit '/etc/default/keyboard: s/^XKBLAYOUT=.*/XKBLAYOUT="gb"/'
 
-See L<https://wiki.debian.org/Keyboard>.
+Див. L<https://wiki.debian.org/Keyboard>.
 
-=head2 LANGUAGE
+=head2 МОВА
 
 Most Linux distributions support multiple locale settings so that you can
 have guest messages printed in another language such as Russian.
@@ -883,9 +683,9 @@ may need to be installed to support console and X fonts, and keyboard input
 methods.  The packages required, and their configuration is highly
 distro-specific, and it is outside the scope of virt-builder to do this.
 
-This section contains examples for some common Linux distributions.
+У цьому розділі наведено приклади для типових дистрибутивів Linux.
 
-=head3 Setting Japanese in Fedora 20
+=head3 Встановлення японської мови для Fedora 20
 
  virt-builder fedora-20 \
    --size 20G \
@@ -898,7 +698,7 @@ This section contains examples for some common Linux distributions.
    --firstboot-command 'localectl set-keymap jp' \
    --firstboot-command 'systemctl isolate graphical.target'
 
-=head3 Setting Japanese in Debian 7 (Wheezy)
+=head3 Встановлення японської мови для Debian 7 (Wheezy)
 
 Note that although this enables Japanese in the text console too, it is
 unlikely that you will see properly rendered Japanese there.  However
@@ -919,7 +719,7 @@ Japanese is properly rendered in X applications and terminals.
    --write '/etc/default/locale:LANG="ja_JP.UTF-8"' \
    --run-command "locale-gen"
 
-=head2 LOG FILE
+=head2 ФАЙЛ ЖУРНАЛУ
 
 Scripts and package installation that runs at build time (I<--run>,
 I<--run-command>, I<--install>, I<--update>, but I<not> firstboot) is logged
@@ -979,58 +779,8 @@ A new random seed is generated for the guest.
 
 =item *
 
-The hostname and timezone are set (I<--hostname>, I<--timezone>).
-
-=item *
-
-The root password is changed (I<--root-password>).
-
-=item *
-
-Core packages are updated (I<--update>).
-
-=item *
-
-Packages are installed (I<--install>).
-
-=item *
-
-Directories are created (I<--mkdir>).
-
-=item *
-
-Files are written (I<--write>).
-
-=item *
-
-Files are uploaded (I<--upload>).
-
-=item *
-
-Files are edited (I<--edit>).
-
-=item *
-
-Files are deleted (I<--delete>, I<--scrub>).
-
-=item *
-
-Symbolic links are created (I<--link>).
-
-=item *
-
-Firstboot scripts are installed (I<--firstboot>, I<--firstboot-command>,
-I<--firstboot-install>).
-
-Note that although firstboot scripts are installed at this step, they do not
-run until the guest is booted first time.  Firstboot scripts will run in the
-order they appear on the command line.
-
-=item *
-
-Scripts are run (I<--run>, I<--run-command>).
-
-Scripts run in the order they appear on the command line.
+Guest customization is performed, in the order specified on the command
+line.
 
 =item *
 
@@ -1107,7 +857,7 @@ could be used to boot the virtual machine:
 As with libvirt, it is very important that the correct format is chosen.  It
 will be C<raw> unless the I<--format> option was used.
 
-=head2 CONFIGURATION MANAGEMENT
+=head2 КЕРУВАННЯ НАЛАШТУВАННЯМИ
 
 =head3 Puppet
 
@@ -1128,7 +878,7 @@ A typical virt-builder command would be:
 The precise instructions vary according to the Linux distro.  For further
 information see: L<http://docs.puppetlabs.com/guides/installation.htm>
 
-=head2 DEBUGGING BUILDS
+=head2 ДІАГНОСТИКА ЗБИРАННЯ
 
 If virt-builder itself fails, then enable debugging (I<-v>) and report a bug
 (see L</BUGS> below).
@@ -1142,7 +892,7 @@ things to try:
 
 =over 4
 
-=item Use virt-rescue
+=item Використання virt-rescue
 
 Run L<virt-rescue(1)> on the disk image:
 
@@ -1153,7 +903,7 @@ image on C</sysroot> and examine them using ordinary Linux commands.  You
 can also chroot into the guest to reinstall the bootloader.  The virt-rescue
 man page has a lot more information and examples.
 
-=item Use guestfish
+=item Використання guestfish
 
 Run L<guestfish(1)> on the disk image:
 
@@ -1162,7 +912,7 @@ Run L<guestfish(1)> on the disk image:
 Use guestfish commands like C<ll /directory> and C<cat /file> to examine
 directories and files.
 
-=item Use guestmount
+=item Використання guestmount
 
 Mount the disk image safely on the host using FUSE and L<guestmount(1)>:
 
@@ -1220,13 +970,13 @@ The following fields can appear:
 
 =over 4
 
-=item C<uri=URI>
+=item C<uri=АДРЕСА>
 
 The URI of the index file which this repository refers to.
 
-This field is required.
+Це поле слід заповнити.
 
-=item C<gpgkey=URI>
+=item C<gpgkey=АДРЕСА>
 
 This optional field represents the URI (although only I<file://> URIs are
 accepted) of the key used to sign the index file.  If not present, the index
@@ -1237,7 +987,7 @@ file referred by I<uri=..> is not signed.
 For serious virt-builder use, you may want to create your own repository of
 templates.
 
-=head3 Libguestfs.org repository
+=head3 Сховище libguestfs.org
 
 Out of the box, virt-builder downloads the file
 L<http://libguestfs.org/download/builder/index.asc> which is an index of
@@ -1249,7 +999,7 @@ The templates hosted on libguestfs.org were created using shell scripts,
 kickstart files and preseed files which can be found in the libguestfs
 source tree, in C<builder/website>.
 
-=head3 Setting up the repository
+=head3 Налаштовування доступу до сховища
 
 You can set up your own site containing an index file and some templates,
 and then point virt-builder at the site by creating a I<.conf> file pointing
@@ -1280,7 +1030,7 @@ Export your GPG public key:
 
  gpg --export -a "you@example.com" > pubkey
  
-=head3 Create the templates
+=head3 Створення шаблонів
 
 There are many ways to create the templates.  For example you could clone
 existing guests (see L<virt-sysprep(1)>), or you could install a guest by
@@ -1334,17 +1084,17 @@ The following fields can appear:
 
 =over 4
 
-=item C<name=NAME>
+=item C<name=НАЗВА>
 
 The user-friendly name of this template.  This is displayed in the I<--list>
 output but is otherwise not significant.
 
-=item C<osinfo=ID>
+=item C<osinfo=ІДЕНТИФІКАТОР>
 
 This optional field maps the operating system to the associated libosinfo
 ID.  Virt-builder does not use it (yet).
 
-=item C<file=PATH>
+=item C<file=ШЛЯХ>
 
 The path (relative to the index) of the xz-compressed template.
 
@@ -1352,7 +1102,7 @@ Note that absolute paths or URIs are B<not> permitted here.  This is because
 virt-builder has a "same origin" policy for templates so they cannot come
 from other servers.
 
-=item C<sig=PATH>
+=item C<sig=ШЛЯХ>
 
 B<This option is deprecated>.  Use the checksum field instead.
 
@@ -1412,7 +1162,7 @@ The virtual size of the image in bytes.  This is the size of the image when
 uncompressed.  If using a non-raw format such as qcow2 then it means the
 virtual disk size, not the size of the qcow2 file.
 
-This field is required.
+Це поле слід заповнити.
 
 Virt-builder also uses this as the minimum size that users can request via
 the I<--size> option, or as the default size if there is no I<--size>
@@ -1435,7 +1185,7 @@ It's a good idea to use this, but not required.  If the field is omitted
 then virt-resize will create an extra partition at the end of the disk to
 cover the free space, which is much less user-friendly.
 
-=item C<lvexpand=/dev/VolGroup/LogVol>
+=item C<lvexpand=/пристрій/група_томів/логічний_том>
 
 When expanding the image to its final size, instruct L<virt-resize(1)> to
 expand the named logical volume in the guest image to fill up all available
@@ -1445,7 +1195,7 @@ If the guest uses LVM2 you should usually put the LV of the guest's root
 filesystem here.  If the guest does not use LVM2 or its root filesystem is
 not on an LV, don't use this option.
 
-=item C<notes=NOTES>
+=item C<notes=НОТАТКИ>
 
 Any notes that go with this image, especially notes describing what packages
 are in the image, how the image was prepared, and licensing information.
@@ -1493,7 +1243,7 @@ for all sources.
 
 You C<must> provide at least 1 fingerprint.
 
-=head3 Licensing of templates
+=head3 Ліцензування шаблонів
 
 You should be aware of the licensing of images that you distribute.  For
 open source guests, provide a link to the source code in the C<notes> field
@@ -1516,9 +1266,9 @@ index file (ie. C<index> or C<index.asc>).
 
 The index is always encoded in UTF-8.
 
-=head2 CACHING
+=head2 КЕШУВАННЯ
 
-=head3 Caching templates
+=head3 Кешування шаблонів
 
 Since the templates are usually very large, downloaded templates are cached
 in the user's home directory.
@@ -1544,7 +1294,7 @@ To disable the template cache, use I<--no-cache>.
 Only templates are cached.  The index and detached digital signatures are
 not cached.
 
-=head3 Caching packages
+=head3 Кешування пакунків
 
 Virt-builder uses L<curl(1)> to download files and it also uses the current
 C<http_proxy> (etc) settings when installing packages (I<--install>,
@@ -1554,7 +1304,7 @@ You may therefore want to set those environment variables in order to
 maximize the amount of local caching that happens.  See L</ENVIRONMENT
 VARIABLES> and L<curl(1)>.
 
-=head3 Local mirrors
+=head3 Локальні дзеркала
 
 To increase both speed and reliability of installing packages, you can set
 up a local mirror of the target distribution, and point the guest package
@@ -1566,7 +1316,7 @@ I<--install> (to install from that repo).  The I<--write> and I<--install>
 steps run in the opposite order, regardless of their order on the command
 line.  You have to do this using I<--run-command> instead of I<--install>.
 
-=head4 Using a local mirror with Fedora
+=head4 Використання локального дзеркала з Fedora
 
 To install a Fedora guest using a local mirror:
 
@@ -1593,7 +1343,7 @@ L<https://help.ubuntu.com/community/AptProxy>) and then do:
    --run-command 'apt-get -y update' \
    --run-command 'apt-get -y install pkg1 pkg2 ...'
 
-=head2 DIGITAL SIGNATURES
+=head2 ЦИФРОВІ ПІДПИСИ
 
 Virt-builder uses GNU Privacy Guard (GnuPG or gpg) to verify that the index
 and templates have not been tampered with.
@@ -1656,7 +1406,7 @@ truly random when the guest boots.
 
 You should check digital signatures and not ignore any signing errors.
 
-=head2 CLONES
+=head2 КЛОНИ
 
 If you wish to create many new guests of the same type, it is tempting to
 run virt-builder once and then copy the output file.  You should B<not> do
@@ -1671,9 +1421,9 @@ booted disk image.  The reason is that some guests create unique machine
 IDs, SSH host keys and so on at first boot, and you would not want clones to
 have duplicate identities.
 
-See also: L<virt-sysprep(1)>.
+Див. також L<virt-sysprep(1)>.
 
-=head2 PERFORMANCE
+=head2 ШВИДКОДІЯ
 
 The most important aspect of getting good performance is caching.  Templates
 gets downloaded into the cache the first time they are used, or if you use
@@ -1808,9 +1558,9 @@ TEMPLATES>.
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<guestfs(3)>, L<guestfish(1)>, L<guestmount(1)>, L<virt-copy-out(1)>,
-L<virt-install(1)>, L<virt-rescue(1)>, L<virt-resize(1)>,
-L<virt-sysprep(1)>, L<oz-install(1)>, L<gpg(1)>, L<curl(1)>,
-L<virt-make-fs(1)>, L<genisoimage(1)>, L<fixfiles(8)>,
+L<virt-customize(1)>, L<virt-install(1)>, L<virt-rescue(1)>,
+L<virt-resize(1)>, L<virt-sysprep(1)>, L<oz-install(1)>, L<gpg(1)>,
+L<curl(1)>, L<virt-make-fs(1)>, L<genisoimage(1)>, L<fixfiles(8)>,
 L<http://libguestfs.org/>.
 
 =head1 АВТОР

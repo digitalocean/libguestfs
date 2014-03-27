@@ -4041,6 +4041,10 @@ L<virt-cat(1)>, L<virt-filesystems(1)> および L<virt-ls(1)> のコマンド�
 
 外部の貢献、実験的な部分です。
 
+=item C<customize>
+
+L<virt-customize(1)> command and documentation.
+
 =item C<daemon>
 
 libguestfs アプライアンスの中で実行され、アクションを実行しているデーモン。
@@ -4472,16 +4476,16 @@ L<guestfs-java(3)>, L<guestfs-lua(3)>, L<guestfs-ocaml(3)>,
 L<guestfs-perl(3)>, L<guestfs-python(3)>, L<guestfs-ruby(3)>,
 L<guestfish(1)>, L<guestmount(1)>, L<virt-alignment-scan(1)>,
 L<virt-builder(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>,
-L<virt-df(1)>, L<virt-diff(1)>, L<virt-edit(1)>, L<virt-filesystems(1)>,
-L<virt-format(1)>, L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
-L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
-L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
-L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
-L<virt-win-reg(1)>, L<guestfs-faq(1)>, L<guestfs-performance(1)>,
-L<guestfs-release-notes(1)>, L<guestfs-testing(1)>,
-L<libguestfs-test-tool(1)>, L<libguestfs-make-fixed-appliance(1)>,
-L<supermin(1)>, L<qemu(1)>, L<hivex(3)>, L<stap(1)>, L<sd-journal(3)>,
-L<http://libguestfs.org/>.
+L<virt-customize(1)>, L<virt-df(1)>, L<virt-diff(1)>, L<virt-edit(1)>,
+L<virt-filesystems(1)>, L<virt-format(1)>, L<virt-inspector(1)>,
+L<virt-list-filesystems(1)>, L<virt-list-partitions(1)>, L<virt-ls(1)>,
+L<virt-make-fs(1)>, L<virt-rescue(1)>, L<virt-resize(1)>,
+L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>,
+L<virt-tar-out(1)>, L<virt-win-reg(1)>, L<guestfs-faq(1)>,
+L<guestfs-performance(1)>, L<guestfs-release-notes(1)>,
+L<guestfs-testing(1)>, L<libguestfs-test-tool(1)>,
+L<libguestfs-make-fixed-appliance(1)>, L<supermin(1)>, L<qemu(1)>,
+L<hivex(3)>, L<stap(1)>, L<sd-journal(3)>, L<http://libguestfs.org/>.
 
 同じ目的を持つツール: L<fdisk(8)>, L<parted(8)>, L<kpartx(8)>, L<lvm(8)>,
 L<disktype(1)>.

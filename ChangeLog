@@ -1,3 +1,231 @@
+commit 7ad1683daef031c3a1f4ca1fb5e75553ec6c4234
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 25 12:51:25 2014 +0000
+
+    Version 1.25.47.
+
+commit 2b208d84db080659badbb70044497aae040592e7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 25 10:46:08 2014 +0000
+
+    Add virt-customize standalone tool.
+    
+    This includes some simple tests and a manual page.
+
+commit aa3bc8b65d56c6d9708b72286d61e459967eb33c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 21 13:41:31 2014 +0000
+
+    sysprep: Remove the --autorelabel (and related) options.
+    
+    The customize module includes an --selinux-label option which can run
+    'fixfiles restore' (on most SELinux guests) or set /.autorelabel (on
+    some older ones).
+    
+    Commit 49014f81f350484da725f5ee2bc62bb24268a334 renamed the old
+    --selinux-label option to --autorelabel, but note this was not
+    included in a stable version of libguestfs.
+    
+    Note this change leaves a bunch of now redundant code for detecting if
+    we created a new file in the guest.
+
+commit ae6f726ecc3bc1b67fd76e51a7b1e1a33d4dcfc0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 19 15:14:06 2014 +0000
+
+    sysprep: Use customize module for customizing the guest after sysprepping.
+    
+    Note this removes the following modules (all replaced by 'customize'):
+    
+     - delete       [--delete, --scrub]
+     - firstboot    [--firstboot]
+     - hostname     [--hostname]
+     - password     [--password, --password-crypto, --root-password]
+     - random-seed
+     - timezone     [--timezone]
+
+commit 51834ad2192b1c90b74894421c2633c831ca1f4e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 19 13:16:53 2014 +0000
+
+    customize: Add a --password option for setting user passwords.
+
+commit 4b0b3589e854f0ed9174250490dc9c6ade94292f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 17 15:34:31 2014 +0000
+
+    customize: Move virt-customize-related code to a separate directory.
+    
+    Split virt-builder into build and customize steps, so that we can spin
+    off a separate tool called 'virt-customize'.  This commit does not in
+    fact create such a tool, but it moves all the common code into a
+    library, in the customize/ subdirectory of the source.
+    
+    Although this is mostly refactoring, it does change the order in which
+    virt-builder command line arguments are processed, so they are now
+    processed in the order they appear, not the inflexible fixed order
+    used before.
+
+commit 8e386fc1beedc2b203231175c156151a1cc49c83
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 21 13:24:38 2014 +0000
+
+    sysprep: Pass debug and quiet flags to all modules.
+    
+    Also use the Common_utils.make_message_function function to print
+    messages (same as virt-builder).
+
+commit 1edfdcbd58381ff0935891c451b448ccdd4af4f0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 21 10:54:11 2014 +0000
+
+    sysprep: Allow order of operations to be specified by modules.
+
+commit f450fb41060c8e0d8a14dc869a54b8981b8fc99c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 21 10:47:51 2014 +0000
+
+    sysprep: Perform operations in alphabetical order.
+    
+    Previously we ran them in essentially a random order, although it
+    might have looked alphabetical in some cases because the modules are
+    loaded in order.
+
+commit 4a9581668c74222d5e780507c81ffb9480c68701
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Tue Mar 25 12:00:41 2014 +0100
+
+    appliance: Not all of Grub is needed, only grub-install
+
+commit 0116a482fc98645e6e71848d5fe46e40571f3f3e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 25 10:47:53 2014 +0000
+
+    Update gnulib to latest.
+    
+    Includes a fix for the missing 'git-log-fix' file.
+    https://lists.gnu.org/archive/html/bug-gnulib/2014-03/threads.html#00019
+
+commit f80fc724bc1d4410303459439b3c7bac51ad7520
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Mar 24 16:23:38 2014 +0100
+
+    php: raise the per-test timeout to 300 secs
+    
+    Some tests might spawn an appliance, which will take time on slower
+    architectures and on some virtualized environments.
+    Hence raise the per-test timeout from the default of 60s to 300s (which
+    should be hopefully enough for now).
+
+commit 483f0e30962ef6a662478dc6f0b13a1852733d4d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Mar 24 16:59:20 2014 +0100
+
+    virt-sparsify --in-place: remove image if discard is not supported
+    
+    No point leaving it around if the test has been skipped.
+
+commit 08234a1c48a9b9e69d1ab8790f9b754fc5ab8952
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 24 14:18:34 2014 +0000
+
+    po-docs: Do not translate "__AVAILABILITY__" placeholder.
+    
+    This fixes commit da122e382f3d6d05c5981a3e5f4e3b806e3e37e3.
+
+commit ad2c6a13b3b541ccc70fe18b4290a06e85b8fc06
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Mar 24 15:13:13 2014 +0100
+
+    docs: remove customize-related files
+    
+    The work on them has not been committed yet.
+
+commit da5b8b6d61d07514d3c74de1bdff7d23108e6849
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 23 21:56:29 2014 +0000
+
+    appliance: Fix quoting so that DEBIAN isn't always defined.
+    
+    Because of incorrect quoting previously, the DEBIAN symbol
+    was always defined.
+
+commit 07bf7402381bbbb4c69373ed150675ef313c2b85
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 23 19:40:44 2014 +0000
+
+    Update gnulib to latest version.
+
+commit 26599da373c549034a1bc01923e5920f61f16abe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 23 16:31:10 2014 +0000
+
+    ocaml: Enable parallel builds.
+    
+    Commit f75142c577255b30f2a8e1d27baa5fd185594197 disabled parallel
+    builds in the ocaml subdirectory (which was the correct thing to do).
+    This made building the OCaml tests in particular very slow.  Therefore
+    fix things so that parallel builds can be used again.
+    
+    See also discussion here about different approaches:
+    
+    https://www.redhat.com/archives/libguestfs/2014-March/thread.html#00223
+    
+    This reintroduces commit dce94f3e266ed3f1fc634a1ef6953f2db1510963.
+
+commit da122e382f3d6d05c5981a3e5f4e3b806e3e37e3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 23 12:59:18 2014 +0000
+
+    Update Ukrainian translations.
+    
+    Contributed by: Yuri Chornoivan (via Transifex)
+
+commit f42769f94b20898452884091ac57d73a95f280c0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 23 12:09:01 2014 +0000
+
+    virt-make-fs: Fix typo in error string.
+    
+    Thanks: Yuri Chornoivan
+
+commit 20f412637eb0a12642f780df80cd43f0a090652f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 22 14:08:08 2014 +0000
+
+    builder: Fix typo in string.
+    
+    Thanks: Yuri Chornoivan
+
+commit e589b6e82336dec3abb6e2b1aea31313b7ec5172
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Mar 20 16:57:29 2014 +0100
+
+    builder: do not parse the same repository file name twice
+    
+    When parsing the repository configuration files, track the file names
+    parsed, and in case of same file name in multiple location consider only
+    the one in the directory coming before others in the prioritised list of
+    paths.
+    
+    This way it is possible to "shadow" a configuration file in a system
+    path with one with the same name in a local directory, for example.
+
+commit 603ad40c5ac034f22f3f2f682755a871d9e84267
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Mar 20 16:35:15 2014 +0100
+
+    builder: allow the index parser to parse files with no sections
+    
+    Gracefully handle files with no sections; extend the validate.sh test
+    to try to validate an empty file.
+
+commit fa0fed8a2deacc29524518fbaa1e51516edce872
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Mar 20 16:23:43 2014 +0100
+
+    builder: allow to run website tests under valgrind
+
 commit 37ed019f53959936daf784af87e772088675aaa9
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Mar 20 15:28:57 2014 +0000

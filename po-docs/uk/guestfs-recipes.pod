@@ -481,7 +481,7 @@ C</usr/share/syslinux/mbr.bin>).
  # Set the first partition as bootable:
  ><fs> part-set-bootable /dev/sda 1 true
 
-See also:
+Див. також
 L<http://rwmj.wordpress.com/2013/04/04/new-in-libguestfs-use-syslinux-or-extlinux-to-make-bootable-guests/#content>
 
 =head1 Показати список програм, встановлених у віртуальній машині
@@ -645,5 +645,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2013
+© Red Hat Inc., 2009–2014
 

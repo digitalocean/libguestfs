@@ -36,21 +36,12 @@ history removed.
 
 Вилучити завдання at та cron користувачів.
 
-=head2 B<delete> *
+=head2 B<customize> *
 
-Delete or scrub specified files or directories.
+Customize the guest.
 
-Use the I<--delete> option to specify a path to remove.
-
-You can use shell glob characters in the specified path; note that such
-metacharacters might require proper escape.  For example:
-
- virt-sysprep --delete '/var/log/*.log'
-
-An alternative option, I<--scrub>, can be used to scrub files.  This only
-works for files (not directories) and cannot use globs.
-
-You can use both options as many times as you want.
+Customize the guest by providing L<virt-customize(1)> options for installing
+packages, editing files and so on.
 
 =head2 B<dhcp-client-state> *
 
@@ -66,32 +57,13 @@ You can use both options as many times as you want.
 
 =head2 B<firewall-rules>
 
-Remove the firewall rules.
+Вилучити правила брандмауера.
 
 This removes custom firewall rules by removing C</etc/sysconfig/iptables> or
 custom firewalld configuration in C</etc/firewalld/*/*>.
 
 Note this is I<not> enabled by default since it may expose guests to
 exploits.  Use with care.
-
-=head2 B<firstboot> *
-
-Додати скрипти для одноразового запуску під час наступного завантаження.
-
-Supply one of more shell scripts (using the I<--firstboot> option).
-
-Ці скрипти буде одноразово виконано під час першого завантаження гостьової
-системи і після цього вилучено. Такими скриптами зручно користуватися для
-остаточного налаштовування, яке має бути виконано у контексті гостьової
-операційної системи, наприклад C<yum update>.
-
-Виведені дані і повідомлення про помилки для таких скриптів буде записано до
-C<~root/virt-sysprep-firstboot.log> (у гостьовій системі).
-
-=head3 Зауваження щодо firstboot
-
-У поточній версії цю можливість реалізовано лише для гостьових систем Linux,
-у яких використовується System V init або systemd
 
 =head2 B<flag-reconfiguration>
 
@@ -117,21 +89,6 @@ UUID, наприклад C</etc/fstab> або завантажувач. Вмик
 завантаження.
 
 Див. L<https://bugzilla.redhat.com/show_bug.cgi?id=991641>
-
-=head2 B<hostname> *
-
-Змінити назву вузла гостьової системи.
-
-Ця дія змінює назву вузла гостьової системи на значення, вказане
-за допомогою параметра I<--hostname>.
-
-Якщо параметр I<--hostname> не буде вказано, назву вузла буде змінено на
-C<localhost.localdomain>.
-
-=head3 Зауваження щодо hostname
-
-У поточній версії назву вузла можна встановлювати лише для гостьових систем
-Linux.
 
 =head2 B<дані-kerberos>
 
@@ -245,42 +202,9 @@ Linux.
 
 Вилучити дані PAM у гостьовій системі.
 
-=head2 B<password> *
-
-Встановити пароль root або користувача.
-
-Set root or another user's password.
-
-Use the I<--root-password> option to specify a replacement root password for
-the guest.  You can only use this option once.
-
-Use the I<--password> option to specify replacement user password(s).  You
-can use this option as many times as you want.
-
-Use I<--password-crypto> to change the password encryption used.
-
-See L</OPTIONS> above for details of these options.
-
-This operation is enabled by default, but it only does something if there is
-at least one I<--root-password> or I<--password> argument given.
-
-=head3 Зауваження щодо password
-
-У поточній версії цим можна користуватися лише для гостьових систем Linux,
-заснованих на glibc, у яких використовуються паролі shadow.
-
 =head2 B<puppet-data-log> *
 
 Вилучити дані та файли журналів puppet.
-
-=head2 B<random-seed> *
-
-Створити породжувач випадкових чисел для гостьової системи.
-
-Записати випадкові байти з основної системи до файла породжувача
-псевдовипадкових чисел у гостьовій системі.
-
-Див. L</RANDOM SEED> нижче.
 
 =head2 B<rh-subscription-manager> *
 
@@ -364,28 +288,11 @@ C</root> і C</home/*>. Отже, файли ssh користувачів, да�
 
 Вилучити бази даних і файли журналів sssd.
 
-=head2 B<timezone> *
-
-Change the default timezone of the guest.
-
-This operation changes the default timezone of the guest to the value given
-in the I<--timezone> parameter.
-
-If the I<--timezone> parameter is not given, then the timezone is not
-changed.
-
-This parameter affects the default timezone that users see when they log in,
-but they can still change their timezone per-user account.
-
-=head3 Notes on timezone
-
-Currently this can only set the timezone on Linux guests.
-
 =head2 B<tmp-files> *
 
-Remove temporary files.
+Вилучити тимчасові файли.
 
-This removes temporary files under C</tmp> and C</var/tmp>.
+Вилучає тимчасові файли з C</tmp> і C</var/tmp>.
 
 =head2 B<udev-persistent-net> *
 

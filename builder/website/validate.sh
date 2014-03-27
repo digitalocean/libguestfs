@@ -19,6 +19,13 @@
 export LANG=C
 set -e
 
-../virt-index-validate $srcdir/index
-../virt-index-validate $srcdir/index.asc
+fn=test-filename-for-index-validate
 
+rm -f $fn
+touch $fn
+
+$VG ../virt-index-validate $srcdir/index
+$VG ../virt-index-validate $srcdir/index.asc
+$VG ../virt-index-validate $fn
+
+rm $fn

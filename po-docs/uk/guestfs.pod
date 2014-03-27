@@ -514,7 +514,7 @@ L</guestfs_chmod> after creating each file or directory.
 
 For more information about umask, see L<umask(2)>.
 
-=head2 LABELS AND UUIDS
+=head2 МІТКИ І UUID
 
 Many filesystems, devices and logical volumes support either labels (short
 strings like "BOOT" which might not be unique) and/or UUIDs (globally unique
@@ -1349,7 +1349,7 @@ right one to remove, putting the remaining options into the C<args> array.
 
 =end html
 
-=head2 BACKEND
+=head2 МОДУЛЬ
 
 The backend (previously known as the "attach method") controls how
 libguestfs creates and/or connects to the backend daemon, eg. by starting
@@ -2397,7 +2397,7 @@ appliance you are currently using supports the functionality.
 
 __AVAILABILITY__
 
-=head2 FILESYSTEM AVAILABLE
+=head2 ДОСТУПНІ ФАЙЛОВІ СИСТЕМИ
 
 The L</guestfs_filesystem_available> call tests whether a filesystem type is
 supported by the appliance kernel.
@@ -3339,7 +3339,7 @@ receive these messages.
 
 =head1 ВНУТРІШНІ ПРИНЦИПИ РОБОТИ
 
-=head2 APPLIANCE BOOT PROCESS
+=head2 ПРОЦЕДУРА ЗАВАНТАЖЕННЯ БАЗОВОЇ СИСТЕМИ
 
 This process has evolved and continues to evolve.  The description here
 corresponds only to the current version of libguestfs and is provided for
@@ -3350,7 +3350,7 @@ In order to follow the stages involved below, enable libguestfs debugging
 
 =over 4
 
-=item Create the appliance
+=item Створення базової системи
 
 C<supermin --build> is invoked to create the kernel, a small initrd and the
 appliance.
@@ -4104,7 +4104,7 @@ programmers.
 
 =item C<align>
 
-L<virt-alignment-scan(1)> command and documentation.
+Програма L<virt-alignment-scan(1)> та документація до неї.
 
 =item C<appliance>
 
@@ -4120,7 +4120,7 @@ Various build scripts used by autotools.
 
 =item C<builder>
 
-L<virt-builder(1)> command and documentation.
+Програма L<virt-builder(1)> та документація до неї.
 
 =item C<cat>
 
@@ -4131,6 +4131,10 @@ documentation.
 
 Outside contributions, experimental parts.
 
+=item C<customize>
+
+L<virt-customize(1)> command and documentation.
+
 =item C<daemon>
 
 The daemon that runs inside the libguestfs appliance and carries out
@@ -4138,15 +4142,15 @@ actions.
 
 =item C<df>
 
-L<virt-df(1)> command and documentation.
+Програма L<virt-df(1)> та документація до неї.
 
 =item C<diff>
 
-L<virt-diff(1)> command and documentation.
+Програма L<virt-diff(1)> та документація до неї.
 
 =item C<edit>
 
-L<virt-edit(1)> command and documentation.
+Програма L<virt-edit(1)> та документація до неї.
 
 =item C<examples>
 
@@ -4160,7 +4164,7 @@ L<virt-tar-out(1)>.
 
 =item C<format>
 
-L<virt-format(1)> command and documentation.
+Програма L<virt-format(1)> та документація до неї.
 
 =item C<fuse>
 
@@ -4194,7 +4198,7 @@ M4 macros used by autoconf.
 
 =item C<make-fs>
 
-L<virt-make-fs(1)> command and documentation.
+Програма L<virt-make-fs(1)> та документація до неї.
 
 =item C<mllib>
 
@@ -4472,11 +4476,11 @@ and L</SUPERMIN_MODULES>.
 
 =item LIBGUESTFS_APPEND
 
-Pass additional options to the guest kernel.
+Передати додаткові параметри ядру гостьової системи.
 
 =item LIBGUESTFS_ATTACH_METHOD
 
-This is the old way to set C<LIBGUESTFS_BACKEND>.
+Це старий спосіб визначити C<LIBGUESTFS_BACKEND>.
 
 =item LIBGUESTFS_BACKEND
 
@@ -4497,7 +4501,7 @@ which have the same effective user ID.
 If C<LIBGUESTFS_CACHEDIR> is not set, then C<TMPDIR> is used.  If C<TMPDIR>
 is not set, then C</var/tmp> is used.
 
-See also L</LIBGUESTFS_TMPDIR>, L</guestfs_set_cachedir>.
+Див. також L</LIBGUESTFS_TMPDIR>, L</guestfs_set_cachedir>.
 
 =item LIBGUESTFS_DEBUG
 
@@ -4535,7 +4539,7 @@ handle.
 If C<LIBGUESTFS_TMPDIR> is not set, then C<TMPDIR> is used.  If C<TMPDIR> is
 not set, then C</tmp> is used.
 
-See also L</LIBGUESTFS_CACHEDIR>, L</guestfs_set_tmpdir>.
+Див. також L</LIBGUESTFS_CACHEDIR>, L</guestfs_set_tmpdir>.
 
 =item LIBGUESTFS_TRACE
 
@@ -4560,9 +4564,9 @@ recent host kernel is chosen.  For more information about kernel selection,
 see L<supermin(1)>.  This feature is only available in supermin /
 febootstrap E<ge> 3.8.
 
-=item TMPDIR
+=item ТИМЧАСОВИЙ КАТАЛОГ
 
-See L</LIBGUESTFS_CACHEDIR>, L</LIBGUESTFS_TMPDIR>.
+Див. L</LIBGUESTFS_CACHEDIR>, L</LIBGUESTFS_TMPDIR>.
 
 =back
 
@@ -4573,16 +4577,16 @@ L<guestfs-java(3)>, L<guestfs-lua(3)>, L<guestfs-ocaml(3)>,
 L<guestfs-perl(3)>, L<guestfs-python(3)>, L<guestfs-ruby(3)>,
 L<guestfish(1)>, L<guestmount(1)>, L<virt-alignment-scan(1)>,
 L<virt-builder(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>,
-L<virt-df(1)>, L<virt-diff(1)>, L<virt-edit(1)>, L<virt-filesystems(1)>,
-L<virt-format(1)>, L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
-L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
-L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
-L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
-L<virt-win-reg(1)>, L<guestfs-faq(1)>, L<guestfs-performance(1)>,
-L<guestfs-release-notes(1)>, L<guestfs-testing(1)>,
-L<libguestfs-test-tool(1)>, L<libguestfs-make-fixed-appliance(1)>,
-L<supermin(1)>, L<qemu(1)>, L<hivex(3)>, L<stap(1)>, L<sd-journal(3)>,
-L<http://libguestfs.org/>.
+L<virt-customize(1)>, L<virt-df(1)>, L<virt-diff(1)>, L<virt-edit(1)>,
+L<virt-filesystems(1)>, L<virt-format(1)>, L<virt-inspector(1)>,
+L<virt-list-filesystems(1)>, L<virt-list-partitions(1)>, L<virt-ls(1)>,
+L<virt-make-fs(1)>, L<virt-rescue(1)>, L<virt-resize(1)>,
+L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>,
+L<virt-tar-out(1)>, L<virt-win-reg(1)>, L<guestfs-faq(1)>,
+L<guestfs-performance(1)>, L<guestfs-release-notes(1)>,
+L<guestfs-testing(1)>, L<libguestfs-test-tool(1)>,
+L<libguestfs-make-fixed-appliance(1)>, L<supermin(1)>, L<qemu(1)>,
+L<hivex(3)>, L<stap(1)>, L<sd-journal(3)>, L<http://libguestfs.org/>.
 
 Tools with a similar purpose: L<fdisk(8)>, L<parted(8)>, L<kpartx(8)>,
 L<lvm(8)>, L<disktype(1)>.
@@ -4593,5 +4597,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2013
+© Red Hat Inc., 2009–2014
 

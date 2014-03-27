@@ -57,16 +57,6 @@ Windows sysprepping in a future version, and we already have code to do it.
 Add a remote disk.  The URI format is compatible with guestfish.  See
 L<guestfish(1)/ADDING REMOTE STORAGE>.
 
-=item B<--autorelabel>
-
-=item B<--no-autorelabel>
-
-I<--autorelabel> forces SELinux relabelling next time the guest boots.
-I<--no-autorelabel> disables relabelling.
-
-The default is to try to detect if SELinux relabelling is required.  See
-L</SELINUX RELABELLING> below for more details.
-
 =item B<-c> URI
 
 =item B<--connect> URI
@@ -126,10 +116,11 @@ operations, while the meta-names C<defaults> and C<all> represent
 respectively the operations enabled by default and all the available ones.
 For example:
 
- --operations delete,defaults,-hostname
+ --operations firewall-rules,defaults,-tmp-files
 
-would enable the C<delete> operation (regardless whether it is enabled by
-default), all the default ones, and disable the C<hostname> operation.
+would enable the C<firewall-rules> operation (regardless whether it is
+enabled by default), all the default ones, and disable the C<tmp-files>
+operation.
 
 I<--operations> can be specified multiple times; the first time the set of
 enabled operations is empty, while any further I<--operations> affects the
@@ -479,34 +470,18 @@ inodes.
 
 I<(このセクションは Linux 仮想マシンのみに適用します)>
 
-The virt-sysprep C<random-seed> operation writes a few bytes of randomness
-from the host into the guest's random seed file.
+For supported guests, virt-sysprep writes a few bytes of randomness from the
+host into the guest's random seed file.
 
 If this is just done once and the guest is cloned from the same template,
 then each guest will start with the same entropy, and things like SSH host
 keys and TCP sequence numbers may be predictable.
 
 Therefore you should arrange to add more randomness I<after> cloning from a
-template too, which can be done by just enabling the C<random-seed>
-operation:
+template too, which can be done by enabling just the customize module:
 
  cp template.img newguest.img
- virt-sysprep --enable random-seed -a newguest.img
-
-=head2 SELinux の再ラベル付け
-
-I<(このセクションは SELinux を使用している Linux 仮想マシンのみに適用されます。)>
-
-If any new files are created by virt-sysprep, then virt-sysprep touches
-C</.autorelabel> so that these will be correctly labelled by SELinux the
-next time the guest is booted.  This process interrupts boot and can take
-some time.
-
-You can force relabelling for all guests by supplying the I<--autorelabel>
-option.
-
-You can disable relabelling entirely by supplying the I<--no-autorelabel>
-option.
+ virt-sysprep --enable customize -a newguest.img
 
 =head1 WINDOWS 8
 
@@ -527,9 +502,9 @@ L<sh(1)> for details.
 =head1 関連項目
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-builder(1)>, L<virt-clone(1)>,
-L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>, L<virsh(1)>,
-L<lvcreate(8)>, L<qemu-img(1)>, L<scrub(1)>, L<http://libguestfs.org/>,
-L<http://libvirt.org/>.
+L<virt-customize(1)>, L<virt-rescue(1)>, L<virt-resize(1)>,
+L<virt-sparsify(1)>, L<virsh(1)>, L<lvcreate(8)>, L<qemu-img(1)>,
+L<scrub(1)>, L<http://libguestfs.org/>, L<http://libvirt.org/>.
 
 =head1 著者
 

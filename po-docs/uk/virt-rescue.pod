@@ -413,7 +413,7 @@ L<sh(1)> for details.
 This configuration file controls the default read-only or read-write mode
 (I<--ro> or I<--rw>).
 
-See L<libguestfs-tools.conf(5)>.
+Див. L<libguestfs-tools.conf(5)>.
 
 =back
 
@@ -429,5 +429,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2013
+© Red Hat Inc., 2009–2014
 

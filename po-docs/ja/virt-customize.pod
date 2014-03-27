@@ -1,0 +1,142 @@
+
+=head1 名前
+
+virt-customize - Customize a virtual machine
+
+=head1 書式
+
+ virt-customize [--options] -d domname
+__CUSTOMIZE_SYNOPSIS__
+
+ virt-customize [--options] -a disk.img [-a disk.img ...]
+__CUSTOMIZE_SYNOPSIS__
+
+=head1 説明
+
+Virt-customize can customize a virtual machine (disk image) by installing
+packages, editing configuration files, and so on.
+
+Virt-customize modifies the guest or disk image I<in place>.  The guest must
+be shut down.  If you want to preserve the existing contents of the guest,
+I<you must snapshot, copy or clone the disk first>.
+
+You do I<not> need to run virt-customize as root.  In fact we'd generally
+recommend that you don't.
+
+Related tools include: L<virt-sysprep(1)> and L<virt-builder(1)>.
+
+=head1 オプション
+
+=over 4
+
+=item B<--help>
+
+簡単なヘルプを表示します。
+
+=item B<-a> file
+
+=item B<--add> file
+
+仮想マシンからディスクイメージの I<file> を追加します。
+
+ディスクイメージの形式は自動的に検出されます。強制的に特定の形式を使用するには I<--format> オプションを使用します。
+
+=item B<-a> URI
+
+=item B<--add> URI
+
+Add a remote disk.  The URI format is compatible with guestfish.  See
+L<guestfish(1)/ADDING REMOTE STORAGE>.
+
+=item B<-c> URI
+
+=item B<--connect> URI
+
+libvirt を使用していると、指定された I<URI> に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
+
+ゲストのブロックデバイスを直接指定していると（(I<-a>)）、libvirt は何も使用されません。
+
+=item B<-d> guest
+
+=item B<--domain> guest
+
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  名前の代わりに仮想マシンの UUID を使用できます。
+
+=item B<-n>
+
+=item B<--dry-run>
+
+Perform a read-only "dry run" on the guest.  This runs the sysprep
+operation, but throws away any changes to the disk at the end.
+
+=item B<--format> raw|qcow2|..
+
+=item B<--format> auto
+
+The default for the I<-a> option is to auto-detect the format of the disk
+image.  Using this forces the disk format for I<-a> options which follow on
+the command line.  Using I<--format auto> switches back to auto-detection
+for subsequent I<-a> options.
+
+例:
+
+ virt-customize --format raw -a disk.img
+
+強制的に C<disk.img> を raw 形式にします (自動検出しません)。
+
+ virt-customize --format raw -a disk.img --format auto -a another.img
+
+強制的に C<disk.img> を raw 形式にし (自動検知なし)、 C<another.img> に対して自動検知に戻します。
+
+仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
+これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。
+
+=item B<-q>
+
+=item B<--quiet>
+
+ログメッセージを表示しません。
+
+To enable detailed logging of individual file operations, use I<-x>.
+
+=item B<-v>
+
+=item B<--verbose>
+
+デバッグ用の冗長なメッセージを有効にします。
+
+=item B<-V>
+
+=item B<--version>
+
+バージョン番号を表示して終了します。
+
+=item B<-x>
+
+libguestfs API 呼び出しのトレースを有効にします。
+
+=back
+
+=head2 Customization options
+
+__CUSTOMIZE_OPTIONS__
+
+=head1 終了ステータス
+
+このプログラムは、成功すると 0 を返します。または、エラーが起きると 1 を返します。
+
+=head1 関連項目
+
+L<guestfs(3)>, L<guestfish(1)>, L<virt-builder(1)>, L<virt-clone(1)>,
+L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
+L<virt-sysprep(1)>, L<virsh(1)>, L<lvcreate(8)>, L<qemu-img(1)>,
+L<scrub(1)>, L<http://libguestfs.org/>, L<http://libvirt.org/>.
+
+=head1 著者
+
+Richard W.M. Jones L<http://people.redhat.com/~rjones/>
+
+=head1 COPYRIGHT
+
+Copyright (C) 2011-2014 Red Hat Inc.
+

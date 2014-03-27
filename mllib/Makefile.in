@@ -1424,37 +1424,20 @@ SOURCES = \
 	common_utils.ml \
 	common_utils_tests.ml \
 	config.ml \
-	crypt-c.c \
-	crypt.ml \
-	crypt.mli \
-	firstboot.mli \
-	firstboot.ml \
 	fsync-c.c \
 	fsync.mli \
 	fsync.ml \
 	mkdtemp.mli \
 	mkdtemp.ml \
 	mkdtemp-c.c \
-	hostname.mli \
-	hostname.ml \
-	password.mli \
-	password.ml \
-	perl_edit.mli \
-	perl_edit.ml \
 	planner.mli \
 	planner.ml \
 	progress-c.c \
 	progress.mli \
 	progress.ml \
-	random_seed.mli \
-	random_seed.ml \
-	timezone.mli \
-	timezone.ml \
 	tty-c.c \
 	tTY.mli \
 	tTY.ml \
-	urandom.mli \
-	urandom.ml \
 	uri-c.c \
 	uRI.mli \
 	uRI.ml
@@ -1468,25 +1451,17 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	libdir \
 @HAVE_OCAML_TRUE@	common_gettext \
 @HAVE_OCAML_TRUE@	common_utils \
-@HAVE_OCAML_TRUE@	urandom \
-@HAVE_OCAML_TRUE@	random_seed \
-@HAVE_OCAML_TRUE@	hostname \
-@HAVE_OCAML_TRUE@	timezone \
-@HAVE_OCAML_TRUE@	firstboot \
-@HAVE_OCAML_TRUE@	perl_edit \
 @HAVE_OCAML_TRUE@	tTY \
 @HAVE_OCAML_TRUE@	fsync \
 @HAVE_OCAML_TRUE@	progress \
 @HAVE_OCAML_TRUE@	uRI \
-@HAVE_OCAML_TRUE@	crypt \
-@HAVE_OCAML_TRUE@	password \
 @HAVE_OCAML_TRUE@	mkdtemp \
 @HAVE_OCAML_TRUE@	planner
 
 @HAVE_OCAML_TRUE@OBJECTS = $(top_builddir)/fish/guestfish-progress.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o tty-c.o \
-@HAVE_OCAML_TRUE@	fsync-c.o progress-c.o uri-c.o crypt-c.o \
-@HAVE_OCAML_TRUE@	mkdtemp-c.o $(am__append_1) $(am__append_2)
+@HAVE_OCAML_TRUE@	fsync-c.o progress-c.o uri-c.o mkdtemp-c.o \
+@HAVE_OCAML_TRUE@	$(am__append_1) $(am__append_2)
 @HAVE_OCAML_TRUE@noinst_SCRIPTS = dummy
 
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L

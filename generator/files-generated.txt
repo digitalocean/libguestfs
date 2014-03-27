@@ -1,4 +1,8 @@
 csharp/Libguestfs.cs
+customize/customize-options.pod
+customize/customize-synopsis.pod
+customize/customize_cmdline.ml
+customize/customize_cmdline.mli
 daemon/actions.h
 daemon/names.c
 daemon/optgroups.c

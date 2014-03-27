@@ -1,0 +1,85 @@
+(* libguestfs generated file
+ * WARNING: THIS FILE IS GENERATED FROM:
+ *   generator/ *.ml
+ * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
+ *
+ * Copyright (C) 2009-2014 Red Hat Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *)
+
+(** Command line argument parsing, both for the virt-customize binary
+    and for the other tools that share the same code. *)
+
+type ops = {
+  ops : op list;
+  flags : flags;
+}
+and op = [
+  | `Delete of string
+      (* --delete PATH *)
+  | `Edit of string * string
+      (* --edit FILE:EXPR *)
+  | `FirstbootScript of string
+      (* --firstboot SCRIPT *)
+  | `FirstbootCommand of string
+      (* --firstboot-command 'CMD+ARGS' *)
+  | `FirstbootPackages of string list
+      (* --firstboot-install PKG,PKG.. *)
+  | `Hostname of string
+      (* --hostname HOSTNAME *)
+  | `InstallPackages of string list
+      (* --install PKG,PKG.. *)
+  | `Link of string * string list
+      (* --link TARGET:LINK[:LINK..] *)
+  | `Mkdir of string
+      (* --mkdir DIR *)
+  | `Password of string * Password.password_selector
+      (* --password USER:SELECTOR *)
+  | `RootPassword of Password.password_selector
+      (* --root-password SELECTOR *)
+  | `Script of string
+      (* --run SCRIPT *)
+  | `Command of string
+      (* --run-command 'CMD+ARGS' *)
+  | `Scrub of string
+      (* --scrub FILE *)
+  | `Timezone of string
+      (* --timezone TIMEZONE *)
+  | `Update
+      (* --update *)
+  | `Upload of string * string
+      (* --upload FILE:DEST *)
+  | `Write of string * string
+      (* --write FILE:CONTENT *)
+]
+and flags = {
+  scrub_logfile : bool;
+      (* --no-logfile *)
+  password_crypto : Password.password_crypto option;
+      (* --password-crypto md5|sha256|sha512 *)
+  selinux_relabel : bool;
+      (* --selinux-relabel *)
+}
+
+type argspec = Arg.key * Arg.spec * Arg.doc
+val argspec : prog:string -> unit -> (argspec * string option * string) list * (unit -> ops)
+(** This returns a pair [(list, get_ops)].
+
+    [list] is a list of the command line arguments, plus some extra data.
+
+    [get_ops] is a function you can call {i after} command line parsing
+    which will return the actual operations specified by the user on the
+    command line. *)

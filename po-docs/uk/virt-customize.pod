@@ -1,0 +1,151 @@
+
+=head1 НАЗВА
+
+virt-customize - Customize a virtual machine
+
+=head1 КОРОТКИЙ ОПИС
+
+ virt-customize [--options] -d domname
+__CUSTOMIZE_SYNOPSIS__
+
+ virt-customize [--options] -a disk.img [-a disk.img ...]
+__CUSTOMIZE_SYNOPSIS__
+
+=head1 ОПИС
+
+Virt-customize can customize a virtual machine (disk image) by installing
+packages, editing configuration files, and so on.
+
+Virt-customize modifies the guest or disk image I<in place>.  The guest must
+be shut down.  If you want to preserve the existing contents of the guest,
+I<you must snapshot, copy or clone the disk first>.
+
+You do I<not> need to run virt-customize as root.  In fact we'd generally
+recommend that you don't.
+
+Related tools include: L<virt-sysprep(1)> and L<virt-builder(1)>.
+
+=head1 ПАРАМЕТРИ
+
+=over 4
+
+=item B<--help>
+
+Показати коротку довідку.
+
+=item B<-a> файл
+
+=item B<--add> файл
+
+Додати I<файл>, який має бути образом диска з віртуальної машини.
+
+Формат образу диска визначається автоматично. Щоб перевизначити його і
+примусово використати певний формат, скористайтеся параметром I<--format>.
+
+=item B<-a> адреса
+
+=item B<--add> адреса
+
+Add a remote disk.  The URI format is compatible with guestfish.  See
+L<guestfish(1)/ADDING REMOTE STORAGE>.
+
+=item B<-c> адреса
+
+=item B<--connect> адреса
+
+Якщо використовується libvirt, встановити з’єднання з вказаним I<URI>. Якщо
+пропущено, з’єднання буде встановлено з типовим гіпервізором libvirt.
+
+Якщо вказати блокові пристрої гостьових систем безпосередньо (I<-a>),
+libvirt не буде використовуватися взагалі.
+
+=item B<-d> гість
+
+=item B<--domain> гість
+
+Додати всі диски з вказаної гостьової системи libvirt. UUID доменів можна
+використовувати замість назв.
+
+=item B<-n>
+
+=item B<--dry-run>
+
+Perform a read-only "dry run" on the guest.  This runs the sysprep
+operation, but throws away any changes to the disk at the end.
+
+=item B<--format> raw|qcow2|..
+
+=item B<--format> auto
+
+Типовим значенням для параметра I<-a> є автоматичне визначення формату
+образу диска. Використання цього параметра примусово визначає значення
+параметрів I<-a> формату диска у наступному рядку команди. Використання
+параметра I<--format auto> перемикає програму у режим автоматичного
+визначення у наступних параметрах I<-a>.
+
+Приклад:
+
+ virt-customize --format raw -a disk.img
+
+примусове встановлення формату без обробки (без автоматичного визначення)
+для C<disk.img>.
+
+ virt-customize --format raw -a disk.img --format auto -a another.img
+
+примусове встановлення формату без обробки (без автоматичного визначення)
+для C<disk.img> і повернення до автоматичного визначення для C<another.img>.
+
+Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
+форматі, вам слід скористатися цим параметром для визначення формату
+диска. Таким чином можна уникнути можливих проблем з захистом для
+сформованих зловмисниками гостьових систем (CVE-2010-3851).
+
+=item B<-q>
+
+=item B<--quiet>
+
+Не виводити повідомлень до журналу.
+
+To enable detailed logging of individual file operations, use I<-x>.
+
+=item B<-v>
+
+=item B<--verbose>
+
+Увімкнути докладний показ повідомлень з метою діагностики.
+
+=item B<-V>
+
+=item B<--version>
+
+Показати дані щодо версії і завершити роботу.
+
+=item B<-x>
+
+Увімкнути трасування викликів програмного інтерфейсу libguestfs.
+
+=back
+
+=head2 Customization options
+
+__CUSTOMIZE_OPTIONS__
+
+=head1 СТАН ВИХОДУ
+
+This program returns 0 on success, or 1 if there was an error.
+
+=head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
+
+L<guestfs(3)>, L<guestfish(1)>, L<virt-builder(1)>, L<virt-clone(1)>,
+L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
+L<virt-sysprep(1)>, L<virsh(1)>, L<lvcreate(8)>, L<qemu-img(1)>,
+L<scrub(1)>, L<http://libguestfs.org/>, L<http://libvirt.org/>.
+
+=head1 АВТОРИ
+
+Richard W.M. Jones L<http://people.redhat.com/~rjones/>
+
+=head1 АВТОРСЬКІ ПРАВА
+
+Copyright (C) 2011-2014 Red Hat Inc.
+

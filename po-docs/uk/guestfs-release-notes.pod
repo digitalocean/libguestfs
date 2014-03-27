@@ -10,7 +10,7 @@ document.body.style.backgroundRepeat = "no-repeat"; </script>
 
 =end коментар
 
-=head1 RELEASE NOTES FOR LIBGUESTFS 1.24
+=head1 НОТАТКИ ЩОДО ВИПУСКУ LIBGUESTFS 1.24
 
 These release notes only cover the differences from the previous stable/dev
 branch split (1.22.0).  For detailed changelogs, please see the git
@@ -56,7 +56,7 @@ New bindings for the Go programming language.
 
 =head3 API
 
-Support for the systemd journal.
+Підтримка журналу systemd.
 
 C<guestfs_add_drive_opts> can now control the qemu caching mode through a
 new C<cachemode> parameter.  You can select improved performance for
@@ -66,7 +66,7 @@ C<guestfs_set_label> now works for XFS and btrfs.
 
 New GUESTFS_EVENT_WARNING event for warning messages.
 
-=head3 Inspection
+=head3 Перевірка
 
 Better inspection of SUSE guests (Olaf Hering).
 
@@ -114,7 +114,7 @@ C<is-socket> APIs now have an extra C<followsymlinks> flag.
 
 C<add-drive> has a new C<cachemode> parameter.
 
-=head2 Build changes
+=head2 Зміни у збиранні
 
 The following packages are required to build libguestfs 1.24:
 
@@ -143,11 +143,11 @@ For UML backend.
 
 =item xz
 
-For virt-builder.
+Для virt-builder.
 
 =item golang E<ge> 1.1.1
 
-For Go language bindings.
+Для прив’язок до мови Go.
 
 =back
 
@@ -196,11 +196,11 @@ When enabled, the network now uses resolver configuration
 
 =item L<https://bugzilla.redhat.com/1019889>
 
-libguestfs-tools.conf should have a man page
+libguestfs-tools.conf потрібна сторінка man
 
 =item L<https://bugzilla.redhat.com/1018149>
 
-valgrind errors in btrfs_subvolume_list
+Помилки valgrind у btrfs_subvolume_list
 
 =item L<https://bugzilla.redhat.com/1002032>
 
@@ -837,7 +837,7 @@ passing.  Several bugs in the bindings were found and fixed as a result.
 Better handling of blocking and non-blocking functions should make
 libguestfs calls more efficient.
 
-=head3 inspection
+=head3 перевірка
 
 Windows guests with unlimited-sized Registries are now supported.  By adding
 the hivex API to the libguestfs API, it is much more efficient and easier to
@@ -1335,7 +1335,7 @@ repository, or the ChangeLog file distributed in the tarball.
    - comma and colon characters in filenames now handled correctly by
      all virt tools
 
-=head3 inspection
+=head3 перевірка
 
    - added support for Fedora 17+
 
@@ -1564,7 +1564,7 @@ repository, or the ChangeLog file distributed in the tarball.
    - new %guestfs_introspection hash is available in Perl bindings so
      you can query which optional arguments are available
 
-=head3 inspection
+=head3 перевірка
 
    - guests with MD devices can be inspected (Matthew Booth)
 
@@ -1738,7 +1738,7 @@ repository, or the ChangeLog file distributed in the tarball.
 
    - the library can now be compiled without hivex (RHBZ#723474).
 
-=head3 inspection
+=head3 перевірка
 
    - Improve detection of Windows disks.
 
@@ -2651,5 +2651,5 @@ Richard W.M. Jones
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2013
+© Red Hat Inc., 2009–2014
 

@@ -1466,15 +1466,13 @@ operations = \
 	ca_certificates \
 	crash_data \
 	cron_spool \
-	delete \
+	customize \
 	dhcp_client_state \
 	dhcp_server_state \
 	dovecot_data \
 	flag_reconfiguration \
 	firewall_rules \
-	firstboot \
 	fs_uuids \
-	hostname \
 	kerberos_data \
 	lvm_uuids \
 	logfiles \
@@ -1485,9 +1483,7 @@ operations = \
 	pacct_log \
 	package_manager_cache \
 	pam_data \
-	password \
 	puppet_data_log \
-	random_seed \
 	rh_subscription_manager \
 	rhn_systemid \
 	rpm_db \
@@ -1497,7 +1493,6 @@ operations = \
 	ssh_hostkeys \
 	ssh_userdir \
 	sssd_db_log \
-	timezone \
 	tmp_files \
 	udev_persistent_net \
 	user_account \
@@ -1516,20 +1511,23 @@ SOURCES = \
 @HAVE_OCAML_TRUE@deps = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uri-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/crypt-c.o \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/crypt.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/urandom.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/password.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/random_seed.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/hostname.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/timezone.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/firstboot.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/crypt-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/crypt.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/urandom.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/password.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/random_seed.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/hostname.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/timezone.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/firstboot.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/perl_edit.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_cmdline.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_run.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
 @HAVE_OCAML_TRUE@	sysprep_operation.cmx \
 @HAVE_OCAML_TRUE@	$(patsubst %,sysprep_operation_%.cmx,$(operations)) \
 @HAVE_OCAML_TRUE@	main.cmx
@@ -1544,7 +1542,8 @@ SOURCES = \
 @HAVE_OCAML_TRUE@OCAMLPACKAGES = -package str,unix -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml -I \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib $(am__append_1)
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize $(am__append_1)
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@OCAMLCLIBS = \
@@ -2091,7 +2090,7 @@ $(top_builddir)/generator/generator:
 
 @HAVE_OCAML_TRUE@.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib $^ | \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
 @HAVE_OCAML_TRUE@	  $(SED) 's/ *$$//' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \

@@ -696,7 +696,7 @@ has to use, which libguestfs cannot know.
 You have to pass the right C<ufstype> mount option when mounting these
 filesystems.
 
-See L<https://www.kernel.org/doc/Documentation/filesystems/ufs.txt>
+Див. L<https://www.kernel.org/doc/Documentation/filesystems/ufs.txt>
 
 =head2 Windows ReFS
 
@@ -1195,5 +1195,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2012–2013
+Copyright (C) 2012-2014 Red Hat Inc.
 

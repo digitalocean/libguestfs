@@ -139,19 +139,24 @@ DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(srcdir)/Makefile.am $(srcdir)/META.in \
 	$(top_srcdir)/build-aux/depcomp
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = mlguestfs.cmxa
-@HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@am__append_2 = html/index.html
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_3 = \
+
+# Note that both calls to ocamlmklib below will create
+# 'libmlguestfs.a' and if run at the same time, they will stomp on or
+# corrupt each others copy.  Hence we have to serialize the calls.
+@HAVE_OCAML_TRUE@am__append_2 = stamp-mlguestfs $(noinst_DATA)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@am__append_3 = guestfs.cmx
+@HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@am__append_4 = html/index.html
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_5 = \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	t/guestfs_100_launch.bc \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	t/guestfs_430_progress_messages.bc
 
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_4 = \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_6 = \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	t/guestfs_100_launch.opt \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	t/guestfs_430_progress_messages.opt
 
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@am__append_5 = $(test_progs_opt)
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@am__append_6 = bindtests.opt
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@am__append_7 = *.cmx *.cmxa
-@HAVE_OCAML_TRUE@am__append_8 = $(noinst_DATA)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@am__append_7 = $(test_progs_opt)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@am__append_8 = bindtests.opt
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@am__append_9 = *.cmx *.cmxa
 subdir = ocaml
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1483,17 +1488,18 @@ EXTRA_DIST = \
 	t/*.ml
 
 CLEANFILES = *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so t/*.cmi \
-	t/*.cmo t/*.cmx t/*.o t/*.a t/*.so $(am__append_8)
+	t/*.cmo t/*.cmx t/*.o t/*.a t/*.so $(am__append_2)
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@noinst_DATA = mlguestfs.cma META $(am__append_1) \
-@HAVE_OCAML_TRUE@	$(am__append_2) bindtests.bc \
-@HAVE_OCAML_TRUE@	$(test_progs_all) $(am__append_6)
+@HAVE_OCAML_TRUE@	$(am__append_4) bindtests.bc \
+@HAVE_OCAML_TRUE@	$(test_progs_all) $(am__append_8)
 
 # Build the C part into a library, so that automake handles the C
 # compilation step for us.  Note that we don't directly use this
 # library; we link with the object files that it generates.
 @HAVE_OCAML_TRUE@noinst_LIBRARIES = libguestfsocaml.a
+@HAVE_OCAML_TRUE@guestfs_cmm = guestfs.cmo $(am__append_3)
 @HAVE_OCAML_TRUE@libguestfsocaml_a_CPPFLAGS = \
 @HAVE_OCAML_TRUE@	-DGUESTFS_PRIVATE=1 \
 @HAVE_OCAML_TRUE@	-I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
@@ -1518,7 +1524,7 @@ CLEANFILES = *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so t/*.cmi \
 @HAVE_OCAML_TRUE@	t/guestfs_060_explicit_close.bc \
 @HAVE_OCAML_TRUE@	t/guestfs_070_optargs.bc \
 @HAVE_OCAML_TRUE@	t/guestfs_410_close_event.bc \
-@HAVE_OCAML_TRUE@	t/guestfs_420_log_messages.bc $(am__append_3)
+@HAVE_OCAML_TRUE@	t/guestfs_420_log_messages.bc $(am__append_5)
 @HAVE_OCAML_TRUE@test_progs_opt = t/guestfs_010_load.opt \
 @HAVE_OCAML_TRUE@	t/guestfs_020_create.opt \
 @HAVE_OCAML_TRUE@	t/guestfs_030_create_flags.opt \
@@ -1528,14 +1534,14 @@ CLEANFILES = *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so t/*.cmi \
 @HAVE_OCAML_TRUE@	t/guestfs_070_optargs.opt \
 @HAVE_OCAML_TRUE@	t/guestfs_410_close_event.opt \
 @HAVE_OCAML_TRUE@	t/guestfs_420_log_messages.opt \
-@HAVE_OCAML_TRUE@	$(am__append_4)
-@HAVE_OCAML_TRUE@test_progs_all = $(test_progs_bc) $(am__append_5)
+@HAVE_OCAML_TRUE@	$(am__append_6)
+@HAVE_OCAML_TRUE@test_progs_all = $(test_progs_bc) $(am__append_7)
 @HAVE_OCAML_TRUE@TESTS = run-bindtests $(test_progs_all)
 @HAVE_OCAML_TRUE@SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly
 
 # Do the installation by hand, because we want to run ocamlfind.
 @HAVE_OCAML_TRUE@data_hook_files = META *.so *.a *.cma *.cmi \
-@HAVE_OCAML_TRUE@	$(srcdir)/*.mli $(am__append_7)
+@HAVE_OCAML_TRUE@	$(srcdir)/*.mli $(am__append_9)
 all: all-am
 
 .SUFFIXES:
@@ -1994,19 +2000,16 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-# Note that both calls to ocamlmklib below will create
-# 'libmlguestfs.a' and if run at the same time, they will stomp on or
-# corrupt each others copy.  Hence we have to serialize the calls.
+@HAVE_OCAML_TRUE@mlguestfs.cma mlguestfs.cmxa: stamp-mlguestfs
 
-@HAVE_OCAML_TRUE@mlguestfs.cma: libguestfsocaml.a guestfs.cmo
+@HAVE_OCAML_TRUE@stamp-mlguestfs: libguestfsocaml.a $(guestfs_cmm)
 @HAVE_OCAML_TRUE@	$(OCAMLMKLIB) -o mlguestfs \
 @HAVE_OCAML_TRUE@	  $(libguestfsocaml_a_OBJECTS) guestfs.cmo \
 @HAVE_OCAML_TRUE@	  -L$(top_builddir)/src/.libs -lguestfs
-
-@HAVE_OCAML_TRUE@mlguestfs.cmxa: libguestfsocaml.a guestfs.cmx
-@HAVE_OCAML_TRUE@	$(OCAMLMKLIB) -o mlguestfs \
-@HAVE_OCAML_TRUE@	  $(libguestfsocaml_a_OBJECTS) guestfs.cmx \
-@HAVE_OCAML_TRUE@	  -L$(top_builddir)/src/.libs -lguestfs
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLMKLIB) -o mlguestfs \
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  $(libguestfsocaml_a_OBJECTS) guestfs.cmx \
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  -L$(top_builddir)/src/.libs -lguestfs
+@HAVE_OCAML_TRUE@	touch $@
 
 @HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@html/index.html: $(srcdir)/guestfs.mli $(srcdir)/guestfs.ml
 @HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@	-$(OCAMLDOC) -d html -html $^
@@ -2055,10 +2058,6 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	  $(data_hook_files)
 @HAVE_OCAML_TRUE@	rm $(DESTDIR)$(OCAMLLIB)/guestfs/bindtests.*
 @HAVE_OCAML_TRUE@	rm $(DESTDIR)$(OCAMLLIB)/guestfs/libguestfsocaml.a
-
-# Tell version 3.79 and up of GNU make to not build goals in this
-# directory in parallel.
-.NOTPARALLEL:
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
