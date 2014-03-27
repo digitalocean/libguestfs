@@ -1128,6 +1128,8 @@ C<guestfs_add_drive_opts>).
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.25.44)
+
 =head2 guestfs_blkdiscardzeroes
 
  int
@@ -1142,6 +1144,8 @@ If it returns false, then it may be that discarded blocks are
 read as stale or random data.
 
 This function returns a C truth value on success or -1 on error.
+
+(Added in 1.25.44)
 
 =head2 guestfs_blkid
 
@@ -2121,6 +2125,8 @@ enables all the other flags, if they are not specified already.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.25.21)
+
 =head2 guestfs_copy_attributes_va
 
  int
@@ -2607,6 +2613,8 @@ Note that this call does not add the new disk to the handle.  You
 may need to call C<guestfs_add_drive_opts> separately.
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.25.31)
 
 =head2 guestfs_disk_create_va
 
@@ -3667,6 +3675,8 @@ See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
 This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
+
+(Added in 1.25.24)
 
 =head2 guestfs_get_cachedir
 
@@ -9482,6 +9492,8 @@ table.  This works on C<gpt> but not on C<mbr> partitions.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
+(Added in 1.25.33)
+
 =head2 guestfs_part_get_parttype
 
  char *
@@ -10723,6 +10735,8 @@ list of settings.
 See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.25.24)
 
 =head2 guestfs_set_cachedir
 

@@ -1,3 +1,127 @@
+commit a9b62321b6f6629580d9ada28b149019dd6174f5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 26 10:28:36 2014 +0000
+
+    Version 1.25.49.
+
+commit 90973755b2f891f3814e9d9d22f739aeb6fa494a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 26 10:21:38 2014 +0000
+
+    customize: Use --no-network flag so test works under UML.
+
+commit 63f0ee9c57a24a6f53becd7534c2a218212291f7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 26 00:05:45 2014 +0000
+
+    Version 1.25.48.
+
+commit 218ac6996be19b84d92f654633d8ad53d1937a02
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 25 23:52:51 2014 +0000
+
+    Further updates to the release notes, for 1.26.
+
+commit 36f4f105810a2b027e4164a73db8ae9789e849a5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 25 19:15:06 2014 +0000
+
+    Further updates to release notes, for 1.26.
+
+commit cec31436f8b87d84887a50fd6eeba853ccef1581
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 25 22:41:19 2014 +0000
+
+    customize: Rename main.ml to customize_main.ml.
+    
+    The OCaml compiler isn't happy when two modules have the same name in
+    different directories.  Since customize/ contains a library of modules
+    used in other directories, and since those directories may have
+    main.ml files too, we need to rename 'customize/main.ml' to
+    'customize/customize_main.ml'.
+
+commit 1a4709147a4e6cbebd394ce1a157a14e4c55db6b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 25 22:09:34 2014 +0000
+
+    customize: Add various options from virt-builder.
+    
+    This adds the following options to virt-customize:
+    
+      --attach
+      --attach-format
+      -m / --memsize
+      --network / --no-network
+      --smp
+    
+    This fixes commit 2b208d84db080659badbb70044497aae040592e7.
+
+commit 87fcb4df0340309d1858ea43ce242985225ab649
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 25 22:09:14 2014 +0000
+
+    Add customize subdirectory to ./run script.
+    
+    This fixes commit 2b208d84db080659badbb70044497aae040592e7.
+
+commit 36f179fdfa548965d0aa57335d12c4cc29e4cf0e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 25 16:06:25 2014 +0000
+
+    Begin working on release notes for libguestfs 1.26 release.
+
+commit a70dd85a1734ecf3e1a6bda57b382a451ffb936d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 25 09:50:32 2014 -0500
+
+    aarch64: Use -M virt to specify virtual machine type.
+    
+    Thanks: Paolo Bonzini
+
+commit d6072de4ffe19ea57fe94caedbb39f1f7517182b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 24 17:34:45 2014 -0500
+
+    arm: Replace #ifdef with #if defined, etc.
+    
+    No functional change.
+
+commit afb74f104dd4b1c27f3bb1254f51342ffa6702b9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 24 17:34:15 2014 -0500
+
+    aarch64: Cannot emulate IDE, like all non-PC.
+
+commit 219c2ddf1b186f2afeda698e0d93ba6b1559eaf8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 24 17:33:51 2014 -0500
+
+    aarch64: This has no working hpet emulation, like ARM 32 bit.
+
+commit f8c83e801afc26dd61a8108188ab4de9e4a4b0ec
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 24 17:33:10 2014 -0500
+
+    aarch64: This has no PCI, like ARM 32 bit.
+
+commit d396ccb47063e2a3d177e50cc2299b40788f2b75
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 25 13:00:22 2014 +0000
+
+    Open release notes for 1.26 release.
+
+commit 40cac10b62509bc1ad12fe9c10a89ad83ca0fb84
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 25 13:00:17 2014 +0000
+
+    Update TODO with Python bindings suggestion.
+
+commit 3d79c51a2853cc3347a31d67a04ce140cbe8d683
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 25 13:11:23 2014 +0000
+
+    Update API support.
+
 commit 7ad1683daef031c3a1f4ca1fb5e75553ec6c4234
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Mar 25 12:51:25 2014 +0000

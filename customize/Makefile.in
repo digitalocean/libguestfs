@@ -1474,7 +1474,7 @@ SOURCES = \
 	firstboot.mli \
 	hostname.ml \
 	hostname.mli \
-	main.ml \
+	customize_main.ml \
 	password.ml \
 	password.mli \
 	perl_edit.ml \
@@ -1514,7 +1514,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	timezone \
 @HAVE_OCAML_TRUE@	customize_cmdline \
 @HAVE_OCAML_TRUE@	customize_run \
-@HAVE_OCAML_TRUE@	main
+@HAVE_OCAML_TRUE@	customize_main
 
 @HAVE_OCAML_TRUE@bin_SCRIPTS = virt-customize
 
