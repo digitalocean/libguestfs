@@ -190,11 +190,11 @@ quote this list to protect it from the shell.
 
  --mount-options "/:noatime"
 
-will mount the root directory with C<notime>.  This example:
+これはルートディレクトリを C<notime> でマウントします。 この例:
 
  --mount-options "/:noatime;/var:rw,nodiratime"
 
-will do the same, plus mount C</var> with C<rw,nodiratime>.
+これは追加で C</var> を C<rw,nodiratime> でマウントすることと同じです。
 
 =item B<-q>
 
@@ -214,7 +214,7 @@ To enable detailed logging of individual file operations, use I<-x>.
 
 =item B<--version>
 
-バージョン番号を表示して終了します。
+バージョン番号を表示して、終了します。
 
 =item B<-x>
 

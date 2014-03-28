@@ -222,7 +222,7 @@ Display help on special FUSE options (see I<-o> below).
 
 =item B<--help>
 
-簡単なヘルプを表示して終了します。
+簡単なヘルプを表示して、終了します。
 
 =item B<-i>
 
@@ -346,8 +346,7 @@ libguestfs からの冗長なメッセージを有効にします。
 
 =item B<--rw>
 
-This changes the I<-a>, I<-d> and I<-m> options so that disks are added and
-mounts are done read-write.
+ディスクが追加され、読み書き可能でマウントされるよう、 I<-a>, I<-d>, I<-m> オプションを変更します。
 
 L<guestfish(1)/OPENING DISKS FOR READ AND WRITE> 参照。
 

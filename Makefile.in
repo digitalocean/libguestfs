@@ -1573,7 +1573,7 @@ SUBDIRS = gnulib/lib $(am__append_1) tests/data generator src examples \
 	$(am__append_13) $(am__append_14) csharp $(am__append_15) \
 	$(am__append_16) $(am__append_17) $(am__append_18)
 EXTRA_DIST = \
-	BUGS HACKING ROADMAP TODO \
+	BUGS HACKING TODO \
 	.gitignore \
 	.lvimrc \
 	.mailmap \
@@ -1687,7 +1687,7 @@ HTMLSUPPORTFILES = \
 	html/pod.css \
 	html/virt-builder.svg
 
-TEXTFILES = BUGS README ROADMAP TODO
+TEXTFILES = BUGS README TODO
 BUILDERFILES = \
 	builder/website/README \
 	builder/website/index \

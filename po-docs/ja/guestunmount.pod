@@ -76,7 +76,7 @@ pipe is closed.
 
 =item B<--help>
 
-簡単なヘルプを表示して終了します。
+簡単なヘルプを表示して、終了します。
 
 =item B<-q>
 

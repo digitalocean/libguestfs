@@ -1,3 +1,91 @@
+commit 996eca5da7adae60e726b9837a9cc8e94373de02
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 27 11:57:09 2014 +0000
+
+    Version 1.26.0.
+    
+    New stable version.
+
+commit a20e368fea11fec1a2927670bbe3035ad0bcf4c1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 27 11:34:37 2014 +0000
+
+    fish: Check return values from a couple of API calls.
+    
+    Found by Coverity.
+
+commit be250948bc3e10b370244476debb7ee90d8d8703
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 27 11:33:40 2014 +0000
+
+    fish: Ignore return value from guestfs_user_cancel.
+    
+    As we are in a signal handler, there's nothing else we can do.
+    
+    Found by Coverity.
+
+commit 40998806437eb74b60fddff466a8318f76551818
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 26 20:25:05 2014 +0000
+
+    examples: Check return value from guestfs_list_filesystems.
+    
+    Found by Coverity.
+
+commit 7792278e0534e0e91ddc160aee46f1623a5769a1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 26 20:23:19 2014 +0000
+
+    virt-diff: Free memory along error path.
+    
+    Found by Coverity.
+
+commit 8da50e5a3f83fffa2ed3508a57c787ee73af3d97
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 26 20:08:36 2014 +0000
+
+    daemon: md: Whitespace fix.
+
+commit 4caa2ea5ffa15719030e1528956163130020417f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 26 20:07:43 2014 +0000
+
+    daemon: ldm: Initialize glob_t struct before passing to glob.
+    
+    Some implementations of glob might use fields in the struct, although
+    not glibc as far as I know.
+    
+    Issue identified by Coverity.
+
+commit fe97d5ed9cd32bac999a93fe1212538363f8a020
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 26 20:03:15 2014 +0000
+
+    builder: pxzcat: Ignore return value from posix_fadvise.
+    
+    Quiets warning from Coverity.
+
+commit 21390bc4aa8b9c5cd32df3e68f2d21fb196dcbc2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 26 16:53:37 2014 +0000
+
+    Pull latest translations from Transifex.
+
+commit f566f176c6fe502e9c765438551fb787a0cef8d9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 26 16:47:26 2014 +0000
+
+    Remove the ROADMAP file.
+    
+    I don't think it provides any value now.  There is a list of bugs in
+    'BUGS' and a set of ideas in 'TODO'.
+
+commit 0febb59afa3d2fb711d2782ecdd51a656623a807
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 26 13:35:05 2014 +0000
+
+    Final updates to release notes for 1.26.
+
 commit a9b62321b6f6629580d9ada28b149019dd6174f5
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Mar 26 10:28:36 2014 +0000

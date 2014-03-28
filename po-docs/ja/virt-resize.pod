@@ -563,7 +563,7 @@ Note that you cannot use I<--expand> and I<--shrink> together.
 
 =item B<--version>
 
-バージョン番号を表示して終了します。
+バージョン番号を表示して、終了します。
 
 =back
 

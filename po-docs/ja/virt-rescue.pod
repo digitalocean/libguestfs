@@ -191,9 +191,8 @@ megabytes.
 
 イメージを読み込み専用で開きます。
 
-The option must always be used if the disk image or virtual machine might be
-running, and is generally recommended in cases where you don't need write
-access to the disk.
+ディスクイメージまたは仮想マシンが使用中の場合、 必ずこのオプションを使用する必要があります。 また、ディスクへの書き込みアクセスが不要な場合、
+このオプションが一般的に推奨されます。
 
 L<guestfish(1)/OPENING DISKS FOR READ AND WRITE> 参照。
 
@@ -234,7 +233,7 @@ terminal, then paste the commands into another virt-rescue.
 
 =item B<--version>
 
-バージョン番号を表示して終了します。
+バージョン番号を表示して、終了します。
 
 =item B<-w>
 

@@ -28,17 +28,17 @@ libguestfs generated file
 
 =item B<acl>
 
-以下の関数: L</guestfs_acl_delete_def_file> L</guestfs_acl_get_file>
+次の関数: L</guestfs_acl_delete_def_file> L</guestfs_acl_get_file>
 L</guestfs_acl_set_file>
 
 =item B<augeas>
 
-The following functions: L</guestfs_aug_clear> L</guestfs_aug_close>
-L</guestfs_aug_defnode> L</guestfs_aug_defvar> L</guestfs_aug_get>
-L</guestfs_aug_init> L</guestfs_aug_insert> L</guestfs_aug_label>
-L</guestfs_aug_load> L</guestfs_aug_ls> L</guestfs_aug_match>
-L</guestfs_aug_mv> L</guestfs_aug_rm> L</guestfs_aug_save>
-L</guestfs_aug_set> L</guestfs_aug_setm>
+次の関数: L</guestfs_aug_clear> L</guestfs_aug_close> L</guestfs_aug_defnode>
+L</guestfs_aug_defvar> L</guestfs_aug_get> L</guestfs_aug_init>
+L</guestfs_aug_insert> L</guestfs_aug_label> L</guestfs_aug_load>
+L</guestfs_aug_ls> L</guestfs_aug_match> L</guestfs_aug_mv>
+L</guestfs_aug_rm> L</guestfs_aug_save> L</guestfs_aug_set>
+L</guestfs_aug_setm>
 
 =item B<blkdiscard>
 
@@ -50,7 +50,7 @@ The following functions: L</guestfs_blkdiscardzeroes>
 
 =item B<btrfs>
 
-以下の関数: L</guestfs_btrfs_device_add> L</guestfs_btrfs_device_delete>
+次の関数: L</guestfs_btrfs_device_add> L</guestfs_btrfs_device_delete>
 L</guestfs_btrfs_filesystem_balance> L</guestfs_btrfs_filesystem_resize>
 L</guestfs_btrfs_filesystem_sync> L</guestfs_btrfs_fsck>
 L</guestfs_btrfs_set_seeding> L</guestfs_btrfs_subvolume_create>
@@ -60,11 +60,11 @@ L</guestfs_mkfs_btrfs>
 
 =item B<extlinux>
 
-The following functions: L</guestfs_extlinux>
+次の関数: L</guestfs_extlinux>
 
 =item B<fstrim>
 
-以下の関数: L</guestfs_fstrim>
+次の関数: L</guestfs_fstrim>
 
 =item B<gdisk>
 
@@ -73,11 +73,11 @@ L</guestfs_part_get_name> L</guestfs_part_set_gpt_type>
 
 =item B<grub>
 
-以下の関数: L</guestfs_grub_install>
+次の関数: L</guestfs_grub_install>
 
 =item B<hivex>
 
-以下の関数: L</guestfs_hivex_close> L</guestfs_hivex_commit>
+次の関数: L</guestfs_hivex_close> L</guestfs_hivex_commit>
 L</guestfs_hivex_node_add_child> L</guestfs_hivex_node_children>
 L</guestfs_hivex_node_delete_child> L</guestfs_hivex_node_get_child>
 L</guestfs_hivex_node_get_value> L</guestfs_hivex_node_name>
@@ -88,56 +88,55 @@ L</guestfs_hivex_value_value>
 
 =item B<inotify>
 
-以下の関数: L</guestfs_inotify_add_watch> L</guestfs_inotify_close>
+次の関数: L</guestfs_inotify_add_watch> L</guestfs_inotify_close>
 L</guestfs_inotify_files> L</guestfs_inotify_init> L</guestfs_inotify_read>
 L</guestfs_inotify_rm_watch>
 
 =item B<journal>
 
-The following functions: L</guestfs_internal_journal_get>
-L</guestfs_journal_close> L</guestfs_journal_get_data_threshold>
-L</guestfs_journal_next> L</guestfs_journal_open>
-L</guestfs_journal_set_data_threshold> L</guestfs_journal_skip>
+次の関数: L</guestfs_internal_journal_get> L</guestfs_journal_close>
+L</guestfs_journal_get_data_threshold> L</guestfs_journal_next>
+L</guestfs_journal_open> L</guestfs_journal_set_data_threshold>
+L</guestfs_journal_skip>
 
 =item B<ldm>
 
-The following functions: L</guestfs_ldmtool_create_all>
-L</guestfs_ldmtool_diskgroup_disks> L</guestfs_ldmtool_diskgroup_name>
-L</guestfs_ldmtool_diskgroup_volumes> L</guestfs_ldmtool_remove_all>
-L</guestfs_ldmtool_scan> L</guestfs_ldmtool_scan_devices>
-L</guestfs_ldmtool_volume_hint> L</guestfs_ldmtool_volume_partitions>
-L</guestfs_ldmtool_volume_type> L</guestfs_list_ldm_partitions>
-L</guestfs_list_ldm_volumes>
+次の関数: L</guestfs_ldmtool_create_all> L</guestfs_ldmtool_diskgroup_disks>
+L</guestfs_ldmtool_diskgroup_name> L</guestfs_ldmtool_diskgroup_volumes>
+L</guestfs_ldmtool_remove_all> L</guestfs_ldmtool_scan>
+L</guestfs_ldmtool_scan_devices> L</guestfs_ldmtool_volume_hint>
+L</guestfs_ldmtool_volume_partitions> L</guestfs_ldmtool_volume_type>
+L</guestfs_list_ldm_partitions> L</guestfs_list_ldm_volumes>
 
 =item B<linuxcaps>
 
-以下の関数: L</guestfs_cap_get_file> L</guestfs_cap_set_file>
+次の関数: L</guestfs_cap_get_file> L</guestfs_cap_set_file>
 
 =item B<linuxfsuuid>
 
-以下の関数: L</guestfs_mke2fs_JU> L</guestfs_mke2journal_U> L</guestfs_mkswap_U>
+次の関数: L</guestfs_mke2fs_JU> L</guestfs_mke2journal_U> L</guestfs_mkswap_U>
 L</guestfs_swapoff_uuid> L</guestfs_swapon_uuid>
 
 =item B<linuxmodules>
 
-以下の関数: L</guestfs_modprobe>
+次の関数: L</guestfs_modprobe>
 
 =item B<linuxxattrs>
 
-以下の関数: L</guestfs_getxattr> L</guestfs_getxattrs>
+次の関数: L</guestfs_getxattr> L</guestfs_getxattrs>
 L</guestfs_internal_lxattrlist> L</guestfs_lgetxattr> L</guestfs_lgetxattrs>
 L</guestfs_lremovexattr> L</guestfs_lsetxattr> L</guestfs_removexattr>
 L</guestfs_setxattr>
 
 =item B<luks>
 
-以下の関数: L</guestfs_luks_add_key> L</guestfs_luks_close>
+次の関数: L</guestfs_luks_add_key> L</guestfs_luks_close>
 L</guestfs_luks_format> L</guestfs_luks_format_cipher>
 L</guestfs_luks_kill_slot> L</guestfs_luks_open> L</guestfs_luks_open_ro>
 
 =item B<lvm2>
 
-The following functions: L</guestfs_lvcreate> L</guestfs_lvcreate_free>
+次の関数: L</guestfs_lvcreate> L</guestfs_lvcreate_free>
 L</guestfs_lvm_remove_all> L</guestfs_lvm_set_filter> L</guestfs_lvremove>
 L</guestfs_lvresize> L</guestfs_lvresize_free> L</guestfs_lvs>
 L</guestfs_lvs_full> L</guestfs_pvchange_uuid> L</guestfs_pvchange_uuid_all>
@@ -149,12 +148,12 @@ L</guestfs_vgmeta> L</guestfs_vgremove> L</guestfs_vgs> L</guestfs_vgs_full>
 
 =item B<mdadm>
 
-以下の関数: L</guestfs_md_create> L</guestfs_md_detail> L</guestfs_md_stat>
+次の関数: L</guestfs_md_create> L</guestfs_md_detail> L</guestfs_md_stat>
 L</guestfs_md_stop>
 
 =item B<mknod>
 
-以下の関数: L</guestfs_mkfifo> L</guestfs_mknod> L</guestfs_mknod_b>
+次の関数: L</guestfs_mkfifo> L</guestfs_mknod> L</guestfs_mknod_b>
 L</guestfs_mknod_c>
 
 =item B<ntfs3g>
@@ -164,28 +163,28 @@ L</guestfs_ntfsclone_out> L</guestfs_ntfsfix>
 
 =item B<ntfsprogs>
 
-以下の関数: L</guestfs_ntfsresize> L</guestfs_ntfsresize_size>
+次の関数: L</guestfs_ntfsresize> L</guestfs_ntfsresize_size>
 
 =item B<realpath>
 
-以下の関数: L</guestfs_realpath>
+次の関数: L</guestfs_realpath>
 
 =item B<rsync>
 
-以下の関数: L</guestfs_rsync> L</guestfs_rsync_in> L</guestfs_rsync_out>
+次の関数: L</guestfs_rsync> L</guestfs_rsync_in> L</guestfs_rsync_out>
 
 =item B<scrub>
 
-以下の関数: L</guestfs_scrub_device> L</guestfs_scrub_file>
+次の関数: L</guestfs_scrub_device> L</guestfs_scrub_file>
 L</guestfs_scrub_freespace>
 
 =item B<selinux>
 
-以下の関数: L</guestfs_getcon> L</guestfs_setcon>
+次の関数: L</guestfs_getcon> L</guestfs_setcon>
 
 =item B<syslinux>
 
-The following functions: L</guestfs_syslinux>
+次の関数: L</guestfs_syslinux>
 
 =item B<wipefs>
 
@@ -193,16 +192,16 @@ The following functions: L</guestfs_syslinux>
 
 =item B<xfs>
 
-以下の関数: L</guestfs_xfs_admin> L</guestfs_xfs_growfs> L</guestfs_xfs_info>
+次の関数: L</guestfs_xfs_admin> L</guestfs_xfs_growfs> L</guestfs_xfs_info>
 L</guestfs_xfs_repair>
 
 =item B<xz>
 
-以下の関数: L</guestfs_txz_in> L</guestfs_txz_out>
+次の関数: L</guestfs_txz_in> L</guestfs_txz_out>
 
 =item B<zerofree>
 
-以下の関数: L</guestfs_zerofree>
+次の関数: L</guestfs_zerofree>
 
 =back
 

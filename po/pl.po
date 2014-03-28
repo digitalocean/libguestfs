@@ -5,17 +5,18 @@
 # Translators:
 # mmarzantowicz <mmarzantowicz@osdf.com.pl>, 2013
 # mmarzantowicz <mmarzantowicz@osdf.com.pl>, 2012
-# Piotr Drąg <piotrdrag@gmail.com>, 2011-2014
+# Piotr Drąg <piotrdrag@gmail.com>, 2011-2013
 # rjones <rjones@redhat.com>, 2011
 msgid ""
 msgstr ""
 "Project-Id-Version: libguestfs\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2014-03-25 12:50+0000\n"
-"PO-Revision-Date: 2013-08-06 13:32+0000\n"
+"POT-Creation-Date: 2014-03-27 12:03+0000\n"
+"PO-Revision-Date: 2014-03-26 16:49+0000\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
-"Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
+"Language-Team: Polish (http://www.transifex.com/projects/p/fedora/language/"
+"pl/)\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1866,7 +1867,7 @@ msgid "you cannot use the same disk image for input and output"
 msgstr ""
 
 #: align/scan.c:73 cat/cat.c:56 cat/filesystems.c:87 cat/ls.c:83 df/main.c:66
-#: diff/diff.c:91 edit/edit.c:68 fish/fish.c:104 fuse/guestmount.c:99
+#: diff/diff.c:91 edit/edit.c:68 fish/fish.c:105 fuse/guestmount.c:99
 #: fuse/guestunmount.c:52 inspector/inspector.c:67 make-fs/make-fs.c:73
 #: rescue/rescue.c:56
 #, c-format
@@ -1897,7 +1898,7 @@ msgstr ""
 
 #: align/scan.c:133 cat/cat.c:115 cat/filesystems.c:187 cat/ls.c:174
 #: df/main.c:133 diff/diff.c:191 diff/diff.c:197 edit/edit.c:134
-#: fish/fish.c:234 format/format.c:129 fuse/guestmount.c:206
+#: fish/fish.c:235 format/format.c:129 fuse/guestmount.c:206
 #: inspector/inspector.c:127 make-fs/make-fs.c:115 rescue/rescue.c:135
 #, c-format
 msgid "guestfs_create: failed to create handle\n"
@@ -1905,7 +1906,7 @@ msgstr "guestfs_create: utworzenie programu obsługi się nie powiodło\n"
 
 #: align/scan.c:153 builder/index-validate.c:84 cat/cat.c:137
 #: cat/filesystems.c:241 cat/ls.c:224 df/main.c:157 diff/diff.c:262
-#: edit/edit.c:156 fish/fish.c:292 format/format.c:183 fuse/guestmount.c:241
+#: edit/edit.c:156 fish/fish.c:293 format/format.c:183 fuse/guestmount.c:241
 #: fuse/guestunmount.c:124 inspector/inspector.c:151 make-fs/make-fs.c:142
 #: rescue/rescue.c:192
 #, c-format
@@ -2017,7 +2018,7 @@ msgstr ""
 "  -x                   Śledzi wywołania API biblioteki libguestfs\n"
 "Aby dowiedzieć się więcej, należy zobaczyć stronę podręcznika %s(1).\n"
 
-#: cat/cat.c:357 edit/edit.c:582 fish/fish.c:1764
+#: cat/cat.c:357 edit/edit.c:582 fish/fish.c:1768
 #, c-format
 msgid "%s: to use Windows drive letters, this must be a Windows guest\n"
 msgstr ""
@@ -2336,12 +2337,12 @@ msgstr ""
 msgid "%s: extra arguments on the command line\n"
 msgstr ""
 
-#: diff/diff.c:732
+#: diff/diff.c:739
 #, c-format
 msgid "%s: external diff command failed\n"
 msgstr ""
 
-#: diff/diff.c:736
+#: diff/diff.c:743
 msgid "End of diff"
 msgstr ""
 
@@ -4874,7 +4875,7 @@ msgid "use 'list-events' to list event handlers\n"
 msgstr ""
 "należy użyć \"list-events\", aby wyświetlić listę programów obsługi zdarzeń\n"
 
-#: fish/fish.c:108
+#: fish/fish.c:109
 #, c-format
 msgid ""
 "%s: guest filesystem shell\n"
@@ -4925,44 +4926,44 @@ msgid ""
 "For more information, see the manpage %s(1).\n"
 msgstr ""
 
-#: fish/fish.c:251
+#: fish/fish.c:252
 #, c-format
 msgid "%s: --listen=PID: PID was not a number: %s\n"
 msgstr "%s: --listen=PID: PID nie był liczbą: %s\n"
 
-#: fish/fish.c:258
+#: fish/fish.c:259
 #, c-format
 msgid ""
 "%s: remote: $GUESTFISH_PID must be set to the PID of the remote process\n"
 msgstr ""
 "%s: zdalnie: $GUESTFISH_PID musi być ustawiony na PID zdalnego procesu\n"
 
-#: fish/fish.c:311
+#: fish/fish.c:312
 #, c-format
 msgid "%s: warning: -D option is deprecated, use --no-dest-paths instead\n"
 msgstr ""
 
-#: fish/fish.c:318
+#: fish/fish.c:319
 #, c-format
 msgid "%s: only one -f parameter can be given\n"
 msgstr "%s: można podać tylko jeden parametr -f\n"
 
-#: fish/fish.c:510
+#: fish/fish.c:514
 #, c-format
 msgid "%s: cannot use --listen and --remote options at the same time\n"
 msgstr "%s: nie można używać opcji --listen i --remote w tym samym czasie\n"
 
-#: fish/fish.c:518
+#: fish/fish.c:522
 #, c-format
 msgid "%s: extra parameters on the command line with --listen flag\n"
 msgstr "%s: dodatkowe parametry wiersza poleceń za pomocą flagi --listen\n"
 
-#: fish/fish.c:524
+#: fish/fish.c:528
 #, c-format
 msgid "%s: cannot use --listen and --file options at the same time\n"
 msgstr "%s: nie można używać opcji --listen i --file w tym samym czasie\n"
 
-#: fish/fish.c:699
+#: fish/fish.c:703
 #, c-format
 msgid ""
 "\n"
@@ -4975,51 +4976,51 @@ msgid ""
 "\n"
 msgstr ""
 
-#: fish/fish.c:857 fish/fish.c:873
+#: fish/fish.c:861 fish/fish.c:877
 #, c-format
 msgid "%s: command arguments not separated by whitespace\n"
 msgstr "%s: parametry poleceń nie są oddzielone spacjami\n"
 
-#: fish/fish.c:867
+#: fish/fish.c:871
 #, c-format
 msgid "%s: unterminated single quote\n"
 msgstr "%s: niezakończony pojedynczy cudzysłów\n"
 
-#: fish/fish.c:897
+#: fish/fish.c:901
 #, c-format
 msgid "%s: internal error parsing string at '%s'\n"
 msgstr "%s: wewnętrzny błąd przetwarzania ciągu \"%s\"\n"
 
-#: fish/fish.c:914
+#: fish/fish.c:918
 #, c-format
 msgid "%s: too many arguments\n"
 msgstr "%s: za dużo parametrów\n"
 
-#: fish/fish.c:989
+#: fish/fish.c:993
 #, c-format
 msgid "%s: invalid escape sequence in string (starting at offset %d)\n"
 msgstr ""
 "%s: nieprawidłowa sekwencja sterująca w ciągu (zaczyna się od offsetu %d)\n"
 
-#: fish/fish.c:998
+#: fish/fish.c:1002
 #, c-format
 msgid "%s: unterminated double quote\n"
 msgstr "%s: niezakończony podwójny cudzysłów\n"
 
-#: fish/fish.c:1061
+#: fish/fish.c:1065
 #, c-format
 msgid "%s: empty command on command line\n"
 msgstr "%s: puste polecenie wiersza poleceń\n"
 
-#: fish/fish.c:1219
+#: fish/fish.c:1223
 msgid "display a list of commands or help on a command"
 msgstr "wyświetla listę poleceń lub pomoc polecenia"
 
-#: fish/fish.c:1221
+#: fish/fish.c:1225
 msgid "quit guestfish"
 msgstr "kończy działanie programu guestfish"
 
-#: fish/fish.c:1232
+#: fish/fish.c:1236
 #, c-format
 msgid ""
 "help - display a list of commands or help on a command\n"
@@ -5030,7 +5031,7 @@ msgstr ""
 "     help polecenie\n"
 "     help\n"
 
-#: fish/fish.c:1240
+#: fish/fish.c:1244
 #, c-format
 msgid ""
 "quit - quit guestfish\n"
@@ -5039,14 +5040,14 @@ msgstr ""
 "quit - kończy działanie programu guestfish\n"
 "     quit\n"
 
-#: fish/fish.c:1245
+#: fish/fish.c:1249
 #, c-format
 msgid "%s: command not known, use -h to list all commands\n"
 msgstr ""
 "%s: nieznane polecenie, należy użyć -h, aby wyświetlić listę wszystkich "
 "poleceń\n"
 
-#: fish/fish.c:1261
+#: fish/fish.c:1265
 #, c-format
 msgid ""
 "Did you mean to open a disk image?  guestfish -a disk.img\n"
@@ -5057,22 +5058,22 @@ msgstr ""
 "Lista poleceń:                        guestfish -h\n"
 "Pełna dokumentacja:                   man guestfish\n"
 
-#: fish/fish.c:1270
+#: fish/fish.c:1274
 #, c-format
 msgid "%s:%d: libguestfs: error: %s\n"
 msgstr "%s:%d: libguestfs: błąd: %s\n"
 
-#: fish/fish.c:1313
+#: fish/fish.c:1317
 #, c-format
 msgid "%s: '%s': invalid boolean value, use 'true' or 'false'\n"
 msgstr ""
 
-#: fish/fish.c:1421
+#: fish/fish.c:1425
 #, c-format
 msgid "Runaway quote in string \"%s\"\n"
 msgstr "Cytat ucieczki w ciągu \"%s\"\n"
 
-#: fish/fish.c:1758
+#: fish/fish.c:1762
 #, c-format
 msgid ""
 "%s: to use Windows drive letters, you must inspect the guest (\"-i\" option "
@@ -5081,7 +5082,7 @@ msgstr ""
 "%s: należy zbadać gościa (opcja \"-i\" lub polecenie \"inspect-os\"), aby "
 "użyć liter napędów systemu Windows\n"
 
-#: fish/fish.c:1778
+#: fish/fish.c:1782
 #, c-format
 msgid ""
 "%s: drive '%c:' not found.  To list available drives do:\n"
@@ -5091,7 +5092,7 @@ msgstr ""
 "wykonać:\n"
 "  inspect-get-drive-mappings %s\n"
 
-#: fish/fish.c:1797
+#: fish/fish.c:1801
 #, c-format
 msgid ""
 "%s: to access '%c:', mount %s first.  One way to do this is:\n"
@@ -7313,163 +7314,3 @@ msgstr "virt-win-reg: {p}: nie można pobrać pliku rejestru: {err}\n"
 #, perl-brace-format
 msgid "virt-win-reg: {p}: could not upload registry file: {err}\n"
 msgstr "virt-win-reg: {p}: nie można wysłać pliku rejestru: {err}\n"
-
-#~ msgid ""
-#~ "Examining the guest ...\n"
-#~ "%!"
-#~ msgstr ""
-#~ "Sprawdzanie gościa...\n"
-#~ "%!"
-
-#~ msgid "virt-make-fs input output\n"
-#~ msgstr "virt-make-fs wejście wyjście\n"
-
-#~ msgid "unexpected output from 'du' command"
-#~ msgstr "nieoczekiwane wyjście polecenia \"du\""
-
-#~ msgid "{f}: unknown input format: {fmt}\n"
-#~ msgstr "{f}: nieznany format wyjścia: {fmt}\n"
-
-#~ msgid "virt-make-fs: cannot parse size parameter: {sz}\n"
-#~ msgstr "virt-make-fs: nie można przetworzyć parametru rozmiaru: {sz}\n"
-
-#~ msgid "cannot dup STDOUT"
-#~ msgstr "nie można zduplikować standardowego wyjścia"
-
-#~ msgid "cannot dup STDERR"
-#~ msgstr "nie można zduplikować standardowego wyjścia błędów"
-
-#~ msgid "cannot redirect STDOUT"
-#~ msgstr "nie można przekierować standardowego wyjścia"
-
-#~ msgid "cannot redirect STDERR"
-#~ msgstr "nie można przekierować standardowego wyjścia błędów"
-
-#~ msgid ""
-#~ "virt-make-fs: NTFS support was disabled when libguestfs was compiled\n"
-#~ msgstr ""
-#~ "virt-make-fs: obsługa systemu plików NTFS została wyłączona podczas "
-#~ "komplikacji biblioteki libguestfs\n"
-
-#~ msgid "tar: failed, see earlier messages\n"
-#~ msgstr ""
-#~ "tar: nie powiodło się, proszę zobaczyć wcześniejsze komunikaty błędów\n"
-
-#~ msgid "uncompress command failed, see earlier messages\n"
-#~ msgstr ""
-#~ "polecenie uncompress się nie powiodło, proszę zobaczyć wcześniejsze "
-#~ "komunikaty błędów\n"
-
-#~ msgid ""
-#~ "virt-make-fs: error copying contents into filesystem\n"
-#~ "An error here usually means that the program did not estimate the\n"
-#~ "filesystem size correctly.  Please read the BUGS section of the manpage.\n"
-#~ msgstr ""
-#~ "virt-make-fs: błąd podczas kopiowania zawartości do systemu plików\n"
-#~ "Błąd w tym miejscu zwykle oznacza, że program nie oszacował poprawnie\n"
-#~ "rozmiar systemu plików. Proszę przeczytać sekcję BUGS strony "
-#~ "podręcznika.\n"
-
-#~ msgid ""
-#~ "filename cannot contain ':' (colon) character. This is a limitation of "
-#~ "qemu."
-#~ msgstr ""
-#~ "nazwa pliku nie może zawierać \":\" (dwukropka). To jest ograniczenie "
-#~ "QEMU."
-
-#~ msgid "%s: error in chunked encoding"
-#~ msgstr "%s: błąd w kodowaniu fragmentu"
-
-#~ msgid "receive_file_data: parse error in reply callback"
-#~ msgstr ""
-#~ "receive_file_data: błąd przetwarzania w odpowiedzi wywołania zwrotnego"
-
-#~ msgid "%s should have %d parameter(s)\n"
-#~ msgstr "%s powinno posiadać %d parametry\n"
-
-#~ msgid "virt-resize %Ld.%Ld.%Ld%s\n"
-#~ msgstr "virt-resize %Ld.%Ld.%Ld%s\n"
-
-#~ msgid "warning: %s"
-#~ msgstr "ostrzeżenie: %s"
-
-#~ msgid "virt-resize: error: "
-#~ msgstr "virt-resize: błąd:"
-
-#~ msgid ""
-#~ "%s: erase and make a blank disk\n"
-#~ "Copyright (C) 2012 Red Hat Inc.\n"
-#~ "\n"
-#~ "%s\n"
-#~ "\n"
-#~ "Usage:\n"
-#~ "  %s [--options] -a disk.img [-a disk.img ...]\n"
-#~ "Options:\n"
-#~ "  -a|--add image       Add image\n"
-#~ "  --filesystem=..      Create empty filesystem\n"
-#~ "  --format[=raw|..]    Force disk format for -a option\n"
-#~ "  --help               Display brief help\n"
-#~ "  --lvm=..             Create Linux LVM2 logical volume\n"
-#~ "  --partition=..       Create / set partition type\n"
-#~ "  -v|--verbose         Verbose messages\n"
-#~ "  -V|--version         Display version and exit\n"
-#~ "  --wipe               Write zeroes over whole disk\n"
-#~ "  -x                   Trace libguestfs API calls\n"
-#~ "For more information, see the manpage %s(1).\n"
-#~ "\n"
-#~ "%s\n"
-#~ "\n"
-#~ msgstr ""
-#~ "%s: czyści i tworzy pusty dysk\n"
-#~ "Copyright (C) 2012 Red Hat Inc.\n"
-#~ "\n"
-#~ "%s\n"
-#~ "\n"
-#~ "Użycie:\n"
-#~ "  %s [--opcje] -a dysk.img [-a dysk.img...]\n"
-#~ "Opcje:\n"
-#~ "  -a|--add obraz       Dodaje obraz\n"
-#~ "  --filesystem=..      Tworzy pusty system plików\n"
-#~ "  --format[=raw|..]    Wymusza format dla opcji -a\n"
-#~ "  --help               Wyświetla krótką pomoc\n"
-#~ "  --lvm=..             Tworzy wolumin logiczny LVM2 systemu Linux\n"
-#~ "  --partition=..       Tworzy/ustawia typ partycji\n"
-#~ "  -v|--verbose         Więcej komunikatów\n"
-#~ "  -V|--version         Wyświetla wersję i kończy działanie\n"
-#~ "  --wipe               Zapisuje zera na całym dysku\n"
-#~ "  -x                   Śledzi wywołania API biblioteki libguestfs\n"
-#~ "Aby dowiedzieć się więcej, należy zobaczyć stronę podręcznika %s(1).\n"
-#~ "\n"
-#~ "%s\n"
-#~ "\n"
-
-#~ msgid "add qemu parameters"
-#~ msgstr "dodaje parametry QEMU"
-
-#~ msgid "get memory allocated to the qemu subprocess"
-#~ msgstr "uzyskuje pamięć przydzieloną do podprocesów QEMU"
-
-#~ msgid "get PID of qemu subprocess"
-#~ msgstr "uzyskuje PID podprocesu QEMU"
-
-#~ msgid "get the qemu binary"
-#~ msgstr "uzyskuje plik binarny QEMU"
-
-#~ msgid "kill the qemu subprocess"
-#~ msgstr "niszczy podproces QEMU"
-
-#~ msgid "launch the qemu subprocess"
-#~ msgstr "uruchamia podproces QEMU"
-
-#~ msgid "set memory allocated to the qemu subprocess"
-#~ msgstr "ustawia pamięć przydzieloną podprocesowi QEMU"
-
-#~ msgid "set the qemu binary"
-#~ msgstr "ustawia plik binarny QEMU"
-
-#~ msgid ""
-#~ "LIBGUESTFS_QEMU environment variable is already set, so\n"
-#~ "--qemu/--qemudir options cannot be used.\n"
-#~ msgstr ""
-#~ "Zmienna środowiskowa LIBGUESTFS_QEMU jest już ustawiona, więc nie można\n"
-#~ "użyć opcji --qemu/--qemudir.\n"

@@ -11,10 +11,11 @@ msgstr ""
 "Project-Id-Version: libguestfs\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2014-03-25 12:50+0000\n"
-"PO-Revision-Date: 2013-08-06 13:32+0000\n"
+"POT-Creation-Date: 2014-03-27 12:03+0000\n"
+"PO-Revision-Date: 2014-03-26 16:49+0000\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
-"Language-Team: Spanish <trans-es@lists.fedoraproject.org>\n"
+"Language-Team: Spanish (http://www.transifex.com/projects/p/fedora/language/"
+"es/)\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1853,7 +1854,7 @@ msgid "you cannot use the same disk image for input and output"
 msgstr ""
 
 #: align/scan.c:73 cat/cat.c:56 cat/filesystems.c:87 cat/ls.c:83 df/main.c:66
-#: diff/diff.c:91 edit/edit.c:68 fish/fish.c:104 fuse/guestmount.c:99
+#: diff/diff.c:91 edit/edit.c:68 fish/fish.c:105 fuse/guestmount.c:99
 #: fuse/guestunmount.c:52 inspector/inspector.c:67 make-fs/make-fs.c:73
 #: rescue/rescue.c:56
 #, c-format
@@ -1884,7 +1885,7 @@ msgstr ""
 
 #: align/scan.c:133 cat/cat.c:115 cat/filesystems.c:187 cat/ls.c:174
 #: df/main.c:133 diff/diff.c:191 diff/diff.c:197 edit/edit.c:134
-#: fish/fish.c:234 format/format.c:129 fuse/guestmount.c:206
+#: fish/fish.c:235 format/format.c:129 fuse/guestmount.c:206
 #: inspector/inspector.c:127 make-fs/make-fs.c:115 rescue/rescue.c:135
 #, c-format
 msgid "guestfs_create: failed to create handle\n"
@@ -1892,7 +1893,7 @@ msgstr "guestfs_create: falló al crear manipulador\n"
 
 #: align/scan.c:153 builder/index-validate.c:84 cat/cat.c:137
 #: cat/filesystems.c:241 cat/ls.c:224 df/main.c:157 diff/diff.c:262
-#: edit/edit.c:156 fish/fish.c:292 format/format.c:183 fuse/guestmount.c:241
+#: edit/edit.c:156 fish/fish.c:293 format/format.c:183 fuse/guestmount.c:241
 #: fuse/guestunmount.c:124 inspector/inspector.c:151 make-fs/make-fs.c:142
 #: rescue/rescue.c:192
 #, c-format
@@ -2004,7 +2005,7 @@ msgstr ""
 "  -x                   Rastrea llamados API de libguestfs\n"
 "Para obtener mayor información, consulte la página man %s(1).\n"
 
-#: cat/cat.c:357 edit/edit.c:582 fish/fish.c:1764
+#: cat/cat.c:357 edit/edit.c:582 fish/fish.c:1768
 #, c-format
 msgid "%s: to use Windows drive letters, this must be a Windows guest\n"
 msgstr ""
@@ -2293,12 +2294,12 @@ msgstr ""
 msgid "%s: extra arguments on the command line\n"
 msgstr ""
 
-#: diff/diff.c:732
+#: diff/diff.c:739
 #, c-format
 msgid "%s: external diff command failed\n"
 msgstr ""
 
-#: diff/diff.c:736
+#: diff/diff.c:743
 msgid "End of diff"
 msgstr ""
 
@@ -4843,7 +4844,7 @@ msgstr ""
 msgid "use 'list-events' to list event handlers\n"
 msgstr ""
 
-#: fish/fish.c:108
+#: fish/fish.c:109
 #, c-format
 msgid ""
 "%s: guest filesystem shell\n"
@@ -4894,12 +4895,12 @@ msgid ""
 "For more information, see the manpage %s(1).\n"
 msgstr ""
 
-#: fish/fish.c:251
+#: fish/fish.c:252
 #, c-format
 msgid "%s: --listen=PID: PID was not a number: %s\n"
 msgstr "%s: --listen=PID: PID no era un número: %s\n"
 
-#: fish/fish.c:258
+#: fish/fish.c:259
 #, c-format
 msgid ""
 "%s: remote: $GUESTFISH_PID must be set to the PID of the remote process\n"
@@ -4907,34 +4908,34 @@ msgstr ""
 "%s: remote: $GUESTFISH_PID debe estar definido con el PID del proceso "
 "remoto\n"
 
-#: fish/fish.c:311
+#: fish/fish.c:312
 #, c-format
 msgid "%s: warning: -D option is deprecated, use --no-dest-paths instead\n"
 msgstr ""
 
-#: fish/fish.c:318
+#: fish/fish.c:319
 #, c-format
 msgid "%s: only one -f parameter can be given\n"
 msgstr "%s: sólo puede ofrecerse un parámetro -f\n"
 
-#: fish/fish.c:510
+#: fish/fish.c:514
 #, c-format
 msgid "%s: cannot use --listen and --remote options at the same time\n"
 msgstr ""
 "%s: no es posible utilizar al mismo tiempo las opciones --listen y --remote\n"
 
-#: fish/fish.c:518
+#: fish/fish.c:522
 #, c-format
 msgid "%s: extra parameters on the command line with --listen flag\n"
 msgstr "%s: parámetros extra de la línea de comando con marca --listen\n"
 
-#: fish/fish.c:524
+#: fish/fish.c:528
 #, c-format
 msgid "%s: cannot use --listen and --file options at the same time\n"
 msgstr ""
 "%s no es posible utilizar al mismo tiempo las opciones --listen y --file\n"
 
-#: fish/fish.c:699
+#: fish/fish.c:703
 #, c-format
 msgid ""
 "\n"
@@ -4947,51 +4948,51 @@ msgid ""
 "\n"
 msgstr ""
 
-#: fish/fish.c:857 fish/fish.c:873
+#: fish/fish.c:861 fish/fish.c:877
 #, c-format
 msgid "%s: command arguments not separated by whitespace\n"
 msgstr ""
 "%s: los argumentos del comando no están separados por un espacio en blanco\n"
 
-#: fish/fish.c:867
+#: fish/fish.c:871
 #, c-format
 msgid "%s: unterminated single quote\n"
 msgstr "%s: cuota simple no finalizada\n"
 
-#: fish/fish.c:897
+#: fish/fish.c:901
 #, c-format
 msgid "%s: internal error parsing string at '%s'\n"
 msgstr "%s: error interno analizando cadena en '%s'\n"
 
-#: fish/fish.c:914
+#: fish/fish.c:918
 #, c-format
 msgid "%s: too many arguments\n"
 msgstr "%s: demasiados argumentos\n"
 
-#: fish/fish.c:989
+#: fish/fish.c:993
 #, c-format
 msgid "%s: invalid escape sequence in string (starting at offset %d)\n"
 msgstr "%s: secuencia no válida en la cadena (empezando en el offset %d)\n"
 
-#: fish/fish.c:998
+#: fish/fish.c:1002
 #, c-format
 msgid "%s: unterminated double quote\n"
 msgstr "%s: doble cuota no finalizada\n"
 
-#: fish/fish.c:1061
+#: fish/fish.c:1065
 #, c-format
 msgid "%s: empty command on command line\n"
 msgstr "%s: comando vacío en la línea de comando\n"
 
-#: fish/fish.c:1219
+#: fish/fish.c:1223
 msgid "display a list of commands or help on a command"
 msgstr "muestra una lista de comandos o asistencia sobre un comando"
 
-#: fish/fish.c:1221
+#: fish/fish.c:1225
 msgid "quit guestfish"
 msgstr "salir de guestfish"
 
-#: fish/fish.c:1232
+#: fish/fish.c:1236
 #, c-format
 msgid ""
 "help - display a list of commands or help on a command\n"
@@ -5002,7 +5003,7 @@ msgstr ""
 "     help cmd\n"
 "     help\n"
 
-#: fish/fish.c:1240
+#: fish/fish.c:1244
 #, c-format
 msgid ""
 "quit - quit guestfish\n"
@@ -5011,12 +5012,12 @@ msgstr ""
 "quit - abandonar guestfish\n"
 "     quit\n"
 
-#: fish/fish.c:1245
+#: fish/fish.c:1249
 #, c-format
 msgid "%s: command not known, use -h to list all commands\n"
 msgstr "%s comando no conocido, utilice -h para listar todos los comandos\n"
 
-#: fish/fish.c:1261
+#: fish/fish.c:1265
 #, c-format
 msgid ""
 "Did you mean to open a disk image?  guestfish -a disk.img\n"
@@ -5027,22 +5028,22 @@ msgstr ""
 "Para obtener una lista de comandos:             guestfish -h\n"
 "Para obtener la documentación completa:         man guestfish\n"
 
-#: fish/fish.c:1270
+#: fish/fish.c:1274
 #, c-format
 msgid "%s:%d: libguestfs: error: %s\n"
 msgstr "%s:%d: libguestfs: error: %s\n"
 
-#: fish/fish.c:1313
+#: fish/fish.c:1317
 #, c-format
 msgid "%s: '%s': invalid boolean value, use 'true' or 'false'\n"
 msgstr ""
 
-#: fish/fish.c:1421
+#: fish/fish.c:1425
 #, c-format
 msgid "Runaway quote in string \"%s\"\n"
 msgstr "Cuota problemática en la cadena \"%s\"\n"
 
-#: fish/fish.c:1758
+#: fish/fish.c:1762
 #, c-format
 msgid ""
 "%s: to use Windows drive letters, you must inspect the guest (\"-i\" option "
@@ -5051,7 +5052,7 @@ msgstr ""
 "%s: para utilizar letras de unidad Windows, debe inspeccionar el huésped  "
 "(opción \"-i\"o ejecute el comando \"inspect-os\")\n"
 
-#: fish/fish.c:1778
+#: fish/fish.c:1782
 #, c-format
 msgid ""
 "%s: drive '%c:' not found.  To list available drives do:\n"
@@ -5061,7 +5062,7 @@ msgstr ""
 "disponibles ejecute:\n"
 "  inspect-get-drive-mappings %s\n"
 
-#: fish/fish.c:1797
+#: fish/fish.c:1801
 #, c-format
 msgid ""
 "%s: to access '%c:', mount %s first.  One way to do this is:\n"
@@ -7205,84 +7206,3 @@ msgstr ""
 msgid "virt-win-reg: {p}: could not upload registry file: {err}\n"
 msgstr ""
 "virt-win-reg: {p}: no ha sido posible cargar el archivo de registro: {err}\n"
-
-#~ msgid "virt-make-fs input output\n"
-#~ msgstr "entrada salida de virt-make-fs\n"
-
-#~ msgid "unexpected output from 'du' command"
-#~ msgstr "salida inesperada del comando 'du'"
-
-#~ msgid "{f}: unknown input format: {fmt}\n"
-#~ msgstr "{f}: formato de entrada desconocido: {fmt}\n"
-
-#~ msgid "virt-make-fs: cannot parse size parameter: {sz}\n"
-#~ msgstr ""
-#~ "virt-make-fs: no es posible analizar el tamaño del parámetro: {sz}\n"
-
-#~ msgid ""
-#~ "virt-make-fs: NTFS support was disabled when libguestfs was compiled\n"
-#~ msgstr ""
-#~ "virt-make-fs: el soporte NTFS fue deshabilitado cuando libguestfs fue "
-#~ "compilado\n"
-
-#~ msgid "tar: failed, see earlier messages\n"
-#~ msgstr "tar: falló, vea mensajes de errores anteriores\n"
-
-#~ msgid "uncompress command failed, see earlier messages\n"
-#~ msgstr ""
-#~ "falló el comando de descompresión, vea mensajes de errores anteriores\n"
-
-#~ msgid ""
-#~ "virt-make-fs: error copying contents into filesystem\n"
-#~ "An error here usually means that the program did not estimate the\n"
-#~ "filesystem size correctly.  Please read the BUGS section of the manpage.\n"
-#~ msgstr ""
-#~ "virt-make-fs: error copiando contenidos hacia el sistema de archivos\n"
-#~ "Un error en este momento por lo general significa que el programa no\n"
-#~ "ha estimado correctamente el tamaño del sistema de archivos.\n"
-#~ "Por favor lea la sección BUGS de la página man.\n"
-
-#~ msgid "%s: error in chunked encoding"
-#~ msgstr "%s: error en codificación fragmentada"
-
-#~ msgid "receive_file_data: parse error in reply callback"
-#~ msgstr ""
-#~ "receive_file_data: error de análisis en la respuesta de devolución de "
-#~ "llamada"
-
-#~ msgid "%s should have %d parameter(s)\n"
-#~ msgstr "%s debería tener %d parámetro(s)\n"
-
-#~ msgid "warning: %s"
-#~ msgstr "advertencia: %s"
-
-#~ msgid "add qemu parameters"
-#~ msgstr "agrega parámetros qemu"
-
-#~ msgid "get memory allocated to the qemu subprocess"
-#~ msgstr "obtiene la memoria alojada en el subproceso qemu"
-
-#~ msgid "get PID of qemu subprocess"
-#~ msgstr "obtiene el PID del subproceso qemu"
-
-#~ msgid "get the qemu binary"
-#~ msgstr "obtiene el binario quemu"
-
-#~ msgid "kill the qemu subprocess"
-#~ msgstr "finaliza el subproceso qemu"
-
-#~ msgid "launch the qemu subprocess"
-#~ msgstr "lanza el subproceso quemu"
-
-#~ msgid "set memory allocated to the qemu subprocess"
-#~ msgstr "define la memoria alojada en el subproceso quemu"
-
-#~ msgid "set the qemu binary"
-#~ msgstr "define el binario quemu"
-
-#~ msgid ""
-#~ "LIBGUESTFS_QEMU environment variable is already set, so\n"
-#~ "--qemu/--qemudir options cannot be used.\n"
-#~ msgstr ""
-#~ "la variable de entorno LIBGUESTFS_QEMU ya se encuentra definida,\n"
-#~ "de modo que las opciones --qemu/--qemudir no pueden ser utilizadas.\n"

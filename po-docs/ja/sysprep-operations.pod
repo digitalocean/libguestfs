@@ -57,7 +57,7 @@ Dovecot (メールサーバー) のデータを削除します。
 
 =head2 B<firewall-rules>
 
-Remove the firewall rules.
+ファイアウォールルールを削除します。
 
 This removes custom firewall rules by removing C</etc/sysconfig/iptables> or
 custom firewalld configuration in C</etc/firewalld/*/*>.
@@ -85,7 +85,7 @@ and update all the places in the guest that use the UUIDs.  For example
 C</etc/fstab> or the bootloader.  Enabling this operation is more likely
 than not to make your guest unbootable.
 
-See: L<https://bugzilla.redhat.com/show_bug.cgi?id=991641>
+参照: L<https://bugzilla.redhat.com/show_bug.cgi?id=991641>
 
 =head2 B<kerberos-data>
 
@@ -283,9 +283,9 @@ SSSD のデータベースとログファイルを削除します。
 
 =head2 B<tmp-files> *
 
-Remove temporary files.
+一時ファイルを削除します。
 
-This removes temporary files under C</tmp> and C</var/tmp>.
+これは C</tmp> と C</var/tmp> の中にある一時ファイルを削除します。
 
 =head2 B<udev-persistent-net> *
 

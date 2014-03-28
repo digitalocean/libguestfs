@@ -8617,7 +8617,7 @@ strings and the array after use>.
 This moves a file from C<src> to C<dest> where C<dest> is either a
 destination filename or destination directory.
 
-See also: C<guestfs_rename>.
+関連項目: C<guestfs_rename>。
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -9006,7 +9006,7 @@ type. Behaviour is undefined for other partition types.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(Added in 1.21.1)
+(1.21.1 において追加)
 
 =head2 guestfs_part_get_mbr_id
 
@@ -9217,7 +9217,7 @@ for a useful list of type GUIDs.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.21.1)
+(1.21.1 において追加)
 
 =head2 guestfs_part_set_mbr_id
 
@@ -9794,7 +9794,7 @@ C<guestfs_mv> instead.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.21.5)
+(1.21.5 において追加)
 
 =head2 guestfs_resize2fs
 
@@ -10182,8 +10182,7 @@ C<append> を C<NULL> に設定することは、追加のオプションが渡�
  guestfs_set_attach_method (guestfs_h *g,
                             const char *backend);
 
-I<This function is deprecated.> In new code, use the L</guestfs_set_backend>
-call instead.
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</guestfs_set_backend> を使用してください。
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -11310,7 +11309,7 @@ called C<syslinux.cfg> on the FAT filesystem, either in the root directory,
 or under C<directory> if that optional argument is being used.  For further
 information about the contents of this file, see L<syslinux(1)>.
 
-See also C<guestfs_extlinux>.
+C<guestfs_extlinux> 参照。
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -11323,7 +11322,7 @@ See also C<guestfs_extlinux>.
                       const char *device,
                       va_list args);
 
-This is the "va_list variant" of L</guestfs_syslinux>.
+これは L</guestfs_syslinux> の "va_list variant" です。
 
 L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
 
@@ -11334,7 +11333,7 @@ L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
                         const char *device,
                         const struct guestfs_syslinux_argv *optargs);
 
-This is the "argv variant" of L</guestfs_syslinux>.
+これは L</guestfs_syslinux> の "argv variant" です。
 
 L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
 

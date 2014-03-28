@@ -135,8 +135,7 @@ following SELinux boolean:
 
  setsebool -P virt_use_execmem=on
 
-For more information see
-L<https://bugzilla.redhat.com/show_bug.cgi?id=806106>.
+詳細は L<https://bugzilla.redhat.com/show_bug.cgi?id=806106> を参照してください。
 
 =head2 "child process died unexpectedly"
 

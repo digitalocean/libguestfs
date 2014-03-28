@@ -338,7 +338,7 @@ L</list-filesystems>, L</lvs> コマンド参照)。 または、 L<virt-filesys
 
 コマンドのパイプ (以下の L</パイプ> 参照) への書き込みに失敗した場合、 このコマンドがエラーを返します。
 
-The default (also for historical reasons) is to ignore such errors so that:
+標準状態では、(歴史的な理由から) そのようなエラーは次のために無視されます。
 
  ><fs> command_with_lots_of_output | head
 
@@ -346,10 +346,9 @@ The default (also for historical reasons) is to ignore such errors so that:
 
 =item B<--progress-bars>
 
-Enable progress bars, even when guestfish is used non-interactively.
+guestfish が非対話式モードを使用している場合でも、 進行状況バーを有効にします。
 
-Progress bars are enabled by default when guestfish is used as an
-interactive shell.
+guestfish を対話式シェルで使用するとき、 進行状況バーが標準で有効になっています。
 
 =item B<--no-progress-bars>
 
@@ -357,50 +356,46 @@ interactive shell.
 
 =item B<--remote[=pid]>
 
-Send remote commands to C<$GUESTFISH_PID> or C<pid>.  See section L</REMOTE
-CONTROL GUESTFISH OVER A SOCKET> below.
+リモートコマンドを C<$GUESTFISH_PID> または C<pid> に送信します。 以下の L</guestfish
+のソケット経由のリモート制御 > 参照。
 
 =item B<-r>
 
 =item B<--ro>
 
-This changes the I<-a>, I<-d> and I<-m> options so that disks are added and
-mounts are done read-only.
+ディスクが追加され、読み込み専用でマウントされるよう、 I<-a>, I<-d>, I<-m> オプションを変更します。
 
-The option must always be used if the disk image or virtual machine might be
-running, and is generally recommended in cases where you don't need write
-access to the disk.
+ディスクイメージまたは仮想マシンが使用中の場合、 必ずこのオプションを使用する必要があります。 また、ディスクへの書き込みアクセスが不要な場合、
+このオプションが一般的に推奨されます。
 
-Note that prepared disk images created with I<-N> are not affected by this
-option.  Also commands like C<add> are not affected - you have to specify
-the C<readonly:true> option explicitly if you need it.
+I<-N> オプションで作成された準備済みディスクイメージは、 このオプションの効果がないことに注意してください。 C<add>
+のようなコマンドも影響を受けません。 必要があれば、C<readonly:true> オプションを明示的に指定する必要があります。
 
 以下の L</OPENING DISKS FOR READ AND WRITE> 参照。
 
 =item B<--selinux>
 
-仮想マシンに対して SELinux を有効にします。 L<guestfs(3)/SELINUX> 参照。
+仮想マシンに対して SELinux を有効にします。 L<guestfs(3)> の SELinux 参照。
 
 =item B<-v>
 
 =item B<--verbose>
 
-非常に冗長なメッセージを有効にします。バグを探していると、これはとくに有用です。
+非常に冗長なメッセージを出力します。  バグを探す場合、とくに有用です。
 
 =item B<-V>
 
 =item B<--version>
 
-guestfish / libguestfs のバージョン番号を表示して終了します。
+guestfish / libguestfs のバージョン番号を表示して、終了します。
 
 =item B<-w>
 
 =item B<--rw>
 
-This changes the I<-a>, I<-d> and I<-m> options so that disks are added and
-mounts are done read-write.
+ディスクが追加され、読み書き可能でマウントされるよう、 I<-a>, I<-d>, I<-m> オプションを変更します。
 
-See L</OPENING DISKS FOR READ AND WRITE> below.
+以下の L</OPENING DISKS FOR READ AND WRITE> 参照。
 
 =item B<-x>
 

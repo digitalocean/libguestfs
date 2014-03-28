@@ -10,9 +10,9 @@ msgstr ""
 "Project-Id-Version: libguestfs\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2014-03-25 12:50+0000\n"
-"PO-Revision-Date: 2014-03-23 12:37+0000\n"
-"Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
+"POT-Creation-Date: 2014-03-27 12:03+0000\n"
+"PO-Revision-Date: 2014-03-26 16:49+0000\n"
+"Last-Translator: rjones <rjones@redhat.com>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/projects/p/fedora/"
 "language/uk/)\n"
 "Language: uk\n"
@@ -2255,7 +2255,7 @@ msgstr ""
 "результату"
 
 #: align/scan.c:73 cat/cat.c:56 cat/filesystems.c:87 cat/ls.c:83 df/main.c:66
-#: diff/diff.c:91 edit/edit.c:68 fish/fish.c:104 fuse/guestmount.c:99
+#: diff/diff.c:91 edit/edit.c:68 fish/fish.c:105 fuse/guestmount.c:99
 #: fuse/guestunmount.c:52 inspector/inspector.c:67 make-fs/make-fs.c:73
 #: rescue/rescue.c:56
 #, c-format
@@ -2304,7 +2304,7 @@ msgstr ""
 
 #: align/scan.c:133 cat/cat.c:115 cat/filesystems.c:187 cat/ls.c:174
 #: df/main.c:133 diff/diff.c:191 diff/diff.c:197 edit/edit.c:134
-#: fish/fish.c:234 format/format.c:129 fuse/guestmount.c:206
+#: fish/fish.c:235 format/format.c:129 fuse/guestmount.c:206
 #: inspector/inspector.c:127 make-fs/make-fs.c:115 rescue/rescue.c:135
 #, c-format
 msgid "guestfs_create: failed to create handle\n"
@@ -2312,7 +2312,7 @@ msgstr "guestfs_create: не вдалося створити елемент ке
 
 #: align/scan.c:153 builder/index-validate.c:84 cat/cat.c:137
 #: cat/filesystems.c:241 cat/ls.c:224 df/main.c:157 diff/diff.c:262
-#: edit/edit.c:156 fish/fish.c:292 format/format.c:183 fuse/guestmount.c:241
+#: edit/edit.c:156 fish/fish.c:293 format/format.c:183 fuse/guestmount.c:241
 #: fuse/guestunmount.c:124 inspector/inspector.c:151 make-fs/make-fs.c:142
 #: rescue/rescue.c:192
 #, c-format
@@ -2438,7 +2438,7 @@ msgstr ""
 "  -x                   Трасувати виклики програмного інтерфейсу libguestfs\n"
 "Щоб дізнатися більше, скористайтеся сторінкою довідника (man) %s(1).\n"
 
-#: cat/cat.c:357 edit/edit.c:582 fish/fish.c:1764
+#: cat/cat.c:357 edit/edit.c:582 fish/fish.c:1768
 #, c-format
 msgid "%s: to use Windows drive letters, this must be a Windows guest\n"
 msgstr ""
@@ -2818,14 +2818,14 @@ msgstr ""
 msgid "%s: extra arguments on the command line\n"
 msgstr "%s: зайві аргументи у командному рядку\n"
 
-#: diff/diff.c:732
+#: diff/diff.c:739
 #, c-format
 msgid "%s: external diff command failed\n"
 msgstr ""
 "%s: спроба використання зовнішньої програми визначення різниці (diff) "
 "зазнала невдачі\n"
 
-#: diff/diff.c:736
+#: diff/diff.c:743
 msgid "End of diff"
 msgstr "Кінець різниці"
 
@@ -5411,7 +5411,7 @@ msgstr ""
 "щоб переглянути список обробників подій, скористайтеся командою «list-"
 "events»\n"
 
-#: fish/fish.c:108
+#: fish/fish.c:109
 #, c-format
 msgid ""
 "%s: guest filesystem shell\n"
@@ -5516,46 +5516,46 @@ msgstr ""
 "\n"
 "Щоб дізнатися більше, ознайомтеся зі сторінкою довідника (man) %s(1).\n"
 
-#: fish/fish.c:251
+#: fish/fish.c:252
 #, c-format
 msgid "%s: --listen=PID: PID was not a number: %s\n"
 msgstr "%s: --listen=PID: PID не був числом: %s\n"
 
-#: fish/fish.c:258
+#: fish/fish.c:259
 #, c-format
 msgid ""
 "%s: remote: $GUESTFISH_PID must be set to the PID of the remote process\n"
 msgstr ""
 "%s: remote: для ідентифікатора віддаленого процесу має $GUESTFISH_PID\n"
 
-#: fish/fish.c:311
+#: fish/fish.c:312
 #, c-format
 msgid "%s: warning: -D option is deprecated, use --no-dest-paths instead\n"
 msgstr ""
 "%s: попередження: параметр -D застарів, замість нього слід користуватися --"
 "no-dest-paths\n"
 
-#: fish/fish.c:318
+#: fish/fish.c:319
 #, c-format
 msgid "%s: only one -f parameter can be given\n"
 msgstr "%s: можна вказувати лише один параметр -f\n"
 
-#: fish/fish.c:510
+#: fish/fish.c:514
 #, c-format
 msgid "%s: cannot use --listen and --remote options at the same time\n"
 msgstr "%s: не можна одночасно використовувати параметри --listen і --remote\n"
 
-#: fish/fish.c:518
+#: fish/fish.c:522
 #, c-format
 msgid "%s: extra parameters on the command line with --listen flag\n"
 msgstr "%s: зайві параметри у командному рядку з прапорцем --listen\n"
 
-#: fish/fish.c:524
+#: fish/fish.c:528
 #, c-format
 msgid "%s: cannot use --listen and --file options at the same time\n"
 msgstr "%s: не можна одночасно використовувати параметри --listen і --file\n"
 
-#: fish/fish.c:699
+#: fish/fish.c:703
 #, c-format
 msgid ""
 "\n"
@@ -5576,51 +5576,51 @@ msgstr ""
 "      «quit», щоб вийти з оболонки\n"
 "\n"
 
-#: fish/fish.c:857 fish/fish.c:873
+#: fish/fish.c:861 fish/fish.c:877
 #, c-format
 msgid "%s: command arguments not separated by whitespace\n"
 msgstr "%s: аргументи команди не відокремлено пробілами\n"
 
-#: fish/fish.c:867
+#: fish/fish.c:871
 #, c-format
 msgid "%s: unterminated single quote\n"
 msgstr "%s: не виявлено завершальних одинарних лапок\n"
 
-#: fish/fish.c:897
+#: fish/fish.c:901
 #, c-format
 msgid "%s: internal error parsing string at '%s'\n"
 msgstr "%s: внутрішня помилка під час обробки рядка, «%s»\n"
 
-#: fish/fish.c:914
+#: fish/fish.c:918
 #, c-format
 msgid "%s: too many arguments\n"
 msgstr "%s: занадто багато аргументів\n"
 
-#: fish/fish.c:989
+#: fish/fish.c:993
 #, c-format
 msgid "%s: invalid escape sequence in string (starting at offset %d)\n"
 msgstr ""
 "%s: некоректна керівна послідовність у рядку (починаючи з позиції %d)\n"
 
-#: fish/fish.c:998
+#: fish/fish.c:1002
 #, c-format
 msgid "%s: unterminated double quote\n"
 msgstr "%s: не виявлено завершальних подвійних лапок\n"
 
-#: fish/fish.c:1061
+#: fish/fish.c:1065
 #, c-format
 msgid "%s: empty command on command line\n"
 msgstr "%s: порожня команда або командний рядок\n"
 
-#: fish/fish.c:1219
+#: fish/fish.c:1223
 msgid "display a list of commands or help on a command"
 msgstr "показати список команд або довідку щодо команди"
 
-#: fish/fish.c:1221
+#: fish/fish.c:1225
 msgid "quit guestfish"
 msgstr "вийти з guestfish"
 
-#: fish/fish.c:1232
+#: fish/fish.c:1236
 #, c-format
 msgid ""
 "help - display a list of commands or help on a command\n"
@@ -5631,7 +5631,7 @@ msgstr ""
 "     help команда\n"
 "     help\n"
 
-#: fish/fish.c:1240
+#: fish/fish.c:1244
 #, c-format
 msgid ""
 "quit - quit guestfish\n"
@@ -5640,13 +5640,13 @@ msgstr ""
 "quit — завершити роботу guestfish\n"
 "     quit\n"
 
-#: fish/fish.c:1245
+#: fish/fish.c:1249
 #, c-format
 msgid "%s: command not known, use -h to list all commands\n"
 msgstr ""
 "%s: невідома команда, скористайтеся -h, щоб отримати список всіх команд\n"
 
-#: fish/fish.c:1261
+#: fish/fish.c:1265
 #, c-format
 msgid ""
 "Did you mean to open a disk image?  guestfish -a disk.img\n"
@@ -5657,22 +5657,22 @@ msgstr ""
 "Отримати список команд:             guestfish -h\n"
 "Ознайомитися з документацією:       man guestfish\n"
 
-#: fish/fish.c:1270
+#: fish/fish.c:1274
 #, c-format
 msgid "%s:%d: libguestfs: error: %s\n"
 msgstr "%s:%d: libguestfs: помилка: %s\n"
 
-#: fish/fish.c:1313
+#: fish/fish.c:1317
 #, c-format
 msgid "%s: '%s': invalid boolean value, use 'true' or 'false'\n"
 msgstr "%s: «%s»: некоректне булеве значення, має бути 'true' або 'false'\n"
 
-#: fish/fish.c:1421
+#: fish/fish.c:1425
 #, c-format
 msgid "Runaway quote in string \"%s\"\n"
 msgstr "У рядку «%s» не вистачає лапок\n"
 
-#: fish/fish.c:1758
+#: fish/fish.c:1762
 #, c-format
 msgid ""
 "%s: to use Windows drive letters, you must inspect the guest (\"-i\" option "
@@ -5682,7 +5682,7 @@ msgstr ""
 "гостьову систему (використати параметр \"-i\" або виконати команду \"inspect-"
 "os\")\n"
 
-#: fish/fish.c:1778
+#: fish/fish.c:1782
 #, c-format
 msgid ""
 "%s: drive '%c:' not found.  To list available drives do:\n"
@@ -5692,7 +5692,7 @@ msgstr ""
 "команду\n"
 "  inspect-get-drive-mappings %s\n"
 
-#: fish/fish.c:1797
+#: fish/fish.c:1801
 #, c-format
 msgid ""
 "%s: to access '%c:', mount %s first.  One way to do this is:\n"
@@ -8218,718 +8218,3 @@ msgstr "virt-win-reg: {p}: не вдалося отримати файл рег�
 #, perl-brace-format
 msgid "virt-win-reg: {p}: could not upload registry file: {err}\n"
 msgstr "virt-win-reg: {p}: не вдалося вивантажити файл регістра: {err}\n"
-
-#~ msgid "%s: %s: %s: file not found\n"
-#~ msgstr "%s: %s: %s: файл не знайдено\n"
-
-#~ msgid "%s: %s: %s: file not found [did you mean %s?]\n"
-#~ msgstr "%s: %s: %s: файл не знайдено [можливо, ви хотіли вказати %s?]\n"
-
-#~ msgid "%s: %s: command exited with an error\n"
-#~ msgstr "%s: %s: спроба виконати команду завершилася невдало\n"
-
-#~ msgid "%s: --install is not supported for this guest operating system\n"
-#~ msgstr ""
-#~ "%s: підтримки --install у цій гостьовій операційній системі не "
-#~ "передбачено\n"
-
-#~ msgid "%s: --update is not supported for this guest operating system\n"
-#~ msgstr ""
-#~ "%s: підтримки --update у цій гостьовій операційній системі не "
-#~ "передбачено\n"
-
-#~ msgid "%s: --upload: %s: file not found\n"
-#~ msgstr "%s: --upload: %s: файл не знайдено\n"
-
-#~ msgid "%s: error: %s is not a regular file in the guest\n"
-#~ msgstr "%s: помилка: %s не є звичайним файлом у гостьовій системі\n"
-
-#~ msgid "%s: invalid --edit format, see the man page.\n"
-#~ msgstr "%s: некоректний формат --edit, див. сторінку підручника (man).\n"
-
-#~ msgid "%s: invalid --link format, see the man page.\n"
-#~ msgstr "%s: некоректний формат --link, див. сторінку підручника (man).\n"
-
-#~ msgid "%s: invalid --upload format, see the man page.\n"
-#~ msgstr "%s: некоректний формат --upload, див. сторінку підручника (man).\n"
-
-#~ msgid "%s: invalid --write format, see the man page.\n"
-#~ msgstr "%s: некоректний формат --write, див. сторінку підручника (man).\n"
-
-#~ msgid "%s: invalid password selector '%s'; see the man page.\n"
-#~ msgstr ""
-#~ "%s: некоректний варіант пароля «%s»; див. сторінку підручника (man).\n"
-
-#~ msgid "%s: log file %s: %s (ignored)\n"
-#~ msgstr "%s: файл журналу %s: %s (проігноровано)\n"
-
-#~ msgid ""
-#~ "%s: password-crypto: unknown algorithm %s, use \"md5\", \"sha256\" or "
-#~ "\"sha512\".\n"
-#~ msgstr ""
-#~ "%s: password-crypto: невідомий алгоритм %s. Слід використовувати одне з "
-#~ "таких значень: \"md5\", \"sha256\" або \"sha512\".\n"
-
-#~ msgid ""
-#~ "%s: sorry, don't know how to use --install with the '%s' package manager\n"
-#~ msgstr ""
-#~ "%s: вибачте, спосіб використання --install для програми для керування "
-#~ "пакунками «%s» є невідомим.\n"
-
-#~ msgid ""
-#~ "%s: sorry, don't know how to use --update with the '%s' package manager\n"
-#~ msgstr ""
-#~ "%s: вибачте, спосіб використання --update для програми для керування "
-#~ "пакунками «%s» є невідомим.\n"
-
-#~ msgid ""
-#~ "%s: warning: hostname could not be set for this type of guest\n"
-#~ "%!"
-#~ msgstr ""
-#~ "%s: попередження: для цього типу гостьових систем не можна встановлювати "
-#~ "назву вузла\n"
-#~ "%!"
-
-#~ msgid ""
-#~ "%s: warning: random seed could not be set for this type of guest\n"
-#~ "%!"
-#~ msgstr ""
-#~ "%s: попередження: для цього типу гостьових систем не можна встановлювати "
-#~ "початкове значення для генератора псевдовипадкових чисел\n"
-#~ "%!"
-
-#~ msgid ""
-#~ "%s: warning: root password could not be set for this type of guest\n"
-#~ "%!"
-#~ msgstr ""
-#~ "%s: попередження: для цього типу гостьових систем не можна встановлювати "
-#~ "пароль адміністратора (root)\n"
-#~ "%!"
-
-#~ msgid ""
-#~ "%s: warning: timezone could not be set for this type of guest\n"
-#~ "%!"
-#~ msgstr ""
-#~ "%s: попередження: для цього типу гостьових систем не можна встановлювати "
-#~ "часовий пояс\n"
-#~ "%!"
-
-#~ msgid "..."
-#~ msgstr "…"
-
-#~ msgid "Add package(s) to install"
-#~ msgstr "Додати пакунки для встановлення"
-
-#~ msgid "Add package(s) to install at firstboot"
-#~ msgstr "Додати пакунки для встановлення під час першого завантаження"
-
-#~ msgid "Add scripts to run once at next boot"
-#~ msgstr ""
-#~ "Додати скрипти для одноразового запуску під час наступного завантаження"
-
-#~ msgid "Change the default timezone of the guest"
-#~ msgstr "Змінити типовий часовий пояс гостьової системи"
-
-#~ msgid "Change the hostname of the guest"
-#~ msgstr "Змінити назву вузла гостьової системи"
-
-#~ msgid ""
-#~ "Change the hostname.  If not given, defaults to C<localhost.localdomain>."
-#~ msgstr ""
-#~ "Зміни назву вузла. Якщо не вказано, використовувати типове C<localhost."
-#~ "localdomain>."
-
-#~ msgid "Change the timezone.  Use a location string such as C<Europe/London>"
-#~ msgstr ""
-#~ "Змінити часовий пояс. Скористайтеся рядком місця, наприклад C<Europe/Kiev>"
-
-#~ msgid "Create directory"
-#~ msgstr "Створити каталог"
-
-#~ msgid "Create symbolic links"
-#~ msgstr "Створити символічні посилання"
-
-#~ msgid "Currently this can only set the hostname on Linux guests."
-#~ msgstr ""
-#~ "У поточній версії назву вузла можна встановлювати лише для гостьових "
-#~ "систем Linux."
-
-#~ msgid "Currently this can only set the timezone on Linux guests."
-#~ msgstr ""
-#~ "У поточній версії часовий пояс можна встановлювати лише для гостьових "
-#~ "систем Linux."
-
-#~ msgid ""
-#~ "Currently this is only implemented for Linux guests using\n"
-#~ "either SysVinit-style scripts, Upstart or systemd."
-#~ msgstr ""
-#~ "У поточній версії цю можливість реалізовано лише для гостьових\n"
-#~ "систем Linux, у яких використовується System V init або systemd"
-
-#~ msgid ""
-#~ "Currently this only works for glibc-based Linux guests that\n"
-#~ "use shadow passwords."
-#~ msgstr ""
-#~ "У поточній версії цим можна користуватися лише для гостьових систем "
-#~ "Linux,\n"
-#~ "заснованих на glibc, у яких використовуються паролі shadow."
-
-#~ msgid "Delete (recursively) the specified C<PATHNAME> in the guest."
-#~ msgstr ""
-#~ "Вилучити (рекурсивно) вказаний C<PATHNAME> об’єкт у гостьовій системі."
-
-#~ msgid "Delete a file or dir"
-#~ msgstr "Вилучити файл або каталог"
-
-#~ msgid "Delete or scrub specified files or directories"
-#~ msgstr "Вилучити або витерти вказані файли або каталоги"
-
-#~ msgid "Deleting: %s"
-#~ msgstr "Вилучаємо: %s"
-
-#~ msgid "Edit file with Perl expr"
-#~ msgstr "Редагувати файл за допомогою виразу Perl"
-
-#~ msgid "Editing: %s"
-#~ msgstr "Редагуємо: %s"
-
-#~ msgid ""
-#~ "Examining the guest ...\n"
-#~ "%!"
-#~ msgstr ""
-#~ "Вивчення гостьової системи…\n"
-#~ "%!"
-
-#~ msgid "File or directory to be removed on guest"
-#~ msgstr "Файл або каталог, які слід вилучити з гостьової системи"
-
-#~ msgid "File to be scrubbed"
-#~ msgstr "Файл, який буде витерто"
-
-#~ msgid "Force SELinux relabel"
-#~ msgstr "Примусова зміна міток SELinux"
-
-#~ msgid "Generate random seed for guest"
-#~ msgstr "Створити породжувач випадкових чисел для гостьової системи"
-
-#~ msgid "Installing firstboot command: [%d] %s"
-#~ msgstr "Встановлюємо програму firstboot: [%d] %s"
-
-#~ msgid "Installing firstboot packages: [%d] %s"
-#~ msgstr "Встановлюємо пакунки firstboot: [%d] %s"
-
-#~ msgid "Installing firstboot script: [%d] %s"
-#~ msgstr "Встановлюємо скрипт firstboot: [%d] %s"
-
-#~ msgid "Installing packages: %s"
-#~ msgstr "Встановлюємо пакунки: %s"
-
-#~ msgid "Linking: %s -> %s"
-#~ msgstr "Пов’язування: %s -> %s"
-
-#~ msgid "Making directory: %s"
-#~ msgstr "Створюємо каталог: %s"
-
-#~ msgid "Never do SELinux relabel"
-#~ msgstr "Ніколи не виконувати зміни міток SELinux"
-
-#~ msgid "New hostname"
-#~ msgstr "Нова назва вузла"
-
-#~ msgid "New timezone"
-#~ msgstr "Новий часовий пояс"
-
-#~ msgid "Relabel files with correct SELinux labels"
-#~ msgstr "Зміна міток файлів на належні мітки SELinux"
-
-#~ msgid "Run command at first guest boot"
-#~ msgstr "Виконати команду під час першого завантаження гостьової системи"
-
-#~ msgid "Run command in disk image"
-#~ msgstr "Виконати команду на образі диска"
-
-#~ msgid "Run script at first guest boot"
-#~ msgstr "Виконати скрипт під час першого завантаження гостьової системи"
-
-#~ msgid "Run script in disk image"
-#~ msgstr "Виконати скрипт на образі диска"
-
-#~ msgid ""
-#~ "Run script(s) once next time the guest boots.  You can supply\n"
-#~ "the I<--firstboot> option as many times as needed."
-#~ msgstr ""
-#~ "Запустити скрипти одноразово під час наступного завантаження гостьової\n"
-#~ "системи. Кількість параметрів I<--firstboot> у рядку команди не обмежено."
-
-#~ msgid "Running: %s"
-#~ msgstr "Виконуємо: %s"
-
-#~ msgid "SELinux relabelling"
-#~ msgstr "Повторне встановлення міток SELinux"
-
-#~ msgid ""
-#~ "Scrub (aggressively overwrite then remove) the specified\n"
-#~ "file called C<PATHNAME> in the guest.  Only single files can\n"
-#~ "be specified using this argument."
-#~ msgstr ""
-#~ "Витерти (агресивно перезаписати декілька разів, а потім вилучити) "
-#~ "вказаний\n"
-#~ "за допомогою C<PATHNAME> файл у гостьовій системі. За допомогою цього "
-#~ "аргументу\n"
-#~ "можна вказувати лише окремі файли."
-
-#~ msgid "Scrub a file"
-#~ msgstr "Витерти файл"
-
-#~ msgid "Scrub build log file"
-#~ msgstr "Витерти файл журналу збирання"
-
-#~ msgid "Scrubbing the log file"
-#~ msgstr "Витираємо файл журналу"
-
-#~ msgid "Scrubbing: %s"
-#~ msgstr "Витираємо: %s"
-
-#~ msgid ""
-#~ "Set a user password.  The user must exist already (this option\n"
-#~ "does I<not> create users).\n"
-#~ "\n"
-#~ "The I<--password> option takes C<USERNAME:SELECTOR>.  The\n"
-#~ "I<--root-password> option takes just the C<SELECTOR>.  The\n"
-#~ "format of the C<SELECTOR> is described below:\n"
-#~ "\n"
-#~ "=over 4\n"
-#~ "\n"
-#~ "=item B<--password USERNAME:file:FILENAME>\n"
-#~ "\n"
-#~ "=item B<--root-password file:FILENAME>\n"
-#~ "\n"
-#~ "Read the password from C<FILENAME>.  The whole\n"
-#~ "first line of this file is the replacement password.\n"
-#~ "Any other lines are ignored.  You should create the file\n"
-#~ "with mode 0600 to ensure no one else can read it.\n"
-#~ "\n"
-#~ "=item B<--password USERNAME:password:PASSWORD>\n"
-#~ "\n"
-#~ "=item B<--root-password password:PASSWORD>\n"
-#~ "\n"
-#~ "Set the password to the literal string C<PASSWORD>.\n"
-#~ "\n"
-#~ "B<Note: this is not secure> since any user on the same machine\n"
-#~ "can see the cleartext password using L<ps(1)>.\n"
-#~ "\n"
-#~ "=item B<--password USERNAME:random>\n"
-#~ "\n"
-#~ "=item B<--root-password random>\n"
-#~ "\n"
-#~ "Choose a random password, which is printed on stdout.  The password\n"
-#~ "has approximately 120 bits of randomness.\n"
-#~ "\n"
-#~ "=item B<--password> USERNAME:disabled\n"
-#~ "\n"
-#~ "=item B<--root-password> disabled\n"
-#~ "\n"
-#~ "The account password is disabled.  This is like putting C<*>\n"
-#~ "in the password field.\n"
-#~ "\n"
-#~ "=item B<--password> USERNAME:locked:file:FILENAME\n"
-#~ "\n"
-#~ "=item B<--password> USERNAME:locked:password:PASSWORD\n"
-#~ "\n"
-#~ "=item B<--password> USERNAME:locked:random\n"
-#~ "\n"
-#~ "=item B<--root-password> locked:file:FILENAME\n"
-#~ "\n"
-#~ "=item B<--root-password> locked:password:PASSWORD\n"
-#~ "\n"
-#~ "=item B<--root-password> locked:random\n"
-#~ "\n"
-#~ "The account is locked, but a password is placed on the\n"
-#~ "account.  If first unlocked (using C<passwd -u>) then logins will\n"
-#~ "use the given password.\n"
-#~ "\n"
-#~ "=item B<--password> USERNAME:locked\n"
-#~ "\n"
-#~ "=item B<--password> USERNAME:locked:disabled\n"
-#~ "\n"
-#~ "=item B<--root-password> locked\n"
-#~ "\n"
-#~ "=item B<--root-password> locked:disabled\n"
-#~ "\n"
-#~ "The account is locked I<and> password is disabled.\n"
-#~ "\n"
-#~ "=back"
-#~ msgstr ""
-#~ "Встановити пароль користувача. Обліковий запису користувача має вже\n"
-#~ "існувати (за допомогою цього параметра I<не можна> створювати\n"
-#~ "облікові записи користувачів).\n"
-#~ "\n"
-#~ "Параметру I<--password> слід передати пару аргументів\n"
-#~ "C<КОРИСТУВАЧ:ВАРІАНТ>. Параметру I<--root-password> слід передавати\n"
-#~ "лише аргумент C<ВАРІАНТ>. Формат аргументу C<ВАРІАНТ> описано нижче:\n"
-#~ "\n"
-#~ "=over 4\n"
-#~ "\n"
-#~ "=item B<--password КОРИСТУВАЧ:file:НАЗВА_ФАЙЛА>\n"
-#~ "\n"
-#~ "=item B<--root-password file:НАЗВА_ФАЙЛА>\n"
-#~ "\n"
-#~ "Прочитати пароль з файла C<НАЗВА_ФАЙЛА>. Увесь перший рядок\n"
-#~ "цього файла буде замінником пароля. Усі інші рядки буде\n"
-#~ "проігноровано. Вам слід створити файл з режимом доступу\n"
-#~ "0600, щоб його не змогли прочитати інші користувачі.\n"
-#~ "\n"
-#~ "=item B<--password КОРИСТУВАЧ:password:ПАРОЛЬ>\n"
-#~ "\n"
-#~ "=item B<--root-password password:ПАРОЛЬ>\n"
-#~ "\n"
-#~ "Встановити пароль, буквально заданий рядком C<ПАРОЛЬ>.\n"
-#~ "\n"
-#~ "B<Зауваження: використання цього варіанта не є безпечним>,\n"
-#~ "оскільки будь-який інший користувач комп’ютера зможе\n"
-#~ "переглянути пароль за допомогою команди L<ps(1)>.\n"
-#~ "\n"
-#~ "=item B<--password КОРИСТУВАЧ:random>\n"
-#~ "\n"
-#~ "=item B<--root-password random>\n"
-#~ "\n"
-#~ "Вибрати випадковий пароль, який буде виведено до stdout.\n"
-#~ "Випадковість пароля наближено відповідатиме 120-бітовій.\n"
-#~ "\n"
-#~ "=item B<--password> КОРИСТУВАЧ:disabled\n"
-#~ "\n"
-#~ "=item B<--root-password> disabled\n"
-#~ "\n"
-#~ "Вимкнути пароль до облікового запису. Подібне до введення\n"
-#~ "C<*> у полі пароля.\n"
-#~ "\n"
-#~ "=item B<--password> КОРИСТУВАЧ:locked:file:НАЗВА_ФАЙЛА\n"
-#~ "\n"
-#~ "=item B<--password> КОРИСТУВАЧ:locked:password:ПАРОЛЬ\n"
-#~ "\n"
-#~ "=item B<--password> КОРИСТУВАЧ:locked:random\n"
-#~ "\n"
-#~ "=item B<--root-password> locked:file:НАЗВА_ФАЙЛА\n"
-#~ "\n"
-#~ "=item B<--root-password> locked:password:ПАРОЛЬ\n"
-#~ "\n"
-#~ "=item B<--root-password> locked:random\n"
-#~ "\n"
-#~ "Заблокувати обліковий запис зі встановленням пароля доступу до\n"
-#~ "облікового запису. Якщо обліковий запис розблокувати (за\n"
-#~ "допомогою команди C<passwd -u>), увійти до нього можна буде\n"
-#~ "за вказаним паролем.\n"
-#~ "\n"
-#~ "=item B<--password> КОРИСТУВАЧ:locked\n"
-#~ "\n"
-#~ "=item B<--password> КОРИСТУВАЧ:locked:disabled\n"
-#~ "\n"
-#~ "=item B<--root-password> locked\n"
-#~ "\n"
-#~ "=item B<--root-password> locked:disabled\n"
-#~ "\n"
-#~ "Заблокувати обліковий запис I<і> вимкнути пароль.\n"
-#~ "\n"
-#~ "=back"
-
-#~ msgid "Set password crypto"
-#~ msgstr "Встановити спосіб шифрування пароля"
-
-#~ msgid ""
-#~ "Set root or another user's password.\n"
-#~ "\n"
-#~ "Use the I<--root-password> option to specify a replacement root\n"
-#~ "password for the guest.  You can only use this option once.\n"
-#~ "\n"
-#~ "Use the I<--password> option to specify replacement user password(s).\n"
-#~ "You can use this option as many times as you want.\n"
-#~ "\n"
-#~ "Use I<--password-crypto> to change the password encryption used.\n"
-#~ "\n"
-#~ "See L</OPTIONS> above for details of these options.\n"
-#~ "\n"
-#~ "This operation is enabled by default, but it only does something\n"
-#~ "if there is at least one I<--root-password> or I<--password>\n"
-#~ "argument given."
-#~ msgstr ""
-#~ "Встановити пароль root або іншого користувача.\n"
-#~ "\n"
-#~ "Параметром I<--root-password> слід користуватися для визначення заміни\n"
-#~ "пароля користувача root гостьової системи. Цей параметр можна "
-#~ "використовувати\n"
-#~ "лише один раз.\n"
-#~ "\n"
-#~ "Параметром I<--password> слід користуватися для заміни паролів "
-#~ "користувачів.\n"
-#~ "Використовувати цей параметр можна довільну кількість разів.\n"
-#~ "\n"
-#~ "Параметром I<--password-crypto> слід користуватися для зміни способу\n"
-#~ "шифрування паролів.\n"
-#~ "\n"
-#~ "Див. L</OPTIONS> вище, щоб дізнатися більше про ці параметри.\n"
-#~ "\n"
-#~ "Типово, цю дію увімкнено, але вона матиме якісь наслідки, лише якщо\n"
-#~ "вказано принаймні один з параметрів I<--root-password> або I<--password>."
-
-#~ msgid "Set root or user password"
-#~ msgstr "Встановити пароль root або користувача"
-
-#~ msgid "Set root password"
-#~ msgstr "Встановити пароль root"
-
-#~ msgid "Set the default timezone"
-#~ msgstr "Встановити типовий часовий пояс"
-
-#~ msgid "Set the hostname"
-#~ msgstr "Встановити назву вузла"
-
-#~ msgid ""
-#~ "Set the password encryption to C<md5>, C<sha256> or C<sha512>.\n"
-#~ "\n"
-#~ "C<sha256> and C<sha512> require glibc E<ge> 2.7\n"
-#~ "(check L<crypt(3)> inside the guest).\n"
-#~ "\n"
-#~ "C<md5> will work with relatively old Linux guests (eg. RHEL 3), but\n"
-#~ "is not secure against modern attacks.\n"
-#~ "\n"
-#~ "The default is C<sha512> unless libguestfs detects an old guest\n"
-#~ "that didn't have support for SHA-512, in which case it will use C<md5>.\n"
-#~ "You can override libguestfs by specifying this option."
-#~ msgstr ""
-#~ "Встановити спосіб шифрування паролів: C<md5>, C<sha256> або C<sha512>.\n"
-#~ "\n"
-#~ "Для шифрування за допомогою C<sha256> і C<sha512> потрібна glibc E<ge> "
-#~ "2.7\n"
-#~ "(див. L<crypt(3)> у гостьовій системі).\n"
-#~ "\n"
-#~ "C<md5> працюватиме з відносно давніми гостьовими системами Linux "
-#~ "(наприклад\n"
-#~ "RHEL 3), але є незахищеним щодо новітніх способів атак.\n"
-#~ "\n"
-#~ "Типовим способом шифрування є C<sha512>. Він використовується, якщо "
-#~ "libguestfs\n"
-#~ "вдасться виявити у гостьовій системі підтримку SHA-512. Якщо такої "
-#~ "підтримки\n"
-#~ "не буде виявлено, використовуватиметься C<md5>. За допомогою цього "
-#~ "параметра\n"
-#~ "ви можете перевизначити автоматично визначений libguestfs спосіб "
-#~ "шифрування."
-
-#~ msgid ""
-#~ "Set the root password.  See I<--password> above for the format\n"
-#~ "of C<SELECTOR>."
-#~ msgstr ""
-#~ "Встановити пароль адміністративного користувача (root). Формат запису "
-#~ "C<SELECTOR>\n"
-#~ "наведено вище, див. I<--password>."
-
-#~ msgid "Setting a random seed"
-#~ msgstr "Встановлення бази випадковості"
-
-#~ msgid ""
-#~ "Setting random password of %s to %s\n"
-#~ "%!"
-#~ msgstr ""
-#~ "Встановлюємо випадковий пароль %s до %s\n"
-#~ "%!"
-
-#~ msgid "Setting random root password [did you mean to use --root-password?]"
-#~ msgstr ""
-#~ "Встановлюємо випадковий пароль root: [можливо, ви хотіли скористатися --"
-#~ "root-password?]"
-
-#~ msgid "Setting root password"
-#~ msgstr "Встановлення пароля root"
-
-#~ msgid "Setting the hostname: %s"
-#~ msgstr "Встановлюємо назву вузла: %s"
-
-#~ msgid "Setting the timezone: %s"
-#~ msgstr "Встановлюємо часовий пояс: %s"
-
-#~ msgid ""
-#~ "Supply one of more shell scripts (using the I<--firstboot> option).\n"
-#~ "\n"
-#~ "These are run the first time the guest boots, and then are\n"
-#~ "deleted.  So these are useful for performing last minute\n"
-#~ "configuration that must run in the context of the guest\n"
-#~ "operating system, for example C<yum update>.\n"
-#~ "\n"
-#~ "Output or errors from the scripts are written to\n"
-#~ "C<~root/virt-sysprep-firstboot.log> (in the guest)."
-#~ msgstr ""
-#~ "Вкажіть один або декілька скриптів оболонки (за допомогою параметра I<--"
-#~ "firstboot>).\n"
-#~ "\n"
-#~ "Ці скрипти буде одноразово виконано під час першого завантаження\n"
-#~ "гостьової системи і після цього вилучено. Такими скриптами зручно\n"
-#~ "користуватися для остаточного налаштовування, яке має бути\n"
-#~ "виконано у контексті гостьової операційної системи, наприклад\n"
-#~ "C<yum update>.\n"
-#~ "\n"
-#~ "Виведені дані і повідомлення про помилки для таких скриптів\n"
-#~ "буде записано до C<~root/virt-sysprep-firstboot.log>\n"
-#~ "(у гостьовій системі)."
-
-#~ msgid ""
-#~ "This operation changes the default timezone of the guest to the value\n"
-#~ "given in the I<--timezone> parameter.\n"
-#~ "\n"
-#~ "If the I<--timezone> parameter is not given, then the timezone is not\n"
-#~ "changed.\n"
-#~ "\n"
-#~ "This parameter affects the default timezone that users see when they log\n"
-#~ "in, but they can still change their timezone per-user account."
-#~ msgstr ""
-#~ "За допомогою цієї команди можна змінити типовий часовий пояс для "
-#~ "гостьової\n"
-#~ "системи на значення, вказане за допомогою параметра I<--timezone>.\n"
-#~ "\n"
-#~ "Якщо параметр I<--timezone> не буде вказано, часовий пояс не "
-#~ "змінюватиметься.\n"
-#~ "\n"
-#~ "Цей параметр стосується типового часового поясу, який буде використано "
-#~ "після\n"
-#~ "входу користувача до системи. Втім, кожен з користувачів може змінити "
-#~ "часовий\n"
-#~ "пояс для свого облікового запису окремо."
-
-#~ msgid ""
-#~ "This operation changes the hostname of the guest to the value\n"
-#~ "given in the I<--hostname> parameter.\n"
-#~ "\n"
-#~ "If the I<--hostname> parameter is not given, then the hostname is "
-#~ "changed\n"
-#~ "to C<localhost.localdomain>."
-#~ msgstr ""
-#~ "Ця дія змінює назву вузла гостьової системи на значення, вказане\n"
-#~ "за допомогою параметра I<--hostname>.\n"
-#~ "\n"
-#~ "Якщо параметр I<--hostname> не буде вказано, назву вузла буде змінено\n"
-#~ "на C<localhost.localdomain>."
-
-#~ msgid "Update core packages"
-#~ msgstr "Оновити основні пакунки"
-
-#~ msgid "Updating core packages"
-#~ msgstr "Оновлюємо основні пакунки"
-
-#~ msgid "Upload file to dest"
-#~ msgstr "Вивантажити файл до вказаного призначення"
-
-#~ msgid "Uploading: %s to %s"
-#~ msgstr "Вивантажуємо: %s до %s"
-
-#~ msgid "Use --autorelabel"
-#~ msgstr "Скористатися --autorelabel"
-
-#~ msgid "Use --no-autorelabel"
-#~ msgstr "Скористатися --no-autorelabel"
-
-#~ msgid ""
-#~ "Use the I<--delete> option to specify a path to remove.\n"
-#~ "\n"
-#~ "You can use shell glob characters in the specified path; note that such\n"
-#~ "metacharacters might require proper escape.  For example:\n"
-#~ "\n"
-#~ " virt-sysprep --delete '/var/log/*.log'\n"
-#~ "\n"
-#~ "An alternative option, I<--scrub>, can be used to scrub files.  This\n"
-#~ "only works for files (not directories) and cannot use globs.\n"
-#~ "\n"
-#~ "You can use both options as many times as you want."
-#~ msgstr ""
-#~ "Скористайтеся параметром I<--delete> для визначення шлях до об’єкта,\n"
-#~ "який слід вилучити.\n"
-#~ "\n"
-#~ "У вказаному шляху ви можете скористатися символами-замінниками. Втім,\n"
-#~ "подібні метасимволи слід належним чином екранувати. Приклад:\n"
-#~ "\n"
-#~ " virt-sysprep --delete '/var/log/*.log'\n"
-#~ "\n"
-#~ "Альтернативним параметром, I<--scrub>, можна скористатися для витирання\n"
-#~ "файлів. Цей параметр працюватиме лише для файлів (не каталогів) і\n"
-#~ "непридатний до використання символів-замінників.\n"
-#~ "\n"
-#~ "У команді може бути вказано довільну кількість описаних вище параметрів."
-
-#~ msgid "Write file"
-#~ msgstr "Записати файл"
-
-#~ msgid ""
-#~ "Write some random bytes from the host into the random seed file of the\n"
-#~ "guest.\n"
-#~ "\n"
-#~ "See L</RANDOM SEED> below."
-#~ msgstr ""
-#~ "Записати випадкові байти з основної системи до файла породжувача "
-#~ "псевдовипадкових\n"
-#~ "чисел у гостьовій системі.\n"
-#~ "\n"
-#~ "Див. L</RANDOM SEED> нижче."
-
-#~ msgid "Writing: %s"
-#~ msgstr "Записуємо: %s"
-
-#~ msgid "firstboot: failed: "
-#~ msgstr "firstboot: помилка: "
-
-#~ msgid "hostname"
-#~ msgstr "назва_вузла"
-
-#~ msgid "md5|sha256|sha512"
-#~ msgstr "md5|sha256|sha512"
-
-#~ msgid "path"
-#~ msgstr "шлях"
-
-#~ msgid "run script once next time guest boots"
-#~ msgstr ""
-#~ "запустити скрипт одного разу під час наступного завантаження гостьової "
-#~ "системи"
-
-#~ msgid "set password crypto"
-#~ msgstr "встановити спосіб шифрування пароля"
-
-#~ msgid "set root password (see man page)"
-#~ msgstr "встановити пароль root (див. сторінку підручника (man))"
-
-#~ msgid "set user password (see man page)"
-#~ msgstr "встановити пароль користувача (див. сторінку підручника (man))"
-
-#~ msgid "timezone"
-#~ msgstr "часовий пояс"
-
-#~ msgid "virt-builder: error: could not evaluate Perl expression '%s'\n"
-#~ msgstr "virt-builder: помилка: не вдалося обробити вираз Perl «%s»\n"
-
-#~ msgid "virt-sysprep: cannot set passwords for %s guests.\n"
-#~ msgstr ""
-#~ "virt-sysprep: не вдалося встановити паролі для гостьових систем %s.\n"
-
-#~ msgid ""
-#~ "virt-sysprep: password: invalid --password format; see the man page.\n"
-#~ msgstr ""
-#~ "virt-sysprep: password: некоректний формат --password; див. сторінку "
-#~ "man.\n"
-
-#~ msgid ""
-#~ "virt-sysprep: password: multiple --root-password/--password options set "
-#~ "the password for user '%s' twice.\n"
-#~ msgstr ""
-#~ "virt-sysprep: password: визначено декілька аргументів --root-password/--"
-#~ "password, які визначають пароль для користувача «%s» двічі.\n"
-
-#~ msgid ""
-#~ "virt-sysprep: password: warning: using insecure md5 password encryption "
-#~ "for\n"
-#~ "guest of type %s version %d.\n"
-#~ "If this is incorrect, use --password-crypto option and file a bug.\n"
-#~ "%!"
-#~ msgstr ""
-#~ "virt-sysprep: password: попередження: використовуємо нестійке шифрування "
-#~ "паролів md5\n"
-#~ "для гостьової системи типу %s, версія %d.\n"
-#~ "Якщо це є помилкою, скористайтеся параметром --password-crypto і створіть "
-#~ "повідомлення про ваду.\n"
-#~ "%!"

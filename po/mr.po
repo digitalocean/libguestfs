@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: libguestfs\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2014-03-25 12:50+0000\n"
-"PO-Revision-Date: 2013-08-06 13:32+0000\n"
+"POT-Creation-Date: 2014-03-27 12:03+0000\n"
+"PO-Revision-Date: 2014-03-26 16:49+0000\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
 "Language-Team: Marathi (http://www.transifex.com/projects/p/fedora/language/"
 "mr/)\n"
@@ -1853,7 +1853,7 @@ msgid "you cannot use the same disk image for input and output"
 msgstr ""
 
 #: align/scan.c:73 cat/cat.c:56 cat/filesystems.c:87 cat/ls.c:83 df/main.c:66
-#: diff/diff.c:91 edit/edit.c:68 fish/fish.c:104 fuse/guestmount.c:99
+#: diff/diff.c:91 edit/edit.c:68 fish/fish.c:105 fuse/guestmount.c:99
 #: fuse/guestunmount.c:52 inspector/inspector.c:67 make-fs/make-fs.c:73
 #: rescue/rescue.c:56
 #, c-format
@@ -1884,7 +1884,7 @@ msgstr ""
 
 #: align/scan.c:133 cat/cat.c:115 cat/filesystems.c:187 cat/ls.c:174
 #: df/main.c:133 diff/diff.c:191 diff/diff.c:197 edit/edit.c:134
-#: fish/fish.c:234 format/format.c:129 fuse/guestmount.c:206
+#: fish/fish.c:235 format/format.c:129 fuse/guestmount.c:206
 #: inspector/inspector.c:127 make-fs/make-fs.c:115 rescue/rescue.c:135
 #, c-format
 msgid "guestfs_create: failed to create handle\n"
@@ -1892,7 +1892,7 @@ msgstr "guestfs_create: हँडल निर्माण करण्यास
 
 #: align/scan.c:153 builder/index-validate.c:84 cat/cat.c:137
 #: cat/filesystems.c:241 cat/ls.c:224 df/main.c:157 diff/diff.c:262
-#: edit/edit.c:156 fish/fish.c:292 format/format.c:183 fuse/guestmount.c:241
+#: edit/edit.c:156 fish/fish.c:293 format/format.c:183 fuse/guestmount.c:241
 #: fuse/guestunmount.c:124 inspector/inspector.c:151 make-fs/make-fs.c:142
 #: rescue/rescue.c:192
 #, c-format
@@ -2004,7 +2004,7 @@ msgstr ""
 "  -x                   libguestfs API कॉल्स् ट्रेस करा\n"
 "अधिक माहितीकरीता, manpage %s(1) पहा.\n"
 
-#: cat/cat.c:357 edit/edit.c:582 fish/fish.c:1764
+#: cat/cat.c:357 edit/edit.c:582 fish/fish.c:1768
 #, c-format
 msgid "%s: to use Windows drive letters, this must be a Windows guest\n"
 msgstr ""
@@ -2285,12 +2285,12 @@ msgstr ""
 msgid "%s: extra arguments on the command line\n"
 msgstr ""
 
-#: diff/diff.c:732
+#: diff/diff.c:739
 #, c-format
 msgid "%s: external diff command failed\n"
 msgstr ""
 
-#: diff/diff.c:736
+#: diff/diff.c:743
 msgid "End of diff"
 msgstr ""
 
@@ -4796,7 +4796,7 @@ msgstr ""
 msgid "use 'list-events' to list event handlers\n"
 msgstr ""
 
-#: fish/fish.c:108
+#: fish/fish.c:109
 #, c-format
 msgid ""
 "%s: guest filesystem shell\n"
@@ -4847,43 +4847,43 @@ msgid ""
 "For more information, see the manpage %s(1).\n"
 msgstr ""
 
-#: fish/fish.c:251
+#: fish/fish.c:252
 #, c-format
 msgid "%s: --listen=PID: PID was not a number: %s\n"
 msgstr "%s: --listen=PID: PID क्रमांक प्रमाणे आढळले नाही: %s\n"
 
-#: fish/fish.c:258
+#: fish/fish.c:259
 #, c-format
 msgid ""
 "%s: remote: $GUESTFISH_PID must be set to the PID of the remote process\n"
 msgstr "%s: रिमोट: $GUESTFISH_PID यांस रिमोट कार्याच्या PID करीता सेट केले पाहिजे\n"
 
-#: fish/fish.c:311
+#: fish/fish.c:312
 #, c-format
 msgid "%s: warning: -D option is deprecated, use --no-dest-paths instead\n"
 msgstr ""
 
-#: fish/fish.c:318
+#: fish/fish.c:319
 #, c-format
 msgid "%s: only one -f parameter can be given\n"
 msgstr "%s: फक्त एकच -f घटक दिले जाऊ शकते\n"
 
-#: fish/fish.c:510
+#: fish/fish.c:514
 #, c-format
 msgid "%s: cannot use --listen and --remote options at the same time\n"
 msgstr "%s: --listen व --remote पर्याय एकाच वेळी वापरणे अशक्य\n"
 
-#: fish/fish.c:518
+#: fish/fish.c:522
 #, c-format
 msgid "%s: extra parameters on the command line with --listen flag\n"
 msgstr "%s: --listen फ्लॅगसह आदेश ओळीवरील अगाऊ घटके\n"
 
-#: fish/fish.c:524
+#: fish/fish.c:528
 #, c-format
 msgid "%s: cannot use --listen and --file options at the same time\n"
 msgstr "%s: --listen व --file पर्यायचा वापर एकाचवेळी करणे अशक्य\n"
 
-#: fish/fish.c:699
+#: fish/fish.c:703
 #, c-format
 msgid ""
 "\n"
@@ -4896,50 +4896,50 @@ msgid ""
 "\n"
 msgstr ""
 
-#: fish/fish.c:857 fish/fish.c:873
+#: fish/fish.c:861 fish/fish.c:877
 #, c-format
 msgid "%s: command arguments not separated by whitespace\n"
 msgstr "%s: आदेश घटके वाईटस्पेस द्वारे विभाजीत नाही\n"
 
-#: fish/fish.c:867
+#: fish/fish.c:871
 #, c-format
 msgid "%s: unterminated single quote\n"
 msgstr "%s: न ओळखलेले सींगल क्वोट\n"
 
-#: fish/fish.c:897
+#: fish/fish.c:901
 #, c-format
 msgid "%s: internal error parsing string at '%s'\n"
 msgstr "%s: '%s' येथील अक्षरसंच वाचतेवेळी आंतरीक त्रुटी आढळली\n"
 
-#: fish/fish.c:914
+#: fish/fish.c:918
 #, c-format
 msgid "%s: too many arguments\n"
 msgstr "%s: खूप जास्त घटके आढळले\n"
 
-#: fish/fish.c:989
+#: fish/fish.c:993
 #, c-format
 msgid "%s: invalid escape sequence in string (starting at offset %d)\n"
 msgstr ""
 
-#: fish/fish.c:998
+#: fish/fish.c:1002
 #, c-format
 msgid "%s: unterminated double quote\n"
 msgstr "%s: न ओळखलेले डबल क्वोट\n"
 
-#: fish/fish.c:1061
+#: fish/fish.c:1065
 #, c-format
 msgid "%s: empty command on command line\n"
 msgstr "%s: आदेश ओळवर रिकामे आदेश आढळले\n"
 
-#: fish/fish.c:1219
+#: fish/fish.c:1223
 msgid "display a list of commands or help on a command"
 msgstr "आदेश सूची किंवा आदेशकरीता मदत दाखवा"
 
-#: fish/fish.c:1221
+#: fish/fish.c:1225
 msgid "quit guestfish"
 msgstr "guestfish पासून बाहेर पडा"
 
-#: fish/fish.c:1232
+#: fish/fish.c:1236
 #, c-format
 msgid ""
 "help - display a list of commands or help on a command\n"
@@ -4950,7 +4950,7 @@ msgstr ""
 "     help cmd\n"
 "     help\n"
 
-#: fish/fish.c:1240
+#: fish/fish.c:1244
 #, c-format
 msgid ""
 "quit - quit guestfish\n"
@@ -4959,12 +4959,12 @@ msgstr ""
 "quit - guestfish पासून बाहेर पडा\n"
 "     quit\n"
 
-#: fish/fish.c:1245
+#: fish/fish.c:1249
 #, c-format
 msgid "%s: command not known, use -h to list all commands\n"
 msgstr "%s: आदेश परिचीत नाही, सर्व आदेश दाखवण्यासाठी -h याचा वापर करा\n"
 
-#: fish/fish.c:1261
+#: fish/fish.c:1265
 #, c-format
 msgid ""
 "Did you mean to open a disk image?  guestfish -a disk.img\n"
@@ -4975,36 +4975,36 @@ msgstr ""
 "आदेशांच्या सूचीकरीता:             guestfish -h\n"
 "संपूर्ण दस्तऐवजीकरणकरीता:         man guestfish\n"
 
-#: fish/fish.c:1270
+#: fish/fish.c:1274
 #, c-format
 msgid "%s:%d: libguestfs: error: %s\n"
 msgstr ""
 
-#: fish/fish.c:1313
+#: fish/fish.c:1317
 #, c-format
 msgid "%s: '%s': invalid boolean value, use 'true' or 'false'\n"
 msgstr ""
 
-#: fish/fish.c:1421
+#: fish/fish.c:1425
 #, c-format
 msgid "Runaway quote in string \"%s\"\n"
 msgstr "\"%s\" अक्षरमाळामध्ये रनअव्हे शब्द आढळले\n"
 
-#: fish/fish.c:1758
+#: fish/fish.c:1762
 #, c-format
 msgid ""
 "%s: to use Windows drive letters, you must inspect the guest (\"-i\" option "
 "or run \"inspect-os\" command)\n"
 msgstr ""
 
-#: fish/fish.c:1778
+#: fish/fish.c:1782
 #, c-format
 msgid ""
 "%s: drive '%c:' not found.  To list available drives do:\n"
 "  inspect-get-drive-mappings %s\n"
 msgstr ""
 
-#: fish/fish.c:1797
+#: fish/fish.c:1801
 #, c-format
 msgid ""
 "%s: to access '%c:', mount %s first.  One way to do this is:\n"
@@ -7099,75 +7099,3 @@ msgstr "virt-win-reg: {p}: रेजिस्ट्री फाइल डाउ
 #, perl-brace-format
 msgid "virt-win-reg: {p}: could not upload registry file: {err}\n"
 msgstr "virt-win-reg: {p}: रेजिस्ट्री फाइल अपलोड करणे शक्य नाही: {err}\n"
-
-#~ msgid "virt-make-fs input output\n"
-#~ msgstr "virt-make-fs इंपुट आउटपुट\n"
-
-#~ msgid "unexpected output from 'du' command"
-#~ msgstr "'du' आदेशसह अनपेक्षित आउटपुट आढळले"
-
-#~ msgid "{f}: unknown input format: {fmt}\n"
-#~ msgstr "{f}: अपरिचीत इंपुट स्वरूप: {fmt}\n"
-
-#~ msgid "virt-make-fs: cannot parse size parameter: {sz}\n"
-#~ msgstr "virt-make-fs: आकार घटक वाचणे अशक्य: {sz}\n"
-
-#~ msgid ""
-#~ "virt-make-fs: NTFS support was disabled when libguestfs was compiled\n"
-#~ msgstr "virt-make-fs: libguestfs कंपाइल केल्यावर NTFS समर्थन बंद केले\n"
-
-#~ msgid "tar: failed, see earlier messages\n"
-#~ msgstr "tar: अपयशी, मागील संदेश पहा\n"
-
-#~ msgid "uncompress command failed, see earlier messages\n"
-#~ msgstr "uncompress आदेश अपयशी, मागील संदेश पहा\n"
-
-#~ msgid ""
-#~ "virt-make-fs: error copying contents into filesystem\n"
-#~ "An error here usually means that the program did not estimate the\n"
-#~ "filesystem size correctly.  Please read the BUGS section of the manpage.\n"
-#~ msgstr ""
-#~ "virt-make-fs: फाइलप्रणाली अंतर्गत अंतर्भूत माहितीचे प्रत बनवतेवेळी त्रुटी\n"
-#~ "येथील त्रुटी म्हणजे कार्यक्रमाने\n"
-#~ "फाइलप्रणाली आकारचा योग्यरित्या अंदाज लावला नाही.  कृपया manpage मधील BUGS "
-#~ "विभाग वाचा.\n"
-
-#~ msgid "%s: error in chunked encoding"
-#~ msgstr "%s: चंक्ड् एनकोडिंग मध्ये त्रुटी आढळली"
-
-#~ msgid "receive_file_data: parse error in reply callback"
-#~ msgstr "receive_file_data: कॉलबॅक प्रतिसाद वाचतेवेळी त्रुटी"
-
-#~ msgid "%s should have %d parameter(s)\n"
-#~ msgstr "%s कडे %d घटके असायला हवे\n"
-
-#~ msgid "add qemu parameters"
-#~ msgstr "qemu घटके समावेश करा"
-
-#~ msgid "get memory allocated to the qemu subprocess"
-#~ msgstr "qemu उपकार्य करीता स्मृतीचे वाटप शक्य करा"
-
-#~ msgid "get PID of qemu subprocess"
-#~ msgstr "qemu उपकार्यचे PID प्राप्त करा"
-
-#~ msgid "get the qemu binary"
-#~ msgstr "qemu बाइनरी प्राप्त करा"
-
-#~ msgid "kill the qemu subprocess"
-#~ msgstr "qemu उपकार्य नष्ट करा"
-
-#~ msgid "launch the qemu subprocess"
-#~ msgstr "qemu उपकार्य सुरू करा"
-
-#~ msgid "set memory allocated to the qemu subprocess"
-#~ msgstr "qemu उपकार्यकरीता स्मृतीचे वाटप करा"
-
-#~ msgid "set the qemu binary"
-#~ msgstr "qemu बाइनरी सेट करा"
-
-#~ msgid ""
-#~ "LIBGUESTFS_QEMU environment variable is already set, so\n"
-#~ "--qemu/--qemudir options cannot be used.\n"
-#~ msgstr ""
-#~ "LIBGUESTFS_QEMU एन्वार्यनमेंट वेरियेबल आधिपासून सेट आहे, म्हणून\n"
-#~ "--qemu/--qemudir पर्याय याचा वापर करणे अशक्य आहे.\n"
