@@ -111,10 +111,6 @@ be exploitable.  (Both changes suggested by Edwin Török)
 
 =head2 API
 
-For each struct returned through the API, libguestfs now generates
-C<guestfs_copy_*> and C<guestfs_compare_*> functions to allow you to copy
-and compare structs.
-
 GUID parameters are now validated when they are passed to API calls, whereas
 previously you could have passed any string.  (Pino Toscano)
 
@@ -142,6 +138,14 @@ parameter above, this makes the host file sparse.
 
 Test if discarded blocks read back as zeroes.
 
+=item C<guestfs_compare_*>
+
+=item C<guestfs_copy_*>
+
+For each struct returned through the API, libguestfs now generates
+C<guestfs_compare_*> and C<guestfs_copy_*> functions to allow you to compare
+and copy structs.
+
 =item C<guestfs_copy_attributes>
 
 Copy attributes (like permissions, xattrs, ownership) from one file to
@@ -149,8 +153,8 @@ another.  (Pino Toscano)
 
 =item C<guestfs_disk_create>
 
-A flexible API for creating empty disk images from scratch.  This avoids you
-needing to call out to external programs like L<qemu-img(1)>.
+A flexible API for creating empty disk images from scratch.  This avoids the
+need to call out to external programs like L<qemu-img(1)>.
 
 =item C<guestfs_get_backend_settings>
 
@@ -793,10 +797,9 @@ The PHP bindings are now tested properly, and have had multiple fixes.
 The long-deprecated Perl C<Sys::Guestfs::Lib> library has been removed.
 L<https://www.redhat.com/archives/libguestfs/2013-April/msg00001.html>
 
-=head3 Examples
+=head3 例
 
-New example program showing how to enable debugging and capture log
-messages.
+新しいプログラム例は、デバッグを有効化し、ログメッセージを採取する方法を示します。
 
 =head3 Other
 
@@ -837,9 +840,9 @@ The febootstrap tool has now been renamed to "supermin".  Libguestfs can use
 either, but now prefers "supermin".
 L<http://people.redhat.com/~rjones/supermin/>
 
-libxml2 is required to build libguestfs.
+libxml2 が libguestfs をビルドするために必要です。
 
-The hivexregedit program (from hivex) is required to build from git.
+(hivex の) hivexregedit プログラムが git からビルドするために必要です。
 
 Internal functions can no longer be used unless the caller defines
 C<-DGUESTFS_PRIVATE=1>.

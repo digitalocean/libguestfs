@@ -11,8 +11,8 @@ msgstr ""
 "Project-Id-Version: libguestfs\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2014-03-25 12:50+0000\n"
-"PO-Revision-Date: 2013-08-06 13:32+0000\n"
+"POT-Creation-Date: 2014-03-27 12:03+0000\n"
+"PO-Revision-Date: 2014-03-26 16:49+0000\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
 "nl/)\n"
@@ -2028,7 +2028,7 @@ msgid "you cannot use the same disk image for input and output"
 msgstr "je kunt dezelfde schijf image niet voor input en output gebruiken"
 
 #: align/scan.c:73 cat/cat.c:56 cat/filesystems.c:87 cat/ls.c:83 df/main.c:66
-#: diff/diff.c:91 edit/edit.c:68 fish/fish.c:104 fuse/guestmount.c:99
+#: diff/diff.c:91 edit/edit.c:68 fish/fish.c:105 fuse/guestmount.c:99
 #: fuse/guestunmount.c:52 inspector/inspector.c:67 make-fs/make-fs.c:73
 #: rescue/rescue.c:56
 #, c-format
@@ -2059,7 +2059,7 @@ msgstr ""
 
 #: align/scan.c:133 cat/cat.c:115 cat/filesystems.c:187 cat/ls.c:174
 #: df/main.c:133 diff/diff.c:191 diff/diff.c:197 edit/edit.c:134
-#: fish/fish.c:234 format/format.c:129 fuse/guestmount.c:206
+#: fish/fish.c:235 format/format.c:129 fuse/guestmount.c:206
 #: inspector/inspector.c:127 make-fs/make-fs.c:115 rescue/rescue.c:135
 #, c-format
 msgid "guestfs_create: failed to create handle\n"
@@ -2067,7 +2067,7 @@ msgstr "guestfs_create: hendel aanmaken mislukte\n"
 
 #: align/scan.c:153 builder/index-validate.c:84 cat/cat.c:137
 #: cat/filesystems.c:241 cat/ls.c:224 df/main.c:157 diff/diff.c:262
-#: edit/edit.c:156 fish/fish.c:292 format/format.c:183 fuse/guestmount.c:241
+#: edit/edit.c:156 fish/fish.c:293 format/format.c:183 fuse/guestmount.c:241
 #: fuse/guestunmount.c:124 inspector/inspector.c:151 make-fs/make-fs.c:142
 #: rescue/rescue.c:192
 #, c-format
@@ -2179,7 +2179,7 @@ msgstr ""
 "  -x                   Trace libguestfs API calls\n"
 "Voor meer informatie, zie de manpagina %s(1).\n"
 
-#: cat/cat.c:357 edit/edit.c:582 fish/fish.c:1764
+#: cat/cat.c:357 edit/edit.c:582 fish/fish.c:1768
 #, c-format
 msgid "%s: to use Windows drive letters, this must be a Windows guest\n"
 msgstr ""
@@ -2493,12 +2493,12 @@ msgstr ""
 msgid "%s: extra arguments on the command line\n"
 msgstr ""
 
-#: diff/diff.c:732
+#: diff/diff.c:739
 #, c-format
 msgid "%s: external diff command failed\n"
 msgstr ""
 
-#: diff/diff.c:736
+#: diff/diff.c:743
 msgid "End of diff"
 msgstr ""
 
@@ -5022,7 +5022,7 @@ msgstr "delete-event: %s: zo'n event handler is niet bekend\n"
 msgid "use 'list-events' to list event handlers\n"
 msgstr "gebruik 'list-events' om event handlers te tonen\n"
 
-#: fish/fish.c:108
+#: fish/fish.c:109
 #, c-format
 msgid ""
 "%s: guest filesystem shell\n"
@@ -5073,12 +5073,12 @@ msgid ""
 "For more information, see the manpage %s(1).\n"
 msgstr ""
 
-#: fish/fish.c:251
+#: fish/fish.c:252
 #, c-format
 msgid "%s: --listen=PID: PID was not a number: %s\n"
 msgstr "%s: --listen=PID: PID was geen getal: %s\n"
 
-#: fish/fish.c:258
+#: fish/fish.c:259
 #, c-format
 msgid ""
 "%s: remote: $GUESTFISH_PID must be set to the PID of the remote process\n"
@@ -5086,35 +5086,35 @@ msgstr ""
 "%s: remote: $GUESTFISH_PID moet ingesteld worden op de PID van het proces op "
 "afstand\n"
 
-#: fish/fish.c:311
+#: fish/fish.c:312
 #, c-format
 msgid "%s: warning: -D option is deprecated, use --no-dest-paths instead\n"
 msgstr ""
 
-#: fish/fish.c:318
+#: fish/fish.c:319
 #, c-format
 msgid "%s: only one -f parameter can be given\n"
 msgstr "%s: er kan slechts een -f parameter opgegeven worden\n"
 
-#: fish/fish.c:510
+#: fish/fish.c:514
 #, c-format
 msgid "%s: cannot use --listen and --remote options at the same time\n"
 msgstr ""
 "%s: de --listen en --remote opties kunnen niet tegelijkertijd gebruikt "
 "worden\n"
 
-#: fish/fish.c:518
+#: fish/fish.c:522
 #, c-format
 msgid "%s: extra parameters on the command line with --listen flag\n"
 msgstr "%s: extra parameters op de commando regel met --listen vlag\n"
 
-#: fish/fish.c:524
+#: fish/fish.c:528
 #, c-format
 msgid "%s: cannot use --listen and --file options at the same time\n"
 msgstr ""
 "%s: de --listen en --file opties kunnen niet tegelijkertijd gebruikt worden\n"
 
-#: fish/fish.c:699
+#: fish/fish.c:703
 #, c-format
 msgid ""
 "\n"
@@ -5127,50 +5127,50 @@ msgid ""
 "\n"
 msgstr ""
 
-#: fish/fish.c:857 fish/fish.c:873
+#: fish/fish.c:861 fish/fish.c:877
 #, c-format
 msgid "%s: command arguments not separated by whitespace\n"
 msgstr "%s: commando argumenten niet gescheiden door spaties\n"
 
-#: fish/fish.c:867
+#: fish/fish.c:871
 #, c-format
 msgid "%s: unterminated single quote\n"
 msgstr "%s: niet afgesloten enkel aanhalingsteken\n"
 
-#: fish/fish.c:897
+#: fish/fish.c:901
 #, c-format
 msgid "%s: internal error parsing string at '%s'\n"
 msgstr "%s: interne fout bij ontleden van tekenreeks op '%s'\n"
 
-#: fish/fish.c:914
+#: fish/fish.c:918
 #, c-format
 msgid "%s: too many arguments\n"
 msgstr "%s: teveel argumenten\n"
 
-#: fish/fish.c:989
+#: fish/fish.c:993
 #, c-format
 msgid "%s: invalid escape sequence in string (starting at offset %d)\n"
 msgstr "%s: ongeldige escape volgorde in string (begint bij offset %d)\n"
 
-#: fish/fish.c:998
+#: fish/fish.c:1002
 #, c-format
 msgid "%s: unterminated double quote\n"
 msgstr "%s: niet afgesloten dubbel aanhalingsteken\n"
 
-#: fish/fish.c:1061
+#: fish/fish.c:1065
 #, c-format
 msgid "%s: empty command on command line\n"
 msgstr "%s: leeg commando op commando regel\n"
 
-#: fish/fish.c:1219
+#: fish/fish.c:1223
 msgid "display a list of commands or help on a command"
 msgstr "laat een lijst van commando's of hulp over een commando zien"
 
-#: fish/fish.c:1221
+#: fish/fish.c:1225
 msgid "quit guestfish"
 msgstr "sluit guestfish af"
 
-#: fish/fish.c:1232
+#: fish/fish.c:1236
 #, c-format
 msgid ""
 "help - display a list of commands or help on a command\n"
@@ -5181,7 +5181,7 @@ msgstr ""
 "     help cmd\n"
 "     help\n"
 
-#: fish/fish.c:1240
+#: fish/fish.c:1244
 #, c-format
 msgid ""
 "quit - quit guestfish\n"
@@ -5190,12 +5190,12 @@ msgstr ""
 "quit - sluit guestfish af\n"
 "     quit\n"
 
-#: fish/fish.c:1245
+#: fish/fish.c:1249
 #, c-format
 msgid "%s: command not known, use -h to list all commands\n"
 msgstr "%s: commando niet bekend, gebruik -h om alle commando's te tonen\n"
 
-#: fish/fish.c:1261
+#: fish/fish.c:1265
 #, c-format
 msgid ""
 "Did you mean to open a disk image?  guestfish -a disk.img\n"
@@ -5206,22 +5206,22 @@ msgstr ""
 "Voor een lijst commando's:         guestfish -h\n"
 "Voor complete documentatie:        man guestfish\n"
 
-#: fish/fish.c:1270
+#: fish/fish.c:1274
 #, c-format
 msgid "%s:%d: libguestfs: error: %s\n"
 msgstr "%s:%d: libguestfs: fout: %s\n"
 
-#: fish/fish.c:1313
+#: fish/fish.c:1317
 #, c-format
 msgid "%s: '%s': invalid boolean value, use 'true' or 'false'\n"
 msgstr ""
 
-#: fish/fish.c:1421
+#: fish/fish.c:1425
 #, c-format
 msgid "Runaway quote in string \"%s\"\n"
 msgstr "Los aanhalingsteken in tekenreeks \"%s\"\n"
 
-#: fish/fish.c:1758
+#: fish/fish.c:1762
 #, c-format
 msgid ""
 "%s: to use Windows drive letters, you must inspect the guest (\"-i\" option "
@@ -5230,7 +5230,7 @@ msgstr ""
 "%s: om Windows station letters te gebruiken, moet je de gast inspecteren (\"-"
 "i\" optie of draai het \"inspect-os\" commando)\n"
 
-#: fish/fish.c:1778
+#: fish/fish.c:1782
 #, c-format
 msgid ""
 "%s: drive '%c:' not found.  To list available drives do:\n"
@@ -5240,7 +5240,7 @@ msgstr ""
 "je uit:\n"
 "  inspect-get-drive-mappings %s\n"
 
-#: fish/fish.c:1797
+#: fish/fish.c:1801
 #, c-format
 msgid ""
 "%s: to access '%c:', mount %s first.  One way to do this is:\n"
@@ -7449,344 +7449,3 @@ msgstr "virt-win-reg: {p}: kon registry bestand niet downloaden: {err}\n"
 #, perl-brace-format
 msgid "virt-win-reg: {p}: could not upload registry file: {err}\n"
 msgstr "virt-win-reg: {p}: kon registry bestand niet uploaden: {err}\n"
-
-#~ msgid "Add scripts to run once at next boot"
-#~ msgstr "Voeg scripts toe om te draaien bij de volgende opstart"
-
-#~ msgid "Change the hostname of the guest"
-#~ msgstr "Verander de hostnaam van een gast"
-
-#~ msgid ""
-#~ "Change the hostname.  If not given, defaults to C<localhost.localdomain>."
-#~ msgstr ""
-#~ "Verander de hostnaam.  Als deze niet opgegeven wordt, wordt het "
-#~ "C<localhost.localdomain>."
-
-#~ msgid ""
-#~ "Examining the guest ...\n"
-#~ "%!"
-#~ msgstr ""
-#~ "Onderzoek de gast ...\n"
-#~ "%!"
-
-#~ msgid "Force SELinux relabel"
-#~ msgstr "Forceer SELinux opnieuw labelen"
-
-#~ msgid "Generate random seed for guest"
-#~ msgstr "Genereer random seed voor gast"
-
-#~ msgid "Never do SELinux relabel"
-#~ msgstr "Voer nooit een SELinux relabel uit"
-
-#~ msgid "New hostname"
-#~ msgstr "Nieuwe hostnaam"
-
-#~ msgid ""
-#~ "Run script(s) once next time the guest boots.  You can supply\n"
-#~ "the I<--firstboot> option as many times as needed."
-#~ msgstr ""
-#~ "Voer script(s) zodra de gast de volgende keer opstart uit.  Je kunt de\n"
-#~ "I<--firstboot> optie zo vaak opgegeven als nodig is."
-
-#~ msgid ""
-#~ "This operation changes the hostname of the guest to the value\n"
-#~ "given in the I<--hostname> parameter.\n"
-#~ "\n"
-#~ "If the I<--hostname> parameter is not given, then the hostname is "
-#~ "changed\n"
-#~ "to C<localhost.localdomain>."
-#~ msgstr ""
-#~ "Deze bewerking verandert de hostnaam van de gast naar de waarde\n"
-#~ "opgegeven in de I<--hostname> parameter.\n"
-#~ "\n"
-#~ "Als de I<--hostname> parameter niet opgegeven is, dan wordt de hostnaam "
-#~ "veranderd\n"
-#~ "naar C<localhost.localdomain>."
-
-#~ msgid ""
-#~ "Write some random bytes from the host into the random seed file of the\n"
-#~ "guest.\n"
-#~ "\n"
-#~ "See L</RANDOM SEED> below."
-#~ msgstr ""
-#~ "Schrijf wat random bytes van de host naar het random seed bestand van de\n"
-#~ "gast.\n"
-#~ "\n"
-#~ "Zie L</RANDOM SEED> hieronder."
-
-#~ msgid "firstboot: failed: "
-#~ msgstr "firstboot: mislukte: "
-
-#~ msgid "hostname"
-#~ msgstr "hostnaam"
-
-#~ msgid "run script once next time guest boots"
-#~ msgstr "voer script uit zodra gasten de volgende keer opstarten"
-
-#~ msgid ""
-#~ "%s: sparsify a virtual machine disk\n"
-#~ "\n"
-#~ " virt-sparsify [--options] indisk outdisk\n"
-#~ "\n"
-#~ "A short summary of the options is given below.  For detailed help please\n"
-#~ "read the man page virt-sparsify(1).\n"
-#~ msgstr ""
-#~ "%s: verdun een virtuele machine schijf\n"
-#~ "\n"
-#~ " virt-sparsify [--opties] inschijf uitschijf\n"
-#~ "\n"
-#~ "Een korte samenvatting van de opties wordt hieronder gegeven.  Voor "
-#~ "gedetailleerde hulp\n"
-#~ "lees je de man pagina virt-sparsify(1).\n"
-
-#~ msgid ""
-#~ "input filename '%s' contains a colon (':'); qemu-img command line syntax "
-#~ "prevents us from using such an image"
-#~ msgstr ""
-#~ "input bestandsnaam '%s' bevat een dubbelepunt (':'); qemu-img "
-#~ "commandoregel syntax belet ons om zo'n image te gebruiken"
-
-#~ msgid ""
-#~ "output filename '%s' contains a colon (':'); qemu-img command line syntax "
-#~ "prevents us from using such an image"
-#~ msgstr ""
-#~ "output bestandsnaam '%s' bevat een dubbelepunt (':'); qemu-img "
-#~ "commandoregel syntax belet ons om zo'n image te gebruiken"
-
-#~ msgid "virt-make-fs input output\n"
-#~ msgstr "virt-make-fs input output\n"
-
-#~ msgid "unexpected output from 'du' command"
-#~ msgstr "onverwachte output  van 'du' commando"
-
-#~ msgid "{f}: unknown input format: {fmt}\n"
-#~ msgstr "{f}: onbekend invoer formaat: {fmt}\n"
-
-#~ msgid "virt-make-fs: cannot parse size parameter: {sz}\n"
-#~ msgstr "virt-make-fs: kan size parameter niet ontleden: {sz}\n"
-
-#~ msgid "cannot dup STDOUT"
-#~ msgstr "kan STDOUT niet dupliceren"
-
-#~ msgid "cannot dup STDERR"
-#~ msgstr "kan STDERR niet dupliceren"
-
-#~ msgid "cannot redirect STDOUT"
-#~ msgstr "kan STDOUT niet omleiden"
-
-#~ msgid "cannot redirect STDERR"
-#~ msgstr "kan STDERR niet omleiden"
-
-#~ msgid "cannot restore STDOUT"
-#~ msgstr "kan STDOUT niet herstellen"
-
-#~ msgid "cannot restore STDERR"
-#~ msgstr "kan STDERR niet herstellen"
-
-#~ msgid "qemu-img create: failed to create disk image:\n"
-#~ msgstr "qemu-img create: schijfimage aanmaken mislukte:\n"
-
-#~ msgid ""
-#~ "virt-make-fs: NTFS support was disabled when libguestfs was compiled\n"
-#~ msgstr ""
-#~ "virt-make-fs: NTFS ondersteuning was uitgezet toen libguestfs "
-#~ "gecompileerd werd\n"
-
-#~ msgid "tar: failed, see earlier messages\n"
-#~ msgstr "tar: misluket, zie eerdere boodschappen\n"
-
-#~ msgid "uncompress command failed, see earlier messages\n"
-#~ msgstr "decomprimeer commando mislukte, zie eerdere boodschappen\n"
-
-#~ msgid ""
-#~ "virt-make-fs: error copying contents into filesystem\n"
-#~ "An error here usually means that the program did not estimate the\n"
-#~ "filesystem size correctly.  Please read the BUGS section of the manpage.\n"
-#~ msgstr ""
-#~ "virt-make-fs: fout bij het kopiëren van inhoud naar het bestandssysteem\n"
-#~ "Een fout hier betekent gewoonlijk dat het programma de grootte van het\n"
-#~ "bestandssysteem niet correct bepaald heeft. Lees de BUGS sectie van de "
-#~ "man pagina.\n"
-
-#~ msgid "error constructing libvirt XML at \"%s\""
-#~ msgstr "fout bij het construeren van libvirt XML op \"%s\""
-
-#~ msgid ""
-#~ "filename cannot contain ':' (colon) character. This is a limitation of "
-#~ "qemu."
-#~ msgstr ""
-#~ "bestandsnaam kan geen ':' (dubbelepunt) karakter bevatten. Dit is een "
-#~ "beperking van qemu."
-
-#~ msgid "%s: error in chunked encoding"
-#~ msgstr "%s: fout in chunk codering"
-
-#~ msgid "receive_file_data: parse error in reply callback"
-#~ msgstr "receive_file_data: ontleed fout in antwoord callback"
-
-#~ msgid "%s should have %d parameter(s)\n"
-#~ msgstr "%s moet %d parameter(s) hebben\n"
-
-#~ msgid ""
-#~ "Run the named C<script> (a shell script or program) against the\n"
-#~ "guest.  The script can be any program on the host.  The script's\n"
-#~ "current directory will be the guest's root directory.\n"
-#~ "\n"
-#~ "B<Note:> If the script is not on the $PATH, then you must give\n"
-#~ "the full absolute path to the script."
-#~ msgstr ""
-#~ "Voer de named C<script> (een shell script of programma) uit voor de\n"
-#~ "gast.  Het script kan elk programma op de host zijn.  De huidige map\n"
-#~ "van het script zal de root map van de gast zijn.\n"
-#~ "\n"
-#~ "B<Note:> Als het script zich niet op het $PATH bevindt dan moet het "
-#~ "volledige\n"
-#~ "absolute pad naar het script opgeven."
-
-#~ msgid ""
-#~ "The mount point (an empty directory on the host) used when\n"
-#~ "the C<script> operation is enabled and one or more scripts\n"
-#~ "are specified using I<--script> parameter(s).\n"
-#~ "\n"
-#~ "B<Note:> C<scriptdir> B<must> be an absolute path.\n"
-#~ "\n"
-#~ "If I<--scriptdir> is not specified then a temporary mountpoint\n"
-#~ "will be created."
-#~ msgstr ""
-#~ "Het aankoppel punt (een lege map op de host) dat gebruikt wordt\n"
-#~ "als de C<script> bewerking aangezet is en een of meer scripts\n"
-#~ "gespecificeerd zijn met gebruik van I<--script> parameter(s).\n"
-#~ "\n"
-#~ "B<Note:> C<scriptdir> B<must> een absoluut pad zijn.\n"
-#~ "\n"
-#~ "Als I<--scriptdir> niet gespecificeerd is dan wordt een tijdelijk "
-#~ "aankoppel punt\n"
-#~ "aangemaakt."
-
-#~ msgid "virt-resize %Ld.%Ld.%Ld%s\n"
-#~ msgstr "virt-resize %Ld.%Ld.%Ld%s\n"
-
-#~ msgid "warning: %s"
-#~ msgstr "waarschuwing: %s"
-
-#~ msgid "could not create appliance through libvirt"
-#~ msgstr "kon appliance niet aanmaken met libvirt"
-
-#~ msgid ""
-#~ "If reporting bugs, run virt-resize with the '-d' option and include the "
-#~ "complete output."
-#~ msgstr ""
-#~ "Bij het rapporten van bug voer je virt-resize uit met de '-d' optie en "
-#~ "voeg je de volledige output toe."
-
-#~ msgid "virt-resize: error: "
-#~ msgstr "virt-resize: fout: "
-
-#~ msgid ""
-#~ "qemu-img version %g\n"
-#~ "%!"
-#~ msgstr ""
-#~ "qemu-img versie %g\n"
-#~ "%!"
-
-#~ msgid ""
-#~ "warning: failed to read qemu-img version\n"
-#~ "  line: %S\n"
-#~ "  message: %s\n"
-#~ "%!"
-#~ msgstr ""
-#~ "waarschuwing: lezen van qemu-img versie mislukte\n"
-#~ "  regel: %S\n"
-#~ "  boodschap: %s\n"
-#~ "%!"
-
-#~ msgid ""
-#~ "%s: erase and make a blank disk\n"
-#~ "Copyright (C) 2012 Red Hat Inc.\n"
-#~ "\n"
-#~ "%s\n"
-#~ "\n"
-#~ "Usage:\n"
-#~ "  %s [--options] -a disk.img [-a disk.img ...]\n"
-#~ "Options:\n"
-#~ "  -a|--add image       Add image\n"
-#~ "  --filesystem=..      Create empty filesystem\n"
-#~ "  --format[=raw|..]    Force disk format for -a option\n"
-#~ "  --help               Display brief help\n"
-#~ "  --lvm=..             Create Linux LVM2 logical volume\n"
-#~ "  --partition=..       Create / set partition type\n"
-#~ "  -v|--verbose         Verbose messages\n"
-#~ "  -V|--version         Display version and exit\n"
-#~ "  --wipe               Write zeroes over whole disk\n"
-#~ "  -x                   Trace libguestfs API calls\n"
-#~ "For more information, see the manpage %s(1).\n"
-#~ "\n"
-#~ "%s\n"
-#~ "\n"
-#~ msgstr ""
-#~ "%s: wis en maak een lege schijf\n"
-#~ "Copyright (C) 2012 Red Hat Inc.\n"
-#~ "\n"
-#~ "%s\n"
-#~ "\n"
-#~ "Gebruik:\n"
-#~ "  %s [--opties] -a disk.img [-a disk.img ...]\n"
-#~ "Opties:\n"
-#~ "  -a|--add image       Voeg image toe\n"
-#~ "  --filesystem=..      Maak leeg bestandssysteem aan\n"
-#~ "  --format[=raw|..]    Forceer schijfformaat voor -a optie  --"
-#~ "help               Toon korte hulp\n"
-#~ "  --lvm=..             Maak Linux LVM2 logische volume aan\n"
-#~ "  --partition=..       Aanmaken / instellen partitie type\n"
-#~ "  -v|--verbose         Uitgebreide boodschappen\n"
-#~ "  -V|--version         Toon versie en sluitaf\n"
-#~ "  --wipe               Schrijf nullen naar de hele schijf\n"
-#~ "  -x                   Traceer libguestfs API aanroepen\n"
-#~ "Voor meer informatie referre je naar de man pagina %s(1).\n"
-#~ "\n"
-#~ "%s\n"
-#~ "\n"
-
-#~ msgid "add qemu parameters"
-#~ msgstr "voeg qemu parameters toe"
-
-#~ msgid "get memory allocated to the qemu subprocess"
-#~ msgstr "verkrijg geheugen toegekend aan het qemu sub-proces"
-
-#~ msgid "get PID of qemu subprocess"
-#~ msgstr "verkrijg PID van qemu sub-proces"
-
-#~ msgid "get the qemu binary"
-#~ msgstr "verkrijg het qemu binaire bestand"
-
-#~ msgid "kill the qemu subprocess"
-#~ msgstr "schiet de qemu sub-processen af"
-
-#~ msgid "launch the qemu subprocess"
-#~ msgstr "lanceer het qemu sub-proces"
-
-#~ msgid "set memory allocated to the qemu subprocess"
-#~ msgstr "stel geheugen toegekend aan het qemu sub-proces in"
-
-#~ msgid "set the qemu binary"
-#~ msgstr "stel het qemu binaire bestand in"
-
-#~ msgid "shutdown the qemu subprocess"
-#~ msgstr "sluit het qemu sub-process af"
-
-#~ msgid "parameter must begin with '-' character"
-#~ msgstr "parameter moet beginnen met het '-' karakter"
-
-#~ msgid ""
-#~ "LIBGUESTFS_QEMU environment variable is already set, so\n"
-#~ "--qemu/--qemudir options cannot be used.\n"
-#~ msgstr ""
-#~ "LIBGUESTFS_QEMU omgevingsvariabele al is ingesteld, dus\n"
-#~ "de --qemu/--qemudir opties kunnen niet gebruikt worden.\n"
-
-#~ msgid ""
-#~ "Create overlay file to protect source disk ...\n"
-#~ "%!"
-#~ msgstr ""
-#~ "Maak overlay bestand aan om bron schijf te beschermen ...\n"
-#~ "%!"

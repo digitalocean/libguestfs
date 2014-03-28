@@ -79,7 +79,7 @@ the L<libguestfs(3)> API).
 
 =item B<--version>
 
-バージョン番号を表示して終了します。
+バージョン番号を表示して、終了します。
 
 =item B<-c URI>
 

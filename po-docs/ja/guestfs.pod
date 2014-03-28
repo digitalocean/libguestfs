@@ -4031,7 +4031,7 @@ autotools により使用されるさまざまなビルドスクリプト。
 
 =item C<builder>
 
-L<virt-builder(1)> command and documentation.
+L<virt-builder(1)> コマンドおよびドキュメント。
 
 =item C<cat>
 
@@ -4203,10 +4203,6 @@ Check C<make && make check> works on at least Fedora, Debian and Ubuntu.
 =item *
 
 C<guestfs-release-notes.pod> をファイナライズします。
-
-=item *
-
-ロードマップを更新します。
 
 =item *
 
