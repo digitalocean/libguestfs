@@ -1,3 +1,9 @@
+commit a78cd210c3b659fdbf3e5344ca5882fb505d2cd5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 27 15:47:16 2014 +0000
+
+    Version 1.27.0.
+
 commit 996eca5da7adae60e726b9837a9cc8e94373de02
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Mar 27 11:57:09 2014 +0000
