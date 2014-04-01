@@ -80,6 +80,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_checksums_out@Base 1.10
  guestfs_chmod@Base 1.10
  guestfs_chown@Base 1.10
+ guestfs_clear_backend_setting@Base 1:1.27.1
  guestfs_close@Base 1.10
  guestfs_command@Base 1.10
  guestfs_command_lines@Base 1.10
@@ -292,6 +293,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_get_attach_method@Base 1.10
  guestfs_get_autosync@Base 1.10
  guestfs_get_backend@Base 1:1.22
+ guestfs_get_backend_setting@Base 1:1.27.1
  guestfs_get_backend_settings@Base 1:1.25.24
  guestfs_get_cachedir@Base 1:1.20
  guestfs_get_direct@Base 1.10
@@ -399,8 +401,6 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_internal_parse_mountable@Base 1:1.22
  guestfs_internal_readlinklist@Base 1:1.20
  guestfs_internal_rhbz914931@Base 1:1.22
- guestfs_internal_set_libvirt_selinux_label@Base 1:1.22
- guestfs_internal_set_libvirt_selinux_norelabel_disks@Base 1:1.22
  guestfs_internal_test@Base 1:1.20
  guestfs_internal_test_63_optargs@Base 1:1.20
  guestfs_internal_test_63_optargs_argv@Base 1:1.20
@@ -683,6 +683,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_set_attach_method@Base 1.10
  guestfs_set_autosync@Base 1.10
  guestfs_set_backend@Base 1:1.22
+ guestfs_set_backend_setting@Base 1:1.27.1
  guestfs_set_backend_settings@Base 1:1.25.24
  guestfs_set_cachedir@Base 1:1.20
  guestfs_set_close_callback@Base 1.10
