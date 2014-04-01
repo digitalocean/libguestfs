@@ -191,30 +191,6 @@ guestfs__max_disks (guestfs_h *g)
   return g->backend_ops->max_disks (g, g->backend_data);
 }
 
-int
-guestfs__internal_set_libvirt_selinux_label (guestfs_h *g, const char *label,
-                                             const char *imagelabel)
-{
-  if (g->backend_ops->set_libvirt_selinux_label == NULL)
-    /* Not an error, just ignore it. */
-    return 0;
-
-  return g->backend_ops->set_libvirt_selinux_label (g, g->backend_data,
-                                                    label, imagelabel);
-}
-
-int
-guestfs__internal_set_libvirt_selinux_norelabel_disks (guestfs_h *g, int flag)
-{
-  if (g->backend_ops->set_libvirt_selinux_norelabel_disks == NULL)
-    /* Not an error, just ignore it. */
-    return 0;
-
-  return g->backend_ops->set_libvirt_selinux_norelabel_disks (g,
-                                                              g->backend_data,
-                                                              flag);
-}
-
 /* You had to call this function after launch in versions <= 1.0.70,
  * but it is now a no-op.
  */
@@ -482,54 +458,6 @@ guestfs___set_backend (guestfs_h *g, const char *method)
     g->backend_data = safe_calloc (g, 1, b->ops->data_size);
   else
     g->backend_data = NULL;
-
-  return 0;
-}
-
-/* Convenience functions for backends to read settings. */
-
-/* Return the string value of a setting, or NULL if not set. */
-const char *
-guestfs___get_backend_setting (guestfs_h *g, const char *name)
-{
-  char **settings = g->backend_settings;
-  size_t namelen = strlen (name);
-  size_t i;
-
-  if (settings == NULL)
-    return NULL;
-
-  for (i = 0; settings[i] != NULL; ++i) {
-    if (STRCASEEQ (settings[i], name))
-      return ""; /* setting exists, no value */
-    if (STRCASEPREFIX (settings[i], name) && settings[i][namelen] == '=')
-      return &settings[i][namelen+1]; /* "name=...", return value */
-  }
-
-  return NULL;
-}
-
-/* If there a setting "name", "name=1", etc?  This is similar to
- * fish/fish.c:is_true.
- */
-int
-guestfs___get_backend_setting_bool (guestfs_h *g, const char *name)
-{
-  const char *value = guestfs___get_backend_setting (g, name);
-
-  if (value == NULL)
-    return 0;
-
-  if (STREQ (value, ""))
-    return 1;
-
-  if (STREQ (value, "1") ||
-      STRCASEEQ (value, "true") ||
-      STRCASEEQ (value, "t") ||
-      STRCASEEQ (value, "yes") ||
-      STRCASEEQ (value, "y") ||
-      STRCASEEQ (value, "on"))
-    return 1;
 
   return 0;
 }

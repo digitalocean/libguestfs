@@ -82,6 +82,7 @@ module Guestfs (
   checksums_out,
   chmod,
   chown,
+  clear_backend_setting,
   command,
   command_lines,
   config,
@@ -131,6 +132,7 @@ module Guestfs (
   get_attach_method,
   get_autosync,
   get_backend,
+  get_backend_setting,
   get_backend_settings,
   get_cachedir,
   get_direct,
@@ -374,6 +376,7 @@ module Guestfs (
   set_attach_method,
   set_autosync,
   set_backend,
+  set_backend_setting,
   set_backend_settings,
   set_cachedir,
   set_direct,
@@ -1222,6 +1225,18 @@ chown h owner group path = do
       fail err
     else return ()
 
+foreign import ccall unsafe "guestfs.h guestfs_clear_backend_setting" c_clear_backend_setting
+  :: GuestfsP -> CString -> IO CInt
+
+clear_backend_setting :: GuestfsH -> String -> IO Int
+clear_backend_setting h name = do
+  r <- withCString name $ \name -> withForeignPtr h (\p -> c_clear_backend_setting p name)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
 foreign import ccall unsafe "guestfs.h guestfs_command" c_command
   :: GuestfsP -> Ptr CString -> IO CString
 
@@ -1804,6 +1819,18 @@ foreign import ccall unsafe "guestfs.h guestfs_get_backend" c_get_backend
 get_backend :: GuestfsH -> IO String
 get_backend h = do
   r <- withForeignPtr h (\p -> c_get_backend p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_get_backend_setting" c_get_backend_setting
+  :: GuestfsP -> CString -> IO CString
+
+get_backend_setting :: GuestfsH -> String -> IO String
+get_backend_setting h name = do
+  r <- withCString name $ \name -> withForeignPtr h (\p -> c_get_backend_setting p name)
   if (r == nullPtr)
     then do
       err <- last_error h
@@ -4744,6 +4771,18 @@ foreign import ccall unsafe "guestfs.h guestfs_set_backend" c_set_backend
 set_backend :: GuestfsH -> String -> IO ()
 set_backend h backend = do
   r <- withCString backend $ \backend -> withForeignPtr h (\p -> c_set_backend p backend)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_set_backend_setting" c_set_backend_setting
+  :: GuestfsP -> CString -> CString -> IO CInt
+
+set_backend_setting :: GuestfsH -> String -> String -> IO ()
+set_backend_setting h name val = do
+  r <- withCString name $ \name -> withCString val $ \val -> withForeignPtr h (\p -> c_set_backend_setting p name val)
   if (r == -1)
     then do
       err <- last_error h

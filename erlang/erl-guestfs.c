@@ -1716,6 +1716,19 @@ run_chown (ETERM *message)
 }
 
 static ETERM *
+run_clear_backend_setting (ETERM *message)
+{
+  CLEANUP_FREE char *name = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_clear_backend_setting (g, name);
+  if (r == -1)
+    return make_error ("clear_backend_setting");
+
+  return erl_mk_int (r);
+}
+
+static ETERM *
 run_command (ETERM *message)
 {
   CLEANUP_FREE_STRING_LIST char **arguments = get_string_list (ARG (0));
@@ -2872,6 +2885,21 @@ run_get_backend (ETERM *message)
   r = guestfs_get_backend (g);
   if (r == NULL)
     return make_error ("get_backend");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_get_backend_setting (ETERM *message)
+{
+  CLEANUP_FREE char *name = erl_iolist_to_string (ARG (0));
+  char *r;
+
+  r = guestfs_get_backend_setting (g, name);
+  if (r == NULL)
+    return make_error ("get_backend_setting");
 
   ETERM *rt = erl_mk_string (r);
   free (r);
@@ -8375,6 +8403,20 @@ run_set_backend (ETERM *message)
 }
 
 static ETERM *
+run_set_backend_setting (ETERM *message)
+{
+  CLEANUP_FREE char *name = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (1));
+  int r;
+
+  r = guestfs_set_backend_setting (g, name, val);
+  if (r == -1)
+    return make_error ("set_backend_setting");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_set_backend_settings (ETERM *message)
 {
   CLEANUP_FREE_STRING_LIST char **settings = get_string_list (ARG (0));
@@ -10489,6 +10531,8 @@ dispatch (ETERM *message)
     return run_chmod (message);
   else if (atom_equals (fun, "chown"))
     return run_chown (message);
+  else if (atom_equals (fun, "clear_backend_setting"))
+    return run_clear_backend_setting (message);
   else if (atom_equals (fun, "command"))
     return run_command (message);
   else if (atom_equals (fun, "command_lines"))
@@ -10609,6 +10653,8 @@ dispatch (ETERM *message)
     return run_get_autosync (message);
   else if (atom_equals (fun, "get_backend"))
     return run_get_backend (message);
+  else if (atom_equals (fun, "get_backend_setting"))
+    return run_get_backend_setting (message);
   else if (atom_equals (fun, "get_backend_settings"))
     return run_get_backend_settings (message);
   else if (atom_equals (fun, "get_cachedir"))
@@ -11215,6 +11261,8 @@ dispatch (ETERM *message)
     return run_set_autosync (message);
   else if (atom_equals (fun, "set_backend"))
     return run_set_backend (message);
+  else if (atom_equals (fun, "set_backend_setting"))
+    return run_set_backend_setting (message);
   else if (atom_equals (fun, "set_backend_settings"))
     return run_set_backend_settings (message);
   else if (atom_equals (fun, "set_cachedir"))

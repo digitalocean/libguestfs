@@ -2016,6 +2016,28 @@ guestfs_lua_chown (lua_State *L)
 }
 
 static int
+guestfs_lua_clear_backend_setting (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *name;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "clear_backend_setting");
+
+  name = luaL_checkstring (L, 2);
+
+  r = guestfs_clear_backend_setting (g, name);
+  if (r == -1)
+    return last_error (L, g);
+
+  lua_pushinteger (L, r);
+  return 1;
+}
+
+static int
 guestfs_lua_command (lua_State *L)
 {
   char *r;
@@ -3571,6 +3593,29 @@ guestfs_lua_get_backend (lua_State *L)
 
 
   r = guestfs_get_backend (g);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
+  return 1;
+}
+
+static int
+guestfs_lua_get_backend_setting (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *name;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "get_backend_setting");
+
+  name = luaL_checkstring (L, 2);
+
+  r = guestfs_get_backend_setting (g, name);
   if (r == NULL)
     return last_error (L, g);
 
@@ -11185,6 +11230,29 @@ guestfs_lua_set_backend (lua_State *L)
 }
 
 static int
+guestfs_lua_set_backend_setting (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *name;
+  const char *val;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "set_backend_setting");
+
+  name = luaL_checkstring (L, 2);
+  val = luaL_checkstring (L, 3);
+
+  r = guestfs_set_backend_setting (g, name, val);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_set_backend_settings (lua_State *L)
 {
   int r;
@@ -15052,6 +15120,7 @@ static luaL_Reg methods[] = {
   { "checksums_out", guestfs_lua_checksums_out },
   { "chmod", guestfs_lua_chmod },
   { "chown", guestfs_lua_chown },
+  { "clear_backend_setting", guestfs_lua_clear_backend_setting },
   { "command", guestfs_lua_command },
   { "command_lines", guestfs_lua_command_lines },
   { "compress_device_out", guestfs_lua_compress_device_out },
@@ -15112,6 +15181,7 @@ static luaL_Reg methods[] = {
   { "get_attach_method", guestfs_lua_get_attach_method },
   { "get_autosync", guestfs_lua_get_autosync },
   { "get_backend", guestfs_lua_get_backend },
+  { "get_backend_setting", guestfs_lua_get_backend_setting },
   { "get_backend_settings", guestfs_lua_get_backend_settings },
   { "get_cachedir", guestfs_lua_get_cachedir },
   { "get_direct", guestfs_lua_get_direct },
@@ -15415,6 +15485,7 @@ static luaL_Reg methods[] = {
   { "set_attach_method", guestfs_lua_set_attach_method },
   { "set_autosync", guestfs_lua_set_autosync },
   { "set_backend", guestfs_lua_set_backend },
+  { "set_backend_setting", guestfs_lua_set_backend_setting },
   { "set_backend_settings", guestfs_lua_set_backend_settings },
   { "set_cachedir", guestfs_lua_set_cachedir },
   { "set_direct", guestfs_lua_set_direct },

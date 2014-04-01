@@ -3134,6 +3134,35 @@ ocaml_guestfs_chown (value gv, value ownerv, value groupv, value pathv)
 }
 
 /* Automatically generated wrapper for function
+ * val clear_backend_setting : t -> string -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_clear_backend_setting (value gv, value namev);
+
+value
+ocaml_guestfs_clear_backend_setting (value gv, value namev)
+{
+  CAMLparam2 (gv, namev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("clear_backend_setting");
+
+  char *name = guestfs___safe_strdup (g, String_val (namev));
+  int r;
+
+  r = guestfs_clear_backend_setting (g, name);
+  free (name);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "clear_backend_setting");
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val command : t -> string array -> string
  */
 
@@ -5280,6 +5309,36 @@ ocaml_guestfs_get_backend (value gv)
   r = guestfs_get_backend (g);
   if (r == NULL)
     ocaml_guestfs_raise_error (g, "get_backend");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_backend_setting : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_get_backend_setting (value gv, value namev);
+
+value
+ocaml_guestfs_get_backend_setting (value gv, value namev)
+{
+  CAMLparam2 (gv, namev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_backend_setting");
+
+  char *name = guestfs___safe_strdup (g, String_val (namev));
+  char *r;
+
+  r = guestfs_get_backend_setting (g, name);
+  free (name);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "get_backend_setting");
 
   rv = caml_copy_string (r);
   free (r);
@@ -15673,6 +15732,37 @@ ocaml_guestfs_set_backend (value gv, value backendv)
   free (backend);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "set_backend");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_backend_setting : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_set_backend_setting (value gv, value namev, value valv);
+
+value
+ocaml_guestfs_set_backend_setting (value gv, value namev, value valv)
+{
+  CAMLparam3 (gv, namev, valv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_backend_setting");
+
+  char *name = guestfs___safe_strdup (g, String_val (namev));
+  char *val = guestfs___safe_strdup (g, String_val (valv));
+  int r;
+
+  r = guestfs_set_backend_setting (g, name, val);
+  free (name);
+  free (val);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_backend_setting");
 
   rv = Val_unit;
   CAMLreturn (rv);

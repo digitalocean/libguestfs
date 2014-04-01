@@ -138,16 +138,17 @@ DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 check_PROGRAMS = tests$(EXEEXT) test-command$(EXEEXT) \
 	test-just-header$(EXEEXT) test-create-handle$(EXEEXT) \
 	test-config$(EXEEXT) test-add-drive-opts$(EXEEXT) \
-	test-last-errno$(EXEEXT) test-private-data$(EXEEXT) \
-	test-user-cancel$(EXEEXT) test-debug-to-file$(EXEEXT) \
-	test-environment$(EXEEXT) test-pwd$(EXEEXT) \
-	test-event-string$(EXEEXT) $(am__EXEEXT_1)
+	test-last-errno$(EXEEXT) test-backend-settings$(EXEEXT) \
+	test-private-data$(EXEEXT) test-user-cancel$(EXEEXT) \
+	test-debug-to-file$(EXEEXT) test-environment$(EXEEXT) \
+	test-pwd$(EXEEXT) test-event-string$(EXEEXT) $(am__EXEEXT_1)
 TESTS = tests$(EXEEXT) test-just-header$(EXEEXT) \
 	test-create-handle$(EXEEXT) test-config$(EXEEXT) \
 	test-add-drive-opts$(EXEEXT) test-last-errno$(EXEEXT) \
-	test-private-data$(EXEEXT) test-user-cancel$(EXEEXT) \
-	test-debug-to-file$(EXEEXT) test-environment$(EXEEXT) \
-	test-event-string$(EXEEXT) $(am__EXEEXT_1)
+	test-backend-settings$(EXEEXT) test-private-data$(EXEEXT) \
+	test-user-cancel$(EXEEXT) test-debug-to-file$(EXEEXT) \
+	test-environment$(EXEEXT) test-event-string$(EXEEXT) \
+	$(am__EXEEXT_1)
 @HAVE_CXX_TRUE@am__append_1 = test-just-header-cxx
 @HAVE_CXX_TRUE@am__append_2 = test-just-header-cxx
 subdir = tests/c-api
@@ -295,6 +296,16 @@ am__v_lt_1 =
 test_add_drive_opts_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(test_add_drive_opts_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am_test_backend_settings_OBJECTS =  \
+	test_backend_settings-test-backend-settings.$(OBJEXT)
+test_backend_settings_OBJECTS = $(am_test_backend_settings_OBJECTS)
+test_backend_settings_DEPENDENCIES =  \
+	$(top_builddir)/src/libutils_la-utils.lo \
+	$(top_builddir)/src/libguestfs.la
+test_backend_settings_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(test_backend_settings_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am_test_command_OBJECTS = test-command.$(OBJEXT)
 test_command_OBJECTS = $(am_test_command_OBJECTS)
@@ -454,14 +465,16 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(test_add_drive_opts_SOURCES) $(test_command_SOURCES) \
+SOURCES = $(test_add_drive_opts_SOURCES) \
+	$(test_backend_settings_SOURCES) $(test_command_SOURCES) \
 	$(test_config_SOURCES) $(test_create_handle_SOURCES) \
 	$(test_debug_to_file_SOURCES) $(test_environment_SOURCES) \
 	$(test_event_string_SOURCES) $(test_just_header_SOURCES) \
 	$(test_just_header_cxx_SOURCES) $(test_last_errno_SOURCES) \
 	$(test_private_data_SOURCES) $(test_pwd_SOURCES) \
 	$(test_user_cancel_SOURCES) $(tests_SOURCES)
-DIST_SOURCES = $(test_add_drive_opts_SOURCES) $(test_command_SOURCES) \
+DIST_SOURCES = $(test_add_drive_opts_SOURCES) \
+	$(test_backend_settings_SOURCES) $(test_command_SOURCES) \
 	$(test_config_SOURCES) $(test_create_handle_SOURCES) \
 	$(test_debug_to_file_SOURCES) $(test_environment_SOURCES) \
 	$(test_event_string_SOURCES) $(test_just_header_SOURCES) \
@@ -1713,6 +1726,18 @@ test_last_errno_LDADD = \
 	$(top_builddir)/src/libguestfs.la \
 	$(top_builddir)/gnulib/lib/libgnu.la
 
+test_backend_settings_SOURCES = test-backend-settings.c
+test_backend_settings_CPPFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+
+test_backend_settings_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+
+test_backend_settings_LDADD = \
+	$(top_builddir)/src/libutils_la-utils.lo \
+	$(top_builddir)/src/libguestfs.la
+
 test_private_data_SOURCES = test-private-data.c
 test_private_data_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src
@@ -1830,6 +1855,10 @@ test-add-drive-opts$(EXEEXT): $(test_add_drive_opts_OBJECTS) $(test_add_drive_op
 	@rm -f test-add-drive-opts$(EXEEXT)
 	$(AM_V_CCLD)$(test_add_drive_opts_LINK) $(test_add_drive_opts_OBJECTS) $(test_add_drive_opts_LDADD) $(LIBS)
 
+test-backend-settings$(EXEEXT): $(test_backend_settings_OBJECTS) $(test_backend_settings_DEPENDENCIES) $(EXTRA_test_backend_settings_DEPENDENCIES) 
+	@rm -f test-backend-settings$(EXEEXT)
+	$(AM_V_CCLD)$(test_backend_settings_LINK) $(test_backend_settings_OBJECTS) $(test_backend_settings_LDADD) $(LIBS)
+
 test-command$(EXEEXT): $(test_command_OBJECTS) $(test_command_DEPENDENCIES) $(EXTRA_test_command_DEPENDENCIES) 
 	@rm -f test-command$(EXEEXT)
 	$(AM_V_CCLD)$(test_command_LINK) $(test_command_OBJECTS) $(test_command_LDADD) $(LIBS)
@@ -1891,6 +1920,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-command.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-pwd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_add_drive_opts-test-add-drive-opts.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_backend_settings-test-backend-settings.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_config-test-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_create_handle-test-create-handle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_debug_to_file-test-debug-to-file.Po@am__quote@
@@ -1938,6 +1968,20 @@ test_add_drive_opts-test-add-drive-opts.obj: test-add-drive-opts.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-add-drive-opts.c' object='test_add_drive_opts-test-add-drive-opts.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_add_drive_opts_CPPFLAGS) $(CPPFLAGS) $(test_add_drive_opts_CFLAGS) $(CFLAGS) -c -o test_add_drive_opts-test-add-drive-opts.obj `if test -f 'test-add-drive-opts.c'; then $(CYGPATH_W) 'test-add-drive-opts.c'; else $(CYGPATH_W) '$(srcdir)/test-add-drive-opts.c'; fi`
+
+test_backend_settings-test-backend-settings.o: test-backend-settings.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_backend_settings_CPPFLAGS) $(CPPFLAGS) $(test_backend_settings_CFLAGS) $(CFLAGS) -MT test_backend_settings-test-backend-settings.o -MD -MP -MF $(DEPDIR)/test_backend_settings-test-backend-settings.Tpo -c -o test_backend_settings-test-backend-settings.o `test -f 'test-backend-settings.c' || echo '$(srcdir)/'`test-backend-settings.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_backend_settings-test-backend-settings.Tpo $(DEPDIR)/test_backend_settings-test-backend-settings.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-backend-settings.c' object='test_backend_settings-test-backend-settings.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_backend_settings_CPPFLAGS) $(CPPFLAGS) $(test_backend_settings_CFLAGS) $(CFLAGS) -c -o test_backend_settings-test-backend-settings.o `test -f 'test-backend-settings.c' || echo '$(srcdir)/'`test-backend-settings.c
+
+test_backend_settings-test-backend-settings.obj: test-backend-settings.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_backend_settings_CPPFLAGS) $(CPPFLAGS) $(test_backend_settings_CFLAGS) $(CFLAGS) -MT test_backend_settings-test-backend-settings.obj -MD -MP -MF $(DEPDIR)/test_backend_settings-test-backend-settings.Tpo -c -o test_backend_settings-test-backend-settings.obj `if test -f 'test-backend-settings.c'; then $(CYGPATH_W) 'test-backend-settings.c'; else $(CYGPATH_W) '$(srcdir)/test-backend-settings.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_backend_settings-test-backend-settings.Tpo $(DEPDIR)/test_backend_settings-test-backend-settings.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-backend-settings.c' object='test_backend_settings-test-backend-settings.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_backend_settings_CPPFLAGS) $(CPPFLAGS) $(test_backend_settings_CFLAGS) $(CFLAGS) -c -o test_backend_settings-test-backend-settings.obj `if test -f 'test-backend-settings.c'; then $(CYGPATH_W) 'test-backend-settings.c'; else $(CYGPATH_W) '$(srcdir)/test-backend-settings.c'; fi`
 
 test_config-test-config.o: test-config.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_config_CPPFLAGS) $(CPPFLAGS) $(test_config_CFLAGS) $(CFLAGS) -MT test_config-test-config.o -MD -MP -MF $(DEPDIR)/test_config-test-config.Tpo -c -o test_config-test-config.o `test -f 'test-config.c' || echo '$(srcdir)/'`test-config.c

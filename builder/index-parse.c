@@ -138,7 +138,6 @@ extern int yydebug;
 /* Line 387 of yacc.c  */
 #line 60 "index-parse.y"
 
-#include "index-parse.h"
 #ifndef YY_TYPEDEF_YY_SCANNER_T
 #define YY_TYPEDEF_YY_SCANNER_T
 typedef void *yyscan_t;
@@ -146,7 +145,7 @@ typedef void *yyscan_t;
 
 
 /* Line 387 of yacc.c  */
-#line 150 "index-parse.c"
+#line 149 "index-parse.c"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -176,7 +175,7 @@ typedef void *yyscan_t;
 typedef union YYSTYPE
 {
 /* Line 387 of yacc.c  */
-#line 70 "index-parse.y"
+#line 69 "index-parse.y"
 
   struct section *section;
   struct field *field;
@@ -184,7 +183,7 @@ typedef union YYSTYPE
 
 
 /* Line 387 of yacc.c  */
-#line 188 "index-parse.c"
+#line 187 "index-parse.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -224,7 +223,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 228 "index-parse.c"
+#line 227 "index-parse.c"
 
 #ifdef short
 # undef short
@@ -517,8 +516,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   101,   101,   103,   107,   109,   111,   115,   123,   124,
-     127,   136,   137,   144,   145
+       0,   100,   100,   102,   106,   108,   110,   114,   122,   123,
+     126,   135,   136,   143,   144
 };
 #endif
 
@@ -1227,38 +1226,38 @@ yydestruct (yymsg, yytype, yyvaluep, yylocationp, scanner, context)
     {
       case 4: /* FIELD */
 /* Line 1398 of yacc.c  */
-#line 96 "index-parse.y"
+#line 95 "index-parse.y"
         { field_free (((*yyvaluep).field)); };
 /* Line 1398 of yacc.c  */
-#line 1234 "index-parse.c"
+#line 1233 "index-parse.c"
         break;
       case 11: /* sections */
 /* Line 1398 of yacc.c  */
-#line 94 "index-parse.y"
+#line 93 "index-parse.y"
         { section_free (((*yyvaluep).section)); };
 /* Line 1398 of yacc.c  */
-#line 1241 "index-parse.c"
+#line 1240 "index-parse.c"
         break;
       case 12: /* section */
 /* Line 1398 of yacc.c  */
-#line 94 "index-parse.y"
+#line 93 "index-parse.y"
         { section_free (((*yyvaluep).section)); };
 /* Line 1398 of yacc.c  */
-#line 1248 "index-parse.c"
+#line 1247 "index-parse.c"
         break;
       case 13: /* fields */
 /* Line 1398 of yacc.c  */
-#line 96 "index-parse.y"
+#line 95 "index-parse.y"
         { field_free (((*yyvaluep).field)); };
 /* Line 1398 of yacc.c  */
-#line 1255 "index-parse.c"
+#line 1254 "index-parse.c"
         break;
       case 14: /* field */
 /* Line 1398 of yacc.c  */
-#line 96 "index-parse.y"
+#line 95 "index-parse.y"
         { field_free (((*yyvaluep).field)); };
 /* Line 1398 of yacc.c  */
-#line 1262 "index-parse.c"
+#line 1261 "index-parse.c"
         break;
 
       default:
@@ -1589,37 +1588,37 @@ yyreduce:
     {
         case 2:
 /* Line 1792 of yacc.c  */
-#line 102 "index-parse.y"
+#line 101 "index-parse.y"
     { context->parsed_index = (yyvsp[(1) - (1)].section); }
     break;
 
   case 3:
 /* Line 1792 of yacc.c  */
-#line 104 "index-parse.y"
+#line 103 "index-parse.y"
     { context->parsed_index = (yyvsp[(2) - (3)].section); }
     break;
 
   case 4:
 /* Line 1792 of yacc.c  */
-#line 108 "index-parse.y"
+#line 107 "index-parse.y"
     { (yyval.section) = (yyvsp[(1) - (2)].section); }
     break;
 
   case 5:
 /* Line 1792 of yacc.c  */
-#line 110 "index-parse.y"
+#line 109 "index-parse.y"
     { (yyval.section) = (yyvsp[(1) - (4)].section); (yyval.section)->next = (yyvsp[(4) - (4)].section); }
     break;
 
   case 6:
 /* Line 1792 of yacc.c  */
-#line 112 "index-parse.y"
+#line 111 "index-parse.y"
     { (yyval.section) = NULL; }
     break;
 
   case 7:
 /* Line 1792 of yacc.c  */
-#line 116 "index-parse.y"
+#line 115 "index-parse.y"
     { (yyval.section) = malloc (sizeof (struct section));
           (yyval.section)->next = NULL;
           (yyval.section)->name = (yyvsp[(1) - (2)].str);
@@ -1628,19 +1627,19 @@ yyreduce:
 
   case 8:
 /* Line 1792 of yacc.c  */
-#line 123 "index-parse.y"
+#line 122 "index-parse.y"
     { (yyval.field) = NULL; }
     break;
 
   case 9:
 /* Line 1792 of yacc.c  */
-#line 125 "index-parse.y"
+#line 124 "index-parse.y"
     { (yyval.field) = (yyvsp[(1) - (2)].field); (yyval.field)->next = (yyvsp[(2) - (2)].field); }
     break;
 
   case 10:
 /* Line 1792 of yacc.c  */
-#line 128 "index-parse.y"
+#line 127 "index-parse.y"
     { (yyval.field) = (yyvsp[(1) - (2)].field);
           char *old_value = (yyval.field)->value;
           (yyval.field)->value = concat_newline (old_value, (yyvsp[(2) - (2)].str));
@@ -1650,13 +1649,13 @@ yyreduce:
 
   case 11:
 /* Line 1792 of yacc.c  */
-#line 136 "index-parse.y"
+#line 135 "index-parse.y"
     { (yyval.str) = NULL; }
     break;
 
   case 12:
 /* Line 1792 of yacc.c  */
-#line 138 "index-parse.y"
+#line 137 "index-parse.y"
     { (yyval.str) = concat_newline ((yyvsp[(1) - (2)].str), (yyvsp[(2) - (2)].str));
           free ((yyvsp[(1) - (2)].str));
           free ((yyvsp[(2) - (2)].str)); }
@@ -1664,19 +1663,19 @@ yyreduce:
 
   case 13:
 /* Line 1792 of yacc.c  */
-#line 144 "index-parse.y"
+#line 143 "index-parse.y"
     {}
     break;
 
   case 14:
 /* Line 1792 of yacc.c  */
-#line 146 "index-parse.y"
+#line 145 "index-parse.y"
     {}
     break;
 
 
 /* Line 1792 of yacc.c  */
-#line 1680 "index-parse.c"
+#line 1679 "index-parse.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1915,7 +1914,7 @@ yyreturn:
 
 
 /* Line 2055 of yacc.c  */
-#line 148 "index-parse.y"
+#line 147 "index-parse.y"
 
 
 void

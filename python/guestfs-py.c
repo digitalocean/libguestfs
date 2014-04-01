@@ -3665,6 +3665,33 @@ py_guestfs_chown (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_clear_backend_setting (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *name;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_clear_backend_setting",
+                         &py_g, &name))
+    goto out;
+  g = get_handle (py_g);
+
+  r = guestfs_clear_backend_setting (g, name);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = PyLong_FromLong ((long) r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_command (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -6063,6 +6090,38 @@ py_guestfs_get_backend (PyObject *self, PyObject *args)
   g = get_handle (py_g);
 
   r = guestfs_get_backend (g);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
+  free (r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_get_backend_setting (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  char *r;
+  const char *name;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_get_backend_setting",
+                         &py_g, &name))
+    goto out;
+  g = get_handle (py_g);
+
+  r = guestfs_get_backend_setting (g, name);
 
   if (r == NULL) {
     PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
@@ -17746,6 +17805,35 @@ py_guestfs_set_backend (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_set_backend_setting (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *name;
+  const char *val;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_set_backend_setting",
+                         &py_g, &name, &val))
+    goto out;
+  g = get_handle (py_g);
+
+  r = guestfs_set_backend_setting (g, name, val);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_set_backend_settings (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
@@ -22089,6 +22177,7 @@ static PyMethodDef methods[] = {
   { (char *) "checksums_out", py_guestfs_checksums_out, METH_VARARGS, NULL },
   { (char *) "chmod", py_guestfs_chmod, METH_VARARGS, NULL },
   { (char *) "chown", py_guestfs_chown, METH_VARARGS, NULL },
+  { (char *) "clear_backend_setting", py_guestfs_clear_backend_setting, METH_VARARGS, NULL },
   { (char *) "command", py_guestfs_command, METH_VARARGS, NULL },
   { (char *) "command_lines", py_guestfs_command_lines, METH_VARARGS, NULL },
   { (char *) "compress_device_out", py_guestfs_compress_device_out, METH_VARARGS, NULL },
@@ -22149,6 +22238,7 @@ static PyMethodDef methods[] = {
   { (char *) "get_attach_method", py_guestfs_get_attach_method, METH_VARARGS, NULL },
   { (char *) "get_autosync", py_guestfs_get_autosync, METH_VARARGS, NULL },
   { (char *) "get_backend", py_guestfs_get_backend, METH_VARARGS, NULL },
+  { (char *) "get_backend_setting", py_guestfs_get_backend_setting, METH_VARARGS, NULL },
   { (char *) "get_backend_settings", py_guestfs_get_backend_settings, METH_VARARGS, NULL },
   { (char *) "get_cachedir", py_guestfs_get_cachedir, METH_VARARGS, NULL },
   { (char *) "get_direct", py_guestfs_get_direct, METH_VARARGS, NULL },
@@ -22452,6 +22542,7 @@ static PyMethodDef methods[] = {
   { (char *) "set_attach_method", py_guestfs_set_attach_method, METH_VARARGS, NULL },
   { (char *) "set_autosync", py_guestfs_set_autosync, METH_VARARGS, NULL },
   { (char *) "set_backend", py_guestfs_set_backend, METH_VARARGS, NULL },
+  { (char *) "set_backend_setting", py_guestfs_set_backend_setting, METH_VARARGS, NULL },
   { (char *) "set_backend_settings", py_guestfs_set_backend_settings, METH_VARARGS, NULL },
   { (char *) "set_cachedir", py_guestfs_set_cachedir, METH_VARARGS, NULL },
   { (char *) "set_direct", py_guestfs_set_direct, METH_VARARGS, NULL },

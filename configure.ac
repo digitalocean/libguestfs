@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [27])
-m4_define([libguestfs_release], [0])
+m4_define([libguestfs_release], [2])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -677,10 +677,16 @@ test "x$XZCAT" = "xno" && AC_MSG_ERROR([xzcat must be installed])
 AC_DEFINE_UNQUOTED([XZCAT],["$XZCAT"],[Name of xzcat program.])
 
 dnl liblzma can be used by virt-builder (optional).
-PKG_CHECK_MODULES([LIBLZMA], [liblzma],[
+PKG_CHECK_MODULES([LIBLZMA], [liblzma], [
     AC_SUBST([LIBLZMA_CFLAGS])
     AC_SUBST([LIBLZMA_LIBS])
     AC_DEFINE([HAVE_LIBLZMA],[1],[liblzma found at compile time.])
+
+    dnl Old lzma in RHEL 6 didn't have some APIs we need.
+    old_LIBS="$LIBS"
+    LIBS="$LIBS $LIBLZMA_LIBS"
+    AC_CHECK_FUNCS([lzma_index_stream_flags lzma_index_stream_padding])
+    LIBS="$old_LIBS"
 ],
 [AC_MSG_WARN([liblzma not found, virt-builder will be slower])])
 
@@ -1655,6 +1661,7 @@ AC_CONFIG_FILES([Makefile
                  po/Makefile
                  python/Makefile
                  python/examples/Makefile
+                 python/setup.py
                  rescue/Makefile
                  resize/Makefile
                  ruby/Makefile

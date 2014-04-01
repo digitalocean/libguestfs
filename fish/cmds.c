@@ -109,6 +109,7 @@ static int run_checksum_device (const char *cmd, size_t argc, char *argv[]);
 static int run_checksums_out (const char *cmd, size_t argc, char *argv[]);
 static int run_chmod (const char *cmd, size_t argc, char *argv[]);
 static int run_chown (const char *cmd, size_t argc, char *argv[]);
+static int run_clear_backend_setting (const char *cmd, size_t argc, char *argv[]);
 static int run_command (const char *cmd, size_t argc, char *argv[]);
 static int run_command_lines (const char *cmd, size_t argc, char *argv[]);
 static int run_compress_device_out (const char *cmd, size_t argc, char *argv[]);
@@ -169,6 +170,7 @@ static int run_get_append (const char *cmd, size_t argc, char *argv[]);
 static int run_get_attach_method (const char *cmd, size_t argc, char *argv[]);
 static int run_get_autosync (const char *cmd, size_t argc, char *argv[]);
 static int run_get_backend (const char *cmd, size_t argc, char *argv[]);
+static int run_get_backend_setting (const char *cmd, size_t argc, char *argv[]);
 static int run_get_backend_settings (const char *cmd, size_t argc, char *argv[]);
 static int run_get_cachedir (const char *cmd, size_t argc, char *argv[]);
 static int run_get_direct (const char *cmd, size_t argc, char *argv[]);
@@ -441,6 +443,7 @@ static int run_set_append (const char *cmd, size_t argc, char *argv[]);
 static int run_set_attach_method (const char *cmd, size_t argc, char *argv[]);
 static int run_set_autosync (const char *cmd, size_t argc, char *argv[]);
 static int run_set_backend (const char *cmd, size_t argc, char *argv[]);
+static int run_set_backend_setting (const char *cmd, size_t argc, char *argv[]);
 static int run_set_backend_settings (const char *cmd, size_t argc, char *argv[]);
 static int run_set_cachedir (const char *cmd, size_t argc, char *argv[]);
 static int run_set_direct (const char *cmd, size_t argc, char *argv[]);
@@ -1064,6 +1067,12 @@ struct command_entry chown_cmd_entry = {
   .run = run_chown
 };
 
+struct command_entry clear_backend_setting_cmd_entry = {
+  .name = "clear-backend-setting",
+  .help = "NAME\n    clear-backend-setting - remove a single per-backend settings string\n\nSYNOPSIS\n     clear-backend-setting name\n\nDESCRIPTION\n    If there is a backend setting string matching \"name\" or beginning with\n    \"name=\", then that string is removed from the backend settings.\n\n    This call returns the number of strings which were removed (which may be\n    0, 1 or greater than 1).\n\n    See \"BACKEND\" in guestfs(3), \"BACKEND SETTINGS\" in guestfs(3).\n\n",
+  .run = run_clear_backend_setting
+};
+
 struct command_entry command_cmd_entry = {
   .name = "command",
   .help = "NAME\n    command - run a command from the guest filesystem\n\nSYNOPSIS\n     command arguments\n\nDESCRIPTION\n    This call runs a command from the guest filesystem. The filesystem must\n    be mounted, and must contain a compatible operating system (ie.\n    something Linux, with the same or compatible processor architecture).\n\n    The single parameter is an argv-style list of arguments. The first\n    element is the name of the program to run. Subsequent elements are\n    parameters. The list must be non-empty (ie. must contain a program\n    name). Note that the command runs directly, and is *not* invoked via the\n    shell (see \"sh\").\n\n    The return value is anything printed to *stdout* by the command.\n\n    If the command returns a non-zero exit status, then this function\n    returns an error message. The error message string is the content of\n    *stderr* from the command.\n\n    The $PATH environment variable will contain at least \"/usr/bin\" and\n    \"/bin\". If you require a program from another location, you should\n    provide the full path in the first parameter.\n\n    Shared libraries and data files required by the program must be\n    available on filesystems which are mounted in the correct places. It is\n    the caller's responsibility to ensure all filesystems that are needed\n    are mounted at the right locations.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
@@ -1424,9 +1433,15 @@ struct command_entry get_backend_cmd_entry = {
   .run = run_get_backend
 };
 
+struct command_entry get_backend_setting_cmd_entry = {
+  .name = "get-backend-setting",
+  .help = "NAME\n    get-backend-setting - get a single per-backend settings string\n\nSYNOPSIS\n     get-backend-setting name\n\nDESCRIPTION\n    Find a backend setting string which is either \"name\" or begins with\n    \"name=\". If \"name\", this returns the string \"1\". If \"name=\", this\n    returns the part after the equals sign (which may be an empty string).\n\n    If no such setting is found, this function throws an error. The errno\n    (see \"last_errno\") will be \"ESRCH\" in this case.\n\n    See \"BACKEND\" in guestfs(3), \"BACKEND SETTINGS\" in guestfs(3).\n\n",
+  .run = run_get_backend_setting
+};
+
 struct command_entry get_backend_settings_cmd_entry = {
   .name = "get-backend-settings",
-  .help = "NAME\n    get-backend-settings - get per-backend settings\n\nSYNOPSIS\n     get-backend-settings\n\nDESCRIPTION\n    Return the current backend settings.\n\n    See \"BACKEND\" in guestfs(3), \"BACKEND SETTINGS\" in guestfs(3).\n\n",
+  .help = "NAME\n    get-backend-settings - get per-backend settings\n\nSYNOPSIS\n     get-backend-settings\n\nDESCRIPTION\n    Return the current backend settings.\n\n    This call returns all backend settings strings. If you want to find a\n    single backend setting, see \"get_backend_setting\".\n\n    See \"BACKEND\" in guestfs(3), \"BACKEND SETTINGS\" in guestfs(3).\n\n",
   .run = run_get_backend_settings
 };
 
@@ -3056,9 +3071,15 @@ struct command_entry set_backend_cmd_entry = {
   .run = run_set_backend
 };
 
+struct command_entry set_backend_setting_cmd_entry = {
+  .name = "set-backend-setting",
+  .help = "NAME\n    set-backend-setting - set a single per-backend settings string\n\nSYNOPSIS\n     set-backend-setting name val\n\nDESCRIPTION\n    Append \"name=value\" to the backend settings string list. However if a\n    string already exists matching \"name\" or beginning with \"name=\", then\n    that setting is replaced.\n\n    See \"BACKEND\" in guestfs(3), \"BACKEND SETTINGS\" in guestfs(3).\n\n",
+  .run = run_set_backend_setting
+};
+
 struct command_entry set_backend_settings_cmd_entry = {
   .name = "set-backend-settings",
-  .help = "NAME\n    set-backend-settings - set per-backend settings\n\nSYNOPSIS\n     set-backend-settings settings\n\nDESCRIPTION\n    Set a list of zero or more settings which are passed through to the\n    current backend. Each setting is a string which is interpreted in a\n    backend-specific way, or ignored if not understood by the backend.\n\n    The default value is an empty list, unless the environment variable\n    \"LIBGUESTFS_BACKEND_SETTINGS\" was set when the handle was created. This\n    environment variable contains a colon-separated list of settings.\n\n    See \"BACKEND\" in guestfs(3), \"BACKEND SETTINGS\" in guestfs(3).\n\n",
+  .help = "NAME\n    set-backend-settings - replace per-backend settings strings\n\nSYNOPSIS\n     set-backend-settings settings\n\nDESCRIPTION\n    Set a list of zero or more settings which are passed through to the\n    current backend. Each setting is a string which is interpreted in a\n    backend-specific way, or ignored if not understood by the backend.\n\n    The default value is an empty list, unless the environment variable\n    \"LIBGUESTFS_BACKEND_SETTINGS\" was set when the handle was created. This\n    environment variable contains a colon-separated list of settings.\n\n    This call replaces all backend settings. If you want to replace a single\n    backend setting, see \"set_backend_setting\". If you want to clear a\n    single backend setting, see \"clear_backend_setting\".\n\n    See \"BACKEND\" in guestfs(3), \"BACKEND SETTINGS\" in guestfs(3).\n\n",
   .run = run_set_backend_settings
 };
 
@@ -3799,6 +3820,7 @@ list_commands (void)
   printf ("%-20s %s\n", "checksums-out", _("compute MD5, SHAx or CRC checksum of files in a directory"));
   printf ("%-20s %s\n", "chmod", _("change file mode"));
   printf ("%-20s %s\n", "chown", _("change file owner and group"));
+  printf ("%-20s %s\n", "clear-backend-setting", _("remove a single per-backend settings string"));
   printf ("%-20s %s\n", "command", _("run a command from the guest filesystem"));
   printf ("%-20s %s\n", "command-lines", _("run a command, returning lines"));
   printf ("%-20s %s\n", "compress-device-out", _("output compressed device"));
@@ -3866,6 +3888,7 @@ list_commands (void)
   printf ("%-20s %s\n", "get-attach-method", _("get the backend"));
   printf ("%-20s %s\n", "get-autosync", _("get autosync mode"));
   printf ("%-20s %s\n", "get-backend", _("get the backend"));
+  printf ("%-20s %s\n", "get-backend-setting", _("get a single per-backend settings string"));
   printf ("%-20s %s\n", "get-backend-settings", _("get per-backend settings"));
   printf ("%-20s %s\n", "get-cachedir", _("get the appliance cache directory"));
   printf ("%-20s %s\n", "get-direct", _("get direct appliance mode flag"));
@@ -4145,7 +4168,8 @@ list_commands (void)
   printf ("%-20s %s\n", "set-attach-method", _("set the backend"));
   printf ("%-20s %s\n", "set-autosync", _("set autosync mode"));
   printf ("%-20s %s\n", "set-backend", _("set the backend"));
-  printf ("%-20s %s\n", "set-backend-settings", _("set per-backend settings"));
+  printf ("%-20s %s\n", "set-backend-setting", _("set a single per-backend settings string"));
+  printf ("%-20s %s\n", "set-backend-settings", _("replace per-backend settings strings"));
   printf ("%-20s %s\n", "set-cachedir", _("set the appliance cache directory"));
   printf ("%-20s %s\n", "set-direct", _("enable or disable direct appliance mode"));
   printf ("%-20s %s\n", "set-e2attrs", _("set ext2 file attributes of a file"));
@@ -6981,6 +7005,32 @@ run_chown (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_clear_backend_setting (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *name;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  name = argv[i++];
+  r = guestfs_clear_backend_setting (g, name);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%d\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_command (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
@@ -9514,6 +9564,33 @@ run_get_backend (const char *cmd, size_t argc, char *argv[])
     goto out_noargs;
   }
   r = guestfs_get_backend (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_get_backend_setting (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  const char *name;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  name = argv[i++];
+  r = guestfs_get_backend_setting (g, name);
   if (r == NULL) goto out;
   ret = 0;
   printf ("%s\n", r);
@@ -19568,6 +19645,33 @@ run_set_backend (const char *cmd, size_t argc, char *argv[])
   }
   backend = argv[i++];
   r = guestfs_set_backend (g, backend);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_backend_setting (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *name;
+  const char *val;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  name = argv[i++];
+  val = argv[i++];
+  r = guestfs_set_backend_setting (g, name, val);
   if (r == -1) goto out;
   ret = 0;
  out:

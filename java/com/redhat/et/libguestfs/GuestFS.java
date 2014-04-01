@@ -2580,6 +2580,33 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * remove a single per-backend settings string
+   * <p>
+   * If there is a backend setting string matching "name" or
+   * beginning with "name=", then that string is removed from
+   * the backend settings.
+   * <p>
+   * This call returns the number of strings which were
+   * removed (which may be 0, 1 or greater than 1).
+   * <p>
+   * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+   * guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int clear_backend_setting (String name)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("clear_backend_setting: handle is closed");
+
+    return _clear_backend_setting (g, name);
+  }
+
+  private native int _clear_backend_setting (long g, String name)
+    throws LibGuestFSException;
+
+  /**
    * run a command from the guest filesystem
    * <p>
    * This call runs a command from the guest filesystem. The
@@ -4717,9 +4744,42 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * get a single per-backend settings string
+   * <p>
+   * Find a backend setting string which is either "name" or
+   * begins with "name=". If "name", this returns the string
+   * "1". If "name=", this returns the part after the equals
+   * sign (which may be an empty string).
+   * <p>
+   * If no such setting is found, this function throws an
+   * error. The errno (see "g.last_errno") will be "ESRCH" in
+   * this case.
+   * <p>
+   * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+   * guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String get_backend_setting (String name)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_backend_setting: handle is closed");
+
+    return _get_backend_setting (g, name);
+  }
+
+  private native String _get_backend_setting (long g, String name)
+    throws LibGuestFSException;
+
+  /**
    * get per-backend settings
    * <p>
    * Return the current backend settings.
+   * <p>
+   * This call returns all backend settings strings. If you
+   * want to find a single backend setting, see
+   * "g.get_backend_setting".
    * <p>
    * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
    * guestfs(3).
@@ -14628,7 +14688,31 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * set per-backend settings
+   * set a single per-backend settings string
+   * <p>
+   * Append "name=value" to the backend settings string list.
+   * However if a string already exists matching "name" or
+   * beginning with "name=", then that setting is replaced.
+   * <p>
+   * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+   * guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_backend_setting (String name, String val)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_backend_setting: handle is closed");
+
+    _set_backend_setting (g, name, val);
+  }
+
+  private native void _set_backend_setting (long g, String name, String val)
+    throws LibGuestFSException;
+
+  /**
+   * replace per-backend settings strings
    * <p>
    * Set a list of zero or more settings which are passed
    * through to the current backend. Each setting is a string
@@ -14639,6 +14723,11 @@ public class GuestFS {
    * environment variable "LIBGUESTFS_BACKEND_SETTINGS" was
    * set when the handle was created. This environment
    * variable contains a colon-separated list of settings.
+   * <p>
+   * This call replaces all backend settings. If you want to
+   * replace a single backend setting, see
+   * "g.set_backend_setting". If you want to clear a single
+   * backend setting, see "g.clear_backend_setting".
    * <p>
    * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
    * guestfs(3).

@@ -136,7 +136,8 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
-	$(srcdir)/Makefile.am $(top_srcdir)/build-aux/depcomp
+	$(srcdir)/Makefile.am $(srcdir)/setup.py.in \
+	$(top_srcdir)/build-aux/depcomp
 @ENABLE_APPLIANCE_TRUE@@HAVE_PYTHON_TRUE@am__append_1 = run-python-tests
 subdir = python
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -269,7 +270,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = setup.py
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -300,12 +301,9 @@ am__uninstall_files_from_dir = { \
   }
 am__installdirs = "$(DESTDIR)$(pythondir)" "$(DESTDIR)$(pythondir)"
 LTLIBRARIES = $(python_LTLIBRARIES)
-am__DEPENDENCIES_1 =
 @HAVE_PYTHON_TRUE@libguestfsmod_la_DEPENDENCIES =  \
-@HAVE_PYTHON_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_PYTHON_TRUE@	$(top_builddir)/src/libguestfs.la \
-@HAVE_PYTHON_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-@HAVE_PYTHON_TRUE@	../gnulib/lib/libgnu.la
+@HAVE_PYTHON_TRUE@	$(top_builddir)/src/libutils_la-utils.lo \
+@HAVE_PYTHON_TRUE@	$(top_builddir)/src/libguestfs.la
 am__libguestfsmod_la_SOURCES_DIST = guestfs-py.c guestfs-py.h \
 	guestfs-py-byhand.c
 @HAVE_PYTHON_TRUE@am_libguestfsmod_la_OBJECTS =  \
@@ -1492,10 +1490,15 @@ generator_built = \
 
 EXTRA_DIST = \
 	$(generator_built) \
+	MANIFEST.in \
+	README.txt \
+	setup.py.in \
 	run-bindtests \
 	run-python-tests \
 	t/*.py
 
+
+# Build the library.
 @HAVE_PYTHON_TRUE@pythondir = $(PYTHON_INSTALLDIR)
 @HAVE_PYTHON_TRUE@python_DATA = guestfs.py
 @HAVE_PYTHON_TRUE@python_LTLIBRARIES = libguestfsmod.la
@@ -1509,15 +1512,25 @@ EXTRA_DIST = \
 @HAVE_PYTHON_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 @HAVE_PYTHON_TRUE@libguestfsmod_la_LIBADD = \
-@HAVE_PYTHON_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_PYTHON_TRUE@	$(top_builddir)/src/libguestfs.la \
-@HAVE_PYTHON_TRUE@	$(LIBXML2_LIBS) \
-@HAVE_PYTHON_TRUE@	$(LIBVIRT_LIBS) \
-@HAVE_PYTHON_TRUE@	../gnulib/lib/libgnu.la
+@HAVE_PYTHON_TRUE@	$(top_builddir)/src/libutils_la-utils.lo \
+@HAVE_PYTHON_TRUE@	$(top_builddir)/src/libguestfs.la
 
 @HAVE_PYTHON_TRUE@libguestfsmod_la_LDFLAGS = -avoid-version -shared -module -shrext $(PYTHON_EXT_SUFFIX)
+
+# Tests.
 @HAVE_PYTHON_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
 @HAVE_PYTHON_TRUE@TESTS = run-bindtests $(am__append_1)
+
+# Extra clean.
+CLEANFILES = \
+	*~ examples/*~ t/*~ \
+	config.h \
+	guestfs-internal-all.h \
+	guestfs-internal-frontend-cleanups.h \
+	guestfs-internal-frontend.h \
+	stamp-extra-files \
+	utils.c
+
 all: all-am
 
 .SUFFIXES:
@@ -1553,6 +1566,8 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+setup.py: $(top_builddir)/config.status $(srcdir)/setup.py.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 install-pythonLTLIBRARIES: $(python_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
@@ -1868,6 +1883,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -1878,8 +1894,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-pythonLTLIBRARIES \
-	mostlyclean-am
+clean-am: clean-generic clean-libtool clean-local \
+	clean-pythonLTLIBRARIES mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -1950,16 +1966,16 @@ uninstall-am: uninstall-pythonDATA uninstall-pythonLTLIBRARIES
 .MAKE: check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
-	clean-generic clean-libtool clean-pythonLTLIBRARIES \
-	cscopelist-am ctags ctags-am distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-pythonDATA \
-	install-pythonLTLIBRARIES install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	clean-generic clean-libtool clean-local \
+	clean-pythonLTLIBRARIES cscopelist-am ctags ctags-am distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-pythonDATA install-pythonLTLIBRARIES install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am uninstall-pythonDATA \
@@ -1997,6 +2013,48 @@ $(top_builddir)/generator/generator:
 	else \
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
+
+# Currently we don't use setup.py to build the Python library for
+# distribution with libguestfs (although maybe we should in future).
+# For now, these are some rules which use setup.py to make a source
+# distribution for pip, and a few other bits.
+
+@HAVE_PYTHON_TRUE@sdist: setup.py stamp-extra-files
+@HAVE_PYTHON_TRUE@	$(PYTHON) setup.py $@
+
+@HAVE_PYTHON_TRUE@setup-build: setup.py stamp-extra-files
+@HAVE_PYTHON_TRUE@	$(PYTHON) setup.py build
+
+@HAVE_PYTHON_TRUE@setup-install: setup.py stamp-extra-files
+@HAVE_PYTHON_TRUE@	$(PYTHON) setup.py install $(SETUP_INSTALL_ARGS)
+
+# Python's crappy MANIFEST file cannot graft single files, so we have
+# to hard-link any extra files we need into the local directory.
+@HAVE_PYTHON_TRUE@stamp-extra-files: \
+@HAVE_PYTHON_TRUE@	  config.h \
+@HAVE_PYTHON_TRUE@	  guestfs-internal-all.h \
+@HAVE_PYTHON_TRUE@	  guestfs-internal-frontend-cleanups.h \
+@HAVE_PYTHON_TRUE@	  guestfs-internal-frontend.h \
+@HAVE_PYTHON_TRUE@	  utils.c
+@HAVE_PYTHON_TRUE@	touch $@
+
+@HAVE_PYTHON_TRUE@config.h:
+@HAVE_PYTHON_TRUE@	ln ../config.h $@
+
+@HAVE_PYTHON_TRUE@guestfs-internal-all.h:
+@HAVE_PYTHON_TRUE@	ln $(top_srcdir)/src/guestfs-internal-all.h $@
+
+@HAVE_PYTHON_TRUE@guestfs-internal-frontend-cleanups.h:
+@HAVE_PYTHON_TRUE@	ln $(top_srcdir)/src/guestfs-internal-frontend-cleanups.h $@
+
+@HAVE_PYTHON_TRUE@guestfs-internal-frontend.h:
+@HAVE_PYTHON_TRUE@	ln $(top_srcdir)/src/guestfs-internal-frontend.h $@
+
+@HAVE_PYTHON_TRUE@utils.c:
+@HAVE_PYTHON_TRUE@	ln $(top_srcdir)/src/utils.c $@
+
+clean-local:
+	rm -rf build dist
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -121,6 +121,7 @@ val last_errno : t -> int
 
 module Errno : sig
   val errno_ENOTSUP : int
+  val errno_ESRCH : int
 end
 
 type int_bool = {
@@ -567,6 +568,9 @@ val chmod : t -> int -> string -> unit
 val chown : t -> int -> int -> string -> unit
 (** change file owner and group *)
 
+val clear_backend_setting : t -> string -> int
+(** remove a single per-backend settings string *)
+
 val command : t -> string array -> string
 (** run a command from the guest filesystem *)
 
@@ -770,6 +774,9 @@ val get_autosync : t -> bool
 
 val get_backend : t -> string
 (** get the backend *)
+
+val get_backend_setting : t -> string -> string
+(** get a single per-backend settings string *)
 
 val get_backend_settings : t -> string array
 (** get per-backend settings *)
@@ -1724,8 +1731,11 @@ val set_autosync : t -> bool -> unit
 val set_backend : t -> string -> unit
 (** set the backend *)
 
+val set_backend_setting : t -> string -> string -> unit
+(** set a single per-backend settings string *)
+
 val set_backend_settings : t -> string array -> unit
-(** set per-backend settings *)
+(** replace per-backend settings strings *)
 
 val set_cachedir : t -> string option -> unit
 (** set the appliance cache directory *)
@@ -2223,6 +2233,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method checksums_out : string -> string -> string -> unit
   method chmod : int -> string -> unit
   method chown : int -> int -> string -> unit
+  method clear_backend_setting : string -> int
   method command : string array -> string
   method command_lines : string array -> string array
   method compress_device_out : ?level:int -> string -> string -> string -> unit
@@ -2283,6 +2294,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method get_attach_method : unit -> string
   method get_autosync : unit -> bool
   method get_backend : unit -> string
+  method get_backend_setting : string -> string
   method get_backend_settings : unit -> string array
   method get_cachedir : unit -> string
   method get_direct : unit -> bool
@@ -2596,6 +2608,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method set_attach_method : string -> unit
   method set_autosync : bool -> unit
   method set_backend : string -> unit
+  method set_backend_setting : string -> string -> unit
   method set_backend_settings : string array -> unit
   method set_cachedir : string option -> unit
   method set_direct : bool -> unit

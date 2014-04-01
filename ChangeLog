@@ -1,3 +1,292 @@
+commit c58bef5125ff6d5d4a06c607707cdcbf61cdb25d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 18:07:08 2014 +0100
+
+    Version 1.27.2.
+
+commit 7c1d95cca0599ac63e5d82adde62bd9a0cbbde7e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 18:00:07 2014 +0100
+
+    rescue: Fix the --suggest regression test so it works when using UML backend.
+    
+    The boot partition name is /dev/ubda1 in this case, so use a small sed
+    script to canonicalize it for the test comparison.
+    
+    This fixes commit f6a37740f2ba6668bee4952fdd35c46cb6d79cba.
+
+commit cf316569238194e5483d525c3ad618687a055656
+Author: Lee Yarwood <lyarwood@redhat.com>
+Date:   Mon Mar 31 16:52:31 2014 +0100
+
+    Add the now mandatory arch=ARCH field to the index file examples.
+    
+    61323fa introduced a mandatory arch field within index files to
+    identify the architecture of the OS installed within a given template.
+    This change simply documents the requirement within the relevant
+    section of the virt-builder man page.
+    
+    Signed-off-by: Lee Yarwood <lyarwood@redhat.com>
+
+commit 4916806bdfd3ec158b03080ae2a7aacde18a4b84
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 15:09:34 2014 +0100
+
+    Version 1.27.1.
+
+commit 957afde13ba3c8fd6db07c7bb27751c2c009a9ee
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 15:13:09 2014 +0100
+
+    python: Add README.txt to EXTRA_DIST.
+
+commit 0d9a61a91ddca03fd5652441caa2a8c9123639ee
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 13:59:08 2014 +0100
+
+    src: Fix test-utils.c to test the validate_guid function again.
+    
+    This fixes commit 768ab2e01dab5a8e7e751c33b72c1341fcaf9dc3.
+
+commit 7e39cd46005d0547cb8ba77c915557efb588ed9a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 12:56:28 2014 +0100
+
+    Remove internal libvirt_setlinux* APIs and use backend settings instead.
+    
+    This removes the internal APIs internal_set_libvirt_selinux_label and
+    internal_set_libvirt_selinux_norelabel_disks.  The communication
+    between the libvirt domain and the backend now uses the backend
+    settings.
+
+commit 5d4e4e7ecaafee6ad8c445f069b3b4c606ba013c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 14:20:28 2014 +0100
+
+    ocaml: Add ESRCH to Guestfs.Errno module.
+
+commit d137ad52c52f8b448d3413660a18c636b6f9ae65
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 12:53:25 2014 +0100
+
+    New APIs: set-backend-setting, get-backend-setting, clear-backend-setting.
+    
+    Currently the backend settings are treated as a list of strings.  You
+    can set the whole list (clearing any strings there previously), but
+    you cannot search for an individual string or replace an individual
+    string.
+    
+    This adds further APIs allowing you to do that.  We treat the backend
+    settings as a list of environment-like strings (ie.  name=value), and
+    add the following functions:
+    
+     - set-backend-setting (name, value)
+    
+       Set name=value.  Any previous settings of name are cleared.
+    
+     - get-backend-setting (name)
+    
+       Search for name or name=value and return the value.
+    
+     - clear-backend-setting (name)
+    
+       Remove any name or name=value settings.
+    
+    This also adds a regression test.
+
+commit 1893eaded0cf7be68bc30eb3a9fbde814cb42316
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 13:33:10 2014 +0100
+
+    handle: Free g->backend_settings.
+    
+    This was not being freed, resulting in a memory leak if you used
+    LIBGUESTFS_BACKEND_SETTINGS.
+    
+    Found by valgrind.
+
+commit 6af2306730b7e4e372e60b6435f87722972c504b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 29 18:52:32 2014 +0000
+
+    python: Remove unnecessary library dependencies.
+    
+    We can remove the deps on libxml2, libvirt and gnulib, by only linking
+    with utils.o (instead of utils.a).
+
+commit fcbfc4775fa2a44020974073594a745ca420d614
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 29 16:07:21 2014 +0000
+
+    python: Add a Python setup.py script.
+    
+    This is not used by libguestfs right now, but it does allow you to
+    build a python "distribution" of libguestfs, like this:
+    
+      make -C python sdist
+    
+    The distribution tarball will be in python/dist/
+    
+    You can copy the distribution tarball somewhere, unpack it, and use
+    regular 'python setup.py' commands such as:
+    
+      python setup.py build
+      python setup.py install [--prefix=...]
+      python setup.py --name
+    
+    In future we hope to be able to upload the distribution tarball to
+    PyPi, but licensing issues prevent this at present.
+
+commit 768ab2e01dab5a8e7e751c33b72c1341fcaf9dc3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 29 16:57:59 2014 +0000
+
+    utils: Move guestfs___validate_guid out of utils.c.
+    
+    guestfs___validate_guid was a new function added to utils.c in
+    commit beef77403cd9d634b6ff6daa9f33d292e2d320a7.
+    
+    However utils.c should not include <guestfs-internal.h> since the
+    other functions in this file can be used by all front-end code, not
+    just libguestfs.so.
+    
+    This function is only needed in libguestfs.so, so move it to another
+    source file, and remove include of <guestfs-internal.h> from utils.c.
+    
+    Also: use 'size_t' for counting, not 'int'.
+    
+    This fixes commit beef77403cd9d634b6ff6daa9f33d292e2d320a7.
+
+commit bc1a4157941f482efebce19529dbad01537a0051
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 29 17:12:07 2014 +0000
+
+    utils: Remove for-loop variable decl.
+    
+    Breaks Python distutils which doesn't use C99:
+    
+    utils.c: In function ‘guestfs___copy_string_list’:
+    utils.c:79:7: error: ‘for’ loop initial declarations are only allowed in C99 mode
+           for (size_t j = 0; j < i; ++j)
+           ^
+    utils.c:79:7: note: use option -std=c99 or -std=gnu99 to compile your code
+
+commit ebda77b647282c672bd76a021f52c9dc972ce34e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 29 15:07:54 2014 +0000
+
+    virt-builder: Add --machine-readable option, as in virt-resize and virt-sparsify.
+    
+    This makes it easier to query the virt-builder binary capabilities,
+    from external programs.
+
+commit 30bdadf032d1c210bae6e2785277afe030d9baf4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 29 14:55:01 2014 +0000
+
+    builder: Disable internal parallel xzcat on RHEL 6.
+
+commit eff7aed6cfc24c1d605578f738a0d76112d9966b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 29 14:47:25 2014 +0000
+
+    builder: Remove recursive include of index-parse.h.
+    
+    This breaks on Bison < 2.7, and seems unnecessary in any case since
+    the same file is included earlier.
+
+commit f6a37740f2ba6668bee4952fdd35c46cb6d79cba
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 28 14:37:45 2014 +0000
+
+    rescue: Add a regression test for virt-rescue --suggest option.
+
+commit c8657535fd6c937a4ce9ebee647b03b8b6f76916
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 28 14:25:42 2014 +0000
+
+    rescue: Don't leak various variables when using --suggest option with multi-boot guests.
+    
+    This fixes a leak which was introduced in
+    commit 4255db65e58a86148ec291a7416a1148c453d926.
+    
+    Found by Coverity.
+
+commit 15b06d6100ceed0974d52d1aeffa67e9e34fc7da
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 28 14:01:19 2014 +0000
+
+    make-fs: Close FILE* along error path.
+    
+    Found by Coverity.
+
+commit 410aae4b6f646e1fc20b82d24486c68f0c09916c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 28 13:59:56 2014 +0000
+
+    make-fs: Check for error return from guestfs_statvfs.
+    
+    Found by Coverity.
+
+commit 4cea94a958d72e6f3411ba0caaccf9c27543d15c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 28 12:35:25 2014 +0000
+
+    daemon: parted: part-get-name: Don't leak partition type string.
+    
+    Found by './configure --enable-valgrind-daemon'.
+    
+    This fixes commit 820b87016794116c783bd224f2e776cfdf65108e.
+
+commit a7a239f7ab8abe8e81861c06abea4dd21dc4cd3d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 28 09:57:07 2014 +0000
+
+    builder: Use libgnu.la instead of -lgnu.
+    
+    This updates commit effcb99f838da1c4830b4a6b0cc4394b904376f2.
+
+commit effcb99f838da1c4830b4a6b0cc4394b904376f2
+Author: Olaf Hering <olaf@aepfle.de>
+Date:   Fri Mar 28 10:44:16 2014 +0100
+
+    builder: Link virt-index-validate with gnulib.
+    
+    [Gnulib tries to replace getopt because of the bug shown below.
+    However because -lgnu was not used in the Makefile, the replacement
+    failed. -- RWMJ]
+    
+    from config.log:
+    
+                 /* This code dumps core on glibc 2.14.  */
+                 {
+                   static char program[] = "program";
+                   static char w[] = "-W";
+                   static char dummy[] = "dummy";
+                   char *argv[] = { program, w, dummy, NULL };
+                   optind = opterr = 1;
+                   if (getopt (3, argv, "W;") != 'W')
+                     result |= 64;
+                 }
+    
+    gdb --quiet --readnow ./conftest -ex r -ex bt -ex detach -ex q
+    Reading symbols from /usr/src/packages/BUILD/libguestfs-1.26.0/conftest...expanding to full symbols...done.
+    Starting program: /usr/src/packages/BUILD/libguestfs-1.26.0/conftest
+    Missing separate debuginfo for /lib64/ld-linux-x86-64.so.2
+    Try: zypper install -C "debuginfo(build-id)=5d1a12e6f0e95331cc4e39df74ecbd5adb76a1f7"
+    Missing separate debuginfo for /lib64/libc.so.6
+    Try: zypper install -C "debuginfo(build-id)=a06caa12df8f953a453befa827c3145adaf6269a"
+    main(323) result 0
+    main(344) result 0
+    main(357) result 0
+    main(370) result 0
+    
+    Program received signal SIGSEGV, Segmentation fault.
+    0x00007ffff7b2dbf8 in _getopt_internal_r () from /lib64/libc.so.6
+    Detaching from program: /usr/src/packages/BUILD/libguestfs-1.26.0/conftest, process 31042
+    
+    This change actually fixes build for me on sles11sp3 and 11.4.
+
 commit a78cd210c3b659fdbf3e5344ca5882fb505d2cd5
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Mar 27 15:47:16 2014 +0000

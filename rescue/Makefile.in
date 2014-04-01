@@ -138,6 +138,10 @@ DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am $(top_srcdir)/build-aux/depcomp
 bin_PROGRAMS = virt-rescue$(EXEEXT)
+@ENABLE_APPLIANCE_TRUE@am__append_1 = \
+@ENABLE_APPLIANCE_TRUE@	test-virt-rescue.pl \
+@ENABLE_APPLIANCE_TRUE@	test-virt-rescue-suggest.sh
+
 subdir = rescue
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1487,6 +1491,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = \
 	test-virt-rescue.pl \
+	test-virt-rescue-suggest.sh \
 	virt-rescue.pod
 
 CLEANFILES = stamp-virt-rescue.pod
@@ -1532,7 +1537,7 @@ noinst_DATA = $(top_builddir)/html/virt-rescue.1.html
 
 # Tests.
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
-@ENABLE_APPLIANCE_TRUE@TESTS = test-virt-rescue.pl
+TESTS = $(am__append_1)
 all: all-am
 
 .SUFFIXES:
@@ -2149,6 +2154,9 @@ stamp-virt-rescue.pod: virt-rescue.pod
 	  --license GPLv2+ \
 	  $<
 	touch $@
+
+check-valgrind:
+	$(MAKE) TESTS="test-virt-rescue-suggest.sh" VG="$(top_builddir)/run @VG@" check
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

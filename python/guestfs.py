@@ -1444,6 +1444,21 @@ class GuestFS(object):
         r = libguestfsmod.chown (self._o, owner, group, path)
         return r
 
+    def clear_backend_setting (self, name):
+        """If there is a backend setting string matching "name" or
+        beginning with "name=", then that string is removed from
+        the backend settings.
+        
+        This call returns the number of strings which were
+        removed (which may be 0, 1 or greater than 1).
+        
+        See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+        guestfs(3).
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.clear_backend_setting (self._o, name)
+        return r
+
     def command (self, arguments):
         """This call runs a command from the guest filesystem. The
         filesystem must be mounted, and must contain a
@@ -2487,8 +2502,29 @@ class GuestFS(object):
         r = libguestfsmod.get_backend (self._o)
         return r
 
+    def get_backend_setting (self, name):
+        """Find a backend setting string which is either "name" or
+        begins with "name=". If "name", this returns the string
+        "1". If "name=", this returns the part after the equals
+        sign (which may be an empty string).
+        
+        If no such setting is found, this function throws an
+        error. The errno (see "g.last_errno") will be "ESRCH" in
+        this case.
+        
+        See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+        guestfs(3).
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.get_backend_setting (self._o, name)
+        return r
+
     def get_backend_settings (self):
         """Return the current backend settings.
+        
+        This call returns all backend settings strings. If you
+        want to find a single backend setting, see
+        "g.get_backend_setting".
         
         See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
         guestfs(3).
@@ -7238,6 +7274,18 @@ class GuestFS(object):
         r = libguestfsmod.set_backend (self._o, backend)
         return r
 
+    def set_backend_setting (self, name, val):
+        """Append "name=value" to the backend settings string list.
+        However if a string already exists matching "name" or
+        beginning with "name=", then that setting is replaced.
+        
+        See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+        guestfs(3).
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.set_backend_setting (self._o, name, val)
+        return r
+
     def set_backend_settings (self, settings):
         """Set a list of zero or more settings which are passed
         through to the current backend. Each setting is a string
@@ -7248,6 +7296,11 @@ class GuestFS(object):
         environment variable "LIBGUESTFS_BACKEND_SETTINGS" was
         set when the handle was created. This environment
         variable contains a colon-separated list of settings.
+        
+        This call replaces all backend settings. If you want to
+        replace a single backend setting, see
+        "g.set_backend_setting". If you want to clear a single
+        backend setting, see "g.clear_backend_setting".
         
         See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
         guestfs(3).

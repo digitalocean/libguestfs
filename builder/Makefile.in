@@ -291,7 +291,7 @@ am_virt_index_validate_OBJECTS =  \
 	virt_index_validate-index-struct.$(OBJEXT) \
 	virt_index_validate-index-validate.$(OBJEXT)
 virt_index_validate_OBJECTS = $(am_virt_index_validate_OBJECTS)
-virt_index_validate_LDADD = $(LDADD)
+virt_index_validate_DEPENDENCIES = ../gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -1659,6 +1659,9 @@ virt_index_validate_SOURCES = \
 
 virt_index_validate_CPPFLAGS = \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\"
+
+virt_index_validate_LDADD = \
+	../gnulib/lib/libgnu.la
 
 all: all-am
 

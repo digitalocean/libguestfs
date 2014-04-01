@@ -915,6 +915,12 @@
 /* Define to 1 if you have the 'lutimes' function. */
 #undef HAVE_LUTIMES
 
+/* Define to 1 if you have the `lzma_index_stream_flags' function. */
+#undef HAVE_LZMA_INDEX_STREAM_FLAGS
+
+/* Define to 1 if you have the `lzma_index_stream_padding' function. */
+#undef HAVE_LZMA_INDEX_STREAM_PADDING
+
 /* Define if the 'malloc' function is POSIX compliant. */
 #undef HAVE_MALLOC_POSIX
 

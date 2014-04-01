@@ -877,6 +877,107 @@ guestfs_get_libvirt_requested_credential_prompt (guestfs_h *g,
 }
 
 GUESTFS_DLL_PUBLIC int
+guestfs_set_backend_setting (guestfs_h *g,
+                             const char *name,
+                             const char *val)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  if (g->state != CONFIG) {
+    error (g, "%s: this function can only be called in the config state",
+              "set_backend_setting");
+    return -1;
+  }
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "set_backend_setting", 19);
+  if (name == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "set_backend_setting", "name");
+    return -1;
+  }
+  if (val == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "set_backend_setting", "val");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "set_backend_setting");
+    fprintf (trace_buffer.fp, " \"%s\"", name);
+    fprintf (trace_buffer.fp, " \"%s\"", val);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__set_backend_setting (g, name, val);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "set_backend_setting");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "set_backend_setting", "-1");
+  }
+
+  return r;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_clear_backend_setting (guestfs_h *g,
+                               const char *name)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  if (g->state != CONFIG) {
+    error (g, "%s: this function can only be called in the config state",
+              "clear_backend_setting");
+    return -1;
+  }
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "clear_backend_setting", 21);
+  if (name == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "clear_backend_setting", "name");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "clear_backend_setting");
+    fprintf (trace_buffer.fp, " \"%s\"", name);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__clear_backend_setting (g, name);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "clear_backend_setting");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "clear_backend_setting", "-1");
+  }
+
+  return r;
+}
+
+GUESTFS_DLL_PUBLIC int
 guestfs_mount (guestfs_h *g,
                const char *mountable,
                const char *mountpoint)

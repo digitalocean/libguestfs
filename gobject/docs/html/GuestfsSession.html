@@ -292,6 +292,10 @@ struct              <a class="link" href="GuestfsSession.html#GuestfsSessionClas
                                                          <em class="parameter"><code><span class="type">gint32</span> group</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gint32</span>              <a class="link" href="GuestfsSession.html#guestfs-session-clear-backend-setting" title="guestfs_session_clear_backend_setting ()">guestfs_session_clear_backend_setting</a>
+                                                        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *name</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gchar</span> *             <a class="link" href="GuestfsSession.html#guestfs-session-command" title="guestfs_session_command ()">guestfs_session_command</a>             (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">gchar</span> *const *arguments</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
@@ -521,6 +525,9 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
 <span class="returnvalue">gint8</span>               <a class="link" href="GuestfsSession.html#guestfs-session-get-autosync" title="guestfs_session_get_autosync ()">guestfs_session_get_autosync</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gchar</span> *             <a class="link" href="GuestfsSession.html#guestfs-session-get-backend" title="guestfs_session_get_backend ()">guestfs_session_get_backend</a>         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gchar</span> *             <a class="link" href="GuestfsSession.html#guestfs-session-get-backend-setting" title="guestfs_session_get_backend_setting ()">guestfs_session_get_backend_setting</a> (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *name</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gchar</span> **            <a class="link" href="GuestfsSession.html#guestfs-session-get-backend-settings" title="guestfs_session_get_backend_settings ()">guestfs_session_get_backend_settings</a>
                                                         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
@@ -1592,6 +1599,10 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-backend" title="guestfs_session_set_backend ()">guestfs_session_set_backend</a>         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *backend</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-backend-setting" title="guestfs_session_set_backend_setting ()">guestfs_session_set_backend_setting</a> (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *name</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *val</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-backend-settings" title="guestfs_session_set_backend_settings ()">guestfs_session_set_backend_settings</a>
                                                         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
@@ -5882,6 +5893,54 @@ makes this relatively easy).
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-clear-backend-setting"></a><h3>guestfs_session_clear_backend_setting ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint32</span>              guestfs_session_clear_backend_setting
+                                                        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *name</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+remove a single per-backend settings string
+</p>
+<p>
+If there is a backend setting string matching "name" or beginning with
+"name=", then that string is removed from the backend settings.
+</p>
+<p>
+This call returns the number of strings which were removed (which may be
+0, 1 or greater than 1).
+</p>
+<p>
+See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>name</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned value, or -1 on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-command"></a><h3>guestfs_session_command ()</h3>
 <pre class="programlisting"><span class="returnvalue">gchar</span> *             guestfs_session_command             (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">gchar</span> *const *arguments</code></em>,
@@ -9134,6 +9193,55 @@ See <a class="link" href="GuestfsSession.html#guestfs-session-set-backend" title
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-get-backend-setting"></a><h3>guestfs_session_get_backend_setting ()</h3>
+<pre class="programlisting"><span class="returnvalue">gchar</span> *             guestfs_session_get_backend_setting (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *name</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+get a single per-backend settings string
+</p>
+<p>
+Find a backend setting string which is either "name" or begins with
+"name=". If "name", this returns the string "1". If "name=", this
+returns the part after the equals sign (which may be an empty string).
+</p>
+<p>
+If no such setting is found, this function throws an error. The errno
+(see <code class="function">guestfs_session_last_errno()</code>) will be <em class="parameter"><code>ESRCH</code></em> in this case.
+</p>
+<p>
+See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>name</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned string, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-get-backend-settings"></a><h3>guestfs_session_get_backend_settings ()</h3>
 <pre class="programlisting"><span class="returnvalue">gchar</span> **            guestfs_session_get_backend_settings
                                                         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
@@ -9143,6 +9251,10 @@ get per-backend settings
 </p>
 <p>
 Return the current backend settings.
+</p>
+<p>
+This call returns all backend settings strings. If you want to find a
+single backend setting, see <a class="link" href="GuestfsSession.html#guestfs-session-get-backend-setting" title="guestfs_session_get_backend_setting ()"><code class="function">guestfs_session_get_backend_setting()</code></a>.
 </p>
 <p>
 See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
@@ -24445,13 +24557,63 @@ See "BACKEND" in guestfs(3).
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-set-backend-setting"></a><h3>guestfs_session_set_backend_setting ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_set_backend_setting (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *name</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *val</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+set a single per-backend settings string
+</p>
+<p>
+Append "name=value" to the backend settings string list. However if a
+string already exists matching "name" or beginning with "name=", then
+that setting is replaced.
+</p>
+<p>
+See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>name</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>val</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-set-backend-settings"></a><h3>guestfs_session_set_backend_settings ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_set_backend_settings
                                                         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">gchar</span> *const *settings</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
-set per-backend settings
+replace per-backend settings strings
 </p>
 <p>
 Set a list of zero or more settings which are passed through to the
@@ -24462,6 +24624,12 @@ backend-specific way, or ignored if not understood by the backend.
 The default value is an empty list, unless the environment variable
 <em class="parameter"><code>LIBGUESTFS_BACKEND_SETTINGS</code></em> was set when the handle was created. This
 environment variable contains a colon-separated list of settings.
+</p>
+<p>
+This call replaces all backend settings. If you want to replace a single
+backend setting, see <a class="link" href="GuestfsSession.html#guestfs-session-set-backend-setting" title="guestfs_session_set_backend_setting ()"><code class="function">guestfs_session_set_backend_setting()</code></a>. If you want
+to clear a single backend setting, see
+<a class="link" href="GuestfsSession.html#guestfs-session-clear-backend-setting" title="guestfs_session_clear_backend_setting ()"><code class="function">guestfs_session_clear_backend_setting()</code></a>.
 </p>
 <p>
 See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).

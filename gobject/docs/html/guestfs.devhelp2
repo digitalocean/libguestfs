@@ -155,6 +155,7 @@
     <keyword type="function" name="guestfs_session_checksums_out ()" link="GuestfsSession.html#guestfs-session-checksums-out"/>
     <keyword type="function" name="guestfs_session_chmod ()" link="GuestfsSession.html#guestfs-session-chmod"/>
     <keyword type="function" name="guestfs_session_chown ()" link="GuestfsSession.html#guestfs-session-chown"/>
+    <keyword type="function" name="guestfs_session_clear_backend_setting ()" link="GuestfsSession.html#guestfs-session-clear-backend-setting"/>
     <keyword type="function" name="guestfs_session_command ()" link="GuestfsSession.html#guestfs-session-command"/>
     <keyword type="function" name="guestfs_session_command_lines ()" link="GuestfsSession.html#guestfs-session-command-lines"/>
     <keyword type="function" name="guestfs_session_compress_device_out ()" link="GuestfsSession.html#guestfs-session-compress-device-out"/>
@@ -215,6 +216,7 @@
     <keyword type="function" name="guestfs_session_get_attach_method ()" link="GuestfsSession.html#guestfs-session-get-attach-method"/>
     <keyword type="function" name="guestfs_session_get_autosync ()" link="GuestfsSession.html#guestfs-session-get-autosync"/>
     <keyword type="function" name="guestfs_session_get_backend ()" link="GuestfsSession.html#guestfs-session-get-backend"/>
+    <keyword type="function" name="guestfs_session_get_backend_setting ()" link="GuestfsSession.html#guestfs-session-get-backend-setting"/>
     <keyword type="function" name="guestfs_session_get_backend_settings ()" link="GuestfsSession.html#guestfs-session-get-backend-settings"/>
     <keyword type="function" name="guestfs_session_get_cachedir ()" link="GuestfsSession.html#guestfs-session-get-cachedir"/>
     <keyword type="function" name="guestfs_session_get_direct ()" link="GuestfsSession.html#guestfs-session-get-direct"/>
@@ -517,6 +519,7 @@
     <keyword type="function" name="guestfs_session_set_attach_method ()" link="GuestfsSession.html#guestfs-session-set-attach-method"/>
     <keyword type="function" name="guestfs_session_set_autosync ()" link="GuestfsSession.html#guestfs-session-set-autosync"/>
     <keyword type="function" name="guestfs_session_set_backend ()" link="GuestfsSession.html#guestfs-session-set-backend"/>
+    <keyword type="function" name="guestfs_session_set_backend_setting ()" link="GuestfsSession.html#guestfs-session-set-backend-setting"/>
     <keyword type="function" name="guestfs_session_set_backend_settings ()" link="GuestfsSession.html#guestfs-session-set-backend-settings"/>
     <keyword type="function" name="guestfs_session_set_cachedir ()" link="GuestfsSession.html#guestfs-session-set-cachedir"/>
     <keyword type="function" name="guestfs_session_set_direct ()" link="GuestfsSession.html#guestfs-session-set-direct"/>

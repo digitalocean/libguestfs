@@ -87,6 +87,7 @@
 <ANCHOR id="guestfs-session-checksums-out" href="guestfs/GuestfsSession.html#guestfs-session-checksums-out">
 <ANCHOR id="guestfs-session-chmod" href="guestfs/GuestfsSession.html#guestfs-session-chmod">
 <ANCHOR id="guestfs-session-chown" href="guestfs/GuestfsSession.html#guestfs-session-chown">
+<ANCHOR id="guestfs-session-clear-backend-setting" href="guestfs/GuestfsSession.html#guestfs-session-clear-backend-setting">
 <ANCHOR id="guestfs-session-command" href="guestfs/GuestfsSession.html#guestfs-session-command">
 <ANCHOR id="guestfs-session-command-lines" href="guestfs/GuestfsSession.html#guestfs-session-command-lines">
 <ANCHOR id="guestfs-session-compress-device-out" href="guestfs/GuestfsSession.html#guestfs-session-compress-device-out">
@@ -147,6 +148,7 @@
 <ANCHOR id="guestfs-session-get-attach-method" href="guestfs/GuestfsSession.html#guestfs-session-get-attach-method">
 <ANCHOR id="guestfs-session-get-autosync" href="guestfs/GuestfsSession.html#guestfs-session-get-autosync">
 <ANCHOR id="guestfs-session-get-backend" href="guestfs/GuestfsSession.html#guestfs-session-get-backend">
+<ANCHOR id="guestfs-session-get-backend-setting" href="guestfs/GuestfsSession.html#guestfs-session-get-backend-setting">
 <ANCHOR id="guestfs-session-get-backend-settings" href="guestfs/GuestfsSession.html#guestfs-session-get-backend-settings">
 <ANCHOR id="guestfs-session-get-cachedir" href="guestfs/GuestfsSession.html#guestfs-session-get-cachedir">
 <ANCHOR id="guestfs-session-get-direct" href="guestfs/GuestfsSession.html#guestfs-session-get-direct">
@@ -449,6 +451,7 @@
 <ANCHOR id="guestfs-session-set-attach-method" href="guestfs/GuestfsSession.html#guestfs-session-set-attach-method">
 <ANCHOR id="guestfs-session-set-autosync" href="guestfs/GuestfsSession.html#guestfs-session-set-autosync">
 <ANCHOR id="guestfs-session-set-backend" href="guestfs/GuestfsSession.html#guestfs-session-set-backend">
+<ANCHOR id="guestfs-session-set-backend-setting" href="guestfs/GuestfsSession.html#guestfs-session-set-backend-setting">
 <ANCHOR id="guestfs-session-set-backend-settings" href="guestfs/GuestfsSession.html#guestfs-session-set-backend-settings">
 <ANCHOR id="guestfs-session-set-cachedir" href="guestfs/GuestfsSession.html#guestfs-session-set-cachedir">
 <ANCHOR id="guestfs-session-set-direct" href="guestfs/GuestfsSession.html#guestfs-session-set-direct">

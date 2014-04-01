@@ -43,7 +43,6 @@ extern int yydebug;
 /* Line 2058 of yacc.c  */
 #line 60 "index-parse.y"
 
-#include "index-parse.h"
 #ifndef YY_TYPEDEF_YY_SCANNER_T
 #define YY_TYPEDEF_YY_SCANNER_T
 typedef void *yyscan_t;
@@ -51,7 +50,7 @@ typedef void *yyscan_t;
 
 
 /* Line 2058 of yacc.c  */
-#line 55 "index-parse.h"
+#line 54 "index-parse.h"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -81,7 +80,7 @@ typedef void *yyscan_t;
 typedef union YYSTYPE
 {
 /* Line 2058 of yacc.c  */
-#line 70 "index-parse.y"
+#line 69 "index-parse.y"
 
   struct section *section;
   struct field *field;
@@ -89,7 +88,7 @@ typedef union YYSTYPE
 
 
 /* Line 2058 of yacc.c  */
-#line 93 "index-parse.h"
+#line 92 "index-parse.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

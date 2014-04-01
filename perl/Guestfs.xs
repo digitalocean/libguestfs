@@ -1368,6 +1368,20 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 SV *
+clear_backend_setting (g, name)
+      guestfs_h *g;
+      char *name;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_clear_backend_setting (g, name);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
 command (g, arguments)
       guestfs_h *g;
       char **arguments;
@@ -2499,6 +2513,21 @@ PREINIT:
       char *r;
    CODE:
       r = guestfs_get_backend (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+get_backend_setting (g, name)
+      guestfs_h *g;
+      char *name;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_get_backend_setting (g, name);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);
@@ -8192,6 +8221,18 @@ PREINIT:
       int r;
  PPCODE:
       r = guestfs_set_backend (g, backend);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+set_backend_setting (g, name, val)
+      guestfs_h *g;
+      char *name;
+      char *val;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_backend_setting (g, name, val);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
