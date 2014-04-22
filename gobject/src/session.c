@@ -4668,6 +4668,9 @@ guestfs_session_df_h (GuestfsSession *session, GError **err)
  * file, which is discovered automatically. You are encouraged to also pass
  * @backingformat to describe the format of @backingfile.
  * 
+ * If @filename refers to a block device, then the device is formatted. The
+ * @size is ignored since block devices have an intrinsic size.
+ * 
  * The other optional parameters are:
  * 
  * @preallocation

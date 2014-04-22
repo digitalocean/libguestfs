@@ -1,5 +1,5 @@
 # libguestfs Ruby bindings -*- ruby -*-
-# Copyright (C) 2011-2014 Red Hat Inc.
+# Copyright (C) 2009-2014 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,26 +15,19 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-require File::join(File::dirname(__FILE__), 'test_helper')
-
-class TestLoad < MiniTest::Unit::TestCase
-  def test_events
-    g = Guestfs::Guestfs.new()
-
-    close_invoked = 0
-    close = Proc.new {| event, event_handle, buf, array |
-      close_invoked += 1
-    }
-
-    # Check that the close event is called.
-    g.set_event_callback(close, Guestfs::EVENT_CLOSE)
-
-    if close_invoked != 0
-      raise "close_invoked should be 0"
-    end
-    g.close()
-    if close_invoked != 1
-      raise "close_invoked should be 1"
+begin
+  require 'minitest/autorun'
+rescue LoadError
+  require 'test/unit'
+  MiniTest = Test
+  module Test
+    Assertions = Unit::Assertions
+    module Assertions
+      alias refute_nil assert_not_nil
     end
   end
 end
+
+$:.unshift(File::join(File::dirname(__FILE__), "..", "lib"))
+$:.unshift(File::join(File::dirname(__FILE__), "..", "ext", "guestfs"))
+require 'guestfs'

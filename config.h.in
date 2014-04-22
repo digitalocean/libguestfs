@@ -888,6 +888,9 @@
 /* libvirt found at compile time. */
 #undef HAVE_LIBVIRT
 
+/* Define to 1 if you have the <linux/fs.h> header file. */
+#undef HAVE_LINUX_FS_H
+
 /* Define to 1 if you have the <linux/raid/md_u.h> header file. */
 #undef HAVE_LINUX_RAID_MD_U_H
 

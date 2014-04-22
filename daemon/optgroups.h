@@ -123,7 +123,6 @@ extern int optgroup_zerofree_available (void);
 
 #define OPTGROUP_GDISK_NOT_AVAILABLE \
   char *__attribute__((noreturn)) do_part_get_gpt_type (const char *device, int partnum) { abort (); } \
-  char *__attribute__((noreturn)) do_part_get_name (const char *device, int partnum) { abort (); } \
   int __attribute__((noreturn)) do_part_set_gpt_type (const char *device, int partnum, const char *guid) { abort (); } \
   int optgroup_gdisk_available (void) { return 0; }
 

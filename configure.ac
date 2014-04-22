@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [27])
-m4_define([libguestfs_release], [5])
+m4_define([libguestfs_release], [6])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -291,6 +291,7 @@ AC_CHECK_HEADERS([\
     byteswap.h \
     endian.h \
     errno.h \
+    linux/fs.h \
     linux/raid/md_u.h \
     printf.h \
     sys/inotify.h \

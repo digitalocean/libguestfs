@@ -1791,6 +1791,10 @@ class GuestFS(object):
         also pass "backingformat" to describe the format of
         "backingfile".
         
+        If "filename" refers to a block device, then the device
+        is formatted. The "size" is ignored since block devices
+        have an intrinsic size.
+        
         The other optional parameters are:
         
         "preallocation"

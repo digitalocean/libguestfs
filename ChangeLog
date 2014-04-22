@@ -1,3 +1,82 @@
+commit 3f4903e53ab8ccb8b199e17f65d5d4c32ed626ad
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 22 14:14:12 2014 +0100
+
+    Version 1.27.6.
+
+commit b176bde942b2ee046383884eb6fa919c3fe68145
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 22 13:25:12 2014 +0100
+
+    FAQ: Describe better how to compile libguestfs from source using alternate qemu/supermin/kernel.
+
+commit 2f5e9066db817f75b245f256abc0c64dd1ae54eb
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Apr 18 11:39:21 2014 +0200
+
+    ruby: tests: convert from Test::Unit to MiniTest (RHBZ#1085029)
+    
+    Convert the tests to the MiniTest test framework, but keeping the usage
+    of the old Test::Unit as fallback in case MiniTest is not available.
+    In the latter case, use a bit of "glue" to make the old API look like
+    the new API, so we can just rely on the newer MiniTest API.
+
+commit fbae7f3e69ce598c52af71ec204f8dbd0a9ce5e5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Apr 18 11:27:11 2014 +0200
+
+    ruby: tests: isolate boilerplate in common file
+    
+    Isolate in a common file all the standard boilerplate in tests, i.e. the
+    import of the test framework and the guestfs module (including the
+    import path hack needed for the latter).
+    
+    Thanks to Vít Ondruch for the precious hints and suggestions.
+
+commit 0316d247706aab7ce7c2225472feeb51fa8b1664
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Apr 17 11:32:50 2014 +0200
+
+    daemon: parted: part-get-name: switch from sgdisk to parted (RHBZ#1088424).
+    
+    Use parted to get the name of partitions in GPT layouts instead of
+    sgdisk, to reduce the possible discrepancy between output of tools.
+    
+    The actual case here is that recent parted versions fixed/improved their
+    UTF-16 handling of partition names in GPT, and sgdisk seems to not be
+    properly handling them, returning also unicode control bytes.
+    Since parted can provide partition names already, just make use of it.
+    
+    Since sgdisk is no more needed for part_get_name, the function is no
+    more optional on it.
+
+commit 909c10d758887958c9e077732fe9beead55ec4e4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 16 21:12:30 2014 +0100
+
+    sparsify: If using -v (verbose), ensure #disk_create runs verbose too.
+
+commit e1a82bb13064db97c2918485a0d9c52329677e62
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 16 21:12:30 2014 +0100
+
+    builder: If using -v (verbose), ensure #disk_create runs verbose too.
+
+commit 9515345bbdd81d9c8eb72f09207a4c090ea56d2c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 16 20:09:39 2014 +0100
+
+    builder: Suggest using virt-install --os-variant option in virt-builder man page.
+
+commit 27355c9b0b49fb988181c6ad70375aa6f490c558
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 16 11:43:23 2014 +0100
+
+    disk-create: Fix this API so it works correctly with block devices (RHBZ#1088262).
+    
+    When you call guestfs_disk_create on a block device with format=raw
+    then it will try to discard the blocks on the device.
+
 commit 1898d457bdd138a90dd859cd14658ab48020a7b2
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Apr 15 23:29:03 2014 +0100

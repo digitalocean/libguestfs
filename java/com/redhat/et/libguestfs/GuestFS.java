@@ -3453,6 +3453,10 @@ public class GuestFS {
    * also pass "backingformat" to describe the format of
    * "backingfile".
    * <p>
+   * If "filename" refers to a block device, then the device
+   * is formatted. The "size" is ignored since block devices
+   * have an intrinsic size.
+   * <p>
    * The other optional parameters are:
    * <p>
    * "preallocation"
