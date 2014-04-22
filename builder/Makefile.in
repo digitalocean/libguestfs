@@ -138,9 +138,8 @@ host_triplet = @host@
 DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am $(srcdir)/libguestfs.conf.in \
-	$(srcdir)/test-index.in index-parse.h index-parse.c \
-	index-scan.c $(top_srcdir)/build-aux/depcomp \
-	$(top_srcdir)/build-aux/ylwrap
+	index-parse.h index-parse.c index-scan.c \
+	$(top_srcdir)/build-aux/depcomp $(top_srcdir)/build-aux/ylwrap
 @HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
 
 # Manual pages and HTML files for the website.
@@ -280,7 +279,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = libguestfs.conf test-index
+CONFIG_CLEAN_FILES = libguestfs.conf
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(repoconfdir)"
@@ -1519,11 +1518,16 @@ AM_CFLAGS = \
 EXTRA_DIST = \
 	$(SOURCES) \
 	libguestfs.gpg \
-	virt-builder.pod \
-	virt-index-validate.pod \
+	test-index \
 	test-virt-builder.sh \
 	test-virt-builder-list.sh \
-	test-virt-builder-planner.sh
+	test-virt-builder-planner.sh \
+	test-virt-index-validate.sh \
+	test-virt-index-validate-bad-1 \
+	test-virt-index-validate-good-1 \
+	test-virt-index-validate-good-2 \
+	virt-builder.pod \
+	virt-index-validate.pod
 
 CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-builder \
 	$(am__append_4) index-parse.c index-parse.h index-scan.c \
@@ -1644,7 +1648,8 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	$(shell if [ -s "../tests/guests/fedora.img" ]; then echo fedora.qcow2 fedora.qcow2.xz; fi)
 
 @HAVE_OCAML_TRUE@check_DATA = $(disk_images)
-@HAVE_OCAML_TRUE@TESTS = test-virt-builder-list.sh $(am__append_5)
+@HAVE_OCAML_TRUE@TESTS = test-virt-builder-list.sh \
+@HAVE_OCAML_TRUE@	test-virt-index-validate.sh $(am__append_5)
 DISTCLEANFILES = .depend
 
 # virt-builder's default repository
@@ -1699,8 +1704,6 @@ $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 libguestfs.conf: $(top_builddir)/config.status $(srcdir)/libguestfs.conf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-test-index: $(top_builddir)/config.status $(srcdir)/test-index.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)

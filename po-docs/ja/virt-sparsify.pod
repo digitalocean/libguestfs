@@ -333,10 +333,6 @@ option.
 Windows 8 "fast startup" can prevent virt-sparsify from working.  See
 L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST STARTUP>.
 
-=head1 終了ステータス
-
-このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
-
 =head1 環境変数
 
 =over 4
@@ -380,7 +376,7 @@ mode must be used instead.
 
 =head1 関連項目
 
-L<virt-filesystems(1)>, L<virt-df(1)>, L<virt-resize(1)>, L<virt-rescue(1)>,
+L<virt-df(1)>, L<virt-filesystems(1)>, L<virt-resize(1)>, L<virt-rescue(1)>,
 L<guestfs(3)>, L<guestfish(1)>, L<truncate(1)>, L<fallocate(1)>,
 L<qemu-img(1)>, L<http://libguestfs.org/>.
 

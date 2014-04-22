@@ -344,11 +344,6 @@ option.
 Windows 8 "fast startup" can prevent virt-sparsify from working.
 See L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST STARTUP>.
 
-=head1 EXIT STATUS
-
-This program returns 0 if successful, or non-zero if there was an
-error.
-
 =head1 ENVIRONMENT VARIABLES
 
 =over 4
@@ -392,8 +387,8 @@ copying mode must be used instead.
 
 =head1 SEE ALSO
 
-L<virt-filesystems(1)>,
 L<virt-df(1)>,
+L<virt-filesystems(1)>,
 L<virt-resize(1)>,
 L<virt-rescue(1)>,
 L<guestfs(3)>,

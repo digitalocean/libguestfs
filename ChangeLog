@@ -1,3 +1,124 @@
+commit df0d1978120b3e3e3c07b5677c00f00027efbe2b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Apr 6 16:19:33 2014 +0100
+
+    Version 1.27.3.
+
+commit 71738831545a51e0bd462fe72c7674581aabd160
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 3 20:27:18 2014 +0100
+
+    recipes: Update the section on installing packages.
+    
+    Libguestfs >= 1.26 makes this easy.
+
+commit 55437e459b80f3805925d42c5ab6ae0f63386360
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 3 12:23:37 2014 +0100
+
+    mllib: utils: Add mapi function.
+    
+    This is List.mapi from the stdlib.  RHEL 6 did not have this function.
+
+commit 82b486a9086f84447324d68b3c0cae300e0334f7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 3 16:05:00 2014 +0100
+
+    appliance: Avoid touching appliance/supermin.d directory.
+    
+    We must avoid touching appliance/supermin.d unless it is necessary, so
+    that we avoid unnecessary rebuilds of the full appliance.
+    Unfortunately since we created temporary files there, even if we
+    didn't decide to keep those temporary files they would still end up
+    touching supermin.d.  To stop this, move the temporary files out.
+
+commit b7ad029536b415b38c2fcc359acf123bae020e65
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Apr 3 15:26:26 2014 +0200
+
+    appliance: exclude pkg-config, doc-base, and reportbug stuff
+    
+    Exclude the arch-independent pkg-config files (no pkg-config available
+    in the appliance).
+    
+    Exclude also the doc-base and reportbug files, typically found in Debian
+    systems.
+
+commit d268cfd13ef8e8dff3313c951e4d415fd183cf89
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 3 08:58:46 2014 +0100
+
+    builder: Add test of virt-index-validate.
+
+commit 358c6571d0a70ec40ff8750885854d3ad6bb28ca
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 3 08:45:31 2014 +0100
+
+    builder: Rearrange EXTRA_DIST in alphabetical order.
+    
+    No functional change.
+
+commit 795a162cee3765cce19cf7c52128ec27a9482aa2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 3 08:44:24 2014 +0100
+
+    builder: Don't use configure to generate test-index file.
+    
+    The file contained no replacement patterns so generating it
+    with configure did nothing.
+
+commit 9cbb619db205da435e022884c694ff4bfd687943
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 2 18:13:59 2014 +0200
+
+    builder: better handle some index parsing errors
+    
+    Add a new lexer token, unused in the grammar, for the unknown lines in
+    index files; this should allow to better handle such kind of parsing
+    errors, removing the need to exit() directly (and leave things in an
+    unclean state).
+
+commit 3fa5096f484087cd3415f7eb5dda98dfed11e7ed
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 2 17:33:37 2014 +0100
+
+    customize: Add a "finishing" message at the end.
+    
+    Useful, mainly because it tells you the total time spent running.
+
+commit 8c46a644bc664de32835541883123fbabe6991fe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 2 14:06:03 2014 +0100
+
+    customize: Add customize/*.ml files for translation.
+
+commit 84f646a41a7571937a7b3f71f12338dfb60776b2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 1 18:01:19 2014 +0200
+
+    src/launch: improve the addition of the no-hpet option
+    
+    Since HPET is specific to x86, we can safely add it its option only on
+    x86 and x86_64 when creating the libvirt XML (no more hitting the
+    launching failures due to that on other architectures).
+    
+    Regarding the direct qemu launch, since qemu 1.1 (which is our current
+    minimum) "-ho-hpet" appears in the help only where actually supported,
+    so we could just checking for it and adding it only if present. This
+    should fix the architecture issues on this backend as well.
+
+commit b03b3f6f463c80be90ca32d241a56123d4122ed6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 1 14:56:32 2014 +0100
+
+    sparsify: Reorder external programs in SEE ALSO section.
+
+commit 07dff756a7e86154a3ee4f951764eb1fd1f5ed0f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 1 14:55:20 2014 +0100
+
+    sparsify: Remove duplicate "EXIT STATUS" sections from man page.
+
 commit c58bef5125ff6d5d4a06c607707cdcbf61cdb25d
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon Mar 31 18:07:08 2014 +0100

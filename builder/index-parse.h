@@ -63,7 +63,8 @@ typedef void *yyscan_t;
      VALUE_CONT = 260,
      EMPTY_LINE = 261,
      PGP_PROLOGUE = 262,
-     PGP_EPILOGUE = 263
+     PGP_EPILOGUE = 263,
+     UNKNOWN_LINE = 264
    };
 #endif
 /* Tokens.  */
@@ -73,6 +74,7 @@ typedef void *yyscan_t;
 #define EMPTY_LINE 261
 #define PGP_PROLOGUE 262
 #define PGP_EPILOGUE 263
+#define UNKNOWN_LINE 264
 
 
 
@@ -88,7 +90,7 @@ typedef union YYSTYPE
 
 
 /* Line 2058 of yacc.c  */
-#line 92 "index-parse.h"
+#line 94 "index-parse.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

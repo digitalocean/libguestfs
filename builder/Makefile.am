@@ -29,11 +29,16 @@ AM_CFLAGS = \
 EXTRA_DIST = \
 	$(SOURCES) \
 	libguestfs.gpg \
-	virt-builder.pod \
-	virt-index-validate.pod \
+	test-index \
 	test-virt-builder.sh \
 	test-virt-builder-list.sh \
-	test-virt-builder-planner.sh
+	test-virt-builder-planner.sh \
+	test-virt-index-validate.sh \
+	test-virt-index-validate-bad-1 \
+	test-virt-index-validate-good-1 \
+	test-virt-index-validate-good-2 \
+	virt-builder.pod \
+	virt-index-validate.pod
 
 CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-builder
 
@@ -225,7 +230,9 @@ fedora.qcow2.xz: fedora.qcow2
 	xz --best --block-size=16777216 -c $< > $@-t
 	mv $@-t $@
 
-TESTS = test-virt-builder-list.sh
+TESTS = \
+	test-virt-builder-list.sh \
+	test-virt-index-validate.sh
 
 if ENABLE_APPLIANCE
 TESTS += test-virt-builder.sh

@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [27])
-m4_define([libguestfs_release], [2])
+m4_define([libguestfs_release], [3])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1614,7 +1614,6 @@ AC_CONFIG_FILES([Makefile
                  builder/Makefile
                  builder/libguestfs.conf
                  builder/test-config/virt-builder/repos.d/test-index.conf
-                 builder/test-index
                  builder/test-website/virt-builder/repos.d/libguestfs.conf
                  builder/website/Makefile
                  cat/Makefile
