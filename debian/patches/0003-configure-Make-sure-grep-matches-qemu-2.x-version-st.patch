@@ -1,0 +1,21 @@
+From: "Richard W.M. Jones" <rjones@redhat.com>
+Date: Tue, 22 Apr 2014 22:21:57 -0400
+Subject: configure: Make sure grep matches qemu 2.x version string.
+
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index ab072c3..9c398e0 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -777,7 +777,7 @@ working.
+         fi
+ 
+         AC_MSG_CHECKING([for $QEMU version >= 1])
+-        if $QEMU -version | grep -sq 'version @<:@1-@:>@'; then
++        if $QEMU -version | grep -sq 'version @<:@1-9@:>@'; then
+             AC_MSG_RESULT([yes])
+         else
+             AC_MSG_RESULT([no])
