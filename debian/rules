@@ -108,6 +108,18 @@ override_dh_auto_install:
 	done
 
 override_dh_install:
+# Split the supermin appliance packages list into subpackages, so the
+# main libguestfs0 can avoid depending on everything.
+	cd $(CURDIR)/debian/tmp/usr/lib/*-*/guestfs/supermin.d && \
+	for f in zfs-fuse; do \
+	  if grep -Esq "^$$f\$$" packages; then \
+	    mv packages packages~; \
+	    grep -Ev "^$$f\$$" < packages~ > packages; \
+	    rm packages~; \
+	    echo $$f > zz-packages-$$f; \
+	  fi; \
+	done
+
 	erlang-depends -perlang-guestfs
 
 	dh_install -X.la -X.so.owner -Xbindtests -X/usr/lib/go/ \

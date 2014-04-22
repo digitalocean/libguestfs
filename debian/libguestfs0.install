@@ -1,5 +1,11 @@
 usr/lib/*-*/libguestfs.so.*
-usr/lib/*-*/guestfs/*
+usr/lib/*-*/guestfs/supermin.d/base.tar.gz
+usr/lib/*-*/guestfs/supermin.d/daemon.tar.gz
+usr/lib/*-*/guestfs/supermin.d/excludefiles
+usr/lib/*-*/guestfs/supermin.d/hostfiles
+usr/lib/*-*/guestfs/supermin.d/init.tar.gz
+usr/lib/*-*/guestfs/supermin.d/packages
+usr/lib/*-*/guestfs/supermin.d/udev-rules.tar.gz
 usr/share/man/man1/guestfs-*
 usr/share/man/*/man1/guestfs-*
 usr/share/locale/*/LC_MESSAGES/libguestfs.mo

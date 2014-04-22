@@ -162,6 +162,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
   qemu-system-sparc [sparc],
   qemu-system-x86 [i386 amd64],
   ${appliance:Depends}
+Recommends: libguestfs-zfs-fuse
 Description: guest disk image management system - shared library
  The libguestfs library allows accessing and modifying guest disk
  images. It offers the following features, among many others:
@@ -181,6 +182,19 @@ Description: guest disk image management system - shared library
  The library provides ways to enumerate guest storage (such as partitions, LVs,
  what file system is in each LV, etc.); to run commands in the context of the
  guest; and to upload and download files and directories.
+
+Package: libguestfs-zfs-fuse
+Section: libs
+Architecture: i386 amd64 powerpc sparc
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
+  zfs-fuse,
+Description: guest disk image management system - shared library
+ The libguestfs library allows accessing and modifying guest disk
+ images.
+ .
+ Install this package to get ZFS support.
 
 Package: libguestfs-tools
 Section: admin
