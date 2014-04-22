@@ -138,7 +138,6 @@ extern int yydebug;
 /* Line 387 of yacc.c  */
 #line 60 "index-parse.y"
 
-#include "index-parse.h"
 #ifndef YY_TYPEDEF_YY_SCANNER_T
 #define YY_TYPEDEF_YY_SCANNER_T
 typedef void *yyscan_t;
@@ -146,7 +145,7 @@ typedef void *yyscan_t;
 
 
 /* Line 387 of yacc.c  */
-#line 150 "index-parse.c"
+#line 149 "index-parse.c"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -159,7 +158,8 @@ typedef void *yyscan_t;
      VALUE_CONT = 260,
      EMPTY_LINE = 261,
      PGP_PROLOGUE = 262,
-     PGP_EPILOGUE = 263
+     PGP_EPILOGUE = 263,
+     UNKNOWN_LINE = 264
    };
 #endif
 /* Tokens.  */
@@ -169,6 +169,7 @@ typedef void *yyscan_t;
 #define EMPTY_LINE 261
 #define PGP_PROLOGUE 262
 #define PGP_EPILOGUE 263
+#define UNKNOWN_LINE 264
 
 
 
@@ -176,7 +177,7 @@ typedef void *yyscan_t;
 typedef union YYSTYPE
 {
 /* Line 387 of yacc.c  */
-#line 70 "index-parse.y"
+#line 69 "index-parse.y"
 
   struct section *section;
   struct field *field;
@@ -184,7 +185,7 @@ typedef union YYSTYPE
 
 
 /* Line 387 of yacc.c  */
-#line 188 "index-parse.c"
+#line 189 "index-parse.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -224,7 +225,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 228 "index-parse.c"
+#line 229 "index-parse.c"
 
 #ifdef short
 # undef short
@@ -449,7 +450,7 @@ union yyalloc
 #define YYLAST   23
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  9
+#define YYNTOKENS  10
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  8
 /* YYNRULES -- Number of rules.  */
@@ -459,7 +460,7 @@ union yyalloc
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   263
+#define YYMAXUTOK   264
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -493,7 +494,7 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8
+       5,     6,     7,     8,     9
 };
 
 #if YYDEBUG
@@ -508,10 +509,10 @@ static const yytype_uint8 yyprhs[] =
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
-      10,     0,    -1,    11,    -1,     7,    11,     8,    -1,    12,
-      16,    -1,    12,     6,    16,    11,    -1,    16,    -1,     3,
-      13,    -1,    -1,    14,    13,    -1,     4,    15,    -1,    -1,
-       5,    15,    -1,    -1,     6,    16,    -1
+      11,     0,    -1,    12,    -1,     7,    12,     8,    -1,    13,
+      17,    -1,    13,     6,    17,    12,    -1,    17,    -1,     3,
+      14,    -1,    -1,    15,    14,    -1,     4,    16,    -1,    -1,
+       5,    16,    -1,    -1,     6,    17,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
@@ -528,8 +529,9 @@ static const yytype_uint8 yyrline[] =
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "SECTION_HEADER", "FIELD", "VALUE_CONT",
-  "EMPTY_LINE", "PGP_PROLOGUE", "PGP_EPILOGUE", "$accept", "index",
-  "sections", "section", "fields", "field", "continuations", "emptylines", YY_NULL
+  "EMPTY_LINE", "PGP_PROLOGUE", "PGP_EPILOGUE", "UNKNOWN_LINE", "$accept",
+  "index", "sections", "section", "fields", "field", "continuations",
+  "emptylines", YY_NULL
 };
 #endif
 
@@ -538,15 +540,15 @@ static const char *const yytname[] =
    token YYLEX-NUM.  */
 static const yytype_uint16 yytoknum[] =
 {
-       0,   256,   257,   258,   259,   260,   261,   262,   263
+       0,   256,   257,   258,   259,   260,   261,   262,   263,   264
 };
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,     9,    10,    10,    11,    11,    11,    12,    13,    13,
-      14,    15,    15,    16,    16
+       0,    10,    11,    11,    12,    12,    12,    13,    14,    14,
+      15,    16,    16,    17,    17
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -616,9 +618,9 @@ static const yytype_int8 yycheck[] =
    symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     3,     6,     7,    10,    11,    12,    16,     4,    13,
-      14,    16,    11,     0,     6,    16,     5,    15,    13,     8,
-      16,    15,    11
+       0,     3,     6,     7,    11,    12,    13,    17,     4,    14,
+      15,    17,    12,     0,     6,    17,     5,    16,    14,     8,
+      17,    16,    12
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1230,35 +1232,35 @@ yydestruct (yymsg, yytype, yyvaluep, yylocationp, scanner, context)
 #line 96 "index-parse.y"
         { field_free (((*yyvaluep).field)); };
 /* Line 1398 of yacc.c  */
-#line 1234 "index-parse.c"
+#line 1236 "index-parse.c"
         break;
-      case 11: /* sections */
+      case 12: /* sections */
 /* Line 1398 of yacc.c  */
 #line 94 "index-parse.y"
         { section_free (((*yyvaluep).section)); };
 /* Line 1398 of yacc.c  */
-#line 1241 "index-parse.c"
+#line 1243 "index-parse.c"
         break;
-      case 12: /* section */
+      case 13: /* section */
 /* Line 1398 of yacc.c  */
 #line 94 "index-parse.y"
         { section_free (((*yyvaluep).section)); };
 /* Line 1398 of yacc.c  */
-#line 1248 "index-parse.c"
+#line 1250 "index-parse.c"
         break;
-      case 13: /* fields */
+      case 14: /* fields */
 /* Line 1398 of yacc.c  */
 #line 96 "index-parse.y"
         { field_free (((*yyvaluep).field)); };
 /* Line 1398 of yacc.c  */
-#line 1255 "index-parse.c"
+#line 1257 "index-parse.c"
         break;
-      case 14: /* field */
+      case 15: /* field */
 /* Line 1398 of yacc.c  */
 #line 96 "index-parse.y"
         { field_free (((*yyvaluep).field)); };
 /* Line 1398 of yacc.c  */
-#line 1262 "index-parse.c"
+#line 1264 "index-parse.c"
         break;
 
       default:
@@ -1676,7 +1678,7 @@ yyreduce:
 
 
 /* Line 1792 of yacc.c  */
-#line 1680 "index-parse.c"
+#line 1682 "index-parse.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

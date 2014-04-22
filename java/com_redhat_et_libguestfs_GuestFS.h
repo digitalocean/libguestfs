@@ -591,6 +591,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1chown
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _clear_backend_setting
+ * Signature: (JLjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1clear_1backend_1setting
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _command
  * Signature: (J[Ljava/lang/String;)Ljava/lang/String;
  */
@@ -1068,6 +1076,14 @@ JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1autosync
  */
 JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1backend
   (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _get_backend_setting
+ * Signature: (JLjava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1backend_1setting
+  (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
@@ -3492,6 +3508,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1autosync
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1backend
   (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _set_backend_setting
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1backend_1setting
+  (JNIEnv *, jobject, jlong, jstring, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS

@@ -316,9 +316,10 @@ all-local:
 	find $(DIST_SUBDIRS) -name '*.c' -o -name '*.pl' -o -name '*.pm' | \
 	grep -v -E '^(examples|gnulib|perl/(blib|examples)|po-docs|tests)/' | \
 	grep -v -E '/((guestfs|rc)_protocol\.c)$$' | \
+	grep -v -E '^python/utils.c$$' | \
 	LC_ALL=C sort > po/POTFILES
 	cd $(srcdir); \
-	find builder mllib resize sparsify sysprep -name '*.ml' | \
+	find builder customize mllib resize sparsify sysprep -name '*.ml' | \
 	LC_ALL=C sort > po/POTFILES-ml
 
 # Manual pages in top level directory.

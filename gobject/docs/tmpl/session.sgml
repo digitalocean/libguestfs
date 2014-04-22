@@ -906,6 +906,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_clear_backend_setting ##### -->
+<para>
+
+</para>
+
+@session: 
+@name: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_command ##### -->
 <para>
 
@@ -1609,6 +1620,17 @@ GuestfsSession
 </para>
 
 @session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_get_backend_setting ##### -->
+<para>
+
+</para>
+
+@session: 
+@name: 
 @err: 
 @Returns: 
 
@@ -5038,6 +5060,18 @@ GuestfsSession
 
 @session: 
 @backend: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_set_backend_setting ##### -->
+<para>
+
+</para>
+
+@session: 
+@name: 
+@val: 
 @err: 
 @Returns: 
 

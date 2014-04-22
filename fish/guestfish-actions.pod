@@ -1282,6 +1282,19 @@ Only numeric uid and gid are supported.  If you want to use
 names, you will need to locate and parse the password file
 yourself (Augeas support makes this relatively easy).
 
+=head2 clear-backend-setting
+
+ clear-backend-setting name
+
+If there is a backend setting string matching C<"name"> or
+beginning with C<"name=">, then that string is removed
+from the backend settings.
+
+This call returns the number of strings which were removed
+(which may be 0, 1 or greater than 1).
+
+See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+
 =head2 command
 
  command 'arguments ...'
@@ -1591,6 +1604,10 @@ be passed as C<-1>.  The size of the snapshot is the same as the
 size of the backing file, which is discovered automatically.  You
 are encouraged to also pass C<backingformat> to describe the format
 of C<backingfile>.
+
+If C<filename> refers to a block device, then the device is
+formatted.  The C<size> is ignored since block devices have an
+intrinsic size.
 
 The other optional parameters are:
 
@@ -2306,11 +2323,29 @@ This handle property was previously called the "attach method".
 
 See L</set-backend> and L<guestfs(3)/BACKEND>.
 
+=head2 get-backend-setting
+
+ get-backend-setting name
+
+Find a backend setting string which is either C<"name"> or
+begins with C<"name=">.  If C<"name">, this returns the
+string C<"1">.  If C<"name=">, this returns the part
+after the equals sign (which may be an empty string).
+
+If no such setting is found, this function throws an error.
+The errno (see L</last-errno>) will be C<ESRCH> in this
+case.
+
+See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+
 =head2 get-backend-settings
 
  get-backend-settings
 
 Return the current backend settings.
+
+This call returns all backend settings strings.  If you want to
+find a single backend setting, see L</get-backend-setting>.
 
 See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
 
@@ -6546,6 +6581,16 @@ This handle property was previously called the "attach method".
 
 See L<guestfs(3)/BACKEND>.
 
+=head2 set-backend-setting
+
+ set-backend-setting name val
+
+Append C<"name=value"> to the backend settings string list.
+However if a string already exists matching C<"name">
+or beginning with C<"name=">, then that setting is replaced.
+
+See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+
 =head2 set-backend-settings
 
  set-backend-settings 'settings ...'
@@ -6559,6 +6604,11 @@ The default value is an empty list, unless the environment
 variable C<LIBGUESTFS_BACKEND_SETTINGS> was set when the handle
 was created.  This environment variable contains a colon-separated
 list of settings.
+
+This call replaces all backend settings.  If you want to replace
+a single backend setting, see L</set-backend-setting>.
+If you want to clear a single backend setting, see
+L</clear-backend-setting>.
 
 See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
 

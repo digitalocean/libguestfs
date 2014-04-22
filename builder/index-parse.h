@@ -43,7 +43,6 @@ extern int yydebug;
 /* Line 2058 of yacc.c  */
 #line 60 "index-parse.y"
 
-#include "index-parse.h"
 #ifndef YY_TYPEDEF_YY_SCANNER_T
 #define YY_TYPEDEF_YY_SCANNER_T
 typedef void *yyscan_t;
@@ -51,7 +50,7 @@ typedef void *yyscan_t;
 
 
 /* Line 2058 of yacc.c  */
-#line 55 "index-parse.h"
+#line 54 "index-parse.h"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -64,7 +63,8 @@ typedef void *yyscan_t;
      VALUE_CONT = 260,
      EMPTY_LINE = 261,
      PGP_PROLOGUE = 262,
-     PGP_EPILOGUE = 263
+     PGP_EPILOGUE = 263,
+     UNKNOWN_LINE = 264
    };
 #endif
 /* Tokens.  */
@@ -74,6 +74,7 @@ typedef void *yyscan_t;
 #define EMPTY_LINE 261
 #define PGP_PROLOGUE 262
 #define PGP_EPILOGUE 263
+#define UNKNOWN_LINE 264
 
 
 
@@ -81,7 +82,7 @@ typedef void *yyscan_t;
 typedef union YYSTYPE
 {
 /* Line 2058 of yacc.c  */
-#line 70 "index-parse.y"
+#line 69 "index-parse.y"
 
   struct section *section;
   struct field *field;
@@ -89,7 +90,7 @@ typedef union YYSTYPE
 
 
 /* Line 2058 of yacc.c  */
-#line 93 "index-parse.h"
+#line 94 "index-parse.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

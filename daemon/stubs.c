@@ -16177,16 +16177,6 @@ part_get_name_stub (XDR *xdr_in)
   CLEANUP_FREE char *device = NULL;
   int partnum;
 
-  /* The caller should have checked before calling this. */
-  if (! optgroup_gdisk_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "gdisk");
-    goto done_no_free;
-  }
-
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
     goto done_no_free;

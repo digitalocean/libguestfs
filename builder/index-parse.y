@@ -58,7 +58,6 @@ concat_newline (const char *str1, const char *str2)
 %}
 
 %code requires {
-#include "index-parse.h"
 #ifndef YY_TYPEDEF_YY_SCANNER_T
 #define YY_TYPEDEF_YY_SCANNER_T
 typedef void *yyscan_t;
@@ -79,6 +78,7 @@ typedef void *yyscan_t;
 %token         EMPTY_LINE
 %token         PGP_PROLOGUE
 %token         PGP_EPILOGUE
+%token         UNKNOWN_LINE
 
 %type <section> sections section
 %type <field>   fields field

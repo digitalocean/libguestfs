@@ -2322,6 +2322,23 @@ func (g *Guestfs) Chown (owner int, group int, path string) *GuestfsError {
     return nil
 }
 
+/* clear_backend_setting : remove a single per-backend settings string */
+func (g *Guestfs) Clear_backend_setting (name string) (int, *GuestfsError) {
+    if g.g == nil {
+        return 0, closed_handle_error ("clear_backend_setting")
+    }
+
+    c_name := C.CString (name)
+    defer C.free (unsafe.Pointer (c_name))
+
+    r := C.guestfs_clear_backend_setting (g.g, c_name)
+
+    if r == -1 {
+        return 0, get_error_from_handle (g, "clear_backend_setting")
+    }
+    return int (r), nil
+}
+
 /* command : run a command from the guest filesystem */
 func (g *Guestfs) Command (arguments []string) (string, *GuestfsError) {
     if g.g == nil {
@@ -3716,6 +3733,24 @@ func (g *Guestfs) Get_backend () (string, *GuestfsError) {
 
     if r == nil {
         return "", get_error_from_handle (g, "get_backend")
+    }
+    defer C.free (unsafe.Pointer (r))
+    return C.GoString (r), nil
+}
+
+/* get_backend_setting : get a single per-backend settings string */
+func (g *Guestfs) Get_backend_setting (name string) (string, *GuestfsError) {
+    if g.g == nil {
+        return "", closed_handle_error ("get_backend_setting")
+    }
+
+    c_name := C.CString (name)
+    defer C.free (unsafe.Pointer (c_name))
+
+    r := C.guestfs_get_backend_setting (g.g, c_name)
+
+    if r == nil {
+        return "", get_error_from_handle (g, "get_backend_setting")
     }
     defer C.free (unsafe.Pointer (r))
     return C.GoString (r), nil
@@ -10335,7 +10370,27 @@ func (g *Guestfs) Set_backend (backend string) *GuestfsError {
     return nil
 }
 
-/* set_backend_settings : set per-backend settings */
+/* set_backend_setting : set a single per-backend settings string */
+func (g *Guestfs) Set_backend_setting (name string, val string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("set_backend_setting")
+    }
+
+    c_name := C.CString (name)
+    defer C.free (unsafe.Pointer (c_name))
+
+    c_val := C.CString (val)
+    defer C.free (unsafe.Pointer (c_val))
+
+    r := C.guestfs_set_backend_setting (g.g, c_name, c_val)
+
+    if r == -1 {
+        return get_error_from_handle (g, "set_backend_setting")
+    }
+    return nil
+}
+
+/* set_backend_settings : replace per-backend settings strings */
 func (g *Guestfs) Set_backend_settings (settings []string) *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("set_backend_settings")

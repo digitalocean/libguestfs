@@ -192,6 +192,7 @@ gchar *guestfs_session_checksum_device (GuestfsSession *session, const gchar *cs
 gboolean guestfs_session_checksums_out (GuestfsSession *session, const gchar *csumtype, const gchar *directory, const gchar *sumsfile, GCancellable *cancellable, GError **err);
 gboolean guestfs_session_chmod (GuestfsSession *session, gint32 mode, const gchar *path, GError **err);
 gboolean guestfs_session_chown (GuestfsSession *session, gint32 owner, gint32 group, const gchar *path, GError **err);
+gint32 guestfs_session_clear_backend_setting (GuestfsSession *session, const gchar *name, GError **err);
 gchar *guestfs_session_command (GuestfsSession *session, gchar *const *arguments, GError **err);
 gchar **guestfs_session_command_lines (GuestfsSession *session, gchar *const *arguments, GError **err);
 gboolean guestfs_session_compress_device_out (GuestfsSession *session, const gchar *ctype, const gchar *device, const gchar *zdevice, GuestfsCompressDeviceOut *optargs, GCancellable *cancellable, GError **err);
@@ -252,6 +253,7 @@ const gchar *guestfs_session_get_append (GuestfsSession *session, GError **err);
 gchar *guestfs_session_get_attach_method (GuestfsSession *session, GError **err);
 gint8 guestfs_session_get_autosync (GuestfsSession *session, GError **err);
 gchar *guestfs_session_get_backend (GuestfsSession *session, GError **err);
+gchar *guestfs_session_get_backend_setting (GuestfsSession *session, const gchar *name, GError **err);
 gchar **guestfs_session_get_backend_settings (GuestfsSession *session, GError **err);
 gchar *guestfs_session_get_cachedir (GuestfsSession *session, GError **err);
 gint8 guestfs_session_get_direct (GuestfsSession *session, GError **err);
@@ -555,6 +557,7 @@ gboolean guestfs_session_set_append (GuestfsSession *session, const gchar *appen
 gboolean guestfs_session_set_attach_method (GuestfsSession *session, const gchar *backend, GError **err);
 gboolean guestfs_session_set_autosync (GuestfsSession *session, gboolean autosync, GError **err);
 gboolean guestfs_session_set_backend (GuestfsSession *session, const gchar *backend, GError **err);
+gboolean guestfs_session_set_backend_setting (GuestfsSession *session, const gchar *name, const gchar *val, GError **err);
 gboolean guestfs_session_set_backend_settings (GuestfsSession *session, gchar *const *settings, GError **err);
 gboolean guestfs_session_set_cachedir (GuestfsSession *session, const gchar *cachedir, GError **err);
 gboolean guestfs_session_set_direct (GuestfsSession *session, gboolean direct, GError **err);

@@ -1290,6 +1290,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_clear_backend_setting (IntPtr h, [In] string name);
+
+    /// <summary>
+    /// remove a single per-backend settings string
+    /// </summary>
+    public int clear_backend_setting (string name)
+    {
+      int r;
+      r = guestfs_clear_backend_setting (_handle, name);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string guestfs_command (IntPtr h, [In] string[] arguments);
 
     /// <summary>
@@ -2156,6 +2171,21 @@ namespace Guestfs
     {
       string r;
       r = guestfs_get_backend (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_get_backend_setting (IntPtr h, [In] string name);
+
+    /// <summary>
+    /// get a single per-backend settings string
+    /// </summary>
+    public string get_backend_setting (string name)
+    {
+      string r;
+      r = guestfs_get_backend_setting (_handle, name);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
@@ -6657,10 +6687,24 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_backend_setting (IntPtr h, [In] string name, [In] string val);
+
+    /// <summary>
+    /// set a single per-backend settings string
+    /// </summary>
+    public void set_backend_setting (string name, string val)
+    {
+      int r;
+      r = guestfs_set_backend_setting (_handle, name, val);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_set_backend_settings (IntPtr h, [In] string[] settings);
 
     /// <summary>
-    /// set per-backend settings
+    /// replace per-backend settings strings
     /// </summary>
     public void set_backend_settings (string[] settings)
     {

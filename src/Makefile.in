@@ -352,9 +352,10 @@ am_libguestfs_la_OBJECTS = libguestfs_la-actions-0.lo \
 	libguestfs_la-errors.lo libguestfs_la-event-string.lo \
 	libguestfs_la-events.lo libguestfs_la-file.lo \
 	libguestfs_la-filearch.lo libguestfs_la-fuse.lo \
-	libguestfs_la-handle.lo libguestfs_la-info.lo \
-	libguestfs_la-inspect.lo libguestfs_la-inspect-apps.lo \
-	libguestfs_la-inspect-fs.lo libguestfs_la-inspect-fs-cd.lo \
+	libguestfs_la-guid.lo libguestfs_la-handle.lo \
+	libguestfs_la-info.lo libguestfs_la-inspect.lo \
+	libguestfs_la-inspect-apps.lo libguestfs_la-inspect-fs.lo \
+	libguestfs_la-inspect-fs-cd.lo \
 	libguestfs_la-inspect-fs-unix.lo \
 	libguestfs_la-inspect-fs-windows.lo \
 	libguestfs_la-inspect-icon.lo libguestfs_la-journal.lo \
@@ -398,7 +399,7 @@ libvirt_is_version_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(LDFLAGS) -o $@
 am_test_utils_OBJECTS = test_utils-test-utils.$(OBJEXT)
 test_utils_OBJECTS = $(am_test_utils_OBJECTS)
-test_utils_DEPENDENCIES = libutils.la \
+test_utils_DEPENDENCIES = libguestfs_la-guid.lo libutils.la \
 	$(top_builddir)/gnulib/lib/libgnu.la
 test_utils_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(test_utils_CFLAGS) \
@@ -572,7 +573,6 @@ FNMATCH_H = @FNMATCH_H@
 FUSE_CFLAGS = @FUSE_CFLAGS@
 FUSE_LIBS = @FUSE_LIBS@
 GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
-GCOV_CFLAGS = @GCOV_CFLAGS@
 GENISOIMAGE = @GENISOIMAGE@
 GETADDRINFO_LIB = @GETADDRINFO_LIB@
 GETOPT_H = @GETOPT_H@
@@ -869,7 +869,6 @@ GOLANG = @GOLANG@
 GOOS = @GOOS@
 GOROOT = @GOROOT@
 GPERF = @GPERF@
-GPROF_CFLAGS = @GPROF_CFLAGS@
 GREP = @GREP@
 GTKDOC_CHECK = @GTKDOC_CHECK@
 GTKDOC_DEPS_CFLAGS = @GTKDOC_DEPS_CFLAGS@
@@ -1276,7 +1275,6 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
-OCAML_GCOV_LDFLAGS = @OCAML_GCOV_LDFLAGS@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
 OTOOL = @OTOOL@
@@ -1652,6 +1650,7 @@ libguestfs_la_SOURCES = \
 	file.c \
 	filearch.c \
 	fuse.c \
+	guid.c \
 	handle.c \
 	info.c \
 	inspect.c \
@@ -1689,10 +1688,9 @@ libguestfs_la_CPPFLAGS = \
 	-DLIBOSINFO_DB_PATH='"$(datadir)/libosinfo/db"' \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
 
-libguestfs_la_CFLAGS = $(WARN_CFLAGS) $(WERROR_CFLAGS) $(GPROF_CFLAGS) \
-	$(GCOV_CFLAGS) $(GCC_VISIBILITY_HIDDEN) $(PCRE_CFLAGS) \
-	$(LIBVIRT_CFLAGS) $(LIBXML2_CFLAGS) $(YAJL_CFLAGS) \
-	$(am__append_1)
+libguestfs_la_CFLAGS = $(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GCC_VISIBILITY_HIDDEN) $(PCRE_CFLAGS) $(LIBVIRT_CFLAGS) \
+	$(LIBXML2_CFLAGS) $(YAJL_CFLAGS) $(am__append_1)
 libguestfs_la_LIBADD = liberrnostring.la libprotocol.la libutils.la \
 	$(PCRE_LIBS) $(MAGIC_LIBS) $(LIBVIRT_LIBS) $(LIBXML2_LIBS) \
 	$(SELINUX_LIBS) $(YAJL_LIBS) ../gnulib/lib/libgnu.la \
@@ -1749,7 +1747,8 @@ libutils_la_CFLAGS = $(libguestfs_la_CFLAGS)
 
 
 # Tests: main tests are in tests/c-api.  Here we just have some
-# internal tests of utility functions.
+# internal tests of utility functions.  Note we don't just test what's
+# in utils.c, we can test other functions as well here.
 TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
 test_utils_SOURCES = test-utils.c
 test_utils_CPPFLAGS = \
@@ -1757,10 +1756,10 @@ test_utils_CPPFLAGS = \
 	-I$(top_srcdir)/src -I.
 
 test_utils_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 test_utils_LDADD = \
+	libguestfs_la-guid.lo \
 	libutils.la \
 	$(top_builddir)/gnulib/lib/libgnu.la
 
@@ -1927,6 +1926,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-filearch.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-fuse.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-guid.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-handle.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-info.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-inspect-apps.Plo@am__quote@
@@ -2164,6 +2164,13 @@ libguestfs_la-fuse.lo: fuse.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='fuse.c' object='libguestfs_la-fuse.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-fuse.lo `test -f 'fuse.c' || echo '$(srcdir)/'`fuse.c
+
+libguestfs_la-guid.lo: guid.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-guid.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-guid.Tpo -c -o libguestfs_la-guid.lo `test -f 'guid.c' || echo '$(srcdir)/'`guid.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-guid.Tpo $(DEPDIR)/libguestfs_la-guid.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='guid.c' object='libguestfs_la-guid.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-guid.lo `test -f 'guid.c' || echo '$(srcdir)/'`guid.c
 
 libguestfs_la-handle.lo: handle.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-handle.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-handle.Tpo -c -o libguestfs_la-handle.lo `test -f 'handle.c' || echo '$(srcdir)/'`handle.c

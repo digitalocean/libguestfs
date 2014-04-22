@@ -1,3 +1,692 @@
+commit 3f4903e53ab8ccb8b199e17f65d5d4c32ed626ad
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 22 14:14:12 2014 +0100
+
+    Version 1.27.6.
+
+commit b176bde942b2ee046383884eb6fa919c3fe68145
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 22 13:25:12 2014 +0100
+
+    FAQ: Describe better how to compile libguestfs from source using alternate qemu/supermin/kernel.
+
+commit 2f5e9066db817f75b245f256abc0c64dd1ae54eb
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Apr 18 11:39:21 2014 +0200
+
+    ruby: tests: convert from Test::Unit to MiniTest (RHBZ#1085029)
+    
+    Convert the tests to the MiniTest test framework, but keeping the usage
+    of the old Test::Unit as fallback in case MiniTest is not available.
+    In the latter case, use a bit of "glue" to make the old API look like
+    the new API, so we can just rely on the newer MiniTest API.
+
+commit fbae7f3e69ce598c52af71ec204f8dbd0a9ce5e5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Apr 18 11:27:11 2014 +0200
+
+    ruby: tests: isolate boilerplate in common file
+    
+    Isolate in a common file all the standard boilerplate in tests, i.e. the
+    import of the test framework and the guestfs module (including the
+    import path hack needed for the latter).
+    
+    Thanks to Vít Ondruch for the precious hints and suggestions.
+
+commit 0316d247706aab7ce7c2225472feeb51fa8b1664
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Apr 17 11:32:50 2014 +0200
+
+    daemon: parted: part-get-name: switch from sgdisk to parted (RHBZ#1088424).
+    
+    Use parted to get the name of partitions in GPT layouts instead of
+    sgdisk, to reduce the possible discrepancy between output of tools.
+    
+    The actual case here is that recent parted versions fixed/improved their
+    UTF-16 handling of partition names in GPT, and sgdisk seems to not be
+    properly handling them, returning also unicode control bytes.
+    Since parted can provide partition names already, just make use of it.
+    
+    Since sgdisk is no more needed for part_get_name, the function is no
+    more optional on it.
+
+commit 909c10d758887958c9e077732fe9beead55ec4e4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 16 21:12:30 2014 +0100
+
+    sparsify: If using -v (verbose), ensure #disk_create runs verbose too.
+
+commit e1a82bb13064db97c2918485a0d9c52329677e62
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 16 21:12:30 2014 +0100
+
+    builder: If using -v (verbose), ensure #disk_create runs verbose too.
+
+commit 9515345bbdd81d9c8eb72f09207a4c090ea56d2c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 16 20:09:39 2014 +0100
+
+    builder: Suggest using virt-install --os-variant option in virt-builder man page.
+
+commit 27355c9b0b49fb988181c6ad70375aa6f490c558
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 16 11:43:23 2014 +0100
+
+    disk-create: Fix this API so it works correctly with block devices (RHBZ#1088262).
+    
+    When you call guestfs_disk_create on a block device with format=raw
+    then it will try to discard the blocks on the device.
+
+commit 1898d457bdd138a90dd859cd14658ab48020a7b2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 15 23:29:03 2014 +0100
+
+    Version 1.27.5.
+
+commit 3c260f23d4a4256e892955d38116c91e7bd189af
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 15 18:03:53 2014 -0400
+
+    configure: Fix tests of qemu on ARM.
+    
+    qemu-system-arm now requires that you pass '-machine virt' (or some
+    -machine type) explicitly.
+    
+    Change the configure test so it works on upstream ARM.
+
+commit 87d79c2ee259ce51595ad3a924fd216f882dc477
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 15 14:15:14 2014 +0200
+
+    builder: add per-repository proxy configuration
+    
+    Add the possibility to configure the proxy in each repository .conf
+    file, specifying whether use no proxy at all, follow the system
+    configuration or use a specific proxy.
+
+commit 040694ab79c3dfa86df41ae9e76e13d287413c66
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 15 14:23:34 2014 +0100
+
+    Version 1.27.4.
+
+commit 8ae2a8a9365bdcb0474042d4ad654d46807c7bfa
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Apr 14 14:18:41 2014 +0200
+
+    sysprep: remove also hidden files/dirs in temporary dirs
+    
+    List manually and remove the content left (hidden files/directories) in
+    temporary directories after the glob listing & removal.
+
+commit 8f3959e581fdbebce95637408f8f44388abc60f4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 14 11:42:33 2014 +0100
+
+    sparsify: Fix automake build.
+    
+    Previous commit 97c57a8887e04742c58c3956385a5366c6df02c3 added a
+    potential bug in the sparsify build.  If virt-sparsify had used a
+    *.mli file then it would have tried to run a command like:
+    
+     ocamlc mlguestfs.cmxa -c foo.mli -o foo.cmi
+    
+    This would fail because ocamlc doesn't know about native code
+    libraries (*.cmxa).  In fact virt-sparsify was not affected by this
+    because it doesn't use any *.mli files.
+    
+    Fix this by adjusting the automake variables.
+
+commit c78b932199096d061364db2fb1d6a679922664c9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Apr 11 16:15:13 2014 +0200
+
+    builder: set an empty XDG_CONFIG_HOME in tests
+    
+    This way they are affected less by the environment.
+
+commit 47ec61e9af19f8a750750ad498adc10fa7ae0521
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 21 15:24:01 2014 +0000
+
+    listfs: If LDM not available, don't inhibit partition detection (RHBZ#1079182).
+    
+    If a disk has type 0x42 partition (which would indicate LDM), but LDM
+    is not available then try parsing the partition anyway.  It might be
+    parseable as plain old NTFS.
+
+commit 97c57a8887e04742c58c3956385a5366c6df02c3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 8 21:17:39 2014 +0100
+
+    sparsify: Use automake to build and link virt-sparsify binary.
+    
+    There are two observations which make this possible: (1) virt-sparsify
+    contains at least one C unit, so automake thinks it is compiling a C
+    program.  (2) Automake lets us add a *_LINK rule to override linking.
+    
+    We list the C sources of virt-sparsify as virt_sparsify_SOURCES, so
+    automake thinks it is building a C program as normal.
+    
+    We override virt_sparsify_LINK to make it actually link an OCaml
+    program.
+    
+    We add virt_sparsify_DEPENDENCIES listing the OCaml objects so that
+    they get built before linking.
+    
+    We need a small linker script (link.sh) which adds some options at the
+    end of the linker command line which are impossible to add using pure
+    automake.
+    
+    Inspired by the same idea in supermin:
+    https://github.com/libguestfs/supermin/blob/master/src/Makefile.am
+
+commit 65b8edda0a65f9a5cc35039712d246147ac02238
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 9 13:56:16 2014 +0200
+
+    sysprep: remove ConsoleKit logs
+
+commit 54d1f6e6110c686f774befd4c16feccf718dd431
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 9 13:42:22 2014 +0200
+
+    sysprep: remove the exim logs
+
+commit f7d2738902367ef7a02c1f0fb9ef9221b41faca8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 9 13:38:50 2014 +0200
+
+    sysprep: remove apt and aptitude logs
+
+commit d413c94fa6c302b948fcf5de560a184895a75142
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 9 13:29:39 2014 +0200
+
+    sysprep: remove debug, syslog and faillog logs
+
+commit ccf84d7b80948ba807ef8ce0216f55f756c894ed
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 9 12:00:00 2014 +0200
+
+    sysprep: remove debian-installer files
+
+commit b08955e76af958f96e3c8d807284e1c379c4f532
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 9 11:38:47 2014 +0200
+
+    sysprep: remove the lightdm logs
+
+commit fc9a4221ba2020685643ac839ee324b9545aea50
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 9 11:31:11 2014 +0200
+
+    sysprep: remove more anaconda configs/logs
+
+commit 0c35c3adddbd50d3dfeea356a49e23c711c18b06
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 9 11:22:53 2014 +0200
+
+    sysprep: remove systemd journals
+
+commit ffffe71c16d8e0cc8537bbaa4d8cc9908f528eb7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 9 10:19:37 2014 +0100
+
+    build: Remove code coverage and code profiling options.
+    
+    This reverts commit 5a2e320ec9390b2146feea6d7b3b8c36a34d0a90.
+
+commit 595bd5022a251a396050c247003ac60328a7facf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 8 10:05:34 2014 +0100
+
+    sparsify: Relax test constraint (RHBZ#1079210).
+    
+    As long as over ~300MB is recovered, declare sparsification to be
+    successful in this test.
+    
+    It looks as if the journal or other metadata takes up a variable
+    amount of space after sparsification.
+
+commit 466885b226821d8099e47cf7a869a00f70c3e5a4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 7 13:17:38 2014 +0100
+
+    configure: Add message about GNUlib tests.
+    
+    Output was:
+    
+      yes
+    
+    Now the output is:
+    
+      checking if we should run the GNUlib tests... yes
+
+commit f63d82781924b2e399a97f0024c7816bd3cd61e9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Apr 4 16:09:51 2014 +0200
+
+    customize: add the chmod command
+    
+    Add the chmod customize command to change the permissions of files.
+
+commit df0d1978120b3e3e3c07b5677c00f00027efbe2b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Apr 6 16:19:33 2014 +0100
+
+    Version 1.27.3.
+
+commit 71738831545a51e0bd462fe72c7674581aabd160
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 3 20:27:18 2014 +0100
+
+    recipes: Update the section on installing packages.
+    
+    Libguestfs >= 1.26 makes this easy.
+
+commit 55437e459b80f3805925d42c5ab6ae0f63386360
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 3 12:23:37 2014 +0100
+
+    mllib: utils: Add mapi function.
+    
+    This is List.mapi from the stdlib.  RHEL 6 did not have this function.
+
+commit 82b486a9086f84447324d68b3c0cae300e0334f7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 3 16:05:00 2014 +0100
+
+    appliance: Avoid touching appliance/supermin.d directory.
+    
+    We must avoid touching appliance/supermin.d unless it is necessary, so
+    that we avoid unnecessary rebuilds of the full appliance.
+    Unfortunately since we created temporary files there, even if we
+    didn't decide to keep those temporary files they would still end up
+    touching supermin.d.  To stop this, move the temporary files out.
+
+commit b7ad029536b415b38c2fcc359acf123bae020e65
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Apr 3 15:26:26 2014 +0200
+
+    appliance: exclude pkg-config, doc-base, and reportbug stuff
+    
+    Exclude the arch-independent pkg-config files (no pkg-config available
+    in the appliance).
+    
+    Exclude also the doc-base and reportbug files, typically found in Debian
+    systems.
+
+commit d268cfd13ef8e8dff3313c951e4d415fd183cf89
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 3 08:58:46 2014 +0100
+
+    builder: Add test of virt-index-validate.
+
+commit 358c6571d0a70ec40ff8750885854d3ad6bb28ca
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 3 08:45:31 2014 +0100
+
+    builder: Rearrange EXTRA_DIST in alphabetical order.
+    
+    No functional change.
+
+commit 795a162cee3765cce19cf7c52128ec27a9482aa2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 3 08:44:24 2014 +0100
+
+    builder: Don't use configure to generate test-index file.
+    
+    The file contained no replacement patterns so generating it
+    with configure did nothing.
+
+commit 9cbb619db205da435e022884c694ff4bfd687943
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 2 18:13:59 2014 +0200
+
+    builder: better handle some index parsing errors
+    
+    Add a new lexer token, unused in the grammar, for the unknown lines in
+    index files; this should allow to better handle such kind of parsing
+    errors, removing the need to exit() directly (and leave things in an
+    unclean state).
+
+commit 3fa5096f484087cd3415f7eb5dda98dfed11e7ed
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 2 17:33:37 2014 +0100
+
+    customize: Add a "finishing" message at the end.
+    
+    Useful, mainly because it tells you the total time spent running.
+
+commit 8c46a644bc664de32835541883123fbabe6991fe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 2 14:06:03 2014 +0100
+
+    customize: Add customize/*.ml files for translation.
+
+commit 84f646a41a7571937a7b3f71f12338dfb60776b2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 1 18:01:19 2014 +0200
+
+    src/launch: improve the addition of the no-hpet option
+    
+    Since HPET is specific to x86, we can safely add it its option only on
+    x86 and x86_64 when creating the libvirt XML (no more hitting the
+    launching failures due to that on other architectures).
+    
+    Regarding the direct qemu launch, since qemu 1.1 (which is our current
+    minimum) "-ho-hpet" appears in the help only where actually supported,
+    so we could just checking for it and adding it only if present. This
+    should fix the architecture issues on this backend as well.
+
+commit b03b3f6f463c80be90ca32d241a56123d4122ed6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 1 14:56:32 2014 +0100
+
+    sparsify: Reorder external programs in SEE ALSO section.
+
+commit 07dff756a7e86154a3ee4f951764eb1fd1f5ed0f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 1 14:55:20 2014 +0100
+
+    sparsify: Remove duplicate "EXIT STATUS" sections from man page.
+
+commit c58bef5125ff6d5d4a06c607707cdcbf61cdb25d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 18:07:08 2014 +0100
+
+    Version 1.27.2.
+
+commit 7c1d95cca0599ac63e5d82adde62bd9a0cbbde7e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 18:00:07 2014 +0100
+
+    rescue: Fix the --suggest regression test so it works when using UML backend.
+    
+    The boot partition name is /dev/ubda1 in this case, so use a small sed
+    script to canonicalize it for the test comparison.
+    
+    This fixes commit f6a37740f2ba6668bee4952fdd35c46cb6d79cba.
+
+commit cf316569238194e5483d525c3ad618687a055656
+Author: Lee Yarwood <lyarwood@redhat.com>
+Date:   Mon Mar 31 16:52:31 2014 +0100
+
+    Add the now mandatory arch=ARCH field to the index file examples.
+    
+    61323fa introduced a mandatory arch field within index files to
+    identify the architecture of the OS installed within a given template.
+    This change simply documents the requirement within the relevant
+    section of the virt-builder man page.
+    
+    Signed-off-by: Lee Yarwood <lyarwood@redhat.com>
+
+commit 4916806bdfd3ec158b03080ae2a7aacde18a4b84
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 15:09:34 2014 +0100
+
+    Version 1.27.1.
+
+commit 957afde13ba3c8fd6db07c7bb27751c2c009a9ee
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 15:13:09 2014 +0100
+
+    python: Add README.txt to EXTRA_DIST.
+
+commit 0d9a61a91ddca03fd5652441caa2a8c9123639ee
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 13:59:08 2014 +0100
+
+    src: Fix test-utils.c to test the validate_guid function again.
+    
+    This fixes commit 768ab2e01dab5a8e7e751c33b72c1341fcaf9dc3.
+
+commit 7e39cd46005d0547cb8ba77c915557efb588ed9a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 12:56:28 2014 +0100
+
+    Remove internal libvirt_setlinux* APIs and use backend settings instead.
+    
+    This removes the internal APIs internal_set_libvirt_selinux_label and
+    internal_set_libvirt_selinux_norelabel_disks.  The communication
+    between the libvirt domain and the backend now uses the backend
+    settings.
+
+commit 5d4e4e7ecaafee6ad8c445f069b3b4c606ba013c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 14:20:28 2014 +0100
+
+    ocaml: Add ESRCH to Guestfs.Errno module.
+
+commit d137ad52c52f8b448d3413660a18c636b6f9ae65
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 12:53:25 2014 +0100
+
+    New APIs: set-backend-setting, get-backend-setting, clear-backend-setting.
+    
+    Currently the backend settings are treated as a list of strings.  You
+    can set the whole list (clearing any strings there previously), but
+    you cannot search for an individual string or replace an individual
+    string.
+    
+    This adds further APIs allowing you to do that.  We treat the backend
+    settings as a list of environment-like strings (ie.  name=value), and
+    add the following functions:
+    
+     - set-backend-setting (name, value)
+    
+       Set name=value.  Any previous settings of name are cleared.
+    
+     - get-backend-setting (name)
+    
+       Search for name or name=value and return the value.
+    
+     - clear-backend-setting (name)
+    
+       Remove any name or name=value settings.
+    
+    This also adds a regression test.
+
+commit 1893eaded0cf7be68bc30eb3a9fbde814cb42316
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 31 13:33:10 2014 +0100
+
+    handle: Free g->backend_settings.
+    
+    This was not being freed, resulting in a memory leak if you used
+    LIBGUESTFS_BACKEND_SETTINGS.
+    
+    Found by valgrind.
+
+commit 6af2306730b7e4e372e60b6435f87722972c504b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 29 18:52:32 2014 +0000
+
+    python: Remove unnecessary library dependencies.
+    
+    We can remove the deps on libxml2, libvirt and gnulib, by only linking
+    with utils.o (instead of utils.a).
+
+commit fcbfc4775fa2a44020974073594a745ca420d614
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 29 16:07:21 2014 +0000
+
+    python: Add a Python setup.py script.
+    
+    This is not used by libguestfs right now, but it does allow you to
+    build a python "distribution" of libguestfs, like this:
+    
+      make -C python sdist
+    
+    The distribution tarball will be in python/dist/
+    
+    You can copy the distribution tarball somewhere, unpack it, and use
+    regular 'python setup.py' commands such as:
+    
+      python setup.py build
+      python setup.py install [--prefix=...]
+      python setup.py --name
+    
+    In future we hope to be able to upload the distribution tarball to
+    PyPi, but licensing issues prevent this at present.
+
+commit 768ab2e01dab5a8e7e751c33b72c1341fcaf9dc3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 29 16:57:59 2014 +0000
+
+    utils: Move guestfs___validate_guid out of utils.c.
+    
+    guestfs___validate_guid was a new function added to utils.c in
+    commit beef77403cd9d634b6ff6daa9f33d292e2d320a7.
+    
+    However utils.c should not include <guestfs-internal.h> since the
+    other functions in this file can be used by all front-end code, not
+    just libguestfs.so.
+    
+    This function is only needed in libguestfs.so, so move it to another
+    source file, and remove include of <guestfs-internal.h> from utils.c.
+    
+    Also: use 'size_t' for counting, not 'int'.
+    
+    This fixes commit beef77403cd9d634b6ff6daa9f33d292e2d320a7.
+
+commit bc1a4157941f482efebce19529dbad01537a0051
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 29 17:12:07 2014 +0000
+
+    utils: Remove for-loop variable decl.
+    
+    Breaks Python distutils which doesn't use C99:
+    
+    utils.c: In function ‘guestfs___copy_string_list’:
+    utils.c:79:7: error: ‘for’ loop initial declarations are only allowed in C99 mode
+           for (size_t j = 0; j < i; ++j)
+           ^
+    utils.c:79:7: note: use option -std=c99 or -std=gnu99 to compile your code
+
+commit ebda77b647282c672bd76a021f52c9dc972ce34e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 29 15:07:54 2014 +0000
+
+    virt-builder: Add --machine-readable option, as in virt-resize and virt-sparsify.
+    
+    This makes it easier to query the virt-builder binary capabilities,
+    from external programs.
+
+commit 30bdadf032d1c210bae6e2785277afe030d9baf4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 29 14:55:01 2014 +0000
+
+    builder: Disable internal parallel xzcat on RHEL 6.
+
+commit eff7aed6cfc24c1d605578f738a0d76112d9966b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 29 14:47:25 2014 +0000
+
+    builder: Remove recursive include of index-parse.h.
+    
+    This breaks on Bison < 2.7, and seems unnecessary in any case since
+    the same file is included earlier.
+
+commit f6a37740f2ba6668bee4952fdd35c46cb6d79cba
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 28 14:37:45 2014 +0000
+
+    rescue: Add a regression test for virt-rescue --suggest option.
+
+commit c8657535fd6c937a4ce9ebee647b03b8b6f76916
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 28 14:25:42 2014 +0000
+
+    rescue: Don't leak various variables when using --suggest option with multi-boot guests.
+    
+    This fixes a leak which was introduced in
+    commit 4255db65e58a86148ec291a7416a1148c453d926.
+    
+    Found by Coverity.
+
+commit 15b06d6100ceed0974d52d1aeffa67e9e34fc7da
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 28 14:01:19 2014 +0000
+
+    make-fs: Close FILE* along error path.
+    
+    Found by Coverity.
+
+commit 410aae4b6f646e1fc20b82d24486c68f0c09916c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 28 13:59:56 2014 +0000
+
+    make-fs: Check for error return from guestfs_statvfs.
+    
+    Found by Coverity.
+
+commit 4cea94a958d72e6f3411ba0caaccf9c27543d15c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 28 12:35:25 2014 +0000
+
+    daemon: parted: part-get-name: Don't leak partition type string.
+    
+    Found by './configure --enable-valgrind-daemon'.
+    
+    This fixes commit 820b87016794116c783bd224f2e776cfdf65108e.
+
+commit a7a239f7ab8abe8e81861c06abea4dd21dc4cd3d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 28 09:57:07 2014 +0000
+
+    builder: Use libgnu.la instead of -lgnu.
+    
+    This updates commit effcb99f838da1c4830b4a6b0cc4394b904376f2.
+
+commit effcb99f838da1c4830b4a6b0cc4394b904376f2
+Author: Olaf Hering <olaf@aepfle.de>
+Date:   Fri Mar 28 10:44:16 2014 +0100
+
+    builder: Link virt-index-validate with gnulib.
+    
+    [Gnulib tries to replace getopt because of the bug shown below.
+    However because -lgnu was not used in the Makefile, the replacement
+    failed. -- RWMJ]
+    
+    from config.log:
+    
+                 /* This code dumps core on glibc 2.14.  */
+                 {
+                   static char program[] = "program";
+                   static char w[] = "-W";
+                   static char dummy[] = "dummy";
+                   char *argv[] = { program, w, dummy, NULL };
+                   optind = opterr = 1;
+                   if (getopt (3, argv, "W;") != 'W')
+                     result |= 64;
+                 }
+    
+    gdb --quiet --readnow ./conftest -ex r -ex bt -ex detach -ex q
+    Reading symbols from /usr/src/packages/BUILD/libguestfs-1.26.0/conftest...expanding to full symbols...done.
+    Starting program: /usr/src/packages/BUILD/libguestfs-1.26.0/conftest
+    Missing separate debuginfo for /lib64/ld-linux-x86-64.so.2
+    Try: zypper install -C "debuginfo(build-id)=5d1a12e6f0e95331cc4e39df74ecbd5adb76a1f7"
+    Missing separate debuginfo for /lib64/libc.so.6
+    Try: zypper install -C "debuginfo(build-id)=a06caa12df8f953a453befa827c3145adaf6269a"
+    main(323) result 0
+    main(344) result 0
+    main(357) result 0
+    main(370) result 0
+    
+    Program received signal SIGSEGV, Segmentation fault.
+    0x00007ffff7b2dbf8 in _getopt_internal_r () from /lib64/libc.so.6
+    Detaching from program: /usr/src/packages/BUILD/libguestfs-1.26.0/conftest, process 31042
+    
+    This change actually fixes build for me on sles11sp3 and 11.4.
+
+commit a78cd210c3b659fdbf3e5344ca5882fb505d2cd5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 27 15:47:16 2014 +0000
+
+    Version 1.27.0.
+
 commit 996eca5da7adae60e726b9837a9cc8e94373de02
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Mar 27 11:57:09 2014 +0000

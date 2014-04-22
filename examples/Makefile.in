@@ -526,7 +526,6 @@ FNMATCH_H = @FNMATCH_H@
 FUSE_CFLAGS = @FUSE_CFLAGS@
 FUSE_LIBS = @FUSE_LIBS@
 GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
-GCOV_CFLAGS = @GCOV_CFLAGS@
 GENISOIMAGE = @GENISOIMAGE@
 GETADDRINFO_LIB = @GETADDRINFO_LIB@
 GETOPT_H = @GETOPT_H@
@@ -823,7 +822,6 @@ GOLANG = @GOLANG@
 GOOS = @GOOS@
 GOROOT = @GOROOT@
 GPERF = @GPERF@
-GPROF_CFLAGS = @GPROF_CFLAGS@
 GREP = @GREP@
 GTKDOC_CHECK = @GTKDOC_CHECK@
 GTKDOC_DEPS_CFLAGS = @GTKDOC_DEPS_CFLAGS@
@@ -1230,7 +1228,6 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
-OCAML_GCOV_LDFLAGS = @OCAML_GCOV_LDFLAGS@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
 OTOOL = @OTOOL@
@@ -1560,8 +1557,7 @@ CLEANFILES = \
 @HAVE_LIBVIRT_TRUE@copy_over_CFLAGS = \
 @HAVE_LIBVIRT_TRUE@	$(LIBVIRT_CFLAGS) \
 @HAVE_LIBVIRT_TRUE@	-pthread \
-@HAVE_LIBVIRT_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-@HAVE_LIBVIRT_TRUE@	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+@HAVE_LIBVIRT_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 @HAVE_LIBVIRT_TRUE@copy_over_LDADD = \
 @HAVE_LIBVIRT_TRUE@	$(top_builddir)/src/libguestfs.la \
@@ -1575,8 +1571,7 @@ CLEANFILES = \
 @HAVE_LIBVIRT_TRUE@libvirt_auth_CFLAGS = \
 @HAVE_LIBVIRT_TRUE@	$(LIBVIRT_CFLAGS) \
 @HAVE_LIBVIRT_TRUE@	-pthread \
-@HAVE_LIBVIRT_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-@HAVE_LIBVIRT_TRUE@	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+@HAVE_LIBVIRT_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 @HAVE_LIBVIRT_TRUE@libvirt_auth_LDADD = \
 @HAVE_LIBVIRT_TRUE@	$(top_builddir)/src/libguestfs.la \
@@ -1588,8 +1583,7 @@ create_disk_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src
 
 create_disk_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 create_disk_LDADD = \
 	$(top_builddir)/src/libguestfs.la
@@ -1600,8 +1594,7 @@ debug_logging_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src
 
 debug_logging_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 debug_logging_LDADD = \
 	$(top_builddir)/src/libguestfs.la
@@ -1612,8 +1605,7 @@ display_icon_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src
 
 display_icon_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 display_icon_LDADD = \
 	$(top_builddir)/src/libguestfs.la
@@ -1624,8 +1616,7 @@ inspect_vm_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src
 
 inspect_vm_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 inspect_vm_LDADD = \
 	$(top_builddir)/src/libguestfs.la
@@ -1639,8 +1630,7 @@ inspect_vm_LDADD = \
 @HAVE_FUSE_TRUE@	-DGUESTFS_WARN_DEPRECATED=1 \
 @HAVE_FUSE_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
 @HAVE_FUSE_TRUE@	$(FUSE_CFLAGS) \
-@HAVE_FUSE_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-@HAVE_FUSE_TRUE@	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+@HAVE_FUSE_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 @HAVE_FUSE_TRUE@mount_local_LDADD = \
 @HAVE_FUSE_TRUE@	$(FUSE_LIBS) \
@@ -1652,8 +1642,7 @@ inspect_vm_LDADD = \
 @HAVE_HIVEX_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src
 
 @HAVE_HIVEX_TRUE@virt_dhcp_address_CFLAGS = \
-@HAVE_HIVEX_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-@HAVE_HIVEX_TRUE@	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+@HAVE_HIVEX_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 @HAVE_HIVEX_TRUE@virt_dhcp_address_LDADD = \
 @HAVE_HIVEX_TRUE@	$(top_builddir)/src/libguestfs.la

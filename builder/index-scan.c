@@ -527,9 +527,7 @@ static yyconst flex_int32_t yy_rule_can_match_eol[10] =
 #define YY_EXTRA_TYPE struct parse_context *
 #define YY_USER_ACTION yylloc->first_line = yylloc->last_line = yylineno;
 
-extern void yyerror (YYLTYPE * yylloc, yyscan_t scanner, struct parse_context *context, const char *msg);
-
-#line 533 "index-scan.c"
+#line 531 "index-scan.c"
 
 #define INITIAL 0
 
@@ -775,7 +773,7 @@ YY_DECL
 	register int yy_act;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
-#line 43 "index-scan.l"
+#line 41 "index-scan.l"
 
 
  /* Apart from the PGP prologue/epilogue which is a hack, the
@@ -786,7 +784,7 @@ YY_DECL
   */
 
   /* Ignore comments - '#' MUST appear at the start of a line. */
-#line 790 "index-scan.c"
+#line 788 "index-scan.c"
 
     yylval = yylval_param;
 
@@ -889,21 +887,21 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 53 "index-scan.l"
+#line 51 "index-scan.l"
 { yyextra->seen_comments++; }
 	YY_BREAK
 /* An empty line is significant. */
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 56 "index-scan.l"
+#line 54 "index-scan.l"
 { return EMPTY_LINE; }
 	YY_BREAK
 /* [...] marks beginning of a section. */
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 59 "index-scan.l"
+#line 57 "index-scan.l"
 {
                       yylval->str = strndup (yytext+1, yyleng-3);
                       return SECTION_HEADER;
@@ -913,7 +911,7 @@ YY_RULE_SETUP
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 65 "index-scan.l"
+#line 63 "index-scan.l"
 {
                       size_t i = strcspn (yytext, "=[");
                       yylval->field = malloc (sizeof (struct field));
@@ -935,7 +933,7 @@ YY_RULE_SETUP
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 83 "index-scan.l"
+#line 81 "index-scan.l"
 {
                       yylval->str = strndup (yytext+1, yyleng-2);
                       return VALUE_CONT;
@@ -945,7 +943,7 @@ YY_RULE_SETUP
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 89 "index-scan.l"
+#line 87 "index-scan.l"
 {
   int c, prevnl = 0;
 
@@ -963,7 +961,7 @@ YY_RULE_SETUP
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
-#line 103 "index-scan.l"
+#line 101 "index-scan.l"
 {
   /* Eat everything to the end of the file. */
   while (input (yyscanner) != EOF)
@@ -975,18 +973,17 @@ YY_RULE_SETUP
 /* anything else is an error */
 case 8:
 YY_RULE_SETUP
-#line 112 "index-scan.l"
+#line 110 "index-scan.l"
 {
-  yyerror (yylloc, yyscanner, yyextra, "unexpected character in input");
-  exit (EXIT_FAILURE);
+  return UNKNOWN_LINE;
 }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 117 "index-scan.l"
+#line 114 "index-scan.l"
 ECHO;
 	YY_BREAK
-#line 990 "index-scan.c"
+#line 987 "index-scan.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2133,7 +2130,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 117 "index-scan.l"
+#line 114 "index-scan.l"
 
 
 

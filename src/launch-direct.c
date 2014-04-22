@@ -278,7 +278,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   int virtio_scsi;
   struct hv_param *hp;
   bool has_kvm;
-  bool force_tcg;
+  int force_tcg;
 
   /* At present you must add drives before starting the appliance.  In
    * future when we enable hotplugging you won't need to do this.
@@ -289,6 +289,8 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   }
 
   force_tcg = guestfs___get_backend_setting_bool (g, "force_tcg");
+  if (force_tcg == -1)
+    return -1;
 
   if (!force_tcg)
     debian_kvm_warning (g);
@@ -469,15 +471,9 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   /* These are recommended settings, see RHBZ#1053847. */
   ADD_CMDLINE ("-rtc");
   ADD_CMDLINE ("driftfix=slew");
-#if !defined(__arm__) && !defined(__aarch64__) && !defined(__powerpc__)
-  /* qemu-system-arm and qemu-system-ppc64 advertises the -no-hpet option
-   * but if you try to use it, it usefully says:
-   *   "Option no-hpet not supported for this target".
-   * Cheers qemu developers.  How many years have we been asking for
-   * capabilities?  Could be 3 or 4 years, I forget.
-   */
-  ADD_CMDLINE ("-no-hpet");
-#endif
+  if (qemu_supports (g, data, "-no-hpet")) {
+    ADD_CMDLINE ("-no-hpet");
+  }
   if (data->qemu_version_major < 1 ||
       (data->qemu_version_major == 1 && data->qemu_version_minor <= 2))
     ADD_CMDLINE ("-no-kvm-pit-reinjection");

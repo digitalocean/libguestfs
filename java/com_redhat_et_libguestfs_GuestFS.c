@@ -1846,6 +1846,26 @@ Java_com_redhat_et_libguestfs_GuestFS__1chown  (JNIEnv *env, jobject obj, jlong 
   }
 }
 
+JNIEXPORT jint JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1clear_1backend_1setting  (JNIEnv *env, jobject obj, jlong jg, jstring jname)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *name;
+
+  name = (*env)->GetStringUTFChars (env, jname, NULL);
+
+  r = guestfs_clear_backend_setting (g, name);
+
+  (*env)->ReleaseStringUTFChars (env, jname, name);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return -1;
+  }
+  return (jint) r;
+}
+
 JNIEXPORT jstring JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1command  (JNIEnv *env, jobject obj, jlong jg, jobjectArray jarguments)
 {
@@ -3365,6 +3385,29 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1backend  (JNIEnv *env, jobject obj,
 
   r = guestfs_get_backend (g);
 
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    return NULL;
+  }
+  jr = (*env)->NewStringUTF (env, r);
+  free (r);
+  return jr;
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1get_1backend_1setting  (JNIEnv *env, jobject obj, jlong jg, jstring jname)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jstring jr;
+  char *r;
+  const char *name;
+
+  name = (*env)->GetStringUTFChars (env, jname, NULL);
+
+  r = guestfs_get_backend_setting (g, name);
+
+  (*env)->ReleaseStringUTFChars (env, jname, name);
 
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
@@ -11523,6 +11566,28 @@ Java_com_redhat_et_libguestfs_GuestFS__1set_1backend  (JNIEnv *env, jobject obj,
   r = guestfs_set_backend (g, backend);
 
   (*env)->ReleaseStringUTFChars (env, jbackend, backend);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1set_1backend_1setting  (JNIEnv *env, jobject obj, jlong jg, jstring jname, jstring jval)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *name;
+  const char *val;
+
+  name = (*env)->GetStringUTFChars (env, jname, NULL);
+  val = (*env)->GetStringUTFChars (env, jval, NULL);
+
+  r = guestfs_set_backend_setting (g, name, val);
+
+  (*env)->ReleaseStringUTFChars (env, jname, name);
+  (*env)->ReleaseStringUTFChars (env, jval, val);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));

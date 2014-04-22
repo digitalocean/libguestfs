@@ -25,8 +25,8 @@
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [26])
-m4_define([libguestfs_release], [0])
+m4_define([libguestfs_minor],   [27])
+m4_define([libguestfs_release], [6])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -291,6 +291,7 @@ AC_CHECK_HEADERS([\
     byteswap.h \
     endian.h \
     errno.h \
+    linux/fs.h \
     linux/raid/md_u.h \
     printf.h \
     sys/inotify.h \
@@ -677,10 +678,16 @@ test "x$XZCAT" = "xno" && AC_MSG_ERROR([xzcat must be installed])
 AC_DEFINE_UNQUOTED([XZCAT],["$XZCAT"],[Name of xzcat program.])
 
 dnl liblzma can be used by virt-builder (optional).
-PKG_CHECK_MODULES([LIBLZMA], [liblzma],[
+PKG_CHECK_MODULES([LIBLZMA], [liblzma], [
     AC_SUBST([LIBLZMA_CFLAGS])
     AC_SUBST([LIBLZMA_LIBS])
     AC_DEFINE([HAVE_LIBLZMA],[1],[liblzma found at compile time.])
+
+    dnl Old lzma in RHEL 6 didn't have some APIs we need.
+    old_LIBS="$LIBS"
+    LIBS="$LIBS $LIBLZMA_LIBS"
+    AC_CHECK_FUNCS([lzma_index_stream_flags lzma_index_stream_padding])
+    LIBS="$old_LIBS"
 ],
 [AC_MSG_WARN([liblzma not found, virt-builder will be slower])])
 
@@ -777,16 +784,29 @@ working.
             AC_MSG_FAILURE([$QEMU version must be >= 1.0.])
         fi
 
-        AC_MSG_CHECKING([that $QEMU -display none -machine accel=kvm:tcg -device ? works])
-        if $QEMU -display none -machine accel=kvm:tcg -device \? >&AS_MESSAGE_LOG_FD 2>&1; then
+	dnl Unfortunately $QEMU -device \? won't just work.  We probably
+	dnl need to add a cocktail of different arguments which differ
+	dnl on the various emulators.  Thanks, qemu.
+	AC_MSG_CHECKING([what extra options we need to use for qemu feature tests])
+	QEMU_OPTIONS_FOR_CONFIGURE=
+	# Note: the order we test these matters.
+	for opt in "-machine virt" "-machine accel=kvm:tcg" "-display none"; do
+	    if $QEMU $QEMU_OPTIONS_FOR_CONFIGURE $opt -device \? >&AS_MESSAGE_LOG_FD 2>&1; then
+	        QEMU_OPTIONS_FOR_CONFIGURE="$QEMU_OPTIONS_FOR_CONFIGURE $opt"
+	    fi
+	done
+	AC_MSG_RESULT([$QEMU_OPTIONS_FOR_CONFIGURE])
+
+        AC_MSG_CHECKING([that $QEMU $QEMU_OPTIONS_FOR_CONFIGURE -device ? works])
+        if $QEMU $QEMU_OPTIONS_FOR_CONFIGURE -device \? >&AS_MESSAGE_LOG_FD 2>&1; then
             AC_MSG_RESULT([yes])
         else
             AC_MSG_RESULT([no])
-            AC_MSG_FAILURE([$QEMU -display none -machine accel=kvm:tcg -device ? doesn't work.])
+            AC_MSG_FAILURE([$QEMU $QEMU_OPTIONS_FOR_CONFIGURE -device ? doesn't work.])
         fi
 
         AC_MSG_CHECKING([for virtio-serial support in $QEMU])
-        if $QEMU $QEMU_OPTIONS -display none -machine accel=kvm:tcg -device \? 2>&1 | grep -sq virtio-serial; then
+        if $QEMU $QEMU_OPTIONS_FOR_CONFIGURE -device \? 2>&1 | grep -sq virtio-serial; then
             AC_MSG_RESULT([yes])
         else
             AC_MSG_RESULT([no])
@@ -991,30 +1011,6 @@ AS_IF([test "x$VALGRIND" != "xno"],[
 ])
 AC_SUBST([VG])
 AM_SUBST_NOTMAKE([VG])
-
-dnl Enable profiling?
-AC_ARG_ENABLE([code-profiling],
-    AS_HELP_STRING([--enable-code-profiling], [enable code profiling]),
-    [],
-    [enable_code_profiling=no])
-AS_IF([test "x$enable_code_profiling" != "xno"],[
-    GPROF_CFLAGS="-pg"
-    AC_SUBST([GPROF_CFLAGS])
-])
-
-dnl Enable code coverage?
-AC_ARG_ENABLE([code-coverage],
-    AS_HELP_STRING([--enable-code-coverage], [enable code coverage]),
-    [],
-    [enable_code_coverage=no])
-AS_IF([test "x$enable_code_coverage" != "xno"],[
-    GCOV_CFLAGS="-fprofile-arcs -ftest-coverage"
-    AC_SUBST([GCOV_CFLAGS])
-    dnl This is a hack to make OCaml programs work when they
-    dnl link to C code that is compiled with gcov flags.
-    OCAML_GCOV_LDFLAGS="-cclib -lgcov"
-    AC_SUBST([OCAML_GCOV_LDFLAGS])
-])
 
 dnl Check for OCaml (optional, for OCaml bindings and OCaml tools).
 OCAMLC=no
@@ -1550,6 +1546,7 @@ dnl For search paths.
 AC_DEFINE_UNQUOTED([PATH_SEPARATOR],["$PATH_SEPARATOR"],
                    [Character that separates path elements in search paths])
 
+AC_MSG_CHECKING([if we should run the GNUlib tests])
 AC_ARG_ENABLE([gnulib-tests],
     [AS_HELP_STRING([--disable-gnulib-tests],
         [disable running GNU Portability library tests @<:@default=yes@:>@])],
@@ -1600,6 +1597,8 @@ AC_CONFIG_FILES([podwrapper.pl],
                 [chmod +x,-w podwrapper.pl])
 AC_CONFIG_FILES([run],
                 [chmod +x,-w run])
+AC_CONFIG_FILES([sparsify/link.sh],
+                [chmod +x,-w sparsify/link.sh])
 
 AC_CONFIG_FILES([Makefile
                  align/Makefile
@@ -1608,7 +1607,6 @@ AC_CONFIG_FILES([Makefile
                  builder/Makefile
                  builder/libguestfs.conf
                  builder/test-config/virt-builder/repos.d/test-index.conf
-                 builder/test-index
                  builder/test-website/virt-builder/repos.d/libguestfs.conf
                  builder/website/Makefile
                  cat/Makefile
@@ -1655,6 +1653,7 @@ AC_CONFIG_FILES([Makefile
                  po/Makefile
                  python/Makefile
                  python/examples/Makefile
+                 python/setup.py
                  rescue/Makefile
                  resize/Makefile
                  ruby/Makefile

@@ -9,9 +9,6 @@
 *.cmxa
 *.diff
 *.eml
-*.gcda
-*.gcno
-*.gcov
 *.hi
 *.jar
 *.la
@@ -26,7 +23,6 @@ bindtests.tmp
 cscope.out
 .deps
 .gdb_history
-gmon.out
 .libs
 Makefile
 Makefile.in
@@ -65,7 +61,6 @@ Makefile.in
 /builder/stamp-virt-builder.pod
 /builder/stamp-virt-index-validate.pod
 /builder/test-config/virt-builder/repos.d/test-index.conf
-/builder/test-index
 /builder/test-website/virt-builder/repos.d/libguestfs.conf
 /builder/virt-builder
 /builder/virt-builder.1
@@ -377,13 +372,23 @@ Makefile.in
 /podwrapper.pl
 /po/*.gmo
 /python/bindtests.py
+/python/build
+/python/config.h
+/python/dist
 /python/examples/guestfs-python.3
 /python/examples/stamp-guestfs-python.pod
 /python/guestfs.py
 /python/guestfs-py.c
 /python/guestfs.pyc
 /python/guestfs.pyo
+/python/guestfs-internal-all.h
+/python/guestfs-internal-frontend-cleanups.h
+/python/guestfs-internal-frontend.h
+/python/MANIFEST
 /python/__pycache__
+/python/setup.py
+/python/stamp-extra-files
+/python/utils.c
 /qemu-wrapper.sh
 /rescue/stamp-virt-rescue.pod
 /rescue/virt-rescue
@@ -405,6 +410,7 @@ Makefile.in
 /ruby/Rakefile
 /run
 /sparsify/.depend
+/sparsify/link.sh
 /sparsify/stamp-virt-sparsify.pod
 /sparsify/virt-sparsify
 /sparsify/virt-sparsify.1
@@ -451,6 +457,7 @@ Makefile.in
 /test.out
 /tests/c-api/test-add-drive-opts
 /tests/c-api/test-add-libvirt-dom
+/tests/c-api/test-backend-settings
 /tests/c-api/test-command
 /tests/c-api/test-config
 /tests/c-api/test-create-handle

@@ -89,6 +89,7 @@
 -export([checksums_out/4]).
 -export([chmod/3]).
 -export([chown/4]).
+-export([clear_backend_setting/2]).
 -export([command/2]).
 -export([command_lines/2]).
 -export([compress_device_out/4, compress_device_out/5]).
@@ -149,6 +150,7 @@
 -export([get_attach_method/1]).
 -export([get_autosync/1]).
 -export([get_backend/1]).
+-export([get_backend_setting/2]).
 -export([get_backend_settings/1]).
 -export([get_cachedir/1]).
 -export([get_direct/1]).
@@ -462,6 +464,7 @@
 -export([set_attach_method/2]).
 -export([set_autosync/2]).
 -export([set_backend/2]).
+-export([set_backend_setting/3]).
 -export([set_backend_settings/2]).
 -export([set_cachedir/2]).
 -export([set_direct/2]).
@@ -826,6 +829,9 @@ chmod(G, Mode, Path) ->
 chown(G, Owner, Group, Path) ->
   call_port(G, {chown, Owner, Group, Path}).
 
+clear_backend_setting(G, Name) ->
+  call_port(G, {clear_backend_setting, Name}).
+
 command(G, Arguments) ->
   call_port(G, {command, Arguments}).
 
@@ -1025,6 +1031,9 @@ get_autosync(G) ->
 
 get_backend(G) ->
   call_port(G, {get_backend}).
+
+get_backend_setting(G, Name) ->
+  call_port(G, {get_backend_setting, Name}).
 
 get_backend_settings(G) ->
   call_port(G, {get_backend_settings}).
@@ -2028,6 +2037,9 @@ set_autosync(G, Autosync) ->
 
 set_backend(G, Backend) ->
   call_port(G, {set_backend, Backend}).
+
+set_backend_setting(G, Name, Val) ->
+  call_port(G, {set_backend_setting, Name, Val}).
 
 set_backend_settings(G, Settings) ->
   call_port(G, {set_backend_settings, Settings}).

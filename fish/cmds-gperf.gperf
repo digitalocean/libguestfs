@@ -101,6 +101,7 @@ extern struct command_entry checksum_device_cmd_entry;
 extern struct command_entry checksums_out_cmd_entry;
 extern struct command_entry chmod_cmd_entry;
 extern struct command_entry chown_cmd_entry;
+extern struct command_entry clear_backend_setting_cmd_entry;
 extern struct command_entry command_cmd_entry;
 extern struct command_entry command_lines_cmd_entry;
 extern struct command_entry compress_device_out_cmd_entry;
@@ -168,6 +169,7 @@ extern struct command_entry get_append_cmd_entry;
 extern struct command_entry get_attach_method_cmd_entry;
 extern struct command_entry get_autosync_cmd_entry;
 extern struct command_entry get_backend_cmd_entry;
+extern struct command_entry get_backend_setting_cmd_entry;
 extern struct command_entry get_backend_settings_cmd_entry;
 extern struct command_entry get_cachedir_cmd_entry;
 extern struct command_entry get_direct_cmd_entry;
@@ -447,6 +449,7 @@ extern struct command_entry set_append_cmd_entry;
 extern struct command_entry set_attach_method_cmd_entry;
 extern struct command_entry set_autosync_cmd_entry;
 extern struct command_entry set_backend_cmd_entry;
+extern struct command_entry set_backend_setting_cmd_entry;
 extern struct command_entry set_backend_settings_cmd_entry;
 extern struct command_entry set_cachedir_cmd_entry;
 extern struct command_entry set_direct_cmd_entry;
@@ -698,6 +701,8 @@ checksums_out, &checksums_out_cmd_entry
 checksums-out, &checksums_out_cmd_entry
 chmod, &chmod_cmd_entry
 chown, &chown_cmd_entry
+clear_backend_setting, &clear_backend_setting_cmd_entry
+clear-backend-setting, &clear_backend_setting_cmd_entry
 command, &command_cmd_entry
 command_lines, &command_lines_cmd_entry
 command-lines, &command_lines_cmd_entry
@@ -804,6 +809,8 @@ get_autosync, &get_autosync_cmd_entry
 get-autosync, &get_autosync_cmd_entry
 get_backend, &get_backend_cmd_entry
 get-backend, &get_backend_cmd_entry
+get_backend_setting, &get_backend_setting_cmd_entry
+get-backend-setting, &get_backend_setting_cmd_entry
 get_backend_settings, &get_backend_settings_cmd_entry
 get-backend-settings, &get_backend_settings_cmd_entry
 get_cachedir, &get_cachedir_cmd_entry
@@ -1310,6 +1317,8 @@ autosync, &set_autosync_cmd_entry
 set_backend, &set_backend_cmd_entry
 set-backend, &set_backend_cmd_entry
 backend, &set_backend_cmd_entry
+set_backend_setting, &set_backend_setting_cmd_entry
+set-backend-setting, &set_backend_setting_cmd_entry
 set_backend_settings, &set_backend_settings_cmd_entry
 set-backend-settings, &set_backend_settings_cmd_entry
 set_cachedir, &set_cachedir_cmd_entry

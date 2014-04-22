@@ -3502,6 +3502,44 @@ guestfs_session_chown (GuestfsSession *session, gint32 owner, gint32 group, cons
 }
 
 /**
+ * guestfs_session_clear_backend_setting:
+ * @session: (transfer none): A GuestfsSession object
+ * @name: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * remove a single per-backend settings string
+ *
+ * If there is a backend setting string matching "name" or beginning with
+ * "name=", then that string is removed from the backend settings.
+ * 
+ * This call returns the number of strings which were removed (which may be
+ * 0, 1 or greater than 1).
+ * 
+ * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint32
+guestfs_session_clear_backend_setting (GuestfsSession *session, const gchar *name, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "clear_backend_setting");
+    return -1;
+  }
+
+  int ret = guestfs_clear_backend_setting (g, name);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
  * guestfs_session_command:
  * @session: (transfer none): A GuestfsSession object
  * @arguments: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
@@ -4629,6 +4667,9 @@ guestfs_session_df_h (GuestfsSession *session, GError **err)
  * as @-1. The size of the snapshot is the same as the size of the backing
  * file, which is discovered automatically. You are encouraged to also pass
  * @backingformat to describe the format of @backingfile.
+ * 
+ * If @filename refers to a block device, then the device is formatted. The
+ * @size is ignored since block devices have an intrinsic size.
  * 
  * The other optional parameters are:
  * 
@@ -6354,6 +6395,45 @@ guestfs_session_get_backend (GuestfsSession *session, GError **err)
 }
 
 /**
+ * guestfs_session_get_backend_setting:
+ * @session: (transfer none): A GuestfsSession object
+ * @name: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * get a single per-backend settings string
+ *
+ * Find a backend setting string which is either "name" or begins with
+ * "name=". If "name", this returns the string "1". If "name=", this
+ * returns the part after the equals sign (which may be an empty string).
+ * 
+ * If no such setting is found, this function throws an error. The errno
+ * (see guestfs_session_last_errno()) will be @ESRCH in this case.
+ * 
+ * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_get_backend_setting (GuestfsSession *session, const gchar *name, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_backend_setting");
+    return NULL;
+  }
+
+  char *ret = guestfs_get_backend_setting (g, name);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
  * guestfs_session_get_backend_settings:
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
@@ -6361,6 +6441,9 @@ guestfs_session_get_backend (GuestfsSession *session, GError **err)
  * get per-backend settings
  *
  * Return the current backend settings.
+ * 
+ * This call returns all backend settings strings. If you want to find a
+ * single backend setting, see guestfs_session_get_backend_setting().
  * 
  * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
  * 
@@ -20312,12 +20395,49 @@ guestfs_session_set_backend (GuestfsSession *session, const gchar *backend, GErr
 }
 
 /**
+ * guestfs_session_set_backend_setting:
+ * @session: (transfer none): A GuestfsSession object
+ * @name: (transfer none) (type utf8):
+ * @val: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * set a single per-backend settings string
+ *
+ * Append "name=value" to the backend settings string list. However if a
+ * string already exists matching "name" or beginning with "name=", then
+ * that setting is replaced.
+ * 
+ * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_set_backend_setting (GuestfsSession *session, const gchar *name, const gchar *val, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_backend_setting");
+    return FALSE;
+  }
+
+  int ret = guestfs_set_backend_setting (g, name, val);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_set_backend_settings:
  * @session: (transfer none): A GuestfsSession object
  * @settings: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
  * @err: A GError object to receive any generated errors
  *
- * set per-backend settings
+ * replace per-backend settings strings
  *
  * Set a list of zero or more settings which are passed through to the
  * current backend. Each setting is a string which is interpreted in a
@@ -20326,6 +20446,11 @@ guestfs_session_set_backend (GuestfsSession *session, const gchar *backend, GErr
  * The default value is an empty list, unless the environment variable
  * @LIBGUESTFS_BACKEND_SETTINGS was set when the handle was created. This
  * environment variable contains a colon-separated list of settings.
+ * 
+ * This call replaces all backend settings. If you want to replace a single
+ * backend setting, see guestfs_session_set_backend_setting(). If you want
+ * to clear a single backend setting, see
+ * guestfs_session_clear_backend_setting().
  * 
  * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
  * 

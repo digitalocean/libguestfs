@@ -1014,6 +1014,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_chmod (guestfs_h *g, int mode, const char 
 #define GUESTFS_HAVE_CHOWN 1
 extern GUESTFS_DLL_PUBLIC int guestfs_chown (guestfs_h *g, int owner, int group, const char *path);
 
+#define GUESTFS_HAVE_CLEAR_BACKEND_SETTING 1
+extern GUESTFS_DLL_PUBLIC int guestfs_clear_backend_setting (guestfs_h *g, const char *name);
+
 #define GUESTFS_HAVE_COMMAND 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_command (guestfs_h *g, char *const *arguments);
 
@@ -1356,6 +1359,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_get_autosync (guestfs_h *g);
 
 #define GUESTFS_HAVE_GET_BACKEND 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_get_backend (guestfs_h *g);
+
+#define GUESTFS_HAVE_GET_BACKEND_SETTING 1
+extern GUESTFS_DLL_PUBLIC char *guestfs_get_backend_setting (guestfs_h *g, const char *name);
 
 #define GUESTFS_HAVE_GET_BACKEND_SETTINGS 1
 extern GUESTFS_DLL_PUBLIC char **guestfs_get_backend_settings (guestfs_h *g);
@@ -2662,6 +2668,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_set_autosync (guestfs_h *g, int autosync);
 #define GUESTFS_HAVE_SET_BACKEND 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_backend (guestfs_h *g, const char *backend);
 
+#define GUESTFS_HAVE_SET_BACKEND_SETTING 1
+extern GUESTFS_DLL_PUBLIC int guestfs_set_backend_setting (guestfs_h *g, const char *name, const char *val);
+
 #define GUESTFS_HAVE_SET_BACKEND_SETTINGS 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_backend_settings (guestfs_h *g, char *const *settings);
 
@@ -3253,12 +3262,6 @@ extern GUESTFS_DLL_PUBLIC char **guestfs_internal_readlinklist (guestfs_h *g, co
 #define GUESTFS_HAVE_INTERNAL_RHBZ914931 1
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_rhbz914931 (guestfs_h *g, const char *filename, int count);
 
-#define GUESTFS_HAVE_INTERNAL_SET_LIBVIRT_SELINUX_LABEL 1
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_set_libvirt_selinux_label (guestfs_h *g, const char *label, const char *imagelabel);
-
-#define GUESTFS_HAVE_INTERNAL_SET_LIBVIRT_SELINUX_NORELABEL_DISKS 1
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_set_libvirt_selinux_norelabel_disks (guestfs_h *g, int norelabeldisks);
-
 #define GUESTFS_INTERNAL_TEST_OBOOL 0
 #define GUESTFS_INTERNAL_TEST_OINT 1
 #define GUESTFS_INTERNAL_TEST_OINT64 2
@@ -3655,6 +3658,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_CHECKSUMS_OUT 1
 #define LIBGUESTFS_HAVE_CHMOD 1
 #define LIBGUESTFS_HAVE_CHOWN 1
+#define LIBGUESTFS_HAVE_CLEAR_BACKEND_SETTING 1
 #define LIBGUESTFS_HAVE_COMMAND 1
 #define LIBGUESTFS_HAVE_COMMAND_LINES 1
 #define LIBGUESTFS_HAVE_COMPRESS_DEVICE_OUT 1
@@ -3715,6 +3719,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_GET_ATTACH_METHOD 1
 #define LIBGUESTFS_HAVE_GET_AUTOSYNC 1
 #define LIBGUESTFS_HAVE_GET_BACKEND 1
+#define LIBGUESTFS_HAVE_GET_BACKEND_SETTING 1
 #define LIBGUESTFS_HAVE_GET_BACKEND_SETTINGS 1
 #define LIBGUESTFS_HAVE_GET_CACHEDIR 1
 #define LIBGUESTFS_HAVE_GET_DIRECT 1
@@ -3991,6 +3996,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_SET_ATTACH_METHOD 1
 #define LIBGUESTFS_HAVE_SET_AUTOSYNC 1
 #define LIBGUESTFS_HAVE_SET_BACKEND 1
+#define LIBGUESTFS_HAVE_SET_BACKEND_SETTING 1
 #define LIBGUESTFS_HAVE_SET_BACKEND_SETTINGS 1
 #define LIBGUESTFS_HAVE_SET_CACHEDIR 1
 #define LIBGUESTFS_HAVE_SET_DIRECT 1

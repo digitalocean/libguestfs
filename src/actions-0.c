@@ -1305,42 +1305,6 @@ guestfs_get_cachedir (guestfs_h *g)
 }
 
 GUESTFS_DLL_PUBLIC int
-guestfs_internal_set_libvirt_selinux_norelabel_disks (guestfs_h *g,
-                                                      int norelabeldisks)
-{
-  int trace_flag = g->trace;
-  struct trace_buffer trace_buffer;
-  int r;
-
-  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "internal_set_libvirt_selinux_norelabel_disks", 44);
-  if (trace_flag) {
-    guestfs___trace_open (&trace_buffer);
-    fprintf (trace_buffer.fp, "%s", "internal_set_libvirt_selinux_norelabel_disks");
-    fputs (norelabeldisks ? " true" : " false", trace_buffer.fp);
-    guestfs___trace_send_line (g, &trace_buffer);
-  }
-
-  r = guestfs__internal_set_libvirt_selinux_norelabel_disks (g, norelabeldisks);
-
-  if (r != -1) {
-    if (trace_flag) {
-      guestfs___trace_open (&trace_buffer);
-      fprintf (trace_buffer.fp, "%s = ", "internal_set_libvirt_selinux_norelabel_disks");
-      fprintf (trace_buffer.fp, "%d", r);
-      guestfs___trace_send_line (g, &trace_buffer);
-    }
-
-  } else {
-    if (trace_flag)
-      guestfs___trace (g, "%s = %s (error)",
-                       "internal_set_libvirt_selinux_norelabel_disks", "-1");
-  }
-
-  return r;
-}
-
-GUESTFS_DLL_PUBLIC int
 guestfs_set_program (guestfs_h *g,
                      const char *program)
 {

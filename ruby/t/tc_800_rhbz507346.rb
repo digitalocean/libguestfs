@@ -1,5 +1,5 @@
 # libguestfs Ruby bindings -*- ruby -*-
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2014 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,18 +15,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-require 'test/unit'
-$:.unshift(File::join(File::dirname(__FILE__), "..", "lib"))
-$:.unshift(File::join(File::dirname(__FILE__), "..", "ext", "guestfs"))
-require 'guestfs'
+require File::join(File::dirname(__FILE__), 'test_helper')
 
-class TestLoad < Test::Unit::TestCase
+class TestLoad < MiniTest::Unit::TestCase
   def test_rhbz507346
     g = Guestfs::Guestfs.new()
     g.add_drive_scratch(10*1024*1024)
     g.launch()
 
-    exception = assert_raise TypeError do
+    exception = assert_raises TypeError do
         g.command(1)
     end
     assert_match /wrong argument type Fixnum \(expected Array\)/, exception.message

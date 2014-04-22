@@ -3591,6 +3591,45 @@ ruby_guestfs_chown (VALUE gv, VALUE ownerv, VALUE groupv, VALUE pathv)
 
 /*
  * call-seq:
+ *   g.clear_backend_setting(name) -> fixnum
+ *
+ * remove a single per-backend settings string
+ *
+ * If there is a backend setting string matching "name" or
+ * beginning with "name=", then that string is removed from
+ * the backend settings.
+ * 
+ * This call returns the number of strings which were
+ * removed (which may be 0, 1 or greater than 1).
+ * 
+ * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+ * guestfs(3).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_clear_backend_setting+[http://libguestfs.org/guestfs.3.html#guestfs_clear_backend_setting]).
+ */
+static VALUE
+ruby_guestfs_clear_backend_setting (VALUE gv, VALUE namev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "clear_backend_setting");
+
+  const char *name = StringValueCStr (namev);
+
+  int r;
+
+  r = guestfs_clear_backend_setting (g, name);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
  *   g.command(arguments) -> string
  *
  * run a command from the guest filesystem
@@ -4694,6 +4733,10 @@ ruby_guestfs_df_h (VALUE gv)
  * which is discovered automatically. You are encouraged to
  * also pass "backingformat" to describe the format of
  * "backingfile".
+ * 
+ * If "filename" refers to a block device, then the device
+ * is formatted. The "size" is ignored since block devices
+ * have an intrinsic size.
  * 
  * The other optional parameters are:
  * 
@@ -6522,11 +6565,58 @@ ruby_guestfs_get_backend (VALUE gv)
 
 /*
  * call-seq:
+ *   g.get_backend_setting(name) -> string
+ *
+ * get a single per-backend settings string
+ *
+ * Find a backend setting string which is either "name" or
+ * begins with "name=". If "name", this returns the string
+ * "1". If "name=", this returns the part after the equals
+ * sign (which may be an empty string).
+ * 
+ * If no such setting is found, this function throws an
+ * error. The errno (see "g.last_errno") will be "ESRCH" in
+ * this case.
+ * 
+ * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+ * guestfs(3).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_backend_setting+[http://libguestfs.org/guestfs.3.html#guestfs_get_backend_setting]).
+ */
+static VALUE
+ruby_guestfs_get_backend_setting (VALUE gv, VALUE namev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_backend_setting");
+
+  const char *name = StringValueCStr (namev);
+
+  char *r;
+
+  r = guestfs_get_backend_setting (g, name);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
  *   g.get_backend_settings() -> list
  *
  * get per-backend settings
  *
  * Return the current backend settings.
+ * 
+ * This call returns all backend settings strings. If you
+ * want to find a single backend setting, see
+ * "g.get_backend_setting".
  * 
  * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
  * guestfs(3).
@@ -20272,9 +20362,46 @@ ruby_guestfs_set_backend (VALUE gv, VALUE backendv)
 
 /*
  * call-seq:
+ *   g.set_backend_setting(name, val) -> nil
+ *
+ * set a single per-backend settings string
+ *
+ * Append "name=value" to the backend settings string list.
+ * However if a string already exists matching "name" or
+ * beginning with "name=", then that setting is replaced.
+ * 
+ * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
+ * guestfs(3).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_backend_setting+[http://libguestfs.org/guestfs.3.html#guestfs_set_backend_setting]).
+ */
+static VALUE
+ruby_guestfs_set_backend_setting (VALUE gv, VALUE namev, VALUE valv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_backend_setting");
+
+  const char *name = StringValueCStr (namev);
+  const char *val = StringValueCStr (valv);
+
+  int r;
+
+  r = guestfs_set_backend_setting (g, name, val);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
  *   g.set_backend_settings(settings) -> nil
  *
- * set per-backend settings
+ * replace per-backend settings strings
  *
  * Set a list of zero or more settings which are passed
  * through to the current backend. Each setting is a string
@@ -20285,6 +20412,11 @@ ruby_guestfs_set_backend (VALUE gv, VALUE backendv)
  * environment variable "LIBGUESTFS_BACKEND_SETTINGS" was
  * set when the handle was created. This environment
  * variable contains a colon-separated list of settings.
+ * 
+ * This call replaces all backend settings. If you want to
+ * replace a single backend setting, see
+ * "g.set_backend_setting". If you want to clear a single
+ * backend setting, see "g.clear_backend_setting".
  * 
  * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
  * guestfs(3).
@@ -25724,6 +25856,8 @@ Init__guestfs (void)
         ruby_guestfs_chmod, 2);
   rb_define_method (c_guestfs, "chown",
         ruby_guestfs_chown, 3);
+  rb_define_method (c_guestfs, "clear_backend_setting",
+        ruby_guestfs_clear_backend_setting, 1);
   rb_define_method (c_guestfs, "command",
         ruby_guestfs_command, 1);
   rb_define_method (c_guestfs, "command_lines",
@@ -25844,6 +25978,8 @@ Init__guestfs (void)
         ruby_guestfs_get_autosync, 0);
   rb_define_method (c_guestfs, "get_backend",
         ruby_guestfs_get_backend, 0);
+  rb_define_method (c_guestfs, "get_backend_setting",
+        ruby_guestfs_get_backend_setting, 1);
   rb_define_method (c_guestfs, "get_backend_settings",
         ruby_guestfs_get_backend_settings, 0);
   rb_define_method (c_guestfs, "get_cachedir",
@@ -26470,6 +26606,8 @@ Init__guestfs (void)
         ruby_guestfs_set_autosync, 1);
   rb_define_method (c_guestfs, "set_backend",
         ruby_guestfs_set_backend, 1);
+  rb_define_method (c_guestfs, "set_backend_setting",
+        ruby_guestfs_set_backend_setting, 2);
   rb_define_method (c_guestfs, "set_backend_settings",
         ruby_guestfs_set_backend_settings, 1);
   rb_define_method (c_guestfs, "set_cachedir",

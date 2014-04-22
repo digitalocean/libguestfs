@@ -34,6 +34,8 @@ type ops = {
   flags : flags;
 }
 and op = [
+  | `Chmod of string * string
+      (* --chmod PERMISSIONS:FILE *)
   | `Delete of string
       (* --delete PATH *)
   | `Edit of string * string
@@ -122,6 +124,16 @@ let rec argspec ~prog () =
   in
 
   let argspec = [
+    (
+      "--chmod",
+      Arg.String (
+        fun s ->
+          let p = split_string_pair "chmod" s in
+          ops := `Chmod p :: !ops
+      ),
+      s_"PERMISSIONS:FILE" ^ " " ^ s_"Change the permissions of a file"
+    ),
+    Some "PERMISSIONS:FILE", "Change the permissions of C<FILE> to C<PERMISSIONS>.\n\nI<Note>: C<PERMISSIONS> by default would be decimal, unless you prefix\nit with C<0> to get octal, ie. use C<0700> not C<700>.";
     (
       "--delete",
       Arg.String (fun s -> ops := `Delete s :: !ops),

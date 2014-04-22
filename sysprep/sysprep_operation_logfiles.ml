@@ -42,6 +42,9 @@ let globs = List.sort compare [
   "/var/log/apache2/*_log-*";
   "/var/log/ntp";
   "/var/log/tuned/tuned.log";
+  "/var/log/debug*";
+  "/var/log/syslog*";
+  "/var/log/faillog*";
 
   (* logfiles configured by /etc/logrotate.d/* *)
   "/var/log/BackupPC/LOG";
@@ -68,7 +71,12 @@ let globs = List.sort compare [
   "/root/install.log.syslog";
   "/root/anaconda-ks.cfg";
   "/root/anaconda-post.log";
+  "/root/initial-setup-ks.cfg";
   "/var/log/anaconda.syslog";
+  "/var/log/anaconda/*";
+
+  (* debian-installer files *)
+  "/var/log/installer/*";
 
   (* GDM and session preferences. *)
   "/var/cache/gdm/*";
@@ -89,6 +97,9 @@ let globs = List.sort compare [
   (* log file of gdm *)
   "/var/log/gdm/*";
 
+  (* log file of lightdm *)
+  "/var/log/lightdm/*";
+
   (* log file of ntp *)
   "/var/log/ntpstats/*";
 
@@ -101,6 +112,19 @@ let globs = List.sort compare [
 
   (* Red Hat subscription manager log files *)
   "/var/log/rhsm/*";
+
+  (* journals of systemd *)
+  "/var/log/journal/*";
+
+  (* Debian logs: apt & aptitude *)
+  "/var/log/aptitude*";
+  "/var/log/apt/*";
+
+  (* log files of exim *)
+  "/var/log/exim4/*";
+
+  (* log files of ConsoleKit *)
+  "/var/log/ConsoleKit/*";
 ]
 let globs_as_pod = String.concat "\n" (List.map ((^) " ") globs)
 

@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs virt-sparsify tool
-# Copyright (C) 2011 Red Hat Inc.
+# Copyright (C) 2011-2014 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -136,7 +136,9 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
-	$(srcdir)/Makefile.am
+	$(srcdir)/Makefile.am $(srcdir)/link.sh.in \
+	$(top_srcdir)/build-aux/depcomp
+@HAVE_OCAML_TRUE@bin_PROGRAMS = virt-sparsify$(EXEEXT)
 @HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
 @HAVE_OCAML_TRUE@am__append_2 = stamp-virt-sparsify.pod
 subdir = sparsify
@@ -270,8 +272,65 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = link.sh
 CONFIG_CLEAN_VPATH_FILES =
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
+PROGRAMS = $(bin_PROGRAMS)
+am__virt_sparsify_SOURCES_DIST = $(top_builddir)/fish/progress.c \
+	$(top_builddir)/mllib/tty-c.c \
+	$(top_builddir)/mllib/progress-c.c statvfs-c.c
+am__objects_1 = virt_sparsify-progress.$(OBJEXT) \
+	virt_sparsify-tty-c.$(OBJEXT) \
+	virt_sparsify-progress-c.$(OBJEXT) \
+	virt_sparsify-statvfs-c.$(OBJEXT)
+@HAVE_OCAML_TRUE@am_virt_sparsify_OBJECTS = $(am__objects_1)
+virt_sparsify_OBJECTS = $(am_virt_sparsify_OBJECTS)
+virt_sparsify_LDADD = $(LDADD)
+AM_V_P = $(am__v_P_@AM_V@)
+am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
+am__v_P_0 = false
+am__v_P_1 = :
+AM_V_GEN = $(am__v_GEN_@AM_V@)
+am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
+am__v_GEN_0 = @echo "  GEN     " $@;
+am__v_GEN_1 = 
+AM_V_at = $(am__v_at_@AM_V@)
+am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
+am__v_at_0 = @
+am__v_at_1 = 
+DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
+am__depfiles_maybe = depfiles
+am__mv = mv -f
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
+SOURCES = $(virt_sparsify_SOURCES)
+DIST_SOURCES = $(am__virt_sparsify_SOURCES_DIST)
+am__can_run_installinfo = \
+  case $$AM_UPDATE_INFO_DIR in \
+    n|no|NO) false;; \
+    *) (install-info --version) >/dev/null 2>&1;; \
+  esac
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -299,26 +358,6 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
-SCRIPTS = $(bin_SCRIPTS)
-AM_V_P = $(am__v_P_@AM_V@)
-am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
-am__v_P_0 = false
-am__v_P_1 = :
-AM_V_GEN = $(am__v_GEN_@AM_V@)
-am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
-am__v_GEN_0 = @echo "  GEN     " $@;
-am__v_GEN_1 = 
-AM_V_at = $(am__v_at_@AM_V@)
-am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
-am__v_at_0 = @
-am__v_at_1 = 
-DIST_SOURCES =
-am__can_run_installinfo = \
-  case $$AM_UPDATE_INFO_DIR in \
-    n|no|NO) false;; \
-    *) (install-info --version) >/dev/null 2>&1;; \
-  esac
 man1dir = $(mandir)/man1
 NROFF = nroff
 MANS = $(man_MANS)
@@ -442,7 +481,6 @@ FNMATCH_H = @FNMATCH_H@
 FUSE_CFLAGS = @FUSE_CFLAGS@
 FUSE_LIBS = @FUSE_LIBS@
 GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
-GCOV_CFLAGS = @GCOV_CFLAGS@
 GENISOIMAGE = @GENISOIMAGE@
 GETADDRINFO_LIB = @GETADDRINFO_LIB@
 GETOPT_H = @GETOPT_H@
@@ -739,7 +777,6 @@ GOLANG = @GOLANG@
 GOOS = @GOOS@
 GOROOT = @GOROOT@
 GPERF = @GPERF@
-GPROF_CFLAGS = @GPROF_CFLAGS@
 GREP = @GREP@
 GTKDOC_CHECK = @GTKDOC_CHECK@
 GTKDOC_DEPS_CFLAGS = @GTKDOC_DEPS_CFLAGS@
@@ -1146,7 +1183,6 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
-OCAML_GCOV_LDFLAGS = @OCAML_GCOV_LDFLAGS@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
 OTOOL = @OTOOL@
@@ -1446,42 +1482,42 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = \
-	$(SOURCES) \
+	$(SOURCES_ML) $(SOURCES_C) \
 	virt-sparsify.pod \
 	test-virt-sparsify.sh \
 	test-virt-sparsify-in-place.sh
 
 CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify \
 	$(am__append_2)
-
-# Alphabetical order.
-SOURCES = \
+SOURCES_ML = \
 	cmdline.ml \
 	copying.ml \
 	in_place.ml \
-	sparsify.ml \
+	sparsify.ml
+
+SOURCES_C = \
+	$(top_builddir)/fish/progress.c \
+	$(top_builddir)/mllib/tty-c.c \
+	$(top_builddir)/mllib/progress-c.c \
 	statvfs-c.c
 
+@HAVE_OCAML_TRUE@virt_sparsify_SOURCES = $(SOURCES_C)
+@HAVE_OCAML_TRUE@virt_sparsify_CFLAGS = \
+@HAVE_OCAML_TRUE@	-I. \
+@HAVE_OCAML_TRUE@	-I$(top_builddir) \
+@HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/src \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/fish
 
-# Note this list must be in dependency order.
-@HAVE_OCAML_TRUE@deps = \
-@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-progress.o \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/tty-c.o \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/progress-c.o \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/tTY.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/progress.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmx \
-@HAVE_OCAML_TRUE@	statvfs-c.o \
-@HAVE_OCAML_TRUE@	cmdline.cmx \
-@HAVE_OCAML_TRUE@	copying.cmx \
-@HAVE_OCAML_TRUE@	in_place.cmx \
-@HAVE_OCAML_TRUE@	sparsify.cmx
+@HAVE_OCAML_TRUE@BOBJECTS = \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/tTY.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/progress.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmo \
+@HAVE_OCAML_TRUE@	$(SOURCES_ML:.ml=.cmo)
 
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OBJECTS = $(patsubst %.cmx,%.cmo,$(deps))
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OBJECTS = $(deps)
-@HAVE_OCAML_TRUE@bin_SCRIPTS = virt-sparsify
+@HAVE_OCAML_TRUE@XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
@@ -1490,17 +1526,18 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib $(am__append_1)
-@HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
-@HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
-
-# automake will decide we don't need C support in this file.  Really
-# we do, so we have to provide it ourselves.
-@HAVE_OCAML_TRUE@DEFAULT_INCLUDES = \
-@HAVE_OCAML_TRUE@	-I. \
-@HAVE_OCAML_TRUE@	-I$(top_builddir) \
-@HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
-@HAVE_OCAML_TRUE@	-I$(top_srcdir)/src \
-@HAVE_OCAML_TRUE@	-I$(top_srcdir)/fish
+@HAVE_OCAML_TRUE@OCAMLFLAGS = -g -warn-error CDEFLMPSUVYZX
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OBJECTS = $(BOBJECTS)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OBJECTS = $(XOBJECTS)
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@BEST = c
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@BEST = opt
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OCAMLLINKFLAGS = mlguestfs.cma -custom
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OCAMLLINKFLAGS = mlguestfs.cmxa
+@HAVE_OCAML_TRUE@virt_sparsify_DEPENDENCIES = $(OBJECTS)
+@HAVE_OCAML_TRUE@virt_sparsify_LINK = \
+@HAVE_OCAML_TRUE@	./link.sh \
+@HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
+@HAVE_OCAML_TRUE@	  $(OBJECTS) -o $@
 
 
 # Manual pages and HTML files for the website.
@@ -1517,7 +1554,7 @@ DISTCLEANFILES = .depend
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .cmi .cmo .cmx .ml .mli .o
+.SUFFIXES: .c .cmi .cmo .cmx .lo .ml .mli .o .obj
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -1549,41 +1586,149 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-install-binSCRIPTS: $(bin_SCRIPTS)
+link.sh: $(top_builddir)/config.status $(srcdir)/link.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
-	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
 	if test -n "$$list"; then \
 	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
 	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
 	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
+	for p in $$list; do echo "$$p $$p"; done | \
+	sed 's/$(EXEEXT)$$//' | \
+	while read p p1; do if test -f $$p \
+	 || test -f $$p1 \
+	  ; then echo "$$p"; echo "$$p"; else :; fi; \
 	done | \
-	sed -e 'p;s,.*/,,;n' \
-	    -e 'h;s|.*|.|' \
-	    -e 'p;x;s,.*/,,;$(transform)' | sed 'N;N;N;s,\n, ,g' | \
-	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1; } \
+	sed -e 'p;s,.*/,,;n;h' \
+	    -e 's|.*|.|' \
+	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
+	sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
 	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
-	    if ($$2 == $$4) { files[d] = files[d] " " $$1; \
-	      if (++n[d] == $(am__install_max)) { \
-		print "f", d, files[d]; n[d] = 0; files[d] = "" } } \
-	    else { print "f", d "/" $$4, $$1 } } \
+	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
+	    else { print "f", $$3 "/" $$4, $$1; } } \
 	  END { for (d in files) print "f", d, files[d] }' | \
 	while read type dir files; do \
-	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
-	     test -z "$$files" || { \
-	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(bindir)$$dir'"; \
-	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
-	     } \
+	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	    test -z "$$files" || { \
+	    echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	    $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	    } \
 	; done
 
-uninstall-binSCRIPTS:
+uninstall-binPROGRAMS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
 	files=`for p in $$list; do echo "$$p"; done | \
-	       sed -e 's,.*/,,;$(transform)'`; \
-	dir='$(DESTDIR)$(bindir)'; $(am__uninstall_files_from_dir)
+	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
+	      -e 's/$$/$(EXEEXT)/' \
+	`; \
+	test -n "$$list" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(bindir)" && rm -f $$files
+
+clean-binPROGRAMS:
+	@list='$(bin_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
+
+virt-sparsify$(EXEEXT): $(virt_sparsify_OBJECTS) $(virt_sparsify_DEPENDENCIES) $(EXTRA_virt_sparsify_DEPENDENCIES) 
+	@rm -f virt-sparsify$(EXEEXT)
+	$(AM_V_GEN)$(virt_sparsify_LINK) $(virt_sparsify_OBJECTS) $(virt_sparsify_LDADD) $(LIBS)
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT)
+
+distclean-compile:
+	-rm -f *.tab.c
+
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_sparsify-progress-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_sparsify-progress.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_sparsify-statvfs-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_sparsify-tty-c.Po@am__quote@
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c `$(CYGPATH_W) '$<'`
+
+.c.lo:
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+virt_sparsify-progress.o: $(top_builddir)/fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -MT virt_sparsify-progress.o -MD -MP -MF $(DEPDIR)/virt_sparsify-progress.Tpo -c -o virt_sparsify-progress.o `test -f '$(top_builddir)/fish/progress.c' || echo '$(srcdir)/'`$(top_builddir)/fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sparsify-progress.Tpo $(DEPDIR)/virt_sparsify-progress.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/fish/progress.c' object='virt_sparsify-progress.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -c -o virt_sparsify-progress.o `test -f '$(top_builddir)/fish/progress.c' || echo '$(srcdir)/'`$(top_builddir)/fish/progress.c
+
+virt_sparsify-progress.obj: $(top_builddir)/fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -MT virt_sparsify-progress.obj -MD -MP -MF $(DEPDIR)/virt_sparsify-progress.Tpo -c -o virt_sparsify-progress.obj `if test -f '$(top_builddir)/fish/progress.c'; then $(CYGPATH_W) '$(top_builddir)/fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/fish/progress.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sparsify-progress.Tpo $(DEPDIR)/virt_sparsify-progress.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/fish/progress.c' object='virt_sparsify-progress.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -c -o virt_sparsify-progress.obj `if test -f '$(top_builddir)/fish/progress.c'; then $(CYGPATH_W) '$(top_builddir)/fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/fish/progress.c'; fi`
+
+virt_sparsify-tty-c.o: $(top_builddir)/mllib/tty-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -MT virt_sparsify-tty-c.o -MD -MP -MF $(DEPDIR)/virt_sparsify-tty-c.Tpo -c -o virt_sparsify-tty-c.o `test -f '$(top_builddir)/mllib/tty-c.c' || echo '$(srcdir)/'`$(top_builddir)/mllib/tty-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sparsify-tty-c.Tpo $(DEPDIR)/virt_sparsify-tty-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/mllib/tty-c.c' object='virt_sparsify-tty-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -c -o virt_sparsify-tty-c.o `test -f '$(top_builddir)/mllib/tty-c.c' || echo '$(srcdir)/'`$(top_builddir)/mllib/tty-c.c
+
+virt_sparsify-tty-c.obj: $(top_builddir)/mllib/tty-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -MT virt_sparsify-tty-c.obj -MD -MP -MF $(DEPDIR)/virt_sparsify-tty-c.Tpo -c -o virt_sparsify-tty-c.obj `if test -f '$(top_builddir)/mllib/tty-c.c'; then $(CYGPATH_W) '$(top_builddir)/mllib/tty-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/mllib/tty-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sparsify-tty-c.Tpo $(DEPDIR)/virt_sparsify-tty-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/mllib/tty-c.c' object='virt_sparsify-tty-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -c -o virt_sparsify-tty-c.obj `if test -f '$(top_builddir)/mllib/tty-c.c'; then $(CYGPATH_W) '$(top_builddir)/mllib/tty-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/mllib/tty-c.c'; fi`
+
+virt_sparsify-progress-c.o: $(top_builddir)/mllib/progress-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -MT virt_sparsify-progress-c.o -MD -MP -MF $(DEPDIR)/virt_sparsify-progress-c.Tpo -c -o virt_sparsify-progress-c.o `test -f '$(top_builddir)/mllib/progress-c.c' || echo '$(srcdir)/'`$(top_builddir)/mllib/progress-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sparsify-progress-c.Tpo $(DEPDIR)/virt_sparsify-progress-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/mllib/progress-c.c' object='virt_sparsify-progress-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -c -o virt_sparsify-progress-c.o `test -f '$(top_builddir)/mllib/progress-c.c' || echo '$(srcdir)/'`$(top_builddir)/mllib/progress-c.c
+
+virt_sparsify-progress-c.obj: $(top_builddir)/mllib/progress-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -MT virt_sparsify-progress-c.obj -MD -MP -MF $(DEPDIR)/virt_sparsify-progress-c.Tpo -c -o virt_sparsify-progress-c.obj `if test -f '$(top_builddir)/mllib/progress-c.c'; then $(CYGPATH_W) '$(top_builddir)/mllib/progress-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/mllib/progress-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sparsify-progress-c.Tpo $(DEPDIR)/virt_sparsify-progress-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/mllib/progress-c.c' object='virt_sparsify-progress-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -c -o virt_sparsify-progress-c.obj `if test -f '$(top_builddir)/mllib/progress-c.c'; then $(CYGPATH_W) '$(top_builddir)/mllib/progress-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/mllib/progress-c.c'; fi`
+
+virt_sparsify-statvfs-c.o: statvfs-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -MT virt_sparsify-statvfs-c.o -MD -MP -MF $(DEPDIR)/virt_sparsify-statvfs-c.Tpo -c -o virt_sparsify-statvfs-c.o `test -f 'statvfs-c.c' || echo '$(srcdir)/'`statvfs-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sparsify-statvfs-c.Tpo $(DEPDIR)/virt_sparsify-statvfs-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='statvfs-c.c' object='virt_sparsify-statvfs-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -c -o virt_sparsify-statvfs-c.o `test -f 'statvfs-c.c' || echo '$(srcdir)/'`statvfs-c.c
+
+virt_sparsify-statvfs-c.obj: statvfs-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -MT virt_sparsify-statvfs-c.obj -MD -MP -MF $(DEPDIR)/virt_sparsify-statvfs-c.Tpo -c -o virt_sparsify-statvfs-c.obj `if test -f 'statvfs-c.c'; then $(CYGPATH_W) 'statvfs-c.c'; else $(CYGPATH_W) '$(srcdir)/statvfs-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sparsify-statvfs-c.Tpo $(DEPDIR)/virt_sparsify-statvfs-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='statvfs-c.c' object='virt_sparsify-statvfs-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -c -o virt_sparsify-statvfs-c.obj `if test -f 'statvfs-c.c'; then $(CYGPATH_W) 'statvfs-c.c'; else $(CYGPATH_W) '$(srcdir)/statvfs-c.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1812,7 +1957,7 @@ distdir: $(DISTFILES)
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
-all-am: Makefile $(SCRIPTS) $(MANS) $(DATA)
+all-am: Makefile $(PROGRAMS) $(MANS) $(DATA)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -1851,11 +1996,13 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-tags
+distclean-am: clean-am distclean-compile distclean-generic \
+	distclean-tags
 
 dvi: dvi-am
 
@@ -1875,7 +2022,7 @@ install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-binSCRIPTS
+install-exec-am: install-binPROGRAMS
 
 install-html: install-html-am
 
@@ -1898,12 +2045,14 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-generic mostlyclean-libtool
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool
 
 pdf: pdf-am
 
@@ -1913,25 +2062,26 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binSCRIPTS uninstall-man
+uninstall-am: uninstall-binPROGRAMS uninstall-man
 
 uninstall-man: uninstall-man1
 
 .MAKE: check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
-	clean-generic clean-libtool cscopelist-am ctags ctags-am \
-	distclean distclean-generic distclean-libtool distclean-tags \
-	distdir dvi dvi-am html html-am info info-am install \
-	install-am install-binSCRIPTS install-data install-data-am \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-man install-man1 install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am tags tags-am uninstall uninstall-am \
-	uninstall-binSCRIPTS uninstall-man uninstall-man1
+	clean-binPROGRAMS clean-generic clean-libtool cscopelist-am \
+	ctags ctags-am distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-binPROGRAMS \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-man1 \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags tags-am uninstall uninstall-am \
+	uninstall-binPROGRAMS uninstall-man uninstall-man1
 
 
 -include $(top_builddir)/localenv
@@ -1966,29 +2116,12 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@virt-sparsify: $(OBJECTS)
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ \
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  -cclib -lncurses \
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  $(OCAML_GCOV_LDFLAGS) \
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  -o $@
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@virt-sparsify: $(OBJECTS)
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  mlguestfs.cma -linkpkg $^ \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  -cclib -lncurses \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  -custom \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  $(OCAML_GCOV_LDFLAGS) \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  -o $@
-
 @HAVE_OCAML_TRUE@.mli.cmi:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAML_TRUE@.ml.cmo:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAML_TRUE@.ml.cmx:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -c $< -o $@
-
-@HAVE_OCAML_TRUE@.c.o:
-@HAVE_OCAML_TRUE@	$(CC) $(CFLAGS) $(PROF_CFLAGS) $(DEFAULT_INCLUDES) -c $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 @HAVE_OCAML_TRUE@virt-sparsify.1 $(top_builddir)/html/virt-sparsify.1.html: stamp-virt-sparsify.pod
 

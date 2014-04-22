@@ -339,6 +339,11 @@ I<--long> is a shorthand for the C<long> format.
 
 See also: I<--source>, I<--notes>, L</SOURCES OF TEMPLATES>.
 
+=item B<--machine-readable>
+
+This option is used to make the output more machine friendly when being
+parsed by other programs.  See L</MACHINE READABLE OUTPUT> below.
+
 =item B<-m> MB
 
 =item B<--memsize> MB
@@ -796,7 +801,8 @@ Import the disk image into libvirt using L<virt-install(1)> I<--import>
 option.
 
  virt-install --import \
-   --name guest --ram 2048 --disk path=disk.img,format=raw
+   --name guest --ram 2048 \
+   --disk path=disk.img,format=raw --os-variant fedora20
 
 Нотатки:
 
@@ -808,6 +814,14 @@ You I<must> specify the correct format.  The format is C<raw> unless you
 used virt-builder's I<--format> option.
 
 =item 2.
+
+I<--os-variant> is highly recommended, because it will present optimum
+devices to enable the guest to run most efficiently.  To get a list of all
+variants, do:
+
+ virt-install --os-variant list
+
+=item 3.
 
 You can run virt-install as root or non-root.  Each works slightly
 differently because libvirt manages a different set of virtual machines for
@@ -982,6 +996,31 @@ This optional field represents the URI (although only I<file://> URIs are
 accepted) of the key used to sign the index file.  If not present, the index
 file referred by I<uri=..> is not signed.
 
+=item C<proxy=MODE>
+
+This optional field specifies the proxy mode, to be used when downloading
+the index file of this repository.  The possible values are:
+
+=over 4
+
+=item B<no>, B<off>
+
+No proxy is being used at all, even overriding the system configuration.
+
+=item B<system>
+
+The proxy used is the system one.
+
+=item I<anything else>
+
+Specifies the actual proxy configuration to be used, overriding the system
+configuration.
+
+=back
+
+If not present, the assumed value is to respect the proxy settings of the
+system (i.e. as if B<system> would be specified).
+
 =back
 
 For serious virt-builder use, you may want to create your own repository of
@@ -1050,6 +1089,7 @@ signature):
  [fedora-18]
  name=Fedora® 18
  osinfo=fedora18
+ arch=x86_64
  file=fedora-18.xz
  checksum[sha512]=...
  format=raw
@@ -1060,6 +1100,7 @@ signature):
  [fedora-19]
  name=Fedora® 19
  osinfo=fedora19
+ arch=x86_64
  file=fedora-19.xz
  checksum[sha512]=...
  revision=3
@@ -1093,6 +1134,11 @@ output but is otherwise not significant.
 
 This optional field maps the operating system to the associated libosinfo
 ID.  Virt-builder does not use it (yet).
+
+=item C<arch=ARCH>
+
+The architecture of the operating system installed within the template. This
+field is required.
 
 =item C<file=ШЛЯХ>
 
@@ -1512,6 +1558,26 @@ Guests will reboot themselves once the first time you use them, which is
 normal and harmless.
 
 =back
+
+=head1 MACHINE READABLE OUTPUT
+
+The I<--machine-readable> option can be used to make the output more machine
+friendly, which is useful when calling virt-builder from other programs,
+GUIs etc.
+
+Use the option on its own to query the capabilities of the virt-builder
+binary.  Typical output looks like this:
+
+ $ virt-builder --machine-readable
+ virt-builder
+ arch
+ config-file
+ customize
+ json-list
+ pxzcat
+
+A list of features is printed, one per line, and the program exits with
+status 0.
 
 =head1 ЗМІННІ СЕРЕДОВИЩА
 

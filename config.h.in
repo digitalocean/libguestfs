@@ -888,6 +888,9 @@
 /* libvirt found at compile time. */
 #undef HAVE_LIBVIRT
 
+/* Define to 1 if you have the <linux/fs.h> header file. */
+#undef HAVE_LINUX_FS_H
+
 /* Define to 1 if you have the <linux/raid/md_u.h> header file. */
 #undef HAVE_LINUX_RAID_MD_U_H
 
@@ -914,6 +917,12 @@
 
 /* Define to 1 if you have the 'lutimes' function. */
 #undef HAVE_LUTIMES
+
+/* Define to 1 if you have the `lzma_index_stream_flags' function. */
+#undef HAVE_LZMA_INDEX_STREAM_FLAGS
+
+/* Define to 1 if you have the `lzma_index_stream_padding' function. */
+#undef HAVE_LZMA_INDEX_STREAM_PADDING
 
 /* Define if the 'malloc' function is POSIX compliant. */
 #undef HAVE_MALLOC_POSIX

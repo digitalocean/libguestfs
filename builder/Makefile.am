@@ -29,11 +29,16 @@ AM_CFLAGS = \
 EXTRA_DIST = \
 	$(SOURCES) \
 	libguestfs.gpg \
-	virt-builder.pod \
-	virt-index-validate.pod \
+	test-index \
 	test-virt-builder.sh \
 	test-virt-builder-list.sh \
-	test-virt-builder-planner.sh
+	test-virt-builder-planner.sh \
+	test-virt-index-validate.sh \
+	test-virt-index-validate-bad-1 \
+	test-virt-index-validate-good-1 \
+	test-virt-index-validate-good-2 \
+	virt-builder.pod \
+	virt-index-validate.pod
 
 CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-builder
 
@@ -160,7 +165,6 @@ virt-builder: $(OBJECTS)
 	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
 	  mlguestfs.cmxa -linkpkg $^ \
 	  -cclib '$(OCAMLCLIBS)' \
-	  $(OCAML_GCOV_LDFLAGS) \
 	  -o $@
 else
 virt-builder: $(OBJECTS)
@@ -168,7 +172,6 @@ virt-builder: $(OBJECTS)
 	  mlguestfs.cma -linkpkg $^ \
 	  -cclib '$(OCAMLCLIBS)' \
 	  -custom \
-	  $(OCAML_GCOV_LDFLAGS) \
 	  -o $@
 endif
 
@@ -225,7 +228,9 @@ fedora.qcow2.xz: fedora.qcow2
 	xz --best --block-size=16777216 -c $< > $@-t
 	mv $@-t $@
 
-TESTS = test-virt-builder-list.sh
+TESTS = \
+	test-virt-builder-list.sh \
+	test-virt-index-validate.sh
 
 if ENABLE_APPLIANCE
 TESTS += test-virt-builder.sh
@@ -277,6 +282,9 @@ virt_index_validate_SOURCES = \
 
 virt_index_validate_CPPFLAGS = \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\"
+
+virt_index_validate_LDADD = \
+	../gnulib/lib/libgnu.la
 
 man_MANS += virt-index-validate.1
 noinst_DATA += $(top_builddir)/html/virt-index-validate.1.html

@@ -418,18 +418,30 @@ This might give you a clue as to what program is running.
 
  guestfish --rw -a disk.img run : hexedit /dev/sda 0x200
 
-=head1 仮想マシンに RPM をインストールします
+=head1 Install packages (RPMs, Debian packages) in a guest
 
-以下のリンクは、仮想マシンにおいて RPM をインストールする方法があります。実際、仮想マシンの次回起動時にインストールされる "firstboot"
-スクリプトを用いて仮想マシンに RPM
-がアップロードされます。停止中の仮想マシンにおいて致命的なセキュリティ更新をインストールするためにこのテクニックを使用できます。
+Since libguestfs 1.26, L<virt-builder(1)>, L<virt-customize(1)> and
+L<virt-sysprep(1)> have an I<--install> option for installing packages in
+Linux guests.  (Use virt-customize if you have an existing guest, or
+virt-builder if you want to create a guest from scratch).
 
-L<https://rwmj.wordpress.com/2010/12/01/tip-install-rpms-in-a-guest/#content>
+例:
 
-Since libguestfs 1.20, L<virt-sysprep(1)> has an option for installing
-firstboot scripts in Linux guests.  Since libguestfs 1.24,
-L<virt-builder(1)> can be used to build guests, installing packages along
-the way.
+ virt-builder fedora-20 --install emacs
+
+=head1 Install packages from an alternate repository
+
+Since libguestfs 1.26, you can use L<virt-builder(1)>, L<virt-customize(1)>
+or L<virt-sysprep(1)> I<--edit> option to edit repository metadata before
+installing packages
+
+For example this would install packages from the updates-testing repository
+in Fedora:
+
+ virt-builder fedora-20 \
+   --edit '/etc/yum.repos.d/fedora-updates-testing.repo:
+             s/enabled=0/enabled=1/' \
+   --install emacs
 
 =head1 Install SYSLINUX bootloader in a guest
 

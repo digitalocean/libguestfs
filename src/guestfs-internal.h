@@ -300,14 +300,6 @@ struct backend_ops {
   /* Hotplugging drives. */
   int (*hot_add_drive) (guestfs_h *g, void *data, struct drive *drv, size_t drv_index);
   int (*hot_remove_drive) (guestfs_h *g, void *data, struct drive *drv, size_t drv_index);
-
-  /* These are a hack used to communicate between guestfs_add_domain and
-   * the libvirt backend.  We will probably remove these in a future
-   * version once we can find a better way to pass this information
-   * around.
-   */
-  int (*set_libvirt_selinux_label) (guestfs_h *g, void *data, const char *label, const char *imagelabel);
-  int (*set_libvirt_selinux_norelabel_disks) (guestfs_h *g, void *data, int flag);
 };
 
 /* Connection module.  A 'connection' represents the appliance console
@@ -605,6 +597,9 @@ struct guestfs_message_header;
 struct guestfs_message_error;
 struct guestfs_progress;
 
+/* handle.c */
+extern int guestfs___get_backend_setting_bool (guestfs_h *g, const char *name);
+
 /* errors.c */
 extern void guestfs___init_error_handler (guestfs_h *g);
 
@@ -736,8 +731,6 @@ extern char *guestfs___appliance_command_line (guestfs_h *g, const char *applian
 #define APPLIANCE_COMMAND_LINE_IS_TCG 1
 extern void guestfs___register_backend (const char *name, const struct backend_ops *);
 extern int guestfs___set_backend (guestfs_h *g, const char *method);
-extern const char *guestfs___get_backend_setting (guestfs_h *g, const char *name);
-extern int guestfs___get_backend_setting_bool (guestfs_h *g, const char *name);
 
 /* inspect.c */
 extern void guestfs___free_inspect_info (guestfs_h *g);
@@ -845,7 +838,7 @@ extern void guestfs___cleanup_cmd_close (struct command **);
 extern char *guestfs___drive_source_qemu_param (guestfs_h *g, const struct drive_source *src);
 extern bool guestfs___discard_possible (guestfs_h *g, struct drive *drv, unsigned long qemu_version);
 
-/* utils.c */
+/* guid.c */
 extern int guestfs___validate_guid (const char *);
 
 #endif /* GUESTFS_INTERNAL_H_ */

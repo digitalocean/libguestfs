@@ -779,104 +779,6 @@ guestfs_get_tmpdir (guestfs_h *g)
 }
 
 GUESTFS_DLL_PUBLIC int
-guestfs_set_backend_settings (guestfs_h *g,
-                              char *const *settings)
-{
-  int trace_flag = g->trace;
-  struct trace_buffer trace_buffer;
-  int r;
-
-  if (g->state != CONFIG) {
-    error (g, "%s: this function can only be called in the config state",
-              "set_backend_settings");
-    return -1;
-  }
-  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "set_backend_settings", 20);
-  if (settings == NULL) {
-    error (g, "%s: %s: parameter cannot be NULL",
-           "set_backend_settings", "settings");
-    return -1;
-  }
-
-  if (trace_flag) {
-    size_t i;
-
-    guestfs___trace_open (&trace_buffer);
-    fprintf (trace_buffer.fp, "%s", "set_backend_settings");
-    fputc (' ', trace_buffer.fp);
-    fputc ('"', trace_buffer.fp);
-    for (i = 0; settings[i]; ++i) {
-      if (i > 0) fputc (' ', trace_buffer.fp);
-      fputs (settings[i], trace_buffer.fp);
-    }
-    fputc ('"', trace_buffer.fp);
-    guestfs___trace_send_line (g, &trace_buffer);
-  }
-
-  r = guestfs__set_backend_settings (g, settings);
-
-  if (r != -1) {
-    if (trace_flag) {
-      guestfs___trace_open (&trace_buffer);
-      fprintf (trace_buffer.fp, "%s = ", "set_backend_settings");
-      fprintf (trace_buffer.fp, "%d", r);
-      guestfs___trace_send_line (g, &trace_buffer);
-    }
-
-  } else {
-    if (trace_flag)
-      guestfs___trace (g, "%s = %s (error)",
-                       "set_backend_settings", "-1");
-  }
-
-  return r;
-}
-
-GUESTFS_DLL_PUBLIC char **
-guestfs_get_backend_settings (guestfs_h *g)
-{
-  int trace_flag = g->trace;
-  struct trace_buffer trace_buffer;
-  char **r;
-
-  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "get_backend_settings", 20);
-  if (trace_flag) {
-    guestfs___trace_open (&trace_buffer);
-    fprintf (trace_buffer.fp, "%s", "get_backend_settings");
-    guestfs___trace_send_line (g, &trace_buffer);
-  }
-
-  r = guestfs__get_backend_settings (g);
-
-  if (r != NULL) {
-    if (trace_flag) {
-      size_t i;
-
-      guestfs___trace_open (&trace_buffer);
-      fprintf (trace_buffer.fp, "%s = ", "get_backend_settings");
-      fputs ("[", trace_buffer.fp);
-      for (i = 0; r[i]; ++i) {
-        if (i > 0) fputs (", ", trace_buffer.fp);
-        fputs ("\"", trace_buffer.fp);
-        fputs (r[i], trace_buffer.fp);
-        fputs ("\"", trace_buffer.fp);
-      }
-      fputs ("]", trace_buffer.fp);
-      guestfs___trace_send_line (g, &trace_buffer);
-    }
-
-  } else {
-    if (trace_flag)
-      guestfs___trace (g, "%s = %s (error)",
-                       "get_backend_settings", "NULL");
-  }
-
-  return r;
-}
-
-GUESTFS_DLL_PUBLIC int
 guestfs_disk_create_argv (guestfs_h *g,
                           const char *filename,
                           const char *format,
@@ -974,6 +876,146 @@ guestfs_disk_create_argv (guestfs_h *g,
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "disk_create", "-1");
+  }
+
+  return r;
+}
+
+GUESTFS_DLL_PUBLIC char **
+guestfs_get_backend_settings (guestfs_h *g)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  char **r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "get_backend_settings", 20);
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "get_backend_settings");
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__get_backend_settings (g);
+
+  if (r != NULL) {
+    if (trace_flag) {
+      size_t i;
+
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "get_backend_settings");
+      fputs ("[", trace_buffer.fp);
+      for (i = 0; r[i]; ++i) {
+        if (i > 0) fputs (", ", trace_buffer.fp);
+        fputs ("\"", trace_buffer.fp);
+        fputs (r[i], trace_buffer.fp);
+        fputs ("\"", trace_buffer.fp);
+      }
+      fputs ("]", trace_buffer.fp);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "get_backend_settings", "NULL");
+  }
+
+  return r;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_set_backend_settings (guestfs_h *g,
+                              char *const *settings)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  if (g->state != CONFIG) {
+    error (g, "%s: this function can only be called in the config state",
+              "set_backend_settings");
+    return -1;
+  }
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "set_backend_settings", 20);
+  if (settings == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "set_backend_settings", "settings");
+    return -1;
+  }
+
+  if (trace_flag) {
+    size_t i;
+
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "set_backend_settings");
+    fputc (' ', trace_buffer.fp);
+    fputc ('"', trace_buffer.fp);
+    for (i = 0; settings[i]; ++i) {
+      if (i > 0) fputc (' ', trace_buffer.fp);
+      fputs (settings[i], trace_buffer.fp);
+    }
+    fputc ('"', trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__set_backend_settings (g, settings);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "set_backend_settings");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "set_backend_settings", "-1");
+  }
+
+  return r;
+}
+
+GUESTFS_DLL_PUBLIC char *
+guestfs_get_backend_setting (guestfs_h *g,
+                             const char *name)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  char *r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "get_backend_setting", 19);
+  if (name == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "get_backend_setting", "name");
+    return NULL;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "get_backend_setting");
+    fprintf (trace_buffer.fp, " \"%s\"", name);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__get_backend_setting (g, name);
+
+  if (r != NULL) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "get_backend_setting");
+      fprintf (trace_buffer.fp, "\"%s\"", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "get_backend_setting", "NULL");
   }
 
   return r;

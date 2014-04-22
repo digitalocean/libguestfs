@@ -1403,6 +1403,17 @@ Only numeric uid and gid are supported.  If you want to use
 names, you will need to locate and parse the password file
 yourself (Augeas support makes this relatively easy).
 
+=item $count = $g->clear_backend_setting ($name);
+
+If there is a backend setting string matching C<"name"> or
+beginning with C<"name=">, then that string is removed
+from the backend settings.
+
+This call returns the number of strings which were removed
+(which may be 0, 1 or greater than 1).
+
+See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+
 =item $output = $g->command (\@arguments);
 
 This call runs a command from the guest filesystem.  The
@@ -1656,6 +1667,10 @@ be passed as C<-1>.  The size of the snapshot is the same as the
 size of the backing file, which is discovered automatically.  You
 are encouraged to also pass C<backingformat> to describe the format
 of C<backingfile>.
+
+If C<filename> refers to a block device, then the device is
+formatted.  The C<size> is ignored since block devices have an
+intrinsic size.
 
 The other optional parameters are:
 
@@ -2283,9 +2298,25 @@ This handle property was previously called the "attach method".
 
 See C<$g-E<gt>set_backend> and L<guestfs(3)/BACKEND>.
 
+=item $val = $g->get_backend_setting ($name);
+
+Find a backend setting string which is either C<"name"> or
+begins with C<"name=">.  If C<"name">, this returns the
+string C<"1">.  If C<"name=">, this returns the part
+after the equals sign (which may be an empty string).
+
+If no such setting is found, this function throws an error.
+The errno (see C<$g-E<gt>last_errno>) will be C<ESRCH> in this
+case.
+
+See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+
 =item @settings = $g->get_backend_settings ();
 
 Return the current backend settings.
+
+This call returns all backend settings strings.  If you want to
+find a single backend setting, see C<$g-E<gt>get_backend_setting>.
 
 See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
 
@@ -6023,6 +6054,14 @@ This handle property was previously called the "attach method".
 
 See L<guestfs(3)/BACKEND>.
 
+=item $g->set_backend_setting ($name, $val);
+
+Append C<"name=value"> to the backend settings string list.
+However if a string already exists matching C<"name">
+or beginning with C<"name=">, then that setting is replaced.
+
+See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+
 =item $g->set_backend_settings (\@settings);
 
 Set a list of zero or more settings which are passed through to
@@ -6034,6 +6073,11 @@ The default value is an empty list, unless the environment
 variable C<LIBGUESTFS_BACKEND_SETTINGS> was set when the handle
 was created.  This environment variable contains a colon-separated
 list of settings.
+
+This call replaces all backend settings.  If you want to replace
+a single backend setting, see C<$g-E<gt>set_backend_setting>.
+If you want to clear a single backend setting, see
+C<$g-E<gt>clear_backend_setting>.
 
 See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
 
@@ -8091,6 +8135,14 @@ use vars qw(%guestfs_introspection);
     name => "chown",
     description => "change file owner and group",
   },
+  "clear_backend_setting" => {
+    ret => 'int',
+    args => [
+      [ 'name', 'string', 0 ],
+    ],
+    name => "clear_backend_setting",
+    description => "remove a single per-backend settings string",
+  },
   "command" => {
     ret => 'string',
     args => [
@@ -8653,6 +8705,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "get_backend",
     description => "get the backend",
+  },
+  "get_backend_setting" => {
+    ret => 'string',
+    args => [
+      [ 'name', 'string', 0 ],
+    ],
+    name => "get_backend_setting",
+    description => "get a single per-backend settings string",
   },
   "get_backend_settings" => {
     ret => 'string list',
@@ -11354,13 +11414,22 @@ use vars qw(%guestfs_introspection);
     name => "set_backend",
     description => "set the backend",
   },
+  "set_backend_setting" => {
+    ret => 'void',
+    args => [
+      [ 'name', 'string', 0 ],
+      [ 'val', 'string', 1 ],
+    ],
+    name => "set_backend_setting",
+    description => "set a single per-backend settings string",
+  },
   "set_backend_settings" => {
     ret => 'void',
     args => [
       [ 'settings', 'string list', 0 ],
     ],
     name => "set_backend_settings",
-    description => "set per-backend settings",
+    description => "replace per-backend settings strings",
   },
   "set_cachedir" => {
     ret => 'void',

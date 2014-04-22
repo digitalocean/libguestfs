@@ -136,25 +136,25 @@ let main () =
   let downloader = Downloader.create ~debug ~curl ~cache in
   let repos = Sources.read_sources ~prog ~debug in
   let repos = List.map (
-    fun { Sources.uri = uri; Sources.gpgkey = gpgkey } ->
+    fun { Sources.uri = uri; Sources.gpgkey = gpgkey; Sources.proxy = proxy } ->
       let gpgkey =
         match gpgkey with
         | None -> Sigchecker.No_Key
         | Some key -> Sigchecker.KeyFile key in
-      uri, gpgkey
+      uri, gpgkey, proxy
   ) repos in
   let sources = List.map (
     fun (source, fingerprint) ->
-      source, Sigchecker.Fingerprint fingerprint
+      source, Sigchecker.Fingerprint fingerprint, Downloader.SystemProxy
   ) sources in
   let sources = List.append repos sources in
   let index : Index_parser.index =
     List.concat (
       List.map (
-        fun (source, key) ->
+        fun (source, key, proxy) ->
           let sigchecker =
             Sigchecker.create ~debug ~gpg ~check_signature ~gpgkey:key in
-          Index_parser.get_index ~prog ~debug ~downloader ~sigchecker source
+          Index_parser.get_index ~prog ~debug ~downloader ~sigchecker ~proxy source
       ) sources
     ) in
 
@@ -533,7 +533,10 @@ let main () =
       msg (f_"Resizing (using virt-resize) to expand the disk to %s")
         (human_size osize);
       let preallocation = if oformat = "qcow2" then Some "metadata" else None in
-      (new G.guestfs ())#disk_create ?preallocation ofile oformat osize;
+      let () =
+        let g = new G.guestfs () in
+        if debug then ( g#set_trace true; g#set_verbose true );
+        g#disk_create ?preallocation ofile oformat osize in
       let cmd =
         sprintf "virt-resize%s%s%s --output-format %s%s%s %s %s"
           (if debug then " --verbose" else " --quiet")
