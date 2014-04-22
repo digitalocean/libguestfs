@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [27])
-m4_define([libguestfs_release], [3])
+m4_define([libguestfs_release], [4])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -998,30 +998,6 @@ AS_IF([test "x$VALGRIND" != "xno"],[
 AC_SUBST([VG])
 AM_SUBST_NOTMAKE([VG])
 
-dnl Enable profiling?
-AC_ARG_ENABLE([code-profiling],
-    AS_HELP_STRING([--enable-code-profiling], [enable code profiling]),
-    [],
-    [enable_code_profiling=no])
-AS_IF([test "x$enable_code_profiling" != "xno"],[
-    GPROF_CFLAGS="-pg"
-    AC_SUBST([GPROF_CFLAGS])
-])
-
-dnl Enable code coverage?
-AC_ARG_ENABLE([code-coverage],
-    AS_HELP_STRING([--enable-code-coverage], [enable code coverage]),
-    [],
-    [enable_code_coverage=no])
-AS_IF([test "x$enable_code_coverage" != "xno"],[
-    GCOV_CFLAGS="-fprofile-arcs -ftest-coverage"
-    AC_SUBST([GCOV_CFLAGS])
-    dnl This is a hack to make OCaml programs work when they
-    dnl link to C code that is compiled with gcov flags.
-    OCAML_GCOV_LDFLAGS="-cclib -lgcov"
-    AC_SUBST([OCAML_GCOV_LDFLAGS])
-])
-
 dnl Check for OCaml (optional, for OCaml bindings and OCaml tools).
 OCAMLC=no
 OCAMLFIND=no
@@ -1556,6 +1532,7 @@ dnl For search paths.
 AC_DEFINE_UNQUOTED([PATH_SEPARATOR],["$PATH_SEPARATOR"],
                    [Character that separates path elements in search paths])
 
+AC_MSG_CHECKING([if we should run the GNUlib tests])
 AC_ARG_ENABLE([gnulib-tests],
     [AS_HELP_STRING([--disable-gnulib-tests],
         [disable running GNU Portability library tests @<:@default=yes@:>@])],
@@ -1606,6 +1583,8 @@ AC_CONFIG_FILES([podwrapper.pl],
                 [chmod +x,-w podwrapper.pl])
 AC_CONFIG_FILES([run],
                 [chmod +x,-w run])
+AC_CONFIG_FILES([sparsify/link.sh],
+                [chmod +x,-w sparsify/link.sh])
 
 AC_CONFIG_FILES([Makefile
                  align/Makefile

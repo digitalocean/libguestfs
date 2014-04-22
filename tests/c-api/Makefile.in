@@ -606,7 +606,6 @@ FNMATCH_H = @FNMATCH_H@
 FUSE_CFLAGS = @FUSE_CFLAGS@
 FUSE_LIBS = @FUSE_LIBS@
 GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
-GCOV_CFLAGS = @GCOV_CFLAGS@
 GENISOIMAGE = @GENISOIMAGE@
 GETADDRINFO_LIB = @GETADDRINFO_LIB@
 GETOPT_H = @GETOPT_H@
@@ -903,7 +902,6 @@ GOLANG = @GOLANG@
 GOOS = @GOOS@
 GOROOT = @GOROOT@
 GPERF = @GPERF@
-GPROF_CFLAGS = @GPROF_CFLAGS@
 GREP = @GREP@
 GTKDOC_CHECK = @GTKDOC_CHECK@
 GTKDOC_DEPS_CFLAGS = @GTKDOC_DEPS_CFLAGS@
@@ -1310,7 +1308,6 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
-OCAML_GCOV_LDFLAGS = @OCAML_GCOV_LDFLAGS@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
 OTOOL = @OTOOL@
@@ -1638,7 +1635,6 @@ tests_CPPFLAGS = \
 
 tests_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
 	$(PCRE_CFLAGS)
 
 tests_LDADD = \
@@ -1663,8 +1659,7 @@ test_just_header_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src
 
 test_just_header_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 test_just_header_LDADD = \
 	$(top_builddir)/src/libguestfs.la
@@ -1674,8 +1669,7 @@ test_just_header_LDADD = \
 @HAVE_CXX_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src
 
 @HAVE_CXX_TRUE@test_just_header_cxx_CXXFLAGS = \
-@HAVE_CXX_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-@HAVE_CXX_TRUE@	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+@HAVE_CXX_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 @HAVE_CXX_TRUE@test_just_header_cxx_LDADD = \
 @HAVE_CXX_TRUE@	$(top_builddir)/src/libguestfs.la
@@ -1685,8 +1679,7 @@ test_create_handle_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src
 
 test_create_handle_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 test_create_handle_LDADD = \
 	$(top_builddir)/src/libguestfs.la
@@ -1696,8 +1689,7 @@ test_config_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src
 
 test_config_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 test_config_LDADD = \
 	$(top_builddir)/src/libguestfs.la
@@ -1707,8 +1699,7 @@ test_add_drive_opts_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src
 
 test_add_drive_opts_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 test_add_drive_opts_LDADD = \
 	$(top_builddir)/src/libguestfs.la
@@ -1719,8 +1710,7 @@ test_last_errno_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src
 
 test_last_errno_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 test_last_errno_LDADD = \
 	$(top_builddir)/src/libguestfs.la \
@@ -1731,8 +1721,7 @@ test_backend_settings_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src
 
 test_backend_settings_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 test_backend_settings_LDADD = \
 	$(top_builddir)/src/libutils_la-utils.lo \
@@ -1743,8 +1732,7 @@ test_private_data_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src
 
 test_private_data_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 test_private_data_LDADD = \
 	$(top_builddir)/src/libguestfs.la
@@ -1756,8 +1744,7 @@ test_user_cancel_CPPFLAGS = \
 
 test_user_cancel_CFLAGS = \
 	-pthread \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 test_user_cancel_LDADD = \
 	$(top_builddir)/src/libguestfs.la -lm \
@@ -1770,8 +1757,7 @@ test_debug_to_file_CPPFLAGS = \
 	-I$(top_builddir)/gnulib/lib
 
 test_debug_to_file_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 test_debug_to_file_LDADD = \
 	$(top_builddir)/src/libguestfs.la \
@@ -1784,8 +1770,7 @@ test_environment_CPPFLAGS = \
 	-I$(top_builddir)/gnulib/lib
 
 test_environment_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 test_environment_LDADD = \
 	$(top_builddir)/src/libguestfs.la \
@@ -1798,8 +1783,7 @@ test_event_string_CPPFLAGS = \
 	-I$(top_builddir)/gnulib/lib
 
 test_event_string_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 test_event_string_LDADD = \
 	$(top_builddir)/src/libguestfs.la \
@@ -2518,8 +2502,7 @@ $(top_builddir)/generator/generator:
 #	-I$(top_srcdir)/src -I$(top_builddir)/src -I$(top_srcdir)/gnulib/lib
 #test_add_libvirt_dom_CFLAGS = \
 #	$(LIBVIRT_CFLAGS) \
-#	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-#	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+#	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 #test_add_libvirt_dom_LDADD = \
 #	$(top_builddir)/src/libguestfs.la $(LIBVIRT_LIBS) \
 #	$(LTLIBTHREAD) $(top_builddir)/gnulib/lib/libgnu.la

@@ -1,3 +1,170 @@
+commit 040694ab79c3dfa86df41ae9e76e13d287413c66
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 15 14:23:34 2014 +0100
+
+    Version 1.27.4.
+
+commit 8ae2a8a9365bdcb0474042d4ad654d46807c7bfa
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Apr 14 14:18:41 2014 +0200
+
+    sysprep: remove also hidden files/dirs in temporary dirs
+    
+    List manually and remove the content left (hidden files/directories) in
+    temporary directories after the glob listing & removal.
+
+commit 8f3959e581fdbebce95637408f8f44388abc60f4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 14 11:42:33 2014 +0100
+
+    sparsify: Fix automake build.
+    
+    Previous commit 97c57a8887e04742c58c3956385a5366c6df02c3 added a
+    potential bug in the sparsify build.  If virt-sparsify had used a
+    *.mli file then it would have tried to run a command like:
+    
+     ocamlc mlguestfs.cmxa -c foo.mli -o foo.cmi
+    
+    This would fail because ocamlc doesn't know about native code
+    libraries (*.cmxa).  In fact virt-sparsify was not affected by this
+    because it doesn't use any *.mli files.
+    
+    Fix this by adjusting the automake variables.
+
+commit c78b932199096d061364db2fb1d6a679922664c9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Apr 11 16:15:13 2014 +0200
+
+    builder: set an empty XDG_CONFIG_HOME in tests
+    
+    This way they are affected less by the environment.
+
+commit 47ec61e9af19f8a750750ad498adc10fa7ae0521
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 21 15:24:01 2014 +0000
+
+    listfs: If LDM not available, don't inhibit partition detection (RHBZ#1079182).
+    
+    If a disk has type 0x42 partition (which would indicate LDM), but LDM
+    is not available then try parsing the partition anyway.  It might be
+    parseable as plain old NTFS.
+
+commit 97c57a8887e04742c58c3956385a5366c6df02c3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 8 21:17:39 2014 +0100
+
+    sparsify: Use automake to build and link virt-sparsify binary.
+    
+    There are two observations which make this possible: (1) virt-sparsify
+    contains at least one C unit, so automake thinks it is compiling a C
+    program.  (2) Automake lets us add a *_LINK rule to override linking.
+    
+    We list the C sources of virt-sparsify as virt_sparsify_SOURCES, so
+    automake thinks it is building a C program as normal.
+    
+    We override virt_sparsify_LINK to make it actually link an OCaml
+    program.
+    
+    We add virt_sparsify_DEPENDENCIES listing the OCaml objects so that
+    they get built before linking.
+    
+    We need a small linker script (link.sh) which adds some options at the
+    end of the linker command line which are impossible to add using pure
+    automake.
+    
+    Inspired by the same idea in supermin:
+    https://github.com/libguestfs/supermin/blob/master/src/Makefile.am
+
+commit 65b8edda0a65f9a5cc35039712d246147ac02238
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 9 13:56:16 2014 +0200
+
+    sysprep: remove ConsoleKit logs
+
+commit 54d1f6e6110c686f774befd4c16feccf718dd431
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 9 13:42:22 2014 +0200
+
+    sysprep: remove the exim logs
+
+commit f7d2738902367ef7a02c1f0fb9ef9221b41faca8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 9 13:38:50 2014 +0200
+
+    sysprep: remove apt and aptitude logs
+
+commit d413c94fa6c302b948fcf5de560a184895a75142
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 9 13:29:39 2014 +0200
+
+    sysprep: remove debug, syslog and faillog logs
+
+commit ccf84d7b80948ba807ef8ce0216f55f756c894ed
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 9 12:00:00 2014 +0200
+
+    sysprep: remove debian-installer files
+
+commit b08955e76af958f96e3c8d807284e1c379c4f532
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 9 11:38:47 2014 +0200
+
+    sysprep: remove the lightdm logs
+
+commit fc9a4221ba2020685643ac839ee324b9545aea50
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 9 11:31:11 2014 +0200
+
+    sysprep: remove more anaconda configs/logs
+
+commit 0c35c3adddbd50d3dfeea356a49e23c711c18b06
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 9 11:22:53 2014 +0200
+
+    sysprep: remove systemd journals
+
+commit ffffe71c16d8e0cc8537bbaa4d8cc9908f528eb7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 9 10:19:37 2014 +0100
+
+    build: Remove code coverage and code profiling options.
+    
+    This reverts commit 5a2e320ec9390b2146feea6d7b3b8c36a34d0a90.
+
+commit 595bd5022a251a396050c247003ac60328a7facf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 8 10:05:34 2014 +0100
+
+    sparsify: Relax test constraint (RHBZ#1079210).
+    
+    As long as over ~300MB is recovered, declare sparsification to be
+    successful in this test.
+    
+    It looks as if the journal or other metadata takes up a variable
+    amount of space after sparsification.
+
+commit 466885b226821d8099e47cf7a869a00f70c3e5a4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 7 13:17:38 2014 +0100
+
+    configure: Add message about GNUlib tests.
+    
+    Output was:
+    
+      yes
+    
+    Now the output is:
+    
+      checking if we should run the GNUlib tests... yes
+
+commit f63d82781924b2e399a97f0024c7816bd3cd61e9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Apr 4 16:09:51 2014 +0200
+
+    customize: add the chmod command
+    
+    Add the chmod customize command to change the permissions of files.
+
 commit df0d1978120b3e3e3c07b5677c00f00027efbe2b
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sun Apr 6 16:19:33 2014 +0100

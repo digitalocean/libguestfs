@@ -26,6 +26,13 @@ libguestfs generated file
 
 =over 4
 
+=item B<--chmod> PERMISSIONS:FILE
+
+Change the permissions of C<FILE> to C<PERMISSIONS>.
+
+I<Note>: C<PERMISSIONS> by default would be decimal, unless you prefix it
+with C<0> to get octal, ie. use C<0700> not C<700>.
+
 =item B<--delete> PATH
 
 Delete a file from the guest.  Or delete a directory (and all its contents,

@@ -28,6 +28,8 @@ type ops = {
   flags : flags;
 }
 and op = [
+  | `Chmod of string * string
+      (* --chmod PERMISSIONS:FILE *)
   | `Delete of string
       (* --delete PATH *)
   | `Edit of string * string
