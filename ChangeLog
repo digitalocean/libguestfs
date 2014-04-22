@@ -1,3 +1,30 @@
+commit 1898d457bdd138a90dd859cd14658ab48020a7b2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 15 23:29:03 2014 +0100
+
+    Version 1.27.5.
+
+commit 3c260f23d4a4256e892955d38116c91e7bd189af
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 15 18:03:53 2014 -0400
+
+    configure: Fix tests of qemu on ARM.
+    
+    qemu-system-arm now requires that you pass '-machine virt' (or some
+    -machine type) explicitly.
+    
+    Change the configure test so it works on upstream ARM.
+
+commit 87d79c2ee259ce51595ad3a924fd216f882dc477
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 15 14:15:14 2014 +0200
+
+    builder: add per-repository proxy configuration
+    
+    Add the possibility to configure the proxy in each repository .conf
+    file, specifying whether use no proxy at all, follow the system
+    configuration or use a specific proxy.
+
 commit 040694ab79c3dfa86df41ae9e76e13d287413c66
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Apr 15 14:23:34 2014 +0100
