@@ -15,7 +15,7 @@ BUILDS         := $(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
 		  default
 
 QEMU_CPU := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU \
-		    | sed -e 's,i[456]86,i386,;s,sparc,sparc64,;s,powerpc,ppc,;s,arm.*,arm,')
+		    | sed -e 's,i[456]86,i386,;s,sparc,sparc64,;s,powerpc,ppc64,;s,arm.*,arm,')
 
 DEFAULT_CONFIG_FLAGS = \
 	--disable-gnulib-tests     \
