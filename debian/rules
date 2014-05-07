@@ -94,9 +94,7 @@ override_dh_auto_build:
 	done
 
 override_dh_auto_test:
-	set -e; for p in $(BUILDS); do \
-		make -C $(CURDIR)/debian/build-$$p quickcheck; \
-	done
+	make -C $(CURDIR)/debian/build-default quickcheck
 
 override_dh_auto_install:
 # All build trees contain the library plus guestfish and C virt tools.
