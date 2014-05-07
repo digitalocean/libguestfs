@@ -111,19 +111,31 @@ override_dh_install:
 # Split the supermin appliance packages list into subpackages, so the
 # main libguestfs0 can avoid depending on everything.
 	cd $(CURDIR)/debian/tmp/usr/lib/*-*/guestfs/supermin.d && \
-	for f in zfs-fuse; do \
-	  if grep -Esq "^$$f\$$" packages; then \
-	    mv packages packages~; \
-	    grep -Ev "^$$f\$$" < packages~ > packages; \
-	    rm packages~; \
-	    echo $$f > zz-packages-$$f; \
-	  fi; \
-	done
+	cp -n packages packages.orig; \
+	for f in gfs2 hfsplus jfs nilfs reiserfs rsync xfs zfs; do \
+	    sed -i -e "/$$f/d" packages; \
+	    grep -F  "$$f" < packages.orig > packages-$$f; \
+	done ; \
+	sed -i -e "/^\(iputils\|lsof\|openssh-server\|strace\|vim\)/d" packages; \
+	grep "^\(iputils\|lsof\|openssh-server\|strace\|vim\)" \
+	    < packages.orig > packages-rescue
 
 	erlang-depends -perlang-guestfs
 
-	dh_install -X.la -X.so.owner -Xbindtests -X/usr/lib/go/ \
-		--fail-missing
+	dh_install -X.la -X.so.owner -Xbindtests -X/usr/lib/go/ -Xpackages.orig \
+	    --fail-missing
+
+# Add packages (except essential packages) from appliance packagelist
+# to libguestfs0 dependencies
+	for p in libguestfs0 \
+	    $(patsubst %,libguestfs-%,gfs2 hfsplus jfs nilfs reiserfs rescue rsync xfs zfs); \
+	do \
+	    echo "appliance for $$p..."; \
+	    echo -n 'appliance:Depends=' >> debian/$$p.substvars; \
+	    cat debian/$$p/usr/lib/*-*/guestfs/supermin.d/*packages* | \
+	    grep -v '^\(bash\|coreutils\|e2fsprogs\|findutils\|grep\|gzip\|sed\|sysvinit\|tar\|util\-linux\)' | \
+		tr '\n' ',' >> debian/$$p.substvars; \
+	done
 
 override_dh_python3:
 	dh_python3 -p python3-guestfs
@@ -133,12 +145,6 @@ override_dh_shlibdeps:
 	dh_shlibdeps
 # Add libraries needed by guestfsd to libguestfs0 dependencies
 	dh_shlibdeps -p libguestfs0 -- -e debian/guestfsd/usr/sbin/guestfsd
-# Add packages (except essential packages) from appliance packagelist
-# to libguestfs0 dependencies
-	echo  -n 'appliance:Depends=' >> debian/libguestfs0.substvars
-	cat debian/libguestfs0/usr/lib/*/guestfs/supermin.d/packages | \
-		sed -e '/^\(bash\|coreutils\|e2fsprogs\|findutils\|grep\|gzip\|sed\|sysvinit\|tar\|util-linux\)$$/d' | \
-		tr '\n' ',' >> debian/libguestfs0.substvars
 
 # Workaround for Lintian warning
 # "{pre,post}inst-has-useless-call-to-ldconfig"

@@ -161,8 +161,16 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
   qemu-system-ppc [powerpc],
   qemu-system-sparc [sparc],
   qemu-system-x86 [i386 amd64],
-  ${appliance:Depends}
-Recommends: libguestfs-zfs-fuse
+  ${appliance:Depends},
+Recommends: libguestfs-hfsplus,
+ libguestfs-reiserfs,
+ libguestfs-xfs,
+Suggests: libguestfs-gfs2,
+ libguestfs-jfs,
+ libguestfs-nilfs,
+ libguestfs-rescue,
+ libguestfs-rsync,
+ libguestfs-zfs,
 Description: guest disk image management system - shared library
  The libguestfs library allows accessing and modifying guest disk
  images. It offers the following features, among many others:
@@ -183,18 +191,126 @@ Description: guest disk image management system - shared library
  what file system is in each LV, etc.); to run commands in the context of the
  guest; and to upload and download files and directories.
 
-Package: libguestfs-zfs-fuse
+Package: libguestfs-gfs2
+Section: libs
+Architecture: linux-any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
+ ${appliance:Depends},
+Description: guest disk image management system - GFS2 support
+ The libguestfs library allows accessing and modifying guest disk
+ images.
+ .
+ This package contains appliance fragments for Global Filesystem
+ (GFS2) support.
+
+Package: libguestfs-hfsplus
+Section: libs
+Architecture: linux-any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
+ ${appliance:Depends},
+Description: guest disk image management system - HFS+ support
+ The libguestfs library allows accessing and modifying guest disk
+ images.
+ .
+ This package contains appliance fragments for HFS+ support.
+
+Package: libguestfs-jfs
+Section: libs
+Architecture: linux-any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
+ ${appliance:Depends},
+Description: guest disk image management system - JFS support
+ The libguestfs library allows accessing and modifying guest disk
+ images.
+ .
+ This package contains appliance fragments for JFS support.
+
+Package: libguestfs-nilfs
+Section: libs
+Architecture: linux-any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
+ ${appliance:Depends},
+Description: guest disk image management system - NILFS v2 support
+ The libguestfs library allows accessing and modifying guest disk
+ images.
+ .
+ This package contains appliance fragments for NILFS v2 support.
+
+Package: libguestfs-reiserfs
+Section: libs
+Architecture: linux-any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
+ ${appliance:Depends},
+Description: guest disk image management system - ReiserFS support
+ The libguestfs library allows accessing and modifying guest disk
+ images.
+ .
+ This package contains appliance fragments for ReiserFS support.
+
+Package: libguestfs-rescue
+Section: libs
+Architecture: linux-any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
+ ${appliance:Depends},
+Description: guest disk image management system - virt-rescue enhancements
+ The libguestfs library allows accessing and modifying guest disk
+ images.
+ .
+ This package contains additional tools to use inside the virt-rescue
+ shell, such as ssh, network utilities, editors and debugging
+ utilities.
+
+Package: libguestfs-rsync
+Section: libs
+Architecture: linux-any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
+ ${appliance:Depends},
+Description: guest disk image management system - rsync support
+ The libguestfs library allows accessing and modifying guest disk
+ images.
+ .
+ This package contains appliance fragments for using rsync to/from
+ guest filesystems.
+
+Package: libguestfs-xfs
+Section: libs
+Architecture: linux-any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
+ ${appliance:Depends},
+Description: guest disk image management system - XFS support
+ The libguestfs library allows accessing and modifying guest disk
+ images.
+ .
+ This package contains appliance fragments for XFS support.
+
+Package: libguestfs-zfs
 Section: libs
 Architecture: i386 amd64 powerpc sparc
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
-  zfs-fuse,
-Description: guest disk image management system - shared library
+ ${appliance:Depends},
+Description: guest disk image management system - ZFS support
  The libguestfs library allows accessing and modifying guest disk
  images.
  .
- Install this package to get ZFS support.
+ This package contains appliance fragments for ZFS support.
 
 Package: libguestfs-tools
 Section: admin
