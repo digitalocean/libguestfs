@@ -10,12 +10,13 @@ Upstream Authors:
 
 Copyright:
 
-    Copyright (C) 2009-2013 Red Hat Inc.
+    Copyright (C) 2009-2014 Red Hat Inc.
 
 License:
 
     The library is distributed under the LGPLv2+. The programs are
-    distributed under the GPLv2+.
+    distributed under the GPLv2+. The source tree contains parts GNU
+    Gnulib which is distributed under GPLv3+.
 
 The Debian packaging is:
 
