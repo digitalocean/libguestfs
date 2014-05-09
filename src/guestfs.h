@@ -1174,6 +1174,19 @@ extern GUESTFS_DLL_PUBLIC int guestfs_cp_a (guestfs_h *g, const char *src, const
 #define GUESTFS_HAVE_CP_R 1
 extern GUESTFS_DLL_PUBLIC int guestfs_cp_r (guestfs_h *g, const char *src, const char *dest);
 
+#define GUESTFS_HAVE_CPIO_OUT 1
+#define GUESTFS_CPIO_OUT_FORMAT 0
+extern GUESTFS_DLL_PUBLIC int guestfs_cpio_out (guestfs_h *g, const char *directory, const char *cpiofile, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_cpio_out_va (guestfs_h *g, const char *directory, const char *cpiofile, va_list args);
+
+struct guestfs_cpio_out_argv {
+  uint64_t bitmask;
+# define GUESTFS_CPIO_OUT_FORMAT_BITMASK (UINT64_C(1)<<0)
+  const char *format;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_cpio_out_argv (guestfs_h *g, const char *directory, const char *cpiofile, const struct guestfs_cpio_out_argv *optargs);
+
 extern GUESTFS_DLL_PUBLIC int guestfs_dd (guestfs_h *g, const char *src, const char *dest)
   GUESTFS_DEPRECATED_BY ("copy_device_to_device");
 
@@ -3673,6 +3686,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_CP 1
 #define LIBGUESTFS_HAVE_CP_A 1
 #define LIBGUESTFS_HAVE_CP_R 1
+#define LIBGUESTFS_HAVE_CPIO_OUT 1
 #define LIBGUESTFS_HAVE_DD 1
 #define LIBGUESTFS_HAVE_DEBUG 1
 #define LIBGUESTFS_HAVE_DEBUG_DRIVES 1

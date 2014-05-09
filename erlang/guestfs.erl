@@ -104,6 +104,7 @@
 -export([cp/3]).
 -export([cp_a/3]).
 -export([cp_r/3]).
+-export([cpio_out/3, cpio_out/4]).
 -export([dd/3]).
 -export([debug/3]).
 -export([debug_drives/1]).
@@ -887,6 +888,11 @@ cp_a(G, Src, Dest) ->
 
 cp_r(G, Src, Dest) ->
   call_port(G, {cp_r, Src, Dest}).
+
+cpio_out(G, Directory, Cpiofile, Optargs) ->
+  call_port(G, {cpio_out, Directory, Cpiofile, Optargs}).
+cpio_out(G, Directory, Cpiofile) ->
+  cpio_out(G, Directory, Cpiofile, []).
 
 dd(G, Src, Dest) ->
   call_port(G, {dd, Src, Dest}).

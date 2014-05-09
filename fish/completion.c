@@ -125,6 +125,7 @@ static const char *const commands[] = {
   "cp",
   "cp-a",
   "cp-r",
+  "cpio-out",
   "dd",
   "debug",
   "debug-drives",

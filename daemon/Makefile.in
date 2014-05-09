@@ -297,47 +297,48 @@ am_guestfsd_OBJECTS = guestfsd-9p.$(OBJEXT) guestfsd-acl.$(OBJEXT) \
 	guestfsd-btrfs.$(OBJEXT) guestfsd-cap.$(OBJEXT) \
 	guestfsd-checksum.$(OBJEXT) guestfsd-cmp.$(OBJEXT) \
 	guestfsd-command.$(OBJEXT) guestfsd-compress.$(OBJEXT) \
-	guestfsd-copy.$(OBJEXT) guestfsd-cpmv.$(OBJEXT) \
-	guestfsd-dd.$(OBJEXT) guestfsd-debug.$(OBJEXT) \
-	guestfsd-devsparts.$(OBJEXT) guestfsd-df.$(OBJEXT) \
-	guestfsd-dir.$(OBJEXT) guestfsd-dmesg.$(OBJEXT) \
-	guestfsd-dropcaches.$(OBJEXT) guestfsd-du.$(OBJEXT) \
-	guestfsd-echo-daemon.$(OBJEXT) guestfsd-ext2.$(OBJEXT) \
-	guestfsd-fallocate.$(OBJEXT) guestfsd-file.$(OBJEXT) \
-	guestfsd-findfs.$(OBJEXT) guestfsd-fill.$(OBJEXT) \
-	guestfsd-find.$(OBJEXT) guestfsd-fsck.$(OBJEXT) \
-	guestfsd-fstrim.$(OBJEXT) guestfsd-glob.$(OBJEXT) \
-	guestfsd-grep.$(OBJEXT) guestfsd-grub.$(OBJEXT) \
-	guestfsd-guestfsd.$(OBJEXT) guestfsd-headtail.$(OBJEXT) \
-	guestfsd-hexdump.$(OBJEXT) guestfsd-hotplug.$(OBJEXT) \
-	guestfsd-hivex.$(OBJEXT) guestfsd-htonl.$(OBJEXT) \
-	guestfsd-initrd.$(OBJEXT) guestfsd-inotify.$(OBJEXT) \
-	guestfsd-internal.$(OBJEXT) guestfsd-is.$(OBJEXT) \
-	guestfsd-isoinfo.$(OBJEXT) guestfsd-journal.$(OBJEXT) \
-	guestfsd-labels.$(OBJEXT) guestfsd-ldm.$(OBJEXT) \
-	guestfsd-link.$(OBJEXT) guestfsd-ls.$(OBJEXT) \
-	guestfsd-luks.$(OBJEXT) guestfsd-lvm.$(OBJEXT) \
-	guestfsd-lvm-filter.$(OBJEXT) guestfsd-md.$(OBJEXT) \
-	guestfsd-mkfs.$(OBJEXT) guestfsd-mknod.$(OBJEXT) \
-	guestfsd-mktemp.$(OBJEXT) guestfsd-modprobe.$(OBJEXT) \
-	guestfsd-mount.$(OBJEXT) guestfsd-mountable.$(OBJEXT) \
-	guestfsd-names.$(OBJEXT) guestfsd-ntfs.$(OBJEXT) \
-	guestfsd-ntfsclone.$(OBJEXT) guestfsd-optgroups.$(OBJEXT) \
-	guestfsd-parted.$(OBJEXT) guestfsd-pingdaemon.$(OBJEXT) \
-	guestfsd-proto.$(OBJEXT) guestfsd-readdir.$(OBJEXT) \
-	guestfsd-realpath.$(OBJEXT) guestfsd-rename.$(OBJEXT) \
-	guestfsd-rsync.$(OBJEXT) guestfsd-scrub.$(OBJEXT) \
-	guestfsd-selinux.$(OBJEXT) guestfsd-sfdisk.$(OBJEXT) \
-	guestfsd-sleep.$(OBJEXT) guestfsd-stat.$(OBJEXT) \
-	guestfsd-statvfs.$(OBJEXT) guestfsd-strings.$(OBJEXT) \
-	guestfsd-stubs.$(OBJEXT) guestfsd-swap.$(OBJEXT) \
-	guestfsd-sync.$(OBJEXT) guestfsd-syslinux.$(OBJEXT) \
-	guestfsd-tar.$(OBJEXT) guestfsd-truncate.$(OBJEXT) \
-	guestfsd-umask.$(OBJEXT) guestfsd-upload.$(OBJEXT) \
-	guestfsd-utimens.$(OBJEXT) guestfsd-utsname.$(OBJEXT) \
-	guestfsd-uuids.$(OBJEXT) guestfsd-wc.$(OBJEXT) \
-	guestfsd-xattr.$(OBJEXT) guestfsd-xfs.$(OBJEXT) \
-	guestfsd-zero.$(OBJEXT) guestfsd-zerofree.$(OBJEXT)
+	guestfsd-copy.$(OBJEXT) guestfsd-cpio.$(OBJEXT) \
+	guestfsd-cpmv.$(OBJEXT) guestfsd-dd.$(OBJEXT) \
+	guestfsd-debug.$(OBJEXT) guestfsd-devsparts.$(OBJEXT) \
+	guestfsd-df.$(OBJEXT) guestfsd-dir.$(OBJEXT) \
+	guestfsd-dmesg.$(OBJEXT) guestfsd-dropcaches.$(OBJEXT) \
+	guestfsd-du.$(OBJEXT) guestfsd-echo-daemon.$(OBJEXT) \
+	guestfsd-ext2.$(OBJEXT) guestfsd-fallocate.$(OBJEXT) \
+	guestfsd-file.$(OBJEXT) guestfsd-findfs.$(OBJEXT) \
+	guestfsd-fill.$(OBJEXT) guestfsd-find.$(OBJEXT) \
+	guestfsd-fsck.$(OBJEXT) guestfsd-fstrim.$(OBJEXT) \
+	guestfsd-glob.$(OBJEXT) guestfsd-grep.$(OBJEXT) \
+	guestfsd-grub.$(OBJEXT) guestfsd-guestfsd.$(OBJEXT) \
+	guestfsd-headtail.$(OBJEXT) guestfsd-hexdump.$(OBJEXT) \
+	guestfsd-hotplug.$(OBJEXT) guestfsd-hivex.$(OBJEXT) \
+	guestfsd-htonl.$(OBJEXT) guestfsd-initrd.$(OBJEXT) \
+	guestfsd-inotify.$(OBJEXT) guestfsd-internal.$(OBJEXT) \
+	guestfsd-is.$(OBJEXT) guestfsd-isoinfo.$(OBJEXT) \
+	guestfsd-journal.$(OBJEXT) guestfsd-labels.$(OBJEXT) \
+	guestfsd-ldm.$(OBJEXT) guestfsd-link.$(OBJEXT) \
+	guestfsd-ls.$(OBJEXT) guestfsd-luks.$(OBJEXT) \
+	guestfsd-lvm.$(OBJEXT) guestfsd-lvm-filter.$(OBJEXT) \
+	guestfsd-md.$(OBJEXT) guestfsd-mkfs.$(OBJEXT) \
+	guestfsd-mknod.$(OBJEXT) guestfsd-mktemp.$(OBJEXT) \
+	guestfsd-modprobe.$(OBJEXT) guestfsd-mount.$(OBJEXT) \
+	guestfsd-mountable.$(OBJEXT) guestfsd-names.$(OBJEXT) \
+	guestfsd-ntfs.$(OBJEXT) guestfsd-ntfsclone.$(OBJEXT) \
+	guestfsd-optgroups.$(OBJEXT) guestfsd-parted.$(OBJEXT) \
+	guestfsd-pingdaemon.$(OBJEXT) guestfsd-proto.$(OBJEXT) \
+	guestfsd-readdir.$(OBJEXT) guestfsd-realpath.$(OBJEXT) \
+	guestfsd-rename.$(OBJEXT) guestfsd-rsync.$(OBJEXT) \
+	guestfsd-scrub.$(OBJEXT) guestfsd-selinux.$(OBJEXT) \
+	guestfsd-sfdisk.$(OBJEXT) guestfsd-sleep.$(OBJEXT) \
+	guestfsd-stat.$(OBJEXT) guestfsd-statvfs.$(OBJEXT) \
+	guestfsd-strings.$(OBJEXT) guestfsd-stubs.$(OBJEXT) \
+	guestfsd-swap.$(OBJEXT) guestfsd-sync.$(OBJEXT) \
+	guestfsd-syslinux.$(OBJEXT) guestfsd-tar.$(OBJEXT) \
+	guestfsd-truncate.$(OBJEXT) guestfsd-umask.$(OBJEXT) \
+	guestfsd-upload.$(OBJEXT) guestfsd-utimens.$(OBJEXT) \
+	guestfsd-utsname.$(OBJEXT) guestfsd-uuids.$(OBJEXT) \
+	guestfsd-wc.$(OBJEXT) guestfsd-xattr.$(OBJEXT) \
+	guestfsd-xfs.$(OBJEXT) guestfsd-zero.$(OBJEXT) \
+	guestfsd-zerofree.$(OBJEXT)
 guestfsd_OBJECTS = $(am_guestfsd_OBJECTS)
 am__DEPENDENCIES_1 =
 guestfsd_DEPENDENCIES = liberrnostring.a libprotocol.a \
@@ -1582,6 +1583,7 @@ guestfsd_SOURCES = \
 	command.c \
 	compress.c \
 	copy.c \
+	cpio.c \
 	cpmv.c \
 	daemon.h \
 	dd.c \
@@ -1838,6 +1840,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-command.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-compress.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-copy.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-cpio.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-cpmv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-dd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-debug.Po@am__quote@
@@ -2195,6 +2198,20 @@ guestfsd-copy.obj: copy.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='copy.c' object='guestfsd-copy.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-copy.obj `if test -f 'copy.c'; then $(CYGPATH_W) 'copy.c'; else $(CYGPATH_W) '$(srcdir)/copy.c'; fi`
+
+guestfsd-cpio.o: cpio.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-cpio.o -MD -MP -MF $(DEPDIR)/guestfsd-cpio.Tpo -c -o guestfsd-cpio.o `test -f 'cpio.c' || echo '$(srcdir)/'`cpio.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-cpio.Tpo $(DEPDIR)/guestfsd-cpio.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cpio.c' object='guestfsd-cpio.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-cpio.o `test -f 'cpio.c' || echo '$(srcdir)/'`cpio.c
+
+guestfsd-cpio.obj: cpio.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-cpio.obj -MD -MP -MF $(DEPDIR)/guestfsd-cpio.Tpo -c -o guestfsd-cpio.obj `if test -f 'cpio.c'; then $(CYGPATH_W) 'cpio.c'; else $(CYGPATH_W) '$(srcdir)/cpio.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-cpio.Tpo $(DEPDIR)/guestfsd-cpio.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cpio.c' object='guestfsd-cpio.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-cpio.obj `if test -f 'cpio.c'; then $(CYGPATH_W) 'cpio.c'; else $(CYGPATH_W) '$(srcdir)/cpio.c'; fi`
 
 guestfsd-cpmv.o: cpmv.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-cpmv.o -MD -MP -MF $(DEPDIR)/guestfsd-cpmv.Tpo -c -o guestfsd-cpmv.o `test -f 'cpmv.c' || echo '$(srcdir)/'`cpmv.c

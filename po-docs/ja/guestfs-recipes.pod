@@ -148,7 +148,7 @@ L<virt-format(1)> ツールは直接これを実行できます。
 
 L<https://rwmj.wordpress.com/2010/09/08/new-guestfish-n-options-in-1-5-9/#content>
 
-L<virt-builder(1)> can create "empty" guests.
+L<virt-builder(1)> can create minimal guests.
 
 =head1 ファイルを削除します (または、他の簡単なファイル操作)
 

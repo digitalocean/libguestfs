@@ -366,6 +366,7 @@ am__objects_1 = libguestfs_gobject_1_0_la-session.lo \
 	libguestfs_gobject_1_0_la-optargs-copy_device_to_file.lo \
 	libguestfs_gobject_1_0_la-optargs-copy_file_to_device.lo \
 	libguestfs_gobject_1_0_la-optargs-copy_file_to_file.lo \
+	libguestfs_gobject_1_0_la-optargs-cpio_out.lo \
 	libguestfs_gobject_1_0_la-optargs-disk_create.lo \
 	libguestfs_gobject_1_0_la-optargs-e2fsck.lo \
 	libguestfs_gobject_1_0_la-optargs-fstrim.lo \
@@ -1658,6 +1659,7 @@ guestfs_gobject_headers = \
   include/guestfs-gobject/optargs-copy_device_to_file.h \
   include/guestfs-gobject/optargs-copy_file_to_device.h \
   include/guestfs-gobject/optargs-copy_file_to_file.h \
+  include/guestfs-gobject/optargs-cpio_out.h \
   include/guestfs-gobject/optargs-disk_create.h \
   include/guestfs-gobject/optargs-e2fsck.h \
   include/guestfs-gobject/optargs-fstrim.h \
@@ -1734,6 +1736,7 @@ guestfs_gobject_sources = \
   src/optargs-copy_device_to_file.c \
   src/optargs-copy_file_to_device.c \
   src/optargs-copy_file_to_file.c \
+  src/optargs-cpio_out.c \
   src/optargs-disk_create.c \
   src/optargs-e2fsck.c \
   src/optargs-fstrim.c \
@@ -1920,6 +1923,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-copy_device_to_file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-copy_file_to_device.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-copy_file_to_file.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-cpio_out.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-disk_create.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-e2fsck.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-fstrim.Plo@am__quote@
@@ -2241,6 +2245,13 @@ libguestfs_gobject_1_0_la-optargs-copy_file_to_file.lo: src/optargs-copy_file_to
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-copy_file_to_file.c' object='libguestfs_gobject_1_0_la-optargs-copy_file_to_file.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-copy_file_to_file.lo `test -f 'src/optargs-copy_file_to_file.c' || echo '$(srcdir)/'`src/optargs-copy_file_to_file.c
+
+libguestfs_gobject_1_0_la-optargs-cpio_out.lo: src/optargs-cpio_out.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-cpio_out.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-cpio_out.Tpo -c -o libguestfs_gobject_1_0_la-optargs-cpio_out.lo `test -f 'src/optargs-cpio_out.c' || echo '$(srcdir)/'`src/optargs-cpio_out.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-cpio_out.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-cpio_out.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-cpio_out.c' object='libguestfs_gobject_1_0_la-optargs-cpio_out.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-cpio_out.lo `test -f 'src/optargs-cpio_out.c' || echo '$(srcdir)/'`src/optargs-cpio_out.c
 
 libguestfs_gobject_1_0_la-optargs-disk_create.lo: src/optargs-disk_create.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-disk_create.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-disk_create.Tpo -c -o libguestfs_gobject_1_0_la-optargs-disk_create.lo `test -f 'src/optargs-disk_create.c' || echo '$(srcdir)/'`src/optargs-disk_create.c

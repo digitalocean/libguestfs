@@ -2136,6 +2136,40 @@ run_cp_r (ETERM *message)
 }
 
 static ETERM *
+run_cpio_out (ETERM *message)
+{
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *cpiofile = erl_iolist_to_string (ARG (1));
+
+  struct guestfs_cpio_out_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_cpio_out_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (2);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "format")) {
+      optargs_s.bitmask |= GUESTFS_CPIO_OUT_FORMAT_BITMASK;
+      optargs_s.format = erl_iolist_to_string (hd_value);
+    }
+    else
+      return unknown_optarg ("cpio_out", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_cpio_out_argv (g, directory, cpiofile, optargs);
+  if ((optargs_s.bitmask & GUESTFS_CPIO_OUT_FORMAT_BITMASK))
+    free ((char *) optargs_s.format);
+  if (r == -1)
+    return make_error ("cpio_out");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_dd (ETERM *message)
 {
   CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
@@ -10561,6 +10595,8 @@ dispatch (ETERM *message)
     return run_cp_a (message);
   else if (atom_equals (fun, "cp_r"))
     return run_cp_r (message);
+  else if (atom_equals (fun, "cpio_out"))
+    return run_cpio_out (message);
   else if (atom_equals (fun, "dd"))
     return run_dd (message);
   else if (atom_equals (fun, "debug"))

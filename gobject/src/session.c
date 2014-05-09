@@ -4379,6 +4379,82 @@ guestfs_session_cp_r (GuestfsSession *session, const gchar *src, const gchar *de
 }
 
 /**
+ * guestfs_session_cpio_out:
+ * @session: (transfer none): A GuestfsSession object
+ * @directory: (transfer none) (type utf8):
+ * @cpiofile: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsCpioOut containing optional arguments
+ * @cancellable: A GCancellable object
+ * @err: A GError object to receive any generated errors
+ *
+ * pack directory into cpio file
+ *
+ * This command packs the contents of @directory and downloads it to local
+ * file @cpiofile.
+ * 
+ * The optional @format parameter can be used to select the format. Only
+ * the following formats are currently permitted:
+ * 
+ * @newc
+ * New (SVR4) portable format. This format happens to be compatible
+ * with the cpio-like format used by the Linux kernel for initramfs.
+ * 
+ * This is the default format.
+ * 
+ * @crc
+ * New (SVR4) portable format with a checksum.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_cpio_out (GuestfsSession *session, const gchar *directory, const gchar *cpiofile, GuestfsCpioOut *optargs, GCancellable *cancellable, GError **err)
+{
+  /* Check we haven't already been cancelled */
+  if (g_cancellable_set_error_if_cancelled (cancellable, err))
+    return FALSE;
+
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "cpio_out");
+    return FALSE;
+  }
+
+  struct guestfs_cpio_out_argv argv;
+  struct guestfs_cpio_out_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue format_v = {0, };
+    g_value_init (&format_v, G_TYPE_STRING);
+    g_object_get_property (G_OBJECT (optargs), "format", &format_v);
+    const gchar *format = g_value_get_string (&format_v);
+    if (format != NULL) {
+      argv.bitmask |= GUESTFS_CPIO_OUT_FORMAT_BITMASK;
+      argv.format = format;
+    }
+    argvp = &argv;
+  }
+  gulong id = 0;
+  if (cancellable) {
+    id = g_cancellable_connect (cancellable,
+                               G_CALLBACK (cancelled_handler),
+                               g, NULL);
+  }
+
+  int ret = guestfs_cpio_out_argv (g, directory, cpiofile, argvp);
+  g_cancellable_disconnect (cancellable, id);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_dd:
  * @session: (transfer none): A GuestfsSession object
  * @src: (transfer none) (type filename):
@@ -8936,6 +9012,9 @@ guestfs_session_inspect_get_arch (GuestfsSession *session, const gchar *root, GE
  * 
  * "opensuse"
  * OpenSUSE.
+ * 
+ * "oraclelinux"
+ * Oracle Linux.
  * 
  * "pardus"
  * Pardus.

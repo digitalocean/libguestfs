@@ -1,3 +1,91 @@
+commit 5e574bb3049dac4a8f1f9b4a1cccbbbc3c15dc9e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed May 7 14:42:03 2014 +0100
+
+    Version 1.27.9.
+
+commit a651990fb12e2cc972e8a984378ec3d57bdce27c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed May 7 15:45:07 2014 +0200
+
+    test-charset-fidelity: allow to skip testing specific FSes
+    
+    Allow to skip testing the filesystem "foo" if the environment variable
+    SKIP_TEST_CHARSET_FIDELITY_foo=1 is set. This way it possible to not
+    test one or more filesystems without disabling the test altogether.
+
+commit 3633109ff35f1d0f6bc72ed129911db6c4ae5c8e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 30 18:10:32 2014 +0200
+
+    Fix handling of passwords in URLs
+    
+    So far, passwords in URLs (eg http://user:password@host..) have been
+    handled as part of the username, and thus passing
+      add-drive path username:username:password ...
+    instead of
+      add-drive path username:username secret:password ...
+    
+    Fix the parsing of URLs to handle passwords as separate elements,
+    properly passing it as "secret" parameter for add-drive, and properly
+    readd it when building URLs in the direct backend.
+    
+    Furthmore, to keep curl- and ssh-based qemu drivers working with
+    authenticated resources, make sure they can accept secrets.
+    
+    Reported in comment #1 of RHBZ#1092583.
+
+commit c24ce0811df8a3f1bf1cff5ccd3e89b948f696d0
+Author: Nikos Skalkotos <skalkoto@grnet.gr>
+Date:   Mon May 5 17:24:04 2014 +0300
+
+    inspect: Add support for Oracle Linux
+    
+    Prior to this patch the library would return "rhel" instead of
+    "oraclelinux" for Oracle Linux OSes.
+
+commit 9e829363932c0db12f38e64763348f65380752f9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 3 16:47:48 2014 +0100
+
+    New API: cpio-out converts a directory to cpio format.
+    
+    This is useful for generating Linux initramfses from other types of
+    filesystems.  For example:
+    
+     guestfish --ro -a disk.img -i cpio-out / - | gzip -9 > initrd.img
+
+commit c67e16734ce41b1ec8ec146531bcec20573fec7f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed May 7 09:04:23 2014 +0100
+
+    sparsify: Add a note about qcow2 internal snapshots not being copied (RHBZ#1094746).
+
+commit 2bd75a1ea1e606780915eeba5048f4bf8af84de9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon May 5 15:54:30 2014 +0100
+
+    customize: random-seed file has moved again.
+    
+    Thanks, systemd.
+
+commit 845daded5fddc70fc5e822769bc1e2a8cbead7ca
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue May 6 19:22:14 2014 +0200
+
+    lib: xmlParse{File,Memory} -> xmlRead{File,Memory}
+    
+    Switch from xmlParse* to xmlRead* so we can explicitly specify parsing
+    flags, including no network usage and no entity resolution.
+    The two behaviours mentioned above were not done before either, so this
+    should not introduce behaviour changes in libguestfs.
+
+commit 4dc42693f23bd38393de001e8c45f22aac9e8292
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun May 4 20:57:33 2014 +0100
+
+    guestfs-recipes: Fix language.
+
 commit be874d7f509bd0ae9098cd2ac8d060865a57891b
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri May 2 11:25:21 2014 +0100

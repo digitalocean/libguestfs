@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.418';
+$VERSION = '0.419';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -1609,6 +1609,29 @@ is useful when you don't want to preserve permissions, because
 the target filesystem does not support it (primarily when
 writing to DOS FAT filesystems).
 
+=item $g->cpio_out ($directory, $cpiofile [, format => $format]);
+
+This command packs the contents of C<directory> and downloads
+it to local file C<cpiofile>.
+
+The optional C<format> parameter can be used to select the format.
+Only the following formats are currently permitted:
+
+=over 4
+
+=item C<newc>
+
+New (SVR4) portable format.  This format happens to be compatible
+with the cpio-like format used by the Linux kernel for initramfs.
+
+This is the default format.
+
+=item C<crc>
+
+New (SVR4) portable format with a checksum.
+
+=back
+
 =item $g->dd ($src, $dest);
 
 This command copies from one source device or file C<src>
@@ -3090,6 +3113,10 @@ OpenBSD.
 =item "opensuse"
 
 OpenSUSE.
+
+=item "oraclelinux"
+
+Oracle Linux.
 
 =item "pardus"
 
@@ -8305,6 +8332,18 @@ use vars qw(%guestfs_introspection);
     ],
     name => "cp_r",
     description => "copy a file or directory recursively",
+  },
+  "cpio_out" => {
+    ret => 'void',
+    args => [
+      [ 'directory', 'string', 0 ],
+      [ 'cpiofile', 'string(filename)', 1 ],
+    ],
+    optargs => {
+      format => [ 'format', 'string', 0 ],
+    },
+    name => "cpio_out",
+    description => "pack directory into cpio file",
   },
   "dd" => {
     ret => 'void',

@@ -4369,6 +4369,58 @@ py_guestfs_cp_r (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_cpio_out (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_cpio_out_argv optargs_s;
+  struct guestfs_cpio_out_argv *optargs = &optargs_s;
+  int r;
+  const char *directory;
+  const char *cpiofile;
+  PyObject *py_format;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OssO:guestfs_cpio_out",
+                         &py_g, &directory, &cpiofile, &py_format))
+    goto out;
+  g = get_handle (py_g);
+
+  if (py_format != Py_None) {
+    optargs_s.bitmask |= GUESTFS_CPIO_OUT_FORMAT_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.format = PyString_AsString (py_format);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_format);
+    optargs_s.format = PyBytes_AS_STRING (bytes);
+#endif
+  }
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_cpio_out_argv (g, directory, cpiofile, optargs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_dd (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -22192,6 +22244,7 @@ static PyMethodDef methods[] = {
   { (char *) "cp", py_guestfs_cp, METH_VARARGS, NULL },
   { (char *) "cp_a", py_guestfs_cp_a, METH_VARARGS, NULL },
   { (char *) "cp_r", py_guestfs_cp_r, METH_VARARGS, NULL },
+  { (char *) "cpio_out", py_guestfs_cpio_out, METH_VARARGS, NULL },
   { (char *) "dd", py_guestfs_dd, METH_VARARGS, NULL },
   { (char *) "debug", py_guestfs_debug, METH_VARARGS, NULL },
   { (char *) "debug_drives", py_guestfs_debug_drives, METH_VARARGS, NULL },

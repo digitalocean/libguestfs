@@ -1503,6 +1503,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_cpio_out_argv (IntPtr h, [In] string directory, [In] string cpiofile, void *);
+
+    /// <summary>
+    /// pack directory into cpio file
+    /// </summary>
+    public void cpio_out (string directory, string cpiofile)
+    {
+      int r;
+      r = guestfs_cpio_out_argv (_handle, directory, cpiofile, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_dd (IntPtr h, [In] string src, [In] string dest);
 
     /// <summary>

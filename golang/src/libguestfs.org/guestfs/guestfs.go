@@ -2827,6 +2827,41 @@ func (g *Guestfs) Cp_r (src string, dest string) *GuestfsError {
     return nil
 }
 
+/* Struct carrying optional arguments for Cpio_out */
+type OptargsCpio_out struct {
+    /* Format field is ignored unless Format_is_set == true */
+    Format_is_set bool
+    Format string
+}
+
+/* cpio_out : pack directory into cpio file */
+func (g *Guestfs) Cpio_out (directory string, cpiofile string, optargs *OptargsCpio_out) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("cpio_out")
+    }
+
+    c_directory := C.CString (directory)
+    defer C.free (unsafe.Pointer (c_directory))
+
+    c_cpiofile := C.CString (cpiofile)
+    defer C.free (unsafe.Pointer (c_cpiofile))
+    c_optargs := C.struct_guestfs_cpio_out_argv{}
+    if optargs != nil {
+        if optargs.Format_is_set {
+            c_optargs.bitmask |= C.GUESTFS_CPIO_OUT_FORMAT_BITMASK
+            c_optargs.format = C.CString (optargs.Format)
+            defer C.free (unsafe.Pointer (c_optargs.format))
+        }
+    }
+
+    r := C.guestfs_cpio_out_argv (g.g, c_directory, c_cpiofile, &c_optargs)
+
+    if r == -1 {
+        return get_error_from_handle (g, "cpio_out")
+    }
+    return nil
+}
+
 /* dd : copy from source to destination using dd */
 func (g *Guestfs) Dd (src string, dest string) *GuestfsError {
     if g.g == nil {

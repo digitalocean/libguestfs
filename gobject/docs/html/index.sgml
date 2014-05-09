@@ -102,6 +102,7 @@
 <ANCHOR id="guestfs-session-cp" href="guestfs/GuestfsSession.html#guestfs-session-cp">
 <ANCHOR id="guestfs-session-cp-a" href="guestfs/GuestfsSession.html#guestfs-session-cp-a">
 <ANCHOR id="guestfs-session-cp-r" href="guestfs/GuestfsSession.html#guestfs-session-cp-r">
+<ANCHOR id="guestfs-session-cpio-out" href="guestfs/GuestfsSession.html#guestfs-session-cpio-out">
 <ANCHOR id="guestfs-session-dd" href="guestfs/GuestfsSession.html#guestfs-session-dd">
 <ANCHOR id="guestfs-session-debug" href="guestfs/GuestfsSession.html#guestfs-session-debug">
 <ANCHOR id="guestfs-session-debug-drives" href="guestfs/GuestfsSession.html#guestfs-session-debug-drives">
@@ -870,6 +871,17 @@
 <ANCHOR id="GuestfsCopyFileToFile--size" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--size">
 <ANCHOR id="GuestfsCopyFileToFile--sparse" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--sparse">
 <ANCHOR id="GuestfsCopyFileToFile--srcoffset" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--srcoffset">
+<ANCHOR id="GuestfsCpioOut" href="guestfs/GuestfsCpioOut.html">
+<ANCHOR id="GuestfsCpioOut.synopsis" href="guestfs/GuestfsCpioOut.html#GuestfsCpioOut.synopsis">
+<ANCHOR id="GuestfsCpioOut.object-hierarchy" href="guestfs/GuestfsCpioOut.html#GuestfsCpioOut.object-hierarchy">
+<ANCHOR id="GuestfsCpioOut.properties" href="guestfs/GuestfsCpioOut.html#GuestfsCpioOut.properties">
+<ANCHOR id="GuestfsCpioOut.description" href="guestfs/GuestfsCpioOut.html#GuestfsCpioOut.description">
+<ANCHOR id="GuestfsCpioOut.details" href="guestfs/GuestfsCpioOut.html#GuestfsCpioOut.details">
+<ANCHOR id="GuestfsCpioOut-struct" href="guestfs/GuestfsCpioOut.html#GuestfsCpioOut-struct">
+<ANCHOR id="GuestfsCpioOutClass" href="guestfs/GuestfsCpioOut.html#GuestfsCpioOutClass">
+<ANCHOR id="guestfs-cpio-out-new" href="guestfs/GuestfsCpioOut.html#guestfs-cpio-out-new">
+<ANCHOR id="GuestfsCpioOut.property-details" href="guestfs/GuestfsCpioOut.html#GuestfsCpioOut.property-details">
+<ANCHOR id="GuestfsCpioOut--format" href="guestfs/GuestfsCpioOut.html#GuestfsCpioOut--format">
 <ANCHOR id="GuestfsDiskCreate" href="guestfs/GuestfsDiskCreate.html">
 <ANCHOR id="GuestfsDiskCreate.synopsis" href="guestfs/GuestfsDiskCreate.html#GuestfsDiskCreate.synopsis">
 <ANCHOR id="GuestfsDiskCreate.object-hierarchy" href="guestfs/GuestfsDiskCreate.html#GuestfsDiskCreate.object-hierarchy">

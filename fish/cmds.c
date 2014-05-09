@@ -124,6 +124,7 @@ static int run_copy_size (const char *cmd, size_t argc, char *argv[]);
 static int run_cp (const char *cmd, size_t argc, char *argv[]);
 static int run_cp_a (const char *cmd, size_t argc, char *argv[]);
 static int run_cp_r (const char *cmd, size_t argc, char *argv[]);
+static int run_cpio_out (const char *cmd, size_t argc, char *argv[]);
 static int run_dd (const char *cmd, size_t argc, char *argv[]);
 static int run_debug (const char *cmd, size_t argc, char *argv[]);
 static int run_debug_drives (const char *cmd, size_t argc, char *argv[]);
@@ -1157,6 +1158,12 @@ struct command_entry cp_r_cmd_entry = {
   .run = run_cp_r
 };
 
+struct command_entry cpio_out_cmd_entry = {
+  .name = "cpio-out",
+  .help = "NAME\n    cpio-out - pack directory into cpio file\n\nSYNOPSIS\n     cpio-out directory cpiofile [format:..]\n\nDESCRIPTION\n    This command packs the contents of \"directory\" and downloads it to local\n    file \"cpiofile\".\n\n    The optional \"format\" parameter can be used to select the format. Only\n    the following formats are currently permitted:\n\n    \"newc\"\n        New (SVR4) portable format. This format happens to be compatible\n        with the cpio-like format used by the Linux kernel for initramfs.\n\n        This is the default format.\n\n    \"crc\"\n        New (SVR4) portable format with a checksum.\n\n",
+  .run = run_cpio_out
+};
+
 struct command_entry dd_cmd_entry = {
   .name = "dd",
   .help = "NAME\n    dd - copy from source to destination using dd\n\nSYNOPSIS\n     dd src dest\n\nDESCRIPTION\n    This command copies from one source device or file \"src\" to another\n    destination device or file \"dest\". Normally you would use this to copy\n    to or from a device or partition, for example to duplicate a filesystem.\n\n    If the destination is a device, it must be as large or larger than the\n    source file or device, otherwise the copy will fail. This command cannot\n    do partial copies (see \"copy_device_to_device\").\n\n    *This function is deprecated.* In new code, use the\n    \"copy-device-to-device\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
@@ -1813,7 +1820,7 @@ struct command_entry inspect_get_arch_cmd_entry = {
 
 struct command_entry inspect_get_distro_cmd_entry = {
   .name = "inspect-get-distro",
-  .help = "NAME\n    inspect-get-distro - get distro of inspected operating system\n\nSYNOPSIS\n     inspect-get-distro root\n\nDESCRIPTION\n    This returns the distro (distribution) of the inspected operating\n    system.\n\n    Currently defined distros are:\n\n    \"archlinux\"\n        Arch Linux.\n\n    \"buildroot\"\n        Buildroot-derived distro, but not one we specifically recognize.\n\n    \"centos\"\n        CentOS.\n\n    \"cirros\"\n        Cirros.\n\n    \"debian\"\n        Debian.\n\n    \"fedora\"\n        Fedora.\n\n    \"freedos\"\n        FreeDOS.\n\n    \"gentoo\"\n        Gentoo.\n\n    \"linuxmint\"\n        Linux Mint.\n\n    \"mageia\"\n        Mageia.\n\n    \"mandriva\"\n        Mandriva.\n\n    \"meego\"\n        MeeGo.\n\n    \"openbsd\"\n        OpenBSD.\n\n    \"opensuse\"\n        OpenSUSE.\n\n    \"pardus\"\n        Pardus.\n\n    \"redhat-based\"\n        Some Red Hat-derived distro.\n\n    \"rhel\"\n        Red Hat Enterprise Linux.\n\n    \"scientificlinux\"\n        Scientific Linux.\n\n    \"slackware\"\n        Slackware.\n\n    \"sles\"\n        SuSE Linux Enterprise Server or Desktop.\n\n    \"suse-based\"\n        Some openSuSE-derived distro.\n\n    \"ttylinux\"\n        ttylinux.\n\n    \"ubuntu\"\n        Ubuntu.\n\n    \"unknown\"\n        The distro could not be determined.\n\n    \"windows\"\n        Windows does not have distributions. This string is returned if the\n        OS type is Windows.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-distro - get distro of inspected operating system\n\nSYNOPSIS\n     inspect-get-distro root\n\nDESCRIPTION\n    This returns the distro (distribution) of the inspected operating\n    system.\n\n    Currently defined distros are:\n\n    \"archlinux\"\n        Arch Linux.\n\n    \"buildroot\"\n        Buildroot-derived distro, but not one we specifically recognize.\n\n    \"centos\"\n        CentOS.\n\n    \"cirros\"\n        Cirros.\n\n    \"debian\"\n        Debian.\n\n    \"fedora\"\n        Fedora.\n\n    \"freedos\"\n        FreeDOS.\n\n    \"gentoo\"\n        Gentoo.\n\n    \"linuxmint\"\n        Linux Mint.\n\n    \"mageia\"\n        Mageia.\n\n    \"mandriva\"\n        Mandriva.\n\n    \"meego\"\n        MeeGo.\n\n    \"openbsd\"\n        OpenBSD.\n\n    \"opensuse\"\n        OpenSUSE.\n\n    \"oraclelinux\"\n        Oracle Linux.\n\n    \"pardus\"\n        Pardus.\n\n    \"redhat-based\"\n        Some Red Hat-derived distro.\n\n    \"rhel\"\n        Red Hat Enterprise Linux.\n\n    \"scientificlinux\"\n        Scientific Linux.\n\n    \"slackware\"\n        Slackware.\n\n    \"sles\"\n        SuSE Linux Enterprise Server or Desktop.\n\n    \"suse-based\"\n        Some openSuSE-derived distro.\n\n    \"ttylinux\"\n        ttylinux.\n\n    \"ubuntu\"\n        Ubuntu.\n\n    \"unknown\"\n        The distro could not be determined.\n\n    \"windows\"\n        Windows does not have distributions. This string is returned if the\n        OS type is Windows.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_distro
 };
 
@@ -3837,6 +3844,7 @@ list_commands (void)
   printf ("%-20s %s\n", "cp", _("copy a file"));
   printf ("%-20s %s\n", "cp-a", _("copy a file or directory recursively"));
   printf ("%-20s %s\n", "cp-r", _("copy a file or directory recursively"));
+  printf ("%-20s %s\n", "cpio-out", _("pack directory into cpio file"));
   printf ("%-20s %s\n", "dd", _("copy from source to destination using dd"));
   printf ("%-20s %s\n", "debug", _("debugging and internals"));
   printf ("%-20s %s\n", "debug-drives", _("debug the drives (internal use only)"));
@@ -7929,6 +7937,59 @@ run_cp_r (const char *cmd, size_t argc, char *argv[])
  out_dest:
   free (src);
  out_src:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_cpio_out (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *directory;
+  char *cpiofile;
+  struct guestfs_cpio_out_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_cpio_out_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 3) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 3);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  directory = argv[i++];
+  cpiofile = file_out (argv[i++]);
+  if (cpiofile == NULL) goto out_cpiofile;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "format:")) {
+      optargs_s.format = &argv[i][7];
+      this_mask = GUESTFS_CPIO_OUT_FORMAT_BITMASK;
+      this_arg = "format";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_cpio_out_argv (g, directory, cpiofile, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (cpiofile);
+ out_cpiofile:
  out_noargs:
   return ret;
 }

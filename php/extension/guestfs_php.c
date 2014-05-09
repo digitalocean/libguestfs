@@ -142,6 +142,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_cp, NULL)
   PHP_FE (guestfs_cp_a, NULL)
   PHP_FE (guestfs_cp_r, NULL)
+  PHP_FE (guestfs_cpio_out, NULL)
   PHP_FE (guestfs_dd, NULL)
   PHP_FE (guestfs_debug, NULL)
   PHP_FE (guestfs_debug_drives, NULL)
@@ -4028,6 +4029,55 @@ PHP_FUNCTION (guestfs_cp_r)
 
   int r;
   r = guestfs_cp_r (g, src, dest);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_cpio_out)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *directory;
+  int directory_size;
+  char *cpiofile;
+  int cpiofile_size;
+  struct guestfs_cpio_out_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_cpio_out_argv *optargs = &optargs_s;
+  char *optargs_t_format = NULL;
+  int optargs_t_format_size = -1;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss|s",
+        &z_g, &directory, &directory_size, &cpiofile, &cpiofile_size, &optargs_t_format, &optargs_t_format_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (directory) != directory_size) {
+    fprintf (stderr, "libguestfs: cpio_out: parameter 'directory' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (strlen (cpiofile) != cpiofile_size) {
+    fprintf (stderr, "libguestfs: cpio_out: parameter 'cpiofile' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (optargs_t_format != NULL) {
+    optargs_s.format = optargs_t_format;
+    optargs_s.bitmask |= GUESTFS_CPIO_OUT_FORMAT_BITMASK;
+  }
+
+  int r;
+  r = guestfs_cpio_out_argv (g, directory, cpiofile, optargs);
 
   if (r == -1) {
     RETURN_FALSE;

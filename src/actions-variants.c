@@ -774,6 +774,59 @@ guestfs_copy_file_to_file_va (guestfs_h *g,
 }
 
 int
+guestfs_cpio_out (guestfs_h *g,
+                  const char *directory,
+                  const char *cpiofile,
+                  ...)
+{
+  va_list optargs;
+
+  int r;
+
+  va_start (optargs, cpiofile);
+  r = guestfs_cpio_out_va (g, directory, cpiofile, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_cpio_out_va (guestfs_h *g,
+                     const char *directory,
+                     const char *cpiofile,
+                     va_list args)
+{
+  struct guestfs_cpio_out_argv optargs_s;
+  struct guestfs_cpio_out_argv *optargs = &optargs_s;
+  int i;
+  uint64_t i_mask;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_CPIO_OUT_FORMAT:
+      optargs_s.format = va_arg (args, const char *);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "cpio_out", i);
+      return -1;
+    }
+
+    i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "cpio_out");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_cpio_out_argv (g, directory, cpiofile, optargs);
+}
+
+int
 guestfs_disk_create (guestfs_h *g,
                      const char *filename,
                      const char *format,

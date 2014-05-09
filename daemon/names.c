@@ -437,4 +437,5 @@ const char *function_names[] = {
   [416] = "part_get_name",
   [417] = "blkdiscard",
   [418] = "blkdiscardzeroes",
+  [419] = "cpio_out",
 };

@@ -216,6 +216,9 @@
         guestfs_cp;
         guestfs_cp_a;
         guestfs_cp_r;
+        guestfs_cpio_out;
+        guestfs_cpio_out_argv;
+        guestfs_cpio_out_va;
         guestfs_create;
         guestfs_create_flags;
         guestfs_dd;

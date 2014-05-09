@@ -1536,6 +1536,35 @@ is useful when you don't want to preserve permissions, because
 the target filesystem does not support it (primarily when
 writing to DOS FAT filesystems).
 
+=head2 cpio-out
+
+ cpio-out directory (cpiofile|-) [format:..]
+
+This command packs the contents of C<directory> and downloads
+it to local file C<cpiofile>.
+
+The optional C<format> parameter can be used to select the format.
+Only the following formats are currently permitted:
+
+=over 4
+
+=item C<newc>
+
+New (SVR4) portable format.  This format happens to be compatible
+with the cpio-like format used by the Linux kernel for initramfs.
+
+This is the default format.
+
+=item C<crc>
+
+New (SVR4) portable format with a checksum.
+
+=back
+
+Use C<-> instead of a filename to read/write from stdin/stdout.
+
+This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
+
 =head2 dd
 
  dd src dest
@@ -3232,6 +3261,10 @@ OpenBSD.
 =item "opensuse"
 
 OpenSUSE.
+
+=item "oraclelinux"
+
+Oracle Linux.
 
 =item "pardus"
 

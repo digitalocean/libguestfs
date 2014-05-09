@@ -2498,6 +2498,39 @@ guestfs_lua_cp_r (lua_State *L)
 }
 
 static int
+guestfs_lua_cpio_out (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *directory;
+  const char *cpiofile;
+  struct guestfs_cpio_out_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_cpio_out_argv *optargs = &optargs_s;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "cpio_out");
+
+  directory = luaL_checkstring (L, 2);
+  cpiofile = luaL_checkstring (L, 3);
+
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 4) == LUA_TTABLE) {
+    OPTARG_IF_SET (4, "format",
+      optargs_s.bitmask |= GUESTFS_CPIO_OUT_FORMAT_BITMASK;
+      optargs_s.format = luaL_checkstring (L, -1);
+    );
+  }
+
+  r = guestfs_cpio_out_argv (g, directory, cpiofile, optargs);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_dd (lua_State *L)
 {
   int r;
@@ -15135,6 +15168,7 @@ static luaL_Reg methods[] = {
   { "cp", guestfs_lua_cp },
   { "cp_a", guestfs_lua_cp_a },
   { "cp_r", guestfs_lua_cp_r },
+  { "cpio_out", guestfs_lua_cpio_out },
   { "dd", guestfs_lua_dd },
   { "debug", guestfs_lua_debug },
   { "debug_drives", guestfs_lua_debug_drives },

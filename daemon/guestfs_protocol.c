@@ -8118,6 +8118,18 @@ xdr_guestfs_blkdiscardzeroes_ret (XDR *xdrs, guestfs_blkdiscardzeroes_ret *objp)
 }
 
 bool_t
+xdr_guestfs_cpio_out_args (XDR *xdrs, guestfs_cpio_out_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->directory, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->format, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

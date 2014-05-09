@@ -1095,6 +1095,20 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_cpio_out ##### -->
+<para>
+
+</para>
+
+@session: 
+@directory: 
+@cpiofile: 
+@optargs: 
+@cancellable: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_dd ##### -->
 <para>
 

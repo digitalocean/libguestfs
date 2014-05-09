@@ -152,7 +152,7 @@ images.  The useful guide below explains the options available.
 
 L<https://rwmj.wordpress.com/2010/09/08/new-guestfish-n-options-in-1-5-9/#content>
 
-L<virt-builder(1)> can create "empty" guests.
+L<virt-builder(1)> can create minimal guests.
 
 =head1 Вилучення файлів (або інші прості дії з файлами)
 
