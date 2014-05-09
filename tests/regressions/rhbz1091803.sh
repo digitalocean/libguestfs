@@ -1,5 +1,6 @@
-# libguestfs virt-builder tool
-# Copyright (C) 2013 Red Hat Inc.
+#!/bin/bash -
+# libguestfs
+# Copyright (C) 2014 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,37 +16,24 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-include $(top_srcdir)/subdir-rules.mk
+# Regression test for:
+# https://bugzilla.redhat.com/show_bug.cgi?id=1091803
+# tar-in API didn't cancel the receive correctly along all error paths.
 
-EXTRA_DIST = \
-	.gitignore \
-	compress.sh \
-	test-guest.sh \
-	validate.sh \
-	README \
-	index \
-	index.asc \
-	centos.sh \
-	centos-*.xz.sig \
-	cirros-*.xz.sig \
-	debian.preseed \
-	debian.sh \
-	debian-*.xz.sig \
-	fedora.sh \
-	fedora-*.xz.sig \
-	rhel.sh \
-	rhel-*.xz.sig \
-	scientificlinux.sh \
-	scientificlinux-*.xz.sig \
-	ubuntu.preseed \
-	ubuntu.sh \
-	ubuntu-*.*.xz.sig
+set -e
+export LANG=C
 
-CLEANFILES = *~
+if [ -n "$SKIP_TEST_RHBZ1091803_SH" ]; then
+    echo "$0: test skipped because environment variable is set."
+    exit 77
+fi
 
-# Validates the index file.
-TESTS_ENVIRONMENT = $(top_builddir)/run --test
-TESTS = validate.sh
-
-check-valgrind:
-	$(MAKE) VG="$(top_builddir)/run @VG@" check
+../../fish/guestfish <<EOF
+scratch 100M
+run
+mkfs ext2 /dev/sda
+mount /dev/sda /
+-tar-in nosuchtarfile.tar /nosuchdirectory
+# Appliance has now crashed, so any subsequent command fails:
+ping-daemon
+EOF

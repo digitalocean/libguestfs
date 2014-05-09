@@ -1,3 +1,90 @@
+commit be874d7f509bd0ae9098cd2ac8d060865a57891b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 2 11:25:21 2014 +0100
+
+    Version 1.27.8.
+
+commit c2488b6ed832ce6899ed083530f4cfc68d5f2e97
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 2 11:24:45 2014 +0100
+
+    builder: Add RHEL 7 signature to EXTRA_DIST.
+    
+    This fixes commit fea553778a1f38b8c0dc3bf76a67725f0cee9094.
+
+commit 0c1a4b1781447d5b485b38e06fe3dcf486ab009d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 2 10:55:21 2014 +0100
+
+    launch: direct: Turn gdb into a backend setting.
+    
+    You can now use LIBGUESTFS_BACKEND_SETTINGS=gdb in order to enable gdb
+    debugging of the appliance.  This only works with the direct backend.
+
+commit c4a91a1866ddba3a52a2b9f2be7d66f519d958ba
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Tue Apr 29 23:18:01 2014 +0200
+
+    launch: direct: Supply -M option when testing qemu for devices.
+    
+    qemu-system-arm 2.0 as currently available through Debian/unstable
+    doesn't want to tell us anything about available devices unless we
+    specify a machine type.
+
+commit 1550a80d6c639cb1bd2a29bba8203a2b8cbb80ae
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 30 15:52:49 2014 +0200
+
+    daemon: xattr: factorize do_getxattr and do_lgetxattr
+    
+    Move all the common code to a new _getxattr function, much like done for
+    other xattrs operations.
+    
+    Mostly code motion, no functional changes.
+
+commit fea553778a1f38b8c0dc3bf76a67725f0cee9094
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 29 23:00:40 2014 +0100
+
+    builder: Add RHEL 7RC disk image.
+
+commit df5bd5741b37da9cf97d7a76ac2805557aa630db
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 29 15:43:20 2014 +0100
+
+    builder: Fix parallel builds of index-parse.o.
+    
+    When parallel builds are enabled it was possible for index-parse.c to
+    be compiled before the file had been completely written by bison.  The
+    usual symptom was that the 'do_parse' symbol was missing -- this
+    simply happened because that symbol is defined at the end of this
+    file, and the compiler compiled the file before the end part was
+    written out.  But you could also see other strange & random compile
+    failures as you would expect.
+    
+    This was tested by running this script on an 8 core server:
+    
+     cd builder/
+     export MAKEFLAGS=-j9
+     while make clean >/dev/null; make all V=1 >& /tmp/log; do echo -n . ; done
+    
+    Previously it would fail after <= 5 iterations.  With this change it
+    runs for at least 100 iterations.
+
+commit 50b207ca459a205efeec613ab04ff4c39dc6bee2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 28 09:14:34 2014 +0100
+
+    Add a regression test for RHBZ#1091803.
+
+commit efd159a063410b3d9d13814222abed231ec42f90
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 28 09:51:00 2014 +0100
+
+    tar-in: Fix places where we didn't cancel the receive (FileIn) correctly along error paths (RHBZ#1091803).
+    
+    Thanks: Bo Fan.
+
 commit 8df792d4a76eb188fcbc68b38c8bc1e757a6f6ff
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Apr 23 19:50:37 2014 +0100

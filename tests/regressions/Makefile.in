@@ -140,8 +140,8 @@ TESTS = rhbz501893$(EXEEXT) rhbz503169c13.sh rhbz557655.sh \
 	rhbz580246.sh rhbz602997.sh rhbz690819.sh rhbz789960.sh \
 	rhbz790721$(EXEEXT) rhbz811649.sh rhbz895904.sh \
 	rhbz914931$(EXEEXT) rhbz957772.sh rhbz975797.sh rhbz1001875.sh \
-	rhbz1054761.sh rhbz1055452$(EXEEXT) test-noexec-stack.pl \
-	$(am__append_1)
+	rhbz1054761.sh rhbz1055452$(EXEEXT) rhbz1091803.sh \
+	test-noexec-stack.pl $(am__append_1)
 @HAVE_LIBVIRT_TRUE@am__append_1 = rhbz1044014.sh
 check_PROGRAMS = rhbz501893$(EXEEXT) rhbz790721$(EXEEXT) \
 	rhbz914931$(EXEEXT) rhbz1055452$(EXEEXT)
@@ -1492,6 +1492,7 @@ EXTRA_DIST = \
 	rhbz1044014.in \
 	rhbz1044014.xml \
 	rhbz1054761.sh \
+	rhbz1091803.sh \
 	test-noexec-stack.pl
 
 tests_not_run = \
