@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [27])
-m4_define([libguestfs_release], [6])
+m4_define([libguestfs_release], [7])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -777,7 +777,7 @@ working.
         fi
 
         AC_MSG_CHECKING([for $QEMU version >= 1])
-        if $QEMU -version | grep -sq 'version @<:@1-@:>@'; then
+        if $QEMU -version | grep -sq 'version @<:@1-9@:>@'; then
             AC_MSG_RESULT([yes])
         else
             AC_MSG_RESULT([no])

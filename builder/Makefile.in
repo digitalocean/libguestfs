@@ -1534,6 +1534,8 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-builder \
 SOURCES = \
 	architecture.ml \
 	builder.ml \
+	cache.mli \
+	cache.ml \
 	cmdline.ml \
 	downloader.mli \
 	downloader.ml \
@@ -1607,6 +1609,7 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	paths.cmx \
 @HAVE_OCAML_TRUE@	languages.cmx \
 @HAVE_OCAML_TRUE@	get_kernel.cmx \
+@HAVE_OCAML_TRUE@	cache.cmx \
 @HAVE_OCAML_TRUE@	downloader.cmx \
 @HAVE_OCAML_TRUE@	sigchecker.cmx \
 @HAVE_OCAML_TRUE@	index_parser.cmx \

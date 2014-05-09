@@ -1,3 +1,41 @@
+commit 8df792d4a76eb188fcbc68b38c8bc1e757a6f6ff
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 23 19:50:37 2014 +0100
+
+    Version 1.27.7.
+
+commit ae891bc5f59f44d575912a087bd09d16e2d60a6b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 23 10:39:51 2014 +0200
+
+    builder: isolate all the cache handling to a new Cache module
+    
+    While there is not that much in it, it groups together the small
+    scattered-around bits handling the cache directory.
+
+commit 101d728e80cce73b882aac7af457013491d03311
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 22 22:21:57 2014 -0400
+
+    configure: Make sure grep matches qemu 2.x version string.
+
+commit 4f5dc4afdc56483a29044d9d5498b5c764bcbc6a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 22 17:58:27 2014 +0200
+
+    builder: add "[ignored]" to parsing errors for .conf files
+    
+    Parsing sources .conf files is not a fatal error (that file would just
+    be ignored), so explicitly state that such parsing errors are ignored.
+    
+    This should address the last bit in RHBZ#1077817.
+
+commit e7c746854b27754807d3a61902c25325b18d525d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 22 17:57:05 2014 +0200
+
+    builder: add an optional suffix string for INI parsing errors
+
 commit 3f4903e53ab8ccb8b199e17f65d5d4c32ed626ad
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Apr 22 14:14:12 2014 +0100
