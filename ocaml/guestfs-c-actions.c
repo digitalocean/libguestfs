@@ -3782,6 +3782,47 @@ ocaml_guestfs_cp_r (value gv, value srcv, value destv)
 }
 
 /* Automatically generated wrapper for function
+ * val cpio_out : t -> ?format:string -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_cpio_out (value gv, value formatv, value directoryv, value cpiofilev);
+
+value
+ocaml_guestfs_cpio_out (value gv, value formatv, value directoryv, value cpiofilev)
+{
+  CAMLparam4 (gv, formatv, directoryv, cpiofilev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("cpio_out");
+
+  char *directory = guestfs___safe_strdup (g, String_val (directoryv));
+  char *cpiofile = guestfs___safe_strdup (g, String_val (cpiofilev));
+  struct guestfs_cpio_out_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_cpio_out_argv *optargs = &optargs_s;
+  if (formatv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_CPIO_OUT_FORMAT_BITMASK;
+    optargs_s.format = guestfs___safe_strdup (g, String_val (Field (formatv, 0)));
+  }
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_cpio_out_argv (g, directory, cpiofile, optargs);
+  caml_leave_blocking_section ();
+  free (directory);
+  free (cpiofile);
+  if (formatv != Val_int (0))
+    free ((char *) optargs_s.format);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "cpio_out");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val dd : t -> string -> string -> unit
  */
 

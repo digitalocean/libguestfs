@@ -27,6 +27,7 @@ daemon/cmp.c
 daemon/command.c
 daemon/compress.c
 daemon/copy.c
+daemon/cpio.c
 daemon/cpmv.c
 daemon/dd.c
 daemon/debug.c
@@ -174,6 +175,7 @@ gobject/src/optargs-copy_device_to_device.c
 gobject/src/optargs-copy_device_to_file.c
 gobject/src/optargs-copy_file_to_device.c
 gobject/src/optargs-copy_file_to_file.c
+gobject/src/optargs-cpio_out.c
 gobject/src/optargs-disk_create.c
 gobject/src/optargs-e2fsck.c
 gobject/src/optargs-fstrim.c
@@ -247,6 +249,15 @@ mllib/tty-c.c
 mllib/uri-c.c
 ocaml/guestfs-c-actions.c
 ocaml/guestfs-c.c
+p2v/authors.c
+p2v/config.c
+p2v/conversion.c
+p2v/copying.c
+p2v/gui.c
+p2v/kernel.c
+p2v/main.c
+p2v/miniexpect.c
+p2v/ssh.c
 perl/Guestfs.c
 perl/bindtests.pl
 perl/lib/Sys/Guestfs.pm
@@ -318,3 +329,5 @@ src/test-utils.c
 src/tmpdirs.c
 src/utils.c
 test-tool/test-tool.c
+v2v/utils-c.c
+v2v/xml-c.c

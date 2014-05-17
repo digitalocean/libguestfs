@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsCpioOut
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsCpioOut ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsCpioOut:format ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsCpioOutClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_cpio_out_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

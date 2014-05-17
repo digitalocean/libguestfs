@@ -1,3 +1,387 @@
+commit 8e6ddbdf708282324acbe0367a5961768cb4747e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 16 11:10:06 2014 +0100
+
+    Version 1.27.11.
+
+commit a09146386ce14e8899b8816894afe83f78604480
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 16 08:45:47 2014 +0100
+
+    virt-p2v: Install the binary in libexecdir.
+    
+    Previously it wasn't installed at all.  However it makes sense to
+    install it somewhere so that it can be placed in a package (a
+    requirement if we're going to create a kickstart).  By placing it in
+    libexecdir it is hopefully clear that it should not be used.
+    
+    Note on Red Hat distros, libexecdir is usually /usr/libexec.  On
+    Debian it is usually /usr/lib/libguestfs.
+
+commit 45971ab95222204a1b8d9a311a739c453308cade
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 16 11:05:40 2014 +0200
+
+    build: bump the libsystemd-journal needed version to 196
+    
+    Bump to >= v196 the minimum version of libsystemd-journal needed for the
+    journal integration, since that version provides
+    sd_journal_get_data_threshold and sd_journal_set_data_threshold.
+
+commit 77166308fad1ca970c5cdba785db4c36e44ea971
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu May 15 23:00:46 2014 +0100
+
+    Version 1.27.10.
+
+commit 047b6d3050a8e7b07f21df62044673380c6f897a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu May 15 13:43:18 2014 +0100
+
+    Add p2v-iso directory containing scripts for building the virt-p2v ISO.
+    
+    It is not possible to have the ISO be built automatically when the
+    user runs 'make'.  The README file describes how you should go about
+    building the ISO or disk image.
+
+commit fd82bb12fd5fc8233955b8ffd4a42c3d6f8d748b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 23 21:27:52 2014 +0100
+
+    New tool: virt-p2v.
+    
+    This is a graphical standalone front-end to virt-v2v which can be run
+    on physical machines (usually linked into a ISO or PXE boot image) to
+    convert the physical machine to a virtual machine.
+
+commit 0131d6f666d93dd353c4e4092fd945861646d319
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 1 14:41:30 2014 +0100
+
+    New tool: virt-v2v.
+    
+    This is a rewrite of the original virt-v2v tool.  The original was
+    written by Matt Booth et al in Perl between 2009 and 2013.
+
+commit 40d9609b29b462b80821e9e6acc5dc5a9e4f01d8
+Author: Maros Zatko <mzatko@redhat.com>
+Date:   Thu May 15 14:44:36 2014 +0100
+
+    generator: Change link to OCaml tutorials.
+
+commit 1a1cb1ec3cdc24262db4de2f8bf12d3479096882
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon May 12 22:19:08 2014 +0100
+
+    builder: Fix RHEL 5 download location.
+    
+    This fixes commit 3bc9ba6c8447cde07db057aea76d0d72f5d833df.
+
+commit d2bfe2cb24a53f6968b1a4b54cfc7299e33cfeaf
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed May 14 17:59:31 2014 +0200
+
+    builder: respect the proxy also when downloading images (RHBZ#1096465).
+    
+    Missing from commit 87d79c2ee259ce51595ad3a924fd216f882dc477.
+
+commit b6c8afaee63e26de42695244eacbeb81b06171a9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed May 14 17:28:13 2014 +0200
+
+    builder: save the proxy for each entry
+    
+    Copy the information about the proxy of a source in all the entries of
+    that source; this way it is possible to use it later when accessing to
+    the actual image of an entry.
+
+commit 3bc9ba6c8447cde07db057aea76d0d72f5d833df
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 10 17:18:39 2014 +0100
+
+    builder: Fix RHEL script for RHEL 5.
+    
+    Root partition is on /dev/sda2:
+    
+    $ virt-filesystems -a rhel-5.10 --all --long -h
+    Name       Type        VFS   Label      MBR  Size  Parent
+    /dev/sda1  filesystem  ext2  /boot      -    510M  -
+    /dev/sda2  filesystem  ext4  /          -    4.5G  -
+    /dev/sda3  filesystem  swap  SWAP-hda3  -    1.0G  -
+    /dev/sda1  partition   -     -          83   510M  /dev/sda
+    /dev/sda2  partition   -     -          83   4.5G  /dev/sda
+    /dev/sda3  partition   -     -          82   1.0G  /dev/sda
+    /dev/sda   device      -     -          -    6.0G  -
+    
+    It would be better if we could mount by label in guestfish ...
+    
+    There is another problem with RHEL 5 guests in that the
+    yum URL is slightly wrong.
+
+commit 75022489c81242a6717e579ff6c5f8dc8ec6cbf6
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Fri May 9 11:14:55 2014 +0200
+
+    appliance: update Debian-specific package list
+
+commit 944a601020aeb4acc0646958aac7b65d2a3ed2e6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 10 12:11:11 2014 +0100
+
+    builder: Add Ubuntu 14.04 disk image.
+    
+    Also remove the Ubuntu 13.10 image, since it's not an LTS image.
+
+commit a1fcd2ca5f24d4646b40408bbbaffb74fb20d9e6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 10 10:45:15 2014 +0100
+
+    builder: ubuntu: Allow virt-install --os-variant to be specified on the command line.
+    
+    Current virt-builder in F20 does not know about --os-variant=ubuntutrusty
+    so to build that you can now do:
+    
+      ./ubuntu.sh 14.04 trusty ubuntusaucy
+
+commit c7888ac61846aa1d21f0ff5dd19b046590b83072
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 9 15:06:50 2014 +0200
+
+    configure: always add the extra warnings
+    
+    Get rid of --enable-gcc-warnings and just add all the warnings in any
+    case; they are tested anyway, so only warnings supported by the compiler
+    will be used.
+    
+    Regarding -Werror, add a new --enable-werror which enables its use.
+
+commit a880bc1eb00909e64093f06a4373942a9b264616
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 9 12:20:33 2014 +0200
+
+    tests/syslinux: add new syslinux 6+ path of mbr.bin
+    
+    Reported in https://bugs.debian.org/746748.
+
+commit f46d53be18f586daa6e3e8ed4975da26c940b203
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 9 12:19:47 2014 +0200
+
+    tests/syslinux: factorize search for mbr.bin
+
+commit 5e574bb3049dac4a8f1f9b4a1cccbbbc3c15dc9e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed May 7 14:42:03 2014 +0100
+
+    Version 1.27.9.
+
+commit a651990fb12e2cc972e8a984378ec3d57bdce27c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed May 7 15:45:07 2014 +0200
+
+    test-charset-fidelity: allow to skip testing specific FSes
+    
+    Allow to skip testing the filesystem "foo" if the environment variable
+    SKIP_TEST_CHARSET_FIDELITY_foo=1 is set. This way it possible to not
+    test one or more filesystems without disabling the test altogether.
+
+commit 3633109ff35f1d0f6bc72ed129911db6c4ae5c8e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 30 18:10:32 2014 +0200
+
+    Fix handling of passwords in URLs
+    
+    So far, passwords in URLs (eg http://user:password@host..) have been
+    handled as part of the username, and thus passing
+      add-drive path username:username:password ...
+    instead of
+      add-drive path username:username secret:password ...
+    
+    Fix the parsing of URLs to handle passwords as separate elements,
+    properly passing it as "secret" parameter for add-drive, and properly
+    readd it when building URLs in the direct backend.
+    
+    Furthmore, to keep curl- and ssh-based qemu drivers working with
+    authenticated resources, make sure they can accept secrets.
+    
+    Reported in comment #1 of RHBZ#1092583.
+
+commit c24ce0811df8a3f1bf1cff5ccd3e89b948f696d0
+Author: Nikos Skalkotos <skalkoto@grnet.gr>
+Date:   Mon May 5 17:24:04 2014 +0300
+
+    inspect: Add support for Oracle Linux
+    
+    Prior to this patch the library would return "rhel" instead of
+    "oraclelinux" for Oracle Linux OSes.
+
+commit 9e829363932c0db12f38e64763348f65380752f9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 3 16:47:48 2014 +0100
+
+    New API: cpio-out converts a directory to cpio format.
+    
+    This is useful for generating Linux initramfses from other types of
+    filesystems.  For example:
+    
+     guestfish --ro -a disk.img -i cpio-out / - | gzip -9 > initrd.img
+
+commit c67e16734ce41b1ec8ec146531bcec20573fec7f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed May 7 09:04:23 2014 +0100
+
+    sparsify: Add a note about qcow2 internal snapshots not being copied (RHBZ#1094746).
+
+commit 2bd75a1ea1e606780915eeba5048f4bf8af84de9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon May 5 15:54:30 2014 +0100
+
+    customize: random-seed file has moved again.
+    
+    Thanks, systemd.
+
+commit 845daded5fddc70fc5e822769bc1e2a8cbead7ca
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue May 6 19:22:14 2014 +0200
+
+    lib: xmlParse{File,Memory} -> xmlRead{File,Memory}
+    
+    Switch from xmlParse* to xmlRead* so we can explicitly specify parsing
+    flags, including no network usage and no entity resolution.
+    The two behaviours mentioned above were not done before either, so this
+    should not introduce behaviour changes in libguestfs.
+
+commit 4dc42693f23bd38393de001e8c45f22aac9e8292
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun May 4 20:57:33 2014 +0100
+
+    guestfs-recipes: Fix language.
+
+commit be874d7f509bd0ae9098cd2ac8d060865a57891b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 2 11:25:21 2014 +0100
+
+    Version 1.27.8.
+
+commit c2488b6ed832ce6899ed083530f4cfc68d5f2e97
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 2 11:24:45 2014 +0100
+
+    builder: Add RHEL 7 signature to EXTRA_DIST.
+    
+    This fixes commit fea553778a1f38b8c0dc3bf76a67725f0cee9094.
+
+commit 0c1a4b1781447d5b485b38e06fe3dcf486ab009d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 2 10:55:21 2014 +0100
+
+    launch: direct: Turn gdb into a backend setting.
+    
+    You can now use LIBGUESTFS_BACKEND_SETTINGS=gdb in order to enable gdb
+    debugging of the appliance.  This only works with the direct backend.
+
+commit c4a91a1866ddba3a52a2b9f2be7d66f519d958ba
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Tue Apr 29 23:18:01 2014 +0200
+
+    launch: direct: Supply -M option when testing qemu for devices.
+    
+    qemu-system-arm 2.0 as currently available through Debian/unstable
+    doesn't want to tell us anything about available devices unless we
+    specify a machine type.
+
+commit 1550a80d6c639cb1bd2a29bba8203a2b8cbb80ae
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 30 15:52:49 2014 +0200
+
+    daemon: xattr: factorize do_getxattr and do_lgetxattr
+    
+    Move all the common code to a new _getxattr function, much like done for
+    other xattrs operations.
+    
+    Mostly code motion, no functional changes.
+
+commit fea553778a1f38b8c0dc3bf76a67725f0cee9094
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 29 23:00:40 2014 +0100
+
+    builder: Add RHEL 7RC disk image.
+
+commit df5bd5741b37da9cf97d7a76ac2805557aa630db
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 29 15:43:20 2014 +0100
+
+    builder: Fix parallel builds of index-parse.o.
+    
+    When parallel builds are enabled it was possible for index-parse.c to
+    be compiled before the file had been completely written by bison.  The
+    usual symptom was that the 'do_parse' symbol was missing -- this
+    simply happened because that symbol is defined at the end of this
+    file, and the compiler compiled the file before the end part was
+    written out.  But you could also see other strange & random compile
+    failures as you would expect.
+    
+    This was tested by running this script on an 8 core server:
+    
+     cd builder/
+     export MAKEFLAGS=-j9
+     while make clean >/dev/null; make all V=1 >& /tmp/log; do echo -n . ; done
+    
+    Previously it would fail after <= 5 iterations.  With this change it
+    runs for at least 100 iterations.
+
+commit 50b207ca459a205efeec613ab04ff4c39dc6bee2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 28 09:14:34 2014 +0100
+
+    Add a regression test for RHBZ#1091803.
+
+commit efd159a063410b3d9d13814222abed231ec42f90
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 28 09:51:00 2014 +0100
+
+    tar-in: Fix places where we didn't cancel the receive (FileIn) correctly along error paths (RHBZ#1091803).
+    
+    Thanks: Bo Fan.
+
+commit 8df792d4a76eb188fcbc68b38c8bc1e757a6f6ff
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 23 19:50:37 2014 +0100
+
+    Version 1.27.7.
+
+commit ae891bc5f59f44d575912a087bd09d16e2d60a6b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 23 10:39:51 2014 +0200
+
+    builder: isolate all the cache handling to a new Cache module
+    
+    While there is not that much in it, it groups together the small
+    scattered-around bits handling the cache directory.
+
+commit 101d728e80cce73b882aac7af457013491d03311
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 22 22:21:57 2014 -0400
+
+    configure: Make sure grep matches qemu 2.x version string.
+
+commit 4f5dc4afdc56483a29044d9d5498b5c764bcbc6a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 22 17:58:27 2014 +0200
+
+    builder: add "[ignored]" to parsing errors for .conf files
+    
+    Parsing sources .conf files is not a fatal error (that file would just
+    be ignored), so explicitly state that such parsing errors are ignored.
+    
+    This should address the last bit in RHBZ#1077817.
+
+commit e7c746854b27754807d3a61902c25325b18d525d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 22 17:57:05 2014 +0200
+
+    builder: add an optional suffix string for INI parsing errors
+
 commit 3f4903e53ab8ccb8b199e17f65d5d4c32ed626ad
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Apr 22 14:14:12 2014 +0100

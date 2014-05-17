@@ -186,6 +186,7 @@
 #define GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK (UINT64_C(1)<<2)
 #define GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK (UINT64_C(1)<<3)
+#define GUESTFS_CPIO_OUT_FORMAT_BITMASK (UINT64_C(1)<<0)
 extern int do_mount (const mountable_t *mountable, const char *mountpoint);
 extern int do_sync (void);
 extern int do_touch (const char *path);
@@ -597,5 +598,6 @@ extern int do_copy_attributes (const char *src, const char *dest, int all, int m
 extern char *do_part_get_name (const char *device, int partnum);
 extern int do_blkdiscard (const char *device);
 extern int do_blkdiscardzeroes (const char *device);
+extern int do_cpio_out (const char *directory, const char *format);
 
 #endif /* GUESTFSD_ACTIONS_H */

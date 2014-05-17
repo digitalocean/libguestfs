@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [27])
-m4_define([libguestfs_release], [6])
+m4_define([libguestfs_release], [11])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -118,6 +118,9 @@ gl_INIT
 AC_PROG_LIBTOOL
 AC_PROG_LN_S
 
+dnl Define the host CPU architecture (defines 'host_cpu')
+AC_CANONICAL_HOST
+
 # Define $(SED).
 m4_ifdef([AC_PROG_SED],[
     AC_PROG_SED
@@ -131,80 +134,80 @@ AC_PROG_CC_STDC
 AC_PROG_INSTALL
 AC_PROG_CPP
 
-AC_ARG_ENABLE([gcc-warnings],
-    [AS_HELP_STRING([--enable-gcc-warnings],
-                    [turn on lots of GCC warnings (for developers)])],
+AC_ARG_ENABLE([werror],
+    [AS_HELP_STRING([--enable-werror],
+                    [turn GCC warnings into errors (for developers)])],
     [case $enableval in
      yes|no) ;;
-     *)      AC_MSG_ERROR([bad value $enableval for gcc-warnings option]) ;;
+     *)      AC_MSG_ERROR([bad value $enableval for werror option]) ;;
      esac
-     gl_gcc_warnings=$enableval],
-    [gl_gcc_warnings=no]
+     gl_gcc_werror=$enableval],
+    [gl_gcc_werror=no]
 )
 
-if test "$gl_gcc_warnings" = yes; then
+if test "$gl_gcc_werror" = yes; then
     gl_WARN_ADD([-Werror], [WERROR_CFLAGS])
     AC_SUBST([WERROR_CFLAGS])
+fi
 
-    # This, $nw, is the list of warnings we disable.
-    nw=
-    nw="$nw -Waggregate-return"      # anachronistic
-    nw="$nw -Wc++-compat"            # We don't care about C++ compilers
-    nw="$nw -Wundef"                 # Warns on '#if GNULIB_FOO' etc in gnulib
-    nw="$nw -Wtraditional"           # Warns on #elif which we use often
-    nw="$nw -Wcast-qual"             # Too many warnings for now
-    nw="$nw -Wconversion"            # Too many warnings for now
-    nw="$nw -Wsystem-headers"        # Don't let system headers trigger warnings
-    nw="$nw -Wsign-conversion"       # Not an error
-    nw="$nw -Wtraditional-conversion" # Don't care about pre-ANSI compilers
-    nw="$nw -Wpadded"                # Our structs are not padded
-    nw="$nw -Wvla"                   # two warnings in mount.c
-    # things I might fix soon:
-    nw="$nw -Wmissing-format-attribute" # daemon.h's asprintf_nowarn
-    nw="$nw -Winline"                # daemon.h's asprintf_nowarn
-    nw="$nw -Wshadow"                # numerous, plus we're not unanimous
-    nw="$nw -Wunsafe-loop-optimizations" # just a warning that an optimization
+dnl This, $nw, is the list of warnings we disable.
+nw=
+nw="$nw -Waggregate-return"          # anachronistic
+nw="$nw -Wc++-compat"                # We don't care about C++ compilers
+nw="$nw -Wundef"                     # Warns on '#if GNULIB_FOO' etc in gnulib
+nw="$nw -Wtraditional"               # Warns on #elif which we use often
+nw="$nw -Wcast-qual"                 # Too many warnings for now
+nw="$nw -Wconversion"                # Too many warnings for now
+nw="$nw -Wsystem-headers"            # Don't let system headers trigger warnings
+nw="$nw -Wsign-conversion"           # Not an error
+nw="$nw -Wtraditional-conversion"    # Don't care about pre-ANSI compilers
+nw="$nw -Wpadded"                    # Our structs are not padded
+nw="$nw -Wvla"                       # two warnings in mount.c
+dnl things I might fix soon:
+nw="$nw -Wmissing-format-attribute"  # daemon.h's asprintf_nowarn
+nw="$nw -Winline"                    # daemon.h's asprintf_nowarn
+nw="$nw -Wshadow"                    # numerous, plus we're not unanimous
+nw="$nw -Wunsafe-loop-optimizations" # just a warning that an optimization
                                      # was not possible, safe to ignore
-    nw="$nw -Wpacked"                # Allow attribute((packed)) on structs
-    nw="$nw -Wlong-long"             # Allow long long since it's required
+nw="$nw -Wpacked"                    # Allow attribute((packed)) on structs
+nw="$nw -Wlong-long"                 # Allow long long since it's required
                                      # by Python, Ruby and xstrtoll.
-    nw="$nw -Wsuggest-attribute=pure" # Don't suggest pure functions.
-    nw="$nw -Wsuggest-attribute=const" # Don't suggest const functions.
-    nw="$nw -Wunsuffixed-float-constants" # Don't care about these.
-    nw="$nw -Wswitch-default"        # This warning is actively dangerous.
-    nw="$nw -Woverlength-strings"    # Who cares about stupid ISO C99 limit.
+nw="$nw -Wsuggest-attribute=pure"    # Don't suggest pure functions.
+nw="$nw -Wsuggest-attribute=const"   # Don't suggest const functions.
+nw="$nw -Wunsuffixed-float-constants" # Don't care about these.
+nw="$nw -Wswitch-default"            # This warning is actively dangerous.
+nw="$nw -Woverlength-strings"        # Who cares about stupid ISO C99 limit.
 
-    gl_MANYWARN_ALL_GCC([ws])
-    gl_MANYWARN_COMPLEMENT([ws], [$ws], [$nw])
-    for w in $ws; do
-        gl_WARN_ADD([$w])
-    done
+gl_MANYWARN_ALL_GCC([ws])
+gl_MANYWARN_COMPLEMENT([ws], [$ws], [$nw])
+for w in $ws; do
+    gl_WARN_ADD([$w])
+done
 
-    # Normally we disable warnings in $nw above.  However $nw only
-    # filters out exact matching warning strings from a list inside
-    # gnulib (see m4/manywarnings.m4).  So we need to explicitly list a
-    # few disabled warnings below.
+dnl Normally we disable warnings in $nw above.  However $nw only
+dnl filters out exact matching warning strings from a list inside
+dnl gnulib (see m4/manywarnings.m4).  So we need to explicitly list a
+dnl few disabled warnings below.
 
-    # Unused parameters are not a bug.
-    gl_WARN_ADD([-Wno-unused-parameter])
+dnl Unused parameters are not a bug.
+gl_WARN_ADD([-Wno-unused-parameter])
 
-    # Missing field initializers is not a bug in C.
-    gl_WARN_ADD([-Wno-missing-field-initializers])
+dnl Missing field initializers is not a bug in C.
+gl_WARN_ADD([-Wno-missing-field-initializers])
 
-    # Display the name of the warning option with the warning.
-    gl_WARN_ADD([-fdiagnostics-show-option])
+dnl Display the name of the warning option with the warning.
+gl_WARN_ADD([-fdiagnostics-show-option])
 
-    AC_SUBST([WARN_CFLAGS])
+AC_SUBST([WARN_CFLAGS])
 
-    AC_DEFINE([lint], [1], [Define to 1 if the compiler is checking for lint.])
-    AC_DEFINE([GNULIB_PORTCHECK], [1], [Enable some gnulib portability checks.])
-    AH_VERBATIM([FORTIFY_SOURCE],[
+AC_DEFINE([lint], [1], [Define to 1 if the compiler is checking for lint.])
+AC_DEFINE([GNULIB_PORTCHECK], [1], [Enable some gnulib portability checks.])
+AH_VERBATIM([FORTIFY_SOURCE],[
 /* Enable compile-time and run-time bounds-checking, and some warnings. */
 #if __OPTIMIZE__ && (! defined (_FORTIFY_SOURCE) || _FORTIFY_SOURCE < 2)
 # undef _FORTIFY_SOURCE
 # define _FORTIFY_SOURCE 2
 #endif])
-fi
 
 AC_C_PROTOTYPES
 test "x$U" != "x" && AC_MSG_ERROR([Compiler not ANSI compliant])
@@ -777,7 +780,7 @@ working.
         fi
 
         AC_MSG_CHECKING([for $QEMU version >= 1])
-        if $QEMU -version | grep -sq 'version @<:@1-@:>@'; then
+        if $QEMU -version | grep -sq 'version @<:@1-9@:>@'; then
             AC_MSG_RESULT([yes])
         else
             AC_MSG_RESULT([no])
@@ -933,6 +936,16 @@ PKG_CHECK_MODULES([LIBCONFIG], [libconfig],[
     [AC_MSG_WARN([libconfig not found, some features will be disabled])])
 AM_CONDITIONAL([HAVE_LIBCONFIG],[test "x$LIBCONFIG_LIBS" != "x"])
 
+dnl Check for gtk2 library, used by virt-p2v.
+PKG_CHECK_MODULES([GTK2], [gtk+-2.0], [
+    AC_SUBST([GTK2_CFLAGS])
+    AC_SUBST([GTK2_LIBS])
+],
+    [AC_MSG_WARN([gtk2 not found, virt-p2v will be disabled])])
+
+dnl Can we build virt-p2v?
+AM_CONDITIONAL([HAVE_P2V], [test "x$GTK2_LIBS" != "x"])
+
 dnl hivex library (highly recommended)
 dnl This used to be a part of libguestfs, but was spun off into its
 dnl own separate upstream project in libguestfs 1.0.85.
@@ -945,7 +958,7 @@ PKG_CHECK_MODULES([HIVEX], [hivex],[
 AM_CONDITIONAL([HAVE_HIVEX],[test "x$HIVEX_LIBS" != "x"])
 
 dnl systemd journal library (optional)
-PKG_CHECK_MODULES([SD_JOURNAL], [libsystemd-journal],[
+PKG_CHECK_MODULES([SD_JOURNAL], [libsystemd-journal >= 196],[
     AC_SUBST([SD_JOURNAL_CFLAGS])
     AC_SUBST([SD_JOURNAL_LIBS])
     AC_DEFINE([HAVE_SD_JOURNAL],[1],[systemd journal library found at compile time.])
@@ -1589,6 +1602,8 @@ AC_CONFIG_FILES([appliance/libguestfs-make-fixed-appliance],
                 [chmod +x,-w appliance/libguestfs-make-fixed-appliance])
 AC_CONFIG_FILES([inspector/test-xmllint.sh],
                 [chmod +x,-w inspector/test-xmllint.sh])
+AC_CONFIG_FILES([p2v-iso/virt-builder-target.sh],
+                [chmod +x,-w p2v-iso/virt-builder-target.sh])
 AC_CONFIG_FILES([php/extension/php-for-tests.sh],
                 [chmod +x,-w php/extension/php-for-tests.sh])
 AC_CONFIG_FILES([pick-guests.pl],
@@ -1599,6 +1614,8 @@ AC_CONFIG_FILES([run],
                 [chmod +x,-w run])
 AC_CONFIG_FILES([sparsify/link.sh],
                 [chmod +x,-w sparsify/link.sh])
+AC_CONFIG_FILES([v2v/link.sh],
+                [chmod +x,-w v2v/link.sh])
 
 AC_CONFIG_FILES([Makefile
                  align/Makefile
@@ -1643,6 +1660,8 @@ AC_CONFIG_FILES([Makefile
                  ocaml/META
                  ocaml/Makefile
                  ocaml/examples/Makefile
+                 p2v/Makefile
+                 p2v-iso/Makefile
                  perl/Makefile
                  perl/Makefile.PL
                  perl/examples/Makefile
@@ -1702,7 +1721,8 @@ AC_CONFIG_FILES([Makefile
                  tests/tmpdirs/Makefile
                  tests/xfs/Makefile
                  tests/xml/Makefile
-                 tools/Makefile])
+                 tools/Makefile
+                 v2v/Makefile])
 AC_OUTPUT
 
 dnl Produce summary.
@@ -1720,6 +1740,8 @@ echo       "guestfish and C-based virt tools .... yes"
 echo       "FUSE filesystem ..................... $enable_fuse"
 AS_ECHO_N(["GNU gettext for i18n ................ "])
 if test "x$HAVE_GNU_GETTEXT_TRUE" = "x"; then echo "yes"; else echo "no"; fi
+AS_ECHO_N(["virt-p2v ............................ "])
+if test "x$HAVE_P2V_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 AS_ECHO_N(["OCaml bindings ...................... "])
 if test "x$HAVE_OCAML_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 AS_ECHO_N(["OCaml-based virt tools .............. "])

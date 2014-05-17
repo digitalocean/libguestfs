@@ -4479,6 +4479,74 @@ ruby_guestfs_cp_r (VALUE gv, VALUE srcv, VALUE destv)
 
 /*
  * call-seq:
+ *   g.cpio_out(directory, cpiofile, {optargs...}) -> nil
+ *
+ * pack directory into cpio file
+ *
+ * This command packs the contents of "directory" and
+ * downloads it to local file "cpiofile".
+ * 
+ * The optional "format" parameter can be used to select
+ * the format. Only the following formats are currently
+ * permitted:
+ * 
+ * "newc"
+ * New (SVR4) portable format. This format happens to
+ * be compatible with the cpio-like format used by the
+ * Linux kernel for initramfs.
+ * 
+ * This is the default format.
+ * 
+ * "crc"
+ * New (SVR4) portable format with a checksum.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_cpio_out+[http://libguestfs.org/guestfs.3.html#guestfs_cpio_out]).
+ */
+static VALUE
+ruby_guestfs_cpio_out (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "cpio_out");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE directoryv = argv[0];
+  volatile VALUE cpiofilev = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
+
+  const char *directory = StringValueCStr (directoryv);
+  const char *cpiofile = StringValueCStr (cpiofilev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_cpio_out_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_cpio_out_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("format")));
+  if (v != Qnil) {
+    optargs_s.format = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_CPIO_OUT_FORMAT_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_cpio_out_argv (g, directory, cpiofile, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
  *   g.dd(src, dest) -> nil
  *
  * copy from source to destination using dd
@@ -9271,6 +9339,9 @@ ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
  * 
  * "opensuse"
  * OpenSUSE.
+ * 
+ * "oraclelinux"
+ * Oracle Linux.
  * 
  * "pardus"
  * Pardus.
@@ -25886,6 +25957,8 @@ Init__guestfs (void)
         ruby_guestfs_cp_a, 2);
   rb_define_method (c_guestfs, "cp_r",
         ruby_guestfs_cp_r, 2);
+  rb_define_method (c_guestfs, "cpio_out",
+        ruby_guestfs_cpio_out, -1);
   rb_define_method (c_guestfs, "dd",
         ruby_guestfs_dd, 2);
   rb_define_method (c_guestfs, "debug",

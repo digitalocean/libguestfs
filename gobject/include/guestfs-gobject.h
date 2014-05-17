@@ -54,6 +54,7 @@
 #include <guestfs-gobject/optargs-copy_device_to_file.h>
 #include <guestfs-gobject/optargs-copy_file_to_device.h>
 #include <guestfs-gobject/optargs-copy_file_to_file.h>
+#include <guestfs-gobject/optargs-cpio_out.h>
 #include <guestfs-gobject/optargs-disk_create.h>
 #include <guestfs-gobject/optargs-e2fsck.h>
 #include <guestfs-gobject/optargs-fstrim.h>

@@ -3296,6 +3296,63 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * pack directory into cpio file
+   * <p>
+   * This command packs the contents of "directory" and
+   * downloads it to local file "cpiofile".
+   * <p>
+   * The optional "format" parameter can be used to select
+   * the format. Only the following formats are currently
+   * permitted:
+   * <p>
+   * "newc"
+   * New (SVR4) portable format. This format happens to
+   * be compatible with the cpio-like format used by the
+   * Linux kernel for initramfs.
+   * <p>
+   * This is the default format.
+   * <p>
+   * "crc"
+   * New (SVR4) portable format with a checksum.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void cpio_out (String directory, String cpiofile, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("cpio_out: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    String format = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("format");
+    if (_optobj != null) {
+      format = ((String) _optobj);
+      _optargs_bitmask |= 1L;
+    }
+
+    _cpio_out (g, directory, cpiofile, _optargs_bitmask, format);
+  }
+
+  public void cpio_out (String directory, String cpiofile)
+    throws LibGuestFSException
+  {
+    cpio_out (directory, cpiofile, null);
+  }
+
+  private native void _cpio_out (long g, String directory, String cpiofile, long _optargs_bitmask, String format)
+    throws LibGuestFSException;
+
+  /**
    * copy from source to destination using dd
    * <p>
    * This command copies from one source device or file "src"
@@ -6575,6 +6632,9 @@ public class GuestFS {
    * <p>
    * "opensuse"
    * OpenSUSE.
+   * <p>
+   * "oraclelinux"
+   * Oracle Linux.
    * <p>
    * "pardus"
    * Pardus.

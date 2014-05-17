@@ -1703,6 +1703,28 @@ class GuestFS(object):
         r = libguestfsmod.cp_r (self._o, src, dest)
         return r
 
+    def cpio_out (self, directory, cpiofile, format=None):
+        """This command packs the contents of "directory" and
+        downloads it to local file "cpiofile".
+        
+        The optional "format" parameter can be used to select
+        the format. Only the following formats are currently
+        permitted:
+        
+        "newc"
+        New (SVR4) portable format. This format happens to
+        be compatible with the cpio-like format used by the
+        Linux kernel for initramfs.
+        
+        This is the default format.
+        
+        "crc"
+        New (SVR4) portable format with a checksum.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.cpio_out (self._o, directory, cpiofile, format)
+        return r
+
     def dd (self, src, dest):
         """This command copies from one source device or file "src"
         to another destination device or file "dest". Normally
@@ -3498,6 +3520,9 @@ class GuestFS(object):
         
         "opensuse"
         OpenSUSE.
+        
+        "oraclelinux"
+        Oracle Linux.
         
         "pardus"
         Pardus.

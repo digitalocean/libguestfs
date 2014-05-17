@@ -2413,6 +2413,67 @@ not support it (primarily when writing to DOS FAT filesystems).
 
 (Додано у 1.21.38)
 
+=head2 guestfs_cpio_out
+
+ int
+ guestfs_cpio_out (guestfs_h *g,
+                   const char *directory,
+                   const char *cpiofile,
+                   ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_CPIO_OUT_FORMAT, const char *format,
+
+This command packs the contents of C<directory> and downloads it to local
+file C<cpiofile>.
+
+The optional C<format> parameter can be used to select the format.  Only the
+following formats are currently permitted:
+
+=over 4
+
+=item C<newc>
+
+New (SVR4) portable format.  This format happens to be compatible with the
+cpio-like format used by the Linux kernel for initramfs.
+
+This is the default format.
+
+=item C<crc>
+
+New (SVR4) portable format with a checksum.
+
+=back
+
+Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
+=head2 guestfs_cpio_out_va
+
+ int
+ guestfs_cpio_out_va (guestfs_h *g,
+                      const char *directory,
+                      const char *cpiofile,
+                      va_list args);
+
+This is the "va_list variant" of L</guestfs_cpio_out>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_cpio_out_argv
+
+ int
+ guestfs_cpio_out_argv (guestfs_h *g,
+                        const char *directory,
+                        const char *cpiofile,
+                        const struct guestfs_cpio_out_argv *optargs);
+
+This is the "argv variant" of L</guestfs_cpio_out>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
 =head2 guestfs_dd
 
  int
@@ -4950,6 +5011,10 @@ OpenBSD.
 =item "opensuse"
 
 OpenSUSE.
+
+=item "oraclelinux"
+
+Oracle Linux.
 
 =item "pardus"
 

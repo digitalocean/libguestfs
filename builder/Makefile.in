@@ -800,6 +800,8 @@ GOOS = @GOOS@
 GOROOT = @GOROOT@
 GPERF = @GPERF@
 GREP = @GREP@
+GTK2_CFLAGS = @GTK2_CFLAGS@
+GTK2_LIBS = @GTK2_LIBS@
 GTKDOC_CHECK = @GTKDOC_CHECK@
 GTKDOC_DEPS_CFLAGS = @GTKDOC_DEPS_CFLAGS@
 GTKDOC_DEPS_LIBS = @GTKDOC_DEPS_LIBS@
@@ -1534,6 +1536,8 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-builder \
 SOURCES = \
 	architecture.ml \
 	builder.ml \
+	cache.mli \
+	cache.ml \
 	cmdline.ml \
 	downloader.mli \
 	downloader.ml \
@@ -1607,6 +1611,7 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	paths.cmx \
 @HAVE_OCAML_TRUE@	languages.cmx \
 @HAVE_OCAML_TRUE@	get_kernel.cmx \
+@HAVE_OCAML_TRUE@	cache.cmx \
 @HAVE_OCAML_TRUE@	downloader.cmx \
 @HAVE_OCAML_TRUE@	sigchecker.cmx \
 @HAVE_OCAML_TRUE@	index_parser.cmx \
@@ -2389,7 +2394,7 @@ stamp-virt-index-validate.pod: virt-index-validate.pod
 # index-parse.h.
 @HAVE_OCAML_TRUE@index-parser-c.c index-scan.c index-validate.c: index-parse.h
 @HAVE_OCAML_TRUE@index-parse.h: index-parse.y
-@HAVE_OCAML_TRUE@	$(MAKE) index-parse.c
+@HAVE_OCAML_TRUE@	$(MAKE) index-parse.h
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

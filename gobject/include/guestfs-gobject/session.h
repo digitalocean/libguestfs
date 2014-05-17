@@ -207,6 +207,7 @@ gboolean guestfs_session_copy_size (GuestfsSession *session, const gchar *src, c
 gboolean guestfs_session_cp (GuestfsSession *session, const gchar *src, const gchar *dest, GError **err);
 gboolean guestfs_session_cp_a (GuestfsSession *session, const gchar *src, const gchar *dest, GError **err);
 gboolean guestfs_session_cp_r (GuestfsSession *session, const gchar *src, const gchar *dest, GError **err);
+gboolean guestfs_session_cpio_out (GuestfsSession *session, const gchar *directory, const gchar *cpiofile, GuestfsCpioOut *optargs, GCancellable *cancellable, GError **err);
 gboolean guestfs_session_dd (GuestfsSession *session, const gchar *src, const gchar *dest, GError **err);
 gchar *guestfs_session_debug (GuestfsSession *session, const gchar *subcmd, gchar *const *extraargs, GError **err);
 gchar **guestfs_session_debug_drives (GuestfsSession *session, GError **err);

@@ -16292,6 +16292,40 @@ done_no_free:
   return;
 }
 
+static void
+cpio_out_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_cpio_out_args args;
+  const char *directory;
+  const char *format;
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_cpio_out_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  directory = args.directory;
+  format = args.format;
+
+  r = do_cpio_out (directory, format);
+  if (r == -1)
+    /* do_cpio_out has already called reply_with_error */
+    goto done;
+
+  /* do_cpio_out has already sent a reply */
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_cpio_out_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -17527,6 +17561,9 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_BLKDISCARDZEROES:
       blkdiscardzeroes_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_CPIO_OUT:
+      cpio_out_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

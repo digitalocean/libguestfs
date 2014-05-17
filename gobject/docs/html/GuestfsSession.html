@@ -363,6 +363,12 @@ struct              <a class="link" href="GuestfsSession.html#GuestfsSessionClas
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *src</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *dest</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-cpio-out" title="guestfs_session_cpio_out ()">guestfs_session_cpio_out</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *cpiofile</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GuestfsCpioOut.html" title="GuestfsCpioOut"><span class="type">GuestfsCpioOut</span></a> *optargs</code></em>,
+                                                         <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-dd" title="guestfs_session_dd ()">guestfs_session_dd</a>                  (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *src</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *dest</code></em>,
@@ -6767,6 +6773,79 @@ filesystems).
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-cpio-out"></a><h3>guestfs_session_cpio_out ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_cpio_out            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *cpiofile</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GuestfsCpioOut.html" title="GuestfsCpioOut"><span class="type">GuestfsCpioOut</span></a> *optargs</code></em>,
+                                                         <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+pack directory into cpio file
+</p>
+<p>
+This command packs the contents of <em class="parameter"><code>directory</code></em> and downloads it to local
+file <em class="parameter"><code>cpiofile</code></em>.
+</p>
+<p>
+The optional <em class="parameter"><code>format</code></em> parameter can be used to select the format. Only
+the following formats are currently permitted:
+</p>
+<p>
+<em class="parameter"><code>newc</code></em>
+New (SVR4) portable format. This format happens to be compatible
+with the cpio-like format used by the Linux kernel for initramfs.
+</p>
+<p>
+This is the default format.
+</p>
+<p>
+<em class="parameter"><code>crc</code></em>
+New (SVR4) portable format with a checksum.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>directory</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cpiofile</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>optargs</code></em> :</span></p></td>
+<td>a GuestfsCpioOut containing optional arguments. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cancellable</code></em> :</span></p></td>
+<td>A GCancellable object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-dd"></a><h3>guestfs_session_dd ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_dd                  (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *src</code></em>,
@@ -12197,6 +12276,10 @@ OpenBSD.
 <p>
 "opensuse"
 OpenSUSE.
+</p>
+<p>
+"oraclelinux"
+Oracle Linux.
 </p>
 <p>
 "pardus"

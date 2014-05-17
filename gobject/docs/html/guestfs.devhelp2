@@ -37,6 +37,7 @@
       <sub name="GuestfsCopyDeviceToFile" link="GuestfsCopyDeviceToFile.html"/>
       <sub name="GuestfsCopyFileToDevice" link="GuestfsCopyFileToDevice.html"/>
       <sub name="GuestfsCopyFileToFile" link="GuestfsCopyFileToFile.html"/>
+      <sub name="GuestfsCpioOut" link="GuestfsCpioOut.html"/>
       <sub name="GuestfsDiskCreate" link="GuestfsDiskCreate.html"/>
       <sub name="GuestfsE2fsck" link="GuestfsE2fsck.html"/>
       <sub name="GuestfsFstrim" link="GuestfsFstrim.html"/>
@@ -170,6 +171,7 @@
     <keyword type="function" name="guestfs_session_cp ()" link="GuestfsSession.html#guestfs-session-cp"/>
     <keyword type="function" name="guestfs_session_cp_a ()" link="GuestfsSession.html#guestfs-session-cp-a"/>
     <keyword type="function" name="guestfs_session_cp_r ()" link="GuestfsSession.html#guestfs-session-cp-r"/>
+    <keyword type="function" name="guestfs_session_cpio_out ()" link="GuestfsSession.html#guestfs-session-cpio-out"/>
     <keyword type="function" name="guestfs_session_dd ()" link="GuestfsSession.html#guestfs-session-dd"/>
     <keyword type="function" name="guestfs_session_debug ()" link="GuestfsSession.html#guestfs-session-debug"/>
     <keyword type="function" name="guestfs_session_debug_drives ()" link="GuestfsSession.html#guestfs-session-debug-drives"/>
@@ -745,6 +747,10 @@
     <keyword type="property" name="The &quot;size&quot; property" link="GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--size"/>
     <keyword type="property" name="The &quot;sparse&quot; property" link="GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--sparse"/>
     <keyword type="property" name="The &quot;srcoffset&quot; property" link="GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--srcoffset"/>
+    <keyword type="struct" name="struct GuestfsCpioOut" link="GuestfsCpioOut.html#GuestfsCpioOut-struct"/>
+    <keyword type="struct" name="struct GuestfsCpioOutClass" link="GuestfsCpioOut.html#GuestfsCpioOutClass"/>
+    <keyword type="function" name="guestfs_cpio_out_new ()" link="GuestfsCpioOut.html#guestfs-cpio-out-new"/>
+    <keyword type="property" name="The &quot;format&quot; property" link="GuestfsCpioOut.html#GuestfsCpioOut--format"/>
     <keyword type="struct" name="struct GuestfsDiskCreate" link="GuestfsDiskCreate.html#GuestfsDiskCreate-struct"/>
     <keyword type="struct" name="struct GuestfsDiskCreateClass" link="GuestfsDiskCreate.html#GuestfsDiskCreateClass"/>
     <keyword type="function" name="guestfs_disk_create_new ()" link="GuestfsDiskCreate.html#guestfs-disk-create-new"/>

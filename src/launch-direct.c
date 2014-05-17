@@ -403,28 +403,12 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   ADD_CMDLINE (MACHINE_TYPE);
 #endif
 
-  /* If this is uncommented, then qemu won't start running the
-   * appliance immediately.  It will wait for you to connect to it
-   * using gdb:
-   *
-   *   $ gdb
-   *   (gdb) symbol-file /path/to/vmlinux
-   *   (gdb) target remote tcp::1234
-   *   (gdb) cont
-   *
-   * You can then debug the appliance kernel, which is useful to debug
-   * boot failures (especially ones where there are no debug messages
-   * printed - tip: look in the kernel log_buf).
-   *
-   * On Fedora, install kernel-debuginfo for the vmlinux file
-   * (containing symbols).  Make sure the symbols precisely match the
-   * kernel being used.
-   */
-#if 0
-  ADD_CMDLINE ("-S");
-  ADD_CMDLINE ("-s");
-  warning (g, "qemu debugging is enabled, connect gdb to tcp::1234 to begin");
-#endif
+  /* See guestfs.pod / gdb */
+  if (guestfs___get_backend_setting_bool (g, "gdb") > 0) {
+    ADD_CMDLINE ("-S");
+    ADD_CMDLINE ("-s");
+    warning (g, "qemu debugging is enabled, connect gdb to tcp::1234 to begin");
+  }
 
   /* Try to guess if KVM is available.  We are just checking that
    * /dev/kvm is openable.  That's not reliable, since /dev/kvm
@@ -1022,6 +1006,10 @@ test_qemu (guestfs_h *g, struct backend_direct_data *data)
   guestfs___cmd_add_arg (cmd3, g->hv);
   guestfs___cmd_add_arg (cmd3, "-display");
   guestfs___cmd_add_arg (cmd3, "none");
+#ifdef MACHINE_TYPE
+  guestfs___cmd_add_arg (cmd3, "-M");
+  guestfs___cmd_add_arg (cmd3, MACHINE_TYPE);
+#endif
   guestfs___cmd_add_arg (cmd3, "-machine");
   guestfs___cmd_add_arg (cmd3, "accel=kvm:tcg");
   guestfs___cmd_add_arg (cmd3, "-device");
@@ -1207,12 +1195,14 @@ qemu_escape_param (guestfs_h *g, const char *param)
 
 static char *
 make_uri (guestfs_h *g, const char *scheme, const char *user,
+          const char *password,
           struct drive_server *server, const char *path)
 {
   xmlURI uri = { .scheme = (char *) scheme,
                  .user = (char *) user };
   CLEANUP_FREE char *query = NULL;
   CLEANUP_FREE char *pathslash = NULL;
+  CLEANUP_FREE char *userauth = NULL;
 
   /* Need to add a leading '/' to URI paths since xmlSaveUri doesn't. */
   if (path[0] != '/') {
@@ -1221,6 +1211,13 @@ make_uri (guestfs_h *g, const char *scheme, const char *user,
   }
   else
     uri.path = (char *) path;
+
+  /* Rebuild user:password. */
+  if (user != NULL && password != NULL) {
+    /* Keep the string in an own variable so it can be freed automatically. */
+    userauth = safe_asprintf (g, "%s:%s", user, password);
+    uri.user = userauth;
+  }
 
   switch (server->transport) {
   case drive_transport_none:
@@ -1267,34 +1264,37 @@ guestfs___drive_source_qemu_param (guestfs_h *g, const struct drive_source *src)
     return path;
 
   case drive_protocol_ftp:
-    return make_uri (g, "ftp", src->username,
+    return make_uri (g, "ftp", src->username, src->secret,
                      &src->servers[0], src->u.exportname);
 
   case drive_protocol_ftps:
-    return make_uri (g, "ftps", src->username,
+    return make_uri (g, "ftps", src->username, src->secret,
                      &src->servers[0], src->u.exportname);
 
   case drive_protocol_gluster:
     switch (src->servers[0].transport) {
     case drive_transport_none:
-      return make_uri (g, "gluster", NULL, &src->servers[0], src->u.exportname);
+      return make_uri (g, "gluster", NULL, NULL,
+                       &src->servers[0], src->u.exportname);
     case drive_transport_tcp:
-      return make_uri (g, "gluster+tcp",
-                       NULL, &src->servers[0], src->u.exportname);
+      return make_uri (g, "gluster+tcp", NULL, NULL,
+                       &src->servers[0], src->u.exportname);
     case drive_transport_unix:
-      return make_uri (g, "gluster+unix", NULL, &src->servers[0], NULL);
+      return make_uri (g, "gluster+unix", NULL, NULL,
+                       &src->servers[0], NULL);
     }
 
   case drive_protocol_http:
-    return make_uri (g, "http", src->username,
+    return make_uri (g, "http", src->username, src->secret,
                      &src->servers[0], src->u.exportname);
 
   case drive_protocol_https:
-    return make_uri (g, "https", src->username,
+    return make_uri (g, "https", src->username, src->secret,
                      &src->servers[0], src->u.exportname);
 
   case drive_protocol_iscsi:
-    return make_uri (g, "iscsi", NULL, &src->servers[0], src->u.exportname);
+    return make_uri (g, "iscsi", NULL, NULL,
+                     &src->servers[0], src->u.exportname);
 
   case drive_protocol_nbd: {
     CLEANUP_FREE char *p = NULL;
@@ -1380,11 +1380,11 @@ guestfs___drive_source_qemu_param (guestfs_h *g, const struct drive_source *src)
                             src->u.exportname);
 
   case drive_protocol_ssh:
-    return make_uri (g, "ssh", src->username,
+    return make_uri (g, "ssh", src->username, src->secret,
                      &src->servers[0], src->u.exportname);
 
   case drive_protocol_tftp:
-    return make_uri (g, "tftp", src->username,
+    return make_uri (g, "tftp", src->username, src->secret,
                      &src->servers[0], src->u.exportname);
   }
 

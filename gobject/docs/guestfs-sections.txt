@@ -203,6 +203,23 @@ guestfs_copy_file_to_file_get_type
 </SECTION>
 
 <SECTION>
+<FILE>optargs-cpio_out</FILE>
+<TITLE>GuestfsCpioOut</TITLE>
+GuestfsCpioOut
+GuestfsCpioOutClass
+guestfs_cpio_out_new
+<SUBSECTION Standard>
+GUESTFS_CPIO_OUT
+GUESTFS_CPIO_OUT_CLASS
+GUESTFS_CPIO_OUT_GET_CLASS
+GUESTFS_IS_CPIO_OUT
+GUESTFS_IS_CPIO_OUT_CLASS
+GUESTFS_TYPE_CPIO_OUT
+GuestfsCpioOutPrivate
+guestfs_cpio_out_get_type
+</SECTION>
+
+<SECTION>
 <FILE>optargs-disk_create</FILE>
 <TITLE>GuestfsDiskCreate</TITLE>
 GuestfsDiskCreate
@@ -971,6 +988,7 @@ guestfs_session_copy_size
 guestfs_session_cp
 guestfs_session_cp_a
 guestfs_session_cp_r
+guestfs_session_cpio_out
 guestfs_session_dd
 guestfs_session_debug
 guestfs_session_debug_drives

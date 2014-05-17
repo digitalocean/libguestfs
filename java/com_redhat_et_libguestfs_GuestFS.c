@@ -2271,6 +2271,34 @@ Java_com_redhat_et_libguestfs_GuestFS__1cp_1r  (JNIEnv *env, jobject obj, jlong 
 }
 
 JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1cpio_1out  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory, jstring jcpiofile, jlong joptargs_bitmask, jstring jformat)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *directory;
+  const char *cpiofile;
+  struct guestfs_cpio_out_argv optargs_s;
+  const struct guestfs_cpio_out_argv *optargs = &optargs_s;
+
+  directory = (*env)->GetStringUTFChars (env, jdirectory, NULL);
+  cpiofile = (*env)->GetStringUTFChars (env, jcpiofile, NULL);
+
+  optargs_s.format = (*env)->GetStringUTFChars (env, jformat, NULL);
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_cpio_out_argv (g, directory, cpiofile, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jdirectory, directory);
+  (*env)->ReleaseStringUTFChars (env, jcpiofile, cpiofile);
+  (*env)->ReleaseStringUTFChars (env, jformat, optargs_s.format);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1dd  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
