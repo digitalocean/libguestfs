@@ -151,39 +151,41 @@ DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 @ENABLE_APPLIANCE_TRUE@	tests/nbd tests/http tests/syslinux \
 @ENABLE_APPLIANCE_TRUE@	tests/journal tests/fuzz \
 @ENABLE_APPLIANCE_TRUE@	tests/relative-paths tests/regressions
+@HAVE_P2V_TRUE@am__append_4 = p2v p2v-iso
 
 # Language bindings.
-@HAVE_PERL_TRUE@am__append_4 = perl perl/examples
-@HAVE_OCAML_TRUE@am__append_5 = ocaml ocaml/examples
-@HAVE_PYTHON_TRUE@am__append_6 = python python/examples
-@HAVE_RUBY_TRUE@am__append_7 = ruby ruby/examples
-@HAVE_JAVA_TRUE@am__append_8 = java java/examples
-@HAVE_HASKELL_TRUE@am__append_9 = haskell
-@HAVE_PHP_TRUE@am__append_10 = php
-@HAVE_ERLANG_TRUE@am__append_11 = erlang erlang/examples
-@HAVE_LUA_TRUE@am__append_12 = lua lua/examples
-@HAVE_GOBJECT_TRUE@am__append_13 = gobject
-@HAVE_GOLANG_TRUE@am__append_14 = golang golang/examples
+@HAVE_PERL_TRUE@am__append_5 = perl perl/examples
+@HAVE_OCAML_TRUE@am__append_6 = ocaml ocaml/examples
+@HAVE_PYTHON_TRUE@am__append_7 = python python/examples
+@HAVE_RUBY_TRUE@am__append_8 = ruby ruby/examples
+@HAVE_JAVA_TRUE@am__append_9 = java java/examples
+@HAVE_HASKELL_TRUE@am__append_10 = haskell
+@HAVE_PHP_TRUE@am__append_11 = php
+@HAVE_ERLANG_TRUE@am__append_12 = erlang erlang/examples
+@HAVE_LUA_TRUE@am__append_13 = lua lua/examples
+@HAVE_GOBJECT_TRUE@am__append_14 = gobject
+@HAVE_GOLANG_TRUE@am__append_15 = golang golang/examples
 
 # OCaml tools.  Note 'mllib' and 'customize' contain shared code used
 # by other OCaml tools, so these must come first.
-@HAVE_OCAML_TRUE@am__append_15 = \
+@HAVE_OCAML_TRUE@am__append_16 = \
 @HAVE_OCAML_TRUE@	mllib \
 @HAVE_OCAML_TRUE@	customize \
 @HAVE_OCAML_TRUE@	builder builder/website \
 @HAVE_OCAML_TRUE@	resize \
 @HAVE_OCAML_TRUE@	sparsify \
-@HAVE_OCAML_TRUE@	sysprep
+@HAVE_OCAML_TRUE@	sysprep \
+@HAVE_OCAML_TRUE@	v2v
 
 
 # Perl tools.
-@HAVE_TOOLS_TRUE@am__append_16 = tools
+@HAVE_TOOLS_TRUE@am__append_17 = tools
 
 # guestmount
-@HAVE_FUSE_TRUE@am__append_17 = fuse
+@HAVE_FUSE_TRUE@am__append_18 = fuse
 
 # po-docs must come after tools, inspector.
-@HAVE_PO4A_TRUE@am__append_18 = po-docs
+@HAVE_PO4A_TRUE@am__append_19 = po-docs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -421,12 +423,12 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	tests/rsync tests/bigdirs tests/disk-labels tests/hotplug \
 	tests/nbd tests/http tests/syslinux tests/journal tests/fuzz \
 	tests/relative-paths tests/regressions test-tool fish align \
-	cat diff df edit format inspector make-fs rescue bash perl \
-	perl/examples ocaml ocaml/examples python python/examples ruby \
-	ruby/examples java java/examples haskell php erlang \
-	erlang/examples lua lua/examples gobject golang \
+	cat diff df edit format inspector make-fs rescue p2v p2v-iso \
+	bash perl perl/examples ocaml ocaml/examples python \
+	python/examples ruby ruby/examples java java/examples haskell \
+	php erlang erlang/examples lua lua/examples gobject golang \
 	golang/examples csharp mllib customize builder builder/website \
-	resize sparsify sysprep tools fuse po-docs
+	resize sparsify sysprep v2v tools fuse po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -843,6 +845,8 @@ GOOS = @GOOS@
 GOROOT = @GOROOT@
 GPERF = @GPERF@
 GREP = @GREP@
+GTK2_CFLAGS = @GTK2_CFLAGS@
+GTK2_LIBS = @GTK2_LIBS@
 GTKDOC_CHECK = @GTKDOC_CHECK@
 GTKDOC_DEPS_CFLAGS = @GTKDOC_DEPS_CFLAGS@
 GTKDOC_DEPS_LIBS = @GTKDOC_DEPS_LIBS@
@@ -1563,12 +1567,12 @@ ACLOCAL_AMFLAGS = -I m4
 # Unconditional because nothing is built yet.
 SUBDIRS = gnulib/lib $(am__append_1) tests/data generator src examples \
 	po $(am__append_2) $(am__append_3) test-tool fish align cat \
-	diff df edit format inspector make-fs rescue bash \
-	$(am__append_4) $(am__append_5) $(am__append_6) \
-	$(am__append_7) $(am__append_8) $(am__append_9) \
-	$(am__append_10) $(am__append_11) $(am__append_12) \
-	$(am__append_13) $(am__append_14) csharp $(am__append_15) \
-	$(am__append_16) $(am__append_17) $(am__append_18)
+	diff df edit format inspector make-fs rescue $(am__append_4) \
+	bash $(am__append_5) $(am__append_6) $(am__append_7) \
+	$(am__append_8) $(am__append_9) $(am__append_10) \
+	$(am__append_11) $(am__append_12) $(am__append_13) \
+	$(am__append_14) $(am__append_15) csharp $(am__append_16) \
+	$(am__append_17) $(am__append_18) $(am__append_19)
 EXTRA_DIST = \
 	BUGS HACKING TODO \
 	.gitignore \
@@ -1677,6 +1681,7 @@ HTMLFILES = \
 	html/virt-tar.1.html \
 	html/virt-tar-in.1.html \
 	html/virt-tar-out.1.html \
+	html/virt-v2v.1.html \
 	html/virt-win-reg.1.html
 
 HTMLSUPPORTFILES = \
@@ -2330,7 +2335,7 @@ all-local:
 	grep -v -E '^python/utils.c$$' | \
 	LC_ALL=C sort > po/POTFILES
 	cd $(srcdir); \
-	find builder customize mllib resize sparsify sysprep -name '*.ml' | \
+	find builder customize mllib resize sparsify sysprep v2v -name '*.ml' | \
 	LC_ALL=C sort > po/POTFILES-ml
 
 guestfs-release-notes.1 guestfs-release-notes.txt $(top_builddir)/html/guestfs-release-notes.1.html: stamp-guestfs-release-notes.pod

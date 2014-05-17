@@ -4228,6 +4228,14 @@ M4 macros used by autoconf.
 Various libraries and common code used by L<virt-resize(1)> and the other
 tools which are written in OCaml.
 
+=item C<p2v>
+
+L<virt-p2v(1)> command and documentation.
+
+=item C<p2v-iso>
+
+Scripts for building the virt-p2v ISO or disk image.
+
 =item C<po>
 
 Переклади простих рядків gettext.
@@ -4277,6 +4285,10 @@ another.
 =item C<tools>
 
 Command line tools written in Perl (L<virt-win-reg(1)> and many others).
+
+=item C<v2v>
+
+L<virt-v2v(1)> command and documentation.
 
 =item C<csharp>
 
@@ -4599,9 +4611,9 @@ L<virt-builder(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>,
 L<virt-customize(1)>, L<virt-df(1)>, L<virt-diff(1)>, L<virt-edit(1)>,
 L<virt-filesystems(1)>, L<virt-format(1)>, L<virt-inspector(1)>,
 L<virt-list-filesystems(1)>, L<virt-list-partitions(1)>, L<virt-ls(1)>,
-L<virt-make-fs(1)>, L<virt-rescue(1)>, L<virt-resize(1)>,
+L<virt-make-fs(1)>, L<virt-p2v(1)>, L<virt-rescue(1)>, L<virt-resize(1)>,
 L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>,
-L<virt-tar-out(1)>, L<virt-win-reg(1)>, L<guestfs-faq(1)>,
+L<virt-tar-out(1)>, L<virt-v2v(1)>, L<virt-win-reg(1)>, L<guestfs-faq(1)>,
 L<guestfs-performance(1)>, L<guestfs-release-notes(1)>,
 L<guestfs-testing(1)>, L<libguestfs-test-tool(1)>,
 L<libguestfs-make-fixed-appliance(1)>, L<supermin(1)>, L<qemu(1)>,

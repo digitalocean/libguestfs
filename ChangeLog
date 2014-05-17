@@ -1,3 +1,144 @@
+commit 77166308fad1ca970c5cdba785db4c36e44ea971
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu May 15 23:00:46 2014 +0100
+
+    Version 1.27.10.
+
+commit 047b6d3050a8e7b07f21df62044673380c6f897a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu May 15 13:43:18 2014 +0100
+
+    Add p2v-iso directory containing scripts for building the virt-p2v ISO.
+    
+    It is not possible to have the ISO be built automatically when the
+    user runs 'make'.  The README file describes how you should go about
+    building the ISO or disk image.
+
+commit fd82bb12fd5fc8233955b8ffd4a42c3d6f8d748b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 23 21:27:52 2014 +0100
+
+    New tool: virt-p2v.
+    
+    This is a graphical standalone front-end to virt-v2v which can be run
+    on physical machines (usually linked into a ISO or PXE boot image) to
+    convert the physical machine to a virtual machine.
+
+commit 0131d6f666d93dd353c4e4092fd945861646d319
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 1 14:41:30 2014 +0100
+
+    New tool: virt-v2v.
+    
+    This is a rewrite of the original virt-v2v tool.  The original was
+    written by Matt Booth et al in Perl between 2009 and 2013.
+
+commit 40d9609b29b462b80821e9e6acc5dc5a9e4f01d8
+Author: Maros Zatko <mzatko@redhat.com>
+Date:   Thu May 15 14:44:36 2014 +0100
+
+    generator: Change link to OCaml tutorials.
+
+commit 1a1cb1ec3cdc24262db4de2f8bf12d3479096882
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon May 12 22:19:08 2014 +0100
+
+    builder: Fix RHEL 5 download location.
+    
+    This fixes commit 3bc9ba6c8447cde07db057aea76d0d72f5d833df.
+
+commit d2bfe2cb24a53f6968b1a4b54cfc7299e33cfeaf
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed May 14 17:59:31 2014 +0200
+
+    builder: respect the proxy also when downloading images (RHBZ#1096465).
+    
+    Missing from commit 87d79c2ee259ce51595ad3a924fd216f882dc477.
+
+commit b6c8afaee63e26de42695244eacbeb81b06171a9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed May 14 17:28:13 2014 +0200
+
+    builder: save the proxy for each entry
+    
+    Copy the information about the proxy of a source in all the entries of
+    that source; this way it is possible to use it later when accessing to
+    the actual image of an entry.
+
+commit 3bc9ba6c8447cde07db057aea76d0d72f5d833df
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 10 17:18:39 2014 +0100
+
+    builder: Fix RHEL script for RHEL 5.
+    
+    Root partition is on /dev/sda2:
+    
+    $ virt-filesystems -a rhel-5.10 --all --long -h
+    Name       Type        VFS   Label      MBR  Size  Parent
+    /dev/sda1  filesystem  ext2  /boot      -    510M  -
+    /dev/sda2  filesystem  ext4  /          -    4.5G  -
+    /dev/sda3  filesystem  swap  SWAP-hda3  -    1.0G  -
+    /dev/sda1  partition   -     -          83   510M  /dev/sda
+    /dev/sda2  partition   -     -          83   4.5G  /dev/sda
+    /dev/sda3  partition   -     -          82   1.0G  /dev/sda
+    /dev/sda   device      -     -          -    6.0G  -
+    
+    It would be better if we could mount by label in guestfish ...
+    
+    There is another problem with RHEL 5 guests in that the
+    yum URL is slightly wrong.
+
+commit 75022489c81242a6717e579ff6c5f8dc8ec6cbf6
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Fri May 9 11:14:55 2014 +0200
+
+    appliance: update Debian-specific package list
+
+commit 944a601020aeb4acc0646958aac7b65d2a3ed2e6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 10 12:11:11 2014 +0100
+
+    builder: Add Ubuntu 14.04 disk image.
+    
+    Also remove the Ubuntu 13.10 image, since it's not an LTS image.
+
+commit a1fcd2ca5f24d4646b40408bbbaffb74fb20d9e6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 10 10:45:15 2014 +0100
+
+    builder: ubuntu: Allow virt-install --os-variant to be specified on the command line.
+    
+    Current virt-builder in F20 does not know about --os-variant=ubuntutrusty
+    so to build that you can now do:
+    
+      ./ubuntu.sh 14.04 trusty ubuntusaucy
+
+commit c7888ac61846aa1d21f0ff5dd19b046590b83072
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 9 15:06:50 2014 +0200
+
+    configure: always add the extra warnings
+    
+    Get rid of --enable-gcc-warnings and just add all the warnings in any
+    case; they are tested anyway, so only warnings supported by the compiler
+    will be used.
+    
+    Regarding -Werror, add a new --enable-werror which enables its use.
+
+commit a880bc1eb00909e64093f06a4373942a9b264616
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 9 12:20:33 2014 +0200
+
+    tests/syslinux: add new syslinux 6+ path of mbr.bin
+    
+    Reported in https://bugs.debian.org/746748.
+
+commit f46d53be18f586daa6e3e8ed4975da26c940b203
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 9 12:19:47 2014 +0200
+
+    tests/syslinux: factorize search for mbr.bin
+
 commit 5e574bb3049dac4a8f1f9b4a1cccbbbc3c15dc9e
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed May 7 14:42:03 2014 +0100
