@@ -1,3 +1,2 @@
 0001-perl-revert-failed-attempt-at-building-out-of-tree-s.patch
 0002-golang-Fix-for-out-of-tree-builds.patch
-0003-configure-Make-sure-grep-matches-qemu-2.x-version-st.patch
