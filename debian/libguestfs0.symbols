@@ -194,6 +194,9 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_cp@Base 1.10
  guestfs_cp_a@Base 1.10
  guestfs_cp_r@Base 1:1.22
+ guestfs_cpio_out@Base 1:1.27.9
+ guestfs_cpio_out_argv@Base 1:1.27.9
+ guestfs_cpio_out_va@Base 1:1.27.9
  guestfs_create@Base 1.10
  guestfs_create_flags@Base 1:1.20
  guestfs_dd@Base 1.10
