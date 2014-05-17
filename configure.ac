@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [27])
-m4_define([libguestfs_release], [10])
+m4_define([libguestfs_release], [11])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -958,7 +958,7 @@ PKG_CHECK_MODULES([HIVEX], [hivex],[
 AM_CONDITIONAL([HAVE_HIVEX],[test "x$HIVEX_LIBS" != "x"])
 
 dnl systemd journal library (optional)
-PKG_CHECK_MODULES([SD_JOURNAL], [libsystemd-journal],[
+PKG_CHECK_MODULES([SD_JOURNAL], [libsystemd-journal >= 196],[
     AC_SUBST([SD_JOURNAL_CFLAGS])
     AC_SUBST([SD_JOURNAL_LIBS])
     AC_DEFINE([HAVE_SD_JOURNAL],[1],[systemd journal library found at compile time.])

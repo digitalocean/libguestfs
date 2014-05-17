@@ -1,3 +1,33 @@
+commit 8e6ddbdf708282324acbe0367a5961768cb4747e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 16 11:10:06 2014 +0100
+
+    Version 1.27.11.
+
+commit a09146386ce14e8899b8816894afe83f78604480
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 16 08:45:47 2014 +0100
+
+    virt-p2v: Install the binary in libexecdir.
+    
+    Previously it wasn't installed at all.  However it makes sense to
+    install it somewhere so that it can be placed in a package (a
+    requirement if we're going to create a kickstart).  By placing it in
+    libexecdir it is hopefully clear that it should not be used.
+    
+    Note on Red Hat distros, libexecdir is usually /usr/libexec.  On
+    Debian it is usually /usr/lib/libguestfs.
+
+commit 45971ab95222204a1b8d9a311a739c453308cade
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 16 11:05:40 2014 +0200
+
+    build: bump the libsystemd-journal needed version to 196
+    
+    Bump to >= v196 the minimum version of libsystemd-journal needed for the
+    journal integration, since that version provides
+    sd_journal_get_data_threshold and sd_journal_set_data_threshold.
+
 commit 77166308fad1ca970c5cdba785db4c36e44ea971
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu May 15 23:00:46 2014 +0100
