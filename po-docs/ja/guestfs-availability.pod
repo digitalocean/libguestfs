@@ -165,10 +165,6 @@ L</guestfs_ntfsclone_out> L</guestfs_ntfsfix>
 
 次の関数: L</guestfs_ntfsresize> L</guestfs_ntfsresize_size>
 
-=item B<realpath>
-
-次の関数: L</guestfs_realpath>
-
 =item B<rsync>
 
 次の関数: L</guestfs_rsync> L</guestfs_rsync_in> L</guestfs_rsync_out>

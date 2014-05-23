@@ -261,11 +261,6 @@ The following functions:
 L</guestfs_ntfsresize>
 L</guestfs_ntfsresize_size>
 
-=item B<realpath>
-
-The following functions:
-L</guestfs_realpath>
-
 =item B<rsync>
 
 The following functions:

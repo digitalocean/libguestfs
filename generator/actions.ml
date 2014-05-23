@@ -5719,7 +5719,18 @@ manual page for more details." };
     tests = [
       InitScratchFS, Always, TestRun (
         [["write"; "/scrub_file"; "content"];
-         ["scrub_file"; "/scrub_file"]]), []
+         ["scrub_file"; "/scrub_file"]]), [];
+      InitScratchFS, Always, TestRun (
+        [["write"; "/scrub_file_2"; "content"];
+         ["ln_s"; "/scrub_file_2"; "/scrub_file_2_link"];
+         ["scrub_file"; "/scrub_file_2_link"]]), [];
+      InitScratchFS, Always, TestLastFail (
+        [["ln_s"; "/scrub_file_3_notexisting"; "/scrub_file_3_link"];
+         ["scrub_file"; "/scrub_file_3_link"]]), [];
+      InitScratchFS, Always, TestLastFail (
+        [["write"; "/scrub_file_4"; "content"];
+         ["ln_s"; "../sysroot/scrub_file_4"; "/scrub_file_4_link"];
+         ["scrub_file"; "/scrub_file_4_link"]]), [];
     ];
     shortdesc = "scrub (securely wipe) a file";
     longdesc = "\
@@ -6665,7 +6676,6 @@ matching lines." };
     name = "realpath";
     style = RString "rpath", [Pathname "path"], [];
     proc_nr = Some 163;
-    optional = Some "realpath";
     tests = [
       InitISOFS, Always, TestResultString (
         [["realpath"; "/../directory"]], "/directory"), []
@@ -8842,7 +8852,7 @@ filesystem.
 
 C<remotefilename> is overwritten starting at the byte C<offset>
 specified.  The intention is to overwrite parts of existing
-files or devices, although if a non-existant file is specified
+files or devices, although if a non-existent file is specified
 then it is created with a \"hole\" before C<offset>.  The
 size of the data written is implicit in the size of the
 source C<filename>.

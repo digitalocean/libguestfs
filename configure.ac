@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [27])
-m4_define([libguestfs_release], [11])
+m4_define([libguestfs_release], [12])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -91,25 +91,16 @@ AC_DEFINE([PACKAGE_VERSION_MINOR],[libguestfs_minor],[Minor version number.])
 AC_DEFINE([PACKAGE_VERSION_RELEASE],[libguestfs_release],[Release number.])
 AC_DEFINE_UNQUOTED([PACKAGE_VERSION_EXTRA],["$libguestfs_extra"],[Extra version string.])
 
-dnl Default backend.
-AC_MSG_CHECKING([if the user specified a default backend])
-AC_ARG_WITH([default-backend],
-    [AS_HELP_STRING([--with-default-backend="direct|libvirt|..."],
-        [set default backend @<:@default=direct@:>@])],
-    [DEFAULT_BACKEND="$withval"],
-    [DEFAULT_BACKEND=direct])
-AC_MSG_RESULT([$DEFAULT_BACKEND])
-AC_DEFINE_UNQUOTED([DEFAULT_BACKEND],["$DEFAULT_BACKEND"],
-                   [Default backend.])
+# Define $(SED).
+m4_ifdef([AC_PROG_SED],[
+    AC_PROG_SED
+],[
+    dnl ... else hope for the best
+    AC_SUBST([SED], "sed")
+])
 
-dnl Fail with error if user does --with-default-attach-method.
-AC_ARG_WITH([default-attach-method],
-    [AS_HELP_STRING([--with-default-attach-method="..."],
-        [use --with-default-backend instead])],
-    [AC_MSG_FAILURE([--with-default-attach-method no longer works in
-this version of libguestfs, use
-  ./configure --with-default-backend=$withval
-instead.])])
+# Define $(AWK).
+AC_PROG_AWK
 
 dnl Early gnulib initialization.
 gl_EARLY
@@ -120,14 +111,6 @@ AC_PROG_LN_S
 
 dnl Define the host CPU architecture (defines 'host_cpu')
 AC_CANONICAL_HOST
-
-# Define $(SED).
-m4_ifdef([AC_PROG_SED],[
-    AC_PROG_SED
-],[
-    dnl ... else hope for the best
-    AC_SUBST([SED], "sed")
-])
 
 dnl Check for basic C environment.
 AC_PROG_CC_STDC
@@ -325,7 +308,6 @@ AC_CHECK_FUNCS([\
     ntohs \
     posix_fallocate \
     posix_fadvise \
-    realpath \
     removexattr \
     setitimer \
     setxattr \
@@ -363,6 +345,26 @@ fi
 AC_MSG_RESULT([$msgfmt_is_gnu])
 AM_CONDITIONAL([HAVE_GNU_GETTEXT],
     [test "x$XGETTEXT" != "xno" && test "x$MSGCAT" != "xno" && test "x$MSGFMT" != "xno" && test "x$MSGMERGE" != "xno" && test "x$msgfmt_is_gnu" != "xno"])
+
+dnl Default backend.
+AC_MSG_CHECKING([if the user specified a default backend])
+AC_ARG_WITH([default-backend],
+    [AS_HELP_STRING([--with-default-backend="direct|libvirt|..."],
+        [set default backend @<:@default=direct@:>@])],
+    [DEFAULT_BACKEND="$withval"],
+    [DEFAULT_BACKEND=direct])
+AC_MSG_RESULT([$DEFAULT_BACKEND])
+AC_DEFINE_UNQUOTED([DEFAULT_BACKEND],["$DEFAULT_BACKEND"],
+                   [Default backend.])
+
+dnl Fail with error if user does --with-default-attach-method.
+AC_ARG_WITH([default-attach-method],
+    [AS_HELP_STRING([--with-default-attach-method="..."],
+        [use --with-default-backend instead])],
+    [AC_MSG_FAILURE([--with-default-attach-method no longer works in
+this version of libguestfs, use
+  ./configure --with-default-backend=$withval
+instead.])])
 
 dnl Build the daemon?
 AC_MSG_CHECKING([if we should build the daemon])
@@ -495,8 +497,8 @@ if test "x$ENABLE_APPLIANCE" = "xyes"; then
     AC_MSG_CHECKING([supermin is new enough])
     $SUPERMIN --version >&AS_MESSAGE_LOG_FD 2>&1 ||
         AC_MSG_ERROR([supermin >= $supermin_min must be installed, your version is too old])
-    supermin_major="`$SUPERMIN --version | awk '{print $2}' | awk -F. '{print $1}'`"
-    supermin_minor="`$SUPERMIN --version | awk '{print $2}' | awk -F. '{print $2}'`"
+    supermin_major="`$SUPERMIN --version | $AWK '{print $2}' | $AWK -F. '{print $1}'`"
+    supermin_minor="`$SUPERMIN --version | $AWK '{print $2}' | $AWK -F. '{print $2}'`"
     AC_MSG_RESULT([$supermin_major.$supermin_minor])
 
     if test "$supermin_major" -lt "$supermin_major_min" || \
@@ -1346,9 +1348,9 @@ if test "x$with_java" != "xno"; then
         fi
 
         dnl JNI version.
-        jni_major_version=`echo "$VERSION" | awk -F. '{print $1}'`
-        jni_minor_version=`echo "$VERSION" | awk -F. '{print $2}'`
-        jni_micro_version=`echo "$VERSION" | awk -F. '{print $3}'`
+        jni_major_version=`echo "$VERSION" | $AWK -F. '{print $1}'`
+        jni_minor_version=`echo "$VERSION" | $AWK -F. '{print $2}'`
+        jni_micro_version=`echo "$VERSION" | $AWK -F. '{print $3}'`
         JNI_VERSION_INFO=`expr "$jni_major_version" + "$jni_minor_version"`":$jni_micro_version:$jni_minor_version"
     fi
 
@@ -1420,7 +1422,7 @@ AS_IF([test "x$enable_lua" != "xno"],[
     AC_CHECK_PROG([LUA],[lua],[lua],[no])
     AS_IF([test "x$LUA" != "xno"],[
         AC_MSG_CHECKING([for Lua version])
-        LUA_VERSION=`$LUA -e 'print(_VERSION)' | awk '{print $2}'`
+        LUA_VERSION=`$LUA -e 'print(_VERSION)' | $AWK '{print $2}'`
         AC_MSG_RESULT([$LUA_VERSION])
         dnl On Debian it's 'lua5.1', 'lua5.2' etc.  On Fedora, just 'lua'.
         PKG_CHECK_MODULES([LUA], [lua$LUA_VERSION],[
@@ -1602,6 +1604,8 @@ AC_CONFIG_FILES([appliance/libguestfs-make-fixed-appliance],
                 [chmod +x,-w appliance/libguestfs-make-fixed-appliance])
 AC_CONFIG_FILES([inspector/test-xmllint.sh],
                 [chmod +x,-w inspector/test-xmllint.sh])
+AC_CONFIG_FILES([p2v-iso/kickstart-target.sh],
+                [chmod +x,-w p2v-iso/kickstart-target.sh])
 AC_CONFIG_FILES([p2v-iso/virt-builder-target.sh],
                 [chmod +x,-w p2v-iso/virt-builder-target.sh])
 AC_CONFIG_FILES([php/extension/php-for-tests.sh],

@@ -46,7 +46,6 @@ extern int optgroup_mdadm_available (void);
 extern int optgroup_mknod_available (void);
 extern int optgroup_ntfs3g_available (void);
 extern int optgroup_ntfsprogs_available (void);
-extern int optgroup_realpath_available (void);
 extern int optgroup_rsync_available (void);
 extern int optgroup_scrub_available (void);
 extern int optgroup_selinux_available (void);
@@ -276,10 +275,6 @@ extern int optgroup_zerofree_available (void);
   int __attribute__((noreturn)) do_ntfsresize (const char *device, int64_t size, int force) { abort (); } \
   int __attribute__((noreturn)) do_ntfsresize_size (const char *device, int64_t size) { abort (); } \
   int optgroup_ntfsprogs_available (void) { return 0; }
-
-#define OPTGROUP_REALPATH_NOT_AVAILABLE \
-  char *__attribute__((noreturn)) do_realpath (const char *path) { abort (); } \
-  int optgroup_realpath_available (void) { return 0; }
 
 #define OPTGROUP_RSYNC_NOT_AVAILABLE \
   int __attribute__((noreturn)) do_rsync (const char *src, const char *dest, int archive, int deletedest) { abort (); } \

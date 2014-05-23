@@ -1,3 +1,150 @@
+commit ee9981714fbb266ff58450b8dd4c3568b284df77
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 23 11:04:20 2014 +0100
+
+    Version 1.27.12.
+
+commit 5d5e66ce334bf61bcc2e672d17d84dd0dd0dd364
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed May 21 15:03:17 2014 +0200
+
+    daemon: scrub-file: resolve the path before calling scrub (RHBZ#1099490).
+    
+    Resolve the given path within the chroot, so scrub can be invoked
+    outside the chroot on an already-resolved path.
+    
+    Add few tests in scrub-file for this and other similar issues.
+
+commit d7aec9c0d31c14b97c0bb93595d492fdd3741143
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed May 21 15:01:50 2014 +0200
+
+    daemon: add sysroot_realpath
+    
+    Similar to sysroot_path, but first resolves (using realpath) the given
+    path within sysroot.
+
+commit 05f84f4c214f9b91862ba63398a2e248e0e7d92d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed May 21 14:58:40 2014 +0200
+
+    Make realpath mandatory
+    
+    commit a86eb0e0d2c67e2153139c681632edc72162b8ed made it an optional
+    feature, as on Windows it was not available; on the other hand, realpath
+    has been used unconditionally already for quite some time, so having
+    just the "realpath" command conditional on the presence of it does not
+    make much sense.
+    
+    Drop the configure/build system handling of it, make the "realpath"
+    command no more optional, and keep the "realpath" feature as
+    unconditionally available now.
+
+commit 50ed922a02c7316749d94dcaf81752d239124030
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed May 21 14:39:30 2014 +0200
+
+    generator: add always-available optgroups
+    
+    Support the possibility to have optional groups always enabled (e.g.
+    because they were present in the past, and they need to be kept for
+    users).
+    Add and use few helper optgroups-related functions to deal also with
+    them.
+
+commit 865f64006e9bab5c1c5efdfd9e8ceee140c8d998
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed May 21 09:36:34 2014 +0100
+
+    ppc64: Use console=hvc0 console=ttyS0.
+    
+    console=ttyS0 used to work.  Now it's broken again, and the correct
+    setting appears to be console=hvc0.  Since we can pass multiple
+    console settings, do that to try and catch the right console.
+
+commit 84189b370a0db5670e2a2d7a5b3d79cffdb67ed5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 20 13:13:39 2014 +0100
+
+    Update guestfs-release-notes.txt.
+    
+    This updates commit a21dfc483c5102334d8c490a50077ec201ffe2e4.
+
+commit 697b0d46782e1c4eb4bc927e54012e0ff8205b2d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue May 20 13:31:07 2014 +0200
+
+    fish: simplify output of 'supported'
+    
+    Print each line at once, making use of the padding features of printf
+    instead of doing it manually.
+
+commit a21dfc483c5102334d8c490a50077ec201ffe2e4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 20 10:45:33 2014 +0100
+
+    Fix some spelling mistakes and typos in documentation (RHBZ#1099284).
+
+commit e014ef33ab80de10df0bcdd73ff774310af3910a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 20 10:40:17 2014 +0100
+
+    Update BUGS.
+
+commit f49e003a875ce5703b7e8d4109a145ebe673129d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 17 11:15:54 2014 +0100
+
+    p2v-iso: Add a kickstart target.
+    
+    This also changes the old p2v-iso/README file into a POD file
+    which is installed as a manual page.
+
+commit 1939cd4849ff3e52e76ddb91d9acd30bca3a0495
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 17 10:58:00 2014 +0100
+
+    p2v-iso: unset CDPATH, set -e at the top of the virt-builder-target script.
+
+commit c65fbeebb8482fede853445d639ddb6642fd3c1b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 17 11:44:46 2014 +0100
+
+    configure: Move --with-default-backend test later in configure.ac.
+    
+    For some reason this test was right at the top of the script.
+
+commit c5106511e004c90a0e538a6d39e3c32fbfea108e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 17 11:35:31 2014 +0100
+
+    build: Use AC_PROG_AWK to define the right awk to call.
+    
+    We actually call plain 'awk' in many different scripts, but this
+    commit does not change all of those.
+
+commit 044ecdb9036d338a32e66a71745f9f946931e4f6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 17 10:38:59 2014 +0100
+
+    builder: Make the summary printed at the end easier to read.
+    
+    This is just a whitespace change.  The new output looks like this:
+    
+                       Output file: fedora-20.img
+                       Output size: 4.0G
+                     Output format: raw
+                Total usable space: 5.2G
+                        Free space: 4.5G (86%)
+
+commit 467bddd3b72fd62bae9695f644182b5dcc5cbd5b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 16 12:54:46 2014 +0100
+
+    p2v-iso: Use xorg-x11-drivers meta-package to install Xorg drivers.
+    
+    Thanks: Andrew Price.
+
 commit 8e6ddbdf708282324acbe0367a5961768cb4747e
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri May 16 11:10:06 2014 +0100
