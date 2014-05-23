@@ -25,6 +25,14 @@
 #include "daemon.h"
 #include "optgroups.h"
 
+static int
+dummy_available (void)
+{
+  return 1;
+}
+
+#define optgroup_realpath_available dummy_available
+
 struct optgroup optgroups[] = {
   { "acl", optgroup_acl_available },
   { "augeas", optgroup_augeas_available },

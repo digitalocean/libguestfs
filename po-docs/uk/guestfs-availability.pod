@@ -166,10 +166,6 @@ L</guestfs_ntfsclone_out> L</guestfs_ntfsfix>
 
 Такі функції: L</guestfs_ntfsresize> L</guestfs_ntfsresize_size>
 
-=item B<realpath>
-
-Такі функції: L</guestfs_realpath>
-
 =item B<rsync>
 
 Такі функції: L</guestfs_rsync> L</guestfs_rsync_in> L</guestfs_rsync_out>

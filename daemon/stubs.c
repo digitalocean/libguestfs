@@ -6080,16 +6080,6 @@ realpath_stub (XDR *xdr_in)
   struct guestfs_realpath_args args;
   const char *path;
 
-  /* The caller should have checked before calling this. */
-  if (! optgroup_realpath_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "realpath");
-    goto done_no_free;
-  }
-
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
     goto done_no_free;

@@ -1417,9 +1417,9 @@ display = \
 	-@echo -n '$(1): file size bytes: '; \
 	stat -c %s $(1); \
 	echo -n '$(1): allocated bytes: '; \
-	du -B 1 $(1) | awk '{print $$1}'; \
+	du -B 1 $(1) | $(AWK) '{print $$1}'; \
 	echo -n '$(1): MD5 hash:        '; \
-	md5sum $(1) | awk '{print $$1}'
+	md5sum $(1) | $(AWK) '{print $$1}'
 
 DISTCLEANFILES = \
 	guest-aux/fedora-name.db \

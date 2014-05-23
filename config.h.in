@@ -1710,9 +1710,6 @@
 /* Define if the 'realloc' function is POSIX compliant. */
 #undef HAVE_REALLOC_POSIX
 
-/* Define to 1 if you have the `realpath' function. */
-#undef HAVE_REALPATH
-
 /* Define to 1 if you have old-style register_printf_function. */
 #undef HAVE_REGISTER_PRINTF_FUNCTION
 

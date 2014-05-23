@@ -23626,7 +23626,7 @@ ruby_guestfs_upload (VALUE gv, VALUE filenamev, VALUE remotefilenamev)
  * 
  * "remotefilename" is overwritten starting at the byte
  * "offset" specified. The intention is to overwrite parts
- * of existing files or devices, although if a non-existant
+ * of existing files or devices, although if a non-existent
  * file is specified then it is created with a "hole"
  * before "offset". The size of the data written is
  * implicit in the size of the source "filename".
