@@ -1,3 +1,38 @@
+commit 2c460ac52f3df25897d93266aac717c3f1147797
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 24 19:17:46 2014 +0100
+
+    Version 1.27.13.
+
+commit 32f5d998731e1c0deed6ec80f5c873697986147e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 23 11:46:43 2014 +0100
+
+    fuse: Add a test of guestmount --fd option (RHBZ#1100498).
+
+commit 145c7ed5eeaaa491f91a8e31ff655df4177b1a5e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 23 11:27:37 2014 +0100
+
+    fuse: Add guestmount --fd option (RHBZ#1100498).
+    
+    This implements the guestmount --fd option to allow you to run
+    guestmount captive under another process (typically using
+    `guestmount --fd=<FD> --no-fork').
+    
+    See: https://bugzilla.redhat.com/show_bug.cgi?id=1100498
+
+commit a60212ee99de88591d060a95b30aa0e0cece5832
+Author: Hilko Bengen <bengen@debian.org>
+Date:   Thu Dec 12 21:06:22 2013 +0100
+
+    golang: Fix for out-of-tree builds
+    
+    RWMJ:
+    
+    This is half of a downstream Debian patch to fix out-of-tree builds
+    for golang.
+
 commit ee9981714fbb266ff58450b8dd4c3568b284df77
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri May 23 11:04:20 2014 +0100
