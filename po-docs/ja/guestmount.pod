@@ -204,6 +204,13 @@ requests, only cache existing ones.
 キーやパスフレーズを入力するとき、通常 guestfish はエコーを無効化します。 そのため、入力内容を確認できません。 テンペスト攻撃の心配がなく、
 部屋に誰も居なければ、 入力内容を確認するためにこのフラグを指定できます。
 
+=item B<--fd=FD>
+
+Specify a pipe or eventfd file descriptor.  When the mountpoint is ready to
+be used, guestmount writes a single byte to this file descriptor.  This can
+be used in conjunction with I<--no-fork> in order to run guestmount captive
+under another process.
+
 =item B<--format=raw|qcow2|..>
 
 =item B<--format>
