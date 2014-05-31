@@ -1,3 +1,84 @@
+commit 0196724330117232868b83bce709559ba3784952
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 30 18:08:26 2014 +0100
+
+    Version 1.27.14.
+
+commit 4d8ecb0d30b8e0c49ddb750b5102a2cb67fdd2b5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu May 29 10:32:15 2014 +0200
+
+    generator: fix daemon functions with optional params but no mandatory params
+    
+    The
+      struct guestfs_$function_args args;
+    declaration was not emitted in that case, leading to build failure.
+
+commit 00d94d95c805ee027a9ef9e67f3979f1faada4a7
+Author: Joseph Wang <joequant@gmail.com>
+Date:   Thu May 29 08:46:20 2014 +0100
+
+    appliance: Update packagelist for Mageia (RHBZ#1102448).
+
+commit ef49b297cc56668da01efa637fb80007a76d23dd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 27 11:48:44 2014 +0100
+
+    appliance: Increase udev timeout to 6000s (RHBZ#1096579).
+    
+    If the image is located on NFS, and the NFS mount is performing a
+    large copy, then all other NFS operations stop.  This delay can be
+    large enough that we hit the current 10 minute timeout in udev.
+    
+    Increasing this to 100 minutes is reported to cure the problem (in
+    reality we want udev to wait indefinitely).
+
+commit 917ca11a76863075b4fcb13fe0eec0c2a6a08892
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue May 27 11:02:58 2014 +0200
+
+    ruby: add :nodoc: comment for internal methods
+    
+    This way they are ignored by rdoc.
+
+commit e4005bd530aab62a8d86cfc7cb5db1c69ae873dd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue May 27 10:57:13 2014 +0200
+
+    builder: support aliases for images (RHBZ#1098718).
+
+commit bed592498d791c5ce6ad722f41dcbfbe243b0a7a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon May 26 12:20:10 2014 +0100
+
+    launch: libvirt: Add -device sga (sgabios).
+    
+    This feature was added to libvirt in 2011-07-08 so we can assume it
+    exists.
+    
+    Thanks: Jiri Jaburek
+
+commit 1fbf0a88f6c4e5648af8ec64e3933683078f4a94
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun May 25 22:34:51 2014 +0100
+
+    fuse: Make all the skip messages consistent in this test.
+
+commit f32aef2971497872c179cb16dd1a1d922c46587e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun May 25 22:34:04 2014 +0100
+
+    fuse: Skip test-fuse-umount-race.sh if backing file does not exist.
+
+commit 068455f21005aa7cf7ea9c0a82e01f2cf58659e1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun May 25 22:28:27 2014 +0100
+
+    fuse: Skip guestmount --fd test if /dev/fuse does not exist.
+    
+    When we run guestmount (eg. in Koji) it will fail anyway, so don't run
+    the test.
+
 commit 2c460ac52f3df25897d93266aac717c3f1147797
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sat May 24 19:17:46 2014 +0100
