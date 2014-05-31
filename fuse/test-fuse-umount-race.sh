@@ -29,12 +29,17 @@ if [ -n "$SKIP_TEST_FUSE_SH" ]; then
 fi
 
 if [ ! -w /dev/fuse ]; then
-    echo "SKIPPING guestmount test, because there is no /dev/fuse."
+    echo "$0: test skipped because there is no /dev/fuse."
+    exit 77
+fi
+
+if [ ! -f ../tests/guests/fedora.img ]; then
+    echo "$0: test skipped because fedora.img test guest does not exist."
     exit 77
 fi
 
 if [ "$(../fish/guestfish get-backend)" = "uml" ]; then
-    echo "$0: skipping test because uml backend does not support qcow2"
+    echo "$0: test skipped because uml backend does not support qcow2"
     exit 77
 fi
 

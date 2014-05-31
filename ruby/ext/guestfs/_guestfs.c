@@ -4592,6 +4592,12 @@ ruby_guestfs_dd (VALUE gv, VALUE srcv, VALUE destv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.debug
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_debug (VALUE gv, VALUE subcmdv, VALUE extraargsv)
 {
@@ -4626,6 +4632,12 @@ ruby_guestfs_debug (VALUE gv, VALUE subcmdv, VALUE extraargsv)
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.debug_drives
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_debug_drives (VALUE gv)
 {
@@ -4652,6 +4664,12 @@ ruby_guestfs_debug_drives (VALUE gv)
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.debug_upload
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_debug_upload (VALUE gv, VALUE filenamev, VALUE tmpnamev, VALUE modev)
 {
@@ -10726,6 +10744,12 @@ ruby_guestfs_inspect_os (VALUE gv)
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test (int argc, VALUE *argv, VALUE gv)
 {
@@ -10827,6 +10851,12 @@ ruby_guestfs_internal_test (int argc, VALUE *argv, VALUE gv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_63_optargs
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_63_optargs (int argc, VALUE *argv, VALUE gv)
 {
@@ -11170,6 +11200,12 @@ ruby_guestfs_internal_test_63_optargs (int argc, VALUE *argv, VALUE gv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_close_output
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_close_output (VALUE gv)
 {
@@ -11188,6 +11224,12 @@ ruby_guestfs_internal_test_close_output (VALUE gv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_only_optargs
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_only_optargs (int argc, VALUE *argv, VALUE gv)
 {
@@ -11221,6 +11263,12 @@ ruby_guestfs_internal_test_only_optargs (int argc, VALUE *argv, VALUE gv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rbool
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rbool (VALUE gv, VALUE valv)
 {
@@ -11240,6 +11288,12 @@ ruby_guestfs_internal_test_rbool (VALUE gv, VALUE valv)
   return INT2NUM (r);
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rboolerr
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rboolerr (VALUE gv)
 {
@@ -11258,6 +11312,12 @@ ruby_guestfs_internal_test_rboolerr (VALUE gv)
   return INT2NUM (r);
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rbufferout
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rbufferout (VALUE gv, VALUE valv)
 {
@@ -11280,6 +11340,12 @@ ruby_guestfs_internal_test_rbufferout (VALUE gv, VALUE valv)
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rbufferouterr
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rbufferouterr (VALUE gv)
 {
@@ -11301,6 +11367,12 @@ ruby_guestfs_internal_test_rbufferouterr (VALUE gv)
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rconstoptstring
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rconstoptstring (VALUE gv, VALUE valv)
 {
@@ -11321,6 +11393,12 @@ ruby_guestfs_internal_test_rconstoptstring (VALUE gv, VALUE valv)
     return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rconstoptstringerr
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rconstoptstringerr (VALUE gv)
 {
@@ -11340,6 +11418,12 @@ ruby_guestfs_internal_test_rconstoptstringerr (VALUE gv)
     return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rconststring
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rconststring (VALUE gv, VALUE valv)
 {
@@ -11359,6 +11443,12 @@ ruby_guestfs_internal_test_rconststring (VALUE gv, VALUE valv)
   return rb_str_new2 (r);
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rconststringerr
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rconststringerr (VALUE gv)
 {
@@ -11377,6 +11467,12 @@ ruby_guestfs_internal_test_rconststringerr (VALUE gv)
   return rb_str_new2 (r);
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rhashtable
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rhashtable (VALUE gv, VALUE valv)
 {
@@ -11404,6 +11500,12 @@ ruby_guestfs_internal_test_rhashtable (VALUE gv, VALUE valv)
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rhashtableerr
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rhashtableerr (VALUE gv)
 {
@@ -11430,6 +11532,12 @@ ruby_guestfs_internal_test_rhashtableerr (VALUE gv)
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rint
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rint (VALUE gv, VALUE valv)
 {
@@ -11449,6 +11557,12 @@ ruby_guestfs_internal_test_rint (VALUE gv, VALUE valv)
   return INT2NUM (r);
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rint64
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rint64 (VALUE gv, VALUE valv)
 {
@@ -11468,6 +11582,12 @@ ruby_guestfs_internal_test_rint64 (VALUE gv, VALUE valv)
   return ULL2NUM (r);
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rint64err
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rint64err (VALUE gv)
 {
@@ -11486,6 +11606,12 @@ ruby_guestfs_internal_test_rint64err (VALUE gv)
   return ULL2NUM (r);
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rinterr
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rinterr (VALUE gv)
 {
@@ -11504,6 +11630,12 @@ ruby_guestfs_internal_test_rinterr (VALUE gv)
   return INT2NUM (r);
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rstring
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rstring (VALUE gv, VALUE valv)
 {
@@ -11525,6 +11657,12 @@ ruby_guestfs_internal_test_rstring (VALUE gv, VALUE valv)
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rstringerr
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rstringerr (VALUE gv)
 {
@@ -11545,6 +11683,12 @@ ruby_guestfs_internal_test_rstringerr (VALUE gv)
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rstringlist
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rstringlist (VALUE gv, VALUE valv)
 {
@@ -11572,6 +11716,12 @@ ruby_guestfs_internal_test_rstringlist (VALUE gv, VALUE valv)
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rstringlisterr
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rstringlisterr (VALUE gv)
 {
@@ -11598,6 +11748,12 @@ ruby_guestfs_internal_test_rstringlisterr (VALUE gv)
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rstruct
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rstruct (VALUE gv, VALUE valv)
 {
@@ -11633,6 +11789,12 @@ ruby_guestfs_internal_test_rstruct (VALUE gv, VALUE valv)
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rstructerr
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rstructerr (VALUE gv)
 {
@@ -11667,6 +11829,12 @@ ruby_guestfs_internal_test_rstructerr (VALUE gv)
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rstructlist
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rstructlist (VALUE gv, VALUE valv)
 {
@@ -11707,6 +11875,12 @@ ruby_guestfs_internal_test_rstructlist (VALUE gv, VALUE valv)
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_rstructlisterr
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_rstructlisterr (VALUE gv)
 {
@@ -11746,6 +11920,12 @@ ruby_guestfs_internal_test_rstructlisterr (VALUE gv)
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.internal_test_set_output
+ *
+ * :nodoc:
+ */
 static VALUE
 ruby_guestfs_internal_test_set_output (VALUE gv, VALUE filenamev)
 {
