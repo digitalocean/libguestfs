@@ -24,7 +24,6 @@
 #define GUESTFSD_OPTGROUPS_H
 
 extern int optgroup_acl_available (void);
-extern int optgroup_augeas_available (void);
 extern int optgroup_blkdiscard_available (void);
 extern int optgroup_blkdiscardzeroes_available (void);
 extern int optgroup_btrfs_available (void);
@@ -68,25 +67,6 @@ extern int optgroup_zerofree_available (void);
   char *__attribute__((noreturn)) do_acl_get_file (const char *path, const char *acltype) { abort (); } \
   int __attribute__((noreturn)) do_acl_set_file (const char *path, const char *acltype, const char *acl) { abort (); } \
   int optgroup_acl_available (void) { return 0; }
-
-#define OPTGROUP_AUGEAS_NOT_AVAILABLE \
-  int __attribute__((noreturn)) do_aug_clear (const char *augpath) { abort (); } \
-  int __attribute__((noreturn)) do_aug_close (void) { abort (); } \
-  guestfs_int_int_bool *__attribute__((noreturn)) do_aug_defnode (const char *name, const char *expr, const char *val) { abort (); } \
-  int __attribute__((noreturn)) do_aug_defvar (const char *name, const char *expr) { abort (); } \
-  char *__attribute__((noreturn)) do_aug_get (const char *augpath) { abort (); } \
-  int __attribute__((noreturn)) do_aug_init (const char *root, int flags) { abort (); } \
-  int __attribute__((noreturn)) do_aug_insert (const char *augpath, const char *label, int before) { abort (); } \
-  char *__attribute__((noreturn)) do_aug_label (const char *augpath) { abort (); } \
-  int __attribute__((noreturn)) do_aug_load (void) { abort (); } \
-  char **__attribute__((noreturn)) do_aug_ls (const char *augpath) { abort (); } \
-  char **__attribute__((noreturn)) do_aug_match (const char *augpath) { abort (); } \
-  int __attribute__((noreturn)) do_aug_mv (const char *src, const char *dest) { abort (); } \
-  int __attribute__((noreturn)) do_aug_rm (const char *augpath) { abort (); } \
-  int __attribute__((noreturn)) do_aug_save (void) { abort (); } \
-  int __attribute__((noreturn)) do_aug_set (const char *augpath, const char *val) { abort (); } \
-  int __attribute__((noreturn)) do_aug_setm (const char *base, const char *sub, const char *val) { abort (); } \
-  int optgroup_augeas_available (void) { return 0; }
 
 #define OPTGROUP_BLKDISCARD_NOT_AVAILABLE \
   int __attribute__((noreturn)) do_blkdiscard (const char *device) { abort (); } \

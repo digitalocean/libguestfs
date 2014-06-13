@@ -1,3 +1,96 @@
+commit 0dbdc470ed7a6fe7251929ee6f4dfeb8ddc01625
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 10 21:10:27 2014 +0100
+
+    Version 1.27.15.
+
+commit 7faa602e8f86702418e11572603badbfbb14f6b7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 10 19:31:06 2014 +0100
+
+    launch: libvirt: Only use serial BIOS (sgabios) on x86.
+    
+    This device is not present at least on ARM.  Unfortunately libvirt
+    doesn't give us any way to query when the device is present.
+    
+    This fixes commit bed592498d791c5ce6ad722f41dcbfbe243b0a7a.
+
+commit e6a858907fd7851148440dcfc7cbabc5cee75a71
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jun 10 15:18:38 2014 +0200
+
+    appliance: init: properly set PS1 and TERM for virt-rescue (RHBZ#812970).
+    
+    Setting environment variables such as PS1 for bash before starting it
+    might not be effective when the startup scripts provided by the
+    distribution unconditionally change it.
+    Hence, set PS1 and TERM in a ~/.bashrc, which will be source'd last and
+    thus be able to set them the way we want.
+
+commit 844066597dc9ed92c0685c136f613c06276c6132
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jun 10 15:18:37 2014 +0200
+
+    daemon: grub: show grub-install's output on error if verbose
+
+commit 45db96b00dde2eb9429efbdc2f57bb1bbafafc03
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jun 10 15:18:36 2014 +0200
+
+    daemon: print parameters for vgchange in error messages
+
+commit 134ac97d22065224e200d6cd72231d116b45f054
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jun 3 14:48:51 2014 +0200
+
+    daemon: retire the augeas feature
+    
+    Augeas has been a mandatory dependency of libguestfs for quite some
+    time, so the aug_* functions could have been always called (without even
+    checking the augeas feature). Thus retire the feature, marking it as
+    always available with no more functions depending on it.
+
+commit b28ef8791a21751b1def9f84108fec14ea73ffa9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jun 3 14:37:41 2014 +0200
+
+    builder: handle duplicated images (RHBZ#1092753).
+    
+    Filter the available images, removing the versions with an older
+    revisions, and duplicates.
+
+commit aeb879247456c619040d3a01a47a08ffa14c03f7
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jun 3 10:14:21 2014 +0200
+
+    inspect: tighten NetBSD detection
+    
+    It seems recent (?) NetBSD versions have their kernel as /netbsd, so
+    also check for it to detect NetBSD installations.
+    
+    The current detection so far basically relied on generic files and
+    directories which can potentially be in every UNIX system, misdetecting
+    them if a /etc/release file is present in them.
+
+commit 5efbc8922ff3f338deb17b42bc7b63cc1545fcc0
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jun 2 21:24:35 2014 +0200
+
+    fish: list also aliases in the guestfish help (RHBZ#1103877).
+    
+    Output also the aliases (telling which function they refer to) in
+    `guestfish -h`, together with non-alias functions.
+
+commit 6577f34a687f339304f20ac703a2e468865a4297
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jun 9 09:59:20 2014 +0200
+
+    appliance: remove extra comma in Mageia's list
+    
+    Followup of commit 00d94d95c805ee027a9ef9e67f3979f1faada4a7.
+    
+    Thanks Thierry Vignaud for the notice.
+
 commit 0196724330117232868b83bce709559ba3784952
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri May 30 18:08:26 2014 +0100

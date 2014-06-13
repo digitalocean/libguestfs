@@ -557,16 +557,6 @@ aug_init_stub (XDR *xdr_in)
   const char *root;
   int flags;
 
-  /* The caller should have checked before calling this. */
-  if (! optgroup_augeas_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "augeas");
-    goto done_no_free;
-  }
-
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
     goto done_no_free;
@@ -600,16 +590,6 @@ aug_close_stub (XDR *xdr_in)
 {
   int r;
 
-  /* The caller should have checked before calling this. */
-  if (! optgroup_augeas_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "augeas");
-    goto done_no_free;
-  }
-
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
     goto done_no_free;
@@ -633,16 +613,6 @@ aug_defvar_stub (XDR *xdr_in)
   struct guestfs_aug_defvar_args args;
   const char *name;
   const char *expr;
-
-  /* The caller should have checked before calling this. */
-  if (! optgroup_augeas_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "augeas");
-    goto done_no_free;
-  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -680,16 +650,6 @@ aug_defnode_stub (XDR *xdr_in)
   const char *name;
   const char *expr;
   const char *val;
-
-  /* The caller should have checked before calling this. */
-  if (! optgroup_augeas_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "augeas");
-    goto done_no_free;
-  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -729,16 +689,6 @@ aug_get_stub (XDR *xdr_in)
   struct guestfs_aug_get_args args;
   const char *augpath;
 
-  /* The caller should have checked before calling this. */
-  if (! optgroup_augeas_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "augeas");
-    goto done_no_free;
-  }
-
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
     goto done_no_free;
@@ -775,16 +725,6 @@ aug_set_stub (XDR *xdr_in)
   const char *augpath;
   const char *val;
 
-  /* The caller should have checked before calling this. */
-  if (! optgroup_augeas_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "augeas");
-    goto done_no_free;
-  }
-
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
     goto done_no_free;
@@ -820,16 +760,6 @@ aug_insert_stub (XDR *xdr_in)
   const char *label;
   int before;
 
-  /* The caller should have checked before calling this. */
-  if (! optgroup_augeas_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "augeas");
-    goto done_no_free;
-  }
-
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
     goto done_no_free;
@@ -863,16 +793,6 @@ aug_rm_stub (XDR *xdr_in)
   int r;
   struct guestfs_aug_rm_args args;
   const char *augpath;
-
-  /* The caller should have checked before calling this. */
-  if (! optgroup_augeas_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "augeas");
-    goto done_no_free;
-  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -909,16 +829,6 @@ aug_mv_stub (XDR *xdr_in)
   const char *src;
   const char *dest;
 
-  /* The caller should have checked before calling this. */
-  if (! optgroup_augeas_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "augeas");
-    goto done_no_free;
-  }
-
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
     goto done_no_free;
@@ -951,16 +861,6 @@ aug_match_stub (XDR *xdr_in)
   char **r;
   struct guestfs_aug_match_args args;
   const char *augpath;
-
-  /* The caller should have checked before calling this. */
-  if (! optgroup_augeas_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "augeas");
-    goto done_no_free;
-  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -996,16 +896,6 @@ aug_save_stub (XDR *xdr_in)
 {
   int r;
 
-  /* The caller should have checked before calling this. */
-  if (! optgroup_augeas_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "augeas");
-    goto done_no_free;
-  }
-
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
     goto done_no_free;
@@ -1026,16 +916,6 @@ static void
 aug_load_stub (XDR *xdr_in)
 {
   int r;
-
-  /* The caller should have checked before calling this. */
-  if (! optgroup_augeas_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "augeas");
-    goto done_no_free;
-  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1059,16 +939,6 @@ aug_ls_stub (XDR *xdr_in)
   char **r;
   struct guestfs_aug_ls_args args;
   const char *augpath;
-
-  /* The caller should have checked before calling this. */
-  if (! optgroup_augeas_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "augeas");
-    goto done_no_free;
-  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8900,16 +8770,6 @@ aug_clear_stub (XDR *xdr_in)
   struct guestfs_aug_clear_args args;
   const char *augpath;
 
-  /* The caller should have checked before calling this. */
-  if (! optgroup_augeas_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "augeas");
-    goto done_no_free;
-  }
-
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
     goto done_no_free;
@@ -15973,16 +15833,6 @@ aug_setm_stub (XDR *xdr_in)
   const char *sub;
   const char *val;
 
-  /* The caller should have checked before calling this. */
-  if (! optgroup_augeas_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "augeas");
-    goto done_no_free;
-  }
-
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
     goto done_no_free;
@@ -16018,16 +15868,6 @@ aug_label_stub (XDR *xdr_in)
   char *r;
   struct guestfs_aug_label_args args;
   const char *augpath;
-
-  /* The caller should have checked before calling this. */
-  if (! optgroup_augeas_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "augeas");
-    goto done_no_free;
-  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");

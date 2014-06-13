@@ -31,6 +31,7 @@ dummy_available (void)
   return 1;
 }
 
+#define optgroup_augeas_available dummy_available
 #define optgroup_realpath_available dummy_available
 
 struct optgroup optgroups[] = {
