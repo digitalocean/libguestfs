@@ -1,3 +1,172 @@
+commit e5276e4455f74ca3ad76d93a6ca41a7175038c0f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 13 22:48:18 2014 +0100
+
+    Version 1.27.16.
+
+commit 31c07bc9d8128f838671a68884613a512282ea5a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 13 22:42:42 2014 +0100
+
+    podwrapper: Put =encoding line before first POD directive.
+    
+    =head isn't always the first POD directive.
+    
+    This fixes commit 1148bd91ce2c0bebc65f9855368fd026aaf9f603.
+
+commit 1148bd91ce2c0bebc65f9855368fd026aaf9f603
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 13 14:22:50 2014 +0100
+
+    podwrapper: Put the =encoding line at the correct place in the input (RHBZ#1109174).
+    
+    Commit c4dc70f8c43a7faae2a8698027a4ed23d316dfa0 broke the man pages
+    for the Perl scripts in the tools/ directory.
+    
+    It inserted the =encoding line at the top of the file, instead of in
+    front of the first =head1 entry, and this meant that the #!/usr/bin/perl
+    and the prologue became a part of the POD, which was not intended.
+
+commit 870c17e99acd038daed9b4004c66d401679475ab
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 13 13:34:38 2014 +0100
+
+    sparsify: Add --tmp option to allow specifying temp directory or block device.
+    
+    Add the virt-sparsify --tmp option.
+    
+    This works in two ways.  Either you can specify a temporary directory,
+    in which case it's just the same as setting $TMPDIR before:
+    
+      virt-sparsify indisk outdisk --tmp /var/tmp
+    
+    Or, as a new feature, you can specify a block device which is directly
+    used (and OVERWRITTEN):
+    
+      virt-sparsify indisk outdisk --tmp /dev/sdX
+    
+    This is useful for oVirt nodes, where there is limited temporary
+    space, but a block device can be assigned to the node.
+    
+    In both cases it is only used in copying mode.  In-place
+    sparsification doesn't require large amounts of temporary space.
+
+commit 893bfe2e36f5a766e822b14fe5e7e4fc9b2b3f75
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 13 13:34:01 2014 +0100
+
+    mllib: Create a common utility function is_directory.
+    
+    This is a wrapper around Sys.is_directory which doesn't throw
+    exceptions.
+
+commit 9b5cdc874784437d7a59bd024043c2abd930b6c3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 12 13:28:03 2014 +0100
+
+    fuse: UID 0 should override all permissions checks (RHBZ#1106548).
+    
+    Previously if you were root, and you tried to change directory into a
+    directory which was not owned by you and not readable (eg. 0700
+    bin:bin), it would fail.
+    
+    This doesn't fail on regular directories because when you are root the
+    kernel just ignores permissions.
+    
+    Although libguestfs in general tries not to duplicate kernel code, in
+    the case where we emulate the FUSE access(2) system call,
+    unfortunately we have to do it by stat-ing the object and performing
+    some (half-arsed) heuristics.
+    
+    This commit modifies the FUSE access(2) system call, so root is now
+    able to chdir to any directory.
+    
+    It also adds some debugging so we can debug these complex permissions
+    checks in the field if some other problem arises in future.
+
+commit 87ac1c186eee81165003bb4d0196e147611527ba
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 12 22:18:02 2014 +0100
+
+    builder: Don't copy *.xz files to WEBSITEDIR.
+
+commit bacc7fd0a3aa7cfe9ecd1a3740f9f7891cd90196
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 12 22:13:25 2014 +0100
+
+    builder: Rebuild Fedora 19 disk image with Xen drivers.
+
+commit 005316b7d869c505df0d8d39a96861e918351f3d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 12 15:42:33 2014 +0100
+
+    builder: Get rid of remaining disk image signatures.
+    
+    These were deprecated and replaced in virt-builder 1.24.1.
+
+commit 58ea77e79becc14e5ddacc0f37f41fac3a3f14e3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 12 15:38:52 2014 +0100
+
+    builder: Update Fedora 20 image, with Xen drivers.
+    
+    This commit also removes the disk image signature.  These have not
+    been needed since virt-builder 1.24.1.  No one should be running that
+    version of virt-builder since there are newer 1.24 branch versions.
+
+commit 0fa52e4e45d80874bc5ea5f112f74be1d3f3472f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 12 13:49:43 2014 +0100
+
+    builder: Fedora: Enable Xen driver support.
+    
+    See:
+    https://www.redhat.com/archives/libguestfs/2014-June/thread.html#00045
+    
+    Notes:
+    
+    (1) Edit dracut configuration to make sure the change is permanent, in
+    case kickstart, virt-builder or something else installs a kernel or
+    runs dracut.
+    
+    (2) We need to run dracut on the just-installed kernel, not on the
+    running kernel.  The snippet to do this was copied from the Fedora
+    cloud kickstart.
+    
+    Thanks: Olaf Hering, George Dunlap, Dario Faggioli.
+
+commit d4d6540b24ac82fd7344db10e96270cc0a28aa68
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 12 13:49:09 2014 +0100
+
+    builder: virt-install now requires '--serial pty' parameter.
+    
+    This updates commit 73ebaa30668ce7d9e3e413c3abf67a74829dfe5d.
+
+commit 73ebaa30668ce7d9e3e413c3abf67a74829dfe5d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 11 12:43:03 2014 +0100
+
+    builder: virt-install now seems to require '--serial pty' option.
+
+commit 99472ab2e925a43e9ba51e62ee66145e92209b8f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 11 12:42:08 2014 +0100
+
+    builder: Further updates to RHEL 7 GA script.
+    
+    The location of the trees have moved ... again.
+
+commit 24800d2e96b668252e30977f3af81aa3b2195eef
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 11 08:21:34 2014 +0100
+
+    builder: Update rhel.sh script for RHEL 7 GA.
+    
+    Set the rootfs for RHEL 7.x to xfs.  (/boot is ext4)
+    
+    Remove old RHEL 7 beta & rc releases.
+
 commit 0dbdc470ed7a6fe7251929ee6f4dfeb8ddc01625
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Jun 10 21:10:27 2014 +0100
