@@ -5388,6 +5388,18 @@ run_journal_get_data_threshold (ETERM *message)
 }
 
 static ETERM *
+run_journal_get_realtime_usec (ETERM *message)
+{
+  int64_t r;
+
+  r = guestfs_journal_get_realtime_usec (g);
+  if (r == -1)
+    return make_error ("journal_get_realtime_usec");
+
+  return erl_mk_longlong (r);
+}
+
+static ETERM *
 run_journal_next (ETERM *message)
 {
   int r;
@@ -10957,6 +10969,8 @@ dispatch (ETERM *message)
     return run_journal_get (message);
   else if (atom_equals (fun, "journal_get_data_threshold"))
     return run_journal_get_data_threshold (message);
+  else if (atom_equals (fun, "journal_get_realtime_usec"))
+    return run_journal_get_realtime_usec (message);
   else if (atom_equals (fun, "journal_next"))
     return run_journal_next (message);
   else if (atom_equals (fun, "journal_open"))

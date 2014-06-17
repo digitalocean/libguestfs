@@ -8901,3 +8901,89 @@ guestfs_blkdiscard (guestfs_h *g,
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC int64_t
+guestfs_journal_get_realtime_usec (guestfs_h *g)
+{
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_journal_get_realtime_usec_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int64_t ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "journal_get_realtime_usec", 25);
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "journal_get_realtime_usec");
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "journal_get_realtime_usec") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_get_realtime_usec", "-1");
+    return -1;
+  }
+
+  serial = guestfs___send (g, GUESTFS_PROC_JOURNAL_GET_REALTIME_USEC, progress_hint, 0,
+                           NULL, NULL);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_get_realtime_usec", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "journal_get_realtime_usec", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_journal_get_realtime_usec_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_get_realtime_usec", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_JOURNAL_GET_REALTIME_USEC, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_get_realtime_usec", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "journal_get_realtime_usec", "-1");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "journal_get_realtime_usec", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "journal_get_realtime_usec",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = ret.usec;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "journal_get_realtime_usec");
+    fprintf (trace_buffer.fp, "%" PRIi64, ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+

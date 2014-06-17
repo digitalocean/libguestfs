@@ -351,6 +351,7 @@
     <keyword type="function" name="guestfs_session_journal_close ()" link="GuestfsSession.html#guestfs-session-journal-close"/>
     <keyword type="function" name="guestfs_session_journal_get ()" link="GuestfsSession.html#guestfs-session-journal-get"/>
     <keyword type="function" name="guestfs_session_journal_get_data_threshold ()" link="GuestfsSession.html#guestfs-session-journal-get-data-threshold"/>
+    <keyword type="function" name="guestfs_session_journal_get_realtime_usec ()" link="GuestfsSession.html#guestfs-session-journal-get-realtime-usec"/>
     <keyword type="function" name="guestfs_session_journal_next ()" link="GuestfsSession.html#guestfs-session-journal-next"/>
     <keyword type="function" name="guestfs_session_journal_open ()" link="GuestfsSession.html#guestfs-session-journal-open"/>
     <keyword type="function" name="guestfs_session_journal_set_data_threshold ()" link="GuestfsSession.html#guestfs-session-journal-set-data-threshold"/>

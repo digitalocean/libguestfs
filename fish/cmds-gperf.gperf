@@ -275,6 +275,7 @@ extern struct command_entry isoinfo_device_cmd_entry;
 extern struct command_entry journal_close_cmd_entry;
 extern struct command_entry journal_get_cmd_entry;
 extern struct command_entry journal_get_data_threshold_cmd_entry;
+extern struct command_entry journal_get_realtime_usec_cmd_entry;
 extern struct command_entry journal_next_cmd_entry;
 extern struct command_entry journal_open_cmd_entry;
 extern struct command_entry journal_set_data_threshold_cmd_entry;
@@ -1020,6 +1021,8 @@ journal_get, &journal_get_cmd_entry
 journal-get, &journal_get_cmd_entry
 journal_get_data_threshold, &journal_get_data_threshold_cmd_entry
 journal-get-data-threshold, &journal_get_data_threshold_cmd_entry
+journal_get_realtime_usec, &journal_get_realtime_usec_cmd_entry
+journal-get-realtime-usec, &journal_get_realtime_usec_cmd_entry
 journal_next, &journal_next_cmd_entry
 journal-next, &journal_next_cmd_entry
 journal_open, &journal_open_cmd_entry

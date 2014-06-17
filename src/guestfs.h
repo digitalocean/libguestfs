@@ -1823,6 +1823,9 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_xattr_list *guestfs_journal_get (guestf
 #define GUESTFS_HAVE_JOURNAL_GET_DATA_THRESHOLD 1
 extern GUESTFS_DLL_PUBLIC int64_t guestfs_journal_get_data_threshold (guestfs_h *g);
 
+#define GUESTFS_HAVE_JOURNAL_GET_REALTIME_USEC 1
+extern GUESTFS_DLL_PUBLIC int64_t guestfs_journal_get_realtime_usec (guestfs_h *g);
+
 #define GUESTFS_HAVE_JOURNAL_NEXT 1
 extern GUESTFS_DLL_PUBLIC int guestfs_journal_next (guestfs_h *g);
 
@@ -3840,6 +3843,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_JOURNAL_CLOSE 1
 #define LIBGUESTFS_HAVE_JOURNAL_GET 1
 #define LIBGUESTFS_HAVE_JOURNAL_GET_DATA_THRESHOLD 1
+#define LIBGUESTFS_HAVE_JOURNAL_GET_REALTIME_USEC 1
 #define LIBGUESTFS_HAVE_JOURNAL_NEXT 1
 #define LIBGUESTFS_HAVE_JOURNAL_OPEN 1
 #define LIBGUESTFS_HAVE_JOURNAL_SET_DATA_THRESHOLD 1

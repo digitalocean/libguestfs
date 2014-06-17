@@ -297,6 +297,7 @@ PHP_FUNCTION (guestfs_isoinfo_device);
 PHP_FUNCTION (guestfs_journal_close);
 PHP_FUNCTION (guestfs_journal_get);
 PHP_FUNCTION (guestfs_journal_get_data_threshold);
+PHP_FUNCTION (guestfs_journal_get_realtime_usec);
 PHP_FUNCTION (guestfs_journal_next);
 PHP_FUNCTION (guestfs_journal_open);
 PHP_FUNCTION (guestfs_journal_set_data_threshold);

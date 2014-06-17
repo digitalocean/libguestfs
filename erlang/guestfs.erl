@@ -292,6 +292,7 @@
 -export([journal_close/1]).
 -export([journal_get/1]).
 -export([journal_get_data_threshold/1]).
+-export([journal_get_realtime_usec/1]).
 -export([journal_next/1]).
 -export([journal_open/2]).
 -export([journal_set_data_threshold/2]).
@@ -1491,6 +1492,9 @@ journal_get(G) ->
 
 journal_get_data_threshold(G) ->
   call_port(G, {journal_get_data_threshold}).
+
+journal_get_realtime_usec(G) ->
+  call_port(G, {journal_get_realtime_usec}).
 
 journal_next(G) ->
   call_port(G, {journal_next}).

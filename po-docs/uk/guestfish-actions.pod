@@ -4011,6 +4011,12 @@ the threshold is unlimited.
 
 Див. також L</journal-set-data-threshold>.
 
+=head2 journal-get-realtime-usec
+
+ journal-get-realtime-usec
+
+Get the realtime (wallclock) timestamp of the current journal entry.
+
 =head2 journal-next
 
  journal-next

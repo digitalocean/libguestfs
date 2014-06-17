@@ -34,15 +34,6 @@ C<mydomain> という名前の libvirt 仮想マシンの中にある C</etc/fst
 
  virt-cat -d mydomain /etc/fstab
 
-仮想マシンのディスクイメージファイルから syslog メッセージを一覧表示するには:
-
- virt-cat -a disk.img /var/log/messages | tail
-
-仮想マシンが取得している DHCP IP アドレスを発見するには:
-
- virt-cat -d mydomain /var/log/messages | \
-   grep 'dhclient: bound to' | tail
-
 どのパッケージが最新インストールされたかを見つけるには:
 
  virt-cat -d mydomain /var/log/yum.log | tail
@@ -158,6 +149,11 @@ the confusing case where a disk image might have the same name as a guest.
 
 互換性のため古い形式がまだサポートされています。
 
+=head1 LOG FILES
+
+To list out the log files from guests, see the related tool L<virt-log(1)>.
+It understands binary log formats such as the systemd journal.
+
 =head1 Windows のパス
 
 C<virt-cat> は Windows のドライブレターとパスの解釈能力に制限があります（例: C<E:\foo\bar.txt>）。
@@ -230,7 +226,7 @@ L<sh(1)> for details.
 =head1 関連項目
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-copy-out(1)>, L<virt-edit(1)>,
-L<virt-tar-out(1)>, L<http://libguestfs.org/>.
+L<virt-log(1)>, L<virt-tar-out(1)>, L<http://libguestfs.org/>.
 
 =head1 著者
 

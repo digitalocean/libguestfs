@@ -2890,6 +2890,10 @@ struct guestfs_cpio_out_args {
   string format<>;
 };
 
+struct guestfs_journal_get_realtime_usec_ret {
+  int64_t usec;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3303,10 +3307,11 @@ enum guestfs_procedure {
   GUESTFS_PROC_PART_GET_NAME = 416,
   GUESTFS_PROC_BLKDISCARD = 417,
   GUESTFS_PROC_BLKDISCARDZEROES = 418,
-  GUESTFS_PROC_CPIO_OUT = 419
+  GUESTFS_PROC_CPIO_OUT = 419,
+  GUESTFS_PROC_JOURNAL_GET_REALTIME_USEC = 420
 };
 
-const GUESTFS_MAX_PROC_NR = 419;
+const GUESTFS_MAX_PROC_NR = 420;
 
 /* The remote procedure call protocol. */
 

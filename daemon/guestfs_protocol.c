@@ -8130,6 +8130,16 @@ xdr_guestfs_cpio_out_args (XDR *xdrs, guestfs_cpio_out_args *objp)
 }
 
 bool_t
+xdr_guestfs_journal_get_realtime_usec_ret (XDR *xdrs, guestfs_journal_get_realtime_usec_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int64_t (xdrs, &objp->usec))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

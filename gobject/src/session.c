@@ -12894,6 +12894,37 @@ guestfs_session_journal_get_data_threshold (GuestfsSession *session, GError **er
 }
 
 /**
+ * guestfs_session_journal_get_realtime_usec:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * get the timestamp of the current journal entry
+ *
+ * Get the realtime (wallclock) timestamp of the current journal entry.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint64
+guestfs_session_journal_get_realtime_usec (GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "journal_get_realtime_usec");
+    return -1;
+  }
+
+  int64_t ret = guestfs_journal_get_realtime_usec (g);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
  * guestfs_session_journal_next:
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors

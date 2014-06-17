@@ -1,3 +1,70 @@
+commit e6a067e183cda42e1ab3596536ab850986c25516
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 16 12:49:02 2014 +0100
+
+    Version 1.27.18.
+
+commit 98a1392849da06c0579c2506a30e5c7d52a93b52
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 16 12:25:05 2014 +0100
+
+    virt-log: Fix memory leak because of wrong type of CLEANUP_* function.
+    
+    This fixes commit a3475cf9bbbbd3514b117d5edd75d9c0e239d43a.
+
+commit cd15b2ead6b25554ad6c13ee5c1463c06f0895b2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 16 10:53:59 2014 +0100
+
+    Version 1.27.17.
+
+commit c1dd8e80ba687a88a9ee84033f331df0bebc78e7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 16 10:50:58 2014 +0100
+
+    tests/guests: Add new file debian-syslog to EXTRA_DIST.
+    
+    This fixes commit 026342a7ee20cd31d4de6c212e848791f7099d5e.
+
+commit 0c38cd4d25eb32187341d3642be51053577d7ceb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 16 10:14:06 2014 +0100
+
+    virt-log: Add support for displaying the Windows Event Log.
+    
+    Uses the external program python-evtx, and this only works
+    for Windows >= Vista.
+
+commit d167da86d922d1c9341848117f7ce140a92dd951
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 16 10:31:29 2014 +0100
+
+    virt-log: do_log_journal: return instead of exiting immediately.
+    
+    This cleans up commit a3475cf9bbbbd3514b117d5edd75d9c0e239d43a.
+
+commit fb546eaee064b14ad192a4f0390325ba1b4c766a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 14 10:50:36 2014 +0100
+
+    New tool: virt-log: It lists log files from within the guest.
+    
+    See 'TODO' file for suggested future improvements.
+
+commit 026342a7ee20cd31d4de6c212e848791f7099d5e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 14 11:52:01 2014 +0100
+
+    tests: guests: Add a text syslog file to the phony Debian guest.
+
+commit 2d996df66c8d67e11a91a89c074c91a233356494
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 14 13:27:02 2014 +0100
+
+    New API: journal_get_realtime_usec
+    
+    This adds a binding for sd_journal_get_realtime_usec(3).
+
 commit e5276e4455f74ca3ad76d93a6ca41a7175038c0f
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Jun 13 22:48:18 2014 +0100

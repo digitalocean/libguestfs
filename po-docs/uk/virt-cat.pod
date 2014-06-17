@@ -35,15 +35,6 @@ C<virt-cat> можна скористатися для пришвидшення 
 
  virt-cat -d mydomain /etc/fstab
 
-Показ списку повідомлень syslog з файла образу диска віртуальної машини:
-
- virt-cat -a disk.img /var/log/messages | tail
-
-Визначення IP-адреси DHCP, використаної віртуальною машиною:
-
- virt-cat -d mydomain /var/log/messages | \
-   grep 'dhclient: bound to' | tail
-
 Пошук нещодавно встановлених пакунків:
 
  virt-cat -d mydomain /var/log/yum.log | tail
@@ -174,6 +165,11 @@ the confusing case where a disk image might have the same name as a guest.
 З міркувань зворотної сумісності передбачено підтримку запису параметрів у
 застарілому форматі.
 
+=head1 LOG FILES
+
+To list out the log files from guests, see the related tool L<virt-log(1)>.
+It understands binary log formats such as the systemd journal.
+
 =head1 ШЛЯХИ У WINDOWS
 
 C<virt-cat> has a limited ability to understand Windows drive letters and
@@ -252,7 +248,7 @@ L<sh(1)> for details.
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-copy-out(1)>, L<virt-edit(1)>,
-L<virt-tar-out(1)>, L<http://libguestfs.org/>.
+L<virt-log(1)>, L<virt-tar-out(1)>, L<http://libguestfs.org/>.
 
 =head1 АВТОР
 

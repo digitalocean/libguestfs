@@ -9268,6 +9268,26 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * get the timestamp of the current journal entry
+   * <p>
+   * Get the realtime (wallclock) timestamp of the current
+   * journal entry.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long journal_get_realtime_usec ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("journal_get_realtime_usec: handle is closed");
+
+    return _journal_get_realtime_usec (g);
+  }
+
+  private native long _journal_get_realtime_usec (long g)
+    throws LibGuestFSException;
+
+  /**
    * move to the next journal entry
    * <p>
    * Move to the next journal entry. You have to call this at

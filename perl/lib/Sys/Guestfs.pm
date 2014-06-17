@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.419';
+$VERSION = '0.420';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -4030,6 +4030,10 @@ this size when reading them (note also that it may not truncate them).
 If this returns C<0>, then the threshold is unlimited.
 
 See also C<$g-E<gt>journal_set_data_threshold>.
+
+=item $usec = $g->journal_get_realtime_usec ();
+
+Get the realtime (wallclock) timestamp of the current journal entry.
 
 =item $more = $g->journal_next ();
 
@@ -9896,6 +9900,13 @@ use vars qw(%guestfs_introspection);
     ],
     name => "journal_get_data_threshold",
     description => "get the data threshold for reading journal entries",
+  },
+  "journal_get_realtime_usec" => {
+    ret => 'int64',
+    args => [
+    ],
+    name => "journal_get_realtime_usec",
+    description => "get the timestamp of the current journal entry",
   },
   "journal_next" => {
     ret => 'bool',

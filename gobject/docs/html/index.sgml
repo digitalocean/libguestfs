@@ -282,6 +282,7 @@
 <ANCHOR id="guestfs-session-journal-close" href="guestfs/GuestfsSession.html#guestfs-session-journal-close">
 <ANCHOR id="guestfs-session-journal-get" href="guestfs/GuestfsSession.html#guestfs-session-journal-get">
 <ANCHOR id="guestfs-session-journal-get-data-threshold" href="guestfs/GuestfsSession.html#guestfs-session-journal-get-data-threshold">
+<ANCHOR id="guestfs-session-journal-get-realtime-usec" href="guestfs/GuestfsSession.html#guestfs-session-journal-get-realtime-usec">
 <ANCHOR id="guestfs-session-journal-next" href="guestfs/GuestfsSession.html#guestfs-session-journal-next">
 <ANCHOR id="guestfs-session-journal-open" href="guestfs/GuestfsSession.html#guestfs-session-journal-open">
 <ANCHOR id="guestfs-session-journal-set-data-threshold" href="guestfs/GuestfsSession.html#guestfs-session-journal-set-data-threshold">

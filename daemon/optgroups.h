@@ -141,6 +141,7 @@ extern int optgroup_zerofree_available (void);
   int __attribute__((noreturn)) do_internal_journal_get (void) { abort (); } \
   int __attribute__((noreturn)) do_journal_close (void) { abort (); } \
   int64_t __attribute__((noreturn)) do_journal_get_data_threshold (void) { abort (); } \
+  int64_t __attribute__((noreturn)) do_journal_get_realtime_usec (void) { abort (); } \
   int __attribute__((noreturn)) do_journal_next (void) { abort (); } \
   int __attribute__((noreturn)) do_journal_open (const char *directory) { abort (); } \
   int __attribute__((noreturn)) do_journal_set_data_threshold (int64_t threshold) { abort (); } \

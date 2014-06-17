@@ -274,6 +274,7 @@ static int run_isoinfo_device (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_close (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_get (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_get_data_threshold (const char *cmd, size_t argc, char *argv[]);
+static int run_journal_get_realtime_usec (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_next (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_open (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_set_data_threshold (const char *cmd, size_t argc, char *argv[]);
@@ -2056,6 +2057,12 @@ struct command_entry journal_get_data_threshold_cmd_entry = {
   .name = "journal-get-data-threshold",
   .help = "NAME\n    journal-get-data-threshold - get the data threshold for reading journal\n    entries\n\nSYNOPSIS\n     journal-get-data-threshold\n\nDESCRIPTION\n    Get the current data threshold for reading journal entries. This is a\n    hint to the journal that it may truncate data fields to this size when\n    reading them (note also that it may not truncate them). If this returns\n    0, then the threshold is unlimited.\n\n    See also \"journal_set_data_threshold\".\n\n",
   .run = run_journal_get_data_threshold
+};
+
+struct command_entry journal_get_realtime_usec_cmd_entry = {
+  .name = "journal-get-realtime-usec",
+  .help = "NAME\n    journal-get-realtime-usec - get the timestamp of the current journal\n    entry\n\nSYNOPSIS\n     journal-get-realtime-usec\n\nDESCRIPTION\n    Get the realtime (wallclock) timestamp of the current journal entry.\n\n",
+  .run = run_journal_get_realtime_usec
 };
 
 struct command_entry journal_next_cmd_entry = {
@@ -4037,6 +4044,7 @@ list_commands (void)
   printf ("%-20s %s\n", "journal-close", _("close the systemd journal"));
   printf ("%-20s %s\n", "journal-get", _("read the current journal entry"));
   printf ("%-20s %s\n", "journal-get-data-threshold", _("get the data threshold for reading journal entries"));
+  printf ("%-20s %s\n", "journal-get-realtime-usec", _("get the timestamp of the current journal entry"));
   printf ("%-20s %s\n", "journal-next", _("move to the next journal entry"));
   printf ("%-20s %s\n", "journal-open", _("open the systemd journal"));
   printf ("%-20s %s\n", "journal-set-data-threshold", _("set the data threshold for reading journal entries"));
@@ -12991,6 +12999,26 @@ run_journal_get_data_threshold (const char *cmd, size_t argc, char *argv[])
     goto out_noargs;
   }
   r = guestfs_journal_get_data_threshold (g);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_journal_get_realtime_usec (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int64_t r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_journal_get_realtime_usec (g);
   if (r == -1) goto out;
   ret = 0;
   printf ("%" PRIi64 "\n", r);

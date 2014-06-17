@@ -16156,6 +16156,39 @@ done_no_free:
   return;
 }
 
+static void
+journal_get_realtime_usec_stub (XDR *xdr_in)
+{
+  int64_t r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_journal_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "journal");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_journal_get_realtime_usec ();
+  if (r == -1)
+    /* do_journal_get_realtime_usec has already called reply_with_error */
+    goto done;
+
+  struct guestfs_journal_get_realtime_usec_ret ret;
+  ret.usec = r;
+  reply ((xdrproc_t) &xdr_guestfs_journal_get_realtime_usec_ret, (char *) &ret);
+done:
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -17394,6 +17427,9 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_CPIO_OUT:
       cpio_out_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_JOURNAL_GET_REALTIME_USEC:
+      journal_get_realtime_usec_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

@@ -234,6 +234,7 @@ module Guestfs (
   is_zero_device,
   journal_close,
   journal_get_data_threshold,
+  journal_get_realtime_usec,
   journal_next,
   journal_open,
   journal_set_data_threshold,
@@ -3055,6 +3056,18 @@ foreign import ccall unsafe "guestfs.h guestfs_journal_get_data_threshold" c_jou
 journal_get_data_threshold :: GuestfsH -> IO Int64
 journal_get_data_threshold h = do
   r <- withForeignPtr h (\p -> c_journal_get_data_threshold p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs.h guestfs_journal_get_realtime_usec" c_journal_get_realtime_usec
+  :: GuestfsP -> IO Int64
+
+journal_get_realtime_usec :: GuestfsH -> IO Int64
+journal_get_realtime_usec h = do
+  r <- withForeignPtr h (\p -> c_journal_get_realtime_usec p)
   if (r == -1)
     then do
       err <- last_error h

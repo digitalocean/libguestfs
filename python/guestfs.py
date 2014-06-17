@@ -4659,6 +4659,14 @@ class GuestFS(object):
         r = libguestfsmod.journal_get_data_threshold (self._o)
         return r
 
+    def journal_get_realtime_usec (self):
+        """Get the realtime (wallclock) timestamp of the current
+        journal entry.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.journal_get_realtime_usec (self._o)
+        return r
+
     def journal_next (self):
         """Move to the next journal entry. You have to call this at
         least once after opening the handle before you are able

@@ -4233,6 +4233,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_journal_get_realtime_usec (IntPtr h);
+
+    /// <summary>
+    /// get the timestamp of the current journal entry
+    /// </summary>
+    public long journal_get_realtime_usec ()
+    {
+      long r;
+      r = guestfs_journal_get_realtime_usec (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_journal_next (IntPtr h);
 
     /// <summary>

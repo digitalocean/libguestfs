@@ -6464,6 +6464,15 @@ the threshold is unlimited.
 
 (Додано у 1.23.11)
 
+=head2 guestfs_journal_get_realtime_usec
+
+ int64_t
+ guestfs_journal_get_realtime_usec (guestfs_h *g);
+
+Get the realtime (wallclock) timestamp of the current journal entry.
+
+У разі помилки цією функцією буде повернуто -1.
+
 =head2 guestfs_journal_next
 
  int

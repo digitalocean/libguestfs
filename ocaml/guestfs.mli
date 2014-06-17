@@ -1182,6 +1182,9 @@ val journal_get : t -> xattr array
 val journal_get_data_threshold : t -> int64
 (** get the data threshold for reading journal entries *)
 
+val journal_get_realtime_usec : t -> int64
+(** get the timestamp of the current journal entry *)
+
 val journal_next : t -> bool
 (** move to the next journal entry *)
 
@@ -2439,6 +2442,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method journal_close : unit -> unit
   method journal_get : unit -> xattr array
   method journal_get_data_threshold : unit -> int64
+  method journal_get_realtime_usec : unit -> int64
   method journal_next : unit -> bool
   method journal_open : string -> unit
   method journal_set_data_threshold : int64 -> unit

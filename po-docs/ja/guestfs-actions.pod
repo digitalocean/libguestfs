@@ -6346,6 +6346,15 @@ See also C<guestfs_journal_set_data_threshold>.
 
 (Added in 1.23.11)
 
+=head2 guestfs_journal_get_realtime_usec
+
+ int64_t
+ guestfs_journal_get_realtime_usec (guestfs_h *g);
+
+Get the realtime (wallclock) timestamp of the current journal entry.
+
+この関数はエラーのとき -1 を返します。
+
 =head2 guestfs_journal_next
 
  int

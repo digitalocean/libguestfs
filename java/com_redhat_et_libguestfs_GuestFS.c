@@ -7082,6 +7082,23 @@ Java_com_redhat_et_libguestfs_GuestFS__1journal_1get_1data_1threshold  (JNIEnv *
   return (jlong) r;
 }
 
+JNIEXPORT jlong JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1journal_1get_1realtime_1usec  (JNIEnv *env, jobject obj, jlong jg)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int64_t r;
+
+
+  r = guestfs_journal_get_realtime_usec (g);
+
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return -1;
+  }
+  return (jlong) r;
+}
+
 JNIEXPORT jboolean JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1journal_1next  (JNIEnv *env, jobject obj, jlong jg)
 {

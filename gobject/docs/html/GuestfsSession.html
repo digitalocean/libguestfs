@@ -976,6 +976,9 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
 <span class="returnvalue">gint64</span>              <a class="link" href="GuestfsSession.html#guestfs-session-journal-get-data-threshold" title="guestfs_session_journal_get_data_threshold ()">guestfs_session_journal_get_data_threshold</a>
                                                         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gint64</span>              <a class="link" href="GuestfsSession.html#guestfs-session-journal-get-realtime-usec" title="guestfs_session_journal_get_realtime_usec ()">guestfs_session_journal_get_realtime_usec</a>
+                                                        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gint8</span>               <a class="link" href="GuestfsSession.html#guestfs-session-journal-next" title="guestfs_session_journal_next ()">guestfs_session_journal_next</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-journal-open" title="guestfs_session_journal_open ()">guestfs_session_journal_open</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
@@ -15910,6 +15913,40 @@ reading them (note also that it may not truncate them). If this returns
 </p>
 <p>
 See also <a class="link" href="GuestfsSession.html#guestfs-session-journal-set-data-threshold" title="guestfs_session_journal_set_data_threshold ()"><code class="function">guestfs_session_journal_set_data_threshold()</code></a>.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned value, or -1 on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-journal-get-realtime-usec"></a><h3>guestfs_session_journal_get_realtime_usec ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint64</span>              guestfs_session_journal_get_realtime_usec
+                                                        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+get the timestamp of the current journal entry
+</p>
+<p>
+Get the realtime (wallclock) timestamp of the current journal entry.
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>

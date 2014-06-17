@@ -3096,6 +3096,16 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_journal_get_realtime_usec ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_journal_next ##### -->
 <para>
 

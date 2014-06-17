@@ -5284,6 +5284,19 @@ PREINIT:
       RETVAL
 
 SV *
+journal_get_realtime_usec (g)
+      guestfs_h *g;
+PREINIT:
+      int64_t r;
+   CODE:
+      r = guestfs_journal_get_realtime_usec (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = my_newSVll (r);
+ OUTPUT:
+      RETVAL
+
+SV *
 journal_next (g)
       guestfs_h *g;
 PREINIT:

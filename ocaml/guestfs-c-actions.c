@@ -9855,6 +9855,35 @@ ocaml_guestfs_journal_get_data_threshold (value gv)
 }
 
 /* Automatically generated wrapper for function
+ * val journal_get_realtime_usec : t -> int64
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_journal_get_realtime_usec (value gv);
+
+value
+ocaml_guestfs_journal_get_realtime_usec (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("journal_get_realtime_usec");
+
+  int64_t r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_journal_get_realtime_usec (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "journal_get_realtime_usec");
+
+  rv = caml_copy_int64 (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val journal_next : t -> bool
  */
 

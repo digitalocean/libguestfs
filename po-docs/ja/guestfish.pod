@@ -1525,11 +1525,11 @@ L<guestfs(3)>, L<http://libguestfs.org/>, L<virt-alignment-scan(1)>,
 L<virt-builder(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>,
 L<virt-customize(1)>, L<virt-df(1)>, L<virt-diff(1)>, L<virt-edit(1)>,
 L<virt-filesystems(1)>, L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
-L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
-L<virt-p2v(1)>, L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
-L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
-L<virt-v2v(1)>, L<virt-win-reg(1)>, L<libguestfs-tools.conf(5)>,
-L<display(1)>, L<hexedit(1)>, L<supermin(1)>.
+L<virt-list-partitions(1)>, L<virt-log(1)>, L<virt-ls(1)>,
+L<virt-make-fs(1)>, L<virt-p2v(1)>, L<virt-rescue(1)>, L<virt-resize(1)>,
+L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>,
+L<virt-tar-out(1)>, L<virt-v2v(1)>, L<virt-win-reg(1)>,
+L<libguestfs-tools.conf(5)>, L<display(1)>, L<hexedit(1)>, L<supermin(1)>.
 
 =head1 著者
 

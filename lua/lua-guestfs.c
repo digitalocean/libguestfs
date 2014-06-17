@@ -6989,6 +6989,26 @@ guestfs_lua_journal_get_data_threshold (lua_State *L)
 }
 
 static int
+guestfs_lua_journal_get_realtime_usec (lua_State *L)
+{
+  int64_t r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "journal_get_realtime_usec");
+
+
+  r = guestfs_journal_get_realtime_usec (g);
+  if (r == -1)
+    return last_error (L, g);
+
+  push_int64 (L, r);
+  return 1;
+}
+
+static int
 guestfs_lua_journal_next (lua_State *L)
 {
   int r;
@@ -15349,6 +15369,7 @@ static luaL_Reg methods[] = {
   { "journal_close", guestfs_lua_journal_close },
   { "journal_get", guestfs_lua_journal_get },
   { "journal_get_data_threshold", guestfs_lua_journal_get_data_threshold },
+  { "journal_get_realtime_usec", guestfs_lua_journal_get_realtime_usec },
   { "journal_next", guestfs_lua_journal_next },
   { "journal_open", guestfs_lua_journal_open },
   { "journal_set_data_threshold", guestfs_lua_journal_set_data_threshold },

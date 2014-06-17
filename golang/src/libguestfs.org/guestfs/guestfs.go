@@ -6667,6 +6667,20 @@ func (g *Guestfs) Journal_get_data_threshold () (int64, *GuestfsError) {
     return int64 (r), nil
 }
 
+/* journal_get_realtime_usec : get the timestamp of the current journal entry */
+func (g *Guestfs) Journal_get_realtime_usec () (int64, *GuestfsError) {
+    if g.g == nil {
+        return 0, closed_handle_error ("journal_get_realtime_usec")
+    }
+
+    r := C.guestfs_journal_get_realtime_usec (g.g)
+
+    if r == -1 {
+        return 0, get_error_from_handle (g, "journal_get_realtime_usec")
+    }
+    return int64 (r), nil
+}
+
 /* journal_next : move to the next journal entry */
 func (g *Guestfs) Journal_next () (bool, *GuestfsError) {
     if g.g == nil {

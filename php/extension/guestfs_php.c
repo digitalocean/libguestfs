@@ -323,6 +323,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_journal_close, NULL)
   PHP_FE (guestfs_journal_get, NULL)
   PHP_FE (guestfs_journal_get_data_threshold, NULL)
+  PHP_FE (guestfs_journal_get_realtime_usec, NULL)
   PHP_FE (guestfs_journal_next, NULL)
   PHP_FE (guestfs_journal_open, NULL)
   PHP_FE (guestfs_journal_set_data_threshold, NULL)
@@ -10803,6 +10804,32 @@ PHP_FUNCTION (guestfs_journal_get_data_threshold)
 
   int64_t r;
   r = guestfs_journal_get_data_threshold (g);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_LONG (r);
+}
+
+PHP_FUNCTION (guestfs_journal_get_realtime_usec)
+{
+  zval *z_g;
+  guestfs_h *g;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "r",
+        &z_g) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  int64_t r;
+  r = guestfs_journal_get_realtime_usec (g);
 
   if (r == -1) {
     RETURN_FALSE;

@@ -11139,6 +11139,39 @@ py_guestfs_journal_get_data_threshold (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_journal_get_realtime_usec (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int64_t r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_journal_get_realtime_usec",
+                         &py_g))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_journal_get_realtime_usec (g);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = PyLong_FromLongLong (r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_journal_next (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -22425,6 +22458,7 @@ static PyMethodDef methods[] = {
   { (char *) "journal_close", py_guestfs_journal_close, METH_VARARGS, NULL },
   { (char *) "journal_get", py_guestfs_journal_get, METH_VARARGS, NULL },
   { (char *) "journal_get_data_threshold", py_guestfs_journal_get_data_threshold, METH_VARARGS, NULL },
+  { (char *) "journal_get_realtime_usec", py_guestfs_journal_get_realtime_usec, METH_VARARGS, NULL },
   { (char *) "journal_next", py_guestfs_journal_next, METH_VARARGS, NULL },
   { (char *) "journal_open", py_guestfs_journal_open, METH_VARARGS, NULL },
   { (char *) "journal_set_data_threshold", py_guestfs_journal_set_data_threshold, METH_VARARGS, NULL },

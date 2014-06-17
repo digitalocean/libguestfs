@@ -2159,6 +2159,14 @@ JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1journal_1get_1da
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _journal_get_realtime_usec
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1journal_1get_1realtime_1usec
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _journal_next
  * Signature: (J)Z
  */

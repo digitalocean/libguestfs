@@ -12830,6 +12830,37 @@ ruby_guestfs_journal_get_data_threshold (VALUE gv)
 
 /*
  * call-seq:
+ *   g.journal_get_realtime_usec() -> fixnum
+ *
+ * get the timestamp of the current journal entry
+ *
+ * Get the realtime (wallclock) timestamp of the current
+ * journal entry.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_journal_get_realtime_usec+[http://libguestfs.org/guestfs.3.html#guestfs_journal_get_realtime_usec]).
+ */
+static VALUE
+ruby_guestfs_journal_get_realtime_usec (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "journal_get_realtime_usec");
+
+
+  int64_t r;
+
+  r = guestfs_journal_get_realtime_usec (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
+}
+
+/*
+ * call-seq:
  *   g.journal_next() -> [True|False]
  *
  * move to the next journal entry
@@ -26513,6 +26544,8 @@ Init__guestfs (void)
         ruby_guestfs_journal_get, 0);
   rb_define_method (c_guestfs, "journal_get_data_threshold",
         ruby_guestfs_journal_get_data_threshold, 0);
+  rb_define_method (c_guestfs, "journal_get_realtime_usec",
+        ruby_guestfs_journal_get_realtime_usec, 0);
   rb_define_method (c_guestfs, "journal_next",
         ruby_guestfs_journal_next, 0);
   rb_define_method (c_guestfs, "journal_open",
