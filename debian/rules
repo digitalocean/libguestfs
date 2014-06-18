@@ -131,7 +131,7 @@ override_dh_install:
 	    echo "appliance for $$p..."; \
 	    echo -n 'appliance:Depends=' >> debian/$$p.substvars; \
 	    cat debian/$$p/usr/lib/*-*/guestfs/supermin.d/*packages* | \
-	    grep -v '^\(bash\|coreutils\|e2fsprogs\|findutils\|grep\|gzip\|sed\|sysvinit\|tar\|util\-linux\)' | \
+	    grep -v '^\(bash\|coreutils\|e2fsprogs\|findutils\|grep\|gzip\|iproute\|sed\|sysvinit\|tar\|util\-linux\)' | \
 		tr '\n' ',' >> debian/$$p.substvars; \
 	done
 
