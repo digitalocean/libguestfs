@@ -45,6 +45,8 @@ let rec main () =
     | InputLibvirtXML filename ->
       Source_libvirt.create_from_xml filename in
 
+  if verbose then printf "%s%!" (string_of_source source);
+
   (* Create a qcow2 v3 overlay to protect the source image(s).  There
    * is a specific reason to use the newer qcow2 variant: Because the
    * L2 table can store zero clusters efficiently, and because
@@ -66,6 +68,7 @@ let rec main () =
         let cmd =
           sprintf "qemu-img create -q -f qcow2 -b %s -o %s %s"
             (quote qemu_uri) (quote options) overlay in
+        if verbose then printf "%s\n%!" cmd;
         if Sys.command cmd <> 0 then
           error (f_"qemu-img command failed, see earlier errors");
         overlay, qemu_uri, format
@@ -90,7 +93,8 @@ let rec main () =
    * work.
    *)
   let overlays =
-    initialize_target g output output_alloc output_format overlays in
+    initialize_target g
+      source output output_alloc output_format output_name overlays in
 
   (* Inspection - this also mounts up the filesystems. *)
   msg (f_"Inspecting the overlay");
@@ -120,7 +124,7 @@ let rec main () =
           | OutputRHEV _ -> Some false
           | OutputLibvirt _ | OutputLocal _ -> None in
 
-        Convert_linux_enterprise.convert ?keep_serial_console
+        Convert_linux.convert ?keep_serial_console
           verbose g inspect source
 
       | distro ->
@@ -161,7 +165,7 @@ let rec main () =
     fun i ov ->
       msg (f_"Copying disk %d/%d to %s (%s)")
         (i+1) nr_overlays ov.ov_target_file ov.ov_target_format;
-      if verbose then printf "%s\n%!" (string_of_overlay ov);
+      if verbose then printf "%s%!" (string_of_overlay ov);
 
       (* It turns out that libguestfs's disk creation code is
        * considerably more flexible and easier to use than qemu-img, so
@@ -211,7 +215,8 @@ let rec main () =
   if debug_gc then
     Gc.compact ()
 
-and initialize_target g output output_alloc output_format overlays =
+and initialize_target g
+    source output output_alloc output_format output_name overlays =
   let overlays =
     mapi (
       fun i (overlay, qemu_uri, backing_format) ->
@@ -244,9 +249,13 @@ and initialize_target g output output_alloc output_format overlays =
           ov_source_file = qemu_uri; ov_source_format = backing_format; }
     ) overlays in
   let overlays =
+    let renamed_source =
+      match output_name with
+      | None -> source
+      | Some name -> { source with s_name = name } in
     match output with
     | OutputLibvirt oc -> assert false
-    | OutputLocal dir -> Target_local.initialize dir overlays
+    | OutputLocal dir -> Target_local.initialize dir renamed_source overlays
     | OutputRHEV os -> assert false in
   overlays
 
@@ -318,7 +327,18 @@ and inspect_source g root_choice =
   let apps = g#inspect_list_applications2 root in
   let apps = Array.to_list apps in
 
-  { i_root = root; i_apps = apps; }
+  (* A map of app2_name -> application2, for easier lookups.  Note
+   * that app names are not unique!  (eg. 'kernel' can appear multiple
+   * times)
+   *)
+  let apps_map = List.fold_left (
+    fun map app ->
+      let name = app.G.app2_name in
+      let vs = try StringMap.find name map with Not_found -> [] in
+      StringMap.add name (app :: vs) map
+  ) StringMap.empty apps in
+
+  { i_root = root; i_apps = apps; i_apps_map = apps_map; }
 
 let () =
   try main ()

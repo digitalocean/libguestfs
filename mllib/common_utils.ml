@@ -208,6 +208,13 @@ let error ~prog ?(exit_code = 1) fs =
   in
   ksprintf display fs
 
+let warning ~prog fs =
+  let display str =
+    wrap ~chan:stderr (sprintf (f_"%s: warning: %s") prog str);
+    prerr_newline ();
+  in
+  ksprintf display fs
+
 let read_whole_file path =
   let buf = Buffer.create 16384 in
   let chan = open_in path in
@@ -340,6 +347,33 @@ let display_long_options () =
   ) !long_options;
   exit 0
 
+(* Compare two version strings intelligently. *)
+let rex_numbers = Str.regexp "^\\([0-9]+\\)\\(.*\\)$"
+let rex_letters = Str.regexp_case_fold "^\\([a-z]+\\)\\(.*\\)$"
+
+let compare_version v1 v2 =
+  let rec split_version = function
+    | "" -> []
+    | str ->
+      let first, rest =
+        if Str.string_match rex_numbers str 0 then (
+          let n = Str.matched_group 1 str in
+          let rest = Str.matched_group 2 str in
+          let n =
+            try `Number (int_of_string n)
+            with Failure "int_of_string" -> `String n in
+          n, rest
+        )
+        else if Str.string_match rex_letters str 0 then
+          `String (Str.matched_group 1 str), Str.matched_group 2 str
+        else (
+          let len = String.length str in
+          `Char str.[0], String.sub str 1 (len-1)
+        ) in
+      first :: split_version rest
+  in
+  compare (split_version v1) (split_version v2)
+
 (* Run an external command, slurp up the output as a list of lines. *)
 let external_command ~prog cmd =
   let chan = Unix.open_process_in cmd in
@@ -458,3 +492,7 @@ let is_char_device file =
 let is_directory path =
   try Sys.is_directory path
   with Sys_error _ -> false
+
+let absolute_path path =
+  if not (Filename.is_relative path) then path
+  else Sys.getcwd () // path

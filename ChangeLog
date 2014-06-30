@@ -1,3 +1,237 @@
+commit e46bbb45d1ea7432a21b8e7b1b8b1dd2efa79c12
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 24 08:28:28 2014 +0100
+
+    Version 1.27.19.
+
+commit 77a963886fc803de8f776ad0ba8d30634ebb9a95
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 23 17:10:50 2014 +0100
+
+    v2v: Refactor common code for listing files in packages.
+    
+    At some point we should make these into real libguestfs inspection
+    APIs.  However they are fairly hard to implement, at least for RPM.
+
+commit 7a68afed14ff9623f5c643e185ab49af6f1505c7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 23 15:27:37 2014 +0100
+
+    v2v: Move app2_version comparison functions to utils.
+    
+    Refactoring.
+
+commit 5b29d9a1a8b22006e8ecfc18a0c1fa545ccb5132
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 23 15:08:11 2014 +0100
+
+    v2v: Create apps_map when doing inspection step.
+
+commit 6705be2379aaf88bf3c8c25ab3ab7ac8fe2da716
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 23 15:02:51 2014 +0100
+
+    v2v: Create a shared StringMap module.
+
+commit 9975bf8eb3dd34a88544e49e736ff4e3825602e1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 23 14:15:28 2014 +0100
+
+    v2v: Rename Convert_linux_enterprise -> Convert_linux.
+    
+    Just module rename.
+
+commit 76bf3f7289c6d43e9b240299e37079bb03afc4f4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 23 14:12:42 2014 +0100
+
+    v2v: Rename Convert_linux_common -> Lib_linux.
+    
+    Just library name refactor.
+
+commit 6f73266363af412004b31ade1812be06a916c402
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 23 11:57:48 2014 +0100
+
+    mllib: Add a common 'warning' utility function.
+    
+    This commit changes many places in OCaml utilities that print
+    warnings to use the warning function instead.
+
+commit b24b0b17a8ab5854c020cb1172597d805b911c73
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 23 11:49:10 2014 +0100
+
+    mllib: Add an interface for Common_utils library.
+    
+    It turned out that Common_utils was exporting the 'G' module (an alias
+    for Guestfs).  We want any code that uses G as a shortcut to declare:
+    
+      module G = Guestfs
+    
+    at the top, since that avoids confusion for newbie (or experienced)
+    OCaml programmers.
+
+commit 273f3464654ebb10de9d53e3c1f225e8f3aade6e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 20 13:34:54 2014 +0100
+
+    v2v: Warn only if virtio packages are missing from the guest.
+    
+    In this version of virt-v2v you have to install a virtio
+    capable kernel before doing the conversion.
+
+commit 8ed27e7865e6ce0dd85697fe133fdf3bf486080b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 20 13:22:59 2014 +0100
+
+    v2v: In convert function, add a hash of app name -> app structure.
+    
+    For quicker lookups than searching the linear list.
+
+commit 7b89f657c46357eff87878638289f7d1b3258c1d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 19 15:32:29 2014 +0100
+
+    mllib: Move common code for comparing version strings to library.
+
+commit 90bf3422c5333b3bb295d6fc466d4cf429b8301e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 19 13:29:15 2014 +0100
+
+    v2v: When parsing input libvirt XML, get correct disk image format.
+    
+    Old Xen PV guests had:
+    
+          <driver name='tap' type='aio'/>
+    
+    The previous xpath expression matched any driver type attribute in
+    order to pick up the format.  However we only want to match:
+    
+          <driver name='qemu' type='raw'/>
+    
+    so we need to check the name attribute as well.
+
+commit af31670d03b83df424cfa540cc6020cce1a8340d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 19 13:28:22 2014 +0100
+
+    v2v: Avoid segfault if xpath expression doesn't match any nodes.
+    
+    I'm not sure if this indicates that the xpath expression is wrong, but
+    in any case it can be that xpathobj->nodesetval is NULL.  In this
+    case, return 0 from xpathobj_nr_nodes instead of segfaulting.
+
+commit 877583a6f4e1a09abc24633d4e68198a2f7d6f59
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 19 12:13:43 2014 +0100
+
+    v2v: In -o local mode, name disks <name>-sda instead of disk-sda.
+    
+    This allows us to use the same shared output directory for multiple
+    parallel tests.
+
+commit 8ad5698d0297a4c52515593a102d03c2a7dbe3c8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 18 14:37:34 2014 +0100
+
+    v2v: Print \n after warnings.
+    
+    Using eprintf so this is not implicit (unlike 'error' function).
+
+commit beef28fe9687c962ea095776288c6a90ffef92cf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 18 14:18:41 2014 +0100
+
+    v2v: Dump out 'source' structure when debugging.
+
+commit 2f616342150c4fed21a443df23625367cfec886e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 18 14:18:21 2014 +0100
+
+    v2v: string_of_overlay already has trailing \n, don't need to add one.
+
+commit 437e387c4d7f00892c01d7b149390b0e125e9805
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 18 14:17:48 2014 +0100
+
+    v2v: Print qemu-img source overlay command when using -v.
+
+commit c62dbb8afd5995e6221df48db0e4f058ebc56c40
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 18 14:08:14 2014 +0100
+
+    run: Add v2v/ subdirectory to $PATH.
+
+commit 27e1b6ca8b39eace5fb7162af4e4ba16c05d0b34
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 18 14:06:50 2014 +0100
+
+    v2v: Allow relative paths to appear in -i libvirtxml input.
+    
+    When writing libvirt XML by hand, or for tests, this is
+    immensely useful.
+
+commit c3c659e996b18a8b7ccdf8e2df673bbaa99aa7a7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 23 21:38:33 2014 +0100
+
+    rescue: Use guestfs_add_drive_scratch to implement the --scratch option.
+
+commit bb3ba0c43a515ecb1444f7f3d97e6f30b3b9a610
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 23 21:26:23 2014 +0100
+
+    options: Compile out part of union which cannot be used when not compiling guestfish.
+
+commit 86706907af1adea96820ec2c5aa4222fcc4065b0
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jun 23 15:56:15 2014 +0200
+
+    edit: add -m option
+    
+    Implement the -m/--mount as available in guestfish to override the
+    automatic introspection and specify which partitions to mount instead.
+
+commit de5e7331afbb83ffac509e899851e791191922b3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jun 23 15:54:00 2014 +0200
+
+    cat: add -m option
+    
+    Implement the -m/--mount as available in guestfish to override the
+    automatic introspection and specify which partitions to mount instead.
+
+commit aad3c467fb47d3aa0720624c20561cd8eb34072b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jun 23 12:54:33 2014 +0200
+
+    ls: add -m option
+    
+    Implement the -m/--mount as available in guestfish to override the
+    automatic introspection and specify which partitions to mount instead.
+
+commit 54c77f99cc0dada27a3e13e22a6afd4a69a98576
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 20 11:06:23 2014 +0100
+
+    builder: Update centos.sh to add CentOS 7 QA.
+
+commit 8d6cbd05cae7420385709a5bbd0e79d35ef6df5d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 17 17:40:48 2014 +0100
+
+    website: Install HTML version of the virt-log(1) man page on the website.
+
+commit cd111bd0e3f4052e256b9e0b823b8af943aac9f5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 17 17:40:00 2014 +0100
+
+    virt-v2v: Remove text from README, moved into test data repo.
+    
+    There is (will be) a new repository containing the large/proprietary
+    test images.  Move the README related to this to the new repo.
+
 commit e6a067e183cda42e1ab3596536ab850986c25516
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon Jun 16 12:49:02 2014 +0100

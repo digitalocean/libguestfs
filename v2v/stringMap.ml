@@ -16,6 +16,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-val initialize : string -> Types.source -> Types.overlay list -> Types.overlay list
+include Map.Make (String)
 
-val create_metadata : string -> Types.source -> Types.overlay list -> Types.guestcaps -> unit
+let keys map = fold (fun k _ ks -> k :: ks) map []

@@ -32,8 +32,10 @@ open Common_utils
 open Utils
 open Types
 
-let rec convert ?(keep_serial_console = true) verbose (g : Guestfs.guestfs)
-    ({ i_root = root; i_apps = apps }
+module G = Guestfs
+
+let rec convert ?(keep_serial_console = true) verbose (g : G.guestfs)
+    ({ i_root = root; i_apps = apps; i_apps_map = apps_map }
         as inspect) source =
   let typ = g#inspect_get_type root
   and distro = g#inspect_get_distro root
@@ -89,7 +91,7 @@ Grub1/grub-legacy error was: %s")
           else
             None
       ) apps in
-    Convert_linux_common.remove verbose g inspect xenmods;
+    Lib_linux.remove verbose g inspect xenmods;
 
     (* Undo related nastiness if kmod-xenpv was installed. *)
     if xenmods <> [] then (
@@ -104,7 +106,7 @@ Grub1/grub-legacy error was: %s")
 
       (* Check it's not owned by an installed application. *)
       let dirs = List.filter (
-        fun d -> not (Convert_linux_common.file_owned verbose g inspect d)
+        fun d -> not (Lib_linux.is_file_owned verbose g inspect d)
       ) dirs in
 
       (* Remove any unowned xenpv directories. *)
@@ -162,7 +164,7 @@ Grub1/grub-legacy error was: %s")
         fun { G.app2_name = name } -> name = package_name
       ) apps in
     if has_guest_additions then
-      Convert_linux_common.remove verbose g inspect [package_name];
+      Lib_linux.remove verbose g inspect [package_name];
 
     (* Guest Additions might have been installed from a tarball.  The
      * above code won't detect this case.  Look for the uninstall tool
@@ -194,11 +196,11 @@ Grub1/grub-legacy error was: %s")
           ignore (g#command [| vboxuninstall |]);
 
           (* Reload Augeas to detect changes made by vbox tools uninst. *)
-          Convert_linux_common.augeas_reload verbose g
+          Lib_linux.augeas_reload verbose g
         with
           G.Error msg ->
-            eprintf (f_"%s: warning: VirtualBox Guest Additions were detected, but uninstallation failed.  The error message was: %s (ignored)")
-              prog msg
+            warning ~prog (f_"VirtualBox Guest Additions were detected, but uninstallation failed.  The error message was: %s (ignored)")
+              msg
     )
 
   and unconfigure_vmware () =
@@ -267,7 +269,7 @@ Grub1/grub-legacy error was: %s")
     );
 
     let remove = !remove in
-    Convert_linux_common.remove verbose g inspect remove;
+    Lib_linux.remove verbose g inspect remove;
 
     (* VMware Tools may have been installed from a tarball, so the
      * above code won't remove it.  Look for the uninstall tool and run
@@ -279,11 +281,11 @@ Grub1/grub-legacy error was: %s")
         ignore (g#command [| uninstaller |]);
 
         (* Reload Augeas to detect changes made by vbox tools uninst. *)
-        Convert_linux_common.augeas_reload verbose g
+        Lib_linux.augeas_reload verbose g
       with
         G.Error msg ->
-          eprintf (f_"%s: warning: VMware tools was detected, but uninstallation failed.  The error message was: %s (ignored)")
-            prog msg
+          warning ~prog (f_"VMware tools was detected, but uninstallation failed.  The error message was: %s (ignored)")
+            msg
     )
 
   and unconfigure_citrix () =
@@ -294,7 +296,7 @@ Grub1/grub-legacy error was: %s")
     let pkgs = List.map (fun { G.app2_name = name } -> name) pkgs in
 
     if pkgs <> [] then (
-      Convert_linux_common.remove verbose g inspect pkgs;
+      Lib_linux.remove verbose g inspect pkgs;
 
       (* Installing these guest utilities automatically unconfigures
        * ttys in /etc/inittab if the system uses it. We need to put
@@ -337,26 +339,28 @@ Grub1/grub-legacy error was: %s")
       if !updated then g#aug_save ();
     )
 
-  and install_virtio () =
-    (* How you install virtio depends on the guest type.  Note that most
-     * modern guests already support virtio, so we do nothing for them.
-     * In Perl virt-v2v this was done via a configuration database
-     * (virt-v2v.db).  This function returns true if virtio is supported
-     * already or if we managed to install it.
+  and can_do_virtio () =
+    (* In the previous virt-v2v, this was a function that installed
+     * virtio, eg. by updating the kernel.  However that function
+     * (which only applied to RHEL <= 5) was very difficult to write
+     * and maintain.  Instead what we do here is to check if the kernel
+     * supports virtio, warn if it doesn't (and give some hint about
+     * what to do) and return false.  Note that all recent Linux comes
+     * with virtio drivers.
      *)
     match distro, major_version, minor_version with
     (* RHEL 6+ has always supported virtio. *)
     | ("rhel"|"centos"|"scientificlinux"|"redhat-based"), v, _ when v >= 6 ->
       true
     | ("rhel"|"centos"|"scientificlinux"|"redhat-based"), 5, _ ->
-      let kernel = upgrade_package "kernel" (0_l, "2.6.18", "128.el5") in
-      let lvm2 = upgrade_package "lvm2" (0_l, "2.02.40", "6.el5") in
+      let kernel = check_kernel_package (0_l, "2.6.18", "128.el5") in
+      let lvm2 = check_package "lvm2" (0_l, "2.02.40", "6.el5") in
       let selinux =
-        upgrade_package ~ifinstalled:true
+        check_package ~ifinstalled:true
           "selinux-policy-targeted" (0_l, "2.4.6", "203.el5") in
       kernel && lvm2 && selinux
     | ("rhel"|"centos"|"scientificlinux"|"redhat-based"), 4, _ ->
-      upgrade_package "kernel" (0_l, "2.6.9", "89.EL")
+      check_kernel_package (0_l, "2.6.9", "89.EL")
 
     (* All supported Fedora versions support virtio. *)
     | "fedora", _, _ -> true
@@ -364,16 +368,49 @@ Grub1/grub-legacy error was: %s")
     (* SLES 11 supports virtio in the kernel. *)
     | ("sles"|"suse-based"), v, _ when v >= 11 -> true
     | ("sles"|"suse-based"), 10, _ ->
-      upgrade_package "kernel" (0_l, "2.6.16.60", "0.85.1")
+      check_kernel_package (0_l, "2.6.16.60", "0.85.1")
 
     (* OpenSUSE. *)
     | "opensuse", v, _ when v >= 11 -> true
     | "opensuse", 10, _ ->
-      upgrade_package "kernel" (0_l, "2.6.25.5", "1.1")
+      check_kernel_package (0_l, "2.6.25.5", "1.1")
 
     | _ ->
-      eprintf (f_"%s: warning: don't know how to install virtio drivers for %s %d")
-        prog distro major_version;
+      warning ~prog (f_"don't know how to install virtio drivers for %s %d\n%!")
+        distro major_version;
+      false
+
+  and check_kernel_package minversion =
+    let names = ["kernel"; "kernel-PAE"; "kernel-hugemem"; "kernel-smp";
+                 "kernel-largesmp"; "kernel-pae"; "kernel-default"] in
+    let found = List.exists (
+      fun name -> check_package ~warn:false name minversion
+    ) names in
+    if not found then (
+      let _, minversion, minrelease = minversion in
+      warning ~prog (f_"cannot enable virtio in this guest.\nTo enable virtio you need to install a kernel >= %s-%s and run %s again.")
+        minversion minrelease prog
+    );
+    found
+
+  and check_package ?(ifinstalled = false) ?(warn = true) name minversion =
+    let installed =
+      let apps = try StringMap.find name apps_map with Not_found -> [] in
+      List.rev (List.sort compare_app2_versions apps) in
+
+    match ifinstalled, installed with
+    (* If the package is not installed, ignore the request. *)
+    | true, [] -> true
+    (* Is the package already installed at the minimum version? *)
+    | _, (installed::_)
+      when compare_app2_version_min installed minversion >= 0 -> true
+    (* User will need to install the package to get virtio. *)
+    | _ ->
+      if warn then (
+        let _, minversion, minrelease = minversion in
+        warning ~prog (f_"cannot enable virtio in this guest.\nTo enable virtio you need to upgrade %s >= %s-%s and run %s again.")
+          name minversion minrelease prog
+      );
       false
 
   and configure_kernel virtio grub =
@@ -385,7 +422,7 @@ Grub1/grub-legacy error was: %s")
         | [] -> None
         | path :: paths ->
           let kernel =
-            Convert_linux_common.inspect_linux_kernel verbose g inspect path in
+            Lib_linux.inspect_linux_kernel verbose g inspect path in
           match kernel with
           | None -> loop paths
           | Some kernel when is_hv_kernel kernel -> loop paths
@@ -413,11 +450,11 @@ Grub1/grub-legacy error was: %s")
             | [] -> "kernel"
             | path :: paths ->
               let kernel =
-                Convert_linux_common.inspect_linux_kernel verbose g inspect
+                Lib_linux.inspect_linux_kernel verbose g inspect
                   path in
               match kernel with
               | None -> loop paths
-              | Some kernel -> kernel.Convert_linux_common.base_package
+              | Some kernel -> kernel.Lib_linux.base_package
           in
           loop kernels in
 
@@ -434,7 +471,7 @@ Grub1/grub-legacy error was: %s")
          *)
         let files1 = g#ls "/lib/modules" in
         let files1 = Array.to_list files1 in
-        Convert_linux_common.install verbose g inspect [current_kernel];
+        Lib_linux.install verbose g inspect [current_kernel];
         let files2 = g#ls "/lib/modules" in
         let files2 = Array.to_list files2 in
 
@@ -451,14 +488,14 @@ Grub1/grub-legacy error was: %s")
         in
         let version = loop files1 files2 in
 
-        { Convert_linux_common.base_package = current_kernel;
+        { Lib_linux.base_package = current_kernel;
           version = version; modules = []; arch = "" } in
 
     (* Set /etc/sysconfig/kernel DEFAULTKERNEL to point to the new
      * kernel package name.
      *)
     if g#is_file ~followsymlinks:true "/etc/sysconfig/kernel" then (
-      let base_package = bootable_kernel.Convert_linux_common.base_package in
+      let base_package = bootable_kernel.Lib_linux.base_package in
       let paths =
         g#aug_match "/files/etc/sysconfig/kernel/DEFAULTKERNEL/value" in
       let paths = Array.to_list paths in
@@ -467,13 +504,13 @@ Grub1/grub-legacy error was: %s")
     );
 
     (* Return the installed kernel version. *)
-    bootable_kernel.Convert_linux_common.version
+    bootable_kernel.Lib_linux.version
 
-  and supports_virtio { Convert_linux_common.modules = modules } =
+  and supports_virtio { Lib_linux.modules = modules } =
     List.mem "virtio_blk" modules && List.mem "virtio_net" modules
 
   (* Is it a hypervisor-specific kernel? *)
-  and is_hv_kernel { Convert_linux_common.modules = modules } =
+  and is_hv_kernel { Lib_linux.modules = modules } =
     List.mem "xennet" modules           (* Xen PV kernel. *)
 
   (* Find a suitable replacement for kernel-xen. *)
@@ -587,22 +624,11 @@ Grub1/grub-legacy error was: %s")
 
     g#aug_save ()
 
-  (* Upgrade 'pkg' to >= minversion.  Returns true if that was possible. *)
-  and upgrade_package ?(ifinstalled = false) name minversion =
-
-
-
-
-
-    (* XXX *)
-    true
-
-
   in
 
   clean_rpmdb ();
   autorelabel ();
-  Convert_linux_common.augeas_init verbose g;
+  Lib_linux.augeas_init verbose g;
   let grub = get_grub () in
 
   unconfigure_xen ();
@@ -610,7 +636,7 @@ Grub1/grub-legacy error was: %s")
   unconfigure_vmware ();
   unconfigure_citrix ();
 
-  let virtio = install_virtio () in
+  let virtio = can_do_virtio () in
   let kernel_version = configure_kernel virtio grub in (*XXX*) ignore kernel_version;
   if keep_serial_console then (
     configure_console ();

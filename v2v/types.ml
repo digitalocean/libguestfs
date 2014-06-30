@@ -40,6 +40,30 @@ type source = {
 }
 and source_disk = string * string option
 
+let rec string_of_source s =
+  sprintf "\
+s_dom_type = %s
+s_name = %s
+s_memory = %Ld
+s_vcpu = %d
+s_arch = %s
+s_features = [%s]
+s_disks = [%s]
+"
+    s.s_dom_type
+    s.s_name
+    s.s_memory
+    s.s_vcpu
+    s.s_arch
+    (String.concat "," s.s_features)
+    (String.concat "," (List.map string_of_source_disk s.s_disks))
+
+and string_of_source_disk (path, format) =
+  path ^
+    match format with
+    | None -> ""
+    | Some format -> " (" ^ format ^ ")"
+
 type overlay = {
   ov_overlay : string;
   ov_target_file : string;
@@ -76,6 +100,7 @@ ov_source_format = %s
 type inspect = {
   i_root : string;
   i_apps : Guestfs.application2 list;
+  i_apps_map : Guestfs.application2 list StringMap.t;
 }
 
 type guestcaps = {

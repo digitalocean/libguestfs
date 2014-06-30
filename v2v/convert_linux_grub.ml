@@ -21,6 +21,7 @@ module G = Guestfs
 open Printf
 
 open Common_gettext.Gettext
+open Common_utils
 
 open Utils
 open Types
@@ -212,7 +213,7 @@ let rec grub1 verbose (g : Guestfs.guestfs) inspect =
       List.exists (fun incl -> g#aug_get incl = config_file) incls in
     if not incls_contains_conf then (
       g#aug_set "/augeas/load/Grub/incl[last()+1]" config_file;
-      Convert_linux_common.augeas_reload verbose g;
+      Lib_linux.augeas_reload verbose g;
     ) in
 
   new grub1 verbose g inspect config_file grub_fs
@@ -223,7 +224,7 @@ and grub1_convert_from_efi verbose g dev =
   g#ln_sf "/boot/grub/grub.conf" "/etc/grub.conf";
 
   (* Reload Augeas to pick up new location of grub.conf. *)
-  Convert_linux_common.augeas_reload verbose g;
+  Lib_linux.augeas_reload verbose g;
 
   ignore (g#command [| "grub-install"; dev |])
 
@@ -272,8 +273,8 @@ object (self)
        ignore (g#command [| "grub2-mkconfig"; "-o"; config_file |])
      with
        G.Error msg ->
-         eprintf (f_"%s: warning: could not update grub2 console: %s (ignored)\n")
-           prog msg
+         warning ~prog (f_"could not update grub2 console: %s (ignored)")
+           msg
     )
 
   method configure_console () = self#update_console ~remove:false
@@ -310,7 +311,7 @@ and grub2_convert_from_efi verbose g inspect dev =
   (* EFI systems boot using grub2-efi, and probably don't have the
    * base grub2 package installed.
    *)
-  Convert_linux_common.install verbose g inspect ["grub2"];
+  Lib_linux.install verbose g inspect ["grub2"];
 
   (* Relabel the EFI boot partition as a BIOS boot partition. *)
   g#part_set_gpt_type dev 1 "21686148-6449-6E6F-744E-656564454649";
