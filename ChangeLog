@@ -1,3 +1,142 @@
+commit f40e11ace4f7c3799549c9f746408b9ab444efef
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 2 13:54:16 2014 +0100
+
+    Version 1.27.20.
+
+commit 5d48f7a7921d57bd12bc5ddc60127c551d39fbef
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 2 13:22:18 2014 +0100
+
+    Update gnulib to latest version.
+
+commit 144a86ac8c4935c1ef5fdedba10144873ac70920
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 1 12:01:28 2014 +0100
+
+    v2v: Change fstrim message to warning.
+    
+    This also ensures it is flushed and translated.
+
+commit dbe0b69f24421f258da2fb420b58fc1530a9cd03
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 30 16:24:03 2014 +0100
+
+    v2v: Remap block device names in grub & /etc/fstab.
+    
+    eg. Change /dev/hda to /dev/vda
+
+commit 120d61cf56f7ad76be32b454df5d628c4e7f5501
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 30 14:14:08 2014 +0100
+
+    v2v: Kill kudzu dead.
+
+commit 838dce6557991f695296b5859db939146e56e527
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 30 14:13:32 2014 +0100
+
+    v2v: When converting Linux guests, rebuild the initrd.
+    
+    It probably needs to be rebuilt to add virtio drivers.
+
+commit a32d92e4205a2d6766cd138671a1ec62fbe811f5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 30 14:12:26 2014 +0100
+
+    v2v: When inspecting Linux guests, collect kernel version & location of initrd file too.
+
+commit 5cf5c3f1c79d66238de5ebe6dae57b5ff93cbe21
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 30 14:08:43 2014 +0100
+
+    v2v: Change source disk into a struct.
+    
+    Simple code refactoring, allowing us to collect the target/@dev
+    attribute in this (now) structure.
+
+commit 544b087d4b4ee92239d26211effe192da4f71d38
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 1 16:12:32 2014 +0100
+
+    generator: Sort the structs.
+    
+    Sort the structs when generating code.  Since the structs are
+    logically indepedent of each other, this should have no effect except
+    to make generated files list the structs in a different order.
+    
+    However this also fixes the following build problem:
+    
+      File "convert_linux.ml", line 322, characters 43-50:
+      Error: This expression has type G.stat = Guestfs.stat
+        but an expression was expected of type G.dirent = Guestfs.dirent
+    
+    It turns out the OCaml bindings don't like the fact that we have
+    two structs with a common field name (dirent.ino and stat.ino).
+    
+    In OCaml < 4.01, this means that any attempt to reference stat.ino
+    would fail because dirent.ino appears second in the file, overriding
+    stat.ino.
+    
+    Sorting the structs has the side effect of making stat.ino appear
+    second, thus resolving the build failure above.
+    
+    In OCaml >= 4.01 the compiler now uses some disambiguation rules based
+    on the known types to resolve this problem, so accessing either field
+    would work no matter what order they are listed in.
+    
+    See:
+    
+    http://ocaml.org/releases/4.01.0.html
+    http://www.lexifi.com/blog/type-based-selection-label-and-constructors
+    http://www.lexifi.com/blog/ocaml-extensions-lexifi-overidding-record-labels-and-constructors
+
+commit 16e817456cf7e5162ba053c92f1a4df24a4160d5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 23 15:17:02 2014 +0100
+
+    v2v: Modify conversion step to first do proper inspection and data
+    gathering about the guest.
+
+commit b6b9b90dd74c7b9204bdf218aa9360e117308e78
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 24 16:49:28 2014 +0100
+
+    Use -v and -x flags consistently across OCaml virt-* tools.
+    
+    virt-customize:
+    virt-sparsify:
+    virt-sysprep:
+    virt-v2v:
+      - These tools consistently used -v to mean verbose/debugging
+        and -x to mean enable libguestfs tracing.
+    
+    virt-builder:
+    virt-resize:
+      - These two tools did not recognize -x at all, and used -v
+        to enable libguestfs tracing and general debugging.
+      - This commit changes these two tools to consume -v/-x
+        consistently with the other tools.
+    
+    Unfortunately this has a cascade of effects through the code.
+
+commit 5d3ec4474c955672c761ac11a178f29581985cd2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 24 16:18:36 2014 +0100
+
+    mllib: Rewrite text wrapping function so it can handle newlines within the text.
+
+commit 9aa0969d8d6f9d8d20b2e9912e8ad7128fcad50d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 24 12:24:04 2014 +0100
+
+    virt-cat, virt-ls, virt-edit: Fix typo in documentation.
+    
+    This fixes the following:
+     commit aad3c467fb47d3aa0720624c20561cd8eb34072b
+     commit de5e7331afbb83ffac509e899851e791191922b3
+     commit 86706907af1adea96820ec2c5aa4222fcc4065b0
+
 commit e46bbb45d1ea7432a21b8e7b1b8b1dd2efa79c12
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Jun 24 08:28:28 2014 +0100

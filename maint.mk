@@ -21,13 +21,6 @@
 # ME := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 ME := maint.mk
 
-# Diagnostic for continued use of deprecated variable.
-# Remove in 2013
-ifneq ($(build_aux),)
- $(error "$(ME): \
-set $$(_build-aux) relative to $$(srcdir) instead of $$(build_aux)")
-endif
-
 # Helper variables.
 _empty =
 _sp = $(_empty) $(_empty)
@@ -155,6 +148,7 @@ export LC_ALL = C
 ## Sanity checks.  ##
 ## --------------- ##
 
+ifneq ($(_gl-Makefile),)
 _cfg_mk := $(wildcard $(srcdir)/cfg.mk)
 
 # Collect the names of rules starting with 'sc_'.
@@ -196,6 +190,7 @@ local-check :=								\
     $(filter-out $(local-checks-to-skip), $(local-checks-available)))
 
 syntax-check: $(local-check)
+endif
 
 # _sc_search_regexp
 #
@@ -1192,7 +1187,7 @@ sc_copyright_check:
 	in_vc_files=$(sample-test)					\
 	halt='out of date copyright in $(sample-test); update it'	\
 	  $(_sc_search_regexp)
-	@require='Copyright @copyright\{\} .*'$$(date +%Y)' Free'	\
+	@require='Copyright @copyright\{\} .*'$$(date +%Y)		\
 	in_vc_files=$(texi)						\
 	halt='out of date copyright in $(texi); update it'		\
 	  $(_sc_search_regexp)

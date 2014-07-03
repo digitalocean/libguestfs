@@ -88,9 +88,120 @@ namespace Guestfs
     static extern string guestfs_last_error (IntPtr h);
 
     [StructLayout (LayoutKind.Sequential)]
+    public class _application {
+      string app_name;
+      string app_display_name;
+      int app_epoch;
+      string app_version;
+      string app_release;
+      string app_install_path;
+      string app_trans_path;
+      string app_publisher;
+      string app_url;
+      string app_source_package;
+      string app_summary;
+      string app_description;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    public class _application2 {
+      string app2_name;
+      string app2_display_name;
+      int app2_epoch;
+      string app2_version;
+      string app2_release;
+      string app2_arch;
+      string app2_install_path;
+      string app2_trans_path;
+      string app2_publisher;
+      string app2_url;
+      string app2_source_package;
+      string app2_summary;
+      string app2_description;
+      string app2_spare1;
+      string app2_spare2;
+      string app2_spare3;
+      string app2_spare4;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    public class _btrfssubvolume {
+      ulong btrfssubvolume_id;
+      ulong btrfssubvolume_top_level_id;
+      string btrfssubvolume_path;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    public class _dirent {
+      long ino;
+      char ftyp;
+      string name;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    public class _hivex_node {
+      long hivex_node_h;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    public class _hivex_value {
+      long hivex_value_h;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    public class _inotify_event {
+      long in_wd;
+      uint in_mask;
+      uint in_cookie;
+      string in_name;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
     public class _int_bool {
       int i;
       int b;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    public class _isoinfo {
+      string iso_system_id;
+      string iso_volume_id;
+      uint iso_volume_space_size;
+      uint iso_volume_set_size;
+      uint iso_volume_sequence_number;
+      uint iso_logical_block_size;
+      string iso_volume_set_id;
+      string iso_publisher_id;
+      string iso_data_preparer_id;
+      string iso_application_id;
+      string iso_copyright_file_id;
+      string iso_abstract_file_id;
+      string iso_bibliographic_file_id;
+      long iso_volume_creation_t;
+      long iso_volume_modification_t;
+      long iso_volume_expiration_t;
+      long iso_volume_effective_t;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    public class _lvm_lv {
+      string lv_name;
+      [MarshalAs (UnmanagedType.ByValTStr, SizeConst=16)]
+      string lv_uuid;
+      string lv_attr;
+      long lv_major;
+      long lv_minor;
+      long lv_kernel_major;
+      long lv_kernel_minor;
+      ulong lv_size;
+      long seg_count;
+      string origin;
+      float snap_percent; /* [0..100] or -1 */
+      float copy_percent; /* [0..100] or -1 */
+      string move_pv;
+      string lv_tags;
+      string mirror_log;
+      string modules;
     }
 
     [StructLayout (LayoutKind.Sequential)]
@@ -137,24 +248,18 @@ namespace Guestfs
     }
 
     [StructLayout (LayoutKind.Sequential)]
-    public class _lvm_lv {
-      string lv_name;
-      [MarshalAs (UnmanagedType.ByValTStr, SizeConst=16)]
-      string lv_uuid;
-      string lv_attr;
-      long lv_major;
-      long lv_minor;
-      long lv_kernel_major;
-      long lv_kernel_minor;
-      ulong lv_size;
-      long seg_count;
-      string origin;
-      float snap_percent; /* [0..100] or -1 */
-      float copy_percent; /* [0..100] or -1 */
-      string move_pv;
-      string lv_tags;
-      string mirror_log;
-      string modules;
+    public class _mdstat {
+      string mdstat_device;
+      int mdstat_index;
+      string mdstat_flags;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    public class _partition {
+      int part_num;
+      ulong part_start;
+      ulong part_end;
+      ulong part_size;
     }
 
     [StructLayout (LayoutKind.Sequential)]
@@ -190,10 +295,11 @@ namespace Guestfs
     }
 
     [StructLayout (LayoutKind.Sequential)]
-    public class _dirent {
-      long ino;
-      char ftyp;
-      string name;
+    public class _utsname {
+      string uts_sysname;
+      string uts_release;
+      string uts_version;
+      string uts_machine;
     }
 
     [StructLayout (LayoutKind.Sequential)]
@@ -209,94 +315,6 @@ namespace Guestfs
       string attrname;
       uint attrval_len;
       string attrval;
-    }
-
-    [StructLayout (LayoutKind.Sequential)]
-    public class _inotify_event {
-      long in_wd;
-      uint in_mask;
-      uint in_cookie;
-      string in_name;
-    }
-
-    [StructLayout (LayoutKind.Sequential)]
-    public class _partition {
-      int part_num;
-      ulong part_start;
-      ulong part_end;
-      ulong part_size;
-    }
-
-    [StructLayout (LayoutKind.Sequential)]
-    public class _application {
-      string app_name;
-      string app_display_name;
-      int app_epoch;
-      string app_version;
-      string app_release;
-      string app_install_path;
-      string app_trans_path;
-      string app_publisher;
-      string app_url;
-      string app_source_package;
-      string app_summary;
-      string app_description;
-    }
-
-    [StructLayout (LayoutKind.Sequential)]
-    public class _application2 {
-      string app2_name;
-      string app2_display_name;
-      int app2_epoch;
-      string app2_version;
-      string app2_release;
-      string app2_arch;
-      string app2_install_path;
-      string app2_trans_path;
-      string app2_publisher;
-      string app2_url;
-      string app2_source_package;
-      string app2_summary;
-      string app2_description;
-      string app2_spare1;
-      string app2_spare2;
-      string app2_spare3;
-      string app2_spare4;
-    }
-
-    [StructLayout (LayoutKind.Sequential)]
-    public class _isoinfo {
-      string iso_system_id;
-      string iso_volume_id;
-      uint iso_volume_space_size;
-      uint iso_volume_set_size;
-      uint iso_volume_sequence_number;
-      uint iso_logical_block_size;
-      string iso_volume_set_id;
-      string iso_publisher_id;
-      string iso_data_preparer_id;
-      string iso_application_id;
-      string iso_copyright_file_id;
-      string iso_abstract_file_id;
-      string iso_bibliographic_file_id;
-      long iso_volume_creation_t;
-      long iso_volume_modification_t;
-      long iso_volume_expiration_t;
-      long iso_volume_effective_t;
-    }
-
-    [StructLayout (LayoutKind.Sequential)]
-    public class _mdstat {
-      string mdstat_device;
-      int mdstat_index;
-      string mdstat_flags;
-    }
-
-    [StructLayout (LayoutKind.Sequential)]
-    public class _btrfssubvolume {
-      ulong btrfssubvolume_id;
-      ulong btrfssubvolume_top_level_id;
-      string btrfssubvolume_path;
     }
 
     [StructLayout (LayoutKind.Sequential)]
@@ -326,24 +344,6 @@ namespace Guestfs
       uint xfs_rtextsize;
       ulong xfs_rtblocks;
       ulong xfs_rtextents;
-    }
-
-    [StructLayout (LayoutKind.Sequential)]
-    public class _utsname {
-      string uts_sysname;
-      string uts_release;
-      string uts_version;
-      string uts_machine;
-    }
-
-    [StructLayout (LayoutKind.Sequential)]
-    public class _hivex_node {
-      long hivex_node_h;
-    }
-
-    [StructLayout (LayoutKind.Sequential)]
-    public class _hivex_value {
-      long hivex_value_h;
     }
 
     [DllImport ("libguestfs.so.0")]

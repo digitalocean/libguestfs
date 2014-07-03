@@ -884,7 +884,7 @@ EXTRA_libgnu_la_SOURCES += gettimeofday.c
 ## begin gnulib module gitlog-to-changelog
 
 
-EXTRA_DIST += $(top_srcdir)/build-aux/gitlog-to-changelog $(top_srcdir)/build-aux/git-log-fix
+EXTRA_DIST += $(top_srcdir)/build-aux/gitlog-to-changelog
 
 ## end   gnulib module gitlog-to-changelog
 

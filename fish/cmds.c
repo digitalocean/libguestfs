@@ -4416,10 +4416,140 @@ display_command (const char *cmd)
 }
 
 static void
+print_application_indent (struct guestfs_application *application, const char *indent)
+{
+  printf ("%sapp_name: %s\n", indent, application->app_name);
+  printf ("%sapp_display_name: %s\n", indent, application->app_display_name);
+  printf ("%sapp_epoch: %" PRIi32 "\n", indent, application->app_epoch);
+  printf ("%sapp_version: %s\n", indent, application->app_version);
+  printf ("%sapp_release: %s\n", indent, application->app_release);
+  printf ("%sapp_install_path: %s\n", indent, application->app_install_path);
+  printf ("%sapp_trans_path: %s\n", indent, application->app_trans_path);
+  printf ("%sapp_publisher: %s\n", indent, application->app_publisher);
+  printf ("%sapp_url: %s\n", indent, application->app_url);
+  printf ("%sapp_source_package: %s\n", indent, application->app_source_package);
+  printf ("%sapp_summary: %s\n", indent, application->app_summary);
+  printf ("%sapp_description: %s\n", indent, application->app_description);
+}
+
+static void
+print_application2_indent (struct guestfs_application2 *application2, const char *indent)
+{
+  printf ("%sapp2_name: %s\n", indent, application2->app2_name);
+  printf ("%sapp2_display_name: %s\n", indent, application2->app2_display_name);
+  printf ("%sapp2_epoch: %" PRIi32 "\n", indent, application2->app2_epoch);
+  printf ("%sapp2_version: %s\n", indent, application2->app2_version);
+  printf ("%sapp2_release: %s\n", indent, application2->app2_release);
+  printf ("%sapp2_arch: %s\n", indent, application2->app2_arch);
+  printf ("%sapp2_install_path: %s\n", indent, application2->app2_install_path);
+  printf ("%sapp2_trans_path: %s\n", indent, application2->app2_trans_path);
+  printf ("%sapp2_publisher: %s\n", indent, application2->app2_publisher);
+  printf ("%sapp2_url: %s\n", indent, application2->app2_url);
+  printf ("%sapp2_source_package: %s\n", indent, application2->app2_source_package);
+  printf ("%sapp2_summary: %s\n", indent, application2->app2_summary);
+  printf ("%sapp2_description: %s\n", indent, application2->app2_description);
+  printf ("%sapp2_spare1: %s\n", indent, application2->app2_spare1);
+  printf ("%sapp2_spare2: %s\n", indent, application2->app2_spare2);
+  printf ("%sapp2_spare3: %s\n", indent, application2->app2_spare3);
+  printf ("%sapp2_spare4: %s\n", indent, application2->app2_spare4);
+}
+
+static void
+print_btrfssubvolume_indent (struct guestfs_btrfssubvolume *btrfssubvolume, const char *indent)
+{
+  printf ("%sbtrfssubvolume_id: %" PRIu64 "\n", indent, btrfssubvolume->btrfssubvolume_id);
+  printf ("%sbtrfssubvolume_top_level_id: %" PRIu64 "\n", indent, btrfssubvolume->btrfssubvolume_top_level_id);
+  printf ("%sbtrfssubvolume_path: %s\n", indent, btrfssubvolume->btrfssubvolume_path);
+}
+
+static void
+print_dirent_indent (struct guestfs_dirent *dirent, const char *indent)
+{
+  printf ("%sino: %" PRIi64 "\n", indent, dirent->ino);
+  printf ("%sftyp: %c\n", indent, dirent->ftyp);
+  printf ("%sname: %s\n", indent, dirent->name);
+}
+
+static void
+print_hivex_node_indent (struct guestfs_hivex_node *hivex_node, const char *indent)
+{
+  printf ("%shivex_node_h: %" PRIi64 "\n", indent, hivex_node->hivex_node_h);
+}
+
+static void
+print_hivex_value_indent (struct guestfs_hivex_value *hivex_value, const char *indent)
+{
+  printf ("%shivex_value_h: %" PRIi64 "\n", indent, hivex_value->hivex_value_h);
+}
+
+static void
+print_inotify_event_indent (struct guestfs_inotify_event *inotify_event, const char *indent)
+{
+  printf ("%sin_wd: %" PRIi64 "\n", indent, inotify_event->in_wd);
+  printf ("%sin_mask: %" PRIu32 "\n", indent, inotify_event->in_mask);
+  printf ("%sin_cookie: %" PRIu32 "\n", indent, inotify_event->in_cookie);
+  printf ("%sin_name: %s\n", indent, inotify_event->in_name);
+}
+
+static void
 print_int_bool_indent (struct guestfs_int_bool *int_bool, const char *indent)
 {
   printf ("%si: %" PRIi32 "\n", indent, int_bool->i);
   printf ("%sb: %" PRIi32 "\n", indent, int_bool->b);
+}
+
+static void
+print_isoinfo_indent (struct guestfs_isoinfo *isoinfo, const char *indent)
+{
+  printf ("%siso_system_id: %s\n", indent, isoinfo->iso_system_id);
+  printf ("%siso_volume_id: %s\n", indent, isoinfo->iso_volume_id);
+  printf ("%siso_volume_space_size: %" PRIu32 "\n", indent, isoinfo->iso_volume_space_size);
+  printf ("%siso_volume_set_size: %" PRIu32 "\n", indent, isoinfo->iso_volume_set_size);
+  printf ("%siso_volume_sequence_number: %" PRIu32 "\n", indent, isoinfo->iso_volume_sequence_number);
+  printf ("%siso_logical_block_size: %" PRIu32 "\n", indent, isoinfo->iso_logical_block_size);
+  printf ("%siso_volume_set_id: %s\n", indent, isoinfo->iso_volume_set_id);
+  printf ("%siso_publisher_id: %s\n", indent, isoinfo->iso_publisher_id);
+  printf ("%siso_data_preparer_id: %s\n", indent, isoinfo->iso_data_preparer_id);
+  printf ("%siso_application_id: %s\n", indent, isoinfo->iso_application_id);
+  printf ("%siso_copyright_file_id: %s\n", indent, isoinfo->iso_copyright_file_id);
+  printf ("%siso_abstract_file_id: %s\n", indent, isoinfo->iso_abstract_file_id);
+  printf ("%siso_bibliographic_file_id: %s\n", indent, isoinfo->iso_bibliographic_file_id);
+  printf ("%siso_volume_creation_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_creation_t);
+  printf ("%siso_volume_modification_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_modification_t);
+  printf ("%siso_volume_expiration_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_expiration_t);
+  printf ("%siso_volume_effective_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_effective_t);
+}
+
+static void
+print_lvm_lv_indent (struct guestfs_lvm_lv *lvm_lv, const char *indent)
+{
+  unsigned int i;
+
+  printf ("%slv_name: %s\n", indent, lvm_lv->lv_name);
+  printf ("%slv_uuid: ", indent);
+  for (i = 0; i < 32; ++i)
+    printf ("%c", lvm_lv->lv_uuid[i]);
+  printf ("\n");
+  printf ("%slv_attr: %s\n", indent, lvm_lv->lv_attr);
+  printf ("%slv_major: %" PRIi64 "\n", indent, lvm_lv->lv_major);
+  printf ("%slv_minor: %" PRIi64 "\n", indent, lvm_lv->lv_minor);
+  printf ("%slv_kernel_major: %" PRIi64 "\n", indent, lvm_lv->lv_kernel_major);
+  printf ("%slv_kernel_minor: %" PRIi64 "\n", indent, lvm_lv->lv_kernel_minor);
+  printf ("%slv_size: %" PRIu64 "\n", indent, lvm_lv->lv_size);
+  printf ("%sseg_count: %" PRIi64 "\n", indent, lvm_lv->seg_count);
+  printf ("%sorigin: %s\n", indent, lvm_lv->origin);
+  if (lvm_lv->snap_percent >= 0)
+    printf ("%ssnap_percent: %g %%\n", indent, (double) lvm_lv->snap_percent);
+  else
+    printf ("%ssnap_percent: \n", indent);
+  if (lvm_lv->copy_percent >= 0)
+    printf ("%scopy_percent: %g %%\n", indent, (double) lvm_lv->copy_percent);
+  else
+    printf ("%scopy_percent: \n", indent);
+  printf ("%smove_pv: %s\n", indent, lvm_lv->move_pv);
+  printf ("%slv_tags: %s\n", indent, lvm_lv->lv_tags);
+  printf ("%smirror_log: %s\n", indent, lvm_lv->mirror_log);
+  printf ("%smodules: %s\n", indent, lvm_lv->modules);
 }
 
 static void
@@ -4476,35 +4606,20 @@ print_lvm_vg_indent (struct guestfs_lvm_vg *lvm_vg, const char *indent)
 }
 
 static void
-print_lvm_lv_indent (struct guestfs_lvm_lv *lvm_lv, const char *indent)
+print_mdstat_indent (struct guestfs_mdstat *mdstat, const char *indent)
 {
-  unsigned int i;
+  printf ("%smdstat_device: %s\n", indent, mdstat->mdstat_device);
+  printf ("%smdstat_index: %" PRIi32 "\n", indent, mdstat->mdstat_index);
+  printf ("%smdstat_flags: %s\n", indent, mdstat->mdstat_flags);
+}
 
-  printf ("%slv_name: %s\n", indent, lvm_lv->lv_name);
-  printf ("%slv_uuid: ", indent);
-  for (i = 0; i < 32; ++i)
-    printf ("%c", lvm_lv->lv_uuid[i]);
-  printf ("\n");
-  printf ("%slv_attr: %s\n", indent, lvm_lv->lv_attr);
-  printf ("%slv_major: %" PRIi64 "\n", indent, lvm_lv->lv_major);
-  printf ("%slv_minor: %" PRIi64 "\n", indent, lvm_lv->lv_minor);
-  printf ("%slv_kernel_major: %" PRIi64 "\n", indent, lvm_lv->lv_kernel_major);
-  printf ("%slv_kernel_minor: %" PRIi64 "\n", indent, lvm_lv->lv_kernel_minor);
-  printf ("%slv_size: %" PRIu64 "\n", indent, lvm_lv->lv_size);
-  printf ("%sseg_count: %" PRIi64 "\n", indent, lvm_lv->seg_count);
-  printf ("%sorigin: %s\n", indent, lvm_lv->origin);
-  if (lvm_lv->snap_percent >= 0)
-    printf ("%ssnap_percent: %g %%\n", indent, (double) lvm_lv->snap_percent);
-  else
-    printf ("%ssnap_percent: \n", indent);
-  if (lvm_lv->copy_percent >= 0)
-    printf ("%scopy_percent: %g %%\n", indent, (double) lvm_lv->copy_percent);
-  else
-    printf ("%scopy_percent: \n", indent);
-  printf ("%smove_pv: %s\n", indent, lvm_lv->move_pv);
-  printf ("%slv_tags: %s\n", indent, lvm_lv->lv_tags);
-  printf ("%smirror_log: %s\n", indent, lvm_lv->mirror_log);
-  printf ("%smodules: %s\n", indent, lvm_lv->modules);
+static void
+print_partition_indent (struct guestfs_partition *partition, const char *indent)
+{
+  printf ("%spart_num: %" PRIi32 "\n", indent, partition->part_num);
+  printf ("%spart_start: %" PRIu64 "\n", indent, partition->part_start);
+  printf ("%spart_end: %" PRIu64 "\n", indent, partition->part_end);
+  printf ("%spart_size: %" PRIu64 "\n", indent, partition->part_size);
 }
 
 static void
@@ -4542,11 +4657,12 @@ print_statvfs_indent (struct guestfs_statvfs *statvfs, const char *indent)
 }
 
 static void
-print_dirent_indent (struct guestfs_dirent *dirent, const char *indent)
+print_utsname_indent (struct guestfs_utsname *utsname, const char *indent)
 {
-  printf ("%sino: %" PRIi64 "\n", indent, dirent->ino);
-  printf ("%sftyp: %c\n", indent, dirent->ftyp);
-  printf ("%sname: %s\n", indent, dirent->name);
+  printf ("%suts_sysname: %s\n", indent, utsname->uts_sysname);
+  printf ("%suts_release: %s\n", indent, utsname->uts_release);
+  printf ("%suts_version: %s\n", indent, utsname->uts_version);
+  printf ("%suts_machine: %s\n", indent, utsname->uts_machine);
 }
 
 static void
@@ -4571,101 +4687,6 @@ print_xattr_indent (struct guestfs_xattr *xattr, const char *indent)
     else
       printf ("\\x%02x", xattr->attrval[i]);
   printf ("\n");
-}
-
-static void
-print_inotify_event_indent (struct guestfs_inotify_event *inotify_event, const char *indent)
-{
-  printf ("%sin_wd: %" PRIi64 "\n", indent, inotify_event->in_wd);
-  printf ("%sin_mask: %" PRIu32 "\n", indent, inotify_event->in_mask);
-  printf ("%sin_cookie: %" PRIu32 "\n", indent, inotify_event->in_cookie);
-  printf ("%sin_name: %s\n", indent, inotify_event->in_name);
-}
-
-static void
-print_partition_indent (struct guestfs_partition *partition, const char *indent)
-{
-  printf ("%spart_num: %" PRIi32 "\n", indent, partition->part_num);
-  printf ("%spart_start: %" PRIu64 "\n", indent, partition->part_start);
-  printf ("%spart_end: %" PRIu64 "\n", indent, partition->part_end);
-  printf ("%spart_size: %" PRIu64 "\n", indent, partition->part_size);
-}
-
-static void
-print_application_indent (struct guestfs_application *application, const char *indent)
-{
-  printf ("%sapp_name: %s\n", indent, application->app_name);
-  printf ("%sapp_display_name: %s\n", indent, application->app_display_name);
-  printf ("%sapp_epoch: %" PRIi32 "\n", indent, application->app_epoch);
-  printf ("%sapp_version: %s\n", indent, application->app_version);
-  printf ("%sapp_release: %s\n", indent, application->app_release);
-  printf ("%sapp_install_path: %s\n", indent, application->app_install_path);
-  printf ("%sapp_trans_path: %s\n", indent, application->app_trans_path);
-  printf ("%sapp_publisher: %s\n", indent, application->app_publisher);
-  printf ("%sapp_url: %s\n", indent, application->app_url);
-  printf ("%sapp_source_package: %s\n", indent, application->app_source_package);
-  printf ("%sapp_summary: %s\n", indent, application->app_summary);
-  printf ("%sapp_description: %s\n", indent, application->app_description);
-}
-
-static void
-print_application2_indent (struct guestfs_application2 *application2, const char *indent)
-{
-  printf ("%sapp2_name: %s\n", indent, application2->app2_name);
-  printf ("%sapp2_display_name: %s\n", indent, application2->app2_display_name);
-  printf ("%sapp2_epoch: %" PRIi32 "\n", indent, application2->app2_epoch);
-  printf ("%sapp2_version: %s\n", indent, application2->app2_version);
-  printf ("%sapp2_release: %s\n", indent, application2->app2_release);
-  printf ("%sapp2_arch: %s\n", indent, application2->app2_arch);
-  printf ("%sapp2_install_path: %s\n", indent, application2->app2_install_path);
-  printf ("%sapp2_trans_path: %s\n", indent, application2->app2_trans_path);
-  printf ("%sapp2_publisher: %s\n", indent, application2->app2_publisher);
-  printf ("%sapp2_url: %s\n", indent, application2->app2_url);
-  printf ("%sapp2_source_package: %s\n", indent, application2->app2_source_package);
-  printf ("%sapp2_summary: %s\n", indent, application2->app2_summary);
-  printf ("%sapp2_description: %s\n", indent, application2->app2_description);
-  printf ("%sapp2_spare1: %s\n", indent, application2->app2_spare1);
-  printf ("%sapp2_spare2: %s\n", indent, application2->app2_spare2);
-  printf ("%sapp2_spare3: %s\n", indent, application2->app2_spare3);
-  printf ("%sapp2_spare4: %s\n", indent, application2->app2_spare4);
-}
-
-static void
-print_isoinfo_indent (struct guestfs_isoinfo *isoinfo, const char *indent)
-{
-  printf ("%siso_system_id: %s\n", indent, isoinfo->iso_system_id);
-  printf ("%siso_volume_id: %s\n", indent, isoinfo->iso_volume_id);
-  printf ("%siso_volume_space_size: %" PRIu32 "\n", indent, isoinfo->iso_volume_space_size);
-  printf ("%siso_volume_set_size: %" PRIu32 "\n", indent, isoinfo->iso_volume_set_size);
-  printf ("%siso_volume_sequence_number: %" PRIu32 "\n", indent, isoinfo->iso_volume_sequence_number);
-  printf ("%siso_logical_block_size: %" PRIu32 "\n", indent, isoinfo->iso_logical_block_size);
-  printf ("%siso_volume_set_id: %s\n", indent, isoinfo->iso_volume_set_id);
-  printf ("%siso_publisher_id: %s\n", indent, isoinfo->iso_publisher_id);
-  printf ("%siso_data_preparer_id: %s\n", indent, isoinfo->iso_data_preparer_id);
-  printf ("%siso_application_id: %s\n", indent, isoinfo->iso_application_id);
-  printf ("%siso_copyright_file_id: %s\n", indent, isoinfo->iso_copyright_file_id);
-  printf ("%siso_abstract_file_id: %s\n", indent, isoinfo->iso_abstract_file_id);
-  printf ("%siso_bibliographic_file_id: %s\n", indent, isoinfo->iso_bibliographic_file_id);
-  printf ("%siso_volume_creation_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_creation_t);
-  printf ("%siso_volume_modification_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_modification_t);
-  printf ("%siso_volume_expiration_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_expiration_t);
-  printf ("%siso_volume_effective_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_effective_t);
-}
-
-static void
-print_mdstat_indent (struct guestfs_mdstat *mdstat, const char *indent)
-{
-  printf ("%smdstat_device: %s\n", indent, mdstat->mdstat_device);
-  printf ("%smdstat_index: %" PRIi32 "\n", indent, mdstat->mdstat_index);
-  printf ("%smdstat_flags: %s\n", indent, mdstat->mdstat_flags);
-}
-
-static void
-print_btrfssubvolume_indent (struct guestfs_btrfssubvolume *btrfssubvolume, const char *indent)
-{
-  printf ("%sbtrfssubvolume_id: %" PRIu64 "\n", indent, btrfssubvolume->btrfssubvolume_id);
-  printf ("%sbtrfssubvolume_top_level_id: %" PRIu64 "\n", indent, btrfssubvolume->btrfssubvolume_top_level_id);
-  printf ("%sbtrfssubvolume_path: %s\n", indent, btrfssubvolume->btrfssubvolume_path);
 }
 
 static void
@@ -4696,27 +4717,6 @@ print_xfsinfo_indent (struct guestfs_xfsinfo *xfsinfo, const char *indent)
   printf ("%sxfs_rtextsize: %" PRIu32 "\n", indent, xfsinfo->xfs_rtextsize);
   printf ("%sxfs_rtblocks: %" PRIu64 "\n", indent, xfsinfo->xfs_rtblocks);
   printf ("%sxfs_rtextents: %" PRIu64 "\n", indent, xfsinfo->xfs_rtextents);
-}
-
-static void
-print_utsname_indent (struct guestfs_utsname *utsname, const char *indent)
-{
-  printf ("%suts_sysname: %s\n", indent, utsname->uts_sysname);
-  printf ("%suts_release: %s\n", indent, utsname->uts_release);
-  printf ("%suts_version: %s\n", indent, utsname->uts_version);
-  printf ("%suts_machine: %s\n", indent, utsname->uts_machine);
-}
-
-static void
-print_hivex_node_indent (struct guestfs_hivex_node *hivex_node, const char *indent)
-{
-  printf ("%shivex_node_h: %" PRIi64 "\n", indent, hivex_node->hivex_node_h);
-}
-
-static void
-print_hivex_value_indent (struct guestfs_hivex_value *hivex_value, const char *indent)
-{
-  printf ("%shivex_value_h: %" PRIi64 "\n", indent, hivex_value->hivex_value_h);
 }
 
 static void

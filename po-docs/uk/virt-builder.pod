@@ -488,6 +488,10 @@ bug report.
 
 Показати дані щодо версії і завершити роботу.
 
+=item B<-x>
+
+Увімкнути трасування викликів програмного інтерфейсу libguestfs.
+
 =back
 
 =head2 Customization options

@@ -55,6 +55,110 @@ extern int64_t get_int64 (ETERM *term);
 #define ARG(i) (ERL_TUPLE_ELEMENT(message,(i)+1))
 
 static ETERM *
+make_application (const struct guestfs_application *application)
+{
+  ETERM *t[12];
+
+  t[0] = erl_mk_string (application->app_name);
+  t[1] = erl_mk_string (application->app_display_name);
+  t[2] = erl_mk_int (application->app_epoch);
+  t[3] = erl_mk_string (application->app_version);
+  t[4] = erl_mk_string (application->app_release);
+  t[5] = erl_mk_string (application->app_install_path);
+  t[6] = erl_mk_string (application->app_trans_path);
+  t[7] = erl_mk_string (application->app_publisher);
+  t[8] = erl_mk_string (application->app_url);
+  t[9] = erl_mk_string (application->app_source_package);
+  t[10] = erl_mk_string (application->app_summary);
+  t[11] = erl_mk_string (application->app_description);
+
+  return erl_mk_list (t, 12);
+}
+
+static ETERM *
+make_application2 (const struct guestfs_application2 *application2)
+{
+  ETERM *t[17];
+
+  t[0] = erl_mk_string (application2->app2_name);
+  t[1] = erl_mk_string (application2->app2_display_name);
+  t[2] = erl_mk_int (application2->app2_epoch);
+  t[3] = erl_mk_string (application2->app2_version);
+  t[4] = erl_mk_string (application2->app2_release);
+  t[5] = erl_mk_string (application2->app2_arch);
+  t[6] = erl_mk_string (application2->app2_install_path);
+  t[7] = erl_mk_string (application2->app2_trans_path);
+  t[8] = erl_mk_string (application2->app2_publisher);
+  t[9] = erl_mk_string (application2->app2_url);
+  t[10] = erl_mk_string (application2->app2_source_package);
+  t[11] = erl_mk_string (application2->app2_summary);
+  t[12] = erl_mk_string (application2->app2_description);
+  t[13] = erl_mk_string (application2->app2_spare1);
+  t[14] = erl_mk_string (application2->app2_spare2);
+  t[15] = erl_mk_string (application2->app2_spare3);
+  t[16] = erl_mk_string (application2->app2_spare4);
+
+  return erl_mk_list (t, 17);
+}
+
+static ETERM *
+make_btrfssubvolume (const struct guestfs_btrfssubvolume *btrfssubvolume)
+{
+  ETERM *t[3];
+
+  t[0] = erl_mk_longlong (btrfssubvolume->btrfssubvolume_id);
+  t[1] = erl_mk_longlong (btrfssubvolume->btrfssubvolume_top_level_id);
+  t[2] = erl_mk_string (btrfssubvolume->btrfssubvolume_path);
+
+  return erl_mk_list (t, 3);
+}
+
+static ETERM *
+make_dirent (const struct guestfs_dirent *dirent)
+{
+  ETERM *t[3];
+
+  t[0] = erl_mk_longlong (dirent->ino);
+  t[1] = erl_mk_int (dirent->ftyp);
+  t[2] = erl_mk_string (dirent->name);
+
+  return erl_mk_list (t, 3);
+}
+
+static ETERM *
+make_hivex_node (const struct guestfs_hivex_node *hivex_node)
+{
+  ETERM *t[1];
+
+  t[0] = erl_mk_longlong (hivex_node->hivex_node_h);
+
+  return erl_mk_list (t, 1);
+}
+
+static ETERM *
+make_hivex_value (const struct guestfs_hivex_value *hivex_value)
+{
+  ETERM *t[1];
+
+  t[0] = erl_mk_longlong (hivex_value->hivex_value_h);
+
+  return erl_mk_list (t, 1);
+}
+
+static ETERM *
+make_inotify_event (const struct guestfs_inotify_event *inotify_event)
+{
+  ETERM *t[4];
+
+  t[0] = erl_mk_longlong (inotify_event->in_wd);
+  t[1] = erl_mk_int (inotify_event->in_mask);
+  t[2] = erl_mk_int (inotify_event->in_cookie);
+  t[3] = erl_mk_string (inotify_event->in_name);
+
+  return erl_mk_list (t, 4);
+}
+
+static ETERM *
 make_int_bool (const struct guestfs_int_bool *int_bool)
 {
   ETERM *t[2];
@@ -63,6 +167,63 @@ make_int_bool (const struct guestfs_int_bool *int_bool)
   t[1] = erl_mk_int (int_bool->b);
 
   return erl_mk_list (t, 2);
+}
+
+static ETERM *
+make_isoinfo (const struct guestfs_isoinfo *isoinfo)
+{
+  ETERM *t[17];
+
+  t[0] = erl_mk_string (isoinfo->iso_system_id);
+  t[1] = erl_mk_string (isoinfo->iso_volume_id);
+  t[2] = erl_mk_int (isoinfo->iso_volume_space_size);
+  t[3] = erl_mk_int (isoinfo->iso_volume_set_size);
+  t[4] = erl_mk_int (isoinfo->iso_volume_sequence_number);
+  t[5] = erl_mk_int (isoinfo->iso_logical_block_size);
+  t[6] = erl_mk_string (isoinfo->iso_volume_set_id);
+  t[7] = erl_mk_string (isoinfo->iso_publisher_id);
+  t[8] = erl_mk_string (isoinfo->iso_data_preparer_id);
+  t[9] = erl_mk_string (isoinfo->iso_application_id);
+  t[10] = erl_mk_string (isoinfo->iso_copyright_file_id);
+  t[11] = erl_mk_string (isoinfo->iso_abstract_file_id);
+  t[12] = erl_mk_string (isoinfo->iso_bibliographic_file_id);
+  t[13] = erl_mk_longlong (isoinfo->iso_volume_creation_t);
+  t[14] = erl_mk_longlong (isoinfo->iso_volume_modification_t);
+  t[15] = erl_mk_longlong (isoinfo->iso_volume_expiration_t);
+  t[16] = erl_mk_longlong (isoinfo->iso_volume_effective_t);
+
+  return erl_mk_list (t, 17);
+}
+
+static ETERM *
+make_lvm_lv (const struct guestfs_lvm_lv *lvm_lv)
+{
+  ETERM *t[16];
+
+  t[0] = erl_mk_string (lvm_lv->lv_name);
+  t[1] = erl_mk_estring (lvm_lv->lv_uuid, 32);
+  t[2] = erl_mk_string (lvm_lv->lv_attr);
+  t[3] = erl_mk_longlong (lvm_lv->lv_major);
+  t[4] = erl_mk_longlong (lvm_lv->lv_minor);
+  t[5] = erl_mk_longlong (lvm_lv->lv_kernel_major);
+  t[6] = erl_mk_longlong (lvm_lv->lv_kernel_minor);
+  t[7] = erl_mk_longlong (lvm_lv->lv_size);
+  t[8] = erl_mk_longlong (lvm_lv->seg_count);
+  t[9] = erl_mk_string (lvm_lv->origin);
+  if (lvm_lv->snap_percent >= 0)
+    t[10] = erl_mk_float (lvm_lv->snap_percent);
+  else
+    t[10] = erl_mk_atom ("undefined");
+  if (lvm_lv->copy_percent >= 0)
+    t[11] = erl_mk_float (lvm_lv->copy_percent);
+  else
+    t[11] = erl_mk_atom ("undefined");
+  t[12] = erl_mk_string (lvm_lv->move_pv);
+  t[13] = erl_mk_string (lvm_lv->lv_tags);
+  t[14] = erl_mk_string (lvm_lv->mirror_log);
+  t[15] = erl_mk_string (lvm_lv->modules);
+
+  return erl_mk_list (t, 16);
 }
 
 static ETERM *
@@ -117,34 +278,28 @@ make_lvm_vg (const struct guestfs_lvm_vg *lvm_vg)
 }
 
 static ETERM *
-make_lvm_lv (const struct guestfs_lvm_lv *lvm_lv)
+make_mdstat (const struct guestfs_mdstat *mdstat)
 {
-  ETERM *t[16];
+  ETERM *t[3];
 
-  t[0] = erl_mk_string (lvm_lv->lv_name);
-  t[1] = erl_mk_estring (lvm_lv->lv_uuid, 32);
-  t[2] = erl_mk_string (lvm_lv->lv_attr);
-  t[3] = erl_mk_longlong (lvm_lv->lv_major);
-  t[4] = erl_mk_longlong (lvm_lv->lv_minor);
-  t[5] = erl_mk_longlong (lvm_lv->lv_kernel_major);
-  t[6] = erl_mk_longlong (lvm_lv->lv_kernel_minor);
-  t[7] = erl_mk_longlong (lvm_lv->lv_size);
-  t[8] = erl_mk_longlong (lvm_lv->seg_count);
-  t[9] = erl_mk_string (lvm_lv->origin);
-  if (lvm_lv->snap_percent >= 0)
-    t[10] = erl_mk_float (lvm_lv->snap_percent);
-  else
-    t[10] = erl_mk_atom ("undefined");
-  if (lvm_lv->copy_percent >= 0)
-    t[11] = erl_mk_float (lvm_lv->copy_percent);
-  else
-    t[11] = erl_mk_atom ("undefined");
-  t[12] = erl_mk_string (lvm_lv->move_pv);
-  t[13] = erl_mk_string (lvm_lv->lv_tags);
-  t[14] = erl_mk_string (lvm_lv->mirror_log);
-  t[15] = erl_mk_string (lvm_lv->modules);
+  t[0] = erl_mk_string (mdstat->mdstat_device);
+  t[1] = erl_mk_int (mdstat->mdstat_index);
+  t[2] = erl_mk_string (mdstat->mdstat_flags);
 
-  return erl_mk_list (t, 16);
+  return erl_mk_list (t, 3);
+}
+
+static ETERM *
+make_partition (const struct guestfs_partition *partition)
+{
+  ETERM *t[4];
+
+  t[0] = erl_mk_int (partition->part_num);
+  t[1] = erl_mk_longlong (partition->part_start);
+  t[2] = erl_mk_longlong (partition->part_end);
+  t[3] = erl_mk_longlong (partition->part_size);
+
+  return erl_mk_list (t, 4);
 }
 
 static ETERM *
@@ -190,15 +345,16 @@ make_statvfs (const struct guestfs_statvfs *statvfs)
 }
 
 static ETERM *
-make_dirent (const struct guestfs_dirent *dirent)
+make_utsname (const struct guestfs_utsname *utsname)
 {
-  ETERM *t[3];
+  ETERM *t[4];
 
-  t[0] = erl_mk_longlong (dirent->ino);
-  t[1] = erl_mk_int (dirent->ftyp);
-  t[2] = erl_mk_string (dirent->name);
+  t[0] = erl_mk_string (utsname->uts_sysname);
+  t[1] = erl_mk_string (utsname->uts_release);
+  t[2] = erl_mk_string (utsname->uts_version);
+  t[3] = erl_mk_string (utsname->uts_machine);
 
-  return erl_mk_list (t, 3);
+  return erl_mk_list (t, 4);
 }
 
 static ETERM *
@@ -223,129 +379,6 @@ make_xattr (const struct guestfs_xattr *xattr)
   t[1] = erl_mk_estring (xattr->attrval, xattr->attrval_len);
 
   return erl_mk_list (t, 2);
-}
-
-static ETERM *
-make_inotify_event (const struct guestfs_inotify_event *inotify_event)
-{
-  ETERM *t[4];
-
-  t[0] = erl_mk_longlong (inotify_event->in_wd);
-  t[1] = erl_mk_int (inotify_event->in_mask);
-  t[2] = erl_mk_int (inotify_event->in_cookie);
-  t[3] = erl_mk_string (inotify_event->in_name);
-
-  return erl_mk_list (t, 4);
-}
-
-static ETERM *
-make_partition (const struct guestfs_partition *partition)
-{
-  ETERM *t[4];
-
-  t[0] = erl_mk_int (partition->part_num);
-  t[1] = erl_mk_longlong (partition->part_start);
-  t[2] = erl_mk_longlong (partition->part_end);
-  t[3] = erl_mk_longlong (partition->part_size);
-
-  return erl_mk_list (t, 4);
-}
-
-static ETERM *
-make_application (const struct guestfs_application *application)
-{
-  ETERM *t[12];
-
-  t[0] = erl_mk_string (application->app_name);
-  t[1] = erl_mk_string (application->app_display_name);
-  t[2] = erl_mk_int (application->app_epoch);
-  t[3] = erl_mk_string (application->app_version);
-  t[4] = erl_mk_string (application->app_release);
-  t[5] = erl_mk_string (application->app_install_path);
-  t[6] = erl_mk_string (application->app_trans_path);
-  t[7] = erl_mk_string (application->app_publisher);
-  t[8] = erl_mk_string (application->app_url);
-  t[9] = erl_mk_string (application->app_source_package);
-  t[10] = erl_mk_string (application->app_summary);
-  t[11] = erl_mk_string (application->app_description);
-
-  return erl_mk_list (t, 12);
-}
-
-static ETERM *
-make_application2 (const struct guestfs_application2 *application2)
-{
-  ETERM *t[17];
-
-  t[0] = erl_mk_string (application2->app2_name);
-  t[1] = erl_mk_string (application2->app2_display_name);
-  t[2] = erl_mk_int (application2->app2_epoch);
-  t[3] = erl_mk_string (application2->app2_version);
-  t[4] = erl_mk_string (application2->app2_release);
-  t[5] = erl_mk_string (application2->app2_arch);
-  t[6] = erl_mk_string (application2->app2_install_path);
-  t[7] = erl_mk_string (application2->app2_trans_path);
-  t[8] = erl_mk_string (application2->app2_publisher);
-  t[9] = erl_mk_string (application2->app2_url);
-  t[10] = erl_mk_string (application2->app2_source_package);
-  t[11] = erl_mk_string (application2->app2_summary);
-  t[12] = erl_mk_string (application2->app2_description);
-  t[13] = erl_mk_string (application2->app2_spare1);
-  t[14] = erl_mk_string (application2->app2_spare2);
-  t[15] = erl_mk_string (application2->app2_spare3);
-  t[16] = erl_mk_string (application2->app2_spare4);
-
-  return erl_mk_list (t, 17);
-}
-
-static ETERM *
-make_isoinfo (const struct guestfs_isoinfo *isoinfo)
-{
-  ETERM *t[17];
-
-  t[0] = erl_mk_string (isoinfo->iso_system_id);
-  t[1] = erl_mk_string (isoinfo->iso_volume_id);
-  t[2] = erl_mk_int (isoinfo->iso_volume_space_size);
-  t[3] = erl_mk_int (isoinfo->iso_volume_set_size);
-  t[4] = erl_mk_int (isoinfo->iso_volume_sequence_number);
-  t[5] = erl_mk_int (isoinfo->iso_logical_block_size);
-  t[6] = erl_mk_string (isoinfo->iso_volume_set_id);
-  t[7] = erl_mk_string (isoinfo->iso_publisher_id);
-  t[8] = erl_mk_string (isoinfo->iso_data_preparer_id);
-  t[9] = erl_mk_string (isoinfo->iso_application_id);
-  t[10] = erl_mk_string (isoinfo->iso_copyright_file_id);
-  t[11] = erl_mk_string (isoinfo->iso_abstract_file_id);
-  t[12] = erl_mk_string (isoinfo->iso_bibliographic_file_id);
-  t[13] = erl_mk_longlong (isoinfo->iso_volume_creation_t);
-  t[14] = erl_mk_longlong (isoinfo->iso_volume_modification_t);
-  t[15] = erl_mk_longlong (isoinfo->iso_volume_expiration_t);
-  t[16] = erl_mk_longlong (isoinfo->iso_volume_effective_t);
-
-  return erl_mk_list (t, 17);
-}
-
-static ETERM *
-make_mdstat (const struct guestfs_mdstat *mdstat)
-{
-  ETERM *t[3];
-
-  t[0] = erl_mk_string (mdstat->mdstat_device);
-  t[1] = erl_mk_int (mdstat->mdstat_index);
-  t[2] = erl_mk_string (mdstat->mdstat_flags);
-
-  return erl_mk_list (t, 3);
-}
-
-static ETERM *
-make_btrfssubvolume (const struct guestfs_btrfssubvolume *btrfssubvolume)
-{
-  ETERM *t[3];
-
-  t[0] = erl_mk_longlong (btrfssubvolume->btrfssubvolume_id);
-  t[1] = erl_mk_longlong (btrfssubvolume->btrfssubvolume_top_level_id);
-  t[2] = erl_mk_string (btrfssubvolume->btrfssubvolume_path);
-
-  return erl_mk_list (t, 3);
 }
 
 static ETERM *
@@ -380,39 +413,6 @@ make_xfsinfo (const struct guestfs_xfsinfo *xfsinfo)
   t[24] = erl_mk_longlong (xfsinfo->xfs_rtextents);
 
   return erl_mk_list (t, 25);
-}
-
-static ETERM *
-make_utsname (const struct guestfs_utsname *utsname)
-{
-  ETERM *t[4];
-
-  t[0] = erl_mk_string (utsname->uts_sysname);
-  t[1] = erl_mk_string (utsname->uts_release);
-  t[2] = erl_mk_string (utsname->uts_version);
-  t[3] = erl_mk_string (utsname->uts_machine);
-
-  return erl_mk_list (t, 4);
-}
-
-static ETERM *
-make_hivex_node (const struct guestfs_hivex_node *hivex_node)
-{
-  ETERM *t[1];
-
-  t[0] = erl_mk_longlong (hivex_node->hivex_node_h);
-
-  return erl_mk_list (t, 1);
-}
-
-static ETERM *
-make_hivex_value (const struct guestfs_hivex_value *hivex_value)
-{
-  ETERM *t[1];
-
-  t[0] = erl_mk_longlong (hivex_value->hivex_value_h);
-
-  return erl_mk_list (t, 1);
 }
 
 static ETERM *

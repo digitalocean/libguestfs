@@ -565,6 +565,10 @@ Note that you cannot use I<--expand> and I<--shrink> together.
 
 バージョン番号を表示して、終了します。
 
+=item B<-x>
+
+libguestfs API 呼び出しのトレースを有効にします。
+
 =back
 
 =head1 マシン可読な出力
