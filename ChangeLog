@@ -1,3 +1,130 @@
+commit 17bf3ce21cb28840987caaa79babd006458ad2d2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 8 13:55:31 2014 +0100
+
+    Version 1.27.21.
+
+commit f296d34f3b30c82309b22b54bf5a2c133992bd93
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 30 18:00:01 2014 +0100
+
+    v2v: Add partial support for converting Windows guests.
+    
+    This is not yet complete.
+
+commit 2ee1fb6472dfcde9cb649a5c2eb4eaffa12f5e2a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 8 09:02:46 2014 +0100
+
+    builder: CentOS 7.0
+
+commit 71ac957d4aedf9560a6b0c75629fea16a32d20c3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jul 7 19:33:44 2014 +0200
+
+    Use Mkdtemp.temp_dir instead of Mkdtemp.mkdtemp
+
+commit c8f3e99302e65a0c10bc82df49789d159bf17e5c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jul 7 19:30:29 2014 +0200
+
+    mllib: introduce Mkdtemp.temp_dir
+    
+    Add a simple function to ease the usage of Mkdtemp.mkdtemp.
+
+commit 3fc6983b1666a32ea6c1b44d88f140e3c84e7201
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jul 7 11:40:19 2014 +0200
+
+    inspect: ignore /etc/fstab with no entries (RHBZ#1113156).
+    
+    Just like no /etc/fstab is not an error, having one with no entries
+    shouldn't be an issue either.
+    
+    With systemd, this could be a valid setup, with mount points set its own
+    way.
+
+commit 3f2e18efdeb4697bf175aae46fb18d0183292445
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 4 15:48:36 2014 +0100
+
+    valgrind: Add suppress for libvirt memory leak in virFileFindResourceFull.
+    
+    https://bugzilla.redhat.com/show_bug.cgi?id=1116427
+
+commit 2fe74642f4b2971ea279374a72ddedde733f5e44
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 3 11:48:49 2014 +0100
+
+    launch: direct: Use -cpu host when using KVM on x86.
+    
+    This is the same as what the libvirt backend does.
+
+commit fc9647bb4d82d7209ee54c26711c178c2396329d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 2 23:09:22 2014 +0100
+
+    mllib: Remove trailing whitespace.
+    
+    This fixes commit b24b0b17a8ab5854c020cb1172597d805b911c73.
+
+commit bf47ed1b6ab94f54737b914e15e5a35a148c1b7c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 2 18:18:39 2014 +0100
+
+    tests: qemu: Test force_tcg setting is effective.
+
+commit 2369e9c2d660e1b9010b5c0afc599b769efd08b2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 2 16:24:59 2014 +0100
+
+    log: Pass correct parameter to localtime_r on 32 bit platforms.
+    
+    We were passing an int64_t which happens to be the same as time_t, but
+    only on 64 bit.  This didn't work on 32 bit (or rather, it works on
+    little endian, but only by accident).
+    
+    This fixes commit fb546eaee064b14ad192a4f0390325ba1b4c766a.
+
+commit a2747578ebfc92d19ca615d8fd462d9b826eafb5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 2 16:17:05 2014 +0100
+
+    journal: Fix binding of sd_journal_get_realtime_usec on 32 bit machines.
+    
+    sd_journal_get_realtime_usec is defined as:
+    
+        int sd_journal_get_realtime_usec(sd_journal* j, uint64_t* usec);
+    
+    Unfortunately we passed size_t* as the second argument.  This happened
+    to work on 64 bit machines because size_t is 64 bit there, but failed
+    on 32 bit machines, where we didn't pass a sufficiently large result
+    buffer.
+    
+    This fixes commit 2d996df66c8d67e11a91a89c074c91a233356494.
+
+commit 1e1d7cf6af45d9334e9cf24f771c47159d9a4fca
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 2 14:24:14 2014 +0100
+
+    excludefiles: Exclude various common log files when building the appliance.
+    
+    These log files can get pretty big, and that causes problems
+    like this one:
+    
+    http://linuxforum.ru/viewtopic.php?id=35381
+    
+    and this one:
+    
+    https://bugzilla.redhat.com/show_bug.cgi?id=1099172
+    
+    In both cases the problem was /var/log/lastlog which is apparently a
+    large sparse file.  Supermin cannot cope with sparseness, so it copies
+    the whole file non-sparse.  But since this could affect other log
+    files this commit covers various common log file names and patterns.
+    
+    Thanks: semperN
+
 commit f40e11ace4f7c3799549c9f746408b9ab444efef
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Jul 2 13:54:16 2014 +0100
