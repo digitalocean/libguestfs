@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 
 # export DH_VERBOSE=1
+include /usr/share/dpkg/architecture.mk
 
 PYTHONS        := $(filter-out python2.5, $(shell pyversions --installed; py3versions --installed))
 PYTHON_DEFAULT := $(shell pyversions --default)
@@ -14,8 +15,11 @@ BUILDS         := $(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
 		  $(filter-out $(LUA_DEFAULT), $(LUAS)) \
 		  default
 
-QEMU_CPU := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU \
+QEMU_CPU := $(shell echo $(DEB_HOST_GNU_CPU) \
 		    | sed -e 's,i[456]86,i386,;s,sparc,sparc64,;s,powerpc,ppc64,;s,arm.*,arm,')
+
+# Do not run "make quickcheck on these architectures
+QUICKCHECK_ARCHITECTURES := i386 amd64
 
 DEFAULT_CONFIG_FLAGS = \
 	--disable-gnulib-tests     \
@@ -94,7 +98,9 @@ override_dh_auto_build:
 	done
 
 override_dh_auto_test:
+ifneq "" "$(findstring $(DEB_HOST_ARCH),$(QUICKCHECK_ARCHITECTURES))"
 	make -C $(CURDIR)/debian/build-default quickcheck
+endif
 
 override_dh_auto_install:
 # All build trees contain the library plus guestfish and C virt tools.
