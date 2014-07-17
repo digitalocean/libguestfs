@@ -1,5 +1,10 @@
+#!/usr/bin/perl
+use Config;
+
+print substr($Config{vendorarch}, 1) . "\n";
+
+print <<EOF;
 usr/share/man/man3/*.3pm
 usr/share/man/man3/guestfs-perl.3*
 usr/share/man/*/man3/guestfs-perl.3*
-
-usr/lib/perl5
+EOF
