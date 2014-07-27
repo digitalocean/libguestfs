@@ -1,0 +1,23 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Sun, 6 Jul 2014 21:34:47 +0200
+Subject: Do not use DTB for armel
+
+---
+ src/guestfs-internal.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/guestfs-internal.h b/src/guestfs-internal.h
+index 648f005..c8b0dcd 100644
+--- a/src/guestfs-internal.h
++++ b/src/guestfs-internal.h
+@@ -145,8 +145,10 @@
+  * internally when using mach-virt).
+  */
+ #define MACHINE_TYPE "vexpress-a15"
++#ifdef __ARM_PCS_VFP /* do not use DTB for armel */
+ #define DTB_WILDCARD "vexpress*a15-tc1.dtb"
+ #endif
++#endif
+ #ifdef __aarch64__
+ #define MACHINE_TYPE "virt"
+ #endif
