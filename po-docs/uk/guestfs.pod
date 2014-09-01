@@ -308,8 +308,8 @@ To copy part of a file (offset and size) use L</guestfs_copy_file_to_file>.
 
 =item B<пристрій> на B<пристрій>
 
-Use L</guestfs_copy_file_to_device>, L</guestfs_copy_device_to_file>, or
-L</guestfs_copy_device_to_device>.
+Скористайтеся L</guestfs_copy_file_to_device>,
+L</guestfs_copy_device_to_file> або L</guestfs_copy_device_to_device>.
 
 Example: duplicate the contents of an LV:
 
@@ -1473,7 +1473,7 @@ I<Note (2):> This section explains how to attach to a running daemon from a
 low level perspective.  For most users, simply using virt tools such as
 L<guestfish(1)> with the I<--live> option will "just work".
 
-=head3 Using guestfs_set_backend
+=head3 Використання guestfs_set_backend
 
 By calling L</guestfs_set_backend> you can change how the library connects
 to the C<guestfsd> daemon in L</guestfs_launch> (read L</ARCHITECTURE> for
@@ -1526,7 +1526,7 @@ Setting the following environment variables (or the equivalent in the API)
 selects the User-Mode Linux backend:
 
  export LIBGUESTFS_BACKEND=uml
- export LIBGUESTFS_HV=/path/to/vmlinux
+ export LIBGUESTFS_HV=/шлях/до/vmlinux
 
 C<vmlinux> (or it may be called C<linux>) is the Linux binary, compiled to
 run as a userspace process.  Note that we reuse the qemu variable in the
@@ -1541,16 +1541,16 @@ shortcomings compared to the usual qemu/KVM-based backend.
 
 Your Linux distro may provide UML in which case you can ignore this section.
 
-These instructions are adapted from:
+Інструкції запозичено з
 L<http://user-mode-linux.sourceforge.net/source.html>
 
 =over 4
 
-=item 1. Check out Linux sources
+=item 1. Отримати початкові коди Linux
 
 Clone the Linux git repository or download the Linux source tarball.
 
-=item 2. Configure the kernel
+=item 2. Налаштувати збирання ядра
 
 B<Note:> All 'make' commands must have C<ARCH=um> added.
 
@@ -1562,7 +1562,7 @@ B<Currently, it needs a large amount of extra work to get modules working>.
 It's recommended that you disable module support in the kernel
 configuration, which will cause everything to be compiled into the image.
 
-=item 3. Build the kernel
+=item 3. Зібрати ядро
 
  make ARCH=um
 
@@ -1719,7 +1719,7 @@ filesystem labels.
 
 =back
 
-=head2 NULL DISKS
+=head2 НУЛЬОВІ ДИСКИ
 
 When adding a disk using, eg., L</guestfs_add_drive>, you can set the
 filename to C<"/dev/null">.  This string is treated specially by libguestfs,
@@ -1789,7 +1789,7 @@ Note that libguestfs itself is not responsible for handling the disk format:
 this is done using L<qemu(1)>.  If support for a particular format is
 missing or broken, this has to be fixed in qemu.
 
-=head3 COMMON VIRTUAL DISK IMAGE FORMATS
+=head3 ТИПОВІ ФОРМАТИ ОБРАЗІВ ВІРТУАЛЬНИХ ДИСКІВ
 
 =over 4
 
@@ -1841,7 +1841,7 @@ generally good support for this.
 VPC (old) and VHD (modern) are the native disk image format of Microsoft
 (and previously, Connectix) Virtual PC and Hyper-V.
 
-=item Obsolete formats
+=item Застарілі формати
 
 The following formats are obsolete and should not be used: I<qcow> (aka
 I<qcow1>), I<cow>, I<bochs>.
@@ -1882,7 +1882,7 @@ Secondly, a kernel-level exploit is like a local root exploit (worse in some
 ways), giving immediate and total access to the system right down to the
 hardware level.
 
-These exploits can be present in the kernel for a very long time
+Ці вразливості могли бути присутніми у ядрі доволі довго
 (L<https://lwn.net/Articles/538898/>).
 
 Libguestfs provides a layered approach to protecting you from exploits:
@@ -3673,7 +3673,7 @@ This section is for hackers who want to extend libguestfs itself.
 
 =head2 OVERVIEW OF THE SOURCE CODE
 
-Libguestfs source is located in the github repository
+Код libguestfs зберігається у сховищі github
 L<https://github.com/libguestfs/libguestfs>
 
 Large amounts of boilerplate code in libguestfs (RPC, bindings,
@@ -4156,7 +4156,7 @@ Outside contributions, experimental parts.
 
 =item C<customize>
 
-L<virt-customize(1)> command and documentation.
+Програма L<virt-customize(1)> та документація до неї.
 
 =item C<daemon>
 

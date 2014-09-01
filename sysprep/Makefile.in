@@ -1515,6 +1515,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/regedit.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/crypt-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/crypt.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/urandom.cmx \

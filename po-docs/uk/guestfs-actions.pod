@@ -1090,7 +1090,7 @@ the underlying drive (see C<guestfs_add_drive_opts>).
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.25.44)
+(Додано у 1.25.44)
 
 =head2 guestfs_blkdiscardzeroes
 
@@ -1107,7 +1107,7 @@ or random data.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.25.44)
+(Додано у 1.25.44)
 
 =head2 guestfs_blkid
 
@@ -2080,7 +2080,7 @@ enables all the other flags, if they are not specified already.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.25.21)
+(Додано у 1.25.21)
 
 =head2 guestfs_copy_attributes_va
 
@@ -2612,7 +2612,7 @@ to call C<guestfs_add_drive_opts> separately.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.25.31)
+(Додано у 1.25.31)
 
 =head2 guestfs_disk_create_va
 
@@ -3665,7 +3665,7 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
-(Added in 1.25.24)
+(Додано у 1.25.24)
 
 =head2 guestfs_get_cachedir
 
@@ -9324,7 +9324,7 @@ This works on C<gpt> but not on C<mbr> partitions.
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
-(Added in 1.25.33)
+(Додано у 1.25.33)
 
 =head2 guestfs_part_get_parttype
 
@@ -10561,7 +10561,7 @@ See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.25.24)
+(Додано у 1.25.24)
 
 =head2 guestfs_set_cachedir
 

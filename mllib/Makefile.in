@@ -1435,6 +1435,8 @@ SOURCES = \
 	progress-c.c \
 	progress.mli \
 	progress.ml \
+	regedit.mli \
+	regedit.ml \
 	tty-c.c \
 	tTY.mli \
 	tTY.ml \
@@ -1456,7 +1458,8 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	progress \
 @HAVE_OCAML_TRUE@	uRI \
 @HAVE_OCAML_TRUE@	mkdtemp \
-@HAVE_OCAML_TRUE@	planner
+@HAVE_OCAML_TRUE@	planner \
+@HAVE_OCAML_TRUE@	regedit
 
 @HAVE_OCAML_TRUE@OBJECTS = $(top_builddir)/fish/guestfish-progress.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o tty-c.o \

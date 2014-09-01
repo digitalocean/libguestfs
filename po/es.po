@@ -11,11 +11,11 @@ msgstr ""
 "Project-Id-Version: libguestfs\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2014-07-21 14:50+0100\n"
-"PO-Revision-Date: 2014-03-26 16:49+0000\n"
+"POT-Creation-Date: 2014-07-23 17:53+0100\n"
+"PO-Revision-Date: 2014-07-22 18:03+0000\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
-"Language-Team: Spanish (http://www.transifex.com/projects/p/fedora/language/"
-"es/)\n"
+"Language-Team: Spanish (http://www.transifex.com/projects/p/libguestfs/"
+"language/es/)\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -597,11 +597,17 @@ msgstr ""
 msgid "%s: you must give either -a or -d options\n"
 msgstr ""
 
-#: ../v2v/convert_windows.ml:58
+#: ../customize/firstboot.ml:177
 msgid ""
-"'%s' is missing.  This file is required in order to do Windows conversions.  "
-"You can get it by building rhsrvany (https://github.com/rwmjones/rhsrvany).  "
-"Original error: %s"
+"'%s' is missing.  This file is required in order to install Windows "
+"firstboot scripts.  You can get it by building rhsrvany (https://github.com/"
+"rwmjones/rhsrvany).  Original error: %s"
+msgstr ""
+
+#: ../v2v/convert_windows.ml:61
+msgid ""
+"'%s' is missing.  Unable to install RHEV-APT (RHEV guest agent).  Original "
+"error: %s"
 msgstr ""
 
 #: ../customize/customize_cmdline.ml:237 ../customize/customize_cmdline.ml:162
@@ -1994,7 +2000,7 @@ msgstr ""
 msgid "cannot set random UUID on filesystem %s type %s: %s"
 msgstr ""
 
-#: ../v2v/convert_windows.ml:133
+#: ../v2v/convert_windows.ml:113
 msgid ""
 "cannot uninstall Xen PV drivers: registry key 'HKLM\\SOFTWARE\\Microsoft"
 "\\Windows\\CurrentVersion\\Uninstall\\%s' does not contain an '%s' key"
@@ -2004,7 +2010,7 @@ msgstr ""
 msgid "connection closed"
 msgstr ""
 
-#: ../v2v/convert_windows.ml:276
+#: ../v2v/convert_windows.ml:394
 msgid ""
 "could not find registry key HKLM\\SOFTWARE\\Microsoft\\Windows"
 "\\CurrentVersion"
@@ -2014,16 +2020,16 @@ msgstr ""
 msgid "could not update grub2 console: %s (ignored)"
 msgstr ""
 
-#: ../v2v/convert_windows.ml:115
+#: ../mllib/regedit.ml:55
 msgid ""
 "decode_utf16le: Windows UTF16-LE string contains non-7-bit characters.  This "
-"is a bug in virt-v2v, please report it."
+"is a bug in %s, please report it."
 msgstr ""
 
-#: ../v2v/convert_windows.ml:109
+#: ../mllib/regedit.ml:49
 msgid ""
 "decode_utf16le: Windows string does not appear to be in UTF16-LE encoding.  "
-"This could be a bug in virt-v2v."
+"This could be a bug in %s."
 msgstr ""
 
 #: ../sysprep/sysprep_operation_script.ml:133
@@ -2134,11 +2140,11 @@ msgstr ""
 msgid "gpg program is not available"
 msgstr ""
 
-#: ../customize/firstboot.ml:114
+#: ../customize/firstboot.ml:117
 msgid "guest type %s is not supported"
 msgstr ""
 
-#: ../customize/firstboot.ml:168
+#: ../customize/firstboot.ml:284
 msgid "guest type %s/%s is not supported"
 msgstr ""
 
@@ -2238,10 +2244,6 @@ msgid "opts"
 msgstr ""
 
 #: ../sparsify/cmdline.ml:172
-msgid "output '%s' cannot be a block device, it must be a regular file"
-msgstr ""
-
-#: ../sparsify/cmdline.ml:176
 msgid "output '%s' cannot be a character device, it must be a regular file"
 msgstr ""
 
@@ -2307,6 +2309,30 @@ msgstr ""
 
 #: ../resize/resize.ml:444
 msgid "the source disk has no partitions"
+msgstr ""
+
+#: ../v2v/convert_windows.ml:256
+msgid ""
+"there are no virtio drivers available for this version of Windows (%d.%d "
+"%s).  virt-v2v looks for drivers in %s\n"
+"\n"
+"The guest will be configured to use slower emulated devices."
+msgstr ""
+
+#: ../v2v/convert_windows.ml:265
+msgid ""
+"there is no viostor (virtio block device) driver for this version of Windows "
+"(%d.%d %s).  virt-v2v looks for this driver here: %s\n"
+"\n"
+"The guest will be configured to use a slower emulated device."
+msgstr ""
+
+#: ../v2v/convert_windows.ml:281
+msgid ""
+"there is no virtio network driver for this version of Windows (%d.%d %s).  "
+"virt-v2v looks for this driver here: %s\n"
+"\n"
+"The guest will be configured to use a slower emulated device."
 msgstr ""
 
 #: ../v2v/source_libvirt.ml:101
@@ -2546,23 +2572,23 @@ msgstr ""
 msgid "virt-v2v is unable to convert this guest type (type=%s)"
 msgstr ""
 
-#: ../sparsify/cmdline.ml:183
+#: ../sparsify/cmdline.ml:179
 msgid "you cannot use --in-place and --check-tmpdir options together"
 msgstr ""
 
-#: ../sparsify/cmdline.ml:186
+#: ../sparsify/cmdline.ml:182
 msgid "you cannot use --in-place and --compress options together"
 msgstr ""
 
-#: ../sparsify/cmdline.ml:189
+#: ../sparsify/cmdline.ml:185
 msgid "you cannot use --in-place and --convert options together"
 msgstr ""
 
-#: ../sparsify/cmdline.ml:195
+#: ../sparsify/cmdline.ml:191
 msgid "you cannot use --in-place and --tmp options together"
 msgstr ""
 
-#: ../sparsify/cmdline.ml:192
+#: ../sparsify/cmdline.ml:188
 msgid "you cannot use --in-place and -o options together"
 msgstr ""
 
@@ -8191,43 +8217,3 @@ msgstr ""
 msgid "virt-win-reg: {p}: could not upload registry file: {err}\n"
 msgstr ""
 "virt-win-reg: {p}: no ha sido posible cargar el archivo de registro: {err}\n"
-
-#~ msgid "could not parse /etc/fstab or empty file"
-#~ msgstr "no se pudo analizar /etc/fstab o vaciar el archivo"
-
-#~ msgid ""
-#~ "%s: display files in a virtual machine\n"
-#~ "Copyright (C) 2010 Red Hat Inc.\n"
-#~ "Usage:\n"
-#~ "  %s [--options] -d domname file [file ...]\n"
-#~ "  %s [--options] -a disk.img [-a disk.img ...] file [file ...]\n"
-#~ "Options:\n"
-#~ "  -a|--add image       Add image\n"
-#~ "  -c|--connect uri     Specify libvirt URI for -d option\n"
-#~ "  -d|--domain guest    Add disks from libvirt guest\n"
-#~ "  --echo-keys          Don't turn off echo for passphrases\n"
-#~ "  --format[=raw|..]    Force disk format for -a option\n"
-#~ "  --help               Display brief help\n"
-#~ "  --keys-from-stdin    Read passphrases from stdin\n"
-#~ "  -v|--verbose         Verbose messages\n"
-#~ "  -V|--version         Display version and exit\n"
-#~ "  -x                   Trace libguestfs API calls\n"
-#~ "For more information, see the manpage %s(1).\n"
-#~ msgstr ""
-#~ "%s: muestra archivos en una máquina virtual\n"
-#~ "Copyright (C) 2010 Red Hat Inc.\n"
-#~ "Uso:\n"
-#~ "  %s [--opciones] -d domname archivo [archivo ...]\n"
-#~ "  %s [--opciones] -a disk.img [-a disk.img ...] archivo [archivo ...]\n"
-#~ "Opciones:\n"
-#~ "  -a|--add image       Agrega una imagen\n"
-#~ "  -c|--connect uri     Indica el URI de libvirt para la opción -d\n"
-#~ "  -d|--domain guest    Agrega discos del húesped libvirt\n"
-#~ "  --echo-keys          Muestra las frases de acceso al tipearlas\n"
-#~ "  --format[=raw|..]    Obliga al formateo del disco para la opción -a\n"
-#~ "  --help               Muestra una pequeña asistencia\n"
-#~ "  --keys-from-stdin    Lee las frases de acceso de stdin\n"
-#~ "  -v|--verbose         Mensajes detallados\n"
-#~ "  -V|--version         Muestra la versión y finaliza\n"
-#~ "  -x                   Rastrea llamados API de libguestfs\n"
-#~ "Para obtener mayor información, consulte la página man %s(1).\n"

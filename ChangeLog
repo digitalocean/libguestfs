@@ -1,3 +1,75 @@
+commit 7f826e1296c85be7f4418830c8b5c992a80e9747
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 23 17:40:16 2014 +0100
+
+    Version 1.27.23.
+
+commit d682dad1864ef3b3353f1521098466459df97ca3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 23 13:08:49 2014 +0100
+
+    aarch64: Add comment about efi-rtc=noprobe option.
+    
+    This updates commit 5326689d50cc82e9108c83511e666be6d081d9dd.
+
+commit bcdbe6405c10ecb7374ae47eee6385be17dbd49e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 8 16:33:45 2014 +0100
+
+    v2v: Add support for converting Windows guests.
+    
+    This completes commit f296d34f3b30c82309b22b54bf5a2c133992bd93.
+
+commit f4698575cced4c45136635daa31821e6d55e7c77
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 8 21:31:06 2014 +0100
+
+    customize: Add the ability to use --firstboot for Windows guests.
+    
+    This allows you to add potentially multiple --firstboot
+    scripts to a Windows guest.
+
+commit 199fa269508ac9ae2de32927e04996834af149d4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 8 21:41:58 2014 +0100
+
+    mllib: Add regedit mini-library.
+    
+    This library replaces Win::Hivex::Regedit, or at least enough for us
+    to be able to make the simple Registry modifications needed for
+    installing firstboot scripts.
+
+commit 9c49590d42642940acf5de06d978ba1e2d71e8d1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 8 20:57:59 2014 +0100
+
+    customize: firstboot: Move Linux-specific functions into Linux submodule.
+    
+    No functional change.
+
+commit 12b54ef5e3aecd55d228a96dfb0a9ab5c8acdf4a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 23 15:01:44 2014 +0100
+
+    sparsify: Relax requirement that output device cannot be block device (RHBZ#1122557).
+    
+    To fix RHBZ#1056290, I prevented virt-sparsify being used if the
+    output device is a block device.
+    
+    I have now retested this scenario and it does work (in both copying
+    and in-place mode), and does not delete the output device, and
+    therefore we can relax this restriction so only char devices are
+    banned.
+    
+    This is useful for oVirt which uses a qcow2 formatted block device to
+    store virtual machines.
+
+commit 897b136aa8012bba26e61e0eb0851a6a4b0cdf5a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 22 19:10:04 2014 +0100
+
+    Update translations from Transifex.
+
 commit e7ae071f60846e0d91a1a1728b5614df912815f6
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon Jul 21 14:36:43 2014 +0100

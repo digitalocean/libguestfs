@@ -9,11 +9,11 @@ msgstr ""
 "Project-Id-Version: libguestfs\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2014-07-21 14:50+0100\n"
-"PO-Revision-Date: 2014-03-26 16:49+0000\n"
+"POT-Creation-Date: 2014-07-23 17:53+0100\n"
+"PO-Revision-Date: 2014-07-22 18:03+0000\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
-"Language-Team: Telugu (http://www.transifex.com/projects/p/fedora/language/"
-"te/)\n"
+"Language-Team: Telugu (http://www.transifex.com/projects/p/libguestfs/"
+"language/te/)\n"
 "Language: te\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -595,11 +595,17 @@ msgstr ""
 msgid "%s: you must give either -a or -d options\n"
 msgstr ""
 
-#: ../v2v/convert_windows.ml:58
+#: ../customize/firstboot.ml:177
 msgid ""
-"'%s' is missing.  This file is required in order to do Windows conversions.  "
-"You can get it by building rhsrvany (https://github.com/rwmjones/rhsrvany).  "
-"Original error: %s"
+"'%s' is missing.  This file is required in order to install Windows "
+"firstboot scripts.  You can get it by building rhsrvany (https://github.com/"
+"rwmjones/rhsrvany).  Original error: %s"
+msgstr ""
+
+#: ../v2v/convert_windows.ml:61
+msgid ""
+"'%s' is missing.  Unable to install RHEV-APT (RHEV guest agent).  Original "
+"error: %s"
 msgstr ""
 
 #: ../customize/customize_cmdline.ml:237 ../customize/customize_cmdline.ml:162
@@ -1992,7 +1998,7 @@ msgstr ""
 msgid "cannot set random UUID on filesystem %s type %s: %s"
 msgstr ""
 
-#: ../v2v/convert_windows.ml:133
+#: ../v2v/convert_windows.ml:113
 msgid ""
 "cannot uninstall Xen PV drivers: registry key 'HKLM\\SOFTWARE\\Microsoft"
 "\\Windows\\CurrentVersion\\Uninstall\\%s' does not contain an '%s' key"
@@ -2002,7 +2008,7 @@ msgstr ""
 msgid "connection closed"
 msgstr ""
 
-#: ../v2v/convert_windows.ml:276
+#: ../v2v/convert_windows.ml:394
 msgid ""
 "could not find registry key HKLM\\SOFTWARE\\Microsoft\\Windows"
 "\\CurrentVersion"
@@ -2012,16 +2018,16 @@ msgstr ""
 msgid "could not update grub2 console: %s (ignored)"
 msgstr ""
 
-#: ../v2v/convert_windows.ml:115
+#: ../mllib/regedit.ml:55
 msgid ""
 "decode_utf16le: Windows UTF16-LE string contains non-7-bit characters.  This "
-"is a bug in virt-v2v, please report it."
+"is a bug in %s, please report it."
 msgstr ""
 
-#: ../v2v/convert_windows.ml:109
+#: ../mllib/regedit.ml:49
 msgid ""
 "decode_utf16le: Windows string does not appear to be in UTF16-LE encoding.  "
-"This could be a bug in virt-v2v."
+"This could be a bug in %s."
 msgstr ""
 
 #: ../sysprep/sysprep_operation_script.ml:133
@@ -2132,11 +2138,11 @@ msgstr ""
 msgid "gpg program is not available"
 msgstr ""
 
-#: ../customize/firstboot.ml:114
+#: ../customize/firstboot.ml:117
 msgid "guest type %s is not supported"
 msgstr ""
 
-#: ../customize/firstboot.ml:168
+#: ../customize/firstboot.ml:284
 msgid "guest type %s/%s is not supported"
 msgstr ""
 
@@ -2236,10 +2242,6 @@ msgid "opts"
 msgstr ""
 
 #: ../sparsify/cmdline.ml:172
-msgid "output '%s' cannot be a block device, it must be a regular file"
-msgstr ""
-
-#: ../sparsify/cmdline.ml:176
 msgid "output '%s' cannot be a character device, it must be a regular file"
 msgstr ""
 
@@ -2305,6 +2307,30 @@ msgstr ""
 
 #: ../resize/resize.ml:444
 msgid "the source disk has no partitions"
+msgstr ""
+
+#: ../v2v/convert_windows.ml:256
+msgid ""
+"there are no virtio drivers available for this version of Windows (%d.%d "
+"%s).  virt-v2v looks for drivers in %s\n"
+"\n"
+"The guest will be configured to use slower emulated devices."
+msgstr ""
+
+#: ../v2v/convert_windows.ml:265
+msgid ""
+"there is no viostor (virtio block device) driver for this version of Windows "
+"(%d.%d %s).  virt-v2v looks for this driver here: %s\n"
+"\n"
+"The guest will be configured to use a slower emulated device."
+msgstr ""
+
+#: ../v2v/convert_windows.ml:281
+msgid ""
+"there is no virtio network driver for this version of Windows (%d.%d %s).  "
+"virt-v2v looks for this driver here: %s\n"
+"\n"
+"The guest will be configured to use a slower emulated device."
 msgstr ""
 
 #: ../v2v/source_libvirt.ml:101
@@ -2544,23 +2570,23 @@ msgstr ""
 msgid "virt-v2v is unable to convert this guest type (type=%s)"
 msgstr ""
 
-#: ../sparsify/cmdline.ml:183
+#: ../sparsify/cmdline.ml:179
 msgid "you cannot use --in-place and --check-tmpdir options together"
 msgstr ""
 
-#: ../sparsify/cmdline.ml:186
+#: ../sparsify/cmdline.ml:182
 msgid "you cannot use --in-place and --compress options together"
 msgstr ""
 
-#: ../sparsify/cmdline.ml:189
+#: ../sparsify/cmdline.ml:185
 msgid "you cannot use --in-place and --convert options together"
 msgstr ""
 
-#: ../sparsify/cmdline.ml:195
+#: ../sparsify/cmdline.ml:191
 msgid "you cannot use --in-place and --tmp options together"
 msgstr ""
 
-#: ../sparsify/cmdline.ml:192
+#: ../sparsify/cmdline.ml:188
 msgid "you cannot use --in-place and -o options together"
 msgstr ""
 

@@ -3,8 +3,8 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# mmarzantowicz <mmarzantowicz@osdf.com.pl>, 2013
-# mmarzantowicz <mmarzantowicz@osdf.com.pl>, 2012
+# Mateusz Marzantowicz <mmarzantowicz@osdf.com.pl>, 2013
+# Mateusz Marzantowicz <mmarzantowicz@osdf.com.pl>, 2012
 # Piotr Drąg <piotrdrag@gmail.com>, 2011-2013
 # rjones <rjones@redhat.com>, 2011
 msgid ""
@@ -12,11 +12,11 @@ msgstr ""
 "Project-Id-Version: libguestfs\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2014-07-21 14:50+0100\n"
-"PO-Revision-Date: 2014-03-26 16:49+0000\n"
+"POT-Creation-Date: 2014-07-23 17:53+0100\n"
+"PO-Revision-Date: 2014-07-22 18:03+0000\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
-"Language-Team: Polish (http://www.transifex.com/projects/p/fedora/language/"
-"pl/)\n"
+"Language-Team: Polish (http://www.transifex.com/projects/p/libguestfs/"
+"language/pl/)\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -105,11 +105,11 @@ msgstr ""
 
 #: ../sysprep/main.ml:62 ../customize/customize_main.ml:68
 msgid "%s: --domain option can only be given once\n"
-msgstr "%s: opcja --domain może zostać podana tylko raz\n"
+msgstr ""
 
 #: ../sysprep/main.ml:74
 msgid "%s: --enable option can only be given once\n"
-msgstr "%s: opcja --enable może zostać podana tylko raz\n"
+msgstr ""
 
 #: ../sysprep/main.ml:86
 msgid "%s: --enable: '%s' is not a known operation\n"
@@ -153,7 +153,6 @@ msgstr ""
 #: ../resize/resize.ml:849
 msgid "%s: This logical volume will be expanded to maximum size."
 msgstr ""
-"%s: ten wolumin logiczny zostanie rozszerzony do maksymalnego rozmiaru."
 
 #: ../resize/resize.ml:656
 msgid ""
@@ -189,7 +188,7 @@ msgstr ""
 
 #: ../resize/resize.ml:828
 msgid "%s: This partition will be deleted."
-msgstr "%s: partycja zostanie usunięta"
+msgstr ""
 
 #: ../resize/resize.ml:824
 msgid "%s: This partition will be left alone."
@@ -197,7 +196,7 @@ msgstr ""
 
 #: ../resize/resize.ml:830
 msgid "%s: This partition will be resized from %s to %s."
-msgstr "%s: Rrozmiar partycji zostanie zmieniony z %s na %s."
+msgstr ""
 
 #: ../builder/cmdline.ml:178
 msgid ""
@@ -403,7 +402,7 @@ msgstr ""
 
 #: ../resize/resize.ml:687
 msgid "%s: new partition size is zero or negative"
-msgstr "%s: nowy rozmiar partycji wynosi zero lub jest ujemny"
+msgstr ""
 
 #: ../builder/sources.ml:47
 msgid "%s: no 'uri' entry for '%s' in %s, skipping it\n"
@@ -449,7 +448,7 @@ msgstr ""
 
 #: ../resize/resize.ml:503
 msgid "%s: partition size %Ld < filesystem size %Ld"
-msgstr "%s: rozmiar partycji %Ld < rozmiar systemu plików %Ld"
+msgstr ""
 
 #: ../resize/resize.ml:498
 msgid "%s: partition size %Ld < physical volume size %Ld"
@@ -600,11 +599,17 @@ msgstr ""
 msgid "%s: you must give either -a or -d options\n"
 msgstr ""
 
-#: ../v2v/convert_windows.ml:58
+#: ../customize/firstboot.ml:177
 msgid ""
-"'%s' is missing.  This file is required in order to do Windows conversions.  "
-"You can get it by building rhsrvany (https://github.com/rwmjones/rhsrvany).  "
-"Original error: %s"
+"'%s' is missing.  This file is required in order to install Windows "
+"firstboot scripts.  You can get it by building rhsrvany (https://github.com/"
+"rwmjones/rhsrvany).  Original error: %s"
+msgstr ""
+
+#: ../v2v/convert_windows.ml:61
+msgid ""
+"'%s' is missing.  Unable to install RHEV-APT (RHEV guest agent).  Original "
+"error: %s"
 msgstr ""
 
 #: ../customize/customize_cmdline.ml:237 ../customize/customize_cmdline.ml:162
@@ -670,7 +675,7 @@ msgstr ""
 #. ../customize/customize_main.ml:75
 #: ../sysprep/main.ml:132 ../sysprep/main.ml:131
 msgid "Add disk image file"
-msgstr "Dodaje obraz dysku"
+msgstr ""
 
 #: ../customize/customize_cmdline.ml:188
 msgid "Add package(s) to install"
@@ -682,7 +687,7 @@ msgstr ""
 
 #: ../sparsify/cmdline.ml:80
 msgid "Add qemu-img options"
-msgstr "Dodaje opcje qemu-img"
+msgstr ""
 
 #: ../builder/list_entries.ml:85
 msgid "Aliases:"
@@ -690,7 +695,7 @@ msgstr ""
 
 #: ../resize/resize.ml:181
 msgid "Align first partition (default: auto)"
-msgstr "Wyrównaj pierwszą partycję (domyślnie: automatycznie)"
+msgstr ""
 
 #: ../builder/list_entries.ml:76
 msgid "Architecture:"
@@ -765,8 +770,6 @@ msgid ""
 "Copying %s ...\n"
 "%!"
 msgstr ""
-"Kopiowanie %s ...\n"
-"%!"
 
 #: ../v2v/v2v.ml:166
 msgid "Copying disk %d/%d to %s (%s)"
@@ -849,7 +852,7 @@ msgstr ""
 
 #: ../resize/resize.ml:187
 msgid "Delete partition"
-msgstr "Usuwa partycję"
+msgstr ""
 
 #: ../builder/cmdline.ml:125
 msgid "Delete the template cache"
@@ -897,11 +900,11 @@ msgstr ""
 
 #: ../resize/resize.ml:183
 msgid "Don't copy boot loader"
-msgstr "Bez kopiowania programu startowego"
+msgstr ""
 
 #: ../resize/resize.ml:190
 msgid "Don't create extra partition"
-msgstr "Bez tworzenia dodatkowej partycji"
+msgstr ""
 
 #: ../builder/cmdline.ml:127
 msgid "Don't delete output file on failure"
@@ -923,7 +926,7 @@ msgstr ""
 
 #: ../resize/resize.ml:204
 msgid "Don't print the summary"
-msgstr "Bez wyświetlania podsumowania"
+msgstr ""
 
 #: ../builder/cmdline.ml:114
 msgid "Download all templates to the cache"
@@ -966,7 +969,7 @@ msgstr ""
 #. ../builder/cmdline.ml:155
 #: ../v2v/cmdline.ml:97 ../sysprep/main.ml:153 ../sysprep/main.ml:152
 msgid "Enable debugging messages"
-msgstr "Włącza komunikaty debugowania"
+msgstr ""
 
 #: ../sysprep/main.ml:143
 msgid "Enable specific operations"
@@ -1002,8 +1005,6 @@ msgid ""
 "Examining %s ...\n"
 "%!"
 msgstr ""
-"Sprawdzanie %s...\n"
-"%!"
 
 #: ../sysprep/main.ml:234 ../customize/customize_main.ml:185
 msgid "Examining the guest ..."
@@ -1011,11 +1012,11 @@ msgstr ""
 
 #: ../resize/resize.ml:194
 msgid "Expand logical volume"
-msgstr "Rozszerza wolumin logiczny"
+msgstr ""
 
 #: ../resize/resize.ml:188
 msgid "Expand partition"
-msgstr "Rozszerza partycję"
+msgstr ""
 
 #: ../resize/resize.ml:1271
 msgid ""
@@ -1058,8 +1059,6 @@ msgid ""
 "Fill free space in %s with zero ...\n"
 "%!"
 msgstr ""
-"Wypełnia wolne miejsce w %s zerami ...\n"
-"%!"
 
 #: ../sparsify/copying.ml:288
 msgid ""
@@ -1099,7 +1098,7 @@ msgstr ""
 
 #: ../resize/resize.ml:202
 msgid "Force ntfsresize"
-msgstr "Wymusza ntfsresize"
+msgstr ""
 
 #: ../resize/resize.ml:207
 msgid "Forcefully resize partition"
@@ -1139,11 +1138,11 @@ msgstr ""
 
 #: ../sparsify/cmdline.ml:75
 msgid "Ignore filesystem"
-msgstr "Ignoruje system plików"
+msgstr ""
 
 #: ../resize/resize.ml:192
 msgid "Ignore partition"
-msgstr "Ignoruje partycję"
+msgstr ""
 
 #: ../sparsify/copying.ml:102
 msgid ""
@@ -1196,7 +1195,7 @@ msgstr ""
 
 #: ../sysprep/main.ml:145
 msgid "List supported operations"
-msgstr "Wyświetla listę obsługiwanych działań"
+msgstr ""
 
 #. ../builder/cmdline.ml:140
 #: ../v2v/cmdline.ml:87 ../sparsify/cmdline.ml:79 ../resize/resize.ml:198
@@ -1322,8 +1321,6 @@ msgstr ""
 #: ../sysprep/main.ml:199 ../sysprep/main.ml:186
 msgid "Read virt-sysprep(1) man page for further information.\n"
 msgstr ""
-"Proszę przeczytać stronę podręcznika virt-sysprep(1), aby uzyskać więcej "
-"informacji.\n"
 
 #: ../customize/customize_cmdline.ml:296
 msgid "Relabel files with correct SELinux labels"
@@ -1331,7 +1328,7 @@ msgstr ""
 
 #: ../sysprep/sysprep_operation_ssh_userdir.ml:38
 msgid "Remove \".ssh\" directories in the guest"
-msgstr "Usuwa katalogi \".ssh\" gościa"
+msgstr ""
 
 #: ../sysprep/sysprep_operation_ca_certificates.ml:51
 msgid "Remove CA certificates in the guest"
@@ -1339,15 +1336,15 @@ msgstr ""
 
 #: ../sysprep/sysprep_operation_dhcp_client_state.ml:36
 msgid "Remove DHCP client leases"
-msgstr "Usuwa dzierżawy klienta DHCP"
+msgstr ""
 
 #: ../sysprep/sysprep_operation_dhcp_server_state.ml:31
 msgid "Remove DHCP server leases"
-msgstr "Usuwa dzierżawy serwera DHCP"
+msgstr ""
 
 #: ../sysprep/sysprep_operation_dovecot_data.ml:37
 msgid "Remove Dovecot (mail server) data"
-msgstr "Usuwa dane (serwera pocztowego) Dovecot"
+msgstr ""
 
 #: ../sysprep/sysprep_operation_net_hostname.ml:49
 msgid "Remove HOSTNAME in network interface configuration"
@@ -1435,7 +1432,7 @@ msgstr ""
 
 #: ../sysprep/sysprep_operation_bash_history.ml:38
 msgid "Remove the bash history in the guest"
-msgstr "Usuwa historię powłoki bash gościa"
+msgstr ""
 
 #: ../sysprep/sysprep_operation_bash_history.ml:39
 msgid ""
@@ -1481,7 +1478,7 @@ msgstr ""
 
 #: ../sysprep/sysprep_operation_utmp.ml:35
 msgid "Remove the utmp file"
-msgstr "Usuwa plik utmp"
+msgstr ""
 
 #: ../sysprep/sysprep_operation_yum_uuid.ml:34
 msgid "Remove the yum UUID"
@@ -1518,7 +1515,7 @@ msgstr ""
 
 #: ../resize/resize.ml:206
 msgid "Resize partition"
-msgstr "Zmienia rozmiar partycji"
+msgstr ""
 
 #: ../builder/builder.ml:572
 msgid "Resizing (using virt-resize) to expand the disk to %s"
@@ -1742,7 +1739,7 @@ msgstr ""
 
 #: ../resize/resize.ml:208
 msgid "Shrink partition"
-msgstr "Zmniejsza partycję"
+msgstr ""
 
 #: ../builder/list_entries.ml:51
 msgid "Source URI: %s\n"
@@ -1965,15 +1962,13 @@ msgstr ""
 
 #: ../sparsify/cmdline.ml:89
 msgid "Zero filesystem"
-msgstr "Wypełnia system plików zerami"
+msgstr ""
 
 #: ../sparsify/in_place.ml:76 ../sparsify/copying.ml:228
 msgid ""
 "Zeroing %s ...\n"
 "%!"
 msgstr ""
-"Zerowanie %s...\n"
-"%!"
 
 #: ../resize/resize.ml:259
 msgid "alignment cannot be < 1"
@@ -1985,7 +1980,7 @@ msgstr ""
 
 #: ../resize/resize.ml:130
 msgid "btrfs-filesystem-resize"
-msgstr "btrfs-filesystem-resize"
+msgstr ""
 
 #: ../builder/builder.ml:154
 msgid "cache %s: %s"
@@ -2007,7 +2002,7 @@ msgstr ""
 msgid "cannot set random UUID on filesystem %s type %s: %s"
 msgstr ""
 
-#: ../v2v/convert_windows.ml:133
+#: ../v2v/convert_windows.ml:113
 msgid ""
 "cannot uninstall Xen PV drivers: registry key 'HKLM\\SOFTWARE\\Microsoft"
 "\\Windows\\CurrentVersion\\Uninstall\\%s' does not contain an '%s' key"
@@ -2017,7 +2012,7 @@ msgstr ""
 msgid "connection closed"
 msgstr ""
 
-#: ../v2v/convert_windows.ml:276
+#: ../v2v/convert_windows.ml:394
 msgid ""
 "could not find registry key HKLM\\SOFTWARE\\Microsoft\\Windows"
 "\\CurrentVersion"
@@ -2027,16 +2022,16 @@ msgstr ""
 msgid "could not update grub2 console: %s (ignored)"
 msgstr ""
 
-#: ../v2v/convert_windows.ml:115
+#: ../mllib/regedit.ml:55
 msgid ""
 "decode_utf16le: Windows UTF16-LE string contains non-7-bit characters.  This "
-"is a bug in virt-v2v, please report it."
+"is a bug in %s, please report it."
 msgstr ""
 
-#: ../v2v/convert_windows.ml:109
+#: ../mllib/regedit.ml:49
 msgid ""
 "decode_utf16le: Windows string does not appear to be in UTF16-LE encoding.  "
-"This could be a bug in virt-v2v."
+"This could be a bug in %s."
 msgstr ""
 
 #: ../sysprep/sysprep_operation_script.ml:133
@@ -2062,7 +2057,7 @@ msgstr ""
 #. ../customize/customize_main.ml:83
 #: ../sysprep/main.ml:137 ../sysprep/main.ml:136
 msgid "domain"
-msgstr "domena"
+msgstr ""
 
 #: ../v2v/lib_linux.ml:151
 msgid "don't know how to find file owner using %s"
@@ -2126,7 +2121,7 @@ msgstr ""
 #. ../customize/customize_main.ml:75
 #: ../sysprep/main.ml:132 ../sysprep/main.ml:131
 msgid "file"
-msgstr "plik"
+msgstr ""
 
 #: ../resize/resize.ml:1167
 msgid "first partition is NTFS but does not contain NTFS boot loader magic"
@@ -2137,7 +2132,7 @@ msgstr ""
 #. ../customize/customize_main.ml:88
 #: ../sysprep/main.ml:144 ../sparsify/cmdline.ml:74 ../sparsify/cmdline.ml:72
 msgid "format"
-msgstr "format"
+msgstr ""
 
 #: ../sparsify/cmdline.ml:89 ../sparsify/cmdline.ml:75
 msgid "fs"
@@ -2147,11 +2142,11 @@ msgstr ""
 msgid "gpg program is not available"
 msgstr ""
 
-#: ../customize/firstboot.ml:114
+#: ../customize/firstboot.ml:117
 msgid "guest type %s is not supported"
 msgstr ""
 
-#: ../customize/firstboot.ml:168
+#: ../customize/firstboot.ml:284
 msgid "guest type %s/%s is not supported"
 msgstr ""
 
@@ -2193,7 +2188,7 @@ msgstr ""
 
 #: ../resize/resize.ml:181
 msgid "never|always|auto"
-msgstr "nigdy|zawsze|automatycznie"
+msgstr ""
 
 #: ../builder/builder.ml:205
 msgid "no cache directory\n"
@@ -2251,10 +2246,6 @@ msgid "opts"
 msgstr ""
 
 #: ../sparsify/cmdline.ml:172
-msgid "output '%s' cannot be a block device, it must be a regular file"
-msgstr ""
-
-#: ../sparsify/cmdline.ml:176
 msgid "output '%s' cannot be a character device, it must be a regular file"
 msgstr ""
 
@@ -2300,7 +2291,7 @@ msgstr ""
 
 #: ../resize/resize.ml:128
 msgid "resize2fs"
-msgstr "resize2fs"
+msgstr ""
 
 #: ../v2v/v2v.ml:307
 msgid "root device %s not found.  Roots found were: %s"
@@ -2308,7 +2299,7 @@ msgstr ""
 
 #: ../sysprep/sysprep_operation_script.ml:146
 msgid "script"
-msgstr "skrypt"
+msgstr ""
 
 #: ../sysprep/sysprep_operation_script.ml:73
 msgid "script failed"
@@ -2316,10 +2307,34 @@ msgstr ""
 
 #: ../resize/resize.ml:182
 msgid "sectors"
-msgstr "sektory"
+msgstr ""
 
 #: ../resize/resize.ml:444
 msgid "the source disk has no partitions"
+msgstr ""
+
+#: ../v2v/convert_windows.ml:256
+msgid ""
+"there are no virtio drivers available for this version of Windows (%d.%d "
+"%s).  virt-v2v looks for drivers in %s\n"
+"\n"
+"The guest will be configured to use slower emulated devices."
+msgstr ""
+
+#: ../v2v/convert_windows.ml:265
+msgid ""
+"there is no viostor (virtio block device) driver for this version of Windows "
+"(%d.%d %s).  virt-v2v looks for this driver here: %s\n"
+"\n"
+"The guest will be configured to use a slower emulated device."
+msgstr ""
+
+#: ../v2v/convert_windows.ml:281
+msgid ""
+"there is no virtio network driver for this version of Windows (%d.%d %s).  "
+"virt-v2v looks for this driver here: %s\n"
+"\n"
+"The guest will be configured to use a slower emulated device."
 msgstr ""
 
 #: ../v2v/source_libvirt.ml:101
@@ -2360,7 +2375,7 @@ msgstr ""
 #. ../customize/customize_main.ml:80
 #: ../sysprep/main.ml:134 ../sysprep/main.ml:133
 msgid "uri"
-msgstr "uri"
+msgstr ""
 
 #: ../resize/resize.ml:298
 msgid "usage is: %s [--options] indisk outdisk"
@@ -2559,23 +2574,23 @@ msgstr ""
 msgid "virt-v2v is unable to convert this guest type (type=%s)"
 msgstr ""
 
-#: ../sparsify/cmdline.ml:183
+#: ../sparsify/cmdline.ml:179
 msgid "you cannot use --in-place and --check-tmpdir options together"
 msgstr ""
 
-#: ../sparsify/cmdline.ml:186
+#: ../sparsify/cmdline.ml:182
 msgid "you cannot use --in-place and --compress options together"
 msgstr ""
 
-#: ../sparsify/cmdline.ml:189
+#: ../sparsify/cmdline.ml:185
 msgid "you cannot use --in-place and --convert options together"
 msgstr ""
 
-#: ../sparsify/cmdline.ml:195
+#: ../sparsify/cmdline.ml:191
 msgid "you cannot use --in-place and --tmp options together"
 msgstr ""
 
-#: ../sparsify/cmdline.ml:192
+#: ../sparsify/cmdline.ml:188
 msgid "you cannot use --in-place and -o options together"
 msgstr ""
 
@@ -8271,102 +8286,3 @@ msgstr "virt-win-reg: {p}: nie można pobrać pliku rejestru: {err}\n"
 #, perl-brace-format
 msgid "virt-win-reg: {p}: could not upload registry file: {err}\n"
 msgstr "virt-win-reg: {p}: nie można wysłać pliku rejestru: {err}\n"
-
-#~ msgid "could not parse /etc/fstab or empty file"
-#~ msgstr "nie można przetworzyć pliku /etc/fstab lub pustego pliku"
-
-#~ msgid ""
-#~ "%s: display files in a virtual machine\n"
-#~ "Copyright (C) 2010 Red Hat Inc.\n"
-#~ "Usage:\n"
-#~ "  %s [--options] -d domname file [file ...]\n"
-#~ "  %s [--options] -a disk.img [-a disk.img ...] file [file ...]\n"
-#~ "Options:\n"
-#~ "  -a|--add image       Add image\n"
-#~ "  -c|--connect uri     Specify libvirt URI for -d option\n"
-#~ "  -d|--domain guest    Add disks from libvirt guest\n"
-#~ "  --echo-keys          Don't turn off echo for passphrases\n"
-#~ "  --format[=raw|..]    Force disk format for -a option\n"
-#~ "  --help               Display brief help\n"
-#~ "  --keys-from-stdin    Read passphrases from stdin\n"
-#~ "  -v|--verbose         Verbose messages\n"
-#~ "  -V|--version         Display version and exit\n"
-#~ "  -x                   Trace libguestfs API calls\n"
-#~ "For more information, see the manpage %s(1).\n"
-#~ msgstr ""
-#~ "%s: wyświetla pliki w maszynie wirtualnej\n"
-#~ "Copyright (C) 2010 Red Hat Inc.\n"
-#~ "Użycie:\n"
-#~ "  %s [--opcje] -d nazwa_domeny plik [plik...]\n"
-#~ "  %s [--opcje] -a dysk.img [-a dysk.img ...] plik [plik...]\n"
-#~ "Opcje:\n"
-#~ "  -a|--add obraz       Dodaje obraz\n"
-#~ "  -c|--connect uri     Określa adres URI biblioteki libvirt dla opcji -d\n"
-#~ "  -d|--domain gość     Dodaje dyski z gościa biblioteki libvirt\n"
-#~ "  --echo-keys          Bez wyłączania echa dla haseł\n"
-#~ "  --format[=raw|..]    Wymusza format dysku dla opcji -a\n"
-#~ "  --help               Wyświetla krótką pomoc\n"
-#~ "  --keys-from-stdin    Odczytuje hasła ze standardowego wejścia\n"
-#~ "  -v|--verbose         Więcej komunikatów\n"
-#~ "  -V|--version         Wyświetla wersję i kończy działanie\n"
-#~ "  -x                   Śledzi wywołania API biblioteki libguestfs\n"
-#~ "Aby dowiedzieć się więcej, należy zobaczyć stronę podręcznika %s(1).\n"
-
-#~ msgid ""
-#~ "%s: list files in a virtual machine\n"
-#~ "Copyright (C) 2010-2012 Red Hat Inc.\n"
-#~ "Usage:\n"
-#~ "  %s [--options] -d domname dir [dir ...]\n"
-#~ "  %s [--options] -a disk.img [-a disk.img ...] dir [dir ...]\n"
-#~ "Options:\n"
-#~ "  -a|--add image       Add image\n"
-#~ "  --checksum[=...]     Display file checksums\n"
-#~ "  -c|--connect uri     Specify libvirt URI for -d option\n"
-#~ "  --csv                Comma-Separated Values output\n"
-#~ "  -d|--domain guest    Add disks from libvirt guest\n"
-#~ "  --echo-keys          Don't turn off echo for passphrases\n"
-#~ "  --extra-stats        Display extra stats\n"
-#~ "  --format[=raw|..]    Force disk format for -a option\n"
-#~ "  --help               Display brief help\n"
-#~ "  -h|--human-readable  Human-readable sizes in output\n"
-#~ "  --keys-from-stdin    Read passphrases from stdin\n"
-#~ "  -l|--long            Long listing\n"
-#~ "  -R|--recursive       Recursive listing\n"
-#~ "  --times              Display file times\n"
-#~ "  --time-days          Display file times as days before now\n"
-#~ "  --time-relative      Display file times as seconds before now\n"
-#~ "  --time-t             Display file times as time_t's\n"
-#~ "  --uids               Display UID, GID\n"
-#~ "  -v|--verbose         Verbose messages\n"
-#~ "  -V|--version         Display version and exit\n"
-#~ "  -x                   Trace libguestfs API calls\n"
-#~ "For more information, see the manpage %s(1).\n"
-#~ msgstr ""
-#~ "%s: wyświetla listę plików w maszynie wirtualnej\n"
-#~ "Copyright (C) 2010-2012 Red Hat Inc.\n"
-#~ "Użycie:\n"
-#~ "  %s [--opcje] -d nazwadom katalog [katalog...]\n"
-#~ "  %s [--opcje] -a dysk.img [-a dysk.img ...] katalog [katalog...]\n"
-#~ "Opcje:\n"
-#~ "  -a|--add obraz       Dodaje obraz\n"
-#~ "  --checksum[=...]     Wyświetla sumy kontrolne plików\n"
-#~ "  -c|--connect uri     Określa adres URI biblioteki libvirt dla opcji -d\n"
-#~ "  --csv                Wyjście wartości oddzielonych przecinkami\n"
-#~ "  -d|--domain gość     Dodaje dyski z gościa biblioteki libvirt\n"
-#~ "  --echo-keys          Bez wyłączania echa dla haseł\n"
-#~ "  --extra-stats        Wyświetla dodatkowe statystyki\n"
-#~ "  --format[=raw|..]    Wymusza format dysku dla opcji -a\n"
-#~ "  --help               Wyświetla krótką pomoc\n"
-#~ "  -h|--human-readable  Wartości na wyjściu czytelne dla człowieka\n"
-#~ "  --keys-from-stdin    Odczytuje hasła ze standardowego wejścia\n"
-#~ "  -l|--long            Długie listy\n"
-#~ "  -R|--recursive       Listy rekursywne\n"
-#~ "  --times              Wyświetla czasy plików\n"
-#~ "  --time-days          Wyświetla czasy plików jako dni do teraz\n"
-#~ "  --time-relative      Wyświetla czasy plików jako sekundy do teraz\n"
-#~ "  --time-t             Wyświetla czasy plików jako time_t\n"
-#~ "  --uids               Wyświetla UID, GID\n"
-#~ "  -v|--verbose         Więcej komunikatów\n"
-#~ "  -V|--version         Wyświetla wersję i kończy działanie\n"
-#~ "  -x                   Śledzi wywołania API biblioteki libguestfs\n"
-#~ "Aby dowiedzieć się więcej, należy zobaczyć stronę podręcznika %s(1).\n"

@@ -492,6 +492,36 @@ L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST STARTUP>.
 
 このプログラムは、成功すると 0 を返します。または、エラーが起きると 1 を返します。
 
+=head1 環境変数
+
+=over 4
+
+=item C<VIRT_TOOLS_DATA_DIR>
+
+This can point to the directory containing data files used for Windows
+firstboot installation.
+
+Normally you do not need to set this.  If not set, a compiled-in default
+will be used (something like C</usr/share/virt-tools>).
+
+This directory may contain the following files:
+
+=over 4
+
+=item C<rhsrvany.exe>
+
+This is the RHSrvAny Windows binary, used to install a "firstboot" script in
+Windows guests.  It is required if you intend to use the I<--firstboot> or
+I<--firstboot-command> options with Windows guests.
+
+See also: C<https://github.com/rwmjones/rhsrvany>
+
+=back
+
+=back
+
+他の環境変数は L<guestfs(3)/環境変数> を参照してください。
+
 =head1 関連項目
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-builder(1)>, L<virt-clone(1)>,

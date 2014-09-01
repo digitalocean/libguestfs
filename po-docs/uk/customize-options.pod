@@ -33,7 +33,7 @@ Change the permissions of C<FILE> to C<PERMISSIONS>.
 I<Note>: C<PERMISSIONS> by default would be decimal, unless you prefix it
 with C<0> to get octal, ie. use C<0700> not C<700>.
 
-=item B<--delete> PATH
+=item B<--delete> ШЛЯХ
 
 Delete a file from the guest.  Or delete a directory (and all its contents,
 recursively).
@@ -66,7 +66,7 @@ that they appear on the command line.
 
 Див. також I<--run>.
 
-=item B<--firstboot-command> 'CMD+ARGS'
+=item B<--firstboot-command> 'КОМАНДА+ПАРАМЕТРИ'
 
 Run command (and arguments) inside the guest when the guest first boots up
 (as root, late in the boot process).
@@ -76,7 +76,7 @@ that they appear on the command line.
 
 Див. також I<--run>.
 
-=item B<--firstboot-install> PKG,PKG..
+=item B<--firstboot-install> ПАКУНОК,ПАКУНОК..
 
 Install the named packages (a comma-separated list).  These are installed
 when the guest first boots using the guest's package manager (eg. apt, yum,
@@ -90,7 +90,7 @@ L<virt-builder(1)/INSTALLING PACKAGES>.
 Set the hostname of the guest to C<HOSTNAME>.  You can use a dotted
 hostname.domainname (FQDN) if you want.
 
-=item B<--install> PKG,PKG..
+=item B<--install> ПАКУНОК,ПАКУНОК..
 
 Install the named packages (a comma-separated list).  These are installed
 during the image build using the guest's package manager (eg. apt, yum,
@@ -106,7 +106,7 @@ L<virt-builder(1)/INSTALLING PACKAGES>.
 Create symbolic link(s) in the guest, starting at C<LINK> and pointing at
 C<TARGET>.
 
-=item B<--mkdir> DIR
+=item B<--mkdir> КАТАЛОГ
 
 Create a directory in the guest.
 
@@ -121,7 +121,7 @@ was built, use this option.
 
 Див. також L</LOG FILE>.
 
-=item B<--password> USER:SELECTOR
+=item B<--password> КОРИСТУВАЧ:ВАРІАНТ
 
 Set the password for C<USER>.  (Note this option does I<not> create the user
 account).
@@ -174,7 +174,7 @@ they appear on the command line.
 
 See also: I<--firstboot>, I<--attach>, I<--upload>.
 
-=item B<--run-command> 'CMD+ARGS'
+=item B<--run-command> 'КОМАНДА+ПАРАМЕТРИ'
 
 Run the command and arguments on the disk image.  The command runs
 virtualized inside a small appliance, chrooted into the guest filesystem.

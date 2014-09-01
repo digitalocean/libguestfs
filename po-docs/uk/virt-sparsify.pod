@@ -5,9 +5,9 @@ virt-sparsify - Make a virtual machine disk sparse
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-sparsify [--options] indisk outdisk
+ virt-sparsify [--параметри] вхідний_диск вихідний_диск
 
- virt-sparsify [--options] --in-place disk
+ virt-sparsify [--параметри] --in-place диск
 
 =head1 ОПИС
 

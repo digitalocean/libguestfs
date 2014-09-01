@@ -129,7 +129,7 @@ passphrases from the user by opening C</dev/tty>.
 
 Увімкнути трасування викликів програмного інтерфейсу libguestfs.
 
-=item B<--xpath> query
+=item B<--xpath> запит
 
 Perform an XPath query on the XML on stdin, and print the result on stdout.
 In this mode virt-inspector simply runs an XPath query; all other inspection

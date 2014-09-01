@@ -1580,6 +1580,7 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/fsync-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/fsync.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/planner.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/regedit.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uri-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp-c.o \

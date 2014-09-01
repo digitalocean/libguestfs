@@ -232,7 +232,7 @@ instead of the truncate command (use I<-c> for a compressed disk).
 
 Similarly, to get non-sparse raw output use:
 
- fallocate -l size outdisk
+ fallocate -l розмір вихідний_диск
 
 (on older systems that don't have the L<fallocate(1)> command use C<dd
 if=/dev/zero of=outdisk bs=1M count=..>)

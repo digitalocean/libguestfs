@@ -12,7 +12,7 @@ document.body.style.backgroundRepeat = "no-repeat"; </script>
 
 =end коментар
 
-=head1 RELEASE NOTES FOR LIBGUESTFS 1.26
+=head1 НОТАТКИ ЩОДО ВИПУСКУ LIBGUESTFS 1.26
 
 These release notes only cover the differences from the previous stable/dev
 branch split (1.24.0).  For detailed changelogs, please see the git
@@ -68,13 +68,13 @@ functionality and command line usage.
 The OCaml bindings have a new C<Guestfs.Errno> module, used to check the
 error number returned by C<Guestfs.last_errno>.
 
-PHP tests now work.  (Pino Toscano)
+Відновлення працездатності тестів PHP. (Pino Toscano)
 
 =head3 Перевірка
 
 Inspection can recognize Debian live images.
 
-=head3 Architectures
+=head3 Архітектури
 
 ARMv7 (32 bit) now supports KVM acceleration.
 
@@ -794,7 +794,8 @@ by using the constructor option S<C<guestfs.GuestFS
 
 The PHP bindings are now tested properly, and have had multiple fixes.
 
-The long-deprecated Perl C<Sys::Guestfs::Lib> library has been removed.
+Вилучено застарілу бібліотеку Perl
+C<Sys::Guestfs::Lib>.
 L<https://www.redhat.com/archives/libguestfs/2013-April/msg00001.html>
 
 =head3 Приклади
@@ -2528,7 +2529,7 @@ repository, or the ChangeLog file distributed in the tarball.
  - guestfs_last_errno allows you to retrieve the errno from the
    daemon, correctly translated to the local operating system.
 
- - Functions can now have optional parameters.
+ - Тепер функції мають додаткові параметри.
 
  - Progress bars and progress notifications can now happen for upload
    commands.
@@ -2579,17 +2580,17 @@ repository, or the ChangeLog file distributed in the tarball.
  - Source includes phony images of Fedora, Debian, Ubuntu and
    Windows guests.
 
- - Ruby bindings have 'make install' rule.
+ - Прив’язки Ruby мають правило «make install».
 
- - <guestfs.h> is now a single file.
+ - <guestfs.h> тепер є єдиним файлом.
 
- - <guestfs.h> does not require XDR headers.
+ - <guestfs.h> не потребує заголовків XDR.
 
  - ocaml xml-light library is no longer required to build (thanks
    Maxim Koltsov).
 
- - ./configure --disable-[...] for each language binding (thanks
-   Maxim Koltsov).
+ - ./configure --disable-[...] для кожної з прив’язок до мови (завдяки
+   Максимові Кольцову).
 
  - Old ocaml-viewer program removed (use guestfs-browser instead).
 
@@ -2632,7 +2633,7 @@ repository, or the ChangeLog file distributed in the tarball.
 
  - Support for LUKS whole-disk encryption in guests.
 
- - PHP bindings.
+ - Прив’язки до PHP.
 
  - Progress messages (and progress bars in guestfish and virt-resize)
    for certain long-running operations.
@@ -2699,7 +2700,7 @@ repository, or the ChangeLog file distributed in the tarball.
  - virt-df --uuid option allows you to follow a domain across migration
    and renaming.
 
- - Translations of manual pages.
+ - Переклади сторінок підручника (man).
 
 =head2 Безпека
 
@@ -2846,15 +2847,15 @@ repository, or the ChangeLog file distributed in the tarball.
 
  - Include extra Augeas lenses in the supermin appliance (Matthew Booth).
 
- - Add error and close callbacks.
+ - Додано зворотні виклики error та close.
 
- - Add explicit close method in the Perl API.
+ - Додано явний метод close до програмного інтерфейсу Perl.
 
- - Multiple fixes for RHEL 5 compatibility.
+ - Декілька виправлень для забезпечення сумісності з RHEL 5.
 
- - Multiple fixes for Debian/Ubuntu compatibility.
+ - Декілька виправлень для забезпечення сумісності з Debian/Ubuntu.
 
- - Multiple revisions to improve the documentation.
+ - Декілька модифікацій з покращеннями у документації.
 
 =head2 Безпека
 
