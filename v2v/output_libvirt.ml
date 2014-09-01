@@ -26,11 +26,11 @@ open Utils
 open DOM
 
 let append_child child = function
-  | PCData _ -> assert false
+  | PCData _ | Comment _  -> assert false
   | Element e -> e.e_children <- e.e_children @ [child]
 
 let append_attr attr = function
-  | PCData _ -> assert false
+  | PCData _ | Comment _ -> assert false
   | Element e -> e.e_attrs <- e.e_attrs @ [attr]
 
 let create_libvirt_xml ?pool source overlays guestcaps =
@@ -64,7 +64,7 @@ let create_libvirt_xml ?pool source overlays guestcaps =
           (match pool with
           | None ->
             e "source" [
-              "file", ov.ov_target_file;
+              "file", absolute_path ov.ov_target_file;
             ] []
           | Some pool ->
             e "source" [
@@ -118,16 +118,24 @@ let create_libvirt_xml ?pool source overlays guestcaps =
       match guestcaps.gcaps_net_bus with
       | Virtio_net -> "virtio" | E1000 -> "e1000" | RTL8139 -> "rtl8139" in
     List.map (
-      fun { s_mac = mac; s_vnet_type = vnet_type; s_vnet = vnet } ->
+      fun { s_mac = mac; s_vnet_type = vnet_type;
+            s_vnet = vnet; s_vnet_orig = vnet_orig } ->
         let vnet_type_str =
           match vnet_type with
           | Bridge -> "bridge" | Network -> "network" in
 
         let nic =
-          e "interface" [ "type", vnet_type_str ] [
+          let children = [
             e "source" [ vnet_type_str, vnet ] [];
             e "model" [ "type", net_model ] [];
           ] in
+          let children =
+            if vnet_orig <> vnet then
+              Comment (sprintf "%s mapped from \"%s\" to \"%s\""
+                         vnet_type_str vnet_orig vnet) :: children
+            else
+              children in
+          e "interface" [ "type", vnet_type_str ] children in
 
         (match mac with
         | None -> ()

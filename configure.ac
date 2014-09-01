@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [27])
-m4_define([libguestfs_release], [30])
+m4_define([libguestfs_release], [31])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1736,7 +1736,8 @@ AC_CONFIG_FILES([Makefile
                  tests/xfs/Makefile
                  tests/xml/Makefile
                  tools/Makefile
-                 v2v/Makefile])
+                 v2v/Makefile
+                 v2v/test-v2v-networks-and-bridges.xml])
 AC_OUTPUT
 
 dnl Produce summary.

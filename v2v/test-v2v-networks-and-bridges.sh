@@ -16,13 +16,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# Test virt-v2v -on (change name) option.
+# Test --network and --bridge parameters.
 
 unset CDPATH
 export LANG=C
 set -e
 
-if [ -n "$SKIP_TEST_V2V_ON_OPTION_SH" ]; then
+if [ -n "$SKIP_TEST_V2V_NETWORKS_AND_BRIDGES_SH" ]; then
     echo "$0: test skipped because environment variable is set"
     exit 77
 fi
@@ -32,8 +32,8 @@ if [ "$(../fish/guestfish get-backend)" = "uml" ]; then
     exit 77
 fi
 
-abs_top_builddir="$(cd ..; pwd)"
-libvirt_uri="test://$abs_top_builddir/tests/guests/guests.xml"
+abs_builddir="$(pwd)"
+libvirt_uri="test://$abs_builddir/test-v2v-networks-and-bridges.xml"
 
 f=../tests/guests/windows.img
 if ! test -f $f || ! test -s $f; then
@@ -47,16 +47,28 @@ if ! test -r $virt_tools_data_dir/rhsrvany.exe; then
     exit 77
 fi
 
-d=test-v2v-windows-conversion.d
+d=test-v2v-networks-and-bridges.d
 rm -rf $d
 mkdir $d
 
+# Use --no-copy because we only care about metadata for this test.
 $VG ./virt-v2v --debug-gc \
     -i libvirt -ic "$libvirt_uri" windows \
-    -o local -os $d -on this-is-not-windows
+    -o local -os $d --no-copy \
+    --bridge "VM Network:bridge1" \
+    --bridge bridge2 \
+    --network default:network1 \
+    --network john:network2 \
+    --network paul:network3 \
+    --network network4
 
-# Test the libvirt XML metadata and a disk was created.
-test -f $d/this-is-not-windows.xml
-test -f $d/this-is-not-windows-sda
+# Test the libvirt XML metadata was created.
+test -f $d/windows.xml
+
+# Extract just the network interfaces from the XML.
+sed -n '/interface/,/\/interface/p' $d/windows.xml > $d/networks
+
+# Test that the output has mapped the networks and bridges correctly.
+diff -ur test-v2v-networks-and-bridges-expected.xml $d/networks
 
 rm -r $d

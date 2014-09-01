@@ -1,3 +1,103 @@
+commit ce59aa8c845cfa4918cb9a0cec0b9056e28c1d4b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Aug 24 21:21:10 2014 +0100
+
+    Version 1.27.31.
+
+commit 066eb6962521015cf82c5e7e773911e3288d2c79
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 22 09:47:09 2014 +0100
+
+    v2v: int64 -> int fix for previous commit.
+    
+    This fixes commit 318a1b17a6be2e20245ca05a68448b5dcd048884
+    (thanks Pino Toscano).
+
+commit 318a1b17a6be2e20245ca05a68448b5dcd048884
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 23:38:34 2014 +0100
+
+    v2v: -i libvirt: Select sensible defaults if <memory> or <vcpu> is missing from input XML.
+    
+    If the <memory> or <vcpu> elements was missing from the source
+    metadata then we would choose useless defaults, resulting in (for
+    example) <vcpu>0</vcpu> being written to the output.
+    
+    Choose sensible defaults for these integer values.
+
+commit 78f725ffd5d06557c401b3618dc4b73722655e00
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 23:25:44 2014 +0100
+
+    v2v: Store original vnet, and add comment to output metadata when mapping it.
+    
+    When we map the network or bridge names (using --network or --bridge
+    command line options), this commit keeps the original name and adds it
+    as a comment to the output metadata.
+    
+    The comment will look something like this:
+    
+        <interface type='bridge'>
+          <!-- bridge mapped from "VM Network" to "bridge1" -->
+          <source bridge='bridge1'/>
+          <model type='rtl8139'/>
+        </interface>
+
+commit d629b5252bbc26a5ffa88e235f6090f260bd436b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 23:24:39 2014 +0100
+
+    v2v: DOM: Add XML comments (<!-- .. -->) to the model.
+    
+    This allows us to insert comments into the output libvirt XML or OVF.
+
+commit 6e1e9604b6da2ef8eeca2acb945bde6becad038e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 21:47:22 2014 +0100
+
+    v2v: Add a test of --network and --bridge command line options.
+    
+    This enhances commit aaf84abca9e19e6a358516b60cc8a49d0905aef5.
+
+commit 02b653496db36666c8f36e4a1ec6a0daad3de146
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 22:36:44 2014 +0100
+
+    v2v: -o rhev: Improve the error message when you pass a bogus -os parameter.
+
+commit 9fa27d4f79673d3898f36fde974eb3ad30690032
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 22:23:55 2014 +0100
+
+    v2v: -o libvirt: <source file=...> must always be an absolute path.
+
+commit 53e788890d868d2a98c2dcfd48de02dcfca698aa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 22:22:04 2014 +0100
+
+    v2v: DOM: Produce pretty-printed XML.
+
+commit 1e1605d937a4e1dfa08aa577d6a8b9bf7213c401
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 22:21:54 2014 +0100
+
+    mllib: Export output_spaces function.
+    
+    This was already in Common_utils, but was only used internally
+    not exported.
+
+commit b9e591f7f08c8ba5373e9c940599109f492695c9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 21:46:45 2014 +0100
+
+    v2v: Tests can use guests.xml not guests-all-good.xml.
+
+commit 350e3285f35862251165db8233d1d70aac9a73cd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 21:25:33 2014 +0100
+
+    v2v: Update documentation for input & output classes.
+
 commit f71d62fa7853c81332275f96db5ee90c9767c0ec
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Aug 21 19:38:27 2014 +0100

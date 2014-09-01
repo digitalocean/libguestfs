@@ -42,7 +42,7 @@ type export_storage_domain = {
 }
 
 let append_child child = function
-  | PCData _ -> assert false
+  | PCData _ | Comment _ -> assert false
   | Element e -> e.e_children <- e.e_children @ [child]
 
 (* We set the creation time to be the same for all dates in
@@ -170,8 +170,11 @@ object
       (* Check that the domain has been attached to a Data Center by
        * checking that the master/vms directory exists.
        *)
-      if not (is_directory (mp // uuid // "master" // "vms")) then
-        error (f_"the Export Storage Domain (%s) has not been attached to any Data Center.\n\nYou have to do this through the RHEV-M / OVirt user interface first.") os;
+      let () =
+        let master_vms_dir = mp // uuid // "master" // "vms" in
+        if not (is_directory master_vms_dir) then
+          error (f_"%s does not exist or is not a directory.\n\nMost likely cause: Either the Export Storage Domain (%s) has not been attached to any Data Center, or the path %s is not an Export Storage Domain at all.\n\nYou have to attach the Export Storage Domain to a Data Center using the RHEV-M / OVirt user interface first.\n\nIf you don't know what the Export Storage Domain mount point should be then you can also find this out through the RHEV-M user interface.")
+            master_vms_dir os os in
 
       (* Check that the ESD is writable. *)
       let testfile = mp // uuid // "v2v-write-test" in
@@ -560,7 +563,8 @@ object
 
       (* Iterate over the NICs, adding them to the OVF document. *)
       iteri (
-        fun i { s_mac = mac; s_vnet_type = vnet_type; s_vnet = vnet } ->
+        fun i { s_mac = mac; s_vnet_type = vnet_type;
+                s_vnet = vnet; s_vnet_orig = vnet_orig } ->
           let dev = sprintf "eth%d" i in
 
           let model =
@@ -572,6 +576,12 @@ object
               warning ~prog (f_"unknown NIC model %s for ethernet device %s.  This NIC will be imported as rtl8139 instead.")
                 bus dev;
               "1" *) in
+
+          if vnet_orig <> vnet then (
+            let c = Comment (sprintf "mapped from \"%s\" to \"%s\""
+                               vnet_orig vnet) in
+            append_child c network_section
+          );
 
           let network = e "Network" ["ovf:name", vnet] [] in
           append_child network network_section;

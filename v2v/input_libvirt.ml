@@ -60,9 +60,9 @@ object
 
     let dom_type = xpath_to_string "/domain/@type" "" in
     let name = xpath_to_string "/domain/name/text()" "" in
-    let memory = xpath_to_int "/domain/memory/text()" 0 in
+    let memory = xpath_to_int "/domain/memory/text()" (1024 * 1024) in
     let memory = Int64.of_int memory *^ 1024L in
-    let vcpu = xpath_to_int "/domain/vcpu/text()" 0 in
+    let vcpu = xpath_to_int "/domain/vcpu/text()" 1 in
     let arch = xpath_to_string "/domain/os/type/@arch" "" in
 
     let features =
@@ -225,7 +225,12 @@ object
         | Some vnet_type ->
           let vnet = xpath_to_string "source/@network | source/@bridge" "" in
           if vnet <> "" then (
-            let nic = { s_mac = mac; s_vnet = vnet; s_vnet_type = vnet_type } in
+            let nic = {
+              s_mac = mac;
+              s_vnet = vnet;
+              s_vnet_orig = vnet;
+              s_vnet_type = vnet_type
+            } in
             nics := nic :: !nics
           )
       done;
