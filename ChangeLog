@@ -1,3 +1,371 @@
+commit 2ab7906f7c695835c642e3dec9012090dcbe5d5c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 29 09:50:40 2014 +0100
+
+    Version 1.27.33.
+
+commit ed6173f6104e2b9f01f8b0de209935687df2bc8f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 29 09:41:33 2014 +0100
+
+    v2v: Fix real conversions test by setting architecture in libvirt XML.
+
+commit 591911f4bf0c328b207f8984c78fb6ede450f692
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 29 09:09:32 2014 +0100
+
+    Add suppression for memory leak in libvirt testDomainGenerateIfnames.
+    
+    See: https://bugzilla.redhat.com/show_bug.cgi?id=1135388
+
+commit 620d20c4bb314e6543a4901880845d01ee7d2ef9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 28 22:00:33 2014 +0100
+
+    Version 1.27.32.
+
+commit d8e04d454a756946516416df8c7df60289c68cdf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 28 21:49:48 2014 +0100
+
+    v2v: Fix bugs in conversion when uninstalling VMware drivers.
+    
+     - Don't uninstall open-vm-tools (the old virt-v2v didn't).
+    
+     - Do fix the library replacement code so it works the same way as
+       old virt-v2v.
+
+commit 155a6f0482e5eeb6a763d4d31354edc5f48a1f43
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 26 19:34:37 2014 +0100
+
+    v2v: esx: Add / fix ability to import guests from vCenter Server.
+    
+    See additional information in the manual page for details.
+
+commit 3fa4fff9b485d8d8b92d5d925b4e047358e63175
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 28 15:05:17 2014 +0100
+
+    v2v: -i libvirt: Allow map_source* functions to map the format as well as the path.
+    
+    For ESX we need to map the format (which is usually unspecified) to raw.
+
+commit 04121c40a164072227de34289f5662f1701fe12e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 28 14:59:45 2014 +0100
+
+    v2v: -i libvirt: Add whitespace to make the code clearer.
+
+commit abbb636e759bcfc87260cbef780fda1bed815ea0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 27 20:39:35 2014 +0100
+
+    v2v: Display a %-done progress bar when copying the disk image to the target.
+    
+    This isn't quite the progress bar we have in mind, but it's sufficient
+    for now.
+    
+    When --quiet is used, the progress bar is not displayed.
+
+commit e3a02c4153f3064dd9427c4044849cf77b3a3421
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 27 20:16:06 2014 +0100
+
+    sparsify: Remove obsolete comment.
+    
+    We don't need to use compat=1.1 with modern qemu, and
+    lazy_refcounts may be dangerous.
+
+commit 53e0d3ea5fc703066f0eb92a49eaf8be18961e7e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 27 20:28:15 2014 +0100
+
+    v2v: Remove lazy_refcounts option.
+    
+    This seems* to cause disk corruption in the overlay files.  A
+    manifestation of this is that the qcow2 header is not written back
+    correctly to disk, resulting in the backing file of the overlay
+    "disappearing" and hence hardly any data being copied over to the
+    target.
+    
+    * Note this could be for a variety of reasons and doesn't necessarily
+    indicate a fault in qemu or qcow2.
+
+commit 7aced6ffb20c27af725040abc4faecf3ddc61010
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 27 14:42:44 2014 +0100
+
+    v2v: -i libvirt/libvirtxml: Check that domain type, name, arch are not missing.
+    
+    This can lead to incorrect output.
+
+commit e112e9a7b2eaa9d75acc6e722e73f3ae377ab9f0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 27 14:35:08 2014 +0100
+
+    v2v: -o libvirt: Fix <features> XML in output.
+    
+    It was writing each feature as PCData (ie. text), not as a separate
+    element, resulting in corrupt <features> output.
+
+commit 4132680aea6b564c7fd668b859b262c58773a4dd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 27 09:42:50 2014 +0100
+
+    v2v: -i libvirt: Don't access remote -ic URIs during object creation.
+    
+    Previously if you used `-i libvirt -ic [a remote URI]' then the remote
+    URI would be opened during object creation, which occurs during
+    command line parsing.  The practical effect was that virt-v2v could
+    appear to hang or give an error (eg if the remote URI is inaccessible)
+    before printing any log messages.  This could be very confusing for
+    the user.
+    
+    Split out -i libvirtxml into a separate module, containing the libvirt
+    XML to source parsing code as a function called
+    Input_libvirtxml.parse_libvirt_xml.
+    
+    Modify -i libvirt so it does all initialization and calls the helper
+    function during the #source method, and not at object creation time.
+
+commit f54aff9e9ffa55a50d4e7a15586931035e5884f4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 26 22:56:31 2014 +0100
+
+    v2v: utils: Permit more safe/unquoted characters in url_quote function.
+
+commit a18629ce40457ef429dc6dbbd10cd89eb8cc4cf7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 26 19:34:22 2014 +0100
+
+    v2v: utils: Don't need to use module name (Common_utils.) here.
+
+commit 715020e264a87e167595557670c46bab0b4db5a8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 26 22:49:05 2014 +0100
+
+    v2v: Remove bogus %systemroot%\Drivers path.
+    
+    This was based an incorrect translation of what the old virt-v2v was
+    doing.  %systemroot%\Drivers is not expected to exist already, and
+    indeed does not exist in a real Windows 7 guest.
+
+commit f527c22b009e2a7005b186db8889e553b935e9e6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 26 17:48:02 2014 +0100
+
+    v2v: Implement binding for `virsh pool-dumpxml'.
+    
+    Add a mini-binding to libvirt virStoragePoolGetXMLDesc to get the pool
+    XML directly using the libvirt API.  Change existing external calls to
+    `virsh pool-dumpxml' to use this API instead.
+
+commit 8dc45325a6b7790896a43f41db5aca376aee2bfc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 26 17:31:08 2014 +0100
+
+    v2v: Work around buggy `virsh dumpxml'.
+    
+    The `virsh dumpxml' command doesn't work properly when the libvirt
+    source requires authentication.  This is because the authentication
+    prompts are sent to stdout, but stdout is also the place where we are
+    reading the output XML from.
+    
+    Add a mini-binding to libvirt virDomainGetXMLDesc which avoids this,
+    getting the XML directly using the libvirt API.  Change existing
+    external calls to `virsh dumpxml' to use this API instead.
+
+commit 53999bddf44539f70164a8aa8f2abb011cf33264
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 26 17:34:57 2014 +0100
+
+    v2v: -o libvirt: Mistakenly we were calling `virsh dumpxml' instead of `virsh pool-dumpxml'.
+
+commit c916ea5b680776f70f21ecb224e0e2ca7031c0f4
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Aug 26 16:12:24 2014 +0200
+
+    daemon: lvm-filter: use augeas for setting the filter
+    
+    The way to set the filter for lvm devices was to open lvm.conf, look
+    for uncommented "filter =" lines and replace the configuration there.
+    This had the issue that if there is no uncommented filter line, then the
+    filter cannot be changed at all; considering newer lvm2 releases ship a
+    sample configuration with no uncommented filter lines, then the old way
+    became wrong and not sufficient.
+    
+    Instead, take a copy of the upstream lvm.aug lens, with a simple change
+    to allow parsing also negative values in configuration, and install it
+    in the daemon. When asking to change the lvm filter, use augeas making
+    sure to use this custom lens for the lvm.conf copy used within the
+    appliance.
+
+commit abb0b47e3f1b8b86d2d39c2a91782ac5ed4b134e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Aug 26 14:39:28 2014 +0200
+
+    daemon: move AUGEAS_ERROR to the common header
+    
+    Other than for current aug_* API, it will be useful for further code
+    using augeas directly.
+
+commit 9b501fa5c6365958de362ecaf0f4e90c147978a2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Aug 26 14:31:05 2014 +0200
+
+    daemon: add add_sprintf
+    
+    Bring the add_sprintf function for stringsbuf from the library.
+
+commit b56b90bf6ed5812400e02daea54621834dab96ef
+Author: Shahar Havivi <shaharh@redhat.com>
+Date:   Tue Aug 26 17:19:36 2014 +0300
+
+    v2v: add xmlXPathRegisterNs for libxml2 binding
+    
+    Signed-off-by: Shahar Havivi <shaharh@redhat.com>
+
+commit 3f315f54e80f449d9fd7b05eafa1c23996775d02
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 26 16:01:39 2014 +0100
+
+    Enable warnings in C code linked to virt-sparsify and virt-v2v.
+    
+    The C code didn't have -Werror enabled (when configured) and didn't
+    enable the full set of warnings we would want.
+    
+    However OCaml-C bindings commonly declare functions which are
+    called directly from OCaml, eg:
+    
+      external parse_memory : string -> doc = "v2v_xml_parse_memory"
+    
+      value v2v_xml_parse_memory (value xmlv)
+    
+    These do not require prototypes as no other C code will call them, so
+    we have to switch off the GCC -Werror=missing-prototypes flag for
+    these files.
+    
+    Also fixes some confusion between _CPPFLAGS and _CFLAGS.
+
+commit 880bf5f2ef036186f820034b87febdd6ee87e9f0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 26 15:45:11 2014 +0100
+
+    v2v: -i libvirtxml: Add example libvirt XML.
+
+commit 8e7cf61a409c4303e6088116f213aad726770f36
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 26 15:43:52 2014 +0100
+
+    v2v: -o local: Use /var/tmp instead of /tmp for examples.
+    
+    In case people are suffering from broken tmp-on-tmpfs setups.
+
+commit 97f634e5fbc57620172fee55c8e5aff5edc9b597
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 25 22:13:34 2014 +0100
+
+    v2v: Split Types.overlay into Types.target and Types.overlay structures.
+    
+    Move the fields from Types.overlay which were related to the target
+    file out.  Now Types.overlay is only concerned with the actual qcow2
+    overlay files, not with a mixture of both files.
+    
+    For every guest disk, there is one chain which looks like this:
+    
+       source_disk         overlay                 target
+      +------------+      +----------------+      +---------------+
+      | s_qemu_uri |<------ ov_source      |<------ target_overlay|
+      | etc        |      | ov_overlay_file|      | target_file   |
+      +------------+      | ov_sd          |      | target_format |
+                          | ov_virtual_size|      +---------------+
+                          +----------------+
+    
+       describes source    describes temp.         describes target
+       disk file           overlay (qcow2)         file
+    
+    This is just refactoring.
+
+commit 29b8fb6c15f31fdbd56a52e4472e259edc24e936
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 25 21:42:15 2014 +0100
+
+    v2v: types.mli: Fix typo in comment.
+
+commit 4d30b82ea3c6a231193203cf608f5537693c0679
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 25 21:36:28 2014 +0100
+
+    v2v: Change "Trimming the filesystems" message to something less scary.
+    
+    Avoid copying unused and blank areas.  Avoid alarm and support calls too.
+
+commit 93943a0f779cdda7d5df3225efeab9adbc68123a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 25 21:31:05 2014 +0100
+
+    v2v: Simplify conversion dispatch code.
+    
+    Refactoring, no functional change.
+
+commit 0f2b503394e1c3bf38d196859970c057be7806a8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 25 20:35:55 2014 +0100
+
+    v2v: Update TODO.
+
+commit 862a27c92d495975cc12925599333e108f16b20d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 25 20:29:31 2014 +0100
+
+    v2v: Inline the initialize_target function.
+    
+    This function had got smaller and smaller until now we might as well
+    just inline it.  Having it after the main function just obscured the
+    order that the code runs.
+    
+    No functional change, just refactoring.
+
+commit 5800d96e7a5fce47187dcf74a7d43fa9c385b8b5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 25 20:27:44 2014 +0100
+
+    v2v: Remove the Types.overlay ov_source_format field.
+    
+    Not used by anything and unlikely to be useful.
+
+commit 938fe047d087f6a8e0bd79f7e275948a60eb1508
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 25 20:22:19 2014 +0100
+
+    v2v: Remove Types.overlay ov_preallocation field.
+    
+    The ov_preallocation field was essentially an implementation detail of
+    the V2v module.  There was no need to carry it around in the overlay
+    struct, and nothing else used it.  This also allows us to simplify
+    other code.
+
+commit 4c492e21ac61769c28cfd6ceb0b869cfcedd59a6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 25 20:15:53 2014 +0100
+
+    v2v: Add comments to DOM module.
+
+commit 613ae49319245189c085136371957cf110b9224e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 25 20:08:56 2014 +0100
+
+    v2v: -o rhev: Move inspection functions.
+    
+    This is pure refactoring, no functional change.
+
+commit 86a1f5581065704fc90e11225abe4c9169af7125
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 25 15:45:31 2014 +0100
+
+    v2v: Trivial fix to documentation in internal interface to libxml2.
+
 commit ce59aa8c845cfa4918cb9a0cec0b9056e28c1d4b
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sun Aug 24 21:21:10 2014 +0100

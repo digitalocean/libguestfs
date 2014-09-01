@@ -30,10 +30,12 @@ SOURCES_MLI = \
 	convert_linux.mli \
 	convert_windows.mli \
 	DOM.mli \
+	domainxml.mli \
 	lib_esx.mli \
 	lib_linux.mli \
 	input_disk.mli \
 	input_libvirt.mli \
+	input_libvirtxml.mli \
 	output_libvirt.mli \
 	output_local.mli \
 	output_RHEV.mli \
@@ -45,10 +47,12 @@ SOURCES_ML = \
 	types.ml \
 	utils.ml \
 	xml.ml \
+	domainxml.ml \
 	DOM.ml \
 	lib_esx.ml \
 	lib_linux.ml \
 	input_disk.ml \
+	input_libvirtxml.ml \
 	input_libvirt.ml \
 	convert_linux.ml \
 	convert_windows.ml \
@@ -65,20 +69,24 @@ SOURCES_C = \
 	$(top_builddir)/mllib/mkdtemp-c.c \
 	$(top_builddir)/customize/crypt-c.c \
 	utils-c.c \
-	xml-c.c
+	xml-c.c \
+	domainxml-c.c
 
 if HAVE_OCAML
 
 bin_PROGRAMS = virt-v2v
 
 virt_v2v_SOURCES = $(SOURCES_C)
-virt_v2v_CFLAGS = \
+virt_v2v_CPPFLAGS = \
 	-I. \
 	-I$(top_builddir) \
 	-I$(shell $(OCAMLC) -where) \
 	-I$(top_srcdir)/src \
-	-I$(top_srcdir)/fish \
-	$(LIBXML2_CFLAGS)
+	-I$(top_srcdir)/fish
+virt_v2v_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(LIBXML2_CFLAGS) \
+	$(LIBVIRT_CFLAGS)
 
 BOBJECTS = \
 	$(top_builddir)/mllib/common_gettext.cmo \

@@ -148,9 +148,9 @@ let parse_cmdline () =
  virt-v2v -ic esx://esx.example.com/ \
    -o rhev -os rhev.nfs:/export_domain --network rhevm esx_guest
 
- virt-v2v -i libvirtxml -o local -os /tmp guest-domain.xml
+ virt-v2v -i libvirtxml -o local -os /var/tmp guest-domain.xml
 
- virt-v2v -i disk -o local -os /tmp disk.img
+ virt-v2v -i disk -o local -os /var/tmp disk.img
 
 There is a companion front-end called \"virt-p2v\" which comes as an
 ISO or CD image that can be booted on physical machines.
@@ -231,7 +231,7 @@ read the man page virt-v2v(1).
         | [filename] -> filename
         | _ ->
           error (f_"expecting a libvirt XML file name on the command line") in
-      Input_libvirt.input_libvirtxml verbose filename in
+      Input_libvirtxml.input_libvirtxml verbose filename in
 
   (* Parse the output mode. *)
   let output =

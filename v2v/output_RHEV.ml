@@ -55,6 +55,115 @@ let iso_time =
     (tm.tm_year + 1900) (tm.tm_mon + 1) tm.tm_mday
     tm.tm_hour tm.tm_min tm.tm_sec
 
+(* Guess vmtype based on the guest inspection data.  This is used
+ * when the [--vmtype] parameter is NOT passed.
+ *)
+let get_vmtype = function
+  | { i_type = "linux"; i_distro = "rhel"; i_major_version = major;
+      i_product_name = product }
+      when major >= 5 && string_find product "Server" >= 0 ->
+    `Server
+
+  | { i_type = "linux"; i_distro = "rhel"; i_major_version = major }
+      when major >= 5 ->
+    `Desktop
+
+  | { i_type = "linux"; i_distro = "rhel"; i_major_version = major;
+      i_product_name = product }
+      when major >= 3 && string_find product "ES" >= 0 ->
+    `Server
+
+  | { i_type = "linux"; i_distro = "rhel"; i_major_version = major;
+      i_product_name = product }
+      when major >= 3 && string_find product "AS" >= 0 ->
+    `Server
+
+  | { i_type = "linux"; i_distro = "rhel"; i_major_version = major }
+      when major >= 3 ->
+    `Desktop
+
+  | { i_type = "linux"; i_distro = "fedora" } -> `Desktop
+
+  | { i_type = "windows"; i_major_version = 5; i_minor_version = 1 } ->
+    `Desktop                            (* Windows XP *)
+
+  | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
+      i_product_name = product } when string_find product "XP" >= 0 ->
+    `Desktop                            (* Windows XP *)
+
+  | { i_type = "windows"; i_major_version = 5; i_minor_version = 2 } ->
+    `Server                             (* Windows 2003 *)
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 0;
+      i_product_name = product } when string_find product "Server" >= 0 ->
+    `Server                             (* Windows 2008 *)
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 0 } ->
+    `Desktop                            (* Vista *)
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 1;
+      i_product_name = product } when string_find product "Server" >= 0 ->
+    `Server                             (* Windows 2008R2 *)
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 1 } ->
+    `Server                             (* Windows 7 *)
+
+  | _ -> `Server
+
+(* Determine the ovf:OperatingSystemSection_Type from libguestfs inspection. *)
+and get_ostype = function
+  | { i_type = "linux"; i_distro = "rhel"; i_major_version = v;
+      i_arch = "i386" } ->
+    sprintf "RHEL%d" v
+
+  | { i_type = "linux"; i_distro = "rhel"; i_major_version = v;
+      i_arch = "x86_64" } ->
+    sprintf "RHEL%dx64" v
+
+  | { i_type = "linux" } -> "OtherLinux"
+
+  | { i_type = "windows"; i_major_version = 5; i_minor_version = 1 } ->
+    "WindowsXP" (* no architecture differentiation of XP on RHEV *)
+
+  | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
+      i_product_name = product } when string_find product "XP" >= 0 ->
+    "WindowsXP" (* no architecture differentiation of XP on RHEV *)
+
+  | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
+      i_arch = "i386" } ->
+    "Windows2003"
+
+  | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
+      i_arch = "x86_64" } ->
+    "Windows2003x64"
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 0;
+      i_arch = "i386" } ->
+    "Windows2008"
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 0;
+      i_arch = "x86_64" } ->
+    "Windows2008x64"
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 1;
+      i_arch = "i386" } ->
+    "Windows7"
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 1;
+      i_arch = "x86_64"; i_product_variant = "Client" } ->
+    "Windows7x64"
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 1;
+      i_arch = "x86_64" } ->
+    "Windows2008R2x64"
+
+  | { i_type = typ; i_distro = distro;
+      i_major_version = major; i_minor_version = minor;
+      i_product_name = product } ->
+    warning ~prog (f_"unknown guest operating system: %s %s %d.%d (%s)")
+      typ distro major minor product;
+    "Unassigned"
+
 class output_rhev verbose os rhev_params output_alloc =
 object
   inherit output verbose
@@ -87,7 +196,7 @@ object
   (* Target VM UUID. *)
   val mutable vm_uuid = ""
 
-  (* Map overlay to volume UUID.  Key is [ov.ov_sd] field which is unique. *)
+  (* Map overlay to volume UUID.  Key is [ov_sd] field which is unique. *)
   val vol_uuid = Hashtbl.create 13
 
   (* Flag to indicate if the target image (image_dir) should be
@@ -101,7 +210,7 @@ object
    * code.
    *
    * 'os' is the output storage (-os nfs:/export).  'source' contains a
-   * few useful fields such as the guest name.  'overlays' describes the
+   * few useful fields such as the guest name.  'targets' describes the
    * destination files.  We modify and return this list.
    *
    * Note it's good to fail here (early) if there are any problems, since
@@ -109,7 +218,7 @@ object
    * done the conversion and copy, and the user won't thank us for
    * displaying errors there.
    *)
-  method prepare_output _ overlays =
+  method prepare_targets _ targets =
     let rec mount_and_check_export_storage_domain () =
       (* The user can either specify -os nfs:/export, or a local directory
        * which is assumed to be the already-mounted NFS export.  In either
@@ -209,22 +318,22 @@ object
 
       (match rhev_params.vol_uuids with
       | [] ->
-        (* Generate random volume UUIDs for each overlay. *)
+        (* Generate random volume UUIDs for each target. *)
         List.iter (
-          fun ov ->
+          fun t ->
             let uuid = uuidgen ~prog () in
-            Hashtbl.replace vol_uuid ov.ov_sd uuid
-        ) overlays
+            Hashtbl.replace vol_uuid t.target_overlay.ov_sd uuid
+        ) targets
       | uuids ->
         (* Use the volume UUIDs passed to us on the command line. *)
         try
           List.iter (
-            fun (ov, uuid) ->
-              Hashtbl.replace vol_uuid ov.ov_sd uuid
-          ) (List.combine overlays uuids)
+            fun (t, uuid) ->
+              Hashtbl.replace vol_uuid t.target_overlay.ov_sd uuid
+          ) (List.combine targets uuids)
         with Invalid_argument _ ->
           error (f_"the number of '--rhev-vol-uuid' parameters passed on the command line has to match the number of guest disk images (for this guest: %d)")
-            (List.length overlays)
+            (List.length targets)
       )
     in
 
@@ -262,21 +371,22 @@ object
      *      <VOL_UUID_3>        # etc
      *      <VOL_UUID_3>.meta   #
      *)
-    let overlays =
+    let targets =
       let output_alloc_for_rhev =
         match output_alloc with
         | `Sparse -> "SPARSE"
         | `Preallocated -> "PREALLOCATED" in
 
       List.map (
-        fun ov ->
+        fun ({ target_overlay = ov } as t) ->
+          let ov_sd = ov.ov_sd in
           let vol_uuid =
-            try Hashtbl.find vol_uuid ov.ov_sd
+            try Hashtbl.find vol_uuid ov_sd
             with Not_found -> assert false in
           let target_file = image_dir // vol_uuid in
 
           if verbose then
-            eprintf "RHEV: will export %s to %s\n%!" ov.ov_sd target_file;
+            eprintf "RHEV: will export %s to %s\n%!" ov_sd target_file;
 
           (* Create the per-volume metadata (.meta files, in an oVirt-
            * specific format).
@@ -285,15 +395,17 @@ object
 
           let size_in_sectors =
             if ov.ov_virtual_size &^ 511L <> 0L then
-              error (f_"the virtual size of the input disk %s is not an exact multiple of 512 bytes.  The virtual size is: %Ld.\n\nThis probably means something unexpected is going on, so please file a bug about this issue.") ov.ov_source_file ov.ov_virtual_size;
+              error (f_"the virtual size of the input disk %s is not an exact multiple of 512 bytes.  The virtual size is: %Ld.\n\nThis probably means something unexpected is going on, so please file a bug about this issue.")
+                ov.ov_source.s_qemu_uri
+                ov.ov_virtual_size;
             ov.ov_virtual_size /^ 512L in
 
           let format_for_rhev =
-            match ov.ov_target_format with
+            match t.target_format with
             | "raw" -> "RAW"
             | "qcow2" -> "COW"
             | _ ->
-              error (f_"RHEV does not support the output format '%s', only raw or qcow2") ov.ov_target_format in
+              error (f_"RHEV does not support the output format '%s', only raw or qcow2") t.target_format in
 
           let chan = open_out vol_meta in
           let fpf fs = fprintf chan fs in
@@ -313,121 +425,14 @@ object
           fpf "EOF\n";
           close_out chan;
 
-          { ov with ov_target_file = target_file }
-      ) overlays in
+          { t with target_file = target_file }
+      ) targets in
 
-    (* Return the list of overlays. *)
-    overlays
+    (* Return the list of targets. *)
+    targets
 
   (* This is called after conversion to write the OVF metadata. *)
-  method create_metadata source overlays guestcaps inspect =
-    (* Guess vmtype based on the guest inspection data. *)
-    let get_vmtype = function
-      | { i_type = "linux"; i_distro = "rhel"; i_major_version = major;
-          i_product_name = product }
-          when major >= 5 && string_find product "Server" >= 0 ->
-        `Server
-
-      | { i_type = "linux"; i_distro = "rhel"; i_major_version = major }
-          when major >= 5 ->
-        `Desktop
-
-      | { i_type = "linux"; i_distro = "rhel"; i_major_version = major;
-          i_product_name = product }
-          when major >= 3 && string_find product "ES" >= 0 ->
-        `Server
-
-      | { i_type = "linux"; i_distro = "rhel"; i_major_version = major;
-          i_product_name = product }
-          when major >= 3 && string_find product "AS" >= 0 ->
-        `Server
-
-      | { i_type = "linux"; i_distro = "rhel"; i_major_version = major }
-          when major >= 3 ->
-        `Desktop
-
-      | { i_type = "linux"; i_distro = "fedora" } -> `Desktop
-
-      | { i_type = "windows"; i_major_version = 5; i_minor_version = 1 } ->
-        `Desktop                            (* Windows XP *)
-
-      | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
-          i_product_name = product } when string_find product "XP" >= 0 ->
-        `Desktop                            (* Windows XP *)
-
-      | { i_type = "windows"; i_major_version = 5; i_minor_version = 2 } ->
-        `Server                            (* Windows 2003 *)
-
-      | { i_type = "windows"; i_major_version = 6; i_minor_version = 0;
-          i_product_name = product } when string_find product "Server" >= 0 ->
-        `Server                            (* Windows 2008 *)
-
-      | { i_type = "windows"; i_major_version = 6; i_minor_version = 0 } ->
-        `Desktop                            (* Vista *)
-
-      | { i_type = "windows"; i_major_version = 6; i_minor_version = 1;
-          i_product_name = product } when string_find product "Server" >= 0 ->
-        `Server                             (* Windows 2008R2 *)
-
-      | { i_type = "windows"; i_major_version = 6; i_minor_version = 1 } ->
-        `Server                             (* Windows 7 *)
-
-      | _ -> `Server
-
-    and get_ostype = function
-      | { i_type = "linux"; i_distro = "rhel"; i_major_version = v;
-          i_arch = "i386" } ->
-        sprintf "RHEL%d" v
-
-      | { i_type = "linux"; i_distro = "rhel"; i_major_version = v;
-          i_arch = "x86_64" } ->
-        sprintf "RHEL%dx64" v
-
-      | { i_type = "linux" } -> "OtherLinux"
-
-      | { i_type = "windows"; i_major_version = 5; i_minor_version = 1 } ->
-        "WindowsXP" (* no architecture differentiation of XP on RHEV *)
-
-      | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
-          i_product_name = product } when string_find product "XP" >= 0 ->
-        "WindowsXP" (* no architecture differentiation of XP on RHEV *)
-
-      | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
-          i_arch = "i386" } ->
-        "Windows2003"
-
-      | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
-          i_arch = "x86_64" } ->
-        "Windows2003x64"
-
-      | { i_type = "windows"; i_major_version = 6; i_minor_version = 0;
-          i_arch = "i386" } ->
-        "Windows2008"
-
-      | { i_type = "windows"; i_major_version = 6; i_minor_version = 0;
-          i_arch = "x86_64" } ->
-        "Windows2008x64"
-
-      | { i_type = "windows"; i_major_version = 6; i_minor_version = 1;
-          i_arch = "i386" } ->
-        "Windows7"
-
-      | { i_type = "windows"; i_major_version = 6; i_minor_version = 1;
-          i_arch = "x86_64"; i_product_variant = "Client" } ->
-        "Windows7x64"
-
-      | { i_type = "windows"; i_major_version = 6; i_minor_version = 1;
-          i_arch = "x86_64" } ->
-        "Windows2008R2x64"
-
-      | { i_type = typ; i_distro = distro;
-          i_major_version = major; i_minor_version = minor;
-          i_product_name = product } ->
-        warning ~prog (f_"unknown guest operating system: %s %s %d.%d (%s)")
-          typ distro major minor product;
-        "Unassigned"
-    in
-
+  method create_metadata source targets guestcaps inspect =
     (* This modifies the OVF DOM, adding a section for each disk. *)
     let rec add_disks ovf =
       let references =
@@ -446,7 +451,7 @@ object
 
       (* Iterate over the disks, adding them to the OVF document. *)
       iteri (
-        fun i ov ->
+        fun i ({ target_overlay = ov } as t) ->
           let is_boot_drive = i == 0 in
 
           let vol_uuid =
@@ -462,8 +467,8 @@ object
              * does not exist.  In that case we simply omit the
              * ovf:actual_size attribute.
              *)
-            if Sys.file_exists ov.ov_target_file then (
-              let usage_mb = du_m ov.ov_target_file in
+            if Sys.file_exists t.target_file then (
+              let usage_mb = du_m t.target_file in
               if usage_mb > 0L then (
                 let usage_mb = Int64.to_float usage_mb /. 1024. in
                 Some usage_mb
@@ -471,11 +476,11 @@ object
             ) else None in
 
           let format_for_rhev =
-            match ov.ov_target_format with
+            match t.target_format with
             | "raw" -> "RAW"
             | "qcow2" -> "COW"
             | _ ->
-              error (f_"RHEV does not support the output format '%s', only raw or qcow2") ov.ov_target_format in
+              error (f_"RHEV does not support the output format '%s', only raw or qcow2") t.target_format in
 
           let output_alloc_for_rhev =
             match output_alloc with
@@ -533,7 +538,7 @@ object
               e "rasd:last_modified_date" [] [PCData iso_time];
             ] in
           append_child item virtualhardware_section;
-      ) overlays
+      ) targets
 
     and du_m filename =
       (* There's no OCaml binding for st_blocks, so run coreutils 'du -m'

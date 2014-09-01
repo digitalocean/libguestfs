@@ -31,10 +31,13 @@
 #include <caml/mlvalues.h>
 
 #include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
 #include <libxml/uri.h>
 
 #include "guestfs.h"
 #include "guestfs-internal-frontend.h"
+
+#pragma GCC diagnostic ignored "-Wmissing-prototypes"
 
 /* xmlDocPtr type */
 #define Doc_val(v) (*((xmlDocPtr *)Data_custom_val(v)))
@@ -138,6 +141,21 @@ v2v_xml_xpath_new_context (value docv)
   Xpathctx_val (xpathctxv) = xpathctx;
 
   CAMLreturn (xpathctxv);
+}
+
+value
+v2v_xml_xpath_register_ns (value xpathctxv, value prefix, value uri)
+{
+  CAMLparam3 (xpathctxv, prefix, uri);
+  xmlXPathContextPtr xpathctx;
+  int r;
+
+  xpathctx = Xpathctx_val (xpathctxv);
+  r = xmlXPathRegisterNs (xpathctx, BAD_CAST String_val (prefix), BAD_CAST String_val (uri));
+  if (r == -1)
+      caml_invalid_argument ("xpath_register_ns: unable to register namespace");
+
+  CAMLreturn (Val_unit);
 }
 
 value
