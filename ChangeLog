@@ -1,3 +1,409 @@
+commit 6ae0e9641bdf516c3e14d004ffb7bd5127fd5d9d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 13 22:10:22 2014 +0100
+
+    Version 1.27.26.
+
+commit 8a23c1d79e878599a17c70bfc0737159acd5b61d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 13 22:18:44 2014 +0100
+
+    lib: Missing include of <locale.h>.
+    
+    Required by setlocale.  For some reason you only see the error
+    when compiling with -O0.
+
+commit d1e56118dd68b624af3f25c2612687521b431842
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 13 10:46:27 2014 +0100
+
+    Add a separate TODO file for virt-v2v and virt-p2v.
+
+commit ef10da8b3a62e3bf0df649f1e725e5150135b003
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 13 12:17:57 2014 +0100
+
+    v2v: Add tests.
+    
+    The virt-v2v tests here are not meant to be thorough tests of guest
+    conversion.  There is a test suite used to test conversion which is
+    kept outside libguestfs because it contains lots of proprietary
+    unredistributable guests like Windows.
+    
+    The tests here instead are testing:
+    
+    - virt-v2v command line arguments
+    - virt-v2v reads and writes files to the correct places
+    - valgrind & memory leaks
+    - any conversion properties that can be tested using just the
+      phony guests (but we don't go out of our way here)
+    - that up to date guests don't crash virt-v2v
+
+commit 7beb9f2cb5dcc2c88dc548d1de9acb03852388b7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 13 16:50:51 2014 +0100
+
+    tests/guests: Add Windows/Drivers directory to phony Windows guest.
+    
+    Allows virt-v2v to complete.
+
+commit 5b6a2e68b8ef8c05577379e19ab0bbf3f66ca216
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 13 13:07:28 2014 +0100
+
+    tests/guests: Fix RPM database in phony Fedora guest.
+    
+    Fix the Name and Packages database so it looks enough like a modern
+    RPM database to fool inspection.  I'm not sure whether or not the old
+    version ever worked, but it doesn't work now.
+    
+    The format is not documented, but in brief:
+    
+    The Name database contains (Name, link) pairs.  The link is an
+    arbitrary 32 bit integer.
+    
+    The Packages database contains (link, RPM-blob) pairs.
+    
+    The RPM-blob is a binary blob formatted like this:
+    
+     * Number of fields               4 bytes, big endian
+     * Size in bytes of the store     4 bytes, big endian
+     * Field descriptions:
+         list of (RPMTAG, 0, offset in store, 0)
+                                      4 * 4 * nr_fields bytes, big endian
+     * The store                      binary data containing ASCIIZ strings
+    
+    For the values of RPMTAG_* that we understand, see src/inspect-apps.c.
+
+commit f0b71818a6bfb3a9a4c40f26604ee1e7dec67926
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 13 12:37:48 2014 +0100
+
+    v2v: Add fedora to "RHEL family".
+    
+    The calling code allows Fedora guests to be used when calling
+    Convert_linux.  However Convert_linux itself would fail with an
+    assertion error when you did this.
+
+commit b743fe2c3ea27ad82eba04256242df7960bfd051
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 13 12:33:41 2014 +0100
+
+    tests/guests: Define the disk format of our test guests in the test XML.
+
+commit 89417216b9a151829ecf108630af1195e5fe0b9f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 13 12:34:12 2014 +0100
+
+    v2v: Fix libvirt source to parse the format of a disk properly.
+    
+    Missing '@' means it wasn't looking for the attribute.
+
+commit cec3b42ad6f72195f4ffae80757b34e046bbc2f6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 12 21:53:57 2014 +0100
+
+    v2v: Add --no-copy option.
+    
+    This option allows callers to generate the metadata without copying
+    the disks.
+
+commit bfcda1ba6a21906d2f82c19cf43bcd475bb4f5d8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 12 17:44:51 2014 +0100
+
+    v2v: Nothing uses ov_target_file_tmp, remove this.
+    
+    Previous virt-v2v would write to a temporary destination file then
+    atomically rename everything at the end.
+    
+    However this appears to be unnecessary since we write the OVF file
+    after copying the disks, so (I assume) RHEV-M won't see the disks
+    before then.
+    
+    In any case nothing used ov_target_file_tmp so we can remove this
+    feature to simplify the code.
+
+commit 295086e93491db2edb0c4f6d4364118f5f0267dc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 12 16:35:05 2014 +0100
+
+    v2v: Allow RHEV UUIDs to be specified on the command line.
+    
+    Currently various UUIDs used by `-o rhev' are generated randomly.
+    This means they are different on every run of the program.
+    
+    Allow some of them to be specified on the command line.  (If not
+    specified they are still generated randomly).
+    
+    This allows RHEV-M to run virt-v2v several times (eg to examine the
+    OVF output) while having paths to files and OVF be stable across runs.
+
+commit ba63916960d8ddb318b1a15872d2f142e0e719b6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 12 15:26:38 2014 +0100
+
+    v2v: Combine miscellaneous RHEV command line options into a single structure.
+    
+    At the moment there is just one "miscellaneous RHEV command line
+    option" (--vmtype), but we may add more in future.  Put them in a
+    single struct for convenience.
+    
+    This is just code motion.
+
+commit 83c314d5c016ce055a8500a9f8f9d8aa694349bd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 12 15:06:21 2014 +0100
+
+    v2v: -o rhev: Fix error message.
+
+commit 3f53dc46803edd40ff42db11024c5764b914508a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 12 15:04:15 2014 +0100
+
+    v2v: `-o ovirt' is an alias for `-o rhev', document it.
+
+commit 0a816c020c00e1b44dba3c4809eca91f70422a13
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 13 14:38:34 2014 +0100
+
+    v2v: Don't disable trace/debug set by environment variables.
+    
+    If the environment variables LIBGUESTFS_TRACE=1 or LIBGUESTFS_DEBUG=1
+    were set, then the current code would end up disabling trace/debug if
+    the command line arguments did not contain -x/-v.
+    
+    Fix this so the effect of enabling trace/debug is cumulative.
+
+commit 5d89c0fd14448f4a907b5fd7fb80afcf62562b80
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 12 15:00:23 2014 +0100
+
+    p2v: Clean up and fix the code for excluding the root device.
+
+commit 67da00d540fbb8c463e9496864b243d780340d9a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 12 12:40:58 2014 +0100
+
+    p2v: Call the remote libvirt XML file 'guest.xml'.
+    
+    Previously it was called 'libvirt.conf' which is more than a little
+    bit confusing.
+    
+    This is only an internal name, so there is no visible change in
+    functionality.
+
+commit 40fbd447ee2393d43549722f240fe356de31f210
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Aug 13 16:43:19 2014 +0200
+
+    build: manually drop flex-/bison-generated files from dist
+    
+    It seems that Automake cannot handle properly the files generated by
+    flex and bison, leaving them in the dist tarball.
+    
+    For now, add a dist-hook to manually prune them from distdir.
+
+commit 577ec51a4ca6b1a7c331a0e3da31295d578a5303
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Aug 13 15:16:17 2014 +0200
+
+    fish: add test-invalid-params.sh to EXTRA_DIST
+    
+    Followup of commit 7912759fc331f6e8a0f7c87731f6bfe8c6e96c1f.
+
+commit 6a51ae503c372b2548c91639e8c23c8bbeac3c44
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 13 13:50:36 2014 +0100
+
+    builder: Missing include of <locale.h>.
+    
+    Required by setlocale.  For some reason you only see the error
+    when compiling with -O0.
+
+commit 34feb37879ea3d3a9adbb5de5baa62882f7c6a9d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 13 13:07:07 2014 +0100
+
+    lib: Typo in comment.
+
+commit 841b20c39cfd53bd7097d2e3f81fd36f8135cc75
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Aug 12 10:16:18 2014 +0200
+
+    python: fix possible free on uninit memory with OStringList optargs
+    
+    When using optional arguments of type OStringList, the code free'ing
+    the member in the optargs_s struct corresponding to that optional
+    argument would just check for a non-PyNone PyObject for that argument.
+    If before that optional argument there are other arguments which can
+    cause an earlier error return from that binding function, the free'ing
+    code will then act on garbage values.
+    
+    Enhance the check by also checking whether the optargs struct has the
+    bitmask with the element for that argument, meaning that the
+    corresponding struct member was initialized.
+
+commit abbbc832d50dafd2872d0f5fee94e62faa978e82
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Aug 11 15:15:16 2014 +0200
+
+    p2v: check results of strndup and sscanf
+
+commit bbae6136abe6432648be94decedc6c96cbe63328
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 11 14:51:37 2014 +0100
+
+    p2v: Move libutils before libxml2 in the list of libraries (RHBZ#1102447).
+    
+    The error is:
+    
+    ../src/.libs/libutils.a(
+    libutils_la-cleanup.o): In function `guestfs___cleanup_xmlBufferFree':
+    cleanup.c:(.text+0x79): undefined reference to `xmlBufferFree'
+    ../src/.libs/libutils.a(libutils_la-cleanup.o): In function
+    `guestfs___cleanup_xmlFreeDoc':
+    cleanup.c:(.text+0x99): undefined reference to `xmlFreeDoc'
+    [etc.]
+    
+    Thanks: Arnaud Gaboury
+
+commit a26a9e68819dab5f9c8eed821d8a686fffabbc5b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 8 17:13:02 2014 +0200
+
+    df: unlock retire_mutex on early exit
+    
+    If pthread_cond_wait fails and the thread worker ends, make sure to
+    unlock retire_mutex, which has been locked for the condition.
+    
+    The return value of pthread_mutex_unlock is ignored, as there's nothing
+    that can be done with it at that point.
+
+commit bb124552155667c082c075cb09267b12a7a567c1
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 8 15:35:02 2014 +0200
+
+    daemon: use CLEANUP_CLOSE
+
+commit 4249ddd8bbd0d38f7e63890b999c6199b54af5b3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 8 15:34:07 2014 +0200
+
+    daemon: add CLEANUP_CLOSE
+    
+    Just call close on the specified fd, if valid.
+
+commit ad4ba5997be030ee4b67614d9e6004107482bbc3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 8 14:58:08 2014 +0200
+
+    daemon: blkid: fix memory issues in "no -p/-i" mode
+    
+    Fix the memory issues in the implementation that uses no -p nor -i:
+    - use add_string_nodup to add results from get_blkid_tag (which returns
+      new strings), so those strings are not leaked
+    - use free_stringslen to clean the hash on error, as in such case the
+      stringbuf will not be terminated with a null entry, thus causing
+      free_strings to crash
+
+commit fef0881b3a31adebf66e0374fed3eb41f9d1471d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 8 14:56:27 2014 +0200
+
+    tests: c-api: do not crash w/ missing hash entry
+    
+    If an hash does not have the requested key, just error out cleanly
+    instead of crashing when trying to compare a null string.
+
+commit 8d23fb31f11019b7b8c4834166748143cec84c0c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 8 13:49:59 2014 +0200
+
+    daemon: initialize memory when handling DeviceList params
+    
+    When dealing with DeviceList parameters, the generator produces code
+    similar to the following:
+    
+      CLEANUP_FREE_STRING_LIST char **devices = NULL;
+      [...]
+      devices = malloc (sizeof (char *) * (args.devices.devices_len+1));
+      {
+        size_t i;
+        for (i = 0; i < args.devices.devices_len; ++i)
+          RESOLVE_DEVICE (args.devices.devices_val[i], devices[i],
+                          , goto done);
+        devices[i] = NULL;
+      }
+    
+    The block hidden within the RESOLVE_DEVICE macro is supposed to
+    assign something to devices[i]; on the other hand, the code in
+    RESOLVE_DEVICE can cause to just end (with an error) the current RPC,
+    which would cause the cleanup of the "devices" array... whose members
+    from the i-th to the (args.devices.devices_len-1)-th would be garbage
+    pointers, causing random memory to be free'd (and thus crashing the
+    daemon).
+    
+    Avoid the access to garbage memory just by having a cleaned "devices"
+    array, so there will be always a NULL element after the initialized
+    members.
+    
+    Add a test for vgcreate which passes a wrong device path causing the
+    situation above, to test that vgcreate would fail gracefully.
+
+commit d1f580550b32e8552ee64f12872b0fa10147957f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 8 10:23:37 2014 +0200
+
+    rescue: fix sscanf placeholders for --smp and --memsize
+    
+    Use %d to parse them as int (since the variables for them as int)
+    instead of %u, even if they both need to be at least > 0; the library
+    will check for the validity of them anyway.
+
+commit 7912759fc331f6e8a0f7c87731f6bfe8c6e96c1f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 8 10:15:32 2014 +0200
+
+    src: always check value passed to set_memsize
+    
+    Move the minimum memory check from the environment parsing to
+    set_memsize, so the limit is actually enforced also when using the API.
+    
+    Adapt the rhbz557655.sh test to the invalid memsize values being
+    rejected now, and add a new test for checking invalid parameters
+    explicitly.
+
+commit 5fddd932054b1e4213807c545f85f5c0b3d698f7
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 7 19:26:46 2014 +0200
+
+    lua: always return luaL_error in actions
+    
+    Even if luaL_error is a "no return" function for the Lua runtime, adopt
+    also in action functions the "return" idiom recommeded for it.
+    
+    This also helps code analyzers in not thinking that "g" might still be
+    null after the null check followed by luaL_error.
+
+commit 5ce123400745469a8dc3a931547c581d69b3bd8e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 7 12:25:13 2014 +0100
+
+    aarch64: Add common function for getting the CPU model.
+    
+    And force a 64 bit CPU model when running on aarch64 with TCG.
+
+commit f5c74637e36b6c8eb1281f93f7fe26f9016e405c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 7 10:45:04 2014 +0200
+
+    daemon: add and use a reply_with_unavailable_feature macro
+    
+    Handy macro to reply the right way for an unavailable feature.
+    While generally used so far in generated code, it can shorten that a
+    bit, and avoid copy&paste when wanting to do manual feature checking.
+
 commit 59584e1814205f62e36692ad3df26adcaeddcfc8
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Aug 5 18:06:22 2014 +0100

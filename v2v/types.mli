@@ -26,8 +26,16 @@ type input =
 type output =
 | OutputLibvirt of string option    (* -o libvirt: -oc *)
 | OutputLocal of string             (* -o local: directory *)
-| OutputRHEV of string * [`Server|`Desktop] option (* -o rhev: output storage *)
+| OutputRHEV of string * output_rhev_params (* -o rhev: output storage *)
 (** The output arguments as specified on the command line. *)
+
+and output_rhev_params = {
+  image_uuid : string option;           (* --rhev-image-uuid *)
+  vol_uuids : string list;              (* --rhev-vol-uuid (multiple) *)
+  vm_uuid : string option;              (* --rhev-vm-uuid *)
+  vmtype : [`Server|`Desktop] option;   (* --vmtype *)
+}
+(** Miscellaneous extra command line parameters used by RHEV. *)
 
 type source = {
   s_dom_type : string;                  (** Source domain type, eg "kvm" *)
@@ -52,8 +60,7 @@ val string_of_source_disk : source_disk -> string
 
 type overlay = {
   ov_overlay : string;       (** Local overlay file (qcow2 format). *)
-  ov_target_file : string;   (** Destination file (real). *)
-  ov_target_file_tmp : string;    (** Destination file (temporary). *)
+  ov_target_file : string;   (** Destination file. *)
   ov_target_format : string; (** Destination format (eg. -of option). *)
   ov_sd : string;            (** sdX libguestfs name of disk. *)
   ov_virtual_size : int64;   (** Virtual disk size in bytes. *)

@@ -280,9 +280,9 @@ am_virt_p2v_OBJECTS = virt_p2v-authors.$(OBJEXT) \
 	virt_p2v-miniexpect.$(OBJEXT) virt_p2v-ssh.$(OBJEXT)
 virt_p2v_OBJECTS = $(am_virt_p2v_OBJECTS)
 am__DEPENDENCIES_1 =
-virt_p2v_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(top_builddir)/src/libutils.la \
-	../gnulib/lib/libgnu.la
+virt_p2v_DEPENDENCIES = $(top_builddir)/src/libutils.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -1494,10 +1494,10 @@ virt_p2v_CFLAGS = \
 	$(GTK2_CFLAGS)
 
 virt_p2v_LDADD = \
+	$(top_builddir)/src/libutils.la \
 	$(PCRE_LIBS) \
 	$(LIBXML2_LIBS) \
 	$(GTK2_LIBS) \
-	$(top_builddir)/src/libutils.la \
 	../gnulib/lib/libgnu.la
 
 

@@ -33,6 +33,7 @@ let parse_cmdline () =
   in
 
   let debug_gc = ref false in
+  let do_copy = ref true in
   let input_conn = ref "" in
   let output_conn = ref "" in
   let output_format = ref "" in
@@ -40,6 +41,8 @@ let parse_cmdline () =
   let output_storage = ref "" in
   let machine_readable = ref false in
   let quiet = ref false in
+  let rhev_image_uuid = ref "" in
+  let rhev_vm_uuid = ref "" in
   let verbose = ref false in
   let trace = ref false in
   let vmtype = ref "" in
@@ -79,6 +82,9 @@ let parse_cmdline () =
       error (f_"unknown --root option: %s") s
   in
 
+  let rhev_vol_uuids = ref [] in
+  let add_rhev_vol_uuid s = rhev_vol_uuids := s :: !rhev_vol_uuids in
+
   let ditto = " -\"-" in
   let argspec = Arg.align [
     "--debug-gc",Arg.Set debug_gc,          " " ^ s_"Debug GC and memory allocations";
@@ -86,6 +92,7 @@ let parse_cmdline () =
     "-ic",       Arg.Set_string input_conn, "uri " ^ s_"Libvirt URI";
     "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
     "--machine-readable", Arg.Set machine_readable, " " ^ s_"Make output machine readable";
+    "--no-copy", Arg.Clear do_copy,         " " ^ s_"Just write the metadata";
     "-o",        Arg.String set_output_mode, "libvirt|local|rhev " ^ s_"Set output mode (default: libvirt)";
     "-oa",       Arg.String set_output_alloc, "sparse|preallocated " ^ s_"Set output allocation mode";
     "-oc",       Arg.Set_string output_conn, "uri " ^ s_"Libvirt URI";
@@ -94,6 +101,12 @@ let parse_cmdline () =
     "-os",       Arg.Set_string output_storage, "storage " ^ s_"Set output storage location";
     "-q",        Arg.Set quiet,             " " ^ s_"Quiet output";
     "--quiet",   Arg.Set quiet,             ditto;
+    "--rhev-image-uuid",
+                 Arg.Set_string rhev_image_uuid, "uuid " ^ s_"Output image UUID";
+    "--rhev-vol-uuid",
+                 Arg.String add_rhev_vol_uuid, "uuid " ^ s_"Output vol UUID(s)";
+    "--rhev-vm-uuid",
+                 Arg.Set_string rhev_vm_uuid, "uuid " ^ s_"Output VM UUID";
     "--root",    Arg.String set_root_choice,"ask|... " ^ s_"How to choose root filesystem";
     "-v",        Arg.Set verbose,           " " ^ s_"Enable debugging messages";
     "--verbose", Arg.Set verbose,           ditto;
@@ -128,6 +141,7 @@ read the man page virt-v2v(1).
   (* Dereference the arguments. *)
   let args = List.rev !args in
   let debug_gc = !debug_gc in
+  let do_copy = !do_copy in
   let input_conn = match !input_conn with "" -> None | s -> Some s in
   let input_mode = !input_mode in
   let machine_readable = !machine_readable in
@@ -138,6 +152,9 @@ read the man page virt-v2v(1).
   let output_name = match !output_name with "" -> None | s -> Some s in
   let output_storage = !output_storage in
   let quiet = !quiet in
+  let rhev_image_uuid = match !rhev_image_uuid with "" -> None | s -> Some s in
+  let rhev_vol_uuids = List.rev !rhev_vol_uuids in
+  let rhev_vm_uuid = match !rhev_vm_uuid with "" -> None | s -> Some s in
   let root_choice = !root_choice in
   let verbose = !verbose in
   let trace = !trace in
@@ -188,7 +205,10 @@ read the man page virt-v2v(1).
         error (f_"-o libvirt: do not use the -os option");
       if vmtype <> None then
         error (f_"--vmtype option can only be used with '-o rhev'");
+      if not do_copy then
+        error (f_"--no-copy and '-o libvirt' cannot be used at the same time");
       OutputLibvirt output_conn
+
     | `Local ->
       if output_storage = "" then
         error (f_"-o local: output directory was not specified, use '-os /dir'");
@@ -198,11 +218,18 @@ read the man page virt-v2v(1).
       if vmtype <> None then
         error (f_"--vmtype option can only be used with '-o rhev'");
       OutputLocal output_storage
+
     | `RHEV ->
       if output_storage = "" then
-        error (f_"-o local: output storage was not specified, use '-os'");
-      OutputRHEV (output_storage, vmtype) in
+        error (f_"-o rhev: output storage was not specified, use '-os'");
+      let rhev_params = {
+        image_uuid = rhev_image_uuid;
+        vol_uuids = rhev_vol_uuids;
+        vm_uuid = rhev_vm_uuid;
+        vmtype = vmtype;
+      } in
+      OutputRHEV (output_storage, rhev_params) in
 
   input, output,
-  debug_gc, output_alloc, output_format, output_name,
+  debug_gc, do_copy, output_alloc, output_format, output_name,
   quiet, root_choice, trace, verbose

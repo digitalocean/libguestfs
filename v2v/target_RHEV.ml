@@ -40,8 +40,10 @@ type export_storage_domain = {
 (* Export Storage Domain mountpoint. *)
 let esd = ref { mp = ""; uuid = "" }
 (* Target image directory, UUID. *)
-let image_uuid = ref ""
 let image_dir = ref ""
+let image_uuid = ref ""
+(* Target VM UUID. *)
+let vm_uuid = ref ""
 (* Flag to indicate if the target image (image_dir) should be
  * deleted.  This is set to false once we know the conversion was
  * successful.
@@ -70,19 +72,22 @@ let iso_time =
  * done the conversion and copy, and the user won't thank us for
  * displaying errors there.
  *)
-let rec initialize ~verbose os source output_alloc overlays =
+let rec initialize ~verbose os rhev_params source output_alloc overlays =
   esd := mount_and_check_export_storage_domain ~verbose os;
   if verbose then
     eprintf "RHEV: ESD mountpoint: %s\nRHEV: ESD UUID: %s\n%!" !esd.mp !esd.uuid;
 
-  (* Create a unique UUID for the final image. *)
-  image_uuid := uuidgen ~prog ();
-  image_dir := !esd.mp // !esd.uuid // "images" // !image_uuid;
+  let overlays =
+    let _image_uuid, _vm_uuid, overlays = create_uuids rhev_params overlays in
+    image_uuid := _image_uuid;
+    vm_uuid := _vm_uuid;
+    overlays in
 
   (* We need to create the target image directory so there's a place
    * for the main program to copy the images to.  However if image
    * conversion fails for any reason then we delete this directory.
    *)
+  image_dir := !esd.mp // !esd.uuid // "images" // !image_uuid;
   mkdir !image_dir 0o755;
   at_exit (fun () ->
     if !delete_target_directory then (
@@ -113,8 +118,7 @@ let rec initialize ~verbose os source output_alloc overlays =
 
     List.map (
       fun ov ->
-        let vol_uuid = uuidgen ~prog () in
-        let target_file = !image_dir // vol_uuid in
+        let target_file = !image_dir // ov.ov_vol_uuid in
 
         if verbose then
           eprintf "RHEV: will export %s to %s\n%!" ov.ov_sd target_file;
@@ -154,9 +158,7 @@ let rec initialize ~verbose os source output_alloc overlays =
         fpf "EOF\n";
         close_out chan;
 
-        { ov with
-          ov_target_file_tmp = target_file; ov_target_file = target_file;
-          ov_vol_uuid = vol_uuid }
+        { ov with ov_target_file = target_file }
     ) overlays in
 
   (* Return the list of overlays. *)
@@ -242,15 +244,46 @@ and check_export_storage_domain os mp =
   (* Looks good, so return the ESD object. *)
   { mp = mp; uuid = uuid }
 
-(* This is called after conversion to write the OVF metadata. *)
-let rec create_metadata os vmtype source output_alloc
-    overlays inspect guestcaps =
-  let vm_uuid = uuidgen ~prog () in
+(* Create unique UUIDs for everything, either based on the command
+ * line parameters or else we invent them here.
+ *)
+and create_uuids rhev_params overlays =
+  let image_uuid =
+    match rhev_params.image_uuid with
+    | Some uuid -> uuid
+    | None -> uuidgen ~prog () in
+  let vm_uuid =
+    match rhev_params.vm_uuid with
+    | Some uuid -> uuid
+    | None -> uuidgen ~prog () in
 
+  (* ... and for volumes. *)
+  let overlays =
+    match rhev_params.vol_uuids with
+    | [] ->
+      List.map (
+        fun ov ->
+          let uuid = uuidgen ~prog () in
+          { ov with ov_vol_uuid = uuid }
+      ) overlays
+    | uuids ->
+      try
+        List.map (
+          fun (ov, uuid) -> { ov with ov_vol_uuid = uuid }
+        ) (List.combine overlays uuids)
+      with Invalid_argument _ ->
+        error (f_"the number of '--rhev-vol-uuid' parameters passed on the command line has to match the number of guest disk images (for this guest: %d)")
+          (List.length overlays) in
+
+  image_uuid, vm_uuid, overlays
+
+(* This is called after conversion to write the OVF metadata. *)
+let rec create_metadata os rhev_params source output_alloc
+    overlays inspect guestcaps =
   let memsize_mb = source.s_memory /^ 1024L /^ 1024L in
 
   let vmtype =
-    match vmtype with
+    match rhev_params.vmtype with
     | Some vmtype -> vmtype
     | None -> get_vmtype inspect in
   let vmtype = match vmtype with `Desktop -> "DESKTOP" | `Server -> "SERVER" in
@@ -286,7 +319,7 @@ let rec create_metadata os vmtype source output_alloc
         e "VmType" [] [PCData vmtype];
         e "DefaultDisplayType" [] [PCData "1"];
 
-        e "Section" ["ovf:id", vm_uuid; "ovf:required", "false";
+        e "Section" ["ovf:id", !vm_uuid; "ovf:required", "false";
                      "xsi:type", "ovf:OperatingSystemSection_Type"] [
           e "Info" [] [PCData "Guest Operating System"];
           e "Description" [] [PCData ostype];
@@ -341,9 +374,9 @@ let rec create_metadata os vmtype source output_alloc
 
 
   (* Write it to the metadata file. *)
-  let dir = !esd.mp // !esd.uuid // "master" // "vms" // vm_uuid in
+  let dir = !esd.mp // !esd.uuid // "master" // "vms" // !vm_uuid in
   mkdir dir 0o755;
-  let file = dir // vm_uuid ^ ".ovf" in
+  let file = dir // !vm_uuid ^ ".ovf" in
   let chan = open_out file in
   doc_to_chan chan ovf;
   close_out chan;
@@ -483,8 +516,7 @@ and add_disks output_alloc overlays guestcaps ovf =
     fun i ov ->
       let is_boot_drive = i == 0 in
 
-      let target_file = ov.ov_target_file
-      and vol_uuid = ov.ov_vol_uuid in
+      let vol_uuid = ov.ov_vol_uuid in
       assert (vol_uuid <> "");
 
       let fileref = !image_uuid // vol_uuid in
@@ -492,8 +524,17 @@ and add_disks output_alloc overlays guestcaps ovf =
       let size_gb =
         Int64.to_float ov.ov_virtual_size /. 1024. /. 1024. /. 1024. in
       let usage_gb =
-        let usage_mb = du_m target_file in
-        Int64.to_float usage_mb /. 1024. in
+        (* In the --no-copy case it can happen that the target file
+         * does not exist.  In that case we simply omit the
+         * ovf:actual_size attribute.
+         *)
+        if Sys.file_exists ov.ov_target_file then (
+          let usage_mb = du_m ov.ov_target_file in
+          if usage_mb > 0L then (
+            let usage_mb = Int64.to_float usage_mb /. 1024. in
+            Some usage_mb
+          ) else None
+        ) else None in
 
       let format_for_rhev =
         match ov.ov_target_format with
@@ -519,10 +560,9 @@ and add_disks output_alloc overlays guestcaps ovf =
 
       (* Add disk to DiskSection. *)
       let disk =
-        e "Disk" [
+        let attrs = [
           "ovf:diskId", vol_uuid;
           "ovf:size", sprintf "%.1f" size_gb;
-          "ovf:actual_size", sprintf "%.1f" usage_gb;
           "ovf:fileRef", fileref;
           "ovf:parentRef", "";
           "ovf:vm_snapshot_id", uuidgen ~prog ();
@@ -533,7 +573,13 @@ and add_disks output_alloc overlays guestcaps ovf =
             if guestcaps.gcaps_block_bus = "virtio" then "VirtIO" else "IDE";
           "ovf:disk-type", "System"; (* RHBZ#744538 *)
           "ovf:boot", if is_boot_drive then "True" else "False";
-        ] [] in
+        ] in
+        let attrs =
+          match usage_gb with
+          | None -> attrs
+          | Some usage_gb ->
+            ("ovf:actual_size", sprintf "%.1f" usage_gb) :: attrs in
+        e "Disk" attrs [] in
       append_child disk disk_section;
 
       (* Add disk to VirtualHardware. *)

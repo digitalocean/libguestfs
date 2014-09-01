@@ -137,11 +137,11 @@ host_triplet = @host@
 DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am $(srcdir)/link.sh.in \
-	$(top_srcdir)/build-aux/depcomp README
+	$(top_srcdir)/build-aux/depcomp TODO
 @HAVE_OCAML_TRUE@bin_PROGRAMS = virt-v2v$(EXEEXT)
 @HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
-@HAVE_OCAML_TRUE@am__append_2 = stamp-virt-v2v.pod
-TESTS =
+@HAVE_OCAML_TRUE@am__append_2 = stamp-virt-v2v.pod \
+@HAVE_OCAML_TRUE@	$(real_guests:%=%.img)
 subdir = v2v
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1488,6 +1488,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
+	$(TESTS) $(SLOW_TESTS) \
 	virt-v2v.pod
 
 CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-v2v $(am__append_2)
@@ -1586,7 +1587,44 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@noinst_DATA = $(top_builddir)/html/virt-v2v.1.html
 
 # Tests.
+
+# The virt-v2v tests here are not meant to be thorough tests of guest
+# conversion.  There is a test suite used to test conversion which is
+# kept outside libguestfs because it contains lots of proprietary
+# unredistributable guests like Windows.
+#
+# The tests here instead are testing:
+#
+# - virt-v2v command line arguments
+# - virt-v2v reads and writes files to the correct places
+# - valgrind & memory leaks
+# - any conversion properties that can be tested using just the
+#   phony guests (but we don't go out of our way here)
+# - that up to date guests don't crash virt-v2v
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@TESTS = \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-machine-readable.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-no-copy.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-of-option.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-on-option.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-rhev.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-rhev-options.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-windows-conversion.sh
+
+@HAVE_OCAML_TRUE@SLOW_TESTS = \
+@HAVE_OCAML_TRUE@	test-v2v-real-conversions.sh
+
+
+# A selection of real guests that test-v2v-real-conversions.sh will
+# try to convert.  This is only used by 'make check-slow'.
+@HAVE_OCAML_TRUE@real_guests = \
+@HAVE_OCAML_TRUE@	centos-6 \
+@HAVE_OCAML_TRUE@	centos-7.0 \
+@HAVE_OCAML_TRUE@	fedora-20 \
+@HAVE_OCAML_TRUE@	rhel-5.10 \
+@HAVE_OCAML_TRUE@	rhel-6.5 \
+@HAVE_OCAML_TRUE@	rhel-7.0
+
 DISTCLEANFILES = .depend
 all: all-am
 
@@ -2217,6 +2255,19 @@ $(top_builddir)/generator/generator:
 
 @HAVE_OCAML_TRUE@check-valgrind:
 @HAVE_OCAML_TRUE@	$(MAKE) VG="$(top_builddir)/run @VG@" check
+
+@HAVE_OCAML_TRUE@check-slow: $(real_guests:%=%.img)
+@HAVE_OCAML_TRUE@	$(MAKE) check TESTS="$(SLOW_TESTS)"
+
+@HAVE_OCAML_TRUE@$(real_guests:%=%.img):
+@HAVE_OCAML_TRUE@	rm -f $@
+@HAVE_OCAML_TRUE@	n=`basename $@ .img`;                                            \
+@HAVE_OCAML_TRUE@	vb="$(top_builddir)/run $(top_builddir)/builder/virt-builder";   \
+@HAVE_OCAML_TRUE@	if $$vb --help >/dev/null && $$vb --notes $$n >/dev/null; then   \
+@HAVE_OCAML_TRUE@	  $$vb $$n;                                                      \
+@HAVE_OCAML_TRUE@	else                                                             \
+@HAVE_OCAML_TRUE@	  touch $$n.img;                                                 \
+@HAVE_OCAML_TRUE@	fi
 
 # Dependencies.
 @HAVE_OCAML_TRUE@depend: .depend

@@ -27,7 +27,14 @@ type input =
 type output =
 | OutputLibvirt of string option
 | OutputLocal of string
-| OutputRHEV of string * [`Server|`Desktop] option
+| OutputRHEV of string * output_rhev_params
+
+and output_rhev_params = {
+  image_uuid : string option;
+  vol_uuids : string list;
+  vm_uuid : string option;
+  vmtype : [`Server|`Desktop] option;
+}
 
 type source = {
   s_dom_type : string;
@@ -76,7 +83,6 @@ and string_of_source_disk { s_qemu_uri = qemu_uri; s_format = format;
 type overlay = {
   ov_overlay : string;
   ov_target_file : string;
-  ov_target_file_tmp : string;
   ov_target_format : string;
   ov_sd : string;
   ov_virtual_size : int64;
@@ -90,7 +96,6 @@ let string_of_overlay ov =
   sprintf "\
 ov_overlay = %s
 ov_target_file = %s
-ov_target_file_tmp = %s
 ov_target_format = %s
 ov_sd = %s
 ov_virtual_size = %Ld
@@ -100,7 +105,7 @@ ov_source_format = %s
 ov_vol_uuid = %s
 "
     ov.ov_overlay
-    ov.ov_target_file ov.ov_target_file_tmp
+    ov.ov_target_file
     ov.ov_target_format
     ov.ov_sd
     ov.ov_virtual_size

@@ -1508,7 +1508,7 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
   py_r = Py_None;
 
  out:
-  if (py_server != Py_None)
+  if (py_server != Py_None && (optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK) != 0)
     free ((char **) optargs_s.server);
   return py_r;
 }
@@ -9284,7 +9284,7 @@ py_guestfs_internal_test (PyObject *self, PyObject *args)
 
  out:
   free (strlist);
-  if (py_ostringlist != Py_None)
+  if (py_ostringlist != Py_None && (optargs_s.bitmask & GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK) != 0)
     free ((char **) optargs_s.ostringlist);
   return py_r;
 }
@@ -19805,7 +19805,7 @@ py_guestfs_tar_out (PyObject *self, PyObject *args)
   py_r = Py_None;
 
  out:
-  if (py_excludes != Py_None)
+  if (py_excludes != Py_None && (optargs_s.bitmask & GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK) != 0)
     free ((char **) optargs_s.excludes);
   return py_r;
 }

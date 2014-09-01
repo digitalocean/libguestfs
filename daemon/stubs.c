@@ -346,11 +346,7 @@ pvs_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -381,11 +377,7 @@ vgs_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -416,11 +408,7 @@ lvs_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -451,11 +439,7 @@ pvs_full_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -486,11 +470,7 @@ vgs_full_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -521,11 +501,7 @@ lvs_full_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -1334,11 +1310,7 @@ pvcreate_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -1377,11 +1349,7 @@ vgcreate_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -1400,7 +1368,7 @@ vgcreate_stub (XDR *xdr_in)
   /* Copy the string list and apply device name translation
    * to each one.
    */
-  physvols = malloc (sizeof (char *) * (args.physvols.physvols_len+1));
+  physvols = calloc (args.physvols.physvols_len+1, sizeof (char *));
   {
     size_t i;
     for (i = 0; i < args.physvols.physvols_len; ++i)
@@ -1432,11 +1400,7 @@ lvcreate_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -1642,11 +1606,7 @@ lvm_remove_all_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -2694,11 +2654,7 @@ lvremove_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -2736,11 +2692,7 @@ vgremove_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -2778,11 +2730,7 @@ pvremove_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -3027,11 +2975,7 @@ grub_install_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_grub_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "grub");
+    reply_with_unavailable_feature ("grub");
     goto done_no_free;
   }
 
@@ -3414,11 +3358,7 @@ zerofree_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_zerofree_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "zerofree");
+    reply_with_unavailable_feature ("zerofree");
     goto done_no_free;
   }
 
@@ -3456,11 +3396,7 @@ pvresize_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -3645,11 +3581,7 @@ vg_activate_all_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -3688,11 +3620,7 @@ vg_activate_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -3740,11 +3668,7 @@ lvresize_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -3880,11 +3804,7 @@ ntfs_3g_probe_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ntfs3g_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ntfs3g");
+    reply_with_unavailable_feature ("ntfs3g");
     goto done_no_free;
   }
 
@@ -4034,11 +3954,7 @@ scrub_device_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_scrub_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "scrub");
+    reply_with_unavailable_feature ("scrub");
     goto done_no_free;
   }
 
@@ -4076,11 +3992,7 @@ scrub_file_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_scrub_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "scrub");
+    reply_with_unavailable_feature ("scrub");
     goto done_no_free;
   }
 
@@ -4120,11 +4032,7 @@ scrub_freespace_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_scrub_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "scrub");
+    reply_with_unavailable_feature ("scrub");
     goto done_no_free;
   }
 
@@ -4695,11 +4603,7 @@ mkswap_U_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxfsuuid_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxfsuuid");
+    reply_with_unavailable_feature ("linuxfsuuid");
     goto done_no_free;
   }
 
@@ -4741,11 +4645,7 @@ mknod_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_mknod_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "mknod");
+    reply_with_unavailable_feature ("mknod");
     goto done_no_free;
   }
 
@@ -4789,11 +4689,7 @@ mkfifo_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_mknod_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "mknod");
+    reply_with_unavailable_feature ("mknod");
     goto done_no_free;
   }
 
@@ -4837,11 +4733,7 @@ mknod_b_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_mknod_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "mknod");
+    reply_with_unavailable_feature ("mknod");
     goto done_no_free;
   }
 
@@ -4887,11 +4779,7 @@ mknod_c_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_mknod_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "mknod");
+    reply_with_unavailable_feature ("mknod");
     goto done_no_free;
   }
 
@@ -5087,11 +4975,7 @@ getxattrs_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxxattrs");
+    reply_with_unavailable_feature ("linuxxattrs");
     goto done_no_free;
   }
 
@@ -5135,11 +5019,7 @@ lgetxattrs_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxxattrs");
+    reply_with_unavailable_feature ("linuxxattrs");
     goto done_no_free;
   }
 
@@ -5186,11 +5066,7 @@ setxattr_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxxattrs");
+    reply_with_unavailable_feature ("linuxxattrs");
     goto done_no_free;
   }
 
@@ -5236,11 +5112,7 @@ lsetxattr_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxxattrs");
+    reply_with_unavailable_feature ("linuxxattrs");
     goto done_no_free;
   }
 
@@ -5284,11 +5156,7 @@ removexattr_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxxattrs");
+    reply_with_unavailable_feature ("linuxxattrs");
     goto done_no_free;
   }
 
@@ -5330,11 +5198,7 @@ lremovexattr_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxxattrs");
+    reply_with_unavailable_feature ("linuxxattrs");
     goto done_no_free;
   }
 
@@ -6402,11 +6266,7 @@ swapon_uuid_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxfsuuid_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxfsuuid");
+    reply_with_unavailable_feature ("linuxfsuuid");
     goto done_no_free;
   }
 
@@ -6444,11 +6304,7 @@ swapoff_uuid_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxfsuuid_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxfsuuid");
+    reply_with_unavailable_feature ("linuxfsuuid");
     goto done_no_free;
   }
 
@@ -6520,11 +6376,7 @@ inotify_init_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_inotify_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "inotify");
+    reply_with_unavailable_feature ("inotify");
     goto done_no_free;
   }
 
@@ -6563,11 +6415,7 @@ inotify_add_watch_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_inotify_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "inotify");
+    reply_with_unavailable_feature ("inotify");
     goto done_no_free;
   }
 
@@ -6610,11 +6458,7 @@ inotify_rm_watch_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_inotify_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "inotify");
+    reply_with_unavailable_feature ("inotify");
     goto done_no_free;
   }
 
@@ -6650,11 +6494,7 @@ inotify_read_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_inotify_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "inotify");
+    reply_with_unavailable_feature ("inotify");
     goto done_no_free;
   }
 
@@ -6685,11 +6525,7 @@ inotify_files_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_inotify_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "inotify");
+    reply_with_unavailable_feature ("inotify");
     goto done_no_free;
   }
 
@@ -6720,11 +6556,7 @@ inotify_close_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_inotify_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "inotify");
+    reply_with_unavailable_feature ("inotify");
     goto done_no_free;
   }
 
@@ -6753,11 +6585,7 @@ setcon_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_selinux_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "selinux");
+    reply_with_unavailable_feature ("selinux");
     goto done_no_free;
   }
 
@@ -6793,11 +6621,7 @@ getcon_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_selinux_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "selinux");
+    reply_with_unavailable_feature ("selinux");
     goto done_no_free;
   }
 
@@ -6937,11 +6761,7 @@ mke2journal_U_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxfsuuid_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxfsuuid");
+    reply_with_unavailable_feature ("linuxfsuuid");
     goto done_no_free;
   }
 
@@ -7060,11 +6880,7 @@ mke2fs_JU_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxfsuuid_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxfsuuid");
+    reply_with_unavailable_feature ("linuxfsuuid");
     goto done_no_free;
   }
 
@@ -7105,11 +6921,7 @@ modprobe_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxmodules_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxmodules");
+    reply_with_unavailable_feature ("linuxmodules");
     goto done_no_free;
   }
 
@@ -7532,11 +7344,7 @@ internal_lxattrlist_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxxattrs");
+    reply_with_unavailable_feature ("linuxxattrs");
     goto done_no_free;
   }
 
@@ -8438,11 +8246,7 @@ txz_in_stub (XDR *xdr_in)
   /* The caller should have checked before calling this. */
   if (! optgroup_xz_available ()) {
     cancel_receive ();
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "xz");
+    reply_with_unavailable_feature ("xz");
     goto done_no_free;
   }
 
@@ -8484,11 +8288,7 @@ txz_out_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_xz_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "xz");
+    reply_with_unavailable_feature ("xz");
     goto done_no_free;
   }
 
@@ -8729,11 +8529,7 @@ lvresize_free_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -9122,11 +8918,7 @@ pvresize_size_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -9166,11 +8958,7 @@ ntfsresize_size_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ntfsprogs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ntfsprogs");
+    reply_with_unavailable_feature ("ntfsprogs");
     goto done_no_free;
   }
 
@@ -9342,11 +9130,7 @@ lvm_set_filter_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -9364,7 +9148,7 @@ lvm_set_filter_stub (XDR *xdr_in)
   /* Copy the string list and apply device name translation
    * to each one.
    */
-  devices = malloc (sizeof (char *) * (args.devices.devices_len+1));
+  devices = calloc (args.devices.devices_len+1, sizeof (char *));
   {
     size_t i;
     for (i = 0; i < args.devices.devices_len; ++i)
@@ -9417,11 +9201,7 @@ luks_open_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_luks_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "luks");
+    reply_with_unavailable_feature ("luks");
     goto done_no_free;
   }
 
@@ -9463,11 +9243,7 @@ luks_open_ro_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_luks_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "luks");
+    reply_with_unavailable_feature ("luks");
     goto done_no_free;
   }
 
@@ -9507,11 +9283,7 @@ luks_close_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_luks_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "luks");
+    reply_with_unavailable_feature ("luks");
     goto done_no_free;
   }
 
@@ -9551,11 +9323,7 @@ luks_format_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_luks_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "luks");
+    reply_with_unavailable_feature ("luks");
     goto done_no_free;
   }
 
@@ -9598,11 +9366,7 @@ luks_format_cipher_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_luks_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "luks");
+    reply_with_unavailable_feature ("luks");
     goto done_no_free;
   }
 
@@ -9646,11 +9410,7 @@ luks_add_key_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_luks_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "luks");
+    reply_with_unavailable_feature ("luks");
     goto done_no_free;
   }
 
@@ -9693,11 +9453,7 @@ luks_kill_slot_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_luks_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "luks");
+    reply_with_unavailable_feature ("luks");
     goto done_no_free;
   }
 
@@ -10299,11 +10055,7 @@ getxattr_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxxattrs");
+    reply_with_unavailable_feature ("linuxxattrs");
     goto done_no_free;
   }
 
@@ -10353,11 +10105,7 @@ lgetxattr_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxxattrs");
+    reply_with_unavailable_feature ("linuxxattrs");
     goto done_no_free;
   }
 
@@ -10616,11 +10364,7 @@ ntfsresize_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ntfsprogs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ntfsprogs");
+    reply_with_unavailable_feature ("ntfsprogs");
     goto done_no_free;
   }
 
@@ -10661,11 +10405,7 @@ btrfs_filesystem_resize_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "btrfs");
+    reply_with_unavailable_feature ("btrfs");
     goto done_no_free;
   }
 
@@ -11085,11 +10825,7 @@ md_create_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_mdadm_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "mdadm");
+    reply_with_unavailable_feature ("mdadm");
     goto done_no_free;
   }
 
@@ -11108,7 +10844,7 @@ md_create_stub (XDR *xdr_in)
   /* Copy the string list and apply device name translation
    * to each one.
    */
-  devices = malloc (sizeof (char *) * (args.devices.devices_len+1));
+  devices = calloc (args.devices.devices_len+1, sizeof (char *));
   {
     size_t i;
     for (i = 0; i < args.devices.devices_len; ++i)
@@ -11168,11 +10904,7 @@ md_detail_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_mdadm_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "mdadm");
+    reply_with_unavailable_feature ("mdadm");
     goto done_no_free;
   }
 
@@ -11214,11 +10946,7 @@ md_stop_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_mdadm_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "mdadm");
+    reply_with_unavailable_feature ("mdadm");
     goto done_no_free;
   }
 
@@ -11365,11 +11093,7 @@ wipefs_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_wipefs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "wipefs");
+    reply_with_unavailable_feature ("wipefs");
     goto done_no_free;
   }
 
@@ -11408,11 +11132,7 @@ ntfsfix_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ntfs3g_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ntfs3g");
+    reply_with_unavailable_feature ("ntfs3g");
     goto done_no_free;
   }
 
@@ -11456,11 +11176,7 @@ ntfsclone_out_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ntfs3g_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ntfs3g");
+    reply_with_unavailable_feature ("ntfs3g");
     goto done_no_free;
   }
 
@@ -11504,11 +11220,7 @@ ntfsclone_in_stub (XDR *xdr_in)
   /* The caller should have checked before calling this. */
   if (! optgroup_ntfs3g_available ()) {
     cancel_receive ();
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ntfs3g");
+    reply_with_unavailable_feature ("ntfs3g");
     goto done_no_free;
   }
 
@@ -11619,11 +11331,7 @@ lvcreate_free_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -11738,11 +11446,7 @@ vgmeta_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -11787,11 +11491,7 @@ md_stat_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_mdadm_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "mdadm");
+    reply_with_unavailable_feature ("mdadm");
     goto done_no_free;
   }
 
@@ -11841,11 +11541,7 @@ mkfs_btrfs_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "btrfs");
+    reply_with_unavailable_feature ("btrfs");
     goto done_no_free;
   }
 
@@ -11863,7 +11559,7 @@ mkfs_btrfs_stub (XDR *xdr_in)
   /* Copy the string list and apply device name translation
    * to each one.
    */
-  devices = malloc (sizeof (char *) * (args.devices.devices_len+1));
+  devices = calloc (args.devices.devices_len+1, sizeof (char *));
   {
     size_t i;
     for (i = 0; i < args.devices.devices_len; ++i)
@@ -12049,11 +11745,7 @@ btrfs_subvolume_snapshot_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "btrfs");
+    reply_with_unavailable_feature ("btrfs");
     goto done_no_free;
   }
 
@@ -12095,11 +11787,7 @@ btrfs_subvolume_delete_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "btrfs");
+    reply_with_unavailable_feature ("btrfs");
     goto done_no_free;
   }
 
@@ -12139,11 +11827,7 @@ btrfs_subvolume_create_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "btrfs");
+    reply_with_unavailable_feature ("btrfs");
     goto done_no_free;
   }
 
@@ -12184,11 +11868,7 @@ btrfs_subvolume_list_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "btrfs");
+    reply_with_unavailable_feature ("btrfs");
     goto done_no_free;
   }
 
@@ -12231,11 +11911,7 @@ btrfs_subvolume_set_default_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "btrfs");
+    reply_with_unavailable_feature ("btrfs");
     goto done_no_free;
   }
 
@@ -12276,11 +11952,7 @@ btrfs_filesystem_sync_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "btrfs");
+    reply_with_unavailable_feature ("btrfs");
     goto done_no_free;
   }
 
@@ -12320,11 +11992,7 @@ btrfs_filesystem_balance_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "btrfs");
+    reply_with_unavailable_feature ("btrfs");
     goto done_no_free;
   }
 
@@ -12365,11 +12033,7 @@ btrfs_device_add_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "btrfs");
+    reply_with_unavailable_feature ("btrfs");
     goto done_no_free;
   }
 
@@ -12387,7 +12051,7 @@ btrfs_device_add_stub (XDR *xdr_in)
   /* Copy the string list and apply device name translation
    * to each one.
    */
-  devices = malloc (sizeof (char *) * (args.devices.devices_len+1));
+  devices = calloc (args.devices.devices_len+1, sizeof (char *));
   {
     size_t i;
     for (i = 0; i < args.devices.devices_len; ++i)
@@ -12421,11 +12085,7 @@ btrfs_device_delete_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "btrfs");
+    reply_with_unavailable_feature ("btrfs");
     goto done_no_free;
   }
 
@@ -12443,7 +12103,7 @@ btrfs_device_delete_stub (XDR *xdr_in)
   /* Copy the string list and apply device name translation
    * to each one.
    */
-  devices = malloc (sizeof (char *) * (args.devices.devices_len+1));
+  devices = calloc (args.devices.devices_len+1, sizeof (char *));
   {
     size_t i;
     for (i = 0; i < args.devices.devices_len; ++i)
@@ -12477,11 +12137,7 @@ btrfs_set_seeding_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "btrfs");
+    reply_with_unavailable_feature ("btrfs");
     goto done_no_free;
   }
 
@@ -12522,11 +12178,7 @@ btrfs_fsck_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "btrfs");
+    reply_with_unavailable_feature ("btrfs");
     goto done_no_free;
   }
 
@@ -12603,11 +12255,7 @@ fstrim_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_fstrim_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "fstrim");
+    reply_with_unavailable_feature ("fstrim");
     goto done_no_free;
   }
 
@@ -12707,11 +12355,7 @@ xfs_info_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_xfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "xfs");
+    reply_with_unavailable_feature ("xfs");
     goto done_no_free;
   }
 
@@ -12753,11 +12397,7 @@ pvchange_uuid_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -12793,11 +12433,7 @@ pvchange_uuid_all_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -12826,11 +12462,7 @@ vgchange_uuid_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -12866,11 +12498,7 @@ vgchange_uuid_all_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "lvm2");
+    reply_with_unavailable_feature ("lvm2");
     goto done_no_free;
   }
 
@@ -12932,11 +12560,7 @@ xfs_growfs_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_xfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "xfs");
+    reply_with_unavailable_feature ("xfs");
     goto done_no_free;
   }
 
@@ -12987,11 +12611,7 @@ rsync_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_rsync_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "rsync");
+    reply_with_unavailable_feature ("rsync");
     goto done_no_free;
   }
 
@@ -13038,11 +12658,7 @@ rsync_in_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_rsync_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "rsync");
+    reply_with_unavailable_feature ("rsync");
     goto done_no_free;
   }
 
@@ -13088,11 +12704,7 @@ rsync_out_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_rsync_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "rsync");
+    reply_with_unavailable_feature ("rsync");
     goto done_no_free;
   }
 
@@ -13212,11 +12824,7 @@ xfs_admin_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_xfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "xfs");
+    reply_with_unavailable_feature ("xfs");
     goto done_no_free;
   }
 
@@ -13264,11 +12872,7 @@ hivex_open_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_hivex_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "hivex");
+    reply_with_unavailable_feature ("hivex");
     goto done_no_free;
   }
 
@@ -13309,11 +12913,7 @@ hivex_close_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_hivex_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "hivex");
+    reply_with_unavailable_feature ("hivex");
     goto done_no_free;
   }
 
@@ -13340,11 +12940,7 @@ hivex_root_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_hivex_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "hivex");
+    reply_with_unavailable_feature ("hivex");
     goto done_no_free;
   }
 
@@ -13375,11 +12971,7 @@ hivex_node_name_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_hivex_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "hivex");
+    reply_with_unavailable_feature ("hivex");
     goto done_no_free;
   }
 
@@ -13420,11 +13012,7 @@ hivex_node_children_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_hivex_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "hivex");
+    reply_with_unavailable_feature ("hivex");
     goto done_no_free;
   }
 
@@ -13467,11 +13055,7 @@ hivex_node_get_child_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_hivex_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "hivex");
+    reply_with_unavailable_feature ("hivex");
     goto done_no_free;
   }
 
@@ -13512,11 +13096,7 @@ hivex_node_parent_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_hivex_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "hivex");
+    reply_with_unavailable_feature ("hivex");
     goto done_no_free;
   }
 
@@ -13556,11 +13136,7 @@ hivex_node_values_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_hivex_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "hivex");
+    reply_with_unavailable_feature ("hivex");
     goto done_no_free;
   }
 
@@ -13603,11 +13179,7 @@ hivex_node_get_value_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_hivex_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "hivex");
+    reply_with_unavailable_feature ("hivex");
     goto done_no_free;
   }
 
@@ -13648,11 +13220,7 @@ hivex_value_key_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_hivex_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "hivex");
+    reply_with_unavailable_feature ("hivex");
     goto done_no_free;
   }
 
@@ -13693,11 +13261,7 @@ hivex_value_type_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_hivex_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "hivex");
+    reply_with_unavailable_feature ("hivex");
     goto done_no_free;
   }
 
@@ -13738,11 +13302,7 @@ hivex_value_value_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_hivex_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "hivex");
+    reply_with_unavailable_feature ("hivex");
     goto done_no_free;
   }
 
@@ -13787,11 +13347,7 @@ hivex_commit_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_hivex_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "hivex");
+    reply_with_unavailable_feature ("hivex");
     goto done_no_free;
   }
 
@@ -13830,11 +13386,7 @@ hivex_node_add_child_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_hivex_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "hivex");
+    reply_with_unavailable_feature ("hivex");
     goto done_no_free;
   }
 
@@ -13875,11 +13427,7 @@ hivex_node_delete_child_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_hivex_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "hivex");
+    reply_with_unavailable_feature ("hivex");
     goto done_no_free;
   }
 
@@ -13921,11 +13469,7 @@ hivex_node_set_value_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_hivex_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "hivex");
+    reply_with_unavailable_feature ("hivex");
     goto done_no_free;
   }
 
@@ -13977,11 +13521,7 @@ xfs_repair_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_xfs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "xfs");
+    reply_with_unavailable_feature ("xfs");
     goto done_no_free;
   }
 
@@ -14368,11 +13908,7 @@ acl_get_file_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_acl_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "acl");
+    reply_with_unavailable_feature ("acl");
     goto done_no_free;
   }
 
@@ -14418,11 +13954,7 @@ acl_set_file_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_acl_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "acl");
+    reply_with_unavailable_feature ("acl");
     goto done_no_free;
   }
 
@@ -14464,11 +13996,7 @@ acl_delete_def_file_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_acl_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "acl");
+    reply_with_unavailable_feature ("acl");
     goto done_no_free;
   }
 
@@ -14508,11 +14036,7 @@ cap_get_file_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxcaps_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxcaps");
+    reply_with_unavailable_feature ("linuxcaps");
     goto done_no_free;
   }
 
@@ -14556,11 +14080,7 @@ cap_set_file_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxcaps_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "linuxcaps");
+    reply_with_unavailable_feature ("linuxcaps");
     goto done_no_free;
   }
 
@@ -14599,11 +14119,7 @@ list_ldm_volumes_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ldm_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ldm");
+    reply_with_unavailable_feature ("ldm");
     goto done_no_free;
   }
 
@@ -14634,11 +14150,7 @@ list_ldm_partitions_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ldm_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ldm");
+    reply_with_unavailable_feature ("ldm");
     goto done_no_free;
   }
 
@@ -14669,11 +14181,7 @@ ldmtool_create_all_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ldm_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ldm");
+    reply_with_unavailable_feature ("ldm");
     goto done_no_free;
   }
 
@@ -14700,11 +14208,7 @@ ldmtool_remove_all_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ldm_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ldm");
+    reply_with_unavailable_feature ("ldm");
     goto done_no_free;
   }
 
@@ -14731,11 +14235,7 @@ ldmtool_scan_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ldm_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ldm");
+    reply_with_unavailable_feature ("ldm");
     goto done_no_free;
   }
 
@@ -14768,11 +14268,7 @@ ldmtool_scan_devices_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ldm_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ldm");
+    reply_with_unavailable_feature ("ldm");
     goto done_no_free;
   }
 
@@ -14790,7 +14286,7 @@ ldmtool_scan_devices_stub (XDR *xdr_in)
   /* Copy the string list and apply device name translation
    * to each one.
    */
-  devices = malloc (sizeof (char *) * (args.devices.devices_len+1));
+  devices = calloc (args.devices.devices_len+1, sizeof (char *));
   {
     size_t i;
     for (i = 0; i < args.devices.devices_len; ++i)
@@ -14824,11 +14320,7 @@ ldmtool_diskgroup_name_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ldm_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ldm");
+    reply_with_unavailable_feature ("ldm");
     goto done_no_free;
   }
 
@@ -14869,11 +14361,7 @@ ldmtool_diskgroup_volumes_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ldm_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ldm");
+    reply_with_unavailable_feature ("ldm");
     goto done_no_free;
   }
 
@@ -14915,11 +14403,7 @@ ldmtool_diskgroup_disks_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ldm_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ldm");
+    reply_with_unavailable_feature ("ldm");
     goto done_no_free;
   }
 
@@ -14962,11 +14446,7 @@ ldmtool_volume_type_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ldm_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ldm");
+    reply_with_unavailable_feature ("ldm");
     goto done_no_free;
   }
 
@@ -15009,11 +14489,7 @@ ldmtool_volume_hint_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ldm_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ldm");
+    reply_with_unavailable_feature ("ldm");
     goto done_no_free;
   }
 
@@ -15056,11 +14532,7 @@ ldmtool_volume_partitions_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ldm_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ldm");
+    reply_with_unavailable_feature ("ldm");
     goto done_no_free;
   }
 
@@ -15105,11 +14577,7 @@ part_set_gpt_type_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_gdisk_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "gdisk");
+    reply_with_unavailable_feature ("gdisk");
     goto done_no_free;
   }
 
@@ -15150,11 +14618,7 @@ part_get_gpt_type_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_gdisk_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "gdisk");
+    reply_with_unavailable_feature ("gdisk");
     goto done_no_free;
   }
 
@@ -15381,11 +14845,7 @@ syslinux_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_syslinux_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "syslinux");
+    reply_with_unavailable_feature ("syslinux");
     goto done_no_free;
   }
 
@@ -15424,11 +14884,7 @@ extlinux_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_extlinux_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "extlinux");
+    reply_with_unavailable_feature ("extlinux");
     goto done_no_free;
   }
 
@@ -15575,11 +15031,7 @@ journal_open_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_journal_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "journal");
+    reply_with_unavailable_feature ("journal");
     goto done_no_free;
   }
 
@@ -15617,11 +15069,7 @@ journal_close_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_journal_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "journal");
+    reply_with_unavailable_feature ("journal");
     goto done_no_free;
   }
 
@@ -15648,11 +15096,7 @@ journal_next_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_journal_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "journal");
+    reply_with_unavailable_feature ("journal");
     goto done_no_free;
   }
 
@@ -15683,11 +15127,7 @@ journal_skip_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_journal_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "journal");
+    reply_with_unavailable_feature ("journal");
     goto done_no_free;
   }
 
@@ -15725,11 +15165,7 @@ internal_journal_get_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_journal_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "journal");
+    reply_with_unavailable_feature ("journal");
     goto done_no_free;
   }
 
@@ -15756,11 +15192,7 @@ journal_get_data_threshold_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_journal_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "journal");
+    reply_with_unavailable_feature ("journal");
     goto done_no_free;
   }
 
@@ -15791,11 +15223,7 @@ journal_set_data_threshold_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_journal_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "journal");
+    reply_with_unavailable_feature ("journal");
     goto done_no_free;
   }
 
@@ -16045,11 +15473,7 @@ blkdiscard_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_blkdiscard_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "blkdiscard");
+    reply_with_unavailable_feature ("blkdiscard");
     goto done_no_free;
   }
 
@@ -16087,11 +15511,7 @@ blkdiscardzeroes_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_blkdiscardzeroes_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "blkdiscardzeroes");
+    reply_with_unavailable_feature ("blkdiscardzeroes");
     goto done_no_free;
   }
 
@@ -16163,11 +15583,7 @@ journal_get_realtime_usec_stub (XDR *xdr_in)
 
   /* The caller should have checked before calling this. */
   if (! optgroup_journal_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "journal");
+    reply_with_unavailable_feature ("journal");
     goto done_no_free;
   }
 

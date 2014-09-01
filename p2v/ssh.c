@@ -505,7 +505,16 @@ open_data_connection (struct config *config, int *local_port, int *remote_port)
                        }, ovector, ovecsize)) {
   case 100:                     /* Ephemeral port. */
     port_str = strndup (&h->buffer[ovector[2]], ovector[3]-ovector[2]);
-    sscanf (port_str, "%d", remote_port);
+    if (port_str == NULL) {
+      set_ssh_error ("not enough memory for strndup");
+      mexp_close (h);
+      return NULL;
+    }
+    if (sscanf (port_str, "%d", remote_port) != 1) {
+      set_ssh_error ("cannot extract the port number from '%s'", port_str);
+      mexp_close (h);
+      return NULL;
+    }
     break;
 
   case MEXP_EOF:
@@ -610,9 +619,9 @@ start_remote_connection (struct config *config,
   if (wait_for_prompt (h) == -1)
     goto error;
 
-  /* Upload the libvirt configuration file to the remote directory. */
+  /* Upload the guest libvirt XML to the remote directory. */
   if (mexp_printf (h,
-                   "cat > '%s/libvirt.conf' << '__%s__'\n"
+                   "cat > '%s/guest.xml' << '__%s__'\n"
                    "%s"
                    "__%s__\n",
                    remote_dir, magic,

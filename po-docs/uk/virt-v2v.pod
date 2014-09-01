@@ -66,6 +66,18 @@ libvirt connections will not work in general.
 This option is used to make the output more machine friendly when being
 parsed by other programs.  See L</MACHINE READABLE OUTPUT> below.
 
+=item B<--no-copy>
+
+Don't copy the disks.  Instead, conversion is performed (and thrown away),
+and metadata is written, but no disks are created.
+
+This is useful in two cases: Either you want to test if conversion is likely
+to succeed, without the long copying process.  Or you are only interested in
+looking at the metadata.
+
+This option is not compatible with I<-o libvirt> since it would create a
+faulty guest (one with no disks).
+
 =item B<-o libvirt>
 
 Set the output method to I<libvirt>.  This is the default.
@@ -87,6 +99,10 @@ written as:
 
 and a libvirt XML file is created containing guest metadata
 (C</dir/name.xml>, where C<name> is the guest name).
+
+=item B<-o ovirt>
+
+This is the same as I<-o rhev>.
 
 =item B<-o rhev>
 
@@ -151,6 +167,43 @@ Storage Domain.
 =item B<--quiet>
 
 This disables progress bars and other unnecessary output.
+
+=item B<--rhev-image-uuid> UUID
+
+=item B<--rhev-vol-uuid> UUID
+
+=item B<--rhev-vm-uuid> UUID
+
+Normally the RHEV output mode chooses a random UUID for each of:
+
+=over 4
+
+=item *
+
+the image directory (I<--rhev-image-uuid>)
+
+=item *
+
+once for each guest disk (I<--rhev-vol-uuid>)
+
+=item *
+
+the VM and OVF file (I<--rhev-vm-uuid>).
+
+=back
+
+However you can force specific UUIDs instead by using these options.
+
+You can use I<--rhev-image-uuid> and I<--rhev-vm-uuid> on the command line
+at most once.
+
+If the guest has more than one virtual disk, then you should use
+I<--rhev-vol-uuid> multiple times to change the UUID of each guest disk.
+
+The format of UUIDs is: C<12345678-1234-1234-1234-123456789abc> (each hex
+digit can be C<0-9> or C<a-f>), conforming to S<OSF DCE 1.1>.
+
+These options can only be used with I<-o rhev>.
 
 =item B<--root ask>
 

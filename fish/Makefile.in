@@ -1574,9 +1574,9 @@ EXTRA_DIST = $(BUILT_SOURCES) rc_protocol.x guestfish.pod \
 	test-add-domain.sh test-add-uri.sh test-alloc.sh test-copy.sh \
 	test-d.sh test-edit.sh test-escapes.sh test-events.sh \
 	test-file-attrs.sh test-find0.sh test-glob.sh test-inspect.sh \
-	test-mount-local.sh test-prep.sh test-read-file.sh \
-	test-remote.sh test-remote-events.sh test-reopen.sh \
-	test-run.sh test-stringlist.sh test-tilde.sh \
+	test-invalid-params.sh test-mount-local.sh test-prep.sh \
+	test-read-file.sh test-remote.sh test-remote-events.sh \
+	test-reopen.sh test-run.sh test-stringlist.sh test-tilde.sh \
 	test-upload-to-dir.sh
 
 # These source files (mostly related to option parsing) are shared
@@ -1687,7 +1687,8 @@ toolsconf_DATA = libguestfs-tools.conf
 # Tests.
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 TESTS = test-a.sh test-add-domain.sh test-add-uri.sh test-d.sh \
-	test-escapes.sh test-events.sh test-tilde.sh $(am__append_3)
+	test-escapes.sh test-events.sh test-invalid-params.sh \
+	test-tilde.sh $(am__append_3)
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 

@@ -435,8 +435,8 @@ guestfs_lua_acl_delete_def_file (lua_State *L)
   const char *dir;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "acl_delete_def_file");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "acl_delete_def_file");
 
   dir = luaL_checkstring (L, 2);
 
@@ -457,8 +457,8 @@ guestfs_lua_acl_get_file (lua_State *L)
   const char *acltype;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "acl_get_file");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "acl_get_file");
 
   path = luaL_checkstring (L, 2);
   acltype = luaL_checkstring (L, 3);
@@ -483,8 +483,8 @@ guestfs_lua_acl_set_file (lua_State *L)
   const char *acl;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "acl_set_file");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "acl_set_file");
 
   path = luaL_checkstring (L, 2);
   acltype = luaL_checkstring (L, 3);
@@ -506,8 +506,8 @@ guestfs_lua_add_cdrom (lua_State *L)
   const char *filename;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "add_cdrom");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "add_cdrom");
 
   filename = luaL_checkstring (L, 2);
 
@@ -529,8 +529,8 @@ guestfs_lua_add_domain (lua_State *L)
   struct guestfs_add_domain_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "add_domain");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "add_domain");
 
   dom = luaL_checkstring (L, 2);
 
@@ -589,8 +589,8 @@ guestfs_lua_add_drive (lua_State *L)
   struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "add_drive");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "add_drive");
 
   filename = luaL_checkstring (L, 2);
 
@@ -659,8 +659,8 @@ guestfs_lua_add_drive_ro (lua_State *L)
   const char *filename;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "add_drive_ro");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "add_drive_ro");
 
   filename = luaL_checkstring (L, 2);
 
@@ -681,8 +681,8 @@ guestfs_lua_add_drive_ro_with_if (lua_State *L)
   const char *iface;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "add_drive_ro_with_if");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "add_drive_ro_with_if");
 
   filename = luaL_checkstring (L, 2);
   iface = luaL_checkstring (L, 3);
@@ -705,8 +705,8 @@ guestfs_lua_add_drive_scratch (lua_State *L)
   struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "add_drive_scratch");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "add_drive_scratch");
 
   size = get_int64 (L, 2);
 
@@ -739,8 +739,8 @@ guestfs_lua_add_drive_with_if (lua_State *L)
   const char *iface;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "add_drive_with_if");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "add_drive_with_if");
 
   filename = luaL_checkstring (L, 2);
   iface = luaL_checkstring (L, 3);
@@ -761,8 +761,8 @@ guestfs_lua_aug_clear (lua_State *L)
   const char *augpath;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "aug_clear");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_clear");
 
   augpath = luaL_checkstring (L, 2);
 
@@ -781,8 +781,8 @@ guestfs_lua_aug_close (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "aug_close");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_close");
 
 
   r = guestfs_aug_close (g);
@@ -803,8 +803,8 @@ guestfs_lua_aug_defnode (lua_State *L)
   const char *val;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "aug_defnode");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_defnode");
 
   name = luaL_checkstring (L, 2);
   expr = luaL_checkstring (L, 3);
@@ -829,8 +829,8 @@ guestfs_lua_aug_defvar (lua_State *L)
   const char *expr;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "aug_defvar");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_defvar");
 
   name = luaL_checkstring (L, 2);
   expr = luaL_optstring (L, 3, NULL);
@@ -852,8 +852,8 @@ guestfs_lua_aug_get (lua_State *L)
   const char *augpath;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "aug_get");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_get");
 
   augpath = luaL_checkstring (L, 2);
 
@@ -876,8 +876,8 @@ guestfs_lua_aug_init (lua_State *L)
   int flags;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "aug_init");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_init");
 
   root = luaL_checkstring (L, 2);
   flags = luaL_checkint (L, 3);
@@ -900,8 +900,8 @@ guestfs_lua_aug_insert (lua_State *L)
   int before;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "aug_insert");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_insert");
 
   augpath = luaL_checkstring (L, 2);
   label = luaL_checkstring (L, 3);
@@ -923,8 +923,8 @@ guestfs_lua_aug_label (lua_State *L)
   const char *augpath;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "aug_label");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_label");
 
   augpath = luaL_checkstring (L, 2);
 
@@ -945,8 +945,8 @@ guestfs_lua_aug_load (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "aug_load");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_load");
 
 
   r = guestfs_aug_load (g);
@@ -965,8 +965,8 @@ guestfs_lua_aug_ls (lua_State *L)
   const char *augpath;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "aug_ls");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_ls");
 
   augpath = luaL_checkstring (L, 2);
 
@@ -988,8 +988,8 @@ guestfs_lua_aug_match (lua_State *L)
   const char *augpath;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "aug_match");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_match");
 
   augpath = luaL_checkstring (L, 2);
 
@@ -1012,8 +1012,8 @@ guestfs_lua_aug_mv (lua_State *L)
   const char *dest;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "aug_mv");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_mv");
 
   src = luaL_checkstring (L, 2);
   dest = luaL_checkstring (L, 3);
@@ -1034,8 +1034,8 @@ guestfs_lua_aug_rm (lua_State *L)
   const char *augpath;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "aug_rm");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_rm");
 
   augpath = luaL_checkstring (L, 2);
 
@@ -1055,8 +1055,8 @@ guestfs_lua_aug_save (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "aug_save");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_save");
 
 
   r = guestfs_aug_save (g);
@@ -1076,8 +1076,8 @@ guestfs_lua_aug_set (lua_State *L)
   const char *val;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "aug_set");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_set");
 
   augpath = luaL_checkstring (L, 2);
   val = luaL_checkstring (L, 3);
@@ -1100,8 +1100,8 @@ guestfs_lua_aug_setm (lua_State *L)
   const char *val;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "aug_setm");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_setm");
 
   base = luaL_checkstring (L, 2);
   sub = luaL_optstring (L, 3, NULL);
@@ -1124,8 +1124,8 @@ guestfs_lua_available (lua_State *L)
   char **groups;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "available");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "available");
 
   groups = get_string_list (L, 2);
 
@@ -1145,8 +1145,8 @@ guestfs_lua_available_all_groups (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "available_all_groups");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "available_all_groups");
 
 
   r = guestfs_available_all_groups (g);
@@ -1168,8 +1168,8 @@ guestfs_lua_base64_in (lua_State *L)
   const char *filename;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "base64_in");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "base64_in");
 
   base64file = luaL_checkstring (L, 2);
   filename = luaL_checkstring (L, 3);
@@ -1191,8 +1191,8 @@ guestfs_lua_base64_out (lua_State *L)
   const char *base64file;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "base64_out");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "base64_out");
 
   filename = luaL_checkstring (L, 2);
   base64file = luaL_checkstring (L, 3);
@@ -1213,8 +1213,8 @@ guestfs_lua_blkdiscard (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "blkdiscard");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "blkdiscard");
 
   device = luaL_checkstring (L, 2);
 
@@ -1234,8 +1234,8 @@ guestfs_lua_blkdiscardzeroes (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "blkdiscardzeroes");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "blkdiscardzeroes");
 
   device = luaL_checkstring (L, 2);
 
@@ -1256,8 +1256,8 @@ guestfs_lua_blkid (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "blkid");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "blkid");
 
   device = luaL_checkstring (L, 2);
 
@@ -1279,8 +1279,8 @@ guestfs_lua_blockdev_flushbufs (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "blockdev_flushbufs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "blockdev_flushbufs");
 
   device = luaL_checkstring (L, 2);
 
@@ -1300,8 +1300,8 @@ guestfs_lua_blockdev_getbsz (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "blockdev_getbsz");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "blockdev_getbsz");
 
   device = luaL_checkstring (L, 2);
 
@@ -1322,8 +1322,8 @@ guestfs_lua_blockdev_getro (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "blockdev_getro");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "blockdev_getro");
 
   device = luaL_checkstring (L, 2);
 
@@ -1344,8 +1344,8 @@ guestfs_lua_blockdev_getsize64 (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "blockdev_getsize64");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "blockdev_getsize64");
 
   device = luaL_checkstring (L, 2);
 
@@ -1366,8 +1366,8 @@ guestfs_lua_blockdev_getss (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "blockdev_getss");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "blockdev_getss");
 
   device = luaL_checkstring (L, 2);
 
@@ -1388,8 +1388,8 @@ guestfs_lua_blockdev_getsz (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "blockdev_getsz");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "blockdev_getsz");
 
   device = luaL_checkstring (L, 2);
 
@@ -1410,8 +1410,8 @@ guestfs_lua_blockdev_rereadpt (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "blockdev_rereadpt");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "blockdev_rereadpt");
 
   device = luaL_checkstring (L, 2);
 
@@ -1432,8 +1432,8 @@ guestfs_lua_blockdev_setbsz (lua_State *L)
   int blocksize;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "blockdev_setbsz");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "blockdev_setbsz");
 
   device = luaL_checkstring (L, 2);
   blocksize = luaL_checkint (L, 3);
@@ -1454,8 +1454,8 @@ guestfs_lua_blockdev_setro (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "blockdev_setro");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "blockdev_setro");
 
   device = luaL_checkstring (L, 2);
 
@@ -1475,8 +1475,8 @@ guestfs_lua_blockdev_setrw (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "blockdev_setrw");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "blockdev_setrw");
 
   device = luaL_checkstring (L, 2);
 
@@ -1497,8 +1497,8 @@ guestfs_lua_btrfs_device_add (lua_State *L)
   const char *fs;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "btrfs_device_add");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_device_add");
 
   devices = get_string_list (L, 2);
   fs = luaL_checkstring (L, 3);
@@ -1521,8 +1521,8 @@ guestfs_lua_btrfs_device_delete (lua_State *L)
   const char *fs;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "btrfs_device_delete");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_device_delete");
 
   devices = get_string_list (L, 2);
   fs = luaL_checkstring (L, 3);
@@ -1544,8 +1544,8 @@ guestfs_lua_btrfs_filesystem_balance (lua_State *L)
   const char *fs;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "btrfs_filesystem_balance");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_filesystem_balance");
 
   fs = luaL_checkstring (L, 2);
 
@@ -1567,8 +1567,8 @@ guestfs_lua_btrfs_filesystem_resize (lua_State *L)
   struct guestfs_btrfs_filesystem_resize_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "btrfs_filesystem_resize");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_filesystem_resize");
 
   mountpoint = luaL_checkstring (L, 2);
 
@@ -1596,8 +1596,8 @@ guestfs_lua_btrfs_filesystem_sync (lua_State *L)
   const char *fs;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "btrfs_filesystem_sync");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_filesystem_sync");
 
   fs = luaL_checkstring (L, 2);
 
@@ -1619,8 +1619,8 @@ guestfs_lua_btrfs_fsck (lua_State *L)
   struct guestfs_btrfs_fsck_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "btrfs_fsck");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_fsck");
 
   device = luaL_checkstring (L, 2);
 
@@ -1653,8 +1653,8 @@ guestfs_lua_btrfs_set_seeding (lua_State *L)
   int seeding;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "btrfs_set_seeding");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_set_seeding");
 
   device = luaL_checkstring (L, 2);
   seeding = lua_toboolean (L, 3);
@@ -1675,8 +1675,8 @@ guestfs_lua_btrfs_subvolume_create (lua_State *L)
   const char *dest;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "btrfs_subvolume_create");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_subvolume_create");
 
   dest = luaL_checkstring (L, 2);
 
@@ -1696,8 +1696,8 @@ guestfs_lua_btrfs_subvolume_delete (lua_State *L)
   const char *subvolume;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "btrfs_subvolume_delete");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_subvolume_delete");
 
   subvolume = luaL_checkstring (L, 2);
 
@@ -1717,8 +1717,8 @@ guestfs_lua_btrfs_subvolume_list (lua_State *L)
   const char *fs;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "btrfs_subvolume_list");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_subvolume_list");
 
   fs = luaL_checkstring (L, 2);
 
@@ -1741,8 +1741,8 @@ guestfs_lua_btrfs_subvolume_set_default (lua_State *L)
   const char *fs;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "btrfs_subvolume_set_default");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_subvolume_set_default");
 
   id = get_int64 (L, 2);
   fs = luaL_checkstring (L, 3);
@@ -1764,8 +1764,8 @@ guestfs_lua_btrfs_subvolume_snapshot (lua_State *L)
   const char *dest;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "btrfs_subvolume_snapshot");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_subvolume_snapshot");
 
   source = luaL_checkstring (L, 2);
   dest = luaL_checkstring (L, 3);
@@ -1786,8 +1786,8 @@ guestfs_lua_canonical_device_name (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "canonical_device_name");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "canonical_device_name");
 
   device = luaL_checkstring (L, 2);
 
@@ -1809,8 +1809,8 @@ guestfs_lua_cap_get_file (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "cap_get_file");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "cap_get_file");
 
   path = luaL_checkstring (L, 2);
 
@@ -1833,8 +1833,8 @@ guestfs_lua_cap_set_file (lua_State *L)
   const char *cap;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "cap_set_file");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "cap_set_file");
 
   path = luaL_checkstring (L, 2);
   cap = luaL_checkstring (L, 3);
@@ -1855,8 +1855,8 @@ guestfs_lua_case_sensitive_path (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "case_sensitive_path");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "case_sensitive_path");
 
   path = luaL_checkstring (L, 2);
 
@@ -1878,8 +1878,8 @@ guestfs_lua_cat (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "cat");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "cat");
 
   path = luaL_checkstring (L, 2);
 
@@ -1902,8 +1902,8 @@ guestfs_lua_checksum (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "checksum");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "checksum");
 
   csumtype = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
@@ -1927,8 +1927,8 @@ guestfs_lua_checksum_device (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "checksum_device");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "checksum_device");
 
   csumtype = luaL_checkstring (L, 2);
   device = luaL_checkstring (L, 3);
@@ -1953,8 +1953,8 @@ guestfs_lua_checksums_out (lua_State *L)
   const char *sumsfile;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "checksums_out");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "checksums_out");
 
   csumtype = luaL_checkstring (L, 2);
   directory = luaL_checkstring (L, 3);
@@ -1977,8 +1977,8 @@ guestfs_lua_chmod (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "chmod");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "chmod");
 
   mode = luaL_checkint (L, 2);
   path = luaL_checkstring (L, 3);
@@ -2001,8 +2001,8 @@ guestfs_lua_chown (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "chown");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "chown");
 
   owner = luaL_checkint (L, 2);
   group = luaL_checkint (L, 3);
@@ -2024,8 +2024,8 @@ guestfs_lua_clear_backend_setting (lua_State *L)
   const char *name;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "clear_backend_setting");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "clear_backend_setting");
 
   name = luaL_checkstring (L, 2);
 
@@ -2046,8 +2046,8 @@ guestfs_lua_command (lua_State *L)
   char **arguments;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "command");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "command");
 
   arguments = get_string_list (L, 2);
 
@@ -2070,8 +2070,8 @@ guestfs_lua_command_lines (lua_State *L)
   char **arguments;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "command_lines");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "command_lines");
 
   arguments = get_string_list (L, 2);
 
@@ -2098,8 +2098,8 @@ guestfs_lua_compress_device_out (lua_State *L)
   struct guestfs_compress_device_out_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "compress_device_out");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "compress_device_out");
 
   ctype = luaL_checkstring (L, 2);
   device = luaL_checkstring (L, 3);
@@ -2133,8 +2133,8 @@ guestfs_lua_compress_out (lua_State *L)
   struct guestfs_compress_out_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "compress_out");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "compress_out");
 
   ctype = luaL_checkstring (L, 2);
   file = luaL_checkstring (L, 3);
@@ -2165,8 +2165,8 @@ guestfs_lua_config (lua_State *L)
   const char *hvvalue;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "config");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "config");
 
   hvparam = luaL_checkstring (L, 2);
   hvvalue = luaL_optstring (L, 3, NULL);
@@ -2190,8 +2190,8 @@ guestfs_lua_copy_attributes (lua_State *L)
   struct guestfs_copy_attributes_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "copy_attributes");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "copy_attributes");
 
   src = luaL_checkstring (L, 2);
   dest = luaL_checkstring (L, 3);
@@ -2235,8 +2235,8 @@ guestfs_lua_copy_device_to_device (lua_State *L)
   struct guestfs_copy_device_to_device_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "copy_device_to_device");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "copy_device_to_device");
 
   src = luaL_checkstring (L, 2);
   dest = luaL_checkstring (L, 3);
@@ -2280,8 +2280,8 @@ guestfs_lua_copy_device_to_file (lua_State *L)
   struct guestfs_copy_device_to_file_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "copy_device_to_file");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "copy_device_to_file");
 
   src = luaL_checkstring (L, 2);
   dest = luaL_checkstring (L, 3);
@@ -2325,8 +2325,8 @@ guestfs_lua_copy_file_to_device (lua_State *L)
   struct guestfs_copy_file_to_device_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "copy_file_to_device");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "copy_file_to_device");
 
   src = luaL_checkstring (L, 2);
   dest = luaL_checkstring (L, 3);
@@ -2370,8 +2370,8 @@ guestfs_lua_copy_file_to_file (lua_State *L)
   struct guestfs_copy_file_to_file_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "copy_file_to_file");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "copy_file_to_file");
 
   src = luaL_checkstring (L, 2);
   dest = luaL_checkstring (L, 3);
@@ -2414,8 +2414,8 @@ guestfs_lua_copy_size (lua_State *L)
   int64_t size;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "copy_size");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "copy_size");
 
   src = luaL_checkstring (L, 2);
   dest = luaL_checkstring (L, 3);
@@ -2438,8 +2438,8 @@ guestfs_lua_cp (lua_State *L)
   const char *dest;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "cp");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "cp");
 
   src = luaL_checkstring (L, 2);
   dest = luaL_checkstring (L, 3);
@@ -2461,8 +2461,8 @@ guestfs_lua_cp_a (lua_State *L)
   const char *dest;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "cp_a");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "cp_a");
 
   src = luaL_checkstring (L, 2);
   dest = luaL_checkstring (L, 3);
@@ -2484,8 +2484,8 @@ guestfs_lua_cp_r (lua_State *L)
   const char *dest;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "cp_r");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "cp_r");
 
   src = luaL_checkstring (L, 2);
   dest = luaL_checkstring (L, 3);
@@ -2509,8 +2509,8 @@ guestfs_lua_cpio_out (lua_State *L)
   struct guestfs_cpio_out_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "cpio_out");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "cpio_out");
 
   directory = luaL_checkstring (L, 2);
   cpiofile = luaL_checkstring (L, 3);
@@ -2540,8 +2540,8 @@ guestfs_lua_dd (lua_State *L)
   const char *dest;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "dd");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "dd");
 
   src = luaL_checkstring (L, 2);
   dest = luaL_checkstring (L, 3);
@@ -2563,8 +2563,8 @@ guestfs_lua_debug (lua_State *L)
   char **extraargs;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "debug");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "debug");
 
   subcmd = luaL_checkstring (L, 2);
   extraargs = get_string_list (L, 3);
@@ -2587,8 +2587,8 @@ guestfs_lua_debug_drives (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "debug_drives");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "debug_drives");
 
 
   r = guestfs_debug_drives (g);
@@ -2611,8 +2611,8 @@ guestfs_lua_debug_upload (lua_State *L)
   int mode;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "debug_upload");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "debug_upload");
 
   filename = luaL_checkstring (L, 2);
   tmpname = luaL_checkstring (L, 3);
@@ -2634,8 +2634,8 @@ guestfs_lua_device_index (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "device_index");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "device_index");
 
   device = luaL_checkstring (L, 2);
 
@@ -2655,8 +2655,8 @@ guestfs_lua_df (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "df");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "df");
 
 
   r = guestfs_df (g);
@@ -2676,8 +2676,8 @@ guestfs_lua_df_h (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "df_h");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "df_h");
 
 
   r = guestfs_df_h (g);
@@ -2702,8 +2702,8 @@ guestfs_lua_disk_create (lua_State *L)
   struct guestfs_disk_create_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "disk_create");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "disk_create");
 
   filename = luaL_checkstring (L, 2);
   format = luaL_checkstring (L, 3);
@@ -2749,8 +2749,8 @@ guestfs_lua_disk_format (lua_State *L)
   const char *filename;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "disk_format");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "disk_format");
 
   filename = luaL_checkstring (L, 2);
 
@@ -2772,8 +2772,8 @@ guestfs_lua_disk_has_backing_file (lua_State *L)
   const char *filename;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "disk_has_backing_file");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "disk_has_backing_file");
 
   filename = luaL_checkstring (L, 2);
 
@@ -2794,8 +2794,8 @@ guestfs_lua_disk_virtual_size (lua_State *L)
   const char *filename;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "disk_virtual_size");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "disk_virtual_size");
 
   filename = luaL_checkstring (L, 2);
 
@@ -2815,8 +2815,8 @@ guestfs_lua_dmesg (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "dmesg");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "dmesg");
 
 
   r = guestfs_dmesg (g);
@@ -2838,8 +2838,8 @@ guestfs_lua_download (lua_State *L)
   const char *filename;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "download");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "download");
 
   remotefilename = luaL_checkstring (L, 2);
   filename = luaL_checkstring (L, 3);
@@ -2863,8 +2863,8 @@ guestfs_lua_download_offset (lua_State *L)
   int64_t size;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "download_offset");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "download_offset");
 
   remotefilename = luaL_checkstring (L, 2);
   filename = luaL_checkstring (L, 3);
@@ -2887,8 +2887,8 @@ guestfs_lua_drop_caches (lua_State *L)
   int whattodrop;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "drop_caches");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "drop_caches");
 
   whattodrop = luaL_checkint (L, 2);
 
@@ -2908,8 +2908,8 @@ guestfs_lua_du (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "du");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "du");
 
   path = luaL_checkstring (L, 2);
 
@@ -2932,8 +2932,8 @@ guestfs_lua_e2fsck (lua_State *L)
   struct guestfs_e2fsck_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "e2fsck");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "e2fsck");
 
   device = luaL_checkstring (L, 2);
 
@@ -2965,8 +2965,8 @@ guestfs_lua_e2fsck_f (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "e2fsck_f");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "e2fsck_f");
 
   device = luaL_checkstring (L, 2);
 
@@ -2986,8 +2986,8 @@ guestfs_lua_echo_daemon (lua_State *L)
   char **words;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "echo_daemon");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "echo_daemon");
 
   words = get_string_list (L, 2);
 
@@ -3011,8 +3011,8 @@ guestfs_lua_egrep (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "egrep");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "egrep");
 
   regex = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
@@ -3036,8 +3036,8 @@ guestfs_lua_egrepi (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "egrepi");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "egrepi");
 
   regex = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
@@ -3061,8 +3061,8 @@ guestfs_lua_equal (lua_State *L)
   const char *file2;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "equal");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "equal");
 
   file1 = luaL_checkstring (L, 2);
   file2 = luaL_checkstring (L, 3);
@@ -3084,8 +3084,8 @@ guestfs_lua_exists (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "exists");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "exists");
 
   path = luaL_checkstring (L, 2);
 
@@ -3106,8 +3106,8 @@ guestfs_lua_extlinux (lua_State *L)
   const char *directory;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "extlinux");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "extlinux");
 
   directory = luaL_checkstring (L, 2);
 
@@ -3128,8 +3128,8 @@ guestfs_lua_fallocate (lua_State *L)
   int len;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "fallocate");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "fallocate");
 
   path = luaL_checkstring (L, 2);
   len = luaL_checkint (L, 3);
@@ -3151,8 +3151,8 @@ guestfs_lua_fallocate64 (lua_State *L)
   int64_t len;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "fallocate64");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "fallocate64");
 
   path = luaL_checkstring (L, 2);
   len = get_int64 (L, 3);
@@ -3173,8 +3173,8 @@ guestfs_lua_feature_available (lua_State *L)
   char **groups;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "feature_available");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "feature_available");
 
   groups = get_string_list (L, 2);
 
@@ -3197,8 +3197,8 @@ guestfs_lua_fgrep (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "fgrep");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "fgrep");
 
   pattern = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
@@ -3222,8 +3222,8 @@ guestfs_lua_fgrepi (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "fgrepi");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "fgrepi");
 
   pattern = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
@@ -3246,8 +3246,8 @@ guestfs_lua_file (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "file");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "file");
 
   path = luaL_checkstring (L, 2);
 
@@ -3269,8 +3269,8 @@ guestfs_lua_file_architecture (lua_State *L)
   const char *filename;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "file_architecture");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "file_architecture");
 
   filename = luaL_checkstring (L, 2);
 
@@ -3292,8 +3292,8 @@ guestfs_lua_filesize (lua_State *L)
   const char *file;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "filesize");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "filesize");
 
   file = luaL_checkstring (L, 2);
 
@@ -3314,8 +3314,8 @@ guestfs_lua_filesystem_available (lua_State *L)
   const char *filesystem;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "filesystem_available");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "filesystem_available");
 
   filesystem = luaL_checkstring (L, 2);
 
@@ -3338,8 +3338,8 @@ guestfs_lua_fill (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "fill");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "fill");
 
   c = luaL_checkint (L, 2);
   len = luaL_checkint (L, 3);
@@ -3362,8 +3362,8 @@ guestfs_lua_fill_dir (lua_State *L)
   int nr;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "fill_dir");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "fill_dir");
 
   dir = luaL_checkstring (L, 2);
   nr = luaL_checkint (L, 3);
@@ -3386,8 +3386,8 @@ guestfs_lua_fill_pattern (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "fill_pattern");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "fill_pattern");
 
   pattern = luaL_checkstring (L, 2);
   len = luaL_checkint (L, 3);
@@ -3409,8 +3409,8 @@ guestfs_lua_find (lua_State *L)
   const char *directory;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "find");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "find");
 
   directory = luaL_checkstring (L, 2);
 
@@ -3433,8 +3433,8 @@ guestfs_lua_find0 (lua_State *L)
   const char *files;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "find0");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "find0");
 
   directory = luaL_checkstring (L, 2);
   files = luaL_checkstring (L, 3);
@@ -3455,8 +3455,8 @@ guestfs_lua_findfs_label (lua_State *L)
   const char *label;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "findfs_label");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "findfs_label");
 
   label = luaL_checkstring (L, 2);
 
@@ -3478,8 +3478,8 @@ guestfs_lua_findfs_uuid (lua_State *L)
   const char *uuid;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "findfs_uuid");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "findfs_uuid");
 
   uuid = luaL_checkstring (L, 2);
 
@@ -3502,8 +3502,8 @@ guestfs_lua_fsck (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "fsck");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "fsck");
 
   fstype = luaL_checkstring (L, 2);
   device = luaL_checkstring (L, 3);
@@ -3527,8 +3527,8 @@ guestfs_lua_fstrim (lua_State *L)
   struct guestfs_fstrim_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "fstrim");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "fstrim");
 
   mountpoint = luaL_checkstring (L, 2);
 
@@ -3563,8 +3563,8 @@ guestfs_lua_get_append (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_append");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_append");
 
 
   r = guestfs_get_append (g);
@@ -3580,8 +3580,8 @@ guestfs_lua_get_attach_method (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_attach_method");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_attach_method");
 
 
   r = guestfs_get_attach_method (g);
@@ -3601,8 +3601,8 @@ guestfs_lua_get_autosync (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_autosync");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_autosync");
 
 
   r = guestfs_get_autosync (g);
@@ -3621,8 +3621,8 @@ guestfs_lua_get_backend (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_backend");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_backend");
 
 
   r = guestfs_get_backend (g);
@@ -3643,8 +3643,8 @@ guestfs_lua_get_backend_setting (lua_State *L)
   const char *name;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_backend_setting");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_backend_setting");
 
   name = luaL_checkstring (L, 2);
 
@@ -3665,8 +3665,8 @@ guestfs_lua_get_backend_settings (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_backend_settings");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_backend_settings");
 
 
   r = guestfs_get_backend_settings (g);
@@ -3686,8 +3686,8 @@ guestfs_lua_get_cachedir (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_cachedir");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_cachedir");
 
 
   r = guestfs_get_cachedir (g);
@@ -3707,8 +3707,8 @@ guestfs_lua_get_direct (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_direct");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_direct");
 
 
   r = guestfs_get_direct (g);
@@ -3728,8 +3728,8 @@ guestfs_lua_get_e2attrs (lua_State *L)
   const char *file;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_e2attrs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_e2attrs");
 
   file = luaL_checkstring (L, 2);
 
@@ -3751,8 +3751,8 @@ guestfs_lua_get_e2generation (lua_State *L)
   const char *file;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_e2generation");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_e2generation");
 
   file = luaL_checkstring (L, 2);
 
@@ -3773,8 +3773,8 @@ guestfs_lua_get_e2label (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_e2label");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_e2label");
 
   device = luaL_checkstring (L, 2);
 
@@ -3796,8 +3796,8 @@ guestfs_lua_get_e2uuid (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_e2uuid");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_e2uuid");
 
   device = luaL_checkstring (L, 2);
 
@@ -3818,8 +3818,8 @@ guestfs_lua_get_hv (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_hv");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_hv");
 
 
   r = guestfs_get_hv (g);
@@ -3840,8 +3840,8 @@ guestfs_lua_get_libvirt_requested_credential_challenge (lua_State *L)
   int index;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_libvirt_requested_credential_challenge");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_libvirt_requested_credential_challenge");
 
   index = luaL_checkint (L, 2);
 
@@ -3863,8 +3863,8 @@ guestfs_lua_get_libvirt_requested_credential_defresult (lua_State *L)
   int index;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_libvirt_requested_credential_defresult");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_libvirt_requested_credential_defresult");
 
   index = luaL_checkint (L, 2);
 
@@ -3886,8 +3886,8 @@ guestfs_lua_get_libvirt_requested_credential_prompt (lua_State *L)
   int index;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_libvirt_requested_credential_prompt");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_libvirt_requested_credential_prompt");
 
   index = luaL_checkint (L, 2);
 
@@ -3908,8 +3908,8 @@ guestfs_lua_get_libvirt_requested_credentials (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_libvirt_requested_credentials");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_libvirt_requested_credentials");
 
 
   r = guestfs_get_libvirt_requested_credentials (g);
@@ -3929,8 +3929,8 @@ guestfs_lua_get_memsize (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_memsize");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_memsize");
 
 
   r = guestfs_get_memsize (g);
@@ -3949,8 +3949,8 @@ guestfs_lua_get_network (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_network");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_network");
 
 
   r = guestfs_get_network (g);
@@ -3969,8 +3969,8 @@ guestfs_lua_get_path (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_path");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_path");
 
 
   r = guestfs_get_path (g);
@@ -3989,8 +3989,8 @@ guestfs_lua_get_pgroup (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_pgroup");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_pgroup");
 
 
   r = guestfs_get_pgroup (g);
@@ -4009,8 +4009,8 @@ guestfs_lua_get_pid (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_pid");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_pid");
 
 
   r = guestfs_get_pid (g);
@@ -4029,8 +4029,8 @@ guestfs_lua_get_program (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_program");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_program");
 
 
   r = guestfs_get_program (g);
@@ -4049,8 +4049,8 @@ guestfs_lua_get_qemu (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_qemu");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_qemu");
 
 
   r = guestfs_get_qemu (g);
@@ -4069,8 +4069,8 @@ guestfs_lua_get_recovery_proc (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_recovery_proc");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_recovery_proc");
 
 
   r = guestfs_get_recovery_proc (g);
@@ -4089,8 +4089,8 @@ guestfs_lua_get_selinux (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_selinux");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_selinux");
 
 
   r = guestfs_get_selinux (g);
@@ -4109,8 +4109,8 @@ guestfs_lua_get_smp (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_smp");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_smp");
 
 
   r = guestfs_get_smp (g);
@@ -4129,8 +4129,8 @@ guestfs_lua_get_state (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_state");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_state");
 
 
   r = guestfs_get_state (g);
@@ -4149,8 +4149,8 @@ guestfs_lua_get_tmpdir (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_tmpdir");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_tmpdir");
 
 
   r = guestfs_get_tmpdir (g);
@@ -4170,8 +4170,8 @@ guestfs_lua_get_trace (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_trace");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_trace");
 
 
   r = guestfs_get_trace (g);
@@ -4190,8 +4190,8 @@ guestfs_lua_get_umask (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_umask");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_umask");
 
 
   r = guestfs_get_umask (g);
@@ -4210,8 +4210,8 @@ guestfs_lua_get_verbose (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "get_verbose");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_verbose");
 
 
   r = guestfs_get_verbose (g);
@@ -4230,8 +4230,8 @@ guestfs_lua_getcon (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "getcon");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "getcon");
 
 
   r = guestfs_getcon (g);
@@ -4254,8 +4254,8 @@ guestfs_lua_getxattr (lua_State *L)
   const char *name;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "getxattr");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "getxattr");
 
   path = luaL_checkstring (L, 2);
   name = luaL_checkstring (L, 3);
@@ -4278,8 +4278,8 @@ guestfs_lua_getxattrs (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "getxattrs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "getxattrs");
 
   path = luaL_checkstring (L, 2);
 
@@ -4301,8 +4301,8 @@ guestfs_lua_glob_expand (lua_State *L)
   const char *pattern;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "glob_expand");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "glob_expand");
 
   pattern = luaL_checkstring (L, 2);
 
@@ -4327,8 +4327,8 @@ guestfs_lua_grep (lua_State *L)
   struct guestfs_grep_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "grep");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "grep");
 
   regex = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
@@ -4372,8 +4372,8 @@ guestfs_lua_grepi (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "grepi");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "grepi");
 
   regex = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
@@ -4397,8 +4397,8 @@ guestfs_lua_grub_install (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "grub_install");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "grub_install");
 
   root = luaL_checkstring (L, 2);
   device = luaL_checkstring (L, 3);
@@ -4419,8 +4419,8 @@ guestfs_lua_head (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "head");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "head");
 
   path = luaL_checkstring (L, 2);
 
@@ -4443,8 +4443,8 @@ guestfs_lua_head_n (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "head_n");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "head_n");
 
   nrlines = luaL_checkint (L, 2);
   path = luaL_checkstring (L, 3);
@@ -4467,8 +4467,8 @@ guestfs_lua_hexdump (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hexdump");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hexdump");
 
   path = luaL_checkstring (L, 2);
 
@@ -4489,8 +4489,8 @@ guestfs_lua_hivex_close (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_close");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_close");
 
 
   r = guestfs_hivex_close (g);
@@ -4509,8 +4509,8 @@ guestfs_lua_hivex_commit (lua_State *L)
   const char *filename;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_commit");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_commit");
 
   filename = luaL_optstring (L, 2, NULL);
 
@@ -4531,8 +4531,8 @@ guestfs_lua_hivex_node_add_child (lua_State *L)
   const char *name;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_node_add_child");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_node_add_child");
 
   parent = get_int64 (L, 2);
   name = luaL_checkstring (L, 3);
@@ -4554,8 +4554,8 @@ guestfs_lua_hivex_node_children (lua_State *L)
   int64_t nodeh;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_node_children");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_node_children");
 
   nodeh = get_int64 (L, 2);
 
@@ -4577,8 +4577,8 @@ guestfs_lua_hivex_node_delete_child (lua_State *L)
   int64_t nodeh;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_node_delete_child");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_node_delete_child");
 
   nodeh = get_int64 (L, 2);
 
@@ -4599,8 +4599,8 @@ guestfs_lua_hivex_node_get_child (lua_State *L)
   const char *name;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_node_get_child");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_node_get_child");
 
   nodeh = get_int64 (L, 2);
   name = luaL_checkstring (L, 3);
@@ -4623,8 +4623,8 @@ guestfs_lua_hivex_node_get_value (lua_State *L)
   const char *key;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_node_get_value");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_node_get_value");
 
   nodeh = get_int64 (L, 2);
   key = luaL_checkstring (L, 3);
@@ -4646,8 +4646,8 @@ guestfs_lua_hivex_node_name (lua_State *L)
   int64_t nodeh;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_node_name");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_node_name");
 
   nodeh = get_int64 (L, 2);
 
@@ -4669,8 +4669,8 @@ guestfs_lua_hivex_node_parent (lua_State *L)
   int64_t nodeh;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_node_parent");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_node_parent");
 
   nodeh = get_int64 (L, 2);
 
@@ -4695,8 +4695,8 @@ guestfs_lua_hivex_node_set_value (lua_State *L)
   size_t val_size;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_node_set_value");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_node_set_value");
 
   nodeh = get_int64 (L, 2);
   key = luaL_checkstring (L, 3);
@@ -4719,8 +4719,8 @@ guestfs_lua_hivex_node_values (lua_State *L)
   int64_t nodeh;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_node_values");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_node_values");
 
   nodeh = get_int64 (L, 2);
 
@@ -4744,8 +4744,8 @@ guestfs_lua_hivex_open (lua_State *L)
   struct guestfs_hivex_open_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_open");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_open");
 
   filename = luaL_checkstring (L, 2);
 
@@ -4780,8 +4780,8 @@ guestfs_lua_hivex_root (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_root");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_root");
 
 
   r = guestfs_hivex_root (g);
@@ -4801,8 +4801,8 @@ guestfs_lua_hivex_value_key (lua_State *L)
   int64_t valueh;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_value_key");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_value_key");
 
   valueh = get_int64 (L, 2);
 
@@ -4824,8 +4824,8 @@ guestfs_lua_hivex_value_type (lua_State *L)
   int64_t valueh;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_value_type");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_value_type");
 
   valueh = get_int64 (L, 2);
 
@@ -4846,8 +4846,8 @@ guestfs_lua_hivex_value_utf8 (lua_State *L)
   int64_t valueh;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_value_utf8");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_value_utf8");
 
   valueh = get_int64 (L, 2);
 
@@ -4870,8 +4870,8 @@ guestfs_lua_hivex_value_value (lua_State *L)
   int64_t valueh;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "hivex_value_value");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_value_value");
 
   valueh = get_int64 (L, 2);
 
@@ -4895,8 +4895,8 @@ guestfs_lua_initrd_cat (lua_State *L)
   const char *filename;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "initrd_cat");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "initrd_cat");
 
   initrdpath = luaL_checkstring (L, 2);
   filename = luaL_checkstring (L, 3);
@@ -4919,8 +4919,8 @@ guestfs_lua_initrd_list (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "initrd_list");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "initrd_list");
 
   path = luaL_checkstring (L, 2);
 
@@ -4943,8 +4943,8 @@ guestfs_lua_inotify_add_watch (lua_State *L)
   int mask;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inotify_add_watch");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inotify_add_watch");
 
   path = luaL_checkstring (L, 2);
   mask = luaL_checkint (L, 3);
@@ -4965,8 +4965,8 @@ guestfs_lua_inotify_close (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inotify_close");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inotify_close");
 
 
   r = guestfs_inotify_close (g);
@@ -4984,8 +4984,8 @@ guestfs_lua_inotify_files (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inotify_files");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inotify_files");
 
 
   r = guestfs_inotify_files (g);
@@ -5006,8 +5006,8 @@ guestfs_lua_inotify_init (lua_State *L)
   int maxevents;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inotify_init");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inotify_init");
 
   maxevents = luaL_checkint (L, 2);
 
@@ -5026,8 +5026,8 @@ guestfs_lua_inotify_read (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inotify_read");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inotify_read");
 
 
   r = guestfs_inotify_read (g);
@@ -5048,8 +5048,8 @@ guestfs_lua_inotify_rm_watch (lua_State *L)
   int wd;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inotify_rm_watch");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inotify_rm_watch");
 
   wd = luaL_checkint (L, 2);
 
@@ -5069,8 +5069,8 @@ guestfs_lua_inspect_get_arch (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_arch");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_arch");
 
   root = luaL_checkstring (L, 2);
 
@@ -5092,8 +5092,8 @@ guestfs_lua_inspect_get_distro (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_distro");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_distro");
 
   root = luaL_checkstring (L, 2);
 
@@ -5115,8 +5115,8 @@ guestfs_lua_inspect_get_drive_mappings (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_drive_mappings");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_drive_mappings");
 
   root = luaL_checkstring (L, 2);
 
@@ -5138,8 +5138,8 @@ guestfs_lua_inspect_get_filesystems (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_filesystems");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_filesystems");
 
   root = luaL_checkstring (L, 2);
 
@@ -5161,8 +5161,8 @@ guestfs_lua_inspect_get_format (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_format");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_format");
 
   root = luaL_checkstring (L, 2);
 
@@ -5184,8 +5184,8 @@ guestfs_lua_inspect_get_hostname (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_hostname");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_hostname");
 
   root = luaL_checkstring (L, 2);
 
@@ -5210,8 +5210,8 @@ guestfs_lua_inspect_get_icon (lua_State *L)
   struct guestfs_inspect_get_icon_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_icon");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_icon");
 
   root = luaL_checkstring (L, 2);
 
@@ -5245,8 +5245,8 @@ guestfs_lua_inspect_get_major_version (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_major_version");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_major_version");
 
   root = luaL_checkstring (L, 2);
 
@@ -5267,8 +5267,8 @@ guestfs_lua_inspect_get_minor_version (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_minor_version");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_minor_version");
 
   root = luaL_checkstring (L, 2);
 
@@ -5289,8 +5289,8 @@ guestfs_lua_inspect_get_mountpoints (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_mountpoints");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_mountpoints");
 
   root = luaL_checkstring (L, 2);
 
@@ -5312,8 +5312,8 @@ guestfs_lua_inspect_get_package_format (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_package_format");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_package_format");
 
   root = luaL_checkstring (L, 2);
 
@@ -5335,8 +5335,8 @@ guestfs_lua_inspect_get_package_management (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_package_management");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_package_management");
 
   root = luaL_checkstring (L, 2);
 
@@ -5358,8 +5358,8 @@ guestfs_lua_inspect_get_product_name (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_product_name");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_product_name");
 
   root = luaL_checkstring (L, 2);
 
@@ -5381,8 +5381,8 @@ guestfs_lua_inspect_get_product_variant (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_product_variant");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_product_variant");
 
   root = luaL_checkstring (L, 2);
 
@@ -5403,8 +5403,8 @@ guestfs_lua_inspect_get_roots (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_roots");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_roots");
 
 
   r = guestfs_inspect_get_roots (g);
@@ -5425,8 +5425,8 @@ guestfs_lua_inspect_get_type (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_type");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_type");
 
   root = luaL_checkstring (L, 2);
 
@@ -5448,8 +5448,8 @@ guestfs_lua_inspect_get_windows_current_control_set (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_windows_current_control_set");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_windows_current_control_set");
 
   root = luaL_checkstring (L, 2);
 
@@ -5471,8 +5471,8 @@ guestfs_lua_inspect_get_windows_systemroot (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_get_windows_systemroot");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_windows_systemroot");
 
   root = luaL_checkstring (L, 2);
 
@@ -5494,8 +5494,8 @@ guestfs_lua_inspect_is_live (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_is_live");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_is_live");
 
   root = luaL_checkstring (L, 2);
 
@@ -5516,8 +5516,8 @@ guestfs_lua_inspect_is_multipart (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_is_multipart");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_is_multipart");
 
   root = luaL_checkstring (L, 2);
 
@@ -5538,8 +5538,8 @@ guestfs_lua_inspect_is_netinst (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_is_netinst");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_is_netinst");
 
   root = luaL_checkstring (L, 2);
 
@@ -5560,8 +5560,8 @@ guestfs_lua_inspect_list_applications (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_list_applications");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_list_applications");
 
   root = luaL_checkstring (L, 2);
 
@@ -5583,8 +5583,8 @@ guestfs_lua_inspect_list_applications2 (lua_State *L)
   const char *root;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_list_applications2");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_list_applications2");
 
   root = luaL_checkstring (L, 2);
 
@@ -5605,8 +5605,8 @@ guestfs_lua_inspect_os (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "inspect_os");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_os");
 
 
   r = guestfs_inspect_os (g);
@@ -5638,8 +5638,8 @@ guestfs_lua_internal_test (lua_State *L)
   struct guestfs_internal_test_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test");
 
   str = luaL_checkstring (L, 2);
   optstr = luaL_optstring (L, 3, NULL);
@@ -5694,8 +5694,8 @@ guestfs_lua_internal_test_63_optargs (lua_State *L)
   struct guestfs_internal_test_63_optargs_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_63_optargs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_63_optargs");
 
 
   /* Check for optional arguments, encoded in a table. */
@@ -5969,8 +5969,8 @@ guestfs_lua_internal_test_close_output (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_close_output");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_close_output");
 
 
   r = guestfs_internal_test_close_output (g);
@@ -5990,8 +5990,8 @@ guestfs_lua_internal_test_only_optargs (lua_State *L)
   struct guestfs_internal_test_only_optargs_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_only_optargs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_only_optargs");
 
 
   /* Check for optional arguments, encoded in a table. */
@@ -6018,8 +6018,8 @@ guestfs_lua_internal_test_rbool (lua_State *L)
   const char *val;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rbool");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rbool");
 
   val = luaL_checkstring (L, 2);
 
@@ -6039,8 +6039,8 @@ guestfs_lua_internal_test_rboolerr (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rboolerr");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rboolerr");
 
 
   r = guestfs_internal_test_rboolerr (g);
@@ -6061,8 +6061,8 @@ guestfs_lua_internal_test_rbufferout (lua_State *L)
   const char *val;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rbufferout");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rbufferout");
 
   val = luaL_checkstring (L, 2);
 
@@ -6084,8 +6084,8 @@ guestfs_lua_internal_test_rbufferouterr (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rbufferouterr");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rbufferouterr");
 
 
   r = guestfs_internal_test_rbufferouterr (g, &size);
@@ -6106,8 +6106,8 @@ guestfs_lua_internal_test_rconstoptstring (lua_State *L)
   const char *val;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rconstoptstring");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rconstoptstring");
 
   val = luaL_checkstring (L, 2);
 
@@ -6124,8 +6124,8 @@ guestfs_lua_internal_test_rconstoptstringerr (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rconstoptstringerr");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rconstoptstringerr");
 
 
   r = guestfs_internal_test_rconstoptstringerr (g);
@@ -6142,8 +6142,8 @@ guestfs_lua_internal_test_rconststring (lua_State *L)
   const char *val;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rconststring");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rconststring");
 
   val = luaL_checkstring (L, 2);
 
@@ -6163,8 +6163,8 @@ guestfs_lua_internal_test_rconststringerr (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rconststringerr");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rconststringerr");
 
 
   r = guestfs_internal_test_rconststringerr (g);
@@ -6184,8 +6184,8 @@ guestfs_lua_internal_test_rhashtable (lua_State *L)
   const char *val;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rhashtable");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rhashtable");
 
   val = luaL_checkstring (L, 2);
 
@@ -6206,8 +6206,8 @@ guestfs_lua_internal_test_rhashtableerr (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rhashtableerr");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rhashtableerr");
 
 
   r = guestfs_internal_test_rhashtableerr (g);
@@ -6228,8 +6228,8 @@ guestfs_lua_internal_test_rint (lua_State *L)
   const char *val;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rint");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rint");
 
   val = luaL_checkstring (L, 2);
 
@@ -6250,8 +6250,8 @@ guestfs_lua_internal_test_rint64 (lua_State *L)
   const char *val;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rint64");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rint64");
 
   val = luaL_checkstring (L, 2);
 
@@ -6271,8 +6271,8 @@ guestfs_lua_internal_test_rint64err (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rint64err");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rint64err");
 
 
   r = guestfs_internal_test_rint64err (g);
@@ -6291,8 +6291,8 @@ guestfs_lua_internal_test_rinterr (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rinterr");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rinterr");
 
 
   r = guestfs_internal_test_rinterr (g);
@@ -6312,8 +6312,8 @@ guestfs_lua_internal_test_rstring (lua_State *L)
   const char *val;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rstring");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rstring");
 
   val = luaL_checkstring (L, 2);
 
@@ -6334,8 +6334,8 @@ guestfs_lua_internal_test_rstringerr (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rstringerr");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rstringerr");
 
 
   r = guestfs_internal_test_rstringerr (g);
@@ -6356,8 +6356,8 @@ guestfs_lua_internal_test_rstringlist (lua_State *L)
   const char *val;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rstringlist");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rstringlist");
 
   val = luaL_checkstring (L, 2);
 
@@ -6378,8 +6378,8 @@ guestfs_lua_internal_test_rstringlisterr (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rstringlisterr");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rstringlisterr");
 
 
   r = guestfs_internal_test_rstringlisterr (g);
@@ -6400,8 +6400,8 @@ guestfs_lua_internal_test_rstruct (lua_State *L)
   const char *val;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rstruct");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rstruct");
 
   val = luaL_checkstring (L, 2);
 
@@ -6422,8 +6422,8 @@ guestfs_lua_internal_test_rstructerr (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rstructerr");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rstructerr");
 
 
   r = guestfs_internal_test_rstructerr (g);
@@ -6444,8 +6444,8 @@ guestfs_lua_internal_test_rstructlist (lua_State *L)
   const char *val;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rstructlist");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rstructlist");
 
   val = luaL_checkstring (L, 2);
 
@@ -6466,8 +6466,8 @@ guestfs_lua_internal_test_rstructlisterr (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_rstructlisterr");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_rstructlisterr");
 
 
   r = guestfs_internal_test_rstructlisterr (g);
@@ -6488,8 +6488,8 @@ guestfs_lua_internal_test_set_output (lua_State *L)
   const char *filename;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_test_set_output");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_test_set_output");
 
   filename = luaL_checkstring (L, 2);
 
@@ -6511,8 +6511,8 @@ guestfs_lua_is_blockdev (lua_State *L)
   struct guestfs_is_blockdev_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "is_blockdev");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "is_blockdev");
 
   path = luaL_checkstring (L, 2);
 
@@ -6540,8 +6540,8 @@ guestfs_lua_is_busy (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "is_busy");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "is_busy");
 
 
   r = guestfs_is_busy (g);
@@ -6563,8 +6563,8 @@ guestfs_lua_is_chardev (lua_State *L)
   struct guestfs_is_chardev_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "is_chardev");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "is_chardev");
 
   path = luaL_checkstring (L, 2);
 
@@ -6592,8 +6592,8 @@ guestfs_lua_is_config (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "is_config");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "is_config");
 
 
   r = guestfs_is_config (g);
@@ -6615,8 +6615,8 @@ guestfs_lua_is_dir (lua_State *L)
   struct guestfs_is_dir_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "is_dir");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "is_dir");
 
   path = luaL_checkstring (L, 2);
 
@@ -6647,8 +6647,8 @@ guestfs_lua_is_fifo (lua_State *L)
   struct guestfs_is_fifo_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "is_fifo");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "is_fifo");
 
   path = luaL_checkstring (L, 2);
 
@@ -6679,8 +6679,8 @@ guestfs_lua_is_file (lua_State *L)
   struct guestfs_is_file_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "is_file");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "is_file");
 
   path = luaL_checkstring (L, 2);
 
@@ -6708,8 +6708,8 @@ guestfs_lua_is_launching (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "is_launching");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "is_launching");
 
 
   r = guestfs_is_launching (g);
@@ -6729,8 +6729,8 @@ guestfs_lua_is_lv (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "is_lv");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "is_lv");
 
   device = luaL_checkstring (L, 2);
 
@@ -6750,8 +6750,8 @@ guestfs_lua_is_ready (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "is_ready");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "is_ready");
 
 
   r = guestfs_is_ready (g);
@@ -6773,8 +6773,8 @@ guestfs_lua_is_socket (lua_State *L)
   struct guestfs_is_socket_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "is_socket");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "is_socket");
 
   path = luaL_checkstring (L, 2);
 
@@ -6803,8 +6803,8 @@ guestfs_lua_is_symlink (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "is_symlink");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "is_symlink");
 
   path = luaL_checkstring (L, 2);
 
@@ -6825,8 +6825,8 @@ guestfs_lua_is_whole_device (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "is_whole_device");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "is_whole_device");
 
   device = luaL_checkstring (L, 2);
 
@@ -6847,8 +6847,8 @@ guestfs_lua_is_zero (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "is_zero");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "is_zero");
 
   path = luaL_checkstring (L, 2);
 
@@ -6869,8 +6869,8 @@ guestfs_lua_is_zero_device (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "is_zero_device");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "is_zero_device");
 
   device = luaL_checkstring (L, 2);
 
@@ -6891,8 +6891,8 @@ guestfs_lua_isoinfo (lua_State *L)
   const char *isofile;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "isoinfo");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "isoinfo");
 
   isofile = luaL_checkstring (L, 2);
 
@@ -6914,8 +6914,8 @@ guestfs_lua_isoinfo_device (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "isoinfo_device");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "isoinfo_device");
 
   device = luaL_checkstring (L, 2);
 
@@ -6936,8 +6936,8 @@ guestfs_lua_journal_close (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "journal_close");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "journal_close");
 
 
   r = guestfs_journal_close (g);
@@ -6955,8 +6955,8 @@ guestfs_lua_journal_get (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "journal_get");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "journal_get");
 
 
   r = guestfs_journal_get (g);
@@ -6976,8 +6976,8 @@ guestfs_lua_journal_get_data_threshold (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "journal_get_data_threshold");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "journal_get_data_threshold");
 
 
   r = guestfs_journal_get_data_threshold (g);
@@ -6996,8 +6996,8 @@ guestfs_lua_journal_get_realtime_usec (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "journal_get_realtime_usec");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "journal_get_realtime_usec");
 
 
   r = guestfs_journal_get_realtime_usec (g);
@@ -7016,8 +7016,8 @@ guestfs_lua_journal_next (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "journal_next");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "journal_next");
 
 
   r = guestfs_journal_next (g);
@@ -7037,8 +7037,8 @@ guestfs_lua_journal_open (lua_State *L)
   const char *directory;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "journal_open");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "journal_open");
 
   directory = luaL_checkstring (L, 2);
 
@@ -7058,8 +7058,8 @@ guestfs_lua_journal_set_data_threshold (lua_State *L)
   int64_t threshold;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "journal_set_data_threshold");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "journal_set_data_threshold");
 
   threshold = get_int64 (L, 2);
 
@@ -7079,8 +7079,8 @@ guestfs_lua_journal_skip (lua_State *L)
   int64_t skip;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "journal_skip");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "journal_skip");
 
   skip = get_int64 (L, 2);
 
@@ -7100,8 +7100,8 @@ guestfs_lua_kill_subprocess (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "kill_subprocess");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "kill_subprocess");
 
 
   r = guestfs_kill_subprocess (g);
@@ -7119,8 +7119,8 @@ guestfs_lua_launch (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "launch");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "launch");
 
 
   r = guestfs_launch (g);
@@ -7141,8 +7141,8 @@ guestfs_lua_lchown (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lchown");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lchown");
 
   owner = luaL_checkint (L, 2);
   group = luaL_checkint (L, 3);
@@ -7163,8 +7163,8 @@ guestfs_lua_ldmtool_create_all (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ldmtool_create_all");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ldmtool_create_all");
 
 
   r = guestfs_ldmtool_create_all (g);
@@ -7183,8 +7183,8 @@ guestfs_lua_ldmtool_diskgroup_disks (lua_State *L)
   const char *diskgroup;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ldmtool_diskgroup_disks");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ldmtool_diskgroup_disks");
 
   diskgroup = luaL_checkstring (L, 2);
 
@@ -7206,8 +7206,8 @@ guestfs_lua_ldmtool_diskgroup_name (lua_State *L)
   const char *diskgroup;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ldmtool_diskgroup_name");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ldmtool_diskgroup_name");
 
   diskgroup = luaL_checkstring (L, 2);
 
@@ -7229,8 +7229,8 @@ guestfs_lua_ldmtool_diskgroup_volumes (lua_State *L)
   const char *diskgroup;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ldmtool_diskgroup_volumes");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ldmtool_diskgroup_volumes");
 
   diskgroup = luaL_checkstring (L, 2);
 
@@ -7251,8 +7251,8 @@ guestfs_lua_ldmtool_remove_all (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ldmtool_remove_all");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ldmtool_remove_all");
 
 
   r = guestfs_ldmtool_remove_all (g);
@@ -7270,8 +7270,8 @@ guestfs_lua_ldmtool_scan (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ldmtool_scan");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ldmtool_scan");
 
 
   r = guestfs_ldmtool_scan (g);
@@ -7292,8 +7292,8 @@ guestfs_lua_ldmtool_scan_devices (lua_State *L)
   char **devices;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ldmtool_scan_devices");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ldmtool_scan_devices");
 
   devices = get_string_list (L, 2);
 
@@ -7317,8 +7317,8 @@ guestfs_lua_ldmtool_volume_hint (lua_State *L)
   const char *volume;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ldmtool_volume_hint");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ldmtool_volume_hint");
 
   diskgroup = luaL_checkstring (L, 2);
   volume = luaL_checkstring (L, 3);
@@ -7342,8 +7342,8 @@ guestfs_lua_ldmtool_volume_partitions (lua_State *L)
   const char *volume;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ldmtool_volume_partitions");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ldmtool_volume_partitions");
 
   diskgroup = luaL_checkstring (L, 2);
   volume = luaL_checkstring (L, 3);
@@ -7367,8 +7367,8 @@ guestfs_lua_ldmtool_volume_type (lua_State *L)
   const char *volume;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ldmtool_volume_type");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ldmtool_volume_type");
 
   diskgroup = luaL_checkstring (L, 2);
   volume = luaL_checkstring (L, 3);
@@ -7393,8 +7393,8 @@ guestfs_lua_lgetxattr (lua_State *L)
   const char *name;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lgetxattr");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lgetxattr");
 
   path = luaL_checkstring (L, 2);
   name = luaL_checkstring (L, 3);
@@ -7417,8 +7417,8 @@ guestfs_lua_lgetxattrs (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lgetxattrs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lgetxattrs");
 
   path = luaL_checkstring (L, 2);
 
@@ -7439,8 +7439,8 @@ guestfs_lua_list_9p (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "list_9p");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "list_9p");
 
 
   r = guestfs_list_9p (g);
@@ -7460,8 +7460,8 @@ guestfs_lua_list_devices (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "list_devices");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "list_devices");
 
 
   r = guestfs_list_devices (g);
@@ -7481,8 +7481,8 @@ guestfs_lua_list_disk_labels (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "list_disk_labels");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "list_disk_labels");
 
 
   r = guestfs_list_disk_labels (g);
@@ -7502,8 +7502,8 @@ guestfs_lua_list_dm_devices (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "list_dm_devices");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "list_dm_devices");
 
 
   r = guestfs_list_dm_devices (g);
@@ -7523,8 +7523,8 @@ guestfs_lua_list_filesystems (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "list_filesystems");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "list_filesystems");
 
 
   r = guestfs_list_filesystems (g);
@@ -7544,8 +7544,8 @@ guestfs_lua_list_ldm_partitions (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "list_ldm_partitions");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "list_ldm_partitions");
 
 
   r = guestfs_list_ldm_partitions (g);
@@ -7565,8 +7565,8 @@ guestfs_lua_list_ldm_volumes (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "list_ldm_volumes");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "list_ldm_volumes");
 
 
   r = guestfs_list_ldm_volumes (g);
@@ -7586,8 +7586,8 @@ guestfs_lua_list_md_devices (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "list_md_devices");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "list_md_devices");
 
 
   r = guestfs_list_md_devices (g);
@@ -7607,8 +7607,8 @@ guestfs_lua_list_partitions (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "list_partitions");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "list_partitions");
 
 
   r = guestfs_list_partitions (g);
@@ -7629,8 +7629,8 @@ guestfs_lua_ll (lua_State *L)
   const char *directory;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ll");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ll");
 
   directory = luaL_checkstring (L, 2);
 
@@ -7652,8 +7652,8 @@ guestfs_lua_llz (lua_State *L)
   const char *directory;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "llz");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "llz");
 
   directory = luaL_checkstring (L, 2);
 
@@ -7676,8 +7676,8 @@ guestfs_lua_ln (lua_State *L)
   const char *linkname;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ln");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ln");
 
   target = luaL_checkstring (L, 2);
   linkname = luaL_checkstring (L, 3);
@@ -7699,8 +7699,8 @@ guestfs_lua_ln_f (lua_State *L)
   const char *linkname;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ln_f");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ln_f");
 
   target = luaL_checkstring (L, 2);
   linkname = luaL_checkstring (L, 3);
@@ -7722,8 +7722,8 @@ guestfs_lua_ln_s (lua_State *L)
   const char *linkname;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ln_s");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ln_s");
 
   target = luaL_checkstring (L, 2);
   linkname = luaL_checkstring (L, 3);
@@ -7745,8 +7745,8 @@ guestfs_lua_ln_sf (lua_State *L)
   const char *linkname;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ln_sf");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ln_sf");
 
   target = luaL_checkstring (L, 2);
   linkname = luaL_checkstring (L, 3);
@@ -7768,8 +7768,8 @@ guestfs_lua_lremovexattr (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lremovexattr");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lremovexattr");
 
   xattr = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
@@ -7790,8 +7790,8 @@ guestfs_lua_ls (lua_State *L)
   const char *directory;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ls");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ls");
 
   directory = luaL_checkstring (L, 2);
 
@@ -7814,8 +7814,8 @@ guestfs_lua_ls0 (lua_State *L)
   const char *filenames;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ls0");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ls0");
 
   dir = luaL_checkstring (L, 2);
   filenames = luaL_checkstring (L, 3);
@@ -7839,8 +7839,8 @@ guestfs_lua_lsetxattr (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lsetxattr");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lsetxattr");
 
   xattr = luaL_checkstring (L, 2);
   val = luaL_checkstring (L, 3);
@@ -7863,8 +7863,8 @@ guestfs_lua_lstat (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lstat");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lstat");
 
   path = luaL_checkstring (L, 2);
 
@@ -7887,8 +7887,8 @@ guestfs_lua_lstatlist (lua_State *L)
   char **names;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lstatlist");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lstatlist");
 
   path = luaL_checkstring (L, 2);
   names = get_string_list (L, 3);
@@ -7915,8 +7915,8 @@ guestfs_lua_luks_add_key (lua_State *L)
   int keyslot;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "luks_add_key");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "luks_add_key");
 
   device = luaL_checkstring (L, 2);
   key = luaL_checkstring (L, 3);
@@ -7939,8 +7939,8 @@ guestfs_lua_luks_close (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "luks_close");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "luks_close");
 
   device = luaL_checkstring (L, 2);
 
@@ -7962,8 +7962,8 @@ guestfs_lua_luks_format (lua_State *L)
   int keyslot;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "luks_format");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "luks_format");
 
   device = luaL_checkstring (L, 2);
   key = luaL_checkstring (L, 3);
@@ -7988,8 +7988,8 @@ guestfs_lua_luks_format_cipher (lua_State *L)
   const char *cipher;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "luks_format_cipher");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "luks_format_cipher");
 
   device = luaL_checkstring (L, 2);
   key = luaL_checkstring (L, 3);
@@ -8014,8 +8014,8 @@ guestfs_lua_luks_kill_slot (lua_State *L)
   int keyslot;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "luks_kill_slot");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "luks_kill_slot");
 
   device = luaL_checkstring (L, 2);
   key = luaL_checkstring (L, 3);
@@ -8039,8 +8039,8 @@ guestfs_lua_luks_open (lua_State *L)
   const char *mapname;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "luks_open");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "luks_open");
 
   device = luaL_checkstring (L, 2);
   key = luaL_checkstring (L, 3);
@@ -8064,8 +8064,8 @@ guestfs_lua_luks_open_ro (lua_State *L)
   const char *mapname;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "luks_open_ro");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "luks_open_ro");
 
   device = luaL_checkstring (L, 2);
   key = luaL_checkstring (L, 3);
@@ -8089,8 +8089,8 @@ guestfs_lua_lvcreate (lua_State *L)
   int mbytes;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lvcreate");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lvcreate");
 
   logvol = luaL_checkstring (L, 2);
   volgroup = luaL_checkstring (L, 3);
@@ -8114,8 +8114,8 @@ guestfs_lua_lvcreate_free (lua_State *L)
   int percent;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lvcreate_free");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lvcreate_free");
 
   logvol = luaL_checkstring (L, 2);
   volgroup = luaL_checkstring (L, 3);
@@ -8137,8 +8137,8 @@ guestfs_lua_lvm_canonical_lv_name (lua_State *L)
   const char *lvname;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lvm_canonical_lv_name");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lvm_canonical_lv_name");
 
   lvname = luaL_checkstring (L, 2);
 
@@ -8159,8 +8159,8 @@ guestfs_lua_lvm_clear_filter (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lvm_clear_filter");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lvm_clear_filter");
 
 
   r = guestfs_lvm_clear_filter (g);
@@ -8178,8 +8178,8 @@ guestfs_lua_lvm_remove_all (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lvm_remove_all");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lvm_remove_all");
 
 
   r = guestfs_lvm_remove_all (g);
@@ -8198,8 +8198,8 @@ guestfs_lua_lvm_set_filter (lua_State *L)
   char **devices;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lvm_set_filter");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lvm_set_filter");
 
   devices = get_string_list (L, 2);
 
@@ -8220,8 +8220,8 @@ guestfs_lua_lvremove (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lvremove");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lvremove");
 
   device = luaL_checkstring (L, 2);
 
@@ -8242,8 +8242,8 @@ guestfs_lua_lvrename (lua_State *L)
   const char *newlogvol;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lvrename");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lvrename");
 
   logvol = luaL_checkstring (L, 2);
   newlogvol = luaL_checkstring (L, 3);
@@ -8265,8 +8265,8 @@ guestfs_lua_lvresize (lua_State *L)
   int mbytes;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lvresize");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lvresize");
 
   device = luaL_checkstring (L, 2);
   mbytes = luaL_checkint (L, 3);
@@ -8288,8 +8288,8 @@ guestfs_lua_lvresize_free (lua_State *L)
   int percent;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lvresize_free");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lvresize_free");
 
   lv = luaL_checkstring (L, 2);
   percent = luaL_checkint (L, 3);
@@ -8309,8 +8309,8 @@ guestfs_lua_lvs (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lvs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lvs");
 
 
   r = guestfs_lvs (g);
@@ -8330,8 +8330,8 @@ guestfs_lua_lvs_full (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lvs_full");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lvs_full");
 
 
   r = guestfs_lvs_full (g);
@@ -8352,8 +8352,8 @@ guestfs_lua_lvuuid (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lvuuid");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lvuuid");
 
   device = luaL_checkstring (L, 2);
 
@@ -8376,8 +8376,8 @@ guestfs_lua_lxattrlist (lua_State *L)
   char **names;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "lxattrlist");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lxattrlist");
 
   path = luaL_checkstring (L, 2);
   names = get_string_list (L, 3);
@@ -8400,8 +8400,8 @@ guestfs_lua_max_disks (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "max_disks");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "max_disks");
 
 
   r = guestfs_max_disks (g);
@@ -8424,8 +8424,8 @@ guestfs_lua_md_create (lua_State *L)
   struct guestfs_md_create_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "md_create");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "md_create");
 
   name = luaL_checkstring (L, 2);
   devices = get_string_list (L, 3);
@@ -8471,8 +8471,8 @@ guestfs_lua_md_detail (lua_State *L)
   const char *md;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "md_detail");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "md_detail");
 
   md = luaL_checkstring (L, 2);
 
@@ -8494,8 +8494,8 @@ guestfs_lua_md_stat (lua_State *L)
   const char *md;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "md_stat");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "md_stat");
 
   md = luaL_checkstring (L, 2);
 
@@ -8517,8 +8517,8 @@ guestfs_lua_md_stop (lua_State *L)
   const char *md;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "md_stop");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "md_stop");
 
   md = luaL_checkstring (L, 2);
 
@@ -8538,8 +8538,8 @@ guestfs_lua_mkdir (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mkdir");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mkdir");
 
   path = luaL_checkstring (L, 2);
 
@@ -8560,8 +8560,8 @@ guestfs_lua_mkdir_mode (lua_State *L)
   int mode;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mkdir_mode");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mkdir_mode");
 
   path = luaL_checkstring (L, 2);
   mode = luaL_checkint (L, 3);
@@ -8582,8 +8582,8 @@ guestfs_lua_mkdir_p (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mkdir_p");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mkdir_p");
 
   path = luaL_checkstring (L, 2);
 
@@ -8603,8 +8603,8 @@ guestfs_lua_mkdtemp (lua_State *L)
   const char *tmpl;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mkdtemp");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mkdtemp");
 
   tmpl = luaL_checkstring (L, 2);
 
@@ -8628,8 +8628,8 @@ guestfs_lua_mke2fs (lua_State *L)
   struct guestfs_mke2fs_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mke2fs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mke2fs");
 
   device = luaL_checkstring (L, 2);
 
@@ -8808,8 +8808,8 @@ guestfs_lua_mke2fs_J (lua_State *L)
   const char *journal;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mke2fs_J");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mke2fs_J");
 
   fstype = luaL_checkstring (L, 2);
   blocksize = luaL_checkint (L, 3);
@@ -8835,8 +8835,8 @@ guestfs_lua_mke2fs_JL (lua_State *L)
   const char *label;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mke2fs_JL");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mke2fs_JL");
 
   fstype = luaL_checkstring (L, 2);
   blocksize = luaL_checkint (L, 3);
@@ -8862,8 +8862,8 @@ guestfs_lua_mke2fs_JU (lua_State *L)
   const char *uuid;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mke2fs_JU");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mke2fs_JU");
 
   fstype = luaL_checkstring (L, 2);
   blocksize = luaL_checkint (L, 3);
@@ -8887,8 +8887,8 @@ guestfs_lua_mke2journal (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mke2journal");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mke2journal");
 
   blocksize = luaL_checkint (L, 2);
   device = luaL_checkstring (L, 3);
@@ -8911,8 +8911,8 @@ guestfs_lua_mke2journal_L (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mke2journal_L");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mke2journal_L");
 
   blocksize = luaL_checkint (L, 2);
   label = luaL_checkstring (L, 3);
@@ -8936,8 +8936,8 @@ guestfs_lua_mke2journal_U (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mke2journal_U");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mke2journal_U");
 
   blocksize = luaL_checkint (L, 2);
   uuid = luaL_checkstring (L, 3);
@@ -8960,8 +8960,8 @@ guestfs_lua_mkfifo (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mkfifo");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mkfifo");
 
   mode = luaL_checkint (L, 2);
   path = luaL_checkstring (L, 3);
@@ -8985,8 +8985,8 @@ guestfs_lua_mkfs (lua_State *L)
   struct guestfs_mkfs_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mkfs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mkfs");
 
   fstype = luaL_checkstring (L, 2);
   device = luaL_checkstring (L, 3);
@@ -9029,8 +9029,8 @@ guestfs_lua_mkfs_b (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mkfs_b");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mkfs_b");
 
   fstype = luaL_checkstring (L, 2);
   blocksize = luaL_checkint (L, 3);
@@ -9054,8 +9054,8 @@ guestfs_lua_mkfs_btrfs (lua_State *L)
   struct guestfs_mkfs_btrfs_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mkfs_btrfs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mkfs_btrfs");
 
   devices = get_string_list (L, 2);
 
@@ -9112,8 +9112,8 @@ guestfs_lua_mklost_and_found (lua_State *L)
   const char *mountpoint;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mklost_and_found");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mklost_and_found");
 
   mountpoint = luaL_checkstring (L, 2);
 
@@ -9133,8 +9133,8 @@ guestfs_lua_mkmountpoint (lua_State *L)
   const char *exemptpath;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mkmountpoint");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mkmountpoint");
 
   exemptpath = luaL_checkstring (L, 2);
 
@@ -9157,8 +9157,8 @@ guestfs_lua_mknod (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mknod");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mknod");
 
   mode = luaL_checkint (L, 2);
   devmajor = luaL_checkint (L, 3);
@@ -9184,8 +9184,8 @@ guestfs_lua_mknod_b (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mknod_b");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mknod_b");
 
   mode = luaL_checkint (L, 2);
   devmajor = luaL_checkint (L, 3);
@@ -9211,8 +9211,8 @@ guestfs_lua_mknod_c (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mknod_c");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mknod_c");
 
   mode = luaL_checkint (L, 2);
   devmajor = luaL_checkint (L, 3);
@@ -9237,8 +9237,8 @@ guestfs_lua_mkswap (lua_State *L)
   struct guestfs_mkswap_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mkswap");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mkswap");
 
   device = luaL_checkstring (L, 2);
 
@@ -9271,8 +9271,8 @@ guestfs_lua_mkswap_L (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mkswap_L");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mkswap_L");
 
   label = luaL_checkstring (L, 2);
   device = luaL_checkstring (L, 3);
@@ -9294,8 +9294,8 @@ guestfs_lua_mkswap_U (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mkswap_U");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mkswap_U");
 
   uuid = luaL_checkstring (L, 2);
   device = luaL_checkstring (L, 3);
@@ -9316,8 +9316,8 @@ guestfs_lua_mkswap_file (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mkswap_file");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mkswap_file");
 
   path = luaL_checkstring (L, 2);
 
@@ -9339,8 +9339,8 @@ guestfs_lua_mktemp (lua_State *L)
   struct guestfs_mktemp_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mktemp");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mktemp");
 
   tmpl = luaL_checkstring (L, 2);
 
@@ -9370,8 +9370,8 @@ guestfs_lua_modprobe (lua_State *L)
   const char *modulename;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "modprobe");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "modprobe");
 
   modulename = luaL_checkstring (L, 2);
 
@@ -9392,8 +9392,8 @@ guestfs_lua_mount (lua_State *L)
   const char *mountpoint;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mount");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mount");
 
   mountable = luaL_checkstring (L, 2);
   mountpoint = luaL_checkstring (L, 3);
@@ -9417,8 +9417,8 @@ guestfs_lua_mount_9p (lua_State *L)
   struct guestfs_mount_9p_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mount_9p");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mount_9p");
 
   mounttag = luaL_checkstring (L, 2);
   mountpoint = luaL_checkstring (L, 3);
@@ -9449,8 +9449,8 @@ guestfs_lua_mount_local (lua_State *L)
   struct guestfs_mount_local_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mount_local");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mount_local");
 
   localmountpoint = luaL_checkstring (L, 2);
 
@@ -9489,8 +9489,8 @@ guestfs_lua_mount_local_run (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mount_local_run");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mount_local_run");
 
 
   r = guestfs_mount_local_run (g);
@@ -9510,8 +9510,8 @@ guestfs_lua_mount_loop (lua_State *L)
   const char *mountpoint;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mount_loop");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mount_loop");
 
   file = luaL_checkstring (L, 2);
   mountpoint = luaL_checkstring (L, 3);
@@ -9534,8 +9534,8 @@ guestfs_lua_mount_options (lua_State *L)
   const char *mountpoint;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mount_options");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mount_options");
 
   options = luaL_checkstring (L, 2);
   mountable = luaL_checkstring (L, 3);
@@ -9558,8 +9558,8 @@ guestfs_lua_mount_ro (lua_State *L)
   const char *mountpoint;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mount_ro");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mount_ro");
 
   mountable = luaL_checkstring (L, 2);
   mountpoint = luaL_checkstring (L, 3);
@@ -9583,8 +9583,8 @@ guestfs_lua_mount_vfs (lua_State *L)
   const char *mountpoint;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mount_vfs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mount_vfs");
 
   options = luaL_checkstring (L, 2);
   vfstype = luaL_checkstring (L, 3);
@@ -9606,8 +9606,8 @@ guestfs_lua_mountpoints (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mountpoints");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mountpoints");
 
 
   r = guestfs_mountpoints (g);
@@ -9627,8 +9627,8 @@ guestfs_lua_mounts (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mounts");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mounts");
 
 
   r = guestfs_mounts (g);
@@ -9650,8 +9650,8 @@ guestfs_lua_mv (lua_State *L)
   const char *dest;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "mv");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mv");
 
   src = luaL_checkstring (L, 2);
   dest = luaL_checkstring (L, 3);
@@ -9671,8 +9671,8 @@ guestfs_lua_nr_devices (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "nr_devices");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "nr_devices");
 
 
   r = guestfs_nr_devices (g);
@@ -9693,8 +9693,8 @@ guestfs_lua_ntfs_3g_probe (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ntfs_3g_probe");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ntfs_3g_probe");
 
   rw = lua_toboolean (L, 2);
   device = luaL_checkstring (L, 3);
@@ -9717,8 +9717,8 @@ guestfs_lua_ntfsclone_in (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ntfsclone_in");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ntfsclone_in");
 
   backupfile = luaL_checkstring (L, 2);
   device = luaL_checkstring (L, 3);
@@ -9742,8 +9742,8 @@ guestfs_lua_ntfsclone_out (lua_State *L)
   struct guestfs_ntfsclone_out_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ntfsclone_out");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ntfsclone_out");
 
   device = luaL_checkstring (L, 2);
   backupfile = luaL_checkstring (L, 3);
@@ -9790,8 +9790,8 @@ guestfs_lua_ntfsfix (lua_State *L)
   struct guestfs_ntfsfix_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ntfsfix");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ntfsfix");
 
   device = luaL_checkstring (L, 2);
 
@@ -9821,8 +9821,8 @@ guestfs_lua_ntfsresize (lua_State *L)
   struct guestfs_ntfsresize_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ntfsresize");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ntfsresize");
 
   device = luaL_checkstring (L, 2);
 
@@ -9855,8 +9855,8 @@ guestfs_lua_ntfsresize_size (lua_State *L)
   int64_t size;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ntfsresize_size");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ntfsresize_size");
 
   device = luaL_checkstring (L, 2);
   size = get_int64 (L, 3);
@@ -9876,8 +9876,8 @@ guestfs_lua_parse_environment (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "parse_environment");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "parse_environment");
 
 
   r = guestfs_parse_environment (g);
@@ -9896,8 +9896,8 @@ guestfs_lua_parse_environment_list (lua_State *L)
   char **environment;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "parse_environment_list");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "parse_environment_list");
 
   environment = get_string_list (L, 2);
 
@@ -9921,8 +9921,8 @@ guestfs_lua_part_add (lua_State *L)
   int64_t endsect;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "part_add");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_add");
 
   device = luaL_checkstring (L, 2);
   prlogex = luaL_checkstring (L, 3);
@@ -9946,8 +9946,8 @@ guestfs_lua_part_del (lua_State *L)
   int partnum;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "part_del");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_del");
 
   device = luaL_checkstring (L, 2);
   partnum = luaL_checkint (L, 3);
@@ -9969,8 +9969,8 @@ guestfs_lua_part_disk (lua_State *L)
   const char *parttype;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "part_disk");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_disk");
 
   device = luaL_checkstring (L, 2);
   parttype = luaL_checkstring (L, 3);
@@ -9992,8 +9992,8 @@ guestfs_lua_part_get_bootable (lua_State *L)
   int partnum;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "part_get_bootable");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_get_bootable");
 
   device = luaL_checkstring (L, 2);
   partnum = luaL_checkint (L, 3);
@@ -10016,8 +10016,8 @@ guestfs_lua_part_get_gpt_type (lua_State *L)
   int partnum;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "part_get_gpt_type");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_get_gpt_type");
 
   device = luaL_checkstring (L, 2);
   partnum = luaL_checkint (L, 3);
@@ -10041,8 +10041,8 @@ guestfs_lua_part_get_mbr_id (lua_State *L)
   int partnum;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "part_get_mbr_id");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_get_mbr_id");
 
   device = luaL_checkstring (L, 2);
   partnum = luaL_checkint (L, 3);
@@ -10065,8 +10065,8 @@ guestfs_lua_part_get_name (lua_State *L)
   int partnum;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "part_get_name");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_get_name");
 
   device = luaL_checkstring (L, 2);
   partnum = luaL_checkint (L, 3);
@@ -10089,8 +10089,8 @@ guestfs_lua_part_get_parttype (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "part_get_parttype");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_get_parttype");
 
   device = luaL_checkstring (L, 2);
 
@@ -10113,8 +10113,8 @@ guestfs_lua_part_init (lua_State *L)
   const char *parttype;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "part_init");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_init");
 
   device = luaL_checkstring (L, 2);
   parttype = luaL_checkstring (L, 3);
@@ -10135,8 +10135,8 @@ guestfs_lua_part_list (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "part_list");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_list");
 
   device = luaL_checkstring (L, 2);
 
@@ -10160,8 +10160,8 @@ guestfs_lua_part_set_bootable (lua_State *L)
   int bootable;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "part_set_bootable");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_set_bootable");
 
   device = luaL_checkstring (L, 2);
   partnum = luaL_checkint (L, 3);
@@ -10185,8 +10185,8 @@ guestfs_lua_part_set_gpt_type (lua_State *L)
   const char *guid;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "part_set_gpt_type");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_set_gpt_type");
 
   device = luaL_checkstring (L, 2);
   partnum = luaL_checkint (L, 3);
@@ -10210,8 +10210,8 @@ guestfs_lua_part_set_mbr_id (lua_State *L)
   int idbyte;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "part_set_mbr_id");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_set_mbr_id");
 
   device = luaL_checkstring (L, 2);
   partnum = luaL_checkint (L, 3);
@@ -10235,8 +10235,8 @@ guestfs_lua_part_set_name (lua_State *L)
   const char *name;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "part_set_name");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_set_name");
 
   device = luaL_checkstring (L, 2);
   partnum = luaL_checkint (L, 3);
@@ -10258,8 +10258,8 @@ guestfs_lua_part_to_dev (lua_State *L)
   const char *partition;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "part_to_dev");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_to_dev");
 
   partition = luaL_checkstring (L, 2);
 
@@ -10281,8 +10281,8 @@ guestfs_lua_part_to_partnum (lua_State *L)
   const char *partition;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "part_to_partnum");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_to_partnum");
 
   partition = luaL_checkstring (L, 2);
 
@@ -10302,8 +10302,8 @@ guestfs_lua_ping_daemon (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "ping_daemon");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ping_daemon");
 
 
   r = guestfs_ping_daemon (g);
@@ -10325,8 +10325,8 @@ guestfs_lua_pread (lua_State *L)
   int64_t offset;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "pread");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "pread");
 
   path = luaL_checkstring (L, 2);
   count = luaL_checkint (L, 3);
@@ -10353,8 +10353,8 @@ guestfs_lua_pread_device (lua_State *L)
   int64_t offset;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "pread_device");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "pread_device");
 
   device = luaL_checkstring (L, 2);
   count = luaL_checkint (L, 3);
@@ -10378,8 +10378,8 @@ guestfs_lua_pvchange_uuid (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "pvchange_uuid");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "pvchange_uuid");
 
   device = luaL_checkstring (L, 2);
 
@@ -10398,8 +10398,8 @@ guestfs_lua_pvchange_uuid_all (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "pvchange_uuid_all");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "pvchange_uuid_all");
 
 
   r = guestfs_pvchange_uuid_all (g);
@@ -10418,8 +10418,8 @@ guestfs_lua_pvcreate (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "pvcreate");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "pvcreate");
 
   device = luaL_checkstring (L, 2);
 
@@ -10439,8 +10439,8 @@ guestfs_lua_pvremove (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "pvremove");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "pvremove");
 
   device = luaL_checkstring (L, 2);
 
@@ -10460,8 +10460,8 @@ guestfs_lua_pvresize (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "pvresize");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "pvresize");
 
   device = luaL_checkstring (L, 2);
 
@@ -10482,8 +10482,8 @@ guestfs_lua_pvresize_size (lua_State *L)
   int64_t size;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "pvresize_size");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "pvresize_size");
 
   device = luaL_checkstring (L, 2);
   size = get_int64 (L, 3);
@@ -10503,8 +10503,8 @@ guestfs_lua_pvs (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "pvs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "pvs");
 
 
   r = guestfs_pvs (g);
@@ -10524,8 +10524,8 @@ guestfs_lua_pvs_full (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "pvs_full");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "pvs_full");
 
 
   r = guestfs_pvs_full (g);
@@ -10546,8 +10546,8 @@ guestfs_lua_pvuuid (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "pvuuid");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "pvuuid");
 
   device = luaL_checkstring (L, 2);
 
@@ -10572,8 +10572,8 @@ guestfs_lua_pwrite (lua_State *L)
   int64_t offset;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "pwrite");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "pwrite");
 
   path = luaL_checkstring (L, 2);
   content = luaL_checklstring (L, 3, &content_size);
@@ -10599,8 +10599,8 @@ guestfs_lua_pwrite_device (lua_State *L)
   int64_t offset;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "pwrite_device");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "pwrite_device");
 
   device = luaL_checkstring (L, 2);
   content = luaL_checklstring (L, 3, &content_size);
@@ -10624,8 +10624,8 @@ guestfs_lua_read_file (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "read_file");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "read_file");
 
   path = luaL_checkstring (L, 2);
 
@@ -10647,8 +10647,8 @@ guestfs_lua_read_lines (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "read_lines");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "read_lines");
 
   path = luaL_checkstring (L, 2);
 
@@ -10670,8 +10670,8 @@ guestfs_lua_readdir (lua_State *L)
   const char *dir;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "readdir");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "readdir");
 
   dir = luaL_checkstring (L, 2);
 
@@ -10693,8 +10693,8 @@ guestfs_lua_readlink (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "readlink");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "readlink");
 
   path = luaL_checkstring (L, 2);
 
@@ -10717,8 +10717,8 @@ guestfs_lua_readlinklist (lua_State *L)
   char **names;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "readlinklist");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "readlinklist");
 
   path = luaL_checkstring (L, 2);
   names = get_string_list (L, 3);
@@ -10742,8 +10742,8 @@ guestfs_lua_realpath (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "realpath");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "realpath");
 
   path = luaL_checkstring (L, 2);
 
@@ -10767,8 +10767,8 @@ guestfs_lua_remount (lua_State *L)
   struct guestfs_remount_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "remount");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "remount");
 
   mountpoint = luaL_checkstring (L, 2);
 
@@ -10796,8 +10796,8 @@ guestfs_lua_remove_drive (lua_State *L)
   const char *label;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "remove_drive");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "remove_drive");
 
   label = luaL_checkstring (L, 2);
 
@@ -10818,8 +10818,8 @@ guestfs_lua_removexattr (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "removexattr");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "removexattr");
 
   xattr = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
@@ -10841,8 +10841,8 @@ guestfs_lua_rename (lua_State *L)
   const char *newpath;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "rename");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "rename");
 
   oldpath = luaL_checkstring (L, 2);
   newpath = luaL_checkstring (L, 3);
@@ -10863,8 +10863,8 @@ guestfs_lua_resize2fs (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "resize2fs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "resize2fs");
 
   device = luaL_checkstring (L, 2);
 
@@ -10884,8 +10884,8 @@ guestfs_lua_resize2fs_M (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "resize2fs_M");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "resize2fs_M");
 
   device = luaL_checkstring (L, 2);
 
@@ -10906,8 +10906,8 @@ guestfs_lua_resize2fs_size (lua_State *L)
   int64_t size;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "resize2fs_size");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "resize2fs_size");
 
   device = luaL_checkstring (L, 2);
   size = get_int64 (L, 3);
@@ -10928,8 +10928,8 @@ guestfs_lua_rm (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "rm");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "rm");
 
   path = luaL_checkstring (L, 2);
 
@@ -10949,8 +10949,8 @@ guestfs_lua_rm_f (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "rm_f");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "rm_f");
 
   path = luaL_checkstring (L, 2);
 
@@ -10970,8 +10970,8 @@ guestfs_lua_rm_rf (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "rm_rf");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "rm_rf");
 
   path = luaL_checkstring (L, 2);
 
@@ -10991,8 +10991,8 @@ guestfs_lua_rmdir (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "rmdir");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "rmdir");
 
   path = luaL_checkstring (L, 2);
 
@@ -11012,8 +11012,8 @@ guestfs_lua_rmmountpoint (lua_State *L)
   const char *exemptpath;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "rmmountpoint");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "rmmountpoint");
 
   exemptpath = luaL_checkstring (L, 2);
 
@@ -11036,8 +11036,8 @@ guestfs_lua_rsync (lua_State *L)
   struct guestfs_rsync_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "rsync");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "rsync");
 
   src = luaL_checkstring (L, 2);
   dest = luaL_checkstring (L, 3);
@@ -11073,8 +11073,8 @@ guestfs_lua_rsync_in (lua_State *L)
   struct guestfs_rsync_in_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "rsync_in");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "rsync_in");
 
   remote = luaL_checkstring (L, 2);
   dest = luaL_checkstring (L, 3);
@@ -11110,8 +11110,8 @@ guestfs_lua_rsync_out (lua_State *L)
   struct guestfs_rsync_out_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "rsync_out");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "rsync_out");
 
   src = luaL_checkstring (L, 2);
   remote = luaL_checkstring (L, 3);
@@ -11144,8 +11144,8 @@ guestfs_lua_scrub_device (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "scrub_device");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "scrub_device");
 
   device = luaL_checkstring (L, 2);
 
@@ -11165,8 +11165,8 @@ guestfs_lua_scrub_file (lua_State *L)
   const char *file;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "scrub_file");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "scrub_file");
 
   file = luaL_checkstring (L, 2);
 
@@ -11186,8 +11186,8 @@ guestfs_lua_scrub_freespace (lua_State *L)
   const char *dir;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "scrub_freespace");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "scrub_freespace");
 
   dir = luaL_checkstring (L, 2);
 
@@ -11207,8 +11207,8 @@ guestfs_lua_set_append (lua_State *L)
   const char *append;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_append");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_append");
 
   append = luaL_optstring (L, 2, NULL);
 
@@ -11228,8 +11228,8 @@ guestfs_lua_set_attach_method (lua_State *L)
   const char *backend;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_attach_method");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_attach_method");
 
   backend = luaL_checkstring (L, 2);
 
@@ -11249,8 +11249,8 @@ guestfs_lua_set_autosync (lua_State *L)
   int autosync;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_autosync");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_autosync");
 
   autosync = lua_toboolean (L, 2);
 
@@ -11270,8 +11270,8 @@ guestfs_lua_set_backend (lua_State *L)
   const char *backend;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_backend");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_backend");
 
   backend = luaL_checkstring (L, 2);
 
@@ -11292,8 +11292,8 @@ guestfs_lua_set_backend_setting (lua_State *L)
   const char *val;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_backend_setting");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_backend_setting");
 
   name = luaL_checkstring (L, 2);
   val = luaL_checkstring (L, 3);
@@ -11314,8 +11314,8 @@ guestfs_lua_set_backend_settings (lua_State *L)
   char **settings;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_backend_settings");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_backend_settings");
 
   settings = get_string_list (L, 2);
 
@@ -11336,8 +11336,8 @@ guestfs_lua_set_cachedir (lua_State *L)
   const char *cachedir;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_cachedir");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_cachedir");
 
   cachedir = luaL_optstring (L, 2, NULL);
 
@@ -11357,8 +11357,8 @@ guestfs_lua_set_direct (lua_State *L)
   int direct;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_direct");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_direct");
 
   direct = lua_toboolean (L, 2);
 
@@ -11381,8 +11381,8 @@ guestfs_lua_set_e2attrs (lua_State *L)
   struct guestfs_set_e2attrs_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_e2attrs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_e2attrs");
 
   file = luaL_checkstring (L, 2);
   attrs = luaL_checkstring (L, 3);
@@ -11412,8 +11412,8 @@ guestfs_lua_set_e2generation (lua_State *L)
   int64_t generation;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_e2generation");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_e2generation");
 
   file = luaL_checkstring (L, 2);
   generation = get_int64 (L, 3);
@@ -11435,8 +11435,8 @@ guestfs_lua_set_e2label (lua_State *L)
   const char *label;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_e2label");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_e2label");
 
   device = luaL_checkstring (L, 2);
   label = luaL_checkstring (L, 3);
@@ -11458,8 +11458,8 @@ guestfs_lua_set_e2uuid (lua_State *L)
   const char *uuid;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_e2uuid");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_e2uuid");
 
   device = luaL_checkstring (L, 2);
   uuid = luaL_checkstring (L, 3);
@@ -11480,8 +11480,8 @@ guestfs_lua_set_hv (lua_State *L)
   const char *hv;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_hv");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_hv");
 
   hv = luaL_checkstring (L, 2);
 
@@ -11502,8 +11502,8 @@ guestfs_lua_set_label (lua_State *L)
   const char *label;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_label");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_label");
 
   mountable = luaL_checkstring (L, 2);
   label = luaL_checkstring (L, 3);
@@ -11526,8 +11526,8 @@ guestfs_lua_set_libvirt_requested_credential (lua_State *L)
   size_t cred_size;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_libvirt_requested_credential");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_libvirt_requested_credential");
 
   index = luaL_checkint (L, 2);
   cred = luaL_checklstring (L, 3, &cred_size);
@@ -11548,8 +11548,8 @@ guestfs_lua_set_libvirt_supported_credentials (lua_State *L)
   char **creds;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_libvirt_supported_credentials");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_libvirt_supported_credentials");
 
   creds = get_string_list (L, 2);
 
@@ -11570,8 +11570,8 @@ guestfs_lua_set_memsize (lua_State *L)
   int memsize;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_memsize");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_memsize");
 
   memsize = luaL_checkint (L, 2);
 
@@ -11591,8 +11591,8 @@ guestfs_lua_set_network (lua_State *L)
   int network;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_network");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_network");
 
   network = lua_toboolean (L, 2);
 
@@ -11612,8 +11612,8 @@ guestfs_lua_set_path (lua_State *L)
   const char *searchpath;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_path");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_path");
 
   searchpath = luaL_optstring (L, 2, NULL);
 
@@ -11633,8 +11633,8 @@ guestfs_lua_set_pgroup (lua_State *L)
   int pgroup;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_pgroup");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_pgroup");
 
   pgroup = lua_toboolean (L, 2);
 
@@ -11654,8 +11654,8 @@ guestfs_lua_set_program (lua_State *L)
   const char *program;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_program");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_program");
 
   program = luaL_checkstring (L, 2);
 
@@ -11675,8 +11675,8 @@ guestfs_lua_set_qemu (lua_State *L)
   const char *hv;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_qemu");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_qemu");
 
   hv = luaL_optstring (L, 2, NULL);
 
@@ -11696,8 +11696,8 @@ guestfs_lua_set_recovery_proc (lua_State *L)
   int recoveryproc;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_recovery_proc");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_recovery_proc");
 
   recoveryproc = lua_toboolean (L, 2);
 
@@ -11717,8 +11717,8 @@ guestfs_lua_set_selinux (lua_State *L)
   int selinux;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_selinux");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_selinux");
 
   selinux = lua_toboolean (L, 2);
 
@@ -11738,8 +11738,8 @@ guestfs_lua_set_smp (lua_State *L)
   int smp;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_smp");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_smp");
 
   smp = luaL_checkint (L, 2);
 
@@ -11759,8 +11759,8 @@ guestfs_lua_set_tmpdir (lua_State *L)
   const char *tmpdir;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_tmpdir");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_tmpdir");
 
   tmpdir = luaL_optstring (L, 2, NULL);
 
@@ -11780,8 +11780,8 @@ guestfs_lua_set_trace (lua_State *L)
   int trace;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_trace");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_trace");
 
   trace = lua_toboolean (L, 2);
 
@@ -11802,8 +11802,8 @@ guestfs_lua_set_uuid (lua_State *L)
   const char *uuid;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_uuid");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_uuid");
 
   device = luaL_checkstring (L, 2);
   uuid = luaL_checkstring (L, 3);
@@ -11824,8 +11824,8 @@ guestfs_lua_set_verbose (lua_State *L)
   int verbose;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "set_verbose");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_verbose");
 
   verbose = lua_toboolean (L, 2);
 
@@ -11845,8 +11845,8 @@ guestfs_lua_setcon (lua_State *L)
   const char *context;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "setcon");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "setcon");
 
   context = luaL_checkstring (L, 2);
 
@@ -11869,8 +11869,8 @@ guestfs_lua_setxattr (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "setxattr");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "setxattr");
 
   xattr = luaL_checkstring (L, 2);
   val = luaL_checkstring (L, 3);
@@ -11897,8 +11897,8 @@ guestfs_lua_sfdisk (lua_State *L)
   char **lines;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "sfdisk");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "sfdisk");
 
   device = luaL_checkstring (L, 2);
   cyls = luaL_checkint (L, 3);
@@ -11924,8 +11924,8 @@ guestfs_lua_sfdiskM (lua_State *L)
   char **lines;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "sfdiskM");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "sfdiskM");
 
   device = luaL_checkstring (L, 2);
   lines = get_string_list (L, 3);
@@ -11952,8 +11952,8 @@ guestfs_lua_sfdisk_N (lua_State *L)
   const char *line;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "sfdisk_N");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "sfdisk_N");
 
   device = luaL_checkstring (L, 2);
   partnum = luaL_checkint (L, 3);
@@ -11978,8 +11978,8 @@ guestfs_lua_sfdisk_disk_geometry (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "sfdisk_disk_geometry");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "sfdisk_disk_geometry");
 
   device = luaL_checkstring (L, 2);
 
@@ -12001,8 +12001,8 @@ guestfs_lua_sfdisk_kernel_geometry (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "sfdisk_kernel_geometry");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "sfdisk_kernel_geometry");
 
   device = luaL_checkstring (L, 2);
 
@@ -12024,8 +12024,8 @@ guestfs_lua_sfdisk_l (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "sfdisk_l");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "sfdisk_l");
 
   device = luaL_checkstring (L, 2);
 
@@ -12047,8 +12047,8 @@ guestfs_lua_sh (lua_State *L)
   const char *command;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "sh");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "sh");
 
   command = luaL_checkstring (L, 2);
 
@@ -12070,8 +12070,8 @@ guestfs_lua_sh_lines (lua_State *L)
   const char *command;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "sh_lines");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "sh_lines");
 
   command = luaL_checkstring (L, 2);
 
@@ -12092,8 +12092,8 @@ guestfs_lua_shutdown (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "shutdown");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "shutdown");
 
 
   r = guestfs_shutdown (g);
@@ -12112,8 +12112,8 @@ guestfs_lua_sleep (lua_State *L)
   int secs;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "sleep");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "sleep");
 
   secs = luaL_checkint (L, 2);
 
@@ -12133,8 +12133,8 @@ guestfs_lua_stat (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "stat");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "stat");
 
   path = luaL_checkstring (L, 2);
 
@@ -12156,8 +12156,8 @@ guestfs_lua_statvfs (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "statvfs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "statvfs");
 
   path = luaL_checkstring (L, 2);
 
@@ -12179,8 +12179,8 @@ guestfs_lua_strings (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "strings");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "strings");
 
   path = luaL_checkstring (L, 2);
 
@@ -12203,8 +12203,8 @@ guestfs_lua_strings_e (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "strings_e");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "strings_e");
 
   encoding = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
@@ -12227,8 +12227,8 @@ guestfs_lua_swapoff_device (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "swapoff_device");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "swapoff_device");
 
   device = luaL_checkstring (L, 2);
 
@@ -12248,8 +12248,8 @@ guestfs_lua_swapoff_file (lua_State *L)
   const char *file;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "swapoff_file");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "swapoff_file");
 
   file = luaL_checkstring (L, 2);
 
@@ -12269,8 +12269,8 @@ guestfs_lua_swapoff_label (lua_State *L)
   const char *label;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "swapoff_label");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "swapoff_label");
 
   label = luaL_checkstring (L, 2);
 
@@ -12290,8 +12290,8 @@ guestfs_lua_swapoff_uuid (lua_State *L)
   const char *uuid;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "swapoff_uuid");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "swapoff_uuid");
 
   uuid = luaL_checkstring (L, 2);
 
@@ -12311,8 +12311,8 @@ guestfs_lua_swapon_device (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "swapon_device");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "swapon_device");
 
   device = luaL_checkstring (L, 2);
 
@@ -12332,8 +12332,8 @@ guestfs_lua_swapon_file (lua_State *L)
   const char *file;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "swapon_file");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "swapon_file");
 
   file = luaL_checkstring (L, 2);
 
@@ -12353,8 +12353,8 @@ guestfs_lua_swapon_label (lua_State *L)
   const char *label;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "swapon_label");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "swapon_label");
 
   label = luaL_checkstring (L, 2);
 
@@ -12374,8 +12374,8 @@ guestfs_lua_swapon_uuid (lua_State *L)
   const char *uuid;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "swapon_uuid");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "swapon_uuid");
 
   uuid = luaL_checkstring (L, 2);
 
@@ -12394,8 +12394,8 @@ guestfs_lua_sync (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "sync");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "sync");
 
 
   r = guestfs_sync (g);
@@ -12416,8 +12416,8 @@ guestfs_lua_syslinux (lua_State *L)
   struct guestfs_syslinux_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "syslinux");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "syslinux");
 
   device = luaL_checkstring (L, 2);
 
@@ -12445,8 +12445,8 @@ guestfs_lua_tail (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "tail");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "tail");
 
   path = luaL_checkstring (L, 2);
 
@@ -12469,8 +12469,8 @@ guestfs_lua_tail_n (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "tail_n");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "tail_n");
 
   nrlines = luaL_checkint (L, 2);
   path = luaL_checkstring (L, 3);
@@ -12496,8 +12496,8 @@ guestfs_lua_tar_in (lua_State *L)
   struct guestfs_tar_in_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "tar_in");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "tar_in");
 
   tarfile = luaL_checkstring (L, 2);
   directory = luaL_checkstring (L, 3);
@@ -12529,8 +12529,8 @@ guestfs_lua_tar_out (lua_State *L)
   struct guestfs_tar_out_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "tar_out");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "tar_out");
 
   directory = luaL_checkstring (L, 2);
   tarfile = luaL_checkstring (L, 3);
@@ -12569,8 +12569,8 @@ guestfs_lua_tgz_in (lua_State *L)
   const char *directory;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "tgz_in");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "tgz_in");
 
   tarball = luaL_checkstring (L, 2);
   directory = luaL_checkstring (L, 3);
@@ -12592,8 +12592,8 @@ guestfs_lua_tgz_out (lua_State *L)
   const char *tarball;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "tgz_out");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "tgz_out");
 
   directory = luaL_checkstring (L, 2);
   tarball = luaL_checkstring (L, 3);
@@ -12614,8 +12614,8 @@ guestfs_lua_touch (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "touch");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "touch");
 
   path = luaL_checkstring (L, 2);
 
@@ -12635,8 +12635,8 @@ guestfs_lua_truncate (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "truncate");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "truncate");
 
   path = luaL_checkstring (L, 2);
 
@@ -12657,8 +12657,8 @@ guestfs_lua_truncate_size (lua_State *L)
   int64_t size;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "truncate_size");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "truncate_size");
 
   path = luaL_checkstring (L, 2);
   size = get_int64 (L, 3);
@@ -12681,8 +12681,8 @@ guestfs_lua_tune2fs (lua_State *L)
   struct guestfs_tune2fs_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "tune2fs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "tune2fs");
 
   device = luaL_checkstring (L, 2);
 
@@ -12746,8 +12746,8 @@ guestfs_lua_tune2fs_l (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "tune2fs_l");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "tune2fs_l");
 
   device = luaL_checkstring (L, 2);
 
@@ -12770,8 +12770,8 @@ guestfs_lua_txz_in (lua_State *L)
   const char *directory;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "txz_in");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "txz_in");
 
   tarball = luaL_checkstring (L, 2);
   directory = luaL_checkstring (L, 3);
@@ -12793,8 +12793,8 @@ guestfs_lua_txz_out (lua_State *L)
   const char *tarball;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "txz_out");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "txz_out");
 
   directory = luaL_checkstring (L, 2);
   tarball = luaL_checkstring (L, 3);
@@ -12815,8 +12815,8 @@ guestfs_lua_umask (lua_State *L)
   int mask;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "umask");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "umask");
 
   mask = luaL_checkint (L, 2);
 
@@ -12839,8 +12839,8 @@ guestfs_lua_umount (lua_State *L)
   struct guestfs_umount_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "umount");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "umount");
 
   pathordevice = luaL_checkstring (L, 2);
 
@@ -12871,8 +12871,8 @@ guestfs_lua_umount_all (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "umount_all");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "umount_all");
 
 
   r = guestfs_umount_all (g);
@@ -12892,8 +12892,8 @@ guestfs_lua_umount_local (lua_State *L)
   struct guestfs_umount_local_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "umount_local");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "umount_local");
 
 
   /* Check for optional arguments, encoded in a table. */
@@ -12921,8 +12921,8 @@ guestfs_lua_upload (lua_State *L)
   const char *remotefilename;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "upload");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "upload");
 
   filename = luaL_checkstring (L, 2);
   remotefilename = luaL_checkstring (L, 3);
@@ -12945,8 +12945,8 @@ guestfs_lua_upload_offset (lua_State *L)
   int64_t offset;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "upload_offset");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "upload_offset");
 
   filename = luaL_checkstring (L, 2);
   remotefilename = luaL_checkstring (L, 3);
@@ -12967,8 +12967,8 @@ guestfs_lua_user_cancel (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "user_cancel");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "user_cancel");
 
 
   r = guestfs_user_cancel (g);
@@ -12991,8 +12991,8 @@ guestfs_lua_utimens (lua_State *L)
   int64_t mtnsecs;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "utimens");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "utimens");
 
   path = luaL_checkstring (L, 2);
   atsecs = get_int64 (L, 3);
@@ -13015,8 +13015,8 @@ guestfs_lua_utsname (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "utsname");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "utsname");
 
 
   r = guestfs_utsname (g);
@@ -13036,8 +13036,8 @@ guestfs_lua_version (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "version");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "version");
 
 
   r = guestfs_version (g);
@@ -13058,8 +13058,8 @@ guestfs_lua_vfs_label (lua_State *L)
   const char *mountable;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vfs_label");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vfs_label");
 
   mountable = luaL_checkstring (L, 2);
 
@@ -13081,8 +13081,8 @@ guestfs_lua_vfs_type (lua_State *L)
   const char *mountable;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vfs_type");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vfs_type");
 
   mountable = luaL_checkstring (L, 2);
 
@@ -13104,8 +13104,8 @@ guestfs_lua_vfs_uuid (lua_State *L)
   const char *mountable;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vfs_uuid");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vfs_uuid");
 
   mountable = luaL_checkstring (L, 2);
 
@@ -13128,8 +13128,8 @@ guestfs_lua_vg_activate (lua_State *L)
   char **volgroups;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vg_activate");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vg_activate");
 
   activate = lua_toboolean (L, 2);
   volgroups = get_string_list (L, 3);
@@ -13151,8 +13151,8 @@ guestfs_lua_vg_activate_all (lua_State *L)
   int activate;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vg_activate_all");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vg_activate_all");
 
   activate = lua_toboolean (L, 2);
 
@@ -13172,8 +13172,8 @@ guestfs_lua_vgchange_uuid (lua_State *L)
   const char *vg;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vgchange_uuid");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vgchange_uuid");
 
   vg = luaL_checkstring (L, 2);
 
@@ -13192,8 +13192,8 @@ guestfs_lua_vgchange_uuid_all (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vgchange_uuid_all");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vgchange_uuid_all");
 
 
   r = guestfs_vgchange_uuid_all (g);
@@ -13213,8 +13213,8 @@ guestfs_lua_vgcreate (lua_State *L)
   char **physvols;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vgcreate");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vgcreate");
 
   volgroup = luaL_checkstring (L, 2);
   physvols = get_string_list (L, 3);
@@ -13236,8 +13236,8 @@ guestfs_lua_vglvuuids (lua_State *L)
   const char *vgname;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vglvuuids");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vglvuuids");
 
   vgname = luaL_checkstring (L, 2);
 
@@ -13260,8 +13260,8 @@ guestfs_lua_vgmeta (lua_State *L)
   const char *vgname;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vgmeta");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vgmeta");
 
   vgname = luaL_checkstring (L, 2);
 
@@ -13283,8 +13283,8 @@ guestfs_lua_vgpvuuids (lua_State *L)
   const char *vgname;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vgpvuuids");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vgpvuuids");
 
   vgname = luaL_checkstring (L, 2);
 
@@ -13306,8 +13306,8 @@ guestfs_lua_vgremove (lua_State *L)
   const char *vgname;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vgremove");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vgremove");
 
   vgname = luaL_checkstring (L, 2);
 
@@ -13328,8 +13328,8 @@ guestfs_lua_vgrename (lua_State *L)
   const char *newvolgroup;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vgrename");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vgrename");
 
   volgroup = luaL_checkstring (L, 2);
   newvolgroup = luaL_checkstring (L, 3);
@@ -13349,8 +13349,8 @@ guestfs_lua_vgs (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vgs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vgs");
 
 
   r = guestfs_vgs (g);
@@ -13370,8 +13370,8 @@ guestfs_lua_vgs_full (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vgs_full");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vgs_full");
 
 
   r = guestfs_vgs_full (g);
@@ -13391,8 +13391,8 @@ guestfs_lua_vgscan (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vgscan");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vgscan");
 
 
   r = guestfs_vgscan (g);
@@ -13411,8 +13411,8 @@ guestfs_lua_vguuid (lua_State *L)
   const char *vgname;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "vguuid");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vguuid");
 
   vgname = luaL_checkstring (L, 2);
 
@@ -13433,8 +13433,8 @@ guestfs_lua_wait_ready (lua_State *L)
   guestfs_h *g = u->g;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "wait_ready");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "wait_ready");
 
 
   r = guestfs_wait_ready (g);
@@ -13453,8 +13453,8 @@ guestfs_lua_wc_c (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "wc_c");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "wc_c");
 
   path = luaL_checkstring (L, 2);
 
@@ -13475,8 +13475,8 @@ guestfs_lua_wc_l (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "wc_l");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "wc_l");
 
   path = luaL_checkstring (L, 2);
 
@@ -13497,8 +13497,8 @@ guestfs_lua_wc_w (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "wc_w");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "wc_w");
 
   path = luaL_checkstring (L, 2);
 
@@ -13519,8 +13519,8 @@ guestfs_lua_wipefs (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "wipefs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "wipefs");
 
   device = luaL_checkstring (L, 2);
 
@@ -13542,8 +13542,8 @@ guestfs_lua_write (lua_State *L)
   size_t content_size;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "write");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "write");
 
   path = luaL_checkstring (L, 2);
   content = luaL_checklstring (L, 3, &content_size);
@@ -13566,8 +13566,8 @@ guestfs_lua_write_append (lua_State *L)
   size_t content_size;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "write_append");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "write_append");
 
   path = luaL_checkstring (L, 2);
   content = luaL_checklstring (L, 3, &content_size);
@@ -13590,8 +13590,8 @@ guestfs_lua_write_file (lua_State *L)
   int size;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "write_file");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "write_file");
 
   path = luaL_checkstring (L, 2);
   content = luaL_checkstring (L, 3);
@@ -13615,8 +13615,8 @@ guestfs_lua_xfs_admin (lua_State *L)
   struct guestfs_xfs_admin_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "xfs_admin");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "xfs_admin");
 
   device = luaL_checkstring (L, 2);
 
@@ -13670,8 +13670,8 @@ guestfs_lua_xfs_growfs (lua_State *L)
   struct guestfs_xfs_growfs_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "xfs_growfs");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "xfs_growfs");
 
   path = luaL_checkstring (L, 2);
 
@@ -13727,8 +13727,8 @@ guestfs_lua_xfs_info (lua_State *L)
   const char *pathordevice;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "xfs_info");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "xfs_info");
 
   pathordevice = luaL_checkstring (L, 2);
 
@@ -13752,8 +13752,8 @@ guestfs_lua_xfs_repair (lua_State *L)
   struct guestfs_xfs_repair_argv *optargs = &optargs_s;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "xfs_repair");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "xfs_repair");
 
   device = luaL_checkstring (L, 2);
 
@@ -13819,8 +13819,8 @@ guestfs_lua_zegrep (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "zegrep");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "zegrep");
 
   regex = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
@@ -13844,8 +13844,8 @@ guestfs_lua_zegrepi (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "zegrepi");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "zegrepi");
 
   regex = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
@@ -13868,8 +13868,8 @@ guestfs_lua_zero (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "zero");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "zero");
 
   device = luaL_checkstring (L, 2);
 
@@ -13889,8 +13889,8 @@ guestfs_lua_zero_device (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "zero_device");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "zero_device");
 
   device = luaL_checkstring (L, 2);
 
@@ -13910,8 +13910,8 @@ guestfs_lua_zero_free_space (lua_State *L)
   const char *directory;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "zero_free_space");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "zero_free_space");
 
   directory = luaL_checkstring (L, 2);
 
@@ -13931,8 +13931,8 @@ guestfs_lua_zerofree (lua_State *L)
   const char *device;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "zerofree");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "zerofree");
 
   device = luaL_checkstring (L, 2);
 
@@ -13953,8 +13953,8 @@ guestfs_lua_zfgrep (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "zfgrep");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "zfgrep");
 
   pattern = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
@@ -13978,8 +13978,8 @@ guestfs_lua_zfgrepi (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "zfgrepi");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "zfgrepi");
 
   pattern = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
@@ -14003,8 +14003,8 @@ guestfs_lua_zfile (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "zfile");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "zfile");
 
   meth = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
@@ -14028,8 +14028,8 @@ guestfs_lua_zgrep (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "zgrep");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "zgrep");
 
   regex = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
@@ -14053,8 +14053,8 @@ guestfs_lua_zgrepi (lua_State *L)
   const char *path;
 
   if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "zgrepi");
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "zgrepi");
 
   regex = luaL_checkstring (L, 2);
   path = luaL_checkstring (L, 3);
