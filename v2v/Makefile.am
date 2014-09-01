@@ -26,9 +26,11 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-v2v
 SOURCES_MLI = \
 	convert_linux.mli \
 	convert_windows.mli \
+	DOM.mli \
 	lib_linux.mli \
 	source_libvirt.mli \
 	target_local.mli \
+	target_RHEV.mli \
 	types.mli \
 	xml.mli
 
@@ -37,18 +39,22 @@ SOURCES_ML = \
 	types.ml \
 	utils.ml \
 	xml.ml \
+	DOM.ml \
 	lib_linux.ml \
 	cmdline.ml \
 	source_libvirt.ml \
 	convert_linux.ml \
 	convert_windows.ml \
 	target_local.ml \
+	target_RHEV.ml \
 	v2v.ml
 
 SOURCES_C = \
 	$(top_builddir)/fish/progress.c \
 	$(top_builddir)/mllib/tty-c.c \
 	$(top_builddir)/mllib/progress-c.c \
+	$(top_builddir)/mllib/mkdtemp-c.c \
+	$(top_builddir)/customize/crypt-c.c \
 	utils-c.c \
 	xml-c.c
 
@@ -72,15 +78,15 @@ BOBJECTS = \
 	$(top_builddir)/mllib/tTY.cmo \
 	$(top_builddir)/mllib/progress.cmo \
 	$(top_builddir)/mllib/config.cmo \
-	$(top_builddir)/customize/urandom.cmx \
-	$(top_builddir)/customize/random_seed.cmx \
-	$(top_builddir)/customize/hostname.cmx \
-	$(top_builddir)/customize/timezone.cmx \
-	$(top_builddir)/customize/firstboot.cmx \
-	$(top_builddir)/customize/perl_edit.cmx \
-	$(top_builddir)/customize/crypt-c.o \
-	$(top_builddir)/customize/crypt.cmx \
-	$(top_builddir)/customize/password.cmx \
+	$(top_builddir)/mllib/mkdtemp.cmo \
+	$(top_builddir)/customize/urandom.cmo \
+	$(top_builddir)/customize/random_seed.cmo \
+	$(top_builddir)/customize/hostname.cmo \
+	$(top_builddir)/customize/timezone.cmo \
+	$(top_builddir)/customize/firstboot.cmo \
+	$(top_builddir)/customize/perl_edit.cmo \
+	$(top_builddir)/customize/crypt.cmo \
+	$(top_builddir)/customize/password.cmo \
 	$(top_builddir)/customize/customize_run.cmo \
 	$(SOURCES_ML:.ml=.cmo)
 XOBJECTS = $(BOBJECTS:.cmo=.cmx)

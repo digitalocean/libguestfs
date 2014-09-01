@@ -1,3 +1,135 @@
+commit 59584e1814205f62e36692ad3df26adcaeddcfc8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 5 18:06:22 2014 +0100
+
+    Version 1.27.25.
+
+commit 40cecb4b9cb4354902149f68918fe1d24a534c41
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 4 17:20:41 2014 +0100
+
+    v2v: Add RHEV target.
+    
+    Use:
+    
+      virt-v2v [..] -o rhev -os nfs:/export
+    
+    or:
+    
+      virt-v2v [..] -o rhev -os /mountpoint
+    
+    to write to a RHEV-M / oVirt Export Storage Domain.
+
+commit 95c3b78f081c2d861fb1517ccfd6b5eb1e1be224
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 4 22:20:56 2014 +0100
+
+    v2v: Keep more inspection data in the inspect struct.
+    
+    Just code motion, no functional change.
+
+commit e82c0c5e55c727e7ad416ad5cf103b056bd157c2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 4 16:24:42 2014 +0100
+
+    v2v: Fix bytecode build.
+
+commit b6cb67d958f5f9ac96b885c8e792beca2d6cac18
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 4 14:51:30 2014 +0100
+
+    ./run: chcon the tmp directory in the builddir.
+    
+    Not just some random tmp directory which happens to be in the
+    local directory.
+
+commit e1c508c29f929134bfcb0f83b402a02e8ff94caa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 25 14:03:54 2014 +0100
+
+    launch: Close file descriptors after fork (RHBZ#1123007).
+    
+    This refactors existing code to close file descriptors in the recovery
+    process, and also adds code to close file descriptors between the
+    fork() and exec() of QEMU or User-Mode Linux.
+    
+    The reason is to avoid leaking main process file descriptors where the
+    main process (or other libraries in the main process) are not setting
+    O_CLOEXEC at all or not setting it atomically.  Python is a particular
+    culprit.
+    
+    See also this OpenStack Nova bug report:
+    https://bugs.launchpad.net/nova/+bug/1313477
+    
+    Thanks: Qin Zhao for identifying and characterizing the problem in Nova.
+    
+    This is version 2 of this commit.  This commit is identical to the
+    reverted commit 115fcc34325f965ac3723683e4462fc667dcd254 except that
+    we don't close stderr.
+
+commit e0ba7855f48284efa27efcae1fa69fb5f3354cf9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jul 27 11:18:55 2014 +0100
+
+    html: Don't build HTMLFILES for disabled features.
+
+commit 286f116691c8aad4ac8bf0d044e9f6ca8d5b3356
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 29 22:20:37 2014 +0100
+
+    Revert "launch: Close file descriptors after fork (RHBZ#1123007)."
+    
+    This attempted fix for RHBZ#1123007 causes the qemu command line to be
+    lost when verbose mode is enabled.  Since this is essential for
+    debugging many problems, I am reverting the patch.
+    
+    This reverts commit 115fcc34325f965ac3723683e4462fc667dcd254.
+
+commit 1d596eb7e68623beece1b5ad6d0c3eb94eb0b6ce
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 29 20:27:53 2014 +0100
+
+    tests: qemu-speed-test: Allow test time to be adjusted with -t option.
+    
+    This is useful when analysing with `perf' since it allows us to
+    increase the amount of time in the test versus the amount of time
+    spent starting the appliance.
+
+commit 1c7da06327701a5fba92fd1aac19606da70c6fd5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 29 11:51:13 2014 +0100
+
+    tests: qemu-speed-test: Allow tests to be run selectively.
+
+commit f342cfc69df2e55b2c0e79595d2a085396475af0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 29 11:50:41 2014 +0100
+
+    tests: qemu-boot: Error if extra command line arguments are given.
+
+commit 043cf4fbe30894af481c242095ed4cd436e136ea
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jul 28 19:29:14 2014 +0200
+
+    launch: direct: check for null paths in make_uri
+    
+    Some protocols may pass a null path to make_uri, so make sure to handle
+    that gracefully.
+
+commit 8ea6b3e03c8cccdd18a7910e9e5da75ee1e27807
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jul 28 17:27:30 2014 +0200
+
+    make-fs: do not leak the fd from mkstemp
+
+commit 2fe93bda9f8744553da19882043f11da5348dc35
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jul 28 17:24:02 2014 +0200
+
+    make-fs: respect libguestfs' temporary dir
+    
+    Do not hardcode /tmp.
+
 commit 50e3ef3357fe97028e958268eac7d63ec4e64408
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sat Jul 26 21:37:59 2014 +0100

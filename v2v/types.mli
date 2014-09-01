@@ -26,7 +26,7 @@ type input =
 type output =
 | OutputLibvirt of string option    (* -o libvirt: -oc *)
 | OutputLocal of string             (* -o local: directory *)
-| OutputRHEV of string              (* -o rhev: output storage *)
+| OutputRHEV of string * [`Server|`Desktop] option (* -o rhev: output storage *)
 (** The output arguments as specified on the command line. *)
 
 type source = {
@@ -62,8 +62,11 @@ type overlay = {
   (* Note: the next two fields are for information only and must not
    * be opened/copied/etc.
    *)
-  ov_source_file : string;   (** qemu URI for source file. *)
+  ov_source_file : string;          (** qemu URI for source file. *)
   ov_source_format : string option; (** Source file format, if known. *)
+
+  (* Only used by RHEV.  XXX Should be parameterized type. *)
+  ov_vol_uuid : string;                 (** RHEV volume UUID *)
 }
 (** Disk overlays and destination disks. *)
 
@@ -71,14 +74,22 @@ val string_of_overlay : overlay -> string
 
 type inspect = {
   i_root : string;                      (** Root device. *)
+  i_type : string;                      (** Usual inspection fields. *)
+  i_distro : string;
+  i_arch : string;
+  i_major_version : int;
+  i_minor_version : int;
+  i_package_format : string;
+  i_package_management : string;
+  i_product_name : string;
+  i_product_variant : string;
   i_apps : Guestfs.application2 list;   (** List of packages installed. *)
   i_apps_map : Guestfs.application2 list StringMap.t;
     (** This is a map from the app name to the application object.
         Since RPM allows multiple packages with the same name to be
         installed, the value is a list. *)
 }
-(** Inspection information.  Only the applications list is stored here
-    as that is the only one which is slow/inconvenient to fetch. *)
+(** Inspection information. *)
 
 type guestcaps = {
   gcaps_block_bus : string;    (** "virtio", "ide", possibly others *)

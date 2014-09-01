@@ -93,7 +93,7 @@ let rec main () =
    * work.
    *)
   let overlays =
-    initialize_target g
+    initialize_target ~verbose g
       source output output_alloc output_format output_name overlays in
 
   (* Inspection - this also mounts up the filesystems. *)
@@ -102,18 +102,16 @@ let rec main () =
 
   (* Conversion. *)
   let guestcaps =
-    let root = inspect.i_root in
-
-    (match g#inspect_get_product_name root with
+    (match inspect.i_product_name with
     | "unknown" ->
       msg (f_"Converting the guest to run on KVM")
     | prod ->
       msg (f_"Converting %s to run on KVM") prod
     );
 
-    match g#inspect_get_type root with
+    match inspect.i_type with
     | "linux" ->
-      (match g#inspect_get_distro root with
+      (match inspect.i_distro with
       | "fedora"
       | "rhel" | "centos" | "scientificlinux" | "redhat-based"
       | "sles" | "suse-based" | "opensuse" ->
@@ -199,7 +197,9 @@ let rec main () =
     | OutputLibvirt oc -> assert false
     | OutputLocal dir ->
       Target_local.create_metadata dir renamed_source overlays guestcaps
-    | OutputRHEV os -> assert false in
+    | OutputRHEV (os, vmtype) ->
+      Target_RHEV.create_metadata os vmtype renamed_source output_alloc
+        overlays inspect guestcaps in
 
   (* If we wrote to a temporary file, rename to the real file. *)
   List.iter (
@@ -215,7 +215,7 @@ let rec main () =
   if debug_gc then
     Gc.compact ()
 
-and initialize_target g
+and initialize_target ~verbose g
     source output output_alloc output_format output_name overlays =
   let overlays =
     mapi (
@@ -246,7 +246,8 @@ and initialize_target g
           ov_target_file = ""; ov_target_file_tmp = "";
           ov_target_format = format;
           ov_sd = sd; ov_virtual_size = vsize; ov_preallocation = preallocation;
-          ov_source_file = qemu_uri; ov_source_format = backing_format; }
+          ov_source_file = qemu_uri; ov_source_format = backing_format;
+          ov_vol_uuid = "" }
     ) overlays in
   let overlays =
     let renamed_source =
@@ -256,7 +257,8 @@ and initialize_target g
     match output with
     | OutputLibvirt oc -> assert false
     | OutputLocal dir -> Target_local.initialize dir renamed_source overlays
-    | OutputRHEV os -> assert false in
+    | OutputRHEV (os, _) ->
+      Target_RHEV.initialize ~verbose os renamed_source output_alloc overlays in
   overlays
 
 and inspect_source g root_choice =
@@ -338,7 +340,18 @@ and inspect_source g root_choice =
       StringMap.add name (app :: vs) map
   ) StringMap.empty apps in
 
-  { i_root = root; i_apps = apps; i_apps_map = apps_map; }
+  { i_root = root;
+    i_type = g#inspect_get_type root;
+    i_distro = g#inspect_get_distro root;
+    i_arch = g#inspect_get_arch root;
+    i_major_version = g#inspect_get_major_version root;
+    i_minor_version = g#inspect_get_minor_version root;
+    i_package_format = g#inspect_get_package_format root;
+    i_package_management = g#inspect_get_package_management root;
+    i_product_name = g#inspect_get_product_name root;
+    i_product_variant = g#inspect_get_product_variant root;
+    i_apps = apps;
+    i_apps_map = apps_map; }
 
 let () =
   try main ()

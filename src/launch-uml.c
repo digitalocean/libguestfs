@@ -335,7 +335,7 @@ launch_uml (guestfs_h *g, void *datav, const char *arg)
       close (csv[1]);
 
       /* RHBZ#1123007 */
-      close_file_descriptors (fd >= 2 && fd != dsv[1]);
+      close_file_descriptors (fd > 2 && fd != dsv[1]);
     }
 
     /* Dump the command line (after setting up stderr above). */
