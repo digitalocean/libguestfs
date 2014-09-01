@@ -478,6 +478,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_journal_close@Base 1:1.23.11
  guestfs_journal_get@Base 1:1.23.11
  guestfs_journal_get_data_threshold@Base 1:1.23.11
+ guestfs_journal_get_realtime_usec@Base 1:1.27.17
  guestfs_journal_next@Base 1:1.23.11
  guestfs_journal_open@Base 1:1.23.11
  guestfs_journal_set_data_threshold@Base 1:1.23.11
