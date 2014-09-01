@@ -24,7 +24,7 @@ type input =
 (** The input arguments as specified on the command line. *)
 
 type output =
-| OutputLibvirt of string option    (* -o libvirt: -oc *)
+| OutputLibvirt of string option * string (* -o libvirt: -oc & -os *)
 | OutputLocal of string             (* -o local: directory *)
 | OutputRHEV of string * output_rhev_params (* -o rhev: output storage *)
 (** The output arguments as specified on the command line. *)
@@ -36,6 +36,9 @@ and output_rhev_params = {
   vmtype : [`Server|`Desktop] option;   (* --vmtype *)
 }
 (** Miscellaneous extra command line parameters used by RHEV. *)
+
+val output_as_options : output -> string
+(** Converts the output struct into the equivalent command line options. *)
 
 type source = {
   s_dom_type : string;                  (** Source domain type, eg "kvm" *)
@@ -101,6 +104,7 @@ type inspect = {
 type guestcaps = {
   gcaps_block_bus : string;    (** "virtio", "ide", possibly others *)
   gcaps_net_bus : string;      (** "virtio", "e1000", possibly others *)
+  gcaps_acpi : bool;           (** guest supports acpi *)
   (* XXX acpi, display *)
 }
 (** Guest capabilities after conversion.  eg. Was virtio found or installed? *)

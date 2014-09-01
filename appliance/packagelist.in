@@ -7,8 +7,10 @@ dnl
 dnl   REDHAT=1     For Fedora, RHEL, EPEL and workalikes.
 dnl   DEBIAN=1     For Debian.
 dnl   UBUNTU=1     For Ubuntu.
-dnl   MAGEIA=1     For Mageia
 dnl   ARCHLINUX=1  For Archlinux.
+dnl   SUSE=1       For OpenSUSE.
+dnl   FRUGALWARE=1 For Frugalware.
+dnl   MAGEIA=1     For Mageia.
 dnl
 dnl There is also a list of packages which are excluded if they appear
 dnl as dependencies of the packages below.  See: excludelist.in
@@ -74,6 +76,7 @@ dnl iproute has been renamed to iproute2
   iputils-arping
   iputils-tracepath
   libaugeas0
+  libc-bin
   libcap2
   libhivex0
   libpcre3
@@ -107,6 +110,9 @@ ifelse(ARCHLINUX,1,
   libcap
   linux
   lrzip
+  dnl syslinux has mtools as optional dependency, but in reality it's
+  dnl a hard one:
+  mtools
   nilfs-utils
   ntfsprogs
   ntfs-3g

@@ -16,19 +16,27 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# Test virt-v2v (Phony) Windows conversion.
+# Test -o libvirt.
 
 unset CDPATH
 export LANG=C
 set -e
 
-if [ -n "$SKIP_TEST_V2V_WINDOWS_CONVERSION_SH" ]; then
+if [ -n "$SKIP_TEST_V2V_LIBVIRT_SH" ]; then
     echo "$0: test skipped because environment variable is set"
     exit 77
 fi
 
 if [ "$(../fish/guestfish get-backend)" = "uml" ]; then
     echo "$0: test skipped because UML backend does not support network"
+    exit 77
+fi
+
+# You shouldn't be running the tests as root anyway, but in this case
+# it's especially bad because we don't want to start creating guests
+# or storage pools in the system namespace.
+if [ "$(id -u)" -eq 0 ]; then
+    echo "$0: test skipped because you're running tests as root.  Don't do that!"
     exit 77
 fi
 
@@ -47,39 +55,28 @@ if ! test -r $virt_tools_data_dir/rhsrvany.exe; then
     exit 77
 fi
 
-# Return a random element from the array 'choices'.
-function random_choice
-{
-    echo "${choices[$((RANDOM % ${#choices[*]}))]}"
-}
+# Generate a random guest name.
+guestname=tmp-$(tr -cd 'a-f0-9' < /dev/urandom | head -c 8)
 
-# Test the --root option stochastically.
-choices=("/dev/sda2" "single" "first")
-root=`random_choice`
-
-d=test-v2v-windows-conversion.d
+d=test-v2v-libvirt.d
 rm -rf $d
 mkdir $d
 
+# Set up the output directory as a libvirt storage pool.
+virsh pool-destroy test-v2v-libvirt ||:
+virsh pool-create-as test-v2v-libvirt dir - - - - $(pwd)/$d
+
 $VG ./virt-v2v --debug-gc \
     -i libvirt -ic "$libvirt_uri" windows \
-    -o local -os $d \
-    --root $root
+    -o libvirt -os test-v2v-libvirt -on $guestname
 
-# Test the libvirt XML metadata and a disk was created.
-test -f $d/windows.xml
-test -f $d/windows-sda
+# Test the disk was created.
+test -f $d/$guestname-sda
 
-# Test some aspects of the target disk image.
-../fish/guestfish --ro -a $d/windows-sda -i <<EOF
-  is-dir "/Program Files/Red Hat/Firstboot"
-  is-file "/Program Files/Red Hat/Firstboot/firstboot.bat"
-  is-dir "/Program Files/Red Hat/Firstboot/scripts"
-  is-dir "/Windows/Drivers/VirtIO"
-EOF
+# Test the guest exists.
+virsh dumpxml $guestname
 
-# We also update the Registry several times, for firstboot, and (ONLY
-# if the virtio-win drivers are installed locally) the critical device
-# database.
-
+# Clean up.
+virsh pool-destroy test-v2v-libvirt ||:
+virsh undefine $guestname ||:
 rm -r $d

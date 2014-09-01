@@ -25,7 +25,7 @@ type input =
 | InputLibvirtXML of string
 
 type output =
-| OutputLibvirt of string option
+| OutputLibvirt of string option * string
 | OutputLocal of string
 | OutputRHEV of string * output_rhev_params
 
@@ -35,6 +35,26 @@ and output_rhev_params = {
   vm_uuid : string option;
   vmtype : [`Server|`Desktop] option;
 }
+
+let output_as_options = function
+  | OutputLibvirt (None, os) ->
+    sprintf "-o libvirt -os %s" os
+  | OutputLibvirt (Some uri, os) ->
+    sprintf "-o libvirt -oc %s -os %s" uri os
+  | OutputLocal os ->
+    sprintf "-o local -os %s" os
+  | OutputRHEV (os, params) ->
+    sprintf "-o rhev -os %s%s%s%s%s" os
+      (match params.image_uuid with
+      | None -> "" | Some uuid -> sprintf " --rhev-image-uuid %s" uuid)
+      (String.concat ""
+         (List.map (sprintf " --rhev-vol-uuid %s") params.vol_uuids))
+      (match params.vm_uuid with
+      | None -> "" | Some uuid -> sprintf " --rhev-vm-uuid %s" uuid)
+      (match params.vmtype with
+      | None -> ""
+      | Some `Server -> " --vmtype server"
+      | Some `Desktop -> " --vmtype desktop")
 
 type source = {
   s_dom_type : string;
@@ -132,4 +152,5 @@ type inspect = {
 type guestcaps = {
   gcaps_block_bus : string;
   gcaps_net_bus : string;
+  gcaps_acpi : bool;
 }

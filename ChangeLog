@@ -1,3 +1,177 @@
+commit cca6f25de9d022b0408677a87fa32360b4312b47
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 15 16:39:14 2014 +0100
+
+    Version 1.27.27.
+
+commit a5e2485426b6d3afd953216afeeecb3950e66ecf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 15 16:38:48 2014 +0100
+
+    website: Add virt-p2v(1) and guestfs-p2v-iso(1) to the website.
+
+commit 787c42d6eb4ae350789752016e862490fcbd78e8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 15 12:49:00 2014 +0200
+
+    tests/syslinux: add /usr/lib/syslinux/bios as directory for mbr.bin
+    
+    On Archlinux that is the location of mbr.bin.
+
+commit df88e30ff1af1dd70a80e12991c5a40ffe611189
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 15 12:48:59 2014 +0200
+
+    appliance: add mtools to Archlinux' packagelist
+    
+    It is an optional dependency but syslinux uses it, so pull it always in
+    the appliance.
+
+commit 3243da393b2630997c4e10b39a5f6fa2585b7e10
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 15 14:37:04 2014 +0100
+
+    v2v: Add a test of -o libvirt target.
+
+commit e2fcc2304c160d20abfee1e5fe6c77f12979d2bf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 15 13:19:53 2014 +0100
+
+    v2v: Add -o libvirt target (creates guest directly in libvirt).
+
+commit 8ba605cad0700a7907ec6ba98a6740c071e74b43
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 15 14:35:14 2014 +0100
+
+    v2v: Display message when intializing the target.
+    
+    As initializing the target (-o ...) is a distinct operation, which can
+    fail if the user supplied the wrong command line arguments, make sure
+    we display an explicit message before we perform this step.
+    
+    It prints something like this:
+    
+      [   5.0] Initializing the target -o libvirt -os default
+
+commit e95a1c75d8a5bb2ef230cd9f13bbe979e2a7457a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 15 10:08:29 2014 +0100
+
+    v2v: Move libvirt XML generation into common module, and use DOM module.
+    
+    Since `-o local' and `-o libvirt' both need to generate libvirt XML
+    they should share the same code to generate it.
+    
+    Also generate it using the DOM module instead of printing the XML
+    directly.  This is cleaner and avoids quoting issues.
+    
+    No functional change here.
+
+commit 7ab495b458c2a93335266de2a24bc827785d18ca
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 15 10:07:27 2014 +0100
+
+    v2v: When outputting XML, write "<element/>" for nodes with no children.
+
+commit 5e872dbd2e50222c68aa7c10e88709a5c7a0687f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 15 08:51:59 2014 +0100
+
+    v2v: Pass acpi, apic, pae features through to libvirt XML output.
+    
+    Notes:
+    
+     - Drop the acpi feature for RHEL 3.  Old virt-v2v says there is
+       a problem presenting ACPI to RHEL 3 guests although it is not
+       specific about what this is.
+    
+     - Old virt-v2v does not pass features through to OVF at all.
+
+commit 991c4e36dd52fccc1883a3b7a8aca071f9d20901
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 14 17:32:27 2014 +0100
+
+    p2v: Find ACPI, APIC and PAE flags and add them to target libvirt XML.
+
+commit 9fa9d39d71af63fe96a95ea5668c14b73555c348
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 14 17:34:39 2014 +0100
+
+    utils: Add new CLEANUP_PCLOSE cleanup.  It calls pclose(3).
+
+commit 93c7842367fc5c99147b0ff4ab64dc52a476c7b8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 14 16:58:22 2014 +0100
+
+    p2v: Rewrite /proc/cmdline reading code to use getline.
+
+commit 483b4b7bbdedbd59884865d3221b2d0dca02a687
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 14 17:35:14 2014 +0100
+
+    v2v: Update TODO.
+
+commit ddfe82e823ff1112e4f75436ece439adc34b2ac9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 14 19:06:20 2014 +0200
+
+    configure: look for "java-default-runtime" as directory for Java
+    
+    This seems to be the new way [1] in Archlinux to specify, as symlink,
+    the default version of Java.
+    
+    Thanks to Peter Wu for the notice about it.
+    
+    [1] https://wiki.archlinux.org/index.php/Java
+
+commit 1d9388b80066529f58b873bc601eab92ebd3c8a6
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 14 16:46:12 2014 +0200
+
+    configure: add java-8-openjdk and java-7-openjdk as locations for java
+    
+    This helps some distros (e.g. Archlinux) where openjdk is installed in
+    java-MAJOR-openjdk directories, without any "default version" symlink.
+
+commit 9609521734c661ec70c34a68f6201a2601190fa6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 14 15:16:06 2014 +0100
+
+    launch: direct: Only issue Debian /dev/kvm group warning if /dev/kvm wasn't openable (RHBZ#1130189).
+    
+    This warning was meant for the case where /dev/kvm is inaccessible and
+    the user must add themselves to a special group.
+    
+    However we didn't take into account whether /dev/kvm was openable in
+    this test.  If it's openable, no point issuing the warning.
+    
+    Move the is_openable ("/dev/kvm") test earlier, and don't issue the
+    warning if that was successful.
+
+commit c21176386080029d285ffdf672e293c62e986640
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 14 14:00:35 2014 +0200
+
+    appliance: add libc-bin to Debian's packagelist
+    
+    It provides libc binaries like ldconfig and its configuration.
+
+commit d9a4c481c940e0c83b8133ce21225c3820a40c28
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 14 13:46:18 2014 +0200
+
+    appliance: update distros in comments
+    
+    Update the list of recognized names of distributions in the comments.
+    
+    No functional changes.
+
+commit 6f045f8401a856d748ebbde08bd5efc0857721f8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 14 10:02:33 2014 +0100
+
+    v2v: Skip virt-v2v tests if rhsrvany.exe is not installed.
+
 commit 6ae0e9641bdf516c3e14d004ffb7bd5127fd5d9d
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Aug 13 22:10:22 2014 +0100

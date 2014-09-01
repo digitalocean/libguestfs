@@ -1498,6 +1498,7 @@ SOURCES_MLI = \
 	DOM.mli \
 	lib_linux.mli \
 	source_libvirt.mli \
+	target_libvirt.mli \
 	target_local.mli \
 	target_RHEV.mli \
 	types.mli \
@@ -1514,6 +1515,7 @@ SOURCES_ML = \
 	source_libvirt.ml \
 	convert_linux.ml \
 	convert_windows.ml \
+	target_libvirt.ml \
 	target_local.ml \
 	target_RHEV.ml \
 	v2v.ml
@@ -1603,6 +1605,7 @@ SOURCES_C = \
 # - that up to date guests don't crash virt-v2v
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@TESTS = \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-libvirt.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-machine-readable.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-no-copy.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-of-option.sh \

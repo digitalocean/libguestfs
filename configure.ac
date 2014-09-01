@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [27])
-m4_define([libguestfs_release], [26])
+m4_define([libguestfs_release], [27])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1251,6 +1251,9 @@ if test "x$with_java" != "xno"; then
         for d in \
             /usr/lib/jvm/java \
             /usr/lib/jvm/default-java \
+            /usr/lib/jvm/java-default-runtime \
+            /usr/lib/jvm/java-8-openjdk \
+            /usr/lib/jvm/java-7-openjdk \
             /usr/lib/jvm/java-6-openjdk
         do
             if test -d $d && test -f $d/bin/java; then
