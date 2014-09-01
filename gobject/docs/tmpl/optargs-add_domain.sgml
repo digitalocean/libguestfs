@@ -38,6 +38,11 @@ GuestfsAddDomain
 
 </para>
 
+<!-- ##### ARG GuestfsAddDomain:copyonread ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GuestfsAddDomain:discard ##### -->
 <para>
 

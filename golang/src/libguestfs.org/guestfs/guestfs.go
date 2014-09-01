@@ -1020,6 +1020,9 @@ type OptargsAdd_domain struct {
     /* Discard field is ignored unless Discard_is_set == true */
     Discard_is_set bool
     Discard string
+    /* Copyonread field is ignored unless Copyonread_is_set == true */
+    Copyonread_is_set bool
+    Copyonread bool
 }
 
 /* add_domain : add the disk(s) from a named libvirt domain */
@@ -1069,6 +1072,10 @@ func (g *Guestfs) Add_domain (dom string, optargs *OptargsAdd_domain) (int, *Gue
             c_optargs.discard = C.CString (optargs.Discard)
             defer C.free (unsafe.Pointer (c_optargs.discard))
         }
+        if optargs.Copyonread_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_DOMAIN_COPYONREAD_BITMASK
+            if optargs.Copyonread { c_optargs.copyonread = 1 } else { c_optargs.copyonread = 0}
+        }
     }
 
     r := C.guestfs_add_domain_argv (g.g, c_dom, &c_optargs)
@@ -1114,6 +1121,9 @@ type OptargsAdd_drive struct {
     /* Discard field is ignored unless Discard_is_set == true */
     Discard_is_set bool
     Discard string
+    /* Copyonread field is ignored unless Copyonread_is_set == true */
+    Copyonread_is_set bool
+    Copyonread bool
 }
 
 /* add_drive : add an image to examine or modify */
@@ -1179,6 +1189,10 @@ func (g *Guestfs) Add_drive (filename string, optargs *OptargsAdd_drive) *Guestf
             c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK
             c_optargs.discard = C.CString (optargs.Discard)
             defer C.free (unsafe.Pointer (c_optargs.discard))
+        }
+        if optargs.Copyonread_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK
+            if optargs.Copyonread { c_optargs.copyonread = 1 } else { c_optargs.copyonread = 0}
         }
     }
 

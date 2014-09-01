@@ -406,6 +406,10 @@ PREINIT:
           optargs_s.discard = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
         }
+        else if (STREQ (this_arg, "copyonread")) {
+          optargs_s.copyonread = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DOMAIN_COPYONREAD_BITMASK;
+        }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
           croak ("optional argument '%s' given twice",
@@ -500,6 +504,10 @@ PREINIT:
         else if (STREQ (this_arg, "discard")) {
           optargs_s.discard = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
+        }
+        else if (STREQ (this_arg, "copyonread")) {
+          optargs_s.copyonread = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)

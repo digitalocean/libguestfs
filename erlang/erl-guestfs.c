@@ -693,6 +693,11 @@ run_add_domain (ETERM *message)
       optargs_s.discard = erl_iolist_to_string (hd_value);
     }
     else
+    if (atom_equals (hd_name, "copyonread")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_COPYONREAD_BITMASK;
+      optargs_s.copyonread = get_bool (hd_value);
+    }
+    else
       return unknown_optarg ("add_domain", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
@@ -782,6 +787,11 @@ run_add_drive (ETERM *message)
     if (atom_equals (hd_name, "discard")) {
       optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
       optargs_s.discard = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "copyonread")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK;
+      optargs_s.copyonread = get_bool (hd_value);
     }
     else
       return unknown_optarg ("add_drive", hd_name);

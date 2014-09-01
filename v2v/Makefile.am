@@ -36,6 +36,7 @@ SOURCES_MLI = \
 	input_disk.mli \
 	input_libvirt.mli \
 	input_libvirtxml.mli \
+	output_glance.mli \
 	output_libvirt.mli \
 	output_local.mli \
 	output_RHEV.mli \
@@ -56,6 +57,7 @@ SOURCES_ML = \
 	input_libvirt.ml \
 	convert_linux.ml \
 	convert_windows.ml \
+	output_glance.ml \
 	output_libvirt.ml \
 	output_local.ml \
 	output_RHEV.ml \
@@ -64,10 +66,12 @@ SOURCES_ML = \
 
 SOURCES_C = \
 	$(top_builddir)/fish/progress.c \
+	$(top_builddir)/fish/file-edit.c \
 	$(top_builddir)/mllib/tty-c.c \
 	$(top_builddir)/mllib/progress-c.c \
 	$(top_builddir)/mllib/mkdtemp-c.c \
 	$(top_builddir)/customize/crypt-c.c \
+	$(top_builddir)/customize/perl_edit-c.c \
 	utils-c.c \
 	xml-c.c \
 	domainxml-c.c
@@ -193,6 +197,7 @@ TESTS = \
 	test-v2v-machine-readable.sh \
 	test-v2v-networks-and-bridges.sh \
 	test-v2v-no-copy.sh \
+	test-v2v-o-glance.sh \
 	test-v2v-o-libvirt.sh \
 	test-v2v-o-rhev.sh \
 	test-v2v-o-rhev-options.sh \

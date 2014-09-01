@@ -561,8 +561,16 @@ public class GuestFS {
       discard = ((String) _optobj);
       _optargs_bitmask |= 128L;
     }
+    boolean copyonread = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("copyonread");
+    if (_optobj != null) {
+      copyonread = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 256L;
+    }
 
-    return _add_domain (g, dom, _optargs_bitmask, libvirturi, readonly, iface, live, allowuuid, readonlydisk, cachemode, discard);
+    return _add_domain (g, dom, _optargs_bitmask, libvirturi, readonly, iface, live, allowuuid, readonlydisk, cachemode, discard, copyonread);
   }
 
   public int add_domain (String dom)
@@ -571,7 +579,7 @@ public class GuestFS {
     return add_domain (dom, null);
   }
 
-  private native int _add_domain (long g, String dom, long _optargs_bitmask, String libvirturi, boolean readonly, String iface, boolean live, boolean allowuuid, String readonlydisk, String cachemode, String discard)
+  private native int _add_domain (long g, String dom, long _optargs_bitmask, String libvirturi, boolean readonly, String iface, boolean live, boolean allowuuid, String readonlydisk, String cachemode, String discard, boolean copyonread)
     throws LibGuestFSException;
 
   /**
@@ -803,6 +811,15 @@ public class GuestFS {
    * if you want to use discard if possible, but
    * don't mind if it doesn't work.
    * <p>
+   * "copyonread"
+   * The boolean parameter "copyonread" enables
+   * copy-on-read support. This only affects disk formats
+   * which have backing files, and causes reads to be
+   * stored in the overlay layer, speeding up multiple
+   * reads of the same area of disk.
+   * <p>
+   * The default is false.
+   * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
@@ -907,8 +924,16 @@ public class GuestFS {
       discard = ((String) _optobj);
       _optargs_bitmask |= 1024L;
     }
+    boolean copyonread = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("copyonread");
+    if (_optobj != null) {
+      copyonread = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2048L;
+    }
 
-    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server, username, secret, cachemode, discard);
+    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server, username, secret, cachemode, discard, copyonread);
   }
 
   public void add_drive (String filename)
@@ -929,7 +954,7 @@ public class GuestFS {
     add_drive (filename, null);
   }
 
-  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String[] server, String username, String secret, String cachemode, String discard)
+  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String[] server, String username, String secret, String cachemode, String discard, boolean copyonread)
     throws LibGuestFSException;
 
   /**

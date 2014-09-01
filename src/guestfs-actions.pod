@@ -157,6 +157,7 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_ADD_DOMAIN_READONLYDISK, const char *readonlydisk,
  GUESTFS_ADD_DOMAIN_CACHEMODE, const char *cachemode,
  GUESTFS_ADD_DOMAIN_DISCARD, const char *discard,
+ GUESTFS_ADD_DOMAIN_COPYONREAD, int copyonread,
 
 This function adds the disk(s) attached to the named libvirt
 domain C<dom>.  It works by connecting to libvirt, requesting
@@ -304,6 +305,7 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_ADD_DRIVE_OPTS_SECRET, const char *secret,
  GUESTFS_ADD_DRIVE_OPTS_CACHEMODE, const char *cachemode,
  GUESTFS_ADD_DRIVE_OPTS_DISCARD, const char *discard,
+ GUESTFS_ADD_DRIVE_OPTS_COPYONREAD, int copyonread,
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -546,6 +548,15 @@ discard, this is a good choice if you want to use discard if
 possible, but don't mind if it doesn't work.
 
 =back
+
+=item C<copyonread>
+
+The boolean parameter C<copyonread> enables copy-on-read support.
+This only affects disk formats which have backing files, and causes
+reads to be stored in the overlay layer, speeding up multiple reads
+of the same area of disk.
+
+The default is false.
 
 =back
 

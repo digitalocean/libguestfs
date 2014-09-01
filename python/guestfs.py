@@ -253,7 +253,7 @@ class GuestFS(object):
         r = libguestfsmod.add_cdrom (self._o, filename)
         return r
 
-    def add_domain (self, dom, libvirturi=None, readonly=None, iface=None, live=None, allowuuid=None, readonlydisk=None, cachemode=None, discard=None):
+    def add_domain (self, dom, libvirturi=None, readonly=None, iface=None, live=None, allowuuid=None, readonlydisk=None, cachemode=None, discard=None, copyonread=None):
         """This function adds the disk(s) attached to the named
         libvirt domain "dom". It works by connecting to libvirt,
         requesting the domain and domain XML from libvirt,
@@ -337,10 +337,10 @@ class GuestFS(object):
         through to "g.add_drive_opts".
         """
         self._check_not_closed ()
-        r = libguestfsmod.add_domain (self._o, dom, libvirturi, readonly, iface, live, allowuuid, readonlydisk, cachemode, discard)
+        r = libguestfsmod.add_domain (self._o, dom, libvirturi, readonly, iface, live, allowuuid, readonlydisk, cachemode, discard, copyonread)
         return r
 
-    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None, username=None, secret=None, cachemode=None, discard=None):
+    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None, username=None, secret=None, cachemode=None, discard=None, copyonread=None):
         """This function adds a disk image called "filename" to the
         handle. "filename" may be a regular host file or a host
         device.
@@ -566,9 +566,18 @@ class GuestFS(object):
         systems support discard, this is a good choice
         if you want to use discard if possible, but
         don't mind if it doesn't work.
+        
+        "copyonread"
+        The boolean parameter "copyonread" enables
+        copy-on-read support. This only affects disk formats
+        which have backing files, and causes reads to be
+        stored in the overlay layer, speeding up multiple
+        reads of the same area of disk.
+        
+        The default is false.
         """
         self._check_not_closed ()
-        r = libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label, protocol, server, username, secret, cachemode, discard)
+        r = libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label, protocol, server, username, secret, cachemode, discard, copyonread)
         return r
 
     add_drive_opts = add_drive

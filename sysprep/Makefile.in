@@ -1524,10 +1524,12 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/hostname.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/timezone.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/firstboot.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/perl_edit-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/perl_edit.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_cmdline.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_run.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-file-edit.o \
 @HAVE_OCAML_TRUE@	sysprep_operation.cmx \
 @HAVE_OCAML_TRUE@	$(patsubst %,sysprep_operation_%.cmx,$(operations)) \
 @HAVE_OCAML_TRUE@	main.cmx

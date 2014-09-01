@@ -61,6 +61,7 @@ struct              <a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain
 <pre class="synopsis">
   "<a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain--allowuuid" title='The "allowuuid" property'>allowuuid</a>"                <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
   "<a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain--cachemode" title='The "cachemode" property'>cachemode</a>"                <span class="type">gchar</span>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain--copyonread" title='The "copyonread" property'>copyonread</a>"               <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
   "<a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain--discard" title='The "discard" property'>discard</a>"                  <span class="type">gchar</span>*                : Read / Write / Construct
   "<a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain--iface" title='The "iface" property'>iface</a>"                    <span class="type">gchar</span>*                : Read / Write / Construct
   "<a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain--libvirturi" title='The "libvirturi" property'>libvirturi</a>"               <span class="type">gchar</span>*                : Read / Write / Construct
@@ -143,6 +144,15 @@ A boolean.
 A string.
 </p>
 <p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsAddDomain--copyonread"></a><h3>The <code class="literal">"copyonread"</code> property</h3>
+<pre class="programlisting">  "copyonread"               <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
 </div>
 <hr>
 <div class="refsect2">

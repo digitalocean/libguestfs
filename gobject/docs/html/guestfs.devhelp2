@@ -672,6 +672,7 @@
     <keyword type="function" name="guestfs_add_domain_new ()" link="GuestfsAddDomain.html#guestfs-add-domain-new"/>
     <keyword type="property" name="The &quot;allowuuid&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--allowuuid"/>
     <keyword type="property" name="The &quot;cachemode&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--cachemode"/>
+    <keyword type="property" name="The &quot;copyonread&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--copyonread"/>
     <keyword type="property" name="The &quot;discard&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--discard"/>
     <keyword type="property" name="The &quot;iface&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--iface"/>
     <keyword type="property" name="The &quot;libvirturi&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--libvirturi"/>
@@ -682,6 +683,7 @@
     <keyword type="struct" name="struct GuestfsAddDriveClass" link="GuestfsAddDrive.html#GuestfsAddDriveClass"/>
     <keyword type="function" name="guestfs_add_drive_new ()" link="GuestfsAddDrive.html#guestfs-add-drive-new"/>
     <keyword type="property" name="The &quot;cachemode&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--cachemode"/>
+    <keyword type="property" name="The &quot;copyonread&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--copyonread"/>
     <keyword type="property" name="The &quot;discard&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--discard"/>
     <keyword type="property" name="The &quot;format&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--format"/>
     <keyword type="property" name="The &quot;iface&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--iface"/>

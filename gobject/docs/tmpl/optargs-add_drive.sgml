@@ -33,6 +33,11 @@ GuestfsAddDrive
 
 </para>
 
+<!-- ##### ARG GuestfsAddDrive:copyonread ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GuestfsAddDrive:discard ##### -->
 <para>
 

@@ -719,6 +719,7 @@
 <ANCHOR id="GuestfsAddDomain.property-details" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain.property-details">
 <ANCHOR id="GuestfsAddDomain--allowuuid" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain--allowuuid">
 <ANCHOR id="GuestfsAddDomain--cachemode" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain--cachemode">
+<ANCHOR id="GuestfsAddDomain--copyonread" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain--copyonread">
 <ANCHOR id="GuestfsAddDomain--discard" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain--discard">
 <ANCHOR id="GuestfsAddDomain--iface" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain--iface">
 <ANCHOR id="GuestfsAddDomain--libvirturi" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain--libvirturi">
@@ -736,6 +737,7 @@
 <ANCHOR id="guestfs-add-drive-new" href="guestfs/GuestfsAddDrive.html#guestfs-add-drive-new">
 <ANCHOR id="GuestfsAddDrive.property-details" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive.property-details">
 <ANCHOR id="GuestfsAddDrive--cachemode" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--cachemode">
+<ANCHOR id="GuestfsAddDrive--copyonread" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--copyonread">
 <ANCHOR id="GuestfsAddDrive--discard" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--discard">
 <ANCHOR id="GuestfsAddDrive--format" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--format">
 <ANCHOR id="GuestfsAddDrive--iface" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--iface">

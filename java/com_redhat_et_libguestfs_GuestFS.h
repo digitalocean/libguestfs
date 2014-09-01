@@ -104,18 +104,18 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1add_1cdrom
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _add_domain
- * Signature: (JLjava/lang/String;JLjava/lang/String;ZLjava/lang/String;ZZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
+ * Signature: (JLjava/lang/String;JLjava/lang/String;ZLjava/lang/String;ZZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)I
  */
 JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1add_1domain
-  (JNIEnv *, jobject, jlong, jstring, jlong, jstring, jboolean, jstring, jboolean, jboolean, jstring, jstring, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jlong, jstring, jboolean, jstring, jboolean, jboolean, jstring, jstring, jstring, jboolean);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _add_drive
- * Signature: (JLjava/lang/String;JZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;JZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1add_1drive
-  (JNIEnv *, jobject, jlong, jstring, jlong, jboolean, jstring, jstring, jstring, jstring, jstring, jobjectArray, jstring, jstring, jstring, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jlong, jboolean, jstring, jstring, jstring, jstring, jstring, jobjectArray, jstring, jstring, jstring, jstring, jboolean);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS

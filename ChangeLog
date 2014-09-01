@@ -1,3 +1,178 @@
+commit 5c487541beceb634997822030039ef4ddc6f3b63
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 29 22:43:10 2014 +0100
+
+    Version 1.27.34.
+
+commit 0d2f4c507455c8bd54c53770d1df047adb462808
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 29 21:14:24 2014 +0100
+
+    v2v: Minor correction to -o glance documentation.
+    
+    This fixes commit f01f641fbb1a29b5727c0443f3700b1c871ccfc9.
+
+commit f01f641fbb1a29b5727c0443f3700b1c871ccfc9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 29 18:27:20 2014 +0100
+
+    v2v: Output to OpenStack Glance (-o glance option).
+
+commit 1ce930ed2749b50bed52910f6d9067f37d3d1a84
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 29 18:22:20 2014 +0100
+
+    v2v: Use copy_on_read in the overlays.
+    
+    To speed up conversions by storing everything we read during
+    conversion in the overlay instead of having to reread it from the
+    remote server during copying.
+    
+    Thanks: Matthew Booth.
+
+commit 180e3c30dee577dd44b3f1ae5bb16de2459b1d23
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 29 18:19:13 2014 +0100
+
+    Add support for qemu copy_on_read feature.
+    
+    When drives are added with this flag, reads from the backing file are
+    copied into the overlay, improving performance of reads to the same
+    area of disk (at the expense of local storage).  This is excellent for
+    reading remote / slow sources like HTTP.
+
+commit 6a3147a5a0259ab72c7e92e2ff00859f2fa8a09e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 29 16:26:45 2014 +0100
+
+    v2v: esx: Add note to documentation about being asked for the password twice.
+
+commit 8aea6d8fac809c00280a5738257ef4134357141e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 29 10:05:47 2014 +0100
+
+    v2v: More esx:// -> vpx:// changes.
+    
+    This updates commit 155a6f0482e5eeb6a763d4d31354edc5f48a1f43.
+
+commit c6b7e6cddac850d6d2caf2e2f3060467c38397fe
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 28 15:06:39 2014 +0200
+
+    customize: use the common perl file editing code
+    
+    Wrap edit_file_perl to OCaml, and use it instead of the OCaml version
+    of it.
+
+commit 57b3a35764a959e3f0995a1b38a129e75bd03f82
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 28 14:23:46 2014 +0200
+
+    fish: edit: add verbose parameter
+
+commit 2d217eb00e38176767a50dadbbb80356e7362492
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 28 11:33:14 2014 +0200
+
+    edit: switch to common editing functions
+    
+    Switch virt-edit to the common edit_file_editor and edit_file_perl.
+
+commit b53126efb0205b4722897c7d79acf6dbc810caf7
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 28 11:21:12 2014 +0200
+
+    fish: edit: add perl file editing
+    
+    Add the perl file editing, mostly based in the virt-edit implementation.
+    
+    This introduces a mild code duplication with edit_file_editor; will deal
+    with it in a later commit.
+
+commit f1c6d5d7f2b852c1d2ccee409c6ac58c02d2bfd2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 28 11:02:53 2014 +0200
+
+    fish: edit: bring the fast-time-edit protection
+    
+    Bring from virt-edit the small hack of putting the ctime of the
+    temporary file few seconds back to notice file changes also on fast
+    editing.
+
+commit c9b6c8dac1bc0fd7ece202d2d7acccb8279d053e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 28 10:45:28 2014 +0200
+
+    fish: edit: return 1 for unchanged file
+    
+    Change the return value of edit_file_editor to 1, in case the editor did
+    not change the (temporary) file.
+
+commit f79ee54722aee530a4f0a0b61cfe1cba3035fc86
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 28 10:44:55 2014 +0200
+
+    fish: edit: bring backup extension to file editing w/ editor
+    
+    Bring the backup extension feature from the perl-like file mode
+    implementation, although currently not making use of it.
+
+commit 511275acb1e27b85034eb7b767dd4e93491f74a8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 28 10:29:55 2014 +0200
+
+    fish: edit: improve the editor execution
+    
+    Dynamically allocate the buffer for the command, and check also its exit
+    status.
+    
+    Improvements taken from the current implementation in virt-edit.
+
+commit 7b9f0cf777c08b89195ef496f74bb35fe528e1d2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 28 10:19:09 2014 +0200
+
+    fish: isolate file editing (w/ editor) code in own file
+    
+    Move the implementation of file editing using editor to an own file, so
+    that can be shared by different tools.
+    
+    Mostly code motion.
+
+commit 582a8fcd84e50ef3ef09c527d84f3d679044c243
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Aug 27 16:51:05 2014 +0200
+
+    cat: use the common Windows path handling code
+
+commit 73ed3171be20a25cbb13fc209d6126943e66d90c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Aug 27 16:44:27 2014 +0200
+
+    fish, edit: move the exit-on-case-sensitive-error behaviour to virt-edit
+    
+    Do not unconditionally exit if guestfs_case_sensitive_path, but let
+    windows_path still return null. Make virt-edit then check for that, and
+    eventually exit on its own.
+
+commit de6258352997e4e7990862a9809d4fbbc875b978
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Aug 27 16:41:35 2014 +0200
+
+    fish, edit: specifies whether mount Windows as readonly
+
+commit 7523e308fa866efa9dec2ab170b473245903e09d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Aug 27 16:18:47 2014 +0200
+
+    edit: move windows path code to common file
+    
+    Move the code handling Windows paths from virt-edit to a common file,
+    so that can be shared by various tools.
+    
+    Mostly code motion, with a minimum touch (the additional guestfs_h*
+    parameter in mount_drive_letter) to make it build and work.
+
 commit 2ab7906f7c695835c642e3dec9012090dcbe5d5c
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Aug 29 09:50:40 2014 +0100

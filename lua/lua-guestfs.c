@@ -568,6 +568,10 @@ guestfs_lua_add_domain (lua_State *L)
       optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
       optargs_s.discard = luaL_checkstring (L, -1);
     );
+    OPTARG_IF_SET (3, "copyonread",
+      optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_COPYONREAD_BITMASK;
+      optargs_s.copyonread = lua_toboolean (L, -1);
+    );
   }
 
   r = guestfs_add_domain_argv (g, dom, optargs);
@@ -639,6 +643,10 @@ guestfs_lua_add_drive (lua_State *L)
     OPTARG_IF_SET (3, "discard",
       optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
       optargs_s.discard = luaL_checkstring (L, -1);
+    );
+    OPTARG_IF_SET (3, "copyonread",
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK;
+      optargs_s.copyonread = lua_toboolean (L, -1);
     );
   }
 

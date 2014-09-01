@@ -1590,6 +1590,7 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/hostname.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/timezone.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/firstboot.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/perl_edit-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/perl_edit.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/crypt-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/crypt.cmx \
@@ -1597,6 +1598,7 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_cmdline.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_run.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-file-edit.o \
 @HAVE_OCAML_TRUE@	index-scan.o \
 @HAVE_OCAML_TRUE@	index-struct.o \
 @HAVE_OCAML_TRUE@	index-parse.o \

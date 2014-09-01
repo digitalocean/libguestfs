@@ -2917,6 +2917,16 @@ Since not all backends and not all underlying systems support
 discard, this is a good choice if you want to use discard if
 possible, but don't mind if it doesn't work.
 </p>
+<p>
+<em class="parameter"><code>copyonread</code></em>
+The boolean parameter <em class="parameter"><code>copyonread</code></em> enables copy-on-read support. This
+only affects disk formats which have backing files, and causes reads
+to be stored in the overlay layer, speeding up multiple reads of the
+same area of disk.
+</p>
+<p>
+The default is false.
+</p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
 <col align="left" valign="top">

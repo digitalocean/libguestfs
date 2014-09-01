@@ -1274,11 +1274,12 @@ py_guestfs_add_domain (PyObject *self, PyObject *args)
   PyObject *py_readonlydisk;
   PyObject *py_cachemode;
   PyObject *py_discard;
+  PyObject *py_copyonread;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OsOOOOOOOO:guestfs_add_domain",
-                         &py_g, &dom, &py_libvirturi, &py_readonly, &py_iface, &py_live, &py_allowuuid, &py_readonlydisk, &py_cachemode, &py_discard))
+  if (!PyArg_ParseTuple (args, (char *) "OsOOOOOOOOO:guestfs_add_domain",
+                         &py_g, &dom, &py_libvirturi, &py_readonly, &py_iface, &py_live, &py_allowuuid, &py_readonlydisk, &py_cachemode, &py_discard, &py_copyonread))
     goto out;
   g = get_handle (py_g);
 
@@ -1347,6 +1348,11 @@ py_guestfs_add_domain (PyObject *self, PyObject *args)
     optargs_s.discard = PyBytes_AS_STRING (bytes);
 #endif
   }
+  if (py_copyonread != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_COPYONREAD_BITMASK;
+    optargs_s.copyonread = PyLong_AsLong (py_copyonread);
+    if (PyErr_Occurred ()) goto out;
+  }
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -1388,11 +1394,12 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
   PyObject *py_secret;
   PyObject *py_cachemode;
   PyObject *py_discard;
+  PyObject *py_copyonread;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OsOOOOOOOOOOO:guestfs_add_drive",
-                         &py_g, &filename, &py_readonly, &py_format, &py_iface, &py_name, &py_label, &py_protocol, &py_server, &py_username, &py_secret, &py_cachemode, &py_discard))
+  if (!PyArg_ParseTuple (args, (char *) "OsOOOOOOOOOOOO:guestfs_add_drive",
+                         &py_g, &filename, &py_readonly, &py_format, &py_iface, &py_name, &py_label, &py_protocol, &py_server, &py_username, &py_secret, &py_cachemode, &py_discard, &py_copyonread))
     goto out;
   g = get_handle (py_g);
 
@@ -1495,6 +1502,11 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
     bytes = PyUnicode_AsUTF8String (py_discard);
     optargs_s.discard = PyBytes_AS_STRING (bytes);
 #endif
+  }
+  if (py_copyonread != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK;
+    optargs_s.copyonread = PyLong_AsLong (py_copyonread);
+    if (PyErr_Occurred ()) goto out;
   }
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);

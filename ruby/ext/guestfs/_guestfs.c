@@ -784,6 +784,11 @@ ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
     optargs_s.discard = StringValueCStr (v);
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
   }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("copyonread")));
+  if (v != Qnil) {
+    optargs_s.copyonread = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_COPYONREAD_BITMASK;
+  }
 
   int r;
 
@@ -1026,6 +1031,15 @@ ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
  * if you want to use discard if possible, but
  * don't mind if it doesn't work.
  * 
+ * "copyonread"
+ * The boolean parameter "copyonread" enables
+ * copy-on-read support. This only affects disk formats
+ * which have backing files, and causes reads to be
+ * stored in the overlay layer, speeding up multiple
+ * reads of the same area of disk.
+ * 
+ * The default is false.
+ * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
  * value. Pass an empty {} for no optional arguments.
@@ -1121,6 +1135,11 @@ ruby_guestfs_add_drive (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.discard = StringValueCStr (v);
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("copyonread")));
+  if (v != Qnil) {
+    optargs_s.copyonread = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK;
   }
 
   int r;

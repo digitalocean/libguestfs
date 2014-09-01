@@ -45,6 +45,7 @@ struct _GuestfsAddDomainPrivate {
   gchar *readonlydisk;
   gchar *cachemode;
   gchar *discard;
+  GuestfsTristate copyonread;
 };
 
 G_DEFINE_TYPE (GuestfsAddDomain, guestfs_add_domain, G_TYPE_OBJECT);
@@ -58,7 +59,8 @@ enum {
   PROP_GUESTFS_ADD_DOMAIN_ALLOWUUID,
   PROP_GUESTFS_ADD_DOMAIN_READONLYDISK,
   PROP_GUESTFS_ADD_DOMAIN_CACHEMODE,
-  PROP_GUESTFS_ADD_DOMAIN_DISCARD
+  PROP_GUESTFS_ADD_DOMAIN_DISCARD,
+  PROP_GUESTFS_ADD_DOMAIN_COPYONREAD
 };
 
 static void
@@ -105,6 +107,10 @@ guestfs_add_domain_set_property(GObject *object, guint property_id, const GValue
       priv->discard = g_value_dup_string (value);
       break;
 
+    case PROP_GUESTFS_ADD_DOMAIN_COPYONREAD:
+      priv->copyonread = g_value_get_enum (value);
+      break;
+
     default:
       /* Invalid property */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -148,6 +154,10 @@ guestfs_add_domain_get_property(GObject *object, guint property_id, GValue *valu
 
     case PROP_GUESTFS_ADD_DOMAIN_DISCARD:
       g_value_set_string (value, priv->discard);
+      break;
+
+    case PROP_GUESTFS_ADD_DOMAIN_COPYONREAD:
+      g_value_set_enum (value, priv->copyonread);
       break;
 
     default:
@@ -309,6 +319,23 @@ guestfs_add_domain_class_init (GuestfsAddDomainClass *klass)
       "discard",
       "A string.",
       NULL,
+      G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+    )
+  );
+
+  /**
+   * GuestfsAddDomain:copyonread:
+   *
+   * A boolean.
+   */
+  g_object_class_install_property (
+    object_class,
+    PROP_GUESTFS_ADD_DOMAIN_COPYONREAD,
+    g_param_spec_enum (
+      "copyonread",
+      "copyonread",
+      "A boolean.",
+      GUESTFS_TYPE_TRISTATE, GUESTFS_TRISTATE_NONE,
       G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
     )
   );

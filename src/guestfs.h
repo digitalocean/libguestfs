@@ -730,6 +730,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_add_cdrom (guestfs_h *g, const char *filen
 #define GUESTFS_ADD_DOMAIN_READONLYDISK 5
 #define GUESTFS_ADD_DOMAIN_CACHEMODE 6
 #define GUESTFS_ADD_DOMAIN_DISCARD 7
+#define GUESTFS_ADD_DOMAIN_COPYONREAD 8
 extern GUESTFS_DLL_PUBLIC int guestfs_add_domain (guestfs_h *g, const char *dom, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_add_domain_va (guestfs_h *g, const char *dom, va_list args);
 
@@ -751,6 +752,8 @@ struct guestfs_add_domain_argv {
   const char *cachemode;
 # define GUESTFS_ADD_DOMAIN_DISCARD_BITMASK (UINT64_C(1)<<7)
   const char *discard;
+# define GUESTFS_ADD_DOMAIN_COPYONREAD_BITMASK (UINT64_C(1)<<8)
+  int copyonread;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_add_domain_argv (guestfs_h *g, const char *dom, const struct guestfs_add_domain_argv *optargs);
@@ -770,6 +773,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_add_drive (guestfs_h *g, const char *filen
 #define GUESTFS_ADD_DRIVE_OPTS_SECRET 8
 #define GUESTFS_ADD_DRIVE_OPTS_CACHEMODE 9
 #define GUESTFS_ADD_DRIVE_OPTS_DISCARD 10
+#define GUESTFS_ADD_DRIVE_OPTS_COPYONREAD 11
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts (guestfs_h *g, const char *filename, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts_va (guestfs_h *g, const char *filename, va_list args);
 
@@ -797,6 +801,8 @@ struct guestfs_add_drive_opts_argv {
   const char *cachemode;
 # define GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK (UINT64_C(1)<<10)
   const char *discard;
+# define GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK (UINT64_C(1)<<11)
+  int copyonread;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts_argv (guestfs_h *g, const char *filename, const struct guestfs_add_drive_opts_argv *optargs);
