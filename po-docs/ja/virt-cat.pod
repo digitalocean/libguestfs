@@ -241,13 +241,6 @@ C<virt-cat> を使用することは、次のこととほぼ同等です:
 ここで、C<disk.img> はディスクイメージ、C</dev/sda1> はディスクイメージにあるファイルシステム、そして C<file>
 はファイルの完全パスです。
 
-=head1 SHELL QUOTING
-
-Libvirt guest names can contain arbitrary characters, some of which have
-meaning to the shell such as C<#> and space.  You may need to quote or
-escape these characters on the command line.  See the shell manual page
-L<sh(1)> for details.
-
 =head1 終了ステータス
 
 このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。

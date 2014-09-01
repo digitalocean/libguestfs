@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libguestfs\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2014-07-08 14:08+0100\n"
+"POT-Creation-Date: 2014-07-21 14:50+0100\n"
 "PO-Revision-Date: 2014-03-26 16:49+0000\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/fedora/language/"
@@ -32,7 +32,7 @@ msgid ""
 "version.\n"
 msgstr ""
 
-#: ../sparsify/copying.ml:94
+#: ../sparsify/copying.ml:109
 msgid ""
 "\n"
 "WARNING: There may not be enough free space on %s.\n"
@@ -275,7 +275,7 @@ msgstr ""
 msgid "%s: error: %s"
 msgstr ""
 
-#: ../v2v/v2v.ml:354
+#: ../v2v/v2v.ml:354 ../sysprep/main.ml:297
 msgid "%s: error: %s\n"
 msgstr ""
 
@@ -283,13 +283,15 @@ msgstr ""
 msgid "%s: error: %s is not a regular file in the guest\n"
 msgstr ""
 
+#. ../resize/resize.ml:1308
 #. ../builder/builder.ml:743
-#: ../v2v/v2v.ml:347 ../sparsify/sparsify.ml:52 ../resize/resize.ml:1308
+#: ../v2v/v2v.ml:347 ../sysprep/main.ml:290 ../sparsify/sparsify.ml:52
 msgid "%s: error: %s: %s\n"
 msgstr ""
 
+#. ../resize/resize.ml:1311
 #. ../builder/builder.ml:746
-#: ../v2v/v2v.ml:350 ../sparsify/sparsify.ml:55 ../resize/resize.ml:1311
+#: ../v2v/v2v.ml:350 ../sysprep/main.ml:293 ../sparsify/sparsify.ml:55
 msgid "%s: error: %s: %s: %s\n"
 msgstr ""
 
@@ -307,9 +309,10 @@ msgstr ""
 msgid "%s: error: no cache directory\n"
 msgstr ""
 
+#. ../resize/resize.ml:1330
 #. ../customize/customize_main.ml:262
 #. ../builder/builder.ml:764
-#: ../v2v/v2v.ml:372 ../sparsify/sparsify.ml:74 ../resize/resize.ml:1330
+#: ../v2v/v2v.ml:372 ../sysprep/main.ml:316 ../sparsify/sparsify.ml:74
 msgid "%s: exception: %s\n"
 msgstr ""
 
@@ -317,8 +320,9 @@ msgstr ""
 msgid "%s: failed to download %s: HTTP status code %s\n"
 msgstr ""
 
+#. ../resize/resize.ml:1318
 #. ../builder/builder.ml:752
-#: ../v2v/v2v.ml:360 ../sparsify/sparsify.ml:62 ../resize/resize.ml:1318
+#: ../v2v/v2v.ml:360 ../sysprep/main.ml:303 ../sparsify/sparsify.ml:62
 msgid "%s: failure: %s\n"
 msgstr ""
 
@@ -342,22 +346,25 @@ msgid ""
 "Requested size = %s, minimum size = %s\n"
 msgstr ""
 
+#. ../resize/resize.ml:1327
 #. ../customize/customize_main.ml:259
 #. ../builder/builder.ml:761
-#: ../v2v/v2v.ml:369 ../sparsify/sparsify.ml:71 ../resize/resize.ml:1327
+#: ../v2v/v2v.ml:369 ../sysprep/main.ml:313 ../sparsify/sparsify.ml:71
 msgid "%s: internal error: Not_found exception was thrown\n"
 msgstr ""
 
+#. ../resize/resize.ml:1324
 #. ../customize/customize_main.ml:255
 #. ../builder/builder.ml:758
-#: ../v2v/v2v.ml:366 ../sparsify/sparsify.ml:68 ../resize/resize.ml:1324
+#: ../v2v/v2v.ml:366 ../sysprep/main.ml:309 ../sparsify/sparsify.ml:68
 msgid "%s: internal error: assertion failed at %s, line %d, char %d\n"
 msgstr ""
 
+#. ../resize/resize.ml:1321
 #. ../customize/customize_main.ml:252
 #. ../builder/sources.ml:135
 #. ../builder/builder.ml:755
-#: ../v2v/v2v.ml:363 ../sparsify/sparsify.ml:65 ../resize/resize.ml:1321
+#: ../v2v/v2v.ml:363 ../sysprep/main.ml:306 ../sparsify/sparsify.ml:65
 msgid "%s: internal error: invalid argument: %s\n"
 msgstr ""
 
@@ -373,8 +380,9 @@ msgstr ""
 msgid "%s: invalid password selector '%s'; see the man page.\n"
 msgstr ""
 
+#. ../resize/resize.ml:1315
 #. ../builder/builder.ml:749
-#: ../v2v/v2v.ml:357 ../sparsify/sparsify.ml:59 ../resize/resize.ml:1315
+#: ../v2v/v2v.ml:357 ../sysprep/main.ml:300 ../sparsify/sparsify.ml:59
 msgid "%s: libguestfs error: %s\n"
 msgstr ""
 
@@ -607,7 +615,7 @@ msgstr ""
 msgid "--check-tmpdir: unknown argument `%s'\n"
 msgstr ""
 
-#: ../sparsify/copying.ml:69
+#: ../sparsify/copying.ml:70
 msgid ""
 "--compress cannot be used for raw output.  Remove this option or use --"
 "convert qcow2."
@@ -621,8 +629,21 @@ msgstr ""
 msgid "--shrink option given twice"
 msgstr ""
 
-#: ../sparsify/copying.ml:78
-msgid "--tmp parameter must point to a directory or a block device"
+#: ../sparsify/copying.ml:92
+msgid ""
+"--tmp parameter must point to a directory, block device or prebuilt file"
+msgstr ""
+
+#: ../sparsify/copying.ml:81
+msgid "--tmp prebuilt:file: %s: file does not exist"
+msgstr ""
+
+#: ../sparsify/copying.ml:88
+msgid "--tmp prebuilt:file: %s: file does not have backing file"
+msgstr ""
+
+#: ../sparsify/copying.ml:86
+msgid "--tmp prebuilt:file: %s: file format is not qcow2"
 msgstr ""
 
 #: ../v2v/cmdline.ml:179
@@ -703,7 +724,7 @@ msgstr ""
 msgid "Check there is enough space in $TMPDIR"
 msgstr ""
 
-#: ../sparsify/in_place.ml:104 ../sparsify/copying.ml:232
+#: ../sparsify/in_place.ml:104 ../sparsify/copying.ml:254
 msgid ""
 "Clearing Linux swap on %s ...\n"
 "%!"
@@ -729,7 +750,7 @@ msgstr ""
 msgid "Converting the guest to run on KVM"
 msgstr ""
 
-#: ../sparsify/copying.ml:287
+#: ../sparsify/copying.ml:309
 msgid ""
 "Copy to destination and make sparse ...\n"
 "%!"
@@ -755,13 +776,13 @@ msgstr ""
 msgid "Create a directory"
 msgstr ""
 
-#: ../sparsify/copying.ml:137
+#: ../sparsify/copying.ml:152
 msgid ""
 "Create overlay device %s to protect source disk ...\n"
 "%!"
 msgstr ""
 
-#: ../sparsify/copying.ml:134
+#: ../sparsify/copying.ml:149
 msgid ""
 "Create overlay file in %s to protect source disk ...\n"
 "%!"
@@ -970,7 +991,7 @@ msgstr ""
 msgid "Error parsing URI '%s'. Look for error messages printed above.\n"
 msgstr ""
 
-#: ../sparsify/copying.ml:166
+#: ../sparsify/copying.ml:188
 msgid ""
 "Examine source disk ...\n"
 "%!"
@@ -1032,7 +1053,7 @@ msgid ""
 "The underlying error was: %s"
 msgstr ""
 
-#: ../sparsify/copying.ml:216
+#: ../sparsify/copying.ml:238
 msgid ""
 "Fill free space in %s with zero ...\n"
 "%!"
@@ -1040,7 +1061,7 @@ msgstr ""
 "Wypełnia wolne miejsce w %s zerami ...\n"
 "%!"
 
-#: ../sparsify/copying.ml:266
+#: ../sparsify/copying.ml:288
 msgid ""
 "Fill free space in volgroup %s with zero ...\n"
 "%!"
@@ -1124,7 +1145,7 @@ msgstr "Ignoruje system plików"
 msgid "Ignore partition"
 msgstr "Ignoruje partycję"
 
-#: ../sparsify/copying.ml:87
+#: ../sparsify/copying.ml:102
 msgid ""
 "Input disk virtual size = %Ld bytes (%s)\n"
 "%!"
@@ -1664,7 +1685,7 @@ msgid "Set template cache dir"
 msgstr ""
 
 #: ../sparsify/cmdline.ml:83
-msgid "Set temporary block device or directory"
+msgid "Set temporary block device, directory or prebuilt file"
 msgstr ""
 
 #: ../customize/customize_cmdline.ml:249
@@ -1731,7 +1752,7 @@ msgstr ""
 msgid "Sparsify in-place operation completed with no errors.\n"
 msgstr ""
 
-#: ../sparsify/copying.ml:305
+#: ../sparsify/copying.ml:327
 msgid ""
 "Sparsify operation completed with no errors.  Before deleting the old disk, "
 "carefully check that the target disk boots and works correctly.\n"
@@ -1898,6 +1919,12 @@ msgstr ""
 msgid "Uploading: %s to %s"
 msgstr ""
 
+#: ../sparsify/copying.ml:155
+msgid ""
+"Using prebuilt file %s as overlay ...\n"
+"%!"
+msgstr ""
+
 #: ../v2v/convert_linux.ml:615
 msgid ""
 "VMware tools was detected, but uninstallation failed.  The error message "
@@ -1940,7 +1967,7 @@ msgstr ""
 msgid "Zero filesystem"
 msgstr "Wypełnia system plików zerami"
 
-#: ../sparsify/in_place.ml:76 ../sparsify/copying.ml:206
+#: ../sparsify/in_place.ml:76 ../sparsify/copying.ml:228
 msgid ""
 "Zeroing %s ...\n"
 "%!"
@@ -1953,7 +1980,7 @@ msgid "alignment cannot be < 1"
 msgstr ""
 
 #: ../sparsify/cmdline.ml:83
-msgid "block|dir"
+msgid "block|dir|prebuilt:file"
 msgstr ""
 
 #: ../resize/resize.ml:130
@@ -1972,7 +1999,7 @@ msgstr ""
 msgid "cached"
 msgstr ""
 
-#: ../sparsify/copying.ml:64
+#: ../sparsify/copying.ml:65
 msgid "cannot detect input disk format; use the --format parameter"
 msgstr ""
 
@@ -2087,7 +2114,7 @@ msgstr ""
 msgid "external command '%s' stopped by signal %d"
 msgstr ""
 
-#: ../sparsify/copying.ml:300
+#: ../sparsify/copying.ml:322
 msgid "external command failed: %s"
 msgstr ""
 
@@ -2105,10 +2132,6 @@ msgstr "plik"
 msgid "first partition is NTFS but does not contain NTFS boot loader magic"
 msgstr ""
 
-#: ../customize/firstboot.ml:82
-msgid "firstboot: failed: "
-msgstr ""
-
 #. ../resize/resize.ml:203
 #. ../resize/resize.ml:191
 #. ../customize/customize_main.ml:88
@@ -2122,6 +2145,14 @@ msgstr ""
 
 #: ../builder/builder.ml:130
 msgid "gpg program is not available"
+msgstr ""
+
+#: ../customize/firstboot.ml:114
+msgid "guest type %s is not supported"
+msgstr ""
+
+#: ../customize/firstboot.ml:168
+msgid "guest type %s/%s is not supported"
 msgstr ""
 
 #: ../customize/customize_run.ml:219
@@ -2255,7 +2286,7 @@ msgstr ""
 msgid "pvresize"
 msgstr ""
 
-#: ../sparsify/in_place.ml:113 ../sparsify/copying.ml:241
+#: ../sparsify/in_place.ml:113 ../sparsify/copying.ml:263
 msgid "pwrite: short write restoring swap partition header"
 msgstr ""
 
@@ -2286,29 +2317,6 @@ msgstr ""
 #: ../resize/resize.ml:182
 msgid "sectors"
 msgstr "sektory"
-
-#: ../sysprep/main.ml:290
-msgid "sysprep operation failed: %s\n"
-msgstr ""
-
-#: ../sysprep/main.ml:302
-msgid "sysprep operation failed: exception: %s\n"
-msgstr ""
-
-#: ../sysprep/main.ml:299
-msgid ""
-"sysprep operation failed: internal error: Not_found exception was thrown\n"
-msgstr ""
-
-#: ../sysprep/main.ml:296
-msgid ""
-"sysprep operation failed: internal error: assertion failed at %s, line %d, "
-"char %d\n"
-msgstr ""
-
-#: ../sysprep/main.ml:293
-msgid "sysprep operation failed: internal error: invalid argument: %s\n"
-msgstr ""
 
 #: ../resize/resize.ml:444
 msgid "the source disk has no partitions"

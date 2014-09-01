@@ -466,13 +466,6 @@ or Python's built-in csv library).
 
 Most spreadsheets and databases can import CSV directly.
 
-=head1 SHELL QUOTING
-
-Libvirt guest names can contain arbitrary characters, some of which have
-meaning to the shell such as C<#> and space.  You may need to quote or
-escape these characters on the command line.  See the shell manual page
-L<sh(1)> for details.
-
 =head1 終了ステータス
 
 このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。

@@ -1,3 +1,204 @@
+commit e7ae071f60846e0d91a1a1728b5614df912815f6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 21 14:36:43 2014 +0100
+
+    Version 1.27.22.
+
+commit 5326689d50cc82e9108c83511e666be6d081d9dd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 18 15:05:55 2014 +0000
+
+    aarch64: efi-rtc=noprobe is needed to fix boot of upstream kernel on VM.
+
+commit f4026d779e9736b5446f80d5b4d68eaa13fd07bd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jul 17 16:24:52 2014 +0200
+
+    configure: look for "default-java" as directory for Java
+    
+    In Debian-based systems, /usr/lib/jvm/default-java is a symlink
+    pointing to the location of the default Java version.
+
+commit de5924a2294a6aeb09e4b41b55f06d2f3ea5e0ec
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 17 20:32:24 2014 +0000
+
+    tests: Add test program to run qemu/appliance repeatedly.
+    
+    For example:
+    
+      $ time ./run ./tests/qemu/qemu-boot -n 100
+      real 1m19.794s
+      user 0m10.001s
+      sys  0m5.928s
+    
+    will run 100 appliance start/stops, from multiple threads.
+
+commit 83790960d63b78b1c2264777a4d87559d11f3b12
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 17 11:38:20 2014 +0100
+
+    valgrind: Tweak the suppression matching OCaml leak in caml_search_in_path.
+    
+    In OCaml 4.02 this still leaks, but the stack trace is slightly
+    different so the old suppression didn't match it.
+
+commit 333ddf208b878441e3ef3ea6b65726f758310315
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 17 09:58:07 2014 +0100
+
+    tests: Add a protocol regression test for long error messages.
+
+commit 4106c97934ec5461ae854939185bfa574374bca2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 17 09:57:42 2014 +0100
+
+    daemon: Truncate long error messages so XDR encoding doesn't fail.
+
+commit 4d3953f09217e15212d18f53e1cf040d54156f72
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 16 22:05:39 2014 +0100
+
+    Warn about large stack frames, and fix a few places with excessive stack usage.
+
+commit 00c94d808b0abc825c379ea1f0f2d44827ad120a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 17 09:43:45 2014 +0100
+
+    tests: Remove tests/protocol/test-qemudie-launchfail.sh
+    
+    This test has not been run since 2012 as it depends on specifics of
+    how supermin and new-style appliances work (see
+    commit 2d89aef897e633bffba1dffd600b122eacd88fc8).
+    
+    This commit removes the test entirely.
+
+commit fa3d6e55b2e3a2be811038914ece3c5bdf57c4a2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 16 12:39:26 2014 +0000
+
+    tests: qemu: Fix TCG test.
+    
+    $guestfish was not defined, so the UML test/skip did not do anything.
+
+commit 9cdaaeee40384af47bb581c83407efac39090cb1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 15 18:22:05 2014 +0000
+
+    tests: regressions: Allow non-exec stack test to be skipped.
+    
+    Currently fails on aarch64 because of a buggy GCC.
+
+commit 9e01541e4814a81a1911d83d07f61aa8b4139ca2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 15 17:56:57 2014 +0000
+
+    tests: 9p: aarch64 also uses virtio-mmio (instead of virtio-pci).
+
+commit 2d01e06fc9983a3981062d96252dc6b4e3a5f326
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 15 17:55:18 2014 +0000
+
+    tests: regressions: Skip test on aarch64 which also does not support IDE.
+
+commit fe9d3f7a903741311cfd0ef0b82607be8ab923df
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 15 16:41:18 2014 +0000
+
+    ocaml: Ignore Warning 3: deprecated feature: String.* functions.
+    
+    In OCaml 4.02, the 'string' type can be made immutable.  All String.*
+    functions that are concerned with creating or mutating strings now
+    give a warning like this:
+    
+      Warning 3: deprecated feature: String.unsafe_set
+    
+    Disable this warning since we don't want to turn on immutable strings
+    yet.
+
+commit d71ec218eaffe0caf07b44e349383ef1d9398feb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jul 12 14:50:15 2014 +0000
+
+    aarch64: Add some earlyprintk debugging.
+
+commit 57c7417f89b2e39f625e9b3276a5ef470fcd5b6a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jul 12 14:49:23 2014 +0000
+
+    aarch64: Use console=ttyAMA0 instead of console=ttyS0.
+    
+    This still only prints early console messages.  Output stops
+    after:
+    
+      bootconsole [earlycon0] disabled
+    
+    but I have not found any way to get later kernel messages.
+
+commit 9d8ede1ae4b8b926a00c16d0f6ba52d8a6defbd7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 10 17:32:39 2014 +0100
+
+    sysprep: Standard exception handling, taken from virt-builder & virt-v2v.
+
+commit f913ca5ebcaacbd94a31ed8fac935833447cc0a7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 8 20:51:22 2014 +0100
+
+    customize: Use Common_utils.error function instead of failwith.
+    
+    This is just code refactoring.
+
+commit 82cf3c9d68237a3294f6e83f2b38de4f1414ca7f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 8 20:52:17 2014 +0100
+
+    customize: Update copyright messages.
+    
+    No functional change.
+
+commit f955fec7601309ca3b33080cb6d49ea916be452e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 8 23:01:05 2014 +0100
+
+    docs: Remove useless "SHELL QUOTING" section from manual pages.
+
+commit 9b47a53a4b5c34095efb297b12867b42752786d4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 11 10:21:39 2014 +0100
+
+    sparsify: Add --tmp prebuilt:file option.
+    
+    This option allows oVirt to pass a prebuilt qcow2 file to use as the
+    temporary overlay.  The file must be qcow2, and must have indisk as a
+    backing file - the code does minimal checks to ensure this is correct.
+    
+    Example usage:
+    
+      qemu-img create -f qcow2 -b indisk overlay.qcow2
+      virt-sparsify indisk --tmp prebuilt:overlay.qcow2 outdisk
+    
+    Note this only applies in copying mode.
+
+commit 66aa98265dd215dcd4c717e7ef6845fbac859e54
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jul 15 11:06:32 2014 +0200
+
+    appliance: init: run ldconfig
+    
+    Run ldconfig early in the init script, so libraries outside standard
+    library paths but with a proper ld.so configuration file pointing at
+    them can be found.
+
+commit a791e081638025b64d1229d23d1181d96cc2a607
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 11 10:38:53 2014 +0100
+
+    RHEL 6: p2v: Add fix for older PCRE.
+    
+    RHEL 6 pcre did not define PCRE_PARTIAL_SOFT.  However PCRE_PARTIAL is
+    a synonym so use that.
+
 commit 17bf3ce21cb28840987caaa79babd006458ad2d2
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Jul 8 13:55:31 2014 +0100

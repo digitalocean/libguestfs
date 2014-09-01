@@ -1488,7 +1488,7 @@ EXTRA_DIST = \
 
 CLEANFILES = *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so t/*.cmi \
 	t/*.cmo t/*.cmx t/*.o t/*.a t/*.so $(am__append_2)
-@HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX
+@HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX-3
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@noinst_DATA = mlguestfs.cma META $(am__append_1) \
 @HAVE_OCAML_TRUE@	$(am__append_4) bindtests.bc \

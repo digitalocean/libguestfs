@@ -304,7 +304,7 @@ guestfs__config (guestfs_h *g,
  */
 #if defined(__powerpc64__)
 #define SERIAL_CONSOLE "console=hvc0 console=ttyS0"
-#elif defined(__arm__)
+#elif defined(__arm__) || defined(__aarch64__)
 #define SERIAL_CONSOLE "console=ttyAMA0"
 #else
 #define SERIAL_CONSOLE "console=ttyS0"
@@ -342,6 +342,10 @@ guestfs___appliance_command_line (guestfs_h *g, const char *appliance_dev,
      " noapic"                  /* workaround for RHBZ#857026 */
 #endif
      " " SERIAL_CONSOLE /* serial console */
+#ifdef __aarch64__
+     " earlyprintk=pl011,0x9000000 ignore_loglevel"
+     " efi-rtc=noprobe"
+#endif
      " udevtimeout=6000"/* for slow systems (RHBZ#480319, RHBZ#1096579) */
      " no_timer_check"  /* fix for RHBZ#502058 */
      "%s"               /* lpj */
