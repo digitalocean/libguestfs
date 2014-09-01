@@ -36,11 +36,12 @@ let parse_cmdline () =
   let do_copy = ref true in
   let input_conn = ref "" in
   let input_format = ref "" in
+  let machine_readable = ref false in
   let output_conn = ref "" in
   let output_format = ref "" in
   let output_name = ref "" in
   let output_storage = ref "" in
-  let machine_readable = ref false in
+  let print_source = ref false in
   let quiet = ref false in
   let rhev_image_uuid = ref "" in
   let rhev_vm_uuid = ref "" in
@@ -55,6 +56,19 @@ let parse_cmdline () =
     | "libvirtxml" -> input_mode := `LibvirtXML
     | s ->
       error (f_"unknown -i option: %s") s
+  in
+
+  let network_map = ref [] in
+  let add_network, add_bridge =
+    let add t str =
+      match string_split ":" str with
+      | "", "" -> error (f_"invalid --bridge or --network parameter")
+      | out, "" | "", out -> network_map := ((t, ""), out) :: !network_map
+      | in_, out -> network_map := ((t, in_), out) :: !network_map
+    in
+    let add_network str = add Network str
+    and add_bridge str = add Bridge str in
+    add_network, add_bridge
   in
 
   let output_mode = ref `Libvirt in
@@ -89,6 +103,7 @@ let parse_cmdline () =
 
   let ditto = " -\"-" in
   let argspec = Arg.align [
+    "--bridge",  Arg.String add_bridge,     "in:out " ^ s_"Map bridge 'in' to 'out'";
     "--debug-gc",Arg.Set debug_gc,          " " ^ s_"Debug GC and memory allocations";
     "-i",        Arg.String set_input_mode, "disk|libvirt|libvirtxml " ^ s_"Set input mode (default: libvirt)";
     "-ic",       Arg.Set_string input_conn, "uri " ^ s_"Libvirt URI";
@@ -96,6 +111,7 @@ let parse_cmdline () =
                                             "format " ^ s_"Input format (for -i disk)";
     "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
     "--machine-readable", Arg.Set machine_readable, " " ^ s_"Make output machine readable";
+    "--network", Arg.String add_network,    "in:out " ^ s_"Map network 'in' to 'out'";
     "--no-copy", Arg.Clear do_copy,         " " ^ s_"Just write the metadata";
     "-o",        Arg.String set_output_mode, "libvirt|local|rhev " ^ s_"Set output mode (default: libvirt)";
     "-oa",       Arg.String set_output_alloc, "sparse|preallocated " ^ s_"Set output allocation mode";
@@ -103,6 +119,7 @@ let parse_cmdline () =
     "-of",       Arg.Set_string output_format, "raw|qcow2 " ^ s_"Set output format";
     "-on",       Arg.Set_string output_name, "name " ^ s_"Rename guest when converting";
     "-os",       Arg.Set_string output_storage, "storage " ^ s_"Set output storage location";
+    "--print-source", Arg.Set print_source, " " ^ s_"Print source and stop";
     "-q",        Arg.Set quiet,             " " ^ s_"Quiet output";
     "--quiet",   Arg.Set quiet,             ditto;
     "--rhev-image-uuid",
@@ -152,12 +169,14 @@ read the man page virt-v2v(1).
   let input_format = match !input_format with "" -> None | s -> Some s in
   let input_mode = !input_mode in
   let machine_readable = !machine_readable in
+  let network_map = !network_map in
   let output_alloc = !output_alloc in
   let output_conn = match !output_conn with "" -> None | s -> Some s in
   let output_format = match !output_format with "" -> None | s -> Some s in
   let output_mode = !output_mode in
   let output_name = match !output_name with "" -> None | s -> Some s in
   let output_storage = !output_storage in
+  let print_source = !print_source in
   let quiet = !quiet in
   let rhev_image_uuid = match !rhev_image_uuid with "" -> None | s -> Some s in
   let rhev_vol_uuids = List.rev !rhev_vol_uuids in
@@ -192,7 +211,7 @@ read the man page virt-v2v(1).
         | [disk] -> disk
         | _ ->
           error (f_"expecting a disk image (filename) on the command line") in
-      InputDisk (input_format, disk)
+      Input_disk.input_disk verbose input_format disk
 
     | `Libvirt ->
       (* -i libvirt: Expecting a single argument which is the name
@@ -203,7 +222,7 @@ read the man page virt-v2v(1).
         | [guest] -> guest
         | _ ->
           error (f_"expecting a libvirt guest name on the command line") in
-      InputLibvirt (input_conn, guest)
+      Input_libvirt.input_libvirt verbose input_conn guest
 
     | `LibvirtXML ->
       (* -i libvirtxml: Expecting a filename (XML file). *)
@@ -212,7 +231,7 @@ read the man page virt-v2v(1).
         | [filename] -> filename
         | _ ->
           error (f_"expecting a libvirt XML file name on the command line") in
-      InputLibvirtXML filename in
+      Input_libvirt.input_libvirtxml verbose filename in
 
   (* Parse the output mode. *)
   let output =
@@ -224,7 +243,7 @@ read the man page virt-v2v(1).
         error (f_"--vmtype option can only be used with '-o rhev'");
       if not do_copy then
         error (f_"--no-copy and '-o libvirt' cannot be used at the same time");
-      OutputLibvirt (output_conn, output_storage)
+      Output_libvirt.output_libvirt verbose output_conn output_storage
 
     | `Local ->
       if output_storage = "" then
@@ -234,19 +253,20 @@ read the man page virt-v2v(1).
           output_storage;
       if vmtype <> None then
         error (f_"--vmtype option can only be used with '-o rhev'");
-      OutputLocal output_storage
+      Output_local.output_local verbose output_storage
 
     | `RHEV ->
       if output_storage = "" then
         error (f_"-o rhev: output storage was not specified, use '-os'");
       let rhev_params = {
-        image_uuid = rhev_image_uuid;
+        Output_RHEV.image_uuid = rhev_image_uuid;
         vol_uuids = rhev_vol_uuids;
         vm_uuid = rhev_vm_uuid;
         vmtype = vmtype;
       } in
-      OutputRHEV (output_storage, rhev_params) in
+      Output_RHEV.output_rhev verbose output_storage rhev_params output_alloc in
 
   input, output,
-  debug_gc, do_copy, output_alloc, output_format, output_name,
-  quiet, root_choice, trace, verbose
+  debug_gc, do_copy, network_map,
+  output_alloc, output_format, output_name,
+  print_source, quiet, root_choice, trace, verbose

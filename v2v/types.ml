@@ -20,46 +20,10 @@ open Printf
 
 (* Types.  See types.mli for documentation. *)
 
-type input =
-| InputDisk of string option * string
-| InputLibvirt of string option * string
-| InputLibvirtXML of string
-
-type output =
-| OutputLibvirt of string option * string
-| OutputLocal of string
-| OutputRHEV of string * output_rhev_params
-
-and output_rhev_params = {
-  image_uuid : string option;
-  vol_uuids : string list;
-  vm_uuid : string option;
-  vmtype : [`Server|`Desktop] option;
-}
-
-let output_as_options = function
-  | OutputLibvirt (None, os) ->
-    sprintf "-o libvirt -os %s" os
-  | OutputLibvirt (Some uri, os) ->
-    sprintf "-o libvirt -oc %s -os %s" uri os
-  | OutputLocal os ->
-    sprintf "-o local -os %s" os
-  | OutputRHEV (os, params) ->
-    sprintf "-o rhev -os %s%s%s%s%s" os
-      (match params.image_uuid with
-      | None -> "" | Some uuid -> sprintf " --rhev-image-uuid %s" uuid)
-      (String.concat ""
-         (List.map (sprintf " --rhev-vol-uuid %s") params.vol_uuids))
-      (match params.vm_uuid with
-      | None -> "" | Some uuid -> sprintf " --rhev-vm-uuid %s" uuid)
-      (match params.vmtype with
-      | None -> ""
-      | Some `Server -> " --vmtype server"
-      | Some `Desktop -> " --vmtype desktop")
-
 type source = {
   s_dom_type : string;
   s_name : string;
+  s_orig_name : string;
   s_memory : int64;
   s_vcpu : int;
   s_arch : string;
@@ -81,8 +45,9 @@ and source_removable = {
 and source_nic = {
   s_mac : string option;
   s_vnet : string;
-  s_vnet_type : [`Bridge|`Network];
+  s_vnet_type : vnet_type;
 }
+and vnet_type = Bridge | Network
 and source_display = {
   s_display_type : [`VNC|`Spice];
   s_keymap : string option;
@@ -90,20 +55,22 @@ and source_display = {
 }
 
 let rec string_of_source s =
-  sprintf "\
-s_dom_type = %s
-s_name = %s
-s_memory = %Ld
-s_vcpu = %d
-s_arch = %s
-s_features = [%s]
-s_display = %s
-s_disks = [%s]
-s_removables = [%s]
-s_nics = [%s]
+  sprintf "    source name: %s
+hypervisor type: %s
+         memory: %Ld (bytes)
+       nr vCPUs: %d
+           arch: %s
+   CPU features: %s
+        display: %s
+disks:
+%s
+removable media:
+%s
+NICs:
+%s
 "
-    s.s_dom_type
     s.s_name
+    s.s_dom_type
     s.s_memory
     s.s_vcpu
     s.s_arch
@@ -111,13 +78,13 @@ s_nics = [%s]
     (match s.s_display with
     | None -> ""
     | Some display -> string_of_source_display display)
-    (String.concat "," (List.map string_of_source_disk s.s_disks))
-    (String.concat "," (List.map string_of_source_removable s.s_removables))
-    (String.concat "," (List.map string_of_source_nic s.s_nics))
+    (String.concat "\n" (List.map string_of_source_disk s.s_disks))
+    (String.concat "\n" (List.map string_of_source_removable s.s_removables))
+    (String.concat "\n" (List.map string_of_source_nic s.s_nics))
 
 and string_of_source_disk { s_qemu_uri = qemu_uri; s_format = format;
                             s_target_dev = target_dev } =
-  sprintf "%s%s%s"
+  sprintf "\t%s%s%s"
     qemu_uri
     (match format with
     | None -> ""
@@ -128,19 +95,19 @@ and string_of_source_disk { s_qemu_uri = qemu_uri; s_format = format;
 
 and string_of_source_removable { s_removable_type = typ;
                                  s_removable_target_dev = target_dev } =
-  sprintf "%s%s"
-    (match typ with `CDROM -> "cdrom" | `Floppy -> "floppy")
+  sprintf "\t%s%s"
+    (match typ with `CDROM -> "CD-ROM" | `Floppy -> "Floppy")
     (match target_dev with
     | None -> ""
     | Some target_dev -> " [" ^ target_dev ^ "]")
 
 and string_of_source_nic { s_mac = mac; s_vnet = vnet; s_vnet_type = typ } =
-  sprintf "%s%s%s"
-    (match typ with `Bridge -> "bridge" | `Network -> "network")
+  sprintf "\t%s \"%s\"%s"
+    (match typ with Bridge -> "Bridge" | Network -> "Network")
     vnet
     (match mac with
     | None -> ""
-    | Some mac -> " " ^ mac)
+    | Some mac -> " mac: " ^ mac)
 
 and string_of_source_display { s_display_type = typ;
                                s_keymap = keymap; s_password = password } =
@@ -158,7 +125,6 @@ type overlay = {
   ov_preallocation : string option;
   ov_source_file : string;
   ov_source_format : string option;
-  ov_vol_uuid : string;
 }
 
 let string_of_overlay ov =
@@ -171,7 +137,6 @@ ov_virtual_size = %Ld
 ov_preallocation = %s
 ov_source_file = %s
 ov_source_format = %s
-ov_vol_uuid = %s
 "
     ov.ov_overlay
     ov.ov_target_file
@@ -181,7 +146,6 @@ ov_vol_uuid = %s
     (match ov.ov_preallocation with None -> "None" | Some s -> s)
     ov.ov_source_file
     (match ov.ov_source_format with None -> "None" | Some s -> s)
-    ov.ov_vol_uuid
 
 type inspect = {
   i_root : string;
@@ -199,8 +163,30 @@ type inspect = {
 }
 
 type guestcaps = {
-  gcaps_block_bus : string;
-  gcaps_net_bus : string;
+  gcaps_block_bus : guestcaps_block_type;
+  gcaps_net_bus : guestcaps_net_type;
+  gcaps_video : guestcaps_video_type;
   gcaps_acpi : bool;
-  gcaps_video : string;
 }
+and guestcaps_block_type = Virtio_blk | IDE
+and guestcaps_net_type = Virtio_net | E1000 | RTL8139
+and guestcaps_video_type = QXL | Cirrus
+
+type output_rhev_params = {
+  image_uuid : string option;
+  vol_uuids : string list;
+  vm_uuid : string option;
+  vmtype : [`Server|`Desktop] option;
+}
+
+class virtual input verbose = object
+  method virtual as_options : string
+  method virtual source : unit -> source
+end
+
+class virtual output verbose = object
+  method virtual as_options : string
+  method virtual prepare_output : source -> overlay list -> overlay list
+  method virtual create_metadata : source -> overlay list -> guestcaps -> inspect -> unit
+  method keep_serial_console = true
+end

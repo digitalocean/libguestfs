@@ -16,12 +16,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-(** [-i libvirt] and [-i libvirtxml] sources. *)
+(** [-o libvirt] target. *)
 
-val create : string option -> string -> Types.source
-(** [create libvirt_uri guest] reads the source metadata from the
-    named libvirt guest. *)
+val output_libvirt : bool -> string option -> string -> Types.output
 
-val create_from_xml : string -> Types.source
-(** [create_from_xml filename] reads the source metadata from the
-    libvirt XML file. *)
+val create_libvirt_xml : ?pool:string -> Types.source -> Types.overlay list -> Types.guestcaps -> DOM.doc
+(** This is called from {!Output_local} to generate the libvirt XML. *)

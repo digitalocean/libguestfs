@@ -1,3 +1,207 @@
+commit f71d62fa7853c81332275f96db5ee90c9767c0ec
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 19:38:27 2014 +0100
+
+    Version 1.27.30.
+
+commit 4389702e5c96a894fe0d97666fc16c92c775d8d2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 19:28:41 2014 +0100
+
+    v2v: Remove build path which inadvertently appeared in test data.
+
+commit 1e1ceb52730d22cf06a0fa098f9382a7071c7ca1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 17:08:35 2014 +0100
+
+    Version 1.27.29.
+
+commit 1d0ef02b3665822ae89ddd2bd39a79c728075cf3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 17:06:53 2014 +0100
+
+    v2v: Fix check-valgrind on --print-source option.
+    
+    This updates commit 3a6dc32342cd6a545d66e9b773bab8450f533fa5.
+
+commit f5fda273b18380f44d399dae230ec622335e9f23
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 15:00:53 2014 +0100
+
+    v2v: Remove ov_vol_uuid hack.
+    
+    Now that we're using classes for outputs, we can hide the RHEV volume
+    UUIDs in the output_rhev class.
+
+commit 3903f97cb38dfb0beaf26e37fb4f4a7a45850a74
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 14:49:43 2014 +0100
+
+    v2v: Replace strings with variants for extra type safety.
+    
+    No functional change.
+
+commit c3dda31492c1d5f53b47278ae383c7d4ce8d86b3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 13:35:59 2014 +0100
+
+    v2v: Pass verbose flag into every input and output subclass.
+
+commit d1c8240b76d4c900ddb61e4a9c3e0e8d9f4907b3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 13:27:09 2014 +0100
+
+    v2v: Print log message when opening the source.
+
+commit ca05d757b00359e05536b3fb01484c0b61cd0934
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 12:25:43 2014 +0100
+
+    v2v: Change input and output variants into classes.
+    
+    Previously Types.input and Types.output were variants, resulting in
+    the main v2v.ml code having to have knowledge of all the input and
+    output types.  So you would end up with code in v2v.ml like:
+    
+      match output with
+      | OutputLibvirt -> (* call some libvirt-specific code *)
+      | OutputRHEV -> (* call some RHEV-specific code *)
+    
+    This changes these types to be abstract superclasses, with specific
+    implementations provided by (and hidden inside) each input/output
+    module.  The above code in v2v.ml now becomes:
+    
+      output#call ... (* no backend-specific knowledge needed *)
+    
+    Although this commit is very large, it is just refactoring.  There is
+    no functional change in the code.
+
+commit c7e56a530690e649a8ab33c1e40137900fb6927c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 21 13:20:25 2014 +0200
+
+    appliance: add glibc-locale on OpenSUSE
+    
+    Provides the gconv modules, needed for iconv to work.
+
+commit 640109e1e506a66111ce45ce82c9321e7da05887
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 11:02:37 2014 +0100
+
+    v2v: Reorder sections in the manual more logically.
+
+commit 3a6dc32342cd6a545d66e9b773bab8450f533fa5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 10:21:19 2014 +0100
+
+    v2v: Add --print-source option.
+
+commit aaf84abca9e19e6a358516b60cc8a49d0905aef5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 10:07:46 2014 +0100
+
+    v2v: Add --network and --bridge options to perform network name mapping.
+
+commit e787c7f213f67cc53e41774f2f6b363b517fe7c1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 21 09:12:04 2014 +0100
+
+    v2v: Let source.s_name be the renamed guest name (in case we use -on option).
+    
+    The original guest name is saved in s_orig_name, although I checked
+    all uses of s_name and nothing needs it at the moment.
+
+commit cf714fc08d455bc4524d97ca7b575bf3cc50b7be
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 20 11:44:49 2014 +0100
+
+    v2v: Update TODO.
+
+commit ccb47f93ff52a4f80498072cf679e502b782f655
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 20 21:16:57 2014 +0100
+
+    v2v: Add support for remote ESX connections.
+    
+    This allows `-ic esx://...' to work because we map the strange source
+    URI used by ESX to a remote HTTPS connection.
+    
+    Example disk section that this handles:
+    
+        <disk type='file' device='disk'>
+          <source file='[datastore1] Windows/Windows.vmdk'/>
+          <target dev='sda' bus='scsi'/>
+          <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+        </disk>
+
+commit 0539c2044c69f892c0a31fdb490e44403853fa57
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 20 20:00:59 2014 +0100
+
+    v2v: VMware returns MAC all zeroes.  Map this to None.
+
+commit bc037d9dedc862c26f6fb9281b5798dd1678cb90
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 20 12:21:05 2014 +0100
+
+    v2v: source_libvirt: Replace create_xml ?dir parameter hack.
+    
+    Instead of the ?dir parameter which was essentially a hack, allow
+    callers of create_xml to provide functions that map
+    <source file="..."> or <source dev="..."> to qemu URIs.
+    
+    The default for these mappings is the identity function.
+    
+    For -i libvirtxml we replace the old absolute_path_of_disk function
+    with a source file mapping function which does the same thing.
+    
+    There is no functional change in this patch.
+
+commit 2fc9fdda98dac8f665f204c5c9baf13541f49014
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 20 12:14:26 2014 +0100
+
+    v2v: Don't attempt to make block device paths absolute.
+    
+    <source dev=...> in the libvirt XML should always refer to a block
+    device, eg. /dev/sda1.  Don't attempt to make these paths absolute
+    (they should already be absolute paths, and if they are not it's wrong
+    to try to make them).
+
+commit 7800150d06a6ec73194def6d05f90273aa40205e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 20 12:04:32 2014 +0100
+
+    v2v: Add binding for libxml2 xmlParseURI.
+    
+    There is already a partial binding for this in fish/uri.c &
+    mllib/uri-c.c.  However it is specialized to parsing the -a parameter
+    on the command line and we want access to the full underlying
+    functionality of xmlParseURI.
+
+commit c5c3a23294dafc2352644e58b79c21fe0cd5ae99
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Aug 20 18:56:39 2014 +0200
+
+    appliance: add mkisofs on OpenSUSE
+    
+    Needed for isoinfo.
+
+commit 3ceff73915839f49686e6f55018929215c889782
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Aug 20 16:57:06 2014 +0200
+
+    appliance: add cdrkit-isotools and mtools for Mageia
+    
+    - cdrkit-isotools provides isoinfo, used by the daemon
+    - mtools is used by syslinux without being a dependency
+
+commit b6ba84499228bf9ee52d319f1b34631409f3a3f4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 19 22:24:45 2014 +0100
+
+    v2v: Add some examples to the manual page.
+
 commit bcce760166f3a377376c030fba0a5e7d86e4f005
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Aug 19 19:46:24 2014 +0100

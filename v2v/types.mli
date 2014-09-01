@@ -18,32 +18,12 @@
 
 (** Types. *)
 
-type input =
-| InputDisk of string option * string   (* -i disk: format + file name *)
-| InputLibvirt of string option * string (* -i libvirt: -ic + guest name *)
-| InputLibvirtXML of string         (* -i libvirtxml: XML file name *)
-(** The input arguments as specified on the command line. *)
-
-type output =
-| OutputLibvirt of string option * string (* -o libvirt: -oc & -os *)
-| OutputLocal of string             (* -o local: directory *)
-| OutputRHEV of string * output_rhev_params (* -o rhev: output storage *)
-(** The output arguments as specified on the command line. *)
-
-and output_rhev_params = {
-  image_uuid : string option;           (* --rhev-image-uuid *)
-  vol_uuids : string list;              (* --rhev-vol-uuid (multiple) *)
-  vm_uuid : string option;              (* --rhev-vm-uuid *)
-  vmtype : [`Server|`Desktop] option;   (* --vmtype *)
-}
-(** Miscellaneous extra command line parameters used by RHEV. *)
-
-val output_as_options : output -> string
-(** Converts the output struct into the equivalent command line options. *)
-
 type source = {
   s_dom_type : string;                  (** Source domain type, eg "kvm" *)
   s_name : string;                      (** Guest name. *)
+  s_orig_name : string;                 (** Original guest name (if we rename
+                                            the guest using -on, original is
+                                            still saved here). *)
   s_memory : int64;                     (** Memory size (bytes). *)
   s_vcpu : int;                         (** Number of CPUs. *)
   s_arch : string;                      (** Architecture. *)
@@ -71,9 +51,10 @@ and source_removable = {
 and source_nic = {
   s_mac : string option;                (** MAC address. *)
   s_vnet : string;                      (** Source network name. *)
-  s_vnet_type : [`Bridge|`Network];     (** Source network type. *)
+  s_vnet_type : vnet_type;              (** Source network type. *)
 }
 (** Network interfaces. *)
+and vnet_type = Bridge | Network
 
 and source_display = {
   s_display_type : [`VNC|`Spice];       (** Display type. *)
@@ -98,9 +79,6 @@ type overlay = {
    *)
   ov_source_file : string;          (** qemu URI for source file. *)
   ov_source_format : string option; (** Source file format, if known. *)
-
-  (* Only used by RHEV.  XXX Should be parameterized type. *)
-  ov_vol_uuid : string;                 (** RHEV volume UUID *)
 }
 (** Disk overlays and destination disks. *)
 
@@ -126,9 +104,41 @@ type inspect = {
 (** Inspection information. *)
 
 type guestcaps = {
-  gcaps_block_bus : string;    (** "virtio", "ide", possibly others *)
-  gcaps_net_bus : string;      (** "virtio", "e1000", possibly others *)
-  gcaps_acpi : bool;           (** guest supports acpi *)
-  gcaps_video : string;        (** "qxl", "cirrus" *)
+  gcaps_block_bus : guestcaps_block_type;
+  gcaps_net_bus : guestcaps_net_type;
+  gcaps_video : guestcaps_video_type;
+  (** Best block device, ntework device and video device guest can
+      access.  These are determined during conversion by inspecting the
+      guest (and in some cases conversion can actually enhance these by
+      installing drivers).  Thus this is not known until after
+      conversion. *)
+
+  gcaps_acpi : bool;           (** True if guest supports acpi. *)
 }
 (** Guest capabilities after conversion.  eg. Was virtio found or installed? *)
+
+and guestcaps_block_type = Virtio_blk | IDE
+and guestcaps_net_type = Virtio_net | E1000 | RTL8139
+and guestcaps_video_type = QXL | Cirrus
+
+class virtual input : bool -> object
+  method virtual as_options : string
+  (** Converts the input object back to the equivalent command line options.
+      This is just used for pretty-printing log messages. *)
+  method virtual source : unit -> source
+  (** Examine the source hypervisor and create a source struct. *)
+end
+(** Encapsulates all [-i], etc input arguments as an object. *)
+
+class virtual output : bool -> object
+  method virtual as_options : string
+  (** Converts the output object back to the equivalent command line options.
+      This is just used for pretty-printing log messages. *)
+  method virtual prepare_output : source -> overlay list -> overlay list
+  (** Called before conversion to prepare the output. *)
+  method virtual create_metadata : source -> overlay list -> guestcaps -> inspect -> unit
+  (** Called after conversion to finish off and create metadata. *)
+  method keep_serial_console : bool
+  (** Whether this output supports serial consoles (RHEV does not). *)
+end
+(** Encapsulates all [-o], etc output arguments as an object. *)

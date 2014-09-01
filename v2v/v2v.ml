@@ -32,22 +32,58 @@ let () = Random.self_init ()
 let rec main () =
   (* Handle the command line. *)
   let input, output,
-    debug_gc, do_copy, output_alloc, output_format, output_name,
-    quiet, root_choice, trace, verbose =
+    debug_gc, do_copy, network_map,
+    output_alloc, output_format, output_name,
+    print_source, quiet, root_choice, trace, verbose =
     Cmdline.parse_cmdline () in
 
   let msg fs = make_message_function ~quiet fs in
 
-  let source =
-    match input with
-    | InputDisk (input_format, disk) ->
-      Source_disk.create input_format disk
-    | InputLibvirt (libvirt_uri, guest) ->
-      Source_libvirt.create libvirt_uri guest
-    | InputLibvirtXML filename ->
-      Source_libvirt.create_from_xml filename in
+  msg (f_"Opening the source %s") input#as_options;
+  let source = input#source () in
+
+  (* Print source and stop. *)
+  if print_source then (
+    printf (f_"Source guest information (--print-source option):\n");
+    printf "\n";
+    printf "%s\n" (string_of_source source);
+    if debug_gc then
+      Gc.compact ();
+    exit 0
+  );
 
   if verbose then printf "%s%!" (string_of_source source);
+
+  (* Map source name. *)
+  let source =
+    match output_name with
+    | None -> source
+    (* Note the s_orig_name field retains the original name in case we
+     * need it for some reason.
+     *)
+    | Some name -> { source with s_name = name } in
+
+  (* Map networks and bridges. *)
+  let source =
+    let { s_nics = nics } = source in
+    let nics = List.map (
+      fun ({ s_vnet_type = t; s_vnet = vnet } as nic) ->
+        try
+          (* Look for a --network or --bridge parameter which names this
+           * network/bridge (eg. --network in:out).
+           *)
+          let new_name = List.assoc (t, vnet) network_map in
+          { nic with s_vnet = new_name }
+        with Not_found ->
+          try
+            (* Not found, so look for a default mapping (eg. --network out). *)
+            let new_name = List.assoc (t, "") network_map in
+            { nic with s_vnet = new_name }
+          with Not_found ->
+            (* Not found, so return the original NIC unchanged. *)
+            nic
+    ) nics in
+    { source with s_nics = nics } in
 
   (* Create a qcow2 v3 overlay to protect the source image(s).  There
    * is a specific reason to use the newer qcow2 variant: Because the
@@ -94,7 +130,7 @@ let rec main () =
    * just so we can display errors to the user before doing too much
    * work.
    *)
-  msg (f_"Initializing the target %s") (output_as_options output);
+  msg (f_"Initializing the target %s") output#as_options;
   let overlays =
     initialize_target ~verbose g
       source output output_alloc output_format output_name overlays in
@@ -120,12 +156,9 @@ let rec main () =
       | "sles" | "suse-based" | "opensuse" ->
 
         (* RHEV doesn't support serial console so remove any on conversion. *)
-        let keep_serial_console =
-          match output with
-          | OutputRHEV _ -> Some false
-          | OutputLibvirt _ | OutputLocal _ -> None in
+        let keep_serial_console = output#keep_serial_console in
 
-        Convert_linux.convert ?keep_serial_console
+        Convert_linux.convert ~keep_serial_console
           verbose g inspect source
 
       | distro ->
@@ -194,20 +227,7 @@ let rec main () =
 
   (* Create output metadata. *)
   msg (f_"Creating output metadata");
-  let () =
-    (* Are we going to rename the guest? *)
-    let renamed_source =
-      match output_name with
-      | None -> source
-      | Some name -> { source with s_name = name } in
-    match output with
-    | OutputLibvirt (oc, os) ->
-      Target_libvirt.create_metadata oc os renamed_source overlays guestcaps
-    | OutputLocal dir ->
-      Target_local.create_metadata dir renamed_source overlays guestcaps
-    | OutputRHEV (os, rhev_params) ->
-      Target_RHEV.create_metadata os rhev_params renamed_source output_alloc
-        overlays inspect guestcaps in
+  output#create_metadata source overlays guestcaps inspect;
 
   msg (f_"Finishing off");
   delete_target_on_exit := false;  (* Don't delete target on exit. *)
@@ -246,21 +266,9 @@ and initialize_target ~verbose g
           ov_target_file = "";
           ov_target_format = format;
           ov_sd = sd; ov_virtual_size = vsize; ov_preallocation = preallocation;
-          ov_source_file = qemu_uri; ov_source_format = backing_format;
-          ov_vol_uuid = "" }
+          ov_source_file = qemu_uri; ov_source_format = backing_format }
     ) overlays in
-  let overlays =
-    let renamed_source =
-      match output_name with
-      | None -> source
-      | Some name -> { source with s_name = name } in
-    match output with
-    | OutputLibvirt (oc, os) ->
-      Target_libvirt.initialize oc os renamed_source overlays
-    | OutputLocal dir -> Target_local.initialize dir renamed_source overlays
-    | OutputRHEV (os, rhev_params) ->
-      Target_RHEV.initialize ~verbose
-        os rhev_params renamed_source output_alloc overlays in
+  let overlays = output#prepare_output source overlays in
   overlays
 
 and inspect_source g root_choice =

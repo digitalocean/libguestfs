@@ -16,4 +16,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-val convert : keep_serial_console:bool -> bool -> Guestfs.guestfs -> Types.inspect -> Types.source -> Types.guestcaps
+(** [-o rhev] target. *)
+
+type rhev_params = {
+  image_uuid : string option;           (* --rhev-image-uuid *)
+  vol_uuids : string list;              (* --rhev-vol-uuid (multiple) *)
+  vm_uuid : string option;              (* --rhev-vm-uuid *)
+  vmtype : [`Server|`Desktop] option;   (* --vmtype *)
+}
+(** Miscellaneous extra command line parameters used by RHEV. *)
+
+val output_rhev : bool -> string -> rhev_params -> [`Sparse|`Preallocated] -> Types.output

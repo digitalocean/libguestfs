@@ -16,7 +16,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-(** [-i disk] source. *)
+(** [-i libvirt] and [-i libvirtxml] sources. *)
 
-val create : string option -> string -> Types.source
-(** [create input_format disk] reads the disk image and returns a {!Types.source}. *)
+val input_libvirt : bool -> string option -> string -> Types.input
+
+val input_libvirtxml : bool -> string -> Types.input
