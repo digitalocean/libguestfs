@@ -1,6 +1,7 @@
 usr/bin/virt-*
 usr/share/man/man1/virt-*
 usr/share/man/*/man1/virt-*
+usr/lib/*-*/virt-p2v
 
 usr/share/bash-completion/completions/virt-*
 
