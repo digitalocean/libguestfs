@@ -139,7 +139,7 @@ host_triplet = @host@
 DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am $(top_srcdir)/build-aux/depcomp
-check_PROGRAMS = qemu-boot$(EXEEXT)
+check_PROGRAMS = qemu-boot$(EXEEXT) qemu-speed-test$(EXEEXT)
 subdir = tests/qemu
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -287,6 +287,16 @@ am__v_lt_1 =
 qemu_boot_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(qemu_boot_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_qemu_speed_test_OBJECTS =  \
+	qemu_speed_test-qemu-speed-test.$(OBJEXT)
+qemu_speed_test_OBJECTS = $(am_qemu_speed_test_OBJECTS)
+qemu_speed_test_DEPENDENCIES = $(top_builddir)/src/libutils.la \
+	$(top_builddir)/src/libguestfs.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(top_builddir)/gnulib/lib/libgnu.la
+qemu_speed_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(qemu_speed_test_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -321,8 +331,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(qemu_boot_SOURCES)
-DIST_SOURCES = $(qemu_boot_SOURCES)
+SOURCES = $(qemu_boot_SOURCES) $(qemu_speed_test_SOURCES)
+DIST_SOURCES = $(qemu_boot_SOURCES) $(qemu_speed_test_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1457,7 +1467,8 @@ TESTS = \
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 EXTRA_DIST = \
 	$(TESTS) \
-	qemu-boot.c
+	qemu-boot.c \
+	qemu-speed-test.c
 
 qemu_boot_SOURCES = \
 	../../df/estimate-max-threads.c \
@@ -1475,6 +1486,25 @@ qemu_boot_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 qemu_boot_LDADD = \
+	$(top_builddir)/src/libutils.la \
+	$(top_builddir)/src/libguestfs.la \
+	$(LIBXML2_LIBS) \
+	$(LIBVIRT_LIBS) \
+	$(top_builddir)/gnulib/lib/libgnu.la
+
+qemu_speed_test_SOURCES = \
+	qemu-speed-test.c
+
+qemu_speed_test_CPPFLAGS = \
+	-DGUESTFS_PRIVATE=1 \
+	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/df
+
+qemu_speed_test_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+
+qemu_speed_test_LDADD = \
 	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
 	$(LIBXML2_LIBS) \
@@ -1530,6 +1560,10 @@ qemu-boot$(EXEEXT): $(qemu_boot_OBJECTS) $(qemu_boot_DEPENDENCIES) $(EXTRA_qemu_
 	@rm -f qemu-boot$(EXEEXT)
 	$(AM_V_CCLD)$(qemu_boot_LINK) $(qemu_boot_OBJECTS) $(qemu_boot_LDADD) $(LIBS)
 
+qemu-speed-test$(EXEEXT): $(qemu_speed_test_OBJECTS) $(qemu_speed_test_DEPENDENCIES) $(EXTRA_qemu_speed_test_DEPENDENCIES) 
+	@rm -f qemu-speed-test$(EXEEXT)
+	$(AM_V_CCLD)$(qemu_speed_test_LINK) $(qemu_speed_test_OBJECTS) $(qemu_speed_test_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -1538,6 +1572,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qemu_boot-estimate-max-threads.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qemu_boot-qemu-boot.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qemu_speed_test-qemu-speed-test.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1587,6 +1622,20 @@ qemu_boot-qemu-boot.obj: qemu-boot.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='qemu-boot.c' object='qemu_boot-qemu-boot.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_boot_CPPFLAGS) $(CPPFLAGS) $(qemu_boot_CFLAGS) $(CFLAGS) -c -o qemu_boot-qemu-boot.obj `if test -f 'qemu-boot.c'; then $(CYGPATH_W) 'qemu-boot.c'; else $(CYGPATH_W) '$(srcdir)/qemu-boot.c'; fi`
+
+qemu_speed_test-qemu-speed-test.o: qemu-speed-test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_speed_test_CPPFLAGS) $(CPPFLAGS) $(qemu_speed_test_CFLAGS) $(CFLAGS) -MT qemu_speed_test-qemu-speed-test.o -MD -MP -MF $(DEPDIR)/qemu_speed_test-qemu-speed-test.Tpo -c -o qemu_speed_test-qemu-speed-test.o `test -f 'qemu-speed-test.c' || echo '$(srcdir)/'`qemu-speed-test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/qemu_speed_test-qemu-speed-test.Tpo $(DEPDIR)/qemu_speed_test-qemu-speed-test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='qemu-speed-test.c' object='qemu_speed_test-qemu-speed-test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_speed_test_CPPFLAGS) $(CPPFLAGS) $(qemu_speed_test_CFLAGS) $(CFLAGS) -c -o qemu_speed_test-qemu-speed-test.o `test -f 'qemu-speed-test.c' || echo '$(srcdir)/'`qemu-speed-test.c
+
+qemu_speed_test-qemu-speed-test.obj: qemu-speed-test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_speed_test_CPPFLAGS) $(CPPFLAGS) $(qemu_speed_test_CFLAGS) $(CFLAGS) -MT qemu_speed_test-qemu-speed-test.obj -MD -MP -MF $(DEPDIR)/qemu_speed_test-qemu-speed-test.Tpo -c -o qemu_speed_test-qemu-speed-test.obj `if test -f 'qemu-speed-test.c'; then $(CYGPATH_W) 'qemu-speed-test.c'; else $(CYGPATH_W) '$(srcdir)/qemu-speed-test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/qemu_speed_test-qemu-speed-test.Tpo $(DEPDIR)/qemu_speed_test-qemu-speed-test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='qemu-speed-test.c' object='qemu_speed_test-qemu-speed-test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_speed_test_CPPFLAGS) $(CPPFLAGS) $(qemu_speed_test_CFLAGS) $(CFLAGS) -c -o qemu_speed_test-qemu-speed-test.obj `if test -f 'qemu-speed-test.c'; then $(CYGPATH_W) 'qemu-speed-test.c'; else $(CYGPATH_W) '$(srcdir)/qemu-speed-test.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

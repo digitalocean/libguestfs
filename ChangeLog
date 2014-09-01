@@ -1,3 +1,118 @@
+commit 50e3ef3357fe97028e958268eac7d63ec4e64408
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jul 26 21:37:59 2014 +0100
+
+    Version 1.27.24.
+
+commit 1b925a0efb9be0020002a9796164209ad6f4d9d2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jul 26 21:27:16 2014 +0100
+
+    build: Add `maintainer-commit' rule to create a new version commit.
+
+commit 08bfd9e41b08aed72fa2de1df71e166b8204c958
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jul 25 17:36:17 2014 +0200
+
+    p2v: close the mexp handle if mexp_spawnv fails
+
+commit 9c3ce6535c34da761148204d5efe014598b1c0a1
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jul 25 17:36:16 2014 +0200
+
+    make-fs: use CLEANUP_FCLOSE
+
+commit 9e7f5300c93c77f899d2bf543858e94608e6286f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jul 25 17:36:15 2014 +0200
+
+    cleanups: add CLEANUP_FCLOSE (fclose on FILE*)
+
+commit d8b9ce65c281cf9cd9ecea8229c83fad3cb64a9b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jul 25 17:36:14 2014 +0200
+
+    p2v: properly call va_end
+
+commit 7378edb9faf22f1a5a7b9e9f74621509da0e223a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 25 17:12:19 2014 +0100
+
+    Add qemu-speed-test program to test speed of qemu.
+    
+    Currently it tests the upload and download speed of virtio-serial and
+    the read and write speed of the block device (eg. virtio-scsi).
+
+commit 115fcc34325f965ac3723683e4462fc667dcd254
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 25 14:03:54 2014 +0100
+
+    launch: Close file descriptors after fork (RHBZ#1123007).
+    
+    This refactors existing code to close file descriptors in the recovery
+    process, and also adds code to close file descriptors between the
+    fork() and exec() of QEMU or User-Mode Linux.
+    
+    The reason is to avoid leaking main process file descriptors where the
+    main process (or other libraries in the main process) are not setting
+    O_CLOEXEC at all or not setting it atomically.  Python is a particular
+    culprit.
+    
+    See also this OpenStack Nova bug report:
+    https://bugs.launchpad.net/nova/+bug/1313477
+    
+    Thanks: Qin Zhao for identifying and characterizing the problem in Nova.
+
+commit f18464995f63095d32431202fa2bedc5b60d7a88
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 25 16:06:46 2014 +0100
+
+    tests: builder: Allow test to be skipped.
+
+commit 81cafdcfd5932c0adddf22a06b3a770063526133
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 25 16:04:18 2014 +0100
+
+    virt-resize: Unmount filesystem after testing size.
+    
+    We were mounting different filesystems on top of each other.  In fact
+    this is not a problem, but it's nicer to unmount each filesystem
+    properly after examining it.
+
+commit fc7da04ccd2871a64447dff531ca332decb4bc0d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 25 16:03:09 2014 +0100
+
+    daemon: Add extra debugging to umount_all command.
+    
+    No functional change, just prints some more debug messages.
+
+commit 146cc78b7d1a5482db95e65e426138d8a9eff872
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 25 15:26:26 2014 +0100
+
+    aarch64: Use a smaller test file for test-cancellation-upload-daemoncancels.sh
+    
+    This test worked by uploading a 100MB file into a 100MB container and
+    seeing the inevitable crash.  Unfortunately virtio-mmio (used on
+    aarch64) is quite slow.  Since this test is not testing the speed of
+    virtio-mmio, use a smaller test file so the test finishes in a
+    reasonable time.
+
+commit d268de93949c2954fda8f0a1387b740903893481
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 25 14:42:38 2014 +0100
+
+    tests: hotplug: Allow tests to be skipped.
+    
+    They don't work on aarch64.
+
+commit 64498034bbc7bce2692597fb8bfbb721e8180543
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 25 10:04:44 2014 +0100
+
+    tests: lvm: Allow test to be skipped.
+
 commit 7f826e1296c85be7f4418830c8b5c992a80e9747
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Jul 23 17:40:16 2014 +0100
