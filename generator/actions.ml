@@ -7210,7 +7210,9 @@ was built (see C<appliance/kmod.whitelist.in> in the source)." };
     proc_nr = Some 195;
     tests = [
       InitNone, Always, TestResultString (
-        [["echo_daemon"; "This is a test"]], "This is a test"), []
+        [["echo_daemon"; "This is a test"]], "This is a test"), [];
+      InitNone, Always, TestResultString (
+        [["echo_daemon"; ""]], ""), [];
     ];
     shortdesc = "echo arguments back to the client";
     longdesc = "\
@@ -9607,7 +9609,7 @@ device is stopped, but it is not destroyed or zeroed." };
           "check_hash (ret, \"PART_ENTRY_NUMBER\", \"1\") == 0 && "^
           "check_hash (ret, \"PART_ENTRY_TYPE\", \"0x83\") == 0 && "^
           "check_hash (ret, \"PART_ENTRY_OFFSET\", \"128\") == 0 && "^
-          "check_hash (ret, \"PART_ENTRY_SIZE\", \"102145\") == 0"), [];
+          "check_hash (ret, \"PART_ENTRY_SIZE\", \"1023745\") == 0"), [];
     ];
     shortdesc = "print block device attributes";
     longdesc = "\

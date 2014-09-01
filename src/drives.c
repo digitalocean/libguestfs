@@ -676,6 +676,11 @@ parse_one_server (guestfs_h *g, const char *server, struct drive_server *ret)
   char *port_str;
   int port;
 
+  /* Note! Do not set any string field in *ret until you know the
+   * function will return successfully.  Otherwise there can be a
+   * double-free in parse_servers -> free_drive_servers below.
+   */
+
   ret->transport = drive_transport_none;
 
   if (STRPREFIX (server, "tcp:")) {
@@ -739,12 +744,14 @@ parse_servers (guestfs_h *g, char *const *strs,
     return 0;
   }
 
+  /* Must use calloc here to avoid freeing garbage along the error
+   * path below.
+   */
   servers = safe_calloc (g, n, sizeof (struct drive_server));
 
   for (i = 0; i < n; ++i) {
     if (parse_one_server (g, strs[i], &servers[i]) == -1) {
-      if (i > 0)
-        free_drive_servers (servers, i-1);
+      free_drive_servers (servers, i);
       return -1;
     }
   }

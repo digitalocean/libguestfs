@@ -3722,7 +3722,7 @@ in C<actions.ml>.
 
 テスト用の一般的なブロックデバイス。
 
-=item C</dev/sdb> 50MB
+=item C</dev/sdb> 500MB
 
 C</dev/sdb1> はファイルシステムの書き込み操作をテストするために使用される ext2 ファイルシステムです。
 

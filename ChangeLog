@@ -1,3 +1,148 @@
+commit bcce760166f3a377376c030fba0a5e7d86e4f005
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 19 19:46:24 2014 +0100
+
+    Version 1.27.28.
+
+commit 3d1cb74b3eee51c5d015032ad964892be914ea9c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 19 13:34:55 2014 +0100
+
+    v2v: Add display, removable disks, and network interfaces.
+    
+    These are now collected from the source metadata and (where
+    possible) passed through to the destination.
+    
+    For reference, see the metadata structure of the old virt-v2v (roughly
+    equivalent to Types.source in the new code):
+    
+    https://git.fedorahosted.org/cgit/virt-v2v.git/tree/metadata-format.txt
+    
+    As you can see the new code now covers all the metadata features of
+    the old code.
+
+commit df471095ef39e7b8e87300ed8599a35a581f3d05
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 19 13:34:35 2014 +0100
+
+    v2v: Update TODO file.
+
+commit 8b3b7cc0daf424249d49fbd7bca2d3a80d1af556
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 19 12:16:04 2014 +0100
+
+    daemon: Fix echo-daemon so it doesn't fail on empty array input.
+
+commit 0ed91a7399c9c58cc29c1320df0d70c9f1d49229
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Aug 19 15:48:05 2014 +0200
+
+    appliance: initial packagelist for OpenSUSE
+    
+    Mostly complete and making most of the features work.
+    
+    The notable lack is ntfsprogs and ntfs-3g, which due to the way
+    mount.ntfs is handled (i.e. using alternatives) do not work properly.
+
+commit 4a4256b8075c69aa6da4b0139e0e3cc2a1291762
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Aug 19 14:25:49 2014 +0200
+
+    tests: make the scratch disk used for scratch much larger
+    
+    50M can be not enough when uploading various copies of unstripped
+    static binaries from the system, which can fill up such a small disk.
+
+commit 6b2bf2c7ace9a1e619fe33b13c06fad49e0731a3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Aug 19 14:22:07 2014 +0200
+
+    builder: do not use xz --block-size for the test images
+    
+    Do not use the --block-size parameter of xz when compressing the test
+    images, as that option does not exist in xz < 5.1.
+
+commit 0fd95e2b9fb9e49cf455b30cd4b85b7d7c354988
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 19 12:11:06 2014 +0100
+
+    drives: Add comments about fragile string handling.
+    
+    GC FTW.
+
+commit b53286a6432b8b381769cd8e8a0c235ce13d58cf
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Aug 18 14:56:08 2014 +0200
+
+    drives: fix deletion of servers on error
+    
+    Make sure to not skip any of the created server, and to always free
+    the "server" array.
+
+commit 06aa1bff0f865fda7d64411977bca992d97fa748
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Aug 18 11:18:23 2014 +0200
+
+    daemon: zfile: call pclose instead of fclose
+    
+    fp was opened with popen, so close it properly.
+
+commit 54887a3eeabb52e27a3a1a571cfd40a351223030
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 15 20:02:50 2014 +0100
+
+    v2v: Update instructions for uploading a volume.
+    
+    The previous instructions didn't include the need to change
+    <disk type='file' ...> to  <disk type='volume' ...>
+
+commit 1866fc47a2561ca23997ab742cdb96b6f55400a6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 15 19:58:10 2014 +0100
+
+    v2v: Add some more man pages that may be relevant to "SEE ALSO" section.
+
+commit c5b0e59dcc29c749999c056cb2747f58b07deba7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 15 19:57:52 2014 +0100
+
+    v2v: Fix formatting of --vmtype option in the man page.
+
+commit 0327036b2ff1e10538424ceb8e4d10f2121d753e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 15 19:51:09 2014 +0100
+
+    v2v: Fix typo in manual page.
+    
+    This fixes commit 7c7caae7c1872c317712c373217362172a46abd6.
+
+commit 25b33344b970c73c2dfaff44bcd410407e1e783e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 15 19:50:43 2014 +0100
+
+    v2v: Make -i local be an alias for -i disk.
+    
+    Analogous to -o local.
+
+commit 7c7caae7c1872c317712c373217362172a46abd6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 15 18:07:02 2014 +0100
+
+    v2v: Add new -i disk to allow direct import of disk images with no metadata.
+    
+    This is simpler to use and more convenient than -i libvirtxml, because
+    users don't need to bother with writing libvirt XML.  However it is
+    less expressive because many source capabilities such as memory and
+    number of vCPUs cannot be specified this way.
+
+commit eaadf5c130ae4b248e1b83825b2d9ea6f83bc8dd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 15 18:16:51 2014 +0100
+
+    v2v: Rename -o (target) tests.
+    
+    No functional change.
+
 commit cca6f25de9d022b0408677a87fa32360b4312b47
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Aug 15 16:39:14 2014 +0100

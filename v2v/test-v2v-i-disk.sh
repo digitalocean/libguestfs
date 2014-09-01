@@ -16,13 +16,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# Test -o libvirt.
+# Test -i disk option.
 
 unset CDPATH
 export LANG=C
 set -e
 
-if [ -n "$SKIP_TEST_V2V_LIBVIRT_SH" ]; then
+if [ -n "$SKIP_TEST_V2V_I_DISK_SH" ]; then
     echo "$0: test skipped because environment variable is set"
     exit 77
 fi
@@ -31,17 +31,6 @@ if [ "$(../fish/guestfish get-backend)" = "uml" ]; then
     echo "$0: test skipped because UML backend does not support network"
     exit 77
 fi
-
-# You shouldn't be running the tests as root anyway, but in this case
-# it's especially bad because we don't want to start creating guests
-# or storage pools in the system namespace.
-if [ "$(id -u)" -eq 0 ]; then
-    echo "$0: test skipped because you're running tests as root.  Don't do that!"
-    exit 77
-fi
-
-abs_top_builddir="$(cd ..; pwd)"
-libvirt_uri="test://$abs_top_builddir/tests/guests/guests-all-good.xml"
 
 f=../tests/guests/windows.img
 if ! test -f $f || ! test -s $f; then
@@ -55,28 +44,16 @@ if ! test -r $virt_tools_data_dir/rhsrvany.exe; then
     exit 77
 fi
 
-# Generate a random guest name.
-guestname=tmp-$(tr -cd 'a-f0-9' < /dev/urandom | head -c 8)
-
-d=test-v2v-libvirt.d
+d=test-v2v-i-disk.d
 rm -rf $d
 mkdir $d
 
-# Set up the output directory as a libvirt storage pool.
-virsh pool-destroy test-v2v-libvirt ||:
-virsh pool-create-as test-v2v-libvirt dir - - - - $(pwd)/$d
-
 $VG ./virt-v2v --debug-gc \
-    -i libvirt -ic "$libvirt_uri" windows \
-    -o libvirt -os test-v2v-libvirt -on $guestname
+    -i disk $f \
+    -o local -os $d
 
-# Test the disk was created.
-test -f $d/$guestname-sda
+# Test the libvirt XML metadata and a disk was created.
+test -f $d/windows.xml
+test -f $d/windows-sda
 
-# Test the guest exists.
-virsh dumpxml $guestname
-
-# Clean up.
-virsh pool-destroy test-v2v-libvirt ||:
-virsh undefine $guestname ||:
 rm -r $d

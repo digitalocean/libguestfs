@@ -1497,6 +1497,7 @@ SOURCES_MLI = \
 	convert_windows.mli \
 	DOM.mli \
 	lib_linux.mli \
+	source_disk.mli \
 	source_libvirt.mli \
 	target_libvirt.mli \
 	target_local.mli \
@@ -1512,6 +1513,7 @@ SOURCES_ML = \
 	DOM.ml \
 	lib_linux.ml \
 	cmdline.ml \
+	source_disk.ml \
 	source_libvirt.ml \
 	convert_linux.ml \
 	convert_windows.ml \
@@ -1605,13 +1607,14 @@ SOURCES_C = \
 # - that up to date guests don't crash virt-v2v
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@TESTS = \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-libvirt.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-i-disk.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-machine-readable.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-no-copy.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-libvirt.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-rhev.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-rhev-options.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-of-option.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-on-option.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-rhev.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-rhev-options.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-windows-conversion.sh
 
 @HAVE_OCAML_TRUE@SLOW_TESTS = \

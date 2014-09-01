@@ -12,6 +12,8 @@ virt-v2v - Convert a guest to use KVM
 
  virt-v2v -i libvirtxml -o local -os /tmp guest-domain.xml
 
+ virt-v2v -i disk -o local -os /tmp disk.img
+
 =head1 説明
 
 Virt-v2v converts guests from a foreign hypervisor to run on KVM, managed by
@@ -38,6 +40,16 @@ E<ge> 1.28.
 Debug garbage collection and memory allocation.  This is only useful when
 debugging memory problems in virt-v2v or the OCaml libguestfs bindings.
 
+=item B<-i disk>
+
+Set the input method to I<disk>.
+
+In this mode you can read a virtual machine disk image with no metadata.
+virt-v2v tries to guess the best default metadata.  This is usually adequate
+but you can get finer control (eg. of memory and vCPUs) by using I<-i
+libvirtxml> instead.  Only guests that use a single disk can be imported
+this way.
+
 =item B<-i libvirt>
 
 Set the input method to I<libvirt>.  This is the default.
@@ -53,6 +65,10 @@ In this mode you have to pass a libvirt XML file on the command line.  This
 file is read in order to get metadata about the source guest (such as its
 name, amount of memory), and also to locate the input disks.
 
+=item B<-i local>
+
+This is the same as I<-i disk>.
+
 =item B<-ic> libvirtURI
 
 Specify a libvirt connection URI to use when reading the guest.  This is
@@ -60,6 +76,11 @@ only used when S<I<-i libvirt>>.
 
 Only local libvirt connections and ESX connections can be used.  Remote
 libvirt connections will not work in general.
+
+=item B<-if> format
+
+For I<-i disk> only, this specifies the format of the input disk image.  For
+other input methods you should specify the input format in the metadata.
 
 =item B<--machine-readable>
 
@@ -261,10 +282,12 @@ first VirtIO disk.
 
 バージョン番号を表示して、終了します。
 
-=item B<--vmtype> server|desktop
+=item B<--vmtype desktop>
+
+=item B<--vmtype server>
 
 For the RHEV target only, specify the type of guest.  You can set this to
-C<server> or C<desktop>.  If the option is not given, then a suitable
+C<desktop> or C<server>.  If the option is not given, then a suitable
 default is chosen based on the detected guest operating system.
 
 =item B<-x>
@@ -453,9 +476,15 @@ words, locate the following bit of XML:
    <target dev='hda' bus='ide' />
  </disk>
 
-and change I<only> the E<lt>sourceE<gt> element to:
+and change two things: The C<type='file'> attribute must be changed to
+C<type='volume'>, and the C<E<lt>sourceE<gt>> element must be changed to
+include C<pool> and C<volume> attributes:
 
+ <disk type='volume' device='disk'>
+   ...
    <source pool='POOL' volume='NAME-sda' />
+   ...
+ </disk>
 
 =item 4.
 
@@ -543,8 +572,9 @@ distributed with virt-v2v.
 
 =head1 関連項目
 
-L<virt-p2v(1)>, L<virt-df(1)>, L<virt-filesystems(1)>, L<guestfs(3)>,
-L<guestfish(1)>, L<qemu-img(1)>, L<http://libguestfs.org/>.
+L<virt-p2v(1)>, L<virt-customize(1)>, L<virt-df(1)>, L<virt-filesystems(1)>,
+L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<guestfs(3)>, L<guestfish(1)>,
+L<qemu-img(1)>, L<http://libguestfs.org/>.
 
 =head1 著者
 

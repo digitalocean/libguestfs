@@ -2351,12 +2351,12 @@ $(top_builddir)/generator/generator:
 
 @HAVE_OCAML_TRUE@fedora.qcow2.xz: fedora.qcow2
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	xz --best --block-size=16777216 -c $< > $@-t
+@HAVE_OCAML_TRUE@	xz --best -c $< > $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
 
 @HAVE_OCAML_TRUE@%.xz: ../tests/guests/%.img
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	xz --best --block-size=16777216 -c $< > $@-t
+@HAVE_OCAML_TRUE@	xz --best -c $< > $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
 
 @HAVE_OCAML_TRUE@check-valgrind:
