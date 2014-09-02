@@ -31,15 +31,6 @@ libguestfs generated file
 Такі функції: L</guestfs_acl_delete_def_file> L</guestfs_acl_get_file>
 L</guestfs_acl_set_file>
 
-=item B<augeas>
-
-Такі функції: L</guestfs_aug_clear> L</guestfs_aug_close>
-L</guestfs_aug_defnode> L</guestfs_aug_defvar> L</guestfs_aug_get>
-L</guestfs_aug_init> L</guestfs_aug_insert> L</guestfs_aug_label>
-L</guestfs_aug_load> L</guestfs_aug_ls> L</guestfs_aug_match>
-L</guestfs_aug_mv> L</guestfs_aug_rm> L</guestfs_aug_save>
-L</guestfs_aug_set> L</guestfs_aug_setm>
-
 =item B<blkdiscard>
 
 Такі функції: L</guestfs_blkdiscard>
@@ -94,8 +85,9 @@ L</guestfs_inotify_rm_watch>
 
 =item B<journal>
 
-Такі функції: L</guestfs_internal_journal_get> L</guestfs_journal_close>
-L</guestfs_journal_get_data_threshold> L</guestfs_journal_next>
+The following functions: L</guestfs_internal_journal_get>
+L</guestfs_journal_close> L</guestfs_journal_get_data_threshold>
+L</guestfs_journal_get_realtime_usec> L</guestfs_journal_next>
 L</guestfs_journal_open> L</guestfs_journal_set_data_threshold>
 L</guestfs_journal_skip>
 

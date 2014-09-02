@@ -169,6 +169,7 @@
    Memcheck:Leak
    fun:malloc
    fun:caml_stat_alloc
+   ...
    fun:caml_search_in_path
 }
 {
@@ -226,6 +227,21 @@
    Memcheck:Leak
    ...
    fun:virNetClientProgramCall
+}
+
+# RHBZ#1116427
+{
+   libvirt_leak_5
+   Memcheck:Leak
+   ...
+   fun:virFileFindResourceFull
+}
+# RHBZ#1135388
+{
+   libvirt_leak_6
+   Memcheck:Leak
+   ...
+   fun:testDomainGenerateIfnames
 }
 
 # FUSE leaks the per-thread context (although the code looks

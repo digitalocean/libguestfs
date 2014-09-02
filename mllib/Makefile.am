@@ -26,6 +26,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o
 SOURCES = \
 	common_gettext.ml \
 	common_utils.ml \
+	common_utils.mli \
 	common_utils_tests.ml \
 	config.ml \
 	fsync-c.c \
@@ -39,6 +40,8 @@ SOURCES = \
 	progress-c.c \
 	progress.mli \
 	progress.ml \
+	regedit.mli \
+	regedit.ml \
 	tty-c.c \
 	tTY.mli \
 	tTY.ml \
@@ -61,7 +64,8 @@ ocaml_modules = config \
 	progress \
 	uRI \
 	mkdtemp \
-	planner
+	planner \
+	regedit
 
 OBJECTS = \
 	$(top_builddir)/fish/guestfish-progress.o \
@@ -88,7 +92,7 @@ if HAVE_OCAML_PKG_GETTEXT
 OCAMLPACKAGES += -package gettext-stub
 endif
 
-OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
+OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX-3 $(OCAMLPACKAGES)
 OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 
 OCAMLCLIBS  = \

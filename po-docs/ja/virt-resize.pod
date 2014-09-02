@@ -565,6 +565,10 @@ Note that you cannot use I<--expand> and I<--shrink> together.
 
 バージョン番号を表示して、終了します。
 
+=item B<-x>
+
+libguestfs API 呼び出しのトレースを有効にします。
+
 =back
 
 =head1 マシン可読な出力
@@ -712,13 +716,6 @@ I<--debug> flag.
 L<dracut(8)> includes a module called C<dracut-modules-growroot> which can
 be used to grow the root partition when the guest first boots up.  There is
 documentation for this module in an associated README file.
-
-=head1 SHELL QUOTING
-
-Libvirt guest names can contain arbitrary characters, some of which have
-meaning to the shell such as C<#> and space.  You may need to quote or
-escape these characters on the command line.  See the shell manual page
-L<sh(1)> for details.
 
 =head1 終了ステータス
 

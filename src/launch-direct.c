@@ -279,6 +279,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   struct hv_param *hp;
   bool has_kvm;
   int force_tcg;
+  const char *cpu_model;
 
   /* At present you must add drives before starting the appliance.  In
    * future when we enable hotplugging you won't need to do this.
@@ -288,11 +289,19 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
     return -1;
   }
 
+  /* Try to guess if KVM is available.  We are just checking that
+   * /dev/kvm is openable.  That's not reliable, since /dev/kvm
+   * might be openable by qemu but not by us (think: SELinux) in
+   * which case the user would not get hardware virtualization,
+   * although at least shouldn't fail.
+   */
+  has_kvm = is_openable (g, "/dev/kvm", O_RDWR|O_CLOEXEC);
+
   force_tcg = guestfs___get_backend_setting_bool (g, "force_tcg");
   if (force_tcg == -1)
     return -1;
 
-  if (!force_tcg)
+  if (!has_kvm && !force_tcg)
     debian_kvm_warning (g);
 
   guestfs___launch_send_progress (g, 0);
@@ -410,13 +419,11 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
     warning (g, "qemu debugging is enabled, connect gdb to tcp::1234 to begin");
   }
 
-  /* Try to guess if KVM is available.  We are just checking that
-   * /dev/kvm is openable.  That's not reliable, since /dev/kvm
-   * might be openable by qemu but not by us (think: SELinux) in
-   * which case the user would not get hardware virtualization,
-   * although at least shouldn't fail.
-   */
-  has_kvm = is_openable (g, "/dev/kvm", O_RDWR|O_CLOEXEC);
+  cpu_model = guestfs___get_cpu_model (has_kvm && !force_tcg);
+  if (cpu_model) {
+    ADD_CMDLINE ("-cpu");
+    ADD_CMDLINE (cpu_model);
+  }
 
   /* The qemu -machine option (added 2010-12) is a bit more sane
    * since it falls back through various different acceleration
@@ -521,7 +528,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
        * the if=... at the end.
        */
       param = safe_asprintf
-        (g, "file=%s%s,cache=%s%s%s%s%s%s,id=hd%zu",
+        (g, "file=%s%s,cache=%s%s%s%s%s%s%s,id=hd%zu",
          escaped_file,
          drv->readonly ? ",snapshot=on" : "",
          drv->cachemode ? drv->cachemode : "writeback",
@@ -530,6 +537,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
          drv->src.format ? drv->src.format : "",
          drv->disk_label ? ",serial=" : "",
          drv->disk_label ? drv->disk_label : "",
+         drv->copyonread ? ",copy-on-read=on" : "",
          i);
     }
     else {
@@ -705,6 +713,13 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
         goto dup_failed;
 
       close (sv[1]);
+
+      /* Close any other file descriptors that we don't want to pass
+       * to qemu.  This prevents file descriptors which didn't have
+       * O_CLOEXEC set properly from leaking into the subprocess.  See
+       * RHBZ#1123007.
+       */
+      close_file_descriptors (fd > 2);
     }
 
     /* Dump the command line (after setting up stderr above). */
@@ -735,7 +750,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   if (g->recovery_proc) {
     r = fork ();
     if (r == 0) {
-      int i, fd, max_fd;
+      int i;
       struct sigaction sa;
       pid_t qemu_pid = data->pid;
       pid_t parent_pid = getppid ();
@@ -755,13 +770,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
       /* Close all other file descriptors.  This ensures that we don't
        * hold open (eg) pipes from the parent process.
        */
-      max_fd = sysconf (_SC_OPEN_MAX);
-      if (max_fd == -1)
-        max_fd = 1024;
-      if (max_fd > 65536)
-        max_fd = 65536; /* bound the amount of work we do here */
-      for (fd = 0; fd < max_fd; ++fd)
-        close (fd);
+      close_file_descriptors (1);
 
       /* It would be nice to be able to put this in the same process
        * group as qemu (ie. setpgid (0, qemu_pid)).  However this is
@@ -1205,7 +1214,7 @@ make_uri (guestfs_h *g, const char *scheme, const char *user,
   CLEANUP_FREE char *userauth = NULL;
 
   /* Need to add a leading '/' to URI paths since xmlSaveUri doesn't. */
-  if (path[0] != '/') {
+  if (path != NULL && path[0] != '/') {
     pathslash = safe_asprintf (g, "/%s", path);
     uri.path = pathslash;
   }

@@ -89,6 +89,8 @@ struct stringsbuf {
  */
 extern int add_string_nodup (struct stringsbuf *sb, char *str);
 extern int add_string (struct stringsbuf *sb, const char *str);
+extern int add_sprintf (struct stringsbuf *sb, const char *fs, ...)
+  __attribute__((format (printf,2,3)));
 extern int end_stringsbuf (struct stringsbuf *sb);
 
 extern size_t count_strings (char *const *argv);
@@ -173,6 +175,7 @@ asprintf_nowarn (char **strp, const char *fmt, ...)
 extern void cleanup_free (void *ptr);
 extern void cleanup_free_string_list (void *ptr);
 extern void cleanup_unlink_free (void *ptr);
+extern void cleanup_close (void *ptr);
 
 /*-- in names.c (auto-generated) --*/
 extern const char *function_names[];
@@ -245,6 +248,12 @@ extern void reply_with_perror_errno (int err, const char *fs, ...)
   __attribute__((format (printf,2,3)));
 #define reply_with_error(...) reply_with_error_errno(0, __VA_ARGS__)
 #define reply_with_perror(...) reply_with_perror_errno(errno, __VA_ARGS__)
+#define reply_with_unavailable_feature(feature) \
+  reply_with_error_errno (ENOTSUP, \
+     "feature '%s' is not available in this\n" \
+     "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n" \
+     "how to check for the availability of features.", \
+     feature)
 
 /* daemon functions that receive files (FileIn) should call
  * receive_file for each FileIn parameter.
@@ -394,15 +403,34 @@ is_zero (const char *buffer, size_t size)
     }                                                   \
     while (0)
 
+/* Calls reply_with_error, but includes the Augeas error details. */
+#define AUGEAS_ERROR(fs,...)                                            \
+  do {                                                                  \
+    int code = aug_error (aug);                                         \
+    if (code == AUG_ENOMEM)                                             \
+      reply_with_error (fs ": augeas out of memory", ##__VA_ARGS__);    \
+    else {                                                              \
+      const char *message = aug_error_message (aug);                    \
+      const char *minor = aug_error_minor_message (aug);                \
+      const char *details = aug_error_details (aug);                    \
+      reply_with_error (fs ": %s%s%s%s%s", ##__VA_ARGS__,               \
+                          message,                                      \
+                          minor ? ": " : "", minor ? minor : "",        \
+                          details ? ": " : "", details ? details : ""); \
+    }                                                                   \
+  } while (0)
+
 #ifdef HAVE_ATTRIBUTE_CLEANUP
 #define CLEANUP_FREE __attribute__((cleanup(cleanup_free)))
 #define CLEANUP_FREE_STRING_LIST                        \
     __attribute__((cleanup(cleanup_free_string_list)))
 #define CLEANUP_UNLINK_FREE __attribute__((cleanup(cleanup_unlink_free)))
+#define CLEANUP_CLOSE __attribute__((cleanup(cleanup_close)))
 #else
 #define CLEANUP_FREE
 #define CLEANUP_FREE_STRING_LIST
 #define CLEANUP_UNLINK_FREE
+#define CLEANUP_CLOSE
 #endif
 
 #endif /* GUESTFSD_DAEMON_H */

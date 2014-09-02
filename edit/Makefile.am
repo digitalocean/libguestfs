@@ -28,12 +28,16 @@ bin_PROGRAMS = virt-edit
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
 	../fish/domain.c \
+	../fish/file-edit.h \
+	../fish/file-edit.c \
 	../fish/inspect.c \
 	../fish/keys.c \
 	../fish/options.h \
 	../fish/options.c \
 	../fish/uri.h \
-	../fish/uri.c
+	../fish/uri.c \
+	../fish/windows.h \
+	../fish/windows.c
 
 virt_edit_SOURCES = \
 	$(SHARED_SOURCE_FILES) \

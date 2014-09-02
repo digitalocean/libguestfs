@@ -274,8 +274,9 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 = virt_edit-config.$(OBJEXT) virt_edit-domain.$(OBJEXT) \
-	virt_edit-inspect.$(OBJEXT) virt_edit-keys.$(OBJEXT) \
-	virt_edit-options.$(OBJEXT) virt_edit-uri.$(OBJEXT)
+	virt_edit-file-edit.$(OBJEXT) virt_edit-inspect.$(OBJEXT) \
+	virt_edit-keys.$(OBJEXT) virt_edit-options.$(OBJEXT) \
+	virt_edit-uri.$(OBJEXT) virt_edit-windows.$(OBJEXT)
 am_virt_edit_OBJECTS = $(am__objects_1) virt_edit-edit.$(OBJEXT)
 virt_edit_OBJECTS = $(am_virt_edit_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -1491,12 +1492,16 @@ CLEANFILES = stamp-virt-edit.pod
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
 	../fish/domain.c \
+	../fish/file-edit.h \
+	../fish/file-edit.c \
 	../fish/inspect.c \
 	../fish/keys.c \
 	../fish/options.h \
 	../fish/options.c \
 	../fish/uri.h \
-	../fish/uri.c
+	../fish/uri.c \
+	../fish/windows.h \
+	../fish/windows.c
 
 virt_edit_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
@@ -1628,10 +1633,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_edit-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_edit-domain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_edit-edit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_edit-file-edit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_edit-inspect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_edit-keys.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_edit-options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_edit-uri.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_edit-windows.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1681,6 +1688,20 @@ virt_edit-domain.obj: ../fish/domain.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='virt_edit-domain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_edit_CPPFLAGS) $(CPPFLAGS) $(virt_edit_CFLAGS) $(CFLAGS) -c -o virt_edit-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
+
+virt_edit-file-edit.o: ../fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_edit_CPPFLAGS) $(CPPFLAGS) $(virt_edit_CFLAGS) $(CFLAGS) -MT virt_edit-file-edit.o -MD -MP -MF $(DEPDIR)/virt_edit-file-edit.Tpo -c -o virt_edit-file-edit.o `test -f '../fish/file-edit.c' || echo '$(srcdir)/'`../fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_edit-file-edit.Tpo $(DEPDIR)/virt_edit-file-edit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/file-edit.c' object='virt_edit-file-edit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_edit_CPPFLAGS) $(CPPFLAGS) $(virt_edit_CFLAGS) $(CFLAGS) -c -o virt_edit-file-edit.o `test -f '../fish/file-edit.c' || echo '$(srcdir)/'`../fish/file-edit.c
+
+virt_edit-file-edit.obj: ../fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_edit_CPPFLAGS) $(CPPFLAGS) $(virt_edit_CFLAGS) $(CFLAGS) -MT virt_edit-file-edit.obj -MD -MP -MF $(DEPDIR)/virt_edit-file-edit.Tpo -c -o virt_edit-file-edit.obj `if test -f '../fish/file-edit.c'; then $(CYGPATH_W) '../fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/../fish/file-edit.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_edit-file-edit.Tpo $(DEPDIR)/virt_edit-file-edit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/file-edit.c' object='virt_edit-file-edit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_edit_CPPFLAGS) $(CPPFLAGS) $(virt_edit_CFLAGS) $(CFLAGS) -c -o virt_edit-file-edit.obj `if test -f '../fish/file-edit.c'; then $(CYGPATH_W) '../fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/../fish/file-edit.c'; fi`
 
 virt_edit-inspect.o: ../fish/inspect.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_edit_CPPFLAGS) $(CPPFLAGS) $(virt_edit_CFLAGS) $(CFLAGS) -MT virt_edit-inspect.o -MD -MP -MF $(DEPDIR)/virt_edit-inspect.Tpo -c -o virt_edit-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
@@ -1737,6 +1758,20 @@ virt_edit-uri.obj: ../fish/uri.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_edit-uri.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_edit_CPPFLAGS) $(CPPFLAGS) $(virt_edit_CFLAGS) $(CFLAGS) -c -o virt_edit-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+
+virt_edit-windows.o: ../fish/windows.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_edit_CPPFLAGS) $(CPPFLAGS) $(virt_edit_CFLAGS) $(CFLAGS) -MT virt_edit-windows.o -MD -MP -MF $(DEPDIR)/virt_edit-windows.Tpo -c -o virt_edit-windows.o `test -f '../fish/windows.c' || echo '$(srcdir)/'`../fish/windows.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_edit-windows.Tpo $(DEPDIR)/virt_edit-windows.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/windows.c' object='virt_edit-windows.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_edit_CPPFLAGS) $(CPPFLAGS) $(virt_edit_CFLAGS) $(CFLAGS) -c -o virt_edit-windows.o `test -f '../fish/windows.c' || echo '$(srcdir)/'`../fish/windows.c
+
+virt_edit-windows.obj: ../fish/windows.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_edit_CPPFLAGS) $(CPPFLAGS) $(virt_edit_CFLAGS) $(CFLAGS) -MT virt_edit-windows.obj -MD -MP -MF $(DEPDIR)/virt_edit-windows.Tpo -c -o virt_edit-windows.obj `if test -f '../fish/windows.c'; then $(CYGPATH_W) '../fish/windows.c'; else $(CYGPATH_W) '$(srcdir)/../fish/windows.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_edit-windows.Tpo $(DEPDIR)/virt_edit-windows.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/windows.c' object='virt_edit-windows.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_edit_CPPFLAGS) $(CPPFLAGS) $(virt_edit_CFLAGS) $(CFLAGS) -c -o virt_edit-windows.obj `if test -f '../fish/windows.c'; then $(CYGPATH_W) '../fish/windows.c'; else $(CYGPATH_W) '$(srcdir)/../fish/windows.c'; fi`
 
 virt_edit-edit.o: edit.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_edit_CPPFLAGS) $(CPPFLAGS) $(virt_edit_CFLAGS) $(CFLAGS) -MT virt_edit-edit.o -MD -MP -MF $(DEPDIR)/virt_edit-edit.Tpo -c -o virt_edit-edit.o `test -f 'edit.c' || echo '$(srcdir)/'`edit.c

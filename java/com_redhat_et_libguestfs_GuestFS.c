@@ -368,7 +368,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1cdrom  (JNIEnv *env, jobject obj, j
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1add_1domain  (JNIEnv *env, jobject obj, jlong jg, jstring jdom, jlong joptargs_bitmask, jstring jlibvirturi, jboolean jreadonly, jstring jiface, jboolean jlive, jboolean jallowuuid, jstring jreadonlydisk, jstring jcachemode, jstring jdiscard)
+Java_com_redhat_et_libguestfs_GuestFS__1add_1domain  (JNIEnv *env, jobject obj, jlong jg, jstring jdom, jlong joptargs_bitmask, jstring jlibvirturi, jboolean jreadonly, jstring jiface, jboolean jlive, jboolean jallowuuid, jstring jreadonlydisk, jstring jcachemode, jstring jdiscard, jboolean jcopyonread)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -386,6 +386,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1domain  (JNIEnv *env, jobject obj, 
   optargs_s.readonlydisk = (*env)->GetStringUTFChars (env, jreadonlydisk, NULL);
   optargs_s.cachemode = (*env)->GetStringUTFChars (env, jcachemode, NULL);
   optargs_s.discard = (*env)->GetStringUTFChars (env, jdiscard, NULL);
+  optargs_s.copyonread = jcopyonread;
   optargs_s.bitmask = joptargs_bitmask;
 
   r = guestfs_add_domain_argv (g, dom, optargs);
@@ -405,7 +406,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1domain  (JNIEnv *env, jobject obj, 
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jlong joptargs_bitmask, jboolean jreadonly, jstring jformat, jstring jiface, jstring jname, jstring jlabel, jstring jprotocol, jobjectArray jserver, jstring jusername, jstring jsecret, jstring jcachemode, jstring jdiscard)
+Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jlong joptargs_bitmask, jboolean jreadonly, jstring jformat, jstring jiface, jstring jname, jstring jlabel, jstring jprotocol, jobjectArray jserver, jstring jusername, jstring jsecret, jstring jcachemode, jstring jdiscard, jboolean jcopyonread)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -436,6 +437,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, j
   optargs_s.secret = (*env)->GetStringUTFChars (env, jsecret, NULL);
   optargs_s.cachemode = (*env)->GetStringUTFChars (env, jcachemode, NULL);
   optargs_s.discard = (*env)->GetStringUTFChars (env, jdiscard, NULL);
+  optargs_s.copyonread = jcopyonread;
   optargs_s.bitmask = joptargs_bitmask;
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);
@@ -7073,6 +7075,23 @@ Java_com_redhat_et_libguestfs_GuestFS__1journal_1get_1data_1threshold  (JNIEnv *
 
 
   r = guestfs_journal_get_data_threshold (g);
+
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return -1;
+  }
+  return (jlong) r;
+}
+
+JNIEXPORT jlong JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1journal_1get_1realtime_1usec  (JNIEnv *env, jobject obj, jlong jg)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int64_t r;
+
+
+  r = guestfs_journal_get_realtime_usec (g);
 
 
   if (r == -1) {

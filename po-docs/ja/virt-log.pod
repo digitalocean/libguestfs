@@ -1,0 +1,138 @@
+
+=head1 名前
+
+virt-log - Display log files from a virtual machine
+
+=head1 書式
+
+ virt-log [--options] -d domname
+
+ virt-log [--options] -a disk.img [-a disk.img ...]
+
+=head1 説明
+
+C<virt-log> is a command line tool to display the log files from the named
+virtual machine (or disk image).
+
+This tool understands and displays both plain text log files
+(eg. C</var/log/messages>) and binary formats such as the systemd journal.
+
+To display other types of files, use L<virt-cat(1)>.  To copy files out of a
+virtual machine, use L<virt-copy-out(1)>.  To display the contents of the
+Windows Registry, use L<virt-win-reg(1)>.
+
+=head1 例
+
+Display the complete logs from a guest:
+
+ virt-log -d mydomain | less
+
+仮想マシンが取得している DHCP IP アドレスを発見するには:
+
+ virt-log -d mydomain | grep 'dhclient.*bound to'
+
+=head1 オプション
+
+=over 4
+
+=item B<--help>
+
+簡単なヘルプを表示します。
+
+=item B<-a> file
+
+=item B<--add> file
+
+Add I<file> which should be a disk image from a virtual machine.  If the
+virtual machine has multiple block devices, you must supply all of them with
+separate I<-a> options.
+
+ディスクイメージの形式は自動検知されます。 これを上書きして強制的に特定の形式を使用する場合、 I<--format=..> オプションを使用します。
+
+=item B<-a URI>
+
+=item B<--add URI>
+
+リモートディスクを追加します。 L<guestfish(1)/リモートストレージの追加> 参照。
+
+=item B<-c> URI
+
+=item B<--connect> URI
+
+libvirt を使用していると、指定された I<URI> に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
+
+ゲストのブロックデバイスを直接指定していると（(I<-a>)）、libvirt は何も使用されません。
+
+=item B<-d> guest
+
+=item B<--domain> guest
+
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  名前の代わりに仮想マシンの UUID を使用できます。
+
+=item B<--echo-keys>
+
+When prompting for keys and passphrases, virt-log normally turns echoing off
+so you cannot see what you are typing.  If you are not worried about Tempest
+attacks and there is no one else in the room you can specify this flag to
+see what you are typing.
+
+=item B<--format=raw|qcow2|..>
+
+=item B<--format>
+
+I<-a> オプションは標準状態でディスクイメージの形式を自動検知します。 これを使用することにより、コマンドラインで後続の I<-a>
+オプションのディスク形式を強制的に指定できます。 引数なしで I<--format> を使用することにより、 後続の I<-a>
+オプションに対して自動検知に戻せます。
+
+例:
+
+ virt-log --format=raw -a disk.img
+
+強制的に C<disk.img> を raw 形式にします (自動検出しません)。
+
+ virt-log --format=raw -a disk.img --format -a another.img
+
+強制的に C<disk.img> を raw 形式にし (自動検知なし)、 C<another.img> に対して自動検知に戻します。
+
+仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
+これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。
+
+=item B<--keys-from-stdin>
+
+標準入力からキーまたはパスフレーズのパラメーターを読み込みます。 標準で C</dev/tty> を開いているユーザーから読み込もうとします。
+
+=item B<-v>
+
+=item B<--verbose>
+
+デバッグ用の冗長なメッセージを有効にします。
+
+=item B<-V>
+
+=item B<--version>
+
+バージョン番号を表示して、終了します。
+
+=item B<-x>
+
+libguestfs API 呼び出しのトレースを有効にします。
+
+=back
+
+=head1 終了ステータス
+
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
+
+=head1 関連項目
+
+L<guestfs(3)>, L<guestfish(1)>, L<virt-cat(1)>, L<virt-copy-out(1)>,
+L<virt-tar-out(1)>, L<virt-win-reg(1)>, L<http://libguestfs.org/>.
+
+=head1 著者
+
+Richard W.M. Jones L<http://people.redhat.com/~rjones/>
+
+=head1 COPYRIGHT
+
+Copyright (C) 2010-2014 Red Hat Inc.
+

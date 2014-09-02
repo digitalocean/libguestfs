@@ -321,6 +321,11 @@ check_hash (char **ret, const char *key, const char *expected)
 {
   const char *value = get_key (ret, key);
 
+  if (value == NULL) {
+    fprintf (stderr, "test failed: hash key %s not found\n", key);
+    return -1;
+  }
+
   if (STRNEQ (value, expected)) {
     fprintf (stderr, "test failed: hash key %s = \"%s\" is not expected value \"%s\"\n",
              key, value, expected);
@@ -431,7 +436,7 @@ create_handle (void)
     exit (EXIT_FAILURE);
   }
 
-  if (guestfs_add_drive_scratch (g, 52428800, -1) == -1) {
+  if (guestfs_add_drive_scratch (g, 524288000, -1) == -1) {
     printf ("FAIL: guestfs_add_drive_scratch\n");
     exit (EXIT_FAILURE);
   }

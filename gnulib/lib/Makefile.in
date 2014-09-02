@@ -1470,8 +1470,7 @@ EXTRA_DIST = accept.c w32sock.h alloca.c alloca.in.h allocator.h \
 	getcwd-lgpl.c getdelim.c getdtablesize.c getline.c \
 	getlogin_r.c getopt.c getopt.in.h getopt1.c getopt_int.h \
 	gettimeofday.c $(top_srcdir)/build-aux/gitlog-to-changelog \
-	$(top_srcdir)/build-aux/git-log-fix glob-libc.h glob.c \
-	glob.in.h $(top_srcdir)/GNUmakefile hash.h \
+	glob-libc.h glob.c glob.in.h $(top_srcdir)/GNUmakefile hash.h \
 	$(top_srcdir)/build-aux/config.rpath human.h i-ring.h \
 	ignore-value.h inet_ntop.c intprops.h inttypes.in.h \
 	config.charset ref-add.sin ref-del.sin locale.in.h \

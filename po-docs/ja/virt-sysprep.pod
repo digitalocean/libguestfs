@@ -488,16 +488,39 @@ template too, which can be done by enabling just the customize module:
 Windows 8 "fast startup" can prevent virt-sysprep from working.  See
 L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST STARTUP>.
 
-=head1 SHELL QUOTING
-
-Libvirt guest names can contain arbitrary characters, some of which have
-meaning to the shell such as C<#> and space.  You may need to quote or
-escape these characters on the command line.  See the shell manual page
-L<sh(1)> for details.
-
 =head1 終了ステータス
 
 このプログラムは、成功すると 0 を返します。または、エラーが起きると 1 を返します。
+
+=head1 環境変数
+
+=over 4
+
+=item C<VIRT_TOOLS_DATA_DIR>
+
+This can point to the directory containing data files used for Windows
+firstboot installation.
+
+Normally you do not need to set this.  If not set, a compiled-in default
+will be used (something like C</usr/share/virt-tools>).
+
+This directory may contain the following files:
+
+=over 4
+
+=item C<rhsrvany.exe>
+
+This is the RHSrvAny Windows binary, used to install a "firstboot" script in
+Windows guests.  It is required if you intend to use the I<--firstboot> or
+I<--firstboot-command> options with Windows guests.
+
+See also: C<https://github.com/rwmjones/rhsrvany>
+
+=back
+
+=back
+
+他の環境変数は L<guestfs(3)/環境変数> を参照してください。
 
 =head1 関連項目
 

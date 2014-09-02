@@ -9,9 +9,11 @@ builder/setlocale-c.c
 builder/uname-c.c
 cat/cat.c
 cat/filesystems.c
+cat/log.c
 cat/ls.c
 cat/visit.c
 customize/crypt-c.c
+customize/perl_edit-c.c
 daemon/9p.c
 daemon/acl.c
 daemon/augeas.c
@@ -134,6 +136,7 @@ fish/echo.c
 fish/edit.c
 fish/event-names.c
 fish/events.c
+fish/file-edit.c
 fish/fish.c
 fish/glob.c
 fish/help.c
@@ -159,6 +162,7 @@ fish/supported.c
 fish/tilde.c
 fish/time.c
 fish/uri.c
+fish/windows.c
 format/format.c
 fuse/guestmount.c
 fuse/guestunmount.c
@@ -330,5 +334,6 @@ src/test-utils.c
 src/tmpdirs.c
 src/utils.c
 test-tool/test-tool.c
+v2v/domainxml-c.c
 v2v/utils-c.c
 v2v/xml-c.c

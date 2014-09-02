@@ -36,19 +36,55 @@ let prog = Filename.basename Sys.executable_name
 
 let () = Random.self_init ()
 
+let remove_duplicates index =
+  (* Fill an hash with the higher revision of the available
+   * (name, arch) tuples, so it possible to ignore duplicates,
+   * and versions with a lower revision.
+   *)
+  let nseen = Hashtbl.create 13 in
+  List.iter (
+    fun (name, { Index_parser.arch = arch; revision = revision }) ->
+      let id = name, arch in
+      try
+        let rev = Hashtbl.find nseen id in
+        if revision > rev then
+          Hashtbl.replace nseen id revision
+      with Not_found ->
+        Hashtbl.add nseen id revision
+  ) index;
+  List.filter (
+    fun (name, { Index_parser.arch = arch; revision = revision }) ->
+      let id = name, arch in
+      try
+        let rev = Hashtbl.find nseen (name, arch) in
+        (* Take the first occurrency with the higher revision,
+         * removing it from the hash so the other occurrencies
+         * are ignored.
+         *)
+        if revision = rev then (
+          Hashtbl.remove nseen id;
+          true
+        ) else
+          false
+      with Not_found ->
+        (* Already taken, so ignore. *)
+        false
+  ) index
+
 let main () =
   (* Command line argument parsing - see cmdline.ml. *)
   let mode, arg,
-    arch, attach, cache, check_signature, curl, debug,
+    arch, attach, cache, check_signature, curl,
     delete_on_failure, format, gpg, list_format, memsize,
-    network, ops, output, quiet, size, smp, sources, sync =
+    network, ops, output, quiet, size, smp, sources, sync,
+    trace, verbose =
     parse_cmdline () in
 
   (* Timestamped messages in ordinary, non-debug non-quiet mode. *)
   let msg fs = make_message_function ~quiet fs in
 
   (* If debugging, echo the command line arguments and the sources. *)
-  if debug then (
+  if verbose then (
     eprintf "command line:";
     List.iter (eprintf " %s") (Array.to_list Sys.argv);
     prerr_newline ();
@@ -62,7 +98,7 @@ let main () =
   let mode =
     match mode with
     | `Get_kernel -> (* --get-kernel is really a different program ... *)
-      Get_kernel.get_kernel ~debug ?format ?output arg;
+      Get_kernel.get_kernel ~trace ~verbose ?format ?output arg;
       exit 0
 
     | `Delete_cache ->                  (* --delete-cache *)
@@ -90,8 +126,8 @@ let main () =
       eprintf (f_"%s: gpg is not installed (or does not work)\nYou should install gpg, or use --gpg option, or use --no-check-signature.\n") prog;
       exit 1
     )
-    else if debug then
-      eprintf (f_"%s: warning: gpg program is not available\n") prog
+    else if verbose then
+      warning ~prog (f_"gpg program is not available")
   );
 
   (* Check that curl works. *)
@@ -113,17 +149,16 @@ let main () =
     match cache with
     | None -> None
     | Some dir ->
-      try Some (Cache.create ~debug ~directory:dir)
+      try Some (Cache.create ~verbose ~directory:dir)
       with exn ->
-        eprintf (f_"%s: warning: cache %s: %s\n") prog dir
-          (Printexc.to_string exn);
-        eprintf (f_"%s: disabling the cache\n%!") prog;
+        warning ~prog (f_"cache %s: %s") dir (Printexc.to_string exn);
+        warning ~prog (f_"disabling the cache");
         None
   in
 
   (* Download the sources. *)
-  let downloader = Downloader.create ~debug ~curl ~cache in
-  let repos = Sources.read_sources ~prog ~debug in
+  let downloader = Downloader.create ~verbose ~curl ~cache in
+  let repos = Sources.read_sources ~prog ~verbose in
   let repos = List.map (
     fun { Sources.uri = uri; Sources.gpgkey = gpgkey; Sources.proxy = proxy } ->
       let gpgkey =
@@ -142,10 +177,11 @@ let main () =
       List.map (
         fun (source, key, proxy) ->
           let sigchecker =
-            Sigchecker.create ~debug ~gpg ~check_signature ~gpgkey:key in
-          Index_parser.get_index ~prog ~debug ~downloader ~sigchecker ~proxy source
+            Sigchecker.create ~verbose ~gpg ~check_signature ~gpgkey:key in
+          Index_parser.get_index ~prog ~verbose ~downloader ~sigchecker ~proxy source
       ) sources
     ) in
+  let index = remove_duplicates index in
 
   (* Now handle the remaining modes. *)
   let mode =
@@ -452,7 +488,7 @@ let main () =
   in
 
   (* Print out the plan. *)
-  if debug then (
+  if verbose then (
     let print_tags tags =
       (try
          let v = List.assoc `Filename tags in eprintf " +filename=%s" v
@@ -508,14 +544,14 @@ let main () =
       let ofile = List.assoc `Filename otags in
       msg (f_"Copying");
       let cmd = sprintf "cp %s %s" (quote ifile) (quote ofile) in
-      if debug then eprintf "%s\n%!" cmd;
+      if verbose then eprintf "%s\n%!" cmd;
       if Sys.command cmd <> 0 then exit 1
 
     | itags, `Rename, otags ->
       let ifile = List.assoc `Filename itags in
       let ofile = List.assoc `Filename otags in
       let cmd = sprintf "mv %s %s" (quote ifile) (quote ofile) in
-      if debug then eprintf "%s\n%!" cmd;
+      if verbose then eprintf "%s\n%!" cmd;
       if Sys.command cmd <> 0 then exit 1
 
     | itags, `Pxzcat, otags ->
@@ -538,11 +574,11 @@ let main () =
       let preallocation = if oformat = "qcow2" then Some "metadata" else None in
       let () =
         let g = new G.guestfs () in
-        if debug then ( g#set_trace true; g#set_verbose true );
+        if verbose then ( g#set_trace true; g#set_verbose true );
         g#disk_create ?preallocation ofile oformat osize in
       let cmd =
         sprintf "virt-resize%s%s%s --output-format %s%s%s %s %s"
-          (if debug then " --verbose" else " --quiet")
+          (if verbose then " --verbose" else " --quiet")
           (if is_block_device ofile then " --no-sparse" else "")
           (match iformat with
           | None -> ""
@@ -555,7 +591,7 @@ let main () =
           | None -> ""
           | Some lvexpand -> sprintf " --lv-expand %s" (quote lvexpand))
           (quote ifile) (quote ofile) in
-      if debug then eprintf "%s\n%!" cmd;
+      if verbose then eprintf "%s\n%!" cmd;
       if Sys.command cmd <> 0 then exit 1
 
     | itags, `Disk_resize, otags ->
@@ -565,8 +601,8 @@ let main () =
       msg (f_"Resizing container (but not filesystems) to expand the disk to %s")
         (human_size osize);
       let cmd = sprintf "qemu-img resize %s %Ld%s"
-        (quote ofile) osize (if debug then "" else " >/dev/null") in
-      if debug then eprintf "%s\n%!" cmd;
+        (quote ofile) osize (if verbose then "" else " >/dev/null") in
+      if verbose then eprintf "%s\n%!" cmd;
       if Sys.command cmd <> 0 then exit 1
 
     | itags, `Convert, otags ->
@@ -582,8 +618,8 @@ let main () =
         | None -> ""
         | Some iformat -> sprintf " -f %s" (quote iformat))
         (quote ifile) (quote oformat) (quote ofile)
-        (if debug then "" else " >/dev/null 2>&1") in
-      if debug then eprintf "%s\n%!" cmd;
+        (if verbose then "" else " >/dev/null 2>&1") in
+      if verbose then eprintf "%s\n%!" cmd;
       if Sys.command cmd <> 0 then exit 1
   ) plan;
 
@@ -591,7 +627,7 @@ let main () =
   msg (f_"Opening the new disk");
   let g =
     let g = new G.guestfs () in
-    if debug then g#set_trace true;
+    if verbose then g#set_trace true;
 
     (match memsize with None -> () | Some memsize -> g#set_memsize memsize);
     (match smp with None -> () | Some smp -> g#set_smp smp);
@@ -630,7 +666,7 @@ let main () =
       eprintf (f_"%s: no guest operating systems or multiboot OS found in this disk image\nThis is a failure of the source repository.  Use -v for more information.\n") prog;
       exit 1 in
 
-  Customize_run.run ~prog ~debug ~quiet g root ops;
+  Customize_run.run ~prog ~verbose ~quiet g root ops;
 
   (* Collect some stats about the final output file.
    * Notes:

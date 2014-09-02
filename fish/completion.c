@@ -292,6 +292,7 @@ static const char *const commands[] = {
   "journal-close",
   "journal-get",
   "journal-get-data-threshold",
+  "journal-get-realtime-usec",
   "journal-next",
   "journal-open",
   "journal-set-data-threshold",

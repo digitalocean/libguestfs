@@ -325,16 +325,17 @@ am_guestfish_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	guestfish-alloc.$(OBJEXT) guestfish-copy.$(OBJEXT) \
 	guestfish-destpaths.$(OBJEXT) guestfish-display.$(OBJEXT) \
 	guestfish-echo.$(OBJEXT) guestfish-edit.$(OBJEXT) \
-	guestfish-events.$(OBJEXT) guestfish-fish.$(OBJEXT) \
-	guestfish-glob.$(OBJEXT) guestfish-help.$(OBJEXT) \
-	guestfish-hexedit.$(OBJEXT) guestfish-lcd.$(OBJEXT) \
-	guestfish-man.$(OBJEXT) guestfish-more.$(OBJEXT) \
-	guestfish-prep.$(OBJEXT) guestfish-prep-disk.$(OBJEXT) \
-	guestfish-prep-part.$(OBJEXT) guestfish-prep-fs.$(OBJEXT) \
-	guestfish-prep-lv.$(OBJEXT) guestfish-prep-boot.$(OBJEXT) \
-	guestfish-rc.$(OBJEXT) guestfish-reopen.$(OBJEXT) \
-	guestfish-setenv.$(OBJEXT) guestfish-supported.$(OBJEXT) \
-	guestfish-tilde.$(OBJEXT) guestfish-time.$(OBJEXT)
+	guestfish-events.$(OBJEXT) guestfish-file-edit.$(OBJEXT) \
+	guestfish-fish.$(OBJEXT) guestfish-glob.$(OBJEXT) \
+	guestfish-help.$(OBJEXT) guestfish-hexedit.$(OBJEXT) \
+	guestfish-lcd.$(OBJEXT) guestfish-man.$(OBJEXT) \
+	guestfish-more.$(OBJEXT) guestfish-prep.$(OBJEXT) \
+	guestfish-prep-disk.$(OBJEXT) guestfish-prep-part.$(OBJEXT) \
+	guestfish-prep-fs.$(OBJEXT) guestfish-prep-lv.$(OBJEXT) \
+	guestfish-prep-boot.$(OBJEXT) guestfish-rc.$(OBJEXT) \
+	guestfish-reopen.$(OBJEXT) guestfish-setenv.$(OBJEXT) \
+	guestfish-supported.$(OBJEXT) guestfish-tilde.$(OBJEXT) \
+	guestfish-time.$(OBJEXT)
 guestfish_OBJECTS = $(am_guestfish_OBJECTS)
 am__DEPENDENCIES_1 =
 guestfish_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -1574,9 +1575,9 @@ EXTRA_DIST = $(BUILT_SOURCES) rc_protocol.x guestfish.pod \
 	test-add-domain.sh test-add-uri.sh test-alloc.sh test-copy.sh \
 	test-d.sh test-edit.sh test-escapes.sh test-events.sh \
 	test-file-attrs.sh test-find0.sh test-glob.sh test-inspect.sh \
-	test-mount-local.sh test-prep.sh test-read-file.sh \
-	test-remote.sh test-remote-events.sh test-reopen.sh \
-	test-run.sh test-stringlist.sh test-tilde.sh \
+	test-invalid-params.sh test-mount-local.sh test-prep.sh \
+	test-read-file.sh test-remote.sh test-remote-events.sh \
+	test-reopen.sh test-run.sh test-stringlist.sh test-tilde.sh \
 	test-upload-to-dir.sh
 
 # These source files (mostly related to option parsing) are shared
@@ -1606,6 +1607,8 @@ guestfish_SOURCES = \
 	echo.c \
 	edit.c \
 	events.c \
+	file-edit.c \
+	file-edit.h \
 	fish.c \
 	fish.h \
 	glob.c \
@@ -1687,7 +1690,8 @@ toolsconf_DATA = libguestfs-tools.conf
 # Tests.
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 TESTS = test-a.sh test-add-domain.sh test-add-uri.sh test-d.sh \
-	test-escapes.sh test-events.sh test-tilde.sh $(am__append_3)
+	test-escapes.sh test-events.sh test-invalid-params.sh \
+	test-tilde.sh $(am__append_3)
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -1848,6 +1852,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-edit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-event-names.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-events.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-file-edit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-fish.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-glob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-help.Po@am__quote@
@@ -2162,6 +2167,20 @@ guestfish-events.obj: events.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='events.c' object='guestfish-events.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-events.obj `if test -f 'events.c'; then $(CYGPATH_W) 'events.c'; else $(CYGPATH_W) '$(srcdir)/events.c'; fi`
+
+guestfish-file-edit.o: file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-file-edit.o -MD -MP -MF $(DEPDIR)/guestfish-file-edit.Tpo -c -o guestfish-file-edit.o `test -f 'file-edit.c' || echo '$(srcdir)/'`file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-file-edit.Tpo $(DEPDIR)/guestfish-file-edit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='file-edit.c' object='guestfish-file-edit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-file-edit.o `test -f 'file-edit.c' || echo '$(srcdir)/'`file-edit.c
+
+guestfish-file-edit.obj: file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-file-edit.obj -MD -MP -MF $(DEPDIR)/guestfish-file-edit.Tpo -c -o guestfish-file-edit.obj `if test -f 'file-edit.c'; then $(CYGPATH_W) 'file-edit.c'; else $(CYGPATH_W) '$(srcdir)/file-edit.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-file-edit.Tpo $(DEPDIR)/guestfish-file-edit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='file-edit.c' object='guestfish-file-edit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-file-edit.obj `if test -f 'file-edit.c'; then $(CYGPATH_W) 'file-edit.c'; else $(CYGPATH_W) '$(srcdir)/file-edit.c'; fi`
 
 guestfish-fish.o: fish.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-fish.o -MD -MP -MF $(DEPDIR)/guestfish-fish.Tpo -c -o guestfish-fish.o `test -f 'fish.c' || echo '$(srcdir)/'`fish.c

@@ -60,6 +60,7 @@ struct              <a class="link" href="GuestfsAddDrive.html#GuestfsAddDriveCl
 <a name="GuestfsAddDrive.properties"></a><h2>Properties</h2>
 <pre class="synopsis">
   "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--cachemode" title='The "cachemode" property'>cachemode</a>"                <span class="type">gchar</span>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--copyonread" title='The "copyonread" property'>copyonread</a>"               <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
   "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--discard" title='The "discard" property'>discard</a>"                  <span class="type">gchar</span>*                : Read / Write / Construct
   "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--format" title='The "format" property'>format</a>"                   <span class="type">gchar</span>*                : Read / Write / Construct
   "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--iface" title='The "iface" property'>iface</a>"                    <span class="type">gchar</span>*                : Read / Write / Construct
@@ -136,6 +137,15 @@ Create a new GuestfsAddDrive object
 A string.
 </p>
 <p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsAddDrive--copyonread"></a><h3>The <code class="literal">"copyonread"</code> property</h3>
+<pre class="programlisting">  "copyonread"               <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
 </div>
 <hr>
 <div class="refsect2">

@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2013 Red Hat Inc.
+ * Copyright (C) 2013-2014 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -55,6 +55,8 @@
   __attribute__((cleanup(guestfs___cleanup_xmlXPathFreeContext)))
 #define CLEANUP_XMLXPATHFREEOBJECT                                      \
   __attribute__((cleanup(guestfs___cleanup_xmlXPathFreeObject)))
+#define CLEANUP_FCLOSE __attribute__((cleanup(guestfs___cleanup_fclose)))
+#define CLEANUP_PCLOSE __attribute__((cleanup(guestfs___cleanup_pclose)))
 #else
 #define CLEANUP_FREE
 #define CLEANUP_FREE_STRING_LIST
@@ -66,6 +68,8 @@
 #define CLEANUP_XMLFREETEXTWRITER
 #define CLEANUP_XMLXPATHFREECONTEXT
 #define CLEANUP_XMLXPATHFREEOBJECT
+#define CLEANUP_FCLOSE
+#define CLEANUP_PCLOSE
 #endif
 
 /* NB: At some point we will stop exporting these safe_* allocation
@@ -115,6 +119,8 @@ extern void guestfs___cleanup_xmlFreeURI (void *ptr);
 extern void guestfs___cleanup_xmlFreeTextWriter (void *ptr);
 extern void guestfs___cleanup_xmlXPathFreeContext (void *ptr);
 extern void guestfs___cleanup_xmlXPathFreeObject (void *ptr);
+extern void guestfs___cleanup_fclose (void *ptr);
+extern void guestfs___cleanup_pclose (void *ptr);
 
 /* These are in a separate header so the header can be generated.
  * Don't include the following file directly:
@@ -146,6 +152,8 @@ struct guestfs___add_libvirt_dom_argv {
   const char *cachemode;
 #define GUESTFS___ADD_LIBVIRT_DOM_DISCARD_BITMASK (UINT64_C(1)<<5)
   const char *discard;
+#define GUESTFS___ADD_LIBVIRT_DOM_COPYONREAD_BITMASK (UINT64_C(1)<<6)
+  int copyonread;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs___add_libvirt_dom (guestfs_h *g, virDomainPtr dom, const struct guestfs___add_libvirt_dom_argv *optargs);
@@ -160,5 +168,19 @@ extern GUESTFS_DLL_PUBLIC int guestfs___add_libvirt_dom (guestfs_h *g, virDomain
 #else
 #  define program_name "libguestfs"
 #endif
+
+/* Close all file descriptors matching the condition. */
+#define close_file_descriptors(cond) do {                               \
+    int max_fd = sysconf (_SC_OPEN_MAX);                                \
+    int fd;                                                             \
+    if (max_fd == -1)                                                   \
+      max_fd = 1024;                                                    \
+    if (max_fd > 65536)                                                 \
+      max_fd = 65536;          /* bound the amount of work we do here */ \
+    for (fd = 0; fd < max_fd; ++fd) {                                   \
+      if (cond)                                                         \
+        close (fd);                                                     \
+    }                                                                   \
+  } while (0)
 
 #endif /* GUESTFS_INTERNAL_FRONTEND_H_ */

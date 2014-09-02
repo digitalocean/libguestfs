@@ -3738,6 +3738,11 @@ struct guestfs_cpio_out_args {
 };
 typedef struct guestfs_cpio_out_args guestfs_cpio_out_args;
 
+struct guestfs_journal_get_realtime_usec_ret {
+	int64_t usec;
+};
+typedef struct guestfs_journal_get_realtime_usec_ret guestfs_journal_get_realtime_usec_ret;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -4151,9 +4156,10 @@ enum guestfs_procedure {
 	GUESTFS_PROC_BLKDISCARD = 417,
 	GUESTFS_PROC_BLKDISCARDZEROES = 418,
 	GUESTFS_PROC_CPIO_OUT = 419,
+	GUESTFS_PROC_JOURNAL_GET_REALTIME_USEC = 420,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 419
+#define GUESTFS_MAX_PROC_NR 420
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4799,6 +4805,7 @@ extern  bool_t xdr_guestfs_blkdiscard_args (XDR *, guestfs_blkdiscard_args*);
 extern  bool_t xdr_guestfs_blkdiscardzeroes_args (XDR *, guestfs_blkdiscardzeroes_args*);
 extern  bool_t xdr_guestfs_blkdiscardzeroes_ret (XDR *, guestfs_blkdiscardzeroes_ret*);
 extern  bool_t xdr_guestfs_cpio_out_args (XDR *, guestfs_cpio_out_args*);
+extern  bool_t xdr_guestfs_journal_get_realtime_usec_ret (XDR *, guestfs_journal_get_realtime_usec_ret*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5394,6 +5401,7 @@ extern bool_t xdr_guestfs_blkdiscard_args ();
 extern bool_t xdr_guestfs_blkdiscardzeroes_args ();
 extern bool_t xdr_guestfs_blkdiscardzeroes_ret ();
 extern bool_t xdr_guestfs_cpio_out_args ();
+extern bool_t xdr_guestfs_journal_get_realtime_usec_ret ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

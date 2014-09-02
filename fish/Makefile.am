@@ -87,6 +87,8 @@ guestfish_SOURCES = \
 	echo.c \
 	edit.c \
 	events.c \
+	file-edit.c \
+	file-edit.h \
 	fish.c \
 	fish.h \
 	glob.c \
@@ -272,6 +274,7 @@ TESTS = \
 	test-d.sh \
 	test-escapes.sh \
 	test-events.sh \
+	test-invalid-params.sh \
 	test-tilde.sh
 
 if ENABLE_APPLIANCE
@@ -310,6 +313,7 @@ EXTRA_DIST += \
 	test-find0.sh \
 	test-glob.sh \
 	test-inspect.sh \
+	test-invalid-params.sh \
 	test-mount-local.sh \
 	test-prep.sh \
 	test-read-file.sh \

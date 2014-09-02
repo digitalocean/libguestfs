@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-(* Mini interface to libxml2 for parsing libvirt XML. *)
+(* Mini interface to libxml2. *)
 
 type doc
 type node_ptr
@@ -31,6 +31,7 @@ type node = doc * node_ptr
 external parse_memory : string -> doc = "v2v_xml_parse_memory"
 external xpath_new_context : doc -> xpathctx = "v2v_xml_xpath_new_context"
 external xpath_eval_expression : xpathctx -> string -> xpathobj = "v2v_xml_xpath_eval_expression"
+external xpath_register_ns : xpathctx -> string -> string -> unit = "v2v_xml_xpath_register_ns"
 
 external xpathobj_nr_nodes : xpathobj -> int = "v2v_xml_xpathobj_nr_nodes"
 external xpathobj_get_node_ptr : xpathobj -> int -> node_ptr = "v2v_xml_xpathobj_get_node_ptr"
@@ -48,3 +49,17 @@ let node_name (_, node) = node_ptr_name node
 external node_ptr_as_string : doc -> node_ptr -> string = "v2v_xml_node_ptr_as_string"
 let node_as_string (doc, node) =
   node_ptr_as_string doc node
+
+type uri = {
+  uri_scheme : string option;
+  uri_opaque : string option;
+  uri_authority : string option;
+  uri_server : string option;
+  uri_user : string option;
+  uri_port : int;
+  uri_path : string option;
+  uri_fragment : string option;
+  uri_query_raw : string option;
+}
+
+external parse_uri : string -> uri = "v2v_xml_parse_uri"

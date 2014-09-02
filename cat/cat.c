@@ -33,6 +33,7 @@
 
 #include "guestfs.h"
 #include "options.h"
+#include "windows.h"
 
 /* Currently open libguestfs handle. */
 guestfs_h *g;
@@ -46,8 +47,6 @@ const char *libvirt_uri = NULL;
 int inspector = 1;
 
 static int do_cat (int argc, char *argv[]);
-static int is_windows (guestfs_h *g, const char *root);
-static char *windows_path (guestfs_h *g, const char *root, const char *filename);
 
 static void __attribute__((noreturn))
 usage (int status)
@@ -70,6 +69,8 @@ usage (int status)
              "  --format[=raw|..]    Force disk format for -a option\n"
              "  --help               Display brief help\n"
              "  --keys-from-stdin    Read passphrases from stdin\n"
+             "  -m|--mount dev[:mnt[:opts[:fstype]]]\n"
+             "                       Mount dev on mnt (if omitted, /)\n"
              "  -v|--verbose         Verbose messages\n"
              "  -V|--version         Display version and exit\n"
              "  -x                   Trace libguestfs API calls\n"
@@ -89,7 +90,7 @@ main (int argc, char *argv[])
 
   enum { HELP_OPTION = CHAR_MAX + 1 };
 
-  static const char *options = "a:c:d:vVx";
+  static const char *options = "a:c:d:m:vVx";
   static const struct option long_options[] = {
     { "add", 1, 0, 'a' },
     { "connect", 1, 0, 'c' },
@@ -99,12 +100,16 @@ main (int argc, char *argv[])
     { "help", 0, 0, HELP_OPTION },
     { "keys-from-stdin", 0, 0, 0 },
     { "long-options", 0, 0, 0 },
+    { "mount", 1, 0, 'm' },
     { "verbose", 0, 0, 'v' },
     { "version", 0, 0, 'V' },
     { 0, 0, 0, 0 }
   };
   struct drv *drvs = NULL;
   struct drv *drv;
+  struct mp *mps = NULL;
+  struct mp *mp;
+  char *p;
   const char *format = NULL;
   int c;
   int r;
@@ -150,6 +155,11 @@ main (int argc, char *argv[])
 
     case 'd':
       OPTION_d;
+      break;
+
+    case 'm':
+      OPTION_m;
+      inspector = 0;
       break;
 
     case 'v':
@@ -214,7 +224,7 @@ main (int argc, char *argv[])
    * values.
    */
   assert (read_only == 1);
-  assert (inspector == 1);
+  assert (inspector == 1 || mps != NULL);
   assert (live == 0);
 
   /* User must specify at least one filename on the command line. */
@@ -225,18 +235,20 @@ main (int argc, char *argv[])
   if (drvs == NULL)
     usage (EXIT_FAILURE);
 
-  /* Add drives, inspect and mount.  Note that inspector is always true,
-   * and there is no -m option.
-   */
+  /* Add drives, inspect and mount. */
   add_drives (drvs, 'a');
 
   if (guestfs_launch (g) == -1)
     exit (EXIT_FAILURE);
 
-  inspect_mount ();
+  if (mps != NULL)
+    mount_mps (mps);
+  else
+    inspect_mount ();
 
   /* Free up data structures, no longer needed after this point. */
   free_drives (drvs);
+  free_mps (mps);
 
   r = do_cat (argc - optind, &argv[optind]);
 
@@ -249,26 +261,31 @@ static int
 do_cat (int argc, char *argv[])
 {
   unsigned errors = 0;
-  int windows, i;
+  int windows = 0;
+  int i;
   char *root;
+  CLEANUP_FREE_STRING_LIST char **roots = NULL;
 
-  /* Get root mountpoint.  See: fish/inspect.c:inspect_mount */
-  CLEANUP_FREE_STRING_LIST char **roots = guestfs_inspect_get_roots (g);
+  if (inspector) {
+    /* Get root mountpoint.  See: fish/inspect.c:inspect_mount */
+    roots = guestfs_inspect_get_roots (g);
 
-  assert (roots);
-  assert (roots[0] != NULL);
-  assert (roots[1] == NULL);
-  root = roots[0];
+    assert (roots);
+    assert (roots[0] != NULL);
+    assert (roots[1] == NULL);
+    root = roots[0];
 
-  /* Windows?  Special handling is required. */
-  windows = is_windows (g, root);
+    /* Windows?  Special handling is required. */
+    windows = is_windows (g, root);
+  }
 
   for (i = 0; i < argc; ++i) {
     CLEANUP_FREE char *filename_to_free = NULL;
     const char *filename = argv[i];
 
     if (windows) {
-      filename = filename_to_free = windows_path (g, root, filename);
+      filename = filename_to_free = windows_path (g, root, filename,
+                                                  1 /* readonly */);
       if (filename == NULL) {
         errors++;
         continue;
@@ -280,110 +297,4 @@ do_cat (int argc, char *argv[])
   }
 
   return errors == 0 ? 0 : -1;
-}
-
-static int
-is_windows (guestfs_h *g, const char *root)
-{
-  char *type;
-  int w;
-
-  type = guestfs_inspect_get_type (g, root);
-  if (!type)
-    return 0;
-
-  w = STREQ (type, "windows");
-  free (type);
-  return w;
-}
-
-static void mount_drive_letter_ro (char drive_letter, const char *root);
-
-static char *
-windows_path (guestfs_h *g, const char *root, const char *path)
-{
-  char *ret;
-  size_t i;
-
-  /* If there is a drive letter, rewrite the path. */
-  if (c_isalpha (path[0]) && path[1] == ':') {
-    char drive_letter = c_tolower (path[0]);
-    /* This returns the newly allocated string. */
-    mount_drive_letter_ro (drive_letter, root);
-    ret = strdup (path + 2);
-    if (ret == NULL) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
-  }
-  else if (!*path) {
-    ret = strdup ("/");
-    if (ret == NULL) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
-  }
-  else {
-    ret = strdup (path);
-    if (ret == NULL) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
-  }
-
-  /* Blindly convert any backslashes into forward slashes.  Is this good? */
-  for (i = 0; i < strlen (ret); ++i)
-    if (ret[i] == '\\')
-      ret[i] = '/';
-
-  /* If this fails, we want to return NULL. */
-  char *t = guestfs_case_sensitive_path (g, ret);
-  free (ret);
-  ret = t;
-
-  return ret;
-}
-
-static void
-mount_drive_letter_ro (char drive_letter, const char *root)
-{
-  char **drives;
-  char *device;
-  size_t i;
-
-  /* Resolve the drive letter using the drive mappings table. */
-  drives = guestfs_inspect_get_drive_mappings (g, root);
-  if (drives == NULL || drives[0] == NULL) {
-    fprintf (stderr, _("%s: to use Windows drive letters, this must be a Windows guest\n"),
-             program_name);
-    exit (EXIT_FAILURE);
-  }
-
-  device = NULL;
-  for (i = 0; drives[i] != NULL; i += 2) {
-    if (c_tolower (drives[i][0]) == drive_letter && drives[i][1] == '\0') {
-      device = drives[i+1];
-      break;
-    }
-  }
-
-  if (device == NULL) {
-    fprintf (stderr, _("%s: drive '%c:' not found.\n"),
-             program_name, drive_letter);
-    exit (EXIT_FAILURE);
-  }
-
-  /* Unmount current disk and remount device. */
-  if (guestfs_umount_all (g) == -1)
-    exit (EXIT_FAILURE);
-
-  if (guestfs_mount_ro (g, device, "/") == -1)
-    exit (EXIT_FAILURE);
-
-  for (i = 0; drives[i] != NULL; ++i)
-    free (drives[i]);
-  free (drives);
-  /* Don't need to free (device) because that string was in the
-   * drives array.
-   */
 }

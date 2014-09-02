@@ -67,6 +67,158 @@ copy_table (char * const * argv)
 }
 
 static value
+copy_application (const struct guestfs_application *application)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (12, 0);
+  v = caml_copy_string (application->app_name);
+  Store_field (rv, 0, v);
+  v = caml_copy_string (application->app_display_name);
+  Store_field (rv, 1, v);
+  v = caml_copy_int32 (application->app_epoch);
+  Store_field (rv, 2, v);
+  v = caml_copy_string (application->app_version);
+  Store_field (rv, 3, v);
+  v = caml_copy_string (application->app_release);
+  Store_field (rv, 4, v);
+  v = caml_copy_string (application->app_install_path);
+  Store_field (rv, 5, v);
+  v = caml_copy_string (application->app_trans_path);
+  Store_field (rv, 6, v);
+  v = caml_copy_string (application->app_publisher);
+  Store_field (rv, 7, v);
+  v = caml_copy_string (application->app_url);
+  Store_field (rv, 8, v);
+  v = caml_copy_string (application->app_source_package);
+  Store_field (rv, 9, v);
+  v = caml_copy_string (application->app_summary);
+  Store_field (rv, 10, v);
+  v = caml_copy_string (application->app_description);
+  Store_field (rv, 11, v);
+  CAMLreturn (rv);
+}
+
+static value
+copy_application2 (const struct guestfs_application2 *application2)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (17, 0);
+  v = caml_copy_string (application2->app2_name);
+  Store_field (rv, 0, v);
+  v = caml_copy_string (application2->app2_display_name);
+  Store_field (rv, 1, v);
+  v = caml_copy_int32 (application2->app2_epoch);
+  Store_field (rv, 2, v);
+  v = caml_copy_string (application2->app2_version);
+  Store_field (rv, 3, v);
+  v = caml_copy_string (application2->app2_release);
+  Store_field (rv, 4, v);
+  v = caml_copy_string (application2->app2_arch);
+  Store_field (rv, 5, v);
+  v = caml_copy_string (application2->app2_install_path);
+  Store_field (rv, 6, v);
+  v = caml_copy_string (application2->app2_trans_path);
+  Store_field (rv, 7, v);
+  v = caml_copy_string (application2->app2_publisher);
+  Store_field (rv, 8, v);
+  v = caml_copy_string (application2->app2_url);
+  Store_field (rv, 9, v);
+  v = caml_copy_string (application2->app2_source_package);
+  Store_field (rv, 10, v);
+  v = caml_copy_string (application2->app2_summary);
+  Store_field (rv, 11, v);
+  v = caml_copy_string (application2->app2_description);
+  Store_field (rv, 12, v);
+  v = caml_copy_string (application2->app2_spare1);
+  Store_field (rv, 13, v);
+  v = caml_copy_string (application2->app2_spare2);
+  Store_field (rv, 14, v);
+  v = caml_copy_string (application2->app2_spare3);
+  Store_field (rv, 15, v);
+  v = caml_copy_string (application2->app2_spare4);
+  Store_field (rv, 16, v);
+  CAMLreturn (rv);
+}
+
+static value
+copy_btrfssubvolume (const struct guestfs_btrfssubvolume *btrfssubvolume)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (3, 0);
+  v = caml_copy_int64 (btrfssubvolume->btrfssubvolume_id);
+  Store_field (rv, 0, v);
+  v = caml_copy_int64 (btrfssubvolume->btrfssubvolume_top_level_id);
+  Store_field (rv, 1, v);
+  v = caml_copy_string (btrfssubvolume->btrfssubvolume_path);
+  Store_field (rv, 2, v);
+  CAMLreturn (rv);
+}
+
+static value
+copy_dirent (const struct guestfs_dirent *dirent)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (3, 0);
+  v = caml_copy_int64 (dirent->ino);
+  Store_field (rv, 0, v);
+  v = Val_int (dirent->ftyp);
+  Store_field (rv, 1, v);
+  v = caml_copy_string (dirent->name);
+  Store_field (rv, 2, v);
+  CAMLreturn (rv);
+}
+
+static value
+copy_hivex_node (const struct guestfs_hivex_node *hivex_node)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (1, 0);
+  v = caml_copy_int64 (hivex_node->hivex_node_h);
+  Store_field (rv, 0, v);
+  CAMLreturn (rv);
+}
+
+static value
+copy_hivex_value (const struct guestfs_hivex_value *hivex_value)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (1, 0);
+  v = caml_copy_int64 (hivex_value->hivex_value_h);
+  Store_field (rv, 0, v);
+  CAMLreturn (rv);
+}
+
+static value
+copy_inotify_event (const struct guestfs_inotify_event *inotify_event)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (4, 0);
+  v = caml_copy_int64 (inotify_event->in_wd);
+  Store_field (rv, 0, v);
+  v = caml_copy_int32 (inotify_event->in_mask);
+  Store_field (rv, 1, v);
+  v = caml_copy_int32 (inotify_event->in_cookie);
+  Store_field (rv, 2, v);
+  v = caml_copy_string (inotify_event->in_name);
+  Store_field (rv, 3, v);
+  CAMLreturn (rv);
+}
+
+static value
 copy_int_bool (const struct guestfs_int_bool *int_bool)
 {
   CAMLparam0 ();
@@ -77,6 +229,103 @@ copy_int_bool (const struct guestfs_int_bool *int_bool)
   Store_field (rv, 0, v);
   v = caml_copy_int32 (int_bool->b);
   Store_field (rv, 1, v);
+  CAMLreturn (rv);
+}
+
+static value
+copy_isoinfo (const struct guestfs_isoinfo *isoinfo)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (17, 0);
+  v = caml_copy_string (isoinfo->iso_system_id);
+  Store_field (rv, 0, v);
+  v = caml_copy_string (isoinfo->iso_volume_id);
+  Store_field (rv, 1, v);
+  v = caml_copy_int32 (isoinfo->iso_volume_space_size);
+  Store_field (rv, 2, v);
+  v = caml_copy_int32 (isoinfo->iso_volume_set_size);
+  Store_field (rv, 3, v);
+  v = caml_copy_int32 (isoinfo->iso_volume_sequence_number);
+  Store_field (rv, 4, v);
+  v = caml_copy_int32 (isoinfo->iso_logical_block_size);
+  Store_field (rv, 5, v);
+  v = caml_copy_string (isoinfo->iso_volume_set_id);
+  Store_field (rv, 6, v);
+  v = caml_copy_string (isoinfo->iso_publisher_id);
+  Store_field (rv, 7, v);
+  v = caml_copy_string (isoinfo->iso_data_preparer_id);
+  Store_field (rv, 8, v);
+  v = caml_copy_string (isoinfo->iso_application_id);
+  Store_field (rv, 9, v);
+  v = caml_copy_string (isoinfo->iso_copyright_file_id);
+  Store_field (rv, 10, v);
+  v = caml_copy_string (isoinfo->iso_abstract_file_id);
+  Store_field (rv, 11, v);
+  v = caml_copy_string (isoinfo->iso_bibliographic_file_id);
+  Store_field (rv, 12, v);
+  v = caml_copy_int64 (isoinfo->iso_volume_creation_t);
+  Store_field (rv, 13, v);
+  v = caml_copy_int64 (isoinfo->iso_volume_modification_t);
+  Store_field (rv, 14, v);
+  v = caml_copy_int64 (isoinfo->iso_volume_expiration_t);
+  Store_field (rv, 15, v);
+  v = caml_copy_int64 (isoinfo->iso_volume_effective_t);
+  Store_field (rv, 16, v);
+  CAMLreturn (rv);
+}
+
+static value
+copy_lvm_lv (const struct guestfs_lvm_lv *lvm_lv)
+{
+  CAMLparam0 ();
+  CAMLlocal3 (rv, v, v2);
+
+  rv = caml_alloc (16, 0);
+  v = caml_copy_string (lvm_lv->lv_name);
+  Store_field (rv, 0, v);
+  v = caml_alloc_string (32);
+  memcpy (String_val (v), lvm_lv->lv_uuid, 32);
+  Store_field (rv, 1, v);
+  v = caml_copy_string (lvm_lv->lv_attr);
+  Store_field (rv, 2, v);
+  v = caml_copy_int64 (lvm_lv->lv_major);
+  Store_field (rv, 3, v);
+  v = caml_copy_int64 (lvm_lv->lv_minor);
+  Store_field (rv, 4, v);
+  v = caml_copy_int64 (lvm_lv->lv_kernel_major);
+  Store_field (rv, 5, v);
+  v = caml_copy_int64 (lvm_lv->lv_kernel_minor);
+  Store_field (rv, 6, v);
+  v = caml_copy_int64 (lvm_lv->lv_size);
+  Store_field (rv, 7, v);
+  v = caml_copy_int64 (lvm_lv->seg_count);
+  Store_field (rv, 8, v);
+  v = caml_copy_string (lvm_lv->origin);
+  Store_field (rv, 9, v);
+  if (lvm_lv->snap_percent >= 0) { /* Some snap_percent */
+    v2 = caml_copy_double (lvm_lv->snap_percent);
+    v = caml_alloc (1, 0);
+    Store_field (v, 0, v2);
+  } else /* None */
+    v = Val_int (0);
+  Store_field (rv, 10, v);
+  if (lvm_lv->copy_percent >= 0) { /* Some copy_percent */
+    v2 = caml_copy_double (lvm_lv->copy_percent);
+    v = caml_alloc (1, 0);
+    Store_field (v, 0, v2);
+  } else /* None */
+    v = Val_int (0);
+  Store_field (rv, 11, v);
+  v = caml_copy_string (lvm_lv->move_pv);
+  Store_field (rv, 12, v);
+  v = caml_copy_string (lvm_lv->lv_tags);
+  Store_field (rv, 13, v);
+  v = caml_copy_string (lvm_lv->mirror_log);
+  Store_field (rv, 14, v);
+  v = caml_copy_string (lvm_lv->modules);
+  Store_field (rv, 15, v);
   CAMLreturn (rv);
 }
 
@@ -169,55 +418,36 @@ copy_lvm_vg (const struct guestfs_lvm_vg *lvm_vg)
 }
 
 static value
-copy_lvm_lv (const struct guestfs_lvm_lv *lvm_lv)
+copy_mdstat (const struct guestfs_mdstat *mdstat)
 {
   CAMLparam0 ();
-  CAMLlocal3 (rv, v, v2);
+  CAMLlocal2 (rv, v);
 
-  rv = caml_alloc (16, 0);
-  v = caml_copy_string (lvm_lv->lv_name);
+  rv = caml_alloc (3, 0);
+  v = caml_copy_string (mdstat->mdstat_device);
   Store_field (rv, 0, v);
-  v = caml_alloc_string (32);
-  memcpy (String_val (v), lvm_lv->lv_uuid, 32);
+  v = caml_copy_int32 (mdstat->mdstat_index);
   Store_field (rv, 1, v);
-  v = caml_copy_string (lvm_lv->lv_attr);
+  v = caml_copy_string (mdstat->mdstat_flags);
   Store_field (rv, 2, v);
-  v = caml_copy_int64 (lvm_lv->lv_major);
+  CAMLreturn (rv);
+}
+
+static value
+copy_partition (const struct guestfs_partition *partition)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (4, 0);
+  v = caml_copy_int32 (partition->part_num);
+  Store_field (rv, 0, v);
+  v = caml_copy_int64 (partition->part_start);
+  Store_field (rv, 1, v);
+  v = caml_copy_int64 (partition->part_end);
+  Store_field (rv, 2, v);
+  v = caml_copy_int64 (partition->part_size);
   Store_field (rv, 3, v);
-  v = caml_copy_int64 (lvm_lv->lv_minor);
-  Store_field (rv, 4, v);
-  v = caml_copy_int64 (lvm_lv->lv_kernel_major);
-  Store_field (rv, 5, v);
-  v = caml_copy_int64 (lvm_lv->lv_kernel_minor);
-  Store_field (rv, 6, v);
-  v = caml_copy_int64 (lvm_lv->lv_size);
-  Store_field (rv, 7, v);
-  v = caml_copy_int64 (lvm_lv->seg_count);
-  Store_field (rv, 8, v);
-  v = caml_copy_string (lvm_lv->origin);
-  Store_field (rv, 9, v);
-  if (lvm_lv->snap_percent >= 0) { /* Some snap_percent */
-    v2 = caml_copy_double (lvm_lv->snap_percent);
-    v = caml_alloc (1, 0);
-    Store_field (v, 0, v2);
-  } else /* None */
-    v = Val_int (0);
-  Store_field (rv, 10, v);
-  if (lvm_lv->copy_percent >= 0) { /* Some copy_percent */
-    v2 = caml_copy_double (lvm_lv->copy_percent);
-    v = caml_alloc (1, 0);
-    Store_field (v, 0, v2);
-  } else /* None */
-    v = Val_int (0);
-  Store_field (rv, 11, v);
-  v = caml_copy_string (lvm_lv->move_pv);
-  Store_field (rv, 12, v);
-  v = caml_copy_string (lvm_lv->lv_tags);
-  Store_field (rv, 13, v);
-  v = caml_copy_string (lvm_lv->mirror_log);
-  Store_field (rv, 14, v);
-  v = caml_copy_string (lvm_lv->modules);
-  Store_field (rv, 15, v);
   CAMLreturn (rv);
 }
 
@@ -290,18 +520,20 @@ copy_statvfs (const struct guestfs_statvfs *statvfs)
 }
 
 static value
-copy_dirent (const struct guestfs_dirent *dirent)
+copy_utsname (const struct guestfs_utsname *utsname)
 {
   CAMLparam0 ();
   CAMLlocal2 (rv, v);
 
-  rv = caml_alloc (3, 0);
-  v = caml_copy_int64 (dirent->ino);
+  rv = caml_alloc (4, 0);
+  v = caml_copy_string (utsname->uts_sysname);
   Store_field (rv, 0, v);
-  v = Val_int (dirent->ftyp);
+  v = caml_copy_string (utsname->uts_release);
   Store_field (rv, 1, v);
-  v = caml_copy_string (dirent->name);
+  v = caml_copy_string (utsname->uts_version);
   Store_field (rv, 2, v);
+  v = caml_copy_string (utsname->uts_machine);
+  Store_field (rv, 3, v);
   CAMLreturn (rv);
 }
 
@@ -335,196 +567,6 @@ copy_xattr (const struct guestfs_xattr *xattr)
   v = caml_alloc_string (xattr->attrval_len);
   memcpy (String_val (v), xattr->attrval, xattr->attrval_len);
   Store_field (rv, 1, v);
-  CAMLreturn (rv);
-}
-
-static value
-copy_inotify_event (const struct guestfs_inotify_event *inotify_event)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-
-  rv = caml_alloc (4, 0);
-  v = caml_copy_int64 (inotify_event->in_wd);
-  Store_field (rv, 0, v);
-  v = caml_copy_int32 (inotify_event->in_mask);
-  Store_field (rv, 1, v);
-  v = caml_copy_int32 (inotify_event->in_cookie);
-  Store_field (rv, 2, v);
-  v = caml_copy_string (inotify_event->in_name);
-  Store_field (rv, 3, v);
-  CAMLreturn (rv);
-}
-
-static value
-copy_partition (const struct guestfs_partition *partition)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-
-  rv = caml_alloc (4, 0);
-  v = caml_copy_int32 (partition->part_num);
-  Store_field (rv, 0, v);
-  v = caml_copy_int64 (partition->part_start);
-  Store_field (rv, 1, v);
-  v = caml_copy_int64 (partition->part_end);
-  Store_field (rv, 2, v);
-  v = caml_copy_int64 (partition->part_size);
-  Store_field (rv, 3, v);
-  CAMLreturn (rv);
-}
-
-static value
-copy_application (const struct guestfs_application *application)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-
-  rv = caml_alloc (12, 0);
-  v = caml_copy_string (application->app_name);
-  Store_field (rv, 0, v);
-  v = caml_copy_string (application->app_display_name);
-  Store_field (rv, 1, v);
-  v = caml_copy_int32 (application->app_epoch);
-  Store_field (rv, 2, v);
-  v = caml_copy_string (application->app_version);
-  Store_field (rv, 3, v);
-  v = caml_copy_string (application->app_release);
-  Store_field (rv, 4, v);
-  v = caml_copy_string (application->app_install_path);
-  Store_field (rv, 5, v);
-  v = caml_copy_string (application->app_trans_path);
-  Store_field (rv, 6, v);
-  v = caml_copy_string (application->app_publisher);
-  Store_field (rv, 7, v);
-  v = caml_copy_string (application->app_url);
-  Store_field (rv, 8, v);
-  v = caml_copy_string (application->app_source_package);
-  Store_field (rv, 9, v);
-  v = caml_copy_string (application->app_summary);
-  Store_field (rv, 10, v);
-  v = caml_copy_string (application->app_description);
-  Store_field (rv, 11, v);
-  CAMLreturn (rv);
-}
-
-static value
-copy_application2 (const struct guestfs_application2 *application2)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-
-  rv = caml_alloc (17, 0);
-  v = caml_copy_string (application2->app2_name);
-  Store_field (rv, 0, v);
-  v = caml_copy_string (application2->app2_display_name);
-  Store_field (rv, 1, v);
-  v = caml_copy_int32 (application2->app2_epoch);
-  Store_field (rv, 2, v);
-  v = caml_copy_string (application2->app2_version);
-  Store_field (rv, 3, v);
-  v = caml_copy_string (application2->app2_release);
-  Store_field (rv, 4, v);
-  v = caml_copy_string (application2->app2_arch);
-  Store_field (rv, 5, v);
-  v = caml_copy_string (application2->app2_install_path);
-  Store_field (rv, 6, v);
-  v = caml_copy_string (application2->app2_trans_path);
-  Store_field (rv, 7, v);
-  v = caml_copy_string (application2->app2_publisher);
-  Store_field (rv, 8, v);
-  v = caml_copy_string (application2->app2_url);
-  Store_field (rv, 9, v);
-  v = caml_copy_string (application2->app2_source_package);
-  Store_field (rv, 10, v);
-  v = caml_copy_string (application2->app2_summary);
-  Store_field (rv, 11, v);
-  v = caml_copy_string (application2->app2_description);
-  Store_field (rv, 12, v);
-  v = caml_copy_string (application2->app2_spare1);
-  Store_field (rv, 13, v);
-  v = caml_copy_string (application2->app2_spare2);
-  Store_field (rv, 14, v);
-  v = caml_copy_string (application2->app2_spare3);
-  Store_field (rv, 15, v);
-  v = caml_copy_string (application2->app2_spare4);
-  Store_field (rv, 16, v);
-  CAMLreturn (rv);
-}
-
-static value
-copy_isoinfo (const struct guestfs_isoinfo *isoinfo)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-
-  rv = caml_alloc (17, 0);
-  v = caml_copy_string (isoinfo->iso_system_id);
-  Store_field (rv, 0, v);
-  v = caml_copy_string (isoinfo->iso_volume_id);
-  Store_field (rv, 1, v);
-  v = caml_copy_int32 (isoinfo->iso_volume_space_size);
-  Store_field (rv, 2, v);
-  v = caml_copy_int32 (isoinfo->iso_volume_set_size);
-  Store_field (rv, 3, v);
-  v = caml_copy_int32 (isoinfo->iso_volume_sequence_number);
-  Store_field (rv, 4, v);
-  v = caml_copy_int32 (isoinfo->iso_logical_block_size);
-  Store_field (rv, 5, v);
-  v = caml_copy_string (isoinfo->iso_volume_set_id);
-  Store_field (rv, 6, v);
-  v = caml_copy_string (isoinfo->iso_publisher_id);
-  Store_field (rv, 7, v);
-  v = caml_copy_string (isoinfo->iso_data_preparer_id);
-  Store_field (rv, 8, v);
-  v = caml_copy_string (isoinfo->iso_application_id);
-  Store_field (rv, 9, v);
-  v = caml_copy_string (isoinfo->iso_copyright_file_id);
-  Store_field (rv, 10, v);
-  v = caml_copy_string (isoinfo->iso_abstract_file_id);
-  Store_field (rv, 11, v);
-  v = caml_copy_string (isoinfo->iso_bibliographic_file_id);
-  Store_field (rv, 12, v);
-  v = caml_copy_int64 (isoinfo->iso_volume_creation_t);
-  Store_field (rv, 13, v);
-  v = caml_copy_int64 (isoinfo->iso_volume_modification_t);
-  Store_field (rv, 14, v);
-  v = caml_copy_int64 (isoinfo->iso_volume_expiration_t);
-  Store_field (rv, 15, v);
-  v = caml_copy_int64 (isoinfo->iso_volume_effective_t);
-  Store_field (rv, 16, v);
-  CAMLreturn (rv);
-}
-
-static value
-copy_mdstat (const struct guestfs_mdstat *mdstat)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-
-  rv = caml_alloc (3, 0);
-  v = caml_copy_string (mdstat->mdstat_device);
-  Store_field (rv, 0, v);
-  v = caml_copy_int32 (mdstat->mdstat_index);
-  Store_field (rv, 1, v);
-  v = caml_copy_string (mdstat->mdstat_flags);
-  Store_field (rv, 2, v);
-  CAMLreturn (rv);
-}
-
-static value
-copy_btrfssubvolume (const struct guestfs_btrfssubvolume *btrfssubvolume)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-
-  rv = caml_alloc (3, 0);
-  v = caml_copy_int64 (btrfssubvolume->btrfssubvolume_id);
-  Store_field (rv, 0, v);
-  v = caml_copy_int64 (btrfssubvolume->btrfssubvolume_top_level_id);
-  Store_field (rv, 1, v);
-  v = caml_copy_string (btrfssubvolume->btrfssubvolume_path);
-  Store_field (rv, 2, v);
   CAMLreturn (rv);
 }
 
@@ -585,48 +627,6 @@ copy_xfsinfo (const struct guestfs_xfsinfo *xfsinfo)
   Store_field (rv, 23, v);
   v = caml_copy_int64 (xfsinfo->xfs_rtextents);
   Store_field (rv, 24, v);
-  CAMLreturn (rv);
-}
-
-static value
-copy_utsname (const struct guestfs_utsname *utsname)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-
-  rv = caml_alloc (4, 0);
-  v = caml_copy_string (utsname->uts_sysname);
-  Store_field (rv, 0, v);
-  v = caml_copy_string (utsname->uts_release);
-  Store_field (rv, 1, v);
-  v = caml_copy_string (utsname->uts_version);
-  Store_field (rv, 2, v);
-  v = caml_copy_string (utsname->uts_machine);
-  Store_field (rv, 3, v);
-  CAMLreturn (rv);
-}
-
-static value
-copy_hivex_node (const struct guestfs_hivex_node *hivex_node)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-
-  rv = caml_alloc (1, 0);
-  v = caml_copy_int64 (hivex_node->hivex_node_h);
-  Store_field (rv, 0, v);
-  CAMLreturn (rv);
-}
-
-static value
-copy_hivex_value (const struct guestfs_hivex_value *hivex_value)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-
-  rv = caml_alloc (1, 0);
-  v = caml_copy_int64 (hivex_value->hivex_value_h);
-  Store_field (rv, 0, v);
   CAMLreturn (rv);
 }
 
@@ -1026,17 +1026,18 @@ ocaml_guestfs_add_cdrom (value gv, value filenamev)
 }
 
 /* Automatically generated wrapper for function
- * val add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> ?cachemode:string -> ?discard:string -> string -> int
+ * val add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> ?cachemode:string -> ?discard:string -> ?copyonread:bool -> string -> int
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_add_domain (value gv, value libvirturiv, value readonlyv, value ifacev, value livev, value allowuuidv, value readonlydiskv, value cachemodev, value discardv, value domv);
+value ocaml_guestfs_add_domain (value gv, value libvirturiv, value readonlyv, value ifacev, value livev, value allowuuidv, value readonlydiskv, value cachemodev, value discardv, value copyonreadv, value domv);
 
 value
-ocaml_guestfs_add_domain (value gv, value libvirturiv, value readonlyv, value ifacev, value livev, value allowuuidv, value readonlydiskv, value cachemodev, value discardv, value domv)
+ocaml_guestfs_add_domain (value gv, value libvirturiv, value readonlyv, value ifacev, value livev, value allowuuidv, value readonlydiskv, value cachemodev, value discardv, value copyonreadv, value domv)
 {
   CAMLparam5 (gv, libvirturiv, readonlyv, ifacev, livev);
-  CAMLxparam5 (allowuuidv, readonlydiskv, cachemodev, discardv, domv);
+  CAMLxparam5 (allowuuidv, readonlydiskv, cachemodev, discardv, copyonreadv);
+  CAMLxparam1 (domv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -1078,6 +1079,10 @@ ocaml_guestfs_add_domain (value gv, value libvirturiv, value readonlyv, value if
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
     optargs_s.discard = guestfs___safe_strdup (g, String_val (Field (discardv, 0)));
   }
+  if (copyonreadv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_COPYONREAD_BITMASK;
+    optargs_s.copyonread = Bool_val (Field (copyonreadv, 0));
+  }
   int r;
 
   caml_enter_blocking_section ();
@@ -1107,22 +1112,22 @@ value ocaml_guestfs_add_domain_byte (value *argv, int argn);
 value
 ocaml_guestfs_add_domain_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_add_domain (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9]);
+  return ocaml_guestfs_add_domain (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9], argv[10]);
 }
 
 /* Automatically generated wrapper for function
- * val add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> ?discard:string -> string -> unit
+ * val add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> ?discard:string -> ?copyonread:bool -> string -> unit
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev, value namev, value labelv, value protocolv, value serverv, value usernamev, value secretv, value cachemodev, value discardv, value filenamev);
+value ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev, value namev, value labelv, value protocolv, value serverv, value usernamev, value secretv, value cachemodev, value discardv, value copyonreadv, value filenamev);
 
 value
-ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev, value namev, value labelv, value protocolv, value serverv, value usernamev, value secretv, value cachemodev, value discardv, value filenamev)
+ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev, value namev, value labelv, value protocolv, value serverv, value usernamev, value secretv, value cachemodev, value discardv, value copyonreadv, value filenamev)
 {
   CAMLparam5 (gv, readonlyv, formatv, ifacev, namev);
   CAMLxparam5 (labelv, protocolv, serverv, usernamev, secretv);
-  CAMLxparam3 (cachemodev, discardv, filenamev);
+  CAMLxparam4 (cachemodev, discardv, copyonreadv, filenamev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -1177,6 +1182,10 @@ ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev,
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
     optargs_s.discard = guestfs___safe_strdup (g, String_val (Field (discardv, 0)));
   }
+  if (copyonreadv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK;
+    optargs_s.copyonread = Bool_val (Field (copyonreadv, 0));
+  }
   int r;
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);
@@ -1214,7 +1223,7 @@ value ocaml_guestfs_add_drive_byte (value *argv, int argn);
 value
 ocaml_guestfs_add_drive_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_add_drive (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9], argv[10], argv[11], argv[12]);
+  return ocaml_guestfs_add_drive (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9], argv[10], argv[11], argv[12], argv[13]);
 }
 
 /* Automatically generated wrapper for function
@@ -9849,6 +9858,35 @@ ocaml_guestfs_journal_get_data_threshold (value gv)
   caml_leave_blocking_section ();
   if (r == -1)
     ocaml_guestfs_raise_error (g, "journal_get_data_threshold");
+
+  rv = caml_copy_int64 (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val journal_get_realtime_usec : t -> int64
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_journal_get_realtime_usec (value gv);
+
+value
+ocaml_guestfs_journal_get_realtime_usec (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("journal_get_realtime_usec");
+
+  int64_t r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_journal_get_realtime_usec (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "journal_get_realtime_usec");
 
   rv = caml_copy_int64 (r);
   CAMLreturn (rv);

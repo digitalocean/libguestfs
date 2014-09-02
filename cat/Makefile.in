@@ -14,8 +14,8 @@
 
 @SET_MAKE@
 
-# libguestfs virt-cat, virt-filesystems and virt-ls.
-# Copyright (C) 2010-2012 Red Hat Inc.
+# libguestfs virt-cat, virt-filesystems, virt-log and virt-ls.
+# Copyright (C) 2010-2014 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -138,7 +138,7 @@ DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am $(top_srcdir)/build-aux/depcomp
 bin_PROGRAMS = virt-cat$(EXEEXT) virt-filesystems$(EXEEXT) \
-	virt-ls$(EXEEXT)
+	virt-log$(EXEEXT) virt-ls$(EXEEXT)
 subdir = cat
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -276,7 +276,7 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 = virt_cat-domain.$(OBJEXT) virt_cat-inspect.$(OBJEXT) \
 	virt_cat-keys.$(OBJEXT) virt_cat-options.$(OBJEXT) \
-	virt_cat-uri.$(OBJEXT)
+	virt_cat-uri.$(OBJEXT) virt_cat-windows.$(OBJEXT)
 am_virt_cat_OBJECTS = $(am__objects_1) virt_cat-cat.$(OBJEXT)
 virt_cat_OBJECTS = $(am_virt_cat_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -294,7 +294,8 @@ am__objects_2 = virt_filesystems-domain.$(OBJEXT) \
 	virt_filesystems-inspect.$(OBJEXT) \
 	virt_filesystems-keys.$(OBJEXT) \
 	virt_filesystems-options.$(OBJEXT) \
-	virt_filesystems-uri.$(OBJEXT)
+	virt_filesystems-uri.$(OBJEXT) \
+	virt_filesystems-windows.$(OBJEXT)
 am_virt_filesystems_OBJECTS = $(am__objects_2) \
 	virt_filesystems-filesystems.$(OBJEXT)
 virt_filesystems_OBJECTS = $(am_virt_filesystems_OBJECTS)
@@ -305,10 +306,21 @@ virt_filesystems_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(virt_filesystems_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-am__objects_3 = virt_ls-domain.$(OBJEXT) virt_ls-inspect.$(OBJEXT) \
+am__objects_3 = virt_log-domain.$(OBJEXT) virt_log-inspect.$(OBJEXT) \
+	virt_log-keys.$(OBJEXT) virt_log-options.$(OBJEXT) \
+	virt_log-uri.$(OBJEXT) virt_log-windows.$(OBJEXT)
+am_virt_log_OBJECTS = $(am__objects_3) virt_log-log.$(OBJEXT)
+virt_log_OBJECTS = $(am_virt_log_OBJECTS)
+virt_log_DEPENDENCIES = $(top_builddir)/src/libutils.la \
+	$(top_builddir)/src/libguestfs.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la
+virt_log_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(virt_log_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am__objects_4 = virt_ls-domain.$(OBJEXT) virt_ls-inspect.$(OBJEXT) \
 	virt_ls-keys.$(OBJEXT) virt_ls-options.$(OBJEXT) \
-	virt_ls-uri.$(OBJEXT)
-am_virt_ls_OBJECTS = $(am__objects_3) virt_ls-ls.$(OBJEXT) \
+	virt_ls-uri.$(OBJEXT) virt_ls-windows.$(OBJEXT)
+am_virt_ls_OBJECTS = $(am__objects_4) virt_ls-ls.$(OBJEXT) \
 	virt_ls-visit.$(OBJEXT)
 virt_ls_OBJECTS = $(am_virt_ls_OBJECTS)
 virt_ls_DEPENDENCIES = $(top_builddir)/src/libutils.la \
@@ -352,9 +364,9 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(virt_cat_SOURCES) $(virt_filesystems_SOURCES) \
-	$(virt_ls_SOURCES)
+	$(virt_log_SOURCES) $(virt_ls_SOURCES)
 DIST_SOURCES = $(virt_cat_SOURCES) $(virt_filesystems_SOURCES) \
-	$(virt_ls_SOURCES)
+	$(virt_log_SOURCES) $(virt_ls_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1517,10 +1529,17 @@ EXTRA_DIST = \
 	virt-cat.pod \
 	test-virt-filesystems.sh \
 	virt-filesystems.pod \
+	test-virt-log.sh \
+	virt-log.pod \
 	test-virt-ls.sh \
 	virt-ls.pod
 
-CLEANFILES = stamp-virt-cat.pod stamp-virt-ls.pod stamp-virt-filesystems.pod
+CLEANFILES = \
+	stamp-virt-cat.pod \
+	stamp-virt-filesystems.pod \
+	stamp-virt-log.pod \
+	stamp-virt-ls.pod
+
 SHARED_SOURCE_FILES = \
 	../fish/domain.c \
 	../fish/inspect.c \
@@ -1528,7 +1547,9 @@ SHARED_SOURCE_FILES = \
 	../fish/options.h \
 	../fish/options.c \
 	../fish/uri.h \
-	../fish/uri.c
+	../fish/uri.c \
+	../fish/windows.h \
+	../fish/windows.c
 
 virt_cat_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
@@ -1574,6 +1595,28 @@ virt_filesystems_LDADD = \
 	$(LIBVIRT_LIBS) \
 	../gnulib/lib/libgnu.la
 
+virt_log_SOURCES = \
+	$(SHARED_SOURCE_FILES) \
+	log.c
+
+virt_log_CPPFLAGS = \
+	-DGUESTFS_WARN_DEPRECATED=1 \
+	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/fish \
+	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
+
+virt_log_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(LIBXML2_CFLAGS)
+
+virt_log_LDADD = \
+	$(top_builddir)/src/libutils.la \
+	$(top_builddir)/src/libguestfs.la \
+	$(LIBXML2_LIBS) \
+	$(LIBVIRT_LIBS) \
+	../gnulib/lib/libgnu.la
+
 virt_ls_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
 	ls.c \
@@ -1600,10 +1643,11 @@ virt_ls_LDADD = \
 
 
 # Manual pages and HTML files for the website.
-man_MANS = virt-cat.1 virt-filesystems.1 virt-ls.1
+man_MANS = virt-cat.1 virt-filesystems.1 virt-log.1 virt-ls.1
 noinst_DATA = \
 	$(top_builddir)/html/virt-cat.1.html \
 	$(top_builddir)/html/virt-filesystems.1.html \
+	$(top_builddir)/html/virt-log.1.html \
 	$(top_builddir)/html/virt-ls.1.html
 
 
@@ -1612,6 +1656,7 @@ TESTS_ENVIRONMENT = $(top_builddir)/run --test
 @ENABLE_APPLIANCE_TRUE@TESTS = \
 @ENABLE_APPLIANCE_TRUE@	test-virt-cat.sh \
 @ENABLE_APPLIANCE_TRUE@	test-virt-filesystems.sh \
+@ENABLE_APPLIANCE_TRUE@	test-virt-log.sh \
 @ENABLE_APPLIANCE_TRUE@	test-virt-ls.sh
 
 all: all-am
@@ -1707,6 +1752,10 @@ virt-filesystems$(EXEEXT): $(virt_filesystems_OBJECTS) $(virt_filesystems_DEPEND
 	@rm -f virt-filesystems$(EXEEXT)
 	$(AM_V_CCLD)$(virt_filesystems_LINK) $(virt_filesystems_OBJECTS) $(virt_filesystems_LDADD) $(LIBS)
 
+virt-log$(EXEEXT): $(virt_log_OBJECTS) $(virt_log_DEPENDENCIES) $(EXTRA_virt_log_DEPENDENCIES) 
+	@rm -f virt-log$(EXEEXT)
+	$(AM_V_CCLD)$(virt_log_LINK) $(virt_log_OBJECTS) $(virt_log_LDADD) $(LIBS)
+
 virt-ls$(EXEEXT): $(virt_ls_OBJECTS) $(virt_ls_DEPENDENCIES) $(EXTRA_virt_ls_DEPENDENCIES) 
 	@rm -f virt-ls$(EXEEXT)
 	$(AM_V_CCLD)$(virt_ls_LINK) $(virt_ls_OBJECTS) $(virt_ls_LDADD) $(LIBS)
@@ -1723,12 +1772,21 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_cat-keys.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_cat-options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_cat-uri.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_cat-windows.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_filesystems-domain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_filesystems-filesystems.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_filesystems-inspect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_filesystems-keys.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_filesystems-options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_filesystems-uri.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_filesystems-windows.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_log-domain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_log-inspect.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_log-keys.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_log-log.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_log-options.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_log-uri.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_log-windows.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_ls-domain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_ls-inspect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_ls-keys.Po@am__quote@
@@ -1736,6 +1794,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_ls-options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_ls-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_ls-visit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_ls-windows.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1828,6 +1887,20 @@ virt_cat-uri.obj: ../fish/uri.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_cat_CPPFLAGS) $(CPPFLAGS) $(virt_cat_CFLAGS) $(CFLAGS) -c -o virt_cat-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
+virt_cat-windows.o: ../fish/windows.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_cat_CPPFLAGS) $(CPPFLAGS) $(virt_cat_CFLAGS) $(CFLAGS) -MT virt_cat-windows.o -MD -MP -MF $(DEPDIR)/virt_cat-windows.Tpo -c -o virt_cat-windows.o `test -f '../fish/windows.c' || echo '$(srcdir)/'`../fish/windows.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_cat-windows.Tpo $(DEPDIR)/virt_cat-windows.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/windows.c' object='virt_cat-windows.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_cat_CPPFLAGS) $(CPPFLAGS) $(virt_cat_CFLAGS) $(CFLAGS) -c -o virt_cat-windows.o `test -f '../fish/windows.c' || echo '$(srcdir)/'`../fish/windows.c
+
+virt_cat-windows.obj: ../fish/windows.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_cat_CPPFLAGS) $(CPPFLAGS) $(virt_cat_CFLAGS) $(CFLAGS) -MT virt_cat-windows.obj -MD -MP -MF $(DEPDIR)/virt_cat-windows.Tpo -c -o virt_cat-windows.obj `if test -f '../fish/windows.c'; then $(CYGPATH_W) '../fish/windows.c'; else $(CYGPATH_W) '$(srcdir)/../fish/windows.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_cat-windows.Tpo $(DEPDIR)/virt_cat-windows.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/windows.c' object='virt_cat-windows.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_cat_CPPFLAGS) $(CPPFLAGS) $(virt_cat_CFLAGS) $(CFLAGS) -c -o virt_cat-windows.obj `if test -f '../fish/windows.c'; then $(CYGPATH_W) '../fish/windows.c'; else $(CYGPATH_W) '$(srcdir)/../fish/windows.c'; fi`
+
 virt_cat-cat.o: cat.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_cat_CPPFLAGS) $(CPPFLAGS) $(virt_cat_CFLAGS) $(CFLAGS) -MT virt_cat-cat.o -MD -MP -MF $(DEPDIR)/virt_cat-cat.Tpo -c -o virt_cat-cat.o `test -f 'cat.c' || echo '$(srcdir)/'`cat.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_cat-cat.Tpo $(DEPDIR)/virt_cat-cat.Po
@@ -1912,6 +1985,20 @@ virt_filesystems-uri.obj: ../fish/uri.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_filesystems_CPPFLAGS) $(CPPFLAGS) $(virt_filesystems_CFLAGS) $(CFLAGS) -c -o virt_filesystems-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
+virt_filesystems-windows.o: ../fish/windows.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_filesystems_CPPFLAGS) $(CPPFLAGS) $(virt_filesystems_CFLAGS) $(CFLAGS) -MT virt_filesystems-windows.o -MD -MP -MF $(DEPDIR)/virt_filesystems-windows.Tpo -c -o virt_filesystems-windows.o `test -f '../fish/windows.c' || echo '$(srcdir)/'`../fish/windows.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_filesystems-windows.Tpo $(DEPDIR)/virt_filesystems-windows.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/windows.c' object='virt_filesystems-windows.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_filesystems_CPPFLAGS) $(CPPFLAGS) $(virt_filesystems_CFLAGS) $(CFLAGS) -c -o virt_filesystems-windows.o `test -f '../fish/windows.c' || echo '$(srcdir)/'`../fish/windows.c
+
+virt_filesystems-windows.obj: ../fish/windows.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_filesystems_CPPFLAGS) $(CPPFLAGS) $(virt_filesystems_CFLAGS) $(CFLAGS) -MT virt_filesystems-windows.obj -MD -MP -MF $(DEPDIR)/virt_filesystems-windows.Tpo -c -o virt_filesystems-windows.obj `if test -f '../fish/windows.c'; then $(CYGPATH_W) '../fish/windows.c'; else $(CYGPATH_W) '$(srcdir)/../fish/windows.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_filesystems-windows.Tpo $(DEPDIR)/virt_filesystems-windows.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/windows.c' object='virt_filesystems-windows.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_filesystems_CPPFLAGS) $(CPPFLAGS) $(virt_filesystems_CFLAGS) $(CFLAGS) -c -o virt_filesystems-windows.obj `if test -f '../fish/windows.c'; then $(CYGPATH_W) '../fish/windows.c'; else $(CYGPATH_W) '$(srcdir)/../fish/windows.c'; fi`
+
 virt_filesystems-filesystems.o: filesystems.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_filesystems_CPPFLAGS) $(CPPFLAGS) $(virt_filesystems_CFLAGS) $(CFLAGS) -MT virt_filesystems-filesystems.o -MD -MP -MF $(DEPDIR)/virt_filesystems-filesystems.Tpo -c -o virt_filesystems-filesystems.o `test -f 'filesystems.c' || echo '$(srcdir)/'`filesystems.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_filesystems-filesystems.Tpo $(DEPDIR)/virt_filesystems-filesystems.Po
@@ -1925,6 +2012,104 @@ virt_filesystems-filesystems.obj: filesystems.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='filesystems.c' object='virt_filesystems-filesystems.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_filesystems_CPPFLAGS) $(CPPFLAGS) $(virt_filesystems_CFLAGS) $(CFLAGS) -c -o virt_filesystems-filesystems.obj `if test -f 'filesystems.c'; then $(CYGPATH_W) 'filesystems.c'; else $(CYGPATH_W) '$(srcdir)/filesystems.c'; fi`
+
+virt_log-domain.o: ../fish/domain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -MT virt_log-domain.o -MD -MP -MF $(DEPDIR)/virt_log-domain.Tpo -c -o virt_log-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_log-domain.Tpo $(DEPDIR)/virt_log-domain.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='virt_log-domain.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -c -o virt_log-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
+
+virt_log-domain.obj: ../fish/domain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -MT virt_log-domain.obj -MD -MP -MF $(DEPDIR)/virt_log-domain.Tpo -c -o virt_log-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_log-domain.Tpo $(DEPDIR)/virt_log-domain.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='virt_log-domain.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -c -o virt_log-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
+
+virt_log-inspect.o: ../fish/inspect.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -MT virt_log-inspect.o -MD -MP -MF $(DEPDIR)/virt_log-inspect.Tpo -c -o virt_log-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_log-inspect.Tpo $(DEPDIR)/virt_log-inspect.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='virt_log-inspect.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -c -o virt_log-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
+
+virt_log-inspect.obj: ../fish/inspect.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -MT virt_log-inspect.obj -MD -MP -MF $(DEPDIR)/virt_log-inspect.Tpo -c -o virt_log-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_log-inspect.Tpo $(DEPDIR)/virt_log-inspect.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='virt_log-inspect.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -c -o virt_log-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
+
+virt_log-keys.o: ../fish/keys.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -MT virt_log-keys.o -MD -MP -MF $(DEPDIR)/virt_log-keys.Tpo -c -o virt_log-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_log-keys.Tpo $(DEPDIR)/virt_log-keys.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='virt_log-keys.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -c -o virt_log-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
+
+virt_log-keys.obj: ../fish/keys.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -MT virt_log-keys.obj -MD -MP -MF $(DEPDIR)/virt_log-keys.Tpo -c -o virt_log-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_log-keys.Tpo $(DEPDIR)/virt_log-keys.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='virt_log-keys.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -c -o virt_log-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
+
+virt_log-options.o: ../fish/options.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -MT virt_log-options.o -MD -MP -MF $(DEPDIR)/virt_log-options.Tpo -c -o virt_log-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_log-options.Tpo $(DEPDIR)/virt_log-options.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_log-options.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -c -o virt_log-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
+
+virt_log-options.obj: ../fish/options.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -MT virt_log-options.obj -MD -MP -MF $(DEPDIR)/virt_log-options.Tpo -c -o virt_log-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_log-options.Tpo $(DEPDIR)/virt_log-options.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_log-options.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -c -o virt_log-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+
+virt_log-uri.o: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -MT virt_log-uri.o -MD -MP -MF $(DEPDIR)/virt_log-uri.Tpo -c -o virt_log-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_log-uri.Tpo $(DEPDIR)/virt_log-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_log-uri.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -c -o virt_log-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+
+virt_log-uri.obj: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -MT virt_log-uri.obj -MD -MP -MF $(DEPDIR)/virt_log-uri.Tpo -c -o virt_log-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_log-uri.Tpo $(DEPDIR)/virt_log-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_log-uri.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -c -o virt_log-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+
+virt_log-windows.o: ../fish/windows.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -MT virt_log-windows.o -MD -MP -MF $(DEPDIR)/virt_log-windows.Tpo -c -o virt_log-windows.o `test -f '../fish/windows.c' || echo '$(srcdir)/'`../fish/windows.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_log-windows.Tpo $(DEPDIR)/virt_log-windows.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/windows.c' object='virt_log-windows.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -c -o virt_log-windows.o `test -f '../fish/windows.c' || echo '$(srcdir)/'`../fish/windows.c
+
+virt_log-windows.obj: ../fish/windows.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -MT virt_log-windows.obj -MD -MP -MF $(DEPDIR)/virt_log-windows.Tpo -c -o virt_log-windows.obj `if test -f '../fish/windows.c'; then $(CYGPATH_W) '../fish/windows.c'; else $(CYGPATH_W) '$(srcdir)/../fish/windows.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_log-windows.Tpo $(DEPDIR)/virt_log-windows.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/windows.c' object='virt_log-windows.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -c -o virt_log-windows.obj `if test -f '../fish/windows.c'; then $(CYGPATH_W) '../fish/windows.c'; else $(CYGPATH_W) '$(srcdir)/../fish/windows.c'; fi`
+
+virt_log-log.o: log.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -MT virt_log-log.o -MD -MP -MF $(DEPDIR)/virt_log-log.Tpo -c -o virt_log-log.o `test -f 'log.c' || echo '$(srcdir)/'`log.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_log-log.Tpo $(DEPDIR)/virt_log-log.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log.c' object='virt_log-log.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -c -o virt_log-log.o `test -f 'log.c' || echo '$(srcdir)/'`log.c
+
+virt_log-log.obj: log.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -MT virt_log-log.obj -MD -MP -MF $(DEPDIR)/virt_log-log.Tpo -c -o virt_log-log.obj `if test -f 'log.c'; then $(CYGPATH_W) 'log.c'; else $(CYGPATH_W) '$(srcdir)/log.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_log-log.Tpo $(DEPDIR)/virt_log-log.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log.c' object='virt_log-log.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_log_CPPFLAGS) $(CPPFLAGS) $(virt_log_CFLAGS) $(CFLAGS) -c -o virt_log-log.obj `if test -f 'log.c'; then $(CYGPATH_W) 'log.c'; else $(CYGPATH_W) '$(srcdir)/log.c'; fi`
 
 virt_ls-domain.o: ../fish/domain.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -MT virt_ls-domain.o -MD -MP -MF $(DEPDIR)/virt_ls-domain.Tpo -c -o virt_ls-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
@@ -1995,6 +2180,20 @@ virt_ls-uri.obj: ../fish/uri.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_ls-uri.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -c -o virt_ls-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+
+virt_ls-windows.o: ../fish/windows.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -MT virt_ls-windows.o -MD -MP -MF $(DEPDIR)/virt_ls-windows.Tpo -c -o virt_ls-windows.o `test -f '../fish/windows.c' || echo '$(srcdir)/'`../fish/windows.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_ls-windows.Tpo $(DEPDIR)/virt_ls-windows.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/windows.c' object='virt_ls-windows.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -c -o virt_ls-windows.o `test -f '../fish/windows.c' || echo '$(srcdir)/'`../fish/windows.c
+
+virt_ls-windows.obj: ../fish/windows.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -MT virt_ls-windows.obj -MD -MP -MF $(DEPDIR)/virt_ls-windows.Tpo -c -o virt_ls-windows.obj `if test -f '../fish/windows.c'; then $(CYGPATH_W) '../fish/windows.c'; else $(CYGPATH_W) '$(srcdir)/../fish/windows.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_ls-windows.Tpo $(DEPDIR)/virt_ls-windows.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/windows.c' object='virt_ls-windows.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -c -o virt_ls-windows.obj `if test -f '../fish/windows.c'; then $(CYGPATH_W) '../fish/windows.c'; else $(CYGPATH_W) '$(srcdir)/../fish/windows.c'; fi`
 
 virt_ls-ls.o: ls.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_ls_CPPFLAGS) $(CPPFLAGS) $(virt_ls_CFLAGS) $(CFLAGS) -MT virt_ls-ls.o -MD -MP -MF $(DEPDIR)/virt_ls-ls.Tpo -c -o virt_ls-ls.o `test -f 'ls.c' || echo '$(srcdir)/'`ls.c
@@ -2419,22 +2618,32 @@ stamp-virt-cat.pod: virt-cat.pod
 	  $<
 	touch $@
 
-virt-ls.1 $(top_builddir)/html/virt-ls.1.html: stamp-virt-ls.pod
-
-stamp-virt-ls.pod: virt-ls.pod
-	$(PODWRAPPER) \
-	  --man virt-ls.1 \
-	  --html $(top_builddir)/html/virt-ls.1.html \
-	  --license GPLv2+ \
-	  $<
-	touch $@
-
 virt-filesystems.1 $(top_builddir)/html/virt-filesystems.1.html: stamp-virt-filesystems.pod
 
 stamp-virt-filesystems.pod: virt-filesystems.pod
 	$(PODWRAPPER) \
 	  --man virt-filesystems.1 \
 	  --html $(top_builddir)/html/virt-filesystems.1.html \
+	  --license GPLv2+ \
+	  $<
+	touch $@
+
+virt-log.1 $(top_builddir)/html/virt-log.1.html: stamp-virt-log.pod
+
+stamp-virt-log.pod: virt-log.pod
+	$(PODWRAPPER) \
+	  --man virt-log.1 \
+	  --html $(top_builddir)/html/virt-log.1.html \
+	  --license GPLv2+ \
+	  $<
+	touch $@
+
+virt-ls.1 $(top_builddir)/html/virt-ls.1.html: stamp-virt-ls.pod
+
+stamp-virt-ls.pod: virt-ls.pod
+	$(PODWRAPPER) \
+	  --man virt-ls.1 \
+	  --html $(top_builddir)/html/virt-ls.1.html \
 	  --license GPLv2+ \
 	  $<
 	touch $@

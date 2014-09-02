@@ -27,7 +27,8 @@ let prog = Filename.basename Sys.executable_name
 let error ?exit_code fs = error ~prog ?exit_code fs
 
 type mode_t =
-| Mode_copying of string * check_t * bool * string option * string option
+| Mode_copying of string * check_t * bool * string option * string option *
+    string option
 | Mode_in_place
 and check_t = [`Ignore|`Continue|`Warn|`Fail]
 
@@ -59,6 +60,7 @@ let parse_cmdline () =
   let machine_readable = ref false in
   let option = ref "" in
   let quiet = ref false in
+  let tmp = ref "" in
   let verbose = ref false in
   let trace = ref false in
   let zeroes = ref [] in
@@ -78,6 +80,7 @@ let parse_cmdline () =
     "-o",        Arg.Set_string option,     s_"option" ^ " " ^ s_"Add qemu-img options";
     "-q",        Arg.Set quiet,             " " ^ s_"Quiet output";
     "--quiet",   Arg.Set quiet,             ditto;
+    "--tmp",     Arg.Set_string tmp,        s_"block|dir|prebuilt:file" ^ " " ^ s_"Set temporary block device, directory or prebuilt file";
     "-v",        Arg.Set verbose,           " " ^ s_"Enable debugging messages";
     "--verbose", Arg.Set verbose,           ditto;
     "-V",        Arg.Unit display_version,  " " ^ s_"Display version and exit";
@@ -113,6 +116,7 @@ read the man page virt-sparsify(1).
   let machine_readable = !machine_readable in
   let option = match !option with "" -> None | str -> Some str in
   let quiet = !quiet in
+  let tmp = match !tmp with "" -> None | str -> Some str in
   let verbose = !verbose in
   let trace = !trace in
   let zeroes = List.rev !zeroes in
@@ -126,7 +130,8 @@ read the man page virt-sparsify(1).
     printf "zero\n";
     printf "check-tmpdir\n";
     printf "in-place\n";
-    let g = new G.guestfs () in
+    printf "tmp-option\n";
+    let g = new Guestfs.guestfs () in
     g#add_drive "/dev/null";
     g#launch ();
     if g#feature_available [| "ntfsprogs"; "ntfs3g" |] then
@@ -162,11 +167,7 @@ read the man page virt-sparsify(1).
         else
           Sys.getcwd () // indisk in
 
-      (* Check the output is not a block or char special (RHBZ#1056290). *)
-      if is_block_device outdisk then
-        error (f_"output '%s' cannot be a block device, it must be a regular file")
-          outdisk;
-
+      (* Check the output is not a char special (RHBZ#1056290). *)
       if is_char_device outdisk then
         error (f_"output '%s' cannot be a character device, it must be a regular file")
           outdisk;
@@ -186,12 +187,15 @@ read the man page virt-sparsify(1).
       if option <> None then
         error (f_"you cannot use --in-place and -o options together");
 
+      if tmp <> None then
+        error (f_"you cannot use --in-place and --tmp options together");
+
       indisk
     ) in
 
   let mode =
     if not in_place then
-      Mode_copying (outdisk, check_tmpdir, compress, convert, option)
+      Mode_copying (outdisk, check_tmpdir, compress, convert, option, tmp)
     else
       Mode_in_place in
 

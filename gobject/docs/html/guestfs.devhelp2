@@ -5,26 +5,26 @@
     <sub name="Libguestfs GObject Bindings" link="ch01.html">
       <sub name="GuestfsSession" link="GuestfsSession.html"/>
       <sub name="GuestfsTristate" link="GuestfsTristate.html"/>
-      <sub name="GuestfsIntBool" link="GuestfsIntBool.html"/>
-      <sub name="GuestfsPV" link="GuestfsPV.html"/>
-      <sub name="GuestfsVG" link="GuestfsVG.html"/>
-      <sub name="GuestfsLV" link="GuestfsLV.html"/>
-      <sub name="GuestfsStat" link="GuestfsStat.html"/>
-      <sub name="GuestfsStatVFS" link="GuestfsStatVFS.html"/>
-      <sub name="GuestfsDirent" link="GuestfsDirent.html"/>
-      <sub name="GuestfsVersion" link="GuestfsVersion.html"/>
-      <sub name="GuestfsXAttr" link="GuestfsXAttr.html"/>
-      <sub name="GuestfsINotifyEvent" link="GuestfsINotifyEvent.html"/>
-      <sub name="GuestfsPartition" link="GuestfsPartition.html"/>
       <sub name="GuestfsApplication" link="GuestfsApplication.html"/>
       <sub name="GuestfsApplication2" link="GuestfsApplication2.html"/>
-      <sub name="GuestfsISOInfo" link="GuestfsISOInfo.html"/>
-      <sub name="GuestfsMDStat" link="GuestfsMDStat.html"/>
       <sub name="GuestfsBTRFSSubvolume" link="GuestfsBTRFSSubvolume.html"/>
-      <sub name="GuestfsXFSInfo" link="GuestfsXFSInfo.html"/>
-      <sub name="GuestfsUTSName" link="GuestfsUTSName.html"/>
+      <sub name="GuestfsDirent" link="GuestfsDirent.html"/>
       <sub name="GuestfsHivexNode" link="GuestfsHivexNode.html"/>
       <sub name="GuestfsHivexValue" link="GuestfsHivexValue.html"/>
+      <sub name="GuestfsINotifyEvent" link="GuestfsINotifyEvent.html"/>
+      <sub name="GuestfsIntBool" link="GuestfsIntBool.html"/>
+      <sub name="GuestfsISOInfo" link="GuestfsISOInfo.html"/>
+      <sub name="GuestfsLV" link="GuestfsLV.html"/>
+      <sub name="GuestfsPV" link="GuestfsPV.html"/>
+      <sub name="GuestfsVG" link="GuestfsVG.html"/>
+      <sub name="GuestfsMDStat" link="GuestfsMDStat.html"/>
+      <sub name="GuestfsPartition" link="GuestfsPartition.html"/>
+      <sub name="GuestfsStat" link="GuestfsStat.html"/>
+      <sub name="GuestfsStatVFS" link="GuestfsStatVFS.html"/>
+      <sub name="GuestfsUTSName" link="GuestfsUTSName.html"/>
+      <sub name="GuestfsVersion" link="GuestfsVersion.html"/>
+      <sub name="GuestfsXAttr" link="GuestfsXAttr.html"/>
+      <sub name="GuestfsXFSInfo" link="GuestfsXFSInfo.html"/>
       <sub name="GuestfsAddDomain" link="GuestfsAddDomain.html"/>
       <sub name="GuestfsAddDrive" link="GuestfsAddDrive.html"/>
       <sub name="GuestfsAddDriveScratch" link="GuestfsAddDriveScratch.html"/>
@@ -351,6 +351,7 @@
     <keyword type="function" name="guestfs_session_journal_close ()" link="GuestfsSession.html#guestfs-session-journal-close"/>
     <keyword type="function" name="guestfs_session_journal_get ()" link="GuestfsSession.html#guestfs-session-journal-get"/>
     <keyword type="function" name="guestfs_session_journal_get_data_threshold ()" link="GuestfsSession.html#guestfs-session-journal-get-data-threshold"/>
+    <keyword type="function" name="guestfs_session_journal_get_realtime_usec ()" link="GuestfsSession.html#guestfs-session-journal-get-realtime-usec"/>
     <keyword type="function" name="guestfs_session_journal_next ()" link="GuestfsSession.html#guestfs-session-journal-next"/>
     <keyword type="function" name="guestfs_session_journal_open ()" link="GuestfsSession.html#guestfs-session-journal-open"/>
     <keyword type="function" name="guestfs_session_journal_set_data_threshold ()" link="GuestfsSession.html#guestfs-session-journal-set-data-threshold"/>
@@ -646,31 +647,32 @@
     <keyword type="signal" name="The &quot;trace&quot; signal" link="GuestfsSession.html#GuestfsSession-trace"/>
     <keyword type="signal" name="The &quot;warning&quot; signal" link="GuestfsSession.html#GuestfsSession-warning"/>
     <keyword type="enum" name="enum GuestfsTristate" link="GuestfsTristate.html#GuestfsTristate-enum"/>
-    <keyword type="struct" name="struct GuestfsIntBool" link="GuestfsIntBool.html#GuestfsIntBool-struct"/>
-    <keyword type="struct" name="struct GuestfsPV" link="GuestfsPV.html#GuestfsPV-struct"/>
-    <keyword type="struct" name="struct GuestfsVG" link="GuestfsVG.html#GuestfsVG-struct"/>
-    <keyword type="struct" name="struct GuestfsLV" link="GuestfsLV.html#GuestfsLV-struct"/>
-    <keyword type="struct" name="struct GuestfsStat" link="GuestfsStat.html#GuestfsStat-struct"/>
-    <keyword type="struct" name="struct GuestfsStatVFS" link="GuestfsStatVFS.html#GuestfsStatVFS-struct"/>
-    <keyword type="struct" name="struct GuestfsDirent" link="GuestfsDirent.html#GuestfsDirent-struct"/>
-    <keyword type="struct" name="struct GuestfsVersion" link="GuestfsVersion.html#GuestfsVersion-struct"/>
-    <keyword type="struct" name="struct GuestfsXAttr" link="GuestfsXAttr.html#GuestfsXAttr-struct"/>
-    <keyword type="struct" name="struct GuestfsINotifyEvent" link="GuestfsINotifyEvent.html#GuestfsINotifyEvent-struct"/>
-    <keyword type="struct" name="struct GuestfsPartition" link="GuestfsPartition.html#GuestfsPartition-struct"/>
     <keyword type="struct" name="struct GuestfsApplication" link="GuestfsApplication.html#GuestfsApplication-struct"/>
     <keyword type="struct" name="struct GuestfsApplication2" link="GuestfsApplication2.html#GuestfsApplication2-struct"/>
-    <keyword type="struct" name="struct GuestfsISOInfo" link="GuestfsISOInfo.html#GuestfsISOInfo-struct"/>
-    <keyword type="struct" name="struct GuestfsMDStat" link="GuestfsMDStat.html#GuestfsMDStat-struct"/>
     <keyword type="struct" name="struct GuestfsBTRFSSubvolume" link="GuestfsBTRFSSubvolume.html#GuestfsBTRFSSubvolume-struct"/>
-    <keyword type="struct" name="struct GuestfsXFSInfo" link="GuestfsXFSInfo.html#GuestfsXFSInfo-struct"/>
-    <keyword type="struct" name="struct GuestfsUTSName" link="GuestfsUTSName.html#GuestfsUTSName-struct"/>
+    <keyword type="struct" name="struct GuestfsDirent" link="GuestfsDirent.html#GuestfsDirent-struct"/>
     <keyword type="struct" name="struct GuestfsHivexNode" link="GuestfsHivexNode.html#GuestfsHivexNode-struct"/>
     <keyword type="struct" name="struct GuestfsHivexValue" link="GuestfsHivexValue.html#GuestfsHivexValue-struct"/>
+    <keyword type="struct" name="struct GuestfsINotifyEvent" link="GuestfsINotifyEvent.html#GuestfsINotifyEvent-struct"/>
+    <keyword type="struct" name="struct GuestfsIntBool" link="GuestfsIntBool.html#GuestfsIntBool-struct"/>
+    <keyword type="struct" name="struct GuestfsISOInfo" link="GuestfsISOInfo.html#GuestfsISOInfo-struct"/>
+    <keyword type="struct" name="struct GuestfsLV" link="GuestfsLV.html#GuestfsLV-struct"/>
+    <keyword type="struct" name="struct GuestfsPV" link="GuestfsPV.html#GuestfsPV-struct"/>
+    <keyword type="struct" name="struct GuestfsVG" link="GuestfsVG.html#GuestfsVG-struct"/>
+    <keyword type="struct" name="struct GuestfsMDStat" link="GuestfsMDStat.html#GuestfsMDStat-struct"/>
+    <keyword type="struct" name="struct GuestfsPartition" link="GuestfsPartition.html#GuestfsPartition-struct"/>
+    <keyword type="struct" name="struct GuestfsStat" link="GuestfsStat.html#GuestfsStat-struct"/>
+    <keyword type="struct" name="struct GuestfsStatVFS" link="GuestfsStatVFS.html#GuestfsStatVFS-struct"/>
+    <keyword type="struct" name="struct GuestfsUTSName" link="GuestfsUTSName.html#GuestfsUTSName-struct"/>
+    <keyword type="struct" name="struct GuestfsVersion" link="GuestfsVersion.html#GuestfsVersion-struct"/>
+    <keyword type="struct" name="struct GuestfsXAttr" link="GuestfsXAttr.html#GuestfsXAttr-struct"/>
+    <keyword type="struct" name="struct GuestfsXFSInfo" link="GuestfsXFSInfo.html#GuestfsXFSInfo-struct"/>
     <keyword type="struct" name="struct GuestfsAddDomain" link="GuestfsAddDomain.html#GuestfsAddDomain-struct"/>
     <keyword type="struct" name="struct GuestfsAddDomainClass" link="GuestfsAddDomain.html#GuestfsAddDomainClass"/>
     <keyword type="function" name="guestfs_add_domain_new ()" link="GuestfsAddDomain.html#guestfs-add-domain-new"/>
     <keyword type="property" name="The &quot;allowuuid&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--allowuuid"/>
     <keyword type="property" name="The &quot;cachemode&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--cachemode"/>
+    <keyword type="property" name="The &quot;copyonread&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--copyonread"/>
     <keyword type="property" name="The &quot;discard&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--discard"/>
     <keyword type="property" name="The &quot;iface&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--iface"/>
     <keyword type="property" name="The &quot;libvirturi&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--libvirturi"/>
@@ -681,6 +683,7 @@
     <keyword type="struct" name="struct GuestfsAddDriveClass" link="GuestfsAddDrive.html#GuestfsAddDriveClass"/>
     <keyword type="function" name="guestfs_add_drive_new ()" link="GuestfsAddDrive.html#guestfs-add-drive-new"/>
     <keyword type="property" name="The &quot;cachemode&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--cachemode"/>
+    <keyword type="property" name="The &quot;copyonread&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--copyonread"/>
     <keyword type="property" name="The &quot;discard&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--discard"/>
     <keyword type="property" name="The &quot;format&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--format"/>
     <keyword type="property" name="The &quot;iface&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--iface"/>

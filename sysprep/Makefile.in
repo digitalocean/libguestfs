@@ -1515,6 +1515,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/regedit.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/crypt-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/crypt.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/urandom.cmx \
@@ -1523,10 +1524,12 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/hostname.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/timezone.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/firstboot.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/perl_edit-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/perl_edit.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_cmdline.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_run.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-file-edit.o \
 @HAVE_OCAML_TRUE@	sysprep_operation.cmx \
 @HAVE_OCAML_TRUE@	$(patsubst %,sysprep_operation_%.cmx,$(operations)) \
 @HAVE_OCAML_TRUE@	main.cmx
@@ -1543,7 +1546,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize $(am__append_1)
-@HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
+@HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX-3 $(OCAMLPACKAGES)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@OCAMLCLIBS = \
 @HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) -lncurses -lcrypt \

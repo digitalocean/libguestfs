@@ -46,6 +46,7 @@ static void set_config_defaults (struct config *config);
 static void find_all_disks (void);
 static void find_all_interfaces (void);
 static char *read_cmdline (void);
+static int cpuinfo_flags (void);
 
 enum { HELP_OPTION = CHAR_MAX + 1 };
 static const char *options = "Vv";
@@ -186,6 +187,7 @@ set_config_defaults (struct config *config)
 {
   long i;
   char hostname[257];
+  int flags;
 
   /* Default guest name is derived from the source hostname.  If we
    * assume that the p2v ISO gets its IP address and hostname from
@@ -251,6 +253,12 @@ set_config_defaults (struct config *config)
   config->memory |= config->memory >> 32;
   config->memory++;
 
+  flags = cpuinfo_flags ();
+  if (flags >= 0)
+    config->flags = flags;
+  else
+    config->flags = 0;
+
   find_all_disks ();
   config->disks = guestfs___copy_string_list (all_disks);
   if (all_removable)
@@ -258,6 +266,12 @@ set_config_defaults (struct config *config)
   find_all_interfaces ();
   if (all_interfaces)
     config->interfaces = guestfs___copy_string_list (all_interfaces);
+
+  /* Default output drops the guest onto /var/tmp on the conversion
+   * server, a hopefully safe default.
+   */
+  config->output = strdup ("local");
+  config->output_storage = strdup ("/var/tmp");
 }
 
 static int
@@ -268,11 +282,52 @@ compare (const void *vp1, const void *vp2)
   return strcmp (*p1, *p2);
 }
 
+/* Get parent device of a partition.  Returns 0 if no parent device
+ * could be found.
+ */
+static dev_t
+partition_parent (dev_t part_dev)
+{
+  CLEANUP_FCLOSE FILE *fp = NULL;
+  CLEANUP_FREE char *path = NULL, *content = NULL;
+  size_t len;
+  unsigned parent_major, parent_minor;
+
+  if (asprintf (&path, "/sys/dev/block/%d:%d/../dev",
+                major (part_dev), minor (part_dev)) == -1) {
+    perror ("asprintf");
+    exit (EXIT_FAILURE);
+  }
+
+  fp = fopen (path, "r");
+  if (fp == NULL)
+    return 0;
+
+  if (getline (&content, &len, fp) == -1) {
+    perror ("getline");
+    exit (EXIT_FAILURE);
+  }
+
+  if (sscanf (content, "%u:%u", &parent_major, &parent_minor) != 2)
+    return 0;
+
+  return makedev (parent_major, parent_minor);
+}
+
+/* Return true if the named device (eg. dev == "sda") contains the
+ * root filesystem.  root_device is the major:minor of the root
+ * filesystem (eg. 8:1 if the root filesystem was /dev/sda1).
+ *
+ * This doesn't work for LVs and so on.  However we only really care
+ * if this test works on the P2V ISO where the root device is a
+ * regular partition.
+ */
 static int
 device_contains (const char *dev, dev_t root_device)
 {
-  CLEANUP_FREE char *dev_name;
   struct stat statbuf;
+  CLEANUP_FREE char *dev_name = NULL;
+  dev_t root_device_parent;
 
   if (asprintf (&dev_name, "/dev/%s", dev) == -1) {
     perror ("asprintf");
@@ -282,17 +337,15 @@ device_contains (const char *dev, dev_t root_device)
   if (stat (dev_name, &statbuf) == -1)
     return 0;
 
+  /* See if dev is the root_device. */
   if (statbuf.st_rdev == root_device)
     return 1;
 
-  /* Could be a partition.  XXX Very hacky and incorrect way to get
-   * the device from its partition.
-   */
-  if (minor (root_device) < 8 /* any major:minor where minor is "small" */ &&
-      statbuf.st_rdev == makedev (major (root_device), 0))
-    return 1;
-  if (major (statbuf.st_rdev) == 8 /* SCSI */ &&
-      statbuf.st_rdev == makedev (major (root_device), minor (root_device) & 0xf))
+  /* See if dev is the parent device of the root_device. */
+  root_device_parent = partition_parent (root_device);
+  if (root_device_parent == 0)
+    return 0;
+  if (statbuf.st_rdev == root_device_parent)
     return 1;
 
   return 0;
@@ -331,12 +384,7 @@ find_all_disks (void)
         STRPREFIX (d->d_name, "vd")) {
       char *p;
 
-      /* Skip the device containing the root filesystem.  This is only
-       * an approximate test -- for example it doesn't work if the
-       * root filesystem is on an LV.  However it doesn't need to be
-       * completely accurate, and we only really care that it works on
-       * the p2v ISO.
-       */
+      /* Skip the device containing the root filesystem. */
       if (device_contains (d->d_name, root_device))
         continue;
 
@@ -455,48 +503,66 @@ find_all_interfaces (void)
 static char *
 read_cmdline (void)
 {
-  int fd;
-  size_t len = 0;
-  ssize_t n;
-  char buf[256];
-  char *r = NULL, *newr;
+  CLEANUP_FCLOSE FILE *fp = NULL;
+  char *ret = NULL;
+  size_t len;
 
-  fd = open ("/proc/cmdline", O_RDONLY|O_CLOEXEC);
-  if (fd == -1) {
+  fp = fopen ("/proc/cmdline", "re");
+  if (fp == NULL) {
     perror ("/proc/cmdline");
     return NULL;
   }
 
-  for (;;) {
-    n = read (fd, buf, sizeof buf);
-    if (n == -1) {
-      perror ("read");
-      free (r);
-      close (fd);
-      return NULL;
-    }
-    if (n == 0)
-      break;
-    newr = realloc (r, len + n + 1); /* + 1 is for terminating NUL */
-    if (newr == NULL) {
-      perror ("realloc");
-      free (r);
-      close (fd);
-      return NULL;
-    }
-    r = newr;
-    memcpy (&r[len], buf, n);
-    len += n;
-  }
-
-  if (r)
-    r[len] = '\0';
-
-  if (close (fd) == -1) {
-    perror ("close");
-    free (r);
+  if (getline (&ret, &len, fp) == -1) {
+    perror ("getline");
     return NULL;
   }
 
-  return r;
+  return ret;
+}
+
+/* Read the list of flags from /proc/cpuinfo. */
+static int
+cpuinfo_flags (void)
+{
+  const char *cmd;
+  CLEANUP_PCLOSE FILE *fp = NULL;
+  CLEANUP_FREE char *flag = NULL;
+  ssize_t len;
+  size_t buflen = 0;
+  int ret = 0;
+
+  /* Get the flags, one per line. */
+  cmd = "< /proc/cpuinfo "
+#if defined(__arm__)
+    "grep ^Features"
+#else
+    "grep ^flags"
+#endif
+    " | awk '{ for (i = 3; i <= NF; ++i) { print $i }; exit }'";
+
+  fp = popen (cmd, "re");
+  if (fp == NULL) {
+    perror ("/proc/cpuinfo");
+    return -1;
+  }
+
+  while (errno = 0, (len = getline (&flag, &buflen, fp)) != -1) {
+    if (len > 0 && flag[len-1] == '\n')
+      flag[len-1] = '\0';
+
+    if (STREQ (flag, "acpi"))
+      ret |= FLAG_ACPI;
+    else if (STREQ (flag, "apic"))
+      ret |= FLAG_APIC;
+    else if (STREQ (flag, "pae"))
+      ret |= FLAG_PAE;
+  }
+
+  if (errno) {
+    perror ("getline");
+    return -1;
+  }
+
+  return ret;
 }

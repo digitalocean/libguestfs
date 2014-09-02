@@ -19,11 +19,15 @@
 open Printf
 
 open Sysprep_operation
+
 open Common_gettext.Gettext
+open Common_utils
 
 module G = Guestfs
 
-let rec fs_uuids_perform ~debug ~quiet g root side_effects =
+let prog = "virt-sysprep"
+
+let rec fs_uuids_perform ~verbose ~quiet g root side_effects =
   let fses = g#list_filesystems () in
   List.iter (function
   | _, "unknown" -> ()
@@ -35,7 +39,7 @@ let rec fs_uuids_perform ~debug ~quiet g root side_effects =
       g#set_uuid dev new_uuid
     with
       G.Error msg ->
-        eprintf (f_"warning: cannot set random UUID on filesystem %s type %s: %s\n")
+        warning ~prog (f_"cannot set random UUID on filesystem %s type %s: %s")
           dev typ msg
   ) fses
 

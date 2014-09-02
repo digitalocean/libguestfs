@@ -784,6 +784,11 @@ ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
     optargs_s.discard = StringValueCStr (v);
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
   }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("copyonread")));
+  if (v != Qnil) {
+    optargs_s.copyonread = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_COPYONREAD_BITMASK;
+  }
 
   int r;
 
@@ -1026,6 +1031,15 @@ ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
  * if you want to use discard if possible, but
  * don't mind if it doesn't work.
  * 
+ * "copyonread"
+ * The boolean parameter "copyonread" enables
+ * copy-on-read support. This only affects disk formats
+ * which have backing files, and causes reads to be
+ * stored in the overlay layer, speeding up multiple
+ * reads of the same area of disk.
+ * 
+ * The default is false.
+ * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
  * value. Pass an empty {} for no optional arguments.
@@ -1121,6 +1135,11 @@ ruby_guestfs_add_drive (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.discard = StringValueCStr (v);
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("copyonread")));
+  if (v != Qnil) {
+    optargs_s.copyonread = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK;
   }
 
   int r;
@@ -12822,6 +12841,37 @@ ruby_guestfs_journal_get_data_threshold (VALUE gv)
   int64_t r;
 
   r = guestfs_journal_get_data_threshold (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.journal_get_realtime_usec() -> fixnum
+ *
+ * get the timestamp of the current journal entry
+ *
+ * Get the realtime (wallclock) timestamp of the current
+ * journal entry.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_journal_get_realtime_usec+[http://libguestfs.org/guestfs.3.html#guestfs_journal_get_realtime_usec]).
+ */
+static VALUE
+ruby_guestfs_journal_get_realtime_usec (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "journal_get_realtime_usec");
+
+
+  int64_t r;
+
+  r = guestfs_journal_get_realtime_usec (g);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -26513,6 +26563,8 @@ Init__guestfs (void)
         ruby_guestfs_journal_get, 0);
   rb_define_method (c_guestfs, "journal_get_data_threshold",
         ruby_guestfs_journal_get_data_threshold, 0);
+  rb_define_method (c_guestfs, "journal_get_realtime_usec",
+        ruby_guestfs_journal_get_realtime_usec, 0);
   rb_define_method (c_guestfs, "journal_next",
         ruby_guestfs_journal_next, 0);
   rb_define_method (c_guestfs, "journal_open",

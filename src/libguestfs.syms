@@ -500,6 +500,7 @@
         guestfs_journal_close;
         guestfs_journal_get;
         guestfs_journal_get_data_threshold;
+        guestfs_journal_get_realtime_usec;
         guestfs_journal_next;
         guestfs_journal_open;
         guestfs_journal_set_data_threshold;

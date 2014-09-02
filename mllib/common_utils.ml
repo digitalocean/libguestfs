@@ -57,25 +57,41 @@ let le32_of_int i =
   String.unsafe_set s 3 (Char.unsafe_chr (Int64.to_int c3));
   s
 
-let output_spaces chan n = for i = 0 to n-1 do output_char chan ' ' done
+type wrap_break_t = WrapEOS | WrapSpace | WrapNL
 
-let wrap ?(chan = stdout) ?(hanging = 0) str =
-  let rec _wrap col str =
-    let n = String.length str in
-    let i = try String.index str ' ' with Not_found -> n in
-    let col =
-      if col+i >= 72 then (
+let rec wrap ?(chan = stdout) ?(indent = 0) str =
+  let len = String.length str in
+  _wrap chan indent 0 0 len str
+
+and _wrap chan indent column i len str =
+  if i < len then (
+    let (j, break) = _wrap_find_next_break i len str in
+    let next_column =
+      if column + (j-i) >= 72 then (
         output_char chan '\n';
-        output_spaces chan hanging;
-        i+hanging+1
-      ) else col+i+1 in
-    output_string chan (String.sub str 0 i);
-    if i < n then (
+        output_spaces chan indent;
+        indent + (j-i) + 1
+      )
+      else column + (j-i) + 1 in
+    output chan str i (j-i);
+    match break with
+    | WrapEOS -> ()
+    | WrapSpace ->
       output_char chan ' ';
-      _wrap col (String.sub str (i+1) (n-(i+1)))
-    )
-  in
-  _wrap 0 str
+      _wrap chan indent next_column (j+1) len str
+    | WrapNL ->
+      output_char chan '\n';
+      output_spaces chan indent;
+      _wrap chan indent indent (j+1) len str
+  )
+
+and _wrap_find_next_break i len str =
+  if i >= len then (len, WrapEOS)
+  else if String.unsafe_get str i = ' ' then (i, WrapSpace)
+  else if String.unsafe_get str i = '\n' then (i, WrapNL)
+  else _wrap_find_next_break (i+1) len str
+
+and output_spaces chan n = for i = 0 to n-1 do output_char chan ' ' done
 
 let string_prefix str prefix =
   let n = String.length prefix in
@@ -201,10 +217,17 @@ let error ~prog ?(exit_code = 1) fs =
     prerr_newline ();
     prerr_newline ();
     wrap ~chan:stderr
-      (sprintf (f_"%s: If reporting bugs, run %s with debugging enabled (-v) and include the complete output.")
+      (sprintf (f_"%s: If reporting bugs, run %s with debugging enabled (-v -x) and include the complete output.")
          prog prog);
     prerr_newline ();
     exit exit_code
+  in
+  ksprintf display fs
+
+let warning ~prog fs =
+  let display str =
+    wrap ~chan:stderr (sprintf (f_"%s: warning: %s") prog str);
+    prerr_newline ();
   in
   ksprintf display fs
 
@@ -340,6 +363,33 @@ let display_long_options () =
   ) !long_options;
   exit 0
 
+(* Compare two version strings intelligently. *)
+let rex_numbers = Str.regexp "^\\([0-9]+\\)\\(.*\\)$"
+let rex_letters = Str.regexp_case_fold "^\\([a-z]+\\)\\(.*\\)$"
+
+let compare_version v1 v2 =
+  let rec split_version = function
+    | "" -> []
+    | str ->
+      let first, rest =
+        if Str.string_match rex_numbers str 0 then (
+          let n = Str.matched_group 1 str in
+          let rest = Str.matched_group 2 str in
+          let n =
+            try `Number (int_of_string n)
+            with Failure "int_of_string" -> `String n in
+          n, rest
+        )
+        else if Str.string_match rex_letters str 0 then
+          `String (Str.matched_group 1 str), Str.matched_group 2 str
+        else (
+          let len = String.length str in
+          `Char str.[0], String.sub str 1 (len-1)
+        ) in
+      first :: split_version rest
+  in
+  compare (split_version v1) (split_version v2)
+
 (* Run an external command, slurp up the output as a list of lines. *)
 let external_command ~prog cmd =
   let chan = Unix.open_process_in cmd in
@@ -451,3 +501,14 @@ let is_block_device file =
 let is_char_device file =
   try (Unix.stat file).Unix.st_kind = Unix.S_CHR
   with Unix.Unix_error _ -> false
+
+(* Annoyingly Sys.is_directory throws an exception on failure
+ * (RHBZ#1022431).
+ *)
+let is_directory path =
+  try Sys.is_directory path
+  with Sys_error _ -> false
+
+let absolute_path path =
+  if not (Filename.is_relative path) then path
+  else Sys.getcwd () // path

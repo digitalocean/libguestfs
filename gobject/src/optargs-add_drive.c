@@ -48,6 +48,7 @@ struct _GuestfsAddDrivePrivate {
   gchar *secret;
   gchar *cachemode;
   gchar *discard;
+  GuestfsTristate copyonread;
 };
 
 G_DEFINE_TYPE (GuestfsAddDrive, guestfs_add_drive, G_TYPE_OBJECT);
@@ -64,7 +65,8 @@ enum {
   PROP_GUESTFS_ADD_DRIVE_USERNAME,
   PROP_GUESTFS_ADD_DRIVE_SECRET,
   PROP_GUESTFS_ADD_DRIVE_CACHEMODE,
-  PROP_GUESTFS_ADD_DRIVE_DISCARD
+  PROP_GUESTFS_ADD_DRIVE_DISCARD,
+  PROP_GUESTFS_ADD_DRIVE_COPYONREAD
 };
 
 static void
@@ -123,6 +125,10 @@ guestfs_add_drive_set_property(GObject *object, guint property_id, const GValue 
       priv->discard = g_value_dup_string (value);
       break;
 
+    case PROP_GUESTFS_ADD_DRIVE_COPYONREAD:
+      priv->copyonread = g_value_get_enum (value);
+      break;
+
     default:
       /* Invalid property */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -174,6 +180,10 @@ guestfs_add_drive_get_property(GObject *object, guint property_id, GValue *value
 
     case PROP_GUESTFS_ADD_DRIVE_DISCARD:
       g_value_set_string (value, priv->discard);
+      break;
+
+    case PROP_GUESTFS_ADD_DRIVE_COPYONREAD:
+      g_value_set_enum (value, priv->copyonread);
       break;
 
     default:
@@ -373,6 +383,23 @@ guestfs_add_drive_class_init (GuestfsAddDriveClass *klass)
       "discard",
       "A string.",
       NULL,
+      G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+    )
+  );
+
+  /**
+   * GuestfsAddDrive:copyonread:
+   *
+   * A boolean.
+   */
+  g_object_class_install_property (
+    object_class,
+    PROP_GUESTFS_ADD_DRIVE_COPYONREAD,
+    g_param_spec_enum (
+      "copyonread",
+      "copyonread",
+      "A boolean.",
+      GUESTFS_TYPE_TRISTATE, GUESTFS_TRISTATE_NONE,
       G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
     )
   );

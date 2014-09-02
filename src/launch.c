@@ -304,7 +304,7 @@ guestfs__config (guestfs_h *g,
  */
 #if defined(__powerpc64__)
 #define SERIAL_CONSOLE "console=hvc0 console=ttyS0"
-#elif defined(__arm__)
+#elif defined(__arm__) || defined(__aarch64__)
 #define SERIAL_CONSOLE "console=ttyAMA0"
 #else
 #define SERIAL_CONSOLE "console=ttyS0"
@@ -342,6 +342,16 @@ guestfs___appliance_command_line (guestfs_h *g, const char *appliance_dev,
      " noapic"                  /* workaround for RHBZ#857026 */
 #endif
      " " SERIAL_CONSOLE /* serial console */
+#ifdef __aarch64__
+     " earlyprintk=pl011,0x9000000 ignore_loglevel"
+     /* This option turns off the EFI RTC device.  QEMU VMs don't
+      * currently provide EFI, and if the device is compiled in it
+      * will try to call the EFI function GetTime unconditionally
+      * (causing a call to NULL).  However this option requires a
+      * non-upstream patch.
+      */
+     " efi-rtc=noprobe"
+#endif
      " udevtimeout=6000"/* for slow systems (RHBZ#480319, RHBZ#1096579) */
      " no_timer_check"  /* fix for RHBZ#502058 */
      "%s"               /* lpj */
@@ -366,6 +376,56 @@ guestfs___appliance_command_line (guestfs_h *g, const char *appliance_dev,
      g->append ? " " : "", g->append ? g->append : "");
 
   return ret;
+}
+
+/* Return the right CPU model to use as the -cpu parameter or its
+ * equivalent in libvirt.  This returns:
+ *
+ * - "host" (means use -cpu host)
+ * - some string such as "cortex-a57" (means use -cpu string)
+ * - NULL (means no -cpu option at all)
+ *
+ * This is made unnecessarily hard and fragile because of two stupid
+ * choices in QEMU:
+ *
+ * (1) The default for qemu-system-aarch64 -M virt is to emulate a
+ * cortex-a15 (WTF?).
+ *
+ * (2) We don't know for sure if KVM will work, but -cpu host is
+ * broken with TCG, so we almost always pass a broken -cpu flag if KVM
+ * is semi-broken in any way.
+ */
+const char *
+guestfs___get_cpu_model (int kvm)
+{
+#if defined(__arm__)            /* 32 bit ARM. */
+  return NULL;
+
+#elif defined(__aarch64__)
+  /* With -M virt, the default -cpu is cortex-a15.  Stupid. */
+  if (kvm)
+    return "host";
+  else
+    return "cortex-a57";
+
+#elif defined(__i386__) || defined(__x86_64__)
+  /* It is faster to pass the CPU host model to the appliance,
+   * allowing maximum speed for things like checksums, encryption.
+   * Only do this with KVM.  It is broken in subtle ways on TCG, and
+   * fairly pointless anyway.
+   */
+  if (kvm)
+    return "host";
+  else
+    return NULL;
+
+#else
+  /* Hope for the best ... */
+  if (kvm)
+    return "host";
+  else
+    return NULL;
+#endif
 }
 
 /* glibc documents, but does not actually implement, a 'getumask(3)'

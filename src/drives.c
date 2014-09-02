@@ -62,6 +62,7 @@ struct drive_create_data {
   const char *disk_label;
   const char *cachemode;
   enum discard discard;
+  bool copyonread;
 };
 
 /* Compile all the regular expressions once when the shared library is
@@ -146,6 +147,7 @@ create_drive_file (guestfs_h *g,
   drv->disk_label = data->disk_label ? safe_strdup (g, data->disk_label) : NULL;
   drv->cachemode = data->cachemode ? safe_strdup (g, data->cachemode) : NULL;
   drv->discard = data->discard;
+  drv->copyonread = data->copyonread;
 
   if (data->readonly) {
     if (create_overlay (g, drv) == -1) {
@@ -181,6 +183,7 @@ create_drive_non_file (guestfs_h *g,
   drv->disk_label = data->disk_label ? safe_strdup (g, data->disk_label) : NULL;
   drv->cachemode = data->cachemode ? safe_strdup (g, data->cachemode) : NULL;
   drv->discard = data->discard;
+  drv->copyonread = data->copyonread;
 
   if (data->readonly) {
     if (create_overlay (g, drv) == -1) {
@@ -467,6 +470,7 @@ create_drive_dev_null (guestfs_h *g,
 
   data->exportname = tmpfile;
   data->discard = discard_disable;
+  data->copyonread = false;
 
   return create_drive_file (g, data);
 }
@@ -532,7 +536,7 @@ static char *
 drive_to_string (guestfs_h *g, const struct drive *drv)
 {
   return safe_asprintf
-    (g, "%s%s%s%s protocol=%s%s%s%s%s%s%s%s%s%s",
+    (g, "%s%s%s%s protocol=%s%s%s%s%s%s%s%s%s%s%s",
      drv->src.u.path,
      drv->readonly ? " readonly" : "",
      drv->src.format ? " format=" : "",
@@ -547,7 +551,8 @@ drive_to_string (guestfs_h *g, const struct drive *drv)
      drv->cachemode ? " cache=" : "",
      drv->cachemode ? : "",
      drv->discard == discard_disable ? "" :
-     drv->discard == discard_enable ? " discard=enable" : " discard=besteffort");
+     drv->discard == discard_enable ? " discard=enable" : " discard=besteffort",
+     drv->copyonread ? " copyonread" : "");
 }
 
 /* Add struct drive to the g->drives vector at the given index. */
@@ -676,6 +681,11 @@ parse_one_server (guestfs_h *g, const char *server, struct drive_server *ret)
   char *port_str;
   int port;
 
+  /* Note! Do not set any string field in *ret until you know the
+   * function will return successfully.  Otherwise there can be a
+   * double-free in parse_servers -> free_drive_servers below.
+   */
+
   ret->transport = drive_transport_none;
 
   if (STRPREFIX (server, "tcp:")) {
@@ -739,12 +749,14 @@ parse_servers (guestfs_h *g, char *const *strs,
     return 0;
   }
 
+  /* Must use calloc here to avoid freeing garbage along the error
+   * path below.
+   */
   servers = safe_calloc (g, n, sizeof (struct drive_server));
 
   for (i = 0; i < n; ++i) {
     if (parse_one_server (g, strs[i], &servers[i]) == -1) {
-      if (i > 0)
-        free_drive_servers (servers, i-1);
+      free_drive_servers (servers, i);
       return -1;
     }
   }
@@ -806,6 +818,10 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
   }
   else
     data.discard = discard_disable;
+
+  data.copyonread =
+    optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK
+    ? optargs->copyonread : false;
 
   if (data.readonly && data.discard == discard_enable) {
     error (g, _("discard support cannot be enabled on read-only drives"));

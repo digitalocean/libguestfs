@@ -388,6 +388,7 @@ GuestfsISOInfo *guestfs_session_isoinfo_device (GuestfsSession *session, const g
 gboolean guestfs_session_journal_close (GuestfsSession *session, GError **err);
 GuestfsXAttr **guestfs_session_journal_get (GuestfsSession *session, GError **err);
 gint64 guestfs_session_journal_get_data_threshold (GuestfsSession *session, GError **err);
+gint64 guestfs_session_journal_get_realtime_usec (GuestfsSession *session, GError **err);
 gint8 guestfs_session_journal_next (GuestfsSession *session, GError **err);
 gboolean guestfs_session_journal_open (GuestfsSession *session, const gchar *directory, GError **err);
 gboolean guestfs_session_journal_set_data_threshold (GuestfsSession *session, gint64 threshold, GError **err);

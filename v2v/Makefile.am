@@ -19,59 +19,96 @@ include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
+	$(TESTS) $(SLOW_TESTS) \
+	test-v2v-networks-and-bridges-expected.xml \
+	test-v2v-networks-and-bridges.xml.in \
 	virt-v2v.pod
 
 CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-v2v
 
 SOURCES_MLI = \
-	convert_linux_common.mli \
-	convert_linux_enterprise.mli \
-	convert_linux_grub.mli \
+	convert_linux.mli \
 	convert_windows.mli \
-	source_libvirt.mli \
-	target_local.mli \
+	DOM.mli \
+	domainxml.mli \
+	lib_esx.mli \
+	lib_linux.mli \
+	input_disk.mli \
+	input_libvirt.mli \
+	input_libvirtxml.mli \
+	output_glance.mli \
+	output_libvirt.mli \
+	output_local.mli \
+	output_RHEV.mli \
 	types.mli \
 	xml.mli
 
 SOURCES_ML = \
+	stringMap.ml \
 	types.ml \
 	utils.ml \
 	xml.ml \
-	cmdline.ml \
-	source_libvirt.ml \
-	convert_linux_common.ml \
-	convert_linux_grub.ml \
-	convert_linux_enterprise.ml \
+	domainxml.ml \
+	DOM.ml \
+	lib_esx.ml \
+	lib_linux.ml \
+	input_disk.ml \
+	input_libvirtxml.ml \
+	input_libvirt.ml \
+	convert_linux.ml \
 	convert_windows.ml \
-	target_local.ml \
+	output_glance.ml \
+	output_libvirt.ml \
+	output_local.ml \
+	output_RHEV.ml \
+	cmdline.ml \
 	v2v.ml
 
 SOURCES_C = \
 	$(top_builddir)/fish/progress.c \
+	$(top_builddir)/fish/file-edit.c \
 	$(top_builddir)/mllib/tty-c.c \
 	$(top_builddir)/mllib/progress-c.c \
+	$(top_builddir)/mllib/mkdtemp-c.c \
+	$(top_builddir)/customize/crypt-c.c \
+	$(top_builddir)/customize/perl_edit-c.c \
 	utils-c.c \
-	xml-c.c
+	xml-c.c \
+	domainxml-c.c
 
 if HAVE_OCAML
 
 bin_PROGRAMS = virt-v2v
 
 virt_v2v_SOURCES = $(SOURCES_C)
-virt_v2v_CFLAGS = \
+virt_v2v_CPPFLAGS = \
 	-I. \
 	-I$(top_builddir) \
 	-I$(shell $(OCAMLC) -where) \
 	-I$(top_srcdir)/src \
-	-I$(top_srcdir)/fish \
-	$(LIBXML2_CFLAGS)
+	-I$(top_srcdir)/fish
+virt_v2v_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(LIBXML2_CFLAGS) \
+	$(LIBVIRT_CFLAGS)
 
 BOBJECTS = \
 	$(top_builddir)/mllib/common_gettext.cmo \
 	$(top_builddir)/mllib/common_utils.cmo \
+	$(top_builddir)/mllib/regedit.cmo \
 	$(top_builddir)/mllib/tTY.cmo \
 	$(top_builddir)/mllib/progress.cmo \
 	$(top_builddir)/mllib/config.cmo \
+	$(top_builddir)/mllib/mkdtemp.cmo \
+	$(top_builddir)/customize/urandom.cmo \
+	$(top_builddir)/customize/random_seed.cmo \
+	$(top_builddir)/customize/hostname.cmo \
+	$(top_builddir)/customize/timezone.cmo \
+	$(top_builddir)/customize/firstboot.cmo \
+	$(top_builddir)/customize/perl_edit.cmo \
+	$(top_builddir)/customize/crypt.cmo \
+	$(top_builddir)/customize/password.cmo \
+	$(top_builddir)/customize/customize_run.cmo \
 	$(SOURCES_ML:.ml=.cmo)
 XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
@@ -83,12 +120,13 @@ OCAMLPACKAGES = \
 	-I $(top_builddir)/src/.libs \
 	-I ../gnulib/lib/.libs \
 	-I $(top_builddir)/ocaml \
-	-I $(top_builddir)/mllib
+	-I $(top_builddir)/mllib \
+	-I $(top_builddir)/customize
 if HAVE_OCAML_PKG_GETTEXT
 OCAMLPACKAGES += -package gettext-stub
 endif
 
-OCAMLFLAGS = -g -warn-error CDEFLMPSUVYZX
+OCAMLFLAGS = -g -warn-error CDEFLMPSUVYZX-3
 
 if !HAVE_OCAMLOPT
 OBJECTS = $(BOBJECTS)
@@ -113,6 +151,10 @@ virt_v2v_LINK = \
 .ml.cmx:
 	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
+# Data directory.
+
+virttoolsdatadir = $(datadir)/virt-tools
+
 # Manual pages and HTML files for the website.
 
 man_MANS = virt-v2v.1
@@ -133,21 +175,81 @@ CLEANFILES += stamp-virt-v2v.pod
 
 # Tests.
 
+# The virt-v2v tests here are not meant to be thorough tests of guest
+# conversion.  There is a test suite used to test conversion which is
+# kept outside libguestfs because it contains lots of proprietary
+# unredistributable guests like Windows.
+#
+# The tests here instead are testing:
+#
+# - virt-v2v command line arguments
+# - virt-v2v reads and writes files to the correct places
+# - valgrind & memory leaks
+# - any conversion properties that can be tested using just the
+#   phony guests (but we don't go out of our way here)
+# - that up to date guests don't crash virt-v2v
+
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 if ENABLE_APPLIANCE
-TESTS =
+TESTS = \
+	test-v2v-i-disk.sh \
+	test-v2v-machine-readable.sh \
+	test-v2v-networks-and-bridges.sh \
+	test-v2v-no-copy.sh \
+	test-v2v-o-glance.sh \
+	test-v2v-o-libvirt.sh \
+	test-v2v-o-rhev.sh \
+	test-v2v-o-rhev-options.sh \
+	test-v2v-of-option.sh \
+	test-v2v-on-option.sh \
+	test-v2v-print-source.sh \
+	test-v2v-windows-conversion.sh
 endif ENABLE_APPLIANCE
+
+# This forces the file to be updated before running the tests, in case
+# the .xml.in file has been changed.  Be nice if automake just did the
+# right thing here.
+check_DATA = test-v2v-networks-and-bridges.xml
 
 check-valgrind:
 	$(MAKE) VG="$(top_builddir)/run @VG@" check
+
+SLOW_TESTS = \
+	test-v2v-real-conversions.sh
+
+check-slow: $(real_guests:%=%.img)
+	$(MAKE) check TESTS="$(SLOW_TESTS)"
+
+# A selection of real guests that test-v2v-real-conversions.sh will
+# try to convert.  This is only used by 'make check-slow'.
+
+real_guests = \
+	centos-6 \
+	centos-7.0 \
+	fedora-20 \
+	rhel-5.10 \
+	rhel-6.5 \
+	rhel-7.0
+
+$(real_guests:%=%.img):
+	rm -f $@
+	n=`basename $@ .img`;                                            \
+	vb="$(top_builddir)/run $(top_builddir)/builder/virt-builder";   \
+	if $$vb --help >/dev/null && $$vb --notes $$n >/dev/null; then   \
+	  $$vb $$n;                                                      \
+	else                                                             \
+	  touch $$n.img;                                                 \
+	fi
+
+CLEANFILES += $(real_guests:%=%.img)
 
 # Dependencies.
 depend: .depend
 
 .depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
 	rm -f $@ $@-t
-	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib $^ | \
+	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
 	  $(SED) 's/ *$$//' | \
 	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
 	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \

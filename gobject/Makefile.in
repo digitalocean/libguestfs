@@ -334,26 +334,26 @@ libguestfs_gobject_1_0_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 am__objects_1 = libguestfs_gobject_1_0_la-session.lo \
 	libguestfs_gobject_1_0_la-tristate.lo \
-	libguestfs_gobject_1_0_la-struct-int_bool.lo \
-	libguestfs_gobject_1_0_la-struct-lvm_pv.lo \
-	libguestfs_gobject_1_0_la-struct-lvm_vg.lo \
-	libguestfs_gobject_1_0_la-struct-lvm_lv.lo \
-	libguestfs_gobject_1_0_la-struct-stat.lo \
-	libguestfs_gobject_1_0_la-struct-statvfs.lo \
-	libguestfs_gobject_1_0_la-struct-dirent.lo \
-	libguestfs_gobject_1_0_la-struct-version.lo \
-	libguestfs_gobject_1_0_la-struct-xattr.lo \
-	libguestfs_gobject_1_0_la-struct-inotify_event.lo \
-	libguestfs_gobject_1_0_la-struct-partition.lo \
 	libguestfs_gobject_1_0_la-struct-application.lo \
 	libguestfs_gobject_1_0_la-struct-application2.lo \
-	libguestfs_gobject_1_0_la-struct-isoinfo.lo \
-	libguestfs_gobject_1_0_la-struct-mdstat.lo \
 	libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo \
-	libguestfs_gobject_1_0_la-struct-xfsinfo.lo \
-	libguestfs_gobject_1_0_la-struct-utsname.lo \
+	libguestfs_gobject_1_0_la-struct-dirent.lo \
 	libguestfs_gobject_1_0_la-struct-hivex_node.lo \
 	libguestfs_gobject_1_0_la-struct-hivex_value.lo \
+	libguestfs_gobject_1_0_la-struct-inotify_event.lo \
+	libguestfs_gobject_1_0_la-struct-int_bool.lo \
+	libguestfs_gobject_1_0_la-struct-isoinfo.lo \
+	libguestfs_gobject_1_0_la-struct-lvm_lv.lo \
+	libguestfs_gobject_1_0_la-struct-lvm_pv.lo \
+	libguestfs_gobject_1_0_la-struct-lvm_vg.lo \
+	libguestfs_gobject_1_0_la-struct-mdstat.lo \
+	libguestfs_gobject_1_0_la-struct-partition.lo \
+	libguestfs_gobject_1_0_la-struct-stat.lo \
+	libguestfs_gobject_1_0_la-struct-statvfs.lo \
+	libguestfs_gobject_1_0_la-struct-utsname.lo \
+	libguestfs_gobject_1_0_la-struct-version.lo \
+	libguestfs_gobject_1_0_la-struct-xattr.lo \
+	libguestfs_gobject_1_0_la-struct-xfsinfo.lo \
 	libguestfs_gobject_1_0_la-optargs-add_domain.lo \
 	libguestfs_gobject_1_0_la-optargs-add_drive.lo \
 	libguestfs_gobject_1_0_la-optargs-add_drive_scratch.lo \
@@ -1629,26 +1629,26 @@ guestfs_gobject_headers = \
   include/guestfs-gobject.h \
   include/guestfs-gobject/session.h \
   include/guestfs-gobject/tristate.h \
-  include/guestfs-gobject/struct-int_bool.h \
-  include/guestfs-gobject/struct-lvm_pv.h \
-  include/guestfs-gobject/struct-lvm_vg.h \
-  include/guestfs-gobject/struct-lvm_lv.h \
-  include/guestfs-gobject/struct-stat.h \
-  include/guestfs-gobject/struct-statvfs.h \
-  include/guestfs-gobject/struct-dirent.h \
-  include/guestfs-gobject/struct-version.h \
-  include/guestfs-gobject/struct-xattr.h \
-  include/guestfs-gobject/struct-inotify_event.h \
-  include/guestfs-gobject/struct-partition.h \
   include/guestfs-gobject/struct-application.h \
   include/guestfs-gobject/struct-application2.h \
-  include/guestfs-gobject/struct-isoinfo.h \
-  include/guestfs-gobject/struct-mdstat.h \
   include/guestfs-gobject/struct-btrfssubvolume.h \
-  include/guestfs-gobject/struct-xfsinfo.h \
-  include/guestfs-gobject/struct-utsname.h \
+  include/guestfs-gobject/struct-dirent.h \
   include/guestfs-gobject/struct-hivex_node.h \
   include/guestfs-gobject/struct-hivex_value.h \
+  include/guestfs-gobject/struct-inotify_event.h \
+  include/guestfs-gobject/struct-int_bool.h \
+  include/guestfs-gobject/struct-isoinfo.h \
+  include/guestfs-gobject/struct-lvm_lv.h \
+  include/guestfs-gobject/struct-lvm_pv.h \
+  include/guestfs-gobject/struct-lvm_vg.h \
+  include/guestfs-gobject/struct-mdstat.h \
+  include/guestfs-gobject/struct-partition.h \
+  include/guestfs-gobject/struct-stat.h \
+  include/guestfs-gobject/struct-statvfs.h \
+  include/guestfs-gobject/struct-utsname.h \
+  include/guestfs-gobject/struct-version.h \
+  include/guestfs-gobject/struct-xattr.h \
+  include/guestfs-gobject/struct-xfsinfo.h \
   include/guestfs-gobject/optargs-add_domain.h \
   include/guestfs-gobject/optargs-add_drive.h \
   include/guestfs-gobject/optargs-add_drive_scratch.h \
@@ -1706,26 +1706,26 @@ guestfs_gobject_headers = \
 guestfs_gobject_sources = \
   src/session.c \
   src/tristate.c \
-  src/struct-int_bool.c \
-  src/struct-lvm_pv.c \
-  src/struct-lvm_vg.c \
-  src/struct-lvm_lv.c \
-  src/struct-stat.c \
-  src/struct-statvfs.c \
-  src/struct-dirent.c \
-  src/struct-version.c \
-  src/struct-xattr.c \
-  src/struct-inotify_event.c \
-  src/struct-partition.c \
   src/struct-application.c \
   src/struct-application2.c \
-  src/struct-isoinfo.c \
-  src/struct-mdstat.c \
   src/struct-btrfssubvolume.c \
-  src/struct-xfsinfo.c \
-  src/struct-utsname.c \
+  src/struct-dirent.c \
   src/struct-hivex_node.c \
   src/struct-hivex_value.c \
+  src/struct-inotify_event.c \
+  src/struct-int_bool.c \
+  src/struct-isoinfo.c \
+  src/struct-lvm_lv.c \
+  src/struct-lvm_pv.c \
+  src/struct-lvm_vg.c \
+  src/struct-mdstat.c \
+  src/struct-partition.c \
+  src/struct-stat.c \
+  src/struct-statvfs.c \
+  src/struct-utsname.c \
+  src/struct-version.c \
+  src/struct-xattr.c \
+  src/struct-xfsinfo.c \
   src/optargs-add_domain.c \
   src/optargs-add_drive.c \
   src/optargs-add_drive_scratch.c \
@@ -2024,12 +2024,75 @@ libguestfs_gobject_1_0_la-tristate.lo: src/tristate.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-tristate.lo `test -f 'src/tristate.c' || echo '$(srcdir)/'`src/tristate.c
 
+libguestfs_gobject_1_0_la-struct-application.lo: src/struct-application.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-application.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-application.Tpo -c -o libguestfs_gobject_1_0_la-struct-application.lo `test -f 'src/struct-application.c' || echo '$(srcdir)/'`src/struct-application.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-application.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-application.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-application.c' object='libguestfs_gobject_1_0_la-struct-application.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-application.lo `test -f 'src/struct-application.c' || echo '$(srcdir)/'`src/struct-application.c
+
+libguestfs_gobject_1_0_la-struct-application2.lo: src/struct-application2.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-application2.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-application2.Tpo -c -o libguestfs_gobject_1_0_la-struct-application2.lo `test -f 'src/struct-application2.c' || echo '$(srcdir)/'`src/struct-application2.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-application2.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-application2.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-application2.c' object='libguestfs_gobject_1_0_la-struct-application2.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-application2.lo `test -f 'src/struct-application2.c' || echo '$(srcdir)/'`src/struct-application2.c
+
+libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo: src/struct-btrfssubvolume.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-btrfssubvolume.Tpo -c -o libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo `test -f 'src/struct-btrfssubvolume.c' || echo '$(srcdir)/'`src/struct-btrfssubvolume.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-btrfssubvolume.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-btrfssubvolume.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-btrfssubvolume.c' object='libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo `test -f 'src/struct-btrfssubvolume.c' || echo '$(srcdir)/'`src/struct-btrfssubvolume.c
+
+libguestfs_gobject_1_0_la-struct-dirent.lo: src/struct-dirent.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-dirent.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-dirent.Tpo -c -o libguestfs_gobject_1_0_la-struct-dirent.lo `test -f 'src/struct-dirent.c' || echo '$(srcdir)/'`src/struct-dirent.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-dirent.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-dirent.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-dirent.c' object='libguestfs_gobject_1_0_la-struct-dirent.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-dirent.lo `test -f 'src/struct-dirent.c' || echo '$(srcdir)/'`src/struct-dirent.c
+
+libguestfs_gobject_1_0_la-struct-hivex_node.lo: src/struct-hivex_node.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-hivex_node.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_node.Tpo -c -o libguestfs_gobject_1_0_la-struct-hivex_node.lo `test -f 'src/struct-hivex_node.c' || echo '$(srcdir)/'`src/struct-hivex_node.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_node.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_node.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-hivex_node.c' object='libguestfs_gobject_1_0_la-struct-hivex_node.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-hivex_node.lo `test -f 'src/struct-hivex_node.c' || echo '$(srcdir)/'`src/struct-hivex_node.c
+
+libguestfs_gobject_1_0_la-struct-hivex_value.lo: src/struct-hivex_value.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-hivex_value.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_value.Tpo -c -o libguestfs_gobject_1_0_la-struct-hivex_value.lo `test -f 'src/struct-hivex_value.c' || echo '$(srcdir)/'`src/struct-hivex_value.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_value.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_value.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-hivex_value.c' object='libguestfs_gobject_1_0_la-struct-hivex_value.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-hivex_value.lo `test -f 'src/struct-hivex_value.c' || echo '$(srcdir)/'`src/struct-hivex_value.c
+
+libguestfs_gobject_1_0_la-struct-inotify_event.lo: src/struct-inotify_event.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-inotify_event.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-inotify_event.Tpo -c -o libguestfs_gobject_1_0_la-struct-inotify_event.lo `test -f 'src/struct-inotify_event.c' || echo '$(srcdir)/'`src/struct-inotify_event.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-inotify_event.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-inotify_event.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-inotify_event.c' object='libguestfs_gobject_1_0_la-struct-inotify_event.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-inotify_event.lo `test -f 'src/struct-inotify_event.c' || echo '$(srcdir)/'`src/struct-inotify_event.c
+
 libguestfs_gobject_1_0_la-struct-int_bool.lo: src/struct-int_bool.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-int_bool.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-int_bool.Tpo -c -o libguestfs_gobject_1_0_la-struct-int_bool.lo `test -f 'src/struct-int_bool.c' || echo '$(srcdir)/'`src/struct-int_bool.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-int_bool.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-int_bool.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-int_bool.c' object='libguestfs_gobject_1_0_la-struct-int_bool.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-int_bool.lo `test -f 'src/struct-int_bool.c' || echo '$(srcdir)/'`src/struct-int_bool.c
+
+libguestfs_gobject_1_0_la-struct-isoinfo.lo: src/struct-isoinfo.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-isoinfo.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-isoinfo.Tpo -c -o libguestfs_gobject_1_0_la-struct-isoinfo.lo `test -f 'src/struct-isoinfo.c' || echo '$(srcdir)/'`src/struct-isoinfo.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-isoinfo.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-isoinfo.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-isoinfo.c' object='libguestfs_gobject_1_0_la-struct-isoinfo.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-isoinfo.lo `test -f 'src/struct-isoinfo.c' || echo '$(srcdir)/'`src/struct-isoinfo.c
+
+libguestfs_gobject_1_0_la-struct-lvm_lv.lo: src/struct-lvm_lv.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-lvm_lv.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-lvm_lv.Tpo -c -o libguestfs_gobject_1_0_la-struct-lvm_lv.lo `test -f 'src/struct-lvm_lv.c' || echo '$(srcdir)/'`src/struct-lvm_lv.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-lvm_lv.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-lvm_lv.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-lvm_lv.c' object='libguestfs_gobject_1_0_la-struct-lvm_lv.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-lvm_lv.lo `test -f 'src/struct-lvm_lv.c' || echo '$(srcdir)/'`src/struct-lvm_lv.c
 
 libguestfs_gobject_1_0_la-struct-lvm_pv.lo: src/struct-lvm_pv.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-lvm_pv.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-lvm_pv.Tpo -c -o libguestfs_gobject_1_0_la-struct-lvm_pv.lo `test -f 'src/struct-lvm_pv.c' || echo '$(srcdir)/'`src/struct-lvm_pv.c
@@ -2045,12 +2108,19 @@ libguestfs_gobject_1_0_la-struct-lvm_vg.lo: src/struct-lvm_vg.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-lvm_vg.lo `test -f 'src/struct-lvm_vg.c' || echo '$(srcdir)/'`src/struct-lvm_vg.c
 
-libguestfs_gobject_1_0_la-struct-lvm_lv.lo: src/struct-lvm_lv.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-lvm_lv.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-lvm_lv.Tpo -c -o libguestfs_gobject_1_0_la-struct-lvm_lv.lo `test -f 'src/struct-lvm_lv.c' || echo '$(srcdir)/'`src/struct-lvm_lv.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-lvm_lv.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-lvm_lv.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-lvm_lv.c' object='libguestfs_gobject_1_0_la-struct-lvm_lv.lo' libtool=yes @AMDEPBACKSLASH@
+libguestfs_gobject_1_0_la-struct-mdstat.lo: src/struct-mdstat.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-mdstat.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-mdstat.Tpo -c -o libguestfs_gobject_1_0_la-struct-mdstat.lo `test -f 'src/struct-mdstat.c' || echo '$(srcdir)/'`src/struct-mdstat.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-mdstat.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-mdstat.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-mdstat.c' object='libguestfs_gobject_1_0_la-struct-mdstat.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-lvm_lv.lo `test -f 'src/struct-lvm_lv.c' || echo '$(srcdir)/'`src/struct-lvm_lv.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-mdstat.lo `test -f 'src/struct-mdstat.c' || echo '$(srcdir)/'`src/struct-mdstat.c
+
+libguestfs_gobject_1_0_la-struct-partition.lo: src/struct-partition.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-partition.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-partition.Tpo -c -o libguestfs_gobject_1_0_la-struct-partition.lo `test -f 'src/struct-partition.c' || echo '$(srcdir)/'`src/struct-partition.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-partition.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-partition.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-partition.c' object='libguestfs_gobject_1_0_la-struct-partition.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-partition.lo `test -f 'src/struct-partition.c' || echo '$(srcdir)/'`src/struct-partition.c
 
 libguestfs_gobject_1_0_la-struct-stat.lo: src/struct-stat.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-stat.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-stat.Tpo -c -o libguestfs_gobject_1_0_la-struct-stat.lo `test -f 'src/struct-stat.c' || echo '$(srcdir)/'`src/struct-stat.c
@@ -2066,12 +2136,12 @@ libguestfs_gobject_1_0_la-struct-statvfs.lo: src/struct-statvfs.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-statvfs.lo `test -f 'src/struct-statvfs.c' || echo '$(srcdir)/'`src/struct-statvfs.c
 
-libguestfs_gobject_1_0_la-struct-dirent.lo: src/struct-dirent.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-dirent.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-dirent.Tpo -c -o libguestfs_gobject_1_0_la-struct-dirent.lo `test -f 'src/struct-dirent.c' || echo '$(srcdir)/'`src/struct-dirent.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-dirent.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-dirent.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-dirent.c' object='libguestfs_gobject_1_0_la-struct-dirent.lo' libtool=yes @AMDEPBACKSLASH@
+libguestfs_gobject_1_0_la-struct-utsname.lo: src/struct-utsname.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-utsname.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-utsname.Tpo -c -o libguestfs_gobject_1_0_la-struct-utsname.lo `test -f 'src/struct-utsname.c' || echo '$(srcdir)/'`src/struct-utsname.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-utsname.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-utsname.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-utsname.c' object='libguestfs_gobject_1_0_la-struct-utsname.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-dirent.lo `test -f 'src/struct-dirent.c' || echo '$(srcdir)/'`src/struct-dirent.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-utsname.lo `test -f 'src/struct-utsname.c' || echo '$(srcdir)/'`src/struct-utsname.c
 
 libguestfs_gobject_1_0_la-struct-version.lo: src/struct-version.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-version.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-version.Tpo -c -o libguestfs_gobject_1_0_la-struct-version.lo `test -f 'src/struct-version.c' || echo '$(srcdir)/'`src/struct-version.c
@@ -2087,82 +2157,12 @@ libguestfs_gobject_1_0_la-struct-xattr.lo: src/struct-xattr.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-xattr.lo `test -f 'src/struct-xattr.c' || echo '$(srcdir)/'`src/struct-xattr.c
 
-libguestfs_gobject_1_0_la-struct-inotify_event.lo: src/struct-inotify_event.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-inotify_event.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-inotify_event.Tpo -c -o libguestfs_gobject_1_0_la-struct-inotify_event.lo `test -f 'src/struct-inotify_event.c' || echo '$(srcdir)/'`src/struct-inotify_event.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-inotify_event.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-inotify_event.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-inotify_event.c' object='libguestfs_gobject_1_0_la-struct-inotify_event.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-inotify_event.lo `test -f 'src/struct-inotify_event.c' || echo '$(srcdir)/'`src/struct-inotify_event.c
-
-libguestfs_gobject_1_0_la-struct-partition.lo: src/struct-partition.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-partition.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-partition.Tpo -c -o libguestfs_gobject_1_0_la-struct-partition.lo `test -f 'src/struct-partition.c' || echo '$(srcdir)/'`src/struct-partition.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-partition.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-partition.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-partition.c' object='libguestfs_gobject_1_0_la-struct-partition.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-partition.lo `test -f 'src/struct-partition.c' || echo '$(srcdir)/'`src/struct-partition.c
-
-libguestfs_gobject_1_0_la-struct-application.lo: src/struct-application.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-application.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-application.Tpo -c -o libguestfs_gobject_1_0_la-struct-application.lo `test -f 'src/struct-application.c' || echo '$(srcdir)/'`src/struct-application.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-application.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-application.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-application.c' object='libguestfs_gobject_1_0_la-struct-application.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-application.lo `test -f 'src/struct-application.c' || echo '$(srcdir)/'`src/struct-application.c
-
-libguestfs_gobject_1_0_la-struct-application2.lo: src/struct-application2.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-application2.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-application2.Tpo -c -o libguestfs_gobject_1_0_la-struct-application2.lo `test -f 'src/struct-application2.c' || echo '$(srcdir)/'`src/struct-application2.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-application2.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-application2.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-application2.c' object='libguestfs_gobject_1_0_la-struct-application2.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-application2.lo `test -f 'src/struct-application2.c' || echo '$(srcdir)/'`src/struct-application2.c
-
-libguestfs_gobject_1_0_la-struct-isoinfo.lo: src/struct-isoinfo.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-isoinfo.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-isoinfo.Tpo -c -o libguestfs_gobject_1_0_la-struct-isoinfo.lo `test -f 'src/struct-isoinfo.c' || echo '$(srcdir)/'`src/struct-isoinfo.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-isoinfo.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-isoinfo.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-isoinfo.c' object='libguestfs_gobject_1_0_la-struct-isoinfo.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-isoinfo.lo `test -f 'src/struct-isoinfo.c' || echo '$(srcdir)/'`src/struct-isoinfo.c
-
-libguestfs_gobject_1_0_la-struct-mdstat.lo: src/struct-mdstat.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-mdstat.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-mdstat.Tpo -c -o libguestfs_gobject_1_0_la-struct-mdstat.lo `test -f 'src/struct-mdstat.c' || echo '$(srcdir)/'`src/struct-mdstat.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-mdstat.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-mdstat.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-mdstat.c' object='libguestfs_gobject_1_0_la-struct-mdstat.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-mdstat.lo `test -f 'src/struct-mdstat.c' || echo '$(srcdir)/'`src/struct-mdstat.c
-
-libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo: src/struct-btrfssubvolume.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-btrfssubvolume.Tpo -c -o libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo `test -f 'src/struct-btrfssubvolume.c' || echo '$(srcdir)/'`src/struct-btrfssubvolume.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-btrfssubvolume.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-btrfssubvolume.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-btrfssubvolume.c' object='libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo `test -f 'src/struct-btrfssubvolume.c' || echo '$(srcdir)/'`src/struct-btrfssubvolume.c
-
 libguestfs_gobject_1_0_la-struct-xfsinfo.lo: src/struct-xfsinfo.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-xfsinfo.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-xfsinfo.Tpo -c -o libguestfs_gobject_1_0_la-struct-xfsinfo.lo `test -f 'src/struct-xfsinfo.c' || echo '$(srcdir)/'`src/struct-xfsinfo.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-xfsinfo.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-xfsinfo.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-xfsinfo.c' object='libguestfs_gobject_1_0_la-struct-xfsinfo.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-xfsinfo.lo `test -f 'src/struct-xfsinfo.c' || echo '$(srcdir)/'`src/struct-xfsinfo.c
-
-libguestfs_gobject_1_0_la-struct-utsname.lo: src/struct-utsname.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-utsname.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-utsname.Tpo -c -o libguestfs_gobject_1_0_la-struct-utsname.lo `test -f 'src/struct-utsname.c' || echo '$(srcdir)/'`src/struct-utsname.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-utsname.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-utsname.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-utsname.c' object='libguestfs_gobject_1_0_la-struct-utsname.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-utsname.lo `test -f 'src/struct-utsname.c' || echo '$(srcdir)/'`src/struct-utsname.c
-
-libguestfs_gobject_1_0_la-struct-hivex_node.lo: src/struct-hivex_node.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-hivex_node.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_node.Tpo -c -o libguestfs_gobject_1_0_la-struct-hivex_node.lo `test -f 'src/struct-hivex_node.c' || echo '$(srcdir)/'`src/struct-hivex_node.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_node.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_node.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-hivex_node.c' object='libguestfs_gobject_1_0_la-struct-hivex_node.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-hivex_node.lo `test -f 'src/struct-hivex_node.c' || echo '$(srcdir)/'`src/struct-hivex_node.c
-
-libguestfs_gobject_1_0_la-struct-hivex_value.lo: src/struct-hivex_value.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-hivex_value.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_value.Tpo -c -o libguestfs_gobject_1_0_la-struct-hivex_value.lo `test -f 'src/struct-hivex_value.c' || echo '$(srcdir)/'`src/struct-hivex_value.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_value.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_value.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-hivex_value.c' object='libguestfs_gobject_1_0_la-struct-hivex_value.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-hivex_value.lo `test -f 'src/struct-hivex_value.c' || echo '$(srcdir)/'`src/struct-hivex_value.c
 
 libguestfs_gobject_1_0_la-optargs-add_domain.lo: src/optargs-add_domain.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-add_domain.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_domain.Tpo -c -o libguestfs_gobject_1_0_la-optargs-add_domain.lo `test -f 'src/optargs-add_domain.c' || echo '$(srcdir)/'`src/optargs-add_domain.c

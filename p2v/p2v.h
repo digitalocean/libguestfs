@@ -61,10 +61,23 @@ struct config {
   char *guestname;
   int vcpus;
   uint64_t memory;
+  int flags;
   char **disks;
   char **removable;
   char **interfaces;
+  char *output;
+  int output_allocation;
+  char *output_format;
+  char *output_storage;
 };
+
+#define FLAG_ACPI 1
+#define FLAG_APIC 2
+#define FLAG_PAE  4
+
+#define OUTPUT_ALLOCATION_NONE         0
+#define OUTPUT_ALLOCATION_SPARSE       1
+#define OUTPUT_ALLOCATION_PREALLOCATED 2
 
 extern struct config *new_config (void);
 extern struct config *copy_config (struct config *);

@@ -129,7 +129,7 @@ passphrases from the user by opening C</dev/tty>.
 
 Увімкнути трасування викликів програмного інтерфейсу libguestfs.
 
-=item B<--xpath> query
+=item B<--xpath> запит
 
 Perform an XPath query on the XML on stdin, and print the result on stdout.
 In this mode virt-inspector simply runs an XPath query; all other inspection
@@ -352,13 +352,6 @@ result on stdout.  All other inspection features are disabled in this mode.
  $ virt-inspector -d Guest | \
      virt-inspector --xpath 'string(//icon)' | base64 -i -d | display -
  [displays the guest icon, if there is one]
-
-=head1 ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ
-
-Libvirt guest names can contain arbitrary characters, some of which have
-meaning to the shell such as C<#> and space.  You may need to quote or
-escape these characters on the command line.  See the shell manual page
-L<sh(1)> for details.
 
 =head1 GETTING INSPECTION DATA FROM THE LIBGUESTFS API
 

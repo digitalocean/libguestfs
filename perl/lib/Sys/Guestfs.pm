@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.419';
+$VERSION = '0.420';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -366,7 +366,7 @@ Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
 
-=item $nrdisks = $g->add_domain ($dom [, libvirturi => $libvirturi] [, readonly => $readonly] [, iface => $iface] [, live => $live] [, allowuuid => $allowuuid] [, readonlydisk => $readonlydisk] [, cachemode => $cachemode] [, discard => $discard]);
+=item $nrdisks = $g->add_domain ($dom [, libvirturi => $libvirturi] [, readonly => $readonly] [, iface => $iface] [, live => $live] [, allowuuid => $allowuuid] [, readonlydisk => $readonlydisk] [, cachemode => $cachemode] [, discard => $discard] [, copyonread => $copyonread]);
 
 This function adds the disk(s) attached to the named libvirt
 domain C<dom>.  It works by connecting to libvirt, requesting
@@ -452,7 +452,7 @@ Disks with the E<lt>readonly/E<gt> flag are skipped.
 The other optional parameters are passed directly through to
 C<$g-E<gt>add_drive_opts>.
 
-=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret] [, cachemode => $cachemode] [, discard => $discard]);
+=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret] [, cachemode => $cachemode] [, discard => $discard] [, copyonread => $copyonread]);
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -696,9 +696,18 @@ possible, but don't mind if it doesn't work.
 
 =back
 
+=item C<copyonread>
+
+The boolean parameter C<copyonread> enables copy-on-read support.
+This only affects disk formats which have backing files, and causes
+reads to be stored in the overlay layer, speeding up multiple reads
+of the same area of disk.
+
+The default is false.
+
 =back
 
-=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret] [, cachemode => $cachemode] [, discard => $discard]);
+=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret] [, cachemode => $cachemode] [, discard => $discard] [, copyonread => $copyonread]);
 
 This is an alias of L</add_drive>.
 
@@ -4030,6 +4039,10 @@ this size when reading them (note also that it may not truncate them).
 If this returns C<0>, then the threshold is unlimited.
 
 See also C<$g-E<gt>journal_set_data_threshold>.
+
+=item $usec = $g->journal_get_realtime_usec ();
+
+Get the realtime (wallclock) timestamp of the current journal entry.
 
 =item $more = $g->journal_next ();
 
@@ -7630,6 +7643,7 @@ use vars qw(%guestfs_introspection);
       readonlydisk => [ 'readonlydisk', 'string', 5 ],
       cachemode => [ 'cachemode', 'string', 6 ],
       discard => [ 'discard', 'string', 7 ],
+      copyonread => [ 'copyonread', 'bool', 8 ],
     },
     name => "add_domain",
     description => "add the disk(s) from a named libvirt domain",
@@ -7651,6 +7665,7 @@ use vars qw(%guestfs_introspection);
       secret => [ 'secret', 'string', 8 ],
       cachemode => [ 'cachemode', 'string', 9 ],
       discard => [ 'discard', 'string', 10 ],
+      copyonread => [ 'copyonread', 'bool', 11 ],
     },
     name => "add_drive",
     description => "add an image to examine or modify",
@@ -9896,6 +9911,13 @@ use vars qw(%guestfs_introspection);
     ],
     name => "journal_get_data_threshold",
     description => "get the data threshold for reading journal entries",
+  },
+  "journal_get_realtime_usec" => {
+    ret => 'int64',
+    args => [
+    ],
+    name => "journal_get_realtime_usec",
+    description => "get the timestamp of the current journal entry",
   },
   "journal_next" => {
     ret => 'bool',

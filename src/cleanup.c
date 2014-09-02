@@ -122,3 +122,21 @@ guestfs___cleanup_xmlXPathFreeObject (void *ptr)
   if (obj)
     xmlXPathFreeObject (obj);
 }
+
+void
+guestfs___cleanup_fclose (void *ptr)
+{
+  FILE *f = * (FILE **) ptr;
+
+  if (f)
+    fclose (f);
+}
+
+void
+guestfs___cleanup_pclose (void *ptr)
+{
+  FILE *f = * (FILE **) ptr;
+
+  if (f)
+    pclose (f);
+}

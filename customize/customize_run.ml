@@ -27,7 +27,7 @@ open Password
 
 let quote = Filename.quote
 
-let run ~prog ~debug ~quiet (g : Guestfs.guestfs) root (ops : ops) =
+let run ~prog ~verbose ~quiet (g : Guestfs.guestfs) root (ops : ops) =
   (* Timestamped messages in ordinary, non-debug non-quiet mode. *)
   let msg fs = make_message_function ~quiet fs in
 
@@ -75,7 +75,7 @@ exec >>%s 2>&1
 %s
 " (quote logfile) env_vars cmd in
 
-    if debug then eprintf "running command:\n%s\n%!" cmd;
+    if verbose then eprintf "running command:\n%s\n%!" cmd;
     try ignore (g#sh cmd)
     with
       Guestfs.Error msg ->
@@ -149,7 +149,7 @@ exec >>%s 2>&1
   (* Set the random seed. *)
   msg (f_"Setting a random seed");
   if not (Random_seed.set_random_seed g root) then
-    eprintf (f_"%s: warning: random seed could not be set for this type of guest\n%!") prog;
+    warning ~prog (f_"random seed could not be set for this type of guest");
 
   (* Used for numbering firstboot commands. *)
   let i = ref 0 in
@@ -193,31 +193,30 @@ exec >>%s 2>&1
         exit 1
       );
 
-      Perl_edit.edit_file ~debug g path expr
+      Perl_edit.edit_file ~verbose g#ocaml_handle path expr
 
     | `FirstbootCommand cmd ->
       incr i;
       msg (f_"Installing firstboot command: [%d] %s") !i cmd;
-      Firstboot.add_firstboot_script g root !i cmd
+      Firstboot.add_firstboot_script ~prog g root !i cmd
 
     | `FirstbootPackages pkgs ->
       incr i;
       msg (f_"Installing firstboot packages: [%d] %s") !i
         (String.concat " " pkgs);
       let cmd = guest_install_command pkgs in
-      Firstboot.add_firstboot_script g root !i cmd
+      Firstboot.add_firstboot_script ~prog g root !i cmd
 
     | `FirstbootScript script ->
       incr i;
       msg (f_"Installing firstboot script: [%d] %s") !i script;
       let cmd = read_whole_file script in
-      Firstboot.add_firstboot_script g root !i cmd
+      Firstboot.add_firstboot_script ~prog g root !i cmd
 
     | `Hostname hostname ->
       msg (f_"Setting the hostname: %s") hostname;
       if not (Hostname.set_hostname g root hostname) then
-        eprintf (f_"%s: warning: hostname could not be set for this type of guest\n%!")
-          prog
+        warning ~prog (f_"hostname could not be set for this type of guest")
 
     | `InstallPackages pkgs ->
       msg (f_"Installing packages: %s") (String.concat " " pkgs);
@@ -253,8 +252,7 @@ exec >>%s 2>&1
     | `Timezone tz ->
       msg (f_"Setting the timezone: %s") tz;
       if not (Timezone.set_timezone ~prog g root tz) then
-        eprintf (f_"%s: warning: timezone could not be set for this type of guest\n%!")
-          prog
+        warning ~prog (f_"timezone could not be set for this type of guest")
 
     | `Update ->
       msg (f_"Updating core packages");
@@ -294,8 +292,7 @@ exec >>%s 2>&1
       set_linux_passwords ~prog ?password_crypto g root passwords
 
     | _ ->
-      eprintf (f_"%s: warning: passwords could not be set for this type of guest\n%!")
-        prog
+      warning ~prog (f_"passwords could not be set for this type of guest")
   );
 
   if ops.flags.selinux_relabel then (
@@ -316,7 +313,7 @@ exec >>%s 2>&1
    * If debugging, dump out the log file.
    * Then if asked, scrub the log file.
    *)
-  if debug then debug_logfile ();
+  if verbose then debug_logfile ();
   if ops.flags.scrub_logfile && g#exists logfile then (
     msg (f_"Scrubbing the log file");
 
@@ -333,7 +330,7 @@ exec >>%s 2>&1
    *)
   (try ignore (g#debug "sh" [| "fuser"; "-k"; "/sysroot" |])
    with exn ->
-     if debug then
+     if verbose then
        eprintf (f_"%s: %s (ignored)\n") prog (Printexc.to_string exn)
   );
   g#ping_daemon () (* tiny delay after kill *)

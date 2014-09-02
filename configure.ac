@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [27])
-m4_define([libguestfs_release], [14])
+m4_define([libguestfs_release], [35])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -180,6 +180,12 @@ gl_WARN_ADD([-Wno-missing-field-initializers])
 
 dnl Display the name of the warning option with the warning.
 gl_WARN_ADD([-fdiagnostics-show-option])
+
+dnl Now some warnings we want to enable and/or customize ...
+
+dnl Warn about large stack allocations.  10000 happens to be the
+dnl same size as Coverity warns about.
+gl_WARN_ADD([-Wframe-larger-than=10000])
 
 AC_SUBST([WARN_CFLAGS])
 
@@ -1244,6 +1250,10 @@ if test "x$with_java" != "xno"; then
         # Look for Java in some likely locations.
         for d in \
             /usr/lib/jvm/java \
+            /usr/lib/jvm/default-java \
+            /usr/lib/jvm/java-default-runtime \
+            /usr/lib/jvm/java-8-openjdk \
+            /usr/lib/jvm/java-7-openjdk \
             /usr/lib/jvm/java-6-openjdk
         do
             if test -d $d && test -f $d/bin/java; then
@@ -1726,7 +1736,8 @@ AC_CONFIG_FILES([Makefile
                  tests/xfs/Makefile
                  tests/xml/Makefile
                  tools/Makefile
-                 v2v/Makefile])
+                 v2v/Makefile
+                 v2v/test-v2v-networks-and-bridges.xml])
 AC_OUTPUT
 
 dnl Produce summary.

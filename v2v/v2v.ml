@@ -32,18 +32,58 @@ let () = Random.self_init ()
 let rec main () =
   (* Handle the command line. *)
   let input, output,
-    debug_gc, output_alloc, output_format, output_name,
-    quiet, root_choice, trace, verbose =
+    debug_gc, do_copy, network_map,
+    output_alloc, output_format, output_name,
+    print_source, quiet, root_choice, trace, verbose =
     Cmdline.parse_cmdline () in
 
   let msg fs = make_message_function ~quiet fs in
 
+  msg (f_"Opening the source %s") input#as_options;
+  let source = input#source () in
+
+  (* Print source and stop. *)
+  if print_source then (
+    printf (f_"Source guest information (--print-source option):\n");
+    printf "\n";
+    printf "%s\n" (string_of_source source);
+    if debug_gc then
+      Gc.compact ();
+    exit 0
+  );
+
+  if verbose then printf "%s%!" (string_of_source source);
+
+  (* Map source name. *)
   let source =
-    match input with
-    | InputLibvirt (libvirt_uri, guest) ->
-      Source_libvirt.create libvirt_uri guest
-    | InputLibvirtXML filename ->
-      Source_libvirt.create_from_xml filename in
+    match output_name with
+    | None -> source
+    (* Note the s_orig_name field retains the original name in case we
+     * need it for some reason.
+     *)
+    | Some name -> { source with s_name = name } in
+
+  (* Map networks and bridges. *)
+  let source =
+    let { s_nics = nics } = source in
+    let nics = List.map (
+      fun ({ s_vnet_type = t; s_vnet = vnet } as nic) ->
+        try
+          (* Look for a --network or --bridge parameter which names this
+           * network/bridge (eg. --network in:out).
+           *)
+          let new_name = List.assoc (t, vnet) network_map in
+          { nic with s_vnet = new_name }
+        with Not_found ->
+          try
+            (* Not found, so look for a default mapping (eg. --network out). *)
+            let new_name = List.assoc (t, "") network_map in
+            { nic with s_vnet = new_name }
+          with Not_found ->
+            (* Not found, so return the original NIC unchanged. *)
+            nic
+    ) nics in
+    { source with s_nics = nics } in
 
   (* Create a qcow2 v3 overlay to protect the source image(s).  There
    * is a specific reason to use the newer qcow2 variant: Because the
@@ -55,42 +95,75 @@ let rec main () =
   msg (f_"Creating an overlay to protect the source from being modified");
   let overlays =
     List.map (
-      fun (qemu_uri, format) ->
-        let overlay = Filename.temp_file "v2vovl" ".qcow2" in
-        unlink_on_exit overlay;
+      fun ({ s_qemu_uri = qemu_uri; s_format = format } as source) ->
+        let overlay_file = Filename.temp_file "v2vovl" ".qcow2" in
+        unlink_on_exit overlay_file;
 
         let options =
-          "compat=1.1,lazy_refcounts=on" ^
+          "compat=1.1" ^
             (match format with None -> ""
             | Some fmt -> ",backing_fmt=" ^ fmt) in
         let cmd =
           sprintf "qemu-img create -q -f qcow2 -b %s -o %s %s"
-            (quote qemu_uri) (quote options) overlay in
+            (quote qemu_uri) (quote options) overlay_file in
+        if verbose then printf "%s\n%!" cmd;
         if Sys.command cmd <> 0 then
           error (f_"qemu-img command failed, see earlier errors");
-        overlay, qemu_uri, format
+
+        (* Sanity check created overlay (see below). *)
+        if not ((new G.guestfs ())#disk_has_backing_file overlay_file) then
+          error (f_"internal error: qemu-img did not create overlay with backing file");
+
+        overlay_file, source
     ) source.s_disks in
 
   (* Open the guestfs handle. *)
   msg (f_"Opening the overlay");
   let g = new G.guestfs () in
-  g#set_trace trace;
-  g#set_verbose verbose;
+  if trace then g#set_trace true;
+  if verbose then g#set_verbose true;
   g#set_network true;
   List.iter (
-    fun (overlay, _, _) ->
-      g#add_drive_opts overlay
+    fun (overlay_file, _) ->
+      g#add_drive_opts overlay_file
         ~format:"qcow2" ~cachemode:"unsafe" ~discard:"besteffort"
+        ~copyonread:true
   ) overlays;
 
   g#launch ();
+
+  let overlays =
+    mapi (
+      fun i (overlay_file, source) ->
+        (* Grab the virtual size of each disk. *)
+        let sd = "sd" ^ drive_name i in
+        let dev = "/dev/" ^ sd in
+        let vsize = g#blockdev_getsize64 dev in
+
+        { ov_overlay_file = overlay_file; ov_sd = sd;
+          ov_virtual_size = vsize; ov_source = source }
+    ) overlays in
 
   (* Work out where we will write the final output.  Do this early
    * just so we can display errors to the user before doing too much
    * work.
    *)
-  let overlays =
-    initialize_target g output output_alloc output_format overlays in
+  msg (f_"Initializing the target %s") output#as_options;
+  let targets =
+    List.map (
+      fun ov ->
+        (* What output format should we use? *)
+        let format =
+          match output_format, ov.ov_source.s_format with
+          | Some format, _ -> format    (* -of overrides everything *)
+          | None, Some format -> format (* same as backing format *)
+          | None, None ->
+            error (f_"disk %s (%s) has no defined format, you have to either define the original format in the source metadata, or use the '-of' option to force the output format") ov.ov_sd ov.ov_source.s_qemu_uri in
+
+        (* output#prepare_targets will fill in the target_file field. *)
+        { target_file = ""; target_format = format; target_overlay = ov }
+    ) overlays in
+  let targets = output#prepare_targets source targets in
 
   (* Inspection - this also mounts up the filesystems. *)
   msg (f_"Inspecting the overlay");
@@ -98,157 +171,113 @@ let rec main () =
 
   (* Conversion. *)
   let guestcaps =
-    let root = inspect.i_root in
-
-    (match g#inspect_get_product_name root with
+    (match inspect.i_product_name with
     | "unknown" ->
       msg (f_"Converting the guest to run on KVM")
     | prod ->
       msg (f_"Converting %s to run on KVM") prod
     );
 
-    match g#inspect_get_type root with
-    | "linux" ->
-      (match g#inspect_get_distro root with
-      | "fedora"
-      | "rhel" | "centos" | "scientificlinux" | "redhat-based"
-      | "sles" | "suse-based" | "opensuse" ->
-
+    match inspect.i_type, inspect.i_distro with
+    | "linux", ("fedora"
+                   | "rhel" | "centos" | "scientificlinux" | "redhat-based"
+                   | "sles" | "suse-based" | "opensuse") ->
         (* RHEV doesn't support serial console so remove any on conversion. *)
-        let keep_serial_console =
-          match output with
-          | OutputRHEV _ -> Some false
-          | OutputLibvirt _ | OutputLocal _ -> None in
+        let keep_serial_console = output#keep_serial_console in
+        Convert_linux.convert ~keep_serial_console verbose g inspect source
 
-        Convert_linux_enterprise.convert ?keep_serial_console
-          verbose g inspect source
+    | "windows", _ -> Convert_windows.convert verbose g inspect source
 
-      | distro ->
-        error (f_"virt-v2v is unable to convert this guest type (linux/distro=%s)") distro
-      );
+    | typ, distro ->
+      error (f_"virt-v2v is unable to convert this guest type (%s/%s)")
+        typ distro in
 
-    | "windows" -> Convert_windows.convert verbose g inspect
-
-    | typ ->
-      error (f_"virt-v2v is unable to convert this guest type (type=%s)") typ in
-
-  (* Trim the filesystems to reduce transfer size. *)
-  msg (f_"Trimming filesystems to reduce amount of data to copy");
-  let () =
+  if do_copy then (
+    (* Doing fstrim on all the filesystems reduces the transfer size
+     * because unused blocks are marked in the overlay and thus do
+     * not have to be copied.
+     *)
+    msg (f_"Mapping filesystem data to avoid copying unused and blank areas");
     let mps = g#mountpoints () in
     List.iter (
       fun (_, mp) ->
         try g#fstrim mp
-        with G.Error msg -> eprintf "%s: %s (ignored)\n" mp msg
-    ) mps in
+        with G.Error msg -> warning ~prog (f_"%s: %s (ignored)") mp msg
+    ) mps
+  );
 
   msg (f_"Closing the overlay");
   g#umount_all ();
   g#shutdown ();
   g#close ();
 
-  (* Copy the source to the output. *)
   let delete_target_on_exit = ref true in
-  at_exit (fun () ->
-    if !delete_target_on_exit then (
-      List.iter (
-        fun ov -> try Unix.unlink ov.ov_target_file_tmp with _ -> ()
-      ) overlays
-    )
-  );
-  let nr_overlays = List.length overlays in
-  iteri (
-    fun i ov ->
-      msg (f_"Copying disk %d/%d to %s (%s)")
-        (i+1) nr_overlays ov.ov_target_file ov.ov_target_format;
-      if verbose then printf "%s\n%!" (string_of_overlay ov);
 
-      (* It turns out that libguestfs's disk creation code is
-       * considerably more flexible and easier to use than qemu-img, so
-       * create the disk explicitly using libguestfs then pass the
-       * 'qemu-img convert -n' option so qemu reuses the disk.
-       *)
-      let preallocation = ov.ov_preallocation in
-      let compat =
-        match ov.ov_target_format with "qcow2" -> Some "1.1" | _ -> None in
-      (new G.guestfs ())#disk_create ov.ov_target_file_tmp
-        ov.ov_target_format ov.ov_virtual_size ?preallocation ?compat;
+  if do_copy then (
+    (* Copy the source to the output. *)
+    at_exit (fun () ->
+      if !delete_target_on_exit then (
+        List.iter (
+          fun t -> try Unix.unlink t.target_file with _ -> ()
+        ) targets
+      )
+    );
+    let nr_disks = List.length targets in
+    iteri (
+      fun i t ->
+        msg (f_"Copying disk %d/%d to %s (%s)")
+          (i+1) nr_disks t.target_file t.target_format;
+        if verbose then printf "%s%!" (string_of_target t);
 
-      let cmd =
-        sprintf "qemu-img convert -n -f qcow2 -O %s %s %s"
-          (quote ov.ov_target_format) (quote ov.ov_overlay)
-          (quote ov.ov_target_file_tmp) in
-      if verbose then printf "%s\n%!" cmd;
-      if Sys.command cmd <> 0 then
-        error (f_"qemu-img command failed, see earlier errors");
-  ) overlays;
+        (* We noticed that qemu sometimes corrupts the qcow2 file on
+         * exit.  This only seemed to happen with lazy_refcounts was
+         * used.  The symptom was that the header wasn't written back
+         * to the disk correctly and the file appeared to have no
+         * backing file.  Just sanity check this here.
+         *)
+        let overlay_file = t.target_overlay.ov_overlay_file in
+        if not ((new G.guestfs ())#disk_has_backing_file overlay_file) then
+          error (f_"internal error: qemu corrupted the overlay file");
 
-  (* Create output metadata. *)
-  msg (f_"Creating output metadata");
-  let () =
-    (* Are we going to rename the guest? *)
-    let renamed_source =
-      match output_name with
-      | None -> source
-      | Some name -> { source with s_name = name } in
-    match output with
-    | OutputLibvirt oc -> assert false
-    | OutputLocal dir ->
-      Target_local.create_metadata dir renamed_source overlays guestcaps
-    | OutputRHEV os -> assert false in
-
-  (* If we wrote to a temporary file, rename to the real file. *)
-  List.iter (
-    fun ov ->
-      if ov.ov_target_file_tmp <> ov.ov_target_file then
-        rename ov.ov_target_file_tmp ov.ov_target_file
-  ) overlays;
-
-  delete_target_on_exit := false;
-
-  msg (f_"Finishing off");
-
-  if debug_gc then
-    Gc.compact ()
-
-and initialize_target g output output_alloc output_format overlays =
-  let overlays =
-    mapi (
-      fun i (overlay, qemu_uri, backing_format) ->
-        (* Grab the virtual size of each disk. *)
-        let sd = "sd" ^ drive_name i in
-        let dev = "/dev/" ^ sd in
-        let vsize = g#blockdev_getsize64 dev in
-
-        (* What output format should we use? *)
-        let format =
-          match output_format, backing_format with
-          | Some format, _ -> format    (* -of overrides everything *)
-          | None, Some format -> format (* same as backing format *)
-          | None, None ->
-            error (f_"disk %s (%s) has no defined format, you have to either define the original format in the source metadata, or use the '-of' option to force the output format") sd qemu_uri in
-
+        (* It turns out that libguestfs's disk creation code is
+         * considerably more flexible and easier to use than qemu-img, so
+         * create the disk explicitly using libguestfs then pass the
+         * 'qemu-img convert -n' option so qemu reuses the disk.
+         *)
         (* What output preallocation mode should we use? *)
         let preallocation =
-          match format, output_alloc with
+          match t.target_format, output_alloc with
           | "raw", `Sparse -> Some "sparse"
           | "raw", `Preallocated -> Some "full"
           | "qcow2", `Sparse -> Some "off" (* ? *)
           | "qcow2", `Preallocated -> Some "metadata"
           | _ -> None (* ignore -oa flag for other formats *) in
+        let compat =
+          match t.target_format with "qcow2" -> Some "1.1" | _ -> None in
+        (new G.guestfs ())#disk_create
+          t.target_file t.target_format t.target_overlay.ov_virtual_size
+          ?preallocation ?compat;
 
-        { ov_overlay = overlay;
-          ov_target_file = ""; ov_target_file_tmp = "";
-          ov_target_format = format;
-          ov_sd = sd; ov_virtual_size = vsize; ov_preallocation = preallocation;
-          ov_source_file = qemu_uri; ov_source_format = backing_format; }
-    ) overlays in
-  let overlays =
-    match output with
-    | OutputLibvirt oc -> assert false
-    | OutputLocal dir -> Target_local.initialize dir overlays
-    | OutputRHEV os -> assert false in
-  overlays
+        let cmd =
+          sprintf "qemu-img convert%s -n -f qcow2 -O %s %s %s"
+            (if not quiet then " -p" else "")
+            (quote t.target_format) (quote overlay_file)
+            (quote t.target_file) in
+        if verbose then printf "%s\n%!" cmd;
+        if Sys.command cmd <> 0 then
+          error (f_"qemu-img command failed, see earlier errors");
+    ) targets
+  ) (* do_copy *);
+
+  (* Create output metadata. *)
+  msg (f_"Creating output metadata");
+  output#create_metadata source targets guestcaps inspect;
+
+  msg (f_"Finishing off");
+  delete_target_on_exit := false;  (* Don't delete target on exit. *)
+
+  if debug_gc then
+    Gc.compact ()
 
 and inspect_source g root_choice =
   let roots = g#inspect_os () in
@@ -318,7 +347,29 @@ and inspect_source g root_choice =
   let apps = g#inspect_list_applications2 root in
   let apps = Array.to_list apps in
 
-  { i_root = root; i_apps = apps; }
+  (* A map of app2_name -> application2, for easier lookups.  Note
+   * that app names are not unique!  (eg. 'kernel' can appear multiple
+   * times)
+   *)
+  let apps_map = List.fold_left (
+    fun map app ->
+      let name = app.G.app2_name in
+      let vs = try StringMap.find name map with Not_found -> [] in
+      StringMap.add name (app :: vs) map
+  ) StringMap.empty apps in
+
+  { i_root = root;
+    i_type = g#inspect_get_type root;
+    i_distro = g#inspect_get_distro root;
+    i_arch = g#inspect_get_arch root;
+    i_major_version = g#inspect_get_major_version root;
+    i_minor_version = g#inspect_get_minor_version root;
+    i_package_format = g#inspect_get_package_format root;
+    i_package_management = g#inspect_get_package_management root;
+    i_product_name = g#inspect_get_product_name root;
+    i_product_variant = g#inspect_get_product_variant root;
+    i_apps = apps;
+    i_apps_map = apps_map; }
 
 let () =
   try main ()

@@ -1449,7 +1449,7 @@ objects = \
 	main.cmo
 
 EXTRA_DIST = $(sources) files-generated.txt
-OCAMLCFLAGS = -warn-error CDEFLMPSUVYZX -I $(srcdir) -I . -package unix,str
+OCAMLCFLAGS = -warn-error CDEFLMPSUVYZX-3 -I $(srcdir) -I . -package unix,str
 noinst_PROGRAM = generator
 noinst_DATA = stamp-generator
 CLEANFILES = $(noinst_DATA) $(noinst_PROGRAM) *.cmi *.cmo *~

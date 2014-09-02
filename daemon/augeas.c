@@ -29,12 +29,6 @@
 #include "actions.h"
 #include "optgroups.h"
 
-int
-optgroup_augeas_available (void)
-{
-  return 1;
-}
-
 /* The Augeas handle.  We maintain a single handle per daemon, which
  * is all that is necessary and reduces the complexity of the API
  * considerably.
@@ -60,23 +54,6 @@ aug_finalize (void)
     }									\
   }									\
   while (0)
-
-/* Calls reply_with_error, but includes the Augeas error details. */
-#define AUGEAS_ERROR(fs,...)                                            \
-  do {                                                                  \
-      int code = aug_error (aug);                                       \
-      if (code == AUG_ENOMEM)                                           \
-        reply_with_error (fs ": augeas out of memory", ##__VA_ARGS__);  \
-      else {                                                            \
-            const char *message = aug_error_message (aug);              \
-            const char *minor = aug_error_minor_message (aug);          \
-            const char *details = aug_error_details (aug);              \
-            reply_with_error (fs ": %s%s%s%s%s", ##__VA_ARGS__,         \
-                                message,                                \
-                                minor ? ": " : "", minor ? minor : "",  \
-                                details ? ": " : "", details ? details : ""); \
-            }                                                           \
-  } while (0)
 
 /* We need to rewrite the root path so it is based at /sysroot. */
 int

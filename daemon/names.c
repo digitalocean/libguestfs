@@ -438,4 +438,5 @@ const char *function_names[] = {
   [417] = "blkdiscard",
   [418] = "blkdiscardzeroes",
   [419] = "cpio_out",
+  [420] = "journal_get_realtime_usec",
 };

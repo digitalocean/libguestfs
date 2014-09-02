@@ -130,28 +130,70 @@ kernel_configuration (struct config *config, const char *cmdline)
 
   r = strstr (cmdline, "p2v.disks=");
   if (r) {
+    CLEANUP_FREE char *t;
+
     r += 5+5;
     len = strcspn (r, " ");
+    t = strndup (r, len);
     guestfs___free_string_list (config->disks);
-    config->disks = guestfs___split_string (',', r);
+    config->disks = guestfs___split_string (',', t);
   }
 
   r = strstr (cmdline, "p2v.removable=");
   if (r) {
+    CLEANUP_FREE char *t;
+
     r += 5+9;
     len = strcspn (r, " ");
+    t = strndup (r, len);
     guestfs___free_string_list (config->removable);
-    config->removable = guestfs___split_string (',', r);
+    config->removable = guestfs___split_string (',', t);
   }
 
   r = strstr (cmdline, "p2v.interfaces=");
   if (r) {
+    CLEANUP_FREE char *t;
+
     r += 5+10;
     len = strcspn (r, " ");
+    t = strndup (r, len);
     guestfs___free_string_list (config->interfaces);
-    config->interfaces = guestfs___split_string (',', r);
+    config->interfaces = guestfs___split_string (',', t);
   }
 
+  r = strstr (cmdline, "p2v.output=");
+  if (r) {
+    r += 5+6;
+    len = strcspn (r, " ");
+    free (config->output);
+    config->output = strndup (r, len);
+  }
+
+  r = strstr (cmdline, "p2v.output_allocation=sparse");
+  if (r)
+    config->output_allocation = OUTPUT_ALLOCATION_SPARSE;
+
+  r = strstr (cmdline, "p2v.output_allocation=preallocated");
+  if (r)
+    config->output_allocation = OUTPUT_ALLOCATION_PREALLOCATED;
+
+  r = strstr (cmdline, "p2v.output_format=");
+  if (r) {
+    r += 5+13;
+    len = strcspn (r, " ");
+    free (config->output_format);
+    config->output_format = strndup (r, len);
+  }
+
+  r = strstr (cmdline, "p2v.output_storage=");
+  if (r) {
+    r += 5+14;
+    len = strcspn (r, " ");
+    free (config->output_storage);
+    config->output_storage = strndup (r, len);
+  }
+
+  /* Perform the conversion in text mode. */
   if (start_conversion (config, notify_ui_callback) == -1) {
     const char *err = get_conversion_error ();
 

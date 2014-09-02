@@ -3944,7 +3944,7 @@ The test environment has 4 block devices:
 
 General block device for testing.
 
-=item C</dev/sdb> 50MB
+=item C</dev/sdb> 500MB
 
 C</dev/sdb1> is an ext2 filesystem used for testing
 filesystem write operations.
@@ -4289,8 +4289,8 @@ L<virt-builder(1)> command and documentation.
 
 =item C<cat>
 
-The L<virt-cat(1)>, L<virt-filesystems(1)> and L<virt-ls(1)> commands
-and documentation.
+The L<virt-cat(1)>, L<virt-filesystems(1)>, L<virt-log(1)>
+and L<virt-ls(1)> commands and documentation.
 
 =item C<contrib>
 
@@ -4776,6 +4776,7 @@ L<virt-format(1)>,
 L<virt-inspector(1)>,
 L<virt-list-filesystems(1)>,
 L<virt-list-partitions(1)>,
+L<virt-log(1)>,
 L<virt-ls(1)>,
 L<virt-make-fs(1)>,
 L<virt-p2v(1)>,

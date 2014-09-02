@@ -323,6 +323,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_journal_close, NULL)
   PHP_FE (guestfs_journal_get, NULL)
   PHP_FE (guestfs_journal_get_data_threshold, NULL)
+  PHP_FE (guestfs_journal_get_realtime_usec, NULL)
   PHP_FE (guestfs_journal_next, NULL)
   PHP_FE (guestfs_journal_open, NULL)
   PHP_FE (guestfs_journal_set_data_threshold, NULL)
@@ -843,9 +844,10 @@ PHP_FUNCTION (guestfs_add_domain)
   int optargs_t_cachemode_size = -1;
   char *optargs_t_discard = NULL;
   int optargs_t_discard_size = -1;
+  zend_bool optargs_t_copyonread = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|sbsbbsss",
-        &z_g, &dom, &dom_size, &optargs_t_libvirturi, &optargs_t_libvirturi_size, &optargs_t_readonly, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_live, &optargs_t_allowuuid, &optargs_t_readonlydisk, &optargs_t_readonlydisk_size, &optargs_t_cachemode, &optargs_t_cachemode_size, &optargs_t_discard, &optargs_t_discard_size) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|sbsbbsssb",
+        &z_g, &dom, &dom_size, &optargs_t_libvirturi, &optargs_t_libvirturi_size, &optargs_t_readonly, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_live, &optargs_t_allowuuid, &optargs_t_readonlydisk, &optargs_t_readonlydisk_size, &optargs_t_cachemode, &optargs_t_cachemode_size, &optargs_t_discard, &optargs_t_discard_size, &optargs_t_copyonread) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -892,6 +894,10 @@ PHP_FUNCTION (guestfs_add_domain)
     optargs_s.discard = optargs_t_discard;
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
   }
+  if (optargs_t_copyonread != (zend_bool)-1) {
+    optargs_s.copyonread = optargs_t_copyonread;
+    optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_COPYONREAD_BITMASK;
+  }
 
   int r;
   r = guestfs_add_domain_argv (g, dom, optargs);
@@ -931,9 +937,10 @@ PHP_FUNCTION (guestfs_add_drive)
   int optargs_t_cachemode_size = -1;
   char *optargs_t_discard = NULL;
   int optargs_t_discard_size = -1;
+  zend_bool optargs_t_copyonread = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bsssssa!ssss",
-        &z_g, &filename, &filename_size, &optargs_t_readonly, &optargs_t_format, &optargs_t_format_size, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_name, &optargs_t_name_size, &optargs_t_label, &optargs_t_label_size, &optargs_t_protocol, &optargs_t_protocol_size, &optargs_t_server, &optargs_t_username, &optargs_t_username_size, &optargs_t_secret, &optargs_t_secret_size, &optargs_t_cachemode, &optargs_t_cachemode_size, &optargs_t_discard, &optargs_t_discard_size) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bsssssa!ssssb",
+        &z_g, &filename, &filename_size, &optargs_t_readonly, &optargs_t_format, &optargs_t_format_size, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_name, &optargs_t_name_size, &optargs_t_label, &optargs_t_label_size, &optargs_t_protocol, &optargs_t_protocol_size, &optargs_t_server, &optargs_t_username, &optargs_t_username_size, &optargs_t_secret, &optargs_t_secret_size, &optargs_t_cachemode, &optargs_t_cachemode_size, &optargs_t_discard, &optargs_t_discard_size, &optargs_t_copyonread) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -1015,6 +1022,10 @@ PHP_FUNCTION (guestfs_add_drive)
   if (optargs_t_discard != NULL) {
     optargs_s.discard = optargs_t_discard;
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
+  }
+  if (optargs_t_copyonread != (zend_bool)-1) {
+    optargs_s.copyonread = optargs_t_copyonread;
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK;
   }
 
   int r;
@@ -10803,6 +10814,32 @@ PHP_FUNCTION (guestfs_journal_get_data_threshold)
 
   int64_t r;
   r = guestfs_journal_get_data_threshold (g);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_LONG (r);
+}
+
+PHP_FUNCTION (guestfs_journal_get_realtime_usec)
+{
+  zval *z_g;
+  guestfs_h *g;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "r",
+        &z_g) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  int64_t r;
+  r = guestfs_journal_get_realtime_usec (g);
 
   if (r == -1) {
     RETURN_FALSE;

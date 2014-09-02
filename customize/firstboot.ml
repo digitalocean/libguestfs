@@ -1,5 +1,5 @@
-(* virt-sysprep
- * Copyright (C) 2012 Red Hat Inc.
+(* virt-customize
+ * Copyright (C) 2012-2014 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,10 +21,13 @@ open Printf
 open Common_utils
 open Common_gettext.Gettext
 
-(* For Linux guests. *)
-let firstboot_dir = "/usr/lib/virt-sysprep"
+open Regedit
 
-let firstboot_sh = sprintf "\
+(* For Linux guests. *)
+module Linux = struct
+  let firstboot_dir = "/usr/lib/virt-sysprep"
+
+  let firstboot_sh = sprintf "\
 #!/bin/sh -
 
 ### BEGIN INIT INFO
@@ -61,7 +64,7 @@ then
 fi
 " firstboot_dir
 
-let firstboot_service = sprintf "\
+  let firstboot_service = sprintf "\
 [Unit]
 Description=virt-sysprep firstboot service
 After=network.target
@@ -78,94 +81,204 @@ StandardError=inherit
 WantedBy=default.target
 " firstboot_dir
 
-let failed fs =
-  ksprintf (fun msg -> failwith (s_"firstboot: failed: " ^ msg)) fs
+  let rec install_service ~prog (g : Guestfs.guestfs) distro =
+    g#mkdir_p firstboot_dir;
+    g#mkdir_p (sprintf "%s/scripts" firstboot_dir);
+    g#write (sprintf "%s/firstboot.sh" firstboot_dir) firstboot_sh;
+    g#chmod 0o755 (sprintf "%s/firstboot.sh" firstboot_dir);
 
-let rec install_service (g : Guestfs.guestfs) distro =
-  g#mkdir_p firstboot_dir;
-  g#mkdir_p (sprintf "%s/scripts" firstboot_dir);
-  g#write (sprintf "%s/firstboot.sh" firstboot_dir) firstboot_sh;
-  g#chmod 0o755 (sprintf "%s/firstboot.sh" firstboot_dir);
+    (* Note we install both systemd and sysvinit services.  This is
+     * because init systems can be switched at runtime, and it's easy to
+     * tell if systemd is installed (eg. Ubuntu uses upstart but installs
+     * systemd configuration directories).  There is no danger of a
+     * firstboot script running twice because they disable themselves
+     * after running.
+     *)
+    if g#is_dir "/etc/systemd/system" then
+      install_systemd_service g;
+    if g#is_dir "/etc/rc.d" || g#is_dir "/etc/init.d" then
+      install_sysvinit_service ~prog g distro
 
-  (* Note we install both systemd and sysvinit services.  This is
-   * because init systems can be switched at runtime, and it's easy to
-   * tell if systemd is installed (eg. Ubuntu uses upstart but installs
-   * systemd configuration directories).  There is no danger of a
-   * firstboot script running twice because they disable themselves
-   * after running.
-   *)
-  if g#is_dir "/etc/systemd/system" then
-    install_systemd_service g;
-  if g#is_dir "/etc/rc.d" || g#is_dir "/etc/init.d" then
-    install_sysvinit_service g distro
+  (* Install the systemd firstboot service, if not installed already. *)
+  and install_systemd_service g =
+    g#write (sprintf "%s/firstboot.service" firstboot_dir) firstboot_service;
+    g#mkdir_p "/etc/systemd/system/default.target.wants";
+    g#ln_sf (sprintf "%s/firstboot.service" firstboot_dir)
+      "/etc/systemd/system/default.target.wants"
 
-(* Install the systemd firstboot service, if not installed already. *)
-and install_systemd_service g =
-  g#write (sprintf "%s/firstboot.service" firstboot_dir) firstboot_service;
-  g#mkdir_p "/etc/systemd/system/default.target.wants";
-  g#ln_sf (sprintf "%s/firstboot.service" firstboot_dir)
-    "/etc/systemd/system/default.target.wants"
+  and install_sysvinit_service ~prog g = function
+    | "fedora"|"rhel"|"centos"|"scientificlinux"|"redhat-based" ->
+      install_sysvinit_redhat g
+    | "opensuse"|"sles"|"suse-based" ->
+      install_sysvinit_suse g
+    | "debian"|"ubuntu" ->
+      install_sysvinit_debian g
+    | distro ->
+      error ~prog (f_"guest type %s is not supported") distro
 
-and install_sysvinit_service g = function
-  | "fedora"|"rhel"|"centos"|"scientificlinux"|"redhat-based" ->
-    install_sysvinit_redhat g
-  | "opensuse"|"sles"|"suse-based" ->
-    install_sysvinit_suse g
-  | "debian"|"ubuntu" ->
-    install_sysvinit_debian g
-  | distro ->
-    failed "guest type %s is not supported" distro
+  and install_sysvinit_redhat g =
+    g#mkdir_p "/etc/rc.d/rc2.d";
+    g#mkdir_p "/etc/rc.d/rc3.d";
+    g#mkdir_p "/etc/rc.d/rc5.d";
+    g#ln_sf (sprintf "%s/firstboot.sh" firstboot_dir)
+      "/etc/rc.d/rc2.d/S99virt-sysprep-firstboot";
+    g#ln_sf (sprintf "%s/firstboot.sh" firstboot_dir)
+      "/etc/rc.d/rc3.d/S99virt-sysprep-firstboot";
+    g#ln_sf (sprintf "%s/firstboot.sh" firstboot_dir)
+      "/etc/rc.d/rc5.d/S99virt-sysprep-firstboot"
 
-and install_sysvinit_redhat g =
-  g#mkdir_p "/etc/rc.d/rc2.d";
-  g#mkdir_p "/etc/rc.d/rc3.d";
-  g#mkdir_p "/etc/rc.d/rc5.d";
-  g#ln_sf (sprintf "%s/firstboot.sh" firstboot_dir)
-    "/etc/rc.d/rc2.d/S99virt-sysprep-firstboot";
-  g#ln_sf (sprintf "%s/firstboot.sh" firstboot_dir)
-    "/etc/rc.d/rc3.d/S99virt-sysprep-firstboot";
-  g#ln_sf (sprintf "%s/firstboot.sh" firstboot_dir)
-    "/etc/rc.d/rc5.d/S99virt-sysprep-firstboot"
+  (* Make firstboot.sh look like a runlevel script to avoid insserv warnings. *)
+  and install_sysvinit_suse g =
+    g#mkdir_p "/etc/init.d/rc2.d";
+    g#mkdir_p "/etc/init.d/rc3.d";
+    g#mkdir_p "/etc/init.d/rc5.d";
+    g#ln_sf (sprintf "%s/firstboot.sh" firstboot_dir)
+      "/etc/init.d/virt-sysprep-firstboot";
+    g#ln_sf "../virt-sysprep-firstboot"
+      "/etc/init.d/rc2.d/S99virt-sysprep-firstboot";
+    g#ln_sf "../virt-sysprep-firstboot"
+      "/etc/init.d/rc3.d/S99virt-sysprep-firstboot";
+    g#ln_sf "../virt-sysprep-firstboot"
+      "/etc/init.d/rc5.d/S99virt-sysprep-firstboot"
 
-(* Make firstboot.sh look like a runlevel script to avoid insserv warnings. *)
-and install_sysvinit_suse g =
-  g#mkdir_p "/etc/init.d/rc2.d";
-  g#mkdir_p "/etc/init.d/rc3.d";
-  g#mkdir_p "/etc/init.d/rc5.d";
-  g#ln_sf (sprintf "%s/firstboot.sh" firstboot_dir)
-    "/etc/init.d/virt-sysprep-firstboot";
-  g#ln_sf "../virt-sysprep-firstboot"
-    "/etc/init.d/rc2.d/S99virt-sysprep-firstboot";
-  g#ln_sf "../virt-sysprep-firstboot"
-    "/etc/init.d/rc3.d/S99virt-sysprep-firstboot";
-  g#ln_sf "../virt-sysprep-firstboot"
-    "/etc/init.d/rc5.d/S99virt-sysprep-firstboot"
+  and install_sysvinit_debian g =
+    g#mkdir_p "/etc/init.d";
+    g#mkdir_p "/etc/rc2.d";
+    g#mkdir_p "/etc/rc3.d";
+    g#mkdir_p "/etc/rc5.d";
+    g#ln_sf (sprintf "%s/firstboot.sh" firstboot_dir)
+      "/etc/init.d/virt-sysprep-firstboot";
+    g#ln_sf "/etc/init.d/virt-sysprep-firstboot"
+      "/etc/rc2.d/S99virt-sysprep-firstboot";
+    g#ln_sf "/etc/init.d/virt-sysprep-firstboot"
+      "/etc/rc3.d/S99virt-sysprep-firstboot";
+    g#ln_sf "/etc/init.d/virt-sysprep-firstboot"
+      "/etc/rc5.d/S99virt-sysprep-firstboot"
+end
 
-and install_sysvinit_debian g =
-  g#mkdir_p "/etc/init.d";
-  g#mkdir_p "/etc/rc2.d";
-  g#mkdir_p "/etc/rc3.d";
-  g#mkdir_p "/etc/rc5.d";
-  g#ln_sf (sprintf "%s/firstboot.sh" firstboot_dir)
-    "/etc/init.d/virt-sysprep-firstboot";
-  g#ln_sf "/etc/init.d/virt-sysprep-firstboot"
-    "/etc/rc2.d/S99virt-sysprep-firstboot";
-  g#ln_sf "/etc/init.d/virt-sysprep-firstboot"
-    "/etc/rc3.d/S99virt-sysprep-firstboot";
-  g#ln_sf "/etc/init.d/virt-sysprep-firstboot"
-    "/etc/rc5.d/S99virt-sysprep-firstboot"
+module Windows = struct
 
-let add_firstboot_script (g : Guestfs.guestfs) root i content =
+  let rec install_service ~prog (g : Guestfs.guestfs) root =
+    (* Get the data directory. *)
+    let virt_tools_data_dir =
+      try Sys.getenv "VIRT_TOOLS_DATA_DIR"
+      with Not_found -> Config.datadir // "virt-tools" in
+
+    (* rhsrvany.exe must exist.
+     *
+     * (Check also that it's not a dangling symlink but a real file).
+     *)
+    let rhsrvany_exe = virt_tools_data_dir // "rhsrvany.exe" in
+    (try
+       let chan = open_in rhsrvany_exe in
+       close_in chan
+     with
+       Sys_error msg ->
+         error ~prog (f_"'%s' is missing.  This file is required in order to install Windows firstboot scripts.  You can get it by building rhsrvany (https://github.com/rwmjones/rhsrvany).  Original error: %s")
+           rhsrvany_exe msg
+    );
+
+    (* Create a directory for firstboot files in the guest. *)
+    let firstboot_dir, firstboot_dir_win =
+      let rec loop firstboot_dir firstboot_dir_win = function
+        | [] -> firstboot_dir, firstboot_dir_win
+        | dir :: path ->
+          let firstboot_dir =
+            if firstboot_dir = "" then "/" ^ dir else firstboot_dir // dir in
+          let firstboot_dir_win = firstboot_dir_win ^ "\\" ^ dir in
+          let firstboot_dir = g#case_sensitive_path firstboot_dir in
+          g#mkdir_p firstboot_dir;
+          loop firstboot_dir firstboot_dir_win path
+      in
+      loop "" "C:" ["Program Files"; "Red Hat"; "Firstboot"] in
+
+    g#mkdir_p (firstboot_dir // "scripts");
+
+    (* Copy rhsrvany to the guest. *)
+    g#upload rhsrvany_exe (firstboot_dir // "rhsrvany.exe");
+
+    (* Write a firstboot.bat control script which just runs the other
+     * scripts in the directory.  Note we need to use CRLF line endings
+     * in this script.
+     *)
+    let firstboot_script = [
+      "@echo off";
+      "echo starting firstboot service >>log.txt";
+      (* Notes:
+       * - You have to use double %% inside the batch file, but NOT
+       * when typing the same commands on the command line.
+       * - You have to use 'call' in front of every external command
+       * else it basically exec's the command and never returns.
+       * FFS.
+       *)
+      "for /f %%f in ('dir /b scripts') do call \"scripts\\%%f\" >>log.txt";
+      "echo uninstalling firstboot service >>log.txt";
+      "rhsrvany.exe -s firstboot uninstall >>log.txt";
+    ] in
+    let firstboot_script = String.concat "\r\n" firstboot_script ^ "\r\n" in
+    g#write (firstboot_dir // "firstboot.bat") firstboot_script;
+
+    (* Open the SYSTEM hive. *)
+    let systemroot = g#inspect_get_windows_systemroot root in
+    let filename = sprintf "%s/system32/config/SYSTEM" systemroot in
+    let filename = g#case_sensitive_path filename in
+    g#hivex_open ~write:true filename;
+
+    let root_node = g#hivex_root () in
+
+    (* Find the 'Current' ControlSet. *)
+    let current_cs =
+      let select = g#hivex_node_get_child root_node "Select" in
+      let valueh = g#hivex_node_get_value select "Current" in
+      let value = int_of_le32 (g#hivex_value_value valueh) in
+      sprintf "ControlSet%03Ld" value in
+
+    (* Add a new rhsrvany service to the system registry to execute firstboot.
+     * NB: All these edits are in the HKLM\SYSTEM hive.  No other
+     * hive may be modified here.
+     *)
+    let regedits = [
+      [ current_cs; "services"; "firstboot" ],
+      [ "Type", REG_DWORD 0x10_l;
+        "Start", REG_DWORD 0x2_l;
+        "ErrorControl", REG_DWORD 0x1_l;
+        "ImagePath",
+          REG_SZ (firstboot_dir_win ^ "\\rhsrvany.exe -s firstboot");
+        "DisplayName", REG_SZ "Virt tools firstboot service";
+        "ObjectName", REG_SZ "LocalSystem" ];
+
+      [ current_cs; "services"; "firstboot"; "Parameters" ],
+      [ "CommandLine",
+          REG_SZ ("cmd /c \"" ^ firstboot_dir_win ^ "\\firstboot.bat\"");
+        "PWD", REG_SZ firstboot_dir_win ];
+    ] in
+    reg_import g root_node regedits;
+
+    g#hivex_commit None;
+    g#hivex_close ();
+
+    firstboot_dir
+
+end
+
+let add_firstboot_script ~prog (g : Guestfs.guestfs) root i content =
   let typ = g#inspect_get_type root in
   let distro = g#inspect_get_distro root in
   match typ, distro with
   | "linux", _ ->
-    install_service g distro;
+    Linux.install_service ~prog g distro;
     let t = Int64.of_float (Unix.time ()) in
     let r = string_random8 () in
-    let filename = sprintf "%s/scripts/%04d-%Ld-%s" firstboot_dir i t r in
+    let filename = sprintf "%s/scripts/%04d-%Ld-%s" Linux.firstboot_dir i t r in
     g#write filename content;
     g#chmod 0o755 filename
 
+  | "windows", _ ->
+    let firstboot_dir = Windows.install_service ~prog g root in
+    let t = Int64.of_float (Unix.time ()) in
+    let r = string_random8 () in
+    let filename = sprintf "%s/scripts/%04d-%Ld-%s.bat" firstboot_dir i t r in
+    g#write filename content
+
   | _ ->
-    failed "guest type %s/%s is not supported" typ distro
+    error ~prog (f_"guest type %s/%s is not supported") typ distro

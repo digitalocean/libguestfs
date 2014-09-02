@@ -91,6 +91,7 @@ deps = \
 	$(top_builddir)/mllib/fsync-c.o \
 	$(top_builddir)/mllib/fsync.cmx \
 	$(top_builddir)/mllib/planner.cmx \
+	$(top_builddir)/mllib/regedit.cmx \
 	$(top_builddir)/mllib/uri-c.o \
 	$(top_builddir)/mllib/uRI.cmx \
 	$(top_builddir)/mllib/mkdtemp-c.o \
@@ -100,6 +101,7 @@ deps = \
 	$(top_builddir)/customize/hostname.cmx \
 	$(top_builddir)/customize/timezone.cmx \
 	$(top_builddir)/customize/firstboot.cmx \
+	$(top_builddir)/customize/perl_edit-c.o \
 	$(top_builddir)/customize/perl_edit.cmx \
 	$(top_builddir)/customize/crypt-c.o \
 	$(top_builddir)/customize/crypt.cmx \
@@ -107,6 +109,7 @@ deps = \
 	$(top_builddir)/customize/customize_cmdline.cmx \
 	$(top_builddir)/customize/customize_run.cmx \
 	$(top_builddir)/fish/guestfish-uri.o \
+	$(top_builddir)/fish/guestfish-file-edit.o \
 	index-scan.o \
 	index-struct.o \
 	index-parse.o \
@@ -152,7 +155,7 @@ if HAVE_OCAML_PKG_GETTEXT
 OCAMLPACKAGES += -package gettext-stub
 endif
 
-OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
+OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX-3 $(OCAMLPACKAGES)
 OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 
 OCAMLCLIBS  = \
@@ -223,12 +226,12 @@ fedora.qcow2: ../tests/guests/fedora.img
 
 fedora.qcow2.xz: fedora.qcow2
 	rm -f $@ $@-t
-	xz --best --block-size=16777216 -c $< > $@-t
+	xz --best -c $< > $@-t
 	mv $@-t $@
 
 %.xz: ../tests/guests/%.img
 	rm -f $@ $@-t
-	xz --best --block-size=16777216 -c $< > $@-t
+	xz --best -c $< > $@-t
 	mv $@-t $@
 
 TESTS = \
@@ -316,3 +319,8 @@ index-parser-c.c index-scan.c index-validate.c: index-parse.h
 index-parse.h: index-parse.y
 	$(MAKE) index-parse.h
 endif
+
+# Apparently there's no clean way with Automake to not have them
+# in the distribution, so just remove them from the distdir.
+dist-hook:
+	rm -f $(distdir)/index-parse.c $(distdir)/index-parse.h $(distdir)/index-scan.c

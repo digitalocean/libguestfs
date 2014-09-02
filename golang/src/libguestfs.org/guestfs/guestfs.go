@@ -183,6 +183,221 @@ func return_hashtable (argv **C.char) map[string]string {
 
 /* XXX Events/callbacks not yet implemented. */
 
+type Application struct {
+    app_name string
+    app_display_name string
+    app_epoch int32
+    app_version string
+    app_release string
+    app_install_path string
+    app_trans_path string
+    app_publisher string
+    app_url string
+    app_source_package string
+    app_summary string
+    app_description string
+}
+
+func return_Application (c *C.struct_guestfs_application) *Application {
+    r := Application{}
+    r.app_name = C.GoString (c.app_name)
+    r.app_display_name = C.GoString (c.app_display_name)
+    r.app_epoch = int32 (c.app_epoch)
+    r.app_version = C.GoString (c.app_version)
+    r.app_release = C.GoString (c.app_release)
+    r.app_install_path = C.GoString (c.app_install_path)
+    r.app_trans_path = C.GoString (c.app_trans_path)
+    r.app_publisher = C.GoString (c.app_publisher)
+    r.app_url = C.GoString (c.app_url)
+    r.app_source_package = C.GoString (c.app_source_package)
+    r.app_summary = C.GoString (c.app_summary)
+    r.app_description = C.GoString (c.app_description)
+    return &r
+}
+
+func return_Application_list (c *C.struct_guestfs_application_list) *[]Application {
+    nrelems := int (c.len)
+    ptr := uintptr (unsafe.Pointer (c.val))
+    elemsize := unsafe.Sizeof (*c.val)
+    r := make ([]Application, nrelems)
+    for i := 0; i < nrelems; i++ {
+        r[i] = *return_Application ((*C.struct_guestfs_application) (unsafe.Pointer (ptr)))
+        ptr += elemsize    }
+    return &r
+}
+
+type Application2 struct {
+    app2_name string
+    app2_display_name string
+    app2_epoch int32
+    app2_version string
+    app2_release string
+    app2_arch string
+    app2_install_path string
+    app2_trans_path string
+    app2_publisher string
+    app2_url string
+    app2_source_package string
+    app2_summary string
+    app2_description string
+    app2_spare1 string
+    app2_spare2 string
+    app2_spare3 string
+    app2_spare4 string
+}
+
+func return_Application2 (c *C.struct_guestfs_application2) *Application2 {
+    r := Application2{}
+    r.app2_name = C.GoString (c.app2_name)
+    r.app2_display_name = C.GoString (c.app2_display_name)
+    r.app2_epoch = int32 (c.app2_epoch)
+    r.app2_version = C.GoString (c.app2_version)
+    r.app2_release = C.GoString (c.app2_release)
+    r.app2_arch = C.GoString (c.app2_arch)
+    r.app2_install_path = C.GoString (c.app2_install_path)
+    r.app2_trans_path = C.GoString (c.app2_trans_path)
+    r.app2_publisher = C.GoString (c.app2_publisher)
+    r.app2_url = C.GoString (c.app2_url)
+    r.app2_source_package = C.GoString (c.app2_source_package)
+    r.app2_summary = C.GoString (c.app2_summary)
+    r.app2_description = C.GoString (c.app2_description)
+    r.app2_spare1 = C.GoString (c.app2_spare1)
+    r.app2_spare2 = C.GoString (c.app2_spare2)
+    r.app2_spare3 = C.GoString (c.app2_spare3)
+    r.app2_spare4 = C.GoString (c.app2_spare4)
+    return &r
+}
+
+func return_Application2_list (c *C.struct_guestfs_application2_list) *[]Application2 {
+    nrelems := int (c.len)
+    ptr := uintptr (unsafe.Pointer (c.val))
+    elemsize := unsafe.Sizeof (*c.val)
+    r := make ([]Application2, nrelems)
+    for i := 0; i < nrelems; i++ {
+        r[i] = *return_Application2 ((*C.struct_guestfs_application2) (unsafe.Pointer (ptr)))
+        ptr += elemsize    }
+    return &r
+}
+
+type BTRFSSubvolume struct {
+    btrfssubvolume_id uint64
+    btrfssubvolume_top_level_id uint64
+    btrfssubvolume_path string
+}
+
+func return_BTRFSSubvolume (c *C.struct_guestfs_btrfssubvolume) *BTRFSSubvolume {
+    r := BTRFSSubvolume{}
+    r.btrfssubvolume_id = uint64 (c.btrfssubvolume_id)
+    r.btrfssubvolume_top_level_id = uint64 (c.btrfssubvolume_top_level_id)
+    r.btrfssubvolume_path = C.GoString (c.btrfssubvolume_path)
+    return &r
+}
+
+func return_BTRFSSubvolume_list (c *C.struct_guestfs_btrfssubvolume_list) *[]BTRFSSubvolume {
+    nrelems := int (c.len)
+    ptr := uintptr (unsafe.Pointer (c.val))
+    elemsize := unsafe.Sizeof (*c.val)
+    r := make ([]BTRFSSubvolume, nrelems)
+    for i := 0; i < nrelems; i++ {
+        r[i] = *return_BTRFSSubvolume ((*C.struct_guestfs_btrfssubvolume) (unsafe.Pointer (ptr)))
+        ptr += elemsize    }
+    return &r
+}
+
+type Dirent struct {
+    ino int64
+    ftyp byte
+    name string
+}
+
+func return_Dirent (c *C.struct_guestfs_dirent) *Dirent {
+    r := Dirent{}
+    r.ino = int64 (c.ino)
+    r.ftyp = byte (c.ftyp)
+    r.name = C.GoString (c.name)
+    return &r
+}
+
+func return_Dirent_list (c *C.struct_guestfs_dirent_list) *[]Dirent {
+    nrelems := int (c.len)
+    ptr := uintptr (unsafe.Pointer (c.val))
+    elemsize := unsafe.Sizeof (*c.val)
+    r := make ([]Dirent, nrelems)
+    for i := 0; i < nrelems; i++ {
+        r[i] = *return_Dirent ((*C.struct_guestfs_dirent) (unsafe.Pointer (ptr)))
+        ptr += elemsize    }
+    return &r
+}
+
+type HivexNode struct {
+    hivex_node_h int64
+}
+
+func return_HivexNode (c *C.struct_guestfs_hivex_node) *HivexNode {
+    r := HivexNode{}
+    r.hivex_node_h = int64 (c.hivex_node_h)
+    return &r
+}
+
+func return_HivexNode_list (c *C.struct_guestfs_hivex_node_list) *[]HivexNode {
+    nrelems := int (c.len)
+    ptr := uintptr (unsafe.Pointer (c.val))
+    elemsize := unsafe.Sizeof (*c.val)
+    r := make ([]HivexNode, nrelems)
+    for i := 0; i < nrelems; i++ {
+        r[i] = *return_HivexNode ((*C.struct_guestfs_hivex_node) (unsafe.Pointer (ptr)))
+        ptr += elemsize    }
+    return &r
+}
+
+type HivexValue struct {
+    hivex_value_h int64
+}
+
+func return_HivexValue (c *C.struct_guestfs_hivex_value) *HivexValue {
+    r := HivexValue{}
+    r.hivex_value_h = int64 (c.hivex_value_h)
+    return &r
+}
+
+func return_HivexValue_list (c *C.struct_guestfs_hivex_value_list) *[]HivexValue {
+    nrelems := int (c.len)
+    ptr := uintptr (unsafe.Pointer (c.val))
+    elemsize := unsafe.Sizeof (*c.val)
+    r := make ([]HivexValue, nrelems)
+    for i := 0; i < nrelems; i++ {
+        r[i] = *return_HivexValue ((*C.struct_guestfs_hivex_value) (unsafe.Pointer (ptr)))
+        ptr += elemsize    }
+    return &r
+}
+
+type INotifyEvent struct {
+    in_wd int64
+    in_mask uint32
+    in_cookie uint32
+    in_name string
+}
+
+func return_INotifyEvent (c *C.struct_guestfs_inotify_event) *INotifyEvent {
+    r := INotifyEvent{}
+    r.in_wd = int64 (c.in_wd)
+    r.in_mask = uint32 (c.in_mask)
+    r.in_cookie = uint32 (c.in_cookie)
+    r.in_name = C.GoString (c.in_name)
+    return &r
+}
+
+func return_INotifyEvent_list (c *C.struct_guestfs_inotify_event_list) *[]INotifyEvent {
+    nrelems := int (c.len)
+    ptr := uintptr (unsafe.Pointer (c.val))
+    elemsize := unsafe.Sizeof (*c.val)
+    r := make ([]INotifyEvent, nrelems)
+    for i := 0; i < nrelems; i++ {
+        r[i] = *return_INotifyEvent ((*C.struct_guestfs_inotify_event) (unsafe.Pointer (ptr)))
+        ptr += elemsize    }
+    return &r
+}
+
 type IntBool struct {
     i int32
     b int32
@@ -202,6 +417,111 @@ func return_IntBool_list (c *C.struct_guestfs_int_bool_list) *[]IntBool {
     r := make ([]IntBool, nrelems)
     for i := 0; i < nrelems; i++ {
         r[i] = *return_IntBool ((*C.struct_guestfs_int_bool) (unsafe.Pointer (ptr)))
+        ptr += elemsize    }
+    return &r
+}
+
+type ISOInfo struct {
+    iso_system_id string
+    iso_volume_id string
+    iso_volume_space_size uint32
+    iso_volume_set_size uint32
+    iso_volume_sequence_number uint32
+    iso_logical_block_size uint32
+    iso_volume_set_id string
+    iso_publisher_id string
+    iso_data_preparer_id string
+    iso_application_id string
+    iso_copyright_file_id string
+    iso_abstract_file_id string
+    iso_bibliographic_file_id string
+    iso_volume_creation_t int64
+    iso_volume_modification_t int64
+    iso_volume_expiration_t int64
+    iso_volume_effective_t int64
+}
+
+func return_ISOInfo (c *C.struct_guestfs_isoinfo) *ISOInfo {
+    r := ISOInfo{}
+    r.iso_system_id = C.GoString (c.iso_system_id)
+    r.iso_volume_id = C.GoString (c.iso_volume_id)
+    r.iso_volume_space_size = uint32 (c.iso_volume_space_size)
+    r.iso_volume_set_size = uint32 (c.iso_volume_set_size)
+    r.iso_volume_sequence_number = uint32 (c.iso_volume_sequence_number)
+    r.iso_logical_block_size = uint32 (c.iso_logical_block_size)
+    r.iso_volume_set_id = C.GoString (c.iso_volume_set_id)
+    r.iso_publisher_id = C.GoString (c.iso_publisher_id)
+    r.iso_data_preparer_id = C.GoString (c.iso_data_preparer_id)
+    r.iso_application_id = C.GoString (c.iso_application_id)
+    r.iso_copyright_file_id = C.GoString (c.iso_copyright_file_id)
+    r.iso_abstract_file_id = C.GoString (c.iso_abstract_file_id)
+    r.iso_bibliographic_file_id = C.GoString (c.iso_bibliographic_file_id)
+    r.iso_volume_creation_t = int64 (c.iso_volume_creation_t)
+    r.iso_volume_modification_t = int64 (c.iso_volume_modification_t)
+    r.iso_volume_expiration_t = int64 (c.iso_volume_expiration_t)
+    r.iso_volume_effective_t = int64 (c.iso_volume_effective_t)
+    return &r
+}
+
+func return_ISOInfo_list (c *C.struct_guestfs_isoinfo_list) *[]ISOInfo {
+    nrelems := int (c.len)
+    ptr := uintptr (unsafe.Pointer (c.val))
+    elemsize := unsafe.Sizeof (*c.val)
+    r := make ([]ISOInfo, nrelems)
+    for i := 0; i < nrelems; i++ {
+        r[i] = *return_ISOInfo ((*C.struct_guestfs_isoinfo) (unsafe.Pointer (ptr)))
+        ptr += elemsize    }
+    return &r
+}
+
+type LV struct {
+    lv_name string
+    lv_uuid [32]byte
+    lv_attr string
+    lv_major int64
+    lv_minor int64
+    lv_kernel_major int64
+    lv_kernel_minor int64
+    lv_size uint64
+    seg_count int64
+    origin string
+    snap_percent float32
+    copy_percent float32
+    move_pv string
+    lv_tags string
+    mirror_log string
+    modules string
+}
+
+func return_LV (c *C.struct_guestfs_lvm_lv) *LV {
+    r := LV{}
+    r.lv_name = C.GoString (c.lv_name)
+    // XXX doesn't work XXX r.lv_uuid = C.GoBytes (c.lv_uuid, len (c.lv_uuid))
+    r.lv_uuid = [32]byte{}
+    r.lv_attr = C.GoString (c.lv_attr)
+    r.lv_major = int64 (c.lv_major)
+    r.lv_minor = int64 (c.lv_minor)
+    r.lv_kernel_major = int64 (c.lv_kernel_major)
+    r.lv_kernel_minor = int64 (c.lv_kernel_minor)
+    r.lv_size = uint64 (c.lv_size)
+    r.seg_count = int64 (c.seg_count)
+    r.origin = C.GoString (c.origin)
+    r.snap_percent = float32 (c.snap_percent)
+    r.copy_percent = float32 (c.copy_percent)
+    r.move_pv = C.GoString (c.move_pv)
+    r.lv_tags = C.GoString (c.lv_tags)
+    r.mirror_log = C.GoString (c.mirror_log)
+    r.modules = C.GoString (c.modules)
+    return &r
+}
+
+func return_LV_list (c *C.struct_guestfs_lvm_lv_list) *[]LV {
+    nrelems := int (c.len)
+    ptr := uintptr (unsafe.Pointer (c.val))
+    elemsize := unsafe.Sizeof (*c.val)
+    r := make ([]LV, nrelems)
+    for i := 0; i < nrelems; i++ {
+        r[i] = *return_LV ((*C.struct_guestfs_lvm_lv) (unsafe.Pointer (ptr)))
         ptr += elemsize    }
     return &r
 }
@@ -312,54 +632,54 @@ func return_VG_list (c *C.struct_guestfs_lvm_vg_list) *[]VG {
     return &r
 }
 
-type LV struct {
-    lv_name string
-    lv_uuid [32]byte
-    lv_attr string
-    lv_major int64
-    lv_minor int64
-    lv_kernel_major int64
-    lv_kernel_minor int64
-    lv_size uint64
-    seg_count int64
-    origin string
-    snap_percent float32
-    copy_percent float32
-    move_pv string
-    lv_tags string
-    mirror_log string
-    modules string
+type MDStat struct {
+    mdstat_device string
+    mdstat_index int32
+    mdstat_flags string
 }
 
-func return_LV (c *C.struct_guestfs_lvm_lv) *LV {
-    r := LV{}
-    r.lv_name = C.GoString (c.lv_name)
-    // XXX doesn't work XXX r.lv_uuid = C.GoBytes (c.lv_uuid, len (c.lv_uuid))
-    r.lv_uuid = [32]byte{}
-    r.lv_attr = C.GoString (c.lv_attr)
-    r.lv_major = int64 (c.lv_major)
-    r.lv_minor = int64 (c.lv_minor)
-    r.lv_kernel_major = int64 (c.lv_kernel_major)
-    r.lv_kernel_minor = int64 (c.lv_kernel_minor)
-    r.lv_size = uint64 (c.lv_size)
-    r.seg_count = int64 (c.seg_count)
-    r.origin = C.GoString (c.origin)
-    r.snap_percent = float32 (c.snap_percent)
-    r.copy_percent = float32 (c.copy_percent)
-    r.move_pv = C.GoString (c.move_pv)
-    r.lv_tags = C.GoString (c.lv_tags)
-    r.mirror_log = C.GoString (c.mirror_log)
-    r.modules = C.GoString (c.modules)
+func return_MDStat (c *C.struct_guestfs_mdstat) *MDStat {
+    r := MDStat{}
+    r.mdstat_device = C.GoString (c.mdstat_device)
+    r.mdstat_index = int32 (c.mdstat_index)
+    r.mdstat_flags = C.GoString (c.mdstat_flags)
     return &r
 }
 
-func return_LV_list (c *C.struct_guestfs_lvm_lv_list) *[]LV {
+func return_MDStat_list (c *C.struct_guestfs_mdstat_list) *[]MDStat {
     nrelems := int (c.len)
     ptr := uintptr (unsafe.Pointer (c.val))
     elemsize := unsafe.Sizeof (*c.val)
-    r := make ([]LV, nrelems)
+    r := make ([]MDStat, nrelems)
     for i := 0; i < nrelems; i++ {
-        r[i] = *return_LV ((*C.struct_guestfs_lvm_lv) (unsafe.Pointer (ptr)))
+        r[i] = *return_MDStat ((*C.struct_guestfs_mdstat) (unsafe.Pointer (ptr)))
+        ptr += elemsize    }
+    return &r
+}
+
+type Partition struct {
+    part_num int32
+    part_start uint64
+    part_end uint64
+    part_size uint64
+}
+
+func return_Partition (c *C.struct_guestfs_partition) *Partition {
+    r := Partition{}
+    r.part_num = int32 (c.part_num)
+    r.part_start = uint64 (c.part_start)
+    r.part_end = uint64 (c.part_end)
+    r.part_size = uint64 (c.part_size)
+    return &r
+}
+
+func return_Partition_list (c *C.struct_guestfs_partition_list) *[]Partition {
+    nrelems := int (c.len)
+    ptr := uintptr (unsafe.Pointer (c.val))
+    elemsize := unsafe.Sizeof (*c.val)
+    r := make ([]Partition, nrelems)
+    for i := 0; i < nrelems; i++ {
+        r[i] = *return_Partition ((*C.struct_guestfs_partition) (unsafe.Pointer (ptr)))
         ptr += elemsize    }
     return &r
 }
@@ -450,27 +770,29 @@ func return_StatVFS_list (c *C.struct_guestfs_statvfs_list) *[]StatVFS {
     return &r
 }
 
-type Dirent struct {
-    ino int64
-    ftyp byte
-    name string
+type UTSName struct {
+    uts_sysname string
+    uts_release string
+    uts_version string
+    uts_machine string
 }
 
-func return_Dirent (c *C.struct_guestfs_dirent) *Dirent {
-    r := Dirent{}
-    r.ino = int64 (c.ino)
-    r.ftyp = byte (c.ftyp)
-    r.name = C.GoString (c.name)
+func return_UTSName (c *C.struct_guestfs_utsname) *UTSName {
+    r := UTSName{}
+    r.uts_sysname = C.GoString (c.uts_sysname)
+    r.uts_release = C.GoString (c.uts_release)
+    r.uts_version = C.GoString (c.uts_version)
+    r.uts_machine = C.GoString (c.uts_machine)
     return &r
 }
 
-func return_Dirent_list (c *C.struct_guestfs_dirent_list) *[]Dirent {
+func return_UTSName_list (c *C.struct_guestfs_utsname_list) *[]UTSName {
     nrelems := int (c.len)
     ptr := uintptr (unsafe.Pointer (c.val))
     elemsize := unsafe.Sizeof (*c.val)
-    r := make ([]Dirent, nrelems)
+    r := make ([]UTSName, nrelems)
     for i := 0; i < nrelems; i++ {
-        r[i] = *return_Dirent ((*C.struct_guestfs_dirent) (unsafe.Pointer (ptr)))
+        r[i] = *return_UTSName ((*C.struct_guestfs_utsname) (unsafe.Pointer (ptr)))
         ptr += elemsize    }
     return &r
 }
@@ -521,259 +843,6 @@ func return_XAttr_list (c *C.struct_guestfs_xattr_list) *[]XAttr {
     r := make ([]XAttr, nrelems)
     for i := 0; i < nrelems; i++ {
         r[i] = *return_XAttr ((*C.struct_guestfs_xattr) (unsafe.Pointer (ptr)))
-        ptr += elemsize    }
-    return &r
-}
-
-type INotifyEvent struct {
-    in_wd int64
-    in_mask uint32
-    in_cookie uint32
-    in_name string
-}
-
-func return_INotifyEvent (c *C.struct_guestfs_inotify_event) *INotifyEvent {
-    r := INotifyEvent{}
-    r.in_wd = int64 (c.in_wd)
-    r.in_mask = uint32 (c.in_mask)
-    r.in_cookie = uint32 (c.in_cookie)
-    r.in_name = C.GoString (c.in_name)
-    return &r
-}
-
-func return_INotifyEvent_list (c *C.struct_guestfs_inotify_event_list) *[]INotifyEvent {
-    nrelems := int (c.len)
-    ptr := uintptr (unsafe.Pointer (c.val))
-    elemsize := unsafe.Sizeof (*c.val)
-    r := make ([]INotifyEvent, nrelems)
-    for i := 0; i < nrelems; i++ {
-        r[i] = *return_INotifyEvent ((*C.struct_guestfs_inotify_event) (unsafe.Pointer (ptr)))
-        ptr += elemsize    }
-    return &r
-}
-
-type Partition struct {
-    part_num int32
-    part_start uint64
-    part_end uint64
-    part_size uint64
-}
-
-func return_Partition (c *C.struct_guestfs_partition) *Partition {
-    r := Partition{}
-    r.part_num = int32 (c.part_num)
-    r.part_start = uint64 (c.part_start)
-    r.part_end = uint64 (c.part_end)
-    r.part_size = uint64 (c.part_size)
-    return &r
-}
-
-func return_Partition_list (c *C.struct_guestfs_partition_list) *[]Partition {
-    nrelems := int (c.len)
-    ptr := uintptr (unsafe.Pointer (c.val))
-    elemsize := unsafe.Sizeof (*c.val)
-    r := make ([]Partition, nrelems)
-    for i := 0; i < nrelems; i++ {
-        r[i] = *return_Partition ((*C.struct_guestfs_partition) (unsafe.Pointer (ptr)))
-        ptr += elemsize    }
-    return &r
-}
-
-type Application struct {
-    app_name string
-    app_display_name string
-    app_epoch int32
-    app_version string
-    app_release string
-    app_install_path string
-    app_trans_path string
-    app_publisher string
-    app_url string
-    app_source_package string
-    app_summary string
-    app_description string
-}
-
-func return_Application (c *C.struct_guestfs_application) *Application {
-    r := Application{}
-    r.app_name = C.GoString (c.app_name)
-    r.app_display_name = C.GoString (c.app_display_name)
-    r.app_epoch = int32 (c.app_epoch)
-    r.app_version = C.GoString (c.app_version)
-    r.app_release = C.GoString (c.app_release)
-    r.app_install_path = C.GoString (c.app_install_path)
-    r.app_trans_path = C.GoString (c.app_trans_path)
-    r.app_publisher = C.GoString (c.app_publisher)
-    r.app_url = C.GoString (c.app_url)
-    r.app_source_package = C.GoString (c.app_source_package)
-    r.app_summary = C.GoString (c.app_summary)
-    r.app_description = C.GoString (c.app_description)
-    return &r
-}
-
-func return_Application_list (c *C.struct_guestfs_application_list) *[]Application {
-    nrelems := int (c.len)
-    ptr := uintptr (unsafe.Pointer (c.val))
-    elemsize := unsafe.Sizeof (*c.val)
-    r := make ([]Application, nrelems)
-    for i := 0; i < nrelems; i++ {
-        r[i] = *return_Application ((*C.struct_guestfs_application) (unsafe.Pointer (ptr)))
-        ptr += elemsize    }
-    return &r
-}
-
-type Application2 struct {
-    app2_name string
-    app2_display_name string
-    app2_epoch int32
-    app2_version string
-    app2_release string
-    app2_arch string
-    app2_install_path string
-    app2_trans_path string
-    app2_publisher string
-    app2_url string
-    app2_source_package string
-    app2_summary string
-    app2_description string
-    app2_spare1 string
-    app2_spare2 string
-    app2_spare3 string
-    app2_spare4 string
-}
-
-func return_Application2 (c *C.struct_guestfs_application2) *Application2 {
-    r := Application2{}
-    r.app2_name = C.GoString (c.app2_name)
-    r.app2_display_name = C.GoString (c.app2_display_name)
-    r.app2_epoch = int32 (c.app2_epoch)
-    r.app2_version = C.GoString (c.app2_version)
-    r.app2_release = C.GoString (c.app2_release)
-    r.app2_arch = C.GoString (c.app2_arch)
-    r.app2_install_path = C.GoString (c.app2_install_path)
-    r.app2_trans_path = C.GoString (c.app2_trans_path)
-    r.app2_publisher = C.GoString (c.app2_publisher)
-    r.app2_url = C.GoString (c.app2_url)
-    r.app2_source_package = C.GoString (c.app2_source_package)
-    r.app2_summary = C.GoString (c.app2_summary)
-    r.app2_description = C.GoString (c.app2_description)
-    r.app2_spare1 = C.GoString (c.app2_spare1)
-    r.app2_spare2 = C.GoString (c.app2_spare2)
-    r.app2_spare3 = C.GoString (c.app2_spare3)
-    r.app2_spare4 = C.GoString (c.app2_spare4)
-    return &r
-}
-
-func return_Application2_list (c *C.struct_guestfs_application2_list) *[]Application2 {
-    nrelems := int (c.len)
-    ptr := uintptr (unsafe.Pointer (c.val))
-    elemsize := unsafe.Sizeof (*c.val)
-    r := make ([]Application2, nrelems)
-    for i := 0; i < nrelems; i++ {
-        r[i] = *return_Application2 ((*C.struct_guestfs_application2) (unsafe.Pointer (ptr)))
-        ptr += elemsize    }
-    return &r
-}
-
-type ISOInfo struct {
-    iso_system_id string
-    iso_volume_id string
-    iso_volume_space_size uint32
-    iso_volume_set_size uint32
-    iso_volume_sequence_number uint32
-    iso_logical_block_size uint32
-    iso_volume_set_id string
-    iso_publisher_id string
-    iso_data_preparer_id string
-    iso_application_id string
-    iso_copyright_file_id string
-    iso_abstract_file_id string
-    iso_bibliographic_file_id string
-    iso_volume_creation_t int64
-    iso_volume_modification_t int64
-    iso_volume_expiration_t int64
-    iso_volume_effective_t int64
-}
-
-func return_ISOInfo (c *C.struct_guestfs_isoinfo) *ISOInfo {
-    r := ISOInfo{}
-    r.iso_system_id = C.GoString (c.iso_system_id)
-    r.iso_volume_id = C.GoString (c.iso_volume_id)
-    r.iso_volume_space_size = uint32 (c.iso_volume_space_size)
-    r.iso_volume_set_size = uint32 (c.iso_volume_set_size)
-    r.iso_volume_sequence_number = uint32 (c.iso_volume_sequence_number)
-    r.iso_logical_block_size = uint32 (c.iso_logical_block_size)
-    r.iso_volume_set_id = C.GoString (c.iso_volume_set_id)
-    r.iso_publisher_id = C.GoString (c.iso_publisher_id)
-    r.iso_data_preparer_id = C.GoString (c.iso_data_preparer_id)
-    r.iso_application_id = C.GoString (c.iso_application_id)
-    r.iso_copyright_file_id = C.GoString (c.iso_copyright_file_id)
-    r.iso_abstract_file_id = C.GoString (c.iso_abstract_file_id)
-    r.iso_bibliographic_file_id = C.GoString (c.iso_bibliographic_file_id)
-    r.iso_volume_creation_t = int64 (c.iso_volume_creation_t)
-    r.iso_volume_modification_t = int64 (c.iso_volume_modification_t)
-    r.iso_volume_expiration_t = int64 (c.iso_volume_expiration_t)
-    r.iso_volume_effective_t = int64 (c.iso_volume_effective_t)
-    return &r
-}
-
-func return_ISOInfo_list (c *C.struct_guestfs_isoinfo_list) *[]ISOInfo {
-    nrelems := int (c.len)
-    ptr := uintptr (unsafe.Pointer (c.val))
-    elemsize := unsafe.Sizeof (*c.val)
-    r := make ([]ISOInfo, nrelems)
-    for i := 0; i < nrelems; i++ {
-        r[i] = *return_ISOInfo ((*C.struct_guestfs_isoinfo) (unsafe.Pointer (ptr)))
-        ptr += elemsize    }
-    return &r
-}
-
-type MDStat struct {
-    mdstat_device string
-    mdstat_index int32
-    mdstat_flags string
-}
-
-func return_MDStat (c *C.struct_guestfs_mdstat) *MDStat {
-    r := MDStat{}
-    r.mdstat_device = C.GoString (c.mdstat_device)
-    r.mdstat_index = int32 (c.mdstat_index)
-    r.mdstat_flags = C.GoString (c.mdstat_flags)
-    return &r
-}
-
-func return_MDStat_list (c *C.struct_guestfs_mdstat_list) *[]MDStat {
-    nrelems := int (c.len)
-    ptr := uintptr (unsafe.Pointer (c.val))
-    elemsize := unsafe.Sizeof (*c.val)
-    r := make ([]MDStat, nrelems)
-    for i := 0; i < nrelems; i++ {
-        r[i] = *return_MDStat ((*C.struct_guestfs_mdstat) (unsafe.Pointer (ptr)))
-        ptr += elemsize    }
-    return &r
-}
-
-type BTRFSSubvolume struct {
-    btrfssubvolume_id uint64
-    btrfssubvolume_top_level_id uint64
-    btrfssubvolume_path string
-}
-
-func return_BTRFSSubvolume (c *C.struct_guestfs_btrfssubvolume) *BTRFSSubvolume {
-    r := BTRFSSubvolume{}
-    r.btrfssubvolume_id = uint64 (c.btrfssubvolume_id)
-    r.btrfssubvolume_top_level_id = uint64 (c.btrfssubvolume_top_level_id)
-    r.btrfssubvolume_path = C.GoString (c.btrfssubvolume_path)
-    return &r
-}
-
-func return_BTRFSSubvolume_list (c *C.struct_guestfs_btrfssubvolume_list) *[]BTRFSSubvolume {
-    nrelems := int (c.len)
-    ptr := uintptr (unsafe.Pointer (c.val))
-    elemsize := unsafe.Sizeof (*c.val)
-    r := make ([]BTRFSSubvolume, nrelems)
-    for i := 0; i < nrelems; i++ {
-        r[i] = *return_BTRFSSubvolume ((*C.struct_guestfs_btrfssubvolume) (unsafe.Pointer (ptr)))
         ptr += elemsize    }
     return &r
 }
@@ -843,75 +912,6 @@ func return_XFSInfo_list (c *C.struct_guestfs_xfsinfo_list) *[]XFSInfo {
     r := make ([]XFSInfo, nrelems)
     for i := 0; i < nrelems; i++ {
         r[i] = *return_XFSInfo ((*C.struct_guestfs_xfsinfo) (unsafe.Pointer (ptr)))
-        ptr += elemsize    }
-    return &r
-}
-
-type UTSName struct {
-    uts_sysname string
-    uts_release string
-    uts_version string
-    uts_machine string
-}
-
-func return_UTSName (c *C.struct_guestfs_utsname) *UTSName {
-    r := UTSName{}
-    r.uts_sysname = C.GoString (c.uts_sysname)
-    r.uts_release = C.GoString (c.uts_release)
-    r.uts_version = C.GoString (c.uts_version)
-    r.uts_machine = C.GoString (c.uts_machine)
-    return &r
-}
-
-func return_UTSName_list (c *C.struct_guestfs_utsname_list) *[]UTSName {
-    nrelems := int (c.len)
-    ptr := uintptr (unsafe.Pointer (c.val))
-    elemsize := unsafe.Sizeof (*c.val)
-    r := make ([]UTSName, nrelems)
-    for i := 0; i < nrelems; i++ {
-        r[i] = *return_UTSName ((*C.struct_guestfs_utsname) (unsafe.Pointer (ptr)))
-        ptr += elemsize    }
-    return &r
-}
-
-type HivexNode struct {
-    hivex_node_h int64
-}
-
-func return_HivexNode (c *C.struct_guestfs_hivex_node) *HivexNode {
-    r := HivexNode{}
-    r.hivex_node_h = int64 (c.hivex_node_h)
-    return &r
-}
-
-func return_HivexNode_list (c *C.struct_guestfs_hivex_node_list) *[]HivexNode {
-    nrelems := int (c.len)
-    ptr := uintptr (unsafe.Pointer (c.val))
-    elemsize := unsafe.Sizeof (*c.val)
-    r := make ([]HivexNode, nrelems)
-    for i := 0; i < nrelems; i++ {
-        r[i] = *return_HivexNode ((*C.struct_guestfs_hivex_node) (unsafe.Pointer (ptr)))
-        ptr += elemsize    }
-    return &r
-}
-
-type HivexValue struct {
-    hivex_value_h int64
-}
-
-func return_HivexValue (c *C.struct_guestfs_hivex_value) *HivexValue {
-    r := HivexValue{}
-    r.hivex_value_h = int64 (c.hivex_value_h)
-    return &r
-}
-
-func return_HivexValue_list (c *C.struct_guestfs_hivex_value_list) *[]HivexValue {
-    nrelems := int (c.len)
-    ptr := uintptr (unsafe.Pointer (c.val))
-    elemsize := unsafe.Sizeof (*c.val)
-    r := make ([]HivexValue, nrelems)
-    for i := 0; i < nrelems; i++ {
-        r[i] = *return_HivexValue ((*C.struct_guestfs_hivex_value) (unsafe.Pointer (ptr)))
         ptr += elemsize    }
     return &r
 }
@@ -1020,6 +1020,9 @@ type OptargsAdd_domain struct {
     /* Discard field is ignored unless Discard_is_set == true */
     Discard_is_set bool
     Discard string
+    /* Copyonread field is ignored unless Copyonread_is_set == true */
+    Copyonread_is_set bool
+    Copyonread bool
 }
 
 /* add_domain : add the disk(s) from a named libvirt domain */
@@ -1069,6 +1072,10 @@ func (g *Guestfs) Add_domain (dom string, optargs *OptargsAdd_domain) (int, *Gue
             c_optargs.discard = C.CString (optargs.Discard)
             defer C.free (unsafe.Pointer (c_optargs.discard))
         }
+        if optargs.Copyonread_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_DOMAIN_COPYONREAD_BITMASK
+            if optargs.Copyonread { c_optargs.copyonread = 1 } else { c_optargs.copyonread = 0}
+        }
     }
 
     r := C.guestfs_add_domain_argv (g.g, c_dom, &c_optargs)
@@ -1114,6 +1121,9 @@ type OptargsAdd_drive struct {
     /* Discard field is ignored unless Discard_is_set == true */
     Discard_is_set bool
     Discard string
+    /* Copyonread field is ignored unless Copyonread_is_set == true */
+    Copyonread_is_set bool
+    Copyonread bool
 }
 
 /* add_drive : add an image to examine or modify */
@@ -1179,6 +1189,10 @@ func (g *Guestfs) Add_drive (filename string, optargs *OptargsAdd_drive) *Guestf
             c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK
             c_optargs.discard = C.CString (optargs.Discard)
             defer C.free (unsafe.Pointer (c_optargs.discard))
+        }
+        if optargs.Copyonread_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK
+            if optargs.Copyonread { c_optargs.copyonread = 1 } else { c_optargs.copyonread = 0}
         }
     }
 
@@ -6663,6 +6677,20 @@ func (g *Guestfs) Journal_get_data_threshold () (int64, *GuestfsError) {
 
     if r == -1 {
         return 0, get_error_from_handle (g, "journal_get_data_threshold")
+    }
+    return int64 (r), nil
+}
+
+/* journal_get_realtime_usec : get the timestamp of the current journal entry */
+func (g *Guestfs) Journal_get_realtime_usec () (int64, *GuestfsError) {
+    if g.g == nil {
+        return 0, closed_handle_error ("journal_get_realtime_usec")
+    }
+
+    r := C.guestfs_journal_get_realtime_usec (g.g)
+
+    if r == -1 {
+        return 0, get_error_from_handle (g, "journal_get_realtime_usec")
     }
     return int64 (r), nil
 }

@@ -755,6 +755,14 @@ guestfs_session_add_domain (GuestfsSession *session, const gchar *dom, GuestfsAd
       argv.bitmask |= GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
       argv.discard = discard;
     }
+    GValue copyonread_v = {0, };
+    g_value_init (&copyonread_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "copyonread", &copyonread_v);
+    GuestfsTristate copyonread = g_value_get_enum (&copyonread_v);
+    if (copyonread != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_ADD_DOMAIN_COPYONREAD_BITMASK;
+      argv.copyonread = copyonread;
+    }
     argvp = &argv;
   }
   int ret = guestfs_add_domain_argv (g, dom, argvp);
@@ -993,6 +1001,14 @@ guestfs_session_add_domain (GuestfsSession *session, const gchar *dom, GuestfsAd
  * discard, this is a good choice if you want to use discard if
  * possible, but don't mind if it doesn't work.
  * 
+ * @copyonread
+ * The boolean parameter @copyonread enables copy-on-read support. This
+ * only affects disk formats which have backing files, and causes reads
+ * to be stored in the overlay layer, speeding up multiple reads of the
+ * same area of disk.
+ * 
+ * The default is false.
+ * 
  * Returns: true on success, false on error
  */
 gboolean
@@ -1091,6 +1107,14 @@ guestfs_session_add_drive (GuestfsSession *session, const gchar *filename, Guest
     if (discard != NULL) {
       argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
       argv.discard = discard;
+    }
+    GValue copyonread_v = {0, };
+    g_value_init (&copyonread_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "copyonread", &copyonread_v);
+    GuestfsTristate copyonread = g_value_get_enum (&copyonread_v);
+    if (copyonread != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK;
+      argv.copyonread = copyonread;
     }
     argvp = &argv;
   }
@@ -12885,6 +12909,37 @@ guestfs_session_journal_get_data_threshold (GuestfsSession *session, GError **er
   }
 
   int64_t ret = guestfs_journal_get_data_threshold (g);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_journal_get_realtime_usec:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * get the timestamp of the current journal entry
+ *
+ * Get the realtime (wallclock) timestamp of the current journal entry.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint64
+guestfs_session_journal_get_realtime_usec (GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "journal_get_realtime_usec");
+    return -1;
+  }
+
+  int64_t ret = guestfs_journal_get_realtime_usec (g);
   if (ret == -1) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return -1;

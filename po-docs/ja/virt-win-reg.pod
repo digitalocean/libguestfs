@@ -350,11 +350,6 @@ L<http://support.microsoft.com/kb/103000>.
 
 パスおよび値の名前は大文字小文字を区別します。
 
-Libvirt guest names can contain arbitrary characters, some of which have
-meaning to the shell such as C<#> and space.  You may need to quote or
-escape these characters on the command line.  See the shell manual page
-L<sh(1)> for details.
-
 =head1 関連項目
 
 L<hivex(3)>, L<hivexsh(1)>, L<hivexregedit(1)>, L<guestfs(3)>,

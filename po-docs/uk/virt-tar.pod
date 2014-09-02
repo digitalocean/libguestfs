@@ -129,13 +129,6 @@ Specify that the input or output tarball is gzip-compressed.
 
 =back
 
-=head1 ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ
-
-Libvirt guest names can contain arbitrary characters, some of which have
-meaning to the shell such as C<#> and space.  You may need to quote or
-escape these characters on the command line.  See the shell manual page
-L<sh(1)> for details.
-
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-cat(1)>, L<virt-edit(1)>,

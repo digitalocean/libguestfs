@@ -599,5 +599,6 @@ extern char *do_part_get_name (const char *device, int partnum);
 extern int do_blkdiscard (const char *device);
 extern int do_blkdiscardzeroes (const char *device);
 extern int do_cpio_out (const char *directory, const char *format);
+extern int64_t do_journal_get_realtime_usec (void);
 
 #endif /* GUESTFSD_ACTIONS_H */

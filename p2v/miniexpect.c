@@ -35,6 +35,13 @@
 
 #include <pcre.h>
 
+/* RHEL 6 pcre did not define PCRE_PARTIAL_SOFT.  However PCRE_PARTIAL
+ * is a synonym so use that.
+ */
+#ifndef PCRE_PARTIAL_SOFT
+#define PCRE_PARTIAL_SOFT PCRE_PARTIAL
+#endif
+
 #include "miniexpect.h"
 
 #define DEBUG 0
@@ -107,6 +114,7 @@ mexp_spawnl (const char *file, const char *arg, ...)
     new_argv = realloc (argv, sizeof (char *) * (i+1));
     if (new_argv == NULL) {
       free (argv);
+      va_end (args);
       return NULL;
     }
     argv = new_argv;
@@ -115,13 +123,14 @@ mexp_spawnl (const char *file, const char *arg, ...)
 
   h = mexp_spawnv (file, argv);
   free (argv);
+  va_end (args);
   return h;
 }
 
 mexp_h *
 mexp_spawnv (const char *file, char **argv)
 {
-  mexp_h *h;
+  mexp_h *h = NULL;
   int fd = -1;
   int err;
   char slave[1024];
@@ -197,6 +206,8 @@ mexp_spawnv (const char *file, char **argv)
     close (fd);
   if (pid > 0)
     waitpid (pid, NULL, 0);
+  if (h != NULL)
+    mexp_close (h);
   errno = err;
   return NULL;
 }

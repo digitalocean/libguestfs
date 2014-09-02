@@ -18,60 +18,134 @@
 
 (** Types. *)
 
-type input =
-| InputLibvirt of string option * string (* -i libvirt: -ic + guest name *)
-| InputLibvirtXML of string         (* -i libvirtxml: XML file name *)
-(** The input arguments as specified on the command line. *)
-
-type output =
-| OutputLibvirt of string option    (* -o libvirt: -oc *)
-| OutputLocal of string             (* -o local: directory *)
-| OutputRHEV of string              (* -o rhev: output storage *)
-(** The output arguments as specified on the command line. *)
-
 type source = {
   s_dom_type : string;                  (** Source domain type, eg "kvm" *)
   s_name : string;                      (** Guest name. *)
+  s_orig_name : string;                 (** Original guest name (if we rename
+                                            the guest using -on, original is
+                                            still saved here). *)
   s_memory : int64;                     (** Memory size (bytes). *)
   s_vcpu : int;                         (** Number of CPUs. *)
   s_arch : string;                      (** Architecture. *)
   s_features : string list;             (** Machine features. *)
+  s_display : source_display option;    (** Guest display. *)
   s_disks : source_disk list;           (** Disk images. *)
+  s_removables : source_removable list; (** CDROMs etc. *)
+  s_nics : source_nic list;             (** NICs. *)
 }
 (** The source: metadata, disk images. *)
 
-and source_disk = string * string option
-(** A source file is a qemu URI and a format. *)
+and source_disk = {
+  s_qemu_uri : string;                  (** QEMU URI of source disk. *)
+  s_format : string option;             (** Format. *)
+  s_target_dev : string option;         (** Target @dev from libvirt XML. *)
+}
+(** A source disk. *)
+
+and source_removable = {
+  s_removable_type : [`CDROM|`Floppy];  (** Type.  *)
+  s_removable_target_dev : string option; (** Target @dev from libvirt XML. *)
+}
+(** Removable media. *)
+
+and source_nic = {
+  s_mac : string option;                (** MAC address. *)
+  s_vnet : string;                      (** Source network name. *)
+  s_vnet_orig : string;                 (** Original network (if we map it). *)
+  s_vnet_type : vnet_type;              (** Source network type. *)
+}
+(** Network interfaces. *)
+and vnet_type = Bridge | Network
+
+and source_display = {
+  s_display_type : [`VNC|`Spice];       (** Display type. *)
+  s_keymap : string option;             (** Guest keymap. *)
+  s_password : string option;           (** If required, password to access
+                                            the display. *)
+}
+
+val string_of_source : source -> string
+val string_of_source_disk : source_disk -> string
 
 type overlay = {
-  ov_overlay : string;       (** Local overlay file (qcow2 format). *)
-  ov_target_file : string;   (** Destination file (real). *)
-  ov_target_file_tmp : string;    (** Destination file (temporary). *)
-  ov_target_format : string; (** Destination format (eg. -of option). *)
+  ov_overlay_file : string;  (** Local overlay file (qcow2 format). *)
   ov_sd : string;            (** sdX libguestfs name of disk. *)
   ov_virtual_size : int64;   (** Virtual disk size in bytes. *)
-  ov_preallocation : string option;     (** ?preallocation option. *)
 
-  (* Note: the next two fields are for information only and must not
-   * be opened/copied/etc.
+  (* Note: The ov_source is for information ONLY (eg. printing
+   * error messages).  It must NOT be opened/read/modified.
    *)
-  ov_source_file : string;   (** qemu URI for source file. *)
-  ov_source_format : string option; (** Source file format, if known. *)
+  ov_source : source_disk;   (** Link back to the source disk. *)
 }
-(** Disk overlays and destination disks. *)
+(** Overlay disk. *)
 
 val string_of_overlay : overlay -> string
 
+type target = {
+  target_file : string;      (** Destination file. *)
+  target_format : string;    (** Destination format (eg. -of option). *)
+
+  target_overlay : overlay;  (** Link back to the overlay disk. *)
+}
+(** Target disk. *)
+
+val string_of_target : target -> string
+
 type inspect = {
   i_root : string;                      (** Root device. *)
-  i_apps : Guestfs.application2 list;   (** Packages installed. *)
+  i_type : string;                      (** Usual inspection fields. *)
+  i_distro : string;
+  i_arch : string;
+  i_major_version : int;
+  i_minor_version : int;
+  i_package_format : string;
+  i_package_management : string;
+  i_product_name : string;
+  i_product_variant : string;
+  i_apps : Guestfs.application2 list;   (** List of packages installed. *)
+  i_apps_map : Guestfs.application2 list StringMap.t;
+    (** This is a map from the app name to the application object.
+        Since RPM allows multiple packages with the same name to be
+        installed, the value is a list. *)
 }
-(** Inspection information.  Only the applications list is stored here
-    as that is the only one which is slow/inconvenient to fetch. *)
+(** Inspection information. *)
 
 type guestcaps = {
-  gcaps_block_bus : string;    (** "virtio", "ide", possibly others *)
-  gcaps_net_bus : string;      (** "virtio", "e1000", possibly others *)
-  (* XXX acpi, display *)
+  gcaps_block_bus : guestcaps_block_type;
+  gcaps_net_bus : guestcaps_net_type;
+  gcaps_video : guestcaps_video_type;
+  (** Best block device, network device and video device guest can
+      access.  These are determined during conversion by inspecting the
+      guest (and in some cases conversion can actually enhance these by
+      installing drivers).  Thus this is not known until after
+      conversion. *)
+
+  gcaps_acpi : bool;           (** True if guest supports acpi. *)
 }
 (** Guest capabilities after conversion.  eg. Was virtio found or installed? *)
+
+and guestcaps_block_type = Virtio_blk | IDE
+and guestcaps_net_type = Virtio_net | E1000 | RTL8139
+and guestcaps_video_type = QXL | Cirrus
+
+class virtual input : bool -> object
+  method virtual as_options : string
+  (** Converts the input object back to the equivalent command line options.
+      This is just used for pretty-printing log messages. *)
+  method virtual source : unit -> source
+  (** Examine the source hypervisor and create a source struct. *)
+end
+(** Encapsulates all [-i], etc input arguments as an object. *)
+
+class virtual output : bool -> object
+  method virtual as_options : string
+  (** Converts the output object back to the equivalent command line options.
+      This is just used for pretty-printing log messages. *)
+  method virtual prepare_targets : source -> target list -> target list
+  (** Called before conversion to prepare the output. *)
+  method virtual create_metadata : source -> target list -> guestcaps -> inspect -> unit
+  (** Called after conversion to finish off and create metadata. *)
+  method keep_serial_console : bool
+  (** Whether this output supports serial consoles (RHEV does not). *)
+end
+(** Encapsulates all [-o], etc output arguments as an object. *)

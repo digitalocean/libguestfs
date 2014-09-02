@@ -29,20 +29,15 @@ let clean_cachedir dir =
   ignore (Sys.command cmd);
 
 type t = {
-  debug : bool;
+  verbose : bool;
   directory : string;
 }
 
-let create ~debug ~directory =
-  (* Annoyingly Sys.is_directory throws an exception on failure
-   * (RHBZ#1022431).
-   *)
-  let is_dir = try Sys.is_directory directory with Sys_error _ -> false in
-  if is_dir = false then (
-    mkdir directory 0o755
-  );
+let create ~verbose ~directory =
+  if not (is_directory directory) then
+    mkdir directory 0o755;
   {
-    debug = debug;
+    verbose = verbose;
     directory = directory;
   }
 

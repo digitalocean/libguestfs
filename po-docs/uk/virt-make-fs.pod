@@ -25,7 +25,7 @@ use L<guestfish(1)>.
 
 Basic usage is:
 
- virt-make-fs input output.img
+ virt-make-fs вхідні_дані вихідний.образ
 
 where C<input> is either a directory containing files that you want to add,
 or a tar archive (either uncompressed tar or gzip-compressed tar); and

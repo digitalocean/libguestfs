@@ -274,6 +274,7 @@ static int run_isoinfo_device (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_close (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_get (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_get_data_threshold (const char *cmd, size_t argc, char *argv[]);
+static int run_journal_get_realtime_usec (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_next (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_open (const char *cmd, size_t argc, char *argv[]);
 static int run_journal_set_data_threshold (const char *cmd, size_t argc, char *argv[]);
@@ -704,13 +705,13 @@ struct command_entry add_cdrom_cmd_entry = {
 
 struct command_entry add_domain_cmd_entry = {
   .name = "add-domain",
-  .help = "NAME\n    add-domain - add the disk(s) from a named libvirt domain\n\nSYNOPSIS\n     add-domain dom [libvirturi:..] [readonly:true|false] [iface:..] [live:true|false] [allowuuid:true|false] [readonlydisk:..] [cachemode:..] [discard:..]\n\nDESCRIPTION\n    This function adds the disk(s) attached to the named libvirt domain\n    \"dom\". It works by connecting to libvirt, requesting the domain and\n    domain XML from libvirt, parsing it for disks, and calling\n    \"add_drive_opts\" on each one.\n\n    The number of disks added is returned. This operation is atomic: if an\n    error is returned, then no disks are added.\n\n    This function does some minimal checks to make sure the libvirt domain\n    is not running (unless \"readonly\" is true). In a future version we will\n    try to acquire the libvirt lock on each disk.\n\n    Disks must be accessible locally. This often means that adding disks\n    from a remote libvirt connection (see <http://libvirt.org/remote.html>)\n    will fail unless those disks are accessible via the same device path\n    locally too.\n\n    The optional \"libvirturi\" parameter sets the libvirt URI (see\n    <http://libvirt.org/uri.html>). If this is not set then we connect to\n    the default libvirt URI (or one set through an environment variable, see\n    the libvirt documentation for full details).\n\n    The optional \"live\" flag controls whether this call will try to connect\n    to a running virtual machine \"guestfsd\" process if it sees a suitable\n    <channel> element in the libvirt XML definition. The default (if the\n    flag is omitted) is never to try. See \"ATTACHING TO RUNNING DAEMONS\" in\n    guestfs(3) for more information.\n\n    If the \"allowuuid\" flag is true (default is false) then a UUID *may* be\n    passed instead of the domain name. The \"dom\" string is treated as a UUID\n    first and looked up, and if that lookup fails then we treat \"dom\" as a\n    name as usual.\n\n    The optional \"readonlydisk\" parameter controls what we do for disks\n    which are marked <readonly/> in the libvirt XML. Possible values are:\n\n    readonlydisk = \"error\"\n        If \"readonly\" is false:\n\n        The whole call is aborted with an error if any disk with the\n        <readonly/> flag is found.\n\n        If \"readonly\" is true:\n\n        Disks with the <readonly/> flag are added read-only.\n\n    readonlydisk = \"read\"\n        If \"readonly\" is false:\n\n        Disks with the <readonly/> flag are added read-only. Other disks are\n        added read/write.\n\n        If \"readonly\" is true:\n\n        Disks with the <readonly/> flag are added read-only.\n\n    readonlydisk = \"write\" (default)\n        If \"readonly\" is false:\n\n        Disks with the <readonly/> flag are added read/write.\n\n        If \"readonly\" is true:\n\n        Disks with the <readonly/> flag are added read-only.\n\n    readonlydisk = \"ignore\"\n        If \"readonly\" is true or false:\n\n        Disks with the <readonly/> flag are skipped.\n\n    The other optional parameters are passed directly through to\n    \"add_drive_opts\".\n\n    You can use 'domain' as an alias for this command.\n\n",
+  .help = "NAME\n    add-domain - add the disk(s) from a named libvirt domain\n\nSYNOPSIS\n     add-domain dom [libvirturi:..] [readonly:true|false] [iface:..] [live:true|false] [allowuuid:true|false] [readonlydisk:..] [cachemode:..] [discard:..] [copyonread:true|false]\n\nDESCRIPTION\n    This function adds the disk(s) attached to the named libvirt domain\n    \"dom\". It works by connecting to libvirt, requesting the domain and\n    domain XML from libvirt, parsing it for disks, and calling\n    \"add_drive_opts\" on each one.\n\n    The number of disks added is returned. This operation is atomic: if an\n    error is returned, then no disks are added.\n\n    This function does some minimal checks to make sure the libvirt domain\n    is not running (unless \"readonly\" is true). In a future version we will\n    try to acquire the libvirt lock on each disk.\n\n    Disks must be accessible locally. This often means that adding disks\n    from a remote libvirt connection (see <http://libvirt.org/remote.html>)\n    will fail unless those disks are accessible via the same device path\n    locally too.\n\n    The optional \"libvirturi\" parameter sets the libvirt URI (see\n    <http://libvirt.org/uri.html>). If this is not set then we connect to\n    the default libvirt URI (or one set through an environment variable, see\n    the libvirt documentation for full details).\n\n    The optional \"live\" flag controls whether this call will try to connect\n    to a running virtual machine \"guestfsd\" process if it sees a suitable\n    <channel> element in the libvirt XML definition. The default (if the\n    flag is omitted) is never to try. See \"ATTACHING TO RUNNING DAEMONS\" in\n    guestfs(3) for more information.\n\n    If the \"allowuuid\" flag is true (default is false) then a UUID *may* be\n    passed instead of the domain name. The \"dom\" string is treated as a UUID\n    first and looked up, and if that lookup fails then we treat \"dom\" as a\n    name as usual.\n\n    The optional \"readonlydisk\" parameter controls what we do for disks\n    which are marked <readonly/> in the libvirt XML. Possible values are:\n\n    readonlydisk = \"error\"\n        If \"readonly\" is false:\n\n        The whole call is aborted with an error if any disk with the\n        <readonly/> flag is found.\n\n        If \"readonly\" is true:\n\n        Disks with the <readonly/> flag are added read-only.\n\n    readonlydisk = \"read\"\n        If \"readonly\" is false:\n\n        Disks with the <readonly/> flag are added read-only. Other disks are\n        added read/write.\n\n        If \"readonly\" is true:\n\n        Disks with the <readonly/> flag are added read-only.\n\n    readonlydisk = \"write\" (default)\n        If \"readonly\" is false:\n\n        Disks with the <readonly/> flag are added read/write.\n\n        If \"readonly\" is true:\n\n        Disks with the <readonly/> flag are added read-only.\n\n    readonlydisk = \"ignore\"\n        If \"readonly\" is true or false:\n\n        Disks with the <readonly/> flag are skipped.\n\n    The other optional parameters are passed directly through to\n    \"add_drive_opts\".\n\n    You can use 'domain' as an alias for this command.\n\n",
   .run = run_add_domain
 };
 
 struct command_entry add_drive_cmd_entry = {
   .name = "add-drive",
-  .help = "NAME\n    add-drive - add an image to examine or modify\n\nSYNOPSIS\n     add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..] [secret:..] [cachemode:..] [discard:..]\n\nDESCRIPTION\n    This function adds a disk image called \"filename\" to the handle.\n    \"filename\" may be a regular host file or a host device.\n\n    When this function is called before \"launch\" (the usual case) then the\n    first time you call this function, the disk appears in the API as\n    \"/dev/sda\", the second time as \"/dev/sdb\", and so on.\n\n    In libguestfs ≥ 1.20 you can also call this function after launch (with\n    some restrictions). This is called \"hotplugging\". When hotplugging, you\n    must specify a \"label\" so that the new disk gets a predictable name. For\n    more information see \"HOTPLUGGING\" in guestfs(3).\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that \"filename\" exists.\n\n    \"filename\" may be the special string \"/dev/null\". See \"NULL DISKS\" in\n    guestfs(3).\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. \"/dev/sdb\". This\n        is used as a hint to the guest inspection process if it is\n        available.\n\n    \"label\"\n        Give the disk a label. The label should be a unique, short string\n        using *only* ASCII characters \"[a-zA-Z]\". As well as its usual name\n        in the API (such as \"/dev/sda\"), the drive will also be named\n        \"/dev/disk/guestfs/*label*\".\n\n        See \"DISK LABELS\" in guestfs(3).\n\n    \"protocol\"\n        The optional protocol argument can be used to select an alternate\n        source protocol.\n\n        See also: \"REMOTE STORAGE\" in guestfs(3).\n\n        \"protocol = \"file\"\"\n            \"filename\" is interpreted as a local file or device. This is the\n            default if the optional protocol parameter is omitted.\n\n        \"protocol = \"ftp\"|\"ftps\"|\"http\"|\"https\"|\"tftp\"\"\n            Connect to a remote FTP, HTTP or TFTP server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"FTP, HTTP AND TFTP\" in guestfs(3)\n\n        \"protocol = \"gluster\"\"\n            Connect to the GlusterFS server. The \"server\" parameter must\n            also be supplied - see below.\n\n            See also: \"GLUSTER\" in guestfs(3)\n\n        \"protocol = \"iscsi\"\"\n            Connect to the iSCSI server. The \"server\" parameter must also be\n            supplied - see below.\n\n            See also: \"ISCSI\" in guestfs(3).\n\n        \"protocol = \"nbd\"\"\n            Connect to the Network Block Device server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"NETWORK BLOCK DEVICE\" in guestfs(3).\n\n        \"protocol = \"rbd\"\"\n            Connect to the Ceph (librbd/RBD) server. The \"server\" parameter\n            must also be supplied - see below. The \"username\" parameter may\n            be supplied. See below. The \"secret\" parameter may be supplied.\n            See below.\n\n            See also: \"CEPH\" in guestfs(3).\n\n        \"protocol = \"sheepdog\"\"\n            Connect to the Sheepdog server. The \"server\" parameter may also\n            be supplied - see below.\n\n            See also: \"SHEEPDOG\" in guestfs(3).\n\n        \"protocol = \"ssh\"\"\n            Connect to the Secure Shell (ssh) server.\n\n            The \"server\" parameter must be supplied. The \"username\"\n            parameter may be supplied. See below.\n\n            See also: \"SSH\" in guestfs(3).\n\n    \"server\"\n        For protocols which require access to a remote server, this is a\n        list of server(s).\n\n         Protocol       Number of servers required\n         --------       --------------------------\n         file           List must be empty or param not used at all\n         ftp|ftps|http|https|tftp  Exactly one\n         gluster        Exactly one\n         iscsi          Exactly one\n         nbd            Exactly one\n         rbd            Zero or more\n         sheepdog       Zero or more\n         ssh            Exactly one\n\n        Each list element is a string specifying a server. The string must\n        be in one of the following formats:\n\n         hostname\n         hostname:port\n         tcp:hostname\n         tcp:hostname:port\n         unix:/path/to/socket\n\n        If the port number is omitted, then the standard port number for the\n        protocol is used (see \"/etc/services\").\n\n    \"username\"\n        For the \"ftp\", \"ftps\", \"http\", \"https\", \"iscsi\", \"rbd\", \"ssh\" and\n        \"tftp\" protocols, this specifies the remote username.\n\n        If not given, then the local username is used for \"ssh\", and no\n        authentication is attempted for ceph. But note this sometimes may\n        give unexpected results, for example if using the libvirt backend\n        and if the libvirt backend is configured to start the qemu appliance\n        as a special user such as \"qemu.qemu\". If in doubt, specify the\n        remote username you want.\n\n    \"secret\"\n        For the \"rbd\" protocol only, this specifies the 'secret' to use when\n        connecting to the remote device.\n\n        If not given, then a secret matching the given username will be\n        looked up in the default keychain locations, or if no username is\n        given, then no authentication will be used.\n\n    \"cachemode\"\n        Choose whether or not libguestfs will obey sync operations (safe but\n        slow) or not (unsafe but fast). The possible values for this string\n        are:\n\n        \"cachemode = \"writeback\"\"\n            This is the default.\n\n            Write operations in the API do not return until a write(2) call\n            has completed in the host [but note this does not imply that\n            anything gets written to disk].\n\n            Sync operations in the API, including implicit syncs caused by\n            filesystem journalling, will not return until an fdatasync(2)\n            call has completed in the host, indicating that data has been\n            committed to disk.\n\n        \"cachemode = \"unsafe\"\"\n            In this mode, there are no guarantees. Libguestfs may cache\n            anything and ignore sync requests. This is suitable only for\n            scratch or temporary disks.\n\n    \"discard\"\n        Enable or disable discard (a.k.a. trim or unmap) support on this\n        drive. If enabled, operations such as \"fstrim\" will be able to\n        discard / make thin / punch holes in the underlying host file or\n        device.\n\n        Possible discard settings are:\n\n        \"discard = \"disable\"\"\n            Disable discard support. This is the default.\n\n        \"discard = \"enable\"\"\n            Enable discard support. Fail if discard is not possible.\n\n        \"discard = \"besteffort\"\"\n            Enable discard support if possible, but don't fail if it is not\n            supported.\n\n            Since not all backends and not all underlying systems support\n            discard, this is a good choice if you want to use discard if\n            possible, but don't mind if it doesn't work.\n\n    You can use 'add' or 'add-drive-opts' as an alias for this command.\n\n",
+  .help = "NAME\n    add-drive - add an image to examine or modify\n\nSYNOPSIS\n     add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..] [secret:..] [cachemode:..] [discard:..] [copyonread:true|false]\n\nDESCRIPTION\n    This function adds a disk image called \"filename\" to the handle.\n    \"filename\" may be a regular host file or a host device.\n\n    When this function is called before \"launch\" (the usual case) then the\n    first time you call this function, the disk appears in the API as\n    \"/dev/sda\", the second time as \"/dev/sdb\", and so on.\n\n    In libguestfs ≥ 1.20 you can also call this function after launch (with\n    some restrictions). This is called \"hotplugging\". When hotplugging, you\n    must specify a \"label\" so that the new disk gets a predictable name. For\n    more information see \"HOTPLUGGING\" in guestfs(3).\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that \"filename\" exists.\n\n    \"filename\" may be the special string \"/dev/null\". See \"NULL DISKS\" in\n    guestfs(3).\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. \"/dev/sdb\". This\n        is used as a hint to the guest inspection process if it is\n        available.\n\n    \"label\"\n        Give the disk a label. The label should be a unique, short string\n        using *only* ASCII characters \"[a-zA-Z]\". As well as its usual name\n        in the API (such as \"/dev/sda\"), the drive will also be named\n        \"/dev/disk/guestfs/*label*\".\n\n        See \"DISK LABELS\" in guestfs(3).\n\n    \"protocol\"\n        The optional protocol argument can be used to select an alternate\n        source protocol.\n\n        See also: \"REMOTE STORAGE\" in guestfs(3).\n\n        \"protocol = \"file\"\"\n            \"filename\" is interpreted as a local file or device. This is the\n            default if the optional protocol parameter is omitted.\n\n        \"protocol = \"ftp\"|\"ftps\"|\"http\"|\"https\"|\"tftp\"\"\n            Connect to a remote FTP, HTTP or TFTP server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"FTP, HTTP AND TFTP\" in guestfs(3)\n\n        \"protocol = \"gluster\"\"\n            Connect to the GlusterFS server. The \"server\" parameter must\n            also be supplied - see below.\n\n            See also: \"GLUSTER\" in guestfs(3)\n\n        \"protocol = \"iscsi\"\"\n            Connect to the iSCSI server. The \"server\" parameter must also be\n            supplied - see below.\n\n            See also: \"ISCSI\" in guestfs(3).\n\n        \"protocol = \"nbd\"\"\n            Connect to the Network Block Device server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"NETWORK BLOCK DEVICE\" in guestfs(3).\n\n        \"protocol = \"rbd\"\"\n            Connect to the Ceph (librbd/RBD) server. The \"server\" parameter\n            must also be supplied - see below. The \"username\" parameter may\n            be supplied. See below. The \"secret\" parameter may be supplied.\n            See below.\n\n            See also: \"CEPH\" in guestfs(3).\n\n        \"protocol = \"sheepdog\"\"\n            Connect to the Sheepdog server. The \"server\" parameter may also\n            be supplied - see below.\n\n            See also: \"SHEEPDOG\" in guestfs(3).\n\n        \"protocol = \"ssh\"\"\n            Connect to the Secure Shell (ssh) server.\n\n            The \"server\" parameter must be supplied. The \"username\"\n            parameter may be supplied. See below.\n\n            See also: \"SSH\" in guestfs(3).\n\n    \"server\"\n        For protocols which require access to a remote server, this is a\n        list of server(s).\n\n         Protocol       Number of servers required\n         --------       --------------------------\n         file           List must be empty or param not used at all\n         ftp|ftps|http|https|tftp  Exactly one\n         gluster        Exactly one\n         iscsi          Exactly one\n         nbd            Exactly one\n         rbd            Zero or more\n         sheepdog       Zero or more\n         ssh            Exactly one\n\n        Each list element is a string specifying a server. The string must\n        be in one of the following formats:\n\n         hostname\n         hostname:port\n         tcp:hostname\n         tcp:hostname:port\n         unix:/path/to/socket\n\n        If the port number is omitted, then the standard port number for the\n        protocol is used (see \"/etc/services\").\n\n    \"username\"\n        For the \"ftp\", \"ftps\", \"http\", \"https\", \"iscsi\", \"rbd\", \"ssh\" and\n        \"tftp\" protocols, this specifies the remote username.\n\n        If not given, then the local username is used for \"ssh\", and no\n        authentication is attempted for ceph. But note this sometimes may\n        give unexpected results, for example if using the libvirt backend\n        and if the libvirt backend is configured to start the qemu appliance\n        as a special user such as \"qemu.qemu\". If in doubt, specify the\n        remote username you want.\n\n    \"secret\"\n        For the \"rbd\" protocol only, this specifies the 'secret' to use when\n        connecting to the remote device.\n\n        If not given, then a secret matching the given username will be\n        looked up in the default keychain locations, or if no username is\n        given, then no authentication will be used.\n\n    \"cachemode\"\n        Choose whether or not libguestfs will obey sync operations (safe but\n        slow) or not (unsafe but fast). The possible values for this string\n        are:\n\n        \"cachemode = \"writeback\"\"\n            This is the default.\n\n            Write operations in the API do not return until a write(2) call\n            has completed in the host [but note this does not imply that\n            anything gets written to disk].\n\n            Sync operations in the API, including implicit syncs caused by\n            filesystem journalling, will not return until an fdatasync(2)\n            call has completed in the host, indicating that data has been\n            committed to disk.\n\n        \"cachemode = \"unsafe\"\"\n            In this mode, there are no guarantees. Libguestfs may cache\n            anything and ignore sync requests. This is suitable only for\n            scratch or temporary disks.\n\n    \"discard\"\n        Enable or disable discard (a.k.a. trim or unmap) support on this\n        drive. If enabled, operations such as \"fstrim\" will be able to\n        discard / make thin / punch holes in the underlying host file or\n        device.\n\n        Possible discard settings are:\n\n        \"discard = \"disable\"\"\n            Disable discard support. This is the default.\n\n        \"discard = \"enable\"\"\n            Enable discard support. Fail if discard is not possible.\n\n        \"discard = \"besteffort\"\"\n            Enable discard support if possible, but don't fail if it is not\n            supported.\n\n            Since not all backends and not all underlying systems support\n            discard, this is a good choice if you want to use discard if\n            possible, but don't mind if it doesn't work.\n\n    \"copyonread\"\n        The boolean parameter \"copyonread\" enables copy-on-read support.\n        This only affects disk formats which have backing files, and causes\n        reads to be stored in the overlay layer, speeding up multiple reads\n        of the same area of disk.\n\n        The default is false.\n\n    You can use 'add' or 'add-drive-opts' as an alias for this command.\n\n",
   .run = run_add_drive
 };
 
@@ -2056,6 +2057,12 @@ struct command_entry journal_get_data_threshold_cmd_entry = {
   .name = "journal-get-data-threshold",
   .help = "NAME\n    journal-get-data-threshold - get the data threshold for reading journal\n    entries\n\nSYNOPSIS\n     journal-get-data-threshold\n\nDESCRIPTION\n    Get the current data threshold for reading journal entries. This is a\n    hint to the journal that it may truncate data fields to this size when\n    reading them (note also that it may not truncate them). If this returns\n    0, then the threshold is unlimited.\n\n    See also \"journal_set_data_threshold\".\n\n",
   .run = run_journal_get_data_threshold
+};
+
+struct command_entry journal_get_realtime_usec_cmd_entry = {
+  .name = "journal-get-realtime-usec",
+  .help = "NAME\n    journal-get-realtime-usec - get the timestamp of the current journal\n    entry\n\nSYNOPSIS\n     journal-get-realtime-usec\n\nDESCRIPTION\n    Get the realtime (wallclock) timestamp of the current journal entry.\n\n",
+  .run = run_journal_get_realtime_usec
 };
 
 struct command_entry journal_next_cmd_entry = {
@@ -3764,6 +3771,12 @@ list_commands (void)
   printf ("%-20s %s\n", "acl-delete-def-file", _("delete the default POSIX ACL of a directory"));
   printf ("%-20s %s\n", "acl-get-file", _("get the POSIX ACL attached to a file"));
   printf ("%-20s %s\n", "acl-set-file", _("set the POSIX ACL attached to a file"));
+  printf ("%-20s ", "add");
+  printf (_("alias for '%s'"), "add-drive");
+  putchar ('\n');
+  printf ("%-20s ", "add-ro");
+  printf (_("alias for '%s'"), "add-drive-ro");
+  putchar ('\n');
   printf ("%-20s %s\n", "add-cdrom", _("add a CD-ROM disk image to examine"));
   printf ("%-20s %s\n", "add-domain", _("add the disk(s) from a named libvirt domain"));
   printf ("%-20s %s\n", "add-drive", _("add an image to examine or modify"));
@@ -3772,6 +3785,15 @@ list_commands (void)
   printf ("%-20s %s\n", "add-drive-scratch", _("add a temporary scratch drive"));
   printf ("%-20s %s\n", "add-drive-with-if", _("add a drive specifying the QEMU block emulation to use"));
   printf ("%-20s %s\n", "alloc", _("allocate and add a disk file"));
+  printf ("%-20s ", "allocate");
+  printf (_("alias for '%s'"), "alloc");
+  putchar ('\n');
+  printf ("%-20s ", "append");
+  printf (_("alias for '%s'"), "set-append");
+  putchar ('\n');
+  printf ("%-20s ", "attach-method");
+  printf (_("alias for '%s'"), "set-attach-method");
+  putchar ('\n');
   printf ("%-20s %s\n", "aug-clear", _("clear Augeas path"));
   printf ("%-20s %s\n", "aug-close", _("close the current Augeas handle"));
   printf ("%-20s %s\n", "aug-defnode", _("define an Augeas node"));
@@ -3788,8 +3810,14 @@ list_commands (void)
   printf ("%-20s %s\n", "aug-save", _("write all pending Augeas changes to disk"));
   printf ("%-20s %s\n", "aug-set", _("set Augeas path to value"));
   printf ("%-20s %s\n", "aug-setm", _("set multiple Augeas nodes"));
+  printf ("%-20s ", "autosync");
+  printf (_("alias for '%s'"), "set-autosync");
+  putchar ('\n');
   printf ("%-20s %s\n", "available", _("test availability of some parts of the API"));
   printf ("%-20s %s\n", "available-all-groups", _("return a list of all optional groups"));
+  printf ("%-20s ", "backend");
+  printf (_("alias for '%s'"), "set-backend");
+  putchar ('\n');
   printf ("%-20s %s\n", "base64-in", _("upload base64-encoded data to file"));
   printf ("%-20s %s\n", "base64-out", _("download file and encode as base64"));
   printf ("%-20s %s\n", "blkdiscard", _("discard all blocks on a device"));
@@ -3817,6 +3845,9 @@ list_commands (void)
   printf ("%-20s %s\n", "btrfs-subvolume-list", _("list btrfs snapshots and subvolumes"));
   printf ("%-20s %s\n", "btrfs-subvolume-set-default", _("set default btrfs subvolume"));
   printf ("%-20s %s\n", "btrfs-subvolume-snapshot", _("create a writable btrfs snapshot"));
+  printf ("%-20s ", "cachedir");
+  printf (_("alias for '%s'"), "set-cachedir");
+  putchar ('\n');
   printf ("%-20s %s\n", "canonical-device-name", _("return canonical device name"));
   printf ("%-20s %s\n", "cap-get-file", _("get the Linux capabilities attached to a file"));
   printf ("%-20s %s\n", "cap-set-file", _("set the Linux capabilities attached to a file"));
@@ -3853,12 +3884,18 @@ list_commands (void)
   printf ("%-20s %s\n", "device-index", _("convert device to index"));
   printf ("%-20s %s\n", "df", _("report file system disk space usage"));
   printf ("%-20s %s\n", "df-h", _("report file system disk space usage (human readable)"));
+  printf ("%-20s ", "direct");
+  printf (_("alias for '%s'"), "set-direct");
+  putchar ('\n');
   printf ("%-20s %s\n", "disk-create", _("create a blank disk image"));
   printf ("%-20s %s\n", "disk-format", _("detect the disk format of a disk image"));
   printf ("%-20s %s\n", "disk-has-backing-file", _("return whether disk has a backing file"));
   printf ("%-20s %s\n", "disk-virtual-size", _("return virtual size of a disk"));
   printf ("%-20s %s\n", "display", _("display an image"));
   printf ("%-20s %s\n", "dmesg", _("return kernel messages"));
+  printf ("%-20s ", "domain");
+  printf (_("alias for '%s'"), "add-domain");
+  putchar ('\n');
   printf ("%-20s %s\n", "download", _("download a file to the local machine"));
   printf ("%-20s %s\n", "download-offset", _("download a file to the local machine with offset and size"));
   printf ("%-20s %s\n", "drop-caches", _("drop kernel page cache, dentries and inodes"));
@@ -3870,6 +3907,9 @@ list_commands (void)
   printf ("%-20s %s\n", "edit", _("edit a file"));
   printf ("%-20s %s\n", "egrep", _("return lines matching a pattern"));
   printf ("%-20s %s\n", "egrepi", _("return lines matching a pattern"));
+  printf ("%-20s ", "emacs");
+  printf (_("alias for '%s'"), "edit");
+  putchar ('\n');
   printf ("%-20s %s\n", "equal", _("test if two files have equal contents"));
   printf ("%-20s %s\n", "event", _("register a handler for an event or events"));
   printf ("%-20s %s\n", "exists", _("test if file or directory exists"));
@@ -3952,6 +3992,9 @@ list_commands (void)
   printf ("%-20s %s\n", "hivex-value-type", _("return the data type from the (key, datatype, data) tuple"));
   printf ("%-20s %s\n", "hivex-value-utf8", _("return the data field from the (key, datatype, data) tuple"));
   printf ("%-20s %s\n", "hivex-value-value", _("return the data field from the (key, datatype, data) tuple"));
+  printf ("%-20s ", "hv");
+  printf (_("alias for '%s'"), "set-hv");
+  putchar ('\n');
   printf ("%-20s %s\n", "initrd-cat", _("list the contents of a single file in an initrd"));
   printf ("%-20s %s\n", "initrd-list", _("list files in an initrd"));
   printf ("%-20s %s\n", "inotify-add-watch", _("add an inotify watch"));
@@ -4001,6 +4044,7 @@ list_commands (void)
   printf ("%-20s %s\n", "journal-close", _("close the systemd journal"));
   printf ("%-20s %s\n", "journal-get", _("read the current journal entry"));
   printf ("%-20s %s\n", "journal-get-data-threshold", _("get the data threshold for reading journal entries"));
+  printf ("%-20s %s\n", "journal-get-realtime-usec", _("get the timestamp of the current journal entry"));
   printf ("%-20s %s\n", "journal-next", _("move to the next journal entry"));
   printf ("%-20s %s\n", "journal-open", _("open the systemd journal"));
   printf ("%-20s %s\n", "journal-set-data-threshold", _("set the data threshold for reading journal entries"));
@@ -4019,6 +4063,9 @@ list_commands (void)
   printf ("%-20s %s\n", "ldmtool-volume-hint", _("return the hint field of a Windows dynamic disk volume"));
   printf ("%-20s %s\n", "ldmtool-volume-partitions", _("return the partitions in a Windows dynamic disk volume"));
   printf ("%-20s %s\n", "ldmtool-volume-type", _("return the type of a Windows dynamic disk volume"));
+  printf ("%-20s ", "less");
+  printf (_("alias for '%s'"), "more");
+  putchar ('\n');
   printf ("%-20s %s\n", "lgetxattr", _("get a single extended attribute"));
   printf ("%-20s %s\n", "lgetxattrs", _("list extended attributes of a file or directory"));
   printf ("%-20s %s\n", "list-9p", _("list 9p filesystems"));
@@ -4065,11 +4112,17 @@ list_commands (void)
   printf ("%-20s %s\n", "lvuuid", _("get the UUID of a logical volume"));
   printf ("%-20s %s\n", "lxattrlist", _("lgetxattr on multiple files"));
   printf ("%-20s %s\n", "man", _("open the manual"));
+  printf ("%-20s ", "manual");
+  printf (_("alias for '%s'"), "man");
+  putchar ('\n');
   printf ("%-20s %s\n", "max-disks", _("maximum number of disks that may be added"));
   printf ("%-20s %s\n", "md-create", _("create a Linux md (RAID) device"));
   printf ("%-20s %s\n", "md-detail", _("obtain metadata for an MD device"));
   printf ("%-20s %s\n", "md-stat", _("get underlying devices from an MD device"));
   printf ("%-20s %s\n", "md-stop", _("stop a Linux md (RAID) device"));
+  printf ("%-20s ", "memsize");
+  printf (_("alias for '%s'"), "set-memsize");
+  putchar ('\n');
   printf ("%-20s %s\n", "mkdir", _("create a directory"));
   printf ("%-20s %s\n", "mkdir-mode", _("create a directory with a particular mode"));
   printf ("%-20s %s\n", "mkdir-p", _("create a directory and parents"));
@@ -4108,6 +4161,9 @@ list_commands (void)
   printf ("%-20s %s\n", "mountpoints", _("show mountpoints"));
   printf ("%-20s %s\n", "mounts", _("show mounted filesystems"));
   printf ("%-20s %s\n", "mv", _("move a file"));
+  printf ("%-20s ", "network");
+  printf (_("alias for '%s'"), "set-network");
+  putchar ('\n');
   printf ("%-20s %s\n", "nr-devices", _("return number of whole block devices (disks) added"));
   printf ("%-20s %s\n", "ntfs-3g-probe", _("probe NTFS volume"));
   printf ("%-20s %s\n", "ntfsclone-in", _("restore NTFS from backup file"));
@@ -4133,9 +4189,21 @@ list_commands (void)
   printf ("%-20s %s\n", "part-set-name", _("set partition name"));
   printf ("%-20s %s\n", "part-to-dev", _("convert partition name to device name"));
   printf ("%-20s %s\n", "part-to-partnum", _("convert partition name to partition number"));
+  printf ("%-20s ", "path");
+  printf (_("alias for '%s'"), "set-path");
+  putchar ('\n');
+  printf ("%-20s ", "pgroup");
+  printf (_("alias for '%s'"), "set-pgroup");
+  putchar ('\n');
+  printf ("%-20s ", "pid");
+  printf (_("alias for '%s'"), "get-pid");
+  putchar ('\n');
   printf ("%-20s %s\n", "ping-daemon", _("ping the guest daemon"));
   printf ("%-20s %s\n", "pread", _("read part of a file"));
   printf ("%-20s %s\n", "pread-device", _("read part of a device"));
+  printf ("%-20s ", "program");
+  printf (_("alias for '%s'"), "set-program");
+  putchar ('\n');
   printf ("%-20s %s\n", "pvchange-uuid", _("generate a new random UUID for a physical volume"));
   printf ("%-20s %s\n", "pvchange-uuid-all", _("generate new random UUIDs for all physical volumes"));
   printf ("%-20s %s\n", "pvcreate", _("create an LVM physical volume"));
@@ -4147,12 +4215,18 @@ list_commands (void)
   printf ("%-20s %s\n", "pvuuid", _("get the UUID of a physical volume"));
   printf ("%-20s %s\n", "pwrite", _("write to part of a file"));
   printf ("%-20s %s\n", "pwrite-device", _("write to part of a device"));
+  printf ("%-20s ", "qemu");
+  printf (_("alias for '%s'"), "set-qemu");
+  putchar ('\n');
   printf ("%-20s %s\n", "read-file", _("read a file"));
   printf ("%-20s %s\n", "read-lines", _("read file as lines"));
   printf ("%-20s %s\n", "readdir", _("read directories entries"));
   printf ("%-20s %s\n", "readlink", _("read the target of a symbolic link"));
   printf ("%-20s %s\n", "readlinklist", _("readlink on multiple files"));
   printf ("%-20s %s\n", "realpath", _("canonicalized absolute pathname"));
+  printf ("%-20s ", "recovery-proc");
+  printf (_("alias for '%s'"), "set-recovery-proc");
+  putchar ('\n');
   printf ("%-20s %s\n", "remount", _("remount a filesystem with different options"));
   printf ("%-20s %s\n", "remove-drive", _("remove a disk image"));
   printf ("%-20s %s\n", "removexattr", _("remove extended attribute of a file or directory"));
@@ -4169,9 +4243,18 @@ list_commands (void)
   printf ("%-20s %s\n", "rsync", _("synchronize the contents of two directories"));
   printf ("%-20s %s\n", "rsync-in", _("synchronize host or remote filesystem with filesystem"));
   printf ("%-20s %s\n", "rsync-out", _("synchronize filesystem with host or remote filesystem"));
+  printf ("%-20s ", "run");
+  printf (_("alias for '%s'"), "launch");
+  putchar ('\n');
+  printf ("%-20s ", "scratch");
+  printf (_("alias for '%s'"), "add-drive-scratch");
+  putchar ('\n');
   printf ("%-20s %s\n", "scrub-device", _("scrub (securely wipe) a device"));
   printf ("%-20s %s\n", "scrub-file", _("scrub (securely wipe) a file"));
   printf ("%-20s %s\n", "scrub-freespace", _("scrub (securely wipe) free space"));
+  printf ("%-20s ", "selinux");
+  printf (_("alias for '%s'"), "set-selinux");
+  putchar ('\n');
   printf ("%-20s %s\n", "set-append", _("add options to kernel command line"));
   printf ("%-20s %s\n", "set-attach-method", _("set the backend"));
   printf ("%-20s %s\n", "set-autosync", _("set autosync mode"));
@@ -4214,6 +4297,9 @@ list_commands (void)
   printf ("%-20s %s\n", "sh-lines", _("run a command via the shell returning lines"));
   printf ("%-20s %s\n", "shutdown", _("shutdown the hypervisor"));
   printf ("%-20s %s\n", "sleep", _("sleep for some seconds"));
+  printf ("%-20s ", "smp");
+  printf (_("alias for '%s'"), "set-smp");
+  putchar ('\n');
   printf ("%-20s %s\n", "sparse", _("create a sparse disk image and add"));
   printf ("%-20s %s\n", "stat", _("get file information"));
   printf ("%-20s %s\n", "statvfs", _("get file system statistics"));
@@ -4237,7 +4323,13 @@ list_commands (void)
   printf ("%-20s %s\n", "tgz-in", _("unpack compressed tarball to directory"));
   printf ("%-20s %s\n", "tgz-out", _("pack directory into compressed tarball"));
   printf ("%-20s %s\n", "time", _("print elapsed time taken to run a command"));
+  printf ("%-20s ", "tmpdir");
+  printf (_("alias for '%s'"), "set-tmpdir");
+  putchar ('\n');
   printf ("%-20s %s\n", "touch", _("update file timestamps or create a new file"));
+  printf ("%-20s ", "trace");
+  printf (_("alias for '%s'"), "set-trace");
+  putchar ('\n');
   printf ("%-20s %s\n", "truncate", _("truncate a file to zero size"));
   printf ("%-20s %s\n", "truncate-size", _("truncate a file to a particular size"));
   printf ("%-20s %s\n", "tune2fs", _("adjust ext2/ext3/ext4 filesystem parameters"));
@@ -4248,12 +4340,21 @@ list_commands (void)
   printf ("%-20s %s\n", "umount", _("unmount a filesystem"));
   printf ("%-20s %s\n", "umount-all", _("unmount all filesystems"));
   printf ("%-20s %s\n", "umount-local", _("unmount a locally mounted filesystem"));
+  printf ("%-20s ", "unmount");
+  printf (_("alias for '%s'"), "umount");
+  putchar ('\n');
+  printf ("%-20s ", "unmount-all");
+  printf (_("alias for '%s'"), "umount-all");
+  putchar ('\n');
   printf ("%-20s %s\n", "unsetenv", _("unset an environment variable"));
   printf ("%-20s %s\n", "upload", _("upload a file from the local machine"));
   printf ("%-20s %s\n", "upload-offset", _("upload a file from the local machine with offset"));
   printf ("%-20s %s\n", "user-cancel", _("cancel the current upload or download operation"));
   printf ("%-20s %s\n", "utimens", _("set timestamp of a file with nanosecond precision"));
   printf ("%-20s %s\n", "utsname", _("appliance kernel version"));
+  printf ("%-20s ", "verbose");
+  printf (_("alias for '%s'"), "set-verbose");
+  putchar ('\n');
   printf ("%-20s %s\n", "version", _("get the library version number"));
   printf ("%-20s %s\n", "vfs-label", _("get the filesystem label"));
   printf ("%-20s %s\n", "vfs-type", _("get the Linux VFS type corresponding to a mounted device"));
@@ -4272,6 +4373,9 @@ list_commands (void)
   printf ("%-20s %s\n", "vgs-full", _("list the LVM volume groups (VGs)"));
   printf ("%-20s %s\n", "vgscan", _("rescan for LVM physical volumes, volume groups and logical volumes"));
   printf ("%-20s %s\n", "vguuid", _("get the UUID of a volume group"));
+  printf ("%-20s ", "vi");
+  printf (_("alias for '%s'"), "edit");
+  putchar ('\n');
   printf ("%-20s %s\n", "wc-c", _("count characters in a file"));
   printf ("%-20s %s\n", "wc-l", _("count lines in a file"));
   printf ("%-20s %s\n", "wc-w", _("count words in a file"));
@@ -4312,10 +4416,140 @@ display_command (const char *cmd)
 }
 
 static void
+print_application_indent (struct guestfs_application *application, const char *indent)
+{
+  printf ("%sapp_name: %s\n", indent, application->app_name);
+  printf ("%sapp_display_name: %s\n", indent, application->app_display_name);
+  printf ("%sapp_epoch: %" PRIi32 "\n", indent, application->app_epoch);
+  printf ("%sapp_version: %s\n", indent, application->app_version);
+  printf ("%sapp_release: %s\n", indent, application->app_release);
+  printf ("%sapp_install_path: %s\n", indent, application->app_install_path);
+  printf ("%sapp_trans_path: %s\n", indent, application->app_trans_path);
+  printf ("%sapp_publisher: %s\n", indent, application->app_publisher);
+  printf ("%sapp_url: %s\n", indent, application->app_url);
+  printf ("%sapp_source_package: %s\n", indent, application->app_source_package);
+  printf ("%sapp_summary: %s\n", indent, application->app_summary);
+  printf ("%sapp_description: %s\n", indent, application->app_description);
+}
+
+static void
+print_application2_indent (struct guestfs_application2 *application2, const char *indent)
+{
+  printf ("%sapp2_name: %s\n", indent, application2->app2_name);
+  printf ("%sapp2_display_name: %s\n", indent, application2->app2_display_name);
+  printf ("%sapp2_epoch: %" PRIi32 "\n", indent, application2->app2_epoch);
+  printf ("%sapp2_version: %s\n", indent, application2->app2_version);
+  printf ("%sapp2_release: %s\n", indent, application2->app2_release);
+  printf ("%sapp2_arch: %s\n", indent, application2->app2_arch);
+  printf ("%sapp2_install_path: %s\n", indent, application2->app2_install_path);
+  printf ("%sapp2_trans_path: %s\n", indent, application2->app2_trans_path);
+  printf ("%sapp2_publisher: %s\n", indent, application2->app2_publisher);
+  printf ("%sapp2_url: %s\n", indent, application2->app2_url);
+  printf ("%sapp2_source_package: %s\n", indent, application2->app2_source_package);
+  printf ("%sapp2_summary: %s\n", indent, application2->app2_summary);
+  printf ("%sapp2_description: %s\n", indent, application2->app2_description);
+  printf ("%sapp2_spare1: %s\n", indent, application2->app2_spare1);
+  printf ("%sapp2_spare2: %s\n", indent, application2->app2_spare2);
+  printf ("%sapp2_spare3: %s\n", indent, application2->app2_spare3);
+  printf ("%sapp2_spare4: %s\n", indent, application2->app2_spare4);
+}
+
+static void
+print_btrfssubvolume_indent (struct guestfs_btrfssubvolume *btrfssubvolume, const char *indent)
+{
+  printf ("%sbtrfssubvolume_id: %" PRIu64 "\n", indent, btrfssubvolume->btrfssubvolume_id);
+  printf ("%sbtrfssubvolume_top_level_id: %" PRIu64 "\n", indent, btrfssubvolume->btrfssubvolume_top_level_id);
+  printf ("%sbtrfssubvolume_path: %s\n", indent, btrfssubvolume->btrfssubvolume_path);
+}
+
+static void
+print_dirent_indent (struct guestfs_dirent *dirent, const char *indent)
+{
+  printf ("%sino: %" PRIi64 "\n", indent, dirent->ino);
+  printf ("%sftyp: %c\n", indent, dirent->ftyp);
+  printf ("%sname: %s\n", indent, dirent->name);
+}
+
+static void
+print_hivex_node_indent (struct guestfs_hivex_node *hivex_node, const char *indent)
+{
+  printf ("%shivex_node_h: %" PRIi64 "\n", indent, hivex_node->hivex_node_h);
+}
+
+static void
+print_hivex_value_indent (struct guestfs_hivex_value *hivex_value, const char *indent)
+{
+  printf ("%shivex_value_h: %" PRIi64 "\n", indent, hivex_value->hivex_value_h);
+}
+
+static void
+print_inotify_event_indent (struct guestfs_inotify_event *inotify_event, const char *indent)
+{
+  printf ("%sin_wd: %" PRIi64 "\n", indent, inotify_event->in_wd);
+  printf ("%sin_mask: %" PRIu32 "\n", indent, inotify_event->in_mask);
+  printf ("%sin_cookie: %" PRIu32 "\n", indent, inotify_event->in_cookie);
+  printf ("%sin_name: %s\n", indent, inotify_event->in_name);
+}
+
+static void
 print_int_bool_indent (struct guestfs_int_bool *int_bool, const char *indent)
 {
   printf ("%si: %" PRIi32 "\n", indent, int_bool->i);
   printf ("%sb: %" PRIi32 "\n", indent, int_bool->b);
+}
+
+static void
+print_isoinfo_indent (struct guestfs_isoinfo *isoinfo, const char *indent)
+{
+  printf ("%siso_system_id: %s\n", indent, isoinfo->iso_system_id);
+  printf ("%siso_volume_id: %s\n", indent, isoinfo->iso_volume_id);
+  printf ("%siso_volume_space_size: %" PRIu32 "\n", indent, isoinfo->iso_volume_space_size);
+  printf ("%siso_volume_set_size: %" PRIu32 "\n", indent, isoinfo->iso_volume_set_size);
+  printf ("%siso_volume_sequence_number: %" PRIu32 "\n", indent, isoinfo->iso_volume_sequence_number);
+  printf ("%siso_logical_block_size: %" PRIu32 "\n", indent, isoinfo->iso_logical_block_size);
+  printf ("%siso_volume_set_id: %s\n", indent, isoinfo->iso_volume_set_id);
+  printf ("%siso_publisher_id: %s\n", indent, isoinfo->iso_publisher_id);
+  printf ("%siso_data_preparer_id: %s\n", indent, isoinfo->iso_data_preparer_id);
+  printf ("%siso_application_id: %s\n", indent, isoinfo->iso_application_id);
+  printf ("%siso_copyright_file_id: %s\n", indent, isoinfo->iso_copyright_file_id);
+  printf ("%siso_abstract_file_id: %s\n", indent, isoinfo->iso_abstract_file_id);
+  printf ("%siso_bibliographic_file_id: %s\n", indent, isoinfo->iso_bibliographic_file_id);
+  printf ("%siso_volume_creation_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_creation_t);
+  printf ("%siso_volume_modification_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_modification_t);
+  printf ("%siso_volume_expiration_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_expiration_t);
+  printf ("%siso_volume_effective_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_effective_t);
+}
+
+static void
+print_lvm_lv_indent (struct guestfs_lvm_lv *lvm_lv, const char *indent)
+{
+  unsigned int i;
+
+  printf ("%slv_name: %s\n", indent, lvm_lv->lv_name);
+  printf ("%slv_uuid: ", indent);
+  for (i = 0; i < 32; ++i)
+    printf ("%c", lvm_lv->lv_uuid[i]);
+  printf ("\n");
+  printf ("%slv_attr: %s\n", indent, lvm_lv->lv_attr);
+  printf ("%slv_major: %" PRIi64 "\n", indent, lvm_lv->lv_major);
+  printf ("%slv_minor: %" PRIi64 "\n", indent, lvm_lv->lv_minor);
+  printf ("%slv_kernel_major: %" PRIi64 "\n", indent, lvm_lv->lv_kernel_major);
+  printf ("%slv_kernel_minor: %" PRIi64 "\n", indent, lvm_lv->lv_kernel_minor);
+  printf ("%slv_size: %" PRIu64 "\n", indent, lvm_lv->lv_size);
+  printf ("%sseg_count: %" PRIi64 "\n", indent, lvm_lv->seg_count);
+  printf ("%sorigin: %s\n", indent, lvm_lv->origin);
+  if (lvm_lv->snap_percent >= 0)
+    printf ("%ssnap_percent: %g %%\n", indent, (double) lvm_lv->snap_percent);
+  else
+    printf ("%ssnap_percent: \n", indent);
+  if (lvm_lv->copy_percent >= 0)
+    printf ("%scopy_percent: %g %%\n", indent, (double) lvm_lv->copy_percent);
+  else
+    printf ("%scopy_percent: \n", indent);
+  printf ("%smove_pv: %s\n", indent, lvm_lv->move_pv);
+  printf ("%slv_tags: %s\n", indent, lvm_lv->lv_tags);
+  printf ("%smirror_log: %s\n", indent, lvm_lv->mirror_log);
+  printf ("%smodules: %s\n", indent, lvm_lv->modules);
 }
 
 static void
@@ -4372,35 +4606,20 @@ print_lvm_vg_indent (struct guestfs_lvm_vg *lvm_vg, const char *indent)
 }
 
 static void
-print_lvm_lv_indent (struct guestfs_lvm_lv *lvm_lv, const char *indent)
+print_mdstat_indent (struct guestfs_mdstat *mdstat, const char *indent)
 {
-  unsigned int i;
+  printf ("%smdstat_device: %s\n", indent, mdstat->mdstat_device);
+  printf ("%smdstat_index: %" PRIi32 "\n", indent, mdstat->mdstat_index);
+  printf ("%smdstat_flags: %s\n", indent, mdstat->mdstat_flags);
+}
 
-  printf ("%slv_name: %s\n", indent, lvm_lv->lv_name);
-  printf ("%slv_uuid: ", indent);
-  for (i = 0; i < 32; ++i)
-    printf ("%c", lvm_lv->lv_uuid[i]);
-  printf ("\n");
-  printf ("%slv_attr: %s\n", indent, lvm_lv->lv_attr);
-  printf ("%slv_major: %" PRIi64 "\n", indent, lvm_lv->lv_major);
-  printf ("%slv_minor: %" PRIi64 "\n", indent, lvm_lv->lv_minor);
-  printf ("%slv_kernel_major: %" PRIi64 "\n", indent, lvm_lv->lv_kernel_major);
-  printf ("%slv_kernel_minor: %" PRIi64 "\n", indent, lvm_lv->lv_kernel_minor);
-  printf ("%slv_size: %" PRIu64 "\n", indent, lvm_lv->lv_size);
-  printf ("%sseg_count: %" PRIi64 "\n", indent, lvm_lv->seg_count);
-  printf ("%sorigin: %s\n", indent, lvm_lv->origin);
-  if (lvm_lv->snap_percent >= 0)
-    printf ("%ssnap_percent: %g %%\n", indent, (double) lvm_lv->snap_percent);
-  else
-    printf ("%ssnap_percent: \n", indent);
-  if (lvm_lv->copy_percent >= 0)
-    printf ("%scopy_percent: %g %%\n", indent, (double) lvm_lv->copy_percent);
-  else
-    printf ("%scopy_percent: \n", indent);
-  printf ("%smove_pv: %s\n", indent, lvm_lv->move_pv);
-  printf ("%slv_tags: %s\n", indent, lvm_lv->lv_tags);
-  printf ("%smirror_log: %s\n", indent, lvm_lv->mirror_log);
-  printf ("%smodules: %s\n", indent, lvm_lv->modules);
+static void
+print_partition_indent (struct guestfs_partition *partition, const char *indent)
+{
+  printf ("%spart_num: %" PRIi32 "\n", indent, partition->part_num);
+  printf ("%spart_start: %" PRIu64 "\n", indent, partition->part_start);
+  printf ("%spart_end: %" PRIu64 "\n", indent, partition->part_end);
+  printf ("%spart_size: %" PRIu64 "\n", indent, partition->part_size);
 }
 
 static void
@@ -4438,11 +4657,12 @@ print_statvfs_indent (struct guestfs_statvfs *statvfs, const char *indent)
 }
 
 static void
-print_dirent_indent (struct guestfs_dirent *dirent, const char *indent)
+print_utsname_indent (struct guestfs_utsname *utsname, const char *indent)
 {
-  printf ("%sino: %" PRIi64 "\n", indent, dirent->ino);
-  printf ("%sftyp: %c\n", indent, dirent->ftyp);
-  printf ("%sname: %s\n", indent, dirent->name);
+  printf ("%suts_sysname: %s\n", indent, utsname->uts_sysname);
+  printf ("%suts_release: %s\n", indent, utsname->uts_release);
+  printf ("%suts_version: %s\n", indent, utsname->uts_version);
+  printf ("%suts_machine: %s\n", indent, utsname->uts_machine);
 }
 
 static void
@@ -4467,101 +4687,6 @@ print_xattr_indent (struct guestfs_xattr *xattr, const char *indent)
     else
       printf ("\\x%02x", xattr->attrval[i]);
   printf ("\n");
-}
-
-static void
-print_inotify_event_indent (struct guestfs_inotify_event *inotify_event, const char *indent)
-{
-  printf ("%sin_wd: %" PRIi64 "\n", indent, inotify_event->in_wd);
-  printf ("%sin_mask: %" PRIu32 "\n", indent, inotify_event->in_mask);
-  printf ("%sin_cookie: %" PRIu32 "\n", indent, inotify_event->in_cookie);
-  printf ("%sin_name: %s\n", indent, inotify_event->in_name);
-}
-
-static void
-print_partition_indent (struct guestfs_partition *partition, const char *indent)
-{
-  printf ("%spart_num: %" PRIi32 "\n", indent, partition->part_num);
-  printf ("%spart_start: %" PRIu64 "\n", indent, partition->part_start);
-  printf ("%spart_end: %" PRIu64 "\n", indent, partition->part_end);
-  printf ("%spart_size: %" PRIu64 "\n", indent, partition->part_size);
-}
-
-static void
-print_application_indent (struct guestfs_application *application, const char *indent)
-{
-  printf ("%sapp_name: %s\n", indent, application->app_name);
-  printf ("%sapp_display_name: %s\n", indent, application->app_display_name);
-  printf ("%sapp_epoch: %" PRIi32 "\n", indent, application->app_epoch);
-  printf ("%sapp_version: %s\n", indent, application->app_version);
-  printf ("%sapp_release: %s\n", indent, application->app_release);
-  printf ("%sapp_install_path: %s\n", indent, application->app_install_path);
-  printf ("%sapp_trans_path: %s\n", indent, application->app_trans_path);
-  printf ("%sapp_publisher: %s\n", indent, application->app_publisher);
-  printf ("%sapp_url: %s\n", indent, application->app_url);
-  printf ("%sapp_source_package: %s\n", indent, application->app_source_package);
-  printf ("%sapp_summary: %s\n", indent, application->app_summary);
-  printf ("%sapp_description: %s\n", indent, application->app_description);
-}
-
-static void
-print_application2_indent (struct guestfs_application2 *application2, const char *indent)
-{
-  printf ("%sapp2_name: %s\n", indent, application2->app2_name);
-  printf ("%sapp2_display_name: %s\n", indent, application2->app2_display_name);
-  printf ("%sapp2_epoch: %" PRIi32 "\n", indent, application2->app2_epoch);
-  printf ("%sapp2_version: %s\n", indent, application2->app2_version);
-  printf ("%sapp2_release: %s\n", indent, application2->app2_release);
-  printf ("%sapp2_arch: %s\n", indent, application2->app2_arch);
-  printf ("%sapp2_install_path: %s\n", indent, application2->app2_install_path);
-  printf ("%sapp2_trans_path: %s\n", indent, application2->app2_trans_path);
-  printf ("%sapp2_publisher: %s\n", indent, application2->app2_publisher);
-  printf ("%sapp2_url: %s\n", indent, application2->app2_url);
-  printf ("%sapp2_source_package: %s\n", indent, application2->app2_source_package);
-  printf ("%sapp2_summary: %s\n", indent, application2->app2_summary);
-  printf ("%sapp2_description: %s\n", indent, application2->app2_description);
-  printf ("%sapp2_spare1: %s\n", indent, application2->app2_spare1);
-  printf ("%sapp2_spare2: %s\n", indent, application2->app2_spare2);
-  printf ("%sapp2_spare3: %s\n", indent, application2->app2_spare3);
-  printf ("%sapp2_spare4: %s\n", indent, application2->app2_spare4);
-}
-
-static void
-print_isoinfo_indent (struct guestfs_isoinfo *isoinfo, const char *indent)
-{
-  printf ("%siso_system_id: %s\n", indent, isoinfo->iso_system_id);
-  printf ("%siso_volume_id: %s\n", indent, isoinfo->iso_volume_id);
-  printf ("%siso_volume_space_size: %" PRIu32 "\n", indent, isoinfo->iso_volume_space_size);
-  printf ("%siso_volume_set_size: %" PRIu32 "\n", indent, isoinfo->iso_volume_set_size);
-  printf ("%siso_volume_sequence_number: %" PRIu32 "\n", indent, isoinfo->iso_volume_sequence_number);
-  printf ("%siso_logical_block_size: %" PRIu32 "\n", indent, isoinfo->iso_logical_block_size);
-  printf ("%siso_volume_set_id: %s\n", indent, isoinfo->iso_volume_set_id);
-  printf ("%siso_publisher_id: %s\n", indent, isoinfo->iso_publisher_id);
-  printf ("%siso_data_preparer_id: %s\n", indent, isoinfo->iso_data_preparer_id);
-  printf ("%siso_application_id: %s\n", indent, isoinfo->iso_application_id);
-  printf ("%siso_copyright_file_id: %s\n", indent, isoinfo->iso_copyright_file_id);
-  printf ("%siso_abstract_file_id: %s\n", indent, isoinfo->iso_abstract_file_id);
-  printf ("%siso_bibliographic_file_id: %s\n", indent, isoinfo->iso_bibliographic_file_id);
-  printf ("%siso_volume_creation_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_creation_t);
-  printf ("%siso_volume_modification_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_modification_t);
-  printf ("%siso_volume_expiration_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_expiration_t);
-  printf ("%siso_volume_effective_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_effective_t);
-}
-
-static void
-print_mdstat_indent (struct guestfs_mdstat *mdstat, const char *indent)
-{
-  printf ("%smdstat_device: %s\n", indent, mdstat->mdstat_device);
-  printf ("%smdstat_index: %" PRIi32 "\n", indent, mdstat->mdstat_index);
-  printf ("%smdstat_flags: %s\n", indent, mdstat->mdstat_flags);
-}
-
-static void
-print_btrfssubvolume_indent (struct guestfs_btrfssubvolume *btrfssubvolume, const char *indent)
-{
-  printf ("%sbtrfssubvolume_id: %" PRIu64 "\n", indent, btrfssubvolume->btrfssubvolume_id);
-  printf ("%sbtrfssubvolume_top_level_id: %" PRIu64 "\n", indent, btrfssubvolume->btrfssubvolume_top_level_id);
-  printf ("%sbtrfssubvolume_path: %s\n", indent, btrfssubvolume->btrfssubvolume_path);
 }
 
 static void
@@ -4592,27 +4717,6 @@ print_xfsinfo_indent (struct guestfs_xfsinfo *xfsinfo, const char *indent)
   printf ("%sxfs_rtextsize: %" PRIu32 "\n", indent, xfsinfo->xfs_rtextsize);
   printf ("%sxfs_rtblocks: %" PRIu64 "\n", indent, xfsinfo->xfs_rtblocks);
   printf ("%sxfs_rtextents: %" PRIu64 "\n", indent, xfsinfo->xfs_rtextents);
-}
-
-static void
-print_utsname_indent (struct guestfs_utsname *utsname, const char *indent)
-{
-  printf ("%suts_sysname: %s\n", indent, utsname->uts_sysname);
-  printf ("%suts_release: %s\n", indent, utsname->uts_release);
-  printf ("%suts_version: %s\n", indent, utsname->uts_version);
-  printf ("%suts_machine: %s\n", indent, utsname->uts_machine);
-}
-
-static void
-print_hivex_node_indent (struct guestfs_hivex_node *hivex_node, const char *indent)
-{
-  printf ("%shivex_node_h: %" PRIi64 "\n", indent, hivex_node->hivex_node_h);
-}
-
-static void
-print_hivex_value_indent (struct guestfs_hivex_value *hivex_value, const char *indent)
-{
-  printf ("%shivex_value_h: %" PRIi64 "\n", indent, hivex_value->hivex_value_h);
 }
 
 static void
@@ -4952,8 +5056,8 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
   struct guestfs_add_domain_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 1 || argc > 9) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 9);
+  if (argc < 1 || argc > 10) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 10);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5015,6 +5119,15 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
       this_mask = GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
       this_arg = "discard";
     }
+    else if (STRPREFIX (argv[i], "copyonread:")) {
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.copyonread = 0; break;
+        default: optargs_s.copyonread = 1;
+      }
+      this_mask = GUESTFS_ADD_DOMAIN_COPYONREAD_BITMASK;
+      this_arg = "copyonread";
+    }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
@@ -5048,8 +5161,8 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
   struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 1 || argc > 12) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 12);
+  if (argc < 1 || argc > 13) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 13);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5118,6 +5231,15 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
       optargs_s.discard = &argv[i][8];
       this_mask = GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
       this_arg = "discard";
+    }
+    else if (STRPREFIX (argv[i], "copyonread:")) {
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.copyonread = 0; break;
+        default: optargs_s.copyonread = 1;
+      }
+      this_mask = GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK;
+      this_arg = "copyonread";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
@@ -12895,6 +13017,26 @@ run_journal_get_data_threshold (const char *cmd, size_t argc, char *argv[])
     goto out_noargs;
   }
   r = guestfs_journal_get_data_threshold (g);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_journal_get_realtime_usec (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int64_t r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have no parameters\n"), cmd);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_journal_get_realtime_usec (g);
   if (r == -1) goto out;
   ret = 0;
   printf ("%" PRIi64 "\n", r);

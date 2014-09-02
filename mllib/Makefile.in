@@ -1421,6 +1421,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o
 SOURCES = \
 	common_gettext.ml \
 	common_utils.ml \
+	common_utils.mli \
 	common_utils_tests.ml \
 	config.ml \
 	fsync-c.c \
@@ -1434,6 +1435,8 @@ SOURCES = \
 	progress-c.c \
 	progress.mli \
 	progress.ml \
+	regedit.mli \
+	regedit.ml \
 	tty-c.c \
 	tTY.mli \
 	tTY.ml \
@@ -1455,7 +1458,8 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	progress \
 @HAVE_OCAML_TRUE@	uRI \
 @HAVE_OCAML_TRUE@	mkdtemp \
-@HAVE_OCAML_TRUE@	planner
+@HAVE_OCAML_TRUE@	planner \
+@HAVE_OCAML_TRUE@	regedit
 
 @HAVE_OCAML_TRUE@OBJECTS = $(top_builddir)/fish/guestfish-progress.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o tty-c.o \
@@ -1469,7 +1473,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@OCAMLPACKAGES = -package str,unix -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I ../ocaml \
 @HAVE_OCAML_TRUE@	$(am__append_3)
-@HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
+@HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX-3 $(OCAMLPACKAGES)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@OCAMLCLIBS = \
 @HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) -lncurses -lcrypt \

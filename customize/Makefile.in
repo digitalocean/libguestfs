@@ -1476,6 +1476,7 @@ SOURCES = \
 	customize_main.ml \
 	password.ml \
 	password.mli \
+	perl_edit-c.c \
 	perl_edit.ml \
 	perl_edit.mli \
 	random_seed.ml \
@@ -1487,12 +1488,15 @@ SOURCES = \
 
 @HAVE_OCAML_TRUE@deps = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-file-edit.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/regedit.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uri-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmx \
-@HAVE_OCAML_TRUE@	crypt-c.o
+@HAVE_OCAML_TRUE@	crypt-c.o \
+@HAVE_OCAML_TRUE@	perl_edit-c.o
 
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OBJECTS = $(patsubst \
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	%.cmx,%.cmo,$(deps)) \
@@ -1524,7 +1528,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib $(am__append_1)
-@HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
+@HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX-3 $(OCAMLPACKAGES)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@OCAMLCLIBS = \
 @HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) -lncurses -lcrypt \

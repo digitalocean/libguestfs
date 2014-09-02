@@ -80,9 +80,110 @@ let () =
   Callback.register_exception "ocaml_guestfs_error" (Error "");
   Callback.register_exception "ocaml_guestfs_closed" (Handle_closed "")
 
+type application = {
+  app_name : string;
+  app_display_name : string;
+  app_epoch : int32;
+  app_version : string;
+  app_release : string;
+  app_install_path : string;
+  app_trans_path : string;
+  app_publisher : string;
+  app_url : string;
+  app_source_package : string;
+  app_summary : string;
+  app_description : string;
+}
+
+type application2 = {
+  app2_name : string;
+  app2_display_name : string;
+  app2_epoch : int32;
+  app2_version : string;
+  app2_release : string;
+  app2_arch : string;
+  app2_install_path : string;
+  app2_trans_path : string;
+  app2_publisher : string;
+  app2_url : string;
+  app2_source_package : string;
+  app2_summary : string;
+  app2_description : string;
+  app2_spare1 : string;
+  app2_spare2 : string;
+  app2_spare3 : string;
+  app2_spare4 : string;
+}
+
+type btrfssubvolume = {
+  btrfssubvolume_id : int64;
+  btrfssubvolume_top_level_id : int64;
+  btrfssubvolume_path : string;
+}
+
+type dirent = {
+  ino : int64;
+  ftyp : char;
+  name : string;
+}
+
+type hivex_node = {
+  hivex_node_h : int64;
+}
+
+type hivex_value = {
+  hivex_value_h : int64;
+}
+
+type inotify_event = {
+  in_wd : int64;
+  in_mask : int32;
+  in_cookie : int32;
+  in_name : string;
+}
+
 type int_bool = {
   i : int32;
   b : int32;
+}
+
+type isoinfo = {
+  iso_system_id : string;
+  iso_volume_id : string;
+  iso_volume_space_size : int32;
+  iso_volume_set_size : int32;
+  iso_volume_sequence_number : int32;
+  iso_logical_block_size : int32;
+  iso_volume_set_id : string;
+  iso_publisher_id : string;
+  iso_data_preparer_id : string;
+  iso_application_id : string;
+  iso_copyright_file_id : string;
+  iso_abstract_file_id : string;
+  iso_bibliographic_file_id : string;
+  iso_volume_creation_t : int64;
+  iso_volume_modification_t : int64;
+  iso_volume_expiration_t : int64;
+  iso_volume_effective_t : int64;
+}
+
+type lvm_lv = {
+  lv_name : string;
+  lv_uuid : string;
+  lv_attr : string;
+  lv_major : int64;
+  lv_minor : int64;
+  lv_kernel_major : int64;
+  lv_kernel_minor : int64;
+  lv_size : int64;
+  seg_count : int64;
+  origin : string;
+  snap_percent : float option;
+  copy_percent : float option;
+  move_pv : string;
+  lv_tags : string;
+  mirror_log : string;
+  modules : string;
 }
 
 type lvm_pv = {
@@ -124,23 +225,17 @@ type lvm_vg = {
   vg_mda_free : int64;
 }
 
-type lvm_lv = {
-  lv_name : string;
-  lv_uuid : string;
-  lv_attr : string;
-  lv_major : int64;
-  lv_minor : int64;
-  lv_kernel_major : int64;
-  lv_kernel_minor : int64;
-  lv_size : int64;
-  seg_count : int64;
-  origin : string;
-  snap_percent : float option;
-  copy_percent : float option;
-  move_pv : string;
-  lv_tags : string;
-  mirror_log : string;
-  modules : string;
+type mdstat = {
+  mdstat_device : string;
+  mdstat_index : int32;
+  mdstat_flags : string;
+}
+
+type partition = {
+  part_num : int32;
+  part_start : int64;
+  part_end : int64;
+  part_size : int64;
 }
 
 type stat = {
@@ -173,10 +268,11 @@ type statvfs = {
   namemax : int64;
 }
 
-type dirent = {
-  ino : int64;
-  ftyp : char;
-  name : string;
+type utsname = {
+  uts_sysname : string;
+  uts_release : string;
+  uts_version : string;
+  uts_machine : string;
 }
 
 type version = {
@@ -189,87 +285,6 @@ type version = {
 type xattr = {
   attrname : string;
   attrval : string;
-}
-
-type inotify_event = {
-  in_wd : int64;
-  in_mask : int32;
-  in_cookie : int32;
-  in_name : string;
-}
-
-type partition = {
-  part_num : int32;
-  part_start : int64;
-  part_end : int64;
-  part_size : int64;
-}
-
-type application = {
-  app_name : string;
-  app_display_name : string;
-  app_epoch : int32;
-  app_version : string;
-  app_release : string;
-  app_install_path : string;
-  app_trans_path : string;
-  app_publisher : string;
-  app_url : string;
-  app_source_package : string;
-  app_summary : string;
-  app_description : string;
-}
-
-type application2 = {
-  app2_name : string;
-  app2_display_name : string;
-  app2_epoch : int32;
-  app2_version : string;
-  app2_release : string;
-  app2_arch : string;
-  app2_install_path : string;
-  app2_trans_path : string;
-  app2_publisher : string;
-  app2_url : string;
-  app2_source_package : string;
-  app2_summary : string;
-  app2_description : string;
-  app2_spare1 : string;
-  app2_spare2 : string;
-  app2_spare3 : string;
-  app2_spare4 : string;
-}
-
-type isoinfo = {
-  iso_system_id : string;
-  iso_volume_id : string;
-  iso_volume_space_size : int32;
-  iso_volume_set_size : int32;
-  iso_volume_sequence_number : int32;
-  iso_logical_block_size : int32;
-  iso_volume_set_id : string;
-  iso_publisher_id : string;
-  iso_data_preparer_id : string;
-  iso_application_id : string;
-  iso_copyright_file_id : string;
-  iso_abstract_file_id : string;
-  iso_bibliographic_file_id : string;
-  iso_volume_creation_t : int64;
-  iso_volume_modification_t : int64;
-  iso_volume_expiration_t : int64;
-  iso_volume_effective_t : int64;
-}
-
-type mdstat = {
-  mdstat_device : string;
-  mdstat_index : int32;
-  mdstat_flags : string;
-}
-
-type btrfssubvolume = {
-  btrfssubvolume_id : int64;
-  btrfssubvolume_top_level_id : int64;
-  btrfssubvolume_path : string;
 }
 
 type xfsinfo = {
@@ -300,27 +315,12 @@ type xfsinfo = {
   xfs_rtextents : int64;
 }
 
-type utsname = {
-  uts_sysname : string;
-  uts_release : string;
-  uts_version : string;
-  uts_machine : string;
-}
-
-type hivex_node = {
-  hivex_node_h : int64;
-}
-
-type hivex_value = {
-  hivex_value_h : int64;
-}
-
 external acl_delete_def_file : t -> string -> unit = "ocaml_guestfs_acl_delete_def_file"
 external acl_get_file : t -> string -> string -> string = "ocaml_guestfs_acl_get_file"
 external acl_set_file : t -> string -> string -> string -> unit = "ocaml_guestfs_acl_set_file"
 external add_cdrom : t -> string -> unit = "ocaml_guestfs_add_cdrom"
-external add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> ?cachemode:string -> ?discard:string -> string -> int = "ocaml_guestfs_add_domain_byte" "ocaml_guestfs_add_domain"
-external add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> ?discard:string -> string -> unit = "ocaml_guestfs_add_drive_byte" "ocaml_guestfs_add_drive"
+external add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> ?cachemode:string -> ?discard:string -> ?copyonread:bool -> string -> int = "ocaml_guestfs_add_domain_byte" "ocaml_guestfs_add_domain"
+external add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> ?discard:string -> ?copyonread:bool -> string -> unit = "ocaml_guestfs_add_drive_byte" "ocaml_guestfs_add_drive"
 let add_drive_opts = add_drive
 external add_drive_ro : t -> string -> unit = "ocaml_guestfs_add_drive_ro"
 external add_drive_ro_with_if : t -> string -> string -> unit = "ocaml_guestfs_add_drive_ro_with_if"
@@ -584,6 +584,7 @@ external isoinfo_device : t -> string -> isoinfo = "ocaml_guestfs_isoinfo_device
 external journal_close : t -> unit = "ocaml_guestfs_journal_close"
 external journal_get : t -> xattr array = "ocaml_guestfs_journal_get"
 external journal_get_data_threshold : t -> int64 = "ocaml_guestfs_journal_get_data_threshold"
+external journal_get_realtime_usec : t -> int64 = "ocaml_guestfs_journal_get_realtime_usec"
 external journal_next : t -> bool = "ocaml_guestfs_journal_next"
 external journal_open : t -> string -> unit = "ocaml_guestfs_journal_open"
 external journal_set_data_threshold : t -> int64 -> unit = "ocaml_guestfs_journal_set_data_threshold"
@@ -1152,6 +1153,7 @@ class guestfs ?environment ?close_on_exit () =
     method journal_close () = journal_close g
     method journal_get () = journal_get g
     method journal_get_data_threshold () = journal_get_data_threshold g
+    method journal_get_realtime_usec () = journal_get_realtime_usec g
     method journal_next () = journal_next g
     method journal_open = journal_open g
     method journal_set_data_threshold = journal_set_data_threshold g
