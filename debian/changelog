@@ -1,3 +1,24 @@
+libguestfs (1:1.27.35-1) experimental; urgency=medium
+
+  * New upstream development version
+  * Added virt-p2v
+  * Updated symbols file
+  * Picked patches from unstable branch
+    - Removed dependency on legacy iproute package (Closes: #752017)
+    - Don't attempt to run make quickcheck on all architectures.
+      (Closes: #754615)
+    - Fixed the code that extracts dependencies from
+      .../guestfs/supermin.d/packages-* lists. This should also take care of
+      the iproute legacy package. (Closes: #752017)
+    - Don't hardcode /usr/lib/perl5 in libguestfs-perl.install
+      (Closes: #755109)
+    - Added patch that disables --dtb on armel
+    - Fix module-init-tools build-dependency
+    - Added architecture-specific dependencies for arm64, ppc64el
+    - Added libc-bin to essential packages expression
+
+ -- Hilko Bengen <bengen@debian.org>  Mon, 01 Sep 2014 18:25:38 +0200
+
 libguestfs (1:1.27.14-1) experimental; urgency=medium
 
   * New upstream development version
