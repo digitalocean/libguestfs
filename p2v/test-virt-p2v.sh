@@ -1,5 +1,5 @@
 #!/bin/bash -
-# libguestfs virt-v2v test script
+# libguestfs virt-p2v test script
 # Copyright (C) 2014 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -16,13 +16,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# Test -o glance.
+# Test virt-p2v in non-GUI mode.
 
 unset CDPATH
 export LANG=C
 set -e
 
-if [ -n "$SKIP_TEST_V2V_O_GLANCE_SH" ]; then
+if [ -n "$SKIP_TEST_VIRT_P2V_SH" ]; then
     echo "$0: test skipped because environment variable is set"
     exit 77
 fi
@@ -32,10 +32,7 @@ if [ "$(../fish/guestfish get-backend)" = "uml" ]; then
     exit 77
 fi
 
-abs_top_builddir="$(cd ..; pwd)"
-libvirt_uri="test://$abs_top_builddir/tests/guests/guests.xml"
-
-f=../tests/guests/windows.img
+f="$(cd ../tests/guests && pwd)/windows.img"
 if ! test -f $f || ! test -s $f; then
     echo "$0: test skipped because phony Windows image was not created"
     exit 77
@@ -47,12 +44,27 @@ if ! test -r $virt_tools_data_dir/rhsrvany.exe; then
     exit 77
 fi
 
-# We don't want to upload to the real glance, so introduce a fake
-# glance binary.
-ln -sf "$(which echo)" glance
+d=test-virt-p2v.d
+rm -rf $d
+mkdir $d
 
-$VG ./virt-v2v --debug-gc \
-    -i libvirt -ic "$libvirt_uri" windows \
-    -o glance -on test
+# We don't want to program under test to actually ssh.  It's unlikely
+# to work.  Therefore create a dummy 'ssh' binary.
+pushd $d
+ln -sf ../test-virt-p2v-ssh.sh ssh
+popd
+export PATH=$d:$PATH
 
-rm glance
+# Note that the PATH already contains the local virt-v2v binary
+# under test (because of the ./run script).
+
+# The Linux kernel command line.
+cmdline="p2v.server=localhost p2v.name=windows p2v.debug p2v.disks=$f p2v.output=local p2v.output_storage=$d"
+
+./virt-p2v --cmdline="$cmdline"
+
+# Test the libvirt XML metadata and a disk was created.
+test -f $d/windows.xml
+test -f $d/windows-sda
+
+rm -r $d

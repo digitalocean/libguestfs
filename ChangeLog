@@ -1,3 +1,151 @@
+commit 3c1b81d2af5c61863ac59e28f2a8509ed7a3e7ce
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 1 17:40:56 2014 +0100
+
+    Version 1.27.35.
+
+commit 22a556099a41ca4cbbfb746b1e620348b41b5049
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 1 14:10:49 2014 +0100
+
+    p2v: Add a test of virt-p2v.
+
+commit c516d2d07dd0d1e4429ec84d2e9ebe02a951c5b5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 1 17:16:52 2014 +0100
+
+    p2v: Add p2v.output* controls so we can control where the output ends up.
+    
+    This still needs to be implemented through the GUI.
+
+commit b16e98ba140d55a3341fcd4a0bca946bca6d3643
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 1 17:14:17 2014 +0100
+
+    p2v: Fix p2v.disks (etc) parsing on kernel command line.
+    
+    The parsing of p2v.disks, p2v.removable and p2v.interfaces did not
+    correctly end at the first space, and therefore any other parameters
+    that happened to be on the command line afterwards would be consumed
+    as a list of disks or interfaces.
+
+commit 0136f50f064bbcea303298e6f22935ee1afffb46
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 1 16:07:04 2014 +0100
+
+    p2v: Add a status message for when we detect the control connection has been closed.
+
+commit 04740c5a35654688183c50863c80b9a427019922
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 1 16:06:05 2014 +0100
+
+    p2v: Send SIGHUP (not SIGTERM) to kill child process.
+    
+    One reason is that when testing the child process will be bash (not
+    ssh), and bash is documented to ignore SIGTERM when it is running
+    interactively.
+
+commit b1125a9db71b51b9208571485e75774adee10017
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 1 15:55:56 2014 +0100
+
+    p2v: Allow -EIO error when reading pty to mean the writer has closed the connection.
+    
+    This is apparently normal behaviour for ptys.
+
+commit 8e5233741f64efb7c8a0cae51f1434fb3497038d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 1 13:06:09 2014 +0100
+
+    v2v: Update TODO file.
+
+commit 9fb2b82dbe32463858c7116d129d48c528729088
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 1 12:21:51 2014 +0100
+
+    v2v: Add some defensive code to test for the broken qcow2 overlay bug.
+    
+    In commit 53e0d3ea5fc703066f0eb92a49eaf8be18961e7e I fixed a cause of
+    disk corruption in the overlay file during conversion.
+    
+    To ensure this doesn't occur again unexpectedly, add a simple test to
+    the virt-v2v code and to the tests.
+
+commit 431cdfd983bc9864d6a44a456a97b72455bb17cd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Sep 1 11:46:57 2014 +0200
+
+    fish: edit: write to the real file name
+    
+    When saving, resolve the path of the file being edited and use that as
+    real target to write to. Otherwise, if the file name is a symlink then
+    it will be replaced by a regular file with the new content, leaving the
+    old file untouched.
+    
+    Extend test-edit.sh to check for this situation.
+
+commit ca9930ef164286df5075cac890f558974efe0893
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Sep 1 10:28:00 2014 +0200
+
+    test-tool: stop printing the FEBOOTSTRAP_* envvars
+    
+    Stop printing the FEBOOTSTRAP_* environment variables, since they are
+    not used anymore.
+
+commit 356fe582b8d64163fb84f662b37f534633b9c2a7
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 29 16:38:04 2014 +0200
+
+    fish: edit: centralize the EDITOR handling
+    
+    Allow null as value for the editor parameter of edit_file_editor, which
+    will then get it from the EDITOR envvar (falling back on vi).
+    
+    This is basically code motion from the two edit_file_editor users to it.
+
+commit b1a648887547c10818e64b45aa983e8287b034d4
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 29 14:58:31 2014 +0200
+
+    fish: edit: factor out download and reupload phases
+    
+    Share some code between edit_file_editor and edit_file_perl; mostly code
+    motion, with no actual behaviour change.
+
+commit 510329939bf675a20f782939f8857ac433acec5c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Aug 31 14:09:51 2014 +0100
+
+    v2v: -o glance: Write potentially huge temporary images to /var/tmp by default.
+    
+    Instead of /tmp.  This can be controlled by setting
+    $LIBGUESTFS_CACHEDIR or $TMPDIR.
+
+commit 705e4bfd11274b09cdc2e821f281e3faed28268b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Aug 31 13:37:51 2014 +0100
+
+    builder: Add test of the --edit option.
+
+commit 1fb19fcad3c2aa572951bddcecd01a93b8c469b2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Aug 31 13:35:33 2014 +0100
+
+    customize: perl_edit: Type of Guestfs_val() param is a Guestfs.t not the object wrapper.
+    
+    This fixes commit c6b7e6cddac850d6d2caf2e2f3060467c38397fe.
+
+commit 94cffee541a329de081fbec78c96d1e753bef6fa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Aug 31 11:35:58 2014 +0100
+
+    -o glance: Multiple fixes.
+    
+    Now tested and working on a glance server.
+    
+    This fixes commit f01f641fbb1a29b5727c0443f3700b1c871ccfc9.
+
 commit 5c487541beceb634997822030039ef4ddc6f3b63
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Aug 29 22:43:10 2014 +0100
