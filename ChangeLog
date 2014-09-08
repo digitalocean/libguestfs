@@ -1,3 +1,179 @@
+commit 03c9834cf3de504c9e2724894e7d9c222fd5e116
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 4 14:58:04 2014 +0100
+
+    Version 1.27.37.
+
+commit c3b3f683973813c008b5175726b68caa7fc6d4e8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 4 14:57:35 2014 +0100
+
+    v2v: Add test OVF file to EXTRA_DIST.
+    
+    This fixes commit 90b1e9845fa0a25de12587749f259d0da8d70a01.
+
+commit ba65af34357eb79e37480758416cdc4e184689aa
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Sep 4 13:42:20 2014 +0200
+
+    customize: fix locking accounts with passwords
+    
+    When setting the password for a locked account, make sure to still write
+    the password after the "!!" marker, otherwise the account will have no
+    password.
+
+commit 5edb78d1ae916e7d76be2ba0c4b86b3f82e8f9e1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 4 12:55:40 2014 +0100
+
+    v2v: docs: Clarify how ESX & Xen imports happen through libvirt.
+
+commit f243418d2300bf2bb7fdb64045544f6420ba90a3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 4 11:32:33 2014 +0100
+
+    v2v: Add support for access to remote RHEL 5 Xen hosts over ssh.
+
+commit 0c295c8e23a90d3a3f5efcfa0452ecde7317e122
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 4 12:37:12 2014 +0100
+
+    v2v: -i libvirtxml: Detect disk format using any <driver type=...> field.
+    
+    Previously we only looked for <driver name=qemu type=...>.  However
+    for Xen imports, the name field could be name=tap (or other values in
+    fact).  Since there can only be one <driver/> element under <disk/>,
+    look for any <driver type=...> in order to get the disk format.
+    
+    A further complication for Xen is that type=aio means "raw" (for
+    obscure historical reasons), so map that.
+    
+    Thanks: Dan Berrangé.
+
+commit 27a5ef9131317e4a715d1dfb62b155ee081c2888
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 4 12:07:36 2014 +0100
+
+    v2v: Move json-generating code into separate module.
+    
+    Just code motion so we can reuse the same code for making
+    `json:' remote SSH URLs.
+
+commit d5662fe035be28f59e1f4ea9f3fd391aa93a591e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 4 11:19:24 2014 +0100
+
+    -i ova: Tidy up the description in the manual page.
+    
+    This updates commit 90b1e9845fa0a25de12587749f259d0da8d70a01.
+
+commit 90b1e9845fa0a25de12587749f259d0da8d70a01
+Author: Shahar Havivi <shaharh@redhat.com>
+Date:   Thu Sep 4 11:51:02 2014 +0300
+
+    v2v: adding input -i ova
+    
+    Adding ability for v2v to get Vmware ova file as an input.
+    
+    Signed-off-by: Shahar Havivi <shaharh@redhat.com>
+
+commit 44ca9d563a93126bd744a819dde7237d371fe1fd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 3 14:01:20 2014 +0100
+
+    launch: libvirt / p2v: Fix empty_element macro.
+    
+    The empty_element macro was not safe when used in a "naked" if
+    statement such as:
+    
+      if (config->flags & FLAG_ACPI) empty_element ("acpi");
+    
+    Fix the macro so it uses do { ... } while (0) to make it safe here.
+
+commit 579119764226d040bec928d7944055b592437d7b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 3 12:25:37 2014 +0100
+
+    v2v: Don't hard-code list of -i and -o options in help output.
+    
+    We can now get it from Modules_list.
+
+commit 82b73852920685e1294f0349815daf3178ac2e20
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 3 12:15:27 2014 +0100
+
+    v2v: Update TODO.
+
+commit 941ebaa5e44cbf41e0dd94f811329d59f18c2868
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 3 12:15:00 2014 +0100
+
+    mllib: error: Clearer message about how to enable debugging.
+
+commit 711c32b0d9d31dc554b78f471be4b529eab4dbba
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 3 12:14:27 2014 +0100
+
+    mllib: Wrap errors at column 76 instead of column 72.
+    
+    Allows for slightly wider, better looking error messages.
+
+commit bb362f687840cd9fcf68bea08fd34fe8e4ddc64c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 3 12:13:42 2014 +0100
+
+    OCaml virt-* tools: Handle pretty printing of exceptions through a common library function.
+
+commit e52742e6d35ae33e55e6fd7a0228e55ec63102d3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Sep 3 11:13:54 2014 +0200
+
+    sysprep: user-account: remove the correct home
+    
+    Query using augeas for the home directory of an user, instead of
+    hardcoding /home/<username>.
+
+commit ee5470d083f106f0843d65229c521d4f997674e8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 23:40:28 2014 +0100
+
+    v2v: Clarify documentation for -o local.
+
+commit 11b1e2862b0b37d33152faef737854920d75a2b9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 22:40:13 2014 +0100
+
+    v2v: Update TODO.
+
+commit e0506486b0b2ac0be0f975c299bd7ca442718b8f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 19:36:25 2014 +0100
+
+    v2v: Review 3-X comments in TODO file and remove any which are not short-term goals to fix.
+
+commit 03ed5a790b571db2ff5f96f58bdbc01af4646cb2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 19:34:09 2014 +0100
+
+    p2v/v2v: List output drivers in `virt-v2v --machine-readable', and use that in virt-p2v.
+    
+    The new output of virt-v2v --machine-readable now lists the input and
+    output drivers available in the binary:
+    
+      $ virt-v2v --machine-readable
+      virt-v2v
+      libguestfs-rewrite
+      input:disk
+      input:libvirt
+      input:libvirtxml
+      output:glance
+      output:libvirt
+      output:local
+      output:rhev
+    
+    With this information, we can now pre-populate the virt-p2v GUI
+    combo box.
+
 commit 03d848ab68a1de7cbee49a6a00963f91e8f53696
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Sep 2 17:06:45 2014 +0100

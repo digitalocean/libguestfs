@@ -20,6 +20,7 @@ include $(top_srcdir)/subdir-rules.mk
 EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	$(TESTS) $(SLOW_TESTS) \
+	test-v2v-i-ova.ovf \
 	test-v2v-networks-and-bridges-expected.xml \
 	test-v2v-networks-and-bridges.xml.in \
 	virt-v2v.pod
@@ -31,12 +32,16 @@ SOURCES_MLI = \
 	convert_windows.mli \
 	DOM.mli \
 	domainxml.mli \
-	lib_esx.mli \
-	lib_linux.mli \
 	input_disk.mli \
 	input_libvirt.mli \
 	input_libvirtxml.mli \
+	JSON.mli \
+	lib_esx.mli \
+	lib_linux.mli \
+	lib_xen.mli \
+	modules_list.mli \
 	output_glance.mli \
+	input_ova.mli \
 	output_libvirt.mli \
 	output_local.mli \
 	output_RHEV.mli \
@@ -50,11 +55,15 @@ SOURCES_ML = \
 	xml.ml \
 	domainxml.ml \
 	DOM.ml \
+	JSON.ml \
 	lib_esx.ml \
+	lib_xen.ml \
 	lib_linux.ml \
+	modules_list.ml \
 	input_disk.ml \
 	input_libvirtxml.ml \
 	input_libvirt.ml \
+	input_ova.ml \
 	convert_linux.ml \
 	convert_windows.ml \
 	output_glance.ml \
@@ -193,6 +202,7 @@ TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 if ENABLE_APPLIANCE
 TESTS = \
+	test-v2v-i-ova.sh \
 	test-v2v-i-disk.sh \
 	test-v2v-machine-readable.sh \
 	test-v2v-networks-and-bridges.sh \

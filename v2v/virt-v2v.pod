@@ -32,13 +32,14 @@ libguestfs E<ge> 1.28.
 
                          ┌────────────┐
  -i disk ───────────┐    │            │   ┌───────▶ -o local
-                    │    │ virt-v2v   │   │
-                    └──▶ │ conversion │ ──┘
- -i libvirt ───────────▶ │ server     │ ────────▶ -o libvirt
-  (default)         ┌──▶ │            │ ──┐        (default)
-                    │    │            │ ─┐└──────▶ -o glance
- -i libvirtxml ─────┘    │            │  └─────────▶ -o rhev
-                         └────────────┘
+ -i ova  ─────────┐ └──▶ │ virt-v2v   │   │
+                  └────▶ │ conversion │ ──┘
+ ESX ──▶┌────────────┐   │ server     │    ┌────────────┐
+ Xen ──▶│ -i libvirt ──▶ │            │ ───▶ -o libvirt │─▶ KVM
+ ... ──▶│  (default) │   │            │    │  (default) │
+        └────────────┘   │            │ ──┐└────────────┘
+ -i libvirtxml ────────▶ │            │ ─┐└──────▶ -o glance
+                         └────────────┘  └─────────▶ -o rhev
 
 Virt-v2v has a number of possible input and output modes, selected
 using the I<-i> and I<-o> options.  Only one input and output mode can
@@ -51,6 +52,8 @@ option selects the precise libvirt source.
 
 I<-i disk> is used for reading from local disk images (mainly for
 testing).
+
+I<-i ova> is used for reading from a VMware ova source file.
 
 I<-i libvirtxml> is used to read from libvirt XML files.  This is the
 method used by L<virt-p2v(1)> behind the scenes.
@@ -158,6 +161,14 @@ usually adequate but you can get finer control (eg. of memory and
 vCPUs) by using I<-i libvirtxml> instead.  Only guests that use a single
 disk can be imported this way.
 
+=item B<-i ova>
+
+Set the input method to I<ova>.
+
+In this mode you can read a VMware ova file.  Virt-v2v will read the
+ova manifest file and check the vmdk volumes for validity (checksums)
+as well as analyzing the ovf file, and then convert the guest.
+
 =item B<-i libvirt>
 
 Set the input method to I<libvirt>.  This is the default.
@@ -183,10 +194,12 @@ This is the same as I<-i disk>.
 Specify a libvirt connection URI to use when reading the guest.  This
 is only used when S<I<-i libvirt>>.
 
-Only local libvirt connections and ESX connections can be used.
-Remote libvirt connections will not work in general.
+Only local libvirt connections, ESX connections, or RHEL 5 Xen remote
+connections can be used.  Other remote libvirt connections will not
+work in general.
 
-See also L</INPUT FROM VMWARE VCENTER SERVER> below.
+See also L</INPUT FROM VMWARE VCENTER SERVER>,
+L</INPUT FROM RHEL 5 XEN> below.
 
 =item B<-if> format
 
@@ -251,12 +264,15 @@ In this mode, the converted guest is written to a local directory
 specified by I<-os /dir> (the directory must exist).  The converted
 guest's disks are written as:
 
- /dir/disk-sda
- /dir/disk-sdb
+ /dir/name-sda
+ /dir/name-sdb
  [etc]
 
-and a libvirt XML file is created containing guest metadata
-(C</dir/name.xml>, where C<name> is the guest name).
+and a libvirt XML file is created containing guest metadata:
+
+ /dir/name.xml
+
+where C<name> is the guest name.
 
 =item B<-o ovirt>
 
@@ -629,7 +645,71 @@ virt-v2v itself connects directly to the server.
 
 In this case the output flags are set to write the converted guest to
 a temporary directory as this is just an example, but you can also
-write to libvirt or RHEV.
+write to libvirt or any other supported target.
+
+=head1 INPUT FROM RHEL 5 XEN
+
+Virt-v2v is able to import Xen guests from RHEL 5 Xen hosts.
+
+Virt-v2v uses libvirt for access to the remote Xen host, and therefore
+the input mode should be I<-i libvirt>.  As this is the default, you
+don't need to specify it on the command line.
+
+=head2 XEN: SET UP SSH-AGENT ACCESS TO XEN HOST
+
+Currently you must enable passwordless SSH access to the remote Xen host
+from the virt-v2v conversion server.
+
+You must also use ssh-agent, and add your ssh public key to
+C</root/.ssh/authorized_keys> (on the Xen host).
+
+After doing this, you should check that passwordless access works
+from the virt-v2v server to the Xen host.  For example:
+
+ $ ssh root@xen.example.com
+ [ logs straight into the shell, no password is requested ]
+
+Note that password-interactive and Kerberos access are B<not>
+supported.  You B<have> to set up ssh access using ssh-agent and
+authorized_keys.
+
+=head2 XEN: TEST LIBVIRT CONNECTION TO REMOTE XEN HOST
+
+Use the L<virsh(1)> command to list the guests on the remote Xen host:
+
+ $ virsh -c xen+ssh://root@xen.example.com list --all
+  Id    Name                           State
+ ----------------------------------------------------
+  0     Domain-0                       running
+  -     rhel49-x86_64-pv               shut off
+
+You should also try dumping the metadata from any guest on your
+server, like this:
+
+ $ virsh -c xen+ssh://root@xen.example.com dumpxml rhel49-x86_64-pv
+ <domain type='xen'>
+   <name>rhel49-x86_64-pv</name>
+   [...]
+ </domain>
+
+B<If the above commands do not work, then virt-v2v is not going to
+work either>.  Fix your libvirt configuration or the remote server
+before continuing.
+
+=head2 XEN: IMPORTING A GUEST
+
+To import a particular guest from a Xen server, do:
+
+ $ virt-v2v -ic 'xen+ssh://root@xen.example.com' \
+   rhel49-x86_64-pv \
+   -o local -os /var/tmp
+
+where C<rhel49-x86_64-pv> is the name of the guest (which must be shut
+down).
+
+In this case the output flags are set to write the converted guest to
+a temporary directory as this is just an example, but you can also
+write to libvirt or any other supported target.
 
 =head1 OUTPUT TO LIBVIRT
 
