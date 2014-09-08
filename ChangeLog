@@ -1,3 +1,73 @@
+commit a12745a48196c2de9fa67e7974c40be63491b0d5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 6 20:06:50 2014 +0100
+
+    Version 1.27.39.
+
+commit 0866d2238138ffd14ec2cadd75332adf549a3035
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 6 10:05:18 2014 +0100
+
+    p2v: Add scripts to make disk or kickstart-based P2V ISO.
+    
+    Two scripts are added, replacing the make targets from the
+    previous commit:
+    
+    virt-p2v-make-disk: Builds a virt-p2v disk or USB key using
+    virt-builder.
+    
+    virt-p2v-make-kickstart: Builds a kickstart file (only) which can be
+    fed to livecd-creator or similar tools on Red Hat-derived distros.
+    
+    Kickstart generation is slightly different: Instead of requiring the
+    downstream 'libguestfs-pvhelper' package, the kickstart now embeds the
+    virt-p2v binary(!) making it self-contained and downstream packaging
+    simpler.
+    
+    In addition there are documentation changes.
+
+commit 8e6478dc7d9f4bcfc76182f556dbcea457ecc110
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 6 09:41:15 2014 +0100
+
+    p2v: Remove p2v-iso directory.
+    
+    As part of reworking the scripts that are used to build the P2V ISO,
+    first remove the separate p2v-iso directory.  Similar scripts and
+    documentation will be introduced back into the p2v/ directory in
+    following commits.
+
+commit e1ee037096a212beca8654a9f277be564066d9b1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 6 19:49:16 2014 +0100
+
+    p2v: Temporarily remove Configure Network button.
+    
+    We will ship 1.28 without the capability of configuring the network
+    (ie. DHCP will always be used).
+
+commit a743f57cb8e74adaccae3a6f3b3da0c6961dc5ba
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 6 19:47:15 2014 +0100
+
+    p2v: Ensure the current version of virt-p2v is always displayed.
+    
+    This will help with debugging customer problems.
+
+commit d7edde6b6dffb61dfd75edc1483eb6ed8ab56e2d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 6 13:49:13 2014 +0100
+
+    p2v: Success message should have info logo, not error logo.
+
+commit d82cf08ce12ffd86e9f1588881dbe3f0ffd12294
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 5 20:05:40 2014 +0100
+
+    daemon: Check return value of end_stringsbuf.
+    
+    Found by Coverity.
+
 commit 255ec57875221b9d7c620de4ddf038ac97743514
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Sep 5 15:12:53 2014 +0100

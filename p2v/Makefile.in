@@ -71,6 +71,7 @@
 # cf. 'subdir-rules.mk'
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -136,7 +137,9 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
-	$(srcdir)/Makefile.am $(top_srcdir)/build-aux/depcomp
+	$(srcdir)/Makefile.am $(srcdir)/virt-p2v-make-disk.in \
+	$(srcdir)/virt-p2v-make-kickstart.in \
+	$(top_srcdir)/build-aux/depcomp
 libexec_PROGRAMS = virt-p2v$(EXEEXT)
 subdir = p2v
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -269,9 +272,10 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = virt-p2v-make-disk virt-p2v-make-kickstart
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(man1dir)"
+am__installdirs = "$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(bindir)" \
+	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(virtp2vdatadir)"
 PROGRAMS = $(libexec_PROGRAMS)
 am_virt_p2v_OBJECTS = virt_p2v-authors.$(OBJEXT) \
 	virt_p2v-config.$(OBJEXT) virt_p2v-conversion.$(OBJEXT) \
@@ -290,6 +294,34 @@ am__v_lt_1 =
 virt_p2v_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(virt_p2v_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__uninstall_files_from_dir = { \
+  test -z "$$files" \
+    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+         $(am__cd) "$$dir" && rm -f $$files; }; \
+  }
+SCRIPTS = $(bin_SCRIPTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -331,37 +363,10 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
-am__install_max = 40
-am__nobase_strip_setup = \
-  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
-am__nobase_strip = \
-  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
-am__nobase_list = $(am__nobase_strip_setup); \
-  for p in $$list; do echo "$$p $$p"; done | \
-  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
-  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
-    if (++n[$$2] == $(am__install_max)) \
-      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
-    END { for (dir in files) print dir, files[dir] }'
-am__base_list = \
-  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
-  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__uninstall_files_from_dir = { \
-  test -z "$$files" \
-    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
-    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
-         $(am__cd) "$$dir" && rm -f $$files; }; \
-  }
 man1dir = $(mandir)/man1
 NROFF = nroff
 MANS = $(man_MANS)
-DATA = $(noinst_DATA)
+DATA = $(noinst_DATA) $(virtp2vdata_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -1485,8 +1490,15 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-EXTRA_DIST = virt-p2v.pod $(TESTS) test-virt-p2v-ssh.sh
-CLEANFILES = stamp-virt-p2v.pod
+EXTRA_DIST = issue launch-virt-p2v.in p2v.ks.in p2v.service \
+	virt-p2v.pod virt-p2v-make-disk.in virt-p2v-make-disk.pod \
+	virt-p2v-make-kickstart.in virt-p2v-make-kickstart.pod \
+	$(TESTS) test-virt-p2v-ssh.sh
+CLEANFILES = \
+	stamp-virt-p2v.pod \
+	stamp-virt-p2v-make-disk.pod \
+	stamp-virt-p2v-make-kickstart.pod
+
 
 # Note that miniexpect comes from here:
 # http://git.annexia.org/?p=miniexpect.git;a=summary
@@ -1523,10 +1535,28 @@ virt_p2v_LDADD = \
 	../gnulib/lib/libgnu.la
 
 
+# Scripts to build the disk image, USB key, or kickstart.
+bin_SCRIPTS = virt-p2v-make-disk virt-p2v-make-kickstart
+
+# Support files needed by the virt-p2v-make-* scripts.
+virtp2vdatadir = $(datadir)/virt-p2v
+virtp2vdata_DATA = \
+	issue \
+	launch-virt-p2v \
+	p2v.ks.in \
+	p2v.service
+
+
 # Manual pages and HTML files for the website.
-man_MANS = virt-p2v.1
+man_MANS = \
+	virt-p2v.1 \
+	virt-p2v-make-disk.1 \
+	virt-p2v-make-kickstart.1
+
 noinst_DATA = \
-	$(top_builddir)/html/virt-p2v.1.html
+	$(top_builddir)/html/virt-p2v.1.html \
+	$(top_builddir)/html/virt-p2v-make-disk.1.html \
+	$(top_builddir)/html/virt-p2v-make-kickstart.1.html
 
 
 # Tests.
@@ -1569,6 +1599,10 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+virt-p2v-make-disk: $(top_builddir)/config.status $(srcdir)/virt-p2v-make-disk.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+virt-p2v-make-kickstart: $(top_builddir)/config.status $(srcdir)/virt-p2v-make-kickstart.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-libexecPROGRAMS: $(libexec_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	@list='$(libexec_PROGRAMS)'; test -n "$(libexecdir)" || list=; \
@@ -1622,6 +1656,41 @@ clean-libexecPROGRAMS:
 virt-p2v$(EXEEXT): $(virt_p2v_OBJECTS) $(virt_p2v_DEPENDENCIES) $(EXTRA_virt_p2v_DEPENDENCIES) 
 	@rm -f virt-p2v$(EXEEXT)
 	$(AM_V_CCLD)$(virt_p2v_LINK) $(virt_p2v_OBJECTS) $(virt_p2v_LDADD) $(LIBS)
+install-binSCRIPTS: $(bin_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n' \
+	    -e 'h;s|.*|.|' \
+	    -e 'p;x;s,.*/,,;$(transform)' | sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1; } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) { files[d] = files[d] " " $$1; \
+	      if (++n[d] == $(am__install_max)) { \
+		print "f", d, files[d]; n[d] = 0; files[d] = "" } } \
+	    else { print "f", d "/" $$4, $$1 } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	     test -z "$$files" || { \
+	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	     } \
+	; done
+
+uninstall-binSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	       sed -e 's,.*/,,;$(transform)'`; \
+	dir='$(DESTDIR)$(bindir)'; $(am__uninstall_files_from_dir)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -1834,6 +1903,27 @@ uninstall-man1:
 	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
 	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
 	dir='$(DESTDIR)$(man1dir)'; $(am__uninstall_files_from_dir)
+install-virtp2vdataDATA: $(virtp2vdata_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(virtp2vdata_DATA)'; test -n "$(virtp2vdatadir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(virtp2vdatadir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(virtp2vdatadir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(virtp2vdatadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(virtp2vdatadir)" || exit $$?; \
+	done
+
+uninstall-virtp2vdataDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(virtp2vdata_DATA)'; test -n "$(virtp2vdatadir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(virtp2vdatadir)'; $(am__uninstall_files_from_dir)
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -2013,9 +2103,9 @@ distdir: $(DISTFILES)
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
-all-am: Makefile $(PROGRAMS) $(MANS) $(DATA)
+all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(MANS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(man1dir)"; do \
+	for dir in "$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(virtp2vdatadir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -2072,13 +2162,13 @@ info: info-am
 
 info-am:
 
-install-data-am: install-man
+install-data-am: install-man install-virtp2vdataDATA
 
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-libexecPROGRAMS
+install-exec-am: install-binSCRIPTS install-libexecPROGRAMS
 
 install-html: install-html-am
 
@@ -2118,7 +2208,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-libexecPROGRAMS uninstall-man
+uninstall-am: uninstall-binSCRIPTS uninstall-libexecPROGRAMS \
+	uninstall-man uninstall-virtp2vdataDATA
 
 uninstall-man: uninstall-man1
 
@@ -2129,16 +2220,17 @@ uninstall-man: uninstall-man1
 	cscopelist-am ctags ctags-am distclean distclean-compile \
 	distclean-generic distclean-libtool distclean-tags distdir dvi \
 	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-libexecPROGRAMS \
-	install-man install-man1 install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
+	install-binSCRIPTS install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am \
+	install-libexecPROGRAMS install-man install-man1 install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	install-virtp2vdataDATA installcheck installcheck-am \
 	installdirs maintainer-clean maintainer-clean-generic \
 	mostlyclean mostlyclean-compile mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-libexecPROGRAMS uninstall-man \
-	uninstall-man1
+	uninstall-am uninstall-binSCRIPTS uninstall-libexecPROGRAMS \
+	uninstall-man uninstall-man1 uninstall-virtp2vdataDATA
 
 
 -include $(top_builddir)/localenv
@@ -2173,12 +2265,39 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
+# Deal with stupid autotools libexecdir-not-expandable crap.
+launch-virt-p2v: launch-virt-p2v.in
+	rm -f $@ $@-t
+	sed 's,@''libexecdir@,$(libexecdir),g' < $< > $@-t
+	chmod 0555 $@-t
+	mv $@-t $@
+
 virt-p2v.1 $(top_builddir)/html/virt-p2v.1.html: stamp-virt-p2v.pod
 
 stamp-virt-p2v.pod: virt-p2v.pod
 	$(PODWRAPPER) \
 	  --man virt-p2v.1 \
 	  --html $(top_builddir)/html/virt-p2v.1.html \
+	  --license GPLv2+ \
+	  $<
+	touch $@
+
+virt-p2v-make-disk.1 $(top_builddir)/html/virt-p2v-make-disk.1.html: stamp-virt-p2v-make-disk.pod
+
+stamp-virt-p2v-make-disk.pod: virt-p2v-make-disk.pod
+	$(PODWRAPPER) \
+	  --man virt-p2v-make-disk.1 \
+	  --html $(top_builddir)/html/virt-p2v-make-disk.1.html \
+	  --license GPLv2+ \
+	  $<
+	touch $@
+
+virt-p2v-make-kickstart.1 $(top_builddir)/html/virt-p2v-make-kickstart.1.html: stamp-virt-p2v-make-kickstart.pod
+
+stamp-virt-p2v-make-kickstart.pod: virt-p2v-make-kickstart.pod
+	$(PODWRAPPER) \
+	  --man virt-p2v-make-kickstart.1 \
+	  --html $(top_builddir)/html/virt-p2v-make-kickstart.1.html \
 	  --license GPLv2+ \
 	  $<
 	touch $@
