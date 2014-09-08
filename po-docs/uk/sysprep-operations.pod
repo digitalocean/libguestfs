@@ -324,8 +324,11 @@ udev цьому можна запобігти.
 
 Вилучити облікові записи користувачів у гостьовій системі.
 
-Вилучити всі облікові записи користувачів та відповідні домашні
-каталоги. Обліковий запис «root» вилучено не буде.
+By default remove all the user accounts and their home directories.  The
+"root" account is not removed.
+
+See the I<--user-accounts> parameter for a way to specify how to remove only
+some users, or to not remove some others.
 
 =head3 Зауваження щодо user-account
 

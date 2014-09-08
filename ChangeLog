@@ -1,3 +1,165 @@
+commit 03d848ab68a1de7cbee49a6a00963f91e8f53696
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 17:06:45 2014 +0100
+
+    Version 1.27.36.
+
+commit 10f6206202b70f1f92807f5d5fed768a3f9e524c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 16:49:25 2014 +0100
+
+    p2v: Support for interface to network map.
+    
+    Instead of having all interfaces connect to the "default" network on
+    the hypervisor target, you can now create a map of interface to target
+    network, either on the kernel command line, eg:
+    
+      p2v.network=em1:rhevm
+      p2v.network=em1:rhevm,em2:management,other
+    
+    or through the GUI.
+
+commit 1ce65eeaefa2ce203db50a455c537b647d885230
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 16:22:52 2014 +0100
+
+    p2v: Print config->output_connection field in conversion debug.
+    
+    This fixes commit 81d3aee0713faddc320cd1db5ac125891d07a0f0.
+
+commit 128d474095bfabc2d724d0181155e364f1afbabf
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 2 15:55:33 2014 +0200
+
+    sysprep: user-account: select which users to remove or keep
+    
+    Enhance the user-account sysprep operation, so it is possible to select
+    which user accounts should be removed only (instead of all), or which to
+    eventually keep.
+
+commit c902ede1cd345258d6c388ab804fbf6a92b24ffd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 14:25:16 2014 +0100
+
+    p2v: Use libxml2 to write the libvirt XML document instead of printfs.
+    
+    Solves quoting issues.  This is just code reorganization, there is no
+    substantive change in the output.
+
+commit fc52f98c76d37273d8a420a99fefb2e5d71dcd50
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 13:29:53 2014 +0100
+
+    v2v: Update TODO file.
+
+commit f0e1f580b17a84fbc914acb50975d0e43ed1f2df
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 13:19:24 2014 +0100
+
+    p2v: Add some spacing on the conversion dialog.
+
+commit 750e8190348a88a7daf861e1162e5812faead059
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 08:53:31 2014 +0100
+
+    p2v: Add GUI controls for -o, -oc etc options on virt-v2v command line.
+
+commit 81d3aee0713faddc320cd1db5ac125891d07a0f0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 08:58:46 2014 +0100
+
+    p2v: Change p2v.output -> p2v.o etc and add p2v.oc
+    
+    Name these the same as the virt-v2v options, so for example
+    '-oa' -> 'p2v.oa'.
+    
+    Also add the missing p2v.oc (-oc) option.
+    
+    This updates commit c516d2d07dd0d1e4429ec84d2e9ebe02a951c5b5.
+
+commit 379f335059f31338e207d8d2b2c17d55334bcafe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 14:32:54 2014 +0100
+
+    v2v: Give a reasonable, early failure if output format is not raw or qcow2.
+    
+    See comment in the code for reasoning.
+    
+    Thanks: Shahar Havivi for discovering this.
+
+commit c004e4648d2091eb217026b15eed7e041557b635
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 2 11:36:29 2014 +0200
+
+    appliance: exclude a lvm2 rule on Ubuntu (RHBZ#1111662).
+    
+    On Ubuntu, exclude the Ubuntu-only 85-lvm2.rules since it causes the
+    automatic activation of volume groups on addition or change. This
+    interferes with libguestfs, as vgs which are disables suddently get
+    enabled.
+
+commit 65822315109cdb1e0079d687ce0d59fdfd6d83f2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 09:05:12 2014 +0100
+
+    generator: Don't use ocamldep -all option in this directory.
+    
+    ocamldep -all (introduced in commit a3881445efd0) creates a dependency
+    rule
+    
+      optgroups.cmi ... : utils.cmx ...
+    
+    Because we never build a native code version of the generator,
+    utils.cmx can never be remade, and so this results in optgroups.cmi
+    being always rebuilt and hence rebuilding the whole directory.
+    
+    It's unclear how to fix this, but reverting the ocamldep -all change
+    in this directory works around it.
+    
+    Partially reverts commit a3881445efd04d5fe6da29db8b2d62a30088b9d1.
+
+commit a3881445efd04d5fe6da29db8b2d62a30088b9d1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 1 22:24:14 2014 +0100
+
+    Use ocamldep -all option.
+    
+    In v2v, 'stringMap.ml' has no corresponding *.mli file.  ocamldep does
+    not generate a *.cmi dependency for such modules, and this can result
+    in parallel builds failing rarely because:
+    
+     (1) stringMap.ml is built (which has the side-effect of generating
+         stringMap.cmi)
+    
+     (2) at the same time, types.mli is compiled.  types.mli depends on
+         stringMap.cmi, but it is half way through being created by (1).
+    
+    There is no dependency to serialize (1) and (2).
+    
+    The resulting error is:
+    
+      File "types.mli", line 1:
+      Error: Corrupted compiled interface
+      stringMap.cmi
+    
+    Using 'ocamldep -all' generates extra deps for the *.cmi files, and
+    otherwise appears to be safe, so use it.
+    
+    There are currently a few upstream OCaml bugs with dependencies and
+    parallel builds:
+    
+    http://caml.inria.fr/mantis/view.php?id=3190
+    http://caml.inria.fr/mantis/view.php?id=4991
+    http://caml.inria.fr/mantis/view.php?id=5000
+    
+    It's not clear which of these apply here.
+
+commit c435053b3476094cd7e05c50c2e7713fcb646d5c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 1 21:29:13 2014 +0100
+
+    Improve diagrams on various manual pages using Unicode box drawing characters.
+
 commit 3c1b81d2af5c61863ac59e28f2a8509ed7a3e7ce
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon Sep 1 17:40:56 2014 +0100

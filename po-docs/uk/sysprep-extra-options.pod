@@ -232,6 +232,19 @@ the local filesystem.
 
 Див. також I<--mkdir>, I<--delete>, I<--scrub>.
 
+=item B<--user-accounts> USERS (see C<user-account> below)
+
+The user accounts to be removed (or not) from the guest.  The value of this
+option is a list of user names separated by comma, where specifying an user
+means it is going to be removed, while prepending C<-> in front of it name
+means it is not removed.  For example:
+
+ --user-accounts bob,eve
+
+would only remove the user accounts C<bob> and C<eve>.
+
+This option can be specified multiple times.
+
 =item B<--write> FILE:CONTENT (see C<customize> below)
 
 Записати C<ДАНІ> до файла C<ФАЙЛ>.

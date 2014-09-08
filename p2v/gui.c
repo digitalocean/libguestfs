@@ -54,7 +54,9 @@ static GtkWidget *conn_dlg,
 
 /* The conversion dialog. */
 static GtkWidget *conv_dlg,
-  *guestname_entry, *vcpus_entry, *memory_entry, *debug_button,
+  *guestname_entry, *vcpus_entry, *memory_entry,
+  *o_combo, *oc_entry, *os_entry, *of_entry, *oa_combo,
+  *debug_button,
   *disks_list, *removable_list, *interfaces_list,
   *start_button;
 
@@ -358,6 +360,7 @@ static void populate_disks (GtkTreeView *disks_list);
 static void populate_removable (GtkTreeView *removable_list);
 static void populate_interfaces (GtkTreeView *interfaces_list);
 static void toggled (GtkCellRendererToggle *cell, gchar *path_str, gpointer data);
+static void network_edited_callback (GtkCellRendererToggle *cell, gchar *path_str, gchar *new_text, gpointer data);
 static void set_disks_from_ui (struct config *);
 static void set_removable_from_ui (struct config *);
 static void set_interfaces_from_ui (struct config *);
@@ -382,6 +385,7 @@ enum {
 enum {
   INTERFACES_COL_CONVERT = 0,
   INTERFACES_COL_DEVICE,
+  INTERFACES_COL_NETWORK,
   NUM_INTERFACES_COLS,
 };
 
@@ -389,9 +393,11 @@ static void
 create_conversion_dialog (struct config *config)
 {
   GtkWidget *back;
-  GtkWidget *hbox, *right_vbox;
-  GtkWidget *target, *target_vbox, *target_tbl;
+  GtkWidget *hbox, *left_vbox, *right_vbox;
+  GtkWidget *target_frame, *target_vbox, *target_tbl;
   GtkWidget *guestname_label, *vcpus_label, *memory_label;
+  GtkWidget *output_frame, *output_vbox, *output_tbl;
+  GtkWidget *o_label, *oa_label, *oc_label, *of_label, *os_label;
   GtkWidget *disks_frame, *disks_sw;
   GtkWidget *removable_frame, *removable_sw;
   GtkWidget *interfaces_frame, *interfaces_sw;
@@ -408,10 +414,12 @@ create_conversion_dialog (struct config *config)
 
   /* The main dialog area. */
   hbox = gtk_hbox_new (TRUE, 1);
+  left_vbox = gtk_vbox_new (TRUE, 1);
   right_vbox = gtk_vbox_new (TRUE, 1);
 
-  /* The left column: target properties. */
-  target = gtk_frame_new (_("Target properties"));
+  /* The left column: target properties and output options. */
+  target_frame = gtk_frame_new (_("Target properties"));
+  gtk_container_set_border_width (GTK_CONTAINER (target_frame), 4);
 
   target_vbox = gtk_vbox_new (FALSE, 1);
 
@@ -447,19 +455,107 @@ create_conversion_dialog (struct config *config)
   gtk_table_attach (GTK_TABLE (target_tbl), memory_entry,
                     1, 2, 2, 3, GTK_FILL, GTK_FILL, 1, 1);
 
+  gtk_box_pack_start (GTK_BOX (target_vbox), target_tbl, TRUE, TRUE, 0);
+  gtk_container_add (GTK_CONTAINER (target_frame), target_vbox);
+
+  output_frame = gtk_frame_new (_("Virt-v2v output options"));
+  gtk_container_set_border_width (GTK_CONTAINER (output_frame), 4);
+
+  output_vbox = gtk_vbox_new (FALSE, 1);
+
+  output_tbl = gtk_table_new (5, 2, FALSE);
+  o_label = gtk_label_new (_("Output to (-o):"));
+  gtk_misc_set_alignment (GTK_MISC (o_label), 1., 0.5);
+  gtk_table_attach (GTK_TABLE (output_tbl), o_label,
+                    0, 1, 0, 1, GTK_FILL, GTK_FILL, 1, 1);
+  o_combo = gtk_combo_box_new_text ();
+  gtk_widget_set_tooltip_markup (o_combo, _("<b>libvirt</b> means send the converted guest to libvirt-managed KVM on the conversion server.  <b>local</b> means put it in a directory on the conversion server.  <b>rhev</b> means write it to RHEV-M/oVirt.  <b>glance</b> means write it to OpenStack Glance.  See the virt-v2v(1) manual page for more information about output options."));
+  /* XXX Add list of input and output drivers to virt-v2v --machine-readable
+   * and pick them up for this list.
+   */
+  gtk_combo_box_append_text (GTK_COMBO_BOX (o_combo), "libvirt");
+  gtk_combo_box_append_text (GTK_COMBO_BOX (o_combo), "local");
+  gtk_combo_box_append_text (GTK_COMBO_BOX (o_combo), "rhev");
+  gtk_combo_box_append_text (GTK_COMBO_BOX (o_combo), "glance");
+  if (config->output) {
+    if (STREQ (config->output, "libvirt"))
+      gtk_combo_box_set_active (GTK_COMBO_BOX (o_combo), 0);
+    else if (STREQ (config->output, "local") || STREQ (config->output, "disk"))
+      gtk_combo_box_set_active (GTK_COMBO_BOX (o_combo), 1);
+    else if (STREQ (config->output, "rhev") || STREQ (config->output, "ovirt"))
+      gtk_combo_box_set_active (GTK_COMBO_BOX (o_combo), 2);
+    else if (STREQ (config->output, "glance"))
+      gtk_combo_box_set_active (GTK_COMBO_BOX (o_combo), 3);
+  }
+  gtk_table_attach (GTK_TABLE (output_tbl), o_combo,
+                    1, 2, 0, 1, GTK_FILL, GTK_FILL, 1, 1);
+
+  oc_label = gtk_label_new (_("Output conn. (-oc):"));
+  gtk_misc_set_alignment (GTK_MISC (oc_label), 1., 0.5);
+  gtk_table_attach (GTK_TABLE (output_tbl), oc_label,
+                    0, 1, 1, 2, GTK_FILL, GTK_FILL, 1, 1);
+  oc_entry = gtk_entry_new ();
+  gtk_widget_set_tooltip_markup (oc_entry, _("For <b>libvirt</b> only, the libvirt connection URI, or leave blank to add the guest to the default libvirt instance on the conversion server.  For others, leave this field blank."));
+  if (config->output_connection != NULL)
+    gtk_entry_set_text (GTK_ENTRY (oc_entry), config->output_connection);
+  gtk_table_attach (GTK_TABLE (output_tbl), oc_entry,
+                    1, 2, 1, 2, GTK_FILL, GTK_FILL, 1, 1);
+
+  os_label = gtk_label_new (_("Output storage (-os):"));
+  gtk_misc_set_alignment (GTK_MISC (os_label), 1., 0.5);
+  gtk_table_attach (GTK_TABLE (output_tbl), os_label,
+                    0, 1, 2, 3, GTK_FILL, GTK_FILL, 1, 1);
+  os_entry = gtk_entry_new ();
+  gtk_widget_set_tooltip_markup (os_entry, _("For <b>local</b>, put the directory name on the conversion server.  For <b>rhev</b>, put the Export Storage Domain (server:/mountpoint).  For others, leave this field blank."));
+  if (config->output_storage != NULL)
+    gtk_entry_set_text (GTK_ENTRY (os_entry), config->output_storage);
+  gtk_table_attach (GTK_TABLE (output_tbl), os_entry,
+                    1, 2, 2, 3, GTK_FILL, GTK_FILL, 1, 1);
+
+  of_label = gtk_label_new (_("Output format (-of):"));
+  gtk_misc_set_alignment (GTK_MISC (of_label), 1., 0.5);
+  gtk_table_attach (GTK_TABLE (output_tbl), of_label,
+                    0, 1, 3, 4, GTK_FILL, GTK_FILL, 1, 1);
+  of_entry = gtk_entry_new ();
+  gtk_widget_set_tooltip_markup (of_entry, _("The output disk format, typically <b>raw</b> or <b>qcow2</b>.  If blank, defaults to <b>raw</b>."));
+  if (config->output_format != NULL)
+    gtk_entry_set_text (GTK_ENTRY (of_entry), config->output_format);
+  gtk_table_attach (GTK_TABLE (output_tbl), of_entry,
+                    1, 2, 3, 4, GTK_FILL, GTK_FILL, 1, 1);
+
+  oa_label = gtk_label_new (_("Output allocation (-oa):"));
+  gtk_misc_set_alignment (GTK_MISC (oa_label), 1., 0.5);
+  gtk_table_attach (GTK_TABLE (output_tbl), oa_label,
+                    0, 1, 4, 5, GTK_FILL, GTK_FILL, 1, 1);
+  oa_combo = gtk_combo_box_new_text ();
+  gtk_combo_box_append_text (GTK_COMBO_BOX (oa_combo), "sparse");
+  gtk_combo_box_append_text (GTK_COMBO_BOX (oa_combo), "preallocated");
+  switch (config->output_allocation) {
+  case OUTPUT_ALLOCATION_PREALLOCATED:
+    gtk_combo_box_set_active (GTK_COMBO_BOX (oa_combo), 1);
+    break;
+  default:
+    gtk_combo_box_set_active (GTK_COMBO_BOX (oa_combo), 0);
+    break;
+  }
+  gtk_table_attach (GTK_TABLE (output_tbl), oa_combo,
+                    1, 2, 4, 5, GTK_FILL, GTK_FILL, 1, 1);
+
   debug_button =
     gtk_check_button_new_with_label (_("Enable server-side debugging\n"
                                        "(This is saved in /tmp on the conversion server)"));
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (debug_button),
                                 config->verbose);
 
-  gtk_box_pack_start (GTK_BOX (target_vbox), target_tbl, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (target_vbox), debug_button, TRUE, TRUE, 0);
-  gtk_container_add (GTK_CONTAINER (target), target_vbox);
+  gtk_box_pack_start (GTK_BOX (output_vbox), output_tbl, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (output_vbox), debug_button, TRUE, TRUE, 0);
+  gtk_container_add (GTK_CONTAINER (output_frame), output_vbox);
 
   /* The right column: select devices to be converted. */
   disks_frame = gtk_frame_new (_("Fixed hard disks"));
+  gtk_container_set_border_width (GTK_CONTAINER (disks_frame), 4);
   disks_sw = gtk_scrolled_window_new (NULL, NULL);
+  gtk_container_set_border_width (GTK_CONTAINER (disks_sw), 8);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (disks_sw),
                                   GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
   disks_list = gtk_tree_view_new ();
@@ -469,7 +565,9 @@ create_conversion_dialog (struct config *config)
   gtk_container_add (GTK_CONTAINER (disks_frame), disks_sw);
 
   removable_frame = gtk_frame_new (_("Removable media"));
+  gtk_container_set_border_width (GTK_CONTAINER (removable_frame), 4);
   removable_sw = gtk_scrolled_window_new (NULL, NULL);
+  gtk_container_set_border_width (GTK_CONTAINER (removable_sw), 8);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (removable_sw),
                                   GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
   removable_list = gtk_tree_view_new ();
@@ -479,7 +577,9 @@ create_conversion_dialog (struct config *config)
   gtk_container_add (GTK_CONTAINER (removable_frame), removable_sw);
 
   interfaces_frame = gtk_frame_new (_("Network interfaces"));
+  gtk_container_set_border_width (GTK_CONTAINER (interfaces_frame), 4);
   interfaces_sw = gtk_scrolled_window_new (NULL, NULL);
+  gtk_container_set_border_width (GTK_CONTAINER (interfaces_sw), 8);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (interfaces_sw),
                                   GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
   interfaces_list = gtk_tree_view_new ();
@@ -488,11 +588,15 @@ create_conversion_dialog (struct config *config)
                                          interfaces_list);
   gtk_container_add (GTK_CONTAINER (interfaces_frame), interfaces_sw);
 
+  /* Pack the top level dialog. */
+  gtk_box_pack_start (GTK_BOX (left_vbox), target_frame, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (left_vbox), output_frame, TRUE, TRUE, 0);
+
   gtk_box_pack_start (GTK_BOX (right_vbox), disks_frame, TRUE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (right_vbox), removable_frame, TRUE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (right_vbox), interfaces_frame, TRUE, TRUE, 0);
 
-  gtk_box_pack_start (GTK_BOX (hbox), target, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), left_vbox, TRUE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (hbox), right_vbox, TRUE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (GTK_DIALOG (conv_dlg)->vbox),
                       hbox, TRUE, TRUE, 0);
@@ -664,18 +768,25 @@ static void
 populate_interfaces (GtkTreeView *interfaces_list)
 {
   GtkListStore *interfaces_store;
-  GtkCellRenderer *interfaces_col_convert, *interfaces_col_device;
+  GtkCellRenderer *interfaces_col_convert, *interfaces_col_device,
+    *interfaces_col_network;
   GtkTreeIter iter;
   size_t i;
 
   interfaces_store = gtk_list_store_new (NUM_INTERFACES_COLS,
-                                         G_TYPE_BOOLEAN, G_TYPE_STRING);
+                                         G_TYPE_BOOLEAN, G_TYPE_STRING,
+                                         G_TYPE_STRING);
   if (all_interfaces) {
     for (i = 0; all_interfaces[i] != NULL; ++i) {
       gtk_list_store_append (interfaces_store, &iter);
       gtk_list_store_set (interfaces_store, &iter,
-                          INTERFACES_COL_CONVERT, TRUE,
+                          /* Only convert the first interface.  As
+                           * they are sorted, this is usually the
+                           * physical interface.
+                           */
+                          INTERFACES_COL_CONVERT, i == 0,
                           INTERFACES_COL_DEVICE, all_interfaces[i],
+                          INTERFACES_COL_NETWORK, "default",
                           -1);
     }
   }
@@ -696,9 +807,20 @@ populate_interfaces (GtkTreeView *interfaces_list)
                                                interfaces_col_device,
                                                "text", INTERFACES_COL_DEVICE,
                                                NULL);
+  interfaces_col_network = gtk_cell_renderer_text_new ();
+  gtk_tree_view_insert_column_with_attributes (interfaces_list,
+                                               -1,
+                                               _("Connect to virtual network"),
+                                               interfaces_col_network,
+                                               "text", INTERFACES_COL_NETWORK,
+                                               NULL);
 
   g_signal_connect (interfaces_col_convert, "toggled",
                     G_CALLBACK (toggled), interfaces_store);
+
+  g_object_set (interfaces_col_network, "editable", TRUE, NULL);
+  g_signal_connect (interfaces_col_network, "edited",
+                    G_CALLBACK (network_edited_callback), interfaces_store);
 }
 
 static void
@@ -713,6 +835,25 @@ toggled (GtkCellRendererToggle *cell, gchar *path_str, gpointer data)
   gtk_tree_model_get (model, &iter, 0 /* CONVERT */, &v, -1);
   v ^= 1;
   gtk_list_store_set (GTK_LIST_STORE (model), &iter, 0 /* CONVERT */, v, -1);
+  gtk_tree_path_free (path);
+}
+
+static void
+network_edited_callback (GtkCellRendererToggle *cell, gchar *path_str,
+                         gchar *new_text, gpointer data)
+{
+  GtkTreeModel *model = data;
+  GtkTreePath *path;
+  GtkTreeIter iter;
+
+  if (new_text == NULL || STREQ (new_text, ""))
+    return;
+
+  path = gtk_tree_path_new_from_string (path_str);
+
+  gtk_tree_model_get_iter (model, &iter, path);
+  gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+                      INTERFACES_COL_NETWORK, new_text, -1);
   gtk_tree_path_free (path);
 }
 
@@ -773,6 +914,54 @@ set_interfaces_from_ui (struct config *config)
 {
   set_from_ui_generic (all_interfaces, &config->interfaces,
                        GTK_TREE_VIEW (interfaces_list));
+}
+
+static void
+set_network_map_from_ui (struct config *config)
+{
+  GtkTreeView *list;
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  gboolean b;
+  const char *s;
+  size_t i, j;
+
+  if (all_interfaces == NULL) {
+    guestfs___free_string_list (config->network_map);
+    config->network_map = NULL;
+    return;
+  }
+
+  list = GTK_TREE_VIEW (interfaces_list);
+  model = gtk_tree_view_get_model (list);
+
+  guestfs___free_string_list (config->network_map);
+  config->network_map =
+    malloc ((1 + guestfs___count_strings (all_interfaces))
+            * sizeof (char *));
+  if (config->network_map == NULL) {
+    perror ("malloc");
+    exit (EXIT_FAILURE);
+  }
+  i = j = 0;
+
+  b = gtk_tree_model_get_iter_first (model, &iter);
+  while (b) {
+    gtk_tree_model_get (model, &iter, INTERFACES_COL_NETWORK, &s, -1);
+    if (s) {
+      assert (all_interfaces[i] != NULL);
+      if (asprintf (&config->network_map[j], "%s:%s",
+                    all_interfaces[i], s) == -1) {
+        perror ("asprintf");
+        exit (EXIT_FAILURE);
+      }
+      ++j;
+    }
+    b = gtk_tree_model_iter_next (model, &iter);
+    ++i;
+  }
+
+  config->network_map[j] = NULL;
 }
 
 /* The conversion dialog Back button has been clicked. */
@@ -902,8 +1091,8 @@ start_conversion_clicked (GtkWidget *w, gpointer data)
 {
   struct config *config = data;
   int i;
-  const char *vcpus_str;
-  const char *memory_str;
+  const char *str;
+  char *str2;
   GtkWidget *dlg;
   struct config *copy;
   int err;
@@ -927,14 +1116,14 @@ start_conversion_clicked (GtkWidget *w, gpointer data)
     return;
   }
 
-  vcpus_str = gtk_entry_get_text (GTK_ENTRY (vcpus_entry));
-  if (sscanf (vcpus_str, "%d", &i) == 1 && i > 0)
+  str = gtk_entry_get_text (GTK_ENTRY (vcpus_entry));
+  if (sscanf (str, "%d", &i) == 1 && i > 0)
     config->vcpus = i;
   else
     config->vcpus = 1;
 
-  memory_str = gtk_entry_get_text (GTK_ENTRY (memory_entry));
-  if (sscanf (memory_str, "%d", &i) == 1 && i >= 256)
+  str = gtk_entry_get_text (GTK_ENTRY (memory_entry));
+  if (sscanf (str, "%d", &i) == 1 && i >= 256)
     config->memory = (uint64_t) i * 1024 * 1024;
   else
     config->memory = 1024 * 1024 * 1024;
@@ -962,6 +1151,42 @@ start_conversion_clicked (GtkWidget *w, gpointer data)
   /* List of removable media and network interfaces. */
   set_removable_from_ui (config);
   set_interfaces_from_ui (config);
+  set_network_map_from_ui (config);
+
+  /* Output selection. */
+  free (config->output);
+  config->output = gtk_combo_box_get_active_text (GTK_COMBO_BOX (o_combo));
+
+  config->output_allocation = OUTPUT_ALLOCATION_NONE;
+  str2 = gtk_combo_box_get_active_text (GTK_COMBO_BOX (oa_combo));
+  if (str2) {
+    if (STREQ (str2, "sparse"))
+      config->output_allocation = OUTPUT_ALLOCATION_SPARSE;
+    else if (STREQ (str2, "preallocated"))
+      config->output_allocation = OUTPUT_ALLOCATION_PREALLOCATED;
+    free (str2);
+  }
+
+  free (config->output_connection);
+  str = gtk_entry_get_text (GTK_ENTRY (oc_entry));
+  if (str && STRNEQ (str, ""))
+    config->output_connection = strdup (str);
+  else
+    config->output_connection = NULL;
+
+  free (config->output_format);
+  str = gtk_entry_get_text (GTK_ENTRY (of_entry));
+  if (str && STRNEQ (str, ""))
+    config->output_format = strdup (str);
+  else
+    config->output_format = NULL;
+
+  free (config->output_storage);
+  str = gtk_entry_get_text (GTK_ENTRY (os_entry));
+  if (str && STRNEQ (str, ""))
+    config->output_storage = strdup (str);
+  else
+    config->output_storage = NULL;
 
   /* Display the UI for conversion. */
   show_running_dialog ();
