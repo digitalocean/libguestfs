@@ -45,6 +45,11 @@ object
       guest
 
   method source () =
+    (* Get the libvirt XML.  This also checks (as a side-effect)
+     * that the domain is not running.  (RHBZ#1138586)
+     *)
+    let xml = Domainxml.dumpxml ?conn:libvirt_uri guest in
+
     (* Depending on the libvirt URI we may need to convert <source/>
      * paths so we can access them remotely (if that is possible).  This
      * is only true for remote, non-NULL URIs.  (We assume the user
@@ -89,10 +94,8 @@ object
             orig_uri;
           None, None in
 
-    (* Get the libvirt XML. *)
-    let xml = Domainxml.dumpxml ?conn:libvirt_uri guest in
-
-    Input_libvirtxml.parse_libvirt_xml ?map_source_file ?map_source_dev xml
+    Input_libvirtxml.parse_libvirt_xml ~verbose
+      ?map_source_file ?map_source_dev xml
 end
 
 let input_libvirt = new input_libvirt

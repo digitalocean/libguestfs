@@ -1,3 +1,131 @@
+commit 255ec57875221b9d7c620de4ddf038ac97743514
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 5 15:12:53 2014 +0100
+
+    Version 1.27.38.
+
+commit d85c38155a5c36ce9fc53a5318ab452921c0915d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 5 15:18:54 2014 +0100
+
+    appliance: Add guestfs_shadow.aug to EXTRA_DIST.
+    
+    Fixes commit 61917136f5ad5efe30502f46f1adf60c20f15c97.
+
+commit 553677398b8bfba60b3870a53d2f5174bac82147
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Sep 4 16:16:06 2014 +0200
+
+    customize: use augeas to change passwords
+    
+    Make use of augeas to load and edit /etc/shadow, now that we have
+    (either from upstream or by ourselves) a lens handling it.
+
+commit a0cf4b3407ea86276633ca36389d0ec964e7d0d5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Sep 4 16:14:42 2014 +0200
+
+    sysprep: remove comment and notes about /etc/shadow lens
+    
+    We are either using the upstream lens, or our copy of it, to handle
+    /etc/shadow, so now removing entries from it works.
+
+commit 61917136f5ad5efe30502f46f1adf60c20f15c97
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Sep 4 15:27:37 2014 +0200
+
+    appliance: daemon: import and use upstream shadow lens
+    
+    Import the upstream lens for the shadow file, just with a different
+    identifier and not matching /etc/shadow by default. Instead, apply a
+    transformation to have it match /etc/shadow only if the version of
+    augeas is at least 1.2.1 [1].
+    
+    [1] While the last upstream version is 1.2.0, all the development seems
+    to happen in master, so whatever the next version is going to be
+    numbered (e.g. 1.2.1 or 1.3.0), the check will be fine anyway.
+
+commit d01fbe86662860b3e7fef8b76a8ba9579669c8af
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Sep 5 14:47:22 2014 +0200
+
+    daemon: add a way to check for the version of augeas
+    
+    Query augeas for its version when required, i.e. only once when using
+    the new augeas_is_version function.
+
+commit 54e32eb8e2e10369de4df0ab4481d1fbcf7ecfb9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 5 14:44:48 2014 +0100
+
+    v2v: -i libvirt, -i libvirtxml: Print libvirt XML when debugging.
+
+commit 35d49cd9de8f07ae281b276bad852ad33875a9b8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 5 14:13:28 2014 +0100
+
+    v2v: When locating initramfs, ignore kdump initramfs images (RHBZ#1138184).
+    
+    Thanks: Tingting Zheng.
+
+commit 096c05a750b8b525e48149c0c6522769c92ab07c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 5 13:36:01 2014 +0100
+
+    v2v: -i libvirt: Check the domain is not running (RHBZ#1138586).
+    
+    It will print an error like this:
+    
+      virt-v2v: error: internal error: invalid argument: libvirt domain 'windows'
+      is running, it must be shut down in order to perform virt-v2v conversion
+    
+    This only works for libvirt domains, and is explicitly disabled for
+    test:/// URIs since these domains are always "running", but we use
+    these URIs for testing.
+
+commit de93b9060d88a3cda71eb1840d04c49fc94b404f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Sep 3 17:38:32 2014 +0200
+
+    daemon: make aug_close cleanup available for all
+    
+    Just code motion, no behaviour changes.
+
+commit a935db30e5f27ab3f355ad77cabba01a82c53186
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Sep 5 11:29:57 2014 +0200
+
+    v2v: R_OK is in Unix module
+
+commit 922da70651a81c24f0fefc9f3885e1cda3250b5a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 5 09:54:32 2014 +0100
+
+    v2v: -i disk: Add a clearer error message if the disk doesn't exist or is not readable.
+
+commit d12f1ee99c42fe800567d82a5e99f1f31dd6760d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 5 09:49:39 2014 +0100
+
+    v2v: -i disk: Don't fail if filename has no extension.
+    
+    Unhelpfully, Filename.chop_extension throws an exception if the
+    filename has no extension (instead of just returning the filename).
+    Therefore the -i disk option would fail if you passed any filename
+    that didn't have an extension.
+
+commit 54995514cb62b4adc066d178eabb7fded4b16196
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 4 15:21:17 2014 +0100
+
+    Update gnulib to latest.
+
+commit 0fc7cbe99b59484ac285da8825e4f351ca019d6d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Sep 4 16:52:36 2014 +0200
+
+    v2v: skip test-v2v-i-ova.sh if rhsrvany.exe is not installed
+
 commit 03c9834cf3de504c9e2724894e7d9c222fd5e116
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Sep 4 14:58:04 2014 +0100

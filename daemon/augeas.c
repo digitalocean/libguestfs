@@ -29,11 +29,72 @@
 #include "actions.h"
 #include "optgroups.h"
 
+#define FPRINTF_AUGEAS_ERROR(aug,fs,...)                                \
+  do {                                                                  \
+    int code = aug_error (aug);                                         \
+    if (code == AUG_ENOMEM)                                             \
+      reply_with_error (fs ": augeas out of memory", ##__VA_ARGS__);    \
+    else {                                                              \
+      const char *message = aug_error_message (aug);                    \
+      const char *minor = aug_error_minor_message (aug);                \
+      const char *details = aug_error_details (aug);                    \
+      fprintf (stderr, fs ": %s%s%s%s%s", ##__VA_ARGS__,                \
+                          message,                                      \
+                          minor ? ": " : "", minor ? minor : "",        \
+                          details ? ": " : "", details ? details : ""); \
+    }                                                                   \
+  } while (0)
+
+int augeas_version;
+
 /* The Augeas handle.  We maintain a single handle per daemon, which
  * is all that is necessary and reduces the complexity of the API
  * considerably.
  */
 static augeas *aug = NULL;
+
+void
+aug_read_version (void)
+{
+  CLEANUP_AUG_CLOSE augeas *ah = NULL;
+  int r;
+  const char *str;
+  int major = 0, minor = 0, patch = 0;
+
+  if (augeas_version != 0)
+    return;
+
+  /* Optimization: do not load the files nor the lenses, since we are
+   * only interested in the version.
+   */
+  ah = aug_init ("/", NULL, AUG_NO_ERR_CLOSE | AUG_NO_LOAD | AUG_NO_STDINC);
+  if (!ah) {
+    FPRINTF_AUGEAS_ERROR (ah, "augeas initialization failed");
+    return;
+  }
+
+  if (aug_error (ah) != AUG_NOERROR) {
+    FPRINTF_AUGEAS_ERROR (ah, "aug_init");
+    return;
+  }
+
+  r = aug_get (ah, "/augeas/version", &str);
+  if (r != 1) {
+    FPRINTF_AUGEAS_ERROR (ah, "aug_get");
+    return;
+  }
+
+  r = sscanf (str, "%d.%d.%d", &major, &minor, &patch);
+  if (r != 2 && r != 3) {
+    fprintf (stderr, "cannot match the version string in '%s'\n", str);
+    return;
+  }
+
+  if (verbose)
+    fprintf (stderr, "augeas version: %d.%d.%d\n", major, minor, patch);
+
+  augeas_version = (major << 16) | (minor << 8) | patch;
+}
 
 /* Clean up the augeas handle on daemon exit. */
 void aug_finalize (void) __attribute__((destructor));
@@ -73,7 +134,7 @@ do_aug_init (const char *root, int flags)
   }
 
   /* Pass AUG_NO_ERR_CLOSE so we can display detailed errors. */
-  aug = aug_init (buf, NULL, flags | AUG_NO_ERR_CLOSE);
+  aug = aug_init (buf, "/usr/share/guestfs/", flags | AUG_NO_ERR_CLOSE);
 
   if (!aug) {
     reply_with_error ("augeas initialization failed");
@@ -85,6 +146,25 @@ do_aug_init (const char *root, int flags)
     aug_close (aug);
     aug = NULL;
     return -1;
+  }
+
+  if (!augeas_is_version (1, 2, 1)) {
+    int r = aug_transform (aug, "guestfs_shadow", "/etc/shadow",
+                           0 /* = included */);
+    if (r == -1) {
+      AUGEAS_ERROR ("aug_transform");
+      aug_close (aug);
+      aug = NULL;
+      return -1;
+    }
+
+    /* If aug_load was implicitly called, reload the handle. */
+    if ((flags & AUG_NO_LOAD) == 0) {
+      if (aug_load (aug) == -1) {
+        AUGEAS_ERROR ("aug_load");
+        return -1;
+      }
+    }
   }
 
   return 0;

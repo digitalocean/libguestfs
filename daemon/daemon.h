@@ -176,6 +176,7 @@ extern void cleanup_free (void *ptr);
 extern void cleanup_free_string_list (void *ptr);
 extern void cleanup_unlink_free (void *ptr);
 extern void cleanup_close (void *ptr);
+extern void cleanup_aug_close (void *ptr);
 
 /*-- in names.c (auto-generated) --*/
 extern const char *function_names[];
@@ -227,8 +228,22 @@ extern void copy_lvm (void);
 /*-- in zero.c --*/
 extern void wipe_device_before_mkfs (const char *device);
 
-/*-- in augeas.c, hivex.c, journal.c --*/
+/*-- in augeas.c --*/
+extern void aug_read_version (void);
 extern void aug_finalize (void);
+
+/* The version of augeas, saved as:
+ * (MAJOR << 16) | (MINOR << 8) | PATCH
+ */
+extern int augeas_version;
+static inline int
+augeas_is_version (int major, int minor, int patch)
+{
+  aug_read_version (); /* Lazy version reading. */
+  return augeas_version >= ((major << 16) | (minor << 8) | patch);
+}
+
+/*-- hivex.c, journal.c --*/
 extern void hivex_finalize (void);
 extern void journal_finalize (void);
 
@@ -426,11 +441,13 @@ is_zero (const char *buffer, size_t size)
     __attribute__((cleanup(cleanup_free_string_list)))
 #define CLEANUP_UNLINK_FREE __attribute__((cleanup(cleanup_unlink_free)))
 #define CLEANUP_CLOSE __attribute__((cleanup(cleanup_close)))
+#define CLEANUP_AUG_CLOSE __attribute__((cleanup(cleanup_aug_close)))
 #else
 #define CLEANUP_FREE
 #define CLEANUP_FREE_STRING_LIST
 #define CLEANUP_UNLINK_FREE
 #define CLEANUP_CLOSE
+#define CLEANUP_AUG_CLOSE
 #endif
 
 #endif /* GUESTFSD_DAEMON_H */

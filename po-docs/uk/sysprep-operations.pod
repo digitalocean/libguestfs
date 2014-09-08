@@ -330,12 +330,6 @@ By default remove all the user accounts and their home directories.  The
 See the I<--user-accounts> parameter for a way to specify how to remove only
 some users, or to not remove some others.
 
-=head3 Зауваження щодо user-account
-
-У поточній версії записи користувачів не вилучаються з
-C</etc/shadow>. Причиною є те, що у Augeas ще немає модуля для файлів
-паролів shadow.
-
 =head2 B<utmp> *
 
 Вилучити файл utmp.
