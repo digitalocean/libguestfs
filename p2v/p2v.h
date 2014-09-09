@@ -65,8 +65,10 @@ struct config {
   char **disks;
   char **removable;
   char **interfaces;
+  char **network_map;
   char *output;
   int output_allocation;
+  char *output_connection;
   char *output_format;
   char *output_storage;
 };
@@ -106,6 +108,10 @@ extern const char *get_ssh_error (void);
 extern int v2v_major;
 extern int v2v_minor;
 extern int v2v_release;
+
+/* input and output drivers (read from remote). */
+extern char **input_drivers;
+extern char **output_drivers;
 
 /* authors.c */
 extern const char *authors[];

@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [27])
-m4_define([libguestfs_release], [35])
+m4_define([libguestfs_release], [39])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1614,10 +1614,10 @@ AC_CONFIG_FILES([appliance/libguestfs-make-fixed-appliance],
                 [chmod +x,-w appliance/libguestfs-make-fixed-appliance])
 AC_CONFIG_FILES([inspector/test-xmllint.sh],
                 [chmod +x,-w inspector/test-xmllint.sh])
-AC_CONFIG_FILES([p2v-iso/kickstart-target.sh],
-                [chmod +x,-w p2v-iso/kickstart-target.sh])
-AC_CONFIG_FILES([p2v-iso/virt-builder-target.sh],
-                [chmod +x,-w p2v-iso/virt-builder-target.sh])
+AC_CONFIG_FILES([p2v/virt-p2v-make-disk],
+                [chmod +x,-w p2v/virt-p2v-make-disk])
+AC_CONFIG_FILES([p2v/virt-p2v-make-kickstart],
+                [chmod +x,-w p2v/virt-p2v-make-kickstart])
 AC_CONFIG_FILES([php/extension/php-for-tests.sh],
                 [chmod +x,-w php/extension/php-for-tests.sh])
 AC_CONFIG_FILES([pick-guests.pl],
@@ -1675,7 +1675,6 @@ AC_CONFIG_FILES([Makefile
                  ocaml/Makefile
                  ocaml/examples/Makefile
                  p2v/Makefile
-                 p2v-iso/Makefile
                  perl/Makefile
                  perl/Makefile.PL
                  perl/examples/Makefile

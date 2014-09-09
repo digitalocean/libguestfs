@@ -33,22 +33,6 @@
 #include "daemon.h"
 #include "actions.h"
 
-#ifdef HAVE_ATTRIBUTE_CLEANUP
-#define CLEANUP_AUG_CLOSE __attribute__((cleanup(cleanup_aug_close)))
-
-static void
-cleanup_aug_close (void *ptr)
-{
-  augeas *aug = * (augeas **) ptr;
-
-  if (aug != NULL)
-    aug_close (aug);
-}
-
-#else
-#define CLEANUP_AUG_CLOSE
-#endif
-
 GUESTFSD_EXT_CMD(str_lvm, lvm);
 GUESTFSD_EXT_CMD(str_cp, cp);
 GUESTFSD_EXT_CMD(str_rm, rm);
@@ -280,8 +264,11 @@ make_filter_strings (char *const *devices)
   if (add_string (&ret, "r|.*|") == -1)
     goto error;
 
-  end_stringsbuf (&ret);
+  if (end_stringsbuf (&ret) == -1)
+    goto error;
+
   return ret.argv;
+
 error:
   if (ret.argv)
     free_stringslen (ret.argv, ret.size);

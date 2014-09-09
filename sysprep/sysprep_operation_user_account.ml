@@ -1,5 +1,6 @@
 (* virt-sysprep
  * Copyright (C) 2012 FUJITSU LIMITED
+ * Copyright (C) 2014 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +26,45 @@ open Common_gettext.Gettext
 
 module G = Guestfs
 
+module StringSet = Set.Make (String)
+
+let users_included = ref StringSet.empty
+let users_excluded = ref StringSet.empty
+let set_users users =
+  let users = string_nsplit "," users in
+  List.iter (
+    fun user ->
+      let op =
+        if string_prefix user "-" then
+          `Exclude (String.sub user 1 (String.length user - 1))
+        else
+          `Include user in
+      match op with
+      | `Include "" | `Exclude "" ->
+        eprintf (f_"%s: --user-accounts: empty user name\n")
+          prog;
+        exit 1
+      | `Include n ->
+        users_included := StringSet.add n !users_included;
+        users_excluded := StringSet.remove n !users_excluded
+      | `Exclude n ->
+        users_included := StringSet.remove n !users_included;
+        users_excluded := StringSet.add n !users_excluded
+  ) users
+
+let check_remove_user user =
+  (* If an user is explicitly excluded, keep it. *)
+  if StringSet.mem user !users_excluded then
+    false
+  (* If the list of included users is empty (thus no users were explicitly
+   * included), or an user is explicitly included, remove it. *)
+  else if StringSet.is_empty !users_included
+          or StringSet.mem user !users_included then
+    true
+  (* Any other case, not a reason to remove it. *)
+  else
+    false
+
 let user_account_perform ~verbose ~quiet g root side_effects =
   let typ = g#inspect_get_type root in
   if typ <> "windows" then (
@@ -39,18 +79,25 @@ let user_account_perform ~verbose ~quiet g root side_effects =
         let uid = userpath ^ "/uid" in
         let uid = g#aug_get uid in
         let uid = int_of_string uid in
-        if uid >= uid_min && uid <= uid_max then (
+        let username =
+          let i = String.rindex userpath '/' in
+          String.sub userpath (i+1) (String.length userpath -i-1) in
+        if uid >= uid_min && uid <= uid_max
+           && check_remove_user username then (
+          (* Get the home before removing the passwd entry. *)
+          let home_dir =
+            try Some (g#aug_get (userpath ^ "/home"))
+            with _ ->
+              if verbose then
+                warning ~prog (f_"Cannot get the home directory for %s")
+                  username;
+              None in
           g#aug_rm userpath;
-          let username =
-            let i = String.rindex userpath '/' in
-            String.sub userpath (i+1) (String.length userpath -i-1) in
-          (* XXX Augeas doesn't yet have a lens for /etc/shadow, so the
-           * next line currently does nothing, but should start to
-           * work in a future version.
-           *)
           g#aug_rm (sprintf "/files/etc/shadow/%s" username);
           g#aug_rm (sprintf "/files/etc/group/%s" username);
-          g#rm_rf ("/home/" ^ username)
+          match home_dir with
+          | None -> ()
+          | Some dir -> g#rm_rf dir
         )
     ) users;
     g#aug_save ();
@@ -62,12 +109,28 @@ let op = {
     enabled_by_default = false;
     heading = s_"Remove the user accounts in the guest";
     pod_description = Some (s_"\
-Remove all the user accounts and their home directories.
-The \"root\" account is not removed.");
-    pod_notes = Some (s_"\
-Currently this does not remove the user accounts from
-C</etc/shadow>.  This is because there is no lens for
-the shadow password file in Augeas.");
+By default remove all the user accounts and their home directories.
+The \"root\" account is not removed.
+
+See the I<--user-accounts> parameter for a way to specify
+how to remove only some users, or to not remove some others.");
+    extra_args = [
+      { extra_argspec = "--user-accounts", Arg.String set_users, s_"users" ^ " " ^ s_"Users to remove/keep";
+        extra_pod_argval = Some "USERS";
+        extra_pod_description = s_"\
+The user accounts to be removed (or not) from the guest.
+The value of this option is a list of user names separated by comma,
+where specifying an user means it is going to be removed,
+while prepending C<-> in front of it name means it is not removed.
+For example:
+
+ --user-accounts bob,eve
+
+would only remove the user accounts C<bob> and C<eve>.
+
+This option can be specified multiple times."
+      };
+    ];
     perform_on_filesystems = Some user_account_perform;
 }
 

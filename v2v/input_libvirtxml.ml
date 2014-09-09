@@ -28,8 +28,12 @@ type map_source = string -> string option -> string * string option
 
 let no_map : map_source = fun x y -> x, y
 
-let parse_libvirt_xml ?(map_source_file = no_map) ?(map_source_dev = no_map)
+let parse_libvirt_xml ~verbose
+    ?(map_source_file = no_map) ?(map_source_dev = no_map)
     xml =
+  if verbose then
+    printf "libvirt xml is:\n%s\n" xml;
+
   let doc = Xml.parse_memory xml in
   let xpathctx = Xml.xpath_new_context doc in
 
@@ -129,8 +133,10 @@ let parse_libvirt_xml ?(map_source_file = no_map) ?(map_source_dev = no_map)
         if target_dev <> "" then Some target_dev else None in
 
       let format =
-        let format = xpath_to_string "driver[@name='qemu']/@type" "" in
-        if format <> "" then Some format else None in
+        match xpath_to_string "driver/@type" "" with
+        | "aio" -> Some "raw" (* Xen wierdness *)
+        | "" -> None
+        | format -> Some format in
 
       (* The <disk type='...'> attribute may be 'block', 'file' or
        * 'network'.  We ignore any other types.
@@ -273,7 +279,8 @@ object
       path, format
     in
 
-    parse_libvirt_xml ~map_source_file xml
+    parse_libvirt_xml ~verbose ~map_source_file xml
 end
 
 let input_libvirtxml = new input_libvirtxml
+let () = Modules_list.register_input_module "libvirtxml"

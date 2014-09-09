@@ -35,11 +35,16 @@ class input_disk verbose input_format disk = object
       disk
 
   method source () =
+    (* Check the input file exists and is readable. *)
+    Unix.access disk [Unix.R_OK];
+
     (* What name should we use for the guest?  We try to derive it from
      * the filename passed in.  Users can override this using the
      * `-on name' option.
      *)
-    let name = Filename.chop_extension (Filename.basename disk) in
+    let name = Filename.basename disk in
+    let name =
+      try Filename.chop_extension name with Invalid_argument _ -> name in
     if name = "" then
       error (f_"-i disk: invalid input filename (%s)") disk;
 
@@ -90,3 +95,4 @@ class input_disk verbose input_format disk = object
 end
 
 let input_disk = new input_disk
+let () = Modules_list.register_input_module "disk"

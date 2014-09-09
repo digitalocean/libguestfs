@@ -1,3 +1,539 @@
+commit a12745a48196c2de9fa67e7974c40be63491b0d5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 6 20:06:50 2014 +0100
+
+    Version 1.27.39.
+
+commit 0866d2238138ffd14ec2cadd75332adf549a3035
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 6 10:05:18 2014 +0100
+
+    p2v: Add scripts to make disk or kickstart-based P2V ISO.
+    
+    Two scripts are added, replacing the make targets from the
+    previous commit:
+    
+    virt-p2v-make-disk: Builds a virt-p2v disk or USB key using
+    virt-builder.
+    
+    virt-p2v-make-kickstart: Builds a kickstart file (only) which can be
+    fed to livecd-creator or similar tools on Red Hat-derived distros.
+    
+    Kickstart generation is slightly different: Instead of requiring the
+    downstream 'libguestfs-pvhelper' package, the kickstart now embeds the
+    virt-p2v binary(!) making it self-contained and downstream packaging
+    simpler.
+    
+    In addition there are documentation changes.
+
+commit 8e6478dc7d9f4bcfc76182f556dbcea457ecc110
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 6 09:41:15 2014 +0100
+
+    p2v: Remove p2v-iso directory.
+    
+    As part of reworking the scripts that are used to build the P2V ISO,
+    first remove the separate p2v-iso directory.  Similar scripts and
+    documentation will be introduced back into the p2v/ directory in
+    following commits.
+
+commit e1ee037096a212beca8654a9f277be564066d9b1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 6 19:49:16 2014 +0100
+
+    p2v: Temporarily remove Configure Network button.
+    
+    We will ship 1.28 without the capability of configuring the network
+    (ie. DHCP will always be used).
+
+commit a743f57cb8e74adaccae3a6f3b3da0c6961dc5ba
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 6 19:47:15 2014 +0100
+
+    p2v: Ensure the current version of virt-p2v is always displayed.
+    
+    This will help with debugging customer problems.
+
+commit d7edde6b6dffb61dfd75edc1483eb6ed8ab56e2d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 6 13:49:13 2014 +0100
+
+    p2v: Success message should have info logo, not error logo.
+
+commit d82cf08ce12ffd86e9f1588881dbe3f0ffd12294
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 5 20:05:40 2014 +0100
+
+    daemon: Check return value of end_stringsbuf.
+    
+    Found by Coverity.
+
+commit 255ec57875221b9d7c620de4ddf038ac97743514
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 5 15:12:53 2014 +0100
+
+    Version 1.27.38.
+
+commit d85c38155a5c36ce9fc53a5318ab452921c0915d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 5 15:18:54 2014 +0100
+
+    appliance: Add guestfs_shadow.aug to EXTRA_DIST.
+    
+    Fixes commit 61917136f5ad5efe30502f46f1adf60c20f15c97.
+
+commit 553677398b8bfba60b3870a53d2f5174bac82147
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Sep 4 16:16:06 2014 +0200
+
+    customize: use augeas to change passwords
+    
+    Make use of augeas to load and edit /etc/shadow, now that we have
+    (either from upstream or by ourselves) a lens handling it.
+
+commit a0cf4b3407ea86276633ca36389d0ec964e7d0d5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Sep 4 16:14:42 2014 +0200
+
+    sysprep: remove comment and notes about /etc/shadow lens
+    
+    We are either using the upstream lens, or our copy of it, to handle
+    /etc/shadow, so now removing entries from it works.
+
+commit 61917136f5ad5efe30502f46f1adf60c20f15c97
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Sep 4 15:27:37 2014 +0200
+
+    appliance: daemon: import and use upstream shadow lens
+    
+    Import the upstream lens for the shadow file, just with a different
+    identifier and not matching /etc/shadow by default. Instead, apply a
+    transformation to have it match /etc/shadow only if the version of
+    augeas is at least 1.2.1 [1].
+    
+    [1] While the last upstream version is 1.2.0, all the development seems
+    to happen in master, so whatever the next version is going to be
+    numbered (e.g. 1.2.1 or 1.3.0), the check will be fine anyway.
+
+commit d01fbe86662860b3e7fef8b76a8ba9579669c8af
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Sep 5 14:47:22 2014 +0200
+
+    daemon: add a way to check for the version of augeas
+    
+    Query augeas for its version when required, i.e. only once when using
+    the new augeas_is_version function.
+
+commit 54e32eb8e2e10369de4df0ab4481d1fbcf7ecfb9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 5 14:44:48 2014 +0100
+
+    v2v: -i libvirt, -i libvirtxml: Print libvirt XML when debugging.
+
+commit 35d49cd9de8f07ae281b276bad852ad33875a9b8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 5 14:13:28 2014 +0100
+
+    v2v: When locating initramfs, ignore kdump initramfs images (RHBZ#1138184).
+    
+    Thanks: Tingting Zheng.
+
+commit 096c05a750b8b525e48149c0c6522769c92ab07c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 5 13:36:01 2014 +0100
+
+    v2v: -i libvirt: Check the domain is not running (RHBZ#1138586).
+    
+    It will print an error like this:
+    
+      virt-v2v: error: internal error: invalid argument: libvirt domain 'windows'
+      is running, it must be shut down in order to perform virt-v2v conversion
+    
+    This only works for libvirt domains, and is explicitly disabled for
+    test:/// URIs since these domains are always "running", but we use
+    these URIs for testing.
+
+commit de93b9060d88a3cda71eb1840d04c49fc94b404f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Sep 3 17:38:32 2014 +0200
+
+    daemon: make aug_close cleanup available for all
+    
+    Just code motion, no behaviour changes.
+
+commit a935db30e5f27ab3f355ad77cabba01a82c53186
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Sep 5 11:29:57 2014 +0200
+
+    v2v: R_OK is in Unix module
+
+commit 922da70651a81c24f0fefc9f3885e1cda3250b5a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 5 09:54:32 2014 +0100
+
+    v2v: -i disk: Add a clearer error message if the disk doesn't exist or is not readable.
+
+commit d12f1ee99c42fe800567d82a5e99f1f31dd6760d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 5 09:49:39 2014 +0100
+
+    v2v: -i disk: Don't fail if filename has no extension.
+    
+    Unhelpfully, Filename.chop_extension throws an exception if the
+    filename has no extension (instead of just returning the filename).
+    Therefore the -i disk option would fail if you passed any filename
+    that didn't have an extension.
+
+commit 54995514cb62b4adc066d178eabb7fded4b16196
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 4 15:21:17 2014 +0100
+
+    Update gnulib to latest.
+
+commit 0fc7cbe99b59484ac285da8825e4f351ca019d6d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Sep 4 16:52:36 2014 +0200
+
+    v2v: skip test-v2v-i-ova.sh if rhsrvany.exe is not installed
+
+commit 03c9834cf3de504c9e2724894e7d9c222fd5e116
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 4 14:58:04 2014 +0100
+
+    Version 1.27.37.
+
+commit c3b3f683973813c008b5175726b68caa7fc6d4e8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 4 14:57:35 2014 +0100
+
+    v2v: Add test OVF file to EXTRA_DIST.
+    
+    This fixes commit 90b1e9845fa0a25de12587749f259d0da8d70a01.
+
+commit ba65af34357eb79e37480758416cdc4e184689aa
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Sep 4 13:42:20 2014 +0200
+
+    customize: fix locking accounts with passwords
+    
+    When setting the password for a locked account, make sure to still write
+    the password after the "!!" marker, otherwise the account will have no
+    password.
+
+commit 5edb78d1ae916e7d76be2ba0c4b86b3f82e8f9e1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 4 12:55:40 2014 +0100
+
+    v2v: docs: Clarify how ESX & Xen imports happen through libvirt.
+
+commit f243418d2300bf2bb7fdb64045544f6420ba90a3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 4 11:32:33 2014 +0100
+
+    v2v: Add support for access to remote RHEL 5 Xen hosts over ssh.
+
+commit 0c295c8e23a90d3a3f5efcfa0452ecde7317e122
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 4 12:37:12 2014 +0100
+
+    v2v: -i libvirtxml: Detect disk format using any <driver type=...> field.
+    
+    Previously we only looked for <driver name=qemu type=...>.  However
+    for Xen imports, the name field could be name=tap (or other values in
+    fact).  Since there can only be one <driver/> element under <disk/>,
+    look for any <driver type=...> in order to get the disk format.
+    
+    A further complication for Xen is that type=aio means "raw" (for
+    obscure historical reasons), so map that.
+    
+    Thanks: Dan Berrangé.
+
+commit 27a5ef9131317e4a715d1dfb62b155ee081c2888
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 4 12:07:36 2014 +0100
+
+    v2v: Move json-generating code into separate module.
+    
+    Just code motion so we can reuse the same code for making
+    `json:' remote SSH URLs.
+
+commit d5662fe035be28f59e1f4ea9f3fd391aa93a591e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 4 11:19:24 2014 +0100
+
+    -i ova: Tidy up the description in the manual page.
+    
+    This updates commit 90b1e9845fa0a25de12587749f259d0da8d70a01.
+
+commit 90b1e9845fa0a25de12587749f259d0da8d70a01
+Author: Shahar Havivi <shaharh@redhat.com>
+Date:   Thu Sep 4 11:51:02 2014 +0300
+
+    v2v: adding input -i ova
+    
+    Adding ability for v2v to get Vmware ova file as an input.
+    
+    Signed-off-by: Shahar Havivi <shaharh@redhat.com>
+
+commit 44ca9d563a93126bd744a819dde7237d371fe1fd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 3 14:01:20 2014 +0100
+
+    launch: libvirt / p2v: Fix empty_element macro.
+    
+    The empty_element macro was not safe when used in a "naked" if
+    statement such as:
+    
+      if (config->flags & FLAG_ACPI) empty_element ("acpi");
+    
+    Fix the macro so it uses do { ... } while (0) to make it safe here.
+
+commit 579119764226d040bec928d7944055b592437d7b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 3 12:25:37 2014 +0100
+
+    v2v: Don't hard-code list of -i and -o options in help output.
+    
+    We can now get it from Modules_list.
+
+commit 82b73852920685e1294f0349815daf3178ac2e20
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 3 12:15:27 2014 +0100
+
+    v2v: Update TODO.
+
+commit 941ebaa5e44cbf41e0dd94f811329d59f18c2868
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 3 12:15:00 2014 +0100
+
+    mllib: error: Clearer message about how to enable debugging.
+
+commit 711c32b0d9d31dc554b78f471be4b529eab4dbba
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 3 12:14:27 2014 +0100
+
+    mllib: Wrap errors at column 76 instead of column 72.
+    
+    Allows for slightly wider, better looking error messages.
+
+commit bb362f687840cd9fcf68bea08fd34fe8e4ddc64c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 3 12:13:42 2014 +0100
+
+    OCaml virt-* tools: Handle pretty printing of exceptions through a common library function.
+
+commit e52742e6d35ae33e55e6fd7a0228e55ec63102d3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Sep 3 11:13:54 2014 +0200
+
+    sysprep: user-account: remove the correct home
+    
+    Query using augeas for the home directory of an user, instead of
+    hardcoding /home/<username>.
+
+commit ee5470d083f106f0843d65229c521d4f997674e8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 23:40:28 2014 +0100
+
+    v2v: Clarify documentation for -o local.
+
+commit 11b1e2862b0b37d33152faef737854920d75a2b9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 22:40:13 2014 +0100
+
+    v2v: Update TODO.
+
+commit e0506486b0b2ac0be0f975c299bd7ca442718b8f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 19:36:25 2014 +0100
+
+    v2v: Review 3-X comments in TODO file and remove any which are not short-term goals to fix.
+
+commit 03ed5a790b571db2ff5f96f58bdbc01af4646cb2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 19:34:09 2014 +0100
+
+    p2v/v2v: List output drivers in `virt-v2v --machine-readable', and use that in virt-p2v.
+    
+    The new output of virt-v2v --machine-readable now lists the input and
+    output drivers available in the binary:
+    
+      $ virt-v2v --machine-readable
+      virt-v2v
+      libguestfs-rewrite
+      input:disk
+      input:libvirt
+      input:libvirtxml
+      output:glance
+      output:libvirt
+      output:local
+      output:rhev
+    
+    With this information, we can now pre-populate the virt-p2v GUI
+    combo box.
+
+commit 03d848ab68a1de7cbee49a6a00963f91e8f53696
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 17:06:45 2014 +0100
+
+    Version 1.27.36.
+
+commit 10f6206202b70f1f92807f5d5fed768a3f9e524c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 16:49:25 2014 +0100
+
+    p2v: Support for interface to network map.
+    
+    Instead of having all interfaces connect to the "default" network on
+    the hypervisor target, you can now create a map of interface to target
+    network, either on the kernel command line, eg:
+    
+      p2v.network=em1:rhevm
+      p2v.network=em1:rhevm,em2:management,other
+    
+    or through the GUI.
+
+commit 1ce65eeaefa2ce203db50a455c537b647d885230
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 16:22:52 2014 +0100
+
+    p2v: Print config->output_connection field in conversion debug.
+    
+    This fixes commit 81d3aee0713faddc320cd1db5ac125891d07a0f0.
+
+commit 128d474095bfabc2d724d0181155e364f1afbabf
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 2 15:55:33 2014 +0200
+
+    sysprep: user-account: select which users to remove or keep
+    
+    Enhance the user-account sysprep operation, so it is possible to select
+    which user accounts should be removed only (instead of all), or which to
+    eventually keep.
+
+commit c902ede1cd345258d6c388ab804fbf6a92b24ffd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 14:25:16 2014 +0100
+
+    p2v: Use libxml2 to write the libvirt XML document instead of printfs.
+    
+    Solves quoting issues.  This is just code reorganization, there is no
+    substantive change in the output.
+
+commit fc52f98c76d37273d8a420a99fefb2e5d71dcd50
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 13:29:53 2014 +0100
+
+    v2v: Update TODO file.
+
+commit f0e1f580b17a84fbc914acb50975d0e43ed1f2df
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 13:19:24 2014 +0100
+
+    p2v: Add some spacing on the conversion dialog.
+
+commit 750e8190348a88a7daf861e1162e5812faead059
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 08:53:31 2014 +0100
+
+    p2v: Add GUI controls for -o, -oc etc options on virt-v2v command line.
+
+commit 81d3aee0713faddc320cd1db5ac125891d07a0f0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 08:58:46 2014 +0100
+
+    p2v: Change p2v.output -> p2v.o etc and add p2v.oc
+    
+    Name these the same as the virt-v2v options, so for example
+    '-oa' -> 'p2v.oa'.
+    
+    Also add the missing p2v.oc (-oc) option.
+    
+    This updates commit c516d2d07dd0d1e4429ec84d2e9ebe02a951c5b5.
+
+commit 379f335059f31338e207d8d2b2c17d55334bcafe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 14:32:54 2014 +0100
+
+    v2v: Give a reasonable, early failure if output format is not raw or qcow2.
+    
+    See comment in the code for reasoning.
+    
+    Thanks: Shahar Havivi for discovering this.
+
+commit c004e4648d2091eb217026b15eed7e041557b635
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 2 11:36:29 2014 +0200
+
+    appliance: exclude a lvm2 rule on Ubuntu (RHBZ#1111662).
+    
+    On Ubuntu, exclude the Ubuntu-only 85-lvm2.rules since it causes the
+    automatic activation of volume groups on addition or change. This
+    interferes with libguestfs, as vgs which are disables suddently get
+    enabled.
+
+commit 65822315109cdb1e0079d687ce0d59fdfd6d83f2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 2 09:05:12 2014 +0100
+
+    generator: Don't use ocamldep -all option in this directory.
+    
+    ocamldep -all (introduced in commit a3881445efd0) creates a dependency
+    rule
+    
+      optgroups.cmi ... : utils.cmx ...
+    
+    Because we never build a native code version of the generator,
+    utils.cmx can never be remade, and so this results in optgroups.cmi
+    being always rebuilt and hence rebuilding the whole directory.
+    
+    It's unclear how to fix this, but reverting the ocamldep -all change
+    in this directory works around it.
+    
+    Partially reverts commit a3881445efd04d5fe6da29db8b2d62a30088b9d1.
+
+commit a3881445efd04d5fe6da29db8b2d62a30088b9d1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 1 22:24:14 2014 +0100
+
+    Use ocamldep -all option.
+    
+    In v2v, 'stringMap.ml' has no corresponding *.mli file.  ocamldep does
+    not generate a *.cmi dependency for such modules, and this can result
+    in parallel builds failing rarely because:
+    
+     (1) stringMap.ml is built (which has the side-effect of generating
+         stringMap.cmi)
+    
+     (2) at the same time, types.mli is compiled.  types.mli depends on
+         stringMap.cmi, but it is half way through being created by (1).
+    
+    There is no dependency to serialize (1) and (2).
+    
+    The resulting error is:
+    
+      File "types.mli", line 1:
+      Error: Corrupted compiled interface
+      stringMap.cmi
+    
+    Using 'ocamldep -all' generates extra deps for the *.cmi files, and
+    otherwise appears to be safe, so use it.
+    
+    There are currently a few upstream OCaml bugs with dependencies and
+    parallel builds:
+    
+    http://caml.inria.fr/mantis/view.php?id=3190
+    http://caml.inria.fr/mantis/view.php?id=4991
+    http://caml.inria.fr/mantis/view.php?id=5000
+    
+    It's not clear which of these apply here.
+
+commit c435053b3476094cd7e05c50c2e7713fcb646d5c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 1 21:29:13 2014 +0100
+
+    Improve diagrams on various manual pages using Unicode box drawing characters.
+
 commit 3c1b81d2af5c61863ac59e28f2a8509ed7a3e7ce
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon Sep 1 17:40:56 2014 +0100

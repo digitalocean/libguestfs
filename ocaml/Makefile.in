@@ -632,6 +632,7 @@ GNULIB_PUTCHAR = @GNULIB_PUTCHAR@
 GNULIB_PUTENV = @GNULIB_PUTENV@
 GNULIB_PUTS = @GNULIB_PUTS@
 GNULIB_PWRITE = @GNULIB_PWRITE@
+GNULIB_QSORT_R = @GNULIB_QSORT_R@
 GNULIB_RAISE = @GNULIB_RAISE@
 GNULIB_RANDOM = @GNULIB_RANDOM@
 GNULIB_RANDOM_R = @GNULIB_RANDOM_R@
@@ -1300,6 +1301,7 @@ REPLACE_PTSNAME = @REPLACE_PTSNAME@
 REPLACE_PTSNAME_R = @REPLACE_PTSNAME_R@
 REPLACE_PUTENV = @REPLACE_PUTENV@
 REPLACE_PWRITE = @REPLACE_PWRITE@
+REPLACE_QSORT_R = @REPLACE_QSORT_R@
 REPLACE_RAISE = @REPLACE_RAISE@
 REPLACE_RANDOM_R = @REPLACE_RANDOM_R@
 REPLACE_READ = @REPLACE_READ@
@@ -2039,7 +2041,7 @@ $(top_builddir)/generator/generator:
 
 @HAVE_OCAML_TRUE@.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml) $(wildcard $(abs_srcdir)/t/*.ml)
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) $^ | \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -all -I ../ocaml -I $(abs_srcdir) $^ | \
 @HAVE_OCAML_TRUE@	  $(SED) 's/ *$$//' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \

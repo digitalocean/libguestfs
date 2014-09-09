@@ -16,8 +16,11 @@ libvirt or Red Hat Enterprise Virtualisation (RHEV) version 2.2 or later.
 
 Normally you don't run the virt-p2v program directly.  Instead you have to
 boot the physical machine using the bootable CD-ROM, ISO or PXE image.  This
-bootable image contains the virt-p2v binary and runs it automatically.  This
-manual page documents both the binary and the bootable image.
+bootable image contains the virt-p2v binary and runs it automatically.
+
+This manual page documents running the virt-p2v program.  To create the
+bootable image you should look at L<virt-p2v-make-disk(1)> or
+L<virt-p2v-make-kickstart(1)>.
 
 =head1 NETWORK SETUP
 
@@ -26,11 +29,11 @@ talk to another server called the "conversion server" which must have
 L<virt-v2v(1)> installed on it.  It always talks to the conversion server
 over SSH:
 
- +-----------+                +-------------+
- | virt-p2v  |                | virt-v2v    |
- | (physical | ssh connection | (conversion |
- |  server)  ----------------->  server)    |
- +-----------+                +-------------+
+ ┌──────────────┐                  ┌─────────────────┐
+ │ virt-p2v     │                  │ virt-v2v        │
+ │ (physical    │  ssh connection  │ (conversion     │
+ │  server)   ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍▶ server)       │
+ └──────────────┘                  └─────────────────┘
 
 The virt-v2v program on the conversion server does the actual conversion
 (physical to virtual, and virtual to virtual conversions are sufficiently
@@ -74,7 +77,7 @@ C<pxelinux.cfg> file.  For example:
  PROMPT 0
  LABEL p2v
    KERNEL virt-p2v-vmlinuz
-   APPEND initrd=virt-p2v-initrd p2v.server=conv.example.com p2v.password=secret p2v.output=libvirt
+   APPEND initrd=virt-p2v-initrd p2v.server=conv.example.com p2v.password=secret p2v.o=libvirt
 
 You have to set some or all of the following command line arguments:
 
@@ -158,7 +161,25 @@ content of removable media is never copied over.
 A list of network interfaces to convert.  The default is to create virtual
 network interfaces for every physical network interface found.
 
-=item B<p2v.output=[libvirt|local|...]>
+=item B<p2v.network=interface:target,...>
+
+Controls how network interfaces are connected to virtual networks on the
+target hypervisor.  The default is to connect all network interfaces to the
+target C<default> network.
+
+You give a comma-separated list of C<interface:target> pairs, plus
+optionally a default target.  For example:
+
+ p2v.network=em1:rhevm
+
+maps interface C<em1> to target network C<rhevm>.
+
+ p2v.network=em1:rhevm,em2:management,other
+
+maps interface C<em1> to C<rhevm>, and C<em2> to C<management>, and any
+other interface that is found to C<other>.
+
+=item B<p2v.o=[libvirt|local|...]>
 
 Set the output mode.  This is the same as the virt-v2v I<-o> option.  See
 L<virt-v2v(1)/OPTIONS>.
@@ -166,17 +187,23 @@ L<virt-v2v(1)/OPTIONS>.
 If not specified, the default is C<local>, and the converted guest is
 written to C</var/tmp>.
 
-=item B<p2v.output_allocation=sparse|preallocated>
+=item B<p2v.oa=sparse|preallocated>
 
 Set the output allocation mode.  This is the same as the virt-v2v I<-oa>
 option.  See L<virt-v2v(1)/OPTIONS>.
 
-=item B<p2v.output_format=raw|sparse|...>
+=item B<p2v.oc=...>
+
+Set the output connection libvirt URI.  This is the same as the virt-v2v
+I<-oc> option.  See L<virt-v2v(1)/OPTIONS> and
+L<http://libvirt.org/uri.html>
+
+=item B<p2v.of=raw|sparse|...>
 
 Set the output format.  This is the same as the virt-v2v I<-oa> option.  See
 L<virt-v2v(1)/OPTIONS>.
 
-=item B<p2v.output_storage=...>
+=item B<p2v.os=...>
 
 Set the output storage.  This is the same as the virt-v2v I<-os> option.
 See L<virt-v2v(1)/OPTIONS>.
@@ -226,7 +253,8 @@ Enable debugging (on the conversion server).
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
-L<virt-v2v(1)>, L<qemu-nbd(1)>, L<http://libguestfs.org/>.
+L<virt-p2v-make-disk(1)>, L<virt-p2v-make-kickstart(1)>, L<virt-v2v(1)>,
+L<qemu-nbd(1)>, L<http://libguestfs.org/>.
 
 =head1 АВТОРИ
 
