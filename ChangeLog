@@ -1,3 +1,70 @@
+commit aebe00e5c6f3087370fe86873cb715f32dc8233b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 9 16:02:44 2014 +0100
+
+    Version 1.27.41.
+
+commit a2107981a621168603dd91ad9f9f2c9948be0f3e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 9 14:20:43 2014 +0100
+
+    daemon: Run 'udevadm settle' with debugging and warn if the command fails.
+
+commit 6b379ab598a3885352d39bf5c084b3abb029abac
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 9 15:42:05 2014 +0100
+
+    Version 1.27.40.
+
+commit 59136518f13cb489cc17a411267d54444d7c8ac6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 9 15:04:24 2014 +0100
+
+    v2v: Calculate dracut/mkinitrd kernel version correctly (RHBZ#1138182).
+    
+    Thanks: Tingting Zheng.
+
+commit e89ab6dde47d8a54d7be42ea88c7dca84e335a0e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 9 15:10:33 2014 +0200
+
+    tests: sysprep: slightly improve output
+    
+    Add minor spacing changes, and report the image being sysprep'ed, so it
+    is easier to spot which image caused some warning message.
+
+commit be1c6965006dec258b915c9561ac66c8cb36dfe6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 9 10:46:55 2014 +0100
+
+    v2v: Check if there is sufficient free space for conversion (RHBZ#1139543).
+    
+    Before trying to perform the conversion, estimate if there is
+    sufficient free space on the guest filesystem(s) for the conversion to
+    be successful.
+    
+    If not, you will see an error similar to this one:
+    
+    [   6.0] Checking for sufficient free disk space in the guest
+    virt-v2v: error: not enough free space for conversion on filesystem '/'.
+    4354048 bytes free < 20000000 bytes needed
+
+commit 4fc333d0eff19e82b6f41957af091ecf4806670e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 8 13:13:01 2014 +0100
+
+    p2v: Use matchbox (window manager) in the virt-p2v ISO.
+    
+    virt-p2v can run without a window manager.  However it then sits in
+    the top left corner of the screen.  Add a lightweight window manager
+    to the ISO so that position and geometry hints work.
+
+commit e52ec0a3dfb504e71db105405746dc2f36e07444
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 8 11:07:03 2014 +0100
+
+    p2v: Whitespace change in options list.
+
 commit a12745a48196c2de9fa67e7974c40be63491b0d5
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sat Sep 6 20:06:50 2014 +0100
