@@ -103,7 +103,7 @@ Build-Depends: debhelper (>= 9),
   xfsprogs,
   xz-utils,
   zerofree,
-  zfs-fuse [i386 amd64 powerpc sparc],
+  zfs-fuse [i386 amd64 armel powerpc sparc],
 Homepage: http://libguestfs.org
 Standards-Version: 3.9.5
 Vcs-Git: git://git.debian.org/git/pkg-libvirt/libguestfs.git
