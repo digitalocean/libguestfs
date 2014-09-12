@@ -1513,13 +1513,15 @@ SOURCES_MLI = \
 	JSON.mli \
 	lib_esx.mli \
 	lib_linux.mli \
+	lib_ovf.mli \
 	lib_xen.mli \
 	modules_list.mli \
 	output_glance.mli \
 	input_ova.mli \
 	output_libvirt.mli \
 	output_local.mli \
-	output_RHEV.mli \
+	output_rhev.mli \
+	output_vdsm.mli \
 	types.mli \
 	xml.mli
 
@@ -1533,6 +1535,7 @@ SOURCES_ML = \
 	JSON.ml \
 	lib_esx.ml \
 	lib_xen.ml \
+	lib_ovf.ml \
 	lib_linux.ml \
 	modules_list.ml \
 	input_disk.ml \
@@ -1544,7 +1547,8 @@ SOURCES_ML = \
 	output_glance.ml \
 	output_libvirt.ml \
 	output_local.ml \
-	output_RHEV.ml \
+	output_rhev.ml \
+	output_vdsm.ml \
 	cmdline.ml \
 	v2v.ml
 
@@ -1648,7 +1652,7 @@ SOURCES_C = \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-glance.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-libvirt.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-rhev.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-rhev-options.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-vdsm-options.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-of-option.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-on-option.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-print-source.sh \

@@ -1,3 +1,69 @@
+commit 8f1ce3a72f5d05fe7b80904ab51803a2e137aebb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 11 19:38:10 2014 +0100
+
+    Version 1.27.43.
+
+commit b67da2524fd8a95e217db8ef764ad1ca34b91a82
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 11 16:55:15 2014 +0100
+
+    v2v: Split off -o vdsm mode from -o rhev (RHBZ#1140156).
+    
+    -o rhev: This is "traditional" output to a RHEV-M Export Storage Domain.
+    It requires no cooperation from RHEV itself, and in all other respects
+    works the same way as old virt-v2v did.
+    
+    -o vdsm: This is the new mode which requires VDSM cooperation.  VDSM
+    manages the conversion, creating the directories, suggesting UUIDs,
+    and cleaning up on failure.  This allows direct import into a Data
+    Domain.
+    
+    The --rhev* command arguments now only apply to -o vdsm, and therefore
+    have been renamed to --vdsm*
+    
+    The --vmtype command line argument may be used with -o rhev or -o vdsm.
+
+commit 4c25f48bbad353ac6b0cc32f4174d2b4923d1f28
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 11 16:21:16 2014 +0100
+
+    v2v: Move some utility functions into Lib_ovf module.
+    
+    This is just code refactoring and has no functional effect.
+
+commit 694dc695b8ea79f78cdd73739512bfc229d7129e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 11 16:14:51 2014 +0100
+
+    v2v: Remove unused struct (Types.output_rhev_params).
+
+commit 04206fb3c036ae676fa6c50af26f40fa74cdd24a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 11 16:14:06 2014 +0100
+
+    v2v: Rename module Output_RHEV to Output_rhev.
+    
+    This is just code refactoring, and has no functional change to the
+    program.
+
+commit de3614e0ff67f5a85625946f35af296080cbb6b8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 11 10:11:09 2014 +0100
+
+    builder: Fix documentation of --list --list-format option (RHBZ#1140547).
+    
+    Also give an error if users use the incorrect one:
+    
+    $ virt-builder --list --format json
+    virt-builder: virt-builder --list: use '--list-format', not '--format'.
+
+commit b047feafa99a6b63b1caa1023db60eca7138c14a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 10 22:31:06 2014 +0100
+
+    Update BUGS file.
+
 commit 4fb3009a42b06f7b716b215de962343c05fd3cd4
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Sep 10 22:11:01 2014 +0100
