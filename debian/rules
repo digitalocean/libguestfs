@@ -19,7 +19,7 @@ pkglist_to_deps := sed -e 's,iproute2\?,iproute2|iproute,;s,\(gfs-tools\|gfs2-to
 essential_deps  := grep -v '^\(bash\|coreutils\|e2fsprogs\|findutils\|grep\|gzip\|libc-bin\|sed\|sysvinit\|tar\|util\-linux\)'
 
 QEMU_CPU := $(shell echo $(DEB_HOST_GNU_CPU) \
-		    | sed -e 's,i[456]86,i386,;s,sparc,sparc64,;s,powerpc,ppc64,;s,arm.*,arm,')
+		    | sed -r -e 's,i[456]86,i386,;s,sparc,sparc64,;s,powerpc(64.*)?,ppc64,;s,arm.*,arm,')
 
 # Do not run "make quickcheck on these architectures
 QUICKCHECK_ARCHITECTURES := i386 amd64
