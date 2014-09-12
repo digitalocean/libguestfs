@@ -1,3 +1,141 @@
+commit 4fb3009a42b06f7b716b215de962343c05fd3cd4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 10 22:11:01 2014 +0100
+
+    Version 1.27.42.
+
+commit c862dc3d2018550146b02740c4f0737cd715f207
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Sep 10 11:39:55 2014 +0200
+
+    fish: fix small memory leak in completion
+    
+    Do not leak the small memory buffer with the path.
+
+commit 55f70c13e3064cc1132deaf5dadcd53387d0987e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Sep 10 11:16:23 2014 +0200
+
+    resize: print FSes which cannot be expanded
+    
+    Should ease a bit the discovery of a filesystem which cannot be
+    expanded.
+
+commit a67845bfa0f5ca5242ea6a965fe73169de830fbc
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Sep 10 11:01:34 2014 +0200
+
+    test-charset-fidelity: set iocharset in vfat/msdos FSes
+    
+    The default charset for these filesystems depends on how the kernel was
+    configured with, so explicitly set the default one (as specified in
+    Linux sources), eventually setting later a new one for the tests.
+
+commit c49d35a919284f54a8e98a8a17c2543e7973b583
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 10 17:01:10 2014 +0100
+
+    v2v: Clearer error message if ssh-agent authentication is not set up (RHBZ#1139973).
+
+commit 516faa1bcb64a95b25ec7f3b2be0d2d1f6c0c60d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 10 16:29:28 2014 +0100
+
+    v2v: Fall back to virDomainGetInfo if remote libvirtd does not support virDomainGetState (RHBZ#1138586).
+    
+    RHEL 5 Xen doesn't support the relatively new virDomainGetState API.
+    Instead you will see a warning message on stderr:
+    
+      libvirt: Remote Driver error : unknown procedure: 212
+    
+    If we detect that virDomainGetState is not supported, then fall back
+    to calling virDomainGetInfo instead, which works everywhere.
+    
+    This updates commit 096c05a750b8b525e48149c0c6522769c92ab07c.
+    
+    See also:
+    https://bugzilla.redhat.com/show_bug.cgi?id=1139973#c2
+    https://bugzilla.redhat.com/show_bug.cgi?id=1138586
+
+commit b6099f4aee3e14a04f6b8c8d62246d337f2a1582
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 10 11:20:56 2014 +0100
+
+    v2v: Report error when multiple conflicting command line options are used (RHBZ#1140050).
+    
+    $ virt-v2v -i disk -i libvirt
+    virt-v2v: error: -i option used more than once on the command line
+
+commit a6279f5c7b4a7794eec32c650590790251aeb220
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 10 00:03:20 2014 +0100
+
+    v2v: List convert modules in --machine-readable output.
+    
+    $ virt-v2v --machine-readable
+    [...]
+    convert:enterprise-linux
+    convert:windows
+
+commit 3d2e2bb44556a218ad4cc4d4d4e6b90cd43d60cf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 9 23:58:17 2014 +0100
+
+    v2v: Abstract Convert_* modules from core v2v code.
+    
+    Previously the core virt-v2v code had to know which Convert_* module
+    to call for each guest type (based on inspection).  After this change
+    the core code doesn't need to know that, but instead Convert_* modules
+    register their interest in particular guest types.
+
+commit 102e9a8c057bb2670ed430feb5de082bd1a97d7a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 9 23:27:51 2014 +0100
+
+    sysprep: Don't use --option=arg in documentation.
+    
+    Fedora patches OCaml's Arg module to support --option=arg.  Since this
+    won't work on other distros or upstream OCaml, don't include such
+    examples in the documentation.
+
+commit c22d86870c9099935c8b92471ba4eb711c0b7018
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 9 23:08:24 2014 +0100
+
+    v2v: Allow -o local as an alias for -o disk.
+    
+    This is symmetrical with -i disk / -i local.
+
+commit 49fa6912ed16d6946da2a603fdb1fc24fdee530b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 9 23:06:54 2014 +0100
+
+    v2v: Sort the -i options alphabetically in the man page.
+
+commit 68e58e5814e74dc3ea8bf930b98eedf421ac5309
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 9 23:02:21 2014 +0100
+
+    v2v: Update documentation credits.
+    
+    Shahar Havivi and Tingting Zheng for development & testing respectively.
+
+commit 334dee64a2c90c4c57de33fd78ffc529f49ebb35
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 9 20:27:33 2014 +0100
+
+    FAQ: Repeat advice to use ./run.
+    
+    The two adjacent sections can be read separately, and the second
+    section doesn't mention not using make install / using ./run, so
+    repeat it a second time.
+
+commit 163eb3b7a1921fe675f5a85d5dc28692d5e03bda
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 9 17:04:47 2014 +0100
+
+    resize: Support for expanding XFS filesystems.
+
 commit aebe00e5c6f3087370fe86873cb715f32dc8233b
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Sep 9 16:02:44 2014 +0100
