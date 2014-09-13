@@ -1,3 +1,11 @@
+libguestfs (1:1.27.44-1) experimental; urgency=medium
+
+  * New upstream development version
+  * Added more architecture-specific dependencies for ppc64el
+  * Added zfs-fuse dependency for armel
+
+ -- Hilko Bengen <bengen@debian.org>  Sat, 13 Sep 2014 22:58:42 +0200
+
 libguestfs (1:1.27.41-1) experimental; urgency=medium
 
   * New upstream development version
