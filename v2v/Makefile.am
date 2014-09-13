@@ -38,13 +38,16 @@ SOURCES_MLI = \
 	JSON.mli \
 	lib_esx.mli \
 	lib_linux.mli \
+	lib_ovf.mli \
 	lib_xen.mli \
 	modules_list.mli \
 	output_glance.mli \
 	input_ova.mli \
 	output_libvirt.mli \
 	output_local.mli \
-	output_RHEV.mli \
+	output_null.mli \
+	output_rhev.mli \
+	output_vdsm.mli \
 	types.mli \
 	xml.mli
 
@@ -58,6 +61,7 @@ SOURCES_ML = \
 	JSON.ml \
 	lib_esx.ml \
 	lib_xen.ml \
+	lib_ovf.ml \
 	lib_linux.ml \
 	modules_list.ml \
 	input_disk.ml \
@@ -66,10 +70,12 @@ SOURCES_ML = \
 	input_ova.ml \
 	convert_linux.ml \
 	convert_windows.ml \
+	output_null.ml \
 	output_glance.ml \
 	output_libvirt.ml \
 	output_local.ml \
-	output_RHEV.ml \
+	output_rhev.ml \
+	output_vdsm.ml \
 	cmdline.ml \
 	v2v.ml
 
@@ -209,8 +215,9 @@ TESTS = \
 	test-v2v-no-copy.sh \
 	test-v2v-o-glance.sh \
 	test-v2v-o-libvirt.sh \
+	test-v2v-o-null.sh \
 	test-v2v-o-rhev.sh \
-	test-v2v-o-rhev-options.sh \
+	test-v2v-o-vdsm-options.sh \
 	test-v2v-of-option.sh \
 	test-v2v-on-option.sh \
 	test-v2v-print-source.sh \

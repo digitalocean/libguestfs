@@ -18,15 +18,10 @@
 
 (** [-o rhev] target. *)
 
-type rhev_params = {
-  image_uuid : string option;           (* --rhev-image-uuid *)
-  vol_uuids : string list;              (* --rhev-vol-uuid (multiple) *)
-  vm_uuid : string option;              (* --rhev-vm-uuid *)
-  vmtype : [`Server|`Desktop] option;   (* --vmtype *)
-}
-(** Miscellaneous extra command line parameters used by RHEV. *)
+val mount_and_check_storage_domain : bool -> string -> string -> (string * string)
+(** This helper function is also used by the VDSM target. *)
 
-val output_rhev : bool -> string -> rhev_params -> [`Sparse|`Preallocated] -> Types.output
-(** [output_rhev verbose os rhev_params output_alloc] creates and
+val output_rhev : bool -> string -> [`Server|`Desktop] option -> [`Sparse|`Preallocated] -> Types.output
+(** [output_rhev verbose os vmtype output_alloc] creates and
     returns a new {!Types.output} object specialized for writing
-    output to RHEV-M or oVirt. *)
+    output to RHEV-M or oVirt Export Storage Domain. *)

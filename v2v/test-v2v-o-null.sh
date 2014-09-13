@@ -16,13 +16,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# Test -o rhev options: --vmtype and --rhev-*-uuid
+# Test -o null.
 
 unset CDPATH
 export LANG=C
 set -e
 
-if [ -n "$SKIP_TEST_V2V_O_RHEV_OPTIONS_SH" ]; then
+if [ -n "$SKIP_TEST_V2V_O_NULL_SH" ]; then
     echo "$0: test skipped because environment variable is set"
     exit 77
 fi
@@ -47,42 +47,6 @@ if ! test -r $virt_tools_data_dir/rhsrvany.exe; then
     exit 77
 fi
 
-d=test-v2v-o-rhev-options.d
-rm -rf $d
-mkdir $d
-
-# Create a dummy Export Storage Domain.
-mkdir $d/12345678-1234-1234-1234-123456789abc
-mkdir $d/12345678-1234-1234-1234-123456789abc/images
-mkdir $d/12345678-1234-1234-1234-123456789abc/master
-mkdir $d/12345678-1234-1234-1234-123456789abc/master/vms
-
-# The --rhev-*-uuid options don't actually check that the
-# parameter is a UUID, which is useful here.
-
 $VG ./virt-v2v --debug-gc \
     -i libvirt -ic "$libvirt_uri" windows \
-    -o rhev -os $d \
-    --vmtype desktop \
-    --rhev-image-uuid IMAGE \
-    --rhev-vol-uuid VOL \
-    --rhev-vm-uuid VM \
-
-# Test the OVF metadata was created.
-test -f $d/12345678-1234-1234-1234-123456789abc/master/vms/VM/VM.ovf
-
-# Test the OVF metadata contains <VmType>DESKTOP</VmType>.
-grep '<VmType>DESKTOP</VmType>' \
-    $d/12345678-1234-1234-1234-123456789abc/master/vms/VM/VM.ovf
-
-pushd $d/12345678-1234-1234-1234-123456789abc/images/IMAGE
-
-# Test the disk .meta was created.
-test -f VOL.meta
-
-# Test the disk file was created.
-test -f VOL
-
-popd
-
-rm -r $d
+    -o null
