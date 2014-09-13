@@ -73,6 +73,18 @@ L<virt-builder(1)/INSTALLING PACKAGES>.
 
 See also I<--update>.
 
+=item B<--keep-user-accounts> USERS (see C<user-account> below)
+
+The user accounts to be kept in the guest.  The value of this option is a
+list of user names separated by comma, where specifying an user means it is
+going to be kept.  For example:
+
+ --keep-user-accounts mary
+
+would keep the user account C<mary>.
+
+This option can be specified multiple times.
+
 =item B<--link> TARGET:LINK[:LINK..] (see C<customize> below)
 
 Create symbolic link(s) in the guest, starting at C<LINK> and pointing at
@@ -114,6 +126,18 @@ secure against modern attacks.
 The default is C<sha512> unless libguestfs detects an old guest that didn't
 have support for SHA-512, in which case it will use C<md5>.  You can
 override libguestfs by specifying this option.
+
+=item B<--remove-user-accounts> USERS (see C<user-account> below)
+
+The user accounts to be removed from the guest.  The value of this option is
+a list of user names separated by comma, where specifying an user means it
+is going to be removed.  For example:
+
+ --remove-user-accounts bob,eve
+
+would only remove the user accounts C<bob> and C<eve>.
+
+This option can be specified multiple times.
 
 =item B<--root-password> SELECTOR (see C<customize> below)
 
@@ -229,19 +253,6 @@ the file is uploaded into that directory, and it keeps the same name as on
 the local filesystem.
 
 See also: I<--mkdir>, I<--delete>, I<--scrub>.
-
-=item B<--user-accounts> USERS (see C<user-account> below)
-
-The user accounts to be removed (or not) from the guest.  The value of this
-option is a list of user names separated by comma, where specifying an user
-means it is going to be removed, while prepending C<-> in front of it name
-means it is not removed.  For example:
-
- --user-accounts bob,eve
-
-would only remove the user accounts C<bob> and C<eve>.
-
-This option can be specified multiple times.
 
 =item B<--write> FILE:CONTENT (see C<customize> below)
 

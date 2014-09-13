@@ -43,6 +43,7 @@ type operation = {
   pod_description : string option;
   pod_notes : string option;
   extra_args : extra_arg list;
+  not_enabled_check_args : unit -> unit;
   perform_on_filesystems : filesystem_side_effects callback option;
   perform_on_devices : device_side_effects callback option;
 }
@@ -60,6 +61,7 @@ let defaults = {
   pod_description = None;
   pod_notes = None;
   extra_args = [];
+  not_enabled_check_args = (fun () -> ());
   perform_on_filesystems = None;
   perform_on_devices = None;
 }
@@ -125,64 +127,43 @@ and check_no_dupes ops =
   ignore (
     List.fold_left (
       fun opset op ->
-        if OperationSet.mem op opset then (
-          eprintf (f_"virt-sysprep: duplicate operation name (%s)\n") op.name;
-          exit 1
-        );
+        if OperationSet.mem op opset then
+          error ~prog (f_"duplicate operation name (%s)") op.name;
         add_to_set op.name opset
     ) empty_set ops
   )
 and check op =
   let n = String.length op.name in
-  if n = 0 then (
-    eprintf (f_"virt-sysprep: operation name is an empty string\n");
-    exit 1;
-  );
+  if n = 0 then
+    error ~prog (f_"operation name is an empty string");
   for i = 0 to n-1 do
     match String.unsafe_get op.name i with
     | 'a'..'z' | 'A'..'Z' | '0'..'9' | '-' -> ()
     | c ->
-      eprintf (f_"virt-sysprep: disallowed character (%c) in operation name\n")
-        c;
-      exit 1
+      error ~prog (f_"disallowed character (%c) in operation name") c
   done;
   let n = String.length op.heading in
-  if n = 0 then (
-    eprintf (f_"virt-sysprep: operation %s has no heading\n") op.name;
-    exit 1
-  );
-  if op.heading.[n-1] = '\n' || op.heading.[n-1] = '.' then (
-    eprintf (f_"virt-sysprep: heading for %s must not end with newline or period\n")
-      op.name;
-    exit 1
-  );
+  if n = 0 then
+    error ~prog (f_"operation %s has no heading") op.name;
+  if op.heading.[n-1] = '\n' || op.heading.[n-1] = '.' then
+    error ~prog (f_"heading for %s must not end with newline or period") op.name;
   (match op.pod_description with
   | None -> ()
   | Some description ->
     let n = String.length description in
-    if n = 0 then (
-      eprintf (f_"virt-sysprep: operation %s has no POD\n") op.name;
-      exit 1
-    );
-    if description.[n-1] = '\n' then (
-      eprintf (f_"virt-sysprep: POD for %s must not end with newline\n")
-        op.name;
-      exit 1
-    )
+    if n = 0 then
+      error ~prog (f_"operation %s has no POD") op.name;
+    if description.[n-1] = '\n' then
+      error ~prog (f_"POD for %s must not end with newline") op.name;
   );
   (match op.pod_notes with
   | None -> ()
   | Some notes ->
     let n = String.length notes in
-    if n = 0 then (
-      eprintf (f_"virt-sysprep: operation %s has no POD notes\n") op.name;
-      exit 1
-    );
-    if notes.[n-1] = '\n' then (
-      eprintf (f_"virt-sysprep: POD notes for %s must not end with newline\n")
-        op.name;
-      exit 1
-    )
+    if n = 0 then
+      error ~prog (f_"operation %s has no POD notes") op.name;
+    if notes.[n-1] = '\n' then
+      error ~prog (f_"POD notes for %s must not end with newline") op.name;
   )
 
 let extra_args () =
@@ -271,6 +252,17 @@ let list_operations () =
         (if op.enabled_by_default then "*" else " ")
         op.heading
   ) !all_operations
+
+let not_enabled_check_args ?operations () =
+  let enabled_ops =
+    match operations with
+    | None -> !enabled_by_default_operations
+    | Some opset -> (* just the operation names listed *)
+      OperationSet.elements opset in
+  let all_ops = opset_of_oplist !all_operations in
+  let enabled_ops = opset_of_oplist enabled_ops in
+  let disabled_ops = OperationSet.diff all_ops enabled_ops in
+  OperationSet.iter (fun op -> op.not_enabled_check_args ()) disabled_ops
 
 let compare_operations { order = o1; name = n1 } { order = o2; name = n2 } =
   let i = compare o1 o2 in

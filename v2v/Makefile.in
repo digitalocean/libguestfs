@@ -1520,6 +1520,7 @@ SOURCES_MLI = \
 	input_ova.mli \
 	output_libvirt.mli \
 	output_local.mli \
+	output_null.mli \
 	output_rhev.mli \
 	output_vdsm.mli \
 	types.mli \
@@ -1544,6 +1545,7 @@ SOURCES_ML = \
 	input_ova.ml \
 	convert_linux.ml \
 	convert_windows.ml \
+	output_null.ml \
 	output_glance.ml \
 	output_libvirt.ml \
 	output_local.ml \
@@ -1651,6 +1653,7 @@ SOURCES_C = \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-no-copy.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-glance.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-libvirt.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-null.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-rhev.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-vdsm-options.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-of-option.sh \

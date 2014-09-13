@@ -83,6 +83,7 @@ let parse_cmdline () =
     | "glance" -> output_mode := `Glance
     | "libvirt" -> output_mode := `Libvirt
     | "disk" | "local" -> output_mode := `Local
+    | "null" -> output_mode := `Null
     | "ovirt" | "rhev" -> output_mode := `RHEV
     | "vdsm" -> output_mode := `VDSM
     | s ->
@@ -166,7 +167,7 @@ let parse_cmdline () =
 
  virt-v2v -i disk -o local -os /var/tmp disk.img
 
- virt-v2v -i disk disk.img -o glance -os glance_image_name
+ virt-v2v -i disk disk.img -o glance
 
 There is a companion front-end called \"virt-p2v\" which comes as an
 ISO or CD image that can be booted on physical machines.
@@ -295,6 +296,15 @@ read the man page virt-v2v(1).
       if vmtype <> None then
         error (f_"--vmtype option cannot be used with '-o local'");
       Output_local.output_local verbose output_storage
+
+    | `Null ->
+      if output_conn <> None then
+        error (f_"-o null: -oc option cannot be used in this output mode");
+      if output_storage <> "" then
+        error (f_"-o null: -os option cannot be used in this output mode");
+      if vmtype <> None then
+        error (f_"--vmtype option cannot be used with '-o null'");
+      Output_null.output_null verbose
 
     | `RHEV ->
       if output_storage = "" then

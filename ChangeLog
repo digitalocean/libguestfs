@@ -1,3 +1,96 @@
+commit 7845bcc20f66eaa1f0e1df85f9f0dbe9da6037e6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 12 22:44:07 2014 +0100
+
+    Version 1.27.44.
+
+commit 764cbd5f695c6acbc39bd0b2b70746bfc9131e98
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 12 22:29:49 2014 +0100
+
+    sysprep: Use 'error' function consistently throughout the program.
+
+commit f1390d3d7a68580fcdceba7ffb26cb7d242d1505
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 12 22:19:42 2014 +0100
+
+    sysprep: Ensure error handler surrounds all the code so we catch and print all errors.
+
+commit 7bd7dabbd71583737e8d48536bb742be03988102
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 12 22:06:06 2014 +0100
+
+    v2v: esx: Clarify that username can be specified in vpx:// URI (RHBZ#1141113).
+    
+    If there is an authentication error when getting the session cookie,
+    emphasize in the error message that the username can be specified in
+    the URI.
+    
+    Unfortunately libvirt asks for the username previously, but we cannot
+    access that.
+
+commit 7836aa523bbcd223e3ebb23b3d174197b614b30f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 12 20:06:49 2014 +0100
+
+    v2v: Add -o null mode.
+    
+    In theory this discards the output.  Unfortunately in practice we have
+    to write the output to a temporary file and delete it (because of
+    limitations in qemu-img convert).
+
+commit 73c1f1cf7e1c4aa4e70407feff49ba847f7ebb63
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 12 19:37:03 2014 +0100
+
+    v2v: -i libvirtxml: Give an error if local disks are not readable (RHBZ#1140946).
+
+commit 3729bc1fe1726abda7576fdd6243a47ac96de5fe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 12 16:39:55 2014 +0100
+
+    sysprep: Check --{keep,remove}-user-accounts parameters are not used when operation is disabled (RHBZ#1141157).
+    
+    You will see an error like this:
+    
+    $ virt-sysprep --remove-user-accounts foo,bar -a /dev/null
+    virt-sysprep: error: user-accounts: --remove-user-accounts parameter was
+    used, but the "user-account" operation is not enabled
+
+commit 5066fde8f25fbcfa75bfa0c8e94b1b15eed3899a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 12 16:34:58 2014 +0100
+
+    sysprep: Add an optional method for checking if unused arguments were passed to disabled operations.
+
+commit 0513a91d2edd5089cd2db151b0605d6649c8a1bf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 12 16:21:11 2014 +0100
+
+    sysprep: Replace --user-accounts option with --{remove,keep}-user-accounts.
+    
+    The --user-accounts option, with its double-negative '-' prefix on
+    user names, is confusing.  Replace it with '--remove-user-accounts'
+    and '--keep-user-accounts' options.
+    
+    This updates commit 128d474095bfabc2d724d0181155e364f1afbabf.
+
+commit e1ed66e2b1c6b94bdfe10616667fdbc299ecb800
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 12 15:47:07 2014 +0100
+
+    v2v: If non-Xen and Xen initrds match a kernel, take shortest name (RHBZ#1141145).
+    
+    Thanks: Tingting Zheng.
+
+commit 44907763a6ee739f9fdd3b0a0e4b3d83ae4148d5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 12 12:41:26 2014 +0100
+
+    v2v: Fix --help documentation of -o glance option.
+    
+    Thanks: Junqin Zhou
+
 commit 8f1ce3a72f5d05fe7b80904ab51803a2e137aebb
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Sep 11 19:38:10 2014 +0100
