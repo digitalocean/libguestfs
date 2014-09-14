@@ -1,3 +1,91 @@
+commit 48604913db4095ab8f6ecc80d9f92b5a04a5285c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Sep 14 14:02:12 2014 +0100
+
+    Version 1.27.45.
+
+commit 4515413217c7d4a6fe026254bffa6f82746047c4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 19 13:54:50 2012 +0000
+
+    daemon: Run udev_settle after pwrite-device finishes (RHBZ#1141451).
+    
+    When you call close on any block device, udev kicks off a rule which
+    runs blkid to reexamine the device.  We need to wait for this rule to
+    finish running since it holds the device open and can cause other
+    operations to fail, notably mkfs.
+    
+    (cherry picked from commit a9c8123c72db47bcab8dd738e8d5256a9ae87f11)
+
+commit 974c4cd015e82b9b2013b27bdbcd51406a997136
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Sep 14 12:22:11 2014 +0100
+
+    appliance: Add comment with udev debugging option.
+
+commit 88dea548031db0eaccc08b63c4ee1e3644cd0e83
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 13 16:44:47 2014 +0100
+
+    v2v: -o rhev/vdsm: In --no-copy case, use estimate for ovf:actual_size (RHBZ#1140156).
+
+commit 3e2f89a74fcc75a0f6b10945d2d4b0273cc21b03
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 13 16:44:17 2014 +0100
+
+    v2v: Fix variable name usage_mb -> usage_gb.
+    
+    It's actually storing usage in gigabytes, not megabytes.
+
+commit 5a620137bf48251c3deab93492e8b7156eb9e282
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 13 16:18:16 2014 +0100
+
+    v2v: Estimate the amount of space required on the target.
+    
+    Estimate the amount of space required on the target by each source
+    disk after conversion.  The estimate is approximately a ceiling on
+    this, and actual use should be considerably lower.
+    
+    Provide an extra output method (#check_target_free_space) which output
+    modules may use to check that there is sufficient free space to
+    proceed, before conversion starts.  None of the output modules
+    actually implement this at the moment.
+
+commit f084fec3817a8f53c16056d50dd080a62d000af6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 13 14:54:39 2014 +0100
+
+    v2v: Introduce Types.mpstats struct storing mountpoint statistics.
+    
+    This is just code refactoring.
+
+commit b7bdb63d8967762a5b234049c4dda911150cc199
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 13 09:45:59 2014 +0100
+
+    tools: Check for dangling --format parameters (RHBZ#1140894).
+    
+    In most C tools, virt-sysprep and virt-customize, you have to put the
+    --format parameter before the corresponding -a parameter.  ie.  The
+    following is correct:
+    
+      guestfish --format qcow2 -a disk1 -a disk2
+    
+    But the following is incorrect.  The --format parameter is dangling
+    and prior to this commit would have been silently ignored:
+    
+      guestfish -a disk1 -a disk2 --format qcow2
+    
+    After this change, dangling --format parameters now lead to an error:
+    
+      guestfish: --format parameter must appear before -a parameter
+    
+    In virt-customize, also check that --attach-format parameter appears
+    before --attach parameter.
+    
+    Thanks: Lingfei Kong
+
 commit 7845bcc20f66eaa1f0e1df85f9f0dbe9da6037e6
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Sep 12 22:44:07 2014 +0100
