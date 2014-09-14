@@ -139,6 +139,7 @@ ov_source = %s
 type target = {
   target_file : string;
   target_format : string;
+  target_estimated_size : int64 option;
   target_overlay : overlay;
 }
 
@@ -146,11 +147,14 @@ let string_of_target t =
   sprintf "\
 target_file = %s
 target_format = %s
+target_estimated_size = %s
 target_overlay = %s
 target_overlay.ov_source = %s
 "
     t.target_file
     t.target_format
+    (match t.target_estimated_size with
+    | None -> "None" | Some i -> Int64.to_string i)
     t.target_overlay.ov_overlay_file
     t.target_overlay.ov_source.s_qemu_uri
 
@@ -167,6 +171,13 @@ type inspect = {
   i_product_variant : string;
   i_apps : Guestfs.application2 list;
   i_apps_map : Guestfs.application2 list StringMap.t;
+}
+
+type mpstat = {
+  mp_dev : string;
+  mp_path : string;
+  mp_statvfs : Guestfs.statvfs;
+  mp_vfs : string;
 }
 
 type guestcaps = {
@@ -187,6 +198,7 @@ end
 class virtual output verbose = object
   method virtual as_options : string
   method virtual prepare_targets : source -> target list -> target list
+  method check_target_free_space (_ : source) (_ : target list) = ()
   method virtual create_metadata : source -> target list -> guestcaps -> inspect -> unit
   method keep_serial_console = true
 end
