@@ -1,3 +1,11 @@
+libguestfs (1:1.27.45-1) experimental; urgency=medium
+
+  * New upstream development version
+  * Added upstream patches that should fix FTBFS on architectures without
+    native OCaml compiler
+
+ -- Hilko Bengen <bengen@debian.org>  Sun, 14 Sep 2014 22:47:30 +0200
+
 libguestfs (1:1.27.44-1) experimental; urgency=medium
 
   * New upstream development version
