@@ -1,0 +1,124 @@
+From: "Richard W.M. Jones" <rjones@redhat.com>
+Date: Sun, 14 Sep 2014 18:46:49 +0100
+Subject: Revert "Use ocamldep -all option."
+
+This reverts commit a3881445efd04d5fe6da29db8b2d62a30088b9d1.
+
+See discussion on the mailing list:
+
+https://www.redhat.com/archives/libguestfs/2014-September/msg00069.html
+---
+ builder/Makefile.am   | 2 +-
+ customize/Makefile.am | 2 +-
+ mllib/Makefile.am     | 2 +-
+ ocaml/Makefile.am     | 2 +-
+ resize/Makefile.am    | 2 +-
+ sparsify/Makefile.am  | 2 +-
+ sysprep/Makefile.am   | 2 +-
+ v2v/Makefile.am       | 2 +-
+ 8 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/builder/Makefile.am b/builder/Makefile.am
+index 0fb5b39..0ca5db6 100644
+--- a/builder/Makefile.am
++++ b/builder/Makefile.am
+@@ -253,7 +253,7 @@ depend: .depend
+ 
+ .depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
+ 	rm -f $@ $@-t
+-	$(OCAMLFIND) ocamldep -all -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
++	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
+ 	  $(SED) 's/ *$$//' | \
+ 	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
+ 	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
+diff --git a/customize/Makefile.am b/customize/Makefile.am
+index 0ea06d3..90234a0 100644
+--- a/customize/Makefile.am
++++ b/customize/Makefile.am
+@@ -187,7 +187,7 @@ depend: .depend
+ 
+ .depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
+ 	rm -f $@ $@-t
+-	$(OCAMLFIND) ocamldep -all -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib $^ | \
++	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib $^ | \
+ 	  $(SED) 's/ *$$//' | \
+ 	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
+ 	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
+diff --git a/mllib/Makefile.am b/mllib/Makefile.am
+index c3553db..af0fe85 100644
+--- a/mllib/Makefile.am
++++ b/mllib/Makefile.am
+@@ -167,7 +167,7 @@ depend: .depend
+ 
+ .depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
+ 	rm -f $@ $@-t
+-	$(OCAMLFIND) ocamldep -all -I ../ocaml -I $(abs_srcdir) $^ | \
++	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) $^ | \
+ 	  $(SED) 's/ *$$//' | \
+ 	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
+ 	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
+diff --git a/ocaml/Makefile.am b/ocaml/Makefile.am
+index 8967f13..8b9dcfa 100644
+--- a/ocaml/Makefile.am
++++ b/ocaml/Makefile.am
+@@ -169,7 +169,7 @@ depend: .depend
+ 
+ .depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml) $(wildcard $(abs_srcdir)/t/*.ml)
+ 	rm -f $@ $@-t
+-	$(OCAMLFIND) ocamldep -all -I ../ocaml -I $(abs_srcdir) $^ | \
++	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) $^ | \
+ 	  $(SED) 's/ *$$//' | \
+ 	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
+ 	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
+diff --git a/resize/Makefile.am b/resize/Makefile.am
+index b71759f..91abeee 100644
+--- a/resize/Makefile.am
++++ b/resize/Makefile.am
+@@ -145,7 +145,7 @@ depend: .depend
+ 
+ .depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
+ 	rm -f $@ $@-t
+-	$(OCAMLFIND) ocamldep -all -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib $^ | \
++	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib $^ | \
+ 	  $(SED) 's/ *$$//' | \
+ 	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
+ 	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
+diff --git a/sparsify/Makefile.am b/sparsify/Makefile.am
+index 6bbd420..bb3bda0 100644
+--- a/sparsify/Makefile.am
++++ b/sparsify/Makefile.am
+@@ -134,7 +134,7 @@ depend: .depend
+ 
+ .depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
+ 	rm -f $@ $@-t
+-	$(OCAMLFIND) ocamldep -all -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib $^ | \
++	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib $^ | \
+ 	  $(SED) 's/ *$$//' | \
+ 	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
+ 	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
+diff --git a/sysprep/Makefile.am b/sysprep/Makefile.am
+index 4e654ef..7b88ef5 100644
+--- a/sysprep/Makefile.am
++++ b/sysprep/Makefile.am
+@@ -225,7 +225,7 @@ depend: .depend
+ 
+ .depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
+ 	rm -f $@ $@-t
+-	$(OCAMLFIND) ocamldep -all -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
++	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
+ 	  $(SED) 's/ *$$//' | \
+ 	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
+ 	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
+diff --git a/v2v/Makefile.am b/v2v/Makefile.am
+index 7807735..2a540f1 100644
+--- a/v2v/Makefile.am
++++ b/v2v/Makefile.am
+@@ -266,7 +266,7 @@ depend: .depend
+ 
+ .depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
+ 	rm -f $@ $@-t
+-	$(OCAMLFIND) ocamldep -all -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
++	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
+ 	  $(SED) 's/ *$$//' | \
+ 	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
+ 	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
