@@ -1,3 +1,78 @@
+commit 21c6c70378b0a48528911bd93ce7b528c809805f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 15 11:03:35 2014 +0100
+
+    Version 1.27.46.
+
+commit 1dd485e500a2ee810802e2f6421dde104b2116ab
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 15 10:17:01 2014 +0100
+
+    v2v: Allow pool UUID to be used in -os parameter (RHBZ#1141631).
+    
+    Thanks: Zhou Junqin.
+
+commit 47251a3599b1477d7c3749912b404c756e613be6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 15 10:15:10 2014 +0100
+
+    v2v: Allow domain UUID to be used in place of libvirt guest name (RHBZ#1141680).
+    
+    Thanks: Zhou Junqin.
+
+commit a417287e0abe09f00bd9160f5b4336d493d0924c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 15 10:13:09 2014 +0100
+
+    v2v: domainxml: Rework libvirt error handling.
+    
+    Don't rely on libvirt's implicit print-to-stderr.  Instead make sure
+    that libvirt error messages are raised in the exception message.
+    
+    Also allow error strings to be translated.
+
+commit be1385d2cbf198606c1d11c0302de6b11176d785
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 15 09:46:30 2014 +0100
+
+    Revert "v2v: -i libvirtxml: Give an error if local disks are not readable (RHBZ#1140946)."
+    
+    This commit breaks remote disks.  See:
+    https://bugzilla.redhat.com/show_bug.cgi?id=1141654
+    
+    This reverts commit 73c1f1cf7e1c4aa4e70407feff49ba847f7ebb63.
+
+commit 7039d0e7f661e04ddec79eb8faabc50da5096451
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Sun Sep 14 21:21:25 2014 +0200
+
+    Generate *.cmx targets only if a native OCaml compiler exists
+
+commit 50d5d4b723295b35772b64650f4a96f43f7cc9fc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Sep 14 19:03:28 2014 +0100
+
+    v2v: Add stringMap.mli (interface).
+    
+    Hopefully this should fix the incorrect build problem.  See discussion
+    here:
+    
+    https://www.redhat.com/archives/libguestfs/2014-September/msg00071.html
+    
+    The interface was generated using 'ocamlc -i'.
+
+commit a18c2aca14e451d54110c44ece4eeed536b3ece2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Sep 14 18:46:49 2014 +0100
+
+    Revert "Use ocamldep -all option."
+    
+    This reverts commit a3881445efd04d5fe6da29db8b2d62a30088b9d1.
+    
+    See discussion on the mailing list:
+    
+    https://www.redhat.com/archives/libguestfs/2014-September/msg00069.html
+
 commit 48604913db4095ab8f6ecc80d9f92b5a04a5285c
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sun Sep 14 14:02:12 2014 +0100
