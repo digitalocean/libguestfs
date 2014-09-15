@@ -2019,8 +2019,8 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	$(top_builddir)/libtool -dlopen $(top_builddir)/src/.libs/libguestfs.la --mode=execute \
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -I . -package unix -linkpkg mlguestfs.cma $< -o $@
 
-@HAVE_OCAML_TRUE@%.opt: %.cmx mlguestfs.cmxa
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@%.opt: %.cmx mlguestfs.cmxa
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
 @HAVE_OCAML_TRUE@check-valgrind:
 @HAVE_OCAML_TRUE@	$(MAKE) VG="$(top_builddir)/run @VG@" check
@@ -2032,16 +2032,16 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -package unix -c $< -o $@
 @HAVE_OCAML_TRUE@%.cmo: %.ml mlguestfs.cma
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -package unix -c $< -o $@
-@HAVE_OCAML_TRUE@guestfs.cmx: guestfs.ml
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -package unix -c $< -o $@
-@HAVE_OCAML_TRUE@%.cmx: %.ml mlguestfs.cmxa
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -package unix -c $< -o $@
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@guestfs.cmx: guestfs.ml
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -package unix -c $< -o $@
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@%.cmx: %.ml mlguestfs.cmxa
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -package unix -c $< -o $@
 
 @HAVE_OCAML_TRUE@depend: .depend
 
 @HAVE_OCAML_TRUE@.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml) $(wildcard $(abs_srcdir)/t/*.ml)
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -all -I ../ocaml -I $(abs_srcdir) $^ | \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) $^ | \
 @HAVE_OCAML_TRUE@	  $(SED) 's/ *$$//' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \

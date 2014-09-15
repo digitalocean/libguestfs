@@ -35,6 +35,7 @@ SOURCES_MLI = \
 	input_disk.mli \
 	input_libvirt.mli \
 	input_libvirtxml.mli \
+	input_ova.mli \
 	JSON.mli \
 	lib_esx.mli \
 	lib_linux.mli \
@@ -42,12 +43,12 @@ SOURCES_MLI = \
 	lib_xen.mli \
 	modules_list.mli \
 	output_glance.mli \
-	input_ova.mli \
 	output_libvirt.mli \
 	output_local.mli \
 	output_null.mli \
 	output_rhev.mli \
 	output_vdsm.mli \
+	stringMap.mli \
 	types.mli \
 	xml.mli
 
@@ -163,8 +164,10 @@ virt_v2v_LINK = \
 	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 .ml.cmo:
 	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+if HAVE_OCAMLOPT
 .ml.cmx:
 	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+endif
 
 # Data directory.
 
@@ -266,7 +269,7 @@ depend: .depend
 
 .depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
 	rm -f $@ $@-t
-	$(OCAMLFIND) ocamldep -all -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
+	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
 	  $(SED) 's/ *$$//' | \
 	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
 	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \

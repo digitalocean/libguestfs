@@ -163,8 +163,8 @@ this way.
 
 Set the input method to I<libvirt>.  This is the default.
 
-In this mode you have to specify a libvirt guest name on the command line.
-You may also specify a libvirt connection URI (see I<-ic>).
+In this mode you have to specify a libvirt guest name or UUID on the command
+line.  You may also specify a libvirt connection URI (see I<-ic>).
 
 =item B<-i libvirtxml>
 
@@ -332,7 +332,7 @@ output name is the same as the input name.
 The location of the storage for the converted guest.
 
 For I<-o libvirt>, this is a libvirt directory pool (see S<C<virsh
-pool-list>>).
+pool-list>>) or pool UUID.
 
 For I<-o local>, this is a directory name.  The directory must exist.
 

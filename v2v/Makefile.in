@@ -1510,6 +1510,7 @@ SOURCES_MLI = \
 	input_disk.mli \
 	input_libvirt.mli \
 	input_libvirtxml.mli \
+	input_ova.mli \
 	JSON.mli \
 	lib_esx.mli \
 	lib_linux.mli \
@@ -1517,12 +1518,12 @@ SOURCES_MLI = \
 	lib_xen.mli \
 	modules_list.mli \
 	output_glance.mli \
-	input_ova.mli \
 	output_libvirt.mli \
 	output_local.mli \
 	output_null.mli \
 	output_rhev.mli \
 	output_vdsm.mli \
+	stringMap.mli \
 	types.mli \
 	xml.mli
 
@@ -2343,8 +2344,8 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAML_TRUE@.ml.cmo:
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAML_TRUE@.ml.cmx:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@.ml.cmx:
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 @HAVE_OCAML_TRUE@virt-v2v.1 $(top_builddir)/html/virt-v2v.1.html: stamp-virt-v2v.pod
 
@@ -2377,7 +2378,7 @@ $(top_builddir)/generator/generator:
 
 @HAVE_OCAML_TRUE@.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -all -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
 @HAVE_OCAML_TRUE@	  $(SED) 's/ *$$//' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
