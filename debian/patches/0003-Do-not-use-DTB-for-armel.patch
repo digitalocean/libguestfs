@@ -7,7 +7,7 @@ Subject: Do not use DTB for armel
  1 file changed, 2 insertions(+)
 
 diff --git a/src/guestfs-internal.h b/src/guestfs-internal.h
-index 648f005..c8b0dcd 100644
+index 69ea2dc..ceae3d7 100644
 --- a/src/guestfs-internal.h
 +++ b/src/guestfs-internal.h
 @@ -145,8 +145,10 @@
