@@ -1,3 +1,56 @@
+commit 9aeaace779e7ce9718208367f5079b4667f8468b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 16 16:43:28 2014 +0100
+
+    Version 1.27.47.
+
+commit 01b25d7fc6ea1dee80d104118436980b7d504af0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 16 16:20:15 2014 +0100
+
+    v2v: Add xvda -> sda etc mappings (RHBZ#1142004).
+    
+    For Xen guests, a device can be presented twice as (eg) xvda and sda,
+    and therefore we should map any otherwise unmapped xvdX.
+    
+    For non-Xen guests, this should have no effect.
+
+commit d86016da8e5d9afd01c75067198aecad15d402c9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 16 15:49:34 2014 +0100
+
+    v2v: Fix for 'grubby: bad argument --set-kernel: unknown option' (RHBZ#1141145).
+    
+    I made a mistake while translating the Perl conversion code and
+    transcribed --set-default as --set-kernel.  grubby has no --set-kernel
+    option so it failed.
+    
+    Thanks: Tingting Zheng
+
+commit a7147ce9ffa93cd1cc0c9b568fe00cc81071a777
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 15 15:36:23 2014 +0100
+
+    run: Add p2v to the PATH.
+
+commit 8856fadadb4f10b89f13068d01d40643e31c488d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 16 08:36:38 2014 +0100
+
+    v2v: Prevent conversion of "blocked" and "paused" domains also.
+    
+    Previously only "running" domains were blocked from conversion.
+    However "blocked" is essentially the same as running (on Xen it just
+    means the domain is running but waiting on an I/O resource).  And
+    "paused" domains probably shouldn't be converted either since their
+    disks are only crash-consistent.
+
+commit 77b371b18b6a7ad37105a595931514f542a04396
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 15 11:31:55 2014 +0100
+
+    v2v: Clarify the missing input format error message (RHBZ#1141723).
+
 commit 21c6c70378b0a48528911bd93ce7b528c809805f
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon Sep 15 11:03:35 2014 +0100
