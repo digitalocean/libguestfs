@@ -289,7 +289,7 @@ let rec argspec ~prog () =
       ),
       "md5|sha256|sha512" ^ " " ^ s_"Set password crypto"
     ),
-    Some "md5|sha256|sha512", "Set the password encryption to C<md5>, C<sha256> or C<sha512>.\n\nC<sha256> and C<sha512> require glibc E<ge> 2.7 (check crypt(3) inside\nthe guest).\n\nC<md5> will work with relatively old Linux guests (eg. RHEL 3), but\nis not secure against modern attacks.\n\nThe default is C<sha512> unless libguestfs detects an old guest that\ndidn't have support for SHA-512, in which case it will use C<md5>.\nYou can override libguestfs by specifying this option.";
+    Some "md5|sha256|sha512", "When the virt tools change or set a password in the guest, this\noption sets the password encryption of that password to\nC<md5>, C<sha256> or C<sha512>.\n\nC<sha256> and C<sha512> require glibc E<ge> 2.7 (check crypt(3) inside\nthe guest).\n\nC<md5> will work with relatively old Linux guests (eg. RHEL 3), but\nis not secure against modern attacks.\n\nThe default is C<sha512> unless libguestfs detects an old guest that\ndidn't have support for SHA-512, in which case it will use C<md5>.\nYou can override libguestfs by specifying this option.\n\nNote this does not change the default password encryption used\nby the guest when you create new user accounts inside the guest.\nIf you want to do that, then you should use the I<--edit> option\nto modify C</etc/sysconfig/authconfig> (Fedora, RHEL) or\nC</etc/pam.d/common-password> (Debian, Ubuntu).";
     (
       "--selinux-relabel",
       Arg.Set selinux_relabel,

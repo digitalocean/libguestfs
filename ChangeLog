@@ -1,3 +1,108 @@
+commit 95729079564edf83128186c4f9d2e6b494928270
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 18 18:08:43 2014 +0100
+
+    Version 1.27.49.
+
+commit c573feb4d1dcae0da85963237ef57312bb02e288
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 18 17:45:12 2014 +0100
+
+    v2v: Print a message if the guest is virtio-capable after conversion.
+
+commit 70444670acc60c5700bcd07ea7440d186eb4b60c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 18 15:07:32 2014 +0100
+
+    v2v: -o rhev: Use chown --reference instead of 36.36 (RHBZ#1143887).
+    
+    When chowning the final directories, instead of chowning them to 36.36
+    (ie. hard-coding those UID/GIDs), use a --reference chown so it should
+    take the ownership from the parent directory.
+    
+    Unfortunately chowning is very complex because of:
+    
+     - NFSv3 vs NFSv4
+    
+     - root squash
+    
+     - idmap
+    
+    which creates approximately 8 different ways for this to fail.
+
+commit 035f47cdde4052e77613c77d2e5e0f24dbab082f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 18 14:43:12 2014 +0100
+
+    v2v: Fix code for editing grub2 console=... parameter (RHBZ#1143883).
+    
+    When presented with a RHEL 7 guest, virt-v2v would print the following
+    warning message:
+    
+      virt-v2v: warning: could not update grub2 console: aug_get: no matching
+      node (ignored)
+    
+    This happened because on RHEL 7, /etc/sysconfig/grub is a symlink to
+    /etc/default/grub, and the Augeas grub2 lens returns entries under
+    /files/etc/default/grub/*, but the code was checking for
+    /files/etc/sysconfig/grub/*.
+    
+    The fix is to check all the possible Augeas paths until one matches.
+    (Only the first match gets updated however).
+    
+    Also, don't rebuild the grub2 config unless we've actually changed it.
+    This avoids doing a potentially failure-prone operation when it's not
+    necessary.
+    
+    I suspect that the old virt-v2v code did not work correctly for RHEL 7
+    guests, but old virt-v2v didn't print a warning here, it just failed
+    to update silently.
+
+commit e5dd3b08de331b14aee4f86eef373e3c900d8b61
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 18 13:56:58 2014 +0100
+
+    customize: Make usage of --password-crypto option clearer (RHBZ#1143949).
+
+commit c68b510be2c58b729143b5940be6dfbb56a94182
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 18 13:35:03 2014 +0100
+
+    Update release notes.
+
+commit 32736857b3590554c4707cfe33eebed0ccc04abe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 21:34:10 2014 +0100
+
+    v2v: Document the input: output: and convert: features in --machine-readable output.
+
+commit 3562a816832d525b5948b41780bff05aa8dec027
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 15 18:44:51 2014 +0100
+
+    generator: Change type of 'tests' to 'c_api_tests'.
+    
+    Just a code refactoring, has no functional effect.
+
+commit e85a976c5a474d751c6e8352370047a3177a7c45
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 15 15:17:47 2014 +0100
+
+    tests: Don't use relative paths to binaries in tests.
+    
+    All tests run under the ./run binary.  For a long time the ./run
+    binary has set the $PATH environment variable to contain all of the
+    directories with binaries in them.
+    
+    Therefore there is no reason to use ../fish/guestfish instead of just
+    plain guestfish (and the same applies to other built binaries).
+
+commit bced8f52897d3e588e88cde3774e1e3666492db4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 16:33:55 2014 +0100
+
+    FAQ: Note that update-guestfs-appliance is not needed with libguestfs >= 1.26.
+
 commit 58a285b5b3d60508779d83f5ffa1de349c4baa78
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Sep 17 15:51:30 2014 +0100

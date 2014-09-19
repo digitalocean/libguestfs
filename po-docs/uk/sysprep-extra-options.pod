@@ -116,7 +116,8 @@ field, and also how to set up user accounts.
 
 =item B<--password-crypto> md5|sha256|sha512 (see C<customize> below)
 
-Встановити спосіб шифрування паролів: C<md5>, C<sha256> або C<sha512>.
+When the virt tools change or set a password in the guest, this option sets
+the password encryption of that password to C<md5>, C<sha256> or C<sha512>.
 
 C<sha256> and C<sha512> require glibc E<ge> 2.7 (check crypt(3) inside the
 guest).
@@ -129,6 +130,12 @@ libguestfs вдасться виявити у гостьовій системі 
 такої підтримки не буде виявлено, використовуватиметься C<md5>. За допомогою
 цього параметра ви можете перевизначити автоматично визначений libguestfs
 спосіб шифрування.
+
+Note this does not change the default password encryption used by the guest
+when you create new user accounts inside the guest.  If you want to do that,
+then you should use the I<--edit> option to modify
+C</etc/sysconfig/authconfig> (Fedora, RHEL) or C</etc/pam.d/common-password>
+(Debian, Ubuntu).
 
 =item B<--remove-user-accounts> USERS (see C<user-account> below)
 
