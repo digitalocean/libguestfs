@@ -24,6 +24,8 @@
  * - OpenSUSE and Fedora (not enterprisey, but similar enough to RHEL/SUSE)
  *)
 
+(* < mdbooth> It's all in there for a reason :/ *)
+
 open Printf
 
 open Common_gettext.Gettext
@@ -749,15 +751,15 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
     if best_kernel <> List.hd grub_kernels then
       grub_set_bootable best_kernel;
 
-    rebuild_initrd best_kernel;
-
     (* Does the best/bootable kernel support virtio? *)
-    best_kernel.ki_supports_virtio
+    let virtio = best_kernel.ki_supports_virtio in
+
+    best_kernel, virtio
 
   and grub_set_bootable kernel =
     let cmd =
       if g#exists "/sbin/grubby" then
-        [| "grubby"; "--set-kernel"; kernel.ki_vmlinuz |]
+        [| "grubby"; "--set-default"; kernel.ki_vmlinuz |]
       else
         [| "/usr/bin/perl"; "-MBootloader::Tools"; "-e"; sprintf "
               InitLibrary();
@@ -996,31 +998,38 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
   and grub2_update_console ~remove =
     let rex = Str.regexp "\\(.*\\)\\bconsole=[xh]vc0\\b\\(.*\\)" in
 
-    let grub_cmdline_expr =
-      if g#exists "/etc/sysconfig/grub" then
-        "/files/etc/sysconfig/grub/GRUB_CMDLINE_LINUX"
+    let paths = [
+      "/files/etc/sysconfig/grub/GRUB_CMDLINE_LINUX";
+      "/files/etc/default/grub/GRUB_CMDLINE_LINUX";
+      "/files/etc/default/grub/GRUB_CMDLINE_LINUX_DEFAULT"
+    ] in
+    let paths = List.map g#aug_match paths in
+    let paths = List.map Array.to_list paths in
+    let paths = List.flatten paths in
+    match paths with
+    | [] ->
+      if not remove then
+        warning ~prog (f_"could not add grub2 serial console (ignored)")
       else
-        "/files/etc/default/grub/GRUB_CMDLINE_LINUX_DEFAULT" in
+        warning ~prog (f_"could not remove grub2 serial console (ignored)")
+    | path :: _ ->
+      let grub_cmdline = g#aug_get path in
+      if Str.string_match rex grub_cmdline 0 then (
+        let new_grub_cmdline =
+          if not remove then
+            Str.global_replace rex "\\1console=ttyS0\\3" grub_cmdline
+          else
+            Str.global_replace rex "\\1\\3" grub_cmdline in
+        g#aug_set path new_grub_cmdline;
+        g#aug_save ();
 
-    (try
-       let grub_cmdline = g#aug_get grub_cmdline_expr in
-       let grub_cmdline =
-         if Str.string_match rex grub_cmdline 0 then (
-           if remove then
-             Str.global_replace rex "\\1\\3" grub_cmdline
-           else
-             Str.global_replace rex "\\1console=ttyS0\\3" grub_cmdline
-         )
-         else grub_cmdline in
-       g#aug_set grub_cmdline_expr grub_cmdline;
-       g#aug_save ();
-
-       ignore (g#command [| "grub2-mkconfig"; "-o"; grub_config |])
-     with
-       G.Error msg ->
-         warning ~prog (f_"could not update grub2 console: %s (ignored)")
-           msg
-    )
+        try
+          ignore (g#command [| "grub2-mkconfig"; "-o"; grub_config |])
+        with
+          G.Error msg ->
+            warning ~prog (f_"could not rebuild grub2 configuration file (%s).  This may mean that grub output will not be sent to the serial port, but otherwise should be harmless.  Original error message: %s")
+              grub_config msg
+      )
 
   and supports_acpi () =
     (* ACPI known to cause RHEL 3 to fail. *)
@@ -1074,6 +1083,106 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
         (f_"The display driver was updated to '%s', but X11 does not seem to be installed in the guest.  X may not function correctly.")
         video_driver
 
+  and configure_kernel_modules virtio =
+    (* This function modifies modules.conf (and its various aliases). *)
+
+    (* Update 'alias eth0 ...'. *)
+    let paths = augeas_modprobe ". =~ regexp('eth[0-9]+')" in
+    let net_device = if virtio then "virtio_net" else "e1000" in
+    List.iter (
+      fun path -> g#aug_set (path ^ "/modulename") net_device
+    ) paths;
+
+    (* Update 'alias scsi_hostadapter ...' *)
+    let paths = augeas_modprobe ". =~ regexp('scsi_hostadapter.*')" in
+    if virtio then (
+      if paths <> [] then (
+        (* There's only 1 scsi controller in the converted guest.
+         * Convert only the first scsi_hostadapter entry to virtio
+         * and delete other scsi_hostadapter entries.
+         *)
+        let path, paths_to_delete = List.hd paths, List.tl paths in
+
+        (* Note that we delete paths in reverse order. This means we don't
+         * have to worry about alias indices being changed.
+         *)
+        List.iter (fun path -> ignore (g#aug_rm path))
+          (List.rev paths_to_delete);
+
+        g#aug_set (path ^ "/modulename") "virtio_blk"
+      ) else (
+        (* We have to add a scsi_hostadapter. *)
+        let modpath = discover_modpath () in
+        g#aug_set (sprintf "/files%s/alias[last()+1]" modpath)
+          "scsi_hostadapter";
+        g#aug_set (sprintf "/files%s/alias[last()]/modulename" modpath)
+          "virtio_blk"
+      )
+    ) else (* not virtio *) (
+      (* There is no scsi controller in an IDE guest. *)
+      List.iter (fun path -> ignore (g#aug_rm path)) (List.rev paths)
+    );
+
+    (* Display a warning about any leftover Xen modules which we
+     * haven't converted.  These are likely to cause an error when
+     * we run mkinitrd.
+     *)
+    let xen_modules = [ "xennet"; "xen-vnif"; "xenblk"; "xen-vbd" ] in
+    let query =
+      "modulename =~ regexp('" ^ String.concat "|" xen_modules ^ "')" in
+    let paths = augeas_modprobe query in
+    List.iter (
+      fun path ->
+        let device = g#aug_get path in
+        let module_ = g#aug_get (path ^ "/modulename") in
+        warning ~prog (f_"don't know how to update %s which loads the %s module")
+          device module_;
+    ) paths;
+
+    (* Update files. *)
+    g#aug_save ()
+
+  and augeas_modprobe query =
+    (* Execute g#aug_match, but against every known location of modules.conf. *)
+    let paths = [
+      "/files/etc/conf.modules/alias";
+      "/files/etc/modules.conf/alias";
+      "/files/etc/modprobe.conf/alias";
+      "/files/etc/modprobe.d/*/alias";
+    ] in
+    let paths =
+      List.map (
+        fun p ->
+          let p = sprintf "%s[%s]" p query in
+          Array.to_list (g#aug_match p)
+      ) paths in
+    List.flatten paths
+
+  and discover_modpath () =
+    (* Find what /etc/modprobe.conf is called today. *)
+    let modpath = ref "" in
+
+    (* Note that we're checking in ascending order of preference so
+     * that the last discovered method will be chosen.
+     *)
+    List.iter (
+      fun file ->
+        if g#is_file ~followsymlinks:true file then
+          modpath := file
+    ) [ "/etc/conf.modules"; "/etc/modules.conf" ];
+
+    if g#is_file ~followsymlinks:true "/etc/modprobe.conf" then
+      modpath := "modprobe.conf";
+
+    if g#is_dir ~followsymlinks:true "/etc/modprobe.d" then
+      (* Create a new file /etc/modprobe.d/virt-v2v-added.conf. *)
+      modpath := "modprobe.d/virt-v2v-added.conf";
+
+    if !modpath = "" then
+      error (f_"unable to find any valid modprobe configuration file such as /etc/modprobe.conf");
+
+    !modpath
+
   and remap_block_devices virtio =
     (* This function's job is to iterate over boot configuration
      * files, replacing "hda" with "vda" or whatever is appropriate.
@@ -1086,15 +1195,17 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
      * added to the target in the order they appear in the libvirt XML.
      *)
     let block_prefix =
-      match family, inspect.i_major_version with
-      | `RHEL_family, v when v < 5 ->
-        (* RHEL < 5 used old ide driver *) "hd"
-      | `RHEL_family, 5 ->
-        (* RHEL 5 uses libata, but udev still uses: *) "hd"
-      | `SUSE_family, _ ->
-        (* SUSE uses libata, but still presents IDE disks as: *) "hd"
-      | _, _ ->
-        (* All modern distros use libata: *) "sd" in
+      if virtio then "vd"
+      else
+        match family, inspect.i_major_version with
+        | `RHEL_family, v when v < 5 ->
+          (* RHEL < 5 used old ide driver *) "hd"
+        | `RHEL_family, 5 ->
+          (* RHEL 5 uses libata, but udev still uses: *) "hd"
+        | `SUSE_family, _ ->
+          (* SUSE uses libata, but still presents IDE disks as: *) "hd"
+        | _, _ ->
+          (* All modern distros use libata: *) "sd" in
     let map =
       mapi (
         fun i disk ->
@@ -1104,6 +1215,20 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
             | None -> (* ummm, what? *) block_prefix ^ drive_name i in
           let target_dev = block_prefix ^ drive_name i in
           source_dev, target_dev
+      ) source.s_disks in
+
+    (* If a Xen guest has non-PV devices, Xen also simultaneously
+     * presents these as xvd devices. i.e. hdX and xvdX both exist and
+     * are the same device.
+     *
+     * This mapping is also useful for P2V conversion of Citrix
+     * Xenserver guests done in HVM mode. Disks are detected as sdX,
+     * although the guest uses xvdX natively.
+     *)
+    let map = map @
+      mapi (
+        fun i disk ->
+          "xvd" ^ drive_name i, block_prefix ^ drive_name i
       ) source.s_disks in
 
     (* Possible Augeas paths to search for device names. *)
@@ -1218,7 +1343,7 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
   unconfigure_efi ();
   unconfigure_kudzu ();
 
-  let virtio = configure_kernel () in
+  let kernel, virtio = configure_kernel () in
 
   if keep_serial_console then (
     configure_console ();
@@ -1232,13 +1357,9 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
 
   let video = get_display_driver () in
   configure_display_driver video;
-
-  (*
-    XXX to do from original v2v:
-    configure_kernel_modules  # updates /etc/modules.conf and friends
-  *)
-
   remap_block_devices virtio;
+  configure_kernel_modules virtio;
+  rebuild_initrd kernel;
 
   let guestcaps = {
     gcaps_block_bus = if virtio then Virtio_blk else IDE;

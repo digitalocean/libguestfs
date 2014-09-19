@@ -896,7 +896,11 @@ do_part_get_gpt_type (const char *device, int partnum)
 char *
 do_part_get_name (const char *device, int partnum)
 {
-  CLEANUP_FREE char *parttype = do_part_get_parttype (device);
+  CLEANUP_FREE char *parttype;
+
+  parttype = do_part_get_parttype (device);
+  if (parttype == NULL)
+    return NULL;
 
   if (STREQ (parttype, "gpt")) {
     int parted_has_m_opt = test_parted_m_opt ();
@@ -950,7 +954,7 @@ do_part_get_name (const char *device, int partnum)
       return name;
     }
   } else {
-    reply_with_error ("parted does not support the machine output (-m)");
+    reply_with_error ("part-get-name can only be used on GUID Partition Tables");
     return NULL;
   }
 

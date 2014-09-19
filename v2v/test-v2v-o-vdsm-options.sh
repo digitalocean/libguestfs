@@ -27,7 +27,7 @@ if [ -n "$SKIP_TEST_V2V_O_VDSM_OPTIONS_SH" ]; then
     exit 77
 fi
 
-if [ "$(../fish/guestfish get-backend)" = "uml" ]; then
+if [ "$(guestfish get-backend)" = "uml" ]; then
     echo "$0: test skipped because UML backend does not support network"
     exit 77
 fi
@@ -62,7 +62,7 @@ mkdir $d/12345678-1234-1234-1234-123456789abc/master/vms/VM
 # The --vdsm-*-uuid options don't actually check that the
 # parameter is a UUID, which is useful here.
 
-$VG ./virt-v2v --debug-gc \
+$VG virt-v2v --debug-gc \
     -i libvirt -ic "$libvirt_uri" windows \
     -o vdsm -os $d \
     --vmtype desktop \
@@ -73,8 +73,8 @@ $VG ./virt-v2v --debug-gc \
 # Test the OVF metadata was created.
 test -f $d/12345678-1234-1234-1234-123456789abc/master/vms/VM/VM.ovf
 
-# Test the OVF metadata contains <VmType>DESKTOP</VmType>.
-grep '<VmType>DESKTOP</VmType>' \
+# Test the OVF metadata contains <VmType>0</VmType> (desktop).
+grep '<VmType>0</VmType>' \
     $d/12345678-1234-1234-1234-123456789abc/master/vms/VM/VM.ovf
 
 pushd $d/12345678-1234-1234-1234-123456789abc/images/IMAGE

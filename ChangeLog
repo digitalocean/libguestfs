@@ -1,3 +1,288 @@
+commit 95729079564edf83128186c4f9d2e6b494928270
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 18 18:08:43 2014 +0100
+
+    Version 1.27.49.
+
+commit c573feb4d1dcae0da85963237ef57312bb02e288
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 18 17:45:12 2014 +0100
+
+    v2v: Print a message if the guest is virtio-capable after conversion.
+
+commit 70444670acc60c5700bcd07ea7440d186eb4b60c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 18 15:07:32 2014 +0100
+
+    v2v: -o rhev: Use chown --reference instead of 36.36 (RHBZ#1143887).
+    
+    When chowning the final directories, instead of chowning them to 36.36
+    (ie. hard-coding those UID/GIDs), use a --reference chown so it should
+    take the ownership from the parent directory.
+    
+    Unfortunately chowning is very complex because of:
+    
+     - NFSv3 vs NFSv4
+    
+     - root squash
+    
+     - idmap
+    
+    which creates approximately 8 different ways for this to fail.
+
+commit 035f47cdde4052e77613c77d2e5e0f24dbab082f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 18 14:43:12 2014 +0100
+
+    v2v: Fix code for editing grub2 console=... parameter (RHBZ#1143883).
+    
+    When presented with a RHEL 7 guest, virt-v2v would print the following
+    warning message:
+    
+      virt-v2v: warning: could not update grub2 console: aug_get: no matching
+      node (ignored)
+    
+    This happened because on RHEL 7, /etc/sysconfig/grub is a symlink to
+    /etc/default/grub, and the Augeas grub2 lens returns entries under
+    /files/etc/default/grub/*, but the code was checking for
+    /files/etc/sysconfig/grub/*.
+    
+    The fix is to check all the possible Augeas paths until one matches.
+    (Only the first match gets updated however).
+    
+    Also, don't rebuild the grub2 config unless we've actually changed it.
+    This avoids doing a potentially failure-prone operation when it's not
+    necessary.
+    
+    I suspect that the old virt-v2v code did not work correctly for RHEL 7
+    guests, but old virt-v2v didn't print a warning here, it just failed
+    to update silently.
+
+commit e5dd3b08de331b14aee4f86eef373e3c900d8b61
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 18 13:56:58 2014 +0100
+
+    customize: Make usage of --password-crypto option clearer (RHBZ#1143949).
+
+commit c68b510be2c58b729143b5940be6dfbb56a94182
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 18 13:35:03 2014 +0100
+
+    Update release notes.
+
+commit 32736857b3590554c4707cfe33eebed0ccc04abe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 21:34:10 2014 +0100
+
+    v2v: Document the input: output: and convert: features in --machine-readable output.
+
+commit 3562a816832d525b5948b41780bff05aa8dec027
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 15 18:44:51 2014 +0100
+
+    generator: Change type of 'tests' to 'c_api_tests'.
+    
+    Just a code refactoring, has no functional effect.
+
+commit e85a976c5a474d751c6e8352370047a3177a7c45
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 15 15:17:47 2014 +0100
+
+    tests: Don't use relative paths to binaries in tests.
+    
+    All tests run under the ./run binary.  For a long time the ./run
+    binary has set the $PATH environment variable to contain all of the
+    directories with binaries in them.
+    
+    Therefore there is no reason to use ../fish/guestfish instead of just
+    plain guestfish (and the same applies to other built binaries).
+
+commit bced8f52897d3e588e88cde3774e1e3666492db4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 16:33:55 2014 +0100
+
+    FAQ: Note that update-guestfs-appliance is not needed with libguestfs >= 1.26.
+
+commit 58a285b5b3d60508779d83f5ffa1de349c4baa78
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 15:51:30 2014 +0100
+
+    Version 1.27.48.
+
+commit 0fabe1a2ed82ff1df9feda459ae139bcca5a3338
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 15:36:15 2014 +0100
+
+    daemon: parted: Fix error message when part-get-name is called on non-GPT (RHBZ#1142416).
+    
+    The error message was bogus, fix it.
+    
+    This fixes commit 0316d247706aab7ce7c2225472feeb51fa8b1664.
+    
+    Found by: Lingfei Kong
+
+commit 5fcc584c344e7894e2da15071050b6eb5f882f55
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 15:34:03 2014 +0100
+
+    daemon: parted: Don't crash if part-get-name called on non-partitioned device (RHBZ#1142158).
+    
+    If do_part_get_parttype returns NULL, then return from the function
+    instead of dereferencing the NULL pointer and crashing.  Note that
+    do_part_get_parttype has already called reply_with_error in this case.
+    
+    This fixes commit 0316d247706aab7ce7c2225472feeb51fa8b1664.
+    
+    Found by: Lingfei Kong
+
+commit 071051073292df15a19259bedc95cedf9a76b1f5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 15:13:33 2014 +0100
+
+    v2v: Reconfigure /etc/modprobe.conf (RHBZ#1141145).
+    
+    More code that was omitted during the translation of old virt-v2v.
+
+commit f982ce27032371c43e167609e0631bc792382da7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 15:13:21 2014 +0100
+
+    v2v: Rebuild initrd last.
+    
+    Old virt-v2v rebuilt the initrd late.  Currently we rebuild the initrd
+    right after choosing a kernel, but it's best to update the initrd
+    at the end since mkinitrd may depend on other configuration files
+    that we are changing (especially see next commit).
+
+commit 5fed8dfae114367c347af170dcef0b5d6183f8c0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 13:59:39 2014 +0100
+
+    v2v: -o rhev: Don't quote 'root' in error message.
+
+commit dd58cde929ade2dd6bc216aac21658ed3b3f51aa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 13:40:10 2014 +0100
+
+    v2v: -o rhev: Chown the image files and metadata after the upload.
+
+commit d5001304e4952450851ab429416c96cc4c8e2331
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 12:56:53 2014 +0100
+
+    v2v: Fix OVF VmType field, which should be 0 or 1 (RHBZ#1142008).
+    
+    Thanks: Shahar Havivi.
+
+commit 05f665166c05519b8b5d4cd26fbe5e912cc63ba8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 12:55:06 2014 +0100
+
+    v2v: Fix capitalization of ovf:volume-type (RHBZ#1142008).
+    
+    Thanks: Shahar Havivi.
+
+commit fe36b2ce950d214aa198daf86188e8fdbe41f43f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 12:49:00 2014 +0100
+
+    v2v: -o rhev/vdsm: Fix ovf:size and ovf:actual_size fields (RHBZ#1142008).
+    
+    These are integers in gigabytes (2^30).
+    
+    Thanks: Shahar Havivi.
+
+commit 7739a6d3570efa2fee32b7210de40c73eca5b988
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 12:13:42 2014 +0100
+
+    v2v: If virtio is enabled, map device names to vd* (RHBZ#1142004).
+    
+    The old virt-v2v code had:
+    
+        my $prefix;
+        if ($virtio) {
+            $prefix = 'vd';
+        } elsif ($libata) {
+            $prefix = 'sd';
+        } else {
+            $prefix = 'hd'
+        }
+    
+    The translated code dropped the test for virtio by accident, which
+    meant that device names would be mapped to sd* or hd* even if the
+    virtio-blk driver was enabled for the guest.
+    
+    Thanks: Tingting Zheng
+
+commit 4178bdc9b4c94e44f5b8520d6dbeeda92a6ae0cd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 11:51:54 2014 +0100
+
+    sysprep: Clarify the documentation for 'flag-reconfiguration'.
+    
+    It was quite obscure what this actually did.  Make it clear
+    in the documentation.
+
+commit f722571c73d427530a357b7a864a5432cc7db461
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 16 16:46:34 2014 +0100
+
+    sysprep: Clarify when --mount-options is used and what it does (RHBZ#1142186).
+
+commit 9aeaace779e7ce9718208367f5079b4667f8468b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 16 16:43:28 2014 +0100
+
+    Version 1.27.47.
+
+commit 01b25d7fc6ea1dee80d104118436980b7d504af0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 16 16:20:15 2014 +0100
+
+    v2v: Add xvda -> sda etc mappings (RHBZ#1142004).
+    
+    For Xen guests, a device can be presented twice as (eg) xvda and sda,
+    and therefore we should map any otherwise unmapped xvdX.
+    
+    For non-Xen guests, this should have no effect.
+
+commit d86016da8e5d9afd01c75067198aecad15d402c9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 16 15:49:34 2014 +0100
+
+    v2v: Fix for 'grubby: bad argument --set-kernel: unknown option' (RHBZ#1141145).
+    
+    I made a mistake while translating the Perl conversion code and
+    transcribed --set-default as --set-kernel.  grubby has no --set-kernel
+    option so it failed.
+    
+    Thanks: Tingting Zheng
+
+commit a7147ce9ffa93cd1cc0c9b568fe00cc81071a777
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 15 15:36:23 2014 +0100
+
+    run: Add p2v to the PATH.
+
+commit 8856fadadb4f10b89f13068d01d40643e31c488d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 16 08:36:38 2014 +0100
+
+    v2v: Prevent conversion of "blocked" and "paused" domains also.
+    
+    Previously only "running" domains were blocked from conversion.
+    However "blocked" is essentially the same as running (on Xen it just
+    means the domain is running but waiting on an I/O resource).  And
+    "paused" domains probably shouldn't be converted either since their
+    disks are only crash-consistent.
+
+commit 77b371b18b6a7ad37105a595931514f542a04396
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 15 11:31:55 2014 +0100
+
+    v2v: Clarify the missing input format error message (RHBZ#1141723).
+
 commit 21c6c70378b0a48528911bd93ce7b528c809805f
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon Sep 15 11:03:35 2014 +0100

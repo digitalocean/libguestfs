@@ -158,7 +158,7 @@ let rec main () =
           | Some format, _ -> format    (* -of overrides everything *)
           | None, Some format -> format (* same as backing format *)
           | None, None ->
-            error (f_"disk %s (%s) has no defined format, you have to either define the original format in the source metadata, or use the '-of' option to force the output format") ov.ov_sd ov.ov_source.s_qemu_uri in
+            error (f_"disk %s (%s) has no defined format.\n\nThe input metadata did not define the disk format (eg. raw/qcow2/etc) of this disk, and so virt-v2v will try to autodetect the format when reading it.\n\nHowever because the input format was not defined, we do not know what output format you want to use.  You have two choices: either define the original format in the source metadata, or use the '-of' option to force the output format") ov.ov_sd ov.ov_source.s_qemu_uri in
 
         (* What really happens here is that the call to #disk_create
          * below fails if the format is not raw or qcow2.  We would
@@ -223,6 +223,14 @@ let rec main () =
           inspect.i_type inspect.i_distro in
     if verbose then printf "picked conversion module %s\n%!" conversion_name;
     convert ~verbose ~keep_serial_console g inspect source in
+
+  (* Did we manage to install virtio drivers? *)
+  if not quiet then (
+    if guestcaps.gcaps_block_bus = Virtio_blk then
+      printf (f_"This guest has virtio drivers installed.\n%!")
+    else
+      printf (f_"This guest does not have virtio drivers installed.\n%!");
+  );
 
   if do_copy then (
     (* Doing fstrim on all the filesystems reduces the transfer size
