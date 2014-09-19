@@ -1,0 +1,28 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Fri, 19 Sep 2014 18:14:01 +0200
+Subject: Add libsystemd0 and systemd (as one alternative) to the appliance
+
+---
+ appliance/packagelist.in | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/appliance/packagelist.in b/appliance/packagelist.in
+index 3e028e3..418c574 100644
+--- a/appliance/packagelist.in
++++ b/appliance/packagelist.in
+@@ -80,6 +80,7 @@ dnl iproute has been renamed to iproute2
+   libcap2
+   libhivex0
+   libpcre3
++  libsystemd0
+   libsystemd-id128-0
+   libsystemd-journal0
+   libyajl2
+@@ -91,6 +92,7 @@ dnl iproute has been renamed to iproute2
+   openssh-client
+   reiserfsprogs
+   sysvinit                  dnl for /sbin/reboot
++  systemd                   dnl alternative for /sbin/reboot
+   ufsutils
+   vim-tiny
+   xz-utils

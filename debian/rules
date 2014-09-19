@@ -15,7 +15,7 @@ BUILDS         := $(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
 		  $(filter-out $(LUA_DEFAULT), $(LUAS)) \
 		  default
 
-pkglist_to_deps := sed -e 's,iproute2\?,iproute2|iproute,;s,\(gfs-tools\|gfs2-tools\|gfs2-utils\),gfs2-utils|gfs2-tools|gfs-tools,;s,\(kmod\|module-init-tools\),kmod | module-init-tools,'
+pkglist_to_deps := sed -e 's,iproute2\?,iproute2|iproute,;s,\(gfs-tools\|gfs2-tools\|gfs2-utils\),gfs2-utils|gfs2-tools|gfs-tools,;s,\(kmod\|module-init-tools\),kmod | module-init-tools,;s,\(systemd\|sysvinit,systemd | sysvinit,'
 essential_deps  := grep -v '^\(bash\|coreutils\|e2fsprogs\|findutils\|grep\|gzip\|libc-bin\|sed\|sysvinit\|tar\|util\-linux\)'
 
 QEMU_CPU := $(shell echo $(DEB_HOST_GNU_CPU) \
