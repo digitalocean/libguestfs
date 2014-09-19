@@ -1,3 +1,130 @@
+commit 58a285b5b3d60508779d83f5ffa1de349c4baa78
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 15:51:30 2014 +0100
+
+    Version 1.27.48.
+
+commit 0fabe1a2ed82ff1df9feda459ae139bcca5a3338
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 15:36:15 2014 +0100
+
+    daemon: parted: Fix error message when part-get-name is called on non-GPT (RHBZ#1142416).
+    
+    The error message was bogus, fix it.
+    
+    This fixes commit 0316d247706aab7ce7c2225472feeb51fa8b1664.
+    
+    Found by: Lingfei Kong
+
+commit 5fcc584c344e7894e2da15071050b6eb5f882f55
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 15:34:03 2014 +0100
+
+    daemon: parted: Don't crash if part-get-name called on non-partitioned device (RHBZ#1142158).
+    
+    If do_part_get_parttype returns NULL, then return from the function
+    instead of dereferencing the NULL pointer and crashing.  Note that
+    do_part_get_parttype has already called reply_with_error in this case.
+    
+    This fixes commit 0316d247706aab7ce7c2225472feeb51fa8b1664.
+    
+    Found by: Lingfei Kong
+
+commit 071051073292df15a19259bedc95cedf9a76b1f5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 15:13:33 2014 +0100
+
+    v2v: Reconfigure /etc/modprobe.conf (RHBZ#1141145).
+    
+    More code that was omitted during the translation of old virt-v2v.
+
+commit f982ce27032371c43e167609e0631bc792382da7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 15:13:21 2014 +0100
+
+    v2v: Rebuild initrd last.
+    
+    Old virt-v2v rebuilt the initrd late.  Currently we rebuild the initrd
+    right after choosing a kernel, but it's best to update the initrd
+    at the end since mkinitrd may depend on other configuration files
+    that we are changing (especially see next commit).
+
+commit 5fed8dfae114367c347af170dcef0b5d6183f8c0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 13:59:39 2014 +0100
+
+    v2v: -o rhev: Don't quote 'root' in error message.
+
+commit dd58cde929ade2dd6bc216aac21658ed3b3f51aa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 13:40:10 2014 +0100
+
+    v2v: -o rhev: Chown the image files and metadata after the upload.
+
+commit d5001304e4952450851ab429416c96cc4c8e2331
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 12:56:53 2014 +0100
+
+    v2v: Fix OVF VmType field, which should be 0 or 1 (RHBZ#1142008).
+    
+    Thanks: Shahar Havivi.
+
+commit 05f665166c05519b8b5d4cd26fbe5e912cc63ba8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 12:55:06 2014 +0100
+
+    v2v: Fix capitalization of ovf:volume-type (RHBZ#1142008).
+    
+    Thanks: Shahar Havivi.
+
+commit fe36b2ce950d214aa198daf86188e8fdbe41f43f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 12:49:00 2014 +0100
+
+    v2v: -o rhev/vdsm: Fix ovf:size and ovf:actual_size fields (RHBZ#1142008).
+    
+    These are integers in gigabytes (2^30).
+    
+    Thanks: Shahar Havivi.
+
+commit 7739a6d3570efa2fee32b7210de40c73eca5b988
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 12:13:42 2014 +0100
+
+    v2v: If virtio is enabled, map device names to vd* (RHBZ#1142004).
+    
+    The old virt-v2v code had:
+    
+        my $prefix;
+        if ($virtio) {
+            $prefix = 'vd';
+        } elsif ($libata) {
+            $prefix = 'sd';
+        } else {
+            $prefix = 'hd'
+        }
+    
+    The translated code dropped the test for virtio by accident, which
+    meant that device names would be mapped to sd* or hd* even if the
+    virtio-blk driver was enabled for the guest.
+    
+    Thanks: Tingting Zheng
+
+commit 4178bdc9b4c94e44f5b8520d6dbeeda92a6ae0cd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 17 11:51:54 2014 +0100
+
+    sysprep: Clarify the documentation for 'flag-reconfiguration'.
+    
+    It was quite obscure what this actually did.  Make it clear
+    in the documentation.
+
+commit f722571c73d427530a357b7a864a5432cc7db461
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 16 16:46:34 2014 +0100
+
+    sysprep: Clarify when --mount-options is used and what it does (RHBZ#1142186).
+
 commit 9aeaace779e7ce9718208367f5079b4667f8468b
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Sep 16 16:43:28 2014 +0100

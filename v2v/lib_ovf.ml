@@ -151,6 +151,7 @@ and get_ostype = function
 
 (* Generate the .meta file associated with each volume. *)
 let create_meta_files verbose output_alloc sd_uuid image_uuid targets =
+  (* Note: Upper case in the .meta, mixed case in the OVF. *)
   let output_alloc_for_rhev =
     match output_alloc with
     | `Sparse -> "SPARSE"
@@ -204,7 +205,7 @@ let rec create_ovf verbose source targets guestcaps inspect
     match vmtype with
       | Some vmtype -> vmtype
       | None -> get_vmtype inspect in
-  let vmtype = match vmtype with `Desktop -> "DESKTOP" | `Server -> "SERVER" in
+  let vmtype = match vmtype with `Desktop -> "0" | `Server -> "1" in
   let ostype = get_ostype inspect in
 
   let ovf : doc =
@@ -326,22 +327,27 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuid vol_uuids ovf =
 
       let fileref = image_uuid // vol_uuid in
 
-      let size_gb =
-        Int64.to_float ov.ov_virtual_size /. 1024. /. 1024. /. 1024. in
-      let usage_gb =
+      (* ovf:size and ovf:actual_size fields are integer GBs.  If you
+       * use floating point numbers then RHEV will fail to parse them.
+       * In case the size is just below a gigabyte boundary, round up.
+       *)
+      let bytes_to_gb b =
+        let b = roundup64 b 1073741824L in
+        b /^ 1073741824L
+      in
+      let size_gb = bytes_to_gb ov.ov_virtual_size in
+      let actual_size_gb =
         if Sys.file_exists t.target_file then (
-          let usage_mb = du_m t.target_file in
-          if usage_mb > 0L then (
-            let usage_gb = Int64.to_float usage_mb /. 1024. in
-            Some usage_gb
-          ) else None
+          let actual_size = du t.target_file in
+          if actual_size > 0L then Some (bytes_to_gb actual_size)
+          else None
         ) else (
           (* In the --no-copy case the target file does not exist.  In
            * that case we use the estimated size.
            *)
           match t.target_estimated_size with
           | None -> None
-          | Some size -> Some (Int64.to_float size /. 1024. /. 1024. /. 1024.)
+          | Some size -> Some (bytes_to_gb size)
         ) in
 
       let format_for_rhev =
@@ -351,17 +357,18 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuid vol_uuids ovf =
         | _ ->
           error (f_"RHEV does not support the output format '%s', only raw or qcow2") t.target_format in
 
+      (* Note: Upper case in the .meta, mixed case in the OVF. *)
       let output_alloc_for_rhev =
         match output_alloc with
-        | `Sparse -> "SPARSE"
-        | `Preallocated -> "PREALLOCATED" in
+        | `Sparse -> "Sparse"
+        | `Preallocated -> "Preallocated" in
 
       (* Add disk to <References/> node. *)
       let disk =
         e "File" [
           "ovf:href", fileref;
           "ovf:id", vol_uuid;
-          "ovf:size", Int64.to_string ov.ov_virtual_size;
+          "ovf:size", Int64.to_string ov.ov_virtual_size; (* NB: in bytes *)
           "ovf:description", title;
         ] [] in
       append_child disk references;
@@ -370,7 +377,7 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuid vol_uuids ovf =
       let disk =
         let attrs = [
           "ovf:diskId", vol_uuid;
-          "ovf:size", sprintf "%.1f" size_gb;
+          "ovf:size", Int64.to_string size_gb;
           "ovf:fileRef", fileref;
           "ovf:parentRef", "";
           "ovf:vm_snapshot_id", uuidgen ~prog ();
@@ -384,10 +391,10 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuid vol_uuids ovf =
           "ovf:boot", if is_boot_drive then "True" else "False";
         ] in
         let attrs =
-          match usage_gb with
+          match actual_size_gb with
           | None -> attrs
-          | Some usage_gb ->
-            ("ovf:actual_size", sprintf "%.1f" usage_gb) :: attrs in
+          | Some actual_size_gb ->
+            ("ovf:actual_size", Int64.to_string actual_size_gb) :: attrs in
         e "Disk" attrs [] in
       append_child disk disk_section;
 
@@ -409,11 +416,11 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuid vol_uuids ovf =
       append_child item virtualhardware_section;
   ) (List.combine targets vol_uuids)
 
-and du_m filename =
-  (* There's no OCaml binding for st_blocks, so run coreutils 'du -m'
-   * to get the used size in megabytes.
+and du filename =
+  (* There's no OCaml binding for st_blocks, so run coreutils 'du'
+   * to get the used size in bytes.
    *)
-  let cmd = sprintf "du -m %s | awk '{print $1}'" (quote filename) in
+  let cmd = sprintf "du -b %s | awk '{print $1}'" (quote filename) in
   let lines = external_command ~prog cmd in
   (* We really don't want the metadata generation to fail because
    * of some silly usage information, so ignore errors here.

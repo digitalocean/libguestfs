@@ -96,7 +96,7 @@ and check_storage_domain verbose domain_class os mp =
   (* Check that the SD is writable. *)
   let testfile = mp // uuid // "v2v-write-test" in
   let write_test_failed err =
-    error (f_"the %s (%s) is not writable.\n\nThis probably means you need to run virt-v2v as 'root'.\n\nOriginal error was: %s")
+    error (f_"the %s (%s) is not writable.\n\nThis probably means you need to run virt-v2v as root.\n\nOriginal error was: %s")
       domain_class os err;
   in
   (try
@@ -239,6 +239,16 @@ object
     let chan = open_out file in
     doc_to_chan chan ovf;
     close_out chan;
+
+    (* Try to chown the images and metadata. *)
+    let cmd = sprintf "chown -R 36.36 %s %s" (quote dir) (quote image_dir) in
+    if verbose then eprintf "%s\n%!" cmd;
+    if Sys.command cmd <> 0 then (
+      (* Note: Don't print the mountpoint in the message below. *)
+      warning ~prog (f_"could not chown newly created RHEV files and directories to 36.36. You may need to do this by hand, otherwise RHEV-M may give errors when trying to import this domain.\n\nThe directories (and all files inside) that have to be owned by 36.36 are:\n%s\n%s")
+        (esd_uuid // "master" // "vms" // vm_uuid)
+        (esd_uuid // "images" // image_uuid)
+    );
 
     (* Finished, so don't delete the target directory on exit. *)
     delete_target_directory <- false

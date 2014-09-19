@@ -69,7 +69,9 @@ exploits.  Use with care.
 
 Flag the system for reconfiguration.
 
-Note that this may require user intervention when the guest is booted.
+For Linux guests, this touches C</.unconfigured>, which causes the first
+boot to interactively query the user for settings such as the root password
+and timezone.
 
 =head2 B<fs-uuids>
 
