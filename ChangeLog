@@ -1,3 +1,113 @@
+commit b2a1d4ce45a5a8a2a857de699b407413591ce875
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 19 14:52:16 2014 +0100
+
+    Version 1.27.50.
+
+commit 1e6dd6d2a31e21dc47cad26d0b06370e3894078b
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Sep 19 15:39:13 2014 +0800
+
+    resize: add function expand_partition_content
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit b9063b7c2f0ee94bef46c79d1bc50b018c22c686
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Sep 19 15:39:12 2014 +0800
+
+    resize: add function set_partition_bootable_and_id
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 51f67a9c81baf746dc9da1774521e53bb14c4853
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Sep 19 15:39:11 2014 +0800
+
+    resize: add function copy_partition
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 4e6526c0763037e3906ec0d2128ec8873cee2137
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Sep 19 15:39:08 2014 +0800
+
+    resize: add function print_summmary
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit d9f8746ea5a5f22ac71ac494c9d93e59354b4d10
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Sep 19 15:39:04 2014 +0800
+
+    add function div_roundup64
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit b05b9ba8bfb6db4fbb0f7325e8ff326978c46d1e
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Sep 19 15:39:03 2014 +0800
+
+    resize: convert sectsize to int64
+    
+    Because sectsize is used as int64 everywhere.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 816d7cf9413ceb70fba48c069e3d2c39c6b67f49
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 19 13:18:45 2014 +0100
+
+    fish: Restore text to default when exiting (RHBZ#1144201).
+    
+    The escape sequence \e[0;30m sets the colour to black.  This is fine
+    if you use a black-on-white terminal, but fails rather badly if you
+    use a white-on-black terminal.
+    
+    Instead use the escape sequence \e[0m which restores the terminal to
+    the defaults, and works in both cases.
+
+commit 4aa38bba2ca77cf0ff7271a8f419182c57f59f7a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 19 12:14:21 2014 +0100
+
+    v2v: Clean the RPM database early on (RHBZ#1143866).
+    
+    If the RPM database in the source guest is corrupt, then subsequent
+    operations will fail randomly.
+    
+    Old virt-v2v appears to have avoided this by cleaning the RPM database
+    very early on.  When translating the code I inadvertantly moved this
+    cleanup to a later stage -- in particular, after inspection of kernels
+    was done which requires running rpm commands.  Move this back to the
+    start.
+
+commit 6db2ff52f9557bc3644700386320dc7a3fa54830
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 19 12:13:41 2014 +0100
+
+    v2v: Move initialization of Augeas after inspection housekeeping.
+    
+    Just cleanup, it should have no effect on the way that the
+    conversion works.
+
+commit 7d9db86cab909a97bd51788b60f7f66dd55d38de
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Sep 19 13:33:21 2014 +0200
+
+    appliance: move e2fsprogs as common for all distros
+    
+    All distro-specific sections have it, so just make it really common.
+
+commit 70768239fde98eeed3b278aa9bb9ca1003343b5e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Sep 19 13:26:37 2014 +0200
+
+    appliance: remove duplicate packages in OpenSUSE, Frugalware, Mageia
+    
+    From some lists of distro-specific packages, remove the ones that
+    appear already in the common list.
+
 commit 95729079564edf83128186c4f9d2e6b494928270
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Sep 18 18:08:43 2014 +0100
