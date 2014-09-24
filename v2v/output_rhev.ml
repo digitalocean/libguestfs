@@ -28,9 +28,7 @@ open DOM
 
 let rec mount_and_check_storage_domain verbose domain_class os =
   (* The user can either specify -os nfs:/export, or a local directory
-   * which is assumed to be the already-mounted NFS export.  In either
-   * case we need to check that we have sufficient permissions to write
-   * to this mountpoint.
+   * which is assumed to be the already-mounted NFS export.
    *)
   match string_split ":/" os with
   | mp, "" ->                         (* Already mounted directory. *)
@@ -38,8 +36,13 @@ let rec mount_and_check_storage_domain verbose domain_class os =
   | server, export ->
     let export = "/" ^ export in
 
-    (* Try mounting it. *)
+    (* Create a mountpoint.  Default mode is too restrictive for us
+     * when we need to write into the directory as 36:36.
+     *)
     let mp = Mkdtemp.temp_dir "v2v." "" in
+    chmod mp 0o755;
+
+    (* Try mounting it. *)
     let cmd =
       sprintf "mount %s:%s %s" (quote server) (quote export) (quote mp) in
     if verbose then printf "%s\n%!" cmd;
@@ -93,25 +96,22 @@ and check_storage_domain verbose domain_class os mp =
         master_vms_dir domain_class os os
         domain_class domain_class domain_class in
 
-  (* Check that the SD is writable. *)
-  let testfile = mp // uuid // "v2v-write-test" in
-  let write_test_failed err =
-    error (f_"the %s (%s) is not writable.\n\nThis probably means you need to run virt-v2v as root.\n\nOriginal error was: %s")
-      domain_class os err;
-  in
-  (try
-     let chan = open_out testfile in
-     close_out chan;
-     unlink testfile
-   with
-   | Sys_error err -> write_test_failed err
-   | Unix_error (code, _, _) -> write_test_failed (error_message code)
-  );
-
   (* Looks good, so return the SD mountpoint and UUID. *)
   (mp, uuid)
 
+(* UID:GID required for files and directories when writing to ESD. *)
+let uid = 36 and gid = 36
+
 class output_rhev verbose os vmtype output_alloc =
+  (* Create a UID-switching handle.  If we're not root, create a dummy
+   * one because we cannot switch UIDs.
+   *)
+  let running_as_root = geteuid () = 0 in
+  let kvmuid_t =
+    if running_as_root then
+      Kvmuid.create ~uid ~gid ()
+    else
+      Kvmuid.create () in
 object
   inherit output verbose
 
@@ -171,6 +171,23 @@ object
       eprintf "RHEV: ESD mountpoint: %s\nRHEV: ESD UUID: %s\n%!"
         esd_mp esd_uuid;
 
+    (* See if we can write files as UID:GID 36:36. *)
+    let () =
+      let testfile = esd_mp // esd_uuid // string_random8 () in
+      Kvmuid.make_file kvmuid_t testfile "";
+      let stat = stat testfile in
+      Kvmuid.unlink kvmuid_t testfile;
+      let actual_uid = stat.st_uid and actual_gid = stat.st_gid in
+      if verbose then
+        eprintf "RHEV: actual UID:GID of new files is %d:%d\n"
+          actual_uid actual_gid;
+      if uid <> actual_uid || gid <> actual_gid then (
+        if running_as_root then
+          warning ~prog (f_"cannot write files to the NFS server as %d:%d, even though we appear to be running as root. This probably means the NFS client or idmapd is not configured properly.\n\nYou will have to chown the files that virt-v2v creates after the run, otherwise RHEV-M will not be able to import the VM.") uid gid
+        else
+          warning ~prog (f_"cannot write files to the NFS server as %d:%d. You might want to stop virt-v2v (^C) and rerun it as root.") uid gid
+      ) in
+
     (* Create unique UUIDs for everything *)
     image_uuid <- uuidgen ~prog ();
     vm_uuid <- uuidgen ~prog ();
@@ -185,11 +202,11 @@ object
      * conversion fails for any reason then we delete this directory.
      *)
     image_dir <- esd_mp // esd_uuid // "images" // image_uuid;
-    mkdir image_dir 0o755;
+    Kvmuid.mkdir kvmuid_t image_dir 0o755;
     at_exit (fun () ->
       if delete_target_directory then (
         let cmd = sprintf "rm -rf %s" (quote image_dir) in
-        ignore (Sys.command cmd)
+        Kvmuid.command kvmuid_t cmd
       )
     );
     if verbose then
@@ -221,10 +238,32 @@ object
       ) (List.combine targets vol_uuids) in
 
     (* Generate the .meta file associated with each volume. *)
-    Lib_ovf.create_meta_files verbose output_alloc esd_uuid image_uuid targets;
+    let metas =
+      Lib_ovf.create_meta_files verbose output_alloc esd_uuid image_uuid
+        targets in
+    List.iter (
+      fun ({ target_file = target_file }, meta) ->
+        let meta_filename = target_file ^ ".meta" in
+        Kvmuid.make_file kvmuid_t meta_filename meta
+    ) (List.combine targets metas);
 
     (* Return the list of targets. *)
     targets
+
+  method disk_create ?backingfile ?backingformat ?preallocation ?compat
+    ?clustersize path format size =
+    Kvmuid.func kvmuid_t (
+      fun () ->
+        let g = new Guestfs.guestfs () in
+        g#disk_create ?backingfile ?backingformat ?preallocation ?compat
+          ?clustersize path format size;
+        (* Make it sufficiently writable so that possibly root, or
+         * root squashed qemu-img will definitely be able to open it.
+         * An example of how root squashing nonsense makes everyone
+         * less secure.
+         *)
+        chmod path 0o666
+    )
 
   (* This is called after conversion to write the OVF metadata. *)
   method create_metadata source targets guestcaps inspect =
@@ -234,23 +273,9 @@ object
 
     (* Write it to the metadata file. *)
     let dir = esd_mp // esd_uuid // "master" // "vms" // vm_uuid in
-    mkdir dir 0o755;
+    Kvmuid.mkdir kvmuid_t dir 0o755;
     let file = dir // vm_uuid ^ ".ovf" in
-    let chan = open_out file in
-    doc_to_chan chan ovf;
-    close_out chan;
-
-    (* Try to chown the images and metadata. *)
-    let cmd =
-      sprintf "chown -R --reference=%s %s %s"
-        (quote (esd_mp // esd_uuid)) (quote dir) (quote image_dir) in
-    if verbose then eprintf "%s\n%!" cmd;
-    if Sys.command cmd <> 0 then (
-      (* Note: Don't print the mountpoint in the message below. *)
-      warning ~prog (f_"could not chown newly created RHEV files and directories to vdsm.kvm.\n\nYou will need to do this operation by hand, otherwise RHEV-M will give errors when trying to import this domain.\n\nThe directories (and all files inside) that have to be owned by vdsm.kvm are:\n%s\n%s")
-        (esd_uuid // "master" // "vms" // vm_uuid)
-        (esd_uuid // "images" // image_uuid)
-    );
+    Kvmuid.output kvmuid_t file (fun chan -> doc_to_chan chan ovf);
 
     (* Finished, so don't delete the target directory on exit. *)
     delete_target_directory <- false

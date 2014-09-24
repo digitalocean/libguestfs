@@ -429,6 +429,8 @@ gboolean guestfs_session_ls0 (GuestfsSession *session, const gchar *dir, const g
 gboolean guestfs_session_lsetxattr (GuestfsSession *session, const gchar *xattr, const gchar *val, gint32 vallen, const gchar *path, GError **err);
 GuestfsStat *guestfs_session_lstat (GuestfsSession *session, const gchar *path, GError **err);
 GuestfsStat **guestfs_session_lstatlist (GuestfsSession *session, const gchar *path, gchar *const *names, GError **err);
+GuestfsStatNS *guestfs_session_lstatns (GuestfsSession *session, const gchar *path, GError **err);
+GuestfsStatNS **guestfs_session_lstatnslist (GuestfsSession *session, const gchar *path, gchar *const *names, GError **err);
 gboolean guestfs_session_luks_add_key (GuestfsSession *session, const gchar *device, const gchar *key, const gchar *newkey, gint32 keyslot, GError **err);
 gboolean guestfs_session_luks_close (GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_luks_format (GuestfsSession *session, const gchar *device, const gchar *key, gint32 keyslot, GError **err);
@@ -597,6 +599,7 @@ gchar **guestfs_session_sh_lines (GuestfsSession *session, const gchar *command,
 gboolean guestfs_session_shutdown (GuestfsSession *session, GError **err);
 gboolean guestfs_session_sleep (GuestfsSession *session, gint32 secs, GError **err);
 GuestfsStat *guestfs_session_stat (GuestfsSession *session, const gchar *path, GError **err);
+GuestfsStatNS *guestfs_session_statns (GuestfsSession *session, const gchar *path, GError **err);
 GuestfsStatVFS *guestfs_session_statvfs (GuestfsSession *session, const gchar *path, GError **err);
 gchar **guestfs_session_strings (GuestfsSession *session, const gchar *path, GError **err);
 gchar **guestfs_session_strings_e (GuestfsSession *session, const gchar *encoding, const gchar *path, GError **err);

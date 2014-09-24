@@ -318,6 +318,8 @@ extern struct command_entry ls0_cmd_entry;
 extern struct command_entry lsetxattr_cmd_entry;
 extern struct command_entry lstat_cmd_entry;
 extern struct command_entry lstatlist_cmd_entry;
+extern struct command_entry lstatns_cmd_entry;
+extern struct command_entry lstatnslist_cmd_entry;
 extern struct command_entry luks_add_key_cmd_entry;
 extern struct command_entry luks_close_cmd_entry;
 extern struct command_entry luks_format_cmd_entry;
@@ -491,6 +493,7 @@ extern struct command_entry shutdown_cmd_entry;
 extern struct command_entry sleep_cmd_entry;
 extern struct command_entry sparse_cmd_entry;
 extern struct command_entry stat_cmd_entry;
+extern struct command_entry statns_cmd_entry;
 extern struct command_entry statvfs_cmd_entry;
 extern struct command_entry strings_cmd_entry;
 extern struct command_entry strings_e_cmd_entry;
@@ -1094,6 +1097,8 @@ ls0, &ls0_cmd_entry
 lsetxattr, &lsetxattr_cmd_entry
 lstat, &lstat_cmd_entry
 lstatlist, &lstatlist_cmd_entry
+lstatns, &lstatns_cmd_entry
+lstatnslist, &lstatnslist_cmd_entry
 luks_add_key, &luks_add_key_cmd_entry
 luks-add-key, &luks_add_key_cmd_entry
 luks_close, &luks_close_cmd_entry
@@ -1408,6 +1413,7 @@ shutdown, &shutdown_cmd_entry
 sleep, &sleep_cmd_entry
 sparse, &sparse_cmd_entry
 stat, &stat_cmd_entry
+statns, &statns_cmd_entry
 statvfs, &statvfs_cmd_entry
 strings, &strings_cmd_entry
 strings_e, &strings_e_cmd_entry

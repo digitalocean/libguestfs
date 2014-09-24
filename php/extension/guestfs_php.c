@@ -364,6 +364,8 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_lsetxattr, NULL)
   PHP_FE (guestfs_lstat, NULL)
   PHP_FE (guestfs_lstatlist, NULL)
+  PHP_FE (guestfs_lstatns, NULL)
+  PHP_FE (guestfs_lstatnslist, NULL)
   PHP_FE (guestfs_luks_add_key, NULL)
   PHP_FE (guestfs_luks_close, NULL)
   PHP_FE (guestfs_luks_format, NULL)
@@ -532,6 +534,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_shutdown, NULL)
   PHP_FE (guestfs_sleep, NULL)
   PHP_FE (guestfs_stat, NULL)
+  PHP_FE (guestfs_statns, NULL)
   PHP_FE (guestfs_statvfs, NULL)
   PHP_FE (guestfs_strings, NULL)
   PHP_FE (guestfs_strings_e, NULL)
@@ -12345,6 +12348,157 @@ PHP_FUNCTION (guestfs_lstatlist)
   guestfs_free_stat_list (r);
 }
 
+PHP_FUNCTION (guestfs_lstatns)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *path;
+  int path_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &path, &path_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (path) != path_size) {
+    fprintf (stderr, "libguestfs: lstatns: parameter 'path' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  struct guestfs_statns *r;
+  r = guestfs_lstatns (g, path);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  array_init (return_value);
+  add_assoc_long (return_value, "st_dev", r->st_dev);
+  add_assoc_long (return_value, "st_ino", r->st_ino);
+  add_assoc_long (return_value, "st_mode", r->st_mode);
+  add_assoc_long (return_value, "st_nlink", r->st_nlink);
+  add_assoc_long (return_value, "st_uid", r->st_uid);
+  add_assoc_long (return_value, "st_gid", r->st_gid);
+  add_assoc_long (return_value, "st_rdev", r->st_rdev);
+  add_assoc_long (return_value, "st_size", r->st_size);
+  add_assoc_long (return_value, "st_blksize", r->st_blksize);
+  add_assoc_long (return_value, "st_blocks", r->st_blocks);
+  add_assoc_long (return_value, "st_atime_sec", r->st_atime_sec);
+  add_assoc_long (return_value, "st_atime_nsec", r->st_atime_nsec);
+  add_assoc_long (return_value, "st_mtime_sec", r->st_mtime_sec);
+  add_assoc_long (return_value, "st_mtime_nsec", r->st_mtime_nsec);
+  add_assoc_long (return_value, "st_ctime_sec", r->st_ctime_sec);
+  add_assoc_long (return_value, "st_ctime_nsec", r->st_ctime_nsec);
+  add_assoc_long (return_value, "st_spare1", r->st_spare1);
+  add_assoc_long (return_value, "st_spare2", r->st_spare2);
+  add_assoc_long (return_value, "st_spare3", r->st_spare3);
+  add_assoc_long (return_value, "st_spare4", r->st_spare4);
+  add_assoc_long (return_value, "st_spare5", r->st_spare5);
+  add_assoc_long (return_value, "st_spare6", r->st_spare6);
+  guestfs_free_statns (r);
+}
+
+PHP_FUNCTION (guestfs_lstatnslist)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *path;
+  int path_size;
+  zval *z_names;
+  char **names;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rsa",
+        &z_g, &path, &path_size, &z_names) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (path) != path_size) {
+    fprintf (stderr, "libguestfs: lstatnslist: parameter 'path' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  {
+    HashTable *a;
+    int n;
+    HashPosition p;
+    zval **d;
+    size_t c = 0;
+
+    a = Z_ARRVAL_P (z_names);
+    n = zend_hash_num_elements (a);
+    names = safe_emalloc (n + 1, sizeof (char *), 0);
+    for (zend_hash_internal_pointer_reset_ex (a, &p);
+         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
+         zend_hash_move_forward_ex (a, &p)) {
+      zval t = **d;
+      zval_copy_ctor (&t);
+      convert_to_string (&t);
+      names[c] = Z_STRVAL (t);
+      c++;
+    }
+    names[c] = NULL;
+  }
+
+  struct guestfs_statns_list *r;
+  r = guestfs_lstatnslist (g, path, names);
+
+  {
+    size_t c = 0;
+
+    for (c = 0; names[c] != NULL; ++c)
+      efree (names[c]);
+    efree (names);
+  }
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  array_init (return_value);
+  size_t c = 0;
+  for (c = 0; c < r->len; ++c) {
+    zval *z_elem;
+    ALLOC_INIT_ZVAL (z_elem);
+    array_init (z_elem);
+    add_assoc_long (z_elem, "st_dev", r->val[c].st_dev);
+    add_assoc_long (z_elem, "st_ino", r->val[c].st_ino);
+    add_assoc_long (z_elem, "st_mode", r->val[c].st_mode);
+    add_assoc_long (z_elem, "st_nlink", r->val[c].st_nlink);
+    add_assoc_long (z_elem, "st_uid", r->val[c].st_uid);
+    add_assoc_long (z_elem, "st_gid", r->val[c].st_gid);
+    add_assoc_long (z_elem, "st_rdev", r->val[c].st_rdev);
+    add_assoc_long (z_elem, "st_size", r->val[c].st_size);
+    add_assoc_long (z_elem, "st_blksize", r->val[c].st_blksize);
+    add_assoc_long (z_elem, "st_blocks", r->val[c].st_blocks);
+    add_assoc_long (z_elem, "st_atime_sec", r->val[c].st_atime_sec);
+    add_assoc_long (z_elem, "st_atime_nsec", r->val[c].st_atime_nsec);
+    add_assoc_long (z_elem, "st_mtime_sec", r->val[c].st_mtime_sec);
+    add_assoc_long (z_elem, "st_mtime_nsec", r->val[c].st_mtime_nsec);
+    add_assoc_long (z_elem, "st_ctime_sec", r->val[c].st_ctime_sec);
+    add_assoc_long (z_elem, "st_ctime_nsec", r->val[c].st_ctime_nsec);
+    add_assoc_long (z_elem, "st_spare1", r->val[c].st_spare1);
+    add_assoc_long (z_elem, "st_spare2", r->val[c].st_spare2);
+    add_assoc_long (z_elem, "st_spare3", r->val[c].st_spare3);
+    add_assoc_long (z_elem, "st_spare4", r->val[c].st_spare4);
+    add_assoc_long (z_elem, "st_spare5", r->val[c].st_spare5);
+    add_assoc_long (z_elem, "st_spare6", r->val[c].st_spare6);
+    add_next_index_zval (return_value, z_elem);
+  }
+  guestfs_free_statns_list (r);
+}
+
 PHP_FUNCTION (guestfs_luks_add_key)
 {
   zval *z_g;
@@ -19104,6 +19258,62 @@ PHP_FUNCTION (guestfs_stat)
   add_assoc_long (return_value, "mtime", r->mtime);
   add_assoc_long (return_value, "ctime", r->ctime);
   guestfs_free_stat (r);
+}
+
+PHP_FUNCTION (guestfs_statns)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *path;
+  int path_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &path, &path_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (path) != path_size) {
+    fprintf (stderr, "libguestfs: statns: parameter 'path' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  struct guestfs_statns *r;
+  r = guestfs_statns (g, path);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  array_init (return_value);
+  add_assoc_long (return_value, "st_dev", r->st_dev);
+  add_assoc_long (return_value, "st_ino", r->st_ino);
+  add_assoc_long (return_value, "st_mode", r->st_mode);
+  add_assoc_long (return_value, "st_nlink", r->st_nlink);
+  add_assoc_long (return_value, "st_uid", r->st_uid);
+  add_assoc_long (return_value, "st_gid", r->st_gid);
+  add_assoc_long (return_value, "st_rdev", r->st_rdev);
+  add_assoc_long (return_value, "st_size", r->st_size);
+  add_assoc_long (return_value, "st_blksize", r->st_blksize);
+  add_assoc_long (return_value, "st_blocks", r->st_blocks);
+  add_assoc_long (return_value, "st_atime_sec", r->st_atime_sec);
+  add_assoc_long (return_value, "st_atime_nsec", r->st_atime_nsec);
+  add_assoc_long (return_value, "st_mtime_sec", r->st_mtime_sec);
+  add_assoc_long (return_value, "st_mtime_nsec", r->st_mtime_nsec);
+  add_assoc_long (return_value, "st_ctime_sec", r->st_ctime_sec);
+  add_assoc_long (return_value, "st_ctime_nsec", r->st_ctime_nsec);
+  add_assoc_long (return_value, "st_spare1", r->st_spare1);
+  add_assoc_long (return_value, "st_spare2", r->st_spare2);
+  add_assoc_long (return_value, "st_spare3", r->st_spare3);
+  add_assoc_long (return_value, "st_spare4", r->st_spare4);
+  add_assoc_long (return_value, "st_spare5", r->st_spare5);
+  add_assoc_long (return_value, "st_spare6", r->st_spare6);
+  guestfs_free_statns (r);
 }
 
 PHP_FUNCTION (guestfs_statvfs)

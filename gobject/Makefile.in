@@ -349,6 +349,7 @@ am__objects_1 = libguestfs_gobject_1_0_la-session.lo \
 	libguestfs_gobject_1_0_la-struct-mdstat.lo \
 	libguestfs_gobject_1_0_la-struct-partition.lo \
 	libguestfs_gobject_1_0_la-struct-stat.lo \
+	libguestfs_gobject_1_0_la-struct-statns.lo \
 	libguestfs_gobject_1_0_la-struct-statvfs.lo \
 	libguestfs_gobject_1_0_la-struct-utsname.lo \
 	libguestfs_gobject_1_0_la-struct-version.lo \
@@ -1646,6 +1647,7 @@ guestfs_gobject_headers = \
   include/guestfs-gobject/struct-mdstat.h \
   include/guestfs-gobject/struct-partition.h \
   include/guestfs-gobject/struct-stat.h \
+  include/guestfs-gobject/struct-statns.h \
   include/guestfs-gobject/struct-statvfs.h \
   include/guestfs-gobject/struct-utsname.h \
   include/guestfs-gobject/struct-version.h \
@@ -1723,6 +1725,7 @@ guestfs_gobject_sources = \
   src/struct-mdstat.c \
   src/struct-partition.c \
   src/struct-stat.c \
+  src/struct-statns.c \
   src/struct-statvfs.c \
   src/struct-utsname.c \
   src/struct-version.c \
@@ -1984,6 +1987,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-mdstat.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-partition.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-stat.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-statns.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-statvfs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-utsname.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-version.Plo@am__quote@
@@ -2130,6 +2134,13 @@ libguestfs_gobject_1_0_la-struct-stat.lo: src/struct-stat.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-stat.c' object='libguestfs_gobject_1_0_la-struct-stat.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-stat.lo `test -f 'src/struct-stat.c' || echo '$(srcdir)/'`src/struct-stat.c
+
+libguestfs_gobject_1_0_la-struct-statns.lo: src/struct-statns.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-statns.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-statns.Tpo -c -o libguestfs_gobject_1_0_la-struct-statns.lo `test -f 'src/struct-statns.c' || echo '$(srcdir)/'`src/struct-statns.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-statns.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-statns.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-statns.c' object='libguestfs_gobject_1_0_la-struct-statns.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-statns.lo `test -f 'src/struct-statns.c' || echo '$(srcdir)/'`src/struct-statns.c
 
 libguestfs_gobject_1_0_la-struct-statvfs.lo: src/struct-statvfs.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-statvfs.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-statvfs.Tpo -c -o libguestfs_gobject_1_0_la-struct-statvfs.lo `test -f 'src/struct-statvfs.c' || echo '$(srcdir)/'`src/struct-statvfs.c

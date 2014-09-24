@@ -157,10 +157,8 @@ let create_meta_files verbose output_alloc sd_uuid image_uuid targets =
     | `Sparse -> "SPARSE"
     | `Preallocated -> "PREALLOCATED" in
 
-  List.iter (
-    fun ({ target_overlay = ov; target_file = target_file } as t) ->
-      let vol_meta = target_file ^ ".meta" in
-
+  List.map (
+    fun ({ target_overlay = ov } as t) ->
       let size_in_sectors =
         if ov.ov_virtual_size &^ 511L <> 0L then
           error (f_"the virtual size of the input disk %s is not an exact multiple of 512 bytes.  The virtual size is: %Ld.\n\nThis probably means something unexpected is going on, so please file a bug about this issue.")
@@ -175,23 +173,23 @@ let create_meta_files verbose output_alloc sd_uuid image_uuid targets =
         | _ ->
           error (f_"RHEV does not support the output format '%s', only raw or qcow2") t.target_format in
 
-      let chan = open_out vol_meta in
-      let fpf fs = fprintf chan fs in
-      fpf "DOMAIN=%s\n" sd_uuid; (* "Domain" as in Storage Domain *)
-      fpf "VOLTYPE=LEAF\n";
-      fpf "CTIME=%.0f\n" time;
-      fpf "MTIME=%.0f\n" time;
-      fpf "IMAGE=%s\n" image_uuid;
-      fpf "DISKTYPE=1\n";
-      fpf "PUUID=00000000-0000-0000-0000-000000000000\n";
-      fpf "LEGALITY=LEGAL\n";
-      fpf "POOL_UUID=\n";
-      fpf "SIZE=%Ld\n" size_in_sectors;
-      fpf "FORMAT=%s\n" format_for_rhev;
-      fpf "TYPE=%s\n" output_alloc_for_rhev;
-      fpf "DESCRIPTION=%s\n" title;
-      fpf "EOF\n";
-      close_out chan;
+      let buf = Buffer.create 256 in
+      let bpf fs = bprintf buf fs in
+      bpf "DOMAIN=%s\n" sd_uuid; (* "Domain" as in Storage Domain *)
+      bpf "VOLTYPE=LEAF\n";
+      bpf "CTIME=%.0f\n" time;
+      bpf "MTIME=%.0f\n" time;
+      bpf "IMAGE=%s\n" image_uuid;
+      bpf "DISKTYPE=1\n";
+      bpf "PUUID=00000000-0000-0000-0000-000000000000\n";
+      bpf "LEGALITY=LEGAL\n";
+      bpf "POOL_UUID=\n";
+      bpf "SIZE=%Ld\n" size_in_sectors;
+      bpf "FORMAT=%s\n" format_for_rhev;
+      bpf "TYPE=%s\n" output_alloc_for_rhev;
+      bpf "DESCRIPTION=%s\n" title;
+      bpf "EOF\n";
+      Buffer.contents buf
   ) targets
 
 (* Create the OVF file. *)
@@ -337,18 +335,13 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuid vol_uuids ovf =
       in
       let size_gb = bytes_to_gb ov.ov_virtual_size in
       let actual_size_gb =
-        if Sys.file_exists t.target_file then (
-          let actual_size = du t.target_file in
-          if actual_size > 0L then Some (bytes_to_gb actual_size)
-          else None
-        ) else (
+        match t.target_actual_size, t.target_estimated_size with
+        | Some actual_size, _ -> Some (bytes_to_gb actual_size)
           (* In the --no-copy case the target file does not exist.  In
            * that case we use the estimated size.
            *)
-          match t.target_estimated_size with
-          | None -> None
-          | Some size -> Some (bytes_to_gb size)
-        ) in
+        | None, Some estimated_size -> Some (bytes_to_gb estimated_size)
+        | None, None -> None in
 
       let format_for_rhev =
         match t.target_format with
@@ -415,19 +408,6 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuid vol_uuids ovf =
         ] in
       append_child item virtualhardware_section;
   ) (List.combine targets vol_uuids)
-
-and du filename =
-  (* There's no OCaml binding for st_blocks, so run coreutils 'du'
-   * to get the used size in bytes.
-   *)
-  let cmd = sprintf "du -b %s | awk '{print $1}'" (quote filename) in
-  let lines = external_command ~prog cmd in
-  (* We really don't want the metadata generation to fail because
-   * of some silly usage information, so ignore errors here.
-   *)
-  match lines with
-  | line::_ -> (try Int64.of_string line with _ -> 0L)
-  | [] -> 0L
 
 (* This modifies the OVF DOM, adding a section for each NIC. *)
 and add_networks nics guestcaps ovf =

@@ -323,6 +323,8 @@
 <ANCHOR id="guestfs-session-lsetxattr" href="guestfs/GuestfsSession.html#guestfs-session-lsetxattr">
 <ANCHOR id="guestfs-session-lstat" href="guestfs/GuestfsSession.html#guestfs-session-lstat">
 <ANCHOR id="guestfs-session-lstatlist" href="guestfs/GuestfsSession.html#guestfs-session-lstatlist">
+<ANCHOR id="guestfs-session-lstatns" href="guestfs/GuestfsSession.html#guestfs-session-lstatns">
+<ANCHOR id="guestfs-session-lstatnslist" href="guestfs/GuestfsSession.html#guestfs-session-lstatnslist">
 <ANCHOR id="guestfs-session-luks-add-key" href="guestfs/GuestfsSession.html#guestfs-session-luks-add-key">
 <ANCHOR id="guestfs-session-luks-close" href="guestfs/GuestfsSession.html#guestfs-session-luks-close">
 <ANCHOR id="guestfs-session-luks-format" href="guestfs/GuestfsSession.html#guestfs-session-luks-format">
@@ -491,6 +493,7 @@
 <ANCHOR id="guestfs-session-shutdown" href="guestfs/GuestfsSession.html#guestfs-session-shutdown">
 <ANCHOR id="guestfs-session-sleep" href="guestfs/GuestfsSession.html#guestfs-session-sleep">
 <ANCHOR id="guestfs-session-stat" href="guestfs/GuestfsSession.html#guestfs-session-stat">
+<ANCHOR id="guestfs-session-statns" href="guestfs/GuestfsSession.html#guestfs-session-statns">
 <ANCHOR id="guestfs-session-statvfs" href="guestfs/GuestfsSession.html#guestfs-session-statvfs">
 <ANCHOR id="guestfs-session-strings" href="guestfs/GuestfsSession.html#guestfs-session-strings">
 <ANCHOR id="guestfs-session-strings-e" href="guestfs/GuestfsSession.html#guestfs-session-strings-e">
@@ -677,6 +680,12 @@
 <ANCHOR id="GuestfsStat.description" href="guestfs/GuestfsStat.html#GuestfsStat.description">
 <ANCHOR id="GuestfsStat.details" href="guestfs/GuestfsStat.html#GuestfsStat.details">
 <ANCHOR id="GuestfsStat-struct" href="guestfs/GuestfsStat.html#GuestfsStat-struct">
+<ANCHOR id="GuestfsStatNS" href="guestfs/GuestfsStatNS.html">
+<ANCHOR id="GuestfsStatNS.synopsis" href="guestfs/GuestfsStatNS.html#GuestfsStatNS.synopsis">
+<ANCHOR id="GuestfsStatNS.object-hierarchy" href="guestfs/GuestfsStatNS.html#GuestfsStatNS.object-hierarchy">
+<ANCHOR id="GuestfsStatNS.description" href="guestfs/GuestfsStatNS.html#GuestfsStatNS.description">
+<ANCHOR id="GuestfsStatNS.details" href="guestfs/GuestfsStatNS.html#GuestfsStatNS.details">
+<ANCHOR id="GuestfsStatNS-struct" href="guestfs/GuestfsStatNS.html#GuestfsStatNS-struct">
 <ANCHOR id="GuestfsStatVFS" href="guestfs/GuestfsStatVFS.html">
 <ANCHOR id="GuestfsStatVFS.synopsis" href="guestfs/GuestfsStatVFS.html#GuestfsStatVFS.synopsis">
 <ANCHOR id="GuestfsStatVFS.object-hierarchy" href="guestfs/GuestfsStatVFS.html#GuestfsStatVFS.object-hierarchy">

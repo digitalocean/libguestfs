@@ -1107,6 +1107,13 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
                                                          <em class="parameter"><code><span class="type">gchar</span> *const *names</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<a class="link" href="GuestfsStatNS.html" title="GuestfsStatNS"><span class="returnvalue">GuestfsStatNS</span></a> *     <a class="link" href="GuestfsSession.html#guestfs-session-lstatns" title="guestfs_session_lstatns ()">guestfs_session_lstatns</a>             (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<a class="link" href="GuestfsStatNS.html" title="GuestfsStatNS"><span class="returnvalue">GuestfsStatNS</span></a> **    <a class="link" href="GuestfsSession.html#guestfs-session-lstatnslist" title="guestfs_session_lstatnslist ()">guestfs_session_lstatnslist</a>         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
+                                                         <em class="parameter"><code><span class="type">gchar</span> *const *names</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-luks-add-key" title="guestfs_session_luks_add_key ()">guestfs_session_luks_add_key</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *key</code></em>,
@@ -1748,6 +1755,9 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code><span class="type">gint32</span> secs</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <a class="link" href="GuestfsStat.html" title="GuestfsStat"><span class="returnvalue">GuestfsStat</span></a> *       <a class="link" href="GuestfsSession.html#guestfs-session-stat" title="guestfs_session_stat ()">guestfs_session_stat</a>                (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<a class="link" href="GuestfsStatNS.html" title="GuestfsStatNS"><span class="returnvalue">GuestfsStatNS</span></a> *     <a class="link" href="GuestfsSession.html#guestfs-session-statns" title="guestfs_session_statns ()">guestfs_session_statns</a>              (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <a class="link" href="GuestfsStatVFS.html" title="GuestfsStatVFS"><span class="returnvalue">GuestfsStatVFS</span></a> *    <a class="link" href="GuestfsSession.html#guestfs-session-statvfs" title="guestfs_session_statvfs ()">guestfs_session_statvfs</a>             (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
@@ -17765,7 +17775,7 @@ the list of files from this directory.
 <p>
 On return you get a list of stat structs, with a one-to-one
 correspondence to the <em class="parameter"><code>names</code></em> list. If any name did not exist or could
-not be lstat'd, then the <em class="parameter"><code>ino</code></em> field of that structure is set to @-1.
+not be lstat'd, then the <em class="parameter"><code>st_ino</code></em> field of that structure is set to @-1.
 </p>
 <p>
 This call is intended for programs that want to efficiently list a
@@ -17801,6 +17811,112 @@ extended attributes.
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>an array of Stat objects, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> GuestfsStat]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-lstatns"></a><h3>guestfs_session_lstatns ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsStatNS.html" title="GuestfsStatNS"><span class="returnvalue">GuestfsStatNS</span></a> *     guestfs_session_lstatns             (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+get file information for a symbolic link
+</p>
+<p>
+Returns file information for the given <em class="parameter"><code>path</code></em>.
+</p>
+<p>
+This is the same as <a class="link" href="GuestfsSession.html#guestfs-session-statns" title="guestfs_session_statns ()"><code class="function">guestfs_session_statns()</code></a> except that if <em class="parameter"><code>path</code></em> is a
+symbolic link, then the link is stat-ed, not the file it refers to.
+</p>
+<p>
+This is the same as the lstat(2) system call.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>path</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a StatNS object, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-lstatnslist"></a><h3>guestfs_session_lstatnslist ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsStatNS.html" title="GuestfsStatNS"><span class="returnvalue">GuestfsStatNS</span></a> **    guestfs_session_lstatnslist         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
+                                                         <em class="parameter"><code><span class="type">gchar</span> *const *names</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+lstat on multiple files
+</p>
+<p>
+This call allows you to perform the <a class="link" href="GuestfsSession.html#guestfs-session-lstatns" title="guestfs_session_lstatns ()"><code class="function">guestfs_session_lstatns()</code></a> operation
+on multiple files, where all files are in the directory <em class="parameter"><code>path</code></em>. <em class="parameter"><code>names</code></em> is
+the list of files from this directory.
+</p>
+<p>
+On return you get a list of stat structs, with a one-to-one
+correspondence to the <em class="parameter"><code>names</code></em> list. If any name did not exist or could
+not be lstat'd, then the <em class="parameter"><code>st_ino</code></em> field of that structure is set to @-1.
+</p>
+<p>
+This call is intended for programs that want to efficiently list a
+directory contents without making many round-trips. See also
+<a class="link" href="GuestfsSession.html#guestfs-session-lxattrlist" title="guestfs_session_lxattrlist ()"><code class="function">guestfs_session_lxattrlist()</code></a> for a similarly efficient call for getting
+extended attributes.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>path</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>names</code></em> :</span></p></td>
+<td>an array of strings. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an array of StatNS objects, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> GuestfsStatNS]</span>
 </td>
 </tr>
 </tbody>
@@ -26683,6 +26799,49 @@ This is the same as the stat(2) system call.
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>a Stat object, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-statns"></a><h3>guestfs_session_statns ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsStatNS.html" title="GuestfsStatNS"><span class="returnvalue">GuestfsStatNS</span></a> *     guestfs_session_statns              (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+get file information
+</p>
+<p>
+Returns file information for the given <em class="parameter"><code>path</code></em>.
+</p>
+<p>
+This is the same as the stat(2) system call.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>path</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a StatNS object, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
 </td>
 </tr>
 </tbody>

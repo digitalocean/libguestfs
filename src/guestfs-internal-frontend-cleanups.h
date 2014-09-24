@@ -51,6 +51,10 @@
   __attribute__((cleanup(guestfs___cleanup_free_stat)))
 #define CLEANUP_FREE_STAT_LIST \
   __attribute__((cleanup(guestfs___cleanup_free_stat_list)))
+#define CLEANUP_FREE_STATNS \
+  __attribute__((cleanup(guestfs___cleanup_free_statns)))
+#define CLEANUP_FREE_STATNS_LIST \
+  __attribute__((cleanup(guestfs___cleanup_free_statns_list)))
 #define CLEANUP_FREE_STATVFS \
   __attribute__((cleanup(guestfs___cleanup_free_statvfs)))
 #define CLEANUP_FREE_STATVFS_LIST \
@@ -126,6 +130,8 @@
 #define CLEANUP_FREE_LVM_LV_LIST
 #define CLEANUP_FREE_STAT
 #define CLEANUP_FREE_STAT_LIST
+#define CLEANUP_FREE_STATNS
+#define CLEANUP_FREE_STATNS_LIST
 #define CLEANUP_FREE_STATVFS
 #define CLEANUP_FREE_STATVFS_LIST
 #define CLEANUP_FREE_DIRENT
@@ -174,6 +180,8 @@ extern void guestfs___cleanup_free_lvm_lv (void *ptr);
 extern void guestfs___cleanup_free_lvm_lv_list (void *ptr);
 extern void guestfs___cleanup_free_stat (void *ptr);
 extern void guestfs___cleanup_free_stat_list (void *ptr);
+extern void guestfs___cleanup_free_statns (void *ptr);
+extern void guestfs___cleanup_free_statns_list (void *ptr);
 extern void guestfs___cleanup_free_statvfs (void *ptr);
 extern void guestfs___cleanup_free_statvfs_list (void *ptr);
 extern void guestfs___cleanup_free_dirent (void *ptr);

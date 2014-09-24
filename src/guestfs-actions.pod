@@ -7380,6 +7380,13 @@ This function returns 0 on success or -1 on error.
  guestfs_lstat (guestfs_h *g,
                 const char *path);
 
+I<This function is deprecated.>
+In new code, use the L</guestfs_lstatns> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 Returns file information for the given C<path>.
 
 This is the same as C<guestfs_stat> except that if C<path>
@@ -7401,13 +7408,20 @@ I<The caller must call C<guestfs_free_stat> after use>.
                     const char *path,
                     char *const *names);
 
+I<This function is deprecated.>
+In new code, use the L</guestfs_lstatnslist> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 This call allows you to perform the C<guestfs_lstat> operation
 on multiple files, where all files are in the directory C<path>.
 C<names> is the list of files from this directory.
 
 On return you get a list of stat structs, with a one-to-one
 correspondence to the C<names> list.  If any name did not exist
-or could not be lstat'd, then the C<ino> field of that structure
+or could not be lstat'd, then the C<st_ino> field of that structure
 is set to C<-1>.
 
 This call is intended for programs that want to efficiently
@@ -7420,6 +7434,49 @@ or NULL if there was an error.
 I<The caller must call C<guestfs_free_stat_list> after use>.
 
 (Added in 1.0.77)
+
+=head2 guestfs_lstatns
+
+ struct guestfs_statns *
+ guestfs_lstatns (guestfs_h *g,
+                  const char *path);
+
+Returns file information for the given C<path>.
+
+This is the same as C<guestfs_statns> except that if C<path>
+is a symbolic link, then the link is stat-ed, not the file it
+refers to.
+
+This is the same as the C<lstat(2)> system call.
+
+This function returns a C<struct guestfs_statns *>,
+or NULL if there was an error.
+I<The caller must call C<guestfs_free_statns> after use>.
+
+=head2 guestfs_lstatnslist
+
+ struct guestfs_statns_list *
+ guestfs_lstatnslist (guestfs_h *g,
+                      const char *path,
+                      char *const *names);
+
+This call allows you to perform the C<guestfs_lstatns> operation
+on multiple files, where all files are in the directory C<path>.
+C<names> is the list of files from this directory.
+
+On return you get a list of stat structs, with a one-to-one
+correspondence to the C<names> list.  If any name did not exist
+or could not be lstat'd, then the C<st_ino> field of that structure
+is set to C<-1>.
+
+This call is intended for programs that want to efficiently
+list a directory contents without making many round-trips.
+See also C<guestfs_lxattrlist> for a similarly efficient call
+for getting extended attributes.
+
+This function returns a C<struct guestfs_statns_list *>,
+or NULL if there was an error.
+I<The caller must call C<guestfs_free_statns_list> after use>.
 
 =head2 guestfs_luks_add_key
 
@@ -11735,6 +11792,13 @@ This function returns 0 on success or -1 on error.
  guestfs_stat (guestfs_h *g,
                const char *path);
 
+I<This function is deprecated.>
+In new code, use the L</guestfs_statns> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 Returns file information for the given C<path>.
 
 This is the same as the C<stat(2)> system call.
@@ -11744,6 +11808,20 @@ or NULL if there was an error.
 I<The caller must call C<guestfs_free_stat> after use>.
 
 (Added in 0.9.2)
+
+=head2 guestfs_statns
+
+ struct guestfs_statns *
+ guestfs_statns (guestfs_h *g,
+                 const char *path);
+
+Returns file information for the given C<path>.
+
+This is the same as the C<stat(2)> system call.
+
+This function returns a C<struct guestfs_statns *>,
+or NULL if there was an error.
+I<The caller must call C<guestfs_free_statns> after use>.
 
 =head2 guestfs_statvfs
 

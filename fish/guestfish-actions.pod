@@ -4630,6 +4630,13 @@ refers to.
 
 This is the same as the C<lstat(2)> system call.
 
+I<This function is deprecated.>
+In new code, use the L</lstatns> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =head2 lstatlist
 
  lstatlist path 'names ...'
@@ -4640,7 +4647,44 @@ C<names> is the list of files from this directory.
 
 On return you get a list of stat structs, with a one-to-one
 correspondence to the C<names> list.  If any name did not exist
-or could not be lstat'd, then the C<ino> field of that structure
+or could not be lstat'd, then the C<st_ino> field of that structure
+is set to C<-1>.
+
+This call is intended for programs that want to efficiently
+list a directory contents without making many round-trips.
+See also L</lxattrlist> for a similarly efficient call
+for getting extended attributes.
+
+I<This function is deprecated.>
+In new code, use the L</lstatnslist> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
+=head2 lstatns
+
+ lstatns path
+
+Returns file information for the given C<path>.
+
+This is the same as L</statns> except that if C<path>
+is a symbolic link, then the link is stat-ed, not the file it
+refers to.
+
+This is the same as the C<lstat(2)> system call.
+
+=head2 lstatnslist
+
+ lstatnslist path 'names ...'
+
+This call allows you to perform the L</lstatns> operation
+on multiple files, where all files are in the directory C<path>.
+C<names> is the list of files from this directory.
+
+On return you get a list of stat structs, with a one-to-one
+correspondence to the C<names> list.  If any name did not exist
+or could not be lstat'd, then the C<st_ino> field of that structure
 is set to C<-1>.
 
 This call is intended for programs that want to efficiently
@@ -7268,6 +7312,21 @@ Sleep for C<secs> seconds.
 =head2 stat
 
  stat path
+
+Returns file information for the given C<path>.
+
+This is the same as the C<stat(2)> system call.
+
+I<This function is deprecated.>
+In new code, use the L</statns> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
+=head2 statns
+
+ statns path
 
 Returns file information for the given C<path>.
 

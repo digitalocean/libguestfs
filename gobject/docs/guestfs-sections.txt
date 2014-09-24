@@ -1209,6 +1209,8 @@ guestfs_session_ls0
 guestfs_session_lsetxattr
 guestfs_session_lstat
 guestfs_session_lstatlist
+guestfs_session_lstatns
+guestfs_session_lstatnslist
 guestfs_session_luks_add_key
 guestfs_session_luks_close
 guestfs_session_luks_format
@@ -1377,6 +1379,7 @@ guestfs_session_sh_lines
 guestfs_session_shutdown
 guestfs_session_sleep
 guestfs_session_stat
+guestfs_session_statns
 guestfs_session_statvfs
 guestfs_session_strings
 guestfs_session_strings_e
@@ -1571,6 +1574,13 @@ guestfs_partition_get_type
 GuestfsStat
 <SUBSECTION Standard>
 guestfs_stat_get_type
+</SECTION>
+
+<SECTION>
+<FILE>struct-statns</FILE>
+GuestfsStatNS
+<SUBSECTION Standard>
+guestfs_statns_get_type
 </SECTION>
 
 <SECTION>

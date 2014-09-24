@@ -1020,6 +1020,48 @@ guestfs_get_program (guestfs_h *g)
   return r;
 }
 
+GUESTFS_DLL_PUBLIC struct guestfs_stat *
+guestfs_stat (guestfs_h *g,
+              const char *path)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  struct guestfs_stat *r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "stat", 4);
+  if (path == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "stat", "path");
+    return NULL;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "stat");
+    fprintf (trace_buffer.fp, " \"%s\"", path);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__stat (g, path);
+
+  if (r != NULL) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "stat");
+      fprintf (trace_buffer.fp, "<struct guestfs_stat *>");
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "stat", "NULL");
+  }
+
+  return r;
+}
+
 GUESTFS_DLL_PUBLIC struct guestfs_lvm_lv_list *
 guestfs_lvs_full (guestfs_h *g)
 {
@@ -1328,104 +1370,6 @@ guestfs_sfdisk (guestfs_h *g,
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "sfdisk");
     fprintf (trace_buffer.fp, "%d", ret_v);
-    guestfs___trace_send_line (g, &trace_buffer);
-  }
-
-  return ret_v;
-}
-
-GUESTFS_DLL_PUBLIC struct guestfs_stat *
-guestfs_stat (guestfs_h *g,
-              const char *path)
-{
-  struct guestfs_stat_args args;
-  guestfs_message_header hdr;
-  guestfs_message_error err;
-  struct guestfs_stat_ret ret;
-  int serial;
-  int r;
-  int trace_flag = g->trace;
-  struct trace_buffer trace_buffer;
-  struct guestfs_stat *ret_v;
-  const uint64_t progress_hint = 0;
-
-  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "stat", 4);
-  if (path == NULL) {
-    error (g, "%s: %s: parameter cannot be NULL",
-           "stat", "path");
-    return NULL;
-  }
-
-  if (trace_flag) {
-    guestfs___trace_open (&trace_buffer);
-    fprintf (trace_buffer.fp, "%s", "stat");
-    fprintf (trace_buffer.fp, " \"%s\"", path);
-    guestfs___trace_send_line (g, &trace_buffer);
-  }
-
-  if (guestfs___check_appliance_up (g, "stat") == -1) {
-    if (trace_flag)
-      guestfs___trace (g, "%s = %s (error)",
-                       "stat", "NULL");
-    return NULL;
-  }
-
-  args.path = (char *) path;
-  serial = guestfs___send (g, GUESTFS_PROC_STAT,
-                           progress_hint, 0,
-                           (xdrproc_t) xdr_guestfs_stat_args, (char *) &args);
-  if (serial == -1) {
-    if (trace_flag)
-      guestfs___trace (g, "%s = %s (error)",
-                       "stat", "NULL");
-    return NULL;
-  }
-
-  memset (&hdr, 0, sizeof hdr);
-  memset (&err, 0, sizeof err);
-  memset (&ret, 0, sizeof ret);
-
-  r = guestfs___recv (g, "stat", &hdr, &err,
-        (xdrproc_t) xdr_guestfs_stat_ret, (char *) &ret);
-  if (r == -1) {
-    if (trace_flag)
-      guestfs___trace (g, "%s = %s (error)",
-                       "stat", "NULL");
-    return NULL;
-  }
-
-  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_STAT, serial) == -1) {
-    if (trace_flag)
-      guestfs___trace (g, "%s = %s (error)",
-                       "stat", "NULL");
-    return NULL;
-  }
-
-  if (hdr.status == GUESTFS_STATUS_ERROR) {
-    int errnum = 0;
-
-    if (trace_flag)
-      guestfs___trace (g, "%s = %s (error)",
-                       "stat", "NULL");
-    if (err.errno_string[0] != '\0')
-      errnum = guestfs___string_to_errno (err.errno_string);
-    if (errnum <= 0)
-      error (g, "%s: %s", "stat", err.error_message);
-    else
-      guestfs___error_errno (g, errnum, "%s: %s", "stat",
-                           err.error_message);
-    free (err.error_message);
-    free (err.errno_string);
-    return NULL;
-  }
-
-  /* caller will free this */
-  ret_v = safe_memdup (g, &ret.statbuf, sizeof (ret.statbuf));
-  if (trace_flag) {
-    guestfs___trace_open (&trace_buffer);
-    fprintf (trace_buffer.fp, "%s = ", "stat");
-    fprintf (trace_buffer.fp, "<struct guestfs_stat *>");
     guestfs___trace_send_line (g, &trace_buffer);
   }
 

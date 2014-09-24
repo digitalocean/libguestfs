@@ -5205,6 +5205,13 @@ class GuestFS(object):
         
         This function returns a dictionary, with keys matching
         the various fields in the guestfs_stat structure.
+        
+        *This function is deprecated.* In new code, use the
+        "lstatns" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
         r = libguestfsmod.lstat (self._o, path)
@@ -5219,7 +5226,7 @@ class GuestFS(object):
         On return you get a list of stat structs, with a
         one-to-one correspondence to the "names" list. If any
         name did not exist or could not be lstat'd, then the
-        "ino" field of that structure is set to -1.
+        "st_ino" field of that structure is set to -1.
         
         This call is intended for programs that want to
         efficiently list a directory contents without making
@@ -5229,10 +5236,58 @@ class GuestFS(object):
         
         This function returns a list of stats. Each stat is
         represented as a dictionary.
+        
+        *This function is deprecated.* In new code, use the
+        "lstatnslist" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         names = list (names)
         self._check_not_closed ()
         r = libguestfsmod.lstatlist (self._o, path, names)
+        return r
+
+    def lstatns (self, path):
+        """Returns file information for the given "path".
+        
+        This is the same as "g.statns" except that if "path" is
+        a symbolic link, then the link is stat-ed, not the file
+        it refers to.
+        
+        This is the same as the lstat(2) system call.
+        
+        This function returns a dictionary, with keys matching
+        the various fields in the guestfs_statns structure.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.lstatns (self._o, path)
+        return r
+
+    def lstatnslist (self, path, names):
+        """This call allows you to perform the "g.lstatns"
+        operation on multiple files, where all files are in the
+        directory "path". "names" is the list of files from this
+        directory.
+        
+        On return you get a list of stat structs, with a
+        one-to-one correspondence to the "names" list. If any
+        name did not exist or could not be lstat'd, then the
+        "st_ino" field of that structure is set to -1.
+        
+        This call is intended for programs that want to
+        efficiently list a directory contents without making
+        many round-trips. See also "g.lxattrlist" for a
+        similarly efficient call for getting extended
+        attributes.
+        
+        This function returns a list of statnss. Each statns is
+        represented as a dictionary.
+        """
+        names = list (names)
+        self._check_not_closed ()
+        r = libguestfsmod.lstatnslist (self._o, path, names)
         return r
 
     def luks_add_key (self, device, key, newkey, keyslot):
@@ -7982,9 +8037,28 @@ class GuestFS(object):
         
         This function returns a dictionary, with keys matching
         the various fields in the guestfs_stat structure.
+        
+        *This function is deprecated.* In new code, use the
+        "statns" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
         r = libguestfsmod.stat (self._o, path)
+        return r
+
+    def statns (self, path):
+        """Returns file information for the given "path".
+        
+        This is the same as the stat(2) system call.
+        
+        This function returns a dictionary, with keys matching
+        the various fields in the guestfs_statns structure.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.statns (self._o, path)
         return r
 
     def statvfs (self, path):

@@ -298,6 +298,31 @@ type stat = {
   ctime : int64;
 }
 
+type statns = {
+  st_dev : int64;
+  st_ino : int64;
+  st_mode : int64;
+  st_nlink : int64;
+  st_uid : int64;
+  st_gid : int64;
+  st_rdev : int64;
+  st_size : int64;
+  st_blksize : int64;
+  st_blocks : int64;
+  st_atime_sec : int64;
+  st_atime_nsec : int64;
+  st_mtime_sec : int64;
+  st_mtime_nsec : int64;
+  st_ctime_sec : int64;
+  st_ctime_nsec : int64;
+  st_spare1 : int64;
+  st_spare2 : int64;
+  st_spare3 : int64;
+  st_spare4 : int64;
+  st_spare5 : int64;
+  st_spare6 : int64;
+}
+
 type statvfs = {
   bsize : int64;
   frsize : int64;
@@ -1303,9 +1328,21 @@ val lsetxattr : t -> string -> string -> int -> string -> unit
 (** set extended attribute of a file or directory *)
 
 val lstat : t -> string -> stat
-(** get file information for a symbolic link *)
+(** get file information for a symbolic link
+
+    @deprecated Use {!lstatns} instead
+ *)
 
 val lstatlist : t -> string -> string array -> stat array
+(** lstat on multiple files
+
+    @deprecated Use {!lstatnslist} instead
+ *)
+
+val lstatns : t -> string -> statns
+(** get file information for a symbolic link *)
+
+val lstatnslist : t -> string -> string array -> statns array
 (** lstat on multiple files *)
 
 val luks_add_key : t -> string -> string -> string -> int -> unit
@@ -1870,6 +1907,12 @@ val sleep : t -> int -> unit
 (** sleep for some seconds *)
 
 val stat : t -> string -> stat
+(** get file information
+
+    @deprecated Use {!statns} instead
+ *)
+
+val statns : t -> string -> statns
 (** get file information *)
 
 val statvfs : t -> string -> statvfs
@@ -2483,6 +2526,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method lsetxattr : string -> string -> int -> string -> unit
   method lstat : string -> stat
   method lstatlist : string -> string array -> stat array
+  method lstatns : string -> statns
+  method lstatnslist : string -> string array -> statns array
   method luks_add_key : string -> string -> string -> int -> unit
   method luks_close : string -> unit
   method luks_format : string -> string -> int -> unit
@@ -2654,6 +2699,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method shutdown : unit -> unit
   method sleep : int -> unit
   method stat : string -> stat
+  method statns : string -> statns
   method statvfs : string -> statvfs
   method strings : string -> string array
   method strings_e : string -> string -> string array

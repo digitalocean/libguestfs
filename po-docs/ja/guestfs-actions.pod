@@ -7030,6 +7030,13 @@ C<.> および C<..> は返されません。ファイル名は並べ替えら�
  guestfs_lstat (guestfs_h *g,
                 const char *path);
 
+I<This function is deprecated.> In new code, use the L</guestfs_lstatns>
+call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 与えられた C<path> のファイル情報を返します。
 
 これは、C<path> がシンボリックリンクであることを除き、C<guestfs_stat>
@@ -7049,13 +7056,20 @@ C<guestfs_free_stat> を呼び出す必要があります>。
                     const char *path,
                     char *const *names);
 
+I<This function is deprecated.> In new code, use the L</guestfs_lstatnslist>
+call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 This call allows you to perform the C<guestfs_lstat> operation on multiple
 files, where all files are in the directory C<path>.  C<names> is the list
 of files from this directory.
 
 On return you get a list of stat structs, with a one-to-one correspondence
 to the C<names> list.  If any name did not exist or could not be lstat'd,
-then the C<ino> field of that structure is set to C<-1>.
+then the C<st_ino> field of that structure is set to C<-1>.
 
 This call is intended for programs that want to efficiently list a directory
 contents without making many round-trips.  See also C<guestfs_lxattrlist>
@@ -7065,6 +7079,45 @@ This function returns a C<struct guestfs_stat_list *>, or NULL if there was
 an error.  I<The caller must call C<guestfs_free_stat_list> after use>.
 
 (1.0.77 において追加)
+
+=head2 guestfs_lstatns
+
+ struct guestfs_statns *
+ guestfs_lstatns (guestfs_h *g,
+                  const char *path);
+
+与えられた C<path> のファイル情報を返します。
+
+This is the same as C<guestfs_statns> except that if C<path> is a symbolic
+link, then the link is stat-ed, not the file it refers to.
+
+これは C<lstat(2)> と同じです。
+
+This function returns a C<struct guestfs_statns *>, or NULL if there was an
+error.  I<The caller must call C<guestfs_free_statns> after use>.
+
+=head2 guestfs_lstatnslist
+
+ struct guestfs_statns_list *
+ guestfs_lstatnslist (guestfs_h *g,
+                      const char *path,
+                      char *const *names);
+
+This call allows you to perform the C<guestfs_lstatns> operation on multiple
+files, where all files are in the directory C<path>.  C<names> is the list
+of files from this directory.
+
+On return you get a list of stat structs, with a one-to-one correspondence
+to the C<names> list.  If any name did not exist or could not be lstat'd,
+then the C<st_ino> field of that structure is set to C<-1>.
+
+This call is intended for programs that want to efficiently list a directory
+contents without making many round-trips.  See also C<guestfs_lxattrlist>
+for a similarly efficient call for getting extended attributes.
+
+This function returns a C<struct guestfs_statns_list *>, or NULL if there
+was an error.  I<The caller must call C<guestfs_free_statns_list> after
+use>.
 
 =head2 guestfs_luks_add_key
 
@@ -11192,6 +11245,13 @@ C<secs> 秒間スリープします。
  guestfs_stat (guestfs_h *g,
                const char *path);
 
+I<This function is deprecated.> In new code, use the L</guestfs_statns> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 与えられた C<path> のファイル情報を返します。
 
 これは C<stat(2)> システムコールと同じです。
@@ -11200,6 +11260,19 @@ C<secs> 秒間スリープします。
 C<guestfs_free_stat> を呼び出す必要があります>。
 
 (0.9.2 において追加)
+
+=head2 guestfs_statns
+
+ struct guestfs_statns *
+ guestfs_statns (guestfs_h *g,
+                 const char *path);
+
+与えられた C<path> のファイル情報を返します。
+
+これは C<stat(2)> システムコールと同じです。
+
+This function returns a C<struct guestfs_statns *>, or NULL if there was an
+error.  I<The caller must call C<guestfs_free_statns> after use>.
 
 =head2 guestfs_statvfs
 

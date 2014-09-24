@@ -125,6 +125,24 @@ guestfs_free_stat_list (struct guestfs_stat_list *x)
 }
 
 GUESTFS_DLL_PUBLIC void
+guestfs_free_statns (struct guestfs_statns *x)
+{
+  if (x) {
+    xdr_free ((xdrproc_t) xdr_guestfs_int_statns, (char *) x);
+    free (x);
+  }
+}
+
+GUESTFS_DLL_PUBLIC void
+guestfs_free_statns_list (struct guestfs_statns_list *x)
+{
+  if (x) {
+    xdr_free ((xdrproc_t) xdr_guestfs_int_statns_list, (char *) x);
+    free (x);
+  }
+}
+
+GUESTFS_DLL_PUBLIC void
 guestfs_free_statvfs (struct guestfs_statvfs *x)
 {
   if (x) {

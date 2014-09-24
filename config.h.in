@@ -1872,7 +1872,7 @@
 /* Define to 1 if `st_atim.st__tim.tv_nsec' is a member of `struct stat'. */
 #undef HAVE_STRUCT_STAT_ST_ATIM_ST__TIM_TV_NSEC
 
-/* Define to 1 if `st_atim.tv_nsec' is a member of `struct stat'. */
+/* Define to 1 if 'st_mtim.tv_nsec' is a member of 'struct stat'. */
 #undef HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC
 
 /* Define to 1 if `st_birthtimensec' is a member of `struct stat'. */
@@ -1889,6 +1889,12 @@
 
 /* Define to 1 if `st_blocks' is a member of `struct stat'. */
 #undef HAVE_STRUCT_STAT_ST_BLOCKS
+
+/* Define to 1 if 'st_mtim.tv_nsec' is a member of 'struct stat'. */
+#undef HAVE_STRUCT_STAT_ST_CTIM_TV_NSEC
+
+/* Define to 1 if 'st_mtim.tv_nsec' is a member of 'struct stat'. */
+#undef HAVE_STRUCT_STAT_ST_MTIM_TV_NSEC
 
 /* Define if struct utimbuf is declared -- usually in <utime.h>. Some systems
    have utime.h but don't declare the struct anywhere. */

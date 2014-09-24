@@ -325,6 +325,37 @@ make_stat (const struct guestfs_stat *stat)
 }
 
 static ETERM *
+make_statns (const struct guestfs_statns *statns)
+{
+  ETERM *t[22];
+
+  t[0] = erl_mk_longlong (statns->st_dev);
+  t[1] = erl_mk_longlong (statns->st_ino);
+  t[2] = erl_mk_longlong (statns->st_mode);
+  t[3] = erl_mk_longlong (statns->st_nlink);
+  t[4] = erl_mk_longlong (statns->st_uid);
+  t[5] = erl_mk_longlong (statns->st_gid);
+  t[6] = erl_mk_longlong (statns->st_rdev);
+  t[7] = erl_mk_longlong (statns->st_size);
+  t[8] = erl_mk_longlong (statns->st_blksize);
+  t[9] = erl_mk_longlong (statns->st_blocks);
+  t[10] = erl_mk_longlong (statns->st_atime_sec);
+  t[11] = erl_mk_longlong (statns->st_atime_nsec);
+  t[12] = erl_mk_longlong (statns->st_mtime_sec);
+  t[13] = erl_mk_longlong (statns->st_mtime_nsec);
+  t[14] = erl_mk_longlong (statns->st_ctime_sec);
+  t[15] = erl_mk_longlong (statns->st_ctime_nsec);
+  t[16] = erl_mk_longlong (statns->st_spare1);
+  t[17] = erl_mk_longlong (statns->st_spare2);
+  t[18] = erl_mk_longlong (statns->st_spare3);
+  t[19] = erl_mk_longlong (statns->st_spare4);
+  t[20] = erl_mk_longlong (statns->st_spare5);
+  t[21] = erl_mk_longlong (statns->st_spare6);
+
+  return erl_mk_list (t, 22);
+}
+
+static ETERM *
 make_statvfs (const struct guestfs_statvfs *statvfs)
 {
   ETERM *t[11];
@@ -449,6 +480,18 @@ make_partition_list (const struct guestfs_partition_list *partitions)
     t[i] = make_partition (&partitions->val[i]);
 
   return erl_mk_list (t, partitions->len);
+}
+
+static ETERM *
+make_statns_list (const struct guestfs_statns_list *statnss)
+{
+  ETERM *t[statnss->len];
+  size_t i;
+
+  for (i = 0; i < statnss->len; ++i)
+    t[i] = make_statns (&statnss->val[i]);
+
+  return erl_mk_list (t, statnss->len);
 }
 
 static ETERM *
@@ -5993,6 +6036,37 @@ run_lstatlist (ETERM *message)
 }
 
 static ETERM *
+run_lstatns (ETERM *message)
+{
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  struct guestfs_statns *r;
+
+  r = guestfs_lstatns (g, path);
+  if (r == NULL)
+    return make_error ("lstatns");
+
+  ETERM *rt = make_statns (r);
+  guestfs_free_statns (r);
+  return rt;
+}
+
+static ETERM *
+run_lstatnslist (ETERM *message)
+{
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **names = get_string_list (ARG (1));
+  struct guestfs_statns_list *r;
+
+  r = guestfs_lstatnslist (g, path, names);
+  if (r == NULL)
+    return make_error ("lstatnslist");
+
+  ETERM *rt = make_statns_list (r);
+  guestfs_free_statns_list (r);
+  return rt;
+}
+
+static ETERM *
 run_luks_add_key (ETERM *message)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
@@ -9022,6 +9096,21 @@ run_stat (ETERM *message)
 }
 
 static ETERM *
+run_statns (ETERM *message)
+{
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  struct guestfs_statns *r;
+
+  r = guestfs_statns (g, path);
+  if (r == NULL)
+    return make_error ("statns");
+
+  ETERM *rt = make_statns (r);
+  guestfs_free_statns (r);
+  return rt;
+}
+
+static ETERM *
 run_statvfs (ETERM *message)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
@@ -11061,6 +11150,10 @@ dispatch (ETERM *message)
     return run_lstat (message);
   else if (atom_equals (fun, "lstatlist"))
     return run_lstatlist (message);
+  else if (atom_equals (fun, "lstatns"))
+    return run_lstatns (message);
+  else if (atom_equals (fun, "lstatnslist"))
+    return run_lstatnslist (message);
   else if (atom_equals (fun, "luks_add_key"))
     return run_luks_add_key (message);
   else if (atom_equals (fun, "luks_close"))
@@ -11397,6 +11490,8 @@ dispatch (ETERM *message)
     return run_sleep (message);
   else if (atom_equals (fun, "stat"))
     return run_stat (message);
+  else if (atom_equals (fun, "statns"))
+    return run_statns (message);
   else if (atom_equals (fun, "statvfs"))
     return run_statvfs (message);
   else if (atom_equals (fun, "strings"))

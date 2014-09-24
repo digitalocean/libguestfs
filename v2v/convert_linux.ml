@@ -43,7 +43,7 @@ type kernel_info = {
   ki_version : string;             (* version-release *)
   ki_arch : string;                (* Kernel architecture. *)
   ki_vmlinuz : string;             (* The path of the vmlinuz file. *)
-  ki_vmlinuz_stat : G.stat;        (* stat(2) of vmlinuz *)
+  ki_vmlinuz_stat : G.statns;      (* stat(2) of vmlinuz *)
   ki_initrd : string option;       (* Path of initramfs, if found. *)
   ki_modpath : string;             (* The module path. *)
   ki_modules : string list;        (* The list of module names. *)
@@ -165,7 +165,7 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
            if not (g#is_dir ~followsymlinks:true modpath) then
              raise Not_found;
            let vmlinuz_stat =
-             try g#stat vmlinuz with G.Error _ -> raise Not_found in
+             try g#statns vmlinuz with G.Error _ -> raise Not_found in
 
            (* Get/construct the version.  XXX Read this from kernel file. *)
            let version =
@@ -357,11 +357,11 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
     filter_map (
       fun vmlinuz ->
         try
-          let statbuf = g#stat vmlinuz in
+          let statbuf = g#statns vmlinuz in
           let kernel =
             List.find (
               fun { ki_vmlinuz_stat = s } ->
-                statbuf.G.dev = s.G.dev && statbuf.G.ino = s.G.ino
+                statbuf.G.st_dev = s.G.st_dev && statbuf.G.st_ino = s.G.st_ino
             ) installed_kernels in
           Some kernel
         with Not_found -> None
@@ -755,18 +755,45 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
     best_kernel, virtio
 
   and grub_set_bootable kernel =
-    let cmd =
-      if g#exists "/sbin/grubby" then
-        [| "grubby"; "--set-default"; kernel.ki_vmlinuz |]
-      else
-        [| "/usr/bin/perl"; "-MBootloader::Tools"; "-e"; sprintf "
+    match grub with
+    | `Grub1 ->
+      if not (string_prefix kernel.ki_vmlinuz grub_prefix) then
+        error (f_"kernel %s is not under grub tree %s")
+          kernel.ki_vmlinuz grub_prefix;
+      let kernel_under_grub_prefix =
+        let prefix_len = String.length grub_prefix in
+        let kernel_len = String.length kernel.ki_vmlinuz in
+        String.sub kernel.ki_vmlinuz prefix_len (kernel_len - prefix_len) in
+
+      (* Find the grub entry for the given kernel. *)
+      let paths = g#aug_match (sprintf "/files%s/title/kernel[. = '%s']"
+                                 grub_config kernel_under_grub_prefix) in
+      let paths = Array.to_list paths in
+      if paths = [] then
+        error (f_"didn't find grub entry for kernel %s") kernel.ki_vmlinuz;
+      let path = List.hd paths in
+      let rex = Str.regexp "/title\\[\\([1-9][0-9]*\\)\\]/kernel" in
+      let index =
+        if Str.string_match rex path 0 then
+          (int_of_string (Str.matched_group 1 path) - 1)
+        else
+          0 in
+      g#aug_set (sprintf "/files%s/default" grub_config) (string_of_int index);
+      g#aug_save ()
+
+    | `Grub2 ->
+      let cmd =
+        if g#exists "/sbin/grubby" then
+          [| "grubby"; "--set-default"; kernel.ki_vmlinuz |]
+        else
+          [| "/usr/bin/perl"; "-MBootloader::Tools"; "-e"; sprintf "
               InitLibrary();
               my @sections = GetSectionList(type=>image, image=>\"%s\");
               my $section = GetSection(@sections);
               my $newdefault = $section->{name};
               SetGlobals(default, \"$newdefault\");
             " kernel.ki_vmlinuz |] in
-    ignore (g#command cmd)
+      ignore (g#command cmd)
 
   (* Even though the kernel was already installed (this version of
    * virt-v2v does not install new kernels), it could have an
@@ -1362,6 +1389,7 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
     gcaps_block_bus = if virtio then Virtio_blk else IDE;
     gcaps_net_bus = if virtio then Virtio_net else E1000;
     gcaps_video = video;
+    gcaps_arch = Utils.kvm_arch inspect.i_arch;
     gcaps_acpi = acpi;
   } in
 

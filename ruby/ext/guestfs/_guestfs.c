@@ -14431,6 +14431,13 @@ ruby_guestfs_lsetxattr (VALUE gv, VALUE xattrv, VALUE valv, VALUE vallenv, VALUE
  * refers to.
  * 
  * This is the same as the lstat(2) system call.
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "lstatns" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -14484,13 +14491,20 @@ ruby_guestfs_lstat (VALUE gv, VALUE pathv)
  * On return you get a list of stat structs, with a
  * one-to-one correspondence to the "names" list. If any
  * name did not exist or could not be lstat'd, then the
- * "ino" field of that structure is set to -1.
+ * "st_ino" field of that structure is set to -1.
  * 
  * This call is intended for programs that want to
  * efficiently list a directory contents without making
  * many round-trips. See also "g.lxattrlist" for a
  * similarly efficient call for getting extended
  * attributes.
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "lstatnslist" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -14545,6 +14559,154 @@ ruby_guestfs_lstatlist (VALUE gv, VALUE pathv, VALUE namesv)
     rb_ary_push (rv, hv);
   }
   guestfs_free_stat_list (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.lstatns(path) -> hash
+ *
+ * get file information for a symbolic link
+ *
+ * Returns file information for the given "path".
+ * 
+ * This is the same as "g.statns" except that if "path" is
+ * a symbolic link, then the link is stat-ed, not the file
+ * it refers to.
+ * 
+ * This is the same as the lstat(2) system call.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_lstatns+[http://libguestfs.org/guestfs.3.html#guestfs_lstatns]).
+ */
+static VALUE
+ruby_guestfs_lstatns (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "lstatns");
+
+  const char *path = StringValueCStr (pathv);
+
+  struct guestfs_statns *r;
+
+  r = guestfs_lstatns (g, path);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_hash_new ();
+  rb_hash_aset (rv, rb_str_new2 ("st_dev"), LL2NUM (r->st_dev));
+  rb_hash_aset (rv, rb_str_new2 ("st_ino"), LL2NUM (r->st_ino));
+  rb_hash_aset (rv, rb_str_new2 ("st_mode"), LL2NUM (r->st_mode));
+  rb_hash_aset (rv, rb_str_new2 ("st_nlink"), LL2NUM (r->st_nlink));
+  rb_hash_aset (rv, rb_str_new2 ("st_uid"), LL2NUM (r->st_uid));
+  rb_hash_aset (rv, rb_str_new2 ("st_gid"), LL2NUM (r->st_gid));
+  rb_hash_aset (rv, rb_str_new2 ("st_rdev"), LL2NUM (r->st_rdev));
+  rb_hash_aset (rv, rb_str_new2 ("st_size"), LL2NUM (r->st_size));
+  rb_hash_aset (rv, rb_str_new2 ("st_blksize"), LL2NUM (r->st_blksize));
+  rb_hash_aset (rv, rb_str_new2 ("st_blocks"), LL2NUM (r->st_blocks));
+  rb_hash_aset (rv, rb_str_new2 ("st_atime_sec"), LL2NUM (r->st_atime_sec));
+  rb_hash_aset (rv, rb_str_new2 ("st_atime_nsec"), LL2NUM (r->st_atime_nsec));
+  rb_hash_aset (rv, rb_str_new2 ("st_mtime_sec"), LL2NUM (r->st_mtime_sec));
+  rb_hash_aset (rv, rb_str_new2 ("st_mtime_nsec"), LL2NUM (r->st_mtime_nsec));
+  rb_hash_aset (rv, rb_str_new2 ("st_ctime_sec"), LL2NUM (r->st_ctime_sec));
+  rb_hash_aset (rv, rb_str_new2 ("st_ctime_nsec"), LL2NUM (r->st_ctime_nsec));
+  rb_hash_aset (rv, rb_str_new2 ("st_spare1"), LL2NUM (r->st_spare1));
+  rb_hash_aset (rv, rb_str_new2 ("st_spare2"), LL2NUM (r->st_spare2));
+  rb_hash_aset (rv, rb_str_new2 ("st_spare3"), LL2NUM (r->st_spare3));
+  rb_hash_aset (rv, rb_str_new2 ("st_spare4"), LL2NUM (r->st_spare4));
+  rb_hash_aset (rv, rb_str_new2 ("st_spare5"), LL2NUM (r->st_spare5));
+  rb_hash_aset (rv, rb_str_new2 ("st_spare6"), LL2NUM (r->st_spare6));
+  guestfs_free_statns (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.lstatnslist(path, names) -> list
+ *
+ * lstat on multiple files
+ *
+ * This call allows you to perform the "g.lstatns"
+ * operation on multiple files, where all files are in the
+ * directory "path". "names" is the list of files from this
+ * directory.
+ * 
+ * On return you get a list of stat structs, with a
+ * one-to-one correspondence to the "names" list. If any
+ * name did not exist or could not be lstat'd, then the
+ * "st_ino" field of that structure is set to -1.
+ * 
+ * This call is intended for programs that want to
+ * efficiently list a directory contents without making
+ * many round-trips. See also "g.lxattrlist" for a
+ * similarly efficient call for getting extended
+ * attributes.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_lstatnslist+[http://libguestfs.org/guestfs.3.html#guestfs_lstatnslist]).
+ */
+static VALUE
+ruby_guestfs_lstatnslist (VALUE gv, VALUE pathv, VALUE namesv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "lstatnslist");
+
+  const char *path = StringValueCStr (pathv);
+  char **names;
+  Check_Type (namesv, T_ARRAY);
+  {
+    size_t i, len;
+    len = RARRAY_LEN (namesv);
+    names = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE v = rb_ary_entry (namesv, i);
+      names[i] = StringValueCStr (v);
+    }
+    names[len] = NULL;
+  }
+
+  struct guestfs_statns_list *r;
+
+  r = guestfs_lstatnslist (g, path, names);
+  free (names);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_ary_new2 (r->len);
+  size_t i;
+  for (i = 0; i < r->len; ++i) {
+    volatile VALUE hv = rb_hash_new ();
+    rb_hash_aset (hv, rb_str_new2 ("st_dev"), LL2NUM (r->val[i].st_dev));
+    rb_hash_aset (hv, rb_str_new2 ("st_ino"), LL2NUM (r->val[i].st_ino));
+    rb_hash_aset (hv, rb_str_new2 ("st_mode"), LL2NUM (r->val[i].st_mode));
+    rb_hash_aset (hv, rb_str_new2 ("st_nlink"), LL2NUM (r->val[i].st_nlink));
+    rb_hash_aset (hv, rb_str_new2 ("st_uid"), LL2NUM (r->val[i].st_uid));
+    rb_hash_aset (hv, rb_str_new2 ("st_gid"), LL2NUM (r->val[i].st_gid));
+    rb_hash_aset (hv, rb_str_new2 ("st_rdev"), LL2NUM (r->val[i].st_rdev));
+    rb_hash_aset (hv, rb_str_new2 ("st_size"), LL2NUM (r->val[i].st_size));
+    rb_hash_aset (hv, rb_str_new2 ("st_blksize"), LL2NUM (r->val[i].st_blksize));
+    rb_hash_aset (hv, rb_str_new2 ("st_blocks"), LL2NUM (r->val[i].st_blocks));
+    rb_hash_aset (hv, rb_str_new2 ("st_atime_sec"), LL2NUM (r->val[i].st_atime_sec));
+    rb_hash_aset (hv, rb_str_new2 ("st_atime_nsec"), LL2NUM (r->val[i].st_atime_nsec));
+    rb_hash_aset (hv, rb_str_new2 ("st_mtime_sec"), LL2NUM (r->val[i].st_mtime_sec));
+    rb_hash_aset (hv, rb_str_new2 ("st_mtime_nsec"), LL2NUM (r->val[i].st_mtime_nsec));
+    rb_hash_aset (hv, rb_str_new2 ("st_ctime_sec"), LL2NUM (r->val[i].st_ctime_sec));
+    rb_hash_aset (hv, rb_str_new2 ("st_ctime_nsec"), LL2NUM (r->val[i].st_ctime_nsec));
+    rb_hash_aset (hv, rb_str_new2 ("st_spare1"), LL2NUM (r->val[i].st_spare1));
+    rb_hash_aset (hv, rb_str_new2 ("st_spare2"), LL2NUM (r->val[i].st_spare2));
+    rb_hash_aset (hv, rb_str_new2 ("st_spare3"), LL2NUM (r->val[i].st_spare3));
+    rb_hash_aset (hv, rb_str_new2 ("st_spare4"), LL2NUM (r->val[i].st_spare4));
+    rb_hash_aset (hv, rb_str_new2 ("st_spare5"), LL2NUM (r->val[i].st_spare5));
+    rb_hash_aset (hv, rb_str_new2 ("st_spare6"), LL2NUM (r->val[i].st_spare6));
+    rb_ary_push (rv, hv);
+  }
+  guestfs_free_statns_list (r);
   return rv;
 }
 
@@ -22317,6 +22479,13 @@ ruby_guestfs_sleep (VALUE gv, VALUE secsv)
  * Returns file information for the given "path".
  * 
  * This is the same as the stat(2) system call.
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "statns" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -22353,6 +22522,63 @@ ruby_guestfs_stat (VALUE gv, VALUE pathv)
   rb_hash_aset (rv, rb_str_new2 ("mtime"), LL2NUM (r->mtime));
   rb_hash_aset (rv, rb_str_new2 ("ctime"), LL2NUM (r->ctime));
   guestfs_free_stat (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.statns(path) -> hash
+ *
+ * get file information
+ *
+ * Returns file information for the given "path".
+ * 
+ * This is the same as the stat(2) system call.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_statns+[http://libguestfs.org/guestfs.3.html#guestfs_statns]).
+ */
+static VALUE
+ruby_guestfs_statns (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "statns");
+
+  const char *path = StringValueCStr (pathv);
+
+  struct guestfs_statns *r;
+
+  r = guestfs_statns (g, path);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_hash_new ();
+  rb_hash_aset (rv, rb_str_new2 ("st_dev"), LL2NUM (r->st_dev));
+  rb_hash_aset (rv, rb_str_new2 ("st_ino"), LL2NUM (r->st_ino));
+  rb_hash_aset (rv, rb_str_new2 ("st_mode"), LL2NUM (r->st_mode));
+  rb_hash_aset (rv, rb_str_new2 ("st_nlink"), LL2NUM (r->st_nlink));
+  rb_hash_aset (rv, rb_str_new2 ("st_uid"), LL2NUM (r->st_uid));
+  rb_hash_aset (rv, rb_str_new2 ("st_gid"), LL2NUM (r->st_gid));
+  rb_hash_aset (rv, rb_str_new2 ("st_rdev"), LL2NUM (r->st_rdev));
+  rb_hash_aset (rv, rb_str_new2 ("st_size"), LL2NUM (r->st_size));
+  rb_hash_aset (rv, rb_str_new2 ("st_blksize"), LL2NUM (r->st_blksize));
+  rb_hash_aset (rv, rb_str_new2 ("st_blocks"), LL2NUM (r->st_blocks));
+  rb_hash_aset (rv, rb_str_new2 ("st_atime_sec"), LL2NUM (r->st_atime_sec));
+  rb_hash_aset (rv, rb_str_new2 ("st_atime_nsec"), LL2NUM (r->st_atime_nsec));
+  rb_hash_aset (rv, rb_str_new2 ("st_mtime_sec"), LL2NUM (r->st_mtime_sec));
+  rb_hash_aset (rv, rb_str_new2 ("st_mtime_nsec"), LL2NUM (r->st_mtime_nsec));
+  rb_hash_aset (rv, rb_str_new2 ("st_ctime_sec"), LL2NUM (r->st_ctime_sec));
+  rb_hash_aset (rv, rb_str_new2 ("st_ctime_nsec"), LL2NUM (r->st_ctime_nsec));
+  rb_hash_aset (rv, rb_str_new2 ("st_spare1"), LL2NUM (r->st_spare1));
+  rb_hash_aset (rv, rb_str_new2 ("st_spare2"), LL2NUM (r->st_spare2));
+  rb_hash_aset (rv, rb_str_new2 ("st_spare3"), LL2NUM (r->st_spare3));
+  rb_hash_aset (rv, rb_str_new2 ("st_spare4"), LL2NUM (r->st_spare4));
+  rb_hash_aset (rv, rb_str_new2 ("st_spare5"), LL2NUM (r->st_spare5));
+  rb_hash_aset (rv, rb_str_new2 ("st_spare6"), LL2NUM (r->st_spare6));
+  guestfs_free_statns (r);
   return rv;
 }
 
@@ -26645,6 +26871,10 @@ Init__guestfs (void)
         ruby_guestfs_lstat, 1);
   rb_define_method (c_guestfs, "lstatlist",
         ruby_guestfs_lstatlist, 2);
+  rb_define_method (c_guestfs, "lstatns",
+        ruby_guestfs_lstatns, 1);
+  rb_define_method (c_guestfs, "lstatnslist",
+        ruby_guestfs_lstatnslist, 2);
   rb_define_method (c_guestfs, "luks_add_key",
         ruby_guestfs_luks_add_key, 4);
   rb_define_method (c_guestfs, "luks_close",
@@ -26987,6 +27217,8 @@ Init__guestfs (void)
         ruby_guestfs_sleep, 1);
   rb_define_method (c_guestfs, "stat",
         ruby_guestfs_stat, 1);
+  rb_define_method (c_guestfs, "statns",
+        ruby_guestfs_statns, 1);
   rb_define_method (c_guestfs, "statvfs",
         ruby_guestfs_statvfs, 1);
   rb_define_method (c_guestfs, "strings",

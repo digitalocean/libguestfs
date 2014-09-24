@@ -280,6 +280,32 @@ namespace Guestfs
     }
 
     [StructLayout (LayoutKind.Sequential)]
+    public class _statns {
+      long st_dev;
+      long st_ino;
+      long st_mode;
+      long st_nlink;
+      long st_uid;
+      long st_gid;
+      long st_rdev;
+      long st_size;
+      long st_blksize;
+      long st_blocks;
+      long st_atime_sec;
+      long st_atime_nsec;
+      long st_mtime_sec;
+      long st_mtime_nsec;
+      long st_ctime_sec;
+      long st_ctime_nsec;
+      long st_spare1;
+      long st_spare2;
+      long st_spare3;
+      long st_spare4;
+      long st_spare5;
+      long st_spare6;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
     public class _statvfs {
       long bsize;
       long frsize;
@@ -4840,6 +4866,36 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern _statns guestfs_lstatns (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// get file information for a symbolic link
+    /// </summary>
+    public _statns lstatns (string path)
+    {
+      _statns r;
+      r = guestfs_lstatns (_handle, path);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _statns[] guestfs_lstatnslist (IntPtr h, [In] string path, [In] string[] names);
+
+    /// <summary>
+    /// lstat on multiple files
+    /// </summary>
+    public _statns[] lstatnslist (string path, string[] names)
+    {
+      _statns[] r;
+      r = guestfs_lstatnslist (_handle, path, names);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_luks_add_key (IntPtr h, [In] string device, [In] string key, [In] string newkey, int keyslot);
 
     /// <summary>
@@ -7248,6 +7304,21 @@ namespace Guestfs
     {
       _stat r;
       r = guestfs_stat (_handle, path);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _statns guestfs_statns (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// get file information
+    /// </summary>
+    public _statns statns (string path)
+    {
+      _statns r;
+      r = guestfs_statns (_handle, path);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;

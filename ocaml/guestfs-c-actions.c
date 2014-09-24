@@ -488,6 +488,60 @@ copy_stat (const struct guestfs_stat *stat)
 }
 
 static value
+copy_statns (const struct guestfs_statns *statns)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (22, 0);
+  v = caml_copy_int64 (statns->st_dev);
+  Store_field (rv, 0, v);
+  v = caml_copy_int64 (statns->st_ino);
+  Store_field (rv, 1, v);
+  v = caml_copy_int64 (statns->st_mode);
+  Store_field (rv, 2, v);
+  v = caml_copy_int64 (statns->st_nlink);
+  Store_field (rv, 3, v);
+  v = caml_copy_int64 (statns->st_uid);
+  Store_field (rv, 4, v);
+  v = caml_copy_int64 (statns->st_gid);
+  Store_field (rv, 5, v);
+  v = caml_copy_int64 (statns->st_rdev);
+  Store_field (rv, 6, v);
+  v = caml_copy_int64 (statns->st_size);
+  Store_field (rv, 7, v);
+  v = caml_copy_int64 (statns->st_blksize);
+  Store_field (rv, 8, v);
+  v = caml_copy_int64 (statns->st_blocks);
+  Store_field (rv, 9, v);
+  v = caml_copy_int64 (statns->st_atime_sec);
+  Store_field (rv, 10, v);
+  v = caml_copy_int64 (statns->st_atime_nsec);
+  Store_field (rv, 11, v);
+  v = caml_copy_int64 (statns->st_mtime_sec);
+  Store_field (rv, 12, v);
+  v = caml_copy_int64 (statns->st_mtime_nsec);
+  Store_field (rv, 13, v);
+  v = caml_copy_int64 (statns->st_ctime_sec);
+  Store_field (rv, 14, v);
+  v = caml_copy_int64 (statns->st_ctime_nsec);
+  Store_field (rv, 15, v);
+  v = caml_copy_int64 (statns->st_spare1);
+  Store_field (rv, 16, v);
+  v = caml_copy_int64 (statns->st_spare2);
+  Store_field (rv, 17, v);
+  v = caml_copy_int64 (statns->st_spare3);
+  Store_field (rv, 18, v);
+  v = caml_copy_int64 (statns->st_spare4);
+  Store_field (rv, 19, v);
+  v = caml_copy_int64 (statns->st_spare5);
+  Store_field (rv, 20, v);
+  v = caml_copy_int64 (statns->st_spare6);
+  Store_field (rv, 21, v);
+  CAMLreturn (rv);
+}
+
+static value
 copy_statvfs (const struct guestfs_statvfs *statvfs)
 {
   CAMLparam0 ();
@@ -681,6 +735,25 @@ copy_partition_list (const struct guestfs_partition_list *partitions)
     rv = caml_alloc (partitions->len, 0);
     for (i = 0; i < partitions->len; ++i) {
       v = copy_partition (&partitions->val[i]);
+      Store_field (rv, i, v);
+    }
+    CAMLreturn (rv);
+  }
+}
+
+static value
+copy_statns_list (const struct guestfs_statns_list *statnss)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+  unsigned int i;
+
+  if (statnss->len == 0)
+    CAMLreturn (Atom (0));
+  else {
+    rv = caml_alloc (statnss->len, 0);
+    for (i = 0; i < statnss->len; ++i) {
+      v = copy_statns (&statnss->val[i]);
       Store_field (rv, i, v);
     }
     CAMLreturn (rv);
@@ -11186,6 +11259,72 @@ ocaml_guestfs_lstatlist (value gv, value pathv, value namesv)
 }
 
 /* Automatically generated wrapper for function
+ * val lstatns : t -> string -> statns
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_lstatns (value gv, value pathv);
+
+value
+ocaml_guestfs_lstatns (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("lstatns");
+
+  char *path = guestfs___safe_strdup (g, String_val (pathv));
+  struct guestfs_statns *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lstatns (g, path);
+  caml_leave_blocking_section ();
+  free (path);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "lstatns");
+
+  rv = copy_statns (r);
+  guestfs_free_statns (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val lstatnslist : t -> string -> string array -> statns array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_lstatnslist (value gv, value pathv, value namesv);
+
+value
+ocaml_guestfs_lstatnslist (value gv, value pathv, value namesv)
+{
+  CAMLparam3 (gv, pathv, namesv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("lstatnslist");
+
+  char *path = guestfs___safe_strdup (g, String_val (pathv));
+  char **names = ocaml_guestfs_strings_val (g, namesv);
+  struct guestfs_statns_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lstatnslist (g, path, names);
+  caml_leave_blocking_section ();
+  free (path);
+  guestfs___free_string_list (names);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "lstatnslist");
+
+  rv = copy_statns_list (r);
+  guestfs_free_statns_list (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val luks_add_key : t -> string -> string -> string -> int -> unit
  */
 
@@ -17016,6 +17155,38 @@ ocaml_guestfs_stat (value gv, value pathv)
 
   rv = copy_stat (r);
   guestfs_free_stat (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val statns : t -> string -> statns
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_statns (value gv, value pathv);
+
+value
+ocaml_guestfs_statns (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("statns");
+
+  char *path = guestfs___safe_strdup (g, String_val (pathv));
+  struct guestfs_statns *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_statns (g, path);
+  caml_leave_blocking_section ();
+  free (path);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "statns");
+
+  rv = copy_statns (r);
+  guestfs_free_statns (r);
   CAMLreturn (rv);
 }
 

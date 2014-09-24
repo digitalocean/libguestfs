@@ -1,3 +1,443 @@
+commit 79501d1a55551bd51940844e769f589d76ad75ce
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 23 16:54:26 2014 +0100
+
+    Version 1.27.53.
+
+commit 8e0ae6560e6629f6e435147557f8e0e42ec7986c
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Tue Sep 23 17:20:34 2014 +0800
+
+    syntax-check: fix prohibit_getopt_without_use check
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 21e2b29e60d48e3a62848ac3c47041f1c4c69be5
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Tue Sep 23 17:20:32 2014 +0800
+
+    syntax-check: fix prohibit_dirent_without_use check
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 54c95ed332e015f0382fec8575a200631fdedd53
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Tue Sep 23 17:20:31 2014 +0800
+
+    syntax-check: fix prohibit_c_ctype_without_use check
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit dfa9efce4b36f41403051a8ee3e27021188d79b2
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Tue Sep 23 17:20:30 2014 +0800
+
+    syntax-check: fix prohibit_assert_without_use check
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit c9fdfe021cc13a7e3507adc65d23a84ef215e75c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 23 15:42:05 2014 +0100
+
+    v2v: -o rhev: chmod the image so we will definitely be able to write to it.
+    
+    NFS sucks.
+
+commit 0f4044b58fdc0693ce6db5925992386e3c453f23
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 23 15:36:12 2014 +0100
+
+    v2v: -o rhev: On failure path, use forking wrapper to clean up images dir.
+    
+    Otherwise you get lots of errors like:
+    
+    rm: cannot remove ‘/var/tmp/mm/42f5e571-21af-44bd-8164-3ebe6bbc9f5a/images/7b28b0e6-79ce-4d78-a6cb-769760a3d373/31e2b06b-85cb-46ed-aac3-8bcef93dc704.meta’: Permission denied
+    rm: cannot remove ‘/var/tmp/mm/42f5e571-21af-44bd-8164-3ebe6bbc9f5a/images/7b28b0e6-79ce-4d78-a6cb-769760a3d373/31e2b06b-85cb-46ed-aac3-8bcef93dc704’: Permission denied
+    
+    because the code is running as root.
+
+commit 06b04e5676eff7af7d0d667eab2f84288cb28755
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 23 15:28:28 2014 +0100
+
+    v2v: -o rhev: Use a random name when testing UID:GID mapping.
+    
+    Using a fixed name is risky if there are multiple parallel virt-v2v
+    processes running.
+
+commit ebb5de6a1f94086ccc6f21a78afebecc360dcd9d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 23 15:26:03 2014 +0100
+
+    v2v: -o rhev/vdsm: Remove the test that the storage domain is writable.
+    
+    For '-o rhev' this is likely to fail (although for obscure reasons it
+    *doesn't* fail on a real RHEV server, I don't quite understand why).
+    The reason is because virt-v2v may be running as root, and with root
+    squashing we don't have permissions to write into the storage domain
+    directory.
+    
+    For '-o vdsm', VDSM is supposed to make sure we are running as the
+    correct user, so there's no reason to doubt things will work.
+
+commit 44e523d9cb8f357d1c60fa530cc90fa7d89ef6c1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 23 13:49:03 2014 +0100
+
+    valgrind: Add suppression for another libvirt/selinux leak.
+
+commit 02c220a6f189de0d901f16a2f09778c47aeff3ea
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 23 12:47:40 2014 +0100
+
+    v2v: Disable valgrind tests that are confused by -o rhev forking.
+    
+    This updates commit 0dfa96c043cee4ce82c0a45c3ad09b0a61798b79.
+
+commit d1145f20cbba96dab728b04e50a4cb074193ee89
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 23 12:22:26 2014 +0100
+
+    v2v: Add -o qemu output mode and --qemu-boot flag.
+    
+    This lets you write a shell script that runs the guest under qemu.
+    Specifying the --qemu-boot flag also boots the guest after conversion.
+
+commit 91c1f58e21fd61dcf38e6d30bf4c59d27432f11d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 23 11:52:00 2014 +0100
+
+    v2v: docs: Change examples so -i input comes before -o options.
+    
+    Make the input/output ordering of command line arguments clearer by
+    changing:
+    
+     virt-v2v -i disk -o local -os /var/tmp disk.img
+    
+    to:
+    
+     virt-v2v -i disk disk.img -o local -os /var/tmp
+
+commit 8cb30d1027435c47e2c762dc997897c3b2e2cac2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 23 15:03:55 2014 +0200
+
+    configure: switch from "java-default-runtime" to "default"
+    
+    Archlinux switched to "default" as directory for the default JDK
+    version.
+
+commit 316c91c140c9994d47fd7950de742afeef162f95
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 23 15:01:53 2014 +0200
+
+    inspect: map Hurd devices, and enable fstab introspection
+    
+    Add a mapping for the Hurd device names, so it is possible to enable the
+    inspection of /etc/fstab.
+
+commit 5b65d05d5a31415aaa6f284f73da745e0ee0408a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Sep 22 19:48:41 2014 +0200
+
+    inspect: basic Minix support
+    
+    Add a basic support for identifying Minix, extracting its version and
+    hostname.
+    
+    Related to RHBZ#1144137.
+
+commit 0035a57dd196e99db9e40582df8f1a39af9fa143
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 22 22:41:33 2014 +0100
+
+    Version 1.27.52.
+
+commit 0dfa96c043cee4ce82c0a45c3ad09b0a61798b79
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 22 21:57:57 2014 +0100
+
+    v2v: -o rhev: Write files and directories as user:group 36:36 (RHBZ#1143887).
+    
+    We need to write files and directories as user:group 36:36, else
+    RHEV-M cannot import the VM.  Doing this in the presence of NFS is
+    difficult.  See v2v/kvmuid.mli for how it is done in this commit.
+
+commit c9c5353223b09d0010bae503383cd0ed8c07fc43
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 22 22:10:44 2014 +0100
+
+    v2v: Allow the output mode to override disk_create.
+    
+    Also we allow the output mode to actually create the disk image.  This
+    lets the output mode set ownership and permissions correctly if
+    required.
+    
+    The default method just calls Guestfs#disk_create, so there is no
+    actual change in this commit.
+
+commit 15556b614d5125cedb55d79a793e027a01e5fe67
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 22 19:31:37 2014 +0100
+
+    v2v: lib_ovf: Change create_meta_files so it doesn't write the files.
+    
+    Change Lib_ovf.create_meta_files so that instead of writing the
+    .meta files, it just returns the content.  Output_rhev and
+    Output_vdsm are correspondingly changed so that they write the
+    content to the .meta files.
+    
+    This is just code refactoring, there is no functional change.
+
+commit 6d09ff3600019617ccece59597c4d7d75ef84c4f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 22 18:28:07 2014 +0100
+
+    Version 1.27.51.
+
+commit 7b428603e3a6dc43c48e276b192fda05a4a50a13
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 22 18:25:51 2014 +0100
+
+    v2v: Windows: Uploading viostor driver needs upload method, not copy.
+    
+    Thanks: Jeff Forbes
+
+commit 1b12c6d46b7315f668da320db93c407a32ee8049
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 22 18:25:26 2014 +0100
+
+    fuse: Remove test-fuse.sh (rewritten script) from EXTRA_DIST.
+    
+    This fixes commit aca076e2e2b3e03f4cf5b09cf7766925f97e4b68.
+
+commit 1b9b4af7246c98c426801310bc61457c8872a8e9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 22 18:13:34 2014 +0100
+
+    Revert "v2v: -o rhev: Chown the image files and metadata after the upload."
+    
+    This reverts commit dd58cde929ade2dd6bc216aac21658ed3b3f51aa.
+
+commit 2e3e254e959f97ef967c6d3f89b1952f6282d034
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 22 18:13:22 2014 +0100
+
+    Revert "v2v: -o rhev: Use chown --reference instead of 36.36 (RHBZ#1143887)."
+    
+    This reverts commit 70444670acc60c5700bcd07ea7440d186eb4b60c.
+
+commit cd86bc510006fce668fe212b35ee19b5c3fdcb68
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Mon Sep 22 15:47:35 2014 +0800
+
+    resize: simplify the code to filter parts
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit cee9a4993d4435b57aa233b7b678a9b7cc5c1d53
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 22 16:44:19 2014 +0100
+
+    v2v: For grub legacy, edit grub config file instead of using grubby (RHBZ#1141145).
+    
+    The old virt-v2v code would either edit the grub config file (grub
+    legacy) or use grubby --set-default (grub2).
+    
+    When translating this code, I figured we could use grubby in both
+    cases, since grubby exists for grub legacy guests.
+    
+    However it doesn't appear to work for grub legacy guests.  Use the
+    configuration file editing method for these, same as old virt-v2v.
+    
+    Thanks: Tingting Zheng
+
+commit 58eaf258c143c0b8321d8b7cbc9b96e73e82536f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 22 13:57:02 2014 +0100
+
+    fuse: Enable futimens test (RHBZ#1144766).
+
+commit 8664337cc39c8575ccb60abb8c6e30f92828ea51
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 22 10:27:21 2014 +0100
+
+    New APIs: Implement stat calls that return nanosecond timestamps (RHBZ#1144891).
+    
+    The existing APIs guestfs_stat, guestfs_lstat and guestfs_lstatlist
+    return a stat structure that contains atime, mtime and ctime fields
+    that store only the timestamp in seconds.
+    
+    Modern filesystems can store timestamps down to nanosecond
+    granularity, and the ordinary glibc stat(2) wrapper will return these
+    in "hidden" stat fields:
+    
+      struct timespec st_atim;            /* Time of last access.  */
+      struct timespec st_mtim;            /* Time of last modification.  */
+      struct timespec st_ctim;            /* Time of last status change.  */
+    
+    with the following macros defined for backwards compatibility:
+    
+      #define st_atime st_atim.tv_sec
+      #define st_mtime st_mtim.tv_sec
+      #define st_ctime st_ctim.tv_sec
+    
+    It is not possible to redefine guestfs_stat to return a longer struct
+    guestfs_stat with room for the extra nanosecond fields, because that
+    would break the ABI of guestfs_lstatlist as it returns an array
+    containing consecutive stat structs (not pointers).  Changing the
+    return type of guestfs_stat would break API.  Changing the generator
+    to support symbol versioning is judged to be too intrusive.
+    
+    Therefore this adds a new struct (guestfs_statns) and new APIs:
+    
+      guestfs_statns
+      guestfs_lstatns
+      guestfs_lstatnslist
+    
+    which return the new struct (or array of structs in the last case).
+    
+    The old APIs may of course still be used, forever, but are deprecated
+    and shouldn't be used in new programs.
+    
+    Because virt tools are compiled with -DGUESTFS_WARN_DEPRECATED=1, I
+    have updated all the places calling the deprecated functions.  This
+    has revealed some areas for improvement: in particular virt-diff and
+    virt-ls could be changed to print the nanosecond fields.
+    
+    FUSE now returns nanoseconds in stat calls where available, fixing
+    https://bugzilla.redhat.com/show_bug.cgi?id=1144891
+    
+    Notes about the implementation:
+    
+    - guestfs_internal_lstatlist has been removed and replaced by
+      guestfs_internal_lstatnslist.  As the former was an internal API no
+      one should have been calling it, or indeed can call it unless they
+      start defining their own header files.
+    
+    - guestfs_stat and guestfs_lstat have been changed into library-side
+      functions.  They, along with guestfs_lstatlist, are now implemented
+      as wrappers around the new functions which just throw away the
+      nanosecond fields.
+
+commit aca076e2e2b3e03f4cf5b09cf7766925f97e4b68
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Sep 21 21:40:13 2014 +0100
+
+    fuse: Rewrite test-fuse.sh in C.
+    
+    This gives us finer control over how system calls are done,
+    and also potentially lets us test more.
+    
+    Currently two tests are disabled:
+    
+     - utimens because of https://bugzilla.redhat.com/show_bug.cgi?id=1144766
+    
+     - utimes because our stat call does not return the nanosecond fields
+
+commit 5bb26dcd3c6be56b432c6bdc545968d8722af486
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 20 14:48:17 2014 +0100
+
+    tests/data: Remove abssymlink.
+    
+    This file causes the test ISO to be rebuilt every time.
+    
+    Instead of including it as a Makefile dependency, create it just
+    before making the ISO, which has the same effect.
+    
+    A test in fish/ also used this file.  Change it so it doesn't need it.
+
+commit 5fa568f686e802e91b939cb53699c5bf568ee71a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 20 13:10:19 2014 +0100
+
+    tests/guests: Don't calculate checksums of generated images.
+    
+    Turns out not to be useful, and takes a long time.
+    
+    This reverts commit 0c605eb94f20cb08e4a858988e0da121af6f66cb.
+
+commit cd9c0fc9a4b0069528b9f157b589acccba931e1e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 20 11:38:39 2014 +0100
+
+    v2v: Move mpstat type definition.
+    
+    It's only used by the core v2v.ml code, so move it to that file.
+    
+    This is just code motion.
+
+commit eed49ac8971e1bbf95e089203e14b6fb7c6a731a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 20 10:11:25 2014 +0100
+
+    v2v: Move target actual size computation into core v2v.ml code.
+    
+    This was only calculated for RHEV, but might benefit other output
+    modes in future, and is generic code, so move it into the core code.
+
+commit c1a32f5c11bd3c5b43c700927f40e5f4b1aeabb5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 20 10:13:13 2014 +0100
+
+    v2v: Clarify description of ov_sd field in comment.
+
+commit 0869f579fd4373f9270128cebc9f35777f7022da
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 20 09:03:36 2014 +0100
+
+    aarch64: Add support to file_architecture API.
+    
+    Add support for aarch64 to the file_architecture API, so we can
+    detect aarch64 guests correctly.
+    
+    Add a test binary and library.  These were generated on an aarch64
+    machine by doing:
+    
+      echo 'main(){}' > bin.c
+      gcc bin.c -o bin-aarch64-dynamic
+      strip --strip-all bin-aarch64-dynamic
+      echo '' > lib.c
+      gcc -shared lib.c -o lib-aarch64.so
+      strip --strip-all lib-aarch64.so
+
+commit f61832b17aba2b9bf52899cf79b1a602f65a2968
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 20 08:53:38 2014 +0100
+
+    v2v: Remove source.s_arch field and find architecture through inspection.
+    
+    Previously we required that the source hypervisor knew the
+    architecture of the guest, and passed that through to KVM.
+    
+    However this was error-prone for several reasons:
+    
+     - OVF (-i ova) doesn't define the architecture
+    
+     - Disk images (-i disk) don't have an associated architecture
+    
+     - Libvirt XML sometimes lacks the <type arch=...> field, especially
+       for RHEL 5-era libvirt.
+    
+     - It might not be set correctly for the guest.
+    
+    We know the real architecture from inspection of the guest, so use
+    that instead.
+
+commit 95b7e716ca4aa3e4cc6c33c11c722ad026712413
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Sep 20 08:12:41 2014 +0100
+
+    v2v: Fix typo in comment.
+
+commit a36dde98899ea160a49c9af65a883383496cd331
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Fri Sep 19 18:55:50 2014 +0200
+
+    appliance: Add libsystemd0 (and systemd as an alternative for sysvinit) on Debian-based systems
+
 commit b2a1d4ce45a5a8a2a857de699b407413591ce875
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Sep 19 14:52:16 2014 +0100

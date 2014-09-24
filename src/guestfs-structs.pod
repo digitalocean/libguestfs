@@ -187,6 +187,47 @@ libguestfs generated file
  void guestfs_free_stat (struct guestfs_stat *);
  void guestfs_free_stat_list (struct guestfs_stat_list *);
 
+=head2 guestfs_statns
+
+ struct guestfs_statns {
+   int64_t st_dev;
+   int64_t st_ino;
+   int64_t st_mode;
+   int64_t st_nlink;
+   int64_t st_uid;
+   int64_t st_gid;
+   int64_t st_rdev;
+   int64_t st_size;
+   int64_t st_blksize;
+   int64_t st_blocks;
+   int64_t st_atime_sec;
+   int64_t st_atime_nsec;
+   int64_t st_mtime_sec;
+   int64_t st_mtime_nsec;
+   int64_t st_ctime_sec;
+   int64_t st_ctime_nsec;
+   int64_t st_spare1;
+   int64_t st_spare2;
+   int64_t st_spare3;
+   int64_t st_spare4;
+   int64_t st_spare5;
+   int64_t st_spare6;
+ };
+ 
+ struct guestfs_statns_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_statns *val; /* Elements. */
+ };
+
+ int guestfs_compare_statns (const struct guestfs_statns *, const struct guestfs_statns *);
+ int guestfs_compare_statns_list (const struct guestfs_statns_list *, const struct guestfs_statns_list *);
+ 
+ struct guestfs_statns *guestfs_copy_statns (const struct guestfs_statns *);
+ struct guestfs_statns_list *guestfs_copy_statns_list (const struct guestfs_statns_list *);
+ 
+ void guestfs_free_statns (struct guestfs_statns *);
+ void guestfs_free_statns_list (struct guestfs_statns_list *);
+
 =head2 guestfs_statvfs
 
  struct guestfs_statvfs {
