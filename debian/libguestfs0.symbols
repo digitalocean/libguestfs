@@ -116,6 +116,8 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_compare_partition_list@Base 1:1.25.16
  guestfs_compare_stat@Base 1:1.25.16
  guestfs_compare_stat_list@Base 1:1.25.16
+ guestfs_compare_statns@Base 1:1.27.51
+ guestfs_compare_statns_list@Base 1:1.27.51
  guestfs_compare_statvfs@Base 1:1.25.16
  guestfs_compare_statvfs_list@Base 1:1.25.16
  guestfs_compare_utsname@Base 1:1.25.16
@@ -181,6 +183,8 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_copy_size@Base 1.10
  guestfs_copy_stat@Base 1:1.25.16
  guestfs_copy_stat_list@Base 1:1.25.16
+ guestfs_copy_statns@Base 1:1.27.51
+ guestfs_copy_statns_list@Base 1:1.27.51
  guestfs_copy_statvfs@Base 1:1.25.16
  guestfs_copy_statvfs_list@Base 1:1.25.16
  guestfs_copy_utsname@Base 1:1.25.16
@@ -278,6 +282,8 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_free_partition_list@Base 1.10
  guestfs_free_stat@Base 1.10
  guestfs_free_stat_list@Base 1.10
+ guestfs_free_statns@Base 1:1.27.51
+ guestfs_free_statns_list@Base 1:1.27.51
  guestfs_free_statvfs@Base 1.10
  guestfs_free_statvfs_list@Base 1.10
  guestfs_free_utsname@Base 1:1.20
@@ -393,53 +399,54 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_inspect_list_applications2@Base 1:1.20
  guestfs_inspect_list_applications@Base 1.10
  guestfs_inspect_os@Base 1.10
- guestfs_internal_autosync@Base 1.10
- guestfs_internal_exit@Base 1:1.23.30
- guestfs_internal_hot_add_drive@Base 1:1.20
- guestfs_internal_hot_remove_drive@Base 1:1.20
- guestfs_internal_hot_remove_drive_precheck@Base 1:1.20
- guestfs_internal_journal_get@Base 1:1.23.11
- guestfs_internal_lstatlist@Base 1:1.20
- guestfs_internal_lxattrlist@Base 1:1.20
- guestfs_internal_parse_mountable@Base 1:1.22
- guestfs_internal_readlinklist@Base 1:1.20
- guestfs_internal_rhbz914931@Base 1:1.22
- guestfs_internal_test@Base 1:1.20
- guestfs_internal_test_63_optargs@Base 1:1.20
- guestfs_internal_test_63_optargs_argv@Base 1:1.20
- guestfs_internal_test_63_optargs_va@Base 1:1.20
- guestfs_internal_test_argv@Base 1:1.20
- guestfs_internal_test_close_output@Base 1:1.20
- guestfs_internal_test_only_optargs@Base 1:1.20
- guestfs_internal_test_only_optargs_argv@Base 1:1.20
- guestfs_internal_test_only_optargs_va@Base 1:1.20
- guestfs_internal_test_rbool@Base 1:1.20
- guestfs_internal_test_rboolerr@Base 1:1.20
- guestfs_internal_test_rbufferout@Base 1:1.20
- guestfs_internal_test_rbufferouterr@Base 1:1.20
- guestfs_internal_test_rconstoptstring@Base 1:1.20
- guestfs_internal_test_rconstoptstringerr@Base 1:1.20
- guestfs_internal_test_rconststring@Base 1:1.20
- guestfs_internal_test_rconststringerr@Base 1:1.20
- guestfs_internal_test_rhashtable@Base 1:1.20
- guestfs_internal_test_rhashtableerr@Base 1:1.20
- guestfs_internal_test_rint64@Base 1:1.20
- guestfs_internal_test_rint64err@Base 1:1.20
- guestfs_internal_test_rint@Base 1:1.20
- guestfs_internal_test_rinterr@Base 1:1.20
- guestfs_internal_test_rstring@Base 1:1.20
- guestfs_internal_test_rstringerr@Base 1:1.20
- guestfs_internal_test_rstringlist@Base 1:1.20
- guestfs_internal_test_rstringlisterr@Base 1:1.20
- guestfs_internal_test_rstruct@Base 1:1.20
- guestfs_internal_test_rstructerr@Base 1:1.20
- guestfs_internal_test_rstructlist@Base 1:1.20
- guestfs_internal_test_rstructlisterr@Base 1:1.20
- guestfs_internal_test_set_output@Base 1:1.20
- guestfs_internal_test_va@Base 1:1.20
- guestfs_internal_upload@Base 1:1.23.29
- guestfs_internal_write@Base 1:1.20
- guestfs_internal_write_append@Base 1:1.20
+ (optional)guestfs_internal_autosync@Base 1.10
+ (optional)guestfs_internal_exit@Base 1:1.23.30
+ (optional)guestfs_internal_hot_add_drive@Base 1:1.20
+ (optional)guestfs_internal_hot_remove_drive@Base 1:1.20
+ (optional)guestfs_internal_hot_remove_drive_precheck@Base 1:1.20
+ (optional)guestfs_internal_journal_get@Base 1:1.23.11
+ (optional)guestfs_internal_lstatlist@Base 1:1.20
+ (optional)guestfs_internal_lstatnslist@Base 1:1.27.51
+ (optional)guestfs_internal_lxattrlist@Base 1:1.20
+ (optional)guestfs_internal_parse_mountable@Base 1:1.22
+ (optional)guestfs_internal_readlinklist@Base 1:1.20
+ (optional)guestfs_internal_rhbz914931@Base 1:1.22
+ (optional)guestfs_internal_test@Base 1:1.20
+ (optional)guestfs_internal_test_63_optargs@Base 1:1.20
+ (optional)guestfs_internal_test_63_optargs_argv@Base 1:1.20
+ (optional)guestfs_internal_test_63_optargs_va@Base 1:1.20
+ (optional)guestfs_internal_test_argv@Base 1:1.20
+ (optional)guestfs_internal_test_close_output@Base 1:1.20
+ (optional)guestfs_internal_test_only_optargs@Base 1:1.20
+ (optional)guestfs_internal_test_only_optargs_argv@Base 1:1.20
+ (optional)guestfs_internal_test_only_optargs_va@Base 1:1.20
+ (optional)guestfs_internal_test_rbool@Base 1:1.20
+ (optional)guestfs_internal_test_rboolerr@Base 1:1.20
+ (optional)guestfs_internal_test_rbufferout@Base 1:1.20
+ (optional)guestfs_internal_test_rbufferouterr@Base 1:1.20
+ (optional)guestfs_internal_test_rconstoptstring@Base 1:1.20
+ (optional)guestfs_internal_test_rconstoptstringerr@Base 1:1.20
+ (optional)guestfs_internal_test_rconststring@Base 1:1.20
+ (optional)guestfs_internal_test_rconststringerr@Base 1:1.20
+ (optional)guestfs_internal_test_rhashtable@Base 1:1.20
+ (optional)guestfs_internal_test_rhashtableerr@Base 1:1.20
+ (optional)guestfs_internal_test_rint64@Base 1:1.20
+ (optional)guestfs_internal_test_rint64err@Base 1:1.20
+ (optional)guestfs_internal_test_rint@Base 1:1.20
+ (optional)guestfs_internal_test_rinterr@Base 1:1.20
+ (optional)guestfs_internal_test_rstring@Base 1:1.20
+ (optional)guestfs_internal_test_rstringerr@Base 1:1.20
+ (optional)guestfs_internal_test_rstringlist@Base 1:1.20
+ (optional)guestfs_internal_test_rstringlisterr@Base 1:1.20
+ (optional)guestfs_internal_test_rstruct@Base 1:1.20
+ (optional)guestfs_internal_test_rstructerr@Base 1:1.20
+ (optional)guestfs_internal_test_rstructlist@Base 1:1.20
+ (optional)guestfs_internal_test_rstructlisterr@Base 1:1.20
+ (optional)guestfs_internal_test_set_output@Base 1:1.20
+ (optional)guestfs_internal_test_va@Base 1:1.20
+ (optional)guestfs_internal_upload@Base 1:1.23.29
+ (optional)guestfs_internal_write@Base 1:1.20
+ (optional)guestfs_internal_write_append@Base 1:1.20
  guestfs_is_blockdev@Base 1.10
  guestfs_is_blockdev_opts@Base 1:1.22
  guestfs_is_blockdev_opts_argv@Base 1:1.22
@@ -521,6 +528,8 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_lsetxattr@Base 1.10
  guestfs_lstat@Base 1.10
  guestfs_lstatlist@Base 1.10
+ guestfs_lstatns@Base 1:1.27.51
+ guestfs_lstatnslist@Base 1:1.27.51
  guestfs_luks_add_key@Base 1.10
  guestfs_luks_close@Base 1.10
  guestfs_luks_format@Base 1.10
@@ -736,6 +745,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_shutdown@Base 1:1.18
  guestfs_sleep@Base 1.10
  guestfs_stat@Base 1.10
+ guestfs_statns@Base 1:1.27.51
  guestfs_statvfs@Base 1.10
  guestfs_strings@Base 1.10
  guestfs_strings_e@Base 1.10
