@@ -138,6 +138,8 @@
         guestfs_compare_partition_list;
         guestfs_compare_stat;
         guestfs_compare_stat_list;
+        guestfs_compare_statns;
+        guestfs_compare_statns_list;
         guestfs_compare_statvfs;
         guestfs_compare_statvfs_list;
         guestfs_compare_utsname;
@@ -203,6 +205,8 @@
         guestfs_copy_size;
         guestfs_copy_stat;
         guestfs_copy_stat_list;
+        guestfs_copy_statns;
+        guestfs_copy_statns_list;
         guestfs_copy_statvfs;
         guestfs_copy_statvfs_list;
         guestfs_copy_utsname;
@@ -300,6 +304,8 @@
         guestfs_free_partition_list;
         guestfs_free_stat;
         guestfs_free_stat_list;
+        guestfs_free_statns;
+        guestfs_free_statns_list;
         guestfs_free_statvfs;
         guestfs_free_statvfs_list;
         guestfs_free_utsname;
@@ -421,7 +427,7 @@
         guestfs_internal_hot_remove_drive;
         guestfs_internal_hot_remove_drive_precheck;
         guestfs_internal_journal_get;
-        guestfs_internal_lstatlist;
+        guestfs_internal_lstatnslist;
         guestfs_internal_lxattrlist;
         guestfs_internal_parse_mountable;
         guestfs_internal_readlinklist;
@@ -543,6 +549,8 @@
         guestfs_lsetxattr;
         guestfs_lstat;
         guestfs_lstatlist;
+        guestfs_lstatns;
+        guestfs_lstatnslist;
         guestfs_luks_add_key;
         guestfs_luks_close;
         guestfs_luks_format;
@@ -758,6 +766,7 @@
         guestfs_shutdown;
         guestfs_sleep;
         guestfs_stat;
+        guestfs_statns;
         guestfs_statvfs;
         guestfs_strings;
         guestfs_strings_e;

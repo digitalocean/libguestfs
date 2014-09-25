@@ -3548,6 +3548,29 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_lstatns ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_lstatnslist ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@names: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_luks_add_key ##### -->
 <para>
 
@@ -5518,6 +5541,17 @@ GuestfsSession
 
 
 <!-- ##### FUNCTION guestfs_session_stat ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_statns ##### -->
 <para>
 
 </para>

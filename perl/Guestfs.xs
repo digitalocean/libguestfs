@@ -5958,6 +5958,106 @@ PREINIT:
       guestfs_free_stat_list (r);
 
 void
+lstatns (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      struct guestfs_statns *r;
+ PPCODE:
+      r = guestfs_lstatns (g, path);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, 2 * 22);
+      PUSHs (sv_2mortal (newSVpv ("st_dev", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_dev)));
+      PUSHs (sv_2mortal (newSVpv ("st_ino", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_ino)));
+      PUSHs (sv_2mortal (newSVpv ("st_mode", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_mode)));
+      PUSHs (sv_2mortal (newSVpv ("st_nlink", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_nlink)));
+      PUSHs (sv_2mortal (newSVpv ("st_uid", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_uid)));
+      PUSHs (sv_2mortal (newSVpv ("st_gid", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_gid)));
+      PUSHs (sv_2mortal (newSVpv ("st_rdev", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_rdev)));
+      PUSHs (sv_2mortal (newSVpv ("st_size", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_size)));
+      PUSHs (sv_2mortal (newSVpv ("st_blksize", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_blksize)));
+      PUSHs (sv_2mortal (newSVpv ("st_blocks", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_blocks)));
+      PUSHs (sv_2mortal (newSVpv ("st_atime_sec", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_atime_sec)));
+      PUSHs (sv_2mortal (newSVpv ("st_atime_nsec", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_atime_nsec)));
+      PUSHs (sv_2mortal (newSVpv ("st_mtime_sec", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_mtime_sec)));
+      PUSHs (sv_2mortal (newSVpv ("st_mtime_nsec", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_mtime_nsec)));
+      PUSHs (sv_2mortal (newSVpv ("st_ctime_sec", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_ctime_sec)));
+      PUSHs (sv_2mortal (newSVpv ("st_ctime_nsec", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_ctime_nsec)));
+      PUSHs (sv_2mortal (newSVpv ("st_spare1", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_spare1)));
+      PUSHs (sv_2mortal (newSVpv ("st_spare2", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_spare2)));
+      PUSHs (sv_2mortal (newSVpv ("st_spare3", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_spare3)));
+      PUSHs (sv_2mortal (newSVpv ("st_spare4", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_spare4)));
+      PUSHs (sv_2mortal (newSVpv ("st_spare5", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_spare5)));
+      PUSHs (sv_2mortal (newSVpv ("st_spare6", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_spare6)));
+      free (r);
+
+void
+lstatnslist (g, path, names)
+      guestfs_h *g;
+      char *path;
+      char **names;
+PREINIT:
+      struct guestfs_statns_list *r;
+      size_t i;
+      HV *hv;
+ PPCODE:
+      r = guestfs_lstatnslist (g, path, names);
+      free (names);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
+        hv = newHV ();
+        (void) hv_store (hv, "st_dev", 6, my_newSVll (r->val[i].st_dev), 0);
+        (void) hv_store (hv, "st_ino", 6, my_newSVll (r->val[i].st_ino), 0);
+        (void) hv_store (hv, "st_mode", 7, my_newSVll (r->val[i].st_mode), 0);
+        (void) hv_store (hv, "st_nlink", 8, my_newSVll (r->val[i].st_nlink), 0);
+        (void) hv_store (hv, "st_uid", 6, my_newSVll (r->val[i].st_uid), 0);
+        (void) hv_store (hv, "st_gid", 6, my_newSVll (r->val[i].st_gid), 0);
+        (void) hv_store (hv, "st_rdev", 7, my_newSVll (r->val[i].st_rdev), 0);
+        (void) hv_store (hv, "st_size", 7, my_newSVll (r->val[i].st_size), 0);
+        (void) hv_store (hv, "st_blksize", 10, my_newSVll (r->val[i].st_blksize), 0);
+        (void) hv_store (hv, "st_blocks", 9, my_newSVll (r->val[i].st_blocks), 0);
+        (void) hv_store (hv, "st_atime_sec", 12, my_newSVll (r->val[i].st_atime_sec), 0);
+        (void) hv_store (hv, "st_atime_nsec", 13, my_newSVll (r->val[i].st_atime_nsec), 0);
+        (void) hv_store (hv, "st_mtime_sec", 12, my_newSVll (r->val[i].st_mtime_sec), 0);
+        (void) hv_store (hv, "st_mtime_nsec", 13, my_newSVll (r->val[i].st_mtime_nsec), 0);
+        (void) hv_store (hv, "st_ctime_sec", 12, my_newSVll (r->val[i].st_ctime_sec), 0);
+        (void) hv_store (hv, "st_ctime_nsec", 13, my_newSVll (r->val[i].st_ctime_nsec), 0);
+        (void) hv_store (hv, "st_spare1", 9, my_newSVll (r->val[i].st_spare1), 0);
+        (void) hv_store (hv, "st_spare2", 9, my_newSVll (r->val[i].st_spare2), 0);
+        (void) hv_store (hv, "st_spare3", 9, my_newSVll (r->val[i].st_spare3), 0);
+        (void) hv_store (hv, "st_spare4", 9, my_newSVll (r->val[i].st_spare4), 0);
+        (void) hv_store (hv, "st_spare5", 9, my_newSVll (r->val[i].st_spare5), 0);
+        (void) hv_store (hv, "st_spare6", 9, my_newSVll (r->val[i].st_spare6), 0);
+        PUSHs (sv_2mortal (newRV ((SV *) hv)));
+      }
+      guestfs_free_statns_list (r);
+
+void
 luks_add_key (g, device, key, newkey, keyslot)
       guestfs_h *g;
       char *device;
@@ -8792,6 +8892,63 @@ PREINIT:
       PUSHs (sv_2mortal (my_newSVll (r->mtime)));
       PUSHs (sv_2mortal (newSVpv ("ctime", 0)));
       PUSHs (sv_2mortal (my_newSVll (r->ctime)));
+      free (r);
+
+void
+statns (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      struct guestfs_statns *r;
+ PPCODE:
+      r = guestfs_statns (g, path);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, 2 * 22);
+      PUSHs (sv_2mortal (newSVpv ("st_dev", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_dev)));
+      PUSHs (sv_2mortal (newSVpv ("st_ino", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_ino)));
+      PUSHs (sv_2mortal (newSVpv ("st_mode", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_mode)));
+      PUSHs (sv_2mortal (newSVpv ("st_nlink", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_nlink)));
+      PUSHs (sv_2mortal (newSVpv ("st_uid", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_uid)));
+      PUSHs (sv_2mortal (newSVpv ("st_gid", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_gid)));
+      PUSHs (sv_2mortal (newSVpv ("st_rdev", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_rdev)));
+      PUSHs (sv_2mortal (newSVpv ("st_size", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_size)));
+      PUSHs (sv_2mortal (newSVpv ("st_blksize", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_blksize)));
+      PUSHs (sv_2mortal (newSVpv ("st_blocks", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_blocks)));
+      PUSHs (sv_2mortal (newSVpv ("st_atime_sec", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_atime_sec)));
+      PUSHs (sv_2mortal (newSVpv ("st_atime_nsec", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_atime_nsec)));
+      PUSHs (sv_2mortal (newSVpv ("st_mtime_sec", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_mtime_sec)));
+      PUSHs (sv_2mortal (newSVpv ("st_mtime_nsec", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_mtime_nsec)));
+      PUSHs (sv_2mortal (newSVpv ("st_ctime_sec", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_ctime_sec)));
+      PUSHs (sv_2mortal (newSVpv ("st_ctime_nsec", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_ctime_nsec)));
+      PUSHs (sv_2mortal (newSVpv ("st_spare1", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_spare1)));
+      PUSHs (sv_2mortal (newSVpv ("st_spare2", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_spare2)));
+      PUSHs (sv_2mortal (newSVpv ("st_spare3", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_spare3)));
+      PUSHs (sv_2mortal (newSVpv ("st_spare4", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_spare4)));
+      PUSHs (sv_2mortal (newSVpv ("st_spare5", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_spare5)));
+      PUSHs (sv_2mortal (newSVpv ("st_spare6", 0)));
+      PUSHs (sv_2mortal (my_newSVll (r->st_spare6)));
       free (r);
 
 void

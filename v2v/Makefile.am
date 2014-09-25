@@ -37,6 +37,7 @@ SOURCES_MLI = \
 	input_libvirtxml.mli \
 	input_ova.mli \
 	JSON.mli \
+	kvmuid.mli \
 	lib_esx.mli \
 	lib_linux.mli \
 	lib_ovf.mli \
@@ -46,6 +47,7 @@ SOURCES_MLI = \
 	output_libvirt.mli \
 	output_local.mli \
 	output_null.mli \
+	output_qemu.mli \
 	output_rhev.mli \
 	output_vdsm.mli \
 	stringMap.mli \
@@ -60,6 +62,7 @@ SOURCES_ML = \
 	domainxml.ml \
 	DOM.ml \
 	JSON.ml \
+	kvmuid.ml \
 	lib_esx.ml \
 	lib_xen.ml \
 	lib_ovf.ml \
@@ -75,6 +78,7 @@ SOURCES_ML = \
 	output_glance.ml \
 	output_libvirt.ml \
 	output_local.ml \
+	output_qemu.ml \
 	output_rhev.ml \
 	output_vdsm.ml \
 	cmdline.ml \
@@ -88,9 +92,10 @@ SOURCES_C = \
 	$(top_builddir)/mllib/mkdtemp-c.c \
 	$(top_builddir)/customize/crypt-c.c \
 	$(top_builddir)/customize/perl_edit-c.c \
+	domainxml-c.c \
+	kvmuid-c.c \
 	utils-c.c \
-	xml-c.c \
-	domainxml-c.c
+	xml-c.c
 
 if HAVE_OCAML
 
@@ -219,6 +224,7 @@ TESTS = \
 	test-v2v-o-glance.sh \
 	test-v2v-o-libvirt.sh \
 	test-v2v-o-null.sh \
+	test-v2v-o-qemu.sh \
 	test-v2v-o-rhev.sh \
 	test-v2v-o-vdsm-options.sh \
 	test-v2v-of-option.sh \

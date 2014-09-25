@@ -333,6 +333,8 @@
 -export([lsetxattr/5]).
 -export([lstat/2]).
 -export([lstatlist/3]).
+-export([lstatns/2]).
+-export([lstatnslist/3]).
 -export([luks_add_key/5]).
 -export([luks_close/2]).
 -export([luks_format/4]).
@@ -504,6 +506,7 @@
 -export([shutdown/1]).
 -export([sleep/2]).
 -export([stat/2]).
+-export([statns/2]).
 -export([statvfs/2]).
 -export([strings/2]).
 -export([strings_e/3]).
@@ -1616,6 +1619,12 @@ lstat(G, Path) ->
 lstatlist(G, Path, Names) ->
   call_port(G, {lstatlist, Path, Names}).
 
+lstatns(G, Path) ->
+  call_port(G, {lstatns, Path}).
+
+lstatnslist(G, Path, Names) ->
+  call_port(G, {lstatnslist, Path, Names}).
+
 luks_add_key(G, Device, Key, Newkey, Keyslot) ->
   call_port(G, {luks_add_key, Device, Key, Newkey, Keyslot}).
 
@@ -2163,6 +2172,9 @@ sleep(G, Secs) ->
 
 stat(G, Path) ->
   call_port(G, {stat, Path}).
+
+statns(G, Path) ->
+  call_port(G, {statns, Path}).
 
 statvfs(G, Path) ->
   call_port(G, {statvfs, Path}).

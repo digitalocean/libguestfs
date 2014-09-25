@@ -2487,6 +2487,22 @@ JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1lstatlist
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _lstatns
+ * Signature: (JLjava/lang/String;)Lcom/redhat/et/libguestfs/StatNS;
+ */
+JNIEXPORT jobject JNICALL Java_com_redhat_et_libguestfs_GuestFS__1lstatns
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _lstatnslist
+ * Signature: (JLjava/lang/String;[Ljava/lang/String;)[Lcom/redhat/et/libguestfs/StatNS;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1lstatnslist
+  (JNIEnv *, jobject, jlong, jstring, jobjectArray);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _luks_add_key
  * Signature: (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V
  */
@@ -3827,6 +3843,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1sleep
  * Signature: (JLjava/lang/String;)Lcom/redhat/et/libguestfs/Stat;
  */
 JNIEXPORT jobject JNICALL Java_com_redhat_et_libguestfs_GuestFS__1stat
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _statns
+ * Signature: (JLjava/lang/String;)Lcom/redhat/et/libguestfs/StatNS;
+ */
+JNIEXPORT jobject JNICALL Java_com_redhat_et_libguestfs_GuestFS__1statns
   (JNIEnv *, jobject, jlong, jstring);
 
 /*

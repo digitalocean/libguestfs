@@ -37,6 +37,7 @@
 #include <guestfs-gobject/struct-mdstat.h>
 #include <guestfs-gobject/struct-partition.h>
 #include <guestfs-gobject/struct-stat.h>
+#include <guestfs-gobject/struct-statns.h>
 #include <guestfs-gobject/struct-statvfs.h>
 #include <guestfs-gobject/struct-utsname.h>
 #include <guestfs-gobject/struct-version.h>

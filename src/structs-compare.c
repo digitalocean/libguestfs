@@ -282,6 +282,73 @@ guestfs_compare_stat_list (const struct guestfs_stat_list *s1, const struct gues
 }
 
 GUESTFS_DLL_PUBLIC int
+guestfs_compare_statns (const struct guestfs_statns *s1, const struct guestfs_statns *s2)
+{
+  if (s1->st_dev < s2->st_dev) return -1;
+  else if (s1->st_dev > s2->st_dev) return 1;
+  if (s1->st_ino < s2->st_ino) return -1;
+  else if (s1->st_ino > s2->st_ino) return 1;
+  if (s1->st_mode < s2->st_mode) return -1;
+  else if (s1->st_mode > s2->st_mode) return 1;
+  if (s1->st_nlink < s2->st_nlink) return -1;
+  else if (s1->st_nlink > s2->st_nlink) return 1;
+  if (s1->st_uid < s2->st_uid) return -1;
+  else if (s1->st_uid > s2->st_uid) return 1;
+  if (s1->st_gid < s2->st_gid) return -1;
+  else if (s1->st_gid > s2->st_gid) return 1;
+  if (s1->st_rdev < s2->st_rdev) return -1;
+  else if (s1->st_rdev > s2->st_rdev) return 1;
+  if (s1->st_size < s2->st_size) return -1;
+  else if (s1->st_size > s2->st_size) return 1;
+  if (s1->st_blksize < s2->st_blksize) return -1;
+  else if (s1->st_blksize > s2->st_blksize) return 1;
+  if (s1->st_blocks < s2->st_blocks) return -1;
+  else if (s1->st_blocks > s2->st_blocks) return 1;
+  if (s1->st_atime_sec < s2->st_atime_sec) return -1;
+  else if (s1->st_atime_sec > s2->st_atime_sec) return 1;
+  if (s1->st_atime_nsec < s2->st_atime_nsec) return -1;
+  else if (s1->st_atime_nsec > s2->st_atime_nsec) return 1;
+  if (s1->st_mtime_sec < s2->st_mtime_sec) return -1;
+  else if (s1->st_mtime_sec > s2->st_mtime_sec) return 1;
+  if (s1->st_mtime_nsec < s2->st_mtime_nsec) return -1;
+  else if (s1->st_mtime_nsec > s2->st_mtime_nsec) return 1;
+  if (s1->st_ctime_sec < s2->st_ctime_sec) return -1;
+  else if (s1->st_ctime_sec > s2->st_ctime_sec) return 1;
+  if (s1->st_ctime_nsec < s2->st_ctime_nsec) return -1;
+  else if (s1->st_ctime_nsec > s2->st_ctime_nsec) return 1;
+  if (s1->st_spare1 < s2->st_spare1) return -1;
+  else if (s1->st_spare1 > s2->st_spare1) return 1;
+  if (s1->st_spare2 < s2->st_spare2) return -1;
+  else if (s1->st_spare2 > s2->st_spare2) return 1;
+  if (s1->st_spare3 < s2->st_spare3) return -1;
+  else if (s1->st_spare3 > s2->st_spare3) return 1;
+  if (s1->st_spare4 < s2->st_spare4) return -1;
+  else if (s1->st_spare4 > s2->st_spare4) return 1;
+  if (s1->st_spare5 < s2->st_spare5) return -1;
+  else if (s1->st_spare5 > s2->st_spare5) return 1;
+  if (s1->st_spare6 < s2->st_spare6) return -1;
+  else if (s1->st_spare6 > s2->st_spare6) return 1;
+  return 0;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_compare_statns_list (const struct guestfs_statns_list *s1, const struct guestfs_statns_list *s2)
+{
+  if (s1->len < s2->len) return -1;
+  else if (s1->len > s2->len) return 1;
+  else {
+    size_t i;
+    int r;
+
+    for (i = 0; i < s1->len; ++i) {
+      r = guestfs_compare_statns (&s1->val[i], &s2->val[i]);
+      if (r != 0) return r;
+    }
+    return 0;
+  }
+}
+
+GUESTFS_DLL_PUBLIC int
 guestfs_compare_statvfs (const struct guestfs_statvfs *s1, const struct guestfs_statvfs *s2)
 {
   if (s1->bsize < s2->bsize) return -1;

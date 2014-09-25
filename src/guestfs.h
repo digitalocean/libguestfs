@@ -576,6 +576,45 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_stat_list *guestfs_copy_stat_list (cons
 extern GUESTFS_DLL_PUBLIC void guestfs_free_stat (struct guestfs_stat *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_stat_list (struct guestfs_stat_list *);
 
+struct guestfs_statns {
+  int64_t st_dev;
+  int64_t st_ino;
+  int64_t st_mode;
+  int64_t st_nlink;
+  int64_t st_uid;
+  int64_t st_gid;
+  int64_t st_rdev;
+  int64_t st_size;
+  int64_t st_blksize;
+  int64_t st_blocks;
+  int64_t st_atime_sec;
+  int64_t st_atime_nsec;
+  int64_t st_mtime_sec;
+  int64_t st_mtime_nsec;
+  int64_t st_ctime_sec;
+  int64_t st_ctime_nsec;
+  int64_t st_spare1;
+  int64_t st_spare2;
+  int64_t st_spare3;
+  int64_t st_spare4;
+  int64_t st_spare5;
+  int64_t st_spare6;
+};
+
+struct guestfs_statns_list {
+  uint32_t len;
+  struct guestfs_statns *val;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_statns (const struct guestfs_statns *, const struct guestfs_statns *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_statns_list (const struct guestfs_statns_list *, const struct guestfs_statns_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_statns *guestfs_copy_statns (const struct guestfs_statns *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_statns_list *guestfs_copy_statns_list (const struct guestfs_statns_list *);
+
+extern GUESTFS_DLL_PUBLIC void guestfs_free_statns (struct guestfs_statns *);
+extern GUESTFS_DLL_PUBLIC void guestfs_free_statns_list (struct guestfs_statns_list *);
+
 struct guestfs_statvfs {
   int64_t bsize;
   int64_t frsize;
@@ -1946,11 +1985,17 @@ extern GUESTFS_DLL_PUBLIC int guestfs_ls0 (guestfs_h *g, const char *dir, const 
 #define GUESTFS_HAVE_LSETXATTR 1
 extern GUESTFS_DLL_PUBLIC int guestfs_lsetxattr (guestfs_h *g, const char *xattr, const char *val, int vallen, const char *path);
 
-#define GUESTFS_HAVE_LSTAT 1
-extern GUESTFS_DLL_PUBLIC struct guestfs_stat *guestfs_lstat (guestfs_h *g, const char *path);
+extern GUESTFS_DLL_PUBLIC struct guestfs_stat *guestfs_lstat (guestfs_h *g, const char *path)
+  GUESTFS_DEPRECATED_BY ("lstatns");
 
-#define GUESTFS_HAVE_LSTATLIST 1
-extern GUESTFS_DLL_PUBLIC struct guestfs_stat_list *guestfs_lstatlist (guestfs_h *g, const char *path, char *const *names);
+extern GUESTFS_DLL_PUBLIC struct guestfs_stat_list *guestfs_lstatlist (guestfs_h *g, const char *path, char *const *names)
+  GUESTFS_DEPRECATED_BY ("lstatnslist");
+
+#define GUESTFS_HAVE_LSTATNS 1
+extern GUESTFS_DLL_PUBLIC struct guestfs_statns *guestfs_lstatns (guestfs_h *g, const char *path);
+
+#define GUESTFS_HAVE_LSTATNSLIST 1
+extern GUESTFS_DLL_PUBLIC struct guestfs_statns_list *guestfs_lstatnslist (guestfs_h *g, const char *path, char *const *names);
 
 #define GUESTFS_HAVE_LUKS_ADD_KEY 1
 extern GUESTFS_DLL_PUBLIC int guestfs_luks_add_key (guestfs_h *g, const char *device, const char *key, const char *newkey, int keyslot);
@@ -2811,8 +2856,11 @@ extern GUESTFS_DLL_PUBLIC int guestfs_shutdown (guestfs_h *g);
 #define GUESTFS_HAVE_SLEEP 1
 extern GUESTFS_DLL_PUBLIC int guestfs_sleep (guestfs_h *g, int secs);
 
-#define GUESTFS_HAVE_STAT 1
-extern GUESTFS_DLL_PUBLIC struct guestfs_stat *guestfs_stat (guestfs_h *g, const char *path);
+extern GUESTFS_DLL_PUBLIC struct guestfs_stat *guestfs_stat (guestfs_h *g, const char *path)
+  GUESTFS_DEPRECATED_BY ("statns");
+
+#define GUESTFS_HAVE_STATNS 1
+extern GUESTFS_DLL_PUBLIC struct guestfs_statns *guestfs_statns (guestfs_h *g, const char *path);
 
 #define GUESTFS_HAVE_STATVFS 1
 extern GUESTFS_DLL_PUBLIC struct guestfs_statvfs *guestfs_statvfs (guestfs_h *g, const char *path);
@@ -3269,8 +3317,8 @@ extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_remove_drive_precheck (guestf
 #define GUESTFS_HAVE_INTERNAL_JOURNAL_GET 1
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_journal_get (guestfs_h *g, const char *filename);
 
-#define GUESTFS_HAVE_INTERNAL_LSTATLIST 1
-extern GUESTFS_DLL_PUBLIC struct guestfs_stat_list *guestfs_internal_lstatlist (guestfs_h *g, const char *path, char *const *names);
+#define GUESTFS_HAVE_INTERNAL_LSTATNSLIST 1
+extern GUESTFS_DLL_PUBLIC struct guestfs_statns_list *guestfs_internal_lstatnslist (guestfs_h *g, const char *path, char *const *names);
 
 #define GUESTFS_HAVE_INTERNAL_LXATTRLIST 1
 extern GUESTFS_DLL_PUBLIC struct guestfs_xattr_list *guestfs_internal_lxattrlist (guestfs_h *g, const char *path, char *const *names);
@@ -3890,6 +3938,8 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_LSETXATTR 1
 #define LIBGUESTFS_HAVE_LSTAT 1
 #define LIBGUESTFS_HAVE_LSTATLIST 1
+#define LIBGUESTFS_HAVE_LSTATNS 1
+#define LIBGUESTFS_HAVE_LSTATNSLIST 1
 #define LIBGUESTFS_HAVE_LUKS_ADD_KEY 1
 #define LIBGUESTFS_HAVE_LUKS_CLOSE 1
 #define LIBGUESTFS_HAVE_LUKS_FORMAT 1
@@ -4058,6 +4108,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_SHUTDOWN 1
 #define LIBGUESTFS_HAVE_SLEEP 1
 #define LIBGUESTFS_HAVE_STAT 1
+#define LIBGUESTFS_HAVE_STATNS 1
 #define LIBGUESTFS_HAVE_STATVFS 1
 #define LIBGUESTFS_HAVE_STRINGS 1
 #define LIBGUESTFS_HAVE_STRINGS_E 1

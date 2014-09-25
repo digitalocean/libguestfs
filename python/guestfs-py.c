@@ -771,6 +771,59 @@ put_stat (struct guestfs_stat *stat)
 };
 
 static PyObject *
+put_statns (struct guestfs_statns *statns)
+{
+  PyObject *dict;
+
+  dict = PyDict_New ();
+  PyDict_SetItemString (dict, "st_dev",
+                        PyLong_FromLongLong (statns->st_dev));
+  PyDict_SetItemString (dict, "st_ino",
+                        PyLong_FromLongLong (statns->st_ino));
+  PyDict_SetItemString (dict, "st_mode",
+                        PyLong_FromLongLong (statns->st_mode));
+  PyDict_SetItemString (dict, "st_nlink",
+                        PyLong_FromLongLong (statns->st_nlink));
+  PyDict_SetItemString (dict, "st_uid",
+                        PyLong_FromLongLong (statns->st_uid));
+  PyDict_SetItemString (dict, "st_gid",
+                        PyLong_FromLongLong (statns->st_gid));
+  PyDict_SetItemString (dict, "st_rdev",
+                        PyLong_FromLongLong (statns->st_rdev));
+  PyDict_SetItemString (dict, "st_size",
+                        PyLong_FromLongLong (statns->st_size));
+  PyDict_SetItemString (dict, "st_blksize",
+                        PyLong_FromLongLong (statns->st_blksize));
+  PyDict_SetItemString (dict, "st_blocks",
+                        PyLong_FromLongLong (statns->st_blocks));
+  PyDict_SetItemString (dict, "st_atime_sec",
+                        PyLong_FromLongLong (statns->st_atime_sec));
+  PyDict_SetItemString (dict, "st_atime_nsec",
+                        PyLong_FromLongLong (statns->st_atime_nsec));
+  PyDict_SetItemString (dict, "st_mtime_sec",
+                        PyLong_FromLongLong (statns->st_mtime_sec));
+  PyDict_SetItemString (dict, "st_mtime_nsec",
+                        PyLong_FromLongLong (statns->st_mtime_nsec));
+  PyDict_SetItemString (dict, "st_ctime_sec",
+                        PyLong_FromLongLong (statns->st_ctime_sec));
+  PyDict_SetItemString (dict, "st_ctime_nsec",
+                        PyLong_FromLongLong (statns->st_ctime_nsec));
+  PyDict_SetItemString (dict, "st_spare1",
+                        PyLong_FromLongLong (statns->st_spare1));
+  PyDict_SetItemString (dict, "st_spare2",
+                        PyLong_FromLongLong (statns->st_spare2));
+  PyDict_SetItemString (dict, "st_spare3",
+                        PyLong_FromLongLong (statns->st_spare3));
+  PyDict_SetItemString (dict, "st_spare4",
+                        PyLong_FromLongLong (statns->st_spare4));
+  PyDict_SetItemString (dict, "st_spare5",
+                        PyLong_FromLongLong (statns->st_spare5));
+  PyDict_SetItemString (dict, "st_spare6",
+                        PyLong_FromLongLong (statns->st_spare6));
+  return dict;
+};
+
+static PyObject *
 put_statvfs (struct guestfs_statvfs *statvfs)
 {
   PyObject *dict;
@@ -980,6 +1033,18 @@ put_partition_list (struct guestfs_partition_list *partitions)
   list = PyList_New (partitions->len);
   for (i = 0; i < partitions->len; ++i)
     PyList_SetItem (list, i, put_partition (&partitions->val[i]));
+  return list;
+};
+
+static PyObject *
+put_statns_list (struct guestfs_statns_list *statnss)
+{
+  PyObject *list;
+  size_t i;
+
+  list = PyList_New (statnss->len);
+  for (i = 0; i < statnss->len; ++i)
+    PyList_SetItem (list, i, put_statns (&statnss->val[i]));
   return list;
 };
 
@@ -12616,6 +12681,81 @@ py_guestfs_lstatlist (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_lstatns (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_statns *r;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_lstatns",
+                         &py_g, &path))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_lstatns (g, path);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = put_statns (r);
+  guestfs_free_statns (r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_lstatnslist (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_statns_list *r;
+  const char *path;
+  PyObject *py_names;
+  char **names = NULL;
+
+  if (!PyArg_ParseTuple (args, (char *) "OsO:guestfs_lstatnslist",
+                         &py_g, &path, &py_names))
+    goto out;
+  g = get_handle (py_g);
+  names = get_string_list (py_names);
+  if (!names) goto out;
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_lstatnslist (g, path, names);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = put_statns_list (r);
+  guestfs_free_statns_list (r);
+
+ out:
+  free (names);
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_luks_add_key (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -19163,6 +19303,41 @@ py_guestfs_stat (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_statns (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_statns *r;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_statns",
+                         &py_g, &path))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_statns (g, path);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = put_statns (r);
+  guestfs_free_statns (r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_statvfs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -22511,6 +22686,8 @@ static PyMethodDef methods[] = {
   { (char *) "lsetxattr", py_guestfs_lsetxattr, METH_VARARGS, NULL },
   { (char *) "lstat", py_guestfs_lstat, METH_VARARGS, NULL },
   { (char *) "lstatlist", py_guestfs_lstatlist, METH_VARARGS, NULL },
+  { (char *) "lstatns", py_guestfs_lstatns, METH_VARARGS, NULL },
+  { (char *) "lstatnslist", py_guestfs_lstatnslist, METH_VARARGS, NULL },
   { (char *) "luks_add_key", py_guestfs_luks_add_key, METH_VARARGS, NULL },
   { (char *) "luks_close", py_guestfs_luks_close, METH_VARARGS, NULL },
   { (char *) "luks_format", py_guestfs_luks_format, METH_VARARGS, NULL },
@@ -22679,6 +22856,7 @@ static PyMethodDef methods[] = {
   { (char *) "shutdown", py_guestfs_shutdown, METH_VARARGS, NULL },
   { (char *) "sleep", py_guestfs_sleep, METH_VARARGS, NULL },
   { (char *) "stat", py_guestfs_stat, METH_VARARGS, NULL },
+  { (char *) "statns", py_guestfs_statns, METH_VARARGS, NULL },
   { (char *) "statvfs", py_guestfs_statvfs, METH_VARARGS, NULL },
   { (char *) "strings", py_guestfs_strings, METH_VARARGS, NULL },
   { (char *) "strings_e", py_guestfs_strings_e, METH_VARARGS, NULL },

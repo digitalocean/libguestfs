@@ -247,6 +247,69 @@ xdr_guestfs_int_stat_list (XDR *xdrs, guestfs_int_stat_list *objp)
 }
 
 bool_t
+xdr_guestfs_int_statns (XDR *xdrs, guestfs_int_statns *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int64_t (xdrs, &objp->st_dev))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_ino))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_mode))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_nlink))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_uid))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_gid))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_rdev))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_size))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_blksize))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_blocks))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_atime_sec))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_atime_nsec))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_mtime_sec))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_mtime_nsec))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_ctime_sec))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_ctime_nsec))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_spare1))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_spare2))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_spare3))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_spare4))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_spare5))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->st_spare6))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_int_statns_list (XDR *xdrs, guestfs_int_statns_list *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->guestfs_int_statns_list_val, (u_int *) &objp->guestfs_int_statns_list_len, ~0,
+		sizeof (guestfs_int_statns), (xdrproc_t) xdr_guestfs_int_statns))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_int_statvfs (XDR *xdrs, guestfs_int_statvfs *objp)
 {
 	register int32_t *buf;
@@ -1688,46 +1751,6 @@ xdr_guestfs_command_lines_ret (XDR *xdrs, guestfs_command_lines_ret *objp)
 
 	 if (!xdr_array (xdrs, (char **)&objp->lines.lines_val, (u_int *) &objp->lines.lines_len, ~0,
 		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
-		 return FALSE;
-	return TRUE;
-}
-
-bool_t
-xdr_guestfs_stat_args (XDR *xdrs, guestfs_stat_args *objp)
-{
-	register int32_t *buf;
-
-	 if (!xdr_string (xdrs, &objp->path, ~0))
-		 return FALSE;
-	return TRUE;
-}
-
-bool_t
-xdr_guestfs_stat_ret (XDR *xdrs, guestfs_stat_ret *objp)
-{
-	register int32_t *buf;
-
-	 if (!xdr_guestfs_int_stat (xdrs, &objp->statbuf))
-		 return FALSE;
-	return TRUE;
-}
-
-bool_t
-xdr_guestfs_lstat_args (XDR *xdrs, guestfs_lstat_args *objp)
-{
-	register int32_t *buf;
-
-	 if (!xdr_string (xdrs, &objp->path, ~0))
-		 return FALSE;
-	return TRUE;
-}
-
-bool_t
-xdr_guestfs_lstat_ret (XDR *xdrs, guestfs_lstat_ret *objp)
-{
-	register int32_t *buf;
-
-	 if (!xdr_guestfs_int_stat (xdrs, &objp->statbuf))
 		 return FALSE;
 	return TRUE;
 }
@@ -4196,29 +4219,6 @@ xdr_guestfs_lchown_args (XDR *xdrs, guestfs_lchown_args *objp)
 	 if (!xdr_int (xdrs, &objp->group))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
-		 return FALSE;
-	return TRUE;
-}
-
-bool_t
-xdr_guestfs_internal_lstatlist_args (XDR *xdrs, guestfs_internal_lstatlist_args *objp)
-{
-	register int32_t *buf;
-
-	 if (!xdr_string (xdrs, &objp->path, ~0))
-		 return FALSE;
-	 if (!xdr_array (xdrs, (char **)&objp->names.names_val, (u_int *) &objp->names.names_len, ~0,
-		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
-		 return FALSE;
-	return TRUE;
-}
-
-bool_t
-xdr_guestfs_internal_lstatlist_ret (XDR *xdrs, guestfs_internal_lstatlist_ret *objp)
-{
-	register int32_t *buf;
-
-	 if (!xdr_guestfs_int_stat_list (xdrs, &objp->statbufs))
 		 return FALSE;
 	return TRUE;
 }
@@ -8135,6 +8135,69 @@ xdr_guestfs_journal_get_realtime_usec_ret (XDR *xdrs, guestfs_journal_get_realti
 	register int32_t *buf;
 
 	 if (!xdr_int64_t (xdrs, &objp->usec))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_statns_args (XDR *xdrs, guestfs_statns_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_statns_ret (XDR *xdrs, guestfs_statns_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_guestfs_int_statns (xdrs, &objp->statbuf))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_lstatns_args (XDR *xdrs, guestfs_lstatns_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_lstatns_ret (XDR *xdrs, guestfs_lstatns_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_guestfs_int_statns (xdrs, &objp->statbuf))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_internal_lstatnslist_args (XDR *xdrs, guestfs_internal_lstatnslist_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	 if (!xdr_array (xdrs, (char **)&objp->names.names_val, (u_int *) &objp->names.names_len, ~0,
+		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_internal_lstatnslist_ret (XDR *xdrs, guestfs_internal_lstatnslist_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_guestfs_int_statns_list (xdrs, &objp->statbufs))
 		 return FALSE;
 	return TRUE;
 }

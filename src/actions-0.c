@@ -1195,6 +1195,63 @@ guestfs_write (guestfs_h *g,
   return r;
 }
 
+GUESTFS_DLL_PUBLIC struct guestfs_statns_list *
+guestfs_lstatnslist (guestfs_h *g,
+                     const char *path,
+                     char *const *names)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  struct guestfs_statns_list *r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "lstatnslist", 11);
+  if (path == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "lstatnslist", "path");
+    return NULL;
+  }
+  if (names == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "lstatnslist", "names");
+    return NULL;
+  }
+
+  if (trace_flag) {
+    size_t i;
+
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "lstatnslist");
+    fprintf (trace_buffer.fp, " \"%s\"", path);
+    fputc (' ', trace_buffer.fp);
+    fputc ('"', trace_buffer.fp);
+    for (i = 0; names[i]; ++i) {
+      if (i > 0) fputc (' ', trace_buffer.fp);
+      fputs (names[i], trace_buffer.fp);
+    }
+    fputc ('"', trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__lstatnslist (g, path, names);
+
+  if (r != NULL) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "lstatnslist");
+      fprintf (trace_buffer.fp, "<struct guestfs_statns_list *>");
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "lstatnslist", "NULL");
+  }
+
+  return r;
+}
+
 GUESTFS_DLL_PUBLIC int
 guestfs_disk_has_backing_file (guestfs_h *g,
                                const char *filename)

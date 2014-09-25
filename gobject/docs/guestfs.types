@@ -60,6 +60,7 @@ guestfs_session_event_params_get_type
 guestfs_session_get_type
 guestfs_set_e2attrs_get_type
 guestfs_stat_get_type
+guestfs_statns_get_type
 guestfs_statvfs_get_type
 guestfs_syslinux_get_type
 guestfs_tar_in_get_type

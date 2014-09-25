@@ -26,7 +26,6 @@ type source = {
                                             still saved here). *)
   s_memory : int64;                     (** Memory size (bytes). *)
   s_vcpu : int;                         (** Number of CPUs. *)
-  s_arch : string;                      (** Architecture. *)
   s_features : string list;             (** Machine features. *)
   s_display : source_display option;    (** Guest display. *)
   s_disks : source_disk list;           (** Disk images. *)
@@ -69,7 +68,7 @@ val string_of_source_disk : source_disk -> string
 
 type overlay = {
   ov_overlay_file : string;  (** Local overlay file (qcow2 format). *)
-  ov_sd : string;            (** sdX libguestfs name of disk. *)
+  ov_sd : string;            (** "sda", "sdb" etc - canonical device name. *)
   ov_virtual_size : int64;   (** Virtual disk size in bytes. *)
 
   (* Note: The ov_source is for information ONLY (eg. printing
@@ -84,7 +83,13 @@ val string_of_overlay : overlay -> string
 type target = {
   target_file : string;      (** Destination file. *)
   target_format : string;    (** Destination format (eg. -of option). *)
+
+  (* Note that the estimate is filled in by core v2v.ml code before
+   * copying starts, and the actual size is filled in after copying
+   * (but may not be filled in if [--no-copy] so don't rely on it).
+   *)
   target_estimated_size : int64 option; (** Est. max. space taken on target. *)
+  target_actual_size : int64 option; (** Actual size on target. *)
 
   target_overlay : overlay;  (** Link back to the overlay disk. *)
 }
@@ -111,14 +116,6 @@ type inspect = {
 }
 (** Inspection information. *)
 
-type mpstat = {
-  mp_dev : string;                      (** Filesystem device (eg. /dev/sda1) *)
-  mp_path : string;                     (** Guest mountpoint (eg. /boot) *)
-  mp_statvfs : Guestfs.statvfs;         (** Free space stats. *)
-  mp_vfs : string;                      (** VFS type (eg. "ext4") *)
-}
-(** Mountpoint stats, used for free space estimation. *)
-
 type guestcaps = {
   gcaps_block_bus : guestcaps_block_type;
   gcaps_net_bus : guestcaps_net_type;
@@ -129,7 +126,8 @@ type guestcaps = {
       installing drivers).  Thus this is not known until after
       conversion. *)
 
-  gcaps_acpi : bool;           (** True if guest supports acpi. *)
+  gcaps_arch : string;      (** Architecture that KVM must emulate. *)
+  gcaps_acpi : bool;        (** True if guest supports acpi. *)
 }
 (** Guest capabilities after conversion.  eg. Was virtio found or installed? *)
 
@@ -157,6 +155,9 @@ class virtual output : bool -> object
       on the target, using the [target.target_estimated_size] field. *)
   method virtual create_metadata : source -> target list -> guestcaps -> inspect -> unit
   (** Called after conversion to finish off and create metadata. *)
+  method disk_create : ?backingfile:string -> ?backingformat:string -> ?preallocation:string -> ?compat:string -> ?clustersize:int -> string -> string -> int64 -> unit
+  (** Called in order to create disks on the target.  The method has the
+      same signature as Guestfs#disk_create. *)
   method keep_serial_console : bool
   (** Whether this output supports serial consoles (RHEV does not). *)
 end

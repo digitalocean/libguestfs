@@ -139,6 +139,7 @@ extern char **guestfs__read_lines (guestfs_h *g, const char *path);
 extern int guestfs__write (guestfs_h *g, const char *path, const char *content, size_t content_size);
 extern int guestfs__write_append (guestfs_h *g, const char *path, const char *content, size_t content_size);
 extern struct guestfs_stat_list *guestfs__lstatlist (guestfs_h *g, const char *path, char *const *names);
+extern struct guestfs_statns_list *guestfs__lstatnslist (guestfs_h *g, const char *path, char *const *names);
 extern struct guestfs_xattr_list *guestfs__lxattrlist (guestfs_h *g, const char *path, char *const *names);
 extern char **guestfs__readlinklist (guestfs_h *g, const char *path, char *const *names);
 extern char **guestfs__ls (guestfs_h *g, const char *directory);
@@ -170,5 +171,7 @@ extern int guestfs__set_backend_settings (guestfs_h *g, char *const *settings);
 extern char *guestfs__get_backend_setting (guestfs_h *g, const char *name);
 extern int guestfs__set_backend_setting (guestfs_h *g, const char *name, const char *val);
 extern int guestfs__clear_backend_setting (guestfs_h *g, const char *name);
+extern struct guestfs_stat *guestfs__stat (guestfs_h *g, const char *path);
+extern struct guestfs_stat *guestfs__lstat (guestfs_h *g, const char *path);
 
 #endif /* GUESTFS_INTERNAL_ACTIONS_H_ */

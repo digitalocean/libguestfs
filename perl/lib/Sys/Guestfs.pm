@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.420';
+$VERSION = '0.423';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -4387,6 +4387,13 @@ refers to.
 
 This is the same as the C<lstat(2)> system call.
 
+I<This function is deprecated.>
+In new code, use the L</lstatns> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =item @statbufs = $g->lstatlist ($path, \@names);
 
 This call allows you to perform the C<$g-E<gt>lstat> operation
@@ -4395,7 +4402,40 @@ C<names> is the list of files from this directory.
 
 On return you get a list of stat structs, with a one-to-one
 correspondence to the C<names> list.  If any name did not exist
-or could not be lstat'd, then the C<ino> field of that structure
+or could not be lstat'd, then the C<st_ino> field of that structure
+is set to C<-1>.
+
+This call is intended for programs that want to efficiently
+list a directory contents without making many round-trips.
+See also C<$g-E<gt>lxattrlist> for a similarly efficient call
+for getting extended attributes.
+
+I<This function is deprecated.>
+In new code, use the L</lstatnslist> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
+=item %statbuf = $g->lstatns ($path);
+
+Returns file information for the given C<path>.
+
+This is the same as C<$g-E<gt>statns> except that if C<path>
+is a symbolic link, then the link is stat-ed, not the file it
+refers to.
+
+This is the same as the C<lstat(2)> system call.
+
+=item @statbufs = $g->lstatnslist ($path, \@names);
+
+This call allows you to perform the C<$g-E<gt>lstatns> operation
+on multiple files, where all files are in the directory C<path>.
+C<names> is the list of files from this directory.
+
+On return you get a list of stat structs, with a one-to-one
+correspondence to the C<names> list.  If any name did not exist
+or could not be lstat'd, then the C<st_ino> field of that structure
 is set to C<-1>.
 
 This call is intended for programs that want to efficiently
@@ -6625,6 +6665,19 @@ but note that any errors are ignored in that case.
 Sleep for C<secs> seconds.
 
 =item %statbuf = $g->stat ($path);
+
+Returns file information for the given C<path>.
+
+This is the same as the C<stat(2)> system call.
+
+I<This function is deprecated.>
+In new code, use the L</statns> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
+=item %statbuf = $g->statns ($path);
 
 Returns file information for the given C<path>.
 
@@ -10240,6 +10293,23 @@ use vars qw(%guestfs_introspection);
     name => "lstatlist",
     description => "lstat on multiple files",
   },
+  "lstatns" => {
+    ret => 'struct statns',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "lstatns",
+    description => "get file information for a symbolic link",
+  },
+  "lstatnslist" => {
+    ret => 'struct statns list',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'names', 'string list', 1 ],
+    ],
+    name => "lstatnslist",
+    description => "lstat on multiple files",
+  },
   "luks_add_key" => {
     ret => 'void',
     args => [
@@ -11800,6 +11870,14 @@ use vars qw(%guestfs_introspection);
       [ 'path', 'string(path)', 0 ],
     ],
     name => "stat",
+    description => "get file information",
+  },
+  "statns" => {
+    ret => 'struct statns',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "statns",
     description => "get file information",
   },
   "statvfs" => {

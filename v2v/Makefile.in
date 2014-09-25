@@ -283,14 +283,14 @@ am__virt_v2v_SOURCES_DIST = $(top_builddir)/fish/progress.c \
 	$(top_builddir)/mllib/progress-c.c \
 	$(top_builddir)/mllib/mkdtemp-c.c \
 	$(top_builddir)/customize/crypt-c.c \
-	$(top_builddir)/customize/perl_edit-c.c utils-c.c xml-c.c \
-	domainxml-c.c
+	$(top_builddir)/customize/perl_edit-c.c domainxml-c.c \
+	kvmuid-c.c utils-c.c xml-c.c
 am__objects_1 = virt_v2v-progress.$(OBJEXT) \
 	virt_v2v-file-edit.$(OBJEXT) virt_v2v-tty-c.$(OBJEXT) \
 	virt_v2v-progress-c.$(OBJEXT) virt_v2v-mkdtemp-c.$(OBJEXT) \
 	virt_v2v-crypt-c.$(OBJEXT) virt_v2v-perl_edit-c.$(OBJEXT) \
-	virt_v2v-utils-c.$(OBJEXT) virt_v2v-xml-c.$(OBJEXT) \
-	virt_v2v-domainxml-c.$(OBJEXT)
+	virt_v2v-domainxml-c.$(OBJEXT) virt_v2v-kvmuid-c.$(OBJEXT) \
+	virt_v2v-utils-c.$(OBJEXT) virt_v2v-xml-c.$(OBJEXT)
 @HAVE_OCAML_TRUE@am_virt_v2v_OBJECTS = $(am__objects_1)
 virt_v2v_OBJECTS = $(am_virt_v2v_OBJECTS)
 virt_v2v_LDADD = $(LDADD)
@@ -1512,6 +1512,7 @@ SOURCES_MLI = \
 	input_libvirtxml.mli \
 	input_ova.mli \
 	JSON.mli \
+	kvmuid.mli \
 	lib_esx.mli \
 	lib_linux.mli \
 	lib_ovf.mli \
@@ -1521,6 +1522,7 @@ SOURCES_MLI = \
 	output_libvirt.mli \
 	output_local.mli \
 	output_null.mli \
+	output_qemu.mli \
 	output_rhev.mli \
 	output_vdsm.mli \
 	stringMap.mli \
@@ -1535,6 +1537,7 @@ SOURCES_ML = \
 	domainxml.ml \
 	DOM.ml \
 	JSON.ml \
+	kvmuid.ml \
 	lib_esx.ml \
 	lib_xen.ml \
 	lib_ovf.ml \
@@ -1550,6 +1553,7 @@ SOURCES_ML = \
 	output_glance.ml \
 	output_libvirt.ml \
 	output_local.ml \
+	output_qemu.ml \
 	output_rhev.ml \
 	output_vdsm.ml \
 	cmdline.ml \
@@ -1563,9 +1567,10 @@ SOURCES_C = \
 	$(top_builddir)/mllib/mkdtemp-c.c \
 	$(top_builddir)/customize/crypt-c.c \
 	$(top_builddir)/customize/perl_edit-c.c \
+	domainxml-c.c \
+	kvmuid-c.c \
 	utils-c.c \
-	xml-c.c \
-	domainxml-c.c
+	xml-c.c
 
 @HAVE_OCAML_TRUE@virt_v2v_SOURCES = $(SOURCES_C)
 @HAVE_OCAML_TRUE@virt_v2v_CPPFLAGS = \
@@ -1655,6 +1660,7 @@ SOURCES_C = \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-glance.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-libvirt.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-null.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-qemu.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-rhev.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-vdsm-options.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-of-option.sh \
@@ -1784,6 +1790,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-crypt-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-domainxml-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-file-edit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-kvmuid-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-mkdtemp-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-perl_edit-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-progress-c.Po@am__quote@
@@ -1911,6 +1918,34 @@ virt_v2v-perl_edit-c.obj: $(top_builddir)/customize/perl_edit-c.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-perl_edit-c.obj `if test -f '$(top_builddir)/customize/perl_edit-c.c'; then $(CYGPATH_W) '$(top_builddir)/customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/customize/perl_edit-c.c'; fi`
 
+virt_v2v-domainxml-c.o: domainxml-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-domainxml-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-domainxml-c.Tpo -c -o virt_v2v-domainxml-c.o `test -f 'domainxml-c.c' || echo '$(srcdir)/'`domainxml-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-domainxml-c.Tpo $(DEPDIR)/virt_v2v-domainxml-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domainxml-c.c' object='virt_v2v-domainxml-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-domainxml-c.o `test -f 'domainxml-c.c' || echo '$(srcdir)/'`domainxml-c.c
+
+virt_v2v-domainxml-c.obj: domainxml-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-domainxml-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v-domainxml-c.Tpo -c -o virt_v2v-domainxml-c.obj `if test -f 'domainxml-c.c'; then $(CYGPATH_W) 'domainxml-c.c'; else $(CYGPATH_W) '$(srcdir)/domainxml-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-domainxml-c.Tpo $(DEPDIR)/virt_v2v-domainxml-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domainxml-c.c' object='virt_v2v-domainxml-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-domainxml-c.obj `if test -f 'domainxml-c.c'; then $(CYGPATH_W) 'domainxml-c.c'; else $(CYGPATH_W) '$(srcdir)/domainxml-c.c'; fi`
+
+virt_v2v-kvmuid-c.o: kvmuid-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-kvmuid-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-kvmuid-c.Tpo -c -o virt_v2v-kvmuid-c.o `test -f 'kvmuid-c.c' || echo '$(srcdir)/'`kvmuid-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-kvmuid-c.Tpo $(DEPDIR)/virt_v2v-kvmuid-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kvmuid-c.c' object='virt_v2v-kvmuid-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-kvmuid-c.o `test -f 'kvmuid-c.c' || echo '$(srcdir)/'`kvmuid-c.c
+
+virt_v2v-kvmuid-c.obj: kvmuid-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-kvmuid-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v-kvmuid-c.Tpo -c -o virt_v2v-kvmuid-c.obj `if test -f 'kvmuid-c.c'; then $(CYGPATH_W) 'kvmuid-c.c'; else $(CYGPATH_W) '$(srcdir)/kvmuid-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-kvmuid-c.Tpo $(DEPDIR)/virt_v2v-kvmuid-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kvmuid-c.c' object='virt_v2v-kvmuid-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-kvmuid-c.obj `if test -f 'kvmuid-c.c'; then $(CYGPATH_W) 'kvmuid-c.c'; else $(CYGPATH_W) '$(srcdir)/kvmuid-c.c'; fi`
+
 virt_v2v-utils-c.o: utils-c.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-utils-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-utils-c.Tpo -c -o virt_v2v-utils-c.o `test -f 'utils-c.c' || echo '$(srcdir)/'`utils-c.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-utils-c.Tpo $(DEPDIR)/virt_v2v-utils-c.Po
@@ -1938,20 +1973,6 @@ virt_v2v-xml-c.obj: xml-c.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xml-c.c' object='virt_v2v-xml-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-xml-c.obj `if test -f 'xml-c.c'; then $(CYGPATH_W) 'xml-c.c'; else $(CYGPATH_W) '$(srcdir)/xml-c.c'; fi`
-
-virt_v2v-domainxml-c.o: domainxml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-domainxml-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-domainxml-c.Tpo -c -o virt_v2v-domainxml-c.o `test -f 'domainxml-c.c' || echo '$(srcdir)/'`domainxml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-domainxml-c.Tpo $(DEPDIR)/virt_v2v-domainxml-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domainxml-c.c' object='virt_v2v-domainxml-c.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-domainxml-c.o `test -f 'domainxml-c.c' || echo '$(srcdir)/'`domainxml-c.c
-
-virt_v2v-domainxml-c.obj: domainxml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-domainxml-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v-domainxml-c.Tpo -c -o virt_v2v-domainxml-c.obj `if test -f 'domainxml-c.c'; then $(CYGPATH_W) 'domainxml-c.c'; else $(CYGPATH_W) '$(srcdir)/domainxml-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-domainxml-c.Tpo $(DEPDIR)/virt_v2v-domainxml-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domainxml-c.c' object='virt_v2v-domainxml-c.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-domainxml-c.obj `if test -f 'domainxml-c.c'; then $(CYGPATH_W) 'domainxml-c.c'; else $(CYGPATH_W) '$(srcdir)/domainxml-c.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

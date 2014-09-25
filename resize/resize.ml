@@ -367,7 +367,7 @@ read the man page virt-resize(1).
    * way to do it is with g#blockdev_getsize64.
    *)
   let sectsize, insize, outsize =
-    let sectsize = g#blockdev_getss "/dev/sdb" in
+    let sectsize = Int64.of_int (g#blockdev_getss "/dev/sdb") in
     let insize = g#blockdev_getsize64 "/dev/sda" in
     let outsize = g#blockdev_getsize64 "/dev/sdb" in
     if verbose then (
@@ -451,13 +451,8 @@ read the man page virt-resize(1).
 
     (* Filter out logical partitions.  See note above. *)
     let parts =
-      match parttype with
-      | GPT -> parts
-      | MBR ->
-        List.filter (function
-        | { G.part_num = part_num } when part_num >= 5_l -> false
-        | _ -> true
-        ) parts in
+        List.filter (fun p -> parttype <> MBR || p.G.part_num <= 4_l)
+        parts in
 
     let partitions =
       List.map (
@@ -722,7 +717,7 @@ read the man page virt-resize(1).
       let first_part_start_sects =
         match partitions with
         | { p_part = { G.part_start = start }} :: _ ->
-          start /^ Int64.of_int sectsize
+          start /^ sectsize
         | [] -> 0L in
 
       let max_bootloader_sects = Int64.of_int max_bootloader /^ 512L in
@@ -737,7 +732,7 @@ read the man page virt-resize(1).
       (* Add up the total max. overhead. *)
       let overhead_sects =
         start_overhead_sects +^ alignment_sects +^ gpt_end_sects in
-      Int64.of_int sectsize *^ overhead_sects in
+      sectsize *^ overhead_sects in
 
     let required = List.fold_left (
       fun total p ->
@@ -828,29 +823,29 @@ read the man page virt-resize(1).
     printf "**********\n\n";
     printf "Summary of changes:\n\n";
 
-    List.iter (
-      fun ({ p_name = name; p_part = { G.part_size = oldsize }} as p) ->
+    let rec print_summary p =
         let text =
           match p.p_operation with
           | OpCopy ->
-              sprintf (f_"%s: This partition will be left alone.") name
+              sprintf (f_"%s: This partition will be left alone.") p.p_name
           | OpIgnore ->
-              sprintf (f_"%s: This partition will be created, but the contents will be ignored (ie. not copied to the target).") name
+              sprintf (f_"%s: This partition will be created, but the contents will be ignored (ie. not copied to the target).") p.p_name
           | OpDelete ->
-              sprintf (f_"%s: This partition will be deleted.") name
+              sprintf (f_"%s: This partition will be deleted.") p.p_name
           | OpResize newsize ->
               sprintf (f_"%s: This partition will be resized from %s to %s.")
-                name (human_size oldsize) (human_size newsize) ^
+                p.p_name (human_size p.p_part.G.part_size) (human_size newsize) ^
               if can_expand_content p.p_type then (
                 sprintf (f_"  The %s on %s will be expanded using the '%s' method.")
                   (string_of_partition_content_no_size p.p_type)
-                  name
+                  p.p_name
                   (string_of_expand_content_method
                      (expand_content_method p.p_type))
               ) else "" in
 
-        wrap ~indent:4 (text ^ "\n\n")
-    ) partitions;
+        wrap ~indent:4 (text ^ "\n\n") in
+
+    List.iter print_summary partitions;
 
     List.iter (
       fun ({ lv_name = name } as lv) ->
@@ -1019,8 +1014,6 @@ read the man page virt-resize(1).
    * on the target.
    *)
   let partitions =
-    let sectsize = Int64.of_int sectsize in
-
     let rec loop partnum start = function
       | p :: ps ->
         (match p.p_operation with
@@ -1028,7 +1021,7 @@ read the man page virt-resize(1).
 
         | OpIgnore | OpCopy ->          (* same size *)
           (* Size in sectors. *)
-          let size = (p.p_part.G.part_size +^ sectsize -^ 1L) /^ sectsize in
+          let size = div_roundup64 p.p_part.G.part_size sectsize in
           (* Start of next partition + alignment. *)
           let end_ = start +^ size in
           let next = roundup64 end_ alignment in
@@ -1042,7 +1035,7 @@ read the man page virt-resize(1).
 
         | OpResize newsize ->           (* resized partition *)
           (* New size in sectors. *)
-          let size = (newsize +^ sectsize -^ 1L) /^ sectsize in
+          let size = div_roundup64 newsize sectsize in
           (* Start of next partition + alignment. *)
           let next = start +^ size in
           let next = roundup64 next alignment in
@@ -1099,8 +1092,7 @@ read the man page virt-resize(1).
   ) partitions;
 
   (* Copy over the data. *)
-  List.iter (
-    fun p ->
+  let copy_partition p =
       match p.p_operation with
       | OpCopy | OpResize _ ->
         (* XXX Old code had 'when target_partnum > 0', but it appears
@@ -1134,14 +1126,14 @@ read the man page virt-resize(1).
            g#copy_device_to_device ~srcoffset ~size:copysize "/dev/sda" target
         )
       | OpIgnore | OpDelete -> ()
-  ) partitions;
+  in
+  List.iter copy_partition partitions;
 
   (* Set bootable and MBR IDs.  Do this *after* copying over the data,
    * so that we can magically change the primary partition to an extended
    * partition if necessary.
    *)
-  List.iter (
-    fun p ->
+  let set_partition_bootable_and_id p =
       if p.p_bootable then
         g#part_set_bootable "/dev/sdb" p.p_target_partnum true;
 
@@ -1157,7 +1149,8 @@ read the man page virt-resize(1).
       | MBR, MBR_ID mbr_id ->
         g#part_set_mbr_id "/dev/sdb" p.p_target_partnum mbr_id
       | GPT, (No_ID|MBR_ID _) | MBR, (No_ID|GPT_Type _) -> ()
-  ) partitions;
+  in
+  List.iter set_partition_bootable_and_id partitions;
 
   (* Fix the bootloader if we aligned the first partition. *)
   if align_first_partition_and_fix_bootloader then (
@@ -1254,8 +1247,7 @@ read the man page virt-resize(1).
     in
 
     (* Expand partition content as required. *)
-    List.iter (
-      function
+    let expand_partition_content = function
       | ({ p_operation = OpResize _ } as p)
           when can_expand_content p.p_type ->
           let source = p.p_name in
@@ -1271,7 +1263,8 @@ read the man page virt-resize(1).
           do_expand_content target meth
       | { p_operation = (OpCopy | OpIgnore | OpDelete | OpResize _) }
         -> ()
-    ) partitions;
+    in
+    List.iter expand_partition_content partitions;
 
     (* Expand logical volume content as required. *)
     List.iter (

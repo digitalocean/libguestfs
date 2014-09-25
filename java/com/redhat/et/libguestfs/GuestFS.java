@@ -10263,6 +10263,13 @@ public class GuestFS {
    * <p>
    * This is the same as the lstat(2) system call.
    * <p>
+   * *This function is deprecated.* In new code, use the
+   * "lstatns" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public Stat lstat (String path)
@@ -10288,13 +10295,20 @@ public class GuestFS {
    * On return you get a list of stat structs, with a
    * one-to-one correspondence to the "names" list. If any
    * name did not exist or could not be lstat'd, then the
-   * "ino" field of that structure is set to -1.
+   * "st_ino" field of that structure is set to -1.
    * <p>
    * This call is intended for programs that want to
    * efficiently list a directory contents without making
    * many round-trips. See also "g.lxattrlist" for a
    * similarly efficient call for getting extended
    * attributes.
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "lstatnslist" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -10308,6 +10322,64 @@ public class GuestFS {
   }
 
   private native Stat[] _lstatlist (long g, String path, String[] names)
+    throws LibGuestFSException;
+
+  /**
+   * get file information for a symbolic link
+   * <p>
+   * Returns file information for the given "path".
+   * <p>
+   * This is the same as "g.statns" except that if "path" is
+   * a symbolic link, then the link is stat-ed, not the file
+   * it refers to.
+   * <p>
+   * This is the same as the lstat(2) system call.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public StatNS lstatns (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lstatns: handle is closed");
+
+    return _lstatns (g, path);
+  }
+
+  private native StatNS _lstatns (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * lstat on multiple files
+   * <p>
+   * This call allows you to perform the "g.lstatns"
+   * operation on multiple files, where all files are in the
+   * directory "path". "names" is the list of files from this
+   * directory.
+   * <p>
+   * On return you get a list of stat structs, with a
+   * one-to-one correspondence to the "names" list. If any
+   * name did not exist or could not be lstat'd, then the
+   * "st_ino" field of that structure is set to -1.
+   * <p>
+   * This call is intended for programs that want to
+   * efficiently list a directory contents without making
+   * many round-trips. See also "g.lxattrlist" for a
+   * similarly efficient call for getting extended
+   * attributes.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public StatNS[] lstatnslist (String path, String[] names)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lstatnslist: handle is closed");
+
+    return _lstatnslist (g, path, names);
+  }
+
+  private native StatNS[] _lstatnslist (long g, String path, String[] names)
     throws LibGuestFSException;
 
   /**
@@ -15919,6 +15991,13 @@ public class GuestFS {
    * <p>
    * This is the same as the stat(2) system call.
    * <p>
+   * *This function is deprecated.* In new code, use the
+   * "statns" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public Stat stat (String path)
@@ -15931,6 +16010,27 @@ public class GuestFS {
   }
 
   private native Stat _stat (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * get file information
+   * <p>
+   * Returns file information for the given "path".
+   * <p>
+   * This is the same as the stat(2) system call.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public StatNS statns (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("statns: handle is closed");
+
+    return _statns (g, path);
+  }
+
+  private native StatNS _statns (long g, String path)
     throws LibGuestFSException;
 
   /**

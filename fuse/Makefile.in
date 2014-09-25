@@ -143,11 +143,12 @@ DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 @HAVE_FUSE_TRUE@	test-guestunmount-not-mounted.sh \
 @HAVE_FUSE_TRUE@	$(am__EXEEXT_1)
 @ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@am__append_1 = \
-@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@	test-fuse.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@	test-fuse \
 @ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@	test-fuse-umount-race.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@	test-guestmount-fd
 
-@HAVE_FUSE_TRUE@check_PROGRAMS = test-guestmount-fd$(EXEEXT) \
+@HAVE_FUSE_TRUE@check_PROGRAMS = test-fuse$(EXEEXT) \
+@HAVE_FUSE_TRUE@	test-guestmount-fd$(EXEEXT) \
 @HAVE_FUSE_TRUE@	test-guestunmount-fd$(EXEEXT)
 subdir = fuse
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -322,6 +323,17 @@ guestunmount_OBJECTS = $(am_guestunmount_OBJECTS)
 guestunmount_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(guestunmount_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am__test_fuse_SOURCES_DIST = test-fuse.c
+@HAVE_FUSE_TRUE@am_test_fuse_OBJECTS = test_fuse-test-fuse.$(OBJEXT)
+test_fuse_OBJECTS = $(am_test_fuse_OBJECTS)
+@HAVE_FUSE_TRUE@test_fuse_DEPENDENCIES =  \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+@HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la
+test_fuse_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(test_fuse_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 am__test_guestmount_fd_SOURCES_DIST = test-guestmount-fd.c
 @HAVE_FUSE_TRUE@am_test_guestmount_fd_OBJECTS = test_guestmount_fd-test-guestmount-fd.$(OBJEXT)
 test_guestmount_fd_OBJECTS = $(am_test_guestmount_fd_OBJECTS)
@@ -381,9 +393,10 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(guestmount_SOURCES) $(guestunmount_SOURCES) \
-	$(test_guestmount_fd_SOURCES) $(test_guestunmount_fd_SOURCES)
+	$(test_fuse_SOURCES) $(test_guestmount_fd_SOURCES) \
+	$(test_guestunmount_fd_SOURCES)
 DIST_SOURCES = $(am__guestmount_SOURCES_DIST) \
-	$(am__guestunmount_SOURCES_DIST) \
+	$(am__guestunmount_SOURCES_DIST) $(am__test_fuse_SOURCES_DIST) \
 	$(am__test_guestmount_fd_SOURCES_DIST) \
 	$(am__test_guestunmount_fd_SOURCES_DIST)
 am__can_run_installinfo = \
@@ -463,7 +476,8 @@ am__tty_colors = { \
     std='[m'; \
   fi; \
 }
-@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@am__EXEEXT_1 = test-fuse.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@am__EXEEXT_1 =  \
+@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@	test-fuse$(EXEEXT) \
 @ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@	test-fuse-umount-race.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@	test-guestmount-fd$(EXEEXT)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -1551,7 +1565,6 @@ top_srcdir = @top_srcdir@
 EXTRA_DIST = \
 	guestmount.pod \
 	guestunmount.pod \
-	test-fuse.sh \
 	test-fuse-umount-race.sh \
 	test-guestunmount-not-mounted.sh
 
@@ -1633,6 +1646,24 @@ CLEANFILES = \
 @HAVE_FUSE_TRUE@TESTS_ENVIRONMENT = \
 @HAVE_FUSE_TRUE@	top_builddir=.. \
 @HAVE_FUSE_TRUE@	$(top_builddir)/run --test
+
+@HAVE_FUSE_TRUE@test_fuse_SOURCES = \
+@HAVE_FUSE_TRUE@	test-fuse.c
+
+@HAVE_FUSE_TRUE@test_fuse_CPPFLAGS = \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_FUSE_TRUE@	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
+
+@HAVE_FUSE_TRUE@test_fuse_CFLAGS = \
+@HAVE_FUSE_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+
+@HAVE_FUSE_TRUE@test_fuse_LDADD = \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(LIBXML2_LIBS) \
+@HAVE_FUSE_TRUE@	$(LIBVIRT_LIBS) \
+@HAVE_FUSE_TRUE@	$(ACL_LIBS) \
+@HAVE_FUSE_TRUE@	../gnulib/lib/libgnu.la
 
 @HAVE_FUSE_TRUE@test_guestmount_fd_SOURCES = \
 @HAVE_FUSE_TRUE@	test-guestmount-fd.c
@@ -1770,6 +1801,10 @@ guestunmount$(EXEEXT): $(guestunmount_OBJECTS) $(guestunmount_DEPENDENCIES) $(EX
 	@rm -f guestunmount$(EXEEXT)
 	$(AM_V_CCLD)$(guestunmount_LINK) $(guestunmount_OBJECTS) $(guestunmount_LDADD) $(LIBS)
 
+test-fuse$(EXEEXT): $(test_fuse_OBJECTS) $(test_fuse_DEPENDENCIES) $(EXTRA_test_fuse_DEPENDENCIES) 
+	@rm -f test-fuse$(EXEEXT)
+	$(AM_V_CCLD)$(test_fuse_LINK) $(test_fuse_OBJECTS) $(test_fuse_LDADD) $(LIBS)
+
 test-guestmount-fd$(EXEEXT): $(test_guestmount_fd_OBJECTS) $(test_guestmount_fd_DEPENDENCIES) $(EXTRA_test_guestmount_fd_DEPENDENCIES) 
 	@rm -f test-guestmount-fd$(EXEEXT)
 	$(AM_V_CCLD)$(test_guestmount_fd_LINK) $(test_guestmount_fd_OBJECTS) $(test_guestmount_fd_LDADD) $(LIBS)
@@ -1792,6 +1827,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestmount-options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestmount-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestunmount-guestunmount.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_fuse-test-fuse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_guestmount_fd-test-guestmount-fd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_guestunmount_fd-test-guestunmount-fd.Po@am__quote@
 
@@ -1927,6 +1963,20 @@ guestunmount-guestunmount.obj: guestunmount.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='guestunmount.c' object='guestunmount-guestunmount.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestunmount_CPPFLAGS) $(CPPFLAGS) $(guestunmount_CFLAGS) $(CFLAGS) -c -o guestunmount-guestunmount.obj `if test -f 'guestunmount.c'; then $(CYGPATH_W) 'guestunmount.c'; else $(CYGPATH_W) '$(srcdir)/guestunmount.c'; fi`
+
+test_fuse-test-fuse.o: test-fuse.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_fuse_CPPFLAGS) $(CPPFLAGS) $(test_fuse_CFLAGS) $(CFLAGS) -MT test_fuse-test-fuse.o -MD -MP -MF $(DEPDIR)/test_fuse-test-fuse.Tpo -c -o test_fuse-test-fuse.o `test -f 'test-fuse.c' || echo '$(srcdir)/'`test-fuse.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_fuse-test-fuse.Tpo $(DEPDIR)/test_fuse-test-fuse.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-fuse.c' object='test_fuse-test-fuse.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_fuse_CPPFLAGS) $(CPPFLAGS) $(test_fuse_CFLAGS) $(CFLAGS) -c -o test_fuse-test-fuse.o `test -f 'test-fuse.c' || echo '$(srcdir)/'`test-fuse.c
+
+test_fuse-test-fuse.obj: test-fuse.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_fuse_CPPFLAGS) $(CPPFLAGS) $(test_fuse_CFLAGS) $(CFLAGS) -MT test_fuse-test-fuse.obj -MD -MP -MF $(DEPDIR)/test_fuse-test-fuse.Tpo -c -o test_fuse-test-fuse.obj `if test -f 'test-fuse.c'; then $(CYGPATH_W) 'test-fuse.c'; else $(CYGPATH_W) '$(srcdir)/test-fuse.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_fuse-test-fuse.Tpo $(DEPDIR)/test_fuse-test-fuse.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-fuse.c' object='test_fuse-test-fuse.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_fuse_CPPFLAGS) $(CPPFLAGS) $(test_fuse_CFLAGS) $(CFLAGS) -c -o test_fuse-test-fuse.obj `if test -f 'test-fuse.c'; then $(CYGPATH_W) 'test-fuse.c'; else $(CYGPATH_W) '$(srcdir)/test-fuse.c'; fi`
 
 test_guestmount_fd-test-guestmount-fd.o: test-guestmount-fd.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_guestmount_fd_CPPFLAGS) $(CPPFLAGS) $(test_guestmount_fd_CFLAGS) $(CFLAGS) -MT test_guestmount_fd-test-guestmount-fd.o -MD -MP -MF $(DEPDIR)/test_guestmount_fd-test-guestmount-fd.Tpo -c -o test_guestmount_fd-test-guestmount-fd.o `test -f 'test-guestmount-fd.c' || echo '$(srcdir)/'`test-guestmount-fd.c

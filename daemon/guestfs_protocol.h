@@ -130,6 +130,37 @@ typedef struct {
 	guestfs_int_stat *guestfs_int_stat_list_val;
 } guestfs_int_stat_list;
 
+struct guestfs_int_statns {
+	int64_t st_dev;
+	int64_t st_ino;
+	int64_t st_mode;
+	int64_t st_nlink;
+	int64_t st_uid;
+	int64_t st_gid;
+	int64_t st_rdev;
+	int64_t st_size;
+	int64_t st_blksize;
+	int64_t st_blocks;
+	int64_t st_atime_sec;
+	int64_t st_atime_nsec;
+	int64_t st_mtime_sec;
+	int64_t st_mtime_nsec;
+	int64_t st_ctime_sec;
+	int64_t st_ctime_nsec;
+	int64_t st_spare1;
+	int64_t st_spare2;
+	int64_t st_spare3;
+	int64_t st_spare4;
+	int64_t st_spare5;
+	int64_t st_spare6;
+};
+typedef struct guestfs_int_statns guestfs_int_statns;
+
+typedef struct {
+	u_int guestfs_int_statns_list_len;
+	guestfs_int_statns *guestfs_int_statns_list_val;
+} guestfs_int_statns_list;
+
 struct guestfs_int_statvfs {
 	int64_t bsize;
 	int64_t frsize;
@@ -724,26 +755,6 @@ struct guestfs_command_lines_ret {
 	} lines;
 };
 typedef struct guestfs_command_lines_ret guestfs_command_lines_ret;
-
-struct guestfs_stat_args {
-	char *path;
-};
-typedef struct guestfs_stat_args guestfs_stat_args;
-
-struct guestfs_stat_ret {
-	guestfs_int_stat statbuf;
-};
-typedef struct guestfs_stat_ret guestfs_stat_ret;
-
-struct guestfs_lstat_args {
-	char *path;
-};
-typedef struct guestfs_lstat_args guestfs_lstat_args;
-
-struct guestfs_lstat_ret {
-	guestfs_int_stat statbuf;
-};
-typedef struct guestfs_lstat_ret guestfs_lstat_ret;
 
 struct guestfs_statvfs_args {
 	char *path;
@@ -1944,20 +1955,6 @@ struct guestfs_lchown_args {
 	char *path;
 };
 typedef struct guestfs_lchown_args guestfs_lchown_args;
-
-struct guestfs_internal_lstatlist_args {
-	char *path;
-	struct {
-		u_int names_len;
-		guestfs_str *names_val;
-	} names;
-};
-typedef struct guestfs_internal_lstatlist_args guestfs_internal_lstatlist_args;
-
-struct guestfs_internal_lstatlist_ret {
-	guestfs_int_stat_list statbufs;
-};
-typedef struct guestfs_internal_lstatlist_ret guestfs_internal_lstatlist_ret;
 
 struct guestfs_internal_lxattrlist_args {
 	char *path;
@@ -3743,6 +3740,40 @@ struct guestfs_journal_get_realtime_usec_ret {
 };
 typedef struct guestfs_journal_get_realtime_usec_ret guestfs_journal_get_realtime_usec_ret;
 
+struct guestfs_statns_args {
+	char *path;
+};
+typedef struct guestfs_statns_args guestfs_statns_args;
+
+struct guestfs_statns_ret {
+	guestfs_int_statns statbuf;
+};
+typedef struct guestfs_statns_ret guestfs_statns_ret;
+
+struct guestfs_lstatns_args {
+	char *path;
+};
+typedef struct guestfs_lstatns_args guestfs_lstatns_args;
+
+struct guestfs_lstatns_ret {
+	guestfs_int_statns statbuf;
+};
+typedef struct guestfs_lstatns_ret guestfs_lstatns_ret;
+
+struct guestfs_internal_lstatnslist_args {
+	char *path;
+	struct {
+		u_int names_len;
+		guestfs_str *names_val;
+	} names;
+};
+typedef struct guestfs_internal_lstatnslist_args guestfs_internal_lstatnslist_args;
+
+struct guestfs_internal_lstatnslist_ret {
+	guestfs_int_statns_list statbufs;
+};
+typedef struct guestfs_internal_lstatnslist_ret guestfs_internal_lstatnslist_ret;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -3791,8 +3822,6 @@ enum guestfs_procedure {
 	GUESTFS_PROC_FILE = 49,
 	GUESTFS_PROC_COMMAND = 50,
 	GUESTFS_PROC_COMMAND_LINES = 51,
-	GUESTFS_PROC_STAT = 52,
-	GUESTFS_PROC_LSTAT = 53,
 	GUESTFS_PROC_STATVFS = 54,
 	GUESTFS_PROC_TUNE2FS_L = 55,
 	GUESTFS_PROC_BLOCKDEV_SETRO = 56,
@@ -3941,7 +3970,6 @@ enum guestfs_procedure {
 	GUESTFS_PROC_UTIMENS = 201,
 	GUESTFS_PROC_MKDIR_MODE = 202,
 	GUESTFS_PROC_LCHOWN = 203,
-	GUESTFS_PROC_INTERNAL_LSTATLIST = 204,
 	GUESTFS_PROC_INTERNAL_LXATTRLIST = 205,
 	GUESTFS_PROC_INTERNAL_READLINKLIST = 206,
 	GUESTFS_PROC_PREAD = 207,
@@ -4157,9 +4185,12 @@ enum guestfs_procedure {
 	GUESTFS_PROC_BLKDISCARDZEROES = 418,
 	GUESTFS_PROC_CPIO_OUT = 419,
 	GUESTFS_PROC_JOURNAL_GET_REALTIME_USEC = 420,
+	GUESTFS_PROC_STATNS = 421,
+	GUESTFS_PROC_LSTATNS = 422,
+	GUESTFS_PROC_INTERNAL_LSTATNSLIST = 423,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 420
+#define GUESTFS_MAX_PROC_NR 423
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4230,6 +4261,8 @@ extern  bool_t xdr_guestfs_int_lvm_lv (XDR *, guestfs_int_lvm_lv*);
 extern  bool_t xdr_guestfs_int_lvm_lv_list (XDR *, guestfs_int_lvm_lv_list*);
 extern  bool_t xdr_guestfs_int_stat (XDR *, guestfs_int_stat*);
 extern  bool_t xdr_guestfs_int_stat_list (XDR *, guestfs_int_stat_list*);
+extern  bool_t xdr_guestfs_int_statns (XDR *, guestfs_int_statns*);
+extern  bool_t xdr_guestfs_int_statns_list (XDR *, guestfs_int_statns_list*);
 extern  bool_t xdr_guestfs_int_statvfs (XDR *, guestfs_int_statvfs*);
 extern  bool_t xdr_guestfs_int_statvfs_list (XDR *, guestfs_int_statvfs_list*);
 extern  bool_t xdr_guestfs_int_dirent (XDR *, guestfs_int_dirent*);
@@ -4316,10 +4349,6 @@ extern  bool_t xdr_guestfs_command_args (XDR *, guestfs_command_args*);
 extern  bool_t xdr_guestfs_command_ret (XDR *, guestfs_command_ret*);
 extern  bool_t xdr_guestfs_command_lines_args (XDR *, guestfs_command_lines_args*);
 extern  bool_t xdr_guestfs_command_lines_ret (XDR *, guestfs_command_lines_ret*);
-extern  bool_t xdr_guestfs_stat_args (XDR *, guestfs_stat_args*);
-extern  bool_t xdr_guestfs_stat_ret (XDR *, guestfs_stat_ret*);
-extern  bool_t xdr_guestfs_lstat_args (XDR *, guestfs_lstat_args*);
-extern  bool_t xdr_guestfs_lstat_ret (XDR *, guestfs_lstat_ret*);
 extern  bool_t xdr_guestfs_statvfs_args (XDR *, guestfs_statvfs_args*);
 extern  bool_t xdr_guestfs_statvfs_ret (XDR *, guestfs_statvfs_ret*);
 extern  bool_t xdr_guestfs_tune2fs_l_args (XDR *, guestfs_tune2fs_l_args*);
@@ -4522,8 +4551,6 @@ extern  bool_t xdr_guestfs_truncate_size_args (XDR *, guestfs_truncate_size_args
 extern  bool_t xdr_guestfs_utimens_args (XDR *, guestfs_utimens_args*);
 extern  bool_t xdr_guestfs_mkdir_mode_args (XDR *, guestfs_mkdir_mode_args*);
 extern  bool_t xdr_guestfs_lchown_args (XDR *, guestfs_lchown_args*);
-extern  bool_t xdr_guestfs_internal_lstatlist_args (XDR *, guestfs_internal_lstatlist_args*);
-extern  bool_t xdr_guestfs_internal_lstatlist_ret (XDR *, guestfs_internal_lstatlist_ret*);
 extern  bool_t xdr_guestfs_internal_lxattrlist_args (XDR *, guestfs_internal_lxattrlist_args*);
 extern  bool_t xdr_guestfs_internal_lxattrlist_ret (XDR *, guestfs_internal_lxattrlist_ret*);
 extern  bool_t xdr_guestfs_internal_readlinklist_args (XDR *, guestfs_internal_readlinklist_args*);
@@ -4806,6 +4833,12 @@ extern  bool_t xdr_guestfs_blkdiscardzeroes_args (XDR *, guestfs_blkdiscardzeroe
 extern  bool_t xdr_guestfs_blkdiscardzeroes_ret (XDR *, guestfs_blkdiscardzeroes_ret*);
 extern  bool_t xdr_guestfs_cpio_out_args (XDR *, guestfs_cpio_out_args*);
 extern  bool_t xdr_guestfs_journal_get_realtime_usec_ret (XDR *, guestfs_journal_get_realtime_usec_ret*);
+extern  bool_t xdr_guestfs_statns_args (XDR *, guestfs_statns_args*);
+extern  bool_t xdr_guestfs_statns_ret (XDR *, guestfs_statns_ret*);
+extern  bool_t xdr_guestfs_lstatns_args (XDR *, guestfs_lstatns_args*);
+extern  bool_t xdr_guestfs_lstatns_ret (XDR *, guestfs_lstatns_ret*);
+extern  bool_t xdr_guestfs_internal_lstatnslist_args (XDR *, guestfs_internal_lstatnslist_args*);
+extern  bool_t xdr_guestfs_internal_lstatnslist_ret (XDR *, guestfs_internal_lstatnslist_ret*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -4826,6 +4859,8 @@ extern bool_t xdr_guestfs_int_lvm_lv ();
 extern bool_t xdr_guestfs_int_lvm_lv_list ();
 extern bool_t xdr_guestfs_int_stat ();
 extern bool_t xdr_guestfs_int_stat_list ();
+extern bool_t xdr_guestfs_int_statns ();
+extern bool_t xdr_guestfs_int_statns_list ();
 extern bool_t xdr_guestfs_int_statvfs ();
 extern bool_t xdr_guestfs_int_statvfs_list ();
 extern bool_t xdr_guestfs_int_dirent ();
@@ -4912,10 +4947,6 @@ extern bool_t xdr_guestfs_command_args ();
 extern bool_t xdr_guestfs_command_ret ();
 extern bool_t xdr_guestfs_command_lines_args ();
 extern bool_t xdr_guestfs_command_lines_ret ();
-extern bool_t xdr_guestfs_stat_args ();
-extern bool_t xdr_guestfs_stat_ret ();
-extern bool_t xdr_guestfs_lstat_args ();
-extern bool_t xdr_guestfs_lstat_ret ();
 extern bool_t xdr_guestfs_statvfs_args ();
 extern bool_t xdr_guestfs_statvfs_ret ();
 extern bool_t xdr_guestfs_tune2fs_l_args ();
@@ -5118,8 +5149,6 @@ extern bool_t xdr_guestfs_truncate_size_args ();
 extern bool_t xdr_guestfs_utimens_args ();
 extern bool_t xdr_guestfs_mkdir_mode_args ();
 extern bool_t xdr_guestfs_lchown_args ();
-extern bool_t xdr_guestfs_internal_lstatlist_args ();
-extern bool_t xdr_guestfs_internal_lstatlist_ret ();
 extern bool_t xdr_guestfs_internal_lxattrlist_args ();
 extern bool_t xdr_guestfs_internal_lxattrlist_ret ();
 extern bool_t xdr_guestfs_internal_readlinklist_args ();
@@ -5402,6 +5431,12 @@ extern bool_t xdr_guestfs_blkdiscardzeroes_args ();
 extern bool_t xdr_guestfs_blkdiscardzeroes_ret ();
 extern bool_t xdr_guestfs_cpio_out_args ();
 extern bool_t xdr_guestfs_journal_get_realtime_usec_ret ();
+extern bool_t xdr_guestfs_statns_args ();
+extern bool_t xdr_guestfs_statns_ret ();
+extern bool_t xdr_guestfs_lstatns_args ();
+extern bool_t xdr_guestfs_lstatns_ret ();
+extern bool_t xdr_guestfs_internal_lstatnslist_args ();
+extern bool_t xdr_guestfs_internal_lstatnslist_ret ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

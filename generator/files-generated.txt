@@ -94,6 +94,7 @@ gobject/include/guestfs-gobject/struct-lvm_vg.h
 gobject/include/guestfs-gobject/struct-mdstat.h
 gobject/include/guestfs-gobject/struct-partition.h
 gobject/include/guestfs-gobject/struct-stat.h
+gobject/include/guestfs-gobject/struct-statns.h
 gobject/include/guestfs-gobject/struct-statvfs.h
 gobject/include/guestfs-gobject/struct-utsname.h
 gobject/include/guestfs-gobject/struct-version.h
@@ -169,6 +170,7 @@ gobject/src/struct-lvm_vg.c
 gobject/src/struct-mdstat.c
 gobject/src/struct-partition.c
 gobject/src/struct-stat.c
+gobject/src/struct-statns.c
 gobject/src/struct-statvfs.c
 gobject/src/struct-utsname.c
 gobject/src/struct-version.c
@@ -197,6 +199,7 @@ java/com/redhat/et/libguestfs/MDStat.java
 java/com/redhat/et/libguestfs/PV.java
 java/com/redhat/et/libguestfs/Partition.java
 java/com/redhat/et/libguestfs/Stat.java
+java/com/redhat/et/libguestfs/StatNS.java
 java/com/redhat/et/libguestfs/StatVFS.java
 java/com/redhat/et/libguestfs/UTSName.java
 java/com/redhat/et/libguestfs/VG.java

@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsStatNS</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsStat.html" title="GuestfsStat">
+<link rel="next" href="GuestfsStatVFS.html" title="GuestfsStatVFS">
+<meta name="generator" content="GTK-Doc V1.19 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsStat.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsStatVFS.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsStatNS.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsStatNS.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsStatNS.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsStatNS"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsStatNS.top_of_page"></a>GuestfsStatNS</span></h2>
+<p>GuestfsStatNS</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsStatNS.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsStatNS.html#GuestfsStatNS-struct" title="struct GuestfsStatNS">GuestfsStatNS</a>;
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsStatNS.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GBoxed
+   +----GuestfsStatNS
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsStatNS.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="GuestfsStatNS.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsStatNS-struct"></a><h3>struct GuestfsStatNS</h3>
+<pre class="programlisting">struct GuestfsStatNS {
+  gint64 st_dev;
+  gint64 st_ino;
+  gint64 st_mode;
+  gint64 st_nlink;
+  gint64 st_uid;
+  gint64 st_gid;
+  gint64 st_rdev;
+  gint64 st_size;
+  gint64 st_blksize;
+  gint64 st_blocks;
+  gint64 st_atime_sec;
+  gint64 st_atime_nsec;
+  gint64 st_mtime_sec;
+  gint64 st_mtime_nsec;
+  gint64 st_ctime_sec;
+  gint64 st_ctime_nsec;
+  gint64 st_spare1;
+  gint64 st_spare2;
+  gint64 st_spare3;
+  gint64 st_spare4;
+  gint64 st_spare5;
+  gint64 st_spare6;
+};
+</pre>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-dev"></a>st_dev</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-ino"></a>st_ino</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-mode"></a>st_mode</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-nlink"></a>st_nlink</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-uid"></a>st_uid</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-gid"></a>st_gid</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-rdev"></a>st_rdev</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-size"></a>st_size</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-blksize"></a>st_blksize</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-blocks"></a>st_blocks</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-atime-sec"></a>st_atime_sec</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-atime-nsec"></a>st_atime_nsec</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-mtime-sec"></a>st_mtime_sec</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-mtime-nsec"></a>st_mtime_nsec</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-ctime-sec"></a>st_ctime_sec</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-ctime-nsec"></a>st_ctime_nsec</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-spare1"></a>st_spare1</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-spare2"></a>st_spare2</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-spare3"></a>st_spare3</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-spare4"></a>st_spare4</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-spare5"></a>st_spare5</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsStatNS-struct.st-spare6"></a>st_spare6</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.19</div>
+</body>
+</html>

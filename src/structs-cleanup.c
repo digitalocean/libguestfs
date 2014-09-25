@@ -93,6 +93,18 @@ guestfs___cleanup_free_stat_list (void *ptr)
 }
 
 void
+guestfs___cleanup_free_statns (void *ptr)
+{
+  guestfs_free_statns (* (struct guestfs_statns **) ptr);
+}
+
+void
+guestfs___cleanup_free_statns_list (void *ptr)
+{
+  guestfs_free_statns_list (* (struct guestfs_statns_list **) ptr);
+}
+
+void
 guestfs___cleanup_free_statvfs (void *ptr)
 {
   guestfs_free_statvfs (* (struct guestfs_statvfs **) ptr);

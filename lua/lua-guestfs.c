@@ -94,6 +94,8 @@ static void push_version (lua_State *L, struct guestfs_version *v);
 static void push_int_bool (lua_State *L, struct guestfs_int_bool *v);
 static void push_partition (lua_State *L, struct guestfs_partition *v);
 static void push_partition_list (lua_State *L, struct guestfs_partition_list *v);
+static void push_statns (lua_State *L, struct guestfs_statns *v);
+static void push_statns_list (lua_State *L, struct guestfs_statns_list *v);
 static void push_application2 (lua_State *L, struct guestfs_application2 *v);
 static void push_application2_list (lua_State *L, struct guestfs_application2_list *v);
 static void push_inotify_event (lua_State *L, struct guestfs_inotify_event *v);
@@ -7912,6 +7914,55 @@ guestfs_lua_lstatlist (lua_State *L)
 }
 
 static int
+guestfs_lua_lstatns (lua_State *L)
+{
+  struct guestfs_statns *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *path;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lstatns");
+
+  path = luaL_checkstring (L, 2);
+
+  r = guestfs_lstatns (g, path);
+  if (r == NULL)
+    return last_error (L, g);
+
+  push_statns (L, r);
+  guestfs_free_statns (r);
+  return 1;
+}
+
+static int
+guestfs_lua_lstatnslist (lua_State *L)
+{
+  struct guestfs_statns_list *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *path;
+  char **names;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lstatnslist");
+
+  path = luaL_checkstring (L, 2);
+  names = get_string_list (L, 3);
+
+  r = guestfs_lstatnslist (g, path, names);
+  free (names);
+  if (r == NULL)
+    return last_error (L, g);
+
+  push_statns_list (L, r);
+  guestfs_free_statns_list (r);
+  return 1;
+}
+
+static int
 guestfs_lua_luks_add_key (lua_State *L)
 {
   int r;
@@ -12156,6 +12207,29 @@ guestfs_lua_stat (lua_State *L)
 }
 
 static int
+guestfs_lua_statns (lua_State *L)
+{
+  struct guestfs_statns *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *path;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "statns");
+
+  path = luaL_checkstring (L, 2);
+
+  r = guestfs_statns (g, path);
+  if (r == NULL)
+    return last_error (L, g);
+
+  push_statns (L, r);
+  guestfs_free_statns (r);
+  return 1;
+}
+
+static int
 guestfs_lua_statvfs (lua_State *L)
 {
   struct guestfs_statvfs *r;
@@ -14455,6 +14529,90 @@ push_partition_list (lua_State *L, struct guestfs_partition_list *v)
 }
 
 static void
+push_statns (lua_State *L, struct guestfs_statns *v)
+{
+  lua_newtable (L);
+  lua_pushliteral (L, "st_dev");
+  push_int64 (L, (int64_t) v->st_dev);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_ino");
+  push_int64 (L, (int64_t) v->st_ino);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_mode");
+  push_int64 (L, (int64_t) v->st_mode);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_nlink");
+  push_int64 (L, (int64_t) v->st_nlink);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_uid");
+  push_int64 (L, (int64_t) v->st_uid);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_gid");
+  push_int64 (L, (int64_t) v->st_gid);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_rdev");
+  push_int64 (L, (int64_t) v->st_rdev);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_size");
+  push_int64 (L, (int64_t) v->st_size);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_blksize");
+  push_int64 (L, (int64_t) v->st_blksize);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_blocks");
+  push_int64 (L, (int64_t) v->st_blocks);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_atime_sec");
+  push_int64 (L, (int64_t) v->st_atime_sec);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_atime_nsec");
+  push_int64 (L, (int64_t) v->st_atime_nsec);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_mtime_sec");
+  push_int64 (L, (int64_t) v->st_mtime_sec);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_mtime_nsec");
+  push_int64 (L, (int64_t) v->st_mtime_nsec);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_ctime_sec");
+  push_int64 (L, (int64_t) v->st_ctime_sec);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_ctime_nsec");
+  push_int64 (L, (int64_t) v->st_ctime_nsec);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_spare1");
+  push_int64 (L, (int64_t) v->st_spare1);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_spare2");
+  push_int64 (L, (int64_t) v->st_spare2);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_spare3");
+  push_int64 (L, (int64_t) v->st_spare3);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_spare4");
+  push_int64 (L, (int64_t) v->st_spare4);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_spare5");
+  push_int64 (L, (int64_t) v->st_spare5);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "st_spare6");
+  push_int64 (L, (int64_t) v->st_spare6);
+  lua_settable (L, -3);
+}
+
+static void
+push_statns_list (lua_State *L, struct guestfs_statns_list *v)
+{
+  size_t i;
+
+  lua_newtable (L);
+  for (i = 0; i < v->len; ++i) {
+    push_statns (L, &v->val[i]);
+    lua_rawseti (L, -2, i+1 /* because of base 1 arrays */);
+  }
+}
+
+static void
 push_application2 (lua_State *L, struct guestfs_application2 *v)
 {
   lua_newtable (L);
@@ -15418,6 +15576,8 @@ static luaL_Reg methods[] = {
   { "lsetxattr", guestfs_lua_lsetxattr },
   { "lstat", guestfs_lua_lstat },
   { "lstatlist", guestfs_lua_lstatlist },
+  { "lstatns", guestfs_lua_lstatns },
+  { "lstatnslist", guestfs_lua_lstatnslist },
   { "luks_add_key", guestfs_lua_luks_add_key },
   { "luks_close", guestfs_lua_luks_close },
   { "luks_format", guestfs_lua_luks_format },
@@ -15586,6 +15746,7 @@ static luaL_Reg methods[] = {
   { "shutdown", guestfs_lua_shutdown },
   { "sleep", guestfs_lua_sleep },
   { "stat", guestfs_lua_stat },
+  { "statns", guestfs_lua_statns },
   { "statvfs", guestfs_lua_statvfs },
   { "strings", guestfs_lua_strings },
   { "strings_e", guestfs_lua_strings_e },

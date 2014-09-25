@@ -1749,82 +1749,6 @@ done_no_free:
 }
 
 static void
-stat_stub (XDR *xdr_in)
-{
-  guestfs_int_stat *r;
-  struct guestfs_stat_args args;
-  const char *path;
-
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done_no_free;
-  }
-
-  memset (&args, 0, sizeof args);
-
-  if (!xdr_guestfs_stat_args (xdr_in, &args)) {
-    reply_with_error ("daemon failed to decode procedure arguments");
-    goto done;
-  }
-  path = args.path;
-  ABS_PATH (path, , goto done);
-
-  NEED_ROOT (, goto done);
-  r = do_stat (path);
-  if (r == NULL)
-    /* do_stat has already called reply_with_error */
-    goto done;
-
-  struct guestfs_stat_ret ret;
-  ret.statbuf = *r;
-  free (r);
-  reply ((xdrproc_t) xdr_guestfs_stat_ret, (char *) &ret);
-  xdr_free ((xdrproc_t) xdr_guestfs_stat_ret, (char *) &ret);
-done:
-  xdr_free ((xdrproc_t) xdr_guestfs_stat_args, (char *) &args);
-done_no_free:
-  return;
-}
-
-static void
-lstat_stub (XDR *xdr_in)
-{
-  guestfs_int_stat *r;
-  struct guestfs_lstat_args args;
-  const char *path;
-
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done_no_free;
-  }
-
-  memset (&args, 0, sizeof args);
-
-  if (!xdr_guestfs_lstat_args (xdr_in, &args)) {
-    reply_with_error ("daemon failed to decode procedure arguments");
-    goto done;
-  }
-  path = args.path;
-  ABS_PATH (path, , goto done);
-
-  NEED_ROOT (, goto done);
-  r = do_lstat (path);
-  if (r == NULL)
-    /* do_lstat has already called reply_with_error */
-    goto done;
-
-  struct guestfs_lstat_ret ret;
-  ret.statbuf = *r;
-  free (r);
-  reply ((xdrproc_t) xdr_guestfs_lstat_ret, (char *) &ret);
-  xdr_free ((xdrproc_t) xdr_guestfs_lstat_ret, (char *) &ret);
-done:
-  xdr_free ((xdrproc_t) xdr_guestfs_lstat_args, (char *) &args);
-done_no_free:
-  return;
-}
-
-static void
 statvfs_stub (XDR *xdr_in)
 {
   guestfs_int_statvfs *r;
@@ -7282,54 +7206,6 @@ lchown_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lchown_args, (char *) &args);
-done_no_free:
-  return;
-}
-
-static void
-internal_lstatlist_stub (XDR *xdr_in)
-{
-  guestfs_int_stat_list *r;
-  struct guestfs_internal_lstatlist_args args;
-  const char *path;
-  char **names;
-
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done_no_free;
-  }
-
-  memset (&args, 0, sizeof args);
-
-  if (!xdr_guestfs_internal_lstatlist_args (xdr_in, &args)) {
-    reply_with_error ("daemon failed to decode procedure arguments");
-    goto done;
-  }
-  path = args.path;
-  ABS_PATH (path, , goto done);
-  /* Ugly, but safe and avoids copying the strings. */
-  names = realloc (args.names.names_val,
-                sizeof (char *) * (args.names.names_len+1));
-  if (names == NULL) {
-    reply_with_perror ("realloc");
-    goto done;
-  }
-  names[args.names.names_len] = NULL;
-  args.names.names_val = names;
-
-  NEED_ROOT (, goto done);
-  r = do_internal_lstatlist (path, names);
-  if (r == NULL)
-    /* do_internal_lstatlist has already called reply_with_error */
-    goto done;
-
-  struct guestfs_internal_lstatlist_ret ret;
-  ret.statbufs = *r;
-  free (r);
-  reply ((xdrproc_t) xdr_guestfs_internal_lstatlist_ret, (char *) &ret);
-  xdr_free ((xdrproc_t) xdr_guestfs_internal_lstatlist_ret, (char *) &ret);
-done:
-  xdr_free ((xdrproc_t) xdr_guestfs_internal_lstatlist_args, (char *) &args);
 done_no_free:
   return;
 }
@@ -15605,6 +15481,130 @@ done_no_free:
   return;
 }
 
+static void
+statns_stub (XDR *xdr_in)
+{
+  guestfs_int_statns *r;
+  struct guestfs_statns_args args;
+  const char *path;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_statns_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_statns (path);
+  if (r == NULL)
+    /* do_statns has already called reply_with_error */
+    goto done;
+
+  struct guestfs_statns_ret ret;
+  ret.statbuf = *r;
+  free (r);
+  reply ((xdrproc_t) xdr_guestfs_statns_ret, (char *) &ret);
+  xdr_free ((xdrproc_t) xdr_guestfs_statns_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_statns_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+lstatns_stub (XDR *xdr_in)
+{
+  guestfs_int_statns *r;
+  struct guestfs_lstatns_args args;
+  const char *path;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_lstatns_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_lstatns (path);
+  if (r == NULL)
+    /* do_lstatns has already called reply_with_error */
+    goto done;
+
+  struct guestfs_lstatns_ret ret;
+  ret.statbuf = *r;
+  free (r);
+  reply ((xdrproc_t) xdr_guestfs_lstatns_ret, (char *) &ret);
+  xdr_free ((xdrproc_t) xdr_guestfs_lstatns_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_lstatns_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+internal_lstatnslist_stub (XDR *xdr_in)
+{
+  guestfs_int_statns_list *r;
+  struct guestfs_internal_lstatnslist_args args;
+  const char *path;
+  char **names;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_internal_lstatnslist_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+  /* Ugly, but safe and avoids copying the strings. */
+  names = realloc (args.names.names_val,
+                sizeof (char *) * (args.names.names_len+1));
+  if (names == NULL) {
+    reply_with_perror ("realloc");
+    goto done;
+  }
+  names[args.names.names_len] = NULL;
+  args.names.names_val = names;
+
+  NEED_ROOT (, goto done);
+  r = do_internal_lstatnslist (path, names);
+  if (r == NULL)
+    /* do_internal_lstatnslist has already called reply_with_error */
+    goto done;
+
+  struct guestfs_internal_lstatnslist_ret ret;
+  ret.statbufs = *r;
+  free (r);
+  reply ((xdrproc_t) xdr_guestfs_internal_lstatnslist_ret, (char *) &ret);
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_lstatnslist_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_lstatnslist_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -15748,12 +15748,6 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_COMMAND_LINES:
       command_lines_stub (xdr_in);
-      break;
-    case GUESTFS_PROC_STAT:
-      stat_stub (xdr_in);
-      break;
-    case GUESTFS_PROC_LSTAT:
-      lstat_stub (xdr_in);
       break;
     case GUESTFS_PROC_STATVFS:
       statvfs_stub (xdr_in);
@@ -16198,9 +16192,6 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_LCHOWN:
       lchown_stub (xdr_in);
-      break;
-    case GUESTFS_PROC_INTERNAL_LSTATLIST:
-      internal_lstatlist_stub (xdr_in);
       break;
     case GUESTFS_PROC_INTERNAL_LXATTRLIST:
       internal_lxattrlist_stub (xdr_in);
@@ -16846,6 +16837,15 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_JOURNAL_GET_REALTIME_USEC:
       journal_get_realtime_usec_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_STATNS:
+      statns_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LSTATNS:
+      lstatns_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INTERNAL_LSTATNSLIST:
+      internal_lstatnslist_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

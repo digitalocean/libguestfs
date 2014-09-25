@@ -136,6 +136,33 @@ struct guestfs_int_stat {
 
 typedef struct guestfs_int_stat guestfs_int_stat_list<>;
 
+struct guestfs_int_statns {
+  int64_t st_dev;
+  int64_t st_ino;
+  int64_t st_mode;
+  int64_t st_nlink;
+  int64_t st_uid;
+  int64_t st_gid;
+  int64_t st_rdev;
+  int64_t st_size;
+  int64_t st_blksize;
+  int64_t st_blocks;
+  int64_t st_atime_sec;
+  int64_t st_atime_nsec;
+  int64_t st_mtime_sec;
+  int64_t st_mtime_nsec;
+  int64_t st_ctime_sec;
+  int64_t st_ctime_nsec;
+  int64_t st_spare1;
+  int64_t st_spare2;
+  int64_t st_spare3;
+  int64_t st_spare4;
+  int64_t st_spare5;
+  int64_t st_spare6;
+};
+
+typedef struct guestfs_int_statns guestfs_int_statns_list<>;
+
 struct guestfs_int_statvfs {
   int64_t bsize;
   int64_t frsize;
@@ -571,22 +598,6 @@ struct guestfs_command_lines_args {
 
 struct guestfs_command_lines_ret {
   guestfs_str lines<>;
-};
-
-struct guestfs_stat_args {
-  string path<>;
-};
-
-struct guestfs_stat_ret {
-  guestfs_int_stat statbuf;
-};
-
-struct guestfs_lstat_args {
-  string path<>;
-};
-
-struct guestfs_lstat_ret {
-  guestfs_int_stat statbuf;
 };
 
 struct guestfs_statvfs_args {
@@ -1498,15 +1509,6 @@ struct guestfs_lchown_args {
   int owner;
   int group;
   string path<>;
-};
-
-struct guestfs_internal_lstatlist_args {
-  string path<>;
-  guestfs_str names<>;
-};
-
-struct guestfs_internal_lstatlist_ret {
-  guestfs_int_stat_list statbufs;
 };
 
 struct guestfs_internal_lxattrlist_args {
@@ -2894,6 +2896,31 @@ struct guestfs_journal_get_realtime_usec_ret {
   int64_t usec;
 };
 
+struct guestfs_statns_args {
+  string path<>;
+};
+
+struct guestfs_statns_ret {
+  guestfs_int_statns statbuf;
+};
+
+struct guestfs_lstatns_args {
+  string path<>;
+};
+
+struct guestfs_lstatns_ret {
+  guestfs_int_statns statbuf;
+};
+
+struct guestfs_internal_lstatnslist_args {
+  string path<>;
+  guestfs_str names<>;
+};
+
+struct guestfs_internal_lstatnslist_ret {
+  guestfs_int_statns_list statbufs;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -2943,8 +2970,6 @@ enum guestfs_procedure {
   GUESTFS_PROC_FILE = 49,
   GUESTFS_PROC_COMMAND = 50,
   GUESTFS_PROC_COMMAND_LINES = 51,
-  GUESTFS_PROC_STAT = 52,
-  GUESTFS_PROC_LSTAT = 53,
   GUESTFS_PROC_STATVFS = 54,
   GUESTFS_PROC_TUNE2FS_L = 55,
   GUESTFS_PROC_BLOCKDEV_SETRO = 56,
@@ -3093,7 +3118,6 @@ enum guestfs_procedure {
   GUESTFS_PROC_UTIMENS = 201,
   GUESTFS_PROC_MKDIR_MODE = 202,
   GUESTFS_PROC_LCHOWN = 203,
-  GUESTFS_PROC_INTERNAL_LSTATLIST = 204,
   GUESTFS_PROC_INTERNAL_LXATTRLIST = 205,
   GUESTFS_PROC_INTERNAL_READLINKLIST = 206,
   GUESTFS_PROC_PREAD = 207,
@@ -3308,10 +3332,13 @@ enum guestfs_procedure {
   GUESTFS_PROC_BLKDISCARD = 417,
   GUESTFS_PROC_BLKDISCARDZEROES = 418,
   GUESTFS_PROC_CPIO_OUT = 419,
-  GUESTFS_PROC_JOURNAL_GET_REALTIME_USEC = 420
+  GUESTFS_PROC_JOURNAL_GET_REALTIME_USEC = 420,
+  GUESTFS_PROC_STATNS = 421,
+  GUESTFS_PROC_LSTATNS = 422,
+  GUESTFS_PROC_INTERNAL_LSTATNSLIST = 423
 };
 
-const GUESTFS_MAX_PROC_NR = 420;
+const GUESTFS_MAX_PROC_NR = 423;
 
 /* The remote procedure call protocol. */
 

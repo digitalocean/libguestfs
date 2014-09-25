@@ -234,8 +234,6 @@ extern int do_lvm_remove_all (void);
 extern char *do_file (const char *path);
 extern char *do_command (char *const *arguments);
 extern char **do_command_lines (char *const *arguments);
-extern guestfs_int_stat *do_stat (const char *path);
-extern guestfs_int_stat *do_lstat (const char *path);
 extern guestfs_int_statvfs *do_statvfs (const char *path);
 extern char **do_tune2fs_l (const char *device);
 extern int do_blockdev_setro (const char *device);
@@ -384,7 +382,6 @@ extern int do_truncate_size (const char *path, int64_t size);
 extern int do_utimens (const char *path, int64_t atsecs, int64_t atnsecs, int64_t mtsecs, int64_t mtnsecs);
 extern int do_mkdir_mode (const char *path, int mode);
 extern int do_lchown (int owner, int group, const char *path);
-extern guestfs_int_stat_list *do_internal_lstatlist (const char *path, char *const *names);
 extern guestfs_int_xattr_list *do_internal_lxattrlist (const char *path, char *const *names);
 extern char **do_internal_readlinklist (const char *path, char *const *names);
 extern char *do_pread (const char *path, int count, int64_t offset, size_t *size_r);
@@ -600,5 +597,8 @@ extern int do_blkdiscard (const char *device);
 extern int do_blkdiscardzeroes (const char *device);
 extern int do_cpio_out (const char *directory, const char *format);
 extern int64_t do_journal_get_realtime_usec (void);
+extern guestfs_int_statns *do_statns (const char *path);
+extern guestfs_int_statns *do_lstatns (const char *path);
+extern guestfs_int_statns_list *do_internal_lstatnslist (const char *path, char *const *names);
 
 #endif /* GUESTFSD_ACTIONS_H */

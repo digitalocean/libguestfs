@@ -254,6 +254,31 @@ type stat = {
   ctime : int64;
 }
 
+type statns = {
+  st_dev : int64;
+  st_ino : int64;
+  st_mode : int64;
+  st_nlink : int64;
+  st_uid : int64;
+  st_gid : int64;
+  st_rdev : int64;
+  st_size : int64;
+  st_blksize : int64;
+  st_blocks : int64;
+  st_atime_sec : int64;
+  st_atime_nsec : int64;
+  st_mtime_sec : int64;
+  st_mtime_nsec : int64;
+  st_ctime_sec : int64;
+  st_ctime_nsec : int64;
+  st_spare1 : int64;
+  st_spare2 : int64;
+  st_spare3 : int64;
+  st_spare4 : int64;
+  st_spare5 : int64;
+  st_spare6 : int64;
+}
+
 type statvfs = {
   bsize : int64;
   frsize : int64;
@@ -625,6 +650,8 @@ external ls0 : t -> string -> string -> unit = "ocaml_guestfs_ls0"
 external lsetxattr : t -> string -> string -> int -> string -> unit = "ocaml_guestfs_lsetxattr"
 external lstat : t -> string -> stat = "ocaml_guestfs_lstat"
 external lstatlist : t -> string -> string array -> stat array = "ocaml_guestfs_lstatlist"
+external lstatns : t -> string -> statns = "ocaml_guestfs_lstatns"
+external lstatnslist : t -> string -> string array -> statns array = "ocaml_guestfs_lstatnslist"
 external luks_add_key : t -> string -> string -> string -> int -> unit = "ocaml_guestfs_luks_add_key"
 external luks_close : t -> string -> unit = "ocaml_guestfs_luks_close"
 external luks_format : t -> string -> string -> int -> unit = "ocaml_guestfs_luks_format"
@@ -796,6 +823,7 @@ external sh_lines : t -> string -> string array = "ocaml_guestfs_sh_lines"
 external shutdown : t -> unit = "ocaml_guestfs_shutdown"
 external sleep : t -> int -> unit = "ocaml_guestfs_sleep"
 external stat : t -> string -> stat = "ocaml_guestfs_stat"
+external statns : t -> string -> statns = "ocaml_guestfs_statns"
 external statvfs : t -> string -> statvfs = "ocaml_guestfs_statvfs"
 external strings : t -> string -> string array = "ocaml_guestfs_strings"
 external strings_e : t -> string -> string -> string array = "ocaml_guestfs_strings_e"
@@ -1194,6 +1222,8 @@ class guestfs ?environment ?close_on_exit () =
     method lsetxattr = lsetxattr g
     method lstat = lstat g
     method lstatlist = lstatlist g
+    method lstatns = lstatns g
+    method lstatnslist = lstatnslist g
     method luks_add_key = luks_add_key g
     method luks_close = luks_close g
     method luks_format = luks_format g
@@ -1365,6 +1395,7 @@ class guestfs ?environment ?close_on_exit () =
     method shutdown () = shutdown g
     method sleep = sleep g
     method stat = stat g
+    method statns = statns g
     method statvfs = statvfs g
     method strings = strings g
     method strings_e = strings_e g

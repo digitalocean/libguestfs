@@ -8987,3 +8987,101 @@ guestfs_journal_get_realtime_usec (guestfs_h *g)
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC struct guestfs_statns *
+guestfs_lstatns (guestfs_h *g,
+                 const char *path)
+{
+  struct guestfs_lstatns_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_lstatns_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  struct guestfs_statns *ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "lstatns", 7);
+  if (path == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "lstatns", "path");
+    return NULL;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "lstatns");
+    fprintf (trace_buffer.fp, " \"%s\"", path);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "lstatns") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "lstatns", "NULL");
+    return NULL;
+  }
+
+  args.path = (char *) path;
+  serial = guestfs___send (g, GUESTFS_PROC_LSTATNS,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_lstatns_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "lstatns", "NULL");
+    return NULL;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "lstatns", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_lstatns_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "lstatns", "NULL");
+    return NULL;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_LSTATNS, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "lstatns", "NULL");
+    return NULL;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "lstatns", "NULL");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "lstatns", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "lstatns",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return NULL;
+  }
+
+  /* caller will free this */
+  ret_v = safe_memdup (g, &ret.statbuf, sizeof (ret.statbuf));
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "lstatns");
+    fprintf (trace_buffer.fp, "<struct guestfs_statns *>");
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+

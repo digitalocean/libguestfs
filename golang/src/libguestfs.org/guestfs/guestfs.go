@@ -729,6 +729,69 @@ func return_Stat_list (c *C.struct_guestfs_stat_list) *[]Stat {
     return &r
 }
 
+type StatNS struct {
+    st_dev int64
+    st_ino int64
+    st_mode int64
+    st_nlink int64
+    st_uid int64
+    st_gid int64
+    st_rdev int64
+    st_size int64
+    st_blksize int64
+    st_blocks int64
+    st_atime_sec int64
+    st_atime_nsec int64
+    st_mtime_sec int64
+    st_mtime_nsec int64
+    st_ctime_sec int64
+    st_ctime_nsec int64
+    st_spare1 int64
+    st_spare2 int64
+    st_spare3 int64
+    st_spare4 int64
+    st_spare5 int64
+    st_spare6 int64
+}
+
+func return_StatNS (c *C.struct_guestfs_statns) *StatNS {
+    r := StatNS{}
+    r.st_dev = int64 (c.st_dev)
+    r.st_ino = int64 (c.st_ino)
+    r.st_mode = int64 (c.st_mode)
+    r.st_nlink = int64 (c.st_nlink)
+    r.st_uid = int64 (c.st_uid)
+    r.st_gid = int64 (c.st_gid)
+    r.st_rdev = int64 (c.st_rdev)
+    r.st_size = int64 (c.st_size)
+    r.st_blksize = int64 (c.st_blksize)
+    r.st_blocks = int64 (c.st_blocks)
+    r.st_atime_sec = int64 (c.st_atime_sec)
+    r.st_atime_nsec = int64 (c.st_atime_nsec)
+    r.st_mtime_sec = int64 (c.st_mtime_sec)
+    r.st_mtime_nsec = int64 (c.st_mtime_nsec)
+    r.st_ctime_sec = int64 (c.st_ctime_sec)
+    r.st_ctime_nsec = int64 (c.st_ctime_nsec)
+    r.st_spare1 = int64 (c.st_spare1)
+    r.st_spare2 = int64 (c.st_spare2)
+    r.st_spare3 = int64 (c.st_spare3)
+    r.st_spare4 = int64 (c.st_spare4)
+    r.st_spare5 = int64 (c.st_spare5)
+    r.st_spare6 = int64 (c.st_spare6)
+    return &r
+}
+
+func return_StatNS_list (c *C.struct_guestfs_statns_list) *[]StatNS {
+    nrelems := int (c.len)
+    ptr := uintptr (unsafe.Pointer (c.val))
+    elemsize := unsafe.Sizeof (*c.val)
+    r := make ([]StatNS, nrelems)
+    for i := 0; i < nrelems; i++ {
+        r[i] = *return_StatNS ((*C.struct_guestfs_statns) (unsafe.Pointer (ptr)))
+        ptr += elemsize    }
+    return &r
+}
+
 type StatVFS struct {
     bsize int64
     frsize int64
@@ -7389,6 +7452,45 @@ func (g *Guestfs) Lstatlist (path string, names []string) (*[]Stat, *GuestfsErro
     return return_Stat_list (r), nil
 }
 
+/* lstatns : get file information for a symbolic link */
+func (g *Guestfs) Lstatns (path string) (*StatNS, *GuestfsError) {
+    if g.g == nil {
+        return &StatNS{}, closed_handle_error ("lstatns")
+    }
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+
+    r := C.guestfs_lstatns (g.g, c_path)
+
+    if r == nil {
+        return &StatNS{}, get_error_from_handle (g, "lstatns")
+    }
+    defer C.guestfs_free_statns (r)
+    return return_StatNS (r), nil
+}
+
+/* lstatnslist : lstat on multiple files */
+func (g *Guestfs) Lstatnslist (path string, names []string) (*[]StatNS, *GuestfsError) {
+    if g.g == nil {
+        return nil, closed_handle_error ("lstatnslist")
+    }
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+
+    c_names := arg_string_list (names)
+    defer free_string_list (c_names)
+
+    r := C.guestfs_lstatnslist (g.g, c_path, c_names)
+
+    if r == nil {
+        return nil, get_error_from_handle (g, "lstatnslist")
+    }
+    defer C.guestfs_free_statns_list (r)
+    return return_StatNS_list (r), nil
+}
+
 /* luks_add_key : add a key on a LUKS encrypted device */
 func (g *Guestfs) Luks_add_key (device string, key string, newkey string, keyslot int) *GuestfsError {
     if g.g == nil {
@@ -11135,6 +11237,24 @@ func (g *Guestfs) Stat (path string) (*Stat, *GuestfsError) {
     }
     defer C.guestfs_free_stat (r)
     return return_Stat (r), nil
+}
+
+/* statns : get file information */
+func (g *Guestfs) Statns (path string) (*StatNS, *GuestfsError) {
+    if g.g == nil {
+        return &StatNS{}, closed_handle_error ("statns")
+    }
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+
+    r := C.guestfs_statns (g.g, c_path)
+
+    if r == nil {
+        return &StatNS{}, get_error_from_handle (g, "statns")
+    }
+    defer C.guestfs_free_statns (r)
+    return return_StatNS (r), nil
 }
 
 /* statvfs : get file system statistics */

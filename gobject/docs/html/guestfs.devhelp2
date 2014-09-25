@@ -20,6 +20,7 @@
       <sub name="GuestfsMDStat" link="GuestfsMDStat.html"/>
       <sub name="GuestfsPartition" link="GuestfsPartition.html"/>
       <sub name="GuestfsStat" link="GuestfsStat.html"/>
+      <sub name="GuestfsStatNS" link="GuestfsStatNS.html"/>
       <sub name="GuestfsStatVFS" link="GuestfsStatVFS.html"/>
       <sub name="GuestfsUTSName" link="GuestfsUTSName.html"/>
       <sub name="GuestfsVersion" link="GuestfsVersion.html"/>
@@ -392,6 +393,8 @@
     <keyword type="function" name="guestfs_session_lsetxattr ()" link="GuestfsSession.html#guestfs-session-lsetxattr"/>
     <keyword type="function" name="guestfs_session_lstat ()" link="GuestfsSession.html#guestfs-session-lstat"/>
     <keyword type="function" name="guestfs_session_lstatlist ()" link="GuestfsSession.html#guestfs-session-lstatlist"/>
+    <keyword type="function" name="guestfs_session_lstatns ()" link="GuestfsSession.html#guestfs-session-lstatns"/>
+    <keyword type="function" name="guestfs_session_lstatnslist ()" link="GuestfsSession.html#guestfs-session-lstatnslist"/>
     <keyword type="function" name="guestfs_session_luks_add_key ()" link="GuestfsSession.html#guestfs-session-luks-add-key"/>
     <keyword type="function" name="guestfs_session_luks_close ()" link="GuestfsSession.html#guestfs-session-luks-close"/>
     <keyword type="function" name="guestfs_session_luks_format ()" link="GuestfsSession.html#guestfs-session-luks-format"/>
@@ -560,6 +563,7 @@
     <keyword type="function" name="guestfs_session_shutdown ()" link="GuestfsSession.html#guestfs-session-shutdown"/>
     <keyword type="function" name="guestfs_session_sleep ()" link="GuestfsSession.html#guestfs-session-sleep"/>
     <keyword type="function" name="guestfs_session_stat ()" link="GuestfsSession.html#guestfs-session-stat"/>
+    <keyword type="function" name="guestfs_session_statns ()" link="GuestfsSession.html#guestfs-session-statns"/>
     <keyword type="function" name="guestfs_session_statvfs ()" link="GuestfsSession.html#guestfs-session-statvfs"/>
     <keyword type="function" name="guestfs_session_strings ()" link="GuestfsSession.html#guestfs-session-strings"/>
     <keyword type="function" name="guestfs_session_strings_e ()" link="GuestfsSession.html#guestfs-session-strings-e"/>
@@ -662,6 +666,7 @@
     <keyword type="struct" name="struct GuestfsMDStat" link="GuestfsMDStat.html#GuestfsMDStat-struct"/>
     <keyword type="struct" name="struct GuestfsPartition" link="GuestfsPartition.html#GuestfsPartition-struct"/>
     <keyword type="struct" name="struct GuestfsStat" link="GuestfsStat.html#GuestfsStat-struct"/>
+    <keyword type="struct" name="struct GuestfsStatNS" link="GuestfsStatNS.html#GuestfsStatNS-struct"/>
     <keyword type="struct" name="struct GuestfsStatVFS" link="GuestfsStatVFS.html#GuestfsStatVFS-struct"/>
     <keyword type="struct" name="struct GuestfsUTSName" link="GuestfsUTSName.html#GuestfsUTSName-struct"/>
     <keyword type="struct" name="struct GuestfsVersion" link="GuestfsVersion.html#GuestfsVersion-struct"/>

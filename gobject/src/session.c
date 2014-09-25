@@ -14428,7 +14428,7 @@ guestfs_session_lstat (GuestfsSession *session, const gchar *path, GError **err)
  * 
  * On return you get a list of stat structs, with a one-to-one
  * correspondence to the @names list. If any name did not exist or could
- * not be lstat'd, then the @ino field of that structure is set to @-1.
+ * not be lstat'd, then the @st_ino field of that structure is set to @-1.
  * 
  * This call is intended for programs that want to efficiently list a
  * directory contents without making many round-trips. See also
@@ -14473,6 +14473,140 @@ guestfs_session_lstatlist (GuestfsSession *session, const gchar *path, gchar *co
     l[i]->ctime = ret->val[i].ctime;
   }
   guestfs_free_stat_list (ret);
+  l[i] = NULL;
+  return l;
+}
+
+/**
+ * guestfs_session_lstatns:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * get file information for a symbolic link
+ *
+ * Returns file information for the given @path.
+ * 
+ * This is the same as guestfs_session_statns() except that if @path is a
+ * symbolic link, then the link is stat-ed, not the file it refers to.
+ * 
+ * This is the same as the lstat(2) system call.
+ * 
+ * Returns: (transfer full): a StatNS object, or NULL on error
+ */
+GuestfsStatNS *
+guestfs_session_lstatns (GuestfsSession *session, const gchar *path, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lstatns");
+    return NULL;
+  }
+
+  struct guestfs_statns *ret = guestfs_lstatns (g, path);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  GuestfsStatNS *s = g_slice_new0 (GuestfsStatNS);
+  s->st_dev = ret->st_dev;
+  s->st_ino = ret->st_ino;
+  s->st_mode = ret->st_mode;
+  s->st_nlink = ret->st_nlink;
+  s->st_uid = ret->st_uid;
+  s->st_gid = ret->st_gid;
+  s->st_rdev = ret->st_rdev;
+  s->st_size = ret->st_size;
+  s->st_blksize = ret->st_blksize;
+  s->st_blocks = ret->st_blocks;
+  s->st_atime_sec = ret->st_atime_sec;
+  s->st_atime_nsec = ret->st_atime_nsec;
+  s->st_mtime_sec = ret->st_mtime_sec;
+  s->st_mtime_nsec = ret->st_mtime_nsec;
+  s->st_ctime_sec = ret->st_ctime_sec;
+  s->st_ctime_nsec = ret->st_ctime_nsec;
+  s->st_spare1 = ret->st_spare1;
+  s->st_spare2 = ret->st_spare2;
+  s->st_spare3 = ret->st_spare3;
+  s->st_spare4 = ret->st_spare4;
+  s->st_spare5 = ret->st_spare5;
+  s->st_spare6 = ret->st_spare6;
+  guestfs_free_statns (ret);
+  return s;
+}
+
+/**
+ * guestfs_session_lstatnslist:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @names: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
+ * @err: A GError object to receive any generated errors
+ *
+ * lstat on multiple files
+ *
+ * This call allows you to perform the guestfs_session_lstatns() operation
+ * on multiple files, where all files are in the directory @path. @names is
+ * the list of files from this directory.
+ * 
+ * On return you get a list of stat structs, with a one-to-one
+ * correspondence to the @names list. If any name did not exist or could
+ * not be lstat'd, then the @st_ino field of that structure is set to @-1.
+ * 
+ * This call is intended for programs that want to efficiently list a
+ * directory contents without making many round-trips. See also
+ * guestfs_session_lxattrlist() for a similarly efficient call for getting
+ * extended attributes.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsStatNS): an array of StatNS objects, or NULL on error
+ */
+GuestfsStatNS **
+guestfs_session_lstatnslist (GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lstatnslist");
+    return NULL;
+  }
+
+  struct guestfs_statns_list *ret = guestfs_lstatnslist (g, path, names);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  GuestfsStatNS **l = g_malloc (sizeof (GuestfsStatNS*) * (ret->len + 1));
+  gsize i;
+  for (i = 0; i < ret->len; i++) {
+    l[i] = g_slice_new0 (GuestfsStatNS);
+    l[i]->st_dev = ret->val[i].st_dev;
+    l[i]->st_ino = ret->val[i].st_ino;
+    l[i]->st_mode = ret->val[i].st_mode;
+    l[i]->st_nlink = ret->val[i].st_nlink;
+    l[i]->st_uid = ret->val[i].st_uid;
+    l[i]->st_gid = ret->val[i].st_gid;
+    l[i]->st_rdev = ret->val[i].st_rdev;
+    l[i]->st_size = ret->val[i].st_size;
+    l[i]->st_blksize = ret->val[i].st_blksize;
+    l[i]->st_blocks = ret->val[i].st_blocks;
+    l[i]->st_atime_sec = ret->val[i].st_atime_sec;
+    l[i]->st_atime_nsec = ret->val[i].st_atime_nsec;
+    l[i]->st_mtime_sec = ret->val[i].st_mtime_sec;
+    l[i]->st_mtime_nsec = ret->val[i].st_mtime_nsec;
+    l[i]->st_ctime_sec = ret->val[i].st_ctime_sec;
+    l[i]->st_ctime_nsec = ret->val[i].st_ctime_nsec;
+    l[i]->st_spare1 = ret->val[i].st_spare1;
+    l[i]->st_spare2 = ret->val[i].st_spare2;
+    l[i]->st_spare3 = ret->val[i].st_spare3;
+    l[i]->st_spare4 = ret->val[i].st_spare4;
+    l[i]->st_spare5 = ret->val[i].st_spare5;
+    l[i]->st_spare6 = ret->val[i].st_spare6;
+  }
+  guestfs_free_statns_list (ret);
   l[i] = NULL;
   return l;
 }
@@ -22090,6 +22224,64 @@ guestfs_session_stat (GuestfsSession *session, const gchar *path, GError **err)
   s->mtime = ret->mtime;
   s->ctime = ret->ctime;
   guestfs_free_stat (ret);
+  return s;
+}
+
+/**
+ * guestfs_session_statns:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * get file information
+ *
+ * Returns file information for the given @path.
+ * 
+ * This is the same as the stat(2) system call.
+ * 
+ * Returns: (transfer full): a StatNS object, or NULL on error
+ */
+GuestfsStatNS *
+guestfs_session_statns (GuestfsSession *session, const gchar *path, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "statns");
+    return NULL;
+  }
+
+  struct guestfs_statns *ret = guestfs_statns (g, path);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  GuestfsStatNS *s = g_slice_new0 (GuestfsStatNS);
+  s->st_dev = ret->st_dev;
+  s->st_ino = ret->st_ino;
+  s->st_mode = ret->st_mode;
+  s->st_nlink = ret->st_nlink;
+  s->st_uid = ret->st_uid;
+  s->st_gid = ret->st_gid;
+  s->st_rdev = ret->st_rdev;
+  s->st_size = ret->st_size;
+  s->st_blksize = ret->st_blksize;
+  s->st_blocks = ret->st_blocks;
+  s->st_atime_sec = ret->st_atime_sec;
+  s->st_atime_nsec = ret->st_atime_nsec;
+  s->st_mtime_sec = ret->st_mtime_sec;
+  s->st_mtime_nsec = ret->st_mtime_nsec;
+  s->st_ctime_sec = ret->st_ctime_sec;
+  s->st_ctime_nsec = ret->st_ctime_nsec;
+  s->st_spare1 = ret->st_spare1;
+  s->st_spare2 = ret->st_spare2;
+  s->st_spare3 = ret->st_spare3;
+  s->st_spare4 = ret->st_spare4;
+  s->st_spare5 = ret->st_spare5;
+  s->st_spare6 = ret->st_spare6;
+  guestfs_free_statns (ret);
   return s;
 }
 

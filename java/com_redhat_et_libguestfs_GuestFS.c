@@ -8268,6 +8268,192 @@ Java_com_redhat_et_libguestfs_GuestFS__1lstatlist  (JNIEnv *env, jobject obj, jl
   return jr;
 }
 
+JNIEXPORT jobject JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1lstatns  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jobject jr;
+  jclass cl;
+  jfieldID fl;
+  struct guestfs_statns *r;
+  const char *path;
+
+  path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
+  r = guestfs_lstatns (g, path);
+
+  (*env)->ReleaseStringUTFChars (env, jpath, path);
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    return NULL;
+  }
+  cl = (*env)->FindClass (env, "com/redhat/et/libguestfs/StatNS");
+  jr = (*env)->AllocObject (env, cl);
+  fl = (*env)->GetFieldID (env, cl, "st_dev", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_dev);
+  fl = (*env)->GetFieldID (env, cl, "st_ino", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_ino);
+  fl = (*env)->GetFieldID (env, cl, "st_mode", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_mode);
+  fl = (*env)->GetFieldID (env, cl, "st_nlink", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_nlink);
+  fl = (*env)->GetFieldID (env, cl, "st_uid", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_uid);
+  fl = (*env)->GetFieldID (env, cl, "st_gid", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_gid);
+  fl = (*env)->GetFieldID (env, cl, "st_rdev", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_rdev);
+  fl = (*env)->GetFieldID (env, cl, "st_size", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_size);
+  fl = (*env)->GetFieldID (env, cl, "st_blksize", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_blksize);
+  fl = (*env)->GetFieldID (env, cl, "st_blocks", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_blocks);
+  fl = (*env)->GetFieldID (env, cl, "st_atime_sec", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_atime_sec);
+  fl = (*env)->GetFieldID (env, cl, "st_atime_nsec", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_atime_nsec);
+  fl = (*env)->GetFieldID (env, cl, "st_mtime_sec", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_mtime_sec);
+  fl = (*env)->GetFieldID (env, cl, "st_mtime_nsec", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_mtime_nsec);
+  fl = (*env)->GetFieldID (env, cl, "st_ctime_sec", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_ctime_sec);
+  fl = (*env)->GetFieldID (env, cl, "st_ctime_nsec", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_ctime_nsec);
+  fl = (*env)->GetFieldID (env, cl, "st_spare1", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_spare1);
+  fl = (*env)->GetFieldID (env, cl, "st_spare2", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_spare2);
+  fl = (*env)->GetFieldID (env, cl, "st_spare3", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_spare3);
+  fl = (*env)->GetFieldID (env, cl, "st_spare4", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_spare4);
+  fl = (*env)->GetFieldID (env, cl, "st_spare5", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_spare5);
+  fl = (*env)->GetFieldID (env, cl, "st_spare6", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_spare6);
+  free (r);
+  return jr;
+}
+
+JNIEXPORT jobjectArray JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1lstatnslist  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jobjectArray jnames)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jobjectArray jr;
+  jclass cl;
+  jfieldID fl;
+  jobject jfl;
+  struct guestfs_statns_list *r;
+  const char *path;
+  size_t names_len;
+  char **names;
+  size_t i;
+
+  path = (*env)->GetStringUTFChars (env, jpath, NULL);
+  names_len = (*env)->GetArrayLength (env, jnames);
+  names = guestfs___safe_malloc (g, sizeof (char *) * (names_len+1));
+  for (i = 0; i < names_len; ++i) {
+    jobject o = (*env)->GetObjectArrayElement (env, jnames, i);
+    names[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
+  }
+  names[names_len] = NULL;
+
+  r = guestfs_lstatnslist (g, path, names);
+
+  (*env)->ReleaseStringUTFChars (env, jpath, path);
+  for (i = 0; i < names_len; ++i) {
+    jobject o = (*env)->GetObjectArrayElement (env, jnames, i);
+    (*env)->ReleaseStringUTFChars (env, o, names[i]);
+  }
+  free (names);
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    return NULL;
+  }
+  cl = (*env)->FindClass (env, "com/redhat/et/libguestfs/StatNS");
+  jr = (*env)->NewObjectArray (env, r->len, cl, NULL);
+
+  for (i = 0; i < r->len; ++i) {
+    jfl = (*env)->AllocObject (env, cl);
+
+    fl = (*env)->GetFieldID (env, cl, "st_dev",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_dev);
+    fl = (*env)->GetFieldID (env, cl, "st_ino",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_ino);
+    fl = (*env)->GetFieldID (env, cl, "st_mode",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_mode);
+    fl = (*env)->GetFieldID (env, cl, "st_nlink",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_nlink);
+    fl = (*env)->GetFieldID (env, cl, "st_uid",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_uid);
+    fl = (*env)->GetFieldID (env, cl, "st_gid",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_gid);
+    fl = (*env)->GetFieldID (env, cl, "st_rdev",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_rdev);
+    fl = (*env)->GetFieldID (env, cl, "st_size",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_size);
+    fl = (*env)->GetFieldID (env, cl, "st_blksize",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_blksize);
+    fl = (*env)->GetFieldID (env, cl, "st_blocks",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_blocks);
+    fl = (*env)->GetFieldID (env, cl, "st_atime_sec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_atime_sec);
+    fl = (*env)->GetFieldID (env, cl, "st_atime_nsec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_atime_nsec);
+    fl = (*env)->GetFieldID (env, cl, "st_mtime_sec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_mtime_sec);
+    fl = (*env)->GetFieldID (env, cl, "st_mtime_nsec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_mtime_nsec);
+    fl = (*env)->GetFieldID (env, cl, "st_ctime_sec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_ctime_sec);
+    fl = (*env)->GetFieldID (env, cl, "st_ctime_nsec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_ctime_nsec);
+    fl = (*env)->GetFieldID (env, cl, "st_spare1",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_spare1);
+    fl = (*env)->GetFieldID (env, cl, "st_spare2",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_spare2);
+    fl = (*env)->GetFieldID (env, cl, "st_spare3",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_spare3);
+    fl = (*env)->GetFieldID (env, cl, "st_spare4",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_spare4);
+    fl = (*env)->GetFieldID (env, cl, "st_spare5",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_spare5);
+    fl = (*env)->GetFieldID (env, cl, "st_spare6",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].st_spare6);
+
+    (*env)->SetObjectArrayElement (env, jr, i, jfl);
+  }
+
+  guestfs_free_statns_list (r);
+  return jr;
+}
+
 JNIEXPORT void JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1luks_1add_1key  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jkey, jstring jnewkey, jint jkeyslot)
 {
@@ -12502,6 +12688,76 @@ Java_com_redhat_et_libguestfs_GuestFS__1stat  (JNIEnv *env, jobject obj, jlong j
   (*env)->SetLongField (env, jr, fl, r->mtime);
   fl = (*env)->GetFieldID (env, cl, "ctime", "J");
   (*env)->SetLongField (env, jr, fl, r->ctime);
+  free (r);
+  return jr;
+}
+
+JNIEXPORT jobject JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1statns  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jobject jr;
+  jclass cl;
+  jfieldID fl;
+  struct guestfs_statns *r;
+  const char *path;
+
+  path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
+  r = guestfs_statns (g, path);
+
+  (*env)->ReleaseStringUTFChars (env, jpath, path);
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    return NULL;
+  }
+  cl = (*env)->FindClass (env, "com/redhat/et/libguestfs/StatNS");
+  jr = (*env)->AllocObject (env, cl);
+  fl = (*env)->GetFieldID (env, cl, "st_dev", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_dev);
+  fl = (*env)->GetFieldID (env, cl, "st_ino", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_ino);
+  fl = (*env)->GetFieldID (env, cl, "st_mode", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_mode);
+  fl = (*env)->GetFieldID (env, cl, "st_nlink", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_nlink);
+  fl = (*env)->GetFieldID (env, cl, "st_uid", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_uid);
+  fl = (*env)->GetFieldID (env, cl, "st_gid", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_gid);
+  fl = (*env)->GetFieldID (env, cl, "st_rdev", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_rdev);
+  fl = (*env)->GetFieldID (env, cl, "st_size", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_size);
+  fl = (*env)->GetFieldID (env, cl, "st_blksize", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_blksize);
+  fl = (*env)->GetFieldID (env, cl, "st_blocks", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_blocks);
+  fl = (*env)->GetFieldID (env, cl, "st_atime_sec", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_atime_sec);
+  fl = (*env)->GetFieldID (env, cl, "st_atime_nsec", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_atime_nsec);
+  fl = (*env)->GetFieldID (env, cl, "st_mtime_sec", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_mtime_sec);
+  fl = (*env)->GetFieldID (env, cl, "st_mtime_nsec", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_mtime_nsec);
+  fl = (*env)->GetFieldID (env, cl, "st_ctime_sec", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_ctime_sec);
+  fl = (*env)->GetFieldID (env, cl, "st_ctime_nsec", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_ctime_nsec);
+  fl = (*env)->GetFieldID (env, cl, "st_spare1", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_spare1);
+  fl = (*env)->GetFieldID (env, cl, "st_spare2", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_spare2);
+  fl = (*env)->GetFieldID (env, cl, "st_spare3", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_spare3);
+  fl = (*env)->GetFieldID (env, cl, "st_spare4", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_spare4);
+  fl = (*env)->GetFieldID (env, cl, "st_spare5", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_spare5);
+  fl = (*env)->GetFieldID (env, cl, "st_spare6", "J");
+  (*env)->SetLongField (env, jr, fl, r->st_spare6);
   free (r);
   return jr;
 }

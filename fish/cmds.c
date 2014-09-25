@@ -315,6 +315,8 @@ static int run_ls0 (const char *cmd, size_t argc, char *argv[]);
 static int run_lsetxattr (const char *cmd, size_t argc, char *argv[]);
 static int run_lstat (const char *cmd, size_t argc, char *argv[]);
 static int run_lstatlist (const char *cmd, size_t argc, char *argv[]);
+static int run_lstatns (const char *cmd, size_t argc, char *argv[]);
+static int run_lstatnslist (const char *cmd, size_t argc, char *argv[]);
 static int run_luks_add_key (const char *cmd, size_t argc, char *argv[]);
 static int run_luks_close (const char *cmd, size_t argc, char *argv[]);
 static int run_luks_format (const char *cmd, size_t argc, char *argv[]);
@@ -483,6 +485,7 @@ static int run_sh_lines (const char *cmd, size_t argc, char *argv[]);
 static int run_shutdown (const char *cmd, size_t argc, char *argv[]);
 static int run_sleep (const char *cmd, size_t argc, char *argv[]);
 static int run_stat (const char *cmd, size_t argc, char *argv[]);
+static int run_statns (const char *cmd, size_t argc, char *argv[]);
 static int run_statvfs (const char *cmd, size_t argc, char *argv[]);
 static int run_strings (const char *cmd, size_t argc, char *argv[]);
 static int run_strings_e (const char *cmd, size_t argc, char *argv[]);
@@ -2295,14 +2298,26 @@ struct command_entry lsetxattr_cmd_entry = {
 
 struct command_entry lstat_cmd_entry = {
   .name = "lstat",
-  .help = "NAME\n    lstat - get file information for a symbolic link\n\nSYNOPSIS\n     lstat path\n\nDESCRIPTION\n    Returns file information for the given \"path\".\n\n    This is the same as \"stat\" except that if \"path\" is a symbolic link,\n    then the link is stat-ed, not the file it refers to.\n\n    This is the same as the lstat(2) system call.\n\n",
+  .help = "NAME\n    lstat - get file information for a symbolic link\n\nSYNOPSIS\n     lstat path\n\nDESCRIPTION\n    Returns file information for the given \"path\".\n\n    This is the same as \"stat\" except that if \"path\" is a symbolic link,\n    then the link is stat-ed, not the file it refers to.\n\n    This is the same as the lstat(2) system call.\n\n    *This function is deprecated.* In new code, use the \"lstatns\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_lstat
 };
 
 struct command_entry lstatlist_cmd_entry = {
   .name = "lstatlist",
-  .help = "NAME\n    lstatlist - lstat on multiple files\n\nSYNOPSIS\n     lstatlist path names\n\nDESCRIPTION\n    This call allows you to perform the \"lstat\" operation on multiple files,\n    where all files are in the directory \"path\". \"names\" is the list of\n    files from this directory.\n\n    On return you get a list of stat structs, with a one-to-one\n    correspondence to the \"names\" list. If any name did not exist or could\n    not be lstat'd, then the \"ino\" field of that structure is set to -1.\n\n    This call is intended for programs that want to efficiently list a\n    directory contents without making many round-trips. See also\n    \"lxattrlist\" for a similarly efficient call for getting extended\n    attributes.\n\n",
+  .help = "NAME\n    lstatlist - lstat on multiple files\n\nSYNOPSIS\n     lstatlist path names\n\nDESCRIPTION\n    This call allows you to perform the \"lstat\" operation on multiple files,\n    where all files are in the directory \"path\". \"names\" is the list of\n    files from this directory.\n\n    On return you get a list of stat structs, with a one-to-one\n    correspondence to the \"names\" list. If any name did not exist or could\n    not be lstat'd, then the \"st_ino\" field of that structure is set to -1.\n\n    This call is intended for programs that want to efficiently list a\n    directory contents without making many round-trips. See also\n    \"lxattrlist\" for a similarly efficient call for getting extended\n    attributes.\n\n    *This function is deprecated.* In new code, use the \"lstatnslist\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_lstatlist
+};
+
+struct command_entry lstatns_cmd_entry = {
+  .name = "lstatns",
+  .help = "NAME\n    lstatns - get file information for a symbolic link\n\nSYNOPSIS\n     lstatns path\n\nDESCRIPTION\n    Returns file information for the given \"path\".\n\n    This is the same as \"statns\" except that if \"path\" is a symbolic link,\n    then the link is stat-ed, not the file it refers to.\n\n    This is the same as the lstat(2) system call.\n\n",
+  .run = run_lstatns
+};
+
+struct command_entry lstatnslist_cmd_entry = {
+  .name = "lstatnslist",
+  .help = "NAME\n    lstatnslist - lstat on multiple files\n\nSYNOPSIS\n     lstatnslist path names\n\nDESCRIPTION\n    This call allows you to perform the \"lstatns\" operation on multiple\n    files, where all files are in the directory \"path\". \"names\" is the list\n    of files from this directory.\n\n    On return you get a list of stat structs, with a one-to-one\n    correspondence to the \"names\" list. If any name did not exist or could\n    not be lstat'd, then the \"st_ino\" field of that structure is set to -1.\n\n    This call is intended for programs that want to efficiently list a\n    directory contents without making many round-trips. See also\n    \"lxattrlist\" for a similarly efficient call for getting extended\n    attributes.\n\n",
+  .run = run_lstatnslist
 };
 
 struct command_entry luks_add_key_cmd_entry = {
@@ -3309,8 +3324,14 @@ struct command_entry sleep_cmd_entry = {
 
 struct command_entry stat_cmd_entry = {
   .name = "stat",
-  .help = "NAME\n    stat - get file information\n\nSYNOPSIS\n     stat path\n\nDESCRIPTION\n    Returns file information for the given \"path\".\n\n    This is the same as the stat(2) system call.\n\n",
+  .help = "NAME\n    stat - get file information\n\nSYNOPSIS\n     stat path\n\nDESCRIPTION\n    Returns file information for the given \"path\".\n\n    This is the same as the stat(2) system call.\n\n    *This function is deprecated.* In new code, use the \"statns\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_stat
+};
+
+struct command_entry statns_cmd_entry = {
+  .name = "statns",
+  .help = "NAME\n    statns - get file information\n\nSYNOPSIS\n     statns path\n\nDESCRIPTION\n    Returns file information for the given \"path\".\n\n    This is the same as the stat(2) system call.\n\n",
+  .run = run_statns
 };
 
 struct command_entry statvfs_cmd_entry = {
@@ -4090,6 +4111,8 @@ list_commands (void)
   printf ("%-20s %s\n", "lsetxattr", _("set extended attribute of a file or directory"));
   printf ("%-20s %s\n", "lstat", _("get file information for a symbolic link"));
   printf ("%-20s %s\n", "lstatlist", _("lstat on multiple files"));
+  printf ("%-20s %s\n", "lstatns", _("get file information for a symbolic link"));
+  printf ("%-20s %s\n", "lstatnslist", _("lstat on multiple files"));
   printf ("%-20s %s\n", "luks-add-key", _("add a key on a LUKS encrypted device"));
   printf ("%-20s %s\n", "luks-close", _("close a LUKS device"));
   printf ("%-20s %s\n", "luks-format", _("format a block device as a LUKS encrypted device"));
@@ -4302,6 +4325,7 @@ list_commands (void)
   putchar ('\n');
   printf ("%-20s %s\n", "sparse", _("create a sparse disk image and add"));
   printf ("%-20s %s\n", "stat", _("get file information"));
+  printf ("%-20s %s\n", "statns", _("get file information"));
   printf ("%-20s %s\n", "statvfs", _("get file system statistics"));
   printf ("%-20s %s\n", "strings", _("print the printable strings in a file"));
   printf ("%-20s %s\n", "strings-e", _("print the printable strings in a file"));
@@ -4641,6 +4665,33 @@ print_stat_indent (struct guestfs_stat *stat, const char *indent)
 }
 
 static void
+print_statns_indent (struct guestfs_statns *statns, const char *indent)
+{
+  printf ("%sst_dev: %" PRIi64 "\n", indent, statns->st_dev);
+  printf ("%sst_ino: %" PRIi64 "\n", indent, statns->st_ino);
+  printf ("%sst_mode: %" PRIi64 "\n", indent, statns->st_mode);
+  printf ("%sst_nlink: %" PRIi64 "\n", indent, statns->st_nlink);
+  printf ("%sst_uid: %" PRIi64 "\n", indent, statns->st_uid);
+  printf ("%sst_gid: %" PRIi64 "\n", indent, statns->st_gid);
+  printf ("%sst_rdev: %" PRIi64 "\n", indent, statns->st_rdev);
+  printf ("%sst_size: %" PRIi64 "\n", indent, statns->st_size);
+  printf ("%sst_blksize: %" PRIi64 "\n", indent, statns->st_blksize);
+  printf ("%sst_blocks: %" PRIi64 "\n", indent, statns->st_blocks);
+  printf ("%sst_atime_sec: %" PRIi64 "\n", indent, statns->st_atime_sec);
+  printf ("%sst_atime_nsec: %" PRIi64 "\n", indent, statns->st_atime_nsec);
+  printf ("%sst_mtime_sec: %" PRIi64 "\n", indent, statns->st_mtime_sec);
+  printf ("%sst_mtime_nsec: %" PRIi64 "\n", indent, statns->st_mtime_nsec);
+  printf ("%sst_ctime_sec: %" PRIi64 "\n", indent, statns->st_ctime_sec);
+  printf ("%sst_ctime_nsec: %" PRIi64 "\n", indent, statns->st_ctime_nsec);
+  printf ("%sst_spare1: %" PRIi64 "\n", indent, statns->st_spare1);
+  printf ("%sst_spare2: %" PRIi64 "\n", indent, statns->st_spare2);
+  printf ("%sst_spare3: %" PRIi64 "\n", indent, statns->st_spare3);
+  printf ("%sst_spare4: %" PRIi64 "\n", indent, statns->st_spare4);
+  printf ("%sst_spare5: %" PRIi64 "\n", indent, statns->st_spare5);
+  printf ("%sst_spare6: %" PRIi64 "\n", indent, statns->st_spare6);
+}
+
+static void
 print_statvfs_indent (struct guestfs_statvfs *statvfs, const char *indent)
 {
   printf ("%sbsize: %" PRIi64 "\n", indent, statvfs->bsize);
@@ -4751,6 +4802,18 @@ print_partition_list (struct guestfs_partition_list *partitions)
   for (i = 0; i < partitions->len; ++i) {
     printf ("[%d] = {\n", i);
     print_partition_indent (&partitions->val[i], "  ");
+    printf ("}\n");
+  }
+}
+
+static void
+print_statns_list (struct guestfs_statns_list *statnss)
+{
+  unsigned int i;
+
+  for (i = 0; i < statnss->len; ++i) {
+    printf ("[%d] = {\n", i);
+    print_statns_indent (&statnss->val[i], "  ");
     printf ("}\n");
   }
 }
@@ -4903,6 +4966,12 @@ static void
 print_int_bool (struct guestfs_int_bool *int_bool)
 {
   print_int_bool_indent (int_bool, "");
+}
+
+static void
+print_statns (struct guestfs_statns *statns)
+{
+  print_statns_indent (statns, "");
 }
 
 static void
@@ -14183,6 +14252,71 @@ run_lstatlist (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_lstatns (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  struct guestfs_statns *r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_lstatns (g, path);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_statns (r);
+  guestfs_free_statns (r);
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_lstatnslist (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  struct guestfs_statns_list *r;
+  char *path;
+  char **names;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  names = parse_string_list (argv[i++]);
+  if (names == NULL) goto out_names;
+  r = guestfs_lstatnslist (g, path, names);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_statns_list (r);
+  guestfs_free_statns_list (r);
+ out:
+  guestfs___free_string_list (names);
+ out_names:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_luks_add_key (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
@@ -21180,6 +21314,36 @@ run_stat (const char *cmd, size_t argc, char *argv[])
   ret = 0;
   print_stat (r);
   guestfs_free_stat (r);
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_statns (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  struct guestfs_statns *r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              1),
+                     cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_statns (g, path);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_statns (r);
+  guestfs_free_statns (r);
  out:
   free (path);
  out_path:

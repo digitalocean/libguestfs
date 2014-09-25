@@ -452,6 +452,56 @@ error: ;
 }
 
 static void
+copy_statns (const struct guestfs_statns *inp, struct guestfs_statns *out)
+{
+  memcpy (out, inp, sizeof *out);
+}
+
+GUESTFS_DLL_PUBLIC struct guestfs_statns *
+guestfs_copy_statns (const struct guestfs_statns *inp)
+{
+  struct guestfs_statns *ret;
+
+  ret = malloc (sizeof *ret);
+  if (ret == NULL)
+    return NULL;
+
+  copy_statns (inp, ret);
+
+  return ret;
+}
+
+GUESTFS_DLL_PUBLIC struct guestfs_statns_list *
+guestfs_copy_statns_list (const struct guestfs_statns_list *inp)
+{
+  int err;
+  struct guestfs_statns_list *ret;
+  size_t i = 0;
+
+  ret = malloc (sizeof *ret);
+  if (ret == NULL)
+    return NULL;
+
+  ret->len = inp->len;
+  ret->val = malloc (sizeof (struct guestfs_statns) * ret->len);
+  if (ret->val == NULL)
+    goto error;
+
+  for (i = 0; i < ret->len; ++i) {
+    copy_statns (&inp->val[i], &ret->val[i]);
+  }
+
+  return ret;
+
+error: ;
+  err = errno;
+  free (ret->val);
+  free (ret);
+  errno = err;
+  return NULL;
+}
+
+static void
 copy_statvfs (const struct guestfs_statvfs *inp, struct guestfs_statvfs *out)
 {
   memcpy (out, inp, sizeof *out);

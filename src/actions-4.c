@@ -3015,121 +3015,6 @@ guestfs_case_sensitive_path (guestfs_h *g,
   return ret_v;
 }
 
-GUESTFS_DLL_PUBLIC struct guestfs_stat_list *
-guestfs_internal_lstatlist (guestfs_h *g,
-                            const char *path,
-                            char *const *names)
-{
-  struct guestfs_internal_lstatlist_args args;
-  guestfs_message_header hdr;
-  guestfs_message_error err;
-  struct guestfs_internal_lstatlist_ret ret;
-  int serial;
-  int r;
-  int trace_flag = g->trace;
-  struct trace_buffer trace_buffer;
-  struct guestfs_stat_list *ret_v;
-  const uint64_t progress_hint = 0;
-
-  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "internal_lstatlist", 18);
-  if (path == NULL) {
-    error (g, "%s: %s: parameter cannot be NULL",
-           "internal_lstatlist", "path");
-    return NULL;
-  }
-  if (names == NULL) {
-    error (g, "%s: %s: parameter cannot be NULL",
-           "internal_lstatlist", "names");
-    return NULL;
-  }
-
-  if (trace_flag) {
-    size_t i;
-
-    guestfs___trace_open (&trace_buffer);
-    fprintf (trace_buffer.fp, "%s", "internal_lstatlist");
-    fprintf (trace_buffer.fp, " \"%s\"", path);
-    fputc (' ', trace_buffer.fp);
-    fputc ('"', trace_buffer.fp);
-    for (i = 0; names[i]; ++i) {
-      if (i > 0) fputc (' ', trace_buffer.fp);
-      fputs (names[i], trace_buffer.fp);
-    }
-    fputc ('"', trace_buffer.fp);
-    guestfs___trace_send_line (g, &trace_buffer);
-  }
-
-  if (guestfs___check_appliance_up (g, "internal_lstatlist") == -1) {
-    if (trace_flag)
-      guestfs___trace (g, "%s = %s (error)",
-                       "internal_lstatlist", "NULL");
-    return NULL;
-  }
-
-  args.path = (char *) path;
-  args.names.names_val = (char **) names;
-  for (args.names.names_len = 0; names[args.names.names_len]; args.names.names_len++) ;
-  serial = guestfs___send (g, GUESTFS_PROC_INTERNAL_LSTATLIST,
-                           progress_hint, 0,
-                           (xdrproc_t) xdr_guestfs_internal_lstatlist_args, (char *) &args);
-  if (serial == -1) {
-    if (trace_flag)
-      guestfs___trace (g, "%s = %s (error)",
-                       "internal_lstatlist", "NULL");
-    return NULL;
-  }
-
-  memset (&hdr, 0, sizeof hdr);
-  memset (&err, 0, sizeof err);
-  memset (&ret, 0, sizeof ret);
-
-  r = guestfs___recv (g, "internal_lstatlist", &hdr, &err,
-        (xdrproc_t) xdr_guestfs_internal_lstatlist_ret, (char *) &ret);
-  if (r == -1) {
-    if (trace_flag)
-      guestfs___trace (g, "%s = %s (error)",
-                       "internal_lstatlist", "NULL");
-    return NULL;
-  }
-
-  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_INTERNAL_LSTATLIST, serial) == -1) {
-    if (trace_flag)
-      guestfs___trace (g, "%s = %s (error)",
-                       "internal_lstatlist", "NULL");
-    return NULL;
-  }
-
-  if (hdr.status == GUESTFS_STATUS_ERROR) {
-    int errnum = 0;
-
-    if (trace_flag)
-      guestfs___trace (g, "%s = %s (error)",
-                       "internal_lstatlist", "NULL");
-    if (err.errno_string[0] != '\0')
-      errnum = guestfs___string_to_errno (err.errno_string);
-    if (errnum <= 0)
-      error (g, "%s: %s", "internal_lstatlist", err.error_message);
-    else
-      guestfs___error_errno (g, errnum, "%s: %s", "internal_lstatlist",
-                           err.error_message);
-    free (err.error_message);
-    free (err.errno_string);
-    return NULL;
-  }
-
-  /* caller will free this */
-  ret_v = safe_memdup (g, &ret.statbufs, sizeof (ret.statbufs));
-  if (trace_flag) {
-    guestfs___trace_open (&trace_buffer);
-    fprintf (trace_buffer.fp, "%s = ", "internal_lstatlist");
-    fprintf (trace_buffer.fp, "<struct guestfs_stat_list *>");
-    guestfs___trace_send_line (g, &trace_buffer);
-  }
-
-  return ret_v;
-}
-
 GUESTFS_DLL_PUBLIC struct guestfs_xattr_list *
 guestfs_internal_lxattrlist (guestfs_h *g,
                              const char *path,
@@ -6165,6 +6050,121 @@ guestfs_part_get_name (guestfs_h *g,
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "part_get_name");
     fprintf (trace_buffer.fp, "\"%s\"", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC struct guestfs_statns_list *
+guestfs_internal_lstatnslist (guestfs_h *g,
+                              const char *path,
+                              char *const *names)
+{
+  struct guestfs_internal_lstatnslist_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_internal_lstatnslist_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  struct guestfs_statns_list *ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "internal_lstatnslist", 20);
+  if (path == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "internal_lstatnslist", "path");
+    return NULL;
+  }
+  if (names == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "internal_lstatnslist", "names");
+    return NULL;
+  }
+
+  if (trace_flag) {
+    size_t i;
+
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "internal_lstatnslist");
+    fprintf (trace_buffer.fp, " \"%s\"", path);
+    fputc (' ', trace_buffer.fp);
+    fputc ('"', trace_buffer.fp);
+    for (i = 0; names[i]; ++i) {
+      if (i > 0) fputc (' ', trace_buffer.fp);
+      fputs (names[i], trace_buffer.fp);
+    }
+    fputc ('"', trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "internal_lstatnslist") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_lstatnslist", "NULL");
+    return NULL;
+  }
+
+  args.path = (char *) path;
+  args.names.names_val = (char **) names;
+  for (args.names.names_len = 0; names[args.names.names_len]; args.names.names_len++) ;
+  serial = guestfs___send (g, GUESTFS_PROC_INTERNAL_LSTATNSLIST,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_internal_lstatnslist_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_lstatnslist", "NULL");
+    return NULL;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "internal_lstatnslist", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_internal_lstatnslist_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_lstatnslist", "NULL");
+    return NULL;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_INTERNAL_LSTATNSLIST, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_lstatnslist", "NULL");
+    return NULL;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_lstatnslist", "NULL");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "internal_lstatnslist", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "internal_lstatnslist",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return NULL;
+  }
+
+  /* caller will free this */
+  ret_v = safe_memdup (g, &ret.statbufs, sizeof (ret.statbufs));
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "internal_lstatnslist");
+    fprintf (trace_buffer.fp, "<struct guestfs_statns_list *>");
     guestfs___trace_send_line (g, &trace_buffer);
   }
 
