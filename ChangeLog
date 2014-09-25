@@ -1,3 +1,70 @@
+commit fc56757d39923903dcb662b759c43bcef794cc59
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 24 19:03:42 2014 +0100
+
+    Version 1.27.54.
+
+commit f6e40498a90ac6f082bede202d15d5a8fbb80fa3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 24 18:18:40 2014 +0100
+
+    v2v: windows: Give a better message when Fast Restart is found (RHBZ#1145995).
+    
+    Thanks: Tingting Zheng
+
+commit 4cc0677da74e847f1112303cbc4413697f7f7345
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 24 18:11:40 2014 +0100
+
+    v2v: Failure to mount the root partition is a hard error.
+    
+    For other partitions, it is a warning.
+
+commit 0ba0692fda5d866eb3ae57e9aa3c6d95de79c961
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 24 17:51:43 2014 +0100
+
+    v2v: Update list of virtio-win drivers to latest (RHBZ#1145908).
+    
+    Update with latest list from:
+    - virtio-win-1.7.2-1.el7.noarch
+    - https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions
+
+commit 97b96af54c5fc47bca2ea8f87d179a8b4d9e5242
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 24 17:27:18 2014 +0100
+
+    v2v: windows: Set filename correctly when uploading virtio drivers (RHBZ#1145916).
+    
+    Thanks: Jeff Forbes, Alain Vondra, Junqin Zhou
+
+commit e1407b36906d978a01c2e3dc19d7b4e1a124cc9f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 24 18:29:27 2014 +0100
+
+    v2v: tests: Don't care about the <model> XML when testing network and bridge mapping.
+
+commit 7806e8667b172775a1a9763c495d68c9531e754a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 24 17:55:27 2014 +0100
+
+    tests: Add drivers directory to phony Windows image.
+    
+    Allows virt-v2v to upload drivers.
+
+commit 6e9dd6752fab0c8cdc67e7ba9745050093444295
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 23 22:16:24 2014 +0100
+
+    v2v: Remap device in /etc/sysconfig/grub boot= entry.
+    
+    Old virt-v2v did not remap this device, so after conversion from Xen
+    the file would have something like:
+    
+      boot=/dev/xvda
+    
+    Although this does not appear to affect anything, better to remap it.
+
 commit 79501d1a55551bd51940844e769f589d76ad75ce
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Sep 23 16:54:26 2014 +0100
