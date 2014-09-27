@@ -2,34 +2,28 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>GuestfsMDCreate</title>
+<title>Libguestfs GObject Bindings Reference Manual: GuestfsMDCreate</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
 <link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
 <link rel="prev" href="GuestfsIsSocket.html" title="GuestfsIsSocket">
 <link rel="next" href="GuestfsMke2fs.html" title="GuestfsMke2fs">
-<meta name="generator" content="GTK-Doc V1.19 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.21 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
-<tr valign="middle">
-<td><a accesskey="p" href="GuestfsIsSocket.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
-<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
-<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
-<td><a accesskey="n" href="GuestfsMke2fs.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
-</tr>
-<tr><td colspan="5" class="shortcuts">
-<a href="#GuestfsMDCreate.synopsis" class="shortcut">Top</a>
-                   | 
-                  <a href="#GuestfsMDCreate.description" class="shortcut">Description</a>
-                   | 
-                  <a href="#GuestfsMDCreate.object-hierarchy" class="shortcut">Object Hierarchy</a>
-                   | 
-                  <a href="#GuestfsMDCreate.properties" class="shortcut">Properties</a>
-</td></tr>
-</table>
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#GuestfsMDCreate.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#GuestfsMDCreate.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#GuestfsMDCreate.properties" class="shortcut">Properties</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="GuestfsIsSocket.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="GuestfsMke2fs.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
 <div class="refentry">
 <a name="GuestfsMDCreate"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
@@ -37,49 +31,117 @@
 <h2><span class="refentrytitle"><a name="GuestfsMDCreate.top_of_page"></a>GuestfsMDCreate</span></h2>
 <p>GuestfsMDCreate — An object encapsulating optional arguments for guestfs_session_md_create</p>
 </td>
-<td valign="top" align="right"></td>
+<td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsynopsisdiv">
-<a name="GuestfsMDCreate.synopsis"></a><h2>Synopsis</h2>
-<pre class="synopsis">
-#include &lt;guestfs-gobject.h&gt;
-
-struct              <a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate-struct" title="struct GuestfsMDCreate">GuestfsMDCreate</a>;
-struct              <a class="link" href="GuestfsMDCreate.html#GuestfsMDCreateClass" title="struct GuestfsMDCreateClass">GuestfsMDCreateClass</a>;
-<a class="link" href="GuestfsMDCreate.html" title="GuestfsMDCreate"><span class="returnvalue">GuestfsMDCreate</span></a> *   <a class="link" href="GuestfsMDCreate.html#guestfs-md-create-new" title="guestfs_md_create_new ()">guestfs_md_create_new</a>               (<em class="parameter"><code><span class="type">void</span></code></em>);
-</pre>
-</div>
 <div class="refsect1">
-<a name="GuestfsMDCreate.object-hierarchy"></a><h2>Object Hierarchy</h2>
-<pre class="synopsis">
-  GObject
-   +----GuestfsMDCreate
-</pre>
+<a name="GuestfsMDCreate.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody><tr>
+<td class="function_type">
+<a class="link" href="GuestfsMDCreate.html" title="GuestfsMDCreate"><span class="returnvalue">GuestfsMDCreate</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="GuestfsMDCreate.html#guestfs-md-create-new" title="guestfs_md_create_new ()">guestfs_md_create_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr></tbody>
+</table></div>
 </div>
 <div class="refsect1">
 <a name="GuestfsMDCreate.properties"></a><h2>Properties</h2>
-<pre class="synopsis">
-  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--chunk" title='The "chunk" property'>chunk</a>"                    <span class="type">gint64</span>                : Read / Write / Construct
-  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--level" title='The "level" property'>level</a>"                    <span class="type">gchar</span>*                : Read / Write / Construct
-  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--missingbitmap" title='The "missingbitmap" property'>missingbitmap</a>"            <span class="type">gint64</span>                : Read / Write / Construct
-  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--nrdevices" title='The "nrdevices" property'>nrdevices</a>"                <span class="type">gint</span>                  : Read / Write / Construct
-  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--spare" title='The "spare" property'>spare</a>"                    <span class="type">gint</span>                  : Read / Write / Construct
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type"><span class="type">gint64</span></td>
+<td class="property_name"><a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--chunk" title="The “chunk” property">chunk</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+<tr>
+<td class="property_type">
+<span class="type">gchar</span> *</td>
+<td class="property_name"><a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--level" title="The “level” property">level</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+<tr>
+<td class="property_type"><span class="type">gint64</span></td>
+<td class="property_name"><a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--missingbitmap" title="The “missingbitmap” property">missingbitmap</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+<tr>
+<td class="property_type"><span class="type">gint</span></td>
+<td class="property_name"><a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--nrdevices" title="The “nrdevices” property">nrdevices</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+<tr>
+<td class="property_type"><span class="type">gint</span></td>
+<td class="property_name"><a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--spare" title="The “spare” property">spare</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="GuestfsMDCreate.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate-struct" title="struct GuestfsMDCreate">GuestfsMDCreate</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="GuestfsMDCreate.html#GuestfsMDCreateClass" title="struct GuestfsMDCreateClass">GuestfsMDCreateClass</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="GuestfsMDCreate.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    GObject
+    <span class="lineart">╰──</span> GuestfsMDCreate
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsMDCreate.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;guestfs-gobject.h&gt;
 </pre>
 </div>
 <div class="refsect1">
 <a name="GuestfsMDCreate.description"></a><h2>Description</h2>
-<p>
-An object encapsulating optional arguments for guestfs_session_md_create
-</p>
+<p>An object encapsulating optional arguments for guestfs_session_md_create</p>
 </div>
 <div class="refsect1">
-<a name="GuestfsMDCreate.details"></a><h2>Details</h2>
+<a name="GuestfsMDCreate.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="guestfs-md-create-new"></a><h3>guestfs_md_create_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsMDCreate.html" title="GuestfsMDCreate"><span class="returnvalue">GuestfsMDCreate</span></a> *
+guestfs_md_create_new (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>Create a new GuestfsMDCreate object</p>
+<div class="refsect3">
+<a name="id-1.2.53.9.2.5"></a><h4>Returns</h4>
+<p> a new GuestfsMDCreate object. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsMDCreate.other_details"></a><h2>Types and Values</h2>
 <div class="refsect2">
 <a name="GuestfsMDCreate-struct"></a><h3>struct GuestfsMDCreate</h3>
 <pre class="programlisting">struct GuestfsMDCreate;</pre>
-<p>
-An object encapsulating optional arguments for guestfs_session_md_create.
-</p>
+<p>An object encapsulating optional arguments for guestfs_session_md_create.</p>
 </div>
 <hr>
 <div class="refsect2">
@@ -88,90 +150,69 @@ An object encapsulating optional arguments for guestfs_session_md_create.
   GObjectClass parent_class;
 };
 </pre>
-<p>
-A class metadata object for GuestfsMDCreate.
-</p>
-<div class="variablelist"><table border="0" class="variablelist">
+<p>A class metadata object for GuestfsMDCreate.</p>
+<div class="refsect3">
+<a name="id-1.2.53.10.3.5"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
 <colgroup>
-<col align="left" valign="top">
-<col>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
 </colgroup>
 <tbody><tr>
-<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsMDCreateClass.parent-class"></a>parent_class</code></em>;</span></p></td>
-<td>The superclass of GuestfsMDCreateClass</td>
+<td class="struct_member_name"><p><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsMDCreateClass.parent-class"></a>parent_class</code></em>;</p></td>
+<td class="struct_member_description"><p>The superclass of GuestfsMDCreateClass</p></td>
+<td class="struct_member_annotations"> </td>
 </tr></tbody>
 </table></div>
 </div>
-<hr>
-<div class="refsect2">
-<a name="guestfs-md-create-new"></a><h3>guestfs_md_create_new ()</h3>
-<pre class="programlisting"><a class="link" href="GuestfsMDCreate.html" title="GuestfsMDCreate"><span class="returnvalue">GuestfsMDCreate</span></a> *   guestfs_md_create_new               (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
-<p>
-Create a new GuestfsMDCreate object
-</p>
-<div class="variablelist"><table border="0" class="variablelist">
-<colgroup>
-<col align="left" valign="top">
-<col>
-</colgroup>
-<tbody><tr>
-<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>a new GuestfsMDCreate object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
-</td>
-</tr></tbody>
-</table></div>
 </div>
 </div>
 <div class="refsect1">
 <a name="GuestfsMDCreate.property-details"></a><h2>Property Details</h2>
 <div class="refsect2">
-<a name="GuestfsMDCreate--chunk"></a><h3>The <code class="literal">"chunk"</code> property</h3>
-<pre class="programlisting">  "chunk"                    <span class="type">gint64</span>                : Read / Write / Construct</pre>
-<p>
-A 64-bit integer.
-</p>
+<a name="GuestfsMDCreate--chunk"></a><h3>The <code class="literal">“chunk”</code> property</h3>
+<pre class="programlisting">  “chunk”                    <span class="type">gint64</span></pre>
+<p>A 64-bit integer.</p>
+<p>Flags: Read / Write / Construct</p>
 <p>Default value: -1</p>
 </div>
 <hr>
 <div class="refsect2">
-<a name="GuestfsMDCreate--level"></a><h3>The <code class="literal">"level"</code> property</h3>
-<pre class="programlisting">  "level"                    <span class="type">gchar</span>*                : Read / Write / Construct</pre>
-<p>
-A string.
-</p>
+<a name="GuestfsMDCreate--level"></a><h3>The <code class="literal">“level”</code> property</h3>
+<pre class="programlisting">  “level”                    <span class="type">gchar</span> *</pre>
+<p>A string.</p>
+<p>Flags: Read / Write / Construct</p>
 <p>Default value: NULL</p>
 </div>
 <hr>
 <div class="refsect2">
-<a name="GuestfsMDCreate--missingbitmap"></a><h3>The <code class="literal">"missingbitmap"</code> property</h3>
-<pre class="programlisting">  "missingbitmap"            <span class="type">gint64</span>                : Read / Write / Construct</pre>
-<p>
-A 64-bit integer.
-</p>
+<a name="GuestfsMDCreate--missingbitmap"></a><h3>The <code class="literal">“missingbitmap”</code> property</h3>
+<pre class="programlisting">  “missingbitmap”            <span class="type">gint64</span></pre>
+<p>A 64-bit integer.</p>
+<p>Flags: Read / Write / Construct</p>
 <p>Default value: -1</p>
 </div>
 <hr>
 <div class="refsect2">
-<a name="GuestfsMDCreate--nrdevices"></a><h3>The <code class="literal">"nrdevices"</code> property</h3>
-<pre class="programlisting">  "nrdevices"                <span class="type">gint</span>                  : Read / Write / Construct</pre>
-<p>
-A 32-bit integer.
-</p>
+<a name="GuestfsMDCreate--nrdevices"></a><h3>The <code class="literal">“nrdevices”</code> property</h3>
+<pre class="programlisting">  “nrdevices”                <span class="type">gint</span></pre>
+<p>A 32-bit integer.</p>
+<p>Flags: Read / Write / Construct</p>
 <p>Default value: -1</p>
 </div>
 <hr>
 <div class="refsect2">
-<a name="GuestfsMDCreate--spare"></a><h3>The <code class="literal">"spare"</code> property</h3>
-<pre class="programlisting">  "spare"                    <span class="type">gint</span>                  : Read / Write / Construct</pre>
-<p>
-A 32-bit integer.
-</p>
+<a name="GuestfsMDCreate--spare"></a><h3>The <code class="literal">“spare”</code> property</h3>
+<pre class="programlisting">  “spare”                    <span class="type">gint</span></pre>
+<p>A 32-bit integer.</p>
+<p>Flags: Read / Write / Construct</p>
 <p>Default value: -1</p>
 </div>
 </div>
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.19</div>
+          Generated by GTK-Doc V1.21</div>
 </body>
 </html>

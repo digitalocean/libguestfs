@@ -49,3 +49,9 @@ GuestfsIsBlockdev
 @Returns: 
 
 
+<!-- ##### STRUCT GuestfsIsBlockdevPrivate ##### -->
+<para>
+
+</para>
+
+

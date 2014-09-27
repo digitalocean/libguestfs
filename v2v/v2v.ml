@@ -40,7 +40,7 @@ let () = Random.self_init ()
 let rec main () =
   (* Handle the command line. *)
   let input, output,
-    debug_gc, do_copy, network_map,
+    debug_gc, debug_overlays, do_copy, network_map, no_trim,
     output_alloc, output_format, output_name,
     print_source, quiet, root_choice, trace, verbose =
     Cmdline.parse_cmdline () in
@@ -101,10 +101,12 @@ let rec main () =
    * data over the wire.
    *)
   msg (f_"Creating an overlay to protect the source from being modified");
+  let overlay_dir = (new Guestfs.guestfs ())#get_cachedir () in
   let overlays =
     List.map (
       fun ({ s_qemu_uri = qemu_uri; s_format = format } as source) ->
-        let overlay_file = Filename.temp_file "v2vovl" ".qcow2" in
+        let overlay_file =
+          Filename.temp_file ~temp_dir:overlay_dir "v2vovl" ".qcow2" in
         unlink_on_exit overlay_file;
 
         let options =
@@ -242,7 +244,7 @@ let rec main () =
       printf (f_"This guest does not have virtio drivers installed.\n%!");
   );
 
-  if do_copy then (
+  if no_trim <> ["*"] && (do_copy || debug_overlays) then (
     (* Doing fstrim on all the filesystems reduces the transfer size
      * because unused blocks are marked in the overlay and thus do
      * not have to be copied.
@@ -251,8 +253,10 @@ let rec main () =
     let mps = g#mountpoints () in
     List.iter (
       fun (_, mp) ->
-        try g#fstrim mp
-        with G.Error msg -> warning ~prog (f_"%s: %s (ignored)") mp msg
+        if not (List.mem mp no_trim) then (
+          try g#fstrim mp
+          with G.Error msg -> warning ~prog (f_"%s: %s (ignored)") mp msg
+        )
     ) mps
   );
 
@@ -270,7 +274,7 @@ let rec main () =
       at_exit (fun () ->
         if !delete_target_on_exit then (
           List.iter (
-            fun t -> try Unix.unlink t.target_file with _ -> ()
+            fun t -> try unlink t.target_file with _ -> ()
           ) targets
         )
       );
@@ -334,6 +338,17 @@ let rec main () =
   (* Create output metadata. *)
   msg (f_"Creating output metadata");
   output#create_metadata source targets guestcaps inspect;
+
+  (* Save overlays if --debug-overlays option was used. *)
+  if debug_overlays then (
+    List.iter (
+      fun ov ->
+        let saved_filename =
+          sprintf "%s/%s-%s.qcow2" overlay_dir source.s_name ov.ov_sd in
+        rename ov.ov_overlay_file saved_filename;
+        printf (f_"Overlay saved as %s [--debug-overlays]\n") saved_filename
+    ) overlays
+  );
 
   msg (f_"Finishing off");
   delete_target_on_exit := false;  (* Don't delete target on exit. *)

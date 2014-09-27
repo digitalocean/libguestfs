@@ -1,3 +1,136 @@
+commit 7ebab447935a3b4045470eff8bc880d34d584f03
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 26 17:14:19 2014 +0100
+
+    Version 1.27.55.
+
+commit dc6bba83387c460145aa3ea87f1b8f00b59a8334
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 26 14:06:48 2014 +0100
+
+    v2v: -o qemu: Add a display to the shell script.
+
+commit f7cd8b4d1069e4b58b4e4391ef84bddd6a3e2735
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 26 14:06:22 2014 +0100
+
+    v2v: -o qemu: Only add a serial console to Linux guests.
+    
+    Makes no sense for Windows guests.
+
+commit 630ab4c22afb91c69e1cc3ee0b6dba6f39a47dbe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 26 14:03:21 2014 +0100
+
+    v2v: -o qemu: Refactor end of line handling.
+
+commit 2365c2dbccd84ff68919dd131624861da293bf44
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 26 14:01:37 2014 +0100
+
+    v2v: Add a source 'window' display type.
+    
+    This maps to SDL/GTK, ie. qemu opening a window on the desktop.
+    We only use it for -i disk -o qemu to help with debugging.
+
+commit ea015319b06acb76a5bd89961b16c2bc82aff74e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 26 12:42:08 2014 +0100
+
+    v2v: Add --no-trim option, allowing fstrim to be suppressed.
+    
+    Mainly useful for testing whether fstrim is responsible for various
+    unexplained boot failures.  We can also suggest it in the field.
+
+commit ad300fcd5e497c401589d54efd9d80334ff41b1b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Sep 26 14:27:04 2014 +0200
+
+    fuse: test-fuse: use acl_to_any_text
+    
+    Switch from acl_to_text to acl_to_any_text, so it is possible to specify
+    options, like forcing the numeric IDs for users/groups. This ensure the
+    resulting string has always numberic IDs, so the comparison can always
+    succeed.
+    
+    Adapt the comparison string to the lack of final endline now.
+
+commit 0db22ee7a70cc51f85b80af180f1d8f55cef5f0c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 26 10:21:07 2014 +0100
+
+    v2v: windows: Sort files before uploading.
+    
+    This makes it easier to compare the trace output from different runs
+    of virt-v2v.
+
+commit 03ef91aa46e036b84a687a7c891720aeea651a17
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 26 10:06:00 2014 +0100
+
+    v2v: Add --debug-overlays option.
+    
+    You can use this to accelerate testing:
+    
+      $ virt-v2v --no-copy --debug-overlays [etc]
+      [...]
+      [  82.0] Converting Windows 7 Ultimate to run on KVM
+      This guest has virtio drivers installed.
+      [  86.0] Closing the overlay
+      [  91.0] Creating output metadata
+      Overlay saved as /var/tmp/win7-test-sda.qcow2 [--debug-overlays]
+      [  91.0] Finishing off
+    
+    No disk format conversion/copying is done, so it's very fast.
+    
+    The overlay file is preserved and can be tested directly (it uses the
+    source file as backing).
+
+commit dbff48de392717e36dd040a241d67462fdc68a14
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 26 10:05:30 2014 +0100
+
+    v2v: Don't use Unix.unlink since Unix module is open in this file.
+    
+    Minor code refactor.
+
+commit 35634e20e73c326d715560dd0e47c893ab16a5fa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 25 17:35:02 2014 +0100
+
+    v2v: Disable extended debugging of hivex_open.
+    
+    It's not really necessary: we have never needed this for debugging
+    inspection for example, and if hive open failures did occur we would
+    ask the user to send us the hive files.  And it causes huge amounts of
+    debugging messages to be printed which fills up the log.
+
+commit 9a9d10d2a0388f84ace3454c56071c544a3b923f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 25 14:30:37 2014 +0100
+
+    v2v: Put overlay on LIBGUESTFS_CACHEDIR, not /tmp (RHBZ#1146017).
+    
+    Since the overlay could grow very large (because of copy-on-read) it
+    is not suitable for /tmp.
+
+commit 401ee58ae1c47877358819ac0b1fb4f069e1fde6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 24 23:47:40 2014 +0100
+
+    v2v: windows: Print product variant in virtio drivers warning message.
+    
+    The inspection product variant field is used to determine which
+    drivers to install, so print it in case we couldn't find any drivers.
+
+commit df77553f4e9394d17c3c2eae91a6918f2f5105f2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 24 23:44:19 2014 +0100
+
+    v2v: windows: Rearrange the order of virtio drivers match clause.
+    
+    No functional change.
+
 commit fc56757d39923903dcb662b759c43bcef794cc59
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Sep 24 19:03:42 2014 +0100

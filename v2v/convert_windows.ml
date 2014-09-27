@@ -72,7 +72,7 @@ let convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
   let rec with_hive name ~write f =
     let filename = sprintf "%s/system32/config/%s" systemroot name in
     let filename = g#case_sensitive_path filename in
-    g#hivex_open ~write ~verbose ~debug:verbose filename;
+    g#hivex_open ~write ~verbose (* ~debug:verbose *) filename;
     let r =
       try
         let root = g#hivex_root () in
@@ -219,37 +219,38 @@ echo uninstalling Xen PV driver
 
     (* See if the drivers for this guest are available in virtio_win_dir. *)
     let path =
-      match inspect.i_major_version, inspect.i_minor_version,
-      inspect.i_arch, inspect.i_product_variant with
-      | 5, 1, "i386", _ ->
+      match inspect.i_arch,
+      inspect.i_major_version, inspect.i_minor_version,
+      inspect.i_product_variant with
+      | "i386", 5, 1, _ ->
         Some (virtio_win_dir // "drivers/i386/WinXP")
-      | 5, 2, "i386", _ ->
+      | "i386", 5, 2, _ ->
         Some (virtio_win_dir // "drivers/i386/Win2003")
-      | 6, 0, "i386", _ ->
+      | "i386", 6, 0, _ ->
         Some (virtio_win_dir // "drivers/i386/Win2008")
-      | 6, 1, "i386", _ ->
+      | "i386", 6, 1, _ ->
         Some (virtio_win_dir // "drivers/i386/Win7")
-      | 6, 2, "i386", _ ->
+      | "i386", 6, 2, _ ->
         Some (virtio_win_dir // "drivers/i386/Win8")
-      | 6, 3, "i386", _ ->
+      | "i386", 6, 3, _ ->
         Some (virtio_win_dir // "drivers/i386/Win8.1")
 
-      | 5, 2, "x86_64", _ ->
+      | "x86_64", 5, 2, _ ->
         Some (virtio_win_dir // "drivers/amd64/Win2003")
-      | 6, 0, "x86_64", _ ->
+      | "x86_64", 6, 0, _ ->
         Some (virtio_win_dir // "drivers/amd64/Win2008")
-      | 6, 1, "x86_64", "Server" ->
-        Some (virtio_win_dir // "drivers/amd64/Win2008R2")
-      | 6, 1, "x86_64", "Client" ->
+      | "x86_64", 6, 1, "Client" ->
         Some (virtio_win_dir // "drivers/amd64/Win7")
-      | 6, 2, "x86_64", "Server" ->
-        Some (virtio_win_dir // "drivers/amd64/Win2012")
-      | 6, 2, "x86_64", "Client" ->
+      | "x86_64", 6, 1, "Server" ->
+        Some (virtio_win_dir // "drivers/amd64/Win2008R2")
+      | "x86_64", 6, 2, "Client" ->
         Some (virtio_win_dir // "drivers/amd64/Win8")
-      | 6, 3, "x86_64", "Server" ->
-        Some (virtio_win_dir // "drivers/amd64/Win2012R2")
-      | 6, 3, "x86_64", "Client" ->
+      | "x86_64", 6, 2, "Server" ->
+        Some (virtio_win_dir // "drivers/amd64/Win2012")
+      | "x86_64", 6, 3, "Client" ->
         Some (virtio_win_dir // "drivers/amd64/Win8.1")
+      | "x86_64", 6, 3, "Server" ->
+        Some (virtio_win_dir // "drivers/amd64/Win2012R2")
 
       | _ ->
         None in
@@ -262,9 +263,10 @@ echo uninstalling Xen PV driver
 
     match path with
     | None ->
-      warning ~prog (f_"there are no virtio drivers available for this version of Windows (%d.%d %s).  virt-v2v looks for drivers in %s\n\nThe guest will be configured to use slower emulated devices.")
+      warning ~prog (f_"there are no virtio drivers available for this version of Windows (%d.%d %s %s).  virt-v2v looks for drivers in %s\n\nThe guest will be configured to use slower emulated devices.")
         inspect.i_major_version inspect.i_minor_version
-        inspect.i_arch virtio_win_dir;
+        inspect.i_arch inspect.i_product_variant
+        virtio_win_dir;
       ( IDE, RTL8139 )
 
     | Some path ->
@@ -303,6 +305,7 @@ echo uninstalling Xen PV driver
        *)
       let files = Sys.readdir path in
       let files = Array.to_list files in
+      let files = List.sort compare files in
       List.iter (
         fun file ->
           g#upload (path // file) (driverdir // file)

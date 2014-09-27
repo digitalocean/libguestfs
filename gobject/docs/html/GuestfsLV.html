@@ -2,32 +2,27 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>GuestfsLV</title>
+<title>Libguestfs GObject Bindings Reference Manual: GuestfsLV</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
 <link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
 <link rel="prev" href="GuestfsISOInfo.html" title="GuestfsISOInfo">
 <link rel="next" href="GuestfsPV.html" title="GuestfsPV">
-<meta name="generator" content="GTK-Doc V1.19 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.21 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
-<tr valign="middle">
-<td><a accesskey="p" href="GuestfsISOInfo.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
-<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
-<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
-<td><a accesskey="n" href="GuestfsPV.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
-</tr>
-<tr><td colspan="5" class="shortcuts">
-<a href="#GuestfsLV.synopsis" class="shortcut">Top</a>
-                   | 
-                  <a href="#GuestfsLV.description" class="shortcut">Description</a>
-                   | 
-                  <a href="#GuestfsLV.object-hierarchy" class="shortcut">Object Hierarchy</a>
-</td></tr>
-</table>
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#GuestfsLV.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#GuestfsLV.object-hierarchy" class="shortcut">Object Hierarchy</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="GuestfsISOInfo.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="GuestfsPV.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
 <div class="refentry">
 <a name="GuestfsLV"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
@@ -35,28 +30,40 @@
 <h2><span class="refentrytitle"><a name="GuestfsLV.top_of_page"></a>GuestfsLV</span></h2>
 <p>GuestfsLV</p>
 </td>
-<td valign="top" align="right"></td>
+<td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsynopsisdiv">
-<a name="GuestfsLV.synopsis"></a><h2>Synopsis</h2>
-<pre class="synopsis">
-#include &lt;guestfs-gobject.h&gt;
-
-struct              <a class="link" href="GuestfsLV.html#GuestfsLV-struct" title="struct GuestfsLV">GuestfsLV</a>;
-</pre>
+<div class="refsect1">
+<a name="GuestfsLV.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody><tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="GuestfsLV.html#GuestfsLV-struct" title="struct GuestfsLV">GuestfsLV</a></td>
+</tr></tbody>
+</table></div>
 </div>
 <div class="refsect1">
 <a name="GuestfsLV.object-hierarchy"></a><h2>Object Hierarchy</h2>
-<pre class="synopsis">
-  GBoxed
-   +----GuestfsLV
+<pre class="screen">    GBoxed
+    <span class="lineart">╰──</span> GuestfsLV
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsLV.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;guestfs-gobject.h&gt;
 </pre>
 </div>
 <div class="refsect1">
 <a name="GuestfsLV.description"></a><h2>Description</h2>
 </div>
 <div class="refsect1">
-<a name="GuestfsLV.details"></a><h2>Details</h2>
+<a name="GuestfsLV.functions_details"></a><h2>Functions</h2>
+</div>
+<div class="refsect1">
+<a name="GuestfsLV.other_details"></a><h2>Types and Values</h2>
 <div class="refsect2">
 <a name="GuestfsLV-struct"></a><h3>struct GuestfsLV</h3>
 <pre class="programlisting">struct GuestfsLV {
@@ -81,83 +88,103 @@ struct              <a class="link" href="GuestfsLV.html#GuestfsLV-struct" title
   gchar *modules;
 };
 </pre>
-<div class="variablelist"><table border="0" class="variablelist">
+<div class="refsect3">
+<a name="id-1.2.13.8.2.4"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
 <colgroup>
-<col align="left" valign="top">
-<col>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
 </colgroup>
 <tbody>
 <tr>
-<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsLV-struct.lv-name"></a>lv_name</code></em>;</span></p></td>
-<td>A NULL-terminated string</td>
+<td class="struct_member_name"><p><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsLV-struct.lv-name"></a>lv_name</code></em>;</p></td>
+<td class="struct_member_description"><p>A NULL-terminated string</p></td>
+<td class="struct_member_annotations"> </td>
 </tr>
 <tr>
-<td><p><span class="term"><span class="type">gchar</span> <em class="structfield"><code><a name="GuestfsLV-struct.lv-uuid"></a>lv_uuid</code></em>[32];</span></p></td>
-<td>A 32 byte UUID. Note that this is not NULL-terminated</td>
+<td class="struct_member_name"><p><span class="type">gchar</span> <em class="structfield"><code><a name="GuestfsLV-struct.lv-uuid"></a>lv_uuid</code></em>[32];</p></td>
+<td class="struct_member_description"><p>A 32 byte UUID. Note that this is not NULL-terminated</p></td>
+<td class="struct_member_annotations"> </td>
 </tr>
 <tr>
-<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsLV-struct.lv-attr"></a>lv_attr</code></em>;</span></p></td>
-<td>A NULL-terminated string</td>
+<td class="struct_member_name"><p><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsLV-struct.lv-attr"></a>lv_attr</code></em>;</p></td>
+<td class="struct_member_description"><p>A NULL-terminated string</p></td>
+<td class="struct_member_annotations"> </td>
 </tr>
 <tr>
-<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsLV-struct.lv-major"></a>lv_major</code></em>;</span></p></td>
-<td>A signed 64-bit integer</td>
+<td class="struct_member_name"><p><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsLV-struct.lv-major"></a>lv_major</code></em>;</p></td>
+<td class="struct_member_description"><p>A signed 64-bit integer</p></td>
+<td class="struct_member_annotations"> </td>
 </tr>
 <tr>
-<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsLV-struct.lv-minor"></a>lv_minor</code></em>;</span></p></td>
-<td>A signed 64-bit integer</td>
+<td class="struct_member_name"><p><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsLV-struct.lv-minor"></a>lv_minor</code></em>;</p></td>
+<td class="struct_member_description"><p>A signed 64-bit integer</p></td>
+<td class="struct_member_annotations"> </td>
 </tr>
 <tr>
-<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsLV-struct.lv-kernel-major"></a>lv_kernel_major</code></em>;</span></p></td>
-<td>A signed 64-bit integer</td>
+<td class="struct_member_name"><p><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsLV-struct.lv-kernel-major"></a>lv_kernel_major</code></em>;</p></td>
+<td class="struct_member_description"><p>A signed 64-bit integer</p></td>
+<td class="struct_member_annotations"> </td>
 </tr>
 <tr>
-<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsLV-struct.lv-kernel-minor"></a>lv_kernel_minor</code></em>;</span></p></td>
-<td>A signed 64-bit integer</td>
+<td class="struct_member_name"><p><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsLV-struct.lv-kernel-minor"></a>lv_kernel_minor</code></em>;</p></td>
+<td class="struct_member_description"><p>A signed 64-bit integer</p></td>
+<td class="struct_member_annotations"> </td>
 </tr>
 <tr>
-<td><p><span class="term"><span class="type">guint64</span> <em class="structfield"><code><a name="GuestfsLV-struct.lv-size"></a>lv_size</code></em>;</span></p></td>
-<td>An unsigned 64-bit integer</td>
+<td class="struct_member_name"><p><span class="type">guint64</span> <em class="structfield"><code><a name="GuestfsLV-struct.lv-size"></a>lv_size</code></em>;</p></td>
+<td class="struct_member_description"><p>An unsigned 64-bit integer</p></td>
+<td class="struct_member_annotations"> </td>
 </tr>
 <tr>
-<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsLV-struct.seg-count"></a>seg_count</code></em>;</span></p></td>
-<td>A signed 64-bit integer</td>
+<td class="struct_member_name"><p><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsLV-struct.seg-count"></a>seg_count</code></em>;</p></td>
+<td class="struct_member_description"><p>A signed 64-bit integer</p></td>
+<td class="struct_member_annotations"> </td>
 </tr>
 <tr>
-<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsLV-struct.origin"></a>origin</code></em>;</span></p></td>
-<td>A NULL-terminated string</td>
+<td class="struct_member_name"><p><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsLV-struct.origin"></a>origin</code></em>;</p></td>
+<td class="struct_member_description"><p>A NULL-terminated string</p></td>
+<td class="struct_member_annotations"> </td>
 </tr>
 <tr>
-<td><p><span class="term"><span class="type">gfloat</span> <em class="structfield"><code><a name="GuestfsLV-struct.snap-percent"></a>snap_percent</code></em>;</span></p></td>
-<td>A floating point number. A value between 0 and 100 represents a percentage. A value of -1 represents 'not present'</td>
+<td class="struct_member_name"><p><span class="type">gfloat</span> <em class="structfield"><code><a name="GuestfsLV-struct.snap-percent"></a>snap_percent</code></em>;</p></td>
+<td class="struct_member_description"><p>A floating point number. A value between 0 and 100 represents a percentage. A value of -1 represents 'not present'</p></td>
+<td class="struct_member_annotations"> </td>
 </tr>
 <tr>
-<td><p><span class="term"><span class="type">gfloat</span> <em class="structfield"><code><a name="GuestfsLV-struct.copy-percent"></a>copy_percent</code></em>;</span></p></td>
-<td>A floating point number. A value between 0 and 100 represents a percentage. A value of -1 represents 'not present'</td>
+<td class="struct_member_name"><p><span class="type">gfloat</span> <em class="structfield"><code><a name="GuestfsLV-struct.copy-percent"></a>copy_percent</code></em>;</p></td>
+<td class="struct_member_description"><p>A floating point number. A value between 0 and 100 represents a percentage. A value of -1 represents 'not present'</p></td>
+<td class="struct_member_annotations"> </td>
 </tr>
 <tr>
-<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsLV-struct.move-pv"></a>move_pv</code></em>;</span></p></td>
-<td>A NULL-terminated string</td>
+<td class="struct_member_name"><p><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsLV-struct.move-pv"></a>move_pv</code></em>;</p></td>
+<td class="struct_member_description"><p>A NULL-terminated string</p></td>
+<td class="struct_member_annotations"> </td>
 </tr>
 <tr>
-<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsLV-struct.lv-tags"></a>lv_tags</code></em>;</span></p></td>
-<td>A NULL-terminated string</td>
+<td class="struct_member_name"><p><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsLV-struct.lv-tags"></a>lv_tags</code></em>;</p></td>
+<td class="struct_member_description"><p>A NULL-terminated string</p></td>
+<td class="struct_member_annotations"> </td>
 </tr>
 <tr>
-<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsLV-struct.mirror-log"></a>mirror_log</code></em>;</span></p></td>
-<td>A NULL-terminated string</td>
+<td class="struct_member_name"><p><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsLV-struct.mirror-log"></a>mirror_log</code></em>;</p></td>
+<td class="struct_member_description"><p>A NULL-terminated string</p></td>
+<td class="struct_member_annotations"> </td>
 </tr>
 <tr>
-<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsLV-struct.modules"></a>modules</code></em>;</span></p></td>
-<td>A NULL-terminated string</td>
+<td class="struct_member_name"><p><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsLV-struct.modules"></a>modules</code></em>;</p></td>
+<td class="struct_member_description"><p>A NULL-terminated string</p></td>
+<td class="struct_member_annotations"> </td>
 </tr>
 </tbody>
 </table></div>
 </div>
 </div>
 </div>
+</div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.19</div>
+          Generated by GTK-Doc V1.21</div>
 </body>
 </html>
