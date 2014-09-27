@@ -157,6 +157,11 @@ See I<--network> below.
 Debug garbage collection and memory allocation.  This is only useful when
 debugging memory problems in virt-v2v or the OCaml libguestfs bindings.
 
+=item B<--debug-overlays>
+
+Save the overlay file(s) created during conversion.  This option is only
+used for debugging virt-v2v and may be removed in a future version.
+
 =item B<-i disk>
 
 Set the input method to I<disk>.
@@ -244,6 +249,23 @@ This option is not compatible with I<-o libvirt> since it would create a
 faulty guest (one with no disks).
 
 This option is not compatible with I<-o glance> for technical reasons.
+
+=item B<--no-trim all>
+
+=item B<--no-trim> mp[,mp...]
+
+By default virt-v2v runs L<fstrim(8)> to reduce the amount of data that
+needs to be copied.  This is known to break some buggy bootloaders causing
+boot failures after conversion (see for example
+L<https://bugzilla.redhat.com/show_bug.cgi?id=1141145#c27>).
+
+You can use I<--no-trim all> to disable all trimming.  Note this will
+greatly increase the amount of data that has to be copied and can make
+virt-v2v run much more slowly.
+
+You can also disable trimming on selected filesystems only (specified by a
+comma-separated list of their mount point(s) in the guest).  Typically you
+would use I<--no-trim /boot> to work around the grub bug mentioned above.
 
 =item B<-o disk>
 
@@ -990,7 +1012,7 @@ distributed with virt-v2v.
 
 L<virt-p2v(1)>, L<virt-customize(1)>, L<virt-df(1)>, L<virt-filesystems(1)>,
 L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<guestfs(3)>, L<guestfish(1)>,
-L<qemu-img(1)>, L<http://libguestfs.org/>.
+L<qemu-img(1)>, L<fstrim(8)>, L<http://libguestfs.org/>.
 
 =head1 著者
 

@@ -378,6 +378,7 @@ guestfs_internal_test_only_optargs_get_type
 GuestfsIsBlockdev
 GuestfsIsBlockdevClass
 guestfs_is_blockdev_new
+GuestfsIsBlockdevPrivate
 <SUBSECTION Standard>
 GUESTFS_IS_BLOCKDEV
 GUESTFS_IS_BLOCKDEV_CLASS
@@ -385,7 +386,6 @@ GUESTFS_IS_BLOCKDEV_GET_CLASS
 GUESTFS_IS_IS_BLOCKDEV
 GUESTFS_IS_IS_BLOCKDEV_CLASS
 GUESTFS_TYPE_IS_BLOCKDEV
-GuestfsIsBlockdevPrivate
 guestfs_is_blockdev_get_type
 </SECTION>
 
@@ -395,6 +395,7 @@ guestfs_is_blockdev_get_type
 GuestfsIsChardev
 GuestfsIsChardevClass
 guestfs_is_chardev_new
+GuestfsIsChardevPrivate
 <SUBSECTION Standard>
 GUESTFS_IS_CHARDEV
 GUESTFS_IS_CHARDEV_CLASS
@@ -402,7 +403,6 @@ GUESTFS_IS_CHARDEV_GET_CLASS
 GUESTFS_IS_IS_CHARDEV
 GUESTFS_IS_IS_CHARDEV_CLASS
 GUESTFS_TYPE_IS_CHARDEV
-GuestfsIsChardevPrivate
 guestfs_is_chardev_get_type
 </SECTION>
 
@@ -412,6 +412,7 @@ guestfs_is_chardev_get_type
 GuestfsIsDir
 GuestfsIsDirClass
 guestfs_is_dir_new
+GuestfsIsDirPrivate
 <SUBSECTION Standard>
 GUESTFS_IS_DIR
 GUESTFS_IS_DIR_CLASS
@@ -419,7 +420,6 @@ GUESTFS_IS_DIR_GET_CLASS
 GUESTFS_IS_IS_DIR
 GUESTFS_IS_IS_DIR_CLASS
 GUESTFS_TYPE_IS_DIR
-GuestfsIsDirPrivate
 guestfs_is_dir_get_type
 </SECTION>
 
@@ -429,6 +429,7 @@ guestfs_is_dir_get_type
 GuestfsIsFifo
 GuestfsIsFifoClass
 guestfs_is_fifo_new
+GuestfsIsFifoPrivate
 <SUBSECTION Standard>
 GUESTFS_IS_FIFO
 GUESTFS_IS_FIFO_CLASS
@@ -436,7 +437,6 @@ GUESTFS_IS_FIFO_GET_CLASS
 GUESTFS_IS_IS_FIFO
 GUESTFS_IS_IS_FIFO_CLASS
 GUESTFS_TYPE_IS_FIFO
-GuestfsIsFifoPrivate
 guestfs_is_fifo_get_type
 </SECTION>
 
@@ -446,6 +446,7 @@ guestfs_is_fifo_get_type
 GuestfsIsFile
 GuestfsIsFileClass
 guestfs_is_file_new
+GuestfsIsFilePrivate
 <SUBSECTION Standard>
 GUESTFS_IS_FILE
 GUESTFS_IS_FILE_CLASS
@@ -453,7 +454,6 @@ GUESTFS_IS_FILE_GET_CLASS
 GUESTFS_IS_IS_FILE
 GUESTFS_IS_IS_FILE_CLASS
 GUESTFS_TYPE_IS_FILE
-GuestfsIsFilePrivate
 guestfs_is_file_get_type
 </SECTION>
 
@@ -463,6 +463,7 @@ guestfs_is_file_get_type
 GuestfsIsSocket
 GuestfsIsSocketClass
 guestfs_is_socket_new
+GuestfsIsSocketPrivate
 <SUBSECTION Standard>
 GUESTFS_IS_IS_SOCKET
 GUESTFS_IS_IS_SOCKET_CLASS
@@ -470,7 +471,6 @@ GUESTFS_IS_SOCKET
 GUESTFS_IS_SOCKET_CLASS
 GUESTFS_IS_SOCKET_GET_CLASS
 GUESTFS_TYPE_IS_SOCKET
-GuestfsIsSocketPrivate
 guestfs_is_socket_get_type
 </SECTION>
 
