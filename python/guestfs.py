@@ -3943,6 +3943,9 @@ class GuestFS(object):
         "dos"
         MS-DOS, FreeDOS and others.
         
+        "minix"
+        MINIX.
+        
         "unknown"
         The operating system type could not be determined.
         

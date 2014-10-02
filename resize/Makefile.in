@@ -139,7 +139,7 @@ DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(srcdir)/Makefile.am
 @HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
 @HAVE_OCAML_TRUE@am__append_2 = stamp-virt-resize.pod
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_3 = test-virt-resize.sh
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_3 = test-virt-resize.pl
 subdir = resize
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1450,7 +1450,7 @@ top_srcdir = @top_srcdir@
 EXTRA_DIST = \
 	$(SOURCES) \
 	virt-resize.pod \
-	test-virt-resize.sh
+	test-virt-resize.pl
 
 CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize \
 	$(am__append_2)

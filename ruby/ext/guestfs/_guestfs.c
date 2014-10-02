@@ -10181,6 +10181,9 @@ ruby_guestfs_inspect_get_roots (VALUE gv)
  * "dos"
  * MS-DOS, FreeDOS and others.
  * 
+ * "minix"
+ * MINIX.
+ * 
  * "unknown"
  * The operating system type could not be determined.
  * 

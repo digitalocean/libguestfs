@@ -3448,6 +3448,10 @@ GNU/Hurd.
 
 MS-DOS, FreeDOS およびその他.
 
+=item "minix"
+
+MINIX.
+
 =item "unknown"
 
 オペレーティング・システムの種類がわかりませんでした。

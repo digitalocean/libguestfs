@@ -1,3 +1,101 @@
+commit 62159d5d48441d5df9706c0a19bc0f416b1e9e46
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 1 16:49:57 2014 +0100
+
+    Version 1.27.57.
+
+commit f23759c330fc8f4a6faba83fc2636d0f6dbf453b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 1 13:40:54 2014 +0100
+
+    v2v: Copy post-conversion tasks section from old virt-v2v documentation.
+    
+    Copied verbatim, apart from some minor reformatting.
+
+commit d0110a4e239a978326b51dd79ca2b9abe30c1cb5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 1 13:36:47 2014 +0100
+
+    v2v: Copy -o rhev information from old virt-v2v manual page.
+
+commit 886c566756d02f8568c20585a0936c387105b061
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 1 12:11:50 2014 +0100
+
+    lib: Avoid rewriting LV names when creating canonical device name (RHBZ#1148355).
+    
+    Thanks: Timothée Ravier
+
+commit c9c65e08eb595f92168dfd0e284aa8ba5525c1a7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 1 10:07:08 2014 +0100
+
+    v2v: Add note to man page about removing VMware tools before conversion.
+    
+    Thanks: Matthew Booth.
+
+commit d39744a030d075cdff82f1ca4c80ec40bdcfb699
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Oct 1 10:12:38 2014 +0200
+
+    sysprep: add no-op --no-selinux-relabel (RHBZ#1148072)
+    
+    Add a no-op --no-selinux-relabel option, to be compatible with
+    virt-sysprep < 1.26.
+
+commit 011b5da6f5db32d22d176f3750e3417a6ad9d553
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 30 13:28:31 2014 +0100
+
+    p2v: Fix reference to virt-v2v(1) in manual page.
+
+commit 7357dcd8789be73952ba3a294f1c34eb18ec2e31
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 30 11:27:35 2014 +0100
+
+    resize: Don't test MBR extended partitions while virt-resize handling is broken.
+    
+    The intention is to fix virt-resize and then revert this commit.
+
+commit 6f196df4145847659b81c91b7314fe7e0775ad94
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 29 14:45:13 2014 +0100
+
+    resize: Rewrite the tests to use a stochastic testing method.
+    
+    The previous tests were very limited, and ran the same two tests
+    on every run.
+    
+    Randomly test:
+     - MBR vs GPT
+     - Primary, extended partitions
+     - Expanding vs shrinking
+     - Use of multiple --resize parameters
+     - Source and target raw vs qcow2 formats
+     - Resizing various different filesystem types
+     - LV expand
+     - extra partition or no extra partition
+    
+    To run the test over and over again (useful for finding regressions in
+    virt-resize), do:
+    
+      while (cd resize; LIBGUESTFS_TRACE=1 ../run ./test-virt-resize.pl) >&/tmp/log ; do echo -n .; done
+    
+    If it fails, you can see the failure in /tmp/log.
+    
+    To rerun a specific test, search for the 'seed:' in the output of the
+    original test, and specify it on the command line:
+    
+      (cd resize; ../run ./test-virt-resize.pl --seed=<SEED>)
+
+commit 225257b67a921c9baa46c6d6d99b6c3ffe732290
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 30 13:51:16 2014 +0200
+
+    inspect: document also MINIX as OS
+    
+    Followup of commit 5b65d05d5a31415aaa6f284f73da745e0ee0408a.
+
 commit 23d4cec345dfd587a07b73cdbfba43516e63a883
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon Sep 29 16:06:06 2014 +0100
