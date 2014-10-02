@@ -12,7 +12,8 @@ virt-p2v - Convert a physical machine to use KVM
 =head1 ОПИС
 
 Virt-p2v converts a physical machine to run virtualized on KVM, managed by
-libvirt or Red Hat Enterprise Virtualisation (RHEV) version 2.2 or later.
+libvirt, OpenStack, oVirt, Red Hat Enterprise Virtualisation (RHEV), or one
+of the other targets supported by L<virt-v2v(1)>.
 
 Normally you don't run the virt-p2v program directly.  Instead you have to
 boot the physical machine using the bootable CD-ROM, ISO or PXE image.  This
@@ -42,8 +43,11 @@ similar that we use the same program to do both).
 The SSH connection is always initiated from the physical server.  All data
 is transferred over the SSH connection.  In terms of firewall and network
 configuration, you only need to ensure that the physical server has access
-to a port (usually TCP port 22) on the conversion server.  (Note that the
-physical machine may reconnect several times during the conversion process.)
+to a port (usually TCP port 22) on the conversion server.  Note that the
+physical machine may reconnect several times during the conversion process.
+
+The reverse port forwarding feature of ssh (ie. C<ssh -R>) is required by
+virt-p2v, and it will not work if this is disabled on the conversion server.
 
 The conversion server does not need to be a physical machine.  It could be a
 virtual machine, as long as it has sufficient memory and disk space to do
@@ -60,6 +64,197 @@ When you start virt-p2v, you'll see a graphical configuration dialog that
 walks you through connection to the conversion server, asks for the
 password, which local hard disks you want to convert, and other things like
 the name of the guest to create and the number of virtual CPUs to give it.
+
+=head2 SSH CONFIGURATION DIALOG
+
+When virt-p2v starts up in GUI mode, the first dialog looks like this:
+
+ ┌────────────────────────────────────────────────────────┐
+ │                      virt-p2v                          │
+ │                                                        │
+ │ Conversion server: [_________________________________] │
+ │                                                        │
+ │          SSH port: [22_______________________________] │
+ │                                                        │
+ │         User name: [root_____________________________] │
+ │                                                        │
+ │          Password: [_________________________________] │
+ │                                                        │
+
+In the fields above, you must enter the hostname, SSH port number, remote
+user name and password of the conversion server.  The conversion server must
+have an up to date version of virt-v2v.
+
+Normally you must log in to the conversion server as root, but if you check
+the following box:
+
+ │                                                        │
+ │                    [ ] Use sudo when running virt-v2v  │
+ │                                                        │
+
+then you can log in as another user, and virt-p2v will use the L<sudo(8)>
+command to elevate privileges to root.  Note that sudo must not require a
+password.
+
+It is also possible to run virt-v2v on the conversion server entirely as
+non-root, but output modes may be limited.  Consult the L<virt-v2v(1)>
+manual page for details.
+
+At the bottom of the dialog are these buttons:
+
+ │                                                        │
+ │                [ Test connection ]                     │
+ │                                                        │
+ │                [ About           ]  [ Next           ] │
+ │                                                        │
+ └────────────────────────────────────────────────────────┘
+
+You must press the C<Test connection> button first to test the SSH
+connection to the conversion server.  If that is successful (ie. you have
+supplied the correct server name, user name, password, etc., and a suitable
+version of virt-v2v is available remotely) then press the C<Next> button to
+move to the next dialog.
+
+=head2 DISK AND NETWORK CONFIGURATION DIALOG
+
+The second configuration dialog lets you configure the details of
+conversion, including what to convert and where to send the guest.
+
+In the left hand column, starting at the top, the target properties let you
+select the name of the guest (ie. after conversion) and how many virtual
+CPUs and how much RAM to give it.  The defaults come from the physical
+machine, and you can usually leave them unchanged:
+
+ ┌─────────────────────────────────────── ─ ─ ─ ─
+ │ Target properties:
+ │
+ │        Name: [hostname______________]
+ │
+ │     # vCPUs: [4_____________________]
+ │
+ │ Memory (MB): [16384_________________]
+ │
+
+The second panel on the left controls the virt-v2v output options.  To
+understand these options it is a really good idea to read the L<virt-v2v(1)>
+manual page.  You can leave the options at the default to create a guest as
+a disk image plus libvirt XML file located in C</var/tmp> on the conversion
+host.  This is a good idea if you are a first-time virt-p2v user.
+
+ │
+ │ Virt-v2v output options:
+ │
+ │          Output to (-o): [local             ▼]
+ │
+ │      Output conn. (-oc): [___________________]
+ │
+ │    Output storage (-os): [/var/tmp___________]
+ │
+ │     Output format (-of): [___________________]
+ │
+ │ Output allocation (-oa): [sparse            ▼]
+ │
+
+All output options and paths are relative to the conversion server (I<not>
+to the physical server).
+
+The final option in this panel enables server-side debugging.  This produces
+a lot of output, but is essential if you are tracking down virt-p2v or
+virt-v2v problems, and can generally be left enabled:
+
+ │
+ │ [✔] Enable server-side debugging
+ │
+
+Finally in the left hand column is an information box giving the version of
+virt-p2v (on the physical server) and virt-v2v (on the conversion server).
+You should supply this information when reporting bugs.
+
+In the right hand column are three panels which control what hard disks,
+removable media devices, and network interfaces, will be created in the
+output guest.  Normally leaving these at the default settings is fine.
+
+ ─ ─ ───────────────────────────────────────┐
+     Fixed hard disks                       │
+                                            │
+     Convert  Device  Size (GB)  Model      │
+     [✔]      sda     1024       HITACHI    │
+     [✔]      sdb     119        HITACHI    │
+                                            │
+
+Normally you would want to convert all hard disks.  If you want virt-p2v to
+completely ignore a local hard disk, uncheck it.  The hard disk that
+contains the operating system must be selected.  If a hard disk is part of a
+RAID array or LVM volume group (VG), then either all hard disks in that
+array/VG must be selected, or none of them.
+
+                                            │
+     Removable media                        │
+                                            │
+     Convert  Device                        │
+     [✔]      sr0                           │
+                                            │
+
+If the physical machine has CD or DVD drives, then you can use the Removable
+media panel to create corresponding drives on the guest after conversion.
+Note that any data CDs/DVDs which are mounted in the drives are I<not>
+copied over.
+
+                                            │
+     Network interfaces                     │
+                                            │
+     Convert  Device Connect to ...         |
+     [✔]      em1    [default_____________] │
+     [ ]      wlp3s0 [default_____________] │
+                                            │
+
+In the Network interfaces panel, select the network interfaces that should
+be created in the guest after conversion.  You can also connect these to
+target hypervisor networks (for further information about this feature, see
+L<virt-v2v(2)/NETWORKS AND BRIDGES>).
+
+When you are ready to begin the conversion, press the C<Start conversion>
+button:
+
+                                            │
+             [ Back ]  [ Start conversion ] │
+                                            │
+ ─ ─ ───────────────────────────────────────┘
+
+=head2 CONVERSION RUNNING DIALOG
+
+When conversion is running you will see this dialog:
+
+ ┌────────────────────────────────────────────────────────┐
+ │                      virt-p2v                          │
+ │                                                        │
+ │  ┌──────────────────────────────────────────────────┐  │
+ │  │                                                 ▲│  │
+ │  │                                                  │  │
+ │  │                                                  │  │
+ ∼  ∼                                                  ∼  ∼
+ │  │                                                  │  │
+ │  │                                                  │  │
+ │  │                                                 ▼│  │
+ │  └──────────────────────────────────────────────────┘  │
+ │                                                        │
+ │ Log files ... to /tmp/virt-p2v-xxx                     │
+ │                                                        │
+ │ Doing conversion ...                                   │
+ │                                                        │
+ │                                 [ Cancel conversion ]  │
+ │                                                        │
+ └────────────────────────────────────────────────────────┘
+
+In the main scrolling area you will see log messages from the virt-v2v
+process.
+
+Below the main area, virt-p2v shows you the location of the directory on the
+conversion server that contains log files and other debugging information.
+Below that is the current status and a button for cancelling conversion.
+
+Once conversion has finished, you should shut down the physical machine.  If
+conversion is successful, you should never reboot it.
 
 =head1 KERNEL COMMAND LINE CONFIGURATION
 
@@ -198,9 +393,9 @@ Set the output connection libvirt URI.  This is the same as the virt-v2v
 I<-oc> option.  See L<virt-v2v(1)/OPTIONS> and
 L<http://libvirt.org/uri.html>
 
-=item B<p2v.of=raw|sparse|...>
+=item B<p2v.of=raw|qcow2|...>
 
-Set the output format.  This is the same as the virt-v2v I<-oa> option.  See
+Set the output format.  This is the same as the virt-v2v I<-of> option.  See
 L<virt-v2v(1)/OPTIONS>.
 
 =item B<p2v.os=...>
@@ -251,10 +446,129 @@ Enable debugging (on the conversion server).
 
 =back
 
+=head1 HOW VIRT-P2V WORKS
+
+B<Note this section is not normative.> We may change how virt-p2v works at
+any time in the future.
+
+As described above, virt-p2v runs on a physical machine, interrogates the
+user or the kernel command line for configuration, and then establishes one
+or more ssh connections to the virt-v2v conversion server.  The ssh
+connections are interactive shell sessions to the remote host, but the
+commands sent are generated entirely by virt-p2v itself, not by the user.
+For data transfer, virt-p2v will use the reverse port forward feature of ssh
+(ie. C<ssh -R>).
+
+It will first make one or more test connections, which are used to query the
+remote version of virt-v2v and its features.  The test connections are
+closed before conversion begins.
+
+ ┌──────────────┐                      ┌─────────────────┐
+ │ virt-p2v     │                      │ virt-v2v        │
+ │ (physical    │  control connection  │ (conversion     │
+ │  server)   ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍▶ server)       │
+ └──────────────┘                      └─────────────────┘
+
+Once virt-p2v is ready to start conversion, it will open a single ssh
+control connection.  It first sends a mkdir command to create a temporary
+directory on the conversion server.  The directory name is randomly chosen
+and is displayed in the GUI.  It has the form:
+
+ /tmp/virt-p2v-YYYYMMDD-XXXXXXXX
+
+where C<YYYYMMDD> is the current date, and the X's are random characters.
+
+Into this directory are written various files which include:
+
+=over 4
+
+=item C<name>
+
+I<before conversion>
+
+The name (usually the hostname) of the physical machine.
+
+=item C<physical.xml>
+
+I<before conversion>
+
+Libvirt XML describing the physical machine.  It is used to pass data about
+the physical source host to L<virt-v2v(1)> via the I<-i libvirtxml> option.
+
+Note this is not "real" libvirt XML (and must B<never> be loaded into
+libvirt, which would reject it anyhow).  Also it is not the same as the
+libvirt XML which virt-v2v generates in certain output modes.
+
+=item C<status>
+
+I<after conversion>
+
+The final status of the conversion.  C<0> if the conversion was successful.
+Non-zero if the conversion failed.
+
+=item C<time>
+
+I<before conversion>
+
+The start date/time of conversion.
+
+=item C<virt-v2v-conversion-log.txt>
+
+I<during/after conversion>
+
+The conversion log.  This is just the output of the virt-v2v command on the
+conversion server.  If conversion fails, you should examine this log file,
+and you may be asked to supply the B<complete>, B<unedited> log file in any
+bug reports or support tickets.
+
+=back
+
+Before conversion actually begins, virt-p2v then makes one or more further
+ssh connections to the server for data transfer.  The transfer protocol used
+currently is NBD (Network Block Device), which is proxied over ssh.  The
+server is L<qemu-nbd(1)>.  There is one ssh connection per physical hard
+disk on the source machine (the common case — a single hard disk — is shown
+below):
+
+ ┌──────────────┐                      ┌─────────────────┐
+ │ virt-p2v     │                      │ virt-v2v        │
+ │ (physical    │  control connection  │ (conversion     │
+ │  server)   ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍▶ server)       │
+ │              │                      │                 │
+ │              │  data connection     │                 │
+ │            ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍▶               │
+ │qemu-nbd ← ─┘ │                      │└─ ← NBD         │
+ │/dev/sda      │                      │     requests    │
+ ∼              ∼                      ∼                 ∼
+ └──────────────┘                      └─────────────────┘
+
+Although the ssh data connection is originated from the physical server and
+terminates on the conversion server, in fact NBD requests flow in the
+opposite direction.  This is because the reverse port forward feature of ssh
+(C<ssh -R>) is used to open a port on the loopback interface of the
+conversion server which is proxied back by ssh to the qemu-nbd server
+running on the physical machine.  The effect is that virt-v2v via libguestfs
+can open nbd connections which directly read the hard disk(s) of the
+physical server.
+
+Two layers of protection are used to ensure that there are no writes to the
+hard disks: Firstly, the qemu-nbd I<-r> (readonly) option is used.  Secondly
+libguestfs creates an overlay on top of the NBD connection which stores
+writes in a temporary file on the conversion file.
+
+The final step is to send the S<C<virt-v2v -i libvirtxml physical.xml ...>>
+command to the conversion server over the control connection.  This
+references the C<physical.xml> file (see above), which in turn references
+the NBD listening port(s) of the data connection(s).
+
+Output from the virt-v2v command (messages, debugging etc) is saved both in
+the log file on the conversion server, and sent over the control connection
+to be displayed in the graphical UI.
+
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<virt-p2v-make-disk(1)>, L<virt-p2v-make-kickstart(1)>, L<virt-v2v(1)>,
-L<qemu-nbd(1)>, L<http://libguestfs.org/>.
+L<qemu-nbd(1)>, L<ssh(1)>, L<http://libguestfs.org/>.
 
 =head1 АВТОРИ
 
