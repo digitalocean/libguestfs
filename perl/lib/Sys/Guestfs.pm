@@ -3498,6 +3498,10 @@ GNU/Hurd.
 
 MS-DOS, FreeDOS and others.
 
+=item "minix"
+
+MINIX.
+
 =item "unknown"
 
 The operating system type could not be determined.

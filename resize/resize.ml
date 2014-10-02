@@ -73,6 +73,9 @@ and partition_id =
   | MBR_ID of int                (* MBR ID. *)
   | GPT_Type of string           (* GPT UUID. *)
 
+type partition_type =
+  | PrimaryPartition
+
 let rec debug_partition p =
   eprintf "%s:\n" p.p_name;
   eprintf "\tpartition data: %ld %Ld-%Ld (%Ld bytes)\n"
@@ -443,14 +446,15 @@ read the man page virt-resize(1).
     | MBR_ID _ | GPT_Type _ | No_ID -> false
   in
 
-  let partitions : partition list =
+  let find_partitions part_type =
     let parts = Array.to_list (g#part_list "/dev/sda") in
-
-    if List.length parts = 0 then
-      error (f_"the source disk has no partitions");
 
     (* Filter out logical partitions.  See note above. *)
     let parts =
+      match part_type with
+      (* for GPT, all partitions are regarded as Primary Partition,
+       * e.g. there is no Extended Partition or Logical Partition. *)
+      | PrimaryPartition ->
         List.filter (fun p -> parttype <> MBR || p.G.part_num <= 4_l)
         parts in
 
@@ -482,11 +486,6 @@ read the man page virt-resize(1).
             p_target_start = 0L; p_target_end = 0L }
       ) parts in
 
-    if verbose then (
-      eprintf "%d partitions found\n" (List.length partitions);
-      List.iter debug_partition partitions
-    );
-
     (* Check content isn't larger than partitions.  If it is then
      * something has gone wrong and we shouldn't continue.  Old
      * virt-resize didn't do these checks.
@@ -517,6 +516,13 @@ read the man page virt-resize(1).
     loop 0L partitions;
 
     partitions in
+
+  let partitions = find_partitions PrimaryPartition in
+
+  if verbose then (
+    eprintf "%d partitions found\n" (List.length partitions);
+    List.iter debug_partition partitions
+    );
 
   (* Build a data structure describing LVs on the source disk. *)
   let lvs =
@@ -1013,64 +1019,68 @@ read the man page virt-resize(1).
    * the final list just contains partitions that need to be created
    * on the target.
    *)
+  let rec calculate_target_partitions partnum start ~create_surplus = function
+    | p :: ps ->
+      (match p.p_operation with
+      | OpDelete ->
+        calculate_target_partitions partnum start ~create_surplus ps (* skip p *)
+
+      | OpIgnore | OpCopy ->          (* same size *)
+        (* Size in sectors. *)
+        let size = div_roundup64 p.p_part.G.part_size sectsize in
+        (* Start of next partition + alignment. *)
+        let end_ = start +^ size in
+        let next = roundup64 end_ alignment in
+
+        if verbose then
+          eprintf "target partition %d: ignore or copy: start=%Ld end=%Ld\n%!"
+            partnum start (end_ -^ 1L);
+
+        { p with p_target_start = start; p_target_end = end_ -^ 1L;
+          p_target_partnum = partnum } ::
+          calculate_target_partitions (partnum+1) next ~create_surplus ps
+
+      | OpResize newsize ->           (* resized partition *)
+        (* New size in sectors. *)
+        let size = div_roundup64 newsize sectsize in
+        (* Start of next partition + alignment. *)
+        let next = start +^ size in
+        let next = roundup64 next alignment in
+
+        if verbose then
+          eprintf "target partition %d: resize: newsize=%Ld start=%Ld end=%Ld\n%!"
+            partnum newsize start (next -^ 1L);
+
+        { p with p_target_start = start; p_target_end = next -^ 1L;
+          p_target_partnum = partnum } ::
+          calculate_target_partitions (partnum+1) next ~create_surplus ps
+      )
+
+    | [] ->
+      (* Create the surplus partition if there is room for it. *)
+      if create_surplus && extra_partition && surplus >= min_extra_partition then (
+        [ {
+          (* Since this partition has no source, this data is
+           * meaningless and not used since the operation is
+           * OpIgnore.
+           *)
+          p_name = "";
+          p_part = { G.part_num = 0l; part_start = 0L; part_end = 0L;
+                     part_size = 0L };
+          p_bootable = false; p_id = No_ID; p_type = ContentUnknown;
+          p_label = None;
+
+          (* Target information is meaningful. *)
+          p_operation = OpIgnore;
+          p_target_partnum = partnum;
+          p_target_start = start; p_target_end = ~^ 64L
+        } ]
+      )
+      else
+        []
+  in
+
   let partitions =
-    let rec loop partnum start = function
-      | p :: ps ->
-        (match p.p_operation with
-        | OpDelete -> loop partnum start ps (* skip p *)
-
-        | OpIgnore | OpCopy ->          (* same size *)
-          (* Size in sectors. *)
-          let size = div_roundup64 p.p_part.G.part_size sectsize in
-          (* Start of next partition + alignment. *)
-          let end_ = start +^ size in
-          let next = roundup64 end_ alignment in
-
-          if verbose then
-            eprintf "target partition %d: ignore or copy: start=%Ld end=%Ld\n%!"
-              partnum start (end_ -^ 1L);
-
-          { p with p_target_start = start; p_target_end = end_ -^ 1L;
-            p_target_partnum = partnum } :: loop (partnum+1) next ps
-
-        | OpResize newsize ->           (* resized partition *)
-          (* New size in sectors. *)
-          let size = div_roundup64 newsize sectsize in
-          (* Start of next partition + alignment. *)
-          let next = start +^ size in
-          let next = roundup64 next alignment in
-
-          if verbose then
-            eprintf "target partition %d: resize: newsize=%Ld start=%Ld end=%Ld\n%!"
-              partnum newsize start (next -^ 1L);
-
-          { p with p_target_start = start; p_target_end = next -^ 1L;
-            p_target_partnum = partnum } :: loop (partnum+1) next ps
-        )
-
-      | [] ->
-        (* Create the surplus partition if there is room for it. *)
-        if extra_partition && surplus >= min_extra_partition then (
-          [ {
-            (* Since this partition has no source, this data is
-             * meaningless and not used since the operation is
-             * OpIgnore.
-             *)
-            p_name = "";
-            p_part = { G.part_num = 0l; part_start = 0L; part_end = 0L;
-                       part_size = 0L };
-            p_bootable = false; p_id = No_ID; p_type = ContentUnknown;
-            p_label = None;
-
-            (* Target information is meaningful. *)
-            p_operation = OpIgnore;
-            p_target_partnum = partnum;
-            p_target_start = start; p_target_end = ~^ 64L
-          } ]
-        )
-        else
-          [] in
-
     (* Choose the alignment of the first partition based on the
      * '--align-first' option.  Old virt-resize used to always align this
      * to 64 sectors, but this causes boot failures unless we are able to
@@ -1083,12 +1093,21 @@ read the man page virt-resize(1).
         (* Preserve the existing start, but convert to sectors. *)
         (List.hd partitions).p_part.G.part_start /^ sectsize in
 
-    loop 1 start partitions in
+    calculate_target_partitions 1 start ~create_surplus:true partitions in
+
+  let mbr_part_type x =
+    match parttype, x.p_part.G.part_num <= 4_l, x.p_type with
+    (* for GPT, all partitions are regarded as Primary Partition. *)
+    | GPT, _, _ -> "primary"
+    | MBR, true, (ContentUnknown|ContentPV _|ContentFS _) -> "primary"
+    | MBR, true, ContentExtendedPartition -> "extended"
+    | MBR, false, _ -> "logical"
+  in
 
   (* Now partition the target disk. *)
   List.iter (
     fun p ->
-      g#part_add "/dev/sdb" "primary" p.p_target_start p.p_target_end
+      g#part_add "/dev/sdb" (mbr_part_type p) p.p_target_start p.p_target_end
   ) partitions;
 
   (* Copy over the data. *)

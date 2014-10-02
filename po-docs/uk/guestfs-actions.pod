@@ -5538,6 +5538,10 @@ GNU/Hurd.
 
 MS-DOS, FreeDOS та інші.
 
+=item "minix"
+
+MINIX.
+
 =item "unknown"
 
 Не вдалося визначити тип операційної системи.

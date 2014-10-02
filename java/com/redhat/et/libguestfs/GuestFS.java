@@ -7262,6 +7262,9 @@ public class GuestFS {
    * "dos"
    * MS-DOS, FreeDOS and others.
    * <p>
+   * "minix"
+   * MINIX.
+   * <p>
    * "unknown"
    * The operating system type could not be determined.
    * <p>

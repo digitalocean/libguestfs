@@ -9785,6 +9785,9 @@ guestfs_session_inspect_get_roots (GuestfsSession *session, GError **err)
  * "dos"
  * MS-DOS, FreeDOS and others.
  * 
+ * "minix"
+ * MINIX.
+ * 
  * "unknown"
  * The operating system type could not be determined.
  * 
