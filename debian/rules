@@ -15,9 +15,6 @@ BUILDS         := $(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
 		  $(filter-out $(LUA_DEFAULT), $(LUAS)) \
 		  default
 
-pkglist_to_deps := sed -e 's,iproute2\?,iproute2|iproute,;s,\(gfs-tools\|gfs2-tools\|gfs2-utils\),gfs2-utils|gfs2-tools|gfs-tools,;s,\(kmod\|module-init-tools\),kmod | module-init-tools,;s,\(systemd\|sysvinit,systemd | sysvinit,'
-essential_deps  := grep -v '^\(bash\|coreutils\|e2fsprogs\|findutils\|grep\|gzip\|libc-bin\|sed\|sysvinit\|tar\|util\-linux\)'
-
 QEMU_CPU := $(shell echo $(DEB_HOST_GNU_CPU) \
 		    | sed -r -e 's,i[456]86,i386,;s,sparc,sparc64,;s,powerpc(64.*)?,ppc64,;s,arm.*,arm,')
 
@@ -117,15 +114,7 @@ override_dh_auto_install:
 override_dh_install:
 # Split the supermin appliance packages list into subpackages, so the
 # main libguestfs0 can avoid depending on everything.
-	cd $(CURDIR)/debian/tmp/usr/lib/*-*/guestfs/supermin.d && \
-	cp -n packages packages.orig; \
-	for p in gfs2 hfsplus jfs nilfs reiserfs rsync xfs zfs; do \
-	    sed -i -e "/$$p/d" packages; \
-	    grep -F  "$$p" < packages.orig > packages-$$p; \
-	done ; \
-	sed -i -e "/^\(iputils\|lsof\|openssh-server\|strace\|vim\)/d" packages; \
-	grep "^\(iputils\|lsof\|openssh-server\|strace\|vim\)" \
-	    < packages.orig > packages-rescue
+	debian/split-appliance.sh
 
 	erlang-depends -perlang-guestfs
 
@@ -133,21 +122,8 @@ override_dh_install:
 	    --fail-missing
 
 # Add packages (except essential packages) from appliance packagelist
-# to libguestfs0 dependencies
-	for p in gfs2 hfsplus jfs nilfs reiserfs rescue rsync xfs zfs; \
-	do \
-	    echo -n 'appliance:Depends=' >> debian/libguestfs-$$p.substvars; \
-	    cat debian/libguestfs-$$p/usr/lib/*-*/guestfs/supermin.d/packages-$$p | \
-	    $(pkglist_to_deps) | \
-	    $(essential_deps) | \
-	    tr '\n' ',' >> debian/libguestfs-$$p.substvars; \
-	done
-
-	echo -n 'appliance:Depends=' >> debian/libguestfs0.substvars
-	cat debian/libguestfs0/usr/lib/*-*/guestfs/supermin.d/packages | \
-	$(pkglist_to_deps) | \
-	$(essential_deps) | \
-	tr '\n' ',' >> debian/libguestfs0.substvars; \
+# to libguestfs* dependencies
+	debian/gen-appliance-depends.sh
 
 override_dh_python3:
 	dh_python3 -p python3-guestfs
