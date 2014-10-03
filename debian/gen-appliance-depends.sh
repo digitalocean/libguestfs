@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -ex
 
 pkglist_to_deps() {
     echo -n 'appliance:Depends='
