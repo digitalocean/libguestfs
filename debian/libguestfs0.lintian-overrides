@@ -3,3 +3,5 @@ libguestfs0: gzip-file-is-not-multi-arch-same-safe usr/lib/x86_64-linux-gnu/gues
 libguestfs0: gzip-file-is-not-multi-arch-same-safe usr/lib/x86_64-linux-gnu/guestfs/supermin.d/daemon.tar.gz
 libguestfs0: gzip-file-is-not-multi-arch-same-safe usr/lib/x86_64-linux-gnu/guestfs/supermin.d/init.tar.gz
 libguestfs0: gzip-file-is-not-multi-arch-same-safe usr/lib/x86_64-linux-gnu/guestfs/supermin.d/udev-rules.tar.gz
+# As of 2.88dsf-53.3, sysvinit is no longer essential
+libguestfs0: depends-on-essential-package-without-using-version depends: sysvinit
