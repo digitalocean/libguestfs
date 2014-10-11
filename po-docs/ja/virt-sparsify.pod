@@ -117,13 +117,13 @@ by doing:
 
 ヘルプを表示します。
 
-=item B<--check-tmpdir=ignore>
+=item B<--check-tmpdir ignore>
 
-=item B<--check-tmpdir=continue>
+=item B<--check-tmpdir continue>
 
-=item B<--check-tmpdir=warn>
+=item B<--check-tmpdir warn>
 
-=item B<--check-tmpdir=fail>
+=item B<--check-tmpdir fail>
 
 Check if L</TMPDIR> or I<--tmp> directory has enough space to complete the
 operation.  This is just an estimate.

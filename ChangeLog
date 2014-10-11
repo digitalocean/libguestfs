@@ -1,3 +1,84 @@
+commit e21a4e5a90ccc5dce49d4fac5f3f4750e3fee182
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 9 10:30:01 2014 +0100
+
+    Version 1.27.61.
+
+commit 626d85d80be994065951b5f17706ca33ca5fc152
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 9 10:15:55 2014 +0100
+
+    v2v: -i libvirt/libvirtxml: Give a better warning for local displays (RHBZ#1150880).
+
+commit 4d4cada65a09dd40940aa021ba7a52b5fbf266be
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 9 09:34:11 2014 +0100
+
+    daemon: copy-file-to-file: Unlink destination file on failure (RHBZ#1150867).
+    
+    When copying from file to file, don't leave the destination file
+    around if the copy fails.
+    
+    However in the same code don't try unlinking the destination device on
+    failure.
+
+commit fbbcc6c6298dc7084891703bdb5af97541c29bdc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 9 09:29:31 2014 +0100
+
+    sparsify: Fix documentation of --check-tmpdir option (RHBZ#1150858).
+
+commit 9d6efb4966c4d0c9f528af8eb901acde65ce4825
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 9 09:21:06 2014 +0100
+
+    diff: Remove copy and paste mistake from the documentation (RHBZ#1150815).
+    
+    Originated from copying this section out of the virt-ls man page.
+
+commit f8f6250612a44ef56dc8ee8574058a7fdf30ee8f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 22:32:03 2014 +0100
+
+    v2v: Allow -b/-n as alias for --bridge/--network.
+    
+    This was permitted by old virt-v2v too.
+
+commit e66138fbe71c24df3a282e1b23d8ed5c80f7b8c7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 21:17:43 2014 +0100
+
+    v2v: Enable trimming of data disks and non-mountpoints (RHBZ#1150701).
+    
+    This also modifies the --no-trim option so you can specify a device
+    name, since this is necessary if fstrim can apply to non-mountpoints.
+
+commit 69fe3945b7641811c99c3c03e05e73d2347e8a42
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 21:16:48 2014 +0100
+
+    v2v: Fix the --no-trim option so it works.
+    
+    We never updated the no_trim variable in the case where this option
+    was supplied, so it never did anything, proving once again that unless
+    you have a test case, the feature won't work.
+
+commit 36ce0e65f693b21a1557086f10fd49be40da720d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 20:21:36 2014 +0100
+
+    v2v: Print virtual and real copying rates.
+    
+    Useful to diagnose speed issues in the qemu block drivers.
+
+commit 7b8ed81560874a4992c249848dd49a4815b1d79d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 20:21:06 2014 +0100
+
+    v2v: Print mountpoint stats in debugging output.
+    
+    Useful for debugging speed / fstrim issues.
+
 commit 1e9b707e9bbcdba22caa262b33cc79c863c26c34
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Oct 8 15:44:01 2014 +0100
