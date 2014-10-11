@@ -37,12 +37,8 @@ SOURCES_MLI = \
 	input_libvirt.mli \
 	input_libvirtxml.mli \
 	input_ova.mli \
-	JSON.mli \
 	kvmuid.mli \
-	lib_esx.mli \
-	lib_linux.mli \
-	lib_ovf.mli \
-	lib_xen.mli \
+	linux.mli \
 	modules_list.mli \
 	output_glance.mli \
 	output_libvirt.mli \
@@ -51,8 +47,11 @@ SOURCES_MLI = \
 	output_qemu.mli \
 	output_rhev.mli \
 	output_vdsm.mli \
+	OVF.mli \
 	stringMap.mli \
 	types.mli \
+	vCenter.mli \
+	xen.mli \
 	xml.mli
 
 SOURCES_ML = \
@@ -62,12 +61,11 @@ SOURCES_ML = \
 	xml.ml \
 	domainxml.ml \
 	DOM.ml \
-	JSON.ml \
 	kvmuid.ml \
-	lib_esx.ml \
-	lib_xen.ml \
-	lib_ovf.ml \
-	lib_linux.ml \
+	vCenter.ml \
+	xen.ml \
+	OVF.ml \
+	linux.ml \
 	modules_list.ml \
 	input_disk.ml \
 	input_libvirtxml.ml \
@@ -122,6 +120,7 @@ BOBJECTS = \
 	$(top_builddir)/mllib/progress.cmo \
 	$(top_builddir)/mllib/config.cmo \
 	$(top_builddir)/mllib/mkdtemp.cmo \
+	$(top_builddir)/mllib/JSON.cmo \
 	$(top_builddir)/customize/urandom.cmo \
 	$(top_builddir)/customize/random_seed.cmo \
 	$(top_builddir)/customize/hostname.cmo \

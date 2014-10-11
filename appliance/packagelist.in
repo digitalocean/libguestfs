@@ -104,7 +104,8 @@ ifelse(ARCHLINUX,1,
   btrfs-progs
   cdrkit
   cryptsetup
-  dhclient
+  dhcpcd
+  gptfdisk
   grub
   hivex
   iproute2
@@ -182,7 +183,7 @@ ifelse(MAGEIA,1,
   chkconfig /* for /etc/init.d */
   cdrkit-genisoimage
   cdrkit-isotools
-  dhclient
+  dhcp-client
   extlinux
   gfs2-utils
   grub
@@ -204,9 +205,6 @@ ifelse(MAGEIA,1,
   vim-minimal
   xz
   yajl
-  module-init-tools
-  procps-ng
-  udev
 )
 
 acl

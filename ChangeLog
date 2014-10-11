@@ -1,3 +1,88 @@
+commit e3722252295921d095fc124bbb2f7698a510fafe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 10 16:58:48 2014 +0100
+
+    Version 1.27.62.
+
+commit 5c7cb0ac7c8b0516ae56966b037fba36c1518b6a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 10 17:03:59 2014 +0200
+
+    builder: use the JSON module
+    
+    Switch to the JSON OCaml module for JSON output.
+    
+    The resulting output is the same, except from an indentation level more
+    within lists.
+
+commit 901de75ff42f169880f5c2356483d30c1e1b04eb
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 10 16:55:47 2014 +0200
+
+    mllib: improve JSON: more types, indented output style
+    
+    Improve the homebrew JSON writer:
+    - add more types (including also nested dictionaries and lists)
+    - format in a compact way (single line), or indented (multilines)
+
+commit bb0d7edfa017ed39f9a4f95b785bd50761cdb8ae
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 10 15:10:20 2014 +0200
+
+    Move JSON to mllib
+    
+    Move the simple OCaml JSON writer to mllib, so that can be enhanced and
+    used also outside v2v.
+
+commit 75b45143f0fe3df2449d1e6b523b63e2380c89aa
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 10 15:09:27 2014 +0200
+
+    appliance: remove few duplicates from Mageia's list
+
+commit 7893a2cfb1b2e2e8fba9ceab35b498025fbe535a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 10 11:47:26 2014 +0100
+
+    FAQ: Add a section on debugging libvirtd.
+
+commit 632803856701bd664f8f482a5bfcaed6715cd36e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 9 18:07:33 2014 +0100
+
+    v2v: Rename some modules to remove lib_ prefix.
+    
+    v2v/lib_ovf.ml -> v2v/OVF.ml
+    v2v/lib_ovf.mli -> v2v/OVF.mli
+    v2v/lib_linux.ml -> v2v/linux.ml
+    v2v/lib_linux.mli -> v2v/linux.mli
+    v2v/lib_esx.ml -> v2v/vCenter.ml
+    v2v/lib_esx.mli -> v2v/vCenter.mli
+    v2v/lib_xen.ml -> v2v/xen.ml
+    v2v/lib_xen.mli -> v2v/xen.mli
+
+commit 88a381b2a065e0447281eb3ca7a215b3855c98b0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 9 16:04:01 2014 +0100
+
+    v2v: Increase readahead window for vCenter transfers (RHBZ#1151033).
+
+commit 8f3a2ca5358d5601be7a9247b6d08193c4e2da46
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Oct 9 14:53:53 2014 +0200
+
+    appliance: add dhcp-client on Mageia
+    
+    dhcp-client replaces the non-existing dhclient.
+
+commit 979e7a49147f4ef1387337db262bf7ea12f627e3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Oct 9 14:53:10 2014 +0200
+
+    appliance: add dhcpcd and gptfdisk on Archlinux
+    
+    dhcpcd replaces the non-existing dhclient.
+
 commit e21a4e5a90ccc5dce49d4fac5f3f4750e3fee182
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Oct 9 10:30:01 2014 +0100
