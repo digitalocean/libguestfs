@@ -443,7 +443,7 @@ Print information about the template cache.  See L</CACHING>.
 
 Don't print ordinary progress messages.
 
-=item B<--size> SIZE
+=item B<--size> РОЗМІР
 
 Select the size of the output disk, where the size can be specified using
 common names such as C<32G> (32 gigabytes) etc.
@@ -1139,7 +1139,7 @@ output but is otherwise not significant.
 This optional field maps the operating system to the associated libosinfo
 ID.  Virt-builder does not use it (yet).
 
-=item C<arch=ARCH>
+=item C<arch=АРХІТЕКТУРА>
 
 The architecture of the operating system installed within the template. This
 field is required.
@@ -1192,7 +1192,8 @@ The revision is an integer which is used to control the template cache.
 Increasing the revision number causes clients to download the template again
 even if they have a copy in the cache.
 
-The revision number is optional.  If omitted it defaults to C<1>.
+Номер модифікації є необов’язковим. Якщо його не вказано, типовим значенням
+вважається C<1>.
 
 =item C<format=raw>
 
@@ -1267,7 +1268,7 @@ Using the hidden flag prevents the template from being listed by the
 I<--list> option (but it is still installable).  This is used for test
 images.
 
-=item C<aliases=ALIAS1 ALIAS2 ...>
+=item C<aliases=ПСЕВДОНІМ1 ПСЕВДОНІМ2 ...>
 
 This optional field specifies a list of aliases, separated by spaces, for
 the image.  For example, an alias could be used to always point to the
@@ -1494,7 +1495,7 @@ web cache may ensure they only need to be downloaded once.  You can also try
 using a local package repository, although this can be complex to set up and
 varies according to which Linux distro you are trying to install.
 
-=head3 Using I<--no-sync>
+=head3 Користування I<--no-sync>
 
 Use I<--no-sync>.  However read the caveats in the L</OPTIONS> section
 above, since this can cause disk corruption if not used correctly.

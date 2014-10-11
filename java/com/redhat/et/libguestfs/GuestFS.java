@@ -4324,6 +4324,12 @@ public class GuestFS {
    * "ppc64"
    * 64 bit Power PC.
    * <p>
+   * "arm"
+   * 32 bit ARM.
+   * <p>
+   * "aarch64"
+   * 64 bit ARM.
+   * <p>
    * Libguestfs may return other architecture strings in
    * future.
    * <p>

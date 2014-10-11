@@ -1,3 +1,209 @@
+commit 1e9b707e9bbcdba22caa262b33cc79c863c26c34
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 15:44:01 2014 +0100
+
+    Version 1.27.60.
+
+commit 6d0f46bacbace13b7c74c092dd7c9356dc4bd41f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 15:41:44 2014 +0100
+
+    v2v: Add README.RHEV-M to EXTRA_DIST.
+    
+    This fixes commit 8adc32cae8898817bfa2ed7669eda1f6c4aa3dae.
+
+commit c4bad9deaf04b4329d0ecb38c007017d6330391c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 15:00:25 2014 +0100
+
+    v2v: -o rhev, -o vdsm: Fix export with multiple disks (RHBZ#1150475).
+    
+    When translating the original virt-v2v code, I misunderstood how image
+    directories are created.  There is one directory under images/ per
+    disk image, not one for all the disks in a single guest.
+    
+    Note this requires that -o vdsm uses multiple --vdsm-image-uuid
+    options, one per disk image of the guest.
+    
+    Reported by: Alain Vondra
+    Thanks: Tingting Zheng
+
+commit 43e150c212c311aa9dbf535faa756b34bf7f580a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 14:59:52 2014 +0100
+
+    mllib: Add 'combine3' function.
+
+commit 8adc32cae8898817bfa2ed7669eda1f6c4aa3dae
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 14:39:40 2014 +0100
+
+    v2v: Add notes about layout of Export Storage Domain for multi-disk guests.
+
+commit 2de1602b707ba33676c2d6fdb98a0591aca08b6e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Oct 8 13:44:25 2014 +0200
+
+    log: tests: switch to a temporary file for outputs
+    
+    Using a pipe to redirect the output of virt-log will lose his return
+    value, so use a temporary file to collect the virt-log output.
+
+commit 371744bc59a25feeafa308b1aa9b9c9c0d2a0099
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 12:40:32 2014 +0100
+
+    Revert "log: tests: fix appending the virt-log output"
+    
+    This reverts commit cfe2daabb2c146c96b1c291a97f08e58cfcdfd2a.
+    
+    The pipe hides the return code from virt-log or valgrind.
+
+commit 7c97b01f2754ffb76f94b68497eb5829ffa92390
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 12:37:51 2014 +0100
+
+    v2v: Add missing disk <rasd:Caption>.
+    
+    Possible fix for RHBZ#1150475.
+
+commit cfe2daabb2c146c96b1c291a97f08e58cfcdfd2a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Oct 8 11:14:28 2014 +0200
+
+    log: tests: fix appending the virt-log output
+    
+    virt-log uses /dev/stdout as output file for guestfs_download, which
+    will open the output file in truncate mode, truncating the output of
+    test-virt-log.sh.
+    
+    Make sure to redirect the output of virt-log so it does not clobber the
+    test output.
+    
+    Thanks to Richard for the hint.
+
+commit aa42bcf54d83df326683b5bb9db68003396dfc6e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 15:29:12 2014 +0100
+
+    Version 1.27.59.
+
+commit fd421ebf88653455d8547f546e887cf5c5bfb890
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 15:29:39 2014 +0100
+
+    p2v: Fix virt-p2v-make-kickstart so it won't fail when using a custom repo.
+    
+    Because of `set -e', using the `((i++))' expression causes bash to
+    fail, unless we tell it to ignore the error code on that line.
+
+commit b81256581b4cea83ebc9f472df1adcd89ac550ce
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 15:04:26 2014 +0100
+
+    Update API support.
+
+commit a97b3b6ae4ff2fd5a31e82a2ab35c559e17cf946
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 13:54:50 2014 +0100
+
+    Update gnulib to latest upstream.
+
+commit 09384e8164c795fff03a43b69499f782087c5b0a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 13:31:47 2014 +0100
+
+    Update translations from Transifex.
+
+commit 6e204f6ccccee1e6ebe27d940760cc7ea746126c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 13:31:36 2014 +0100
+
+    Update BUGS.
+
+commit 8ddae163e49a1ac459fbd3d1ff3a2546af9f75a6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 13:20:12 2014 +0100
+
+    Update release notes.
+
+commit a48ade569d485a114d29da358e4a2c36429b7ebb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 12:40:41 2014 +0100
+
+    v2v: Further documentation fixes.
+    
+    Replace more instances of 'esx.example.com' with
+    'vcenter.example.com', and rearrange command line arguments
+    semantically.
+
+commit f796435628cea8b037d5fc786934583019707c6e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 10:17:33 2014 +0100
+
+    FAQ: Need to set SUPERMIN_KERNEL_VERSION in recent supermin.
+
+commit 0f023a080b6612ba3ffba53eb557443adca0a88d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 09:27:09 2014 +0100
+
+    v2v: Improve VMware import documentation.
+    
+    Additional information about URIs, which may contain cluster and/or
+    folder names (thanks: James Mighion).
+    
+    Replace esx.example.com with vcenter.example.com to reduce confusion
+    about vCenter vs ESXi.
+
+commit c92734b209e4504e84a051e433c81d4d5449d660
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 6 18:05:53 2014 +0200
+
+    log: tests: skip fedora.img if journal is not available
+
+commit cb1b7cbdd5f92ee41ba70915d74dfa845d2365ae
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 6 16:10:44 2014 +0200
+
+    tools: fix free -m invocation
+    
+    Since procps 3.3.10, free does not output the "-/+ buffers/cache" line
+    anymore. On the other hand, the data from it can be calculated from the
+    memory values, so just do the calculation manually (with awk).
+
+commit c4bc416820005d6bc4956b32d9c6e0f83382702d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 6 13:09:58 2014 +0100
+
+    lib: Enable detection of ARM (32 bit).
+    
+    This includes some empty binaries to use for detection testing.
+
+commit 07f87a7c91736a0a2389c3100d7e3ef83ed55a35
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 6 13:09:46 2014 +0100
+
+    lib: Document output of 'file-architecture' API for aarch64 binaries.
+
+commit 56cfb8a9262c508169fd69ea4ca8a8db4b5a5a35
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 3 14:24:48 2014 +0200
+
+    sysprep: remove more logs
+    
+    - remove firewalld, grubby, and proftpd logs
+    - extend the cups log removal also to its timestamped rotated logs
+    - remove also the libvirt/libxl logs
+
+commit 0823416925aa10d6f03b7227214df24dd3b2a823
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 2 17:02:21 2014 +0100
+
+    tests: Fix SKIP_ environment variable in a couple of scripts.
+    
+    I checked and bug 690819 has nothing to do with either of these
+    tests.  It was just a copy and paste error.
+
 commit 7ff5d51815cf7f3beb936512dcc5c95c9d36ee1f
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Oct 2 15:55:51 2014 +0100

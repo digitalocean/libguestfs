@@ -641,7 +641,7 @@ test_set_uuid_0_perform (guestfs_h *g)
 {
   /* TestResultString for set_uuid (0) */
   const char *arg43 = "/dev/sda1";
-  const char *arg44 = "6ace5ab3-c527-4205-7b33-59234526199a";
+  const char *arg44 = "d1361161-1784-f43e-34c3-795da2189c59";
   int ret42;
   ret42 = guestfs_set_uuid (g, arg43, arg44);
   if (ret42 == -1)
@@ -651,9 +651,9 @@ test_set_uuid_0_perform (guestfs_h *g)
   ret = guestfs_vfs_uuid (g, arg46);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "6ace5ab3-c527-4205-7b33-59234526199a")) {
+  if (! STREQ (ret, "d1361161-1784-f43e-34c3-795da2189c59")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_set_uuid_0", "vfs_uuid", "6ace5ab3-c527-4205-7b33-59234526199a", ret);
+             "test_set_uuid_0", "vfs_uuid", "d1361161-1784-f43e-34c3-795da2189c59", ret);
     return -1;
   }
   return 0;
@@ -2185,7 +2185,7 @@ test_mke2fs_2_perform (guestfs_h *g)
   const char *arg303 = "/dev/sda1";
   struct guestfs_mke2fs_argv optargs304;
   optargs304.blocksize = 4096;
-  optargs304.uuid = "6ace5ab3-c527-4205-7b33-59234526199a";
+  optargs304.uuid = "d1361161-1784-f43e-34c3-795da2189c59";
   optargs304.journaldev = 1;
   optargs304.bitmask = UINT64_C(0x100100002);
   int ret302;
@@ -2195,7 +2195,7 @@ test_mke2fs_2_perform (guestfs_h *g)
   const char *arg306 = "/dev/sda2";
   struct guestfs_mke2fs_argv optargs307;
   optargs307.blocksize = 4096;
-  optargs307.journaldevice = "UUID=6ace5ab3-c527-4205-7b33-59234526199a";
+  optargs307.journaldevice = "UUID=d1361161-1784-f43e-34c3-795da2189c59";
   optargs307.label = "JOURNAL";
   optargs307.fstype = "ext2";
   optargs307.forcecreate = 1;
@@ -6853,7 +6853,7 @@ test_vfs_uuid_0_perform (guestfs_h *g)
 {
   /* TestResultString for vfs_uuid (0) */
   const char *arg946 = "/dev/sda1";
-  const char *arg947 = "6ace5ab3-c527-4205-7b33-59234526199a";
+  const char *arg947 = "d1361161-1784-f43e-34c3-795da2189c59";
   int ret945;
   ret945 = guestfs_set_e2uuid (g, arg946, arg947);
   if (ret945 == -1)
@@ -6863,9 +6863,9 @@ test_vfs_uuid_0_perform (guestfs_h *g)
   ret = guestfs_vfs_uuid (g, arg949);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "6ace5ab3-c527-4205-7b33-59234526199a")) {
+  if (! STREQ (ret, "d1361161-1784-f43e-34c3-795da2189c59")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_vfs_uuid_0", "vfs_uuid", "6ace5ab3-c527-4205-7b33-59234526199a", ret);
+             "test_vfs_uuid_0", "vfs_uuid", "d1361161-1784-f43e-34c3-795da2189c59", ret);
     return -1;
   }
   return 0;
@@ -10508,7 +10508,7 @@ test_mke2journal_U_0_perform (guestfs_h *g)
   ret1443 = guestfs_part_add (g, arg1444, arg1445, 204800, -64);
   if (ret1443 == -1)
     return -1;
-  const char *arg1451 = "6ace5ab3-c527-4205-7b33-59234526199a";
+  const char *arg1451 = "d1361161-1784-f43e-34c3-795da2189c59";
   const char *arg1452 = "/dev/sda1";
   int ret1449;
   ret1449 = guestfs_mke2journal_U (g, 4096, arg1451, arg1452);
@@ -10516,7 +10516,7 @@ test_mke2journal_U_0_perform (guestfs_h *g)
     return -1;
   const char *arg1455 = "ext2";
   const char *arg1457 = "/dev/sda2";
-  const char *arg1458 = "6ace5ab3-c527-4205-7b33-59234526199a";
+  const char *arg1458 = "d1361161-1784-f43e-34c3-795da2189c59";
   int ret1454;
   ret1454 = guestfs_mke2fs_JU (g, arg1455, 4096, arg1457, arg1458);
   if (ret1454 == -1)
@@ -11251,18 +11251,18 @@ test_swapon_uuid_0_perform (guestfs_h *g)
   /* TestRun for swapon_uuid (0) */
   const char *arg1628 = "/dev/sdc";
   struct guestfs_mkswap_opts_argv optargs1629;
-  optargs1629.uuid = "6ace5ab3-c527-4205-7b33-59234526199a";
+  optargs1629.uuid = "d1361161-1784-f43e-34c3-795da2189c59";
   optargs1629.bitmask = UINT64_C(0x2);
   int ret1627;
   ret1627 = guestfs_mkswap_opts_argv (g, arg1628, &optargs1629);
   if (ret1627 == -1)
     return -1;
-  const char *arg1631 = "6ace5ab3-c527-4205-7b33-59234526199a";
+  const char *arg1631 = "d1361161-1784-f43e-34c3-795da2189c59";
   int ret1630;
   ret1630 = guestfs_swapon_uuid (g, arg1631);
   if (ret1630 == -1)
     return -1;
-  const char *arg1634 = "6ace5ab3-c527-4205-7b33-59234526199a";
+  const char *arg1634 = "d1361161-1784-f43e-34c3-795da2189c59";
   int ret1633;
   ret1633 = guestfs_swapoff_uuid (g, arg1634);
   if (ret1633 == -1)
@@ -13601,7 +13601,7 @@ test_mkswap_U_0_perform (guestfs_h *g)
   ret1844 = guestfs_part_disk (g, arg1845, arg1846);
   if (ret1844 == -1)
     return -1;
-  const char *arg1849 = "6ace5ab3-c527-4205-7b33-59234526199a";
+  const char *arg1849 = "d1361161-1784-f43e-34c3-795da2189c59";
   const char *arg1850 = "/dev/sda1";
   int ret1848;
   ret1848 = guestfs_mkswap_U (g, arg1849, arg1850);
@@ -13817,7 +13817,7 @@ test_mkswap_2_perform (guestfs_h *g)
     return -1;
   const char *arg1880 = "/dev/sda1";
   struct guestfs_mkswap_opts_argv optargs1881;
-  optargs1881.uuid = "6ace5ab3-c527-4205-7b33-59234526199a";
+  optargs1881.uuid = "d1361161-1784-f43e-34c3-795da2189c59";
   optargs1881.bitmask = UINT64_C(0x2);
   int ret1879;
   ret1879 = guestfs_mkswap_opts_argv (g, arg1880, &optargs1881);
@@ -13878,7 +13878,7 @@ test_mkswap_3_perform (guestfs_h *g)
   const char *arg1888 = "/dev/sda1";
   struct guestfs_mkswap_opts_argv optargs1889;
   optargs1889.label = "hello";
-  optargs1889.uuid = "6ace5ab3-c527-4205-7b33-59234526199a";
+  optargs1889.uuid = "d1361161-1784-f43e-34c3-795da2189c59";
   optargs1889.bitmask = UINT64_C(0x3);
   int ret1887;
   ret1887 = guestfs_mkswap_opts_argv (g, arg1888, &optargs1889);
@@ -17143,7 +17143,7 @@ test_get_e2uuid_0_perform (guestfs_h *g)
   if (ret2309 == -1)
     return -1;
   const char *arg2314 = "/dev/sdc";
-  const char *arg2315 = "6ace5ab3-c527-4205-7b33-59234526199a";
+  const char *arg2315 = "d1361161-1784-f43e-34c3-795da2189c59";
   int ret2313;
   ret2313 = guestfs_set_e2uuid (g, arg2314, arg2315);
   if (ret2313 == -1)
@@ -17153,9 +17153,9 @@ test_get_e2uuid_0_perform (guestfs_h *g)
   ret = guestfs_get_e2uuid (g, arg2317);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "6ace5ab3-c527-4205-7b33-59234526199a")) {
+  if (! STREQ (ret, "d1361161-1784-f43e-34c3-795da2189c59")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_get_e2uuid_0", "get_e2uuid", "6ace5ab3-c527-4205-7b33-59234526199a", ret);
+             "test_get_e2uuid_0", "get_e2uuid", "d1361161-1784-f43e-34c3-795da2189c59", ret);
     return -1;
   }
   return 0;
@@ -17198,7 +17198,7 @@ test_set_e2uuid_0_perform (guestfs_h *g)
 {
   /* TestResultString for set_e2uuid (0) */
   const char *arg2320 = "/dev/sda1";
-  const char *arg2321 = "6ace5ab3-c527-4205-7b33-59234526199a";
+  const char *arg2321 = "d1361161-1784-f43e-34c3-795da2189c59";
   int ret2319;
   ret2319 = guestfs_set_e2uuid (g, arg2320, arg2321);
   if (ret2319 == -1)
@@ -17208,9 +17208,9 @@ test_set_e2uuid_0_perform (guestfs_h *g)
   ret = guestfs_get_e2uuid (g, arg2323);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "6ace5ab3-c527-4205-7b33-59234526199a")) {
+  if (! STREQ (ret, "d1361161-1784-f43e-34c3-795da2189c59")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_set_e2uuid_0", "get_e2uuid", "6ace5ab3-c527-4205-7b33-59234526199a", ret);
+             "test_set_e2uuid_0", "get_e2uuid", "d1361161-1784-f43e-34c3-795da2189c59", ret);
     return -1;
   }
   return 0;
@@ -27587,14 +27587,14 @@ static int
 test_file_architecture_1_perform (guestfs_h *g)
 {
   /* TestResultString for file_architecture (1) */
-  const char *arg3689 = "/bin-i586-dynamic";
+  const char *arg3689 = "/bin-armv7-dynamic";
   CLEANUP_FREE char *ret;
   ret = guestfs_file_architecture (g, arg3689);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "i386")) {
+  if (! STREQ (ret, "arm")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_file_architecture_1", "file_architecture", "i386", ret);
+             "test_file_architecture_1", "file_architecture", "arm", ret);
     return -1;
   }
   return 0;
@@ -27636,14 +27636,14 @@ static int
 test_file_architecture_2_perform (guestfs_h *g)
 {
   /* TestResultString for file_architecture (2) */
-  const char *arg3691 = "/bin-sparc-dynamic";
+  const char *arg3691 = "/bin-i586-dynamic";
   CLEANUP_FREE char *ret;
   ret = guestfs_file_architecture (g, arg3691);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "sparc")) {
+  if (! STREQ (ret, "i386")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_file_architecture_2", "file_architecture", "sparc", ret);
+             "test_file_architecture_2", "file_architecture", "i386", ret);
     return -1;
   }
   return 0;
@@ -27685,14 +27685,14 @@ static int
 test_file_architecture_3_perform (guestfs_h *g)
 {
   /* TestResultString for file_architecture (3) */
-  const char *arg3693 = "/bin-win32.exe";
+  const char *arg3693 = "/bin-sparc-dynamic";
   CLEANUP_FREE char *ret;
   ret = guestfs_file_architecture (g, arg3693);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "i386")) {
+  if (! STREQ (ret, "sparc")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_file_architecture_3", "file_architecture", "i386", ret);
+             "test_file_architecture_3", "file_architecture", "sparc", ret);
     return -1;
   }
   return 0;
@@ -27734,14 +27734,14 @@ static int
 test_file_architecture_4_perform (guestfs_h *g)
 {
   /* TestResultString for file_architecture (4) */
-  const char *arg3695 = "/bin-win64.exe";
+  const char *arg3695 = "/bin-win32.exe";
   CLEANUP_FREE char *ret;
   ret = guestfs_file_architecture (g, arg3695);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "x86_64")) {
+  if (! STREQ (ret, "i386")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_file_architecture_4", "file_architecture", "x86_64", ret);
+             "test_file_architecture_4", "file_architecture", "i386", ret);
     return -1;
   }
   return 0;
@@ -27783,7 +27783,7 @@ static int
 test_file_architecture_5_perform (guestfs_h *g)
 {
   /* TestResultString for file_architecture (5) */
-  const char *arg3697 = "/bin-x86_64-dynamic";
+  const char *arg3697 = "/bin-win64.exe";
   CLEANUP_FREE char *ret;
   ret = guestfs_file_architecture (g, arg3697);
   if (ret == NULL)
@@ -27832,14 +27832,14 @@ static int
 test_file_architecture_6_perform (guestfs_h *g)
 {
   /* TestResultString for file_architecture (6) */
-  const char *arg3699 = "/lib-aarch64.so";
+  const char *arg3699 = "/bin-x86_64-dynamic";
   CLEANUP_FREE char *ret;
   ret = guestfs_file_architecture (g, arg3699);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "aarch64")) {
+  if (! STREQ (ret, "x86_64")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_file_architecture_6", "file_architecture", "aarch64", ret);
+             "test_file_architecture_6", "file_architecture", "x86_64", ret);
     return -1;
   }
   return 0;
@@ -27881,14 +27881,14 @@ static int
 test_file_architecture_7_perform (guestfs_h *g)
 {
   /* TestResultString for file_architecture (7) */
-  const char *arg3701 = "/lib-i586.so";
+  const char *arg3701 = "/lib-aarch64.so";
   CLEANUP_FREE char *ret;
   ret = guestfs_file_architecture (g, arg3701);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "i386")) {
+  if (! STREQ (ret, "aarch64")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_file_architecture_7", "file_architecture", "i386", ret);
+             "test_file_architecture_7", "file_architecture", "aarch64", ret);
     return -1;
   }
   return 0;
@@ -27930,14 +27930,14 @@ static int
 test_file_architecture_8_perform (guestfs_h *g)
 {
   /* TestResultString for file_architecture (8) */
-  const char *arg3703 = "/lib-sparc.so";
+  const char *arg3703 = "/lib-armv7.so";
   CLEANUP_FREE char *ret;
   ret = guestfs_file_architecture (g, arg3703);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "sparc")) {
+  if (! STREQ (ret, "arm")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_file_architecture_8", "file_architecture", "sparc", ret);
+             "test_file_architecture_8", "file_architecture", "arm", ret);
     return -1;
   }
   return 0;
@@ -27979,7 +27979,7 @@ static int
 test_file_architecture_9_perform (guestfs_h *g)
 {
   /* TestResultString for file_architecture (9) */
-  const char *arg3705 = "/lib-win32.dll";
+  const char *arg3705 = "/lib-i586.so";
   CLEANUP_FREE char *ret;
   ret = guestfs_file_architecture (g, arg3705);
   if (ret == NULL)
@@ -28028,14 +28028,14 @@ static int
 test_file_architecture_10_perform (guestfs_h *g)
 {
   /* TestResultString for file_architecture (10) */
-  const char *arg3707 = "/lib-win64.dll";
+  const char *arg3707 = "/lib-sparc.so";
   CLEANUP_FREE char *ret;
   ret = guestfs_file_architecture (g, arg3707);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "x86_64")) {
+  if (! STREQ (ret, "sparc")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_file_architecture_10", "file_architecture", "x86_64", ret);
+             "test_file_architecture_10", "file_architecture", "sparc", ret);
     return -1;
   }
   return 0;
@@ -28077,14 +28077,14 @@ static int
 test_file_architecture_11_perform (guestfs_h *g)
 {
   /* TestResultString for file_architecture (11) */
-  const char *arg3709 = "/lib-x86_64.so";
+  const char *arg3709 = "/lib-win32.dll";
   CLEANUP_FREE char *ret;
   ret = guestfs_file_architecture (g, arg3709);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "x86_64")) {
+  if (! STREQ (ret, "i386")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_file_architecture_11", "file_architecture", "x86_64", ret);
+             "test_file_architecture_11", "file_architecture", "i386", ret);
     return -1;
   }
   return 0;
@@ -28126,7 +28126,7 @@ static int
 test_file_architecture_12_perform (guestfs_h *g)
 {
   /* TestResultString for file_architecture (12) */
-  const char *arg3711 = "/initrd-x86_64.img";
+  const char *arg3711 = "/lib-win64.dll";
   CLEANUP_FREE char *ret;
   ret = guestfs_file_architecture (g, arg3711);
   if (ret == NULL)
@@ -28175,7 +28175,7 @@ static int
 test_file_architecture_13_perform (guestfs_h *g)
 {
   /* TestResultString for file_architecture (13) */
-  const char *arg3713 = "/initrd-x86_64.img.gz";
+  const char *arg3713 = "/lib-x86_64.so";
   CLEANUP_FREE char *ret;
   ret = guestfs_file_architecture (g, arg3713);
   if (ret == NULL)
@@ -28183,6 +28183,104 @@ test_file_architecture_13_perform (guestfs_h *g)
   if (! STREQ (ret, "x86_64")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
              "test_file_architecture_13", "file_architecture", "x86_64", ret);
+    return -1;
+  }
+  return 0;
+}
+
+static int test_file_architecture_14_skip (void);
+static int test_file_architecture_14_perform (guestfs_h *);
+
+static int
+test_file_architecture_14 (guestfs_h *g)
+{
+  if (test_file_architecture_14_skip ()) {
+    skipped ("test_file_architecture_14", "environment variable set");
+    return 0;
+  }
+
+  if (init_iso_fs (g) == -1)
+    return -1;
+
+  return test_file_architecture_14_perform (g);
+}
+
+static int
+test_file_architecture_14_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file_architecture") == NULL;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE_14");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int
+test_file_architecture_14_perform (guestfs_h *g)
+{
+  /* TestResultString for file_architecture (14) */
+  const char *arg3715 = "/initrd-x86_64.img";
+  CLEANUP_FREE char *ret;
+  ret = guestfs_file_architecture (g, arg3715);
+  if (ret == NULL)
+      return -1;
+  if (! STREQ (ret, "x86_64")) {
+    fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
+             "test_file_architecture_14", "file_architecture", "x86_64", ret);
+    return -1;
+  }
+  return 0;
+}
+
+static int test_file_architecture_15_skip (void);
+static int test_file_architecture_15_perform (guestfs_h *);
+
+static int
+test_file_architecture_15 (guestfs_h *g)
+{
+  if (test_file_architecture_15_skip ()) {
+    skipped ("test_file_architecture_15", "environment variable set");
+    return 0;
+  }
+
+  if (init_iso_fs (g) == -1)
+    return -1;
+
+  return test_file_architecture_15_perform (g);
+}
+
+static int
+test_file_architecture_15_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file_architecture") == NULL;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE_15");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int
+test_file_architecture_15_perform (guestfs_h *g)
+{
+  /* TestResultString for file_architecture (15) */
+  const char *arg3717 = "/initrd-x86_64.img.gz";
+  CLEANUP_FREE char *ret;
+  ret = guestfs_file_architecture (g, arg3717);
+  if (ret == NULL)
+      return -1;
+  if (! STREQ (ret, "x86_64")) {
+    fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
+             "test_file_architecture_15", "file_architecture", "x86_64", ret);
     return -1;
   }
   return 0;
@@ -28224,9 +28322,9 @@ static int
 test_set_trace_0_perform (guestfs_h *g)
 {
   /* TestResultFalse for set_trace (0) */
-  int ret3715;
-  ret3715 = guestfs_set_trace (g, 0);
-  if (ret3715 == -1)
+  int ret3719;
+  ret3719 = guestfs_set_trace (g, 0);
+  if (ret3719 == -1)
     return -1;
   int ret;
   ret = guestfs_get_trace (g);
@@ -28616,9 +28714,9 @@ static int
 test_get_path_0_perform (guestfs_h *g)
 {
   /* TestRun for get_path (0) */
-  const char *ret3726;
-  ret3726 = guestfs_get_path (g);
-  if (ret3726 == NULL)
+  const char *ret3730;
+  ret3730 = guestfs_get_path (g);
+  if (ret3730 == NULL)
       return -1;
   return 0;
 }
@@ -28659,9 +28757,9 @@ static int
 test_get_hv_0_perform (guestfs_h *g)
 {
   /* TestRun for get_hv (0) */
-  CLEANUP_FREE char *ret3728;
-  ret3728 = guestfs_get_hv (g);
-  if (ret3728 == NULL)
+  CLEANUP_FREE char *ret3732;
+  ret3732 = guestfs_get_hv (g);
+  if (ret3732 == NULL)
       return -1;
   return 0;
 }
@@ -28702,16 +28800,16 @@ static int
 test_get_qemu_0_perform (guestfs_h *g)
 {
   /* TestRun for get_qemu (0) */
-  const char *ret3730;
-  ret3730 = guestfs_get_qemu (g);
-  if (ret3730 == NULL)
+  const char *ret3734;
+  ret3734 = guestfs_get_qemu (g);
+  if (ret3734 == NULL)
       return -1;
   return 0;
 }
 
-size_t nr_tests = 471;
+size_t nr_tests = 473;
 
-struct test tests[471] = {
+struct test tests[473] = {
   { .name = "test_lstatns_0", .test_fn = test_lstatns_0 },
   { .name = "test_statns_0", .test_fn = test_statns_0 },
   { .name = "test_aug_label_0", .test_fn = test_aug_label_0 },
@@ -29172,6 +29270,8 @@ struct test tests[471] = {
   { .name = "test_file_architecture_11", .test_fn = test_file_architecture_11 },
   { .name = "test_file_architecture_12", .test_fn = test_file_architecture_12 },
   { .name = "test_file_architecture_13", .test_fn = test_file_architecture_13 },
+  { .name = "test_file_architecture_14", .test_fn = test_file_architecture_14 },
+  { .name = "test_file_architecture_15", .test_fn = test_file_architecture_15 },
   { .name = "test_set_trace_0", .test_fn = test_set_trace_0 },
   { .name = "test_version_0", .test_fn = test_version_0 },
   { .name = "test_get_memsize_0", .test_fn = test_get_memsize_0 },

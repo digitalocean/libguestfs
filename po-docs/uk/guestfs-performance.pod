@@ -456,7 +456,7 @@ Save the following script as C<time.stap>:
        printf ("\t%s %s\n", $$name, $$parms);
  }
  
- /* Display all calls to guestfs_* functions. */
+ /* Показати усі виклики функцій guestfs_*. */
  probe process("/usr/lib*/libguestfs.so.0")
            .function("guestfs_[a-z]*") ? {
        display_time();

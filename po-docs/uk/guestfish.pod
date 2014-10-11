@@ -39,7 +39,7 @@ command.
 
 =head1 ПРИКЛАДИ
 
-=head2 As an interactive shell
+=head2 Як інтерактивну оболонку
 
  $ guestfish
  
@@ -63,7 +63,7 @@ command.
  [...]
  ><fs> exit
 
-=head2 From shell scripts
+=head2 Зі скриптів оболонки
 
 Create a new C</etc/motd> file in a guest or disk image:
 
@@ -88,7 +88,7 @@ List all the filesystems in a disk image:
  list-filesystems
  _EOF_
 
-=head2 On one command line
+=head2 У одному рядку команди
 
 Update C</etc/resolv.conf> in a guest:
 
@@ -116,7 +116,7 @@ Another way to edit C</boot/grub/grub.conf> interactively is:
 
  guestfish --rw -a disk.img -i edit /boot/grub/grub.conf
 
-=head2 As a script interpreter
+=head2 Як інтерпретатор скриптів
 
 Create a 100MB disk containing an ext2-formatted partition:
 
@@ -137,7 +137,7 @@ To list what is available do:
 
  guestfish -N help | less
 
-=head2 Remote drives
+=head2 Віддалені диски
 
 Access a remote disk using ssh:
 

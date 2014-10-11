@@ -28,7 +28,7 @@ libguestfs generated file
 
 =head2 allocate
 
- alloc filename size
+ alloc назва_файла розмір
 
 This creates an empty (zeroed) file of the given size, and then adds so it
 can be further examined.

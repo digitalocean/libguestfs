@@ -1853,6 +1853,8 @@ See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
 
 У разі помилки цією функцією буде повернуто -1.
 
+(Added in 1.27.2)
+
 =head2 guestfs_command
 
  char *
@@ -2459,6 +2461,8 @@ New (SVR4) portable format with a checksum.
 =back
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
+(Added in 1.27.9)
 
 =head2 guestfs_cpio_out_va
 
@@ -3207,6 +3211,14 @@ Intel Itanium.
 
 64-бітовий Power PC.
 
+=item "arm"
+
+32 bit ARM.
+
+=item "aarch64"
+
+64 bit ARM.
+
 =back
 
 У майбутніх версіях Libguestfs може повертати і інші рядки назв архітектур.
@@ -3658,6 +3670,8 @@ See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
+
+(Added in 1.27.2)
 
 =head2 guestfs_get_backend_settings
 
@@ -4580,7 +4594,7 @@ This is a wrapper around the L<hivex(3)> call of the same name.
  guestfs_hivex_node_name (guestfs_h *g,
                           int64_t nodeh);
 
-Return the name of C<nodeh>.
+Повернути назву C<nodeh>.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
@@ -4595,7 +4609,7 @@ the returned string after use>.
  guestfs_hivex_node_parent (guestfs_h *g,
                             int64_t nodeh);
 
-Return the parent node of C<nodeh>.
+Повернути батьківський вузол C<nodeh>.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
@@ -4782,7 +4796,7 @@ For example, in guestfish you could use the following command to examine the
 boot script (usually called C</init>)  contained in a Linux initrd or
 initramfs image:
 
- initrd-cat /boot/initrd-<version>.img init
+ initrd-cat /boot/initrd-<версія>.img init
 
 Див. також C<guestfs_initrd_list>.
 
@@ -6487,6 +6501,8 @@ Get the realtime (wallclock) timestamp of the current journal entry.
 
 У разі помилки цією функцією буде повернуто -1.
 
+(Added in 1.27.18)
+
 =head2 guestfs_journal_next
 
  int
@@ -7228,6 +7244,8 @@ This is the same as the C<lstat(2)> system call.
 This function returns a C<struct guestfs_statns *>, or NULL if there was an
 error.  I<The caller must call C<guestfs_free_statns> after use>.
 
+(Added in 1.27.53)
+
 =head2 guestfs_lstatnslist
 
  struct guestfs_statns_list *
@@ -7250,6 +7268,8 @@ for a similarly efficient call for getting extended attributes.
 This function returns a C<struct guestfs_statns_list *>, or NULL if there
 was an error.  I<The caller must call C<guestfs_free_statns_list> after
 use>.
+
+(Added in 1.27.53)
 
 =head2 guestfs_luks_add_key
 
@@ -10606,6 +10626,8 @@ See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
+(Added in 1.27.2)
+
 =head2 guestfs_set_backend_settings
 
  int
@@ -11476,6 +11498,8 @@ This is the same as the C<stat(2)> system call.
 
 This function returns a C<struct guestfs_statns *>, or NULL if there was an
 error.  I<The caller must call C<guestfs_free_statns> after use>.
+
+(Added in 1.27.53)
 
 =head2 guestfs_statvfs
 
