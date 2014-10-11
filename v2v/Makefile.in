@@ -1588,9 +1588,9 @@ SOURCES_C = \
 
 @HAVE_OCAML_TRUE@BOBJECTS = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/tTY.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/regedit.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/tTY.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/progress.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp.cmo \

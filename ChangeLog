@@ -1,3 +1,99 @@
+commit 7ff5d51815cf7f3beb936512dcc5c95c9d36ee1f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 2 15:55:51 2014 +0100
+
+    Version 1.27.58.
+
+commit 432390757522ec9dc575d4cc4a56f35e42ea301f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 2 15:30:02 2014 +0100
+
+    tests: Disable UML tests in 'check-release'.
+    
+    This effectively demotes UML to unsupported status.  This has happened
+    because UML has regressed quite a lot upstream.  There are multiple
+    grave bugs revealed by running the test suite and I don't have the
+    inclination to fix them.
+
+commit 765dc6237ce7b93dd2f33d99be53eae92e048a7a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 1 20:12:41 2014 +0100
+
+    tests: rsync: Skip this test when the backend is libvirt.
+    
+    It would work, except if you have a host firewall which will block
+    inbound connections on virbr0 to non-standard ports.
+
+commit 07c0926b588db5c86214917b609c2f477c817c0e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 1 20:12:04 2014 +0100
+
+    appliance: Change example ping lines to ping 8.8.8.8.
+    
+    This are commented out (still) so this change does nothing.
+
+commit 224de20b9a8d5ea56f6337f19b4ca237bb88eca0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 30 16:44:05 2014 +0100
+
+    launch: libvirt: Use qemu-bridge-helper to implement a full network (RHBZ#1148012).
+    
+    When using the libvirt backend, don't use the SLIRP.  Use
+    qemu-bridge-helper via libvirt to give us a full network connection.
+    
+    One consequence of this is that 'ping' works in
+    'virt-builder --run-command'.
+    
+    A less useful consequence is that the host firewall will prevent
+    connections on non-standard ports to the host.  So you can't (eg)
+    connect to a rsync daemon on the host listening on an arbitrary port,
+    which worked before.
+    
+    The default bridge is 'virbr0', but you can override this by setting
+    LIBGUESTFS_BACKEND_SETTINGS=network_bridge=<some_bridge>
+    
+    Note: this does not fix virt-rescue (since it overrides the default
+    backend and uses 'direct' for various reasons).
+
+commit 67e6f32a240c7c234e6af637c1cd324b36a82cd3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 30 16:44:04 2014 +0100
+
+    appliance: Use dhclient or dhcpcd instead of hard-coding IP address of appliance.
+    
+    qemu in SLIRP mode offers DHCP services to the appliance.  We don't
+    use them, but use a fixed IP address intead.  This changes the
+    appliance to get its IP address using DHCP.
+    
+    Note: This is only used when the network is enabled.  dhclient is
+    somewhat slower, but the penalty (a few seconds) is only paid for
+    network users.
+    
+    On SuSE or other distros, dhcpcd could be used if available.
+
+commit 9018a23828b5c65b677a4ab1d21b776c6d225c73
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 2 13:19:03 2014 +0100
+
+    mllib: Coloured messages, errors, warnings.
+    
+    Uses ANSI terminal codes to colour the output.
+
+commit 25274b4f75196f77c891d8e858644ad0df1ad6f0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 2 13:01:12 2014 +0100
+
+    v2v: Print the difference between our disk size estimate and actual size.
+
+commit ae19e8f29f43db8514c18009e736e643ad9b25f9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 2 13:00:13 2014 +0100
+
+    v2v: 'du -b' doesn't show real (sparse) size.
+    
+    This caused the actual size to be wrong (in OVF output).
+    Use --block-size=1 instead.
+
 commit 62159d5d48441d5df9706c0a19bc0f416b1e9e46
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Oct 1 16:49:57 2014 +0100
