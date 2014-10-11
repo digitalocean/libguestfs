@@ -309,7 +309,8 @@ You may need to add yourself to the C<kvm> group:
 
 =item Debian Squeeze (6)
 
-Hilko Bengen has built libguestfs in squeeze backports:
+Hilko Bengen зібрано libguestfs для сховища пакунків зворотного портування
+squeeze:
 L<http://packages.debian.org/search?keywords=guestfs&searchon=names&section=all&suite=squeeze-backports>
 
 =item Debian Wheezy та пізніші версії (7+)
@@ -381,16 +382,16 @@ Libguestfs було додано до AUR у 2010 році.
 
 =item Інші дистрибутиви не-Linux
 
-You'll have to compile from source, and port it.
+Вам слід зібрати бібліотеку з початкових кодів і портувати її.
 
 =back
 
-=head2 How can I compile and install libguestfs from source?
+=head2 Як зібрати і встановити libguestfs з початкових кодів?
 
 You can compile libguestfs from git or a source tarball.  Read the README
 file before starting.
 
-Git: L<https://github.com/libguestfs/libguestfs> Source tarballs:
+Git: L<https://github.com/libguestfs/libguestfs> Архіви з кодом:
 L<http://libguestfs.org/download>
 
 Don't run C<make install>! Use the C<./run> script instead (see README).
@@ -411,13 +412,14 @@ should contain:
  #export PATH=/tmp/qemu/x86_64-softmmu:$PATH
  ./autogen.sh --prefix /usr "$@"
 
-Make C<localconfigure> executable.
+Зробіть C<localconfigure> виконуваним.
 
-C<localenv> should contain:
+C<localenv> має містити таке:
 
  #export SUPERMIN=/tmp/supermin/src/supermin
  #export LIBGUESTFS_HV=/tmp/qemu/x86_64-softmmu/qemu-system-x86_64
  #export SUPERMIN_KERNEL=/tmp/linux/arch/x86/boot/bzImage
+ #export SUPERMIN_KERNEL_VERSION=3.XX.0
  #export SUPERMIN_MODULES=/tmp/lib/modules/3.XX.0
 
 Uncomment and adjust these lines as required to use the alternate programs
@@ -965,6 +967,21 @@ process: L<guestfs(3)/INTERNALS>.
 Enable debugging and look at the full output.  If you cannot work out what
 is going on, file a bug report, including the I<complete> output of
 L<libguestfs-test-tool(1)>.
+
+=head2 Debugging libvirt
+
+If you are using the libvirt backend, and libvirt is failing, then you can
+enable debugging by editing C</etc/libvirt/libvirtd.conf>.
+
+If you are running as non-root, then you have to edit a different file.
+Create C<~/.config/libvirt/libvirtd.conf> containing:
+
+ log_level=1
+ log_outputs="1:file:/tmp/libvirtd.log"
+
+Kill any session (non-root) libvirtd that is running, and next time you run
+the libguestfs command, you should see a large amount of useful debugging
+information from libvirtd in C</tmp/libvirtd.log>
 
 =head1 DESIGN/INTERNALS OF LIBGUESTFS
 

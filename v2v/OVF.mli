@@ -16,11 +16,15 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-(** Poor man's JSON generator. *)
+(** Functions for dealing with OVF files. *)
 
-type field = string * json_t
-and json_t = String of string | Int of int
-and doc = field list
+val create_meta_files : bool -> [`Sparse|`Preallocated] -> string -> string list -> Types.target list -> string list
+(** Create the .meta file associated with each target.
 
-val string_of_doc : doc -> string
-  (** Serialize {!doc} object as a string. *)
+    Note this does not write them, since output_rhev has to do a
+    permissions dance when writing files.  Instead the contents of each
+    file is returned (one per target), and they must be written to
+    [target_file ^ ".meta"]. *)
+
+val create_ovf : bool -> Types.source -> Types.target list -> Types.guestcaps -> Types.inspect -> [`Sparse|`Preallocated] -> [`Server|`Desktop] option -> string -> string list -> string list -> string -> DOM.doc
+(** Create the OVF file. *)

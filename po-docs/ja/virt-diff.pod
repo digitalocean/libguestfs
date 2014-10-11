@@ -161,8 +161,6 @@ back to auto-detection for subsequent I<-a>/I<-A> options.
 
 読みやすい形式でファイル容量を表示します。
 
-このオプションは I<-lR> 出力モードにおいてのみ効果があります。  上の L</RECURSIVE LONG LISTING> 参照。
-
 =item B<--keys-from-stdin>
 
 標準入力からキーまたはパスフレーズのパラメーターを読み込みます。 標準で C</dev/tty> を開いているユーザーから読み込もうとします。

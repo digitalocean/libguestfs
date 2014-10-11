@@ -1972,6 +1972,14 @@ Intel Itanium.
 
 64-бітовий Power PC.
 
+=item "arm"
+
+32 bit ARM.
+
+=item "aarch64"
+
+64 bit ARM.
+
 =back
 
 У майбутніх версіях Libguestfs може повертати і інші рядки назв архітектур.
@@ -2799,7 +2807,7 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 
 =head2 hivex-commit
 
- hivex-commit filename
+ hivex-commit назва_файла
 
 Commit (write) changes to the hive.
 
@@ -2836,7 +2844,7 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 
 =head2 hivex-node-get-child
 
- hivex-node-get-child nodeh name
+ hivex-node-get-child nodeh назва
 
 Return the child of C<nodeh> with the name C<name>, if it exists.  This can
 return C<0> meaning the name was not found.
@@ -2845,7 +2853,7 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 
 =head2 hivex-node-get-value
 
- hivex-node-get-value nodeh key
+ hivex-node-get-value nodeh ключ
 
 Return the value attached to C<nodeh> which has the name C<key>, if it
 exists.  This can return C<0> meaning the key was not found.
@@ -2856,7 +2864,7 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 
  hivex-node-name nodeh
 
-Return the name of C<nodeh>.
+Повернути назву C<nodeh>.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
@@ -2864,7 +2872,7 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 
  hivex-node-parent nodeh
 
-Return the parent node of C<nodeh>.
+Повернути батьківський вузол C<nodeh>.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
@@ -2957,7 +2965,7 @@ For example, in guestfish you could use the following command to examine the
 boot script (usually called C</init>)  contained in a Linux initrd or
 initramfs image:
 
- initrd-cat /boot/initrd-<version>.img init
+ initrd-cat /boot/initrd-<версія>.img init
 
 Див. також L</initrd-list>.
 
@@ -3008,7 +3016,7 @@ pathnames are sorted and deduplicated.
 
 =head2 inotify-init
 
- inotify-init maxevents
+ inotify-init макс_подій
 
 This command creates a new inotify handle.  The inotify subsystem can be
 used to notify events which happen to objects in the guest filesystem.
@@ -4355,7 +4363,7 @@ intended that you try to parse the output string.
 
 =head2 llz
 
- llz directory
+ llz каталог
 
 List the files in C<directory> in the format of 'ls -laZ'.
 
@@ -4390,7 +4398,7 @@ option removes the link (C<linkname>) if it exists already.
 
 =head2 lremovexattr
 
- lremovexattr xattr path
+ lremovexattr xattr шлях
 
 This is the same as L</removexattr>, but if C<path> is a symbolic link, then
 it removes an extended attribute of the link itself.
@@ -4405,7 +4413,7 @@ shown.
 
 =head2 ls0
 
- ls0 dir (filenames|-)
+ ls0 каталог (назви файлів|-)
 
 This specialized command is used to get a listing of the filenames in the
 directory C<dir>.  The list of filenames is written to the local file
@@ -7814,7 +7822,7 @@ command.
 
 =head2 wipefs
 
- wipefs device
+ wipefs пристрій
 
 This command erases filesystem or RAID signatures from the specified
 C<device> to make the filesystem invisible to libblkid.
@@ -7893,7 +7901,7 @@ ARGUMENTS>.
 
 =head2 xfs-info
 
- xfs-info pathordevice
+ xfs-info шлях_або_пристрій
 
 C<pathordevice> is a mounted XFS filesystem or a device containing an XFS
 filesystem.  This command returns the geometry of the filesystem.
@@ -7981,7 +7989,7 @@ unnecessarily.
 
 =head2 zero-free-space
 
- zero-free-space directory
+ zero-free-space каталог
 
 Zero the free space in the filesystem mounted on C<directory>.  The
 filesystem must be mounted read-write.

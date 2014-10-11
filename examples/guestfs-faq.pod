@@ -417,6 +417,7 @@ C<localenv> should contain:
  #export SUPERMIN=/tmp/supermin/src/supermin
  #export LIBGUESTFS_HV=/tmp/qemu/x86_64-softmmu/qemu-system-x86_64
  #export SUPERMIN_KERNEL=/tmp/linux/arch/x86/boot/bzImage
+ #export SUPERMIN_KERNEL_VERSION=3.XX.0
  #export SUPERMIN_MODULES=/tmp/lib/modules/3.XX.0
 
 Uncomment and adjust these lines as required to use the alternate
@@ -975,6 +976,21 @@ boot process: L<guestfs(3)/INTERNALS>.
 Enable debugging and look at the full output.  If you cannot work out
 what is going on, file a bug report, including the I<complete> output
 of L<libguestfs-test-tool(1)>.
+
+=head2 Debugging libvirt
+
+If you are using the libvirt backend, and libvirt is failing, then you
+can enable debugging by editing C</etc/libvirt/libvirtd.conf>.
+
+If you are running as non-root, then you have to edit a different
+file.  Create C<~/.config/libvirt/libvirtd.conf> containing:
+
+ log_level=1
+ log_outputs="1:file:/tmp/libvirtd.log"
+
+Kill any session (non-root) libvirtd that is running, and next time
+you run the libguestfs command, you should see a large amount of
+useful debugging information from libvirtd in C</tmp/libvirtd.log>
 
 =head1 DESIGN/INTERNALS OF LIBGUESTFS
 

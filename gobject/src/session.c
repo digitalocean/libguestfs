@@ -5799,6 +5799,12 @@ guestfs_session_file (GuestfsSession *session, const gchar *path, GError **err)
  * "ppc64"
  * 64 bit Power PC.
  * 
+ * "arm"
+ * 32 bit ARM.
+ * 
+ * "aarch64"
+ * 64 bit ARM.
+ * 
  * Libguestfs may return other architecture strings in future.
  * 
  * The function works on at least the following types of files:

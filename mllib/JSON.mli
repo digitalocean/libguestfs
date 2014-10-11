@@ -16,38 +16,21 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-(* Poor man's JSON generator. *)
-
-open Printf
-
-open Common_utils
+(** Simple JSON generator. *)
 
 type field = string * json_t
-and json_t = String of string | Int of int
+and json_t =
+  | String of string
+  | Int of int
+  | Int64 of int64
+  | Bool of bool
+  | List of json_t list
+  | Dict of field list
 and doc = field list
 
-(* JSON quoting. *)
-let json_quote str =
-  let str = replace_str str "\\" "\\\\" in
-  let str = replace_str str "\"" "\\\"" in
-  let str = replace_str str "'" "\\'" in
-  let str = replace_str str "\008" "\\b" in
-  let str = replace_str str "\012" "\\f" in
-  let str = replace_str str "\n" "\\n" in
-  let str = replace_str str "\r" "\\r" in
-  let str = replace_str str "\t" "\\t" in
-  let str = replace_str str "\011" "\\v" in
-  str
+type output_format =
+  | Compact
+  | Indented
 
-let string_of_doc fields =
-  "{ " ^
-    String.concat ", " (
-      List.map (
-        function
-        | (n, String v) ->
-          sprintf "\"%s\" : \"%s\"" n (json_quote v)
-        | (n, Int v) ->
-          sprintf "\"%s\" : %d" n v
-      ) fields
-    )
-  ^ " }"
+val string_of_doc : ?fmt:output_format -> doc -> string
+  (** Serialize {!doc} object as a string. *)

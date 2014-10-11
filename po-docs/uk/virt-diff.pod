@@ -169,9 +169,6 @@ back to auto-detection for subsequent I<-a>/I<-A> options.
 
 Показати розміри файлів у зручному для читання форматі.
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
-
 =item B<--keys-from-stdin>
 
 Read key or passphrase parameters from stdin.  The default is to try to read

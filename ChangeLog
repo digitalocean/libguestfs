@@ -1,3 +1,471 @@
+commit e3722252295921d095fc124bbb2f7698a510fafe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 10 16:58:48 2014 +0100
+
+    Version 1.27.62.
+
+commit 5c7cb0ac7c8b0516ae56966b037fba36c1518b6a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 10 17:03:59 2014 +0200
+
+    builder: use the JSON module
+    
+    Switch to the JSON OCaml module for JSON output.
+    
+    The resulting output is the same, except from an indentation level more
+    within lists.
+
+commit 901de75ff42f169880f5c2356483d30c1e1b04eb
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 10 16:55:47 2014 +0200
+
+    mllib: improve JSON: more types, indented output style
+    
+    Improve the homebrew JSON writer:
+    - add more types (including also nested dictionaries and lists)
+    - format in a compact way (single line), or indented (multilines)
+
+commit bb0d7edfa017ed39f9a4f95b785bd50761cdb8ae
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 10 15:10:20 2014 +0200
+
+    Move JSON to mllib
+    
+    Move the simple OCaml JSON writer to mllib, so that can be enhanced and
+    used also outside v2v.
+
+commit 75b45143f0fe3df2449d1e6b523b63e2380c89aa
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 10 15:09:27 2014 +0200
+
+    appliance: remove few duplicates from Mageia's list
+
+commit 7893a2cfb1b2e2e8fba9ceab35b498025fbe535a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 10 11:47:26 2014 +0100
+
+    FAQ: Add a section on debugging libvirtd.
+
+commit 632803856701bd664f8f482a5bfcaed6715cd36e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 9 18:07:33 2014 +0100
+
+    v2v: Rename some modules to remove lib_ prefix.
+    
+    v2v/lib_ovf.ml -> v2v/OVF.ml
+    v2v/lib_ovf.mli -> v2v/OVF.mli
+    v2v/lib_linux.ml -> v2v/linux.ml
+    v2v/lib_linux.mli -> v2v/linux.mli
+    v2v/lib_esx.ml -> v2v/vCenter.ml
+    v2v/lib_esx.mli -> v2v/vCenter.mli
+    v2v/lib_xen.ml -> v2v/xen.ml
+    v2v/lib_xen.mli -> v2v/xen.mli
+
+commit 88a381b2a065e0447281eb3ca7a215b3855c98b0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 9 16:04:01 2014 +0100
+
+    v2v: Increase readahead window for vCenter transfers (RHBZ#1151033).
+
+commit 8f3a2ca5358d5601be7a9247b6d08193c4e2da46
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Oct 9 14:53:53 2014 +0200
+
+    appliance: add dhcp-client on Mageia
+    
+    dhcp-client replaces the non-existing dhclient.
+
+commit 979e7a49147f4ef1387337db262bf7ea12f627e3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Oct 9 14:53:10 2014 +0200
+
+    appliance: add dhcpcd and gptfdisk on Archlinux
+    
+    dhcpcd replaces the non-existing dhclient.
+
+commit e21a4e5a90ccc5dce49d4fac5f3f4750e3fee182
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 9 10:30:01 2014 +0100
+
+    Version 1.27.61.
+
+commit 626d85d80be994065951b5f17706ca33ca5fc152
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 9 10:15:55 2014 +0100
+
+    v2v: -i libvirt/libvirtxml: Give a better warning for local displays (RHBZ#1150880).
+
+commit 4d4cada65a09dd40940aa021ba7a52b5fbf266be
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 9 09:34:11 2014 +0100
+
+    daemon: copy-file-to-file: Unlink destination file on failure (RHBZ#1150867).
+    
+    When copying from file to file, don't leave the destination file
+    around if the copy fails.
+    
+    However in the same code don't try unlinking the destination device on
+    failure.
+
+commit fbbcc6c6298dc7084891703bdb5af97541c29bdc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 9 09:29:31 2014 +0100
+
+    sparsify: Fix documentation of --check-tmpdir option (RHBZ#1150858).
+
+commit 9d6efb4966c4d0c9f528af8eb901acde65ce4825
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 9 09:21:06 2014 +0100
+
+    diff: Remove copy and paste mistake from the documentation (RHBZ#1150815).
+    
+    Originated from copying this section out of the virt-ls man page.
+
+commit f8f6250612a44ef56dc8ee8574058a7fdf30ee8f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 22:32:03 2014 +0100
+
+    v2v: Allow -b/-n as alias for --bridge/--network.
+    
+    This was permitted by old virt-v2v too.
+
+commit e66138fbe71c24df3a282e1b23d8ed5c80f7b8c7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 21:17:43 2014 +0100
+
+    v2v: Enable trimming of data disks and non-mountpoints (RHBZ#1150701).
+    
+    This also modifies the --no-trim option so you can specify a device
+    name, since this is necessary if fstrim can apply to non-mountpoints.
+
+commit 69fe3945b7641811c99c3c03e05e73d2347e8a42
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 21:16:48 2014 +0100
+
+    v2v: Fix the --no-trim option so it works.
+    
+    We never updated the no_trim variable in the case where this option
+    was supplied, so it never did anything, proving once again that unless
+    you have a test case, the feature won't work.
+
+commit 36ce0e65f693b21a1557086f10fd49be40da720d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 20:21:36 2014 +0100
+
+    v2v: Print virtual and real copying rates.
+    
+    Useful to diagnose speed issues in the qemu block drivers.
+
+commit 7b8ed81560874a4992c249848dd49a4815b1d79d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 20:21:06 2014 +0100
+
+    v2v: Print mountpoint stats in debugging output.
+    
+    Useful for debugging speed / fstrim issues.
+
+commit 1e9b707e9bbcdba22caa262b33cc79c863c26c34
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 15:44:01 2014 +0100
+
+    Version 1.27.60.
+
+commit 6d0f46bacbace13b7c74c092dd7c9356dc4bd41f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 15:41:44 2014 +0100
+
+    v2v: Add README.RHEV-M to EXTRA_DIST.
+    
+    This fixes commit 8adc32cae8898817bfa2ed7669eda1f6c4aa3dae.
+
+commit c4bad9deaf04b4329d0ecb38c007017d6330391c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 15:00:25 2014 +0100
+
+    v2v: -o rhev, -o vdsm: Fix export with multiple disks (RHBZ#1150475).
+    
+    When translating the original virt-v2v code, I misunderstood how image
+    directories are created.  There is one directory under images/ per
+    disk image, not one for all the disks in a single guest.
+    
+    Note this requires that -o vdsm uses multiple --vdsm-image-uuid
+    options, one per disk image of the guest.
+    
+    Reported by: Alain Vondra
+    Thanks: Tingting Zheng
+
+commit 43e150c212c311aa9dbf535faa756b34bf7f580a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 14:59:52 2014 +0100
+
+    mllib: Add 'combine3' function.
+
+commit 8adc32cae8898817bfa2ed7669eda1f6c4aa3dae
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 14:39:40 2014 +0100
+
+    v2v: Add notes about layout of Export Storage Domain for multi-disk guests.
+
+commit 2de1602b707ba33676c2d6fdb98a0591aca08b6e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Oct 8 13:44:25 2014 +0200
+
+    log: tests: switch to a temporary file for outputs
+    
+    Using a pipe to redirect the output of virt-log will lose his return
+    value, so use a temporary file to collect the virt-log output.
+
+commit 371744bc59a25feeafa308b1aa9b9c9c0d2a0099
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 12:40:32 2014 +0100
+
+    Revert "log: tests: fix appending the virt-log output"
+    
+    This reverts commit cfe2daabb2c146c96b1c291a97f08e58cfcdfd2a.
+    
+    The pipe hides the return code from virt-log or valgrind.
+
+commit 7c97b01f2754ffb76f94b68497eb5829ffa92390
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 8 12:37:51 2014 +0100
+
+    v2v: Add missing disk <rasd:Caption>.
+    
+    Possible fix for RHBZ#1150475.
+
+commit cfe2daabb2c146c96b1c291a97f08e58cfcdfd2a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Oct 8 11:14:28 2014 +0200
+
+    log: tests: fix appending the virt-log output
+    
+    virt-log uses /dev/stdout as output file for guestfs_download, which
+    will open the output file in truncate mode, truncating the output of
+    test-virt-log.sh.
+    
+    Make sure to redirect the output of virt-log so it does not clobber the
+    test output.
+    
+    Thanks to Richard for the hint.
+
+commit aa42bcf54d83df326683b5bb9db68003396dfc6e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 15:29:12 2014 +0100
+
+    Version 1.27.59.
+
+commit fd421ebf88653455d8547f546e887cf5c5bfb890
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 15:29:39 2014 +0100
+
+    p2v: Fix virt-p2v-make-kickstart so it won't fail when using a custom repo.
+    
+    Because of `set -e', using the `((i++))' expression causes bash to
+    fail, unless we tell it to ignore the error code on that line.
+
+commit b81256581b4cea83ebc9f472df1adcd89ac550ce
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 15:04:26 2014 +0100
+
+    Update API support.
+
+commit a97b3b6ae4ff2fd5a31e82a2ab35c559e17cf946
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 13:54:50 2014 +0100
+
+    Update gnulib to latest upstream.
+
+commit 09384e8164c795fff03a43b69499f782087c5b0a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 13:31:47 2014 +0100
+
+    Update translations from Transifex.
+
+commit 6e204f6ccccee1e6ebe27d940760cc7ea746126c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 13:31:36 2014 +0100
+
+    Update BUGS.
+
+commit 8ddae163e49a1ac459fbd3d1ff3a2546af9f75a6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 13:20:12 2014 +0100
+
+    Update release notes.
+
+commit a48ade569d485a114d29da358e4a2c36429b7ebb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 12:40:41 2014 +0100
+
+    v2v: Further documentation fixes.
+    
+    Replace more instances of 'esx.example.com' with
+    'vcenter.example.com', and rearrange command line arguments
+    semantically.
+
+commit f796435628cea8b037d5fc786934583019707c6e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 10:17:33 2014 +0100
+
+    FAQ: Need to set SUPERMIN_KERNEL_VERSION in recent supermin.
+
+commit 0f023a080b6612ba3ffba53eb557443adca0a88d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 7 09:27:09 2014 +0100
+
+    v2v: Improve VMware import documentation.
+    
+    Additional information about URIs, which may contain cluster and/or
+    folder names (thanks: James Mighion).
+    
+    Replace esx.example.com with vcenter.example.com to reduce confusion
+    about vCenter vs ESXi.
+
+commit c92734b209e4504e84a051e433c81d4d5449d660
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 6 18:05:53 2014 +0200
+
+    log: tests: skip fedora.img if journal is not available
+
+commit cb1b7cbdd5f92ee41ba70915d74dfa845d2365ae
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 6 16:10:44 2014 +0200
+
+    tools: fix free -m invocation
+    
+    Since procps 3.3.10, free does not output the "-/+ buffers/cache" line
+    anymore. On the other hand, the data from it can be calculated from the
+    memory values, so just do the calculation manually (with awk).
+
+commit c4bc416820005d6bc4956b32d9c6e0f83382702d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 6 13:09:58 2014 +0100
+
+    lib: Enable detection of ARM (32 bit).
+    
+    This includes some empty binaries to use for detection testing.
+
+commit 07f87a7c91736a0a2389c3100d7e3ef83ed55a35
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 6 13:09:46 2014 +0100
+
+    lib: Document output of 'file-architecture' API for aarch64 binaries.
+
+commit 56cfb8a9262c508169fd69ea4ca8a8db4b5a5a35
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 3 14:24:48 2014 +0200
+
+    sysprep: remove more logs
+    
+    - remove firewalld, grubby, and proftpd logs
+    - extend the cups log removal also to its timestamped rotated logs
+    - remove also the libvirt/libxl logs
+
+commit 0823416925aa10d6f03b7227214df24dd3b2a823
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 2 17:02:21 2014 +0100
+
+    tests: Fix SKIP_ environment variable in a couple of scripts.
+    
+    I checked and bug 690819 has nothing to do with either of these
+    tests.  It was just a copy and paste error.
+
+commit 7ff5d51815cf7f3beb936512dcc5c95c9d36ee1f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 2 15:55:51 2014 +0100
+
+    Version 1.27.58.
+
+commit 432390757522ec9dc575d4cc4a56f35e42ea301f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 2 15:30:02 2014 +0100
+
+    tests: Disable UML tests in 'check-release'.
+    
+    This effectively demotes UML to unsupported status.  This has happened
+    because UML has regressed quite a lot upstream.  There are multiple
+    grave bugs revealed by running the test suite and I don't have the
+    inclination to fix them.
+
+commit 765dc6237ce7b93dd2f33d99be53eae92e048a7a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 1 20:12:41 2014 +0100
+
+    tests: rsync: Skip this test when the backend is libvirt.
+    
+    It would work, except if you have a host firewall which will block
+    inbound connections on virbr0 to non-standard ports.
+
+commit 07c0926b588db5c86214917b609c2f477c817c0e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 1 20:12:04 2014 +0100
+
+    appliance: Change example ping lines to ping 8.8.8.8.
+    
+    This are commented out (still) so this change does nothing.
+
+commit 224de20b9a8d5ea56f6337f19b4ca237bb88eca0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 30 16:44:05 2014 +0100
+
+    launch: libvirt: Use qemu-bridge-helper to implement a full network (RHBZ#1148012).
+    
+    When using the libvirt backend, don't use the SLIRP.  Use
+    qemu-bridge-helper via libvirt to give us a full network connection.
+    
+    One consequence of this is that 'ping' works in
+    'virt-builder --run-command'.
+    
+    A less useful consequence is that the host firewall will prevent
+    connections on non-standard ports to the host.  So you can't (eg)
+    connect to a rsync daemon on the host listening on an arbitrary port,
+    which worked before.
+    
+    The default bridge is 'virbr0', but you can override this by setting
+    LIBGUESTFS_BACKEND_SETTINGS=network_bridge=<some_bridge>
+    
+    Note: this does not fix virt-rescue (since it overrides the default
+    backend and uses 'direct' for various reasons).
+
+commit 67e6f32a240c7c234e6af637c1cd324b36a82cd3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 30 16:44:04 2014 +0100
+
+    appliance: Use dhclient or dhcpcd instead of hard-coding IP address of appliance.
+    
+    qemu in SLIRP mode offers DHCP services to the appliance.  We don't
+    use them, but use a fixed IP address intead.  This changes the
+    appliance to get its IP address using DHCP.
+    
+    Note: This is only used when the network is enabled.  dhclient is
+    somewhat slower, but the penalty (a few seconds) is only paid for
+    network users.
+    
+    On SuSE or other distros, dhcpcd could be used if available.
+
+commit 9018a23828b5c65b677a4ab1d21b776c6d225c73
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 2 13:19:03 2014 +0100
+
+    mllib: Coloured messages, errors, warnings.
+    
+    Uses ANSI terminal codes to colour the output.
+
+commit 25274b4f75196f77c891d8e858644ad0df1ad6f0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 2 13:01:12 2014 +0100
+
+    v2v: Print the difference between our disk size estimate and actual size.
+
+commit ae19e8f29f43db8514c18009e736e643ad9b25f9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 2 13:00:13 2014 +0100
+
+    v2v: 'du -b' doesn't show real (sparse) size.
+    
+    This caused the actual size to be wrong (in OVF output).
+    Use --block-size=1 instead.
+
 commit 62159d5d48441d5df9706c0a19bc0f416b1e9e46
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Oct 1 16:49:57 2014 +0100

@@ -1823,6 +1823,8 @@ See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
 
 この関数はエラーのとき -1 を返します。
 
+(Added in 1.27.2)
+
 =head2 guestfs_command
 
  char *
@@ -2421,6 +2423,8 @@ New (SVR4) portable format with a checksum.
 =back
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(Added in 1.27.9)
 
 =head2 guestfs_cpio_out_va
 
@@ -3146,6 +3150,14 @@ Intel Itanium.
 
 64 ビット Power PC.
 
+=item "arm"
+
+32 bit ARM.
+
+=item "aarch64"
+
+64 bit ARM.
+
 =back
 
 libguestfs は将来他のアーキテクチャー文字列を返すかもしれません。
@@ -3588,6 +3600,8 @@ C<guestfs_last_errno>) will be C<ESRCH> in this case.
 See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
+
+(Added in 1.27.2)
 
 =head2 guestfs_get_backend_settings
 
@@ -6369,6 +6383,8 @@ Get the realtime (wallclock) timestamp of the current journal entry.
 
 この関数はエラーのとき -1 を返します。
 
+(Added in 1.27.18)
+
 =head2 guestfs_journal_next
 
  int
@@ -7100,6 +7116,8 @@ link, then the link is stat-ed, not the file it refers to.
 This function returns a C<struct guestfs_statns *>, or NULL if there was an
 error.  I<The caller must call C<guestfs_free_statns> after use>.
 
+(Added in 1.27.53)
+
 =head2 guestfs_lstatnslist
 
  struct guestfs_statns_list *
@@ -7122,6 +7140,8 @@ for a similarly efficient call for getting extended attributes.
 This function returns a C<struct guestfs_statns_list *>, or NULL if there
 was an error.  I<The caller must call C<guestfs_free_statns_list> after
 use>.
+
+(Added in 1.27.53)
 
 =head2 guestfs_luks_add_key
 
@@ -10425,6 +10445,8 @@ See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
+(Added in 1.27.2)
+
 =head2 guestfs_set_backend_settings
 
  int
@@ -11277,6 +11299,8 @@ C<guestfs_free_stat> を呼び出す必要があります>。
 
 This function returns a C<struct guestfs_statns *>, or NULL if there was an
 error.  I<The caller must call C<guestfs_free_statns> after use>.
+
+(Added in 1.27.53)
 
 =head2 guestfs_statvfs
 

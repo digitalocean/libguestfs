@@ -2063,6 +2063,14 @@ Intel Itanium.
 
 64 bit Power PC.
 
+=item "arm"
+
+32 bit ARM.
+
+=item "aarch64"
+
+64 bit ARM.
+
 =back
 
 Libguestfs may return other architecture strings in future.

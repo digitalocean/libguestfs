@@ -35,6 +35,12 @@ type mpstat = {
   mp_vfs : string;                      (* VFS type (eg. "ext4") *)
 }
 
+let print_mpstat chan { mp_dev = dev; mp_path = path;
+                        mp_statvfs = s; mp_vfs = vfs } =
+  fprintf chan "mountpoint statvfs %s %s (%s):\n" dev path vfs;
+  fprintf chan "  bsize=%Ld blocks=%Ld bfree=%Ld bavail=%Ld\n"
+    s.G.bsize s.G.blocks s.G.bfree s.G.bavail
+
 let () = Random.self_init ()
 
 let rec main () =
@@ -206,6 +212,12 @@ let rec main () =
       { mp_dev = dev; mp_path = path; mp_statvfs = statvfs; mp_vfs = vfs }
   ) (g#mountpoints ()) in
 
+  if verbose then (
+    (* This is useful for debugging speed / fstrim issues. *)
+    printf "mpstats:\n";
+    List.iter (print_mpstat Pervasives.stdout) mpstats
+  );
+
   (* Check there is enough free space to perform conversion. *)
   msg (f_"Checking for sufficient free disk space in the guest");
   check_free_space mpstats;
@@ -244,20 +256,15 @@ let rec main () =
       printf (f_"This guest does not have virtio drivers installed.\n%!");
   );
 
+  g#umount_all ();
+
   if no_trim <> ["*"] && (do_copy || debug_overlays) then (
     (* Doing fstrim on all the filesystems reduces the transfer size
      * because unused blocks are marked in the overlay and thus do
      * not have to be copied.
      *)
     msg (f_"Mapping filesystem data to avoid copying unused and blank areas");
-    let mps = g#mountpoints () in
-    List.iter (
-      fun (_, mp) ->
-        if not (List.mem mp no_trim) then (
-          try g#fstrim mp
-          with G.Error msg -> warning ~prog (f_"%s: %s (ignored)") mp msg
-        )
-    ) mps
+    do_fstrim ~verbose g no_trim inspect;
   );
 
   msg (f_"Closing the overlay");
@@ -325,13 +332,53 @@ let rec main () =
               (quote t.target_format) (quote overlay_file)
               (quote t.target_file) in
           if verbose then printf "%s\n%!" cmd;
+          let start_time = gettimeofday () in
           if Sys.command cmd <> 0 then
             error (f_"qemu-img command failed, see earlier errors");
+          let end_time = gettimeofday () in
 
           (* Calculate the actual size on the target, returns an updated
            * target structure.
            *)
-          actual_target_size t
+          let t = actual_target_size t in
+
+          (* If verbose, print the virtual and real copying rates. *)
+          let elapsed_time = end_time -. start_time in
+          if verbose && elapsed_time > 0. then (
+            let rate =
+              Int64.to_float t.target_overlay.ov_virtual_size
+              /. 1024. /. 1024. *. 10. /. elapsed_time in
+            printf "virtual copying rate: %.1f M bits/sec\n%!" rate;
+
+            match t.target_actual_size with
+            | None -> ()
+            | Some actual ->
+              let rate =
+                Int64.to_float actual /. 1024. /. 1024. *. 10. /. elapsed_time in
+              printf "real copying rate: %.1f M bits/sec\n%!" rate
+          );
+
+          (* If verbose, find out how close the estimate was.  This is
+           * for developer information only - so we can increase the
+           * accuracy of the estimate.
+           *)
+          if verbose then (
+            match t.target_estimated_size, t.target_actual_size with
+            | None, None | None, Some _ | Some _, None | Some _, Some 0L -> ()
+            | Some estimate, Some actual ->
+              let pc =
+                100. *. Int64.to_float estimate /. Int64.to_float actual
+                -. 100. in
+              printf "%s: estimate %Ld (%s) versus actual %Ld (%s): %.1f%%"
+                t.target_overlay.ov_sd
+                estimate (human_size estimate)
+                actual (human_size actual)
+                pc;
+              if pc < 0. then printf " ! ESTIMATE TOO LOW !";
+              printf "\n%!";
+          );
+
+          t
       ) targets
     ) (* do_copy *) in
 
@@ -453,6 +500,7 @@ and inspect_source g root_choice =
     i_package_management = g#inspect_get_package_management root;
     i_product_name = g#inspect_get_product_name root;
     i_product_variant = g#inspect_get_product_variant root;
+    i_mountpoints = mps;
     i_apps = apps;
     i_apps_map = apps_map; }
 
@@ -484,6 +532,60 @@ and check_free_space mpstats =
         error (f_"not enough free space for conversion on filesystem '%s'.  %Ld bytes free < %Ld bytes needed")
           mp free_bytes needed_bytes
   ) mpstats
+
+(* Perform the fstrim.  The trimming bit is easy.  Dealing with the
+ * [--no-trim] parameter .. not so much.
+ *)
+and do_fstrim ~verbose g no_trim inspect =
+  (* Get all filesystems. *)
+  let fses = g#list_filesystems () in
+
+  let fses = filter_map (
+    function (_, ("unknown"|"swap")) -> None | (dev, _) -> Some dev
+  ) fses in
+
+  let fses =
+    if no_trim = [] then fses
+    else (
+      if verbose then (
+        printf "no_trim: %s\n" (String.concat " " no_trim);
+        printf "filesystems before considering no_trim: %s\n"
+          (String.concat " " fses)
+      );
+
+      (* Drop any filesystems that match a device name in the no_trim list. *)
+      let fses = List.filter (
+        fun dev ->
+          not (List.mem (g#canonical_device_name dev) no_trim)
+      ) fses in
+
+      (* Drop any mountpoints matching the no_trim list. *)
+      let dev_to_mp =
+        List.map (fun (mp, dev) -> g#canonical_device_name dev, mp)
+          inspect.i_mountpoints in
+      let fses = List.filter (
+        fun dev ->
+          try not (List.mem (List.assoc dev dev_to_mp) no_trim)
+          with Not_found -> true
+      ) fses in
+
+      if verbose then
+        printf "filesystems after considering no_trim: %s\n%!"
+          (String.concat " " fses);
+
+      fses
+    ) in
+
+  (* Trim the remaining filesystems. *)
+  List.iter (
+    fun dev ->
+      g#umount_all ();
+      let mounted = try g#mount dev "/"; true with G.Error _ -> false in
+      if mounted then (
+        try g#fstrim "/"
+        with G.Error msg -> warning ~prog (f_"%s (ignored)") msg
+      )
+  ) fses
 
 (* Estimate the space required on the target for each disk.  It is the
  * maximum space that might be required, but in reasonable cases much
@@ -621,7 +723,7 @@ and actual_target_size target =
  * to get the used size in bytes.
  *)
 and du filename =
-  let cmd = sprintf "du -b %s | awk '{print $1}'" (quote filename) in
+  let cmd = sprintf "du --block-size=1 %s | awk '{print $1}'" (quote filename) in
   let lines = external_command ~prog cmd in
   (* Ignore errors because we want to avoid failures after copying. *)
   match lines with

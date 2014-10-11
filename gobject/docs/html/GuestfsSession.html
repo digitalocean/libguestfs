@@ -10833,6 +10833,10 @@ Intel Itanium.</p>
 32 bit Power PC.</p>
 <p>"ppc64"
 64 bit Power PC.</p>
+<p>"arm"
+32 bit ARM.</p>
+<p>"aarch64"
+64 bit ARM.</p>
 <p>Libguestfs may return other architecture strings in future.</p>
 <p>The function works on at least the following types of files:</p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
@@ -10861,7 +10865,7 @@ compressed code, and are horribly hard to unpack. If you want to
 find the architecture of a kernel, use the architecture of the
 associated initrd or kernel module(s) instead.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.115.23"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.115.25"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -10888,7 +10892,7 @@ associated initrd or kernel module(s) instead.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.115.24"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.115.26"></a><h4>Returns</h4>
 <p> the returned string, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
 </div>

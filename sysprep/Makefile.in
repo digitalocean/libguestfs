@@ -1511,6 +1511,8 @@ SOURCES = \
 # Note this list must be in dependency order.
 @HAVE_OCAML_TRUE@deps = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/tty-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/tTY.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uri-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmx \

@@ -5,9 +5,9 @@ virt-v2v - Convert a guest to use KVM
 
 =head1 書式
 
- virt-v2v -ic vpx://esx.example.com/Datacenter/esxi esx_guest
+ virt-v2v -ic vpx://vcenter.example.com/Datacenter/esxi esx_guest
 
- virt-v2v -ic vpx://esx.example.com/Datacenter/esxi esx_guest \
+ virt-v2v -ic vpx://vcenter.example.com/Datacenter/esxi esx_guest \
    -o rhev -os rhev.nfs:/export_domain --network rhevm
 
  virt-v2v -i libvirtxml guest-domain.xml -o local -os /var/tmp
@@ -77,11 +77,11 @@ used when virt-v2v runs under VDSM control.
 
 =head2 Convert from VMware vCenter server to local libvirt
 
-You have a VMware vCenter server called C<esx.example.com>, a datacenter
+You have a VMware vCenter server called C<vcenter.example.com>, a datacenter
 called C<Datacenter>, and an ESXi hypervisor called C<esxi>.  You want to
 convert a guest called C<esx_guest> to run locally under libvirt.
 
- virt-v2v -ic vpx://example.com/Datacenter/esxi esx_guest
+ virt-v2v -ic vpx://vcenter.example.com/Datacenter/esxi esx_guest
 
 In this case you will most likely have to run virt-v2v as C<root>, since it
 needs to talk to the system libvirt daemon and copy the guest disks to
@@ -98,8 +98,8 @@ Export Storage Domain you should check the settings on your RHEV-M
 management console.  Guest network interface(s) are connected to the target
 network called C<rhevm>.
 
- virt-v2v -ic vpx://esx.example.com/Datacenter/esxi \
-   -o rhev -os rhev.nfs:/export_domain --network rhevm esx_guest
+ virt-v2v -ic vpx://vcenter.example.com/Datacenter/esxi esx_guest \
+   -o rhev -os rhev.nfs:/export_domain --network rhevm
 
 In this case the host running virt-v2v acts as a B<conversion server>.
 
@@ -147,6 +147,8 @@ To convert a local disk image and immediately boot it in local qemu, do:
 =item B<--help>
 
 ヘルプを表示します。
+
+=item B<-b> ...
 
 =item B<--bridge> ...
 
@@ -221,9 +223,17 @@ other input methods you should specify the input format in the metadata.
 
 このオプションは、他のプログラムにより解析されるときに、よりマシンに易しい出力を作成するために使用されます。以下の L</マシン可読な出力> 参照。
 
+=item B<-n> in:out
+
+=item B<-n> out
+
 =item B<--network> in:out
 
 =item B<--network> out
+
+=item B<-b> in:out
+
+=item B<-b> out
 
 =item B<--bridge> in:out
 
@@ -266,6 +276,11 @@ virt-v2v run much more slowly.
 You can also disable trimming on selected filesystems only (specified by a
 comma-separated list of their mount point(s) in the guest).  Typically you
 would use I<--no-trim /boot> to work around the grub bug mentioned above.
+
+You can also disable trimming on partitions using the libguestfs naming
+scheme for devices, eg: I<--no-trim /dev/sdb2> means do not trim the second
+partition on the second block device.  Use L<virt-filesystems(1)> to list
+filesystem names in a guest.
 
 =item B<-o disk>
 
@@ -468,7 +483,8 @@ virt-v2v runs under VDSM control.  The parameters control:
 
 =item *
 
-the image directory (I<--vdsm-image-uuid>)
+the image directory of each guest disk (I<--vdsm-image-uuid>) (this option
+is passed once for each guest disk)
 
 =item *
 
@@ -635,17 +651,6 @@ Virt-v2v uses libvirt for access to vCenter, and therefore the input mode
 should be I<-i libvirt>.  As this is the default, you don't need to specify
 it on the command line.
 
-The libvirt URI of a vCenter server looks something like this:
-
- vpx://user@server/Datacenter/esxi
-
-where C<user@> is the (optional, but recommended) user to connect as,
-C<server> is the vCenter Server (I<not> hypervisor), C<Datacenter> is the
-name of the datacenter, and C<esxi> is the name of the ESXi hypervisor
-running the guest.
-
-For full details of libvirt URIs, see: L<http://libvirt.org/drvesx.html>
-
 =head2 ESX: REMOVE VMWARE TOOLS FROM WINDOWS GUESTS
 
 For Windows guests, you should remove VMware tools before conversion.
@@ -658,13 +663,74 @@ reason that virt-v2v cannot remove them).
 This is not necessary for Linux guests, as virt-v2v is able to remove VMware
 tools.
 
+=head2 ESX: VCENTER URI
+
+The libvirt URI of a vCenter server looks something like this:
+
+ vpx://user@server/Datacenter/esxi
+
+where:
+
+=over 4
+
+=item C<user@>
+
+is the (optional, but recommended) user to connect as
+
+=item C<server>
+
+is the vCenter Server (I<not> hypervisor)
+
+=item C<Datacenter>
+
+is the name of the datacenter
+
+=item C<esxi>
+
+is the name of the ESXi hypervisor running the guest.
+
+=back
+
+If the VMware deployment is using clusters and/or folders, then these may
+need to be added to the URI, eg:
+
+ vpx://user@server/Datacenter/cluster1/esxi
+
+For full details of libvirt URIs, see: L<http://libvirt.org/drvesx.html>
+
+Typical errors from libvirt / virsh when the URI is wrong include:
+
+=over 4
+
+=item *
+
+Could not find datacenter specified in [...]
+
+=item *
+
+Could not find compute resource specified in [...]
+
+=item *
+
+Path [...] does not specify a compute resource
+
+=item *
+
+Path [...] does not specify a host system
+
+=item *
+
+Could not find host system specified in [...]
+
+=back
+
 =head2 ESX: TEST LIBVIRT CONNECTION TO VCENTER
 
 Use the L<virsh(1)> command to list the guests on the vCenter Server like
 this:
 
- $ virsh -c 'vpx://root@esx.example.com/Datacenter/esxi' list --all
- Enter root's password for esx.example.com: ***
+ $ virsh -c 'vpx://root@vcenter.example.com/Datacenter/esxi' list --all
+ Enter root's password for vcenter.example.com: ***
  
   Id    Name                           State
  ----------------------------------------------------
@@ -676,12 +742,12 @@ certificates" or similar, then you can either import the ESX host's
 certificate, or bypass signature verification by adding the C<?no_verify=1>
 flag:
 
- $ virsh -c 'vpx://root@esx.example.com/Datacenter/esxi?no_verify=1' list --all
+ $ virsh -c 'vpx://root@vcenter.example.com/Datacenter/esxi?no_verify=1' list --all
 
 You should also try dumping the metadata from any guest on your server, like
 this:
 
- $ virsh -c 'vpx://root@esx.example.com/Datacenter/esxi' dumpxml "Windows 2003"
+ $ virsh -c 'vpx://root@vcenter.example.com/Datacenter/esxi' dumpxml "Windows 2003"
  <domain type='vmware'>
    <name>Windows 2003</name>
    [...]
@@ -695,7 +761,7 @@ before continuing.
 
 To import a particular guest from vCenter Server, do:
 
- $ virt-v2v -ic 'vpx://root@esx.example.com/Datacenter/esxi?no_verify=1' \
+ $ virt-v2v -ic 'vpx://root@vcenter.example.com/Datacenter/esxi?no_verify=1' \
    "Windows 2003" \
    -o local -os /var/tmp
 

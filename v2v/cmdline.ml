@@ -45,7 +45,6 @@ let parse_cmdline () =
   let print_source = ref false in
   let qemu_boot = ref false in
   let quiet = ref false in
-  let vdsm_image_uuid = ref "" in
   let vdsm_vm_uuid = ref "" in
   let verbose = ref false in
   let trace = ref false in
@@ -89,10 +88,11 @@ let parse_cmdline () =
       List.iter (
         fun mp ->
           if String.length mp = 0 then
-            error (f_"--no-trim: empty mountpoint");
+            error (f_"--no-trim: empty parameter");
           if mp.[0] <> '/' then
-            error (f_"--no-trim: %s: mountpoint does not begin with '/'") mp;
-      ) mps
+            error (f_"--no-trim: %s: mountpoint/device name does not begin with '/'") mp;
+      ) mps;
+      no_trim := mps
   in
 
   let output_mode = ref `Not_set in
@@ -129,6 +129,9 @@ let parse_cmdline () =
       error (f_"unknown --root option: %s") s
   in
 
+  let vdsm_image_uuids = ref [] in
+  let add_vdsm_image_uuid s = vdsm_image_uuids := s :: !vdsm_image_uuids in
+
   let vdsm_vol_uuids = ref [] in
   let add_vdsm_vol_uuid s = vdsm_vol_uuids := s :: !vdsm_vol_uuids in
 
@@ -139,7 +142,8 @@ let parse_cmdline () =
 
   let ditto = " -\"-" in
   let argspec = Arg.align [
-    "--bridge",  Arg.String add_bridge,     "in:out " ^ s_"Map bridge 'in' to 'out'";
+    "-b",        Arg.String add_bridge,     "in:out " ^ s_"Map bridge 'in' to 'out'";
+    "--bridge",  Arg.String add_bridge,     ditto;
     "--debug-gc",Arg.Set debug_gc,          " " ^ s_"Debug GC and memory allocations";
     "--debug-overlay",Arg.Set debug_overlays,
     " " ^ s_"Save overlay files";
@@ -151,7 +155,8 @@ let parse_cmdline () =
     "format " ^ s_"Input format (for -i disk)";
     "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
     "--machine-readable", Arg.Set machine_readable, " " ^ s_"Make output machine readable";
-    "--network", Arg.String add_network,    "in:out " ^ s_"Map network 'in' to 'out'";
+    "-n",        Arg.String add_network,    "in:out " ^ s_"Map network 'in' to 'out'";
+    "--network", Arg.String add_network,    ditto;
     "--no-copy", Arg.Clear do_copy,         " " ^ s_"Just write the metadata";
     "--no-trim", Arg.String set_no_trim,    "all|mp,mp,.." ^ s_"Don't trim selected mounts";
     "-o",        Arg.String set_output_mode, o_options ^ " " ^ s_"Set output mode (default: libvirt)";
@@ -166,7 +171,7 @@ let parse_cmdline () =
     "--quiet",   Arg.Set quiet,             ditto;
     "--root",    Arg.String set_root_choice,"ask|... " ^ s_"How to choose root filesystem";
     "--vdsm-image-uuid",
-    Arg.Set_string vdsm_image_uuid, "uuid " ^ s_"Output image UUID";
+    Arg.String add_vdsm_image_uuid, "uuid " ^ s_"Output image UUID(s)";
     "--vdsm-vol-uuid",
     Arg.String add_vdsm_vol_uuid, "uuid " ^ s_"Output vol UUID(s)";
     "--vdsm-vm-uuid",
@@ -226,7 +231,7 @@ read the man page virt-v2v(1).
   let qemu_boot = !qemu_boot in
   let quiet = !quiet in
   let root_choice = !root_choice in
-  let vdsm_image_uuid = !vdsm_image_uuid in
+  let vdsm_image_uuids = List.rev !vdsm_image_uuids in
   let vdsm_vol_uuids = List.rev !vdsm_vol_uuids in
   let vdsm_vm_uuid = !vdsm_vm_uuid in
   let verbose = !verbose in
@@ -362,10 +367,10 @@ read the man page virt-v2v(1).
         error (f_"-o vdsm: output storage was not specified, use '-os'");
       if qemu_boot then
         error (f_"-o vdsm: --qemu-boot option cannot be used in this output mode");
-      if vdsm_image_uuid = "" || vdsm_vm_uuid = "" then
-        error (f_"-o vdsm: either --vdsm-image-uuid or --vdsm-vm-uuid was not specified");
+      if vdsm_image_uuids = [] || vdsm_vol_uuids = [] || vdsm_vm_uuid = "" then
+        error (f_"-o vdsm: either --vdsm-image-uuid, --vdsm-vol-uuid or --vdsm-vm-uuid was not specified");
       let vdsm_params = {
-        Output_vdsm.image_uuid = vdsm_image_uuid;
+        Output_vdsm.image_uuids = vdsm_image_uuids;
         vol_uuids = vdsm_vol_uuids;
         vm_uuid = vdsm_vm_uuid;
       } in
