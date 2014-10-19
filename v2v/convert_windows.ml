@@ -331,12 +331,16 @@ echo uninstalling Xen PV driver
       [ "Service", REG_SZ "viostor";
         "ClassGUID", REG_SZ "{4D36E97B-E325-11CE-BFC1-08002BE10318}" ];
 
+      [ current_cs; "Control"; "CriticalDeviceDatabase"; "pci#ven_1af4&dev_1001&subsys_00021af4&rev_00" ],
+      [ "Service", REG_SZ "viostor";
+        "ClassGUID", REG_SZ "{4D36E97B-E325-11CE-BFC1-08002BE10318}" ];
+
       [ current_cs; "Services"; "viostor" ],
       [ "Type", REG_DWORD 0x1_l;
         "Start", REG_DWORD 0x0_l;
         "Group", REG_SZ "SCSI miniport";
         "ErrorControl", REG_DWORD 0x1_l;
-        "ImagePath", REG_SZ "system32\\\\drivers\\\\viostor.sys";
+        "ImagePath", REG_EXPAND_SZ "system32\\drivers\\viostor.sys";
         "Tag", REG_DWORD 0x21_l ];
 
       [ current_cs; "Services"; "viostor"; "Parameters" ],

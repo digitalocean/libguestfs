@@ -1,3 +1,118 @@
+commit 6e5039d1ef69acf38b2cdbd3d4b634887ae00979
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 17 17:38:07 2014 +0100
+
+    Version 1.27.64.
+
+commit 288bc73bb02fcf69b952a80fc4efe89337bfab4b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 17 17:37:37 2014 +0100
+
+    v2v: Add test files to EXTRA_DIST.
+    
+    This fixes commit 852f2e8e3c3228be4b9cd2be5b1d5da10a41fe32.
+
+commit 97c96ed6702cb7b4dfcc5acd08a29cb6f2b70b54
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 17 17:18:25 2014 +0100
+
+    v2v: Windows: Add &REV_00 variant, which is used by W2K8R2.
+
+commit 4f6033c3f4428f2c0033dfc256e71f05db17c3c2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 17 17:14:52 2014 +0100
+
+    v2v: Windows: Fix quoting and type of viostor ImagePath parameter.
+    
+    The way to fix these bugs -- for future reference -- is as follows:
+    
+    (1) Install the corresponnding Windows version with virtio enabled.
+    See:
+    
+    https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Virtualization_Deployment_and_Administration_Guide/chap-KVM_Para_virtualized_virtio_Drivers.html
+    
+    (the ".vfd" method)
+    
+    (2) Download the SYSTEM and SOFTWARE registries from the
+    virtio-enabled guest.
+    
+    (3) Examine each registry using 'hivexsh', especially the keys which
+    we modify during virt-v2v (see v2v/convert_windows.ml).  Remember to
+    use both the 'ls' and 'lsval' commands in hivexsh.
+    
+    (4) Download the SYSTEM and SOFTWARE registries from the guest that
+    fails to boot.
+    
+    (5) Examine the same registry keys from each registry using 'hivexsh'.
+    
+    (6) Work out what the differences are, paying particular attention to
+    quoting and the type of each key (eg. str(1), str(2), etc).
+    
+    Thanks: Matthew Booth.
+
+commit ca6d7d9c34dacf83dc8611c74f66cfe208fcdc0b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 17 13:44:35 2014 +0100
+
+    v2v: Print version of virt-v2v in debug output.
+    
+    Easier than asking users to send us this information, which they often don't.
+
+commit e2e17055742c3de6145406033b16716f259949f2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 16 18:02:46 2014 +0100
+
+    v2v: Add new section on resource requirements of virt-v2v to the manual.
+
+commit 852f2e8e3c3228be4b9cd2be5b1d5da10a41fe32
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 16 14:08:17 2014 +0200
+
+    tests: v2v: Test -i ova with two input disks.
+
+commit d8849fadbdb88d1afa03174ab36057afba7a0fc7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 16 15:58:41 2014 +0100
+
+    v2v: -i ova: Fix it so it actually verifies SHA-1 hashes from manifest files.
+    
+    There were two large bugs before: (1) It only found one manifest file
+    (meaning that multi-volume OVAs would be broken).  (2) The regular
+    expression didn't work so it wouldn't check the hash.  Bugs (1) + (2)
+    combined so that the check just didn't do anything at all, which is
+    why we didn't notice the multi-volume problem.
+    
+    Actually I suspect we shouldn't be doing this check at all, since I
+    bet there are OVAs out there with broken SHA-1's.
+
+commit 249aae0c2ffa685008c03f5d06e05c2989b1ec99
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 16 08:36:33 2014 +0200
+
+    handle: Process empty LIBGUESTFS_* environment variables correctly (RHBZ#1153515).
+    
+    Ignore an environment variable:
+    
+     - if an environment variable is an empty string, AND
+    
+     - if an empty string would have no meaning for that environment
+       variable (eg. LIBGUESTFS_BACKEND can only take on certain values,
+       and an empty string is not one of them).
+    
+    Note that LIBGUESTFS_BACKEND_SETTINGS is meaningful as an empty
+    string, and for this case I have removed the STRNEQ (str, "") test.
+    
+    Previously:
+    
+    $ LIBGUESTFS_BACKEND="" guestfish -a /dev/null run
+    libguestfs: error: invalid backend:
+    
+    After this commit:
+    
+    $ LIBGUESTFS_BACKEND="" guestfish -a /dev/null run
+    
+    (no error message is printed)
+
 commit 93c2769e2bb6a19b216d78216d062e4d99f43dbf
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Oct 15 22:19:19 2014 +0200
