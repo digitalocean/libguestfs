@@ -137,14 +137,14 @@ including Windows or Red Hat Enterprise Linux.
 
 Показати довідкове повідомлення.
 
-=item B<-o> OUTPUT
+=item B<-o> ВИВЕДЕННЯ
 
-=item B<--output> OUTPUT
+=item B<--output> ВИВЕДЕННЯ
 
 Write kickstart to C<OUTPUT>.  If not specified, the default is C<p2v.ks> in
 the current directory.
 
-=item B<--proxy> URL
+=item B<--proxy> АДРЕСА
 
 Tell the kickstart to use a proxy server or web cache for downloads.
 

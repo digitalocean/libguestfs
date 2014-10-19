@@ -16,13 +16,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# Test -i ova option.
+# Test -i ova option with two disks.
 
 unset CDPATH
 export LANG=C
 set -e
 
-if [ -n "$SKIP_TEST_V2V_I_OVA_SH" ]; then
+if [ -n "$SKIP_TEST_V2V_I_OVA_TWO_DISKS_SH" ]; then
     echo "$0: test skipped because environment variable is set"
     exit 77
 fi
@@ -32,55 +32,38 @@ if [ "$(guestfish get-backend)" = "uml" ]; then
     exit 77
 fi
 
-f=../tests/guests/windows.img
-if ! test -f $f || ! test -s $f; then
-    echo "$0: test skipped because phony Windows image was not created"
-    exit 77
-fi
-
 virt_tools_data_dir=${VIRT_TOOLS_DATA_DIR:-/usr/share/virt-tools}
 if ! test -r $virt_tools_data_dir/rhsrvany.exe; then
     echo "$0: test skipped because rhsrvany.exe is not installed"
     exit 77
 fi
 
-d=test-v2v-i-ova.d
+d=test-v2v-i-ova-two-disks.d
 rm -rf $d
 mkdir $d
 
-vmdk=test-ova.vmdk
-ovf=test-v2v-i-ova.ovf
-mf=test-ova.mf
-ova=test-ova.ova
-raw=TestOva-sda
+pushd $d
 
-qemu-img convert $f -O vmdk $d/$vmdk
-cp $ovf $d/$ovf
-sha1=`sha1sum $d/$ovf | awk '{print $1}'`
-echo "SHA1($ovf)= $sha1" > $d/$mf
-sha1=`sha1sum $d/$vmdk | awk '{print $1}'`
-echo "SHA1($vmdk)= $sha1" >> $d/$mf
+# Create a phony OVA.  This is only a test of source parsing, not
+# conversion, so the contents of the disks doesn't matter.
+truncate -s 10k disk1.vmdk
+sha=`sha1sum disk1.vmdk | awk '{print $1}'`
+echo -e "SHA1(disk1.vmdk)=$sha\r" > disk1.mf
+truncate -s 100k disk2.vmdk
+sha=`sha1sum disk2.vmdk | awk '{print $1}'`
+echo -e "SHA1(disk2.vmdk)=$sha\r" > disk2.mf
 
-pushd .
-cd $d
-tar -cf $ova $ovf $mf $vmdk
-rm -rf $ovf $mf $vmdk
+tar -cf test.ova ../test-v2v-i-ova-two-disks.ovf disk1.vmdk disk1.mf disk2.vmdk disk2.mf
 popd
 
-$VG virt-v2v --debug-gc \
-    -i ova $d/$ova \
-    -o local -of raw -os $d
+# Run virt-v2v but only as far as the --print-source stage, and
+# normalize the output.
+$VG virt-v2v --debug-gc --quiet \
+    -i ova $d/test.ova \
+    --print-source |
+sed 's,[^ \t]*\(disk.*.vmdk\),\1,' > $d/source
 
-# Test the libvirt XML metadata and a disk was created.
-test -f $d/$raw
-test -f $d/TestOva.xml
-
-# Normalize the XML output.
-mv $d/TestOva.xml $d/TestOva.xml.old
-sed "s,source file='.*TestOva-sda',source file='TestOva-sda'," \
-    < $d/TestOva.xml.old > $d/TestOva.xml
-
-# Check the libvirt XML output.
-diff -u test-v2v-i-ova.xml $d/TestOva.xml
+# Check the parsed source is what we expect.
+diff -u test-v2v-i-ova-two-disks.expected $d/source
 
 rm -rf $d

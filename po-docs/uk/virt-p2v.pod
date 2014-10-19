@@ -23,7 +23,7 @@ This manual page documents running the virt-p2v program.  To create the
 bootable image you should look at L<virt-p2v-make-disk(1)> or
 L<virt-p2v-make-kickstart(1)>.
 
-=head1 NETWORK SETUP
+=head1 НАЛАШТОВУВАННЯ МЕРЕЖІ
 
 Virt-p2v runs on the physical machine which you want to convert.  It has to
 talk to another server called the "conversion server" which must have
@@ -278,7 +278,7 @@ You have to set some or all of the following command line arguments:
 
 =over 4
 
-=item B<p2v.server=SERVER>
+=item B<p2v.server=СЕРВЕР>
 
 The name or IP address of the conversion server.
 
@@ -290,12 +290,12 @@ to the GUI (interactive) configuration method.
 
 The SSH port number on the conversion server (default: C<22>).
 
-=item B<p2v.username=USERNAME>
+=item B<p2v.username=КОРИСТУВАЧ>
 
 The SSH username that we log in as on the conversion server (default:
 C<root>).
 
-=item B<p2v.password=PASSWORD>
+=item B<p2v.password=ПАРОЛЬ>
 
 The SSH password that we use to log in to the conversion server.
 
@@ -312,7 +312,7 @@ Use C<p2v.sudo> to tell virt-p2v to use L<sudo(8)> to gain root privileges
 on the conversion server after logging in as a non-root user (default: do
 not use sudo).
 
-=item B<p2v.name=GUESTNAME>
+=item B<p2v.name=НАЗВА_ГОСТЬОВОЇ_СИСТЕМИ>
 
 The name of the guest that is created.  The default is to try to derive a
 name from the physical machine's hostname (if possible) else use a randomly
@@ -356,7 +356,7 @@ content of removable media is never copied over.
 A list of network interfaces to convert.  The default is to create virtual
 network interfaces for every physical network interface found.
 
-=item B<p2v.network=interface:target,...>
+=item B<p2v.network=інтерфейс:призначення,...>
 
 Controls how network interfaces are connected to virtual networks on the
 target hypervisor.  The default is to connect all network interfaces to the
@@ -411,7 +411,7 @@ Use DHCP for configuring the network interface (this is the default).
 
 =begin коментар
 
-=item B<ip=ADDR:GATEWAY:NETMASK>
+=item B<ip=АДРЕСА:ШЛЮЗ:МАСКА_МЕРЕЖІ>
 
 Set up a static IPv4 network configuration.
 
@@ -427,7 +427,7 @@ Set up a static IPv4 network configuration.
 
 Показати довідкове повідомлення.
 
-=item B<--cmdline=CMDLINE>
+=item B<--cmdline=РЯДОК_КОМАНДИ>
 
 This is used for debugging. Instead of parsing the kernel command line from
 C</proc/cmdline>, parse the string parameter C<CMDLINE>.
@@ -484,13 +484,13 @@ Into this directory are written various files which include:
 
 =item C<name>
 
-I<before conversion>
+I<до перетворення>
 
 The name (usually the hostname) of the physical machine.
 
 =item C<physical.xml>
 
-I<before conversion>
+I<до перетворення>
 
 Libvirt XML describing the physical machine.  It is used to pass data about
 the physical source host to L<virt-v2v(1)> via the I<-i libvirtxml> option.
@@ -501,20 +501,20 @@ libvirt XML which virt-v2v generates in certain output modes.
 
 =item C<status>
 
-I<after conversion>
+I<після перетворення>
 
 The final status of the conversion.  C<0> if the conversion was successful.
 Non-zero if the conversion failed.
 
 =item C<time>
 
-I<before conversion>
+I<до перетворення>
 
 The start date/time of conversion.
 
 =item C<virt-v2v-conversion-log.txt>
 
-I<during/after conversion>
+I<підчас/після перетворення>
 
 The conversion log.  This is just the output of the virt-v2v command on the
 conversion server.  If conversion fails, you should examine this log file,

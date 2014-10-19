@@ -54,9 +54,9 @@ want to convert (for testing only).
 
 Показати довідкове повідомлення.
 
-=item B<-o> OUTPUT
+=item B<-o> ВИВЕДЕННЯ
 
-=item B<--output> OUTPUT
+=item B<--output> ВИВЕДЕННЯ
 
 Write output to C<OUTPUT>, which can be a local file or block device.  B<The
 existing contents of the device will be erased>.

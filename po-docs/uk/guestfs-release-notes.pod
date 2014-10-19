@@ -5,18 +5,18 @@ guestfs-release-notes - libguestfs Release Notes
 
 =begin коментар
 
-UPDATED TO a48ade569d485a114d29da358e4a2c36429b7ebb
+UPDATED TO (put commit hash here)
 
 =end коментар
 
-=begin html
+=begin коментар
 
 <script> document.body.style.backgroundImage = "url('draft.png')";
 document.body.style.backgroundRepeat = "no-repeat"; </script>
 
-=end html
+=end коментар
 
-=head1 RELEASE NOTES FOR LIBGUESTFS 1.28
+=head1 НОТАТКИ ЩОДО ВИПУСКУ LIBGUESTFS 1.28
 
 These release notes only cover the differences from the previous stable/dev
 branch split (1.26.0).  For detailed changelogs, please see the git
@@ -27,14 +27,14 @@ repository, or the ChangeLog file distributed in the tarball.
 =head3 Інструменти
 
 L<virt-v2v(1)> and L<virt-p2v(1)> are tools for converting from foreign
-hypervisors or physical machines, to KVM.  These tools were previously a
-separate project.  The code for both tools has been integrated into the
-libguestfs tree.  As part of the refactoring, virt-p2v has been rewritten
-(from Ruby, now C), and virt-v2v now uses several modern features of qemu
-which make it run many times faster than before.  L<virt-v2v(1)> can import
-from: VMware vCenter, VMware OVA files, local disk files, libvirt, RHEL 5
-Xen.  It can output to: oVirt or Red Hat Enterprise Virtualization (RHEV-M),
-OpenStack Glance, libvirt, qemu, local disk files.
+hypervisors (such as VMware or Xen) or physical machines, to KVM.  These
+tools were previously a separate project.  The code for both tools has been
+integrated into the libguestfs tree.  As part of the refactoring, virt-p2v
+has been rewritten (from Ruby, now C), and virt-v2v now uses several modern
+features of qemu which make it run many times faster than before.
+L<virt-v2v(1)> can import from: VMware vCenter, VMware OVA files, local disk
+files, libvirt, RHEL 5 Xen.  It can output to: oVirt or Red Hat Enterprise
+Virtualization (RHEV-M), OpenStack Glance, libvirt, qemu, local disk files.
 
 L<virt-log(1)> is a new tool for listing log files from guests.  It supports
 a variety of guests including Linux traditional, Linux using journal, and
@@ -221,6 +221,47 @@ on.
 
 =over 4
 
+=item L<https://bugzilla.redhat.com/1153515>
+
+empty (but set) LIBGUESTFS_BACKEND prints libguestfs: error: invalid
+backend:
+
+=item L<https://bugzilla.redhat.com/1151766>
+
+libguestfs-bash-completion package contains file
+/usr/share/bash-completion/completions/virt-log, but no _virt_log() function
+in that file
+
+=item L<https://bugzilla.redhat.com/1151738>
+
+typo error in man page of virt-edit
+
+=item L<https://bugzilla.redhat.com/1151033>
+
+virt-v2v conversions from VMware vCenter server run slowly
+
+=item L<https://bugzilla.redhat.com/1150880>
+
+virt-v2v: warning: display <graphics type='sdl'> was ignored when converting
+rhel5 guest with sdl graphics
+
+=item L<https://bugzilla.redhat.com/1150867>
+
+'copy-file-to-file /src /dest' create file /dest even if command
+'copy-file-to-file /src /dest' failed
+
+=item L<https://bugzilla.redhat.com/1150815>
+
+Can not find "RECURSIVE LONG LISTING" in 'man virt-diff'
+
+=item L<https://bugzilla.redhat.com/1150701>
+
+virt-v2v does not fstrim data disks and non-mounted filesystems
+
+=item L<https://bugzilla.redhat.com/1150475>
+
+Exporting 2+ disk guest to RHEV, only one disk shows after import
+
 =item L<https://bugzilla.redhat.com/1148355>
 
 virt-filesystems: incorrect LVM vg name when listing Fedora 21 Alpha Atomic
@@ -228,7 +269,7 @@ image filesystems
 
 =item L<https://bugzilla.redhat.com/1148072>
 
-Option missing --no-selinux-relabel
+Не вистачає параметра --no-selinux-relabel
 
 =item L<https://bugzilla.redhat.com/1148012>
 
@@ -252,6 +293,10 @@ hivex_open: used block id ……
 
 Improve the error info when converting windows guest with unclean file
 system
+
+=item L<https://bugzilla.redhat.com/1145916>
+
+virt-v2v fails to convert win7 guest
 
 =item L<https://bugzilla.redhat.com/1144891>
 
@@ -426,7 +471,7 @@ scrub-file can't handle link file
 
 =item L<https://bugzilla.redhat.com/1099284>
 
-typo errors in man pages
+Друкарські помилки у сторінках man
 
 =item L<https://bugzilla.redhat.com/1098718>
 
@@ -481,7 +526,7 @@ virt-sparsify overwrites block devices if used as output files
 
 =item L<https://bugzilla.redhat.com/812970>
 
-virt-rescue cannot set ><rescue> prompt, on Ubuntu 12.04
+virt-rescue cannot set E<ge>E<lt>rescueE<gt> prompt, on Ubuntu 12.04
 
 =back
 
@@ -593,14 +638,14 @@ previously you could have passed any string.  (Pino Toscano)
 
 =over 4
 
-=item C<guestfs_add_drive_opts>: new C<discard> parameter
+=item C<guestfs_add_drive_opts>: новий параметр C<discard>
 
 The new C<discard> parameter allows fine-grained control over discard/trim
 support for a particular disk.  This allows the host file to become more
 sparse (or thin-provisioned) when you delete files or issue the
 C<guestfs_fstrim> API call.
 
-=item C<guestfs_add_domain>: new parameters: C<cachemode>, C<discard>
+=item C<guestfs_add_domain>: нові параметри: C<cachemode>, C<discard>
 
 These parameters are passed through when adding the domain's disks.
 

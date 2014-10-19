@@ -363,8 +363,8 @@ protocol is used (see C</etc/services>).
 
 =item C<username>
 
-For the C<ftp>, C<ftps>, C<http>, C<https>, C<iscsi>, C<rbd>, C<ssh> and
-C<tftp> protocols, this specifies the remote username.
+Для протоколів C<ftp>, C<ftps>, C<http>, C<https>, C<iscsi>, C<rbd>, C<ssh>
+та C<tftp> визначає ім’я користувача віддаленої системи.
 
 If not given, then the local username is used for C<ssh>, and no
 authentication is attempted for ceph.  But note this sometimes may give
@@ -413,7 +413,7 @@ Enable or disable discard (a.k.a. trim or unmap) support on this drive.  If
 enabled, operations such as L</fstrim> will be able to discard / make thin /
 punch holes in the underlying host file or device.
 
-Possible discard settings are:
+Можливі варіанти параметрів відкидання:
 
 =over 4
 
@@ -441,7 +441,7 @@ The boolean parameter C<copyonread> enables copy-on-read support.  This only
 affects disk formats which have backing files, and causes reads to be stored
 in the overlay layer, speeding up multiple reads of the same area of disk.
 
-The default is false.
+Типовим є значення false.
 
 =back
 
@@ -1253,7 +1253,7 @@ C<"name=">, then that string is removed from the backend settings.
 This call returns the number of strings which were removed (which may be 0,
 1 or greater than 1).
 
-See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+Див. L<guestfs(3)/МОДУЛЬ>, L<guestfs(3)/ПАРАМЕТРИ МОДУЛЯ>.
 
 =head2 command
 
@@ -1343,7 +1343,7 @@ some parameters which would interfere with parameters that we use.
 
 The first character of C<hvparam> string must be a C<-> (dash).
 
-C<hvvalue> can be NULL.
+C<hvvalue> може дорівнювати NULL.
 
 =head2 copy-attributes
 
@@ -1486,7 +1486,7 @@ support it (primarily when writing to DOS FAT filesystems).
 
 =head2 cpio-out
 
- cpio-out directory (cpiofile|-) [format:..]
+ cpio-out каталог (файл cpio|-) [формат:..]
 
 This command packs the contents of C<directory> and downloads it to local
 file C<cpiofile>.
@@ -1974,47 +1974,47 @@ Intel Itanium.
 
 =item "arm"
 
-32 bit ARM.
+32-бітовий ARM.
 
 =item "aarch64"
 
-64 bit ARM.
+64-бітовий ARM.
 
 =back
 
 У майбутніх версіях Libguestfs може повертати і інші рядки назв архітектур.
 
-The function works on at least the following types of files:
+Функція працює принаймні для таких типів файлів:
 
 =over 4
 
 =item *
 
-many types of Un*x and Linux binary
+багатьох типів виконуваних файлів Un*x та Linux
 
 =item *
 
-many types of Un*x and Linux shared library
+багатьох типів бібліотек спільного використання Un*x та Linux
 
 =item *
 
-Windows Win32 and Win64 binaries
+виконуваних файлів Windows Win32 та Win64
 
 =item *
 
-Windows Win32 and Win64 DLLs
+DLL Windows Win32 і Win64
 
-Win32 binaries and DLLs return C<i386>.
+виконувані файли та DLL Win32 повертають C<i386>.
 
-Win64 binaries and DLLs return C<x86_64>.
-
-=item *
-
-Linux kernel modules
+виконувані файли та DLL Win64 повертають C<x86_64>.
 
 =item *
 
-Linux new-style initrd images
+модулів ядра Linux
+
+=item *
+
+образів нового стилю initrd Linux
 
 =item *
 
@@ -2280,7 +2280,7 @@ this returns the part after the equals sign (which may be an empty string).
 If no such setting is found, this function throws an error.  The errno (see
 L</last-errno>) will be C<ESRCH> in this case.
 
-See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+Див. L<guestfs(3)/МОДУЛЬ>, L<guestfs(3)/ПАРАМЕТРИ МОДУЛЯ>.
 
 =head2 get-backend-settings
 
@@ -2291,7 +2291,7 @@ Return the current backend settings.
 This call returns all backend settings strings.  If you want to find a
 single backend setting, see L</get-backend-setting>.
 
-See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+Див. L<guestfs(3)/МОДУЛЬ>, L<guestfs(3)/ПАРАМЕТРИ МОДУЛЯ>.
 
 =head2 get-cachedir
 
@@ -6428,7 +6428,7 @@ Append C<"name=value"> to the backend settings string list.  However if a
 string already exists matching C<"name"> or beginning with C<"name=">, then
 that setting is replaced.
 
-See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+Див. L<guestfs(3)/МОДУЛЬ>, L<guestfs(3)/ПАРАМЕТРИ МОДУЛЯ>.
 
 =head2 set-backend-settings
 
@@ -6446,7 +6446,7 @@ This call replaces all backend settings.  If you want to replace a single
 backend setting, see L</set-backend-setting>.  If you want to clear a single
 backend setting, see L</clear-backend-setting>.
 
-See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+Див. L<guestfs(3)/МОДУЛЬ>, L<guestfs(3)/ПАРАМЕТРИ МОДУЛЯ>.
 
 =head2 set-cachedir
 

@@ -122,7 +122,7 @@ libvirt を使用していると、指定された I<URI> に接続します。 
 
 このオプションは Perl 5 がインストールされているときのみ利用可能であることに注意してください。
 
-=item B<--format> raw|qcow2|...
+=item B<--format=raw|qcow2|..>
 
 =item B<--format>
 

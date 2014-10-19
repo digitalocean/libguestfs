@@ -1,3 +1,260 @@
+commit 6e05b458d5010dc6fe959c2777d4bb02ccafc2d9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 10:50:23 2014 +0100
+
+    Version 1.28.1.
+
+commit 93f8b522aa06e4ca7bc22fa40928ce38c6ece6ad
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 10:27:23 2014 +0100
+
+    p2v: Test did not recognize '1.XX.0' as a valid version number.
+    
+    Thus breaking when we changed the version number to 1.28.0.
+    
+    (cherry picked from commit 1f97a5df7673aa3a6e4208a421a87fd14369675c)
+
+commit 305f0050eb7844919de24409a3cb919827f7e0db
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 09:26:37 2014 +0100
+
+    Version 1.28.0.
+
+commit 3b3b507a1ee3125e61ecdd1dfd9153d710db25fb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 09:02:41 2014 +0100
+
+    Update translations from Transifex.
+
+commit d57660d5d657ffbdb4011dd6f20a3cc39673c96d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 09:02:18 2014 +0100
+
+    Update release notes for 1.28 release.
+
+commit d3548012e90251c03f50b83e582ea92ddba0ac79
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 09:12:03 2014 +0100
+
+    Update API support for 1.28 release.
+
+commit 6e5039d1ef69acf38b2cdbd3d4b634887ae00979
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 17 17:38:07 2014 +0100
+
+    Version 1.27.64.
+
+commit 288bc73bb02fcf69b952a80fc4efe89337bfab4b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 17 17:37:37 2014 +0100
+
+    v2v: Add test files to EXTRA_DIST.
+    
+    This fixes commit 852f2e8e3c3228be4b9cd2be5b1d5da10a41fe32.
+
+commit 97c96ed6702cb7b4dfcc5acd08a29cb6f2b70b54
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 17 17:18:25 2014 +0100
+
+    v2v: Windows: Add &REV_00 variant, which is used by W2K8R2.
+
+commit 4f6033c3f4428f2c0033dfc256e71f05db17c3c2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 17 17:14:52 2014 +0100
+
+    v2v: Windows: Fix quoting and type of viostor ImagePath parameter.
+    
+    The way to fix these bugs -- for future reference -- is as follows:
+    
+    (1) Install the corresponnding Windows version with virtio enabled.
+    See:
+    
+    https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Virtualization_Deployment_and_Administration_Guide/chap-KVM_Para_virtualized_virtio_Drivers.html
+    
+    (the ".vfd" method)
+    
+    (2) Download the SYSTEM and SOFTWARE registries from the
+    virtio-enabled guest.
+    
+    (3) Examine each registry using 'hivexsh', especially the keys which
+    we modify during virt-v2v (see v2v/convert_windows.ml).  Remember to
+    use both the 'ls' and 'lsval' commands in hivexsh.
+    
+    (4) Download the SYSTEM and SOFTWARE registries from the guest that
+    fails to boot.
+    
+    (5) Examine the same registry keys from each registry using 'hivexsh'.
+    
+    (6) Work out what the differences are, paying particular attention to
+    quoting and the type of each key (eg. str(1), str(2), etc).
+    
+    Thanks: Matthew Booth.
+
+commit ca6d7d9c34dacf83dc8611c74f66cfe208fcdc0b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 17 13:44:35 2014 +0100
+
+    v2v: Print version of virt-v2v in debug output.
+    
+    Easier than asking users to send us this information, which they often don't.
+
+commit e2e17055742c3de6145406033b16716f259949f2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 16 18:02:46 2014 +0100
+
+    v2v: Add new section on resource requirements of virt-v2v to the manual.
+
+commit 852f2e8e3c3228be4b9cd2be5b1d5da10a41fe32
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 16 14:08:17 2014 +0200
+
+    tests: v2v: Test -i ova with two input disks.
+
+commit d8849fadbdb88d1afa03174ab36057afba7a0fc7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 16 15:58:41 2014 +0100
+
+    v2v: -i ova: Fix it so it actually verifies SHA-1 hashes from manifest files.
+    
+    There were two large bugs before: (1) It only found one manifest file
+    (meaning that multi-volume OVAs would be broken).  (2) The regular
+    expression didn't work so it wouldn't check the hash.  Bugs (1) + (2)
+    combined so that the check just didn't do anything at all, which is
+    why we didn't notice the multi-volume problem.
+    
+    Actually I suspect we shouldn't be doing this check at all, since I
+    bet there are OVAs out there with broken SHA-1's.
+
+commit 249aae0c2ffa685008c03f5d06e05c2989b1ec99
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 16 08:36:33 2014 +0200
+
+    handle: Process empty LIBGUESTFS_* environment variables correctly (RHBZ#1153515).
+    
+    Ignore an environment variable:
+    
+     - if an environment variable is an empty string, AND
+    
+     - if an empty string would have no meaning for that environment
+       variable (eg. LIBGUESTFS_BACKEND can only take on certain values,
+       and an empty string is not one of them).
+    
+    Note that LIBGUESTFS_BACKEND_SETTINGS is meaningful as an empty
+    string, and for this case I have removed the STRNEQ (str, "") test.
+    
+    Previously:
+    
+    $ LIBGUESTFS_BACKEND="" guestfish -a /dev/null run
+    libguestfs: error: invalid backend:
+    
+    After this commit:
+    
+    $ LIBGUESTFS_BACKEND="" guestfish -a /dev/null run
+    
+    (no error message is printed)
+
+commit 93c2769e2bb6a19b216d78216d062e4d99f43dbf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 15 22:19:19 2014 +0200
+
+    Version 1.27.63.
+
+commit 4511137c054416f407ff4e05c82ca6b9abc62d8a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 15 21:23:33 2014 +0200
+
+    tests: v2v: Check -i ova generates the same XML each time.
+
+commit 717c73d22b57dc2c06a80ca516b83591c64caafa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 15 21:18:21 2014 +0200
+
+    v2v: -i ova: Try hard to preserve the order of floppies and CDROMs from the original OVF.
+    
+    Remove the common 'add_resource' function.
+    
+    Duplicate that function into code for adding disks, and separate code
+    for adding removables (floppies & CDROMs).
+    
+    The removables code should look for all removable devices
+    (ResourceType 14, 15, 16) in a single query, so that the order doesn't
+    depend on the order in which we do the queries.
+
+commit 59015939abc63de27fc6e8329a23f3087fd3f91a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 15 21:04:33 2014 +0200
+
+    v2v: -i ova: Preserve the order of disks/removable/NICs from the source OVF.
+    
+    Because we built the lists up backwards, we ought to reverse them
+    before passing them out of the module.
+
+commit 516a95824a9a5408c353dc9843492b5092fbe0fc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 15 21:00:21 2014 +0200
+
+    v2v: -i ova: Mainly whitespace and formatting changes.
+    
+    Mainly tidy up the indentation and comments to match the "house
+    style".  No significant functional change.
+
+commit 94f2eb8b26cef7faa42eba7c9cbe39d6a25858bd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 13 15:06:30 2014 +0200
+
+    bash: add virt-log completion entry (RHBZ#1151766).
+    
+    Thanks: Lingfei Kong
+
+commit 88a482dd9f6f1b842350edd0437dfe621ebcf510
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 13 13:07:43 2014 +0200
+
+    v2v: Add 'exit' choice to --root ask.
+    
+    If the user does ^C then this leaves temporary overlay files around
+    (possibly a bug?).  Offer an 'exit' choice to the user which exits
+    cleanly.
+    
+    The new message looks like this:
+    
+      Dual- or multi-boot operating system detected.  Choose the root filesystem
+      that contains the main operating system from the list below:
+    
+       [1] /dev/sda3 (Fedora release 20 (Heisenbug))
+       [2] /dev/sdb3
+    
+      Enter a number between 1 and 2, or 'exit': exit
+
+commit 04de9d3df064ab32ea31a0b803f29466cc0fc0d9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 13 11:40:00 2014 +0200
+
+    v2v: When choosing a root from several, print an info message.
+
+commit 2ba45489a1e296b89d3c32ef80e57efc13f32a88
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 13 11:39:24 2014 +0200
+
+    v2v: Add an 'info' function for info messages, and use it for virtio message.
+
+commit 2b4ba9d692d1dfa08b19459305477fd22b6066d8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 13 11:36:15 2014 +0200
+
+    v2v: --root ask: Number the guests in the list correctly.
+    
+    Thanks: Junqin Zhou
+
+commit 145a188f7056d4414adef472e95cad5640d79511
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 13 11:02:14 2014 +0200
+
+    edit: fix --format documentation (RHBZ#1151738).
+    
+    Use only --format=FMT as a way to specify a format, as the version
+    without the equal sign will not work for that.
+
 commit e3722252295921d095fc124bbb2f7698a510fafe
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Oct 10 16:58:48 2014 +0100

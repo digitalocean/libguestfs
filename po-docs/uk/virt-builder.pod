@@ -302,7 +302,7 @@ directory:
 
 =item B<--list>
 
-=item B<--list --list-format> format
+=item B<--list --list-format> формат
 
 =item B<--list --long>
 
@@ -772,7 +772,7 @@ The template signature is checked.
 
 =item *
 
-The template is uncompressed to a tmp file.
+Шаблон розпаковано до файла tmp.
 
 =item *
 
@@ -793,13 +793,13 @@ line.
 
 =item *
 
-SELinux relabelling is done (I<--selinux-relabel>).
+Зміну міток SELinux виконано (I<--selinux-relabel>).
 
 =back
 
-=head2 IMPORTING THE DISK IMAGE
+=head2 ІМПОРТУВАННЯ ОБРАЗУ ДИСКА
 
-=head3 Importing into libvirt
+=head3 Імпортування до libvirt
 
 Import the disk image into libvirt using L<virt-install(1)> I<--import>
 option.
@@ -835,7 +835,7 @@ differently as well.
 
 =back
 
-=head3 Importing into OpenStack
+=head3 Імпортування до OpenStack
 
 Import the image into Glance (the OpenStack image store) by doing:
 
@@ -912,7 +912,7 @@ things to try:
 
 =item Використання virt-rescue
 
-Run L<virt-rescue(1)> on the disk image:
+Запустити L<virt-rescue(1)> над образом диска:
 
  virt-rescue -a disk.img
 
@@ -923,7 +923,7 @@ man page has a lot more information and examples.
 
 =item Використання guestfish
 
-Run L<guestfish(1)> on the disk image:
+Запустити L<guestfish(1)> над образом диска:
 
  guestfish -a disk.img -i
 
@@ -932,17 +932,18 @@ directories and files.
 
 =item Використання guestmount
 
-Mount the disk image safely on the host using FUSE and L<guestmount(1)>:
+Безпечно змонтувати образ диска у основній системі за допомогою FUSE і
+L<guestmount(1)>:
 
  mkdir /tmp/mp
  guestmount -a disk.img -i /tmp/mp
  cd /tmp/mp
 
-To unmount the disk image do:
+Щоб демонтувати образ диска, виконайте такі дії:
 
  fusermount -u /tmp/mp
 
-=item Add a serial console
+=item Додати послідовну консоль
 
 If the guest hangs during boot, it can be helpful to add a serial console to
 the guest, and direct kernel messages to the serial console.  Adding the
@@ -954,7 +955,7 @@ following on the kernel command line:
 
 =back
 
-=head2 SOURCES OF TEMPLATES
+=head2 ДЖЕРЕЛА ШАБЛОНІВ
 
 virt-builder reads the available sources from configuration files, with the
 I<.conf> extension and located in the following paths:
@@ -963,8 +964,8 @@ I<.conf> extension and located in the following paths:
 
 =item *
 
-$XDG_CONFIG_HOME/virt-builder/repos.d/ (C<$XDG_CONFIG_HOME> is
-C<$HOME/.config> if not set).
+$XDG_CONFIG_HOME/virt-builder/repos.d/ (C<$XDG_CONFIG_HOME> дорівнює
+C<$HOME/.config>, якщо не встановлено).
 
 =item *
 
@@ -984,7 +985,7 @@ following:
 The part in square brackets is the repository identifier, which is used as
 unique identifier.
 
-The following fields can appear:
+Можуть з’явитися такі поля:
 
 =over 4
 
@@ -1000,7 +1001,7 @@ This optional field represents the URI (although only I<file://> URIs are
 accepted) of the key used to sign the index file.  If not present, the index
 file referred by I<uri=..> is not signed.
 
-=item C<proxy=MODE>
+=item C<proxy=РЕЖИМ>
 
 This optional field specifies the proxy mode, to be used when downloading
 the index file of this repository.  The possible values are:
@@ -1013,9 +1014,9 @@ No proxy is being used at all, even overriding the system configuration.
 
 =item B<system>
 
-The proxy used is the system one.
+Використаний проксі-сервер є системним.
 
-=item I<anything else>
+=item I<усе інше>
 
 Specifies the actual proxy configuration to be used, overriding the system
 configuration.
@@ -1125,7 +1126,7 @@ This will create the final file called C<index.asc> which can be uploaded to
 the server (and is the I<uri=..> URL).  As noted above, signing the index
 file is optional, but recommended.
 
-The following fields can appear:
+Можуть з’явитися такі поля:
 
 =over 4
 
@@ -1376,7 +1377,7 @@ line.  You have to do this using I<--run-command> instead of I<--install>.
 
 =head4 Використання локального дзеркала з Fedora
 
-To install a Fedora guest using a local mirror:
+Для встановлення гостьової системи Fedora за допомогою локального дзеркала:
 
  virt-builder fedora 20 \
    --edit '/etc/yum.repos.d/fedora.repo:
@@ -1500,7 +1501,7 @@ varies according to which Linux distro you are trying to install.
 Use I<--no-sync>.  However read the caveats in the L</OPTIONS> section
 above, since this can cause disk corruption if not used correctly.
 
-=head3 Skipping virt-resize
+=head3 Пропускання virt-resize
 
 Virt-builder can skip the virt-resize step under certain conditions.  This
 makes virt-builder much faster.  The conditions are:
@@ -1552,7 +1553,7 @@ possible strategies it can use to ensure correct labelling:
 
 =over 4
 
-=item Using I<--selinux-relabel>
+=item Користування I<--selinux-relabel>
 
 This runs L<fixfiles(8)> just before finalizing the guest, which sets
 SELinux labels correctly in the disk image.
@@ -1620,7 +1621,7 @@ firstboot installation.
 Normally you do not need to set this.  If not set, a compiled-in default
 will be used (something like C</usr/share/virt-tools>).
 
-This directory may contain the following files:
+Цей каталог може містити такі файли:
 
 =over 4
 
@@ -1630,7 +1631,7 @@ This is the RHSrvAny Windows binary, used to install a "firstboot" script in
 Windows guests.  It is required if you intend to use the I<--firstboot> or
 I<--firstboot-command> options with Windows guests.
 
-See also: C<https://github.com/rwmjones/rhsrvany>
+Див. також C<https://github.com/rwmjones/rhsrvany>
 
 =back
 
