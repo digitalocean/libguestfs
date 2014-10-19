@@ -308,9 +308,9 @@ L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>).
 
 =item B<--mount пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]>
 
-Mount the named partition or logical volume on the given mountpoint.
+Змонтувати названий розділ або логічний том до вказаної точки монтування.
 
-If the mountpoint is omitted, it defaults to C</>.
+Якщо точку монтування пропущено, використовуватиметься типове значення C</>.
 
 You have to mount something on C</> before most commands will work.
 
@@ -1272,7 +1272,7 @@ redisplay, editing etc works.
 
 =item \a
 
-A bell character.
+Символ гудка.
 
 =item \e
 
@@ -1280,7 +1280,7 @@ An ASCII ESC (escape) character.
 
 =item \n
 
-A newline.
+Символ розриву рядка.
 
 =item \r
 
@@ -1296,7 +1296,7 @@ The ASCII character whose code is the hex value NN.
 
 =back
 
-=head2 EXAMPLES OF PROMPTS
+=head2 ПРИКЛАДИ ЗАПИТІВ
 
 Note these these require a terminal that supports ANSI escape codes.
 

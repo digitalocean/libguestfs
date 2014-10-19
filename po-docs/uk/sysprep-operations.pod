@@ -3,7 +3,7 @@
 
 Вилучити дані щодо аварії, створені ABRT.
 
-Remove the automatically generated ABRT crash data in C</var/spool/abrt/>.
+Вилучити автоматично створені ABRT дані щодо аварії у C</var/spool/abrt/>.
 
 =head2 B<bash-history> *
 
@@ -14,9 +14,9 @@ Remove the automatically generated ABRT crash data in C</var/spool/abrt/>.
 
 =head3 Notes on bash-history
 
-Currently this only looks in C</root> and C</home/*> for home directories,
-so users with home directories in other locations won't have the bash
-history removed.
+У поточній версії пошук домашніх каталогів користувачів виконується лише у
+C</root> і C</home/*>. Отже, журнал bash користувачів, дані яких
+зберігаються у інших каталогах, не буде вилучено.
 
 =head2 B<blkid-tab> *
 
@@ -38,10 +38,10 @@ history removed.
 
 =head2 B<customize> *
 
-Customize the guest.
+Налаштувати гостьову систему.
 
-Customize the guest by providing L<virt-customize(1)> options for installing
-packages, editing files and so on.
+Налаштувати гостьову систему визначенням параметрів L<virt-customize(1)> для
+встановлення пакунків, редагування файлів тощо.
 
 =head2 B<dhcp-client-state> *
 
@@ -59,19 +59,19 @@ packages, editing files and so on.
 
 Вилучити правила брандмауера.
 
-This removes custom firewall rules by removing C</etc/sysconfig/iptables> or
-custom firewalld configuration in C</etc/firewalld/*/*>.
+Вилучає нетипові правила брандмауера вилученням C</etc/sysconfig/iptables>
+або нетипових налаштувань firewalld з C</etc/firewalld/*/*>.
 
-Note this is I<not> enabled by default since it may expose guests to
-exploits.  Use with care.
+Зауважте, що цю можливість типово I<не> увімкнено, оскільки може відкрити
+гостьову систему для вразливостей. Користуйтеся обережно.
 
 =head2 B<flag-reconfiguration>
 
 Позначити систему для зміни налаштувань.
 
-For Linux guests, this touches C</.unconfigured>, which causes the first
-boot to interactively query the user for settings such as the root password
-and timezone.
+Для гостьових систем Linux оновлює часову позначку C</.unconfigured>, отже,
+під час першого завантаження користувачеві буде надіслано запит щодо
+параметрів, зокрема пароля root та часового поясу.
 
 =head2 B<fs-uuids>
 
@@ -225,7 +225,7 @@ UUID, наприклад C</etc/fstab> або завантажувач. Вмик
 
 =head2 B<rh-subscription-manager> *
 
-Remove the RH subscription manager files.
+Вилучити файли керування передплатою RH.
 
 =head2 B<rhn-systemid> *
 

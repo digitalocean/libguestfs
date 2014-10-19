@@ -76,15 +76,15 @@ L<virt-builder(1)/INSTALLING PACKAGES>.
 
 =item B<--keep-user-accounts> USERS (see C<user-account> below)
 
-The user accounts to be kept in the guest.  The value of this option is a
-list of user names separated by comma, where specifying an user means it is
-going to be kept.  For example:
+Облікові записи користувачів, які слід залишити у гостьовій
+системі. Значенням цього параметра є список імен користувачів, відокремлених
+комами, який визначатиме ті записи, які слід зберегти. Приклад:
 
  --keep-user-accounts mary
 
-would keep the user account C<mary>.
+збереже обліковий запис користувача C<mary>.
 
-This option can be specified multiple times.
+Цей параметр можна вказувати декілька разів у одній команді.
 
 =item B<--link> TARGET:LINK[:LINK..] (see C<customize> below)
 
@@ -139,15 +139,15 @@ C</etc/sysconfig/authconfig> (Fedora, RHEL) or C</etc/pam.d/common-password>
 
 =item B<--remove-user-accounts> USERS (see C<user-account> below)
 
-The user accounts to be removed from the guest.  The value of this option is
-a list of user names separated by comma, where specifying an user means it
-is going to be removed.  For example:
+Облікові записи користувачів, які слід вилучити з гостьової
+системи. Значенням цього параметра є список імен користувачів, відокремлених
+комами, який визначатиме ті записи, які слід вилучити. Приклад:
 
  --remove-user-accounts bob,eve
 
 would only remove the user accounts C<bob> and C<eve>.
 
-This option can be specified multiple times.
+Цей параметр можна вказувати декілька разів у одній команді.
 
 =item B<--root-password> SELECTOR (see C<customize> below)
 

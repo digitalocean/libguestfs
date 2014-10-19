@@ -460,8 +460,8 @@ protocol is used (see C</etc/services>).
 
 =item C<username>
 
-For the C<ftp>, C<ftps>, C<http>, C<https>, C<iscsi>, C<rbd>, C<ssh> and
-C<tftp> protocols, this specifies the remote username.
+Для протоколів C<ftp>, C<ftps>, C<http>, C<https>, C<iscsi>, C<rbd>, C<ssh>
+та C<tftp> визначає ім’я користувача віддаленої системи.
 
 If not given, then the local username is used for C<ssh>, and no
 authentication is attempted for ceph.  But note this sometimes may give
@@ -510,7 +510,7 @@ Enable or disable discard (a.k.a. trim or unmap) support on this drive.  If
 enabled, operations such as C<guestfs_fstrim> will be able to discard / make
 thin / punch holes in the underlying host file or device.
 
-Possible discard settings are:
+Можливі варіанти параметрів відкидання:
 
 =over 4
 
@@ -538,7 +538,7 @@ The boolean parameter C<copyonread> enables copy-on-read support.  This only
 affects disk formats which have backing files, and causes reads to be stored
 in the overlay layer, speeding up multiple reads of the same area of disk.
 
-The default is false.
+Типовим є значення false.
 
 =back
 
@@ -1849,7 +1849,7 @@ C<"name=">, then that string is removed from the backend settings.
 This call returns the number of strings which were removed (which may be 0,
 1 or greater than 1).
 
-See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+Див. L<guestfs(3)/МОДУЛЬ>, L<guestfs(3)/ПАРАМЕТРИ МОДУЛЯ>.
 
 У разі помилки цією функцією буде повернуто -1.
 
@@ -2035,7 +2035,7 @@ some parameters which would interfere with parameters that we use.
 
 The first character of C<hvparam> string must be a C<-> (dash).
 
-C<hvvalue> can be NULL.
+C<hvvalue> може дорівнювати NULL.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -2472,7 +2472,7 @@ New (SVR4) portable format with a checksum.
                       const char *cpiofile,
                       va_list args);
 
-This is the "va_list variant" of L</guestfs_cpio_out>.
+Це «варіант з va_list» L</guestfs_cpio_out>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -2484,7 +2484,7 @@ This is the "va_list variant" of L</guestfs_cpio_out>.
                         const char *cpiofile,
                         const struct guestfs_cpio_out_argv *optargs);
 
-This is the "argv variant" of L</guestfs_cpio_out>.
+Це «варіант з argv» L</guestfs_cpio_out>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -3213,47 +3213,47 @@ Intel Itanium.
 
 =item "arm"
 
-32 bit ARM.
+32-бітовий ARM.
 
 =item "aarch64"
 
-64 bit ARM.
+64-бітовий ARM.
 
 =back
 
 У майбутніх версіях Libguestfs може повертати і інші рядки назв архітектур.
 
-The function works on at least the following types of files:
+Функція працює принаймні для таких типів файлів:
 
 =over 4
 
 =item *
 
-many types of Un*x and Linux binary
+багатьох типів виконуваних файлів Un*x та Linux
 
 =item *
 
-many types of Un*x and Linux shared library
+багатьох типів бібліотек спільного використання Un*x та Linux
 
 =item *
 
-Windows Win32 and Win64 binaries
+виконуваних файлів Windows Win32 та Win64
 
 =item *
 
-Windows Win32 and Win64 DLLs
+DLL Windows Win32 і Win64
 
-Win32 binaries and DLLs return C<i386>.
+виконувані файли та DLL Win32 повертають C<i386>.
 
-Win64 binaries and DLLs return C<x86_64>.
-
-=item *
-
-Linux kernel modules
+виконувані файли та DLL Win64 повертають C<x86_64>.
 
 =item *
 
-Linux new-style initrd images
+модулів ядра Linux
+
+=item *
+
+образів нового стилю initrd Linux
 
 =item *
 
@@ -3666,7 +3666,7 @@ this returns the part after the equals sign (which may be an empty string).
 If no such setting is found, this function throws an error.  The errno (see
 C<guestfs_last_errno>) will be C<ESRCH> in this case.
 
-See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+Див. L<guestfs(3)/МОДУЛЬ>, L<guestfs(3)/ПАРАМЕТРИ МОДУЛЯ>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
@@ -3683,7 +3683,7 @@ Return the current backend settings.
 This call returns all backend settings strings.  If you want to find a
 single backend setting, see C<guestfs_get_backend_setting>.
 
-See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+Див. L<guestfs(3)/МОДУЛЬ>, L<guestfs(3)/ПАРАМЕТРИ МОДУЛЯ>.
 
 This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
@@ -10622,7 +10622,7 @@ Append C<"name=value"> to the backend settings string list.  However if a
 string already exists matching C<"name"> or beginning with C<"name=">, then
 that setting is replaced.
 
-See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+Див. L<guestfs(3)/МОДУЛЬ>, L<guestfs(3)/ПАРАМЕТРИ МОДУЛЯ>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -10646,7 +10646,7 @@ This call replaces all backend settings.  If you want to replace a single
 backend setting, see C<guestfs_set_backend_setting>.  If you want to clear a
 single backend setting, see C<guestfs_clear_backend_setting>.
 
-See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+Див. L<guestfs(3)/МОДУЛЬ>, L<guestfs(3)/ПАРАМЕТРИ МОДУЛЯ>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 

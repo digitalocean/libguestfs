@@ -7,7 +7,7 @@ guestunmount - Unmount a guestmounted filesystem
 
  guestunmount точка_монтування
 
- guestunmount --fd=<FD> mountpoint
+ guestunmount --fd=<дескрипто_файла> точка монтування
 
 =head1 ОПИС
 
@@ -32,7 +32,7 @@ it waits until the pipe C<FD> is closed.  This can be used to monitor
 another process and clean up its mountpoint when that process exits, as
 described below.
 
-=head2 FROM PROGRAMS
+=head2 З ПРОГРАМ
 
 You can just call C<guestunmount mountpoint> from the program, but a more
 sophisticated way to use guestunmount is to have it monitor your program so
@@ -58,7 +58,7 @@ inherit the file descriptor and keep it open.
 
 Guestunmount never daemonizes itself.
 
-=head2 FROM SHELL SCRIPTS
+=head2 ЗІ СКРИПТІВ ОБОЛОНКИ
 
 Since bash doesn't provide a way to create an unnamed pipe, use a trap to
 call guestunmount on exit like this:

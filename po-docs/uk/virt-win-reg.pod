@@ -226,7 +226,7 @@ Windows-style (CRLF) line endings, like this:
 
 This file would need conversion before you could I<--merge> it.
 
-=head1 CurrentControlSet etc.
+=head1 CurrentControlSet тощо.
 
 Registry keys like C<CurrentControlSet> don't really exist in the Windows
 Registry at the level of the hive file, and therefore you cannot modify
@@ -247,7 +247,7 @@ to look at the C<HKLM\SYSTEM\Select> key:
 
 Similarly, other C<Current...> keys in the path may need to be replaced.
 
-=head1 DELETING REGISTRY KEYS AND VALUES
+=head1 ВИЛУЧЕННЯ КЛЮЧІВ ТА ЗНАЧЕНЬ РЕЄСТРУ
 
 To delete a whole registry key, use the syntax:
 
@@ -258,7 +258,7 @@ To delete a single value within a key, use the syntax:
  [HKEY_LOCAL_MACHINE\Foo]
  "Value"=-
 
-=head1 WINDOWS TIPS
+=head1 ПІДКАЗКИ ЩОДО WINDOWS
 
 Note that some of these tips modify the guest disk image.  The guest I<must>
 be shut off, else you will get disk corruption.
@@ -286,7 +286,7 @@ time a user logs in, replace C<RunOnce> with C<Run>.
 
  virt-win-reg --merge WindowsGuest test.reg
 
-=head2 INSTALLING A SERVICE
+=head2 ВСТАНОВЛЕННЯ СЛУЖБИ
 
 This section assumes you are familiar with Windows services, and you either
 have a program which handles the Windows Service Control Protocol directly

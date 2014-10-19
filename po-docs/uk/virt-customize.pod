@@ -227,7 +227,7 @@ firstboot installation.
 Normally you do not need to set this.  If not set, a compiled-in default
 will be used (something like C</usr/share/virt-tools>).
 
-This directory may contain the following files:
+Цей каталог може містити такі файли:
 
 =over 4
 
@@ -237,7 +237,7 @@ This is the RHSrvAny Windows binary, used to install a "firstboot" script in
 Windows guests.  It is required if you intend to use the I<--firstboot> or
 I<--firstboot-command> options with Windows guests.
 
-See also: C<https://github.com/rwmjones/rhsrvany>
+Див. також C<https://github.com/rwmjones/rhsrvany>
 
 =back
 

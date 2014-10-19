@@ -99,7 +99,7 @@ If you are using the libvirt backend, then you can try out a different
 root):
 
  killall libvirtd lt-libvirtd
- ~/path/to/libvirt/run libguestfs-test-tool
+ ~/шлях/до/libvirt/run libguestfs-test-tool
 
 The first command kills any session C<libvirtd> process(es) that may be
 running on the machine.  The second command uses libvirt's C<run> script (in
@@ -124,7 +124,7 @@ Or if you are using the default (direct) backend, then you can try libvirt:
 
 or with libvirt and a specific L<libvirt URI|http://libvirt.org/uri.html>:
 
- export LIBGUESTFS_BACKEND=libvirt:qemu:///session
+ export LIBGUESTFS_BACKEND=libvirt:qemu:///сеанс
 
 =head1 TRYING OUT DIFFERENT SELINUX SETTINGS
 

@@ -89,7 +89,7 @@ C</var/lib/libvirt/images>.
 
 For more information see L</INPUT FROM VMWARE VCENTER SERVER> below.
 
-=head2 Convert from ESX to RHEV-M/oVirt
+=head2 Перетворити образ із формату ESX на образ у форматі RHEV-M/oVirt
 
 This is the same as the previous example, except you want to send the guest
 to a RHEV-M Export Storage Domain which is located remotely (over NFS) at
@@ -116,7 +116,7 @@ on OpenStack (only KVM-based OpenStack is supported), you can do:
 
 To control the name of the image in Glance, use the I<-on> option.
 
-=head2 Convert disk image to disk image
+=head2 Перетворити образ диска на образ диска
 
 Given a disk image from another hypervisor that you want to convert to run
 on KVM, you have two options.  The simplest way is to try:
@@ -152,7 +152,7 @@ To convert a local disk image and immediately boot it in local qemu, do:
 
 =item B<--bridge> ...
 
-See I<--network> below.
+Див. I<--network> нижче.
 
 =item B<--debug-gc>
 
@@ -166,7 +166,7 @@ used for debugging virt-v2v and may be removed in a future version.
 
 =item B<-i disk>
 
-Set the input method to I<disk>.
+Встановити метод введення I<disk>.
 
 In this mode you can read a virtual machine disk image with no metadata.
 virt-v2v tries to guess the best default metadata.  This is usually adequate
@@ -176,14 +176,14 @@ this way.
 
 =item B<-i libvirt>
 
-Set the input method to I<libvirt>.  This is the default.
+Встановити метод введення I<libvirt>. Цей метод є типовим.
 
 In this mode you have to specify a libvirt guest name or UUID on the command
 line.  You may also specify a libvirt connection URI (see I<-ic>).
 
 =item B<-i libvirtxml>
 
-Set the input method to I<libvirtxml>.
+Встановити метод введення I<libvirtxml>.
 
 In this mode you have to pass a libvirt XML file on the command line.  This
 file is read in order to get metadata about the source guest (such as its
@@ -202,7 +202,7 @@ In this mode you can read a VMware ova file.  Virt-v2v will read the ova
 manifest file and check the vmdk volumes for validity (checksums)  as well
 as analyzing the ovf file, and then convert the guest.
 
-=item B<-ic> libvirtURI
+=item B<-ic> адреса_libvirt
 
 Specify a libvirt connection URI to use when reading the guest.  This is
 only used when S<I<-i libvirt>>.
@@ -214,7 +214,7 @@ general.
 See also L</INPUT FROM VMWARE VCENTER SERVER>, L</INPUT FROM RHEL 5 XEN>
 below.
 
-=item B<-if> format
+=item B<-if> формат
 
 For I<-i disk> only, this specifies the format of the input disk image.  For
 other input methods you should specify the input format in the metadata.
@@ -228,23 +228,23 @@ parsed by other programs.  See L</MACHINE READABLE OUTPUT> below.
 
 =item B<-n> out
 
-=item B<--network> in:out
+=item B<--network> введення:виведення
 
-=item B<--network> out
+=item B<--network> виведення
 
 =item B<-b> in:out
 
 =item B<-b> out
 
-=item B<--bridge> in:out
+=item B<--bridge> введення:виведення
 
-=item B<--bridge> out
+=item B<--bridge> виведення
 
 Map network (or bridge) called C<in> to network (or bridge) called C<out>.
 If no C<in:> prefix is given, all other networks (or bridges)  are mapped to
 C<out>.
 
-See L</NETWORKS AND BRIDGES> below.
+див. L</МЕРЕЖІ І МІСТКИ> нижче.
 
 =item B<--no-copy>
 
@@ -285,7 +285,7 @@ filesystem names in a guest.
 
 =item B<-o disk>
 
-This is the same as I<-o local>.
+Те саме, що і I<-o local>.
 
 =item B<-o glance>
 
@@ -300,11 +300,11 @@ Set the output method to I<libvirt>.  This is the default.
 In this mode, the converted guest is created as a libvirt guest.  You may
 also specify a libvirt connection URI (see I<-oc>).
 
-See L</OUTPUT TO LIBVIRT> below.
+Див. L</ВИВЕДЕННЯ ДО LIBVIRT> нижче.
 
 =item B<-o local>
 
-Set the output method to I<local>.
+Встановити метод виведення до I<local>.
 
 In this mode, the converted guest is written to a local directory specified
 by I<-os /dir> (the directory must exist).  The converted guest's disks are
@@ -312,28 +312,28 @@ written as:
 
  /dir/name-sda
  /dir/name-sdb
- [etc]
+ [тощо]
 
 and a libvirt XML file is created containing guest metadata:
 
- /dir/name.xml
+ /каталог/назва.xml
 
-where C<name> is the guest name.
+де C<назва> — назва гостьової системи.
 
 =item B<-o null>
 
-Set the output method to I<null>.
+Встановити метод виведення до I<null>.
 
 The guest is converted and copied (unless you also specify I<--no-copy>),
 but the results are thrown away and no metadata is written.
 
 =item B<-o ovirt>
 
-This is the same as I<-o rhev>.
+Це те саме, що і I<-o rhev>.
 
 =item B<-o qemu>
 
-Set the output method to I<qemu>.
+Встановити метод виведення до I<qemu>.
 
 This is similar to I<-o local>, except that a shell script is written which
 you can use to boot the guest in qemu.  The converted disks and shell script
@@ -344,18 +344,18 @@ which boots the guest under qemu immediately.
 
 =item B<-o rhev>
 
-Set the output method to I<rhev>.
+Встановити метод виведення до I<rhev>.
 
 The converted guest is written to a RHEV Export Storage Domain.  The I<-os>
 parameter must also be used to specify the location of the Export Storage
 Domain.  Note this does not actually import the guest into RHEV.  You have
 to do that manually later using the UI.
 
-See L</OUTPUT TO RHEV> below.
+Див. L</ВИВЕДЕННЯ ДО RHEV> нижче.
 
 =item B<-o vdsm>
 
-Set the output method to I<vdsm>.
+Встановити метод виведення до I<vdsm>.
 
 This mode is similar to I<-o rhev> but is only used by RHEV VDSM when it
 runs virt-v2v under VDSM control.
@@ -366,7 +366,7 @@ runs virt-v2v under VDSM control.
 
 Set the output file allocation mode.  The default is C<sparse>.
 
-=item B<-oc> libvirtURI
+=item B<-oc> адреса_libvirt
 
 Specify a libvirt connection to use when writing the converted guest.  This
 is only used when S<I<-o libvirt>>.  See L</OUTPUT TO LIBVIRT> below.
@@ -374,18 +374,18 @@ is only used when S<I<-o libvirt>>.  See L</OUTPUT TO LIBVIRT> below.
 Only local libvirt connections can be used.  Remote libvirt connections will
 not work.
 
-=item B<-of> format
+=item B<-of> формат
 
 When converting the guest, convert the disks to the given format.
 
 If not specified, then the input format is used.
 
-=item B<-on> name
+=item B<-on> назва
 
 Rename the guest when converting it.  If this option is not used then the
 output name is the same as the input name.
 
-=item B<-os> storage
+=item B<-os> сховище
 
 The location of the storage for the converted guest.
 
@@ -501,7 +501,7 @@ the VM and OVF file (I<--vdsm-vm-uuid>).
 The format of UUIDs is: C<12345678-1234-1234-1234-123456789abc> (each hex
 digit can be C<0-9> or C<a-f>), conforming to S<OSF DCE 1.1>.
 
-These options can only be used with I<-o vdsm>.
+Ці параметри можна використовувати лише з I<-o vdsm>.
 
 =item B<-v>
 
@@ -530,7 +530,7 @@ system.
 
 =back
 
-=head1 XEN PARAVIRTUALIZED GUESTS
+=head1 ПАРАВІРТУАЛІЗОВАНІ ГОСТЬОВІ СИСТЕМИ XEN
 
 Older versions of virt-v2v could turn a Xen paravirtualized (PV) guest into
 a KVM guest by installing a new kernel.  This version of virt-v2v does
@@ -564,7 +564,7 @@ kernel from the table below:
 
  Windows        (Does not apply, as there is no Xen PV Windows kernel)
 
-=head1 ENABLING VIRTIO
+=head1 ВМИКАННЯ VIRTIO
 
 "Virtio" is the name for a set of drivers which make disk (block device),
 network and other guest operations work much faster on KVM.
@@ -579,28 +579,28 @@ installed I<before> conversion, by consulting the table below.
 
  RHEL 3         No virtio drivers are available
  
- RHEL 4         kernel >= 2.5.9-89.EL
+ RHEL 4         ядро >= 2.5.9-89.EL
  
- RHEL 5         kernel >= 2.6.18-128.el5
+ RHEL 5         ядро >= 2.6.18-128.el5
                 lvm2 >= 2.02.40-6.el5
                 selinux-policy-targeted >= 2.4.6-203.el5
  
- RHEL 6+        All versions support virtio
+ RHEL 6+        усі версії підтримують virtio
  
- Fedora         All versions support virtio
+ Fedora         усі версії підтримують virtio
  
- SLES 11+       All versions support virtio
+ SLES 11+       усі версії підтримують virtio
  
- SLES 10        kernel >= 2.6.16.60-0.85.1
+ SLES 10        ядро >= 2.6.16.60-0.85.1
  
- OpenSUSE 11+   All versions support virtio
+ OpenSUSE 11+   усі версії підтримують virtio
  
- OpenSUSE 10    kernel >= 2.6.25.5-1.1
+ OpenSUSE 10    ядро >= 2.6.25.5-1.1
 
  Windows        Drivers are installed from /usr/share/virtio-win
                 if present
 
-=head1 NETWORKS AND BRIDGES
+=head1 МЕРЕЖІ І МІСТКИ
 
 Guests are usually connected to one or more networks, and when converted to
 the target hypervisor you usually want to reconnect those networks at the
@@ -668,13 +668,13 @@ tools.
 
 The libvirt URI of a vCenter server looks something like this:
 
- vpx://user@server/Datacenter/esxi
+ vpx://користувач@сервер/Datacenter/esxi
 
-where:
+де
 
 =over 4
 
-=item C<user@>
+=item C<користувач@>
 
 is the (optional, but recommended) user to connect as
 
@@ -776,7 +776,7 @@ In this case the output flags are set to write the converted guest to a
 temporary directory as this is just an example, but you can also write to
 libvirt or any other supported target.
 
-=head1 INPUT FROM RHEL 5 XEN
+=head1 ВВЕДЕННЯ З RHEL 5 XEN
 
 Virt-v2v is able to import Xen guests from RHEL 5 Xen hosts.
 
@@ -839,7 +839,7 @@ In this case the output flags are set to write the converted guest to a
 temporary directory as this is just an example, but you can also write to
 libvirt or any other supported target.
 
-=head1 OUTPUT TO LIBVIRT
+=head1 ВИВЕДЕННЯ ДО LIBVIRT
 
 The I<-o libvirt> option lets you upload the converted guest to a
 libvirt-managed host.  There are several limitations:
@@ -1028,7 +1028,7 @@ Offline conversion.
 
 =item 2
 
-First boot.
+Перше завантаження.
 
 =back
 
@@ -1082,7 +1082,7 @@ and directories with the correct ownership.  If you run virt-v2v as
 non-root, it will probably still work, but you will need to manually change
 ownership after virt-v2v has finished.
 
-=item Writing to libvirt
+=item Запис до libvirt
 
 When using I<-o libvirt>, you may need to run virt-v2v as root so that it
 can write to the libvirt system instance (ie. C<qemu:///system>)  and to the
@@ -1092,7 +1092,7 @@ You can avoid this by setting up libvirt connection authentication, see
 L<http://libvirt.org/auth.html>.  Alternatively, use I<-oc qemu:///session>,
 which will write to your per-user libvirt instance.
 
-=item Writing to Glance
+=item Запис до Glance
 
 This does I<not> need root (in fact it probably won't work), but may require
 either a special user and/or for you to source a script that sets
@@ -1219,7 +1219,7 @@ all.  The option was added when virt-v2v was rewritten in 2014.
 
 =item C</usr/share/virtio-win>
 
-(Optional)
+(Необов’язково)
 
 If this directory is present, then virtio drivers for Windows guests will be
 found from this directory and installed in the guest during conversion.
@@ -1245,7 +1245,7 @@ conversion.
 Normally you do not need to set this.  If not set, a compiled-in default
 will be used (something like C</usr/share/virt-tools>).
 
-This directory may contain the following files:
+Цей каталог може містити такі файли:
 
 =over 4
 
@@ -1256,11 +1256,11 @@ This directory may contain the following files:
 This is the RHSrvAny Windows binary, used to install a "firstboot" script in
 the guest during conversion of Windows guests.
 
-See also: C<https://github.com/rwmjones/rhsrvany>
+Див. також C<https://github.com/rwmjones/rhsrvany>
 
 =item C<rhev-apt.exe>
 
-(Optional)
+(Необов’язково)
 
 The RHEV Application Provisioning Tool (RHEV APT).  If this file is present,
 then RHEV APT will be installed in the Windows guest during conversion.

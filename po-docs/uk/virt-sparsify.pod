@@ -242,9 +242,9 @@ You cannot use this option and I<--in-place> together.
 
 This disables progress bars and other unnecessary output.
 
-=item B<--tmp> block_device
+=item B<--tmp> блоковий_пристрій
 
-=item B<--tmp> dir
+=item B<--tmp> каталог
 
 In copying mode only, use the named device or directory as the location of
 the temporary overlay (see also L</TMPDIR> below).

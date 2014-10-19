@@ -1,3 +1,43 @@
+commit 6e05b458d5010dc6fe959c2777d4bb02ccafc2d9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 10:50:23 2014 +0100
+
+    Version 1.28.1.
+
+commit 93f8b522aa06e4ca7bc22fa40928ce38c6ece6ad
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 10:27:23 2014 +0100
+
+    p2v: Test did not recognize '1.XX.0' as a valid version number.
+    
+    Thus breaking when we changed the version number to 1.28.0.
+    
+    (cherry picked from commit 1f97a5df7673aa3a6e4208a421a87fd14369675c)
+
+commit 305f0050eb7844919de24409a3cb919827f7e0db
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 09:26:37 2014 +0100
+
+    Version 1.28.0.
+
+commit 3b3b507a1ee3125e61ecdd1dfd9153d710db25fb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 09:02:41 2014 +0100
+
+    Update translations from Transifex.
+
+commit d57660d5d657ffbdb4011dd6f20a3cc39673c96d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 09:02:18 2014 +0100
+
+    Update release notes for 1.28 release.
+
+commit d3548012e90251c03f50b83e582ea92ddba0ac79
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 09:12:03 2014 +0100
+
+    Update API support for 1.28 release.
+
 commit 6e5039d1ef69acf38b2cdbd3d4b634887ae00979
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Oct 17 17:38:07 2014 +0100
