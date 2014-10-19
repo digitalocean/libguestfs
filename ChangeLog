@@ -1,3 +1,105 @@
+commit 93c2769e2bb6a19b216d78216d062e4d99f43dbf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 15 22:19:19 2014 +0200
+
+    Version 1.27.63.
+
+commit 4511137c054416f407ff4e05c82ca6b9abc62d8a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 15 21:23:33 2014 +0200
+
+    tests: v2v: Check -i ova generates the same XML each time.
+
+commit 717c73d22b57dc2c06a80ca516b83591c64caafa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 15 21:18:21 2014 +0200
+
+    v2v: -i ova: Try hard to preserve the order of floppies and CDROMs from the original OVF.
+    
+    Remove the common 'add_resource' function.
+    
+    Duplicate that function into code for adding disks, and separate code
+    for adding removables (floppies & CDROMs).
+    
+    The removables code should look for all removable devices
+    (ResourceType 14, 15, 16) in a single query, so that the order doesn't
+    depend on the order in which we do the queries.
+
+commit 59015939abc63de27fc6e8329a23f3087fd3f91a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 15 21:04:33 2014 +0200
+
+    v2v: -i ova: Preserve the order of disks/removable/NICs from the source OVF.
+    
+    Because we built the lists up backwards, we ought to reverse them
+    before passing them out of the module.
+
+commit 516a95824a9a5408c353dc9843492b5092fbe0fc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 15 21:00:21 2014 +0200
+
+    v2v: -i ova: Mainly whitespace and formatting changes.
+    
+    Mainly tidy up the indentation and comments to match the "house
+    style".  No significant functional change.
+
+commit 94f2eb8b26cef7faa42eba7c9cbe39d6a25858bd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 13 15:06:30 2014 +0200
+
+    bash: add virt-log completion entry (RHBZ#1151766).
+    
+    Thanks: Lingfei Kong
+
+commit 88a482dd9f6f1b842350edd0437dfe621ebcf510
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 13 13:07:43 2014 +0200
+
+    v2v: Add 'exit' choice to --root ask.
+    
+    If the user does ^C then this leaves temporary overlay files around
+    (possibly a bug?).  Offer an 'exit' choice to the user which exits
+    cleanly.
+    
+    The new message looks like this:
+    
+      Dual- or multi-boot operating system detected.  Choose the root filesystem
+      that contains the main operating system from the list below:
+    
+       [1] /dev/sda3 (Fedora release 20 (Heisenbug))
+       [2] /dev/sdb3
+    
+      Enter a number between 1 and 2, or 'exit': exit
+
+commit 04de9d3df064ab32ea31a0b803f29466cc0fc0d9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 13 11:40:00 2014 +0200
+
+    v2v: When choosing a root from several, print an info message.
+
+commit 2ba45489a1e296b89d3c32ef80e57efc13f32a88
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 13 11:39:24 2014 +0200
+
+    v2v: Add an 'info' function for info messages, and use it for virtio message.
+
+commit 2b4ba9d692d1dfa08b19459305477fd22b6066d8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 13 11:36:15 2014 +0200
+
+    v2v: --root ask: Number the guests in the list correctly.
+    
+    Thanks: Junqin Zhou
+
+commit 145a188f7056d4414adef472e95cad5640d79511
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 13 11:02:14 2014 +0200
+
+    edit: fix --format documentation (RHBZ#1151738).
+    
+    Use only --format=FMT as a way to specify a format, as the version
+    without the equal sign will not work for that.
+
 commit e3722252295921d095fc124bbb2f7698a510fafe
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Oct 10 16:58:48 2014 +0100

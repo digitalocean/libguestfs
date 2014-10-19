@@ -251,9 +251,9 @@ let rec main () =
   (* Did we manage to install virtio drivers? *)
   if not quiet then (
     if guestcaps.gcaps_block_bus = Virtio_blk then
-      printf (f_"This guest has virtio drivers installed.\n%!")
+      info ~prog (f_"This guest has virtio drivers installed.")
     else
-      printf (f_"This guest does not have virtio drivers installed.\n%!");
+      info ~prog (f_"This guest does not have virtio drivers installed.");
   );
 
   g#umount_all ();
@@ -417,24 +417,28 @@ and inspect_source g root_choice =
       | `Ask ->
         (* List out the roots and ask the user to choose. *)
         printf "\n***\n";
-        printf (f_"dual- or multi-boot operating system detected. Choose the root filesystem\nthat contains the main operating system from the list below:\n");
+        printf (f_"Dual- or multi-boot operating system detected.  Choose the root filesystem\nthat contains the main operating system from the list below:\n");
         printf "\n";
         iteri (
           fun i root ->
             let prod = g#inspect_get_product_name root in
             match prod with
-            | "unknown" -> printf " [%d] %s\n" i root
-            | prod -> printf " [%d] %s (%s)\n" i root prod
+            | "unknown" -> printf " [%d] %s\n" (i+1) root
+            | prod -> printf " [%d] %s (%s)\n" (i+1) root prod
         ) roots;
         printf "\n";
         let i = ref 0 in
         let n = List.length roots in
         while !i < 1 || !i > n do
-          printf (f_"Enter number between 1 and %d: ") n;
-          (try i := int_of_string (read_line ())
-           with
-           | End_of_file -> error (f_"connection closed")
-           | Failure "int_of_string" -> ()
+          printf (f_"Enter a number between 1 and %d, or 'exit': ") n;
+          let input = read_line () in
+          if input = "exit" || input = "q" || input = "quit" then
+            exit 0
+          else (
+            try i := int_of_string input
+            with
+            | End_of_file -> error (f_"connection closed")
+            | Failure "int_of_string" -> ()
           )
         done;
         List.nth roots (!i - 1)
@@ -443,13 +447,18 @@ and inspect_source g root_choice =
         error (f_"multi-boot operating systems are not supported by virt-v2v. Use the --root option to change how virt-v2v handles this.")
 
       | `First ->
-        List.hd roots
+        let root = List.hd roots in
+        info ~prog (f_"Picked %s because '--root first' was used.") root;
+        root
 
       | `Dev dev ->
-        if List.mem dev roots then dev
-        else
-          error (f_"root device %s not found.  Roots found were: %s")
-            dev (String.concat " " roots) in
+        let root =
+          if List.mem dev roots then dev
+          else
+            error (f_"root device %s not found.  Roots found were: %s")
+              dev (String.concat " " roots) in
+        info ~prog (f_"Picked %s because '--root %s' was used.") root dev;
+        root in
 
   (* Reject this OS if it doesn't look like an installed image. *)
   let () =
