@@ -1,3 +1,10 @@
+libguestfs (1:1.28.1-1) unstable; urgency=medium
+
+  * New upstream version
+  * Updated watch file (development -> stable)
+
+ -- Hilko Bengen <bengen@debian.org>  Sun, 19 Oct 2014 15:07:52 +0200
+
 libguestfs (1:1.27.62-1) experimental; urgency=medium
 
   * New upstream development version
