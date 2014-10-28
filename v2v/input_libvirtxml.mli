@@ -18,17 +18,21 @@
 
 (** [-i libvirtxml] source. *)
 
-type map_source = string -> string option -> string * string option
-(** Map function that takes [path] and [format] parameters, and
-    returns the possibly rewritten [qemu_uri, format] pair. *)
+type parsed_disk = {
+  p_source_disk : Types.source_disk;    (** Source disk. *)
+  p_source : parsed_source;         (** <source dev|file attribute> *)
+}
+and parsed_source =
+| P_source_dev of string             (** <source dev> *)
+| P_source_file of string            (** <source file> *)
+| P_dont_rewrite                     (** s_qemu_uri is already set. *)
 
-val parse_libvirt_xml : verbose:bool -> ?map_source_file:map_source -> ?map_source_dev:map_source -> string -> Types.source
-(** Take libvirt XML and parse it into a {!Types.source} structure.
+val parse_libvirt_xml : verbose:bool -> string -> Types.source * parsed_disk list
+(** Take libvirt XML and parse it into a {!Types.source} structure and a
+    list of source disks.
 
-    The optional [?map_source_file] and [?map_source_dev] functions
-    are used to map [<source file="..."/>] and [<source dev="..."/>]
-    from the XML into QEMU URIs.  If not given, then an identity
-    mapping is used.
+    {b Note} the [source.s_disks] field is an empty list.  The caller
+    must map over the parsed disks and update the [source.s_disks] field.
 
     This function is also used by {!Input_libvirt}, hence it is
     exported. *)

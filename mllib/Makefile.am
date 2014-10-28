@@ -95,7 +95,7 @@ if HAVE_OCAML_PKG_GETTEXT
 OCAMLPACKAGES += -package gettext-stub
 endif
 
-OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX-3 $(OCAMLPACKAGES)
+OCAMLCFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR) $(OCAMLPACKAGES)
 OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 
 OCAMLCLIBS  = \
@@ -137,6 +137,7 @@ libdir.ml: Makefile
 # we do, so we have to provide it ourselves.
 
 DEFAULT_INCLUDES = \
+	$(LIBVIRT_CFLAGS) \
 	-I. \
 	-I$(top_builddir) \
 	-I$(shell $(OCAMLC) -where) \

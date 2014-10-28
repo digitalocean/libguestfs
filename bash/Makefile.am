@@ -35,40 +35,62 @@ scripts = \
 	virt-sparsify \
 	virt-sysprep
 
+# Note: Don't distribute the symbolic links, only the real files.
 EXTRA_DIST = \
 	README \
-	$(scripts)
+	guestfish \
+	guestmount \
+	virt-alignment-scan \
+	virt-rescue \
+	virt-resize
 
 # Some of the scripts are simply symbolic links.
 virt-cat:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 virt-df:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 virt-edit:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 virt-filesystems:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 virt-format:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 virt-inspector:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 virt-log:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 virt-ls:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 virt-sysprep:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 
 virt-builder:
-	ln -sf virt-resize $@
+	rm -f $@
+	$(LN_S) virt-resize $@
 virt-sparsify:
-	ln -sf virt-resize $@
+	rm -f $@
+	$(LN_S) virt-resize $@
 
 if HAVE_BASH_COMPLETION
 
 # Bash completion script.
 
 bashcompletiondir = $(BASH_COMPLETIONS_DIR)
-bashcompletion_DATA = $(scripts)
+#bashcompletion_DATA = $(scripts)
+
+all-local: $(scripts)
+
+install-data-local: $(scripts)
+	$(mkdir_p) $(DESTDIR)$(bashcompletiondir)
+	cp -d $(scripts) $(DESTDIR)$(bashcompletiondir)
 
 endif

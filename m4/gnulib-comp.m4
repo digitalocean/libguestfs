@@ -195,6 +195,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module human:
   # Code from module i-ring:
   # Code from module i-ring-tests:
+  # Code from module iconv:
+  # Code from module iconv-tests:
   # Code from module ignore-value:
   # Code from module ignore-value-tests:
   # Code from module include_next:
@@ -211,6 +213,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module inttypes-tests:
   # Code from module ioctl:
   # Code from module ioctl-tests:
+  # Code from module isatty:
+  # Code from module isatty-tests:
   # Code from module largefile:
   AC_REQUIRE([AC_SYS_LARGEFILE])
   # Code from module listen:
@@ -282,6 +286,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module priv-set:
   # Code from module priv-set-tests:
   # Code from module progname:
+  # Code from module ptsname_r:
+  # Code from module ptsname_r-tests:
   # Code from module putenv:
   # Code from module quote:
   # Code from module quotearg:
@@ -414,6 +420,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module time:
   # Code from module time-tests:
   # Code from module timespec:
+  # Code from module ttyname_r:
+  # Code from module ttyname_r-tests:
   # Code from module unistd:
   # Code from module unistd-safer:
   # Code from module unistd-safer-tests:
@@ -717,6 +725,9 @@ AC_SUBST([LTALLOCA])
   gl_HOSTENT
   gl_HUMAN
   gl_I_RING
+  AM_ICONV
+  m4_ifdef([gl_ICONV_MODULE_INDICATOR],
+    [gl_ICONV_MODULE_INDICATOR([iconv])])
   gl_FUNC_INET_NTOP
   if test $HAVE_INET_NTOP = 0 || test $REPLACE_INET_NTOP = 1; then
     AC_LIBOBJ([inet_ntop])
@@ -724,6 +735,12 @@ AC_SUBST([LTALLOCA])
   fi
   gl_ARPA_INET_MODULE_INDICATOR([inet_ntop])
   gl_INTTYPES_INCOMPLETE
+  gl_FUNC_ISATTY
+  if test $REPLACE_ISATTY = 1; then
+    AC_LIBOBJ([isatty])
+    gl_PREREQ_ISATTY
+  fi
+  gl_UNISTD_MODULE_INDICATOR([isatty])
   AC_REQUIRE([gl_LARGEFILE])
   gl_LOCALCHARSET
   LOCALCHARSET_TESTS_ENVIRONMENT="CHARSETALIASDIR=\"\$(abs_top_builddir)/$gl_source_base\""
@@ -860,6 +877,12 @@ AC_SUBST([LTALLOCA])
     AC_LIBOBJ([pread])
   fi
   gl_UNISTD_MODULE_INDICATOR([pread])
+  gl_FUNC_PTSNAME_R
+  if test $HAVE_PTSNAME_R = 0 || test $REPLACE_PTSNAME_R = 1; then
+    AC_LIBOBJ([ptsname_r])
+    gl_PREREQ_PTSNAME_R
+  fi
+  gl_STDLIB_MODULE_INDICATOR([ptsname_r])
   gl_QUOTE
   gl_QUOTEARG
   gl_FUNC_RAISE
@@ -1053,6 +1076,12 @@ AC_SUBST([LTALLOCA])
   gl_THREADLIB
   gl_HEADER_TIME_H
   gl_TIMESPEC
+  gl_FUNC_TTYNAME_R
+  if test $HAVE_TTYNAME_R = 0 || test $REPLACE_TTYNAME_R = 1; then
+    AC_LIBOBJ([ttyname_r])
+    gl_PREREQ_TTYNAME_R
+  fi
+  gl_UNISTD_MODULE_INDICATOR([ttyname_r])
   gl_UNISTD_H
   gl_UNISTD_SAFER
   gl_UTIMENS
@@ -1229,6 +1258,7 @@ changequote([, ])dnl
   gl_PRIV_SET
   AC_CHECK_DECLS([program_invocation_name], [], [], [#include <errno.h>])
   AC_CHECK_DECLS([program_invocation_short_name], [], [], [#include <errno.h>])
+  AC_CHECK_DECLS_ONCE([alarm])
   gl_FUNC_PUTENV
   if test $REPLACE_PUTENV = 1; then
     AC_LIBOBJ([putenv])
@@ -1562,6 +1592,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/inet_ntop.c
   lib/intprops.h
   lib/inttypes.in.h
+  lib/isatty.c
   lib/itold.c
   lib/localcharset.c
   lib/localcharset.h
@@ -1610,6 +1641,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/printf-args.h
   lib/printf-parse.c
   lib/printf-parse.h
+  lib/ptsname_r.c
   lib/quote.h
   lib/quotearg.c
   lib/quotearg.h
@@ -1689,6 +1721,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/time.in.h
   lib/timespec.c
   lib/timespec.h
+  lib/ttyname_r.c
   lib/unistd--.h
   lib/unistd-safer.h
   lib/unistd.c
@@ -1808,6 +1841,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/inttypes.m4
   m4/inttypes_h.m4
   m4/ioctl.m4
+  m4/isatty.m4
   m4/largefile.m4
   m4/lcmessage.m4
   m4/lib-ld.m4
@@ -1865,6 +1899,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/printf.m4
   m4/priv-set.m4
   m4/progtest.m4
+  m4/ptsname_r.m4
   m4/putenv.m4
   m4/quote.m4
   m4/quotearg.m4
@@ -1931,6 +1966,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/threadlib.m4
   m4/time_h.m4
   m4/timespec.m4
+  m4/ttyname_r.m4
   m4/uintmax_t.m4
   m4/ungetc.m4
   m4/unistd-safer.m4
@@ -2039,6 +2075,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-glob.c
   tests/test-hash.c
   tests/test-i-ring.c
+  tests/test-iconv.c
   tests/test-ignore-value.c
   tests/test-inet_ntop.c
   tests/test-inet_pton.c
@@ -2047,6 +2084,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-inttostr.c
   tests/test-inttypes.c
   tests/test-ioctl.c
+  tests/test-isatty.c
   tests/test-listen.c
   tests/test-locale.c
   tests/test-localeconv.c
@@ -2095,6 +2133,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-pread.c
   tests/test-pread.sh
   tests/test-priv-set.c
+  tests/test-ptsname_r.c
   tests/test-quotearg-simple.c
   tests/test-quotearg.h
   tests/test-raise.c
@@ -2157,6 +2196,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-thread_create.c
   tests/test-thread_self.c
   tests/test-time.c
+  tests/test-ttyname_r.c
   tests/test-unistd.c
   tests/test-unlink.c
   tests/test-unlink.h

@@ -69,7 +69,6 @@
 
 # 'common-rules.mk' should be included in every Makefile.am.
 # cf. 'subdir-rules.mk'
-
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -178,12 +177,13 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
 	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
-	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/include_next.m4 \
-	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
-	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/intmax_t.m4 \
-	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/inttostr.m4 \
-	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
-	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/ioctl.m4 \
+	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/iconv.m4 \
+	$(top_srcdir)/m4/include_next.m4 $(top_srcdir)/m4/inet_ntop.m4 \
+	$(top_srcdir)/m4/inet_pton.m4 $(top_srcdir)/m4/intlmacosx.m4 \
+	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/introspection.m4 \
+	$(top_srcdir)/m4/inttostr.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
+	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
+	$(top_srcdir)/m4/ioctl.m4 $(top_srcdir)/m4/isatty.m4 \
 	$(top_srcdir)/m4/largefile.m4 $(top_srcdir)/m4/lcmessage.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
 	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
@@ -214,17 +214,18 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/pipe.m4 $(top_srcdir)/m4/pipe2.m4 \
 	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/pread.m4 \
 	$(top_srcdir)/m4/printf.m4 $(top_srcdir)/m4/priv-set.m4 \
-	$(top_srcdir)/m4/putenv.m4 $(top_srcdir)/m4/quote.m4 \
-	$(top_srcdir)/m4/quotearg.m4 $(top_srcdir)/m4/raise.m4 \
-	$(top_srcdir)/m4/rawmemchr.m4 $(top_srcdir)/m4/read-file.m4 \
-	$(top_srcdir)/m4/read.m4 $(top_srcdir)/m4/readdir.m4 \
-	$(top_srcdir)/m4/readlink.m4 $(top_srcdir)/m4/readlinkat.m4 \
-	$(top_srcdir)/m4/realloc.m4 $(top_srcdir)/m4/rmdir.m4 \
-	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
-	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/secure_getenv.m4 \
-	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
-	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
-	$(top_srcdir)/m4/sigaction.m4 $(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/ptsname_r.m4 $(top_srcdir)/m4/putenv.m4 \
+	$(top_srcdir)/m4/quote.m4 $(top_srcdir)/m4/quotearg.m4 \
+	$(top_srcdir)/m4/raise.m4 $(top_srcdir)/m4/rawmemchr.m4 \
+	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
+	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
+	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
+	$(top_srcdir)/m4/rmdir.m4 $(top_srcdir)/m4/safe-read.m4 \
+	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
+	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
+	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
+	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/sigaction.m4 \
+	$(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
 	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
 	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
@@ -249,20 +250,21 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/sys_wait_h.m4 $(top_srcdir)/m4/tempname.m4 \
 	$(top_srcdir)/m4/thread.m4 $(top_srcdir)/m4/threadlib.m4 \
 	$(top_srcdir)/m4/time_h.m4 $(top_srcdir)/m4/timespec.m4 \
-	$(top_srcdir)/m4/ungetc.m4 $(top_srcdir)/m4/unistd-safer.m4 \
-	$(top_srcdir)/m4/unistd_h.m4 $(top_srcdir)/m4/unlink.m4 \
-	$(top_srcdir)/m4/unlinkat.m4 $(top_srcdir)/m4/unlinkdir.m4 \
-	$(top_srcdir)/m4/utimbuf.m4 $(top_srcdir)/m4/utimecmp.m4 \
-	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimes.m4 \
-	$(top_srcdir)/m4/vasnprintf.m4 $(top_srcdir)/m4/vasprintf.m4 \
-	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/m4/warnings.m4 \
-	$(top_srcdir)/m4/wchar_h.m4 $(top_srcdir)/m4/wchar_t.m4 \
-	$(top_srcdir)/m4/wcrtomb.m4 $(top_srcdir)/m4/wctob.m4 \
-	$(top_srcdir)/m4/wctomb.m4 $(top_srcdir)/m4/wctype_h.m4 \
-	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/write.m4 \
-	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xsize.m4 \
-	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
-	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/ttyname_r.m4 $(top_srcdir)/m4/ungetc.m4 \
+	$(top_srcdir)/m4/unistd-safer.m4 $(top_srcdir)/m4/unistd_h.m4 \
+	$(top_srcdir)/m4/unlink.m4 $(top_srcdir)/m4/unlinkat.m4 \
+	$(top_srcdir)/m4/unlinkdir.m4 $(top_srcdir)/m4/utimbuf.m4 \
+	$(top_srcdir)/m4/utimecmp.m4 $(top_srcdir)/m4/utimens.m4 \
+	$(top_srcdir)/m4/utimes.m4 $(top_srcdir)/m4/vasnprintf.m4 \
+	$(top_srcdir)/m4/vasprintf.m4 $(top_srcdir)/m4/warn-on-use.m4 \
+	$(top_srcdir)/m4/warnings.m4 $(top_srcdir)/m4/wchar_h.m4 \
+	$(top_srcdir)/m4/wchar_t.m4 $(top_srcdir)/m4/wcrtomb.m4 \
+	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
+	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
+	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
+	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
+	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -288,35 +290,6 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
-am__install_max = 40
-am__nobase_strip_setup = \
-  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
-am__nobase_strip = \
-  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
-am__nobase_list = $(am__nobase_strip_setup); \
-  for p in $$list; do echo "$$p $$p"; done | \
-  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
-  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
-    if (++n[$$2] == $(am__install_max)) \
-      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
-    END { for (dir in files) print dir, files[dir] }'
-am__base_list = \
-  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
-  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__uninstall_files_from_dir = { \
-  test -z "$$files" \
-    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
-    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
-         $(am__cd) "$$dir" && rm -f $$files; }; \
-  }
-am__installdirs = "$(DESTDIR)$(bashcompletiondir)"
-DATA = $(bashcompletion_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 pkglibexecdir = @pkglibexecdir@
@@ -979,6 +952,7 @@ LEXLIB = @LEXLIB@
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBCONFIG_CFLAGS = @LIBCONFIG_CFLAGS@
 LIBCONFIG_LIBS = @LIBCONFIG_LIBS@
+LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
 LIBLZMA_CFLAGS = @LIBLZMA_CFLAGS@
 LIBLZMA_LIBS = @LIBLZMA_LIBS@
@@ -1008,6 +982,7 @@ LOCALE_JA = @LOCALE_JA@
 LOCALE_TR_UTF8 = @LOCALE_TR_UTF8@
 LOCALE_ZH_CN = @LOCALE_ZH_CN@
 LTALLOCA = @LTALLOCA@
+LTLIBICONV = @LTLIBICONV@
 LTLIBINTL = @LTLIBINTL@
 LTLIBMULTITHREAD = @LTLIBMULTITHREAD@
 LTLIBOBJS = @LTLIBOBJS@
@@ -1101,8 +1076,10 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
+OCAML_FLAGS = @OCAML_FLAGS@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
+OCAML_WARN_ERROR = @OCAML_WARN_ERROR@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -1319,6 +1296,7 @@ UINT64_MAX_EQ_ULONG_MAX = @UINT64_MAX_EQ_ULONG_MAX@
 UNDEFINE_STRTOK_R = @UNDEFINE_STRTOK_R@
 UNISTD_H_HAVE_WINSOCK2_H = @UNISTD_H_HAVE_WINSOCK2_H@
 UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
+UNZIP = @UNZIP@
 VALGRIND = @VALGRIND@
 VALGRIND_NO_VGDB = @VALGRIND_NO_VGDB@
 VERSION = @VERSION@
@@ -1338,6 +1316,7 @@ YAJL_CFLAGS = @YAJL_CFLAGS@
 YAJL_LIBS = @YAJL_LIBS@
 YFLAGS = @YFLAGS@
 YIELD_LIB = @YIELD_LIB@
+ZIP = @ZIP@
 abs_aux_dir = @abs_aux_dir@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -1418,14 +1397,19 @@ scripts = \
 	virt-sparsify \
 	virt-sysprep
 
+
+# Note: Don't distribute the symbolic links, only the real files.
 EXTRA_DIST = \
 	README \
-	$(scripts)
+	guestfish \
+	guestmount \
+	virt-alignment-scan \
+	virt-rescue \
+	virt-resize
 
 
 # Bash completion script.
 @HAVE_BASH_COMPLETION_TRUE@bashcompletiondir = $(BASH_COMPLETIONS_DIR)
-@HAVE_BASH_COMPLETION_TRUE@bashcompletion_DATA = $(scripts)
 all: all-am
 
 .SUFFIXES:
@@ -1466,27 +1450,6 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-bashcompletionDATA: $(bashcompletion_DATA)
-	@$(NORMAL_INSTALL)
-	@list='$(bashcompletion_DATA)'; test -n "$(bashcompletiondir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(bashcompletiondir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(bashcompletiondir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(bashcompletiondir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(bashcompletiondir)" || exit $$?; \
-	done
-
-uninstall-bashcompletionDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(bashcompletion_DATA)'; test -n "$(bashcompletiondir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(bashcompletiondir)'; $(am__uninstall_files_from_dir)
 tags TAGS:
 
 ctags CTAGS:
@@ -1526,11 +1489,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(DATA)
+@HAVE_BASH_COMPLETION_FALSE@all-local:
+all-am: Makefile all-local
 installdirs:
-	for dir in "$(DESTDIR)$(bashcompletiondir)"; do \
-	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
-	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -1561,6 +1522,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+@HAVE_BASH_COMPLETION_FALSE@install-data-local:
 clean: clean-am
 
 clean-am: clean-generic clean-libtool mostlyclean-am
@@ -1581,7 +1543,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-bashcompletionDATA
+install-data-am: install-data-local
 
 install-dvi: install-dvi-am
 
@@ -1625,22 +1587,22 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-bashcompletionDATA
+uninstall-am:
 
 .MAKE: install-am install-strip
 
-.PHONY: all all-am check check-am clean clean-generic clean-libtool \
-	cscopelist-am ctags-am distclean distclean-generic \
-	distclean-libtool distdir dvi dvi-am html html-am info info-am \
-	install install-am install-bashcompletionDATA install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+.PHONY: all all-am all-local check check-am clean clean-generic \
+	clean-libtool cscopelist-am ctags-am distclean \
+	distclean-generic distclean-libtool distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-data-local install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am tags-am uninstall \
-	uninstall-am uninstall-bashcompletionDATA
+	uninstall-am
 
 
 -include $(top_builddir)/localenv
@@ -1677,28 +1639,46 @@ $(top_builddir)/generator/generator:
 
 # Some of the scripts are simply symbolic links.
 virt-cat:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 virt-df:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 virt-edit:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 virt-filesystems:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 virt-format:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 virt-inspector:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 virt-log:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 virt-ls:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 virt-sysprep:
-	ln -sf virt-alignment-scan $@
+	rm -f $@
+	$(LN_S) virt-alignment-scan $@
 
 virt-builder:
-	ln -sf virt-resize $@
+	rm -f $@
+	$(LN_S) virt-resize $@
 virt-sparsify:
-	ln -sf virt-resize $@
+	rm -f $@
+	$(LN_S) virt-resize $@
+#bashcompletion_DATA = $(scripts)
+
+@HAVE_BASH_COMPLETION_TRUE@all-local: $(scripts)
+
+@HAVE_BASH_COMPLETION_TRUE@install-data-local: $(scripts)
+@HAVE_BASH_COMPLETION_TRUE@	$(mkdir_p) $(DESTDIR)$(bashcompletiondir)
+@HAVE_BASH_COMPLETION_TRUE@	cp -d $(scripts) $(DESTDIR)$(bashcompletiondir)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

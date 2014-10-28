@@ -91,6 +91,7 @@ deps = \
 	$(top_builddir)/mllib/mkdtemp-c.o \
 	$(top_builddir)/mllib/mkdtemp.cmx \
 	$(top_builddir)/mllib/regedit.cmx \
+	$(top_builddir)/customize/customize_utils.cmx \
 	$(top_builddir)/customize/crypt-c.o \
 	$(top_builddir)/customize/crypt.cmx \
 	$(top_builddir)/customize/urandom.cmx \
@@ -130,7 +131,7 @@ if HAVE_OCAML_PKG_GETTEXT
 OCAMLPACKAGES += -package gettext-stub
 endif
 
-OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX-3 $(OCAMLPACKAGES)
+OCAMLCFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR) $(OCAMLPACKAGES)
 OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 
 OCAMLCLIBS  = \

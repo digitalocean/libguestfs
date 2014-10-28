@@ -23,8 +23,12 @@ EXTRA_DIST = \
 	HACKING README.RHEV-M \
 	test-v2v-i-ova.ovf \
 	test-v2v-i-ova.xml \
+	test-v2v-i-ova-gz.expected \
+	test-v2v-i-ova-gz.ovf \
 	test-v2v-i-ova-two-disks.expected \
 	test-v2v-i-ova-two-disks.ovf \
+	test-v2v-i-ova-zip.expected \
+	test-v2v-i-ova-zip.ovf \
 	test-v2v-networks-and-bridges-expected.xml \
 	test-v2v-networks-and-bridges.xml.in \
 	virt-v2v.pod
@@ -38,6 +42,9 @@ SOURCES_MLI = \
 	domainxml.mli \
 	input_disk.mli \
 	input_libvirt.mli \
+	input_libvirt_other.mli \
+	input_libvirt_vcenter_https.mli \
+	input_libvirt_xen_ssh.mli \
 	input_libvirtxml.mli \
 	input_ova.mli \
 	kvmuid.mli \
@@ -53,8 +60,6 @@ SOURCES_MLI = \
 	OVF.mli \
 	stringMap.mli \
 	types.mli \
-	vCenter.mli \
-	xen.mli \
 	xml.mli
 
 SOURCES_ML = \
@@ -65,13 +70,14 @@ SOURCES_ML = \
 	domainxml.ml \
 	DOM.ml \
 	kvmuid.ml \
-	vCenter.ml \
-	xen.ml \
 	OVF.ml \
 	linux.ml \
 	modules_list.ml \
 	input_disk.ml \
 	input_libvirtxml.ml \
+	input_libvirt_other.ml \
+	input_libvirt_vcenter_https.ml \
+	input_libvirt_xen_ssh.ml \
 	input_libvirt.ml \
 	input_ova.ml \
 	convert_linux.ml \
@@ -124,6 +130,7 @@ BOBJECTS = \
 	$(top_builddir)/mllib/config.cmo \
 	$(top_builddir)/mllib/mkdtemp.cmo \
 	$(top_builddir)/mllib/JSON.cmo \
+	$(top_builddir)/customize/customize_utils.cmo \
 	$(top_builddir)/customize/urandom.cmo \
 	$(top_builddir)/customize/random_seed.cmo \
 	$(top_builddir)/customize/hostname.cmo \
@@ -150,7 +157,7 @@ if HAVE_OCAML_PKG_GETTEXT
 OCAMLPACKAGES += -package gettext-stub
 endif
 
-OCAMLFLAGS = -g -warn-error CDEFLMPSUVYZX-3
+OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 
 if !HAVE_OCAMLOPT
 OBJECTS = $(BOBJECTS)
@@ -218,7 +225,9 @@ CLEANFILES += stamp-virt-v2v.pod
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 TESTS = \
-	test-v2v-i-ova-two-disks.sh
+	test-v2v-i-ova-gz.sh \
+	test-v2v-i-ova-two-disks.sh \
+	test-v2v-i-ova-zip.sh
 
 if ENABLE_APPLIANCE
 TESTS += \

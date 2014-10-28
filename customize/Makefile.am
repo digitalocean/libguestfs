@@ -42,6 +42,7 @@ SOURCES = \
 	customize_cmdline.mli \
 	customize_run.ml \
 	customize_run.mli \
+	customize_utils.ml \
 	firstboot.ml \
 	firstboot.mli \
 	hostname.ml \
@@ -83,6 +84,7 @@ endif
 
 # This list must be in dependency order.
 ocaml_modules = \
+	customize_utils \
 	crypt \
 	firstboot \
 	hostname \
@@ -115,7 +117,7 @@ if HAVE_OCAML_PKG_GETTEXT
 OCAMLPACKAGES += -package gettext-stub
 endif
 
-OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX-3 $(OCAMLPACKAGES)
+OCAMLCFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR) $(OCAMLPACKAGES)
 OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 
 OCAMLCLIBS  = \
@@ -150,6 +152,7 @@ endif
 # we do, so we have to provide it ourselves.
 
 DEFAULT_INCLUDES = \
+	$(LIBVIRT_CFLAGS) \
 	-I. \
 	-I$(top_builddir) \
 	-I$(shell $(OCAMLC) -where) \
