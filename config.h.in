@@ -258,6 +258,9 @@
 /* Define to 1 when the gnulib module ioctl should be tested. */
 #undef GNULIB_TEST_IOCTL
 
+/* Define to 1 when the gnulib module isatty should be tested. */
+#undef GNULIB_TEST_ISATTY
+
 /* Define to 1 when the gnulib module listen should be tested. */
 #undef GNULIB_TEST_LISTEN
 
@@ -326,6 +329,9 @@
 
 /* Define to 1 when the gnulib module pread should be tested. */
 #undef GNULIB_TEST_PREAD
+
+/* Define to 1 when the gnulib module ptsname_r should be tested. */
+#undef GNULIB_TEST_PTSNAME_R
 
 /* Define to 1 when the gnulib module putenv should be tested. */
 #undef GNULIB_TEST_PUTENV
@@ -416,6 +422,9 @@
 
 /* Define to 1 when the gnulib module symlinkat should be tested. */
 #undef GNULIB_TEST_SYMLINKAT
+
+/* Define to 1 when the gnulib module ttyname_r should be tested. */
+#undef GNULIB_TEST_TTYNAME_R
 
 /* Define to 1 when the gnulib module unlink should be tested. */
 #undef GNULIB_TEST_UNLINK
@@ -658,6 +667,10 @@
    don't. */
 #undef HAVE_DECL_TOWLOWER
 
+/* Define to 1 if you have the declaration of `ttyname_r', and to 0 if you
+   don't. */
+#undef HAVE_DECL_TTYNAME_R
+
 /* Define to 1 if you have the declaration of `unsetenv', and to 0 if you
    don't. */
 #undef HAVE_DECL_UNSETENV
@@ -814,6 +827,9 @@
 
 /* Define to 1 if you have the `htons' function. */
 #undef HAVE_HTONS
+
+/* Define if you have the iconv() function and it works. */
+#undef HAVE_ICONV
 
 /* Define to 1 if you have the `inet_ntop' function. */
 #undef HAVE_INET_NTOP
@@ -1007,6 +1023,9 @@
 /* Define to 1 if you have the 'pipe2' function. */
 #undef HAVE_PIPE2
 
+/* Define if the ttyname_r function has a POSIX compliant declaration. */
+#undef HAVE_POSIXDECL_TTYNAME_R
+
 /* Define to 1 if you have the `posix_fadvise' function. */
 #undef HAVE_POSIX_FADVISE
 
@@ -1030,6 +1049,9 @@
 
 /* Define if the POSIX multithreading library has read/write locks. */
 #undef HAVE_PTHREAD_RWLOCK
+
+/* Define to 1 if you have the 'ptsname_r' function. */
+#undef HAVE_PTSNAME_R
 
 /* Found PyCapsule_New in libpython. */
 #undef HAVE_PYCAPSULE_NEW
@@ -1923,6 +1945,9 @@
    */
 #undef HAVE_SYS_DIR_H
 
+/* Define to 1 if you have the <sys/endian.h> header file. */
+#undef HAVE_SYS_ENDIAN_H
+
 /* Define to 1 if you have the <sys/filsys.h> header file. */
 #undef HAVE_SYS_FILSYS_H
 
@@ -2001,6 +2026,12 @@
 
 /* Define to 1 if you have the `tsearch' function. */
 #undef HAVE_TSEARCH
+
+/* Define to 1 if you have the `ttyname' function. */
+#undef HAVE_TTYNAME
+
+/* Define to 1 if you have the `ttyname_r' function. */
+#undef HAVE_TTYNAME_R
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
@@ -2116,6 +2147,12 @@
 
 /* Define to 1 if you have the '__xpg_strerror_r' function. */
 #undef HAVE___XPG_STRERROR_R
+
+/* Define as const if the declaration of iconv() needs const. */
+#undef ICONV_CONST
+
+/* Define to 1 if isatty() may fail without setting errno. */
+#undef ISATTY_FAILS_WITHOUT_SETTING_ERRNO
 
 /* Define to 1 if lseek does not detect pipes. */
 #undef LSEEK_PIPE_BROKEN

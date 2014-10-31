@@ -1,3 +1,295 @@
+commit 5862a4391db34732d45403f594ecc050fe77383f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 25 17:56:45 2014 +0100
+
+    Version 1.29.2.
+
+commit 09584a8bc6d92887e8c6eb4bcd5c777d6ec6d97f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 25 15:35:49 2014 +0100
+
+    sparsify: Add Utils module and use common error/warning/info functions.
+    
+    This program needs quite a lot more work, in particular to make the
+    regular messages use 'make_message_function' instead of 'printf'.
+
+commit b01582623d0828355e8c218ac62e6a36a2c6c1e3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 25 11:36:15 2014 +0100
+
+    resize: Tidy up messages.
+    
+    Add common error/warning/info functions.
+    
+    Examine every existing call to printf/eprintf and change where
+    necessary so that:
+    
+     - error is used instead of eprintf + exit 1
+    
+     - warning no longer needs ~prog argument (it is added by Utils module)
+    
+     - any verbose output should go to stdout, not stderr
+    
+     - info is used to print general informational messages
+    
+    Also, don't indent summary of changes.
+
+commit 6049fbdddb8c28a48632af2a7f894c93ffd8ac63
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 25 15:13:27 2014 +0100
+
+    sysprep: Use common error/warning/info functions.
+
+commit 7c9293fff02c9d71833c6914ad7a8d00c3b47bb1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 25 15:06:08 2014 +0100
+
+    v2v: Add Utils.warning and Utils.info that don't require ~prog parameter.
+
+commit f7664b7f76bc7e997e1d714a894ea6e696b168e8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 25 11:36:15 2014 +0100
+
+    customize: Add Customize_utils module and use common error/warning/info functions.
+    
+    Add a Customize_utils module.  This contains common error/warning/info
+    functions, and also quote = Filename.quote.
+    
+    Examine every existing call to printf/eprintf and change where
+    necessary so that:
+    
+     - error is used instead of eprintf + exit 1
+    
+     - warning no longer needs ~prog argument (it is added by Utils module)
+    
+     - any verbose output should go to stdout, not stderr
+    
+     - info is used to print general informational messages
+    
+    Also, don't pass ~prog parameter around.  Instead we just get it from
+    the executable name.
+
+commit b99983480ac3d75e2cb62dacf6042b3cd4cdf65e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 25 11:36:15 2014 +0100
+
+    builder: Add Utils module and use common error/warning/info functions.
+    
+    Add a Utils module.  This contains common error/warning/info functions,
+    and also quote = Filename.quote.
+    
+    Examine every existing call to printf/eprintf and change where
+    necessary so that:
+    
+     - error is used instead of eprintf + exit 1
+    
+     - warning no longer needs ~prog argument (it is added by Utils module)
+    
+     - any verbose output should go to stdout, not stderr
+    
+     - info is used to print general informational messages
+
+commit 4ff6ba35502736a2aed1f17eda67728f624c3390
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 24 16:55:36 2014 +0100
+
+    test-tool: Handle mapping other architectures to qemu-system-* binaries.
+
+commit 5018e001290a585ed303bc311cdeeca6b5c11e98
+Author: Menanteau Guy <menantea@linux.vnet.ibm.com>
+Date:   Fri Oct 24 16:51:02 2014 +0100
+
+    ppc64le: test-tool: Use correct qemu-system-ppc64 binary when creating qemu wrapper.
+
+commit a61d190ed3c7eb0d9389abcd69c44c78dd2be3ad
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 24 14:40:57 2014 +0100
+
+    ppc64le: configure: Look for qemu-system-ppc64 binary (RHBZ#1156449).
+
+commit 62c84c6a551cccd2dfe6b1ca393504c5fea4b435
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 24 09:53:21 2014 +0100
+
+    inspector: Document that -a option can take a URI for remote storage (RHBZ#1156301).
+
+commit a5a0c2f3b047ebb064d54d5029b1d1e475375668
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 24 09:13:25 2014 +0100
+
+    bash-completion: Install symbolic links instead of copies of files (RHBZ#1156298).
+
+commit 68ac0afc8d578bede4a80ebaab07bc54a535a4ef
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 24 09:12:56 2014 +0100
+
+    bash-completion: Replace 'ln -sf' commands with rm; $(LN_S).
+
+commit 46f9dd5290668edca2832164349f6f325826d2cd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Oct 22 19:23:18 2014 +0200
+
+    configure: map also amd64 as host_cpu to x86_64 qemu
+
+commit 7fcac5f59f80f4deca8a55d77a1d9842dc6b5449
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Oct 22 18:13:49 2014 +0200
+
+    tests: switch from get_current_dir_name to getcwd(0, NULL)
+    
+    get_current_dir_name exists on GNU libc only, so not portable.
+    On the other hand, while POSIX leaves a null buffer argument for getcwd
+    as unspecified behaviour, basically the most used/important Unix
+    implementations (GNU libc, FreeBSD's libc, etc) allow such value,
+    returning a new allocated buffer with the current directory.
+    
+    In any case, the change just affects two tests, so even if it hits a
+    libc not implementing this behaviour for getcwd, only tests are
+    affected.
+
+commit 3784a42d03857eae1e06c2a00bef7490793d395f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Oct 22 10:20:01 2014 +0200
+
+    customize, mllib: use the libvirt CFLAGS
+    
+    uri-c.c and perl_edit-c.c end up (directly or indirectly) including
+    guestfs-internal-frontend.h, which in turns includes libvirt/libvirt.h;
+    hence, make sure to use the libvirt CFLAGS.
+
+commit 0a2534c4f1e9c905c79b45f2bc774edc0638a07a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 20 18:11:00 2014 +0200
+
+    actions: mark as IfNotCrossAppliance tests of command and command_lines
+    
+    All these tests copy to the appliance a tool built on the host, and run
+    it.
+
+commit 349536bf70d8f546c209b08d1b31446cde242785
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 20 17:59:56 2014 +0200
+
+    tests/c-api: add a way to skip test when host and appliance differ
+    
+    Add a IfNotCrossAppliance prereq for tests, so a test using it can only
+    be run when the appliance is a copy of the running host system; this can
+    help marking tests which run stuff (usually built in the host) inside
+    the appliance.
+
+commit 3de9fa7ba9090f3a279bae08faaa5447dda92d6d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 20 16:32:01 2014 +0200
+
+    build: use $(SED) instead of sed when possible
+    
+    Make use of the sed executable set at configure time.
+
+commit ea9b225480cb2ea9c6c3bb5fd0363648fb2ccbce
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 20 12:28:46 2014 +0200
+
+    Include stdint.h where needed
+    
+    Required for using int64_t, etc. Apparently implicitly pulled so far.
+
+commit abd93812ca0cd845b4e1133126391b429ec944ce
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 20 10:39:03 2014 +0200
+
+    tests: isolate iso_system_id baseline string
+    
+    Move the reference iso_system_id for the isoinfo_device test to an own
+    define for Linux, with an error for unknown OSes.
+
+commit d2c853f41435c6ac7507f4c152efef7ba7d0ec7c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 17 14:46:40 2014 +0200
+
+    builder: rename "program_name" into "progname"
+    
+    "program_name" is already used as shorthand define for
+    program_invocation_short_name.
+
+commit 57512e778558c5b93cfa360c83836c2cf8fc5908
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 17 13:53:50 2014 +0200
+
+    normalize iconv handling
+    
+    Since the signature of iconv() changes between implementations (the
+    constness of the second parameter, in particular), make use of the iconv
+    module of gnulib to handle these potential differences, including an
+    external (out of libc) iconv implementation.
+
+commit b44bf2170248d5a832aa4ace9722eb81fe0519d0
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Oct 16 15:16:28 2014 +0200
+
+    p2v: remove unused variable
+
+commit 471ed473cf8d20020f1df90e86ff142072d198f6
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Oct 16 11:55:33 2014 +0200
+
+    fuse: test-fuse: enclose acl vars within HAVE_ACL
+    
+    Enclose the acl-related variables within a #ifdef HAVE_ACL block, so
+    when building without acl support and -Werror it can build.
+
+commit c1ad89170d19312311699f1d36990ab504542e5c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Oct 16 10:42:05 2014 +0200
+
+    build: look for and use sys/endian.h
+    
+    Some OSes have sys/endian.h instead of glibc's endian.h.
+
+commit b7d2226926694827e04cdc0fd0887c7b81c32c86
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Oct 16 10:29:24 2014 +0200
+
+    Include sys/wait.h where needed
+    
+    Required for using WIFEXITED, WEXITSTATUS, etc. Apparently implicitly
+    pulled so far.
+
+commit 78b27cc0b64a3e7b72602fc05102968b34fe529d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Oct 16 09:29:45 2014 +0200
+
+    Include string.h where needed
+    
+    Required for using strlen, memcpy, etc. Apparently implicitly pulled so
+    far.
+
+commit 65f830b84ca9573db51dc4e0d3a3a9ee1fd5f12f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Oct 16 09:28:33 2014 +0200
+
+    build: use the ptsname_r gnulib module
+    
+    virt-p2v uses ptsname_r, which is not portable but implemented by
+    gnulib.
+
+commit fd70cdc3c58a9f240ef8dbbef73ed13054917220
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 23 15:43:25 2014 +0100
+
+    ocaml: Pass -annot flag to compiler.
+    
+    This generates .annot files that contain type information.
+    In emacs + tuareg mode, using C-c C-t displays the type of the
+    underlying expression.
+
+commit 90dc8942bf34a6b42ca3e8b58ed2bb15ebbd7918
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 23 15:41:49 2014 +0100
+
+    ocaml: Factor out flags into configure script.
+    
+    No change, just refactoring.
+
 commit fdaaa005136bf041e54a2e04006718641074221c
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Oct 22 14:40:02 2014 +0100

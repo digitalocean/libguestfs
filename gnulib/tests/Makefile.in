@@ -125,25 +125,26 @@ TESTS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-getdelim$(EXEEXT) test-getdtablesize$(EXEEXT) \
 	test-getline$(EXEEXT) test-getopt$(EXEEXT) \
 	test-gettimeofday$(EXEEXT) test-glob$(EXEEXT) \
-	test-hash$(EXEEXT) test-i-ring$(EXEEXT) \
+	test-hash$(EXEEXT) test-i-ring$(EXEEXT) test-iconv$(EXEEXT) \
 	test-ignore-value$(EXEEXT) test-inet_ntop$(EXEEXT) \
 	test-inet_pton$(EXEEXT) test-intprops$(EXEEXT) \
 	test-inttostr$(EXEEXT) test-inttypes$(EXEEXT) \
-	test-ioctl$(EXEEXT) test-listen$(EXEEXT) test-locale$(EXEEXT) \
-	test-localeconv$(EXEEXT) test-localename$(EXEEXT) \
-	test-lock$(EXEEXT) test-lseek.sh test-lstat$(EXEEXT) \
-	test-malloca$(EXEEXT) test-mbrtowc1.sh test-mbrtowc2.sh \
-	test-mbrtowc3.sh test-mbrtowc4.sh test-mbrtowc-w32-1.sh \
-	test-mbrtowc-w32-2.sh test-mbrtowc-w32-3.sh \
-	test-mbrtowc-w32-4.sh test-mbrtowc-w32-5.sh test-mbsinit.sh \
-	test-mbsrtowcs1.sh test-mbsrtowcs2.sh test-mbsrtowcs3.sh \
-	test-mbsrtowcs4.sh test-memchr$(EXEEXT) test-memmem$(EXEEXT) \
+	test-ioctl$(EXEEXT) test-isatty$(EXEEXT) test-listen$(EXEEXT) \
+	test-locale$(EXEEXT) test-localeconv$(EXEEXT) \
+	test-localename$(EXEEXT) test-lock$(EXEEXT) test-lseek.sh \
+	test-lstat$(EXEEXT) test-malloca$(EXEEXT) test-mbrtowc1.sh \
+	test-mbrtowc2.sh test-mbrtowc3.sh test-mbrtowc4.sh \
+	test-mbrtowc-w32-1.sh test-mbrtowc-w32-2.sh \
+	test-mbrtowc-w32-3.sh test-mbrtowc-w32-4.sh \
+	test-mbrtowc-w32-5.sh test-mbsinit.sh test-mbsrtowcs1.sh \
+	test-mbsrtowcs2.sh test-mbsrtowcs3.sh test-mbsrtowcs4.sh \
+	test-memchr$(EXEEXT) test-memmem$(EXEEXT) \
 	test-memrchr$(EXEEXT) test-nanosleep$(EXEEXT) \
 	test-netdb$(EXEEXT) test-netinet_in$(EXEEXT) \
 	test-open$(EXEEXT) test-openat-safer$(EXEEXT) \
 	test-openat$(EXEEXT) test-pathmax$(EXEEXT) test-perror.sh \
 	test-perror2$(EXEEXT) test-pipe$(EXEEXT) test-pipe2$(EXEEXT) \
-	test-pread.sh test-priv-set$(EXEEXT) \
+	test-pread.sh test-priv-set$(EXEEXT) test-ptsname_r$(EXEEXT) \
 	test-quotearg-simple$(EXEEXT) test-raise$(EXEEXT) \
 	test-rawmemchr$(EXEEXT) test-read-file$(EXEEXT) \
 	test-read$(EXEEXT) test-readlink$(EXEEXT) \
@@ -168,17 +169,18 @@ TESTS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-sys_types$(EXEEXT) test-sys_uio$(EXEEXT) \
 	test-sys_wait$(EXEEXT) test-init.sh test-thread_self$(EXEEXT) \
 	test-thread_create$(EXEEXT) test-time$(EXEEXT) \
-	test-dup-safer$(EXEEXT) test-unistd$(EXEEXT) \
-	test-unlink$(EXEEXT) test-unlinkat$(EXEEXT) \
-	test-unsetenv$(EXEEXT) test-utimens$(EXEEXT) \
-	test-vasnprintf$(EXEEXT) test-vasprintf$(EXEEXT) \
-	test-vc-list-files-git.sh test-vc-list-files-cvs.sh \
-	test-verify$(EXEEXT) test-verify.sh test-wchar$(EXEEXT) \
-	test-wcrtomb.sh test-wcrtomb-w32-1.sh test-wcrtomb-w32-2.sh \
-	test-wcrtomb-w32-3.sh test-wcrtomb-w32-4.sh \
-	test-wcrtomb-w32-5.sh test-wctype-h$(EXEEXT) \
-	test-write$(EXEEXT) test-xalloc-die.sh test-xstrtol.sh \
-	test-xstrtoll.sh test-xstrtoumax.sh test-xvasprintf$(EXEEXT)
+	test-ttyname_r$(EXEEXT) test-dup-safer$(EXEEXT) \
+	test-unistd$(EXEEXT) test-unlink$(EXEEXT) \
+	test-unlinkat$(EXEEXT) test-unsetenv$(EXEEXT) \
+	test-utimens$(EXEEXT) test-vasnprintf$(EXEEXT) \
+	test-vasprintf$(EXEEXT) test-vc-list-files-git.sh \
+	test-vc-list-files-cvs.sh test-verify$(EXEEXT) test-verify.sh \
+	test-wchar$(EXEEXT) test-wcrtomb.sh test-wcrtomb-w32-1.sh \
+	test-wcrtomb-w32-2.sh test-wcrtomb-w32-3.sh \
+	test-wcrtomb-w32-4.sh test-wcrtomb-w32-5.sh \
+	test-wctype-h$(EXEEXT) test-write$(EXEEXT) test-xalloc-die.sh \
+	test-xstrtol.sh test-xstrtoll.sh test-xstrtoumax.sh \
+	test-xvasprintf$(EXEEXT)
 XFAIL_TESTS =
 noinst_PROGRAMS =
 check_PROGRAMS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
@@ -207,10 +209,11 @@ check_PROGRAMS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-getdtablesize$(EXEEXT) test-getline$(EXEEXT) \
 	test-getopt$(EXEEXT) test-gettimeofday$(EXEEXT) \
 	test-glob$(EXEEXT) test-hash$(EXEEXT) test-i-ring$(EXEEXT) \
-	test-ignore-value$(EXEEXT) test-inet_ntop$(EXEEXT) \
-	test-inet_pton$(EXEEXT) test-intprops$(EXEEXT) \
-	test-inttostr$(EXEEXT) test-inttypes$(EXEEXT) \
-	test-ioctl$(EXEEXT) test-listen$(EXEEXT) test-locale$(EXEEXT) \
+	test-iconv$(EXEEXT) test-ignore-value$(EXEEXT) \
+	test-inet_ntop$(EXEEXT) test-inet_pton$(EXEEXT) \
+	test-intprops$(EXEEXT) test-inttostr$(EXEEXT) \
+	test-inttypes$(EXEEXT) test-ioctl$(EXEEXT) \
+	test-isatty$(EXEEXT) test-listen$(EXEEXT) test-locale$(EXEEXT) \
 	test-localeconv$(EXEEXT) test-localename$(EXEEXT) \
 	test-lock$(EXEEXT) test-lseek$(EXEEXT) test-lstat$(EXEEXT) \
 	test-malloca$(EXEEXT) test-mbrtowc$(EXEEXT) \
@@ -223,31 +226,32 @@ check_PROGRAMS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-pathmax$(EXEEXT) test-perror$(EXEEXT) \
 	test-perror2$(EXEEXT) test-pipe$(EXEEXT) test-pipe2$(EXEEXT) \
 	test-pread$(EXEEXT) test-priv-set$(EXEEXT) \
-	test-quotearg-simple$(EXEEXT) test-raise$(EXEEXT) \
-	test-rawmemchr$(EXEEXT) test-read-file$(EXEEXT) \
-	test-read$(EXEEXT) test-readlink$(EXEEXT) \
-	test-readlinkat$(EXEEXT) test-rmdir$(EXEEXT) \
-	test-select$(EXEEXT) test-select-fd$(EXEEXT) \
-	test-select-stdin$(EXEEXT) test-setenv$(EXEEXT) \
-	test-setlocale1$(EXEEXT) test-setlocale2$(EXEEXT) \
-	test-setsockopt$(EXEEXT) test-sigaction$(EXEEXT) \
-	test-signal-h$(EXEEXT) test-sigprocmask$(EXEEXT) \
-	test-sleep$(EXEEXT) test-snprintf$(EXEEXT) \
-	test-sockets$(EXEEXT) test-stat$(EXEEXT) \
-	test-stat-time$(EXEEXT) test-statat$(EXEEXT) \
-	test-stdalign$(EXEEXT) test-stdbool$(EXEEXT) \
-	test-stddef$(EXEEXT) test-stdint$(EXEEXT) test-stdio$(EXEEXT) \
-	test-stdlib$(EXEEXT) test-strchrnul$(EXEEXT) \
-	test-strerror$(EXEEXT) test-strerror_r$(EXEEXT) \
-	test-string$(EXEEXT) test-strnlen$(EXEEXT) \
-	test-strtoll$(EXEEXT) test-strtoull$(EXEEXT) \
-	test-strtoumax$(EXEEXT) test-symlink$(EXEEXT) \
-	test-symlinkat$(EXEEXT) test-sys_ioctl$(EXEEXT) \
-	test-sys_select$(EXEEXT) test-sys_socket$(EXEEXT) \
-	test-sys_stat$(EXEEXT) test-sys_time$(EXEEXT) \
-	test-sys_types$(EXEEXT) test-sys_uio$(EXEEXT) \
-	test-sys_wait$(EXEEXT) test-thread_self$(EXEEXT) \
-	test-thread_create$(EXEEXT) test-time$(EXEEXT) \
+	test-ptsname_r$(EXEEXT) test-quotearg-simple$(EXEEXT) \
+	test-raise$(EXEEXT) test-rawmemchr$(EXEEXT) \
+	test-read-file$(EXEEXT) test-read$(EXEEXT) \
+	test-readlink$(EXEEXT) test-readlinkat$(EXEEXT) \
+	test-rmdir$(EXEEXT) test-select$(EXEEXT) \
+	test-select-fd$(EXEEXT) test-select-stdin$(EXEEXT) \
+	test-setenv$(EXEEXT) test-setlocale1$(EXEEXT) \
+	test-setlocale2$(EXEEXT) test-setsockopt$(EXEEXT) \
+	test-sigaction$(EXEEXT) test-signal-h$(EXEEXT) \
+	test-sigprocmask$(EXEEXT) test-sleep$(EXEEXT) \
+	test-snprintf$(EXEEXT) test-sockets$(EXEEXT) \
+	test-stat$(EXEEXT) test-stat-time$(EXEEXT) \
+	test-statat$(EXEEXT) test-stdalign$(EXEEXT) \
+	test-stdbool$(EXEEXT) test-stddef$(EXEEXT) \
+	test-stdint$(EXEEXT) test-stdio$(EXEEXT) test-stdlib$(EXEEXT) \
+	test-strchrnul$(EXEEXT) test-strerror$(EXEEXT) \
+	test-strerror_r$(EXEEXT) test-string$(EXEEXT) \
+	test-strnlen$(EXEEXT) test-strtoll$(EXEEXT) \
+	test-strtoull$(EXEEXT) test-strtoumax$(EXEEXT) \
+	test-symlink$(EXEEXT) test-symlinkat$(EXEEXT) \
+	test-sys_ioctl$(EXEEXT) test-sys_select$(EXEEXT) \
+	test-sys_socket$(EXEEXT) test-sys_stat$(EXEEXT) \
+	test-sys_time$(EXEEXT) test-sys_types$(EXEEXT) \
+	test-sys_uio$(EXEEXT) test-sys_wait$(EXEEXT) \
+	test-thread_self$(EXEEXT) test-thread_create$(EXEEXT) \
+	test-time$(EXEEXT) test-ttyname_r$(EXEEXT) \
 	test-dup-safer$(EXEEXT) test-unistd$(EXEEXT) \
 	test-unlink$(EXEEXT) test-unlinkat$(EXEEXT) \
 	test-unsetenv$(EXEEXT) test-utimens$(EXEEXT) \
@@ -302,12 +306,13 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
 	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
-	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/include_next.m4 \
-	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
-	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/intmax_t.m4 \
-	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/inttostr.m4 \
-	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
-	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/ioctl.m4 \
+	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/iconv.m4 \
+	$(top_srcdir)/m4/include_next.m4 $(top_srcdir)/m4/inet_ntop.m4 \
+	$(top_srcdir)/m4/inet_pton.m4 $(top_srcdir)/m4/intlmacosx.m4 \
+	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/introspection.m4 \
+	$(top_srcdir)/m4/inttostr.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
+	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
+	$(top_srcdir)/m4/ioctl.m4 $(top_srcdir)/m4/isatty.m4 \
 	$(top_srcdir)/m4/largefile.m4 $(top_srcdir)/m4/lcmessage.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
 	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
@@ -338,17 +343,18 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/pipe.m4 $(top_srcdir)/m4/pipe2.m4 \
 	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/pread.m4 \
 	$(top_srcdir)/m4/printf.m4 $(top_srcdir)/m4/priv-set.m4 \
-	$(top_srcdir)/m4/putenv.m4 $(top_srcdir)/m4/quote.m4 \
-	$(top_srcdir)/m4/quotearg.m4 $(top_srcdir)/m4/raise.m4 \
-	$(top_srcdir)/m4/rawmemchr.m4 $(top_srcdir)/m4/read-file.m4 \
-	$(top_srcdir)/m4/read.m4 $(top_srcdir)/m4/readdir.m4 \
-	$(top_srcdir)/m4/readlink.m4 $(top_srcdir)/m4/readlinkat.m4 \
-	$(top_srcdir)/m4/realloc.m4 $(top_srcdir)/m4/rmdir.m4 \
-	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
-	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/secure_getenv.m4 \
-	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
-	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
-	$(top_srcdir)/m4/sigaction.m4 $(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/ptsname_r.m4 $(top_srcdir)/m4/putenv.m4 \
+	$(top_srcdir)/m4/quote.m4 $(top_srcdir)/m4/quotearg.m4 \
+	$(top_srcdir)/m4/raise.m4 $(top_srcdir)/m4/rawmemchr.m4 \
+	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
+	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
+	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
+	$(top_srcdir)/m4/rmdir.m4 $(top_srcdir)/m4/safe-read.m4 \
+	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
+	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
+	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
+	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/sigaction.m4 \
+	$(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
 	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
 	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
@@ -373,20 +379,21 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/sys_wait_h.m4 $(top_srcdir)/m4/tempname.m4 \
 	$(top_srcdir)/m4/thread.m4 $(top_srcdir)/m4/threadlib.m4 \
 	$(top_srcdir)/m4/time_h.m4 $(top_srcdir)/m4/timespec.m4 \
-	$(top_srcdir)/m4/ungetc.m4 $(top_srcdir)/m4/unistd-safer.m4 \
-	$(top_srcdir)/m4/unistd_h.m4 $(top_srcdir)/m4/unlink.m4 \
-	$(top_srcdir)/m4/unlinkat.m4 $(top_srcdir)/m4/unlinkdir.m4 \
-	$(top_srcdir)/m4/utimbuf.m4 $(top_srcdir)/m4/utimecmp.m4 \
-	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimes.m4 \
-	$(top_srcdir)/m4/vasnprintf.m4 $(top_srcdir)/m4/vasprintf.m4 \
-	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/m4/warnings.m4 \
-	$(top_srcdir)/m4/wchar_h.m4 $(top_srcdir)/m4/wchar_t.m4 \
-	$(top_srcdir)/m4/wcrtomb.m4 $(top_srcdir)/m4/wctob.m4 \
-	$(top_srcdir)/m4/wctomb.m4 $(top_srcdir)/m4/wctype_h.m4 \
-	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/write.m4 \
-	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xsize.m4 \
-	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
-	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/ttyname_r.m4 $(top_srcdir)/m4/ungetc.m4 \
+	$(top_srcdir)/m4/unistd-safer.m4 $(top_srcdir)/m4/unistd_h.m4 \
+	$(top_srcdir)/m4/unlink.m4 $(top_srcdir)/m4/unlinkat.m4 \
+	$(top_srcdir)/m4/unlinkdir.m4 $(top_srcdir)/m4/utimbuf.m4 \
+	$(top_srcdir)/m4/utimecmp.m4 $(top_srcdir)/m4/utimens.m4 \
+	$(top_srcdir)/m4/utimes.m4 $(top_srcdir)/m4/vasnprintf.m4 \
+	$(top_srcdir)/m4/vasprintf.m4 $(top_srcdir)/m4/warn-on-use.m4 \
+	$(top_srcdir)/m4/warnings.m4 $(top_srcdir)/m4/wchar_h.m4 \
+	$(top_srcdir)/m4/wchar_t.m4 $(top_srcdir)/m4/wcrtomb.m4 \
+	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
+	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
+	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
+	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
+	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -692,6 +699,9 @@ test_i_ring_OBJECTS = test-i-ring.$(OBJEXT)
 test_i_ring_LDADD = $(LDADD)
 test_i_ring_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
 	libtests.a $(am__DEPENDENCIES_1)
+test_iconv_SOURCES = test-iconv.c
+test_iconv_OBJECTS = test-iconv.$(OBJEXT)
+test_iconv_DEPENDENCIES = $(am__DEPENDENCIES_2)
 test_ignore_value_SOURCES = test-ignore-value.c
 test_ignore_value_OBJECTS = test-ignore-value.$(OBJEXT)
 test_ignore_value_LDADD = $(LDADD)
@@ -722,6 +732,11 @@ test_ioctl_SOURCES = test-ioctl.c
 test_ioctl_OBJECTS = test-ioctl.$(OBJEXT)
 test_ioctl_LDADD = $(LDADD)
 test_ioctl_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
+	libtests.a $(am__DEPENDENCIES_1)
+test_isatty_SOURCES = test-isatty.c
+test_isatty_OBJECTS = test-isatty.$(OBJEXT)
+test_isatty_LDADD = $(LDADD)
+test_isatty_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
 	libtests.a $(am__DEPENDENCIES_1)
 test_listen_SOURCES = test-listen.c
 test_listen_OBJECTS = test-listen.$(OBJEXT)
@@ -850,6 +865,11 @@ test_priv_set_SOURCES = test-priv-set.c
 test_priv_set_OBJECTS = test-priv-set.$(OBJEXT)
 test_priv_set_LDADD = $(LDADD)
 test_priv_set_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
+	libtests.a $(am__DEPENDENCIES_1)
+test_ptsname_r_SOURCES = test-ptsname_r.c
+test_ptsname_r_OBJECTS = test-ptsname_r.$(OBJEXT)
+test_ptsname_r_LDADD = $(LDADD)
+test_ptsname_r_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
 	libtests.a $(am__DEPENDENCIES_1)
 test_quotearg_simple_SOURCES = test-quotearg-simple.c
 test_quotearg_simple_OBJECTS = test-quotearg-simple.$(OBJEXT)
@@ -1081,6 +1101,11 @@ test_time_OBJECTS = test-time.$(OBJEXT)
 test_time_LDADD = $(LDADD)
 test_time_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
 	libtests.a $(am__DEPENDENCIES_1)
+test_ttyname_r_SOURCES = test-ttyname_r.c
+test_ttyname_r_OBJECTS = test-ttyname_r.$(OBJEXT)
+test_ttyname_r_LDADD = $(LDADD)
+test_ttyname_r_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
+	libtests.a $(am__DEPENDENCIES_1)
 test_unistd_SOURCES = test-unistd.c
 test_unistd_OBJECTS = test-unistd.$(OBJEXT)
 test_unistd_LDADD = $(LDADD)
@@ -1217,34 +1242,36 @@ SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-futimens.c test-fwrite.c test-getaddrinfo.c \
 	test-getcwd-lgpl.c test-getdelim.c test-getdtablesize.c \
 	test-getline.c test-getopt.c test-gettimeofday.c test-glob.c \
-	test-hash.c test-i-ring.c test-ignore-value.c test-inet_ntop.c \
-	test-inet_pton.c test-intprops.c test-inttostr.c \
-	test-inttypes.c test-ioctl.c test-listen.c test-locale.c \
-	test-localeconv.c test-localename.c test-lock.c test-lseek.c \
-	test-lstat.c test-malloca.c test-mbrtowc.c test-mbrtowc-w32.c \
+	test-hash.c test-i-ring.c test-iconv.c test-ignore-value.c \
+	test-inet_ntop.c test-inet_pton.c test-intprops.c \
+	test-inttostr.c test-inttypes.c test-ioctl.c test-isatty.c \
+	test-listen.c test-locale.c test-localeconv.c \
+	test-localename.c test-lock.c test-lseek.c test-lstat.c \
+	test-malloca.c test-mbrtowc.c test-mbrtowc-w32.c \
 	test-mbsinit.c test-mbsrtowcs.c test-memchr.c test-memmem.c \
 	test-memrchr.c test-nanosleep.c test-netdb.c test-netinet_in.c \
 	test-open.c test-openat.c test-openat-safer.c test-pathmax.c \
 	test-perror.c test-perror2.c test-pipe.c test-pipe2.c \
-	test-pread.c test-priv-set.c test-quotearg-simple.c \
-	test-raise.c test-rawmemchr.c test-read.c test-read-file.c \
-	test-readlink.c test-readlinkat.c test-rmdir.c test-select.c \
-	test-select-fd.c test-select-stdin.c test-setenv.c \
-	test-setlocale1.c test-setlocale2.c test-setsockopt.c \
-	test-sigaction.c test-signal-h.c test-sigprocmask.c \
-	test-sleep.c test-snprintf.c test-sockets.c test-stat.c \
-	test-stat-time.c test-statat.c test-stdalign.c test-stdbool.c \
-	test-stddef.c test-stdint.c test-stdio.c test-stdlib.c \
-	test-strchrnul.c test-strerror.c test-strerror_r.c \
-	test-string.c test-strnlen.c test-strtoll.c test-strtoull.c \
-	test-strtoumax.c test-symlink.c test-symlinkat.c \
-	test-sys_ioctl.c test-sys_select.c test-sys_socket.c \
-	test-sys_stat.c test-sys_time.c test-sys_types.c \
-	test-sys_uio.c test-sys_wait.c test-thread_create.c \
-	test-thread_self.c test-time.c test-unistd.c test-unlink.c \
-	test-unlinkat.c test-unsetenv.c test-utimens.c \
-	test-vasnprintf.c test-vasprintf.c test-verify.c test-wchar.c \
-	test-wcrtomb.c test-wcrtomb-w32.c test-wctype-h.c test-write.c \
+	test-pread.c test-priv-set.c test-ptsname_r.c \
+	test-quotearg-simple.c test-raise.c test-rawmemchr.c \
+	test-read.c test-read-file.c test-readlink.c test-readlinkat.c \
+	test-rmdir.c test-select.c test-select-fd.c \
+	test-select-stdin.c test-setenv.c test-setlocale1.c \
+	test-setlocale2.c test-setsockopt.c test-sigaction.c \
+	test-signal-h.c test-sigprocmask.c test-sleep.c \
+	test-snprintf.c test-sockets.c test-stat.c test-stat-time.c \
+	test-statat.c test-stdalign.c test-stdbool.c test-stddef.c \
+	test-stdint.c test-stdio.c test-stdlib.c test-strchrnul.c \
+	test-strerror.c test-strerror_r.c test-string.c test-strnlen.c \
+	test-strtoll.c test-strtoull.c test-strtoumax.c test-symlink.c \
+	test-symlinkat.c test-sys_ioctl.c test-sys_select.c \
+	test-sys_socket.c test-sys_stat.c test-sys_time.c \
+	test-sys_types.c test-sys_uio.c test-sys_wait.c \
+	test-thread_create.c test-thread_self.c test-time.c \
+	test-ttyname_r.c test-unistd.c test-unlink.c test-unlinkat.c \
+	test-unsetenv.c test-utimens.c test-vasnprintf.c \
+	test-vasprintf.c test-verify.c test-wchar.c test-wcrtomb.c \
+	test-wcrtomb-w32.c test-wctype-h.c test-write.c \
 	test-xalloc-die.c test-xstrtol.c test-xstrtoll.c \
 	test-xstrtoul.c test-xstrtoull.c test-xstrtoumax.c \
 	test-xvasprintf.c
@@ -1265,34 +1292,36 @@ DIST_SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-futimens.c test-fwrite.c test-getaddrinfo.c \
 	test-getcwd-lgpl.c test-getdelim.c test-getdtablesize.c \
 	test-getline.c test-getopt.c test-gettimeofday.c test-glob.c \
-	test-hash.c test-i-ring.c test-ignore-value.c test-inet_ntop.c \
-	test-inet_pton.c test-intprops.c test-inttostr.c \
-	test-inttypes.c test-ioctl.c test-listen.c test-locale.c \
-	test-localeconv.c test-localename.c test-lock.c test-lseek.c \
-	test-lstat.c test-malloca.c test-mbrtowc.c test-mbrtowc-w32.c \
+	test-hash.c test-i-ring.c test-iconv.c test-ignore-value.c \
+	test-inet_ntop.c test-inet_pton.c test-intprops.c \
+	test-inttostr.c test-inttypes.c test-ioctl.c test-isatty.c \
+	test-listen.c test-locale.c test-localeconv.c \
+	test-localename.c test-lock.c test-lseek.c test-lstat.c \
+	test-malloca.c test-mbrtowc.c test-mbrtowc-w32.c \
 	test-mbsinit.c test-mbsrtowcs.c test-memchr.c test-memmem.c \
 	test-memrchr.c test-nanosleep.c test-netdb.c test-netinet_in.c \
 	test-open.c test-openat.c test-openat-safer.c test-pathmax.c \
 	test-perror.c test-perror2.c test-pipe.c test-pipe2.c \
-	test-pread.c test-priv-set.c test-quotearg-simple.c \
-	test-raise.c test-rawmemchr.c test-read.c test-read-file.c \
-	test-readlink.c test-readlinkat.c test-rmdir.c test-select.c \
-	test-select-fd.c test-select-stdin.c test-setenv.c \
-	test-setlocale1.c test-setlocale2.c test-setsockopt.c \
-	test-sigaction.c test-signal-h.c test-sigprocmask.c \
-	test-sleep.c test-snprintf.c test-sockets.c test-stat.c \
-	test-stat-time.c test-statat.c test-stdalign.c test-stdbool.c \
-	test-stddef.c test-stdint.c test-stdio.c test-stdlib.c \
-	test-strchrnul.c test-strerror.c test-strerror_r.c \
-	test-string.c test-strnlen.c test-strtoll.c test-strtoull.c \
-	test-strtoumax.c test-symlink.c test-symlinkat.c \
-	test-sys_ioctl.c test-sys_select.c test-sys_socket.c \
-	test-sys_stat.c test-sys_time.c test-sys_types.c \
-	test-sys_uio.c test-sys_wait.c test-thread_create.c \
-	test-thread_self.c test-time.c test-unistd.c test-unlink.c \
-	test-unlinkat.c test-unsetenv.c test-utimens.c \
-	test-vasnprintf.c test-vasprintf.c test-verify.c test-wchar.c \
-	test-wcrtomb.c test-wcrtomb-w32.c test-wctype-h.c test-write.c \
+	test-pread.c test-priv-set.c test-ptsname_r.c \
+	test-quotearg-simple.c test-raise.c test-rawmemchr.c \
+	test-read.c test-read-file.c test-readlink.c test-readlinkat.c \
+	test-rmdir.c test-select.c test-select-fd.c \
+	test-select-stdin.c test-setenv.c test-setlocale1.c \
+	test-setlocale2.c test-setsockopt.c test-sigaction.c \
+	test-signal-h.c test-sigprocmask.c test-sleep.c \
+	test-snprintf.c test-sockets.c test-stat.c test-stat-time.c \
+	test-statat.c test-stdalign.c test-stdbool.c test-stddef.c \
+	test-stdint.c test-stdio.c test-stdlib.c test-strchrnul.c \
+	test-strerror.c test-strerror_r.c test-string.c test-strnlen.c \
+	test-strtoll.c test-strtoull.c test-strtoumax.c test-symlink.c \
+	test-symlinkat.c test-sys_ioctl.c test-sys_select.c \
+	test-sys_socket.c test-sys_stat.c test-sys_time.c \
+	test-sys_types.c test-sys_uio.c test-sys_wait.c \
+	test-thread_create.c test-thread_self.c test-time.c \
+	test-ttyname_r.c test-unistd.c test-unlink.c test-unlinkat.c \
+	test-unsetenv.c test-utimens.c test-vasnprintf.c \
+	test-vasprintf.c test-verify.c test-wchar.c test-wcrtomb.c \
+	test-wcrtomb-w32.c test-wctype-h.c test-write.c \
 	test-xalloc-die.c test-xstrtol.c test-xstrtoll.c \
 	test-xstrtoul.c test-xstrtoull.c test-xstrtoumax.c \
 	test-xvasprintf.c
@@ -2046,6 +2075,7 @@ LEXLIB = @LEXLIB@
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBCONFIG_CFLAGS = @LIBCONFIG_CFLAGS@
 LIBCONFIG_LIBS = @LIBCONFIG_LIBS@
+LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
 LIBLZMA_CFLAGS = @LIBLZMA_CFLAGS@
 LIBLZMA_LIBS = @LIBLZMA_LIBS@
@@ -2075,6 +2105,7 @@ LOCALE_JA = @LOCALE_JA@
 LOCALE_TR_UTF8 = @LOCALE_TR_UTF8@
 LOCALE_ZH_CN = @LOCALE_ZH_CN@
 LTALLOCA = @LTALLOCA@
+LTLIBICONV = @LTLIBICONV@
 LTLIBINTL = @LTLIBINTL@
 LTLIBMULTITHREAD = @LTLIBMULTITHREAD@
 LTLIBOBJS = @LTLIBOBJS@
@@ -2168,8 +2199,10 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
+OCAML_FLAGS = @OCAML_FLAGS@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
+OCAML_WARN_ERROR = @OCAML_WARN_ERROR@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -2535,16 +2568,17 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 	test-getopt.h test-getopt_long.h getpagesize.c \
 	$(top_srcdir)/build-aux/config.rpath signature.h \
 	test-gettimeofday.c test-glob.c signature.h macros.h \
-	test-hash.c macros.h test-i-ring.c macros.h \
-	test-ignore-value.c test-inet_ntop.c signature.h macros.h \
-	inet_pton.c test-inet_pton.c signature.h macros.h \
-	test-intprops.c macros.h anytostr.c inttostr.h macros.h \
-	test-inttostr.c test-inttypes.c ioctl.c w32sock.h test-ioctl.c \
-	signature.h macros.h listen.c w32sock.h test-listen.c \
-	signature.h macros.h test-locale.c test-localeconv.c \
-	signature.h macros.h localename.h test-localename.c macros.h \
-	test-lock.c test-lseek.c test-lseek.sh signature.h macros.h \
-	test-lstat.h test-lstat.c signature.h macros.h test-malloca.c \
+	test-hash.c macros.h test-i-ring.c macros.h test-iconv.c \
+	signature.h macros.h test-ignore-value.c test-inet_ntop.c \
+	signature.h macros.h inet_pton.c test-inet_pton.c signature.h \
+	macros.h test-intprops.c macros.h anytostr.c inttostr.h \
+	macros.h test-inttostr.c test-inttypes.c ioctl.c w32sock.h \
+	test-ioctl.c signature.h macros.h test-isatty.c signature.h \
+	macros.h listen.c w32sock.h test-listen.c signature.h macros.h \
+	test-locale.c test-localeconv.c signature.h macros.h \
+	localename.h test-localename.c macros.h test-lock.c \
+	test-lseek.c test-lseek.sh signature.h macros.h test-lstat.h \
+	test-lstat.c signature.h macros.h test-malloca.c \
 	test-mbrtowc1.sh test-mbrtowc2.sh test-mbrtowc3.sh \
 	test-mbrtowc4.sh test-mbrtowc.c test-mbrtowc-w32-1.sh \
 	test-mbrtowc-w32-2.sh test-mbrtowc-w32-3.sh \
@@ -2563,11 +2597,12 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 	test-perror.c test-perror2.c test-perror.sh pipe.c test-pipe.c \
 	signature.h macros.h test-pipe2.c signature.h macros.h \
 	test-pread.c test-pread.sh signature.h macros.h priv-set.h \
-	test-priv-set.c macros.h putenv.c test-quotearg-simple.c \
-	test-quotearg.h macros.h zerosize-ptr.h test-raise.c \
-	signature.h macros.h test-rawmemchr.c zerosize-ptr.h \
-	signature.h macros.h test-read-file.c test-read.c signature.h \
-	macros.h test-readlink.h test-readlink.c signature.h macros.h \
+	test-priv-set.c macros.h test-ptsname_r.c signature.h macros.h \
+	putenv.c test-quotearg-simple.c test-quotearg.h macros.h \
+	zerosize-ptr.h test-raise.c signature.h macros.h \
+	test-rawmemchr.c zerosize-ptr.h signature.h macros.h \
+	test-read-file.c test-read.c signature.h macros.h \
+	test-readlink.h test-readlink.c signature.h macros.h \
 	test-readlink.h test-readlinkat.c signature.h macros.h rmdir.c \
 	test-rmdir.h test-rmdir.c signature.h macros.h root-uid.h \
 	macros.h signature.h test-select.c test-select.h \
@@ -2598,12 +2633,13 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 	test-sys_socket.c test-sys_stat.c test-sys_time.c \
 	test-sys_types.c test-sys_uio.c test-sys_wait.c \
 	test-sys_wait.h init.sh test-init.sh test-thread_self.c \
-	test-thread_create.c macros.h test-time.c test-dup-safer.c \
-	macros.h test-unistd.c unlink.c test-unlink.h test-unlink.c \
-	signature.h macros.h at-func.c unlinkat.c test-unlinkat.c \
-	test-rmdir.h test-unlink.h signature.h macros.h unlinkdir.h \
-	unsetenv.c test-unsetenv.c signature.h macros.h utimecmp.h \
-	nap.h test-futimens.h test-lutimens.h test-utimens.h \
+	test-thread_create.c macros.h test-time.c test-ttyname_r.c \
+	signature.h macros.h test-dup-safer.c macros.h test-unistd.c \
+	unlink.c test-unlink.h test-unlink.c signature.h macros.h \
+	at-func.c unlinkat.c test-unlinkat.c test-rmdir.h \
+	test-unlink.h signature.h macros.h unlinkdir.h unsetenv.c \
+	test-unsetenv.c signature.h macros.h utimecmp.h nap.h \
+	test-futimens.h test-lutimens.h test-utimens.h \
 	test-utimens-common.h test-utimens.c macros.h \
 	test-vasnprintf.c macros.h test-vasprintf.c signature.h \
 	macros.h test-vc-list-files-git.sh test-vc-list-files-cvs.sh \
@@ -2673,6 +2709,7 @@ test_futimens_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME) $(LIB_NANOSLEEP) @LIBINTL@
 test_getaddrinfo_LDADD = $(LDADD) @GETADDRINFO_LIB@ @LIBINTL@
 test_getcwd_lgpl_LDADD = $(LDADD) $(LIBINTL)
 test_getopt_LDADD = $(LDADD) $(LIBINTL)
+test_iconv_LDADD = $(LDADD) @LIBICONV@
 test_inet_ntop_LDADD = $(LDADD) @INET_NTOP_LIB@
 test_inet_pton_LDADD = $(LDADD) @INET_PTON_LIB@
 test_listen_LDADD = $(LDADD) @LIBSOCKET@
@@ -3025,6 +3062,10 @@ test-i-ring$(EXEEXT): $(test_i_ring_OBJECTS) $(test_i_ring_DEPENDENCIES) $(EXTRA
 	@rm -f test-i-ring$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_i_ring_OBJECTS) $(test_i_ring_LDADD) $(LIBS)
 
+test-iconv$(EXEEXT): $(test_iconv_OBJECTS) $(test_iconv_DEPENDENCIES) $(EXTRA_test_iconv_DEPENDENCIES) 
+	@rm -f test-iconv$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_iconv_OBJECTS) $(test_iconv_LDADD) $(LIBS)
+
 test-ignore-value$(EXEEXT): $(test_ignore_value_OBJECTS) $(test_ignore_value_DEPENDENCIES) $(EXTRA_test_ignore_value_DEPENDENCIES) 
 	@rm -f test-ignore-value$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_ignore_value_OBJECTS) $(test_ignore_value_LDADD) $(LIBS)
@@ -3052,6 +3093,10 @@ test-inttypes$(EXEEXT): $(test_inttypes_OBJECTS) $(test_inttypes_DEPENDENCIES) $
 test-ioctl$(EXEEXT): $(test_ioctl_OBJECTS) $(test_ioctl_DEPENDENCIES) $(EXTRA_test_ioctl_DEPENDENCIES) 
 	@rm -f test-ioctl$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_ioctl_OBJECTS) $(test_ioctl_LDADD) $(LIBS)
+
+test-isatty$(EXEEXT): $(test_isatty_OBJECTS) $(test_isatty_DEPENDENCIES) $(EXTRA_test_isatty_DEPENDENCIES) 
+	@rm -f test-isatty$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_isatty_OBJECTS) $(test_isatty_LDADD) $(LIBS)
 
 test-listen$(EXEEXT): $(test_listen_OBJECTS) $(test_listen_DEPENDENCIES) $(EXTRA_test_listen_DEPENDENCIES) 
 	@rm -f test-listen$(EXEEXT)
@@ -3164,6 +3209,10 @@ test-pread$(EXEEXT): $(test_pread_OBJECTS) $(test_pread_DEPENDENCIES) $(EXTRA_te
 test-priv-set$(EXEEXT): $(test_priv_set_OBJECTS) $(test_priv_set_DEPENDENCIES) $(EXTRA_test_priv_set_DEPENDENCIES) 
 	@rm -f test-priv-set$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_priv_set_OBJECTS) $(test_priv_set_LDADD) $(LIBS)
+
+test-ptsname_r$(EXEEXT): $(test_ptsname_r_OBJECTS) $(test_ptsname_r_DEPENDENCIES) $(EXTRA_test_ptsname_r_DEPENDENCIES) 
+	@rm -f test-ptsname_r$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_ptsname_r_OBJECTS) $(test_ptsname_r_LDADD) $(LIBS)
 
 test-quotearg-simple$(EXEEXT): $(test_quotearg_simple_OBJECTS) $(test_quotearg_simple_DEPENDENCIES) $(EXTRA_test_quotearg_simple_DEPENDENCIES) 
 	@rm -f test-quotearg-simple$(EXEEXT)
@@ -3369,6 +3418,10 @@ test-time$(EXEEXT): $(test_time_OBJECTS) $(test_time_DEPENDENCIES) $(EXTRA_test_
 	@rm -f test-time$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_time_OBJECTS) $(test_time_LDADD) $(LIBS)
 
+test-ttyname_r$(EXEEXT): $(test_ttyname_r_OBJECTS) $(test_ttyname_r_DEPENDENCIES) $(EXTRA_test_ttyname_r_DEPENDENCIES) 
+	@rm -f test-ttyname_r$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_ttyname_r_OBJECTS) $(test_ttyname_r_LDADD) $(LIBS)
+
 test-unistd$(EXEEXT): $(test_unistd_OBJECTS) $(test_unistd_DEPENDENCIES) $(EXTRA_test_unistd_DEPENDENCIES) 
 	@rm -f test-unistd$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_unistd_OBJECTS) $(test_unistd_LDADD) $(LIBS)
@@ -3545,6 +3598,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-glob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-hash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-i-ring.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-iconv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-ignore-value.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-inet_ntop.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-inet_pton.Po@am__quote@
@@ -3552,6 +3606,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-inttostr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-inttypes.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-ioctl.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-isatty.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-listen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-locale.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-localeconv.Po@am__quote@
@@ -3580,6 +3635,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-pipe2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-pread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-priv-set.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-ptsname_r.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-quotearg-simple.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-raise.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-rawmemchr.Po@am__quote@
@@ -3631,6 +3687,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-thread_create.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-thread_self.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-time.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-ttyname_r.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-unistd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-unlink.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-unlinkat.Po@am__quote@

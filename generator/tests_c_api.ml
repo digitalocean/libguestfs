@@ -47,6 +47,12 @@ let rec generate_c_api_tests () =
 
 #include \"tests.h\"
 
+#ifdef __linux__
+#define GUESTFS_ISO_SYSTEM_ID \"LINUX\"
+#else
+#error Missing GUESTFS_ISO_SYSTEM_ID for the current OS
+#endif
+
 ";
 
   (* Generate a list of commands which are not tested anywhere. *)
@@ -61,7 +67,7 @@ let rec generate_c_api_tests () =
     fun { tests = tests } ->
       let seqs = filter_map (
         function
-        | (_, (Always|IfAvailable _), test, cleanup) ->
+        | (_, (Always|IfAvailable _|IfNotCrossAppliance), test, cleanup) ->
           Some (seq_of_test test @ cleanup)
         | (_, Disabled, _, _) -> None
       ) tests in
@@ -145,6 +151,15 @@ static int
     pr "\n"
   in
 
+  let utsname_test () =
+    pr "  if (using_cross_appliance ()) {\n";
+    pr "    skipped (\"%s\", \"cannot run when appliance and host are different\");\n"
+      test_name;
+    pr "    return 0;\n";
+    pr "  }\n";
+    pr "\n"
+  in
+
   (match optional with
   | Some group -> group_test group
   | None -> ()
@@ -158,6 +173,9 @@ static int
      group_test group;
      generate_one_test_body name i test_name init cleanup
    | Always ->
+     generate_one_test_body name i test_name init cleanup
+   | IfNotCrossAppliance ->
+     utsname_test ();
      generate_one_test_body name i test_name init cleanup
   );
 

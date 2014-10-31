@@ -14,10 +14,12 @@ builder/setlocale.ml
 builder/sigchecker.ml
 builder/sources.ml
 builder/uname.ml
+builder/utils.ml
 customize/crypt.ml
 customize/customize_cmdline.ml
 customize/customize_main.ml
 customize/customize_run.ml
+customize/customize_utils.ml
 customize/firstboot.ml
 customize/hostname.ml
 customize/password.ml
@@ -43,6 +45,7 @@ sparsify/cmdline.ml
 sparsify/copying.ml
 sparsify/in_place.ml
 sparsify/sparsify.ml
+sparsify/utils.ml
 sysprep/main.ml
 sysprep/sysprep_operation.ml
 sysprep/sysprep_operation_abrt_data.ml

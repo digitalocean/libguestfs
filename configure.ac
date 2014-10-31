@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [29])
-m4_define([libguestfs_release], [1])
+m4_define([libguestfs_release], [2])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -288,6 +288,7 @@ AC_CHECK_HEADERS([\
     attr/xattr.h \
     byteswap.h \
     endian.h \
+    sys/endian.h \
     errno.h \
     linux/fs.h \
     linux/raid/md_u.h \
@@ -732,7 +733,9 @@ dnl back to basic 'qemu'.  Allow the user to override it.
 qemu_system="$(
     echo qemu-system-$host_cpu |
     $SED -e 's/-i@<:@456@:>@86/-i386/g' \
-         -e 's/-arm.*/-arm/g'
+         -e 's/-arm.*/-arm/g' \
+         -e 's/-amd64/-x86_64/g' \
+         -e 's/-ppc64le/-ppc64/g'
     )"
 default_qemu="qemu-kvm kvm $qemu_system qemu"
 AC_ARG_WITH([qemu],
@@ -1092,6 +1095,12 @@ AM_CONDITIONAL([HAVE_OCAML_PKG_GETTEXT],
 AC_CHECK_PROG([OCAML_GETTEXT],[ocaml-gettext],[ocaml-gettext],[no])
 AM_CONDITIONAL([HAVE_OCAML_GETTEXT],
     [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && test "x$OCAML_PKG_gettext" != "xno" && test "x$OCAML_GETTEXT" != "xno"])
+
+dnl Flags we want to pass to every OCaml compiler call.
+OCAML_WARN_ERROR="-warn-error CDEFLMPSUVYZX-3"
+AC_SUBST([OCAML_WARN_ERROR])
+OCAML_FLAGS="-g -annot"
+AC_SUBST([OCAML_FLAGS])
 
 dnl Check for Perl (optional, for Perl bindings and Perl tools).
 AC_ARG_ENABLE([perl],

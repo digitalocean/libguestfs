@@ -34,6 +34,12 @@
 
 #include "tests.h"
 
+#ifdef __linux__
+#define GUESTFS_ISO_SYSTEM_ID "LINUX"
+#else
+#error Missing GUESTFS_ISO_SYSTEM_ID for the current OS
+#endif
+
 void
 no_test_warnings (void)
 {
@@ -641,7 +647,7 @@ test_set_uuid_0_perform (guestfs_h *g)
 {
   /* TestResultString for set_uuid (0) */
   const char *arg43 = "/dev/sda1";
-  const char *arg44 = "d1361161-1784-f43e-34c3-795da2189c59";
+  const char *arg44 = "81090552-da64-7733-b46f-0d817b8cd59e";
   int ret42;
   ret42 = guestfs_set_uuid (g, arg43, arg44);
   if (ret42 == -1)
@@ -651,9 +657,9 @@ test_set_uuid_0_perform (guestfs_h *g)
   ret = guestfs_vfs_uuid (g, arg46);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "d1361161-1784-f43e-34c3-795da2189c59")) {
+  if (! STREQ (ret, "81090552-da64-7733-b46f-0d817b8cd59e")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_set_uuid_0", "vfs_uuid", "d1361161-1784-f43e-34c3-795da2189c59", ret);
+             "test_set_uuid_0", "vfs_uuid", "81090552-da64-7733-b46f-0d817b8cd59e", ret);
     return -1;
   }
   return 0;
@@ -2185,7 +2191,7 @@ test_mke2fs_2_perform (guestfs_h *g)
   const char *arg303 = "/dev/sda1";
   struct guestfs_mke2fs_argv optargs304;
   optargs304.blocksize = 4096;
-  optargs304.uuid = "d1361161-1784-f43e-34c3-795da2189c59";
+  optargs304.uuid = "81090552-da64-7733-b46f-0d817b8cd59e";
   optargs304.journaldev = 1;
   optargs304.bitmask = UINT64_C(0x100100002);
   int ret302;
@@ -2195,7 +2201,7 @@ test_mke2fs_2_perform (guestfs_h *g)
   const char *arg306 = "/dev/sda2";
   struct guestfs_mke2fs_argv optargs307;
   optargs307.blocksize = 4096;
-  optargs307.journaldevice = "UUID=d1361161-1784-f43e-34c3-795da2189c59";
+  optargs307.journaldevice = "UUID=81090552-da64-7733-b46f-0d817b8cd59e";
   optargs307.label = "JOURNAL";
   optargs307.fstype = "ext2";
   optargs307.forcecreate = 1;
@@ -4441,9 +4447,9 @@ test_isoinfo_device_0_perform (guestfs_h *g)
   ret = guestfs_isoinfo_device (g, arg682);
   if (ret == NULL)
       return -1;
-  if (! (STREQ (ret->iso_system_id, "LINUX") && STREQ (ret->iso_volume_id, "CDROM") && STREQ (ret->iso_volume_set_id, "") && ret->iso_volume_set_size == 1 && ret->iso_volume_sequence_number == 1 && ret->iso_logical_block_size == 2048)) {
+  if (! (STREQ (ret->iso_system_id, GUESTFS_ISO_SYSTEM_ID) && STREQ (ret->iso_volume_id, "CDROM") && STREQ (ret->iso_volume_set_id, "") && ret->iso_volume_set_size == 1 && ret->iso_volume_sequence_number == 1 && ret->iso_logical_block_size == 2048)) {
     fprintf (stderr, "%s: test failed: expression false: %s\n",
-             "test_isoinfo_device_0", "STREQ (ret->iso_system_id, \"LINUX\") && STREQ (ret->iso_volume_id, \"CDROM\") && STREQ (ret->iso_volume_set_id, \"\") && ret->iso_volume_set_size == 1 && ret->iso_volume_sequence_number == 1 && ret->iso_logical_block_size == 2048");
+             "test_isoinfo_device_0", "STREQ (ret->iso_system_id, GUESTFS_ISO_SYSTEM_ID) && STREQ (ret->iso_volume_id, \"CDROM\") && STREQ (ret->iso_volume_set_id, \"\") && ret->iso_volume_set_size == 1 && ret->iso_volume_sequence_number == 1 && ret->iso_logical_block_size == 2048");
     if (!guestfs_get_trace (g))
       fprintf (stderr, "Set LIBGUESTFS_TRACE=1 to see values returned from API calls.\n");
     return -1;
@@ -6853,7 +6859,7 @@ test_vfs_uuid_0_perform (guestfs_h *g)
 {
   /* TestResultString for vfs_uuid (0) */
   const char *arg946 = "/dev/sda1";
-  const char *arg947 = "d1361161-1784-f43e-34c3-795da2189c59";
+  const char *arg947 = "81090552-da64-7733-b46f-0d817b8cd59e";
   int ret945;
   ret945 = guestfs_set_e2uuid (g, arg946, arg947);
   if (ret945 == -1)
@@ -6863,9 +6869,9 @@ test_vfs_uuid_0_perform (guestfs_h *g)
   ret = guestfs_vfs_uuid (g, arg949);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "d1361161-1784-f43e-34c3-795da2189c59")) {
+  if (! STREQ (ret, "81090552-da64-7733-b46f-0d817b8cd59e")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_vfs_uuid_0", "vfs_uuid", "d1361161-1784-f43e-34c3-795da2189c59", ret);
+             "test_vfs_uuid_0", "vfs_uuid", "81090552-da64-7733-b46f-0d817b8cd59e", ret);
     return -1;
   }
   return 0;
@@ -10508,7 +10514,7 @@ test_mke2journal_U_0_perform (guestfs_h *g)
   ret1443 = guestfs_part_add (g, arg1444, arg1445, 204800, -64);
   if (ret1443 == -1)
     return -1;
-  const char *arg1451 = "d1361161-1784-f43e-34c3-795da2189c59";
+  const char *arg1451 = "81090552-da64-7733-b46f-0d817b8cd59e";
   const char *arg1452 = "/dev/sda1";
   int ret1449;
   ret1449 = guestfs_mke2journal_U (g, 4096, arg1451, arg1452);
@@ -10516,7 +10522,7 @@ test_mke2journal_U_0_perform (guestfs_h *g)
     return -1;
   const char *arg1455 = "ext2";
   const char *arg1457 = "/dev/sda2";
-  const char *arg1458 = "d1361161-1784-f43e-34c3-795da2189c59";
+  const char *arg1458 = "81090552-da64-7733-b46f-0d817b8cd59e";
   int ret1454;
   ret1454 = guestfs_mke2fs_JU (g, arg1455, 4096, arg1457, arg1458);
   if (ret1454 == -1)
@@ -11251,18 +11257,18 @@ test_swapon_uuid_0_perform (guestfs_h *g)
   /* TestRun for swapon_uuid (0) */
   const char *arg1628 = "/dev/sdc";
   struct guestfs_mkswap_opts_argv optargs1629;
-  optargs1629.uuid = "d1361161-1784-f43e-34c3-795da2189c59";
+  optargs1629.uuid = "81090552-da64-7733-b46f-0d817b8cd59e";
   optargs1629.bitmask = UINT64_C(0x2);
   int ret1627;
   ret1627 = guestfs_mkswap_opts_argv (g, arg1628, &optargs1629);
   if (ret1627 == -1)
     return -1;
-  const char *arg1631 = "d1361161-1784-f43e-34c3-795da2189c59";
+  const char *arg1631 = "81090552-da64-7733-b46f-0d817b8cd59e";
   int ret1630;
   ret1630 = guestfs_swapon_uuid (g, arg1631);
   if (ret1630 == -1)
     return -1;
-  const char *arg1634 = "d1361161-1784-f43e-34c3-795da2189c59";
+  const char *arg1634 = "81090552-da64-7733-b46f-0d817b8cd59e";
   int ret1633;
   ret1633 = guestfs_swapoff_uuid (g, arg1634);
   if (ret1633 == -1)
@@ -13601,7 +13607,7 @@ test_mkswap_U_0_perform (guestfs_h *g)
   ret1844 = guestfs_part_disk (g, arg1845, arg1846);
   if (ret1844 == -1)
     return -1;
-  const char *arg1849 = "d1361161-1784-f43e-34c3-795da2189c59";
+  const char *arg1849 = "81090552-da64-7733-b46f-0d817b8cd59e";
   const char *arg1850 = "/dev/sda1";
   int ret1848;
   ret1848 = guestfs_mkswap_U (g, arg1849, arg1850);
@@ -13817,7 +13823,7 @@ test_mkswap_2_perform (guestfs_h *g)
     return -1;
   const char *arg1880 = "/dev/sda1";
   struct guestfs_mkswap_opts_argv optargs1881;
-  optargs1881.uuid = "d1361161-1784-f43e-34c3-795da2189c59";
+  optargs1881.uuid = "81090552-da64-7733-b46f-0d817b8cd59e";
   optargs1881.bitmask = UINT64_C(0x2);
   int ret1879;
   ret1879 = guestfs_mkswap_opts_argv (g, arg1880, &optargs1881);
@@ -13878,7 +13884,7 @@ test_mkswap_3_perform (guestfs_h *g)
   const char *arg1888 = "/dev/sda1";
   struct guestfs_mkswap_opts_argv optargs1889;
   optargs1889.label = "hello";
-  optargs1889.uuid = "d1361161-1784-f43e-34c3-795da2189c59";
+  optargs1889.uuid = "81090552-da64-7733-b46f-0d817b8cd59e";
   optargs1889.bitmask = UINT64_C(0x3);
   int ret1887;
   ret1887 = guestfs_mkswap_opts_argv (g, arg1888, &optargs1889);
@@ -17143,7 +17149,7 @@ test_get_e2uuid_0_perform (guestfs_h *g)
   if (ret2309 == -1)
     return -1;
   const char *arg2314 = "/dev/sdc";
-  const char *arg2315 = "d1361161-1784-f43e-34c3-795da2189c59";
+  const char *arg2315 = "81090552-da64-7733-b46f-0d817b8cd59e";
   int ret2313;
   ret2313 = guestfs_set_e2uuid (g, arg2314, arg2315);
   if (ret2313 == -1)
@@ -17153,9 +17159,9 @@ test_get_e2uuid_0_perform (guestfs_h *g)
   ret = guestfs_get_e2uuid (g, arg2317);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "d1361161-1784-f43e-34c3-795da2189c59")) {
+  if (! STREQ (ret, "81090552-da64-7733-b46f-0d817b8cd59e")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_get_e2uuid_0", "get_e2uuid", "d1361161-1784-f43e-34c3-795da2189c59", ret);
+             "test_get_e2uuid_0", "get_e2uuid", "81090552-da64-7733-b46f-0d817b8cd59e", ret);
     return -1;
   }
   return 0;
@@ -17198,7 +17204,7 @@ test_set_e2uuid_0_perform (guestfs_h *g)
 {
   /* TestResultString for set_e2uuid (0) */
   const char *arg2320 = "/dev/sda1";
-  const char *arg2321 = "d1361161-1784-f43e-34c3-795da2189c59";
+  const char *arg2321 = "81090552-da64-7733-b46f-0d817b8cd59e";
   int ret2319;
   ret2319 = guestfs_set_e2uuid (g, arg2320, arg2321);
   if (ret2319 == -1)
@@ -17208,9 +17214,9 @@ test_set_e2uuid_0_perform (guestfs_h *g)
   ret = guestfs_get_e2uuid (g, arg2323);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "d1361161-1784-f43e-34c3-795da2189c59")) {
+  if (! STREQ (ret, "81090552-da64-7733-b46f-0d817b8cd59e")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_set_e2uuid_0", "get_e2uuid", "d1361161-1784-f43e-34c3-795da2189c59", ret);
+             "test_set_e2uuid_0", "get_e2uuid", "81090552-da64-7733-b46f-0d817b8cd59e", ret);
     return -1;
   }
   return 0;
@@ -19674,6 +19680,11 @@ test_command_lines_0 (guestfs_h *g)
     return 0;
   }
 
+  if (using_cross_appliance ()) {
+    skipped ("test_command_lines_0", "cannot run when appliance and host are different");
+    return 0;
+  }
+
   if (init_scratch_fs (g) == -1)
     return -1;
 
@@ -19744,6 +19755,11 @@ test_command_lines_1 (guestfs_h *g)
 {
   if (test_command_lines_1_skip ()) {
     skipped ("test_command_lines_1", "environment variable set");
+    return 0;
+  }
+
+  if (using_cross_appliance ()) {
+    skipped ("test_command_lines_1", "cannot run when appliance and host are different");
     return 0;
   }
 
@@ -19820,6 +19836,11 @@ test_command_lines_2 (guestfs_h *g)
     return 0;
   }
 
+  if (using_cross_appliance ()) {
+    skipped ("test_command_lines_2", "cannot run when appliance and host are different");
+    return 0;
+  }
+
   if (init_scratch_fs (g) == -1)
     return -1;
 
@@ -19890,6 +19911,11 @@ test_command_lines_3 (guestfs_h *g)
 {
   if (test_command_lines_3_skip ()) {
     skipped ("test_command_lines_3", "environment variable set");
+    return 0;
+  }
+
+  if (using_cross_appliance ()) {
+    skipped ("test_command_lines_3", "cannot run when appliance and host are different");
     return 0;
   }
 
@@ -19966,6 +19992,11 @@ test_command_lines_4 (guestfs_h *g)
     return 0;
   }
 
+  if (using_cross_appliance ()) {
+    skipped ("test_command_lines_4", "cannot run when appliance and host are different");
+    return 0;
+  }
+
   if (init_scratch_fs (g) == -1)
     return -1;
 
@@ -20036,6 +20067,11 @@ test_command_lines_5 (guestfs_h *g)
 {
   if (test_command_lines_5_skip ()) {
     skipped ("test_command_lines_5", "environment variable set");
+    return 0;
+  }
+
+  if (using_cross_appliance ()) {
+    skipped ("test_command_lines_5", "cannot run when appliance and host are different");
     return 0;
   }
 
@@ -20112,6 +20148,11 @@ test_command_lines_6 (guestfs_h *g)
     return 0;
   }
 
+  if (using_cross_appliance ()) {
+    skipped ("test_command_lines_6", "cannot run when appliance and host are different");
+    return 0;
+  }
+
   if (init_scratch_fs (g) == -1)
     return -1;
 
@@ -20182,6 +20223,11 @@ test_command_lines_7 (guestfs_h *g)
 {
   if (test_command_lines_7_skip ()) {
     skipped ("test_command_lines_7", "environment variable set");
+    return 0;
+  }
+
+  if (using_cross_appliance ()) {
+    skipped ("test_command_lines_7", "cannot run when appliance and host are different");
     return 0;
   }
 
@@ -20258,6 +20304,11 @@ test_command_lines_8 (guestfs_h *g)
     return 0;
   }
 
+  if (using_cross_appliance ()) {
+    skipped ("test_command_lines_8", "cannot run when appliance and host are different");
+    return 0;
+  }
+
   if (init_scratch_fs (g) == -1)
     return -1;
 
@@ -20328,6 +20379,11 @@ test_command_lines_9 (guestfs_h *g)
 {
   if (test_command_lines_9_skip ()) {
     skipped ("test_command_lines_9", "environment variable set");
+    return 0;
+  }
+
+  if (using_cross_appliance ()) {
+    skipped ("test_command_lines_9", "cannot run when appliance and host are different");
     return 0;
   }
 
@@ -20404,6 +20460,11 @@ test_command_lines_10 (guestfs_h *g)
     return 0;
   }
 
+  if (using_cross_appliance ()) {
+    skipped ("test_command_lines_10", "cannot run when appliance and host are different");
+    return 0;
+  }
+
   if (init_scratch_fs (g) == -1)
     return -1;
 
@@ -20474,6 +20535,11 @@ test_command_0 (guestfs_h *g)
 {
   if (test_command_0_skip ()) {
     skipped ("test_command_0", "environment variable set");
+    return 0;
+  }
+
+  if (using_cross_appliance ()) {
+    skipped ("test_command_0", "cannot run when appliance and host are different");
     return 0;
   }
 
@@ -20548,6 +20614,11 @@ test_command_1 (guestfs_h *g)
     return 0;
   }
 
+  if (using_cross_appliance ()) {
+    skipped ("test_command_1", "cannot run when appliance and host are different");
+    return 0;
+  }
+
   if (init_scratch_fs (g) == -1)
     return -1;
 
@@ -20616,6 +20687,11 @@ test_command_2 (guestfs_h *g)
 {
   if (test_command_2_skip ()) {
     skipped ("test_command_2", "environment variable set");
+    return 0;
+  }
+
+  if (using_cross_appliance ()) {
+    skipped ("test_command_2", "cannot run when appliance and host are different");
     return 0;
   }
 
@@ -20690,6 +20766,11 @@ test_command_3 (guestfs_h *g)
     return 0;
   }
 
+  if (using_cross_appliance ()) {
+    skipped ("test_command_3", "cannot run when appliance and host are different");
+    return 0;
+  }
+
   if (init_scratch_fs (g) == -1)
     return -1;
 
@@ -20758,6 +20839,11 @@ test_command_4 (guestfs_h *g)
 {
   if (test_command_4_skip ()) {
     skipped ("test_command_4", "environment variable set");
+    return 0;
+  }
+
+  if (using_cross_appliance ()) {
+    skipped ("test_command_4", "cannot run when appliance and host are different");
     return 0;
   }
 
@@ -20832,6 +20918,11 @@ test_command_5 (guestfs_h *g)
     return 0;
   }
 
+  if (using_cross_appliance ()) {
+    skipped ("test_command_5", "cannot run when appliance and host are different");
+    return 0;
+  }
+
   if (init_scratch_fs (g) == -1)
     return -1;
 
@@ -20900,6 +20991,11 @@ test_command_6 (guestfs_h *g)
 {
   if (test_command_6_skip ()) {
     skipped ("test_command_6", "environment variable set");
+    return 0;
+  }
+
+  if (using_cross_appliance ()) {
+    skipped ("test_command_6", "cannot run when appliance and host are different");
     return 0;
   }
 
@@ -20974,6 +21070,11 @@ test_command_7 (guestfs_h *g)
     return 0;
   }
 
+  if (using_cross_appliance ()) {
+    skipped ("test_command_7", "cannot run when appliance and host are different");
+    return 0;
+  }
+
   if (init_scratch_fs (g) == -1)
     return -1;
 
@@ -21042,6 +21143,11 @@ test_command_8 (guestfs_h *g)
 {
   if (test_command_8_skip ()) {
     skipped ("test_command_8", "environment variable set");
+    return 0;
+  }
+
+  if (using_cross_appliance ()) {
+    skipped ("test_command_8", "cannot run when appliance and host are different");
     return 0;
   }
 
@@ -21116,6 +21222,11 @@ test_command_9 (guestfs_h *g)
     return 0;
   }
 
+  if (using_cross_appliance ()) {
+    skipped ("test_command_9", "cannot run when appliance and host are different");
+    return 0;
+  }
+
   if (init_scratch_fs (g) == -1)
     return -1;
 
@@ -21184,6 +21295,11 @@ test_command_10 (guestfs_h *g)
 {
   if (test_command_10_skip ()) {
     skipped ("test_command_10", "environment variable set");
+    return 0;
+  }
+
+  if (using_cross_appliance ()) {
+    skipped ("test_command_10", "cannot run when appliance and host are different");
     return 0;
   }
 
@@ -21258,6 +21374,11 @@ test_command_11 (guestfs_h *g)
     return 0;
   }
 
+  if (using_cross_appliance ()) {
+    skipped ("test_command_11", "cannot run when appliance and host are different");
+    return 0;
+  }
+
   if (init_scratch_fs (g) == -1)
     return -1;
 
@@ -21321,6 +21442,11 @@ test_command_12 (guestfs_h *g)
 {
   if (test_command_12_skip ()) {
     skipped ("test_command_12", "environment variable set");
+    return 0;
+  }
+
+  if (using_cross_appliance ()) {
+    skipped ("test_command_12", "cannot run when appliance and host are different");
     return 0;
   }
 

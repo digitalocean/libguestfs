@@ -75,7 +75,8 @@ SOURCES = \
 	sources.ml \
 	uname.ml \
 	uname.mli \
-	uname-c.c
+	uname-c.c \
+	utils.ml
 
 man_MANS =
 noinst_DATA =
@@ -99,6 +100,7 @@ deps = \
 	$(top_builddir)/mllib/uRI.cmx \
 	$(top_builddir)/mllib/mkdtemp-c.o \
 	$(top_builddir)/mllib/mkdtemp.cmx \
+	$(top_builddir)/customize/customize_utils.cmx \
 	$(top_builddir)/customize/urandom.cmx \
 	$(top_builddir)/customize/random_seed.cmx \
 	$(top_builddir)/customize/hostname.cmx \
@@ -113,6 +115,7 @@ deps = \
 	$(top_builddir)/customize/customize_run.cmx \
 	$(top_builddir)/fish/guestfish-uri.o \
 	$(top_builddir)/fish/guestfish-file-edit.o \
+	utils.cmx \
 	index-scan.o \
 	index-struct.o \
 	index-parse.o \
@@ -158,7 +161,7 @@ if HAVE_OCAML_PKG_GETTEXT
 OCAMLPACKAGES += -package gettext-stub
 endif
 
-OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX-3 $(OCAMLPACKAGES)
+OCAMLCFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR) $(OCAMLPACKAGES)
 OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 
 OCAMLCLIBS  = \

@@ -26,6 +26,7 @@ EXTRA_DIST = \
 CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify
 
 SOURCES_ML = \
+	utils.ml \
 	cmdline.ml \
 	copying.ml \
 	in_place.ml \
@@ -72,7 +73,7 @@ if HAVE_OCAML_PKG_GETTEXT
 OCAMLPACKAGES += -package gettext-stub
 endif
 
-OCAMLFLAGS = -g -warn-error CDEFLMPSUVYZX-3
+OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 
 if !HAVE_OCAMLOPT
 OBJECTS = $(BOBJECTS)

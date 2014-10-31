@@ -32,6 +32,9 @@
 #ifdef HAVE_ENDIAN_H
 #include <endian.h>
 #endif
+#ifdef HAVE_SYS_ENDIAN_H
+#include <sys/endian.h>
+#endif
 
 #include <pcre.h>
 
@@ -666,7 +669,7 @@ utf16_to_utf8 (/* const */ char *input, size_t len)
   char *inp = input;
   char *outp = out;
 
-  size_t r = iconv (ic, &inp, &inlen, &outp, &outlen);
+  size_t r = iconv (ic, (ICONV_CONST char **) &inp, &inlen, &outp, &outlen);
   if (r == (size_t) -1) {
     if (errno == E2BIG) {
       int err = errno;

@@ -64,6 +64,7 @@ gnumakefile
 hash
 hash-pjw
 human
+iconv
 ignore-value
 lock
 maintainer-makefile
@@ -77,6 +78,7 @@ openat
 perror
 pipe2
 pread
+ptsname_r
 read-file
 readlink
 select
