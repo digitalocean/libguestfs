@@ -1,3 +1,12 @@
+libguestfs (1:1.28.2-1) unstable; urgency=medium
+
+  * New upstream version
+  * Fixed guestfsd dependencies, stripped unnecessary build-dependencies
+  * Bumped Standards-Version
+  * Added patch for fixing build
+
+ -- Hilko Bengen <bengen@debian.org>  Fri, 31 Oct 2014 19:34:41 +0100
+
 libguestfs (1:1.28.1-1) unstable; urgency=medium
 
   * New upstream version
