@@ -144,6 +144,92 @@ qemu, do:
 
  virt-v2v -i disk disk.img -o qemu -os /var/tmp --qemu-boot
 
+=head1 SUPPORT MATRIX
+
+=head2 Hypervisors (Input)
+
+=over 4
+
+=item VMware ESXi
+
+Must be managed by VMware vCenter.  Unmanaged, direct input from ESXi
+is not supported.
+
+=item OVA exported from VMware
+
+OVAs from other hypervisors will not work.
+
+=item RHEL 5 Xen
+
+=item Citrix Xen
+
+Citrix Xen has not been recently tested.
+
+=item Hyper-V
+
+Not recently tested.  Requires that you export the disk or use
+L<virt-p2v(1)> on Hyper-V.
+
+=item Direct from disk images
+
+Only disk images exported from supported hypervisors, and using
+container formats supported by qemu.
+
+=item Physical machines
+
+Using the L<virt-p2v(1)> tool.
+
+=back
+
+=head2 Hypervisors (Output)
+
+QEMU and KVM only.
+
+=head2 Virtualization management systems (Output)
+
+=over 4
+
+=item OpenStack Glance
+
+=item Red Hat Enterprise Virtualization (RHEV) 2.2 and up
+
+=item Local libvirt
+
+And hence L<virsh(1)>, L<virt-manager(1)>, and similar tools.
+
+=item Local disk
+
+=back
+
+=head2 Guests
+
+=over 4
+
+=item Red Hat Enterprise Linux 3, 4, 5, 6, 7
+
+=item CentOS 3, 4, 5, 6, 7
+
+=item Scientific Linux 3, 4, 5, 6, 7
+
+=item Fedora
+
+=item SLES 10 and up
+
+=item OpenSUSE 10 and up
+
+=item Windows XP to Windows 7 / Windows Server 2008 R2
+
+We use Windows internal version numbers, see
+L<https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions>
+
+Currently only NT 5.2 to NT 6.1 are supported, with support for later
+versions planned soon.
+
+The Windows Recovery Console is not supported, see
+L</Windows Recovery Console> below.
+
+=back
+
 =head1 OPTIONS
 
 =over 4
@@ -422,6 +508,13 @@ C<root>.
 
 You will get an error if virt-v2v is unable to mount/write to the
 Export Storage Domain.
+
+=item B<--password-file> file
+
+Instead of asking for password(s) interactively, pass the password
+through a file.  Note the file should contain the whole password,
+B<without any trailing newline>, and for security the file should have
+mode C<0600> so that others cannot read it.
 
 =item B<--print-source>
 
@@ -789,7 +882,8 @@ down).
 
 Note that you may be asked for the vCenter password I<twice>.  This
 happens once because libvirt needs it, and a second time because
-virt-v2v itself connects directly to the server.
+virt-v2v itself connects directly to the server.  Use
+I<--password-file> to supply a password via a file.
 
 In this case the output flags are set to write the converted guest to
 a temporary directory as this is just an example, but you can also

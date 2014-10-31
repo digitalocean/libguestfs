@@ -22354,6 +22354,10 @@ guestfs_session_statvfs (GuestfsSession *session, const gchar *path, GError **er
  * This runs the strings(1) command on a file and returns the list of
  * printable strings found.
  * 
+ * Use this API with caution. In particular, it's generally not a good idea
+ * to use it on untrusted files. For more information see "CVE-2014-8484"
+ * in guestfs(3).
+ * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  */
 gchar **
@@ -22408,6 +22412,10 @@ guestfs_session_strings (GuestfsSession *session, const gchar *path, GError **er
  * L   32-bit little endian such as UCS-4LE.
  * 
  * The returned strings are transcoded to UTF-8.
+ * 
+ * Use this API with caution. In particular, it's generally not a good idea
+ * to use it on untrusted files. For more information see "CVE-2014-8484"
+ * in guestfs(3).
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  */

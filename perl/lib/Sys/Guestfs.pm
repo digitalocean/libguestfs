@@ -6708,6 +6708,10 @@ This is the same as the C<statvfs(2)> system call.
 This runs the L<strings(1)> command on a file and returns
 the list of printable strings found.
 
+B<Use this API with caution.>  In particular, it's generally not
+a good idea to use it on untrusted files.  For more information
+see L<guestfs(3)/CVE-2014-8484>.
+
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
@@ -6751,6 +6755,10 @@ This is useful for examining binaries in Windows guests.
 =back
 
 The returned strings are transcoded to UTF-8.
+
+B<Use this API with caution.>  In particular, it's generally not
+a good idea to use it on untrusted files.  For more information
+see L<guestfs(3)/CVE-2014-8484>.
 
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.

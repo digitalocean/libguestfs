@@ -8089,6 +8089,10 @@ class GuestFS(object):
         """This runs the strings(1) command on a file and returns
         the list of printable strings found.
         
+        Use this API with caution. In particular, it's generally
+        not a good idea to use it on untrusted files. For more
+        information see "CVE-2014-8484" in guestfs(3).
+        
         This function returns a list of strings.
         
         Because of the message protocol, there is a transfer
@@ -8125,6 +8129,10 @@ class GuestFS(object):
         L   32-bit little endian such as UCS-4LE.
         
         The returned strings are transcoded to UTF-8.
+        
+        Use this API with caution. In particular, it's generally
+        not a good idea to use it on untrusted files. For more
+        information see "CVE-2014-8484" in guestfs(3).
         
         This function returns a list of strings.
         

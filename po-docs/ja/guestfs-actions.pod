@@ -11328,6 +11328,10 @@ error.  I<The caller must call C<guestfs_free_statvfs> after use>.
 This runs the L<strings(1)> command on a file and returns the list of
 printable strings found.
 
+B<Use this API with caution.> In particular, it's generally not a good idea
+to use it on untrusted files.  For more information see
+L<guestfs(3)/CVE-2014-8484>.
+
 This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
@@ -11380,6 +11384,10 @@ UCS-4LE のような 32 ビットのリトルエンディアン。
 =back
 
 返される文字列は UTF-8 に変換されます。
+
+B<Use this API with caution.> In particular, it's generally not a good idea
+to use it on untrusted files.  For more information see
+L<guestfs(3)/CVE-2014-8484>.
 
 This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the

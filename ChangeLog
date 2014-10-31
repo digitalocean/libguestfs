@@ -1,3 +1,189 @@
+commit 3e4024a1ea3dc7f14798d8c76a568e86dbf99a48
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 30 22:21:47 2014 +0000
+
+    Version 1.29.3.
+
+commit 65abc4420325c1226b002f2304709b2040160877
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 30 13:34:12 2014 +0000
+
+    v2v: Add --password-file parameter (RHBZ#1158526).
+    
+    This allows you to send passwords to virt-v2v input modes without
+    being interactive.
+
+commit b35b84684c845ceefd3c0ec519caf80366a798ea
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 30 09:02:00 2014 +0000
+
+    v2v: vmware: Use 'curl --config' to pass arguments securely to curl.
+    
+    Instead of making up an ordinary curl command line, write a temporary
+    config file and use 'curl --config tmpfile' to pass the arguments.
+    
+    The advantage is that it's more secure if we want to supply passwords
+    to curl, since a '--user username:password' parameter on the command
+    line could be read (eg. by 'ps ax'), but the temporary file has mode
+    0600 and cannot be read by other users.
+    
+    This is mostly code motion, but it also passes the '-q' option to curl
+    to stop it from reading default configuration files.
+
+commit d82c5fb5a0c86345891ee191ae7d820361978643
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 30 13:47:23 2014 +0000
+
+    v2v: Remove useless parentheses around expression.
+
+commit 8efbe49df6d53666bd5a6031f45f45ceb1408fb8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 28 11:21:08 2014 +0000
+
+    p2v: kickstart: Add rpm to list of packages.
+    
+    Avoids RHBZ#1089566.
+
+commit 26952db56ffab1bc93c7f57c43e785f62d44854f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 28 11:20:30 2014 +0000
+
+    p2v: kickstart: Remove 'install' line.
+    
+    'install' is the default operation, it doesn't have to be specified.
+
+commit c48114cd24d630ac66bd683c3593c33d43f712a6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 28 09:00:29 2014 +0000
+
+    p2v: kickstart: Add firewalld to the ISO to allow firewall to be enabled.
+
+commit 439bf5e42ac5396eed8911e2d2698ceb4603f0a8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 28 08:55:46 2014 +0000
+
+    p2v: kickstart: Name the ISO 'virt-p2v'.
+
+commit a03bffa15a5357d5d0244595caf99607be1ec3ab
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 29 18:01:52 2014 +0000
+
+    v2v: Add a support matrix to the manual page.
+    
+    This explains what does and doesn't work.
+
+commit 6d338ae4e64ef7c41bba74f66809b63158e49311
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 28 22:48:57 2014 +0000
+
+    builder: Document that --edit option can be split across lines.
+
+commit cb291d7e4642547da5551f8686bbc46a911377af
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 28 08:51:06 2014 +0000
+
+    p2v: Ensure we are using virt-v2v >= 1.28.
+    
+    Must NOT use:
+    
+    - One of the interim versions of virt-v2v (1.27.x) that we published
+      during development.
+    
+    - Old virt-v2v (0.9.x).
+    
+    Also use the --version option (instead of -V) since old virt-v2v
+    required it:
+    
+      $ virt-v2v -V
+      Option v is ambiguous (version, vmtype)
+      Usage:
+      [...]
+      $ virt-v2v --version
+      0.9.1
+
+commit d0eba7f26035db10dcaa062e1c90e63f6d446f9f
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Tue Oct 28 15:51:24 2014 +0800
+
+    sysprep: remove /var/spool/mail/username
+    
+    remove /var/spool/mail/username if --enable user-account.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 7f7c15334722b975722e43ccd5308fc74a4ad453
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 27 17:50:58 2014 +0000
+
+    Document three (fixed) security problems in the main manual page.
+    
+    Previously these were only covered in the release notes, but not in
+    the "SECURITY" section of guestfs(3).
+
+commit 777e2175abe5d8ab6687d11d817827080ae6f7ff
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 27 17:44:54 2014 +0000
+
+    Add warnings about using guestfs_strings* APIs because of CVE-2014-8484 and CVE-2014-8485.
+
+commit b09b60c987ff113bc4520ab994142da912ffa3d6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 27 15:42:02 2014 +0000
+
+    p2v: Add usb-storage module and rebuild initrd (RHBZ#1157679).
+    
+    Include the usb-storage kernel module, to permit booting from USB
+    keys.
+    
+    Rerun dracut to rebuild the initramfs.  This is complicated because by
+    default dracut will try to build an initramfs for the running
+    (ie. appliance) kernel, which is completely useless.  We need to find
+    the latest installed kernel and rebuild the initramfs for that
+    instead, which is hairy.
+    
+    This also does a small refactoring of the distro-specific code,
+    removing the $selinux_relabel variable and replacing it with a generic
+    $extra_args variable.
+    
+    I only added this to the virt-builder script, since one assumes that
+    livecd-creator/whatever should make the kickstart ISO bootable by
+    installing whatever drivers and modules are necessary.
+
+commit 4c31cae279aeb66f424d983cbf472b08daf6a762
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 27 16:10:28 2014 +0000
+
+    Revert "p2v: Add usb-storage dracut module to allow boot from USB key (RHBZ#1157679)."
+    
+    Running 'dracut -f' installs a dracut for the running kernel (of the
+    appliance) not the installed kernel.  Stupid stupid stupid.
+    
+    This reverts commit 7a6d44ebfe23f28f46f6af1fd48ea8371473529b.
+
+commit 7a6d44ebfe23f28f46f6af1fd48ea8371473529b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 27 15:42:02 2014 +0000
+
+    p2v: Add usb-storage dracut module to allow boot from USB key (RHBZ#1157679).
+    
+    I only added this to the virt-builder script, since one assumes that
+    livecd-creator/whatever should make the kickstart ISO bootable by
+    installing whatever drivers and modules are necessary.
+
+commit 91788cd76f23227c102293a5dc5eef1c30cf7858
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 27 13:41:49 2014 +0000
+
+    p2v: Add "Hardware Support" group to the P2V images (RHBZ#1157679).
+    
+    Thanks: Chris Adams
+
+commit fab95a52bd307e6be699681de67134788687bf13
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Oct 26 19:35:36 2014 +0000
+
+    p2v: Explain in the man page why the virt-p2v ISO is used.
+
 commit 5862a4391db34732d45403f594ecc050fe77383f
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sat Oct 25 17:56:45 2014 +0100

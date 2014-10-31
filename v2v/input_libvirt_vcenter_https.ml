@@ -36,23 +36,51 @@ let readahead_for_copying = Some (64 * 1024 * 1024)
 (* Return the session cookie.  It is memoized, so you can call this
  * as often as required.
  *)
-let get_session_cookie =
+let rec get_session_cookie =
   let session_cookie = ref "" in
-  fun verbose scheme uri sslverify url ->
+  fun verbose password scheme uri sslverify url ->
     if !session_cookie <> "" then
       Some !session_cookie
     else (
-      let cmd =
-        sprintf "curl -s%s%s%s -I %s ||:"
-          (if not sslverify then " --insecure" else "")
-          (match uri.uri_user with Some _ -> " -u" | None -> "")
-          (match uri.uri_user with Some user -> " " ^ quote user | None -> "")
-          (quote url) in
-      let lines = external_command ~prog cmd in
+      let curl_args = [
+        "head", None;
+        "silent", None;
+        "url", Some url;
+      ] in
+      let curl_args =
+        match uri.uri_user, password with
+        | None, None -> curl_args
+        | None, Some _ ->
+          warning (f_"--password-file parameter ignored because 'user@' was not given in the URL");
+          curl_args
+        | Some user, None ->
+          ("user", Some user) :: curl_args
+        | Some user, Some password ->
+          ("user", Some (user ^ ":" ^ password)) :: curl_args in
+      let curl_args =
+        if not sslverify then ("insecure", None) :: curl_args else curl_args in
+
+      let lines = run_curl_get_lines curl_args in
 
       let dump_response chan =
-        fprintf chan "%s\n" cmd;
-        List.iter (fun x -> fprintf chan "%s\n" x) lines
+        (* Don't print passwords in the debug output. *)
+        let curl_args =
+          List.map (
+            function
+            | ("user", Some _) -> ("user", Some "<hidden>")
+            | x -> x
+          ) curl_args in
+        (* Dump out the approximate curl command that was run. *)
+        fprintf chan "curl -q";
+        List.iter (
+          function
+          | name, None -> fprintf chan " --%s" name
+          | name, Some value -> fprintf chan " --%s %s" name (quote value)
+        ) curl_args;
+        fprintf chan "\n";
+        (* Dump out the output of the command. *)
+        List.iter (fun x -> fprintf chan "%s\n" x) lines;
+        flush chan
       in
 
       if verbose then dump_response stdout;
@@ -109,6 +137,39 @@ let get_session_cookie =
         Some !session_cookie
     )
 
+(* Run 'curl' and pass the arguments securely through the --config
+ * option and an external file.
+ *)
+and run_curl_get_lines curl_args =
+  let config_file, chan = Filename.open_temp_file "v2vcurl" ".conf" in
+  List.iter (
+    function
+    | name, None -> fprintf chan "%s\n" name
+    | name, Some value ->
+      fprintf chan "%s = \"" name;
+      (* Write the quoted value.  See 'curl' man page for what is
+       * allowed here.
+       *)
+      let len = String.length value in
+      for i = 0 to len-1 do
+        match value.[i] with
+        | '\\' -> output_string chan "\\\\"
+        | '"' -> output_string chan "\\\""
+        | '\t' -> output_string chan "\\t"
+        | '\n' -> output_string chan "\\n"
+        | '\r' -> output_string chan "\\r"
+        | '\x0b' -> output_string chan "\\v"
+        | c -> output_char chan c
+      done;
+      fprintf chan "\"\n"
+  ) curl_args;
+  close_out chan;
+
+  let cmd = sprintf "curl -q --config %s" (quote config_file) in
+  let lines = external_command ~prog cmd in
+  Unix.unlink config_file;
+  lines
+
 (* Helper function to extract the datacenter from a URI. *)
 let get_datacenter uri scheme =
   let default_dc = "ha-datacenter" in
@@ -149,7 +210,7 @@ let get_datacenter uri scheme =
  *)
 let source_re = Str.regexp "^\\[\\(.*\\)\\] \\(.*\\)\\.vmdk$"
 
-let map_source_to_uri ?readahead verbose uri scheme server path =
+let map_source_to_uri ?readahead verbose password uri scheme server path =
   if not (Str.string_match source_re path 0) then
     path
   else (
@@ -182,7 +243,8 @@ let map_source_to_uri ?readahead verbose uri scheme server path =
         string_find query "no_verify=1" = -1 in
 
     (* Now we have to query the server to get the session cookie. *)
-    let session_cookie = get_session_cookie verbose scheme uri sslverify url in
+    let session_cookie =
+      get_session_cookie verbose password scheme uri sslverify url in
 
     (* Construct the JSON parameters. *)
     let json_params = [
@@ -219,9 +281,9 @@ let map_source_to_uri ?readahead verbose uri scheme server path =
 
 (* Subclass specialized for handling VMware vCenter over https. *)
 class input_libvirt_vcenter_https
-  verbose libvirt_uri parsed_uri scheme server guest =
+  verbose password libvirt_uri parsed_uri scheme server guest =
 object
-  inherit input_libvirt verbose libvirt_uri guest
+  inherit input_libvirt verbose password libvirt_uri guest
 
   val saved_source_paths = Hashtbl.create 13
 
@@ -235,7 +297,7 @@ object
     (* Get the libvirt XML.  This also checks (as a side-effect)
      * that the domain is not running.  (RHBZ#1138586)
      *)
-    let xml = Domainxml.dumpxml ?conn:libvirt_uri guest in
+    let xml = Domainxml.dumpxml ?password ?conn:libvirt_uri guest in
     let source, disks = parse_libvirt_xml ~verbose xml in
 
     (* Save the original source paths, so that we can remap them again
@@ -259,7 +321,7 @@ object
       | { p_source_disk = disk; p_source = P_dont_rewrite } -> disk
       | { p_source_disk = disk; p_source = P_source_file path } ->
         let qemu_uri = map_source_to_uri ?readahead
-	  verbose parsed_uri scheme server path in
+	  verbose password parsed_uri scheme server path in
 
         (* The libvirt ESX driver doesn't normally specify a format, but
          * the format of the -flat file is *always* raw, so force it here.
@@ -280,7 +342,7 @@ object
       let readahead = readahead_for_copying in
       let backing_qemu_uri =
         map_source_to_uri ?readahead
-          verbose parsed_uri scheme server orig_path in
+          verbose password parsed_uri scheme server orig_path in
 
       (* Rebase the qcow2 overlay to adjust the readahead parameter. *)
       let cmd =
