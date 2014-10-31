@@ -77,7 +77,7 @@ and flags = {
 }
 
 type argspec = Arg.key * Arg.spec * Arg.doc
-val argspec : prog:string -> unit -> (argspec * string option * string) list * (unit -> ops)
+val argspec : unit -> (argspec * string option * string) list * (unit -> ops)
 (** This returns a pair [(list, get_ops)].
 
     [list] is a list of the command line arguments, plus some extra data.

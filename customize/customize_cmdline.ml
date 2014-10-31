@@ -29,6 +29,8 @@ open Printf
 open Common_utils
 open Common_gettext.Gettext
 
+open Customize_utils
+
 type ops = {
   ops : op list;
   flags : flags;
@@ -84,7 +86,7 @@ and flags = {
 
 type argspec = Arg.key * Arg.spec * Arg.doc
 
-let rec argspec ~prog () =
+let rec argspec () =
   let ops = ref [] in
   let scrub_logfile = ref false in
   let password_crypto = ref None in
@@ -105,9 +107,8 @@ let rec argspec ~prog () =
     let i =
       try String.index arg ':'
       with Not_found ->
-        eprintf (f_"%s: invalid format for '--%s' parameter, see the man page.\n")
-          prog option_name;
-        exit 1 in
+        error (f_"invalid format for '--%s' parameter, see the man page")
+          option_name in
     let len = String.length arg in
     String.sub arg 0 i, String.sub arg (i+1) (len-(i+1))
   in
@@ -117,9 +118,8 @@ let rec argspec ~prog () =
   let split_links_list option_name arg =
     match string_nsplit ":" arg with
     | [] | [_] ->
-      eprintf (f_"%s: invalid format for '--%s' parameter, see the man page.\n")
-        prog option_name;
-      exit 1
+      error (f_"invalid format for '--%s' parameter, see the man page")
+        option_name
     | target :: lns -> target, lns
   in
 
@@ -209,7 +209,7 @@ let rec argspec ~prog () =
       Arg.String (
         fun s ->
           let user, sel = split_string_pair "password" s in
-          let sel = Password.parse_selector ~prog sel in
+          let sel = Password.parse_selector sel in
           ops := `Password (user, sel) :: !ops
       ),
       s_"USER:SELECTOR" ^ " " ^ s_"Set user password"
@@ -219,7 +219,7 @@ let rec argspec ~prog () =
       "--root-password",
       Arg.String (
         fun s ->
-          let sel = Password.parse_selector ~prog s in
+          let sel = Password.parse_selector s in
           ops := `RootPassword sel :: !ops
       ),
       s_"SELECTOR" ^ " " ^ s_"Set root password"
@@ -285,7 +285,7 @@ let rec argspec ~prog () =
       "--password-crypto",
       Arg.String (
         fun s ->
-          password_crypto := Some (Password.password_crypto_of_string ~prog s)
+          password_crypto := Some (Password.password_crypto_of_string s)
       ),
       "md5|sha256|sha512" ^ " " ^ s_"Set password crypto"
     ),

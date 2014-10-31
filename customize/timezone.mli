@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-val set_timezone : prog:string -> Guestfs.guestfs -> string -> string -> bool
-(** [set_timezone ~prog g root "Europe/London"] sets the default timezone
+val set_timezone : Guestfs.guestfs -> string -> string -> bool
+(** [set_timezone g root "Europe/London"] sets the default timezone
     of the guest.  Returns [true] if it was able to set the
     timezone or [false] if not. *)

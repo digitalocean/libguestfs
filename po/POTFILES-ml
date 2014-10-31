@@ -14,10 +14,12 @@ builder/setlocale.ml
 builder/sigchecker.ml
 builder/sources.ml
 builder/uname.ml
+builder/utils.ml
 customize/crypt.ml
 customize/customize_cmdline.ml
 customize/customize_main.ml
 customize/customize_run.ml
+customize/customize_utils.ml
 customize/firstboot.ml
 customize/hostname.ml
 customize/password.ml
@@ -43,6 +45,7 @@ sparsify/cmdline.ml
 sparsify/copying.ml
 sparsify/in_place.ml
 sparsify/sparsify.ml
+sparsify/utils.ml
 sysprep/main.ml
 sysprep/sysprep_operation.ml
 sysprep/sysprep_operation_abrt_data.ml
@@ -91,6 +94,9 @@ v2v/convert_windows.ml
 v2v/domainxml.ml
 v2v/input_disk.ml
 v2v/input_libvirt.ml
+v2v/input_libvirt_other.ml
+v2v/input_libvirt_vcenter_https.ml
+v2v/input_libvirt_xen_ssh.ml
 v2v/input_libvirtxml.ml
 v2v/input_ova.ml
 v2v/kvmuid.ml
@@ -107,6 +113,4 @@ v2v/stringMap.ml
 v2v/types.ml
 v2v/utils.ml
 v2v/v2v.ml
-v2v/vCenter.ml
-v2v/xen.ml
 v2v/xml.ml

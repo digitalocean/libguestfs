@@ -604,6 +604,16 @@ EXTRA_DIST += test-i-ring.c macros.h
 
 ## end   gnulib module i-ring-tests
 
+## begin gnulib module iconv-tests
+
+TESTS += test-iconv
+check_PROGRAMS += test-iconv
+test_iconv_LDADD = $(LDADD) @LIBICONV@
+
+EXTRA_DIST += test-iconv.c signature.h macros.h
+
+## end   gnulib module iconv-tests
+
 ## begin gnulib module ignore-value-tests
 
 TESTS += test-ignore-value
@@ -694,6 +704,14 @@ check_PROGRAMS += test-ioctl
 EXTRA_DIST += test-ioctl.c signature.h macros.h
 
 ## end   gnulib module ioctl-tests
+
+## begin gnulib module isatty-tests
+
+TESTS += test-isatty
+check_PROGRAMS += test-isatty
+EXTRA_DIST += test-isatty.c signature.h macros.h
+
+## end   gnulib module isatty-tests
 
 ## begin gnulib module listen
 
@@ -987,6 +1005,14 @@ EXTRA_DIST += test-priv-set.c macros.h
 libtests_a_SOURCES += progname.h progname.c
 
 ## end   gnulib module progname
+
+## begin gnulib module ptsname_r-tests
+
+TESTS += test-ptsname_r
+check_PROGRAMS += test-ptsname_r
+EXTRA_DIST += test-ptsname_r.c signature.h macros.h
+
+## end   gnulib module ptsname_r-tests
 
 ## begin gnulib module putenv
 
@@ -1578,6 +1604,14 @@ check_PROGRAMS += test-time
 EXTRA_DIST += test-time.c
 
 ## end   gnulib module time-tests
+
+## begin gnulib module ttyname_r-tests
+
+TESTS += test-ttyname_r
+check_PROGRAMS += test-ttyname_r
+EXTRA_DIST += test-ttyname_r.c signature.h macros.h
+
+## end   gnulib module ttyname_r-tests
 
 ## begin gnulib module unistd-safer-tests
 

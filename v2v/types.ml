@@ -33,6 +33,7 @@ type source = {
   s_nics : source_nic list;
 }
 and source_disk = {
+  s_disk_id : int;
   s_qemu_uri : string;
   s_format : string option;
   s_target_dev : string option;
@@ -193,6 +194,7 @@ and guestcaps_video_type = QXL | Cirrus
 class virtual input verbose = object
   method virtual as_options : string
   method virtual source : unit -> source
+  method adjust_overlay_parameters (_ : overlay) = ()
 end
 
 class virtual output verbose = object
