@@ -2333,6 +2333,9 @@
 /* Define to 1 if unlink() on a parent directory may succeed */
 #undef UNLINK_PARENT_BUG
 
+/* Name of unzip program. */
+#undef UNZIP
+
 /* Define if the POSIX multithreading library can be used. */
 #undef USE_POSIX_THREADS
 
@@ -2430,6 +2433,9 @@
 /* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
    `char[]'. */
 #undef YYTEXT_POINTER
+
+/* Name of zip program. */
+#undef ZIP
 
 /* Enable large inode numbers on Mac OS X 10.5. */
 #undef _DARWIN_USE_64_BIT_INODE

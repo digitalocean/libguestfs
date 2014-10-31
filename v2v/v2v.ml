@@ -73,6 +73,17 @@ let rec main () =
 
   if verbose then printf "%s%!" (string_of_source source);
 
+  assert (source.s_dom_type <> "");
+  assert (source.s_name <> "");
+  assert (source.s_memory > 0L);
+  assert (source.s_vcpu >= 1);
+  if source.s_disks = [] then
+    error (f_"source has no hard disks!");
+  List.iter (
+    fun disk ->
+      assert (disk.s_qemu_uri <> "");
+  ) source.s_disks;
+
   (* Map source name. *)
   let source =
     match output_name with
@@ -306,6 +317,13 @@ let rec main () =
           let overlay_file = t.target_overlay.ov_overlay_file in
           if not ((new G.guestfs ())#disk_has_backing_file overlay_file) then
             error (f_"internal error: qemu corrupted the overlay file");
+
+          (* Give the input module a chance to adjust the parameters
+           * of the overlay/backing file.  This allows us to increase
+           * the readahead parameter when copying (see RHBZ#1151033 and
+           * RHBZ#1153589 for the gruesome details).
+           *)
+          input#adjust_overlay_parameters t.target_overlay;
 
           (* It turns out that libguestfs's disk creation code is
            * considerably more flexible and easier to use than

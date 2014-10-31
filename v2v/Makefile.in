@@ -1429,6 +1429,7 @@ UINT64_MAX_EQ_ULONG_MAX = @UINT64_MAX_EQ_ULONG_MAX@
 UNDEFINE_STRTOK_R = @UNDEFINE_STRTOK_R@
 UNISTD_H_HAVE_WINSOCK2_H = @UNISTD_H_HAVE_WINSOCK2_H@
 UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
+UNZIP = @UNZIP@
 VALGRIND = @VALGRIND@
 VALGRIND_NO_VGDB = @VALGRIND_NO_VGDB@
 VERSION = @VERSION@
@@ -1448,6 +1449,7 @@ YAJL_CFLAGS = @YAJL_CFLAGS@
 YAJL_LIBS = @YAJL_LIBS@
 YFLAGS = @YFLAGS@
 YIELD_LIB = @YIELD_LIB@
+ZIP = @ZIP@
 abs_aux_dir = @abs_aux_dir@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -1516,8 +1518,12 @@ EXTRA_DIST = \
 	HACKING README.RHEV-M \
 	test-v2v-i-ova.ovf \
 	test-v2v-i-ova.xml \
+	test-v2v-i-ova-gz.expected \
+	test-v2v-i-ova-gz.ovf \
 	test-v2v-i-ova-two-disks.expected \
 	test-v2v-i-ova-two-disks.ovf \
+	test-v2v-i-ova-zip.expected \
+	test-v2v-i-ova-zip.ovf \
 	test-v2v-networks-and-bridges-expected.xml \
 	test-v2v-networks-and-bridges.xml.in \
 	virt-v2v.pod
@@ -1530,6 +1536,9 @@ SOURCES_MLI = \
 	domainxml.mli \
 	input_disk.mli \
 	input_libvirt.mli \
+	input_libvirt_other.mli \
+	input_libvirt_vcenter_https.mli \
+	input_libvirt_xen_ssh.mli \
 	input_libvirtxml.mli \
 	input_ova.mli \
 	kvmuid.mli \
@@ -1545,8 +1554,6 @@ SOURCES_MLI = \
 	OVF.mli \
 	stringMap.mli \
 	types.mli \
-	vCenter.mli \
-	xen.mli \
 	xml.mli
 
 SOURCES_ML = \
@@ -1557,13 +1564,14 @@ SOURCES_ML = \
 	domainxml.ml \
 	DOM.ml \
 	kvmuid.ml \
-	vCenter.ml \
-	xen.ml \
 	OVF.ml \
 	linux.ml \
 	modules_list.ml \
 	input_disk.ml \
 	input_libvirtxml.ml \
+	input_libvirt_other.ml \
+	input_libvirt_vcenter_https.ml \
+	input_libvirt_xen_ssh.ml \
 	input_libvirt.ml \
 	input_ova.ml \
 	convert_linux.ml \
@@ -1671,7 +1679,9 @@ SOURCES_C = \
 #   phony guests (but we don't go out of our way here)
 # - that up to date guests don't crash virt-v2v
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
-@HAVE_OCAML_TRUE@TESTS = test-v2v-i-ova-two-disks.sh $(am__append_3)
+@HAVE_OCAML_TRUE@TESTS = test-v2v-i-ova-gz.sh \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-two-disks.sh \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-zip.sh $(am__append_3)
 
 # This forces the file to be updated before running the tests, in case
 # the .xml.in file has been changed.  Be nice if automake just did the

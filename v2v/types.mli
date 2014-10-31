@@ -35,6 +35,7 @@ type source = {
 (** The source: metadata, disk images. *)
 
 and source_disk = {
+  s_disk_id : int;                      (** A unique ID for each source disk. *)
   s_qemu_uri : string;                  (** QEMU URI of source disk. *)
   s_format : string option;             (** Format. *)
   s_target_dev : string option;         (** Target @dev from libvirt XML. *)
@@ -142,6 +143,9 @@ class virtual input : bool -> object
       This is just used for pretty-printing log messages. *)
   method virtual source : unit -> source
   (** Examine the source hypervisor and create a source struct. *)
+  method adjust_overlay_parameters : overlay -> unit
+  (** Called just before copying to allow the input module to adjust
+      parameters of the overlay disk. *)
 end
 (** Encapsulates all [-i], etc input arguments as an object. *)
 

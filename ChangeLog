@@ -1,18 +1,243 @@
-commit 6e05b458d5010dc6fe959c2777d4bb02ccafc2d9
+commit fdaaa005136bf041e54a2e04006718641074221c
 Author: Richard W.M. Jones <rjones@redhat.com>
-Date:   Sat Oct 18 10:50:23 2014 +0100
+Date:   Wed Oct 22 14:40:02 2014 +0100
 
-    Version 1.28.1.
+    Version 1.29.1.
 
-commit 93f8b522aa06e4ca7bc22fa40928ce38c6ece6ad
+commit ad78d1492b02eaf5d810e2f9d012a5fed4f4124b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 22 12:00:36 2014 +0100
+
+    v2v: -i libvirtxml: Fix handling of nbd sources (RHBZ#1153589).
+    
+    Previously I modified the parse_libvirt_xml function to get rid of the
+    awkward 'map_source*' functions, and have the callers map over and
+    modify the source disks afterwards.  However this broke the case where
+    an "nbd:..." URL was returned by parse_libvirt_xml, since the callers
+    might try to map this URL (eg. turning it into an absolute path).
+    This broke virt-p2v specifically.
+    
+    This commit changes parse_libvirt_xml to return a list of tuples
+    containing disk information, giving the callers more information with
+    which to do the mapping.
+    
+    This fixes commit 3596165282ccf2c5896894ec4e9a71c6da788463.
+
+commit dbe35729a3fbb7150275584dd0c5aa7d86c8e03e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 22 12:35:53 2014 +0100
+
+    v2v: Add some assertions to check the source was created correctly.
+
+commit e1eccae2da3a670c1ef7626c8779b71fb1877f7d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 21 13:36:55 2014 +0100
+
+    v2v: -i ova: Don't fail when given a relative path to an OVA directory (RHBZ#1155121).
+
+commit 496d0c45bc5e8c361d2cccb20b0f3a64443b05ab
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 20 21:48:08 2014 +0100
+
+    v2v: vcenter: Hoist readahead configurables to top of file.
+    
+    No change, just code motion.
+
+commit b8f826b7ac1e7f90f670f474c3582b56063cdef6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 20 20:41:29 2014 +0100
+
+    v2v: Inline and simplify Xen and vCenter input methods.
+    
+    Take the opportunity presented by the refactoring in the previous
+    commit to inline and simplify functions in these input subclasses.
+    
+    This finally removes the map_source* functions.
+
+commit a468fde01687914de501f0a95cd5a40986daec29
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 20 19:35:23 2014 +0100
+
+    v2v: Refactor Xen and vCenter code.
+    
+    This refactors the code into more logical units, based on the previous
+    commits.  So Xen + the input_libvirt Xen code is grouped and moved
+    into a new module called Input_libvirt_xen_ssh.  Similarly VCenter +
+    input_libvirt vCenter code is moved to Input_libvirt_vcenter_https.
+    
+    There is no change here, purely code motion.
+
+commit 9281dc7d44b7b02c6470a61425aa177e6525ee88
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 20 18:34:48 2014 +0100
+
+    v2v: vCenter: Adjust readahead parameter between conversion and copying phases (RHBZ#1151033) (RHBZ#1153589).
+    
+    Previously we fixed RHBZ#1151033 by increasing the cURL readahead
+    parameter to a large value.  Unfortunately this is too large -- and
+    hence slow -- for the conversion phase, which broke on slow vCenter
+    servers (RHBZ#1153589).
+    
+    What we do now is to perform the conversion phase with the default
+    readahead (2MB) to ensure stability, since performance of the
+    conversion phase is not critical.  Then before copying we change the
+    readahead to the larger value (64MB) to ensure efficient copying.
+
+commit 0084736f5fe75f62f72f0014333b32ab753b1554
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 20 18:21:38 2014 +0100
+
+    v2v: Add input#adjust_overlay_parameters method.
+    
+    This is called before the copying phase to allow the input method to
+    adjust overlay/backing parameters.
+    
+    The default implementation does nothing, so this commit has no effect.
+
+commit 63387fd8d0d77f7fdaaad14e5053b86ae51cbd6e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 20 18:18:54 2014 +0100
+
+    v2v: Add a unique number to source disks.
+    
+    Note that it doesn't matter what the number is, as long as it's
+    different for each disk.
+    
+    The unique number lets us store extra data in input objects which is
+    associated with each disk.
+
+commit 3596165282ccf2c5896894ec4e9a71c6da788463
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 20 18:02:57 2014 +0100
+
+    v2v: -i libvirt: Refactor map_source* functions.
+    
+    Get rid of the awkward map_source* functions, and replace it with
+    equivalent code which modifies the source disks objects coming back
+    from Input_libvirtxml.parse_libvirt_xml.
+    
+    This is just code refactoring.  Apart from the order in which certain
+    tests are done, this should be equivalent to the previous code.
+
+commit 9596fc44ff522f5f993a3c5ef9bb24a9a1b4a996
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 20 17:37:04 2014 +0100
+
+    v2v: -i libvirt: Create three specialized subclasses for handling vCenter/Xen/other.
+    
+    Previously we had one class ('input_libvirt') which handled all three
+    cases.  Now we have one superclass ('input_libvirt') and three
+    subclasses of that ('input_libvirt_vcenter_https',
+    'input_libvirt_xen_ssh', 'input_libvirt_other') which handle the three
+    cases separately.
+    
+    This is just code motion, and should be functionally equivalent to
+    what was here before.
+
+commit 9ddfbad814e55553d9d1cea08134311c12923cfe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 20 14:03:13 2014 +0100
+
+    v2v: Increase vCenter https timeout to 10 minutes.
+
+commit 0b49defc2b4307e1f9159b862637978129aaed29
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 20 14:01:25 2014 +0100
+
+    appliance: Set udev.event-timeout to override default too low udev setting.
+    
+    Unfortunately udev removed the udevtimeout setting on the kernel
+    command line.  This means the default timeout was being set back to 30
+    seconds, which is way too low for remote disks.
+    
+    However it was re-added (2014-07-29) as udev.event-timeout.  Set both
+    to be sure.
+    
+    Note this requires systemd >= 216.
+
+commit 3276845df1847d037fc4a5bed24966e0f9a0d564
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Oct 14 11:10:22 2014 +0200
+
+    diff: do not pad uid/gid in CSV mode
+
+commit 87941d183f4a96b4d936c2e94a79a60288f0dc74
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 13 16:49:59 2014 +0200
+
+    cat, diff: avoid double slashes in paths (RHBZ#1151910).
+    
+    In full_path, skip the trailing slash in the base directory when
+    different than "/", as the slash will eventually be added when building
+    the resulting path.
+
+commit e5befcacc5f7c1a6bd67fcdb92afede1a82d50eb
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 13 15:51:34 2014 +0200
+
+    ls: in CSV mode, always have a checksum field (RHBZ#1151900).
+    
+    Make sure to output the field for checksum even for non-regular files,
+    as empty, in CSV output mode. This ensures each line has the same number
+    of fields, regardless of the file type.
+
+commit 9019c4eb0621397163f0092c5c00ebb969d14152
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 21:57:10 2014 +0100
+
+    v2v: -i ova: Add a test for *.vmdk.gz compressed files (RHBZ#1152998).
+
+commit f27a582b6dd85a2810351cf7c2d2c98dc5ea6e9a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 21:45:10 2014 +0100
+
+    v2v: -i ova: Add a test for ZIP as a container (RHBZ#1152998).
+
+commit ede39a7591122abe29fc6de29aaa717ee9f8bb55
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 18:54:12 2014 +0100
+
+    v2v: Handle *.vmdk.gz compressed files (RHBZ#1152998).
+    
+    The OVA spec allows the disk images to be gzipped within the OVA
+    container.
+
+commit 60405e5aa1b89ce4ad8b27efb992e82e38d6dbeb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 18:41:43 2014 +0100
+
+    v2v: -i ova: Allow directories and ZIP files to be used as input (RHBZ#1152998).
+    
+    OVA is not a particularly well-specified format.  The specification
+    allows a directory to be an OVA, so enable that.  The spec doesn't
+    mention that ZIP can be used in place of tar, but since we have seen
+    these in the wild, allow that too.
+
+commit d8e26d0e4dc3de649cf81584e8c060becd2e4531
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 18:41:01 2014 +0100
+
+    mllib: Enhance and rename 'detect_compression' function so it can detect a few more file types.
+
+commit a7a5a223d4ca17b09a1e489fb3f147a2102f98d7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 13:53:19 2014 +0100
+
+    v2v: Change --help text URLs so they don't reference esx as main server.
+
+commit 1f97a5df7673aa3a6e4208a421a87fd14369675c
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sat Oct 18 10:27:23 2014 +0100
 
     p2v: Test did not recognize '1.XX.0' as a valid version number.
     
     Thus breaking when we changed the version number to 1.28.0.
-    
-    (cherry picked from commit 1f97a5df7673aa3a6e4208a421a87fd14369675c)
+
+commit cbad8e6d5114798bd3fdd279c801e1b97c648692
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 18 09:45:04 2014 +0100
+
+    Version 1.29.0.
 
 commit 305f0050eb7844919de24409a3cb919827f7e0db
 Author: Richard W.M. Jones <rjones@redhat.com>

@@ -25,7 +25,7 @@
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [28])
+m4_define([libguestfs_minor],   [29])
 m4_define([libguestfs_release], [1])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
@@ -719,6 +719,13 @@ fi
 if test "x$YACC" = "xyacc"; then
     AC_MSG_FAILURE([GNU 'bison' is required (yacc won't work).])
 fi
+
+dnl zip/unzip, used by virt-v2v
+AC_PATH_PROGS([ZIP],[zip],[no])
+AC_DEFINE_UNQUOTED([ZIP],["$ZIP"],[Name of zip program.])
+AM_CONDITIONAL([HAVE_ZIP],[test "x$ZIP" != "xno"])
+AC_PATH_PROGS([UNZIP],[unzip],[no])
+AC_DEFINE_UNQUOTED([UNZIP],["$UNZIP"],[Name of unzip program.])
 
 dnl Check for QEMU for running binaries on this $host_cpu, fall
 dnl back to basic 'qemu'.  Allow the user to override it.

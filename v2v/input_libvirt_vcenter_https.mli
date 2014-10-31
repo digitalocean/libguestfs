@@ -16,8 +16,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-(** Functions for dealing with ESX. *)
+(** [-i libvirt] when the source is VMware vCenter *)
 
-val map_path_to_uri : bool -> Xml.uri -> string -> string -> string -> string option -> string * string option
-(** Map a VMware path like "[datastore1] guest/guest.vmdk" to the
-    URL where we can fetch the data. *)
+val input_libvirt_vcenter_https : bool -> string option -> Xml.uri -> string -> string -> string -> Types.input
