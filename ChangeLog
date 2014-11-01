@@ -1,3 +1,98 @@
+commit a6b39437830dd49c55e0b2ca7c9b05e446462e59
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 31 17:47:18 2014 +0000
+
+    Version 1.29.4.
+
+commit 6d6644d52d8092dd4f4add859ebda06bea4b5b56
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 31 11:02:33 2014 +0000
+
+    launch: libvirt: Implement drive secrets (RHBZ#1159016).
+    
+    Implement the GUESTFS_ADD_DRIVE_OPTS_SECRET argument of
+    guestfs_add_drive_opts.  For libvirt we have to save the secret in
+    libvirtd first, get a UUID, and then pass the UUID back through the
+    domain XML.
+
+commit 68dc488a4476caf742d5342307258dd72d0e2256
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 31 14:16:36 2014 +0000
+
+    v2v: -o libvirt: Get the <features/> right in the output XML (RHBZ#1159258).
+    
+    Implement what old virt-v2v did (from
+    lib/Sys/VirtConvert/Connection/LibVirtTarget.pm)
+    
+    Thanks: Tingting Zheng, Matthew Booth
+
+commit 7ba102dc4cd4b7c80f7486a54bf8535dd964f436
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 31 17:45:04 2014 +0100
+
+    fish: complete symlink properly
+    
+    When an entry is a symlink, check whether it points to a directory, so
+    the entry for it can be completed correctly.
+
+commit a8b95a5535480c7b382fab82dcaf18eb67e5278a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 31 17:37:22 2014 +0100
+
+    fish: fix dir completion on filesystems w/o dirent.d_type (RHBZ#1153844).
+    
+    On filesystems whose dirent.d_type is DT_UNKNOWN or some unknown value,
+    manually check whether an entry is a directory, thus completing in the
+    proper way.
+
+commit d082cd6ae573956d1973e43e29edb819edb21e6e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 31 16:11:01 2014 +0100
+
+    builder: pass Sources.source objects directly
+    
+    Instead of passing the (uri, key, proxy) tuple around, pass the whole
+    Sources.source record; this requires creating proper Sources.source also
+    for uri+fingerprint passed via command line.
+    
+    No functional changes.
+
+commit 56bd781b76471cdce2602b34971f2f32b1ac1285
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 31 15:17:51 2014 +0100
+
+    builder: use gpgkey_type for the gpgkey field in sources
+
+commit 3987bbcd91fd134d04d92406859486d51c90af40
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 31 15:05:32 2014 +0100
+
+    builder: move the gpgkey_type type from Sigchecker to Utils
+    
+    No functional change, just code motion.
+
+commit 1470be7f3b36b9ba6862fd04aa66446e89b108a7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 31 15:57:45 2014 +0000
+
+    v2v: Add bounds check to Xml.xpathobj_node function.
+    
+    I accidentally called it with an out-of-bounds index, and it caused a
+    core dump.  Add a bounds check to stop this from happening in
+    production.
+
+commit c085a0ba73858769fba1f88855cff59dea29afcf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 31 13:44:57 2014 +0000
+
+    builder: Updated CentOS image to 6.6.
+
+commit 847465a79422d30509dc2829578c059db78366bd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 31 10:50:20 2014 +0000
+
+    src/info.c: Remove incorrect comment.
+
 commit 3e4024a1ea3dc7f14798d8c76a568e86dbf99a48
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Oct 30 22:21:47 2014 +0000

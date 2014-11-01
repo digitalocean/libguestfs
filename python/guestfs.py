@@ -511,7 +511,7 @@ class GuestFS(object):
         "secret"
         For the "rbd" protocol only, this specifies the
         'secret' to use when connecting to the remote
-        device.
+        device. It must be base64 encoded.
         
         If not given, then a secret matching the given
         username will be looked up in the default keychain

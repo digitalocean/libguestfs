@@ -47,13 +47,13 @@ and list_entries_long ~sources index =
   let langs = Languages.languages () in
 
   List.iter (
-    fun (source, key, proxy) ->
-      printf (f_"Source URI: %s\n") source;
-      (match key with
-      | Sigchecker.No_Key -> ()
-      | Sigchecker.Fingerprint fp ->
+    fun { Sources.uri = uri; gpgkey = gpgkey } ->
+      printf (f_"Source URI: %s\n") uri;
+      (match gpgkey with
+      | Utils.No_Key -> ()
+      | Utils.Fingerprint fp ->
         printf (f_"Fingerprint: %s\n") fp;
-      | Sigchecker.KeyFile kf ->
+      | Utils.KeyFile kf ->
         printf (f_"Key: %s\n") kf;
       );
       printf "\n"
@@ -99,14 +99,14 @@ and list_entries_long ~sources index =
 and list_entries_json ~sources index =
   let json_sources =
     List.map (
-      fun (source, key, proxy) ->
-        let item = [ "uri", JSON.String source ] in
+      fun { Sources.uri = uri; gpgkey = gpgkey } ->
+        let item = [ "uri", JSON.String uri ] in
         let item =
-          match key with
-          | Sigchecker.No_Key -> item
-          | Sigchecker.Fingerprint fp ->
+          match gpgkey with
+          | Utils.No_Key -> item
+          | Utils.Fingerprint fp ->
             ("fingerprint", JSON.String fp) :: item
-          | Sigchecker.KeyFile kf ->
+          | Utils.KeyFile kf ->
             ("key", JSON.String kf) :: item in
         JSON.Dict item
     ) sources in
