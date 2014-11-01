@@ -485,7 +485,7 @@ specify the remote username you want.
 =item C<secret>
 
 For the C<rbd> protocol only, this specifies the 'secret' to use when
-connecting to the remote device.
+connecting to the remote device.  It must be base64 encoded.
 
 If not given, then a secret matching the given username will be looked up in the
 default keychain locations, or if no username is given, then no authentication
@@ -11878,6 +11878,10 @@ I<The caller must call C<guestfs_free_statvfs> after use>.
 This runs the L<strings(1)> command on a file and returns
 the list of printable strings found.
 
+B<Use this API with caution.>  In particular, it's generally not
+a good idea to use it on untrusted files.  For more information
+see L<guestfs(3)/CVE-2014-8484>.
+
 This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
@@ -11932,6 +11936,10 @@ This is useful for examining binaries in Windows guests.
 =back
 
 The returned strings are transcoded to UTF-8.
+
+B<Use this API with caution.>  In particular, it's generally not
+a good idea to use it on untrusted files.  For more information
+see L<guestfs(3)/CVE-2014-8484>.
 
 This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.

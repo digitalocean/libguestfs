@@ -755,7 +755,7 @@ public class GuestFS {
    * "secret"
    * For the "rbd" protocol only, this specifies the
    * 'secret' to use when connecting to the remote
-   * device.
+   * device. It must be base64 encoded.
    * <p>
    * If not given, then a secret matching the given
    * username will be looked up in the default keychain
@@ -16072,6 +16072,10 @@ public class GuestFS {
    * This runs the strings(1) command on a file and returns
    * the list of printable strings found.
    * <p>
+   * Use this API with caution. In particular, it's generally
+   * not a good idea to use it on untrusted files. For more
+   * information see "CVE-2014-8484" in guestfs(3).
+   * <p>
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
@@ -16118,6 +16122,10 @@ public class GuestFS {
    * L   32-bit little endian such as UCS-4LE.
    * <p>
    * The returned strings are transcoded to UTF-8.
+   * <p>
+   * Use this API with caution. In particular, it's generally
+   * not a good idea to use it on untrusted files. For more
+   * information see "CVE-2014-8484" in guestfs(3).
    * <p>
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL

@@ -975,7 +975,7 @@ ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
  * "secret"
  * For the "rbd" protocol only, this specifies the
  * 'secret' to use when connecting to the remote
- * device.
+ * device. It must be base64 encoded.
  * 
  * If not given, then a secret matching the given
  * username will be looked up in the default keychain
@@ -22649,6 +22649,10 @@ ruby_guestfs_statvfs (VALUE gv, VALUE pathv)
  * This runs the strings(1) command on a file and returns
  * the list of printable strings found.
  * 
+ * Use this API with caution. In particular, it's generally
+ * not a good idea to use it on untrusted files. For more
+ * information see "CVE-2014-8484" in guestfs(3).
+ * 
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
@@ -22715,6 +22719,10 @@ ruby_guestfs_strings (VALUE gv, VALUE pathv)
  * L   32-bit little endian such as UCS-4LE.
  * 
  * The returned strings are transcoded to UTF-8.
+ * 
+ * Use this API with caution. In particular, it's generally
+ * not a good idea to use it on untrusted files. For more
+ * information see "CVE-2014-8484" in guestfs(3).
  * 
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL

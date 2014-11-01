@@ -104,41 +104,41 @@ host_triplet = @host@
 TESTS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-alloca-opt$(EXEEXT) test-areadlink$(EXEEXT) \
 	test-areadlinkat$(EXEEXT) test-argmatch$(EXEEXT) \
-	test-arpa_inet$(EXEEXT) test-binary-io.sh test-bind$(EXEEXT) \
-	test-bitrotate$(EXEEXT) test-btowc1.sh test-btowc2.sh \
-	test-byteswap$(EXEEXT) test-c-ctype$(EXEEXT) test-c-strcase.sh \
-	test-chdir$(EXEEXT) test-cloexec$(EXEEXT) test-close$(EXEEXT) \
-	test-connect$(EXEEXT) test-dirent-safer$(EXEEXT) \
-	test-dirent$(EXEEXT) test-dup$(EXEEXT) test-dup2$(EXEEXT) \
-	test-dup3$(EXEEXT) test-environ$(EXEEXT) test-errno$(EXEEXT) \
-	test-fchdir$(EXEEXT) test-fcntl-h$(EXEEXT) \
-	test-fcntl-safer$(EXEEXT) test-fcntl$(EXEEXT) \
-	test-fdopen$(EXEEXT) test-fdopendir$(EXEEXT) \
-	test-fgetc$(EXEEXT) test-filevercmp$(EXEEXT) \
-	test-float$(EXEEXT) test-fnmatch$(EXEEXT) test-fpending.sh \
-	test-fputc$(EXEEXT) test-fread$(EXEEXT) test-fstat$(EXEEXT) \
-	test-fstatat$(EXEEXT) test-ftell.sh test-ftell2.sh \
-	test-ftell3$(EXEEXT) test-ftello.sh test-ftello2.sh \
-	test-ftello3$(EXEEXT) test-ftello4.sh test-ftruncate.sh \
-	test-futimens$(EXEEXT) test-fwrite$(EXEEXT) \
-	test-getaddrinfo$(EXEEXT) test-getcwd-lgpl$(EXEEXT) \
-	test-getdelim$(EXEEXT) test-getdtablesize$(EXEEXT) \
-	test-getline$(EXEEXT) test-getopt$(EXEEXT) \
-	test-gettimeofday$(EXEEXT) test-glob$(EXEEXT) \
-	test-hash$(EXEEXT) test-i-ring$(EXEEXT) test-iconv$(EXEEXT) \
-	test-ignore-value$(EXEEXT) test-inet_ntop$(EXEEXT) \
-	test-inet_pton$(EXEEXT) test-intprops$(EXEEXT) \
-	test-inttostr$(EXEEXT) test-inttypes$(EXEEXT) \
-	test-ioctl$(EXEEXT) test-isatty$(EXEEXT) test-listen$(EXEEXT) \
-	test-locale$(EXEEXT) test-localeconv$(EXEEXT) \
-	test-localename$(EXEEXT) test-lock$(EXEEXT) test-lseek.sh \
-	test-lstat$(EXEEXT) test-malloca$(EXEEXT) test-mbrtowc1.sh \
-	test-mbrtowc2.sh test-mbrtowc3.sh test-mbrtowc4.sh \
-	test-mbrtowc-w32-1.sh test-mbrtowc-w32-2.sh \
-	test-mbrtowc-w32-3.sh test-mbrtowc-w32-4.sh \
-	test-mbrtowc-w32-5.sh test-mbsinit.sh test-mbsrtowcs1.sh \
-	test-mbsrtowcs2.sh test-mbsrtowcs3.sh test-mbsrtowcs4.sh \
-	test-memchr$(EXEEXT) test-memmem$(EXEEXT) \
+	test-arpa_inet$(EXEEXT) test-base64$(EXEEXT) test-binary-io.sh \
+	test-bind$(EXEEXT) test-bitrotate$(EXEEXT) test-btowc1.sh \
+	test-btowc2.sh test-byteswap$(EXEEXT) test-c-ctype$(EXEEXT) \
+	test-c-strcase.sh test-chdir$(EXEEXT) test-cloexec$(EXEEXT) \
+	test-close$(EXEEXT) test-connect$(EXEEXT) \
+	test-dirent-safer$(EXEEXT) test-dirent$(EXEEXT) \
+	test-dup$(EXEEXT) test-dup2$(EXEEXT) test-dup3$(EXEEXT) \
+	test-environ$(EXEEXT) test-errno$(EXEEXT) test-fchdir$(EXEEXT) \
+	test-fcntl-h$(EXEEXT) test-fcntl-safer$(EXEEXT) \
+	test-fcntl$(EXEEXT) test-fdopen$(EXEEXT) \
+	test-fdopendir$(EXEEXT) test-fgetc$(EXEEXT) \
+	test-filevercmp$(EXEEXT) test-float$(EXEEXT) \
+	test-fnmatch$(EXEEXT) test-fpending.sh test-fputc$(EXEEXT) \
+	test-fread$(EXEEXT) test-fstat$(EXEEXT) test-fstatat$(EXEEXT) \
+	test-ftell.sh test-ftell2.sh test-ftell3$(EXEEXT) \
+	test-ftello.sh test-ftello2.sh test-ftello3$(EXEEXT) \
+	test-ftello4.sh test-ftruncate.sh test-futimens$(EXEEXT) \
+	test-fwrite$(EXEEXT) test-getaddrinfo$(EXEEXT) \
+	test-getcwd-lgpl$(EXEEXT) test-getdelim$(EXEEXT) \
+	test-getdtablesize$(EXEEXT) test-getline$(EXEEXT) \
+	test-getopt$(EXEEXT) test-gettimeofday$(EXEEXT) \
+	test-glob$(EXEEXT) test-hash$(EXEEXT) test-i-ring$(EXEEXT) \
+	test-iconv$(EXEEXT) test-ignore-value$(EXEEXT) \
+	test-inet_ntop$(EXEEXT) test-inet_pton$(EXEEXT) \
+	test-intprops$(EXEEXT) test-inttostr$(EXEEXT) \
+	test-inttypes$(EXEEXT) test-ioctl$(EXEEXT) \
+	test-isatty$(EXEEXT) test-listen$(EXEEXT) test-locale$(EXEEXT) \
+	test-localeconv$(EXEEXT) test-localename$(EXEEXT) \
+	test-lock$(EXEEXT) test-lseek.sh test-lstat$(EXEEXT) \
+	test-malloca$(EXEEXT) test-mbrtowc1.sh test-mbrtowc2.sh \
+	test-mbrtowc3.sh test-mbrtowc4.sh test-mbrtowc-w32-1.sh \
+	test-mbrtowc-w32-2.sh test-mbrtowc-w32-3.sh \
+	test-mbrtowc-w32-4.sh test-mbrtowc-w32-5.sh test-mbsinit.sh \
+	test-mbsrtowcs1.sh test-mbsrtowcs2.sh test-mbsrtowcs3.sh \
+	test-mbsrtowcs4.sh test-memchr$(EXEEXT) test-memmem$(EXEEXT) \
 	test-memrchr$(EXEEXT) test-nanosleep$(EXEEXT) \
 	test-netdb$(EXEEXT) test-netinet_in$(EXEEXT) \
 	test-open$(EXEEXT) test-openat-safer$(EXEEXT) \
@@ -186,8 +186,9 @@ noinst_PROGRAMS =
 check_PROGRAMS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-alloca-opt$(EXEEXT) test-areadlink$(EXEEXT) \
 	test-areadlinkat$(EXEEXT) test-argmatch$(EXEEXT) \
-	test-arpa_inet$(EXEEXT) test-binary-io$(EXEEXT) \
-	test-bind$(EXEEXT) test-bitrotate$(EXEEXT) test-btowc$(EXEEXT) \
+	test-arpa_inet$(EXEEXT) test-base64$(EXEEXT) \
+	test-binary-io$(EXEEXT) test-bind$(EXEEXT) \
+	test-bitrotate$(EXEEXT) test-btowc$(EXEEXT) \
 	test-byteswap$(EXEEXT) test-c-ctype$(EXEEXT) \
 	test-c-strcasecmp$(EXEEXT) test-c-strncasecmp$(EXEEXT) \
 	test-chdir$(EXEEXT) test-cloexec$(EXEEXT) test-close$(EXEEXT) \
@@ -269,9 +270,9 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/absolute-header.m4 \
 	$(top_srcdir)/m4/accept4.m4 $(top_srcdir)/m4/alloca.m4 \
-	$(top_srcdir)/m4/arpa_inet_h.m4 $(top_srcdir)/m4/btowc.m4 \
-	$(top_srcdir)/m4/byteswap.m4 $(top_srcdir)/m4/chdir-long.m4 \
-	$(top_srcdir)/m4/clock_time.m4 \
+	$(top_srcdir)/m4/arpa_inet_h.m4 $(top_srcdir)/m4/base64.m4 \
+	$(top_srcdir)/m4/btowc.m4 $(top_srcdir)/m4/byteswap.m4 \
+	$(top_srcdir)/m4/chdir-long.m4 $(top_srcdir)/m4/clock_time.m4 \
 	$(top_srcdir)/m4/close-stream.m4 $(top_srcdir)/m4/close.m4 \
 	$(top_srcdir)/m4/closedir.m4 $(top_srcdir)/m4/closeout.m4 \
 	$(top_srcdir)/m4/codeset.m4 $(top_srcdir)/m4/configmake.m4 \
@@ -449,6 +450,11 @@ test_arpa_inet_SOURCES = test-arpa_inet.c
 test_arpa_inet_OBJECTS = test-arpa_inet.$(OBJEXT)
 test_arpa_inet_LDADD = $(LDADD)
 test_arpa_inet_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
+	libtests.a $(am__DEPENDENCIES_1)
+test_base64_SOURCES = test-base64.c
+test_base64_OBJECTS = test-base64.$(OBJEXT)
+test_base64_LDADD = $(LDADD)
+test_base64_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
 	libtests.a $(am__DEPENDENCIES_1)
 test_binary_io_SOURCES = test-binary-io.c
 test_binary_io_OBJECTS = test-binary-io.$(OBJEXT)
@@ -1228,8 +1234,8 @@ am__v_CCLD_1 =
 SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-accept.c test-accept4.c test-alloca-opt.c \
 	test-areadlink.c test-areadlinkat.c test-argmatch.c \
-	test-arpa_inet.c test-binary-io.c test-bind.c test-bitrotate.c \
-	test-btowc.c test-byteswap.c test-c-ctype.c \
+	test-arpa_inet.c test-base64.c test-binary-io.c test-bind.c \
+	test-bitrotate.c test-btowc.c test-byteswap.c test-c-ctype.c \
 	test-c-strcasecmp.c test-c-strncasecmp.c test-chdir.c \
 	test-cloexec.c test-close.c test-connect.c test-dirent.c \
 	test-dirent-safer.c test-dup.c test-dup-safer.c test-dup2.c \
@@ -1278,8 +1284,8 @@ SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 DIST_SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-accept.c test-accept4.c test-alloca-opt.c \
 	test-areadlink.c test-areadlinkat.c test-argmatch.c \
-	test-arpa_inet.c test-binary-io.c test-bind.c test-bitrotate.c \
-	test-btowc.c test-byteswap.c test-c-ctype.c \
+	test-arpa_inet.c test-base64.c test-binary-io.c test-bind.c \
+	test-bitrotate.c test-btowc.c test-byteswap.c test-c-ctype.c \
 	test-c-strcasecmp.c test-c-strncasecmp.c test-chdir.c \
 	test-cloexec.c test-close.c test-connect.c test-dirent.c \
 	test-dirent-safer.c test-dup.c test-dup-safer.c test-dup2.c \
@@ -2535,10 +2541,11 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 	signature.h macros.h test-alloca-opt.c test-areadlink.h \
 	test-areadlink.c macros.h test-areadlink.h test-areadlinkat.c \
 	macros.h test-argmatch.c macros.h test-arpa_inet.c \
-	test-binary-io.sh test-binary-io.c macros.h bind.c w32sock.h \
-	test-bind.c signature.h macros.h test-bitrotate.c macros.h \
-	btowc.c test-btowc1.sh test-btowc2.sh test-btowc.c signature.h \
-	macros.h test-byteswap.c macros.h test-c-ctype.c macros.h \
+	test-base64.c macros.h test-binary-io.sh test-binary-io.c \
+	macros.h bind.c w32sock.h test-bind.c signature.h macros.h \
+	test-bitrotate.c macros.h btowc.c test-btowc1.sh \
+	test-btowc2.sh test-btowc.c signature.h macros.h \
+	test-byteswap.c macros.h test-c-ctype.c macros.h \
 	test-c-strcase.sh test-c-strcasecmp.c test-c-strncasecmp.c \
 	macros.h test-chdir.c signature.h macros.h test-cloexec.c \
 	macros.h test-close.c signature.h macros.h test-connect.c \
@@ -2849,6 +2856,10 @@ test-argmatch$(EXEEXT): $(test_argmatch_OBJECTS) $(test_argmatch_DEPENDENCIES) $
 test-arpa_inet$(EXEEXT): $(test_arpa_inet_OBJECTS) $(test_arpa_inet_DEPENDENCIES) $(EXTRA_test_arpa_inet_DEPENDENCIES) 
 	@rm -f test-arpa_inet$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_arpa_inet_OBJECTS) $(test_arpa_inet_LDADD) $(LIBS)
+
+test-base64$(EXEEXT): $(test_base64_OBJECTS) $(test_base64_DEPENDENCIES) $(EXTRA_test_base64_DEPENDENCIES) 
+	@rm -f test-base64$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_base64_OBJECTS) $(test_base64_LDADD) $(LIBS)
 
 test-binary-io$(EXEEXT): $(test_binary_io_OBJECTS) $(test_binary_io_DEPENDENCIES) $(EXTRA_test_binary_io_DEPENDENCIES) 
 	@rm -f test-binary-io$(EXEEXT)
@@ -3545,6 +3556,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-areadlinkat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-argmatch.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-arpa_inet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-base64.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-binary-io.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-bind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-bitrotate.Po@am__quote@

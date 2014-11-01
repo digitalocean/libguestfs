@@ -57,6 +57,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module arpa_inet:
   # Code from module arpa_inet-tests:
   # Code from module at-internal:
+  # Code from module base64:
+  # Code from module base64-tests:
   # Code from module binary-io:
   # Code from module binary-io-tests:
   # Code from module bind:
@@ -502,6 +504,7 @@ AC_SUBST([LTALLOCA])
   gl_HEADER_ARPA_INET
   AC_PROG_MKDIR_P
   AC_LIBOBJ([openat-proc])
+  gl_FUNC_BASE64
   gl_BYTESWAP
   AC_CHECK_FUNCS_ONCE([readlinkat])
   gl_UNISTD_MODULE_INDICATOR([chdir])
@@ -1477,6 +1480,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/asnprintf.c
   lib/asprintf.c
   lib/at-func.c
+  lib/base64.c
+  lib/base64.h
   lib/basename-lgpl.c
   lib/binary-io.c
   lib/binary-io.h
@@ -1758,6 +1763,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/accept4.m4
   m4/alloca.m4
   m4/arpa_inet_h.m4
+  m4/base64.m4
   m4/btowc.m4
   m4/byteswap.m4
   m4/chdir-long.m4
@@ -2008,6 +2014,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-areadlinkat.c
   tests/test-argmatch.c
   tests/test-arpa_inet.c
+  tests/test-base64.c
   tests/test-binary-io.c
   tests/test-binary-io.sh
   tests/test-bind.c
