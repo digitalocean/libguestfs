@@ -1,2 +1,2 @@
 version=3
-http://libguestfs.org/download/([\d\.]*)-stable/libguestfs-([\d\.]*)\.tar\.gz
+http://libguestfs.org/download/([\d\.]*)-development/libguestfs-([\d\.]*)\.tar\.gz
