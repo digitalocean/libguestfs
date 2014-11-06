@@ -58,6 +58,8 @@ and op = [
       (* --run-command 'CMD+ARGS' *)
   | `Scrub of string
       (* --scrub FILE *)
+  | `SSHInject of string * Ssh_key.ssh_key_selector
+      (* --ssh-inject USER[:SELECTOR] *)
   | `Timezone of string
       (* --timezone TIMEZONE *)
   | `Update

@@ -55,6 +55,8 @@ SOURCES = \
 	perl_edit.mli \
 	random_seed.ml \
 	random_seed.mli \
+	ssh_key.ml \
+	ssh_key.mli \
 	timezone.ml \
 	timezone.mli \
 	urandom.ml \
@@ -92,6 +94,7 @@ ocaml_modules = \
 	password \
 	perl_edit \
 	random_seed \
+	ssh_key \
 	timezone \
 	customize_cmdline \
 	customize_run \
@@ -121,7 +124,7 @@ OCAMLCFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR) $(OCAMLPACKAGES)
 OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 
 OCAMLCLIBS  = \
-	$(LIBXML2_LIBS) -lncurses -lcrypt \
+	$(LIBXML2_LIBS) $(LIBINTL) -lncurses -lcrypt \
 	-L../src/.libs -lutils \
 	-L../gnulib/lib/.libs -lgnu
 

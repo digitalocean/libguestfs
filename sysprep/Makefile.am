@@ -102,6 +102,7 @@ deps = \
 	$(top_builddir)/customize/firstboot.cmx \
 	$(top_builddir)/customize/perl_edit-c.o \
 	$(top_builddir)/customize/perl_edit.cmx \
+	$(top_builddir)/customize/ssh_key.cmx \
 	$(top_builddir)/customize/customize_cmdline.cmx \
 	$(top_builddir)/customize/customize_run.cmx \
 	$(top_builddir)/fish/guestfish-uri.o \
@@ -135,7 +136,7 @@ OCAMLCFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR) $(OCAMLPACKAGES)
 OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 
 OCAMLCLIBS  = \
-	$(LIBXML2_LIBS) -lncurses -lcrypt \
+	$(LIBXML2_LIBS) $(LIBINTL) -lncurses -lcrypt \
 	-L../src/.libs -lutils \
 	-L../gnulib/lib/.libs -lgnu
 

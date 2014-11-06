@@ -8089,9 +8089,10 @@ class GuestFS(object):
         """This runs the strings(1) command on a file and returns
         the list of printable strings found.
         
-        Use this API with caution. In particular, it's generally
-        not a good idea to use it on untrusted files. For more
-        information see "CVE-2014-8484" in guestfs(3).
+        The "strings" command has, in the past, had problems
+        with parsing untrusted files. These are mitigated in the
+        current version of libguestfs, but see "CVE-2014-8484"
+        in guestfs(3).
         
         This function returns a list of strings.
         
@@ -8130,9 +8131,10 @@ class GuestFS(object):
         
         The returned strings are transcoded to UTF-8.
         
-        Use this API with caution. In particular, it's generally
-        not a good idea to use it on untrusted files. For more
-        information see "CVE-2014-8484" in guestfs(3).
+        The "strings" command has, in the past, had problems
+        with parsing untrusted files. These are mitigated in the
+        current version of libguestfs, but see "CVE-2014-8484"
+        in guestfs(3).
         
         This function returns a list of strings.
         

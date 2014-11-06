@@ -1,3 +1,219 @@
+commit 8c2f27518a6f5068c1111b3f41bcfa6971646063
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Nov 5 15:41:32 2014 +0000
+
+    Version 1.29.5.
+
+commit f27e2426491efab7904c2863a8a443416babc571
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Nov 5 14:33:39 2014 +0000
+
+    daemon: strings: Use -a option to avoid using BFD to parse files.
+    
+    Avoids hitting CVE-2014-8484 and CVE-2014-8485 and similar problems
+    with BFD parsing on untrusted files.
+
+commit a5426cce5faa0fde0de1b62c8646cb8a9992ef2b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Nov 4 18:02:56 2014 +0100
+
+    build: check for libintl, and use it
+    
+    Look for libint/gettext and link to it; this properly detects whether
+    libint is part of libc.
+
+commit c58d335952194b9556db78abde75637921ab4eca
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 4 21:21:20 2014 +0000
+
+    v2v: -i libvirt vcenter: Change 'esx:' to 'vcenter:' in errors/warnings.
+    
+    'esx' is inaccurate.
+
+commit 1fab78c7b249b230ce0d667fe4416505c19bbc74
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Nov 4 09:59:41 2014 +0100
+
+    tests/qemu: isolate MD5 calculation in an own shared function
+    
+    md5sum(1) does not exist everywhere, so wrap it in an own function so
+    the right implementation can be chosen on each OS.  Also, wrapping it
+    avoid using awk everytime.
+
+commit 3d02e53c48266669675cc237f61ae2c4e1816e66
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Nov 3 16:49:59 2014 +0100
+
+    ruby: fix detection of ruby library
+    
+    Query RbConfig::CONFIG for "libdir", and use that when trying to link to
+    the ruby library.  This fixes the libruby detection when it is installed
+    in a non-standard library directory.
+
+commit 9deafea8462b72779a85570b7dd0412d5e7c10bc
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Nov 4 18:02:04 2014 +0100
+
+    test-charset-fidelity: use and link against gnulib
+    
+    It uses error() which is specific to GNU libc, but supplied by gnulib if
+    not available.
+
+commit a293ac1e911052c52e3110800a5b7b2c5f1bd37d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Oct 30 14:52:28 2014 +0100
+
+    build: isolate the libdb tools search in an own autoconf macro
+    
+    Create an autoconf macro to deal with the possible combinations of names
+    and versions of the libdb tools. This also eases the addition of a libdb
+    version, or a new pattern for the names of tools.
+    
+    There is no functional change.
+
+commit aba82825a329f9f99438fec161f1b0fb2098bdc9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Oct 29 18:53:07 2014 +0100
+
+    builder: fix inclusion of <config.h> in lex-generated source
+    
+    Use a %top block for including <config.h>, so it is included prior to
+    any other include, even for system ones. This makes sure its definitions
+    are properly used in gnulib replacement headers.
+
+commit d1634799e396f2003e2abd36b042a1133bb6d928
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 27 13:08:34 2014 +0100
+
+    src: launch: cast the sockaddr args to sockaddr*
+    
+    This matches what generally done for passing socket addresses to e.g.
+    socket and bind, and already done in other parts of libguestfs.
+
+commit 8c8e089ad1644a0f43586b43eb476ad6574c7c18
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 27 10:59:43 2014 +0100
+
+    build: check for UNIX_PATH_MAX, and properly define it if not
+    
+    Do a configure check to see whether UNIX_PATH_MAX is defined; if it is
+    not defined, provide it with the size of sun_path in the struct
+    sockaddr_un, thus with the proper size for any libc.
+
+commit 65a54c6c92371286db7020b2f188a7ab3ad329cb
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Nov 4 10:49:01 2014 +0100
+
+    bash: fix build/clean when srcdir==builddir
+    
+    Use CLEANFILES to remove the generated symlinks, and just ignore the
+    errors when copying the scripts in srcdir!=builddir situations.
+    
+    Followup of commit 40ac54829d4e71b1bac76343872a2674a40c7ac0.
+
+commit 40ac54829d4e71b1bac76343872a2674a40c7ac0
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Fri Oct 31 20:03:22 2014 +0100
+
+    Fix, simplify out-of-tree build/install for bash completions
+
+commit 25cad1e62fa73e9cfd9a0e3d1d330165b19339ec
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Nov 4 09:16:17 2014 +0100
+
+    customize: firstboot: fix Linux log output
+    
+    Pass -a to each tee invocation, otherwise just the last one (so only for
+    the last script executed) will appear in the log file.
+
+commit f8ed15462fbb03c5b19972361f2a2e6fed4c5f02
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Nov 3 21:15:59 2014 +0100
+
+    customize: firstboot: make sure to run Linux scripts only once
+    
+    If a script does not finish, hangs, etc, it would be executed again at
+    the next boot, since the injected firstboot.sh helper removes it only
+    after it finished.
+    
+    Before executing a script, move it to another internal subdirectory
+    (scripts-done) and execute it from there, so it is not run again by
+    firstboot.sh.  The downside is that now scripts are executed only once
+    at all, so if a script fails it will not be attempted at the next boot.
+    
+    Also, remove all the files found in scripts-done, as they have been run
+    (or at least attempted) in a previous boot.
+    
+    This fixes RHBZ#1159651.
+
+commit 3d6c2af450f54babb6c3df5903d46769cacacc89
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Nov 3 19:30:54 2014 +0100
+
+    customize: Add --ssh-inject option for injecting SSH keys.
+    
+    This adds a customize option:
+    
+      virt-customize --ssh-inject USER
+      virt-customize --ssh-inject USER:string:KEY_STRING
+      virt-customize --ssh-inject USER:file:FILENAME
+    
+    (ditto for virt-builder and virt-sysprep)
+    
+    In each case this injects into the guest user USER
+    a) the current (host) user's ssh pubkey
+    b) the key specified as KEY_STRING
+    c) the key in FILENAME
+    adding it to ~USER/.ssh/authorized_keys in the guest.
+    
+    For example:
+    
+      virt-builder fedora-20 --ssh-inject root
+    
+    will add the local user's ssh pubkey into the root account of the
+    newly created guest.  Or:
+    
+      virt-customize -a disk.img \
+         --ssh-inject 'mary:string:ssh-rsa AAAA.... mary@localhost'
+    
+    adds the given ssh pubkey to mary's account in the guest.
+    
+    This doesn't set the SELinux labels correctly on newly created files
+    and directories, so you have to use --selinux-relabel (probably we
+    should fix this as part of the general effort to fix SELinux
+    relabelling).  However it should preserve the labels if the
+    ~/.ssh/authorized_keys file already exists.
+    
+    Most of this work is based on a patch sent to the mailing list by
+    Richard W.M. Jones <rjones@redhat.com>:
+    https://www.redhat.com/archives/libguestfs/2014-November/msg00000.html
+
+commit 39f524d79b10a3654ee4879951a3ef8dcc99a46f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Nov 3 19:38:12 2014 +0000
+
+    v2v: Ensure --bridge and --network args are documented correctly in --help output.
+
+commit 0121f4fd56770de4efd454b058a28ea39bf41807
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Nov 1 21:08:53 2014 +0000
+
+    generator: customize: Insert whitespace between entries.
+    
+    Just a whitespace change.
+
+commit 0701b24e5c9934c502e2ecd698d60d884604552a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 31 18:30:36 2014 +0000
+
+    daemon: No longer needs its own copy of gnulib.
+    
+    Since the daemon has long since used the same build system as the rest
+    of libguestfs, it no longer needs its own gnulib.
+    
+    This arcane bit of code was left over from
+    commit e05ddc70f1fa6d1e8253d69c5d17e69bfad2be90 (added 2009-08-03 !)
+
 commit a6b39437830dd49c55e0b2ca7c9b05e446462e59
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Oct 31 17:47:18 2014 +0000

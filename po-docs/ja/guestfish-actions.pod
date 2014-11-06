@@ -6915,8 +6915,8 @@ point itself, but it doesn't need to be).
 This runs the L<strings(1)> command on a file and returns the list of
 printable strings found.
 
-B<Use this API with caution.> In particular, it's generally not a good idea
-to use it on untrusted files.  For more information see
+The C<strings> command has, in the past, had problems with parsing untrusted
+files.  These are mitigated in the current version of libguestfs, but see
 L<guestfs(3)/CVE-2014-8484>.
 
 Because of the message protocol, there is a transfer limit of somewhere
@@ -6963,8 +6963,8 @@ UCS-4LE のような 32 ビットのリトルエンディアン。
 
 返される文字列は UTF-8 に変換されます。
 
-B<Use this API with caution.> In particular, it's generally not a good idea
-to use it on untrusted files.  For more information see
+The C<strings> command has, in the past, had problems with parsing untrusted
+files.  These are mitigated in the current version of libguestfs, but see
 L<guestfs(3)/CVE-2014-8484>.
 
 Because of the message protocol, there is a transfer limit of somewhere
