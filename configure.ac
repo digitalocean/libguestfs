@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [29])
-m4_define([libguestfs_release], [4])
+m4_define([libguestfs_release], [5])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -328,6 +328,30 @@ AC_CHECK_FUNCS([\
     statvfs \
     sync])
 
+dnl Check for UNIX_PATH_MAX, creating a custom one if not available.
+AC_MSG_CHECKING([for UNIX_PATH_MAX])
+AC_COMPILE_IFELSE([
+  AC_LANG_PROGRAM([[
+#include <sys/un.h>
+  ]], [[
+#ifndef UNIX_PATH_MAX
+#error UNIX_PATH_MAX not defined
+#endif
+  ]])], [
+    AC_MSG_RESULT([yes])
+  ], [
+    AC_MSG_RESULT([no])
+    AC_MSG_CHECKING([for size of sockaddr_un.sun_path])
+    AC_COMPUTE_INT(unix_path_max, [sizeof (myaddr.sun_path)], [
+#include <sys/un.h>
+struct sockaddr_un myaddr;
+      ], [
+        AC_MSG_ERROR([cannot get it])
+      ])
+    AC_MSG_RESULT([$unix_path_max])
+    AC_DEFINE_UNQUOTED([UNIX_PATH_MAX], $unix_path_max, [Custom value for UNIX_PATH_MAX])
+  ])
+
 dnl tgetent, tputs and UP [sic] are all required.  They come from libtinfo
 dnl which is pulled in as a dependency of libncurses.
 old_LIBS="$LIBS"
@@ -358,6 +382,9 @@ fi
 AC_MSG_RESULT([$msgfmt_is_gnu])
 AM_CONDITIONAL([HAVE_GNU_GETTEXT],
     [test "x$XGETTEXT" != "xno" && test "x$MSGCAT" != "xno" && test "x$MSGFMT" != "xno" && test "x$MSGMERGE" != "xno" && test "x$msgfmt_is_gnu" != "xno"])
+
+dnl Check for gettext.
+AM_GNU_GETTEXT([external])
 
 dnl Default backend.
 AC_MSG_CHECKING([if the user specified a default backend])
@@ -655,10 +682,8 @@ AC_CHECK_PROG([PO4A],[po4a],[po4a],[no])
 AM_CONDITIONAL([HAVE_PO4A], [test "x$PO4A" != "xno"])
 
 dnl Check for db_dump, db_load (optional).
-AC_PATH_PROGS([DB_DUMP],
-              [db_dump db5.1_dump db4_dump db4.8_dump db4.7_dump db4.6_dump],[no])
-AC_PATH_PROGS([DB_LOAD],
-              [db_load db5.1_load db4_load db4.8_load db4.7_load db4.6_load],[no])
+GUESTFS_FIND_DB_TOOL([DB_DUMP], [dump])
+GUESTFS_FIND_DB_TOOL([DB_LOAD], [load])
 if test "x$DB_DUMP" != "xno"; then
     AC_DEFINE_UNQUOTED([DB_DUMP],["$DB_DUMP"],[Name of db_dump program.])
 fi
@@ -1233,9 +1258,15 @@ AS_IF([test "x$enable_ruby" != "xno"],[
         libruby="$(cat conftest)"
         rm conftest
         AS_IF([test -n "$libruby"],[
+            ruby_cmd='puts RbConfig::CONFIG@<:@"libdir"@:>@'
+            echo running: $RUBY -rrbconfig -e \'$ruby_cmd\' >&AS_MESSAGE_LOG_FD
+            $RUBY -rrbconfig -e "$ruby_cmd" >conftest 2>&AS_MESSAGE_LOG_FD
+            libruby_libdir="$(cat conftest)"
+            rm conftest
+            test -n "$libruby_libdir" && libruby_libdir="-L$libruby_libdir"
             AC_MSG_RESULT([-l$libruby])
             AC_CHECK_LIB([$libruby],[ruby_init],
-                         [have_libruby=1],[have_libruby=])
+                         [have_libruby=1],[have_libruby=],[$libruby_libdir])
         ],[
             AC_MSG_RESULT([not found])
         ])

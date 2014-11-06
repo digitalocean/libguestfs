@@ -29433,9 +29433,10 @@ guestfs_session_strings (<em class="parameter"><code><a class="link" href="Guest
 <p>print the printable strings in a file</p>
 <p>This runs the strings(1) command on a file and returns the list of
 printable strings found.</p>
-<p>Use this API with caution. In particular, it's generally not a good idea
-to use it on untrusted files. For more information see "CVE-2014-8484"
-in guestfs(3).</p>
+<p>The <em class="parameter"><code>strings</code></em>
+ command has, in the past, had problems with parsing
+untrusted files. These are mitigated in the current version of
+libguestfs, but see "CVE-2014-8484" in guestfs(3).</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.477.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -29494,9 +29495,10 @@ for examining binaries in Windows guests.</p>
 <p>B   32-bit big endian such as UCS-4BE.</p>
 <p>L   32-bit little endian such as UCS-4LE.</p>
 <p>The returned strings are transcoded to UTF-8.</p>
-<p>Use this API with caution. In particular, it's generally not a good idea
-to use it on untrusted files. For more information see "CVE-2014-8484"
-in guestfs(3).</p>
+<p>The <em class="parameter"><code>strings</code></em>
+ command has, in the past, had problems with parsing
+untrusted files. These are mitigated in the current version of
+libguestfs, but see "CVE-2014-8484" in guestfs(3).</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.478.15"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">

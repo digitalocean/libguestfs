@@ -66,6 +66,8 @@ and op = [
       (* --run-command 'CMD+ARGS' *)
   | `Scrub of string
       (* --scrub FILE *)
+  | `SSHInject of string * Ssh_key.ssh_key_selector
+      (* --ssh-inject USER[:SELECTOR] *)
   | `Timezone of string
       (* --timezone TIMEZONE *)
   | `Update
@@ -243,6 +245,17 @@ let rec argspec () =
       s_"FILE" ^ " " ^ s_"Scrub a file"
     ),
     Some "FILE", "Scrub a file from the guest.  This is like I<--delete> except that:\n\n=over 4\n\n=item *\n\nIt scrubs the data so a guest could not recover it.\n\n=item *\n\nIt cannot delete directories, only regular files.\n\n=back";
+    (
+      "--ssh-inject",
+      Arg.String (
+        fun s ->
+          let user, selstr = string_split ":" s in
+          let sel = Ssh_key.parse_selector selstr in
+          ops := `SSHInject (user, sel) :: !ops
+      ),
+      s_"USER[:SELECTOR]" ^ " " ^ s_"Inject a public key into the guest"
+    ),
+    Some "USER[:SELECTOR]", "Inject an ssh key so the given C<USER> will be able to log in over\nssh without supplying a password.  The C<USER> must exist already\nin the guest.\n\nSee L<virt-builder(1)/SSH KEYS> for the format of\nthe C<SELECTOR> field.\n\nYou can have multiple I<--ssh-inject> options, for different users\nand also for more keys for each user.";
     (
       "--timezone",
       Arg.String (fun s -> ops := `Timezone s :: !ops),

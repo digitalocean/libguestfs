@@ -193,6 +193,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
 	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
+	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
 	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
 	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/iconv.m4 \
@@ -224,14 +225,15 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/nanosleep.m4 $(top_srcdir)/m4/netdb_h.m4 \
-	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nocrash.m4 \
-	$(top_srcdir)/m4/ocaml.m4 $(top_srcdir)/m4/off_t.m4 \
-	$(top_srcdir)/m4/onceonly.m4 $(top_srcdir)/m4/open.m4 \
-	$(top_srcdir)/m4/openat.m4 $(top_srcdir)/m4/opendir.m4 \
-	$(top_srcdir)/m4/pathmax.m4 $(top_srcdir)/m4/perror.m4 \
-	$(top_srcdir)/m4/pipe.m4 $(top_srcdir)/m4/pipe2.m4 \
-	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/pread.m4 \
-	$(top_srcdir)/m4/printf.m4 $(top_srcdir)/m4/priv-set.m4 \
+	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nls.m4 \
+	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
+	$(top_srcdir)/m4/off_t.m4 $(top_srcdir)/m4/onceonly.m4 \
+	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
+	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
+	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
+	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
+	$(top_srcdir)/m4/priv-set.m4 $(top_srcdir)/m4/progtest.m4 \
 	$(top_srcdir)/m4/ptsname_r.m4 $(top_srcdir)/m4/putenv.m4 \
 	$(top_srcdir)/m4/quote.m4 $(top_srcdir)/m4/quotearg.m4 \
 	$(top_srcdir)/m4/raise.m4 $(top_srcdir)/m4/rawmemchr.m4 \
@@ -396,7 +398,7 @@ am__libvirt_is_version_SOURCES_DIST = libvirt-is-version.c
 @HAVE_LIBVIRT_TRUE@am_libvirt_is_version_OBJECTS = libvirt_is_version-libvirt-is-version.$(OBJEXT)
 libvirt_is_version_OBJECTS = $(am_libvirt_is_version_OBJECTS)
 @HAVE_LIBVIRT_TRUE@libvirt_is_version_DEPENDENCIES =  \
-@HAVE_LIBVIRT_TRUE@	$(am__DEPENDENCIES_1)
+@HAVE_LIBVIRT_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 libvirt_is_version_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libvirt_is_version_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
@@ -404,7 +406,7 @@ libvirt_is_version_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_test_utils_OBJECTS = test_utils-test-utils.$(OBJEXT)
 test_utils_OBJECTS = $(am_test_utils_OBJECTS)
 test_utils_DEPENDENCIES = libguestfs_la-guid.lo libutils.la \
-	$(top_builddir)/gnulib/lib/libgnu.la
+	$(am__DEPENDENCIES_1) $(top_builddir)/gnulib/lib/libgnu.la
 test_utils_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(test_utils_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
@@ -580,12 +582,15 @@ GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
 GENISOIMAGE = @GENISOIMAGE@
 GETADDRINFO_LIB = @GETADDRINFO_LIB@
 GETOPT_H = @GETOPT_H@
+GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GHC = @GHC@
 GIO_CFLAGS = @GIO_CFLAGS@
 GIO_LIBS = @GIO_LIBS@
 GJS = @GJS@
 GLIBC21 = @GLIBC21@
 GLOB_H = @GLOB_H@
+GMSGFMT = @GMSGFMT@
+GMSGFMT_015 = @GMSGFMT_015@
 GNULIB_ACCEPT = @GNULIB_ACCEPT@
 GNULIB_ACCEPT4 = @GNULIB_ACCEPT4@
 GNULIB_ALPHASORT = @GNULIB_ALPHASORT@
@@ -1134,6 +1139,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INT32_MAX_LT_INTMAX_MAX = @INT32_MAX_LT_INTMAX_MAX@
 INT64_MAX_EQ_LONG_MAX = @INT64_MAX_EQ_LONG_MAX@
+INTLLIBS = @INTLLIBS@
 INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
 INTROSPECTION_CFLAGS = @INTROSPECTION_CFLAGS@
 INTROSPECTION_COMPILER = @INTROSPECTION_COMPILER@
@@ -1207,6 +1213,7 @@ MAX_PROC_NR = @MAX_PROC_NR@
 MKDIR_P = @MKDIR_P@
 MSGCAT = @MSGCAT@
 MSGFMT = @MSGFMT@
+MSGFMT_015 = @MSGFMT_015@
 MSGMERGE = @MSGMERGE@
 NETINET_IN_H = @NETINET_IN_H@
 NEXT_ARPA_INET_H = @NEXT_ARPA_INET_H@
@@ -1311,6 +1318,7 @@ PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PNMTOPNG = @PNMTOPNG@
 PO4A = @PO4A@
 PODWRAPPER = @PODWRAPPER@
+POSUB = @POSUB@
 PRAGMA_COLUMNS = @PRAGMA_COLUMNS@
 PRAGMA_SYSTEM_HEADER = @PRAGMA_SYSTEM_HEADER@
 PRIPTR_PREFIX = @PRIPTR_PREFIX@
@@ -1505,6 +1513,7 @@ UNDEFINE_STRTOK_R = @UNDEFINE_STRTOK_R@
 UNISTD_H_HAVE_WINSOCK2_H = @UNISTD_H_HAVE_WINSOCK2_H@
 UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 UNZIP = @UNZIP@
+USE_NLS = @USE_NLS@
 VALGRIND = @VALGRIND@
 VALGRIND_NO_VGDB = @VALGRIND_NO_VGDB@
 VERSION = @VERSION@
@@ -1517,6 +1526,8 @@ WINDOWS_64_BIT_ST_SIZE = @WINDOWS_64_BIT_ST_SIZE@
 WINT_T_SUFFIX = @WINT_T_SUFFIX@
 WRESTOOL = @WRESTOOL@
 XGETTEXT = @XGETTEXT@
+XGETTEXT_015 = @XGETTEXT_015@
+XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 XMLLINT = @XMLLINT@
 XZCAT = @XZCAT@
 YACC = @YACC@
@@ -1709,7 +1720,7 @@ libguestfs_la_LIBADD = liberrnostring.la libprotocol.la libutils.la \
 	$(PCRE_LIBS) $(MAGIC_LIBS) $(LIBVIRT_LIBS) $(LIBXML2_LIBS) \
 	$(SELINUX_LIBS) $(YAJL_LIBS) ../gnulib/lib/libgnu.la \
 	$(GETADDRINFO_LIB) $(HOSTENT_LIB) $(INET_NTOP_LIB) \
-	$(LIBSOCKET) $(LIB_CLOCK_GETTIME) $(LIBINTL) $(LTLIBTHREAD) \
+	$(LIBSOCKET) $(LIB_CLOCK_GETTIME) $(LTLIBINTL) $(LTLIBTHREAD) \
 	$(LTLIBICONV) $(SERVENT_LIB) $(am__append_2)
 
 # Force libtool to name the library 'libguestfs.so.0.$(MAX_PROC_NR).0'.
@@ -1750,7 +1761,8 @@ libutils_la_CPPFLAGS = $(libguestfs_la_CPPFLAGS)
 libutils_la_CFLAGS = $(libguestfs_la_CFLAGS)
 @HAVE_LIBVIRT_TRUE@libvirt_is_version_SOURCES = libvirt-is-version.c
 @HAVE_LIBVIRT_TRUE@libvirt_is_version_LDADD = \
-@HAVE_LIBVIRT_TRUE@	$(LIBVIRT_LIBS)
+@HAVE_LIBVIRT_TRUE@	$(LIBVIRT_LIBS) \
+@HAVE_LIBVIRT_TRUE@	$(LTLIBINTL)
 
 @HAVE_LIBVIRT_TRUE@libvirt_is_version_CPPFLAGS = \
 @HAVE_LIBVIRT_TRUE@	-DLOCALEBASEDIR=\""$(datadir)/locale"\"
@@ -1775,6 +1787,7 @@ test_utils_CFLAGS = \
 test_utils_LDADD = \
 	libguestfs_la-guid.lo \
 	libutils.la \
+	$(LTLIBINTL) \
 	$(top_builddir)/gnulib/lib/libgnu.la
 
 

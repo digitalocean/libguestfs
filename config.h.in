@@ -61,6 +61,10 @@
 /* Define if struct dirent has a member d_ino that actually works. */
 #undef D_INO_IN_DIRENT
 
+/* Define to 1 if translation of program messages to the user's native
+   language is requested. */
+#undef ENABLE_NLS
+
 /* Enable packet dumps in verbose mode. */
 #undef ENABLE_PACKET_DUMP
 
@@ -523,6 +527,10 @@
 /* Define to 1 if you have the `completion_matches' function. */
 #undef HAVE_COMPLETION_MATCHES
 
+/* Define if the GNU dcgettext() function is already present or preinstalled.
+   */
+#undef HAVE_DCGETTEXT
+
 /* Define to 1 if you have the declaration of `alarm', and to 0 if you don't.
    */
 #undef HAVE_DECL_ALARM
@@ -803,6 +811,9 @@
 
 /* Define to 1 if you have the `getservbyname' function. */
 #undef HAVE_GETSERVBYNAME
+
+/* Define if the GNU gettext() function is already present or preinstalled. */
+#undef HAVE_GETTEXT
 
 /* Define to 1 if you have the 'gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
@@ -2363,6 +2374,9 @@
 /* Define to 1 if the type of the st_atim member of a struct stat is struct
    timespec. */
 #undef TYPEOF_STRUCT_STAT_ST_ATIM_IS_STRUCT_TIMESPEC
+
+/* Custom value for UNIX_PATH_MAX */
+#undef UNIX_PATH_MAX
 
 /* Define to 1 if unlink (dir) cannot possibly succeed. */
 #undef UNLINK_CANNOT_UNLINK_DIR

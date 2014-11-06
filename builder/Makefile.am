@@ -111,6 +111,7 @@ deps = \
 	$(top_builddir)/customize/crypt-c.o \
 	$(top_builddir)/customize/crypt.cmx \
 	$(top_builddir)/customize/password.cmx \
+	$(top_builddir)/customize/ssh_key.cmx \
 	$(top_builddir)/customize/customize_cmdline.cmx \
 	$(top_builddir)/customize/customize_run.cmx \
 	$(top_builddir)/fish/guestfish-uri.o \
@@ -167,6 +168,7 @@ OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 OCAMLCLIBS  = \
 	$(LIBLZMA_LIBS) \
 	$(LIBXML2_LIBS) \
+	$(LIBINTL) \
 	-L../src/.libs -lutils \
 	-L../gnulib/lib/.libs -lgnu \
 	-pthread -lpthread \
@@ -298,6 +300,7 @@ virt_index_validate_CPPFLAGS = \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\"
 
 virt_index_validate_LDADD = \
+	$(LTLIBINTL) \
 	../gnulib/lib/libgnu.la
 
 man_MANS += virt-index-validate.1

@@ -180,6 +180,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
 	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
+	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
 	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
 	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/iconv.m4 \
@@ -211,14 +212,15 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/nanosleep.m4 $(top_srcdir)/m4/netdb_h.m4 \
-	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nocrash.m4 \
-	$(top_srcdir)/m4/ocaml.m4 $(top_srcdir)/m4/off_t.m4 \
-	$(top_srcdir)/m4/onceonly.m4 $(top_srcdir)/m4/open.m4 \
-	$(top_srcdir)/m4/openat.m4 $(top_srcdir)/m4/opendir.m4 \
-	$(top_srcdir)/m4/pathmax.m4 $(top_srcdir)/m4/perror.m4 \
-	$(top_srcdir)/m4/pipe.m4 $(top_srcdir)/m4/pipe2.m4 \
-	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/pread.m4 \
-	$(top_srcdir)/m4/printf.m4 $(top_srcdir)/m4/priv-set.m4 \
+	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nls.m4 \
+	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
+	$(top_srcdir)/m4/off_t.m4 $(top_srcdir)/m4/onceonly.m4 \
+	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
+	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
+	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
+	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
+	$(top_srcdir)/m4/priv-set.m4 $(top_srcdir)/m4/progtest.m4 \
 	$(top_srcdir)/m4/ptsname_r.m4 $(top_srcdir)/m4/putenv.m4 \
 	$(top_srcdir)/m4/quote.m4 $(top_srcdir)/m4/quotearg.m4 \
 	$(top_srcdir)/m4/raise.m4 $(top_srcdir)/m4/rawmemchr.m4 \
@@ -449,12 +451,15 @@ GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
 GENISOIMAGE = @GENISOIMAGE@
 GETADDRINFO_LIB = @GETADDRINFO_LIB@
 GETOPT_H = @GETOPT_H@
+GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GHC = @GHC@
 GIO_CFLAGS = @GIO_CFLAGS@
 GIO_LIBS = @GIO_LIBS@
 GJS = @GJS@
 GLIBC21 = @GLIBC21@
 GLOB_H = @GLOB_H@
+GMSGFMT = @GMSGFMT@
+GMSGFMT_015 = @GMSGFMT_015@
 GNULIB_ACCEPT = @GNULIB_ACCEPT@
 GNULIB_ACCEPT4 = @GNULIB_ACCEPT4@
 GNULIB_ALPHASORT = @GNULIB_ALPHASORT@
@@ -1003,6 +1008,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INT32_MAX_LT_INTMAX_MAX = @INT32_MAX_LT_INTMAX_MAX@
 INT64_MAX_EQ_LONG_MAX = @INT64_MAX_EQ_LONG_MAX@
+INTLLIBS = @INTLLIBS@
 INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
 INTROSPECTION_CFLAGS = @INTROSPECTION_CFLAGS@
 INTROSPECTION_COMPILER = @INTROSPECTION_COMPILER@
@@ -1076,6 +1082,7 @@ MAX_PROC_NR = @MAX_PROC_NR@
 MKDIR_P = @MKDIR_P@
 MSGCAT = @MSGCAT@
 MSGFMT = @MSGFMT@
+MSGFMT_015 = @MSGFMT_015@
 MSGMERGE = @MSGMERGE@
 NETINET_IN_H = @NETINET_IN_H@
 NEXT_ARPA_INET_H = @NEXT_ARPA_INET_H@
@@ -1180,6 +1187,7 @@ PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PNMTOPNG = @PNMTOPNG@
 PO4A = @PO4A@
 PODWRAPPER = @PODWRAPPER@
+POSUB = @POSUB@
 PRAGMA_COLUMNS = @PRAGMA_COLUMNS@
 PRAGMA_SYSTEM_HEADER = @PRAGMA_SYSTEM_HEADER@
 PRIPTR_PREFIX = @PRIPTR_PREFIX@
@@ -1374,6 +1382,7 @@ UNDEFINE_STRTOK_R = @UNDEFINE_STRTOK_R@
 UNISTD_H_HAVE_WINSOCK2_H = @UNISTD_H_HAVE_WINSOCK2_H@
 UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 UNZIP = @UNZIP@
+USE_NLS = @USE_NLS@
 VALGRIND = @VALGRIND@
 VALGRIND_NO_VGDB = @VALGRIND_NO_VGDB@
 VERSION = @VERSION@
@@ -1386,6 +1395,8 @@ WINDOWS_64_BIT_ST_SIZE = @WINDOWS_64_BIT_ST_SIZE@
 WINT_T_SUFFIX = @WINT_T_SUFFIX@
 WRESTOOL = @WRESTOOL@
 XGETTEXT = @XGETTEXT@
+XGETTEXT_015 = @XGETTEXT_015@
+XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 XMLLINT = @XMLLINT@
 XZCAT = @XZCAT@
 YACC = @YACC@
@@ -1500,7 +1511,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR) $(OCAMLPACKAGES)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@OCAMLCLIBS = \
-@HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) -lncurses \
+@HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) $(LIBINTL) -lncurses \
 @HAVE_OCAML_TRUE@	-L../src/.libs -lutils \
 @HAVE_OCAML_TRUE@	-L../gnulib/lib/.libs -lgnu
 

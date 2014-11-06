@@ -42,6 +42,7 @@ and op_type =
 | TargetLinks of string                 (* target:link[:link...] *)
 | PasswordSelector of string            (* password selector *)
 | UserPasswordSelector of string        (* user:selector *)
+| SSHKeySelector of string              (* user:selector *)
 
 let ops = [
   { op_name = "chmod";
@@ -54,6 +55,7 @@ Change the permissions of C<FILE> to C<PERMISSIONS>.
 I<Note>: C<PERMISSIONS> by default would be decimal, unless you prefix
 it with C<0> to get octal, ie. use C<0700> not C<700>.";
   };
+
   { op_name = "delete";
     op_type = String "PATH";
     op_discrim = "`Delete";
@@ -64,6 +66,7 @@ contents, recursively).
 
 See also: I<--upload>, I<--scrub>.";
   };
+
   { op_name = "edit";
     op_type = StringPair "FILE:EXPR";
     op_discrim = "`Edit";
@@ -78,6 +81,7 @@ Note that this option is only available when Perl 5 is installed.
 
 See L<virt-edit(1)/NON-INTERACTIVE EDITING>.";
   };
+
   { op_name = "firstboot";
     op_type = String "SCRIPT";
     op_discrim = "`FirstbootScript";
@@ -96,6 +100,7 @@ order that they appear on the command line.
 
 See also I<--run>.";
   };
+
   { op_name = "firstboot-command";
     op_type = String "'CMD+ARGS'";
     op_discrim = "`FirstbootCommand";
@@ -109,6 +114,7 @@ order that they appear on the command line.
 
 See also I<--run>.";
   };
+
   { op_name = "firstboot-install";
     op_type = StringList "PKG,PKG..";
     op_discrim = "`FirstbootPackages";
@@ -121,6 +127,7 @@ installed when the guest first boots using the guest's package manager
 For an overview on the different ways to install packages, see
 L<virt-builder(1)/INSTALLING PACKAGES>.";
   };
+
   { op_name = "hostname";
     op_type = String "HOSTNAME";
     op_discrim = "`Hostname";
@@ -129,6 +136,7 @@ L<virt-builder(1)/INSTALLING PACKAGES>.";
 Set the hostname of the guest to C<HOSTNAME>.  You can use a
 dotted hostname.domainname (FQDN) if you want.";
   };
+
   { op_name = "install";
     op_type = StringList "PKG,PKG..";
     op_discrim = "`InstallPackages";
@@ -143,6 +151,7 @@ L<virt-builder(1)/INSTALLING PACKAGES>.
 
 See also I<--update>.";
   };
+
   { op_name = "link";
     op_type = TargetLinks "TARGET:LINK[:LINK..]";
     op_discrim = "`Link";
@@ -151,6 +160,7 @@ See also I<--update>.";
 Create symbolic link(s) in the guest, starting at C<LINK> and
 pointing at C<TARGET>.";
   };
+
   { op_name = "mkdir";
     op_type = String "DIR";
     op_discrim = "`Mkdir";
@@ -161,6 +171,7 @@ Create a directory in the guest.
 This uses S<C<mkdir -p>> so any intermediate directories are created,
 and it also works if the directory already exists.";
   };
+
   { op_name = "password";
     op_type = UserPasswordSelector "USER:SELECTOR";
     op_discrim = "`Password";
@@ -172,6 +183,7 @@ create the user account).
 See L<virt-builder(1)/USERS AND PASSWORDS> for the format of
 the C<SELECTOR> field, and also how to set up user accounts.";
   };
+
   { op_name = "root-password";
     op_type = PasswordSelector "SELECTOR";
     op_discrim = "`RootPassword";
@@ -185,6 +197,7 @@ the C<SELECTOR> field, and also how to set up user accounts.
 Note: In virt-builder, if you I<don't> set I<--root-password>
 then the guest is given a I<random> root password.";
   };
+
   { op_name = "run";
     op_type = String "SCRIPT";
     op_discrim = "`Script";
@@ -207,6 +220,7 @@ in the same order that they appear on the command line.
 
 See also: I<--firstboot>, I<--attach>, I<--upload>.";
   };
+
   { op_name = "run-command";
     op_type = String "'CMD+ARGS'";
     op_discrim = "`Command";
@@ -226,6 +240,7 @@ in the same order that they appear on the command line.
 
 See also: I<--firstboot>, I<--attach>, I<--upload>.";
   };
+
   { op_name = "scrub";
     op_type = String "FILE";
     op_discrim = "`Scrub";
@@ -245,6 +260,23 @@ It cannot delete directories, only regular files.
 
 =back";
   };
+
+  { op_name = "ssh-inject";
+    op_type = SSHKeySelector "USER[:SELECTOR]";
+    op_discrim = "`SSHInject";
+    op_shortdesc = "Inject a public key into the guest";
+    op_pod_longdesc = "\
+Inject an ssh key so the given C<USER> will be able to log in over
+ssh without supplying a password.  The C<USER> must exist already
+in the guest.
+
+See L<virt-builder(1)/SSH KEYS> for the format of
+the C<SELECTOR> field.
+
+You can have multiple I<--ssh-inject> options, for different users
+and also for more keys for each user."
+  };
+
   { op_name = "timezone";
     op_type = String "TIMEZONE";
     op_discrim = "`Timezone";
@@ -253,6 +285,7 @@ It cannot delete directories, only regular files.
 Set the default timezone of the guest to C<TIMEZONE>.  Use a location
 string like C<Europe/London>";
   };
+
   { op_name = "update";
     op_type = Unit;
     op_discrim = "`Update";
@@ -264,6 +297,7 @@ template to their latest versions.
 
 See also I<--install>.";
   };
+
   { op_name = "upload";
     op_type = StringPair "FILE:DEST";
     op_discrim = "`Upload";
@@ -282,6 +316,7 @@ name as on the local filesystem.
 
 See also: I<--mkdir>, I<--delete>, I<--scrub>.";
   };
+
   { op_name = "write";
     op_type = StringPair "FILE:CONTENT";
     op_discrim = "`Write";
@@ -315,6 +350,7 @@ the image was built, use this option.
 
 See also: L</LOG FILE>.";
   };
+
   { flag_name = "password-crypto";
     flag_type = FlagPasswordCrypto "md5|sha256|sha512";
     flag_ml_var = "password_crypto";
@@ -340,6 +376,7 @@ If you want to do that, then you should use the I<--edit> option
 to modify C</etc/sysconfig/authconfig> (Fedora, RHEL) or
 C</etc/pam.d/common-password> (Debian, Ubuntu).";
   };
+
   { flag_name = "selinux-relabel";
     flag_type = FlagBool false (* XXX - the default in virt-builder *);
     flag_ml_var = "selinux_relabel";
@@ -519,6 +556,19 @@ let rec argspec () =
       pr "      s_\"%s\" ^ \" \" ^ s_\"%s\"\n" v shortdesc;
       pr "    ),\n";
       pr "    Some %S, %S;\n" v longdesc
+    | { op_type = SSHKeySelector v; op_name = name; op_discrim = discrim;
+        op_shortdesc = shortdesc; op_pod_longdesc = longdesc } ->
+      pr "    (\n";
+      pr "      \"--%s\",\n" name;
+      pr "      Arg.String (\n";
+      pr "        fun s ->\n";
+      pr "          let user, selstr = string_split \":\" s in\n";
+      pr "          let sel = Ssh_key.parse_selector selstr in\n";
+      pr "          ops := %s (user, sel) :: !ops\n" discrim;
+      pr "      ),\n";
+      pr "      s_\"%s\" ^ \" \" ^ s_\"%s\"\n" v shortdesc;
+      pr "    ),\n";
+      pr "    Some %S, %S;\n" v longdesc
   ) ops;
 
   List.iter (
@@ -586,6 +636,10 @@ type ops = {
         op_name = name } ->
       pr "  | %s of string * Password.password_selector\n      (* --%s %s *)\n"
         discrim name v
+    | { op_type = SSHKeySelector v; op_discrim = discrim;
+        op_name = name } ->
+      pr "  | %s of string * Ssh_key.ssh_key_selector\n      (* --%s %s *)\n"
+        discrim name v
   ) ops;
   pr "]\n";
 
@@ -611,7 +665,7 @@ let generate_customize_synopsis_pod () =
       | { op_type = Unit; op_name = n } ->
         n, sprintf "[--%s]" n
       | { op_type = String v | StringPair v | StringList v | TargetLinks v
-            | PasswordSelector v | UserPasswordSelector v;
+            | PasswordSelector v | UserPasswordSelector v | SSHKeySelector v;
           op_name = n } ->
         n, sprintf "[--%s %s]" n v
     ) ops @
@@ -651,7 +705,7 @@ let generate_customize_options_pod () =
       | { op_type = Unit; op_name = n; op_pod_longdesc = ld } ->
         n, sprintf "B<--%s>" n, ld
       | { op_type = String v | StringPair v | StringList v | TargetLinks v
-            | PasswordSelector v | UserPasswordSelector v;
+            | PasswordSelector v | UserPasswordSelector v | SSHKeySelector v;
           op_name = n; op_pod_longdesc = ld } ->
         n, sprintf "B<--%s> %s" n v, ld
     ) ops @
