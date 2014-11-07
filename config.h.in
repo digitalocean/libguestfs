@@ -900,9 +900,6 @@
 /* libmagic found at compile time. */
 #undef HAVE_LIBMAGIC
 
-/* Define to 1 if you have the `ncurses' library (-lncurses). */
-#undef HAVE_LIBNCURSES
-
 /* Define to 1 if you have the `portablexdr' library (-lportablexdr). */
 #undef HAVE_LIBPORTABLEXDR
 
@@ -911,6 +908,9 @@
 
 /* Define to 1 if you have libselinux. */
 #undef HAVE_LIBSELINUX
+
+/* Define to 1 if you have the `tinfo' library (-ltinfo). */
+#undef HAVE_LIBTINFO
 
 /* libvirt found at compile time. */
 #undef HAVE_LIBVIRT

@@ -1501,7 +1501,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR) $(OCAMLPACKAGES)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@OCAMLCLIBS = \
-@HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) $(LIBINTL) -lncurses -lcrypt \
+@HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) $(LIBINTL) -ltinfo -lcrypt \
 @HAVE_OCAML_TRUE@	-L../src/.libs -lutils \
 @HAVE_OCAML_TRUE@	-L../gnulib/lib/.libs -lgnu
 
@@ -1923,10 +1923,10 @@ $(top_builddir)/generator/generator:
 
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmx tty-c.o tTY.cmx common_utils.cmx common_utils_tests.cmx
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib -lncurses -o $@
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib -ltinfo -o $@
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmo tty-c.o tTY.cmo common_utils.cmo common_utils_tests.cmo
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  mlguestfs.cma -linkpkg $^ -cclib -lncurses -custom -o $@
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  mlguestfs.cma -linkpkg $^ -cclib -ltinfo -custom -o $@
 
 @HAVE_OCAML_TRUE@check-valgrind:
 @HAVE_OCAML_TRUE@	$(MAKE) VG="$(top_builddir)/run @VG@" check
