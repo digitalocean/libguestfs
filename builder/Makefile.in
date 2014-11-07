@@ -1675,7 +1675,7 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	-L../src/.libs -lutils \
 @HAVE_OCAML_TRUE@	-L../gnulib/lib/.libs -lgnu \
 @HAVE_OCAML_TRUE@	-pthread -lpthread \
-@HAVE_OCAML_TRUE@	-lncurses -lcrypt
+@HAVE_OCAML_TRUE@	-ltinfo -lcrypt
 
 
 # Tests.

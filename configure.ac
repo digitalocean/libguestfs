@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [29])
-m4_define([libguestfs_release], [5])
+m4_define([libguestfs_release], [6])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -355,14 +355,14 @@ struct sockaddr_un myaddr;
 dnl tgetent, tputs and UP [sic] are all required.  They come from libtinfo
 dnl which is pulled in as a dependency of libncurses.
 old_LIBS="$LIBS"
-AC_CHECK_LIB([ncurses], [tgetent], [], [
-    AC_MSG_ERROR(['ncurses' library not found, or it doesn't contain 'tgetent'])
+AC_CHECK_LIB([tinfo], [tgetent], [], [
+    AC_MSG_ERROR(['libtinfo' library (usually part of ncurses) not found, or it doesn't contain 'tgetent'])
 ])
-AC_CHECK_LIB([ncurses], [tputs], [], [
-    AC_MSG_ERROR(['ncurses' library not found, or it doesn't contain 'tputs'])
+AC_CHECK_LIB([tinfo], [tputs], [], [
+    AC_MSG_ERROR(['libtinfo' library (usually part of ncurses) not found, or it doesn't contain 'tputs'])
 ])
-AC_CHECK_LIB([ncurses], [UP], [], [
-    AC_MSG_ERROR(['ncurses' library not found, or it doesn't contain 'UP'])
+AC_CHECK_LIB([tinfo], [UP], [], [
+    AC_MSG_ERROR(['libtinfo' library (usually part of ncurses) not found, or it doesn't contain 'UP'])
 ])
 LIBS="$old_LIBS"
 
@@ -760,6 +760,7 @@ qemu_system="$(
     $SED -e 's/-i@<:@456@:>@86/-i386/g' \
          -e 's/-arm.*/-arm/g' \
          -e 's/-amd64/-x86_64/g' \
+         -e 's/-powerpc64/-ppc64/g' \
          -e 's/-ppc64le/-ppc64/g'
     )"
 default_qemu="qemu-kvm kvm $qemu_system qemu"

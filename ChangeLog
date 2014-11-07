@@ -1,3 +1,75 @@
+commit 75b37b758986d6885c399b17d07329deb326546d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 6 22:07:26 2014 +0000
+
+    Version 1.29.6.
+
+commit 4a187b7faf119cb2bb4a761bd59618bd2af77ef9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 6 18:49:46 2014 +0000
+
+    v2v: Warn if a kernel-* package is found containing no files.
+
+commit 377bc302f11db3da4263f894c76a7d280fb25dbd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 6 18:47:34 2014 +0000
+
+    v2v: Fix kernel detection when multiple kernels are installed (RHBZ#1161250).
+    
+    Previously we used to try to find the 'vmlinuz' file by running 'rpm
+    -ql kernel' and looking for any file called 'vmlinuz-*'.
+    
+    If there were multiple 'kernel' packages installed, the rpm command
+    would list files from all of them, resulting in a random 'vmlinuz-*'
+    being chosen, not necessarily the one corresponding to the kernel
+    package we were looking at.
+    
+    Use 'rpm -ql kernel-<VERSION>-<RELEASE>' instead so that we only look
+    for files in the right kernel package.
+    
+    Thanks: James Mighion
+
+commit bd589a1d53c5192daf40da0cc7f5809c7e4fa0ca
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 6 15:15:39 2014 +0000
+
+    test-tool: Map powerpc64 -> ppc64 when searching for qemu.
+    
+    Consequence of the previous commit.
+    
+    This also adjusts the whitespace to make the generated script
+    a bit nicer.
+
+commit a550ecb5f198ff7179df097ffc7847ff576115ee
+Author: David Sommerseth <davids@redhat.com>
+Date:   Thu Nov 6 15:14:04 2014 +0000
+
+    configure: Map powerpc64 -> ppc64.
+
+commit 5de06a3571d20d0fd483d26099cc49bc0f08ecf0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 6 09:52:32 2014 +0000
+
+    v2v: Document minimum free filesystem space requirements.
+
+commit 918dd3705d3d34f28eb3cf30cd79d16358d525e3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 6 09:47:21 2014 +0000
+
+    v2v: Ignore small filesystems when checking for sufficient free space.
+
+commit ea04bcbc84f5727ded8eb2aaecfea3b3275c146e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Nov 5 21:34:58 2014 +0000
+
+    Use -ltinfo instead of -lncurses.
+    
+    In tools except guestfish, we don't use ncurses, or even curses, just
+    2 termcap functions and a global variable.  These are provided by
+    libtinfo, so just link to that.
+    
+    In guestfish we use readline which needs ncurses.  Leave that alone.
+
 commit 8c2f27518a6f5068c1111b3f41bcfa6971646063
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Nov 5 15:41:32 2014 +0000
