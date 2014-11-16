@@ -1110,6 +1110,8 @@ LIBS = @LIBS@
 LIBSOCKET = @LIBSOCKET@
 LIBTESTS_LIBDEPS = @LIBTESTS_LIBDEPS@
 LIBTHREAD = @LIBTHREAD@
+LIBTINFO_CFLAGS = @LIBTINFO_CFLAGS@
+LIBTINFO_LIBS = @LIBTINFO_LIBS@
 LIBTOOL = @LIBTOOL@
 LIBVIRT_CFLAGS = @LIBVIRT_CFLAGS@
 LIBVIRT_LIBS = @LIBVIRT_LIBS@
@@ -1536,7 +1538,8 @@ AM_CFLAGS = \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/fish \
 	-pthread \
-	$(LIBLZMA_CFLAGS)
+	$(LIBLZMA_CFLAGS) \
+	$(LIBTINFO_CFLAGS)
 
 EXTRA_DIST = \
 	$(SOURCES) \
@@ -1675,7 +1678,7 @@ noinst_DATA = $(am__append_3) \
 @HAVE_OCAML_TRUE@	-L../src/.libs -lutils \
 @HAVE_OCAML_TRUE@	-L../gnulib/lib/.libs -lgnu \
 @HAVE_OCAML_TRUE@	-pthread -lpthread \
-@HAVE_OCAML_TRUE@	-ltinfo -lcrypt
+@HAVE_OCAML_TRUE@	$(LIBTINFO_LIBS) -lcrypt
 
 
 # Tests.

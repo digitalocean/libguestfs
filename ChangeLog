@@ -1,3 +1,81 @@
+commit 52dfb831dbb6a7e85ddfd022678be8e72ad86e35
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Nov 15 17:09:59 2014 +0000
+
+    Version 1.29.7.
+
+commit 643162a61a65483f7c6d21a1b1db220ae468b3c3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Nov 14 18:04:12 2014 +0100
+
+    appliance: explicitly add libyajl2 on openSUSE
+    
+    While it has always been needed, it has been implicitly pulled in by
+    some other package. Hence, make it sure to always have it.
+
+commit 891959cf7f82fac89aed3997532e2bee22ae2720
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 13 15:30:52 2014 +0000
+
+    df: Allow policykit and SASL authentication when reading list of domains.
+    
+    Use virConnectOpenAuth instead of virConnectOpenReadOnly.
+    
+    See also:
+    https://www.redhat.com/archives/libguestfs/2014-November/thread.html#00035
+
+commit 57547dcdcfb27bdd988d8a561dc2178ea1d23517
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Nov 12 09:50:59 2014 +0100
+
+    daemon: check xfs label lengths (RHBZ#1162966).
+    
+    Similar to commit 52f9cd4882135910ea06e1e50ac6441d455c9ab1, but for xfs
+    filesystems.
+
+commit e698daabbcb3c9d7e08e571fbd661369d4d52194
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Nov 10 14:53:07 2014 +0100
+
+    configure: simplify the qemu cpu mapping
+    
+    Use AS_CASE to properly map from the host cpu to the qemu cpu suffix;
+    this avoids doing multiple string replacements using sed, and it is
+    possible to use case-like syntax.
+
+commit 34d685157459c9a649179ae4b313f8b3576696f4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 13 13:22:21 2014 +0000
+
+    Rename LIBNCURSES* to LIBTINFO*.
+    
+    We actually depend on libtinfo or libtermcap, not curses, so
+    rename the variable.
+    
+    This updates commit 96add4d5b34daabbae5a2766f564ae98b48cf576.
+
+commit 96add4d5b34daabbae5a2766f564ae98b48cf576
+Author: Mike Frysinger <vapier@gentoo.org>
+Date:   Mon Nov 10 22:47:51 2014 -0500
+
+    use pkg-config to look up ncurses
+    
+    Hardcoding -ltinfo breaks on distros that do not build the sep library
+    (which is the default ncurses behavior).  Use pkg-config to look up the
+    right libraries regardless of how the distro built things.
+
+commit 7407c0ae14c382e11e93afe94c0fc37d16df6ae9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Nov 7 11:25:06 2014 +0000
+
+    v2v: -o glance: Fix metadata for disk type and NIC (RHBZ#1161575).
+    
+    The labels 'hw_disk_bus' and 'hw_vif_model' were swapped.  This
+    happened to work for virtio guests.  For non-virtio guests you ended
+    up with absurdities like requiring an rtl8139 driver for the disk.
+    
+    Thanks: Junquin Zhou
+
 commit 75b37b758986d6885c399b17d07329deb326546d
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Nov 6 22:07:26 2014 +0000
