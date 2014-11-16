@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [29])
-m4_define([libguestfs_release], [6])
+m4_define([libguestfs_release], [7])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -352,19 +352,13 @@ struct sockaddr_un myaddr;
     AC_DEFINE_UNQUOTED([UNIX_PATH_MAX], $unix_path_max, [Custom value for UNIX_PATH_MAX])
   ])
 
-dnl tgetent, tputs and UP [sic] are all required.  They come from libtinfo
-dnl which is pulled in as a dependency of libncurses.
-old_LIBS="$LIBS"
-AC_CHECK_LIB([tinfo], [tgetent], [], [
-    AC_MSG_ERROR(['libtinfo' library (usually part of ncurses) not found, or it doesn't contain 'tgetent'])
+dnl tgetent, tputs and UP [sic] are all required.  They come from the lower
+dnl tinfo library, but might be part of ncurses directly.
+PKG_CHECK_MODULES([LIBTINFO], [tinfo], [], [
+    PKG_CHECK_MODULES([LIBTINFO], [ncurses])
 ])
-AC_CHECK_LIB([tinfo], [tputs], [], [
-    AC_MSG_ERROR(['libtinfo' library (usually part of ncurses) not found, or it doesn't contain 'tputs'])
-])
-AC_CHECK_LIB([tinfo], [UP], [], [
-    AC_MSG_ERROR(['libtinfo' library (usually part of ncurses) not found, or it doesn't contain 'UP'])
-])
-LIBS="$old_LIBS"
+AC_SUBST([LIBTINFO_CFLAGS])
+AC_SUBST([LIBTINFO_LIBS])
 
 dnl GNU gettext tools (optional).
 AC_CHECK_PROG([XGETTEXT],[xgettext],[xgettext],[no])
@@ -755,15 +749,13 @@ AC_DEFINE_UNQUOTED([UNZIP],["$UNZIP"],[Name of unzip program.])
 
 dnl Check for QEMU for running binaries on this $host_cpu, fall
 dnl back to basic 'qemu'.  Allow the user to override it.
-qemu_system="$(
-    echo qemu-system-$host_cpu |
-    $SED -e 's/-i@<:@456@:>@86/-i386/g' \
-         -e 's/-arm.*/-arm/g' \
-         -e 's/-amd64/-x86_64/g' \
-         -e 's/-powerpc64/-ppc64/g' \
-         -e 's/-ppc64le/-ppc64/g'
-    )"
-default_qemu="qemu-kvm kvm $qemu_system qemu"
+AS_CASE([$host_cpu],
+        [i@<:@456@:>@86],[qemu_cpu=i386],
+        [arm*],[qemu_cpu=arm],
+        [amd64],[qemu_cpu=x86_64],
+        [powerpc64 | ppc64le],[qemu_cpu=ppc64],
+        [qemu_cpu=$host_cpu])
+default_qemu="qemu-kvm kvm qemu-system-$qemu_cpu qemu"
 AC_ARG_WITH([qemu],
     [AS_HELP_STRING([--with-qemu="bin1 bin2 ..."],
         [set default QEMU binary @<:@default="[qemu-kvm] qemu-system-<host> qemu"@:>@])],

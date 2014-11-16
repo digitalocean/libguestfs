@@ -909,9 +909,6 @@
 /* Define to 1 if you have libselinux. */
 #undef HAVE_LIBSELINUX
 
-/* Define to 1 if you have the `tinfo' library (-ltinfo). */
-#undef HAVE_LIBTINFO
-
 /* libvirt found at compile time. */
 #undef HAVE_LIBVIRT
 
