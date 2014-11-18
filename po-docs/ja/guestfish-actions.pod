@@ -2182,8 +2182,8 @@ L</fstrim> either instead of, or after calling L</zero-free-space>.
 
  get-append
 
-Return the additional kernel options which are added to the guest kernel
-command line.
+Return the additional kernel options which are added to the libguestfs
+appliance kernel command line.
 
 C<NULL> ならば、オプションが追加されません。
 
@@ -6232,7 +6232,8 @@ more details.
 
  set-append append
 
-この関数は、追加のオプションを仮想マシンのカーネルコマンドラインに追加するために使用されます。
+This function is used to add additional options to the libguestfs appliance
+kernel command line.
 
 C<LIBGUESTFS_APPEND> 環境変数を設定して上書きされなければ、デフォルトは C<NULL> です。
 

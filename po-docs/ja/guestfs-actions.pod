@@ -3528,8 +3528,8 @@ L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
  const char *
  guestfs_get_append (guestfs_h *g);
 
-Return the additional kernel options which are added to the guest kernel
-command line.
+Return the additional kernel options which are added to the libguestfs
+appliance kernel command line.
 
 C<NULL> ならば、オプションが追加されません。
 
@@ -10365,7 +10365,8 @@ more details.
  guestfs_set_append (guestfs_h *g,
                      const char *append);
 
-この関数は、追加のオプションを仮想マシンのカーネルコマンドラインに追加するために使用されます。
+This function is used to add additional options to the libguestfs appliance
+kernel command line.
 
 C<LIBGUESTFS_APPEND> 環境変数を設定して上書きされなければ、デフォルトは C<NULL> です。
 

@@ -6378,8 +6378,8 @@ guestfs_session_fstrim (GuestfsSession *session, const gchar *mountpoint, Guestf
  *
  * get the additional kernel options
  *
- * Return the additional kernel options which are added to the guest kernel
- * command line.
+ * Return the additional kernel options which are added to the libguestfs
+ * appliance kernel command line.
  * 
  * If @NULL then no options are added.
  * 
@@ -20531,8 +20531,8 @@ guestfs_session_scrub_freespace (GuestfsSession *session, const gchar *dir, GErr
  *
  * add options to kernel command line
  *
- * This function is used to add additional options to the guest kernel
- * command line.
+ * This function is used to add additional options to the libguestfs
+ * appliance kernel command line.
  * 
  * The default is @NULL unless overridden by setting @LIBGUESTFS_APPEND
  * environment variable.

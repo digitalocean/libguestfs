@@ -2309,7 +2309,7 @@ instead of, or after calling C<$g-E<gt>zero_free_space>.
 =item $append = $g->get_append ();
 
 Return the additional kernel options which are added to the
-guest kernel command line.
+libguestfs appliance kernel command line.
 
 If C<NULL> then no options are added.
 
@@ -6105,7 +6105,7 @@ manual page for more details.
 =item $g->set_append ($append);
 
 This function is used to add additional options to the
-guest kernel command line.
+libguestfs appliance kernel command line.
 
 The default is C<NULL> unless overridden by setting
 C<LIBGUESTFS_APPEND> environment variable.

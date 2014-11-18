@@ -2500,7 +2500,7 @@ class GuestFS(object):
 
     def get_append (self):
         """Return the additional kernel options which are added to
-        the guest kernel command line.
+        the libguestfs appliance kernel command line.
         
         If "NULL" then no options are added.
         """
@@ -7329,7 +7329,7 @@ class GuestFS(object):
 
     def set_append (self, append):
         """This function is used to add additional options to the
-        guest kernel command line.
+        libguestfs appliance kernel command line.
         
         The default is "NULL" unless overridden by setting
         "LIBGUESTFS_APPEND" environment variable.

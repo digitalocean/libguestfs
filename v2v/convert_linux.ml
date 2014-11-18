@@ -1224,26 +1224,33 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
      * particular it assumes all non-removable source disks will be
      * added to the target in the order they appear in the libvirt XML.
      *)
-    let block_prefix =
-      if virtio then "vd"
-      else
-        match family, inspect.i_major_version with
-        | `RHEL_family, v when v < 5 ->
-          (* RHEL < 5 used old ide driver *) "hd"
-        | `RHEL_family, 5 ->
-          (* RHEL 5 uses libata, but udev still uses: *) "hd"
-        | `SUSE_family, _ ->
-          (* SUSE uses libata, but still presents IDE disks as: *) "hd"
-        | _, _ ->
-          (* All modern distros use libata: *) "sd" in
+    let ide_block_prefix =
+      match family, inspect.i_major_version with
+      | `RHEL_family, v when v < 5 ->
+        (* RHEL < 5 used old ide driver *) "hd"
+      | `RHEL_family, 5 ->
+        (* RHEL 5 uses libata, but udev still uses: *) "hd"
+      | `SUSE_family, _ ->
+        (* SUSE uses libata, but still presents IDE disks as: *) "hd"
+      | _, _ ->
+        (* All modern distros use libata: *) "sd" in
+
+    let block_prefix_after_conversion =
+      if virtio then "vd" else ide_block_prefix in
+
     let map =
       mapi (
         fun i disk ->
-          let source_dev =
-            match disk.s_target_dev with (* target/@dev in _source_ HV *)
-            | Some dev -> dev
-            | None -> (* ummm, what? *) block_prefix ^ drive_name i in
-          let target_dev = block_prefix ^ drive_name i in
+          let block_prefix_before_conversion =
+            match disk.s_controller with
+            | Some `IDE -> ide_block_prefix
+            | Some `SCSI -> "sd"
+            | Some `Virtio_blk -> "vd"
+            | None ->
+              (* This is basically a guess.  It assumes the source used IDE. *)
+              ide_block_prefix in
+          let source_dev = block_prefix_before_conversion ^ drive_name i in
+          let target_dev = block_prefix_after_conversion ^ drive_name i in
           source_dev, target_dev
       ) source.s_disks in
 
@@ -1258,8 +1265,17 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
     let map = map @
       mapi (
         fun i disk ->
-          "xvd" ^ drive_name i, block_prefix ^ drive_name i
+          "xvd" ^ drive_name i, block_prefix_after_conversion ^ drive_name i
       ) source.s_disks in
+
+    if verbose then (
+      printf "block device map:\n";
+      List.iter (
+        fun (source_dev, target_dev) ->
+          printf "\t%s\t-> %s\n" source_dev target_dev
+      ) (List.sort (fun (a,_) (b,_) -> compare a b) map);
+      flush stdout
+    );
 
     (* Possible Augeas paths to search for device names. *)
     let paths = [
@@ -1289,63 +1305,64 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
     and rex_device_cciss =
       Str.regexp "^/dev/\\(cciss/c[0-9]+d[0-9]+\\)$"
     and rex_device_p =
-      Str.regexp "^/dev/\\([a-z]+\\)\\([0-9]*\\)$"
+      Str.regexp "^/dev/\\([a-z]+\\)\\([0-9]+\\)$"
     and rex_device =
       Str.regexp "^/dev/\\([a-z]+\\)$" in
 
     let rec replace_if_device path value =
-      if Str.string_match rex_device_cciss_p value 0 then (
+      let replace device =
+        try List.assoc device map
+        with Not_found ->
+          if string_find device "md" = -1 && string_find device "fd" = -1 &&
+            device <> "cdrom" then
+            warning (f_"%s references unknown device \"%s\".  You may have to fix this entry manually after conversion.")
+              path device;
+          device
+      in
+
+      if string_find path "GRUB_CMDLINE" >= 0 then (
+        (* Handle grub2 resume=<dev> specially. *)
+        if Str.string_match rex_resume value 0 then (
+          let start = Str.matched_group 1 value
+          and device = Str.matched_group 2 value
+          and end_ = Str.matched_group 3 value in
+          let device = replace_if_device path device in
+          start ^ device ^ end_
+        )
+        else value
+      )
+      else if Str.string_match rex_device_cciss_p value 0 then (
         let device = Str.matched_group 1 value
         and part = Str.matched_group 2 value in
-        "/dev/" ^ replace path device ^ part
+        "/dev/" ^ replace device ^ part
       )
       else if Str.string_match rex_device_cciss value 0 then (
         let device = Str.matched_group 1 value in
-        "/dev/" ^ replace path device
+        "/dev/" ^ replace device
       )
       else if Str.string_match rex_device_p value 0 then (
         let device = Str.matched_group 1 value
         and part = Str.matched_group 2 value in
-        "/dev/" ^ replace path device ^ part
+        "/dev/" ^ replace device ^ part
       )
       else if Str.string_match rex_device value 0 then (
         let device = Str.matched_group 1 value in
-        "/dev/" ^ replace path device
+        "/dev/" ^ replace device
       )
       else (* doesn't look like a known device name *)
         value
-
-    and replace path device =
-      try List.assoc device map
-      with Not_found ->
-        if string_find device "md" = -1 && string_find device "fd" = -1 &&
-          device <> "cdrom" then
-          warning (f_"%s references unknown device \"%s\".  You may have to fix this entry manually after conversion.")
-            path device;
-        device
     in
 
     let changed = ref false in
     List.iter (
       fun path ->
         let value = g#aug_get path in
+        let new_value = replace_if_device path value in
 
-        let value =
-          (* Handle grub2 resume=<dev> specially. *)
-          if string_find path "GRUB_CMDLINE" >= 0 then (
-            if Str.string_match rex_resume value 0 then (
-              let start = Str.matched_group 1 value
-              and device = Str.matched_group 2 value
-              and end_ = Str.matched_group 3 value in
-              let device = replace_if_device path device in
-              start ^ device ^ end_
-            )
-            else value
-          )
-          else replace_if_device path value in
-
-        g#aug_set path value;
-        changed := true
+        if value <> new_value then (
+          g#aug_set path new_value;
+          changed := true
+        )
     ) paths;
 
     if !changed then (

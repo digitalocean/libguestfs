@@ -60,14 +60,16 @@ let parse_libvirt_xml ~verbose xml =
     )
   in
 
-  let dom_type = xpath_to_string "/domain/@type" "" in
+  let hypervisor = xpath_to_string "/domain/@type" "" in
   let name = xpath_to_string "/domain/name/text()" "" in
   let memory = xpath_to_int "/domain/memory/text()" (1024 * 1024) in
   let memory = Int64.of_int memory *^ 1024L in
   let vcpu = xpath_to_int "/domain/vcpu/text()" 1 in
 
-  if dom_type = "" then
+  if hypervisor = "" then
     error (f_"in the libvirt XML metadata, <domain type='...'> is missing or empty");
+  let hypervisor = source_hypervisor_of_string hypervisor in
+
   if name = "" then
     error (f_"in the libvirt XML metadata, <name> is missing or empty");
 
@@ -114,12 +116,12 @@ let parse_libvirt_xml ~verbose xml =
     let get_disks, add_disk =
       let disks = ref [] and i = ref 0 in
       let get_disks () = List.rev !disks in
-      let add_disk qemu_uri format target_dev p_source =
+      let add_disk qemu_uri format controller p_source =
         incr i;
         disks :=
           { p_source_disk = { s_disk_id = !i;
                               s_qemu_uri = qemu_uri; s_format = format;
-                              s_target_dev = target_dev };
+                              s_controller = controller };
             p_source = p_source } :: !disks
       in
       get_disks, add_disk
@@ -134,9 +136,14 @@ let parse_libvirt_xml ~verbose xml =
       let node = Xml.xpathobj_node doc obj i in
       Xml.xpathctx_set_current_context xpathctx node;
 
-      let target_dev =
-        let target_dev = xpath_to_string "target/@dev" "" in
-        if target_dev <> "" then Some target_dev else None in
+      let controller =
+        let target_bus = xpath_to_string "target/@bus" "" in
+        match target_bus with
+        | "" -> None
+        | "ide" -> Some `IDE
+        | "scsi" -> Some `SCSI
+        | "virtio" -> Some `Virtio_blk
+        | _ -> None in
 
       let format =
         match xpath_to_string "driver/@type" "" with
@@ -151,11 +158,11 @@ let parse_libvirt_xml ~verbose xml =
       | "block" ->
         let path = xpath_to_string "source/@dev" "" in
         if path <> "" then
-          add_disk path format target_dev (P_source_dev path)
+          add_disk path format controller (P_source_dev path)
       | "file" ->
         let path = xpath_to_string "source/@file" "" in
         if path <> "" then
-          add_disk path format target_dev (P_source_file path)
+          add_disk path format controller (P_source_file path)
       | "network" ->
         (* We only handle <source protocol="nbd"> here, and that is
          * intended only for virt-p2v.  Any other network disk is
@@ -170,7 +177,7 @@ let parse_libvirt_xml ~verbose xml =
              * XXX Quoting, although it's not needed for virt-p2v.
              *)
             let path = sprintf "nbd:%s:%d" host port in
-            add_disk path format target_dev P_dont_rewrite
+            add_disk path format controller P_dont_rewrite
           )
         | "" -> ()
         | protocol ->
@@ -193,9 +200,14 @@ let parse_libvirt_xml ~verbose xml =
       let node = Xml.xpathobj_node doc obj i in
       Xml.xpathctx_set_current_context xpathctx node;
 
-      let target_dev =
-        let target_dev = xpath_to_string "target/@dev" "" in
-        if target_dev <> "" then Some target_dev else None in
+      let controller =
+        let target_bus = xpath_to_string "target/@bus" "" in
+        match target_bus with
+        | "" -> None
+        | "ide" -> Some `IDE
+        | "scsi" -> Some `SCSI
+        | "virtio" -> Some `Virtio_blk
+        | _ -> None in
 
       let typ =
         match xpath_to_string "@device" "" with
@@ -204,7 +216,7 @@ let parse_libvirt_xml ~verbose xml =
         | _ -> assert false (* libxml2 error? *) in
 
       let disk =
-        { s_removable_type = typ; s_removable_target_dev = target_dev } in
+        { s_removable_type = typ; s_removable_controller = controller } in
       disks := disk :: !disks
     done;
     List.rev !disks in
@@ -247,7 +259,7 @@ let parse_libvirt_xml ~verbose xml =
     List.rev !nics in
 
   ({
-    s_dom_type = dom_type;
+    s_hypervisor = hypervisor;
     s_name = name; s_orig_name = name;
     s_memory = memory;
     s_vcpu = vcpu;

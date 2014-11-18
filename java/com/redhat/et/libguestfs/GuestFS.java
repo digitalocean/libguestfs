@@ -4746,7 +4746,7 @@ public class GuestFS {
    * get the additional kernel options
    * <p>
    * Return the additional kernel options which are added to
-   * the guest kernel command line.
+   * the libguestfs appliance kernel command line.
    * <p>
    * If "NULL" then no options are added.
    * <p>
@@ -14776,7 +14776,7 @@ public class GuestFS {
    * add options to kernel command line
    * <p>
    * This function is used to add additional options to the
-   * guest kernel command line.
+   * libguestfs appliance kernel command line.
    * <p>
    * The default is "NULL" unless overridden by setting
    * "LIBGUESTFS_APPEND" environment variable.

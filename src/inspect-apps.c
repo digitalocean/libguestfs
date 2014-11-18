@@ -60,6 +60,7 @@
 static struct guestfs_application2_list *list_applications_rpm (guestfs_h *g, struct inspect_fs *fs);
 #endif
 static struct guestfs_application2_list *list_applications_deb (guestfs_h *g, struct inspect_fs *fs);
+static struct guestfs_application2_list *list_applications_pacman (guestfs_h *g, struct inspect_fs *fs);
 static struct guestfs_application2_list *list_applications_windows (guestfs_h *g, struct inspect_fs *fs);
 static void add_application (guestfs_h *g, struct guestfs_application2_list *, const char *name, const char *display_name, int32_t epoch, const char *version, const char *release, const char *arch, const char *install_path, const char *publisher, const char *url, const char *description);
 static void sort_applications (struct guestfs_application2_list *);
@@ -145,6 +146,11 @@ guestfs__inspect_list_applications2 (guestfs_h *g, const char *root)
         break;
 
       case OS_PACKAGE_FORMAT_PACMAN:
+	ret = list_applications_pacman (g, fs);
+	if (ret == NULL)
+	  return NULL;
+	break;
+
       case OS_PACKAGE_FORMAT_EBUILD:
       case OS_PACKAGE_FORMAT_PISI:
       case OS_PACKAGE_FORMAT_PKGSRC:
@@ -253,14 +259,17 @@ read_rpm_name (guestfs_h *g,
 /* tag constants, see rpmtag.h in RPM for complete list */
 #define RPMTAG_VERSION 1001
 #define RPMTAG_RELEASE 1002
+#define RPMTAG_EPOCH 1003
 #define RPMTAG_ARCH 1022
 
 static char *
 get_rpm_header_tag (guestfs_h *g, const unsigned char *header_start,
-                    size_t header_len, uint32_t tag)
+                    size_t header_len, uint32_t tag, char type)
 {
   uint32_t num_fields, offset;
   const unsigned char *cursor = header_start + 8, *store, *header_end;
+  size_t max_len;
+  char iv[4];
 
   /* This function parses the RPM header structure to pull out various
    * tag strings (version, release, arch, etc.).  For more detail on the
@@ -285,10 +294,24 @@ get_rpm_header_tag (guestfs_h *g, const unsigned char *header_start,
   while (cursor < store && cursor <= header_end - 16) {
     if (be32toh (*(uint32_t *) cursor) == tag) {
       offset = be32toh(*(uint32_t *) (cursor + 8));
+
       if (store + offset >= header_end)
         return NULL;
-      return safe_strndup(g, (const char *) (store + offset),
-                          header_end - (store + offset));
+      max_len = header_end - (store + offset);
+
+      switch (type) {
+      case 's':
+        return safe_strndup (g, (const char *) (store + offset), max_len);
+
+      case 'i':
+        memset (iv, 0, sizeof iv);
+        memcpy (iv, (void *) (store + offset),
+                max_len > sizeof iv ? sizeof iv : max_len);
+        return safe_memdup (g, iv, sizeof iv);
+
+      default:
+        abort ();
+      }
     }
     cursor += 16;
   }
@@ -311,7 +334,9 @@ read_package (guestfs_h *g,
 {
   struct read_package_data *data = datav;
   struct rpm_name nkey, *entry;
-  CLEANUP_FREE char *version = NULL, *release = NULL, *arch = NULL;
+  CLEANUP_FREE char *version = NULL, *release = NULL,
+    *epoch_str = NULL, *arch = NULL;
+  int32_t epoch;
 
   /* This function reads one (key, value) pair from the Packages
    * database.  The key is the link field (see struct rpm_name).  The
@@ -336,13 +361,20 @@ read_package (guestfs_h *g,
    * application out of the binary value string.
    */
 
-  version = get_rpm_header_tag (g, value, valuelen, RPMTAG_VERSION);
-  release = get_rpm_header_tag (g, value, valuelen, RPMTAG_RELEASE);
-  arch = get_rpm_header_tag (g, value, valuelen, RPMTAG_ARCH);
+  version = get_rpm_header_tag (g, value, valuelen, RPMTAG_VERSION, 's');
+  release = get_rpm_header_tag (g, value, valuelen, RPMTAG_RELEASE, 's');
+  epoch_str = get_rpm_header_tag (g, value, valuelen, RPMTAG_EPOCH, 'i');
+  arch = get_rpm_header_tag (g, value, valuelen, RPMTAG_ARCH, 's');
+
+  /* The epoch is stored as big-endian integer. */
+  if (epoch_str)
+    epoch = be32toh (*(int32_t *) epoch_str);
+  else
+    epoch = 0;
 
   /* Add the application and what we know. */
   if (version && release)
-    add_application (g, data->apps, entry->name, "", 0, version, release,
+    add_application (g, data->apps, entry->name, "", epoch, version, release,
                      arch ? arch : "", "", "", "", "");
 
   return 0;
@@ -491,6 +523,137 @@ list_applications_deb (guestfs_h *g, struct inspect_fs *fs)
   if (fp)
     fclose (fp);
   */
+  return ret;
+}
+
+static struct guestfs_application2_list *
+list_applications_pacman (guestfs_h *g, struct inspect_fs *fs)
+{
+  CLEANUP_FREE char *desc_file = NULL, *fname = NULL, *line = NULL;
+  CLEANUP_FREE_DIRENT_LIST struct guestfs_dirent_list *local_db = NULL;
+  struct guestfs_application2_list *apps = NULL, *ret = NULL;
+  struct guestfs_dirent *curr = NULL;
+  FILE *fp;
+  size_t i, allocsize = 0;
+  ssize_t len;
+  CLEANUP_FREE char *name = NULL, *version = NULL, *desc = NULL;
+  CLEANUP_FREE char *arch = NULL, *url = NULL;
+  char **key = NULL, *rel = NULL, *ver = NULL, *p;
+  int32_t epoch;
+  const size_t path_len = strlen ("/var/lib/pacman/local/") + strlen ("/desc");
+
+  local_db = guestfs_readdir (g, "/var/lib/pacman/local");
+  if (local_db == NULL)
+    return NULL;
+
+  /* Allocate 'apps' list. */
+  apps = safe_malloc (g, sizeof *apps);
+  apps->len = 0;
+  apps->val = NULL;
+
+  for (i = 0; i < local_db->len; i++) {
+    curr = &local_db->val[i];
+
+    if (curr->ftyp != 'd' || STREQ (curr->name, ".") || STREQ (curr->name, ".."))
+      continue;
+
+    free (fname);
+    fname = safe_malloc (g, strlen (curr->name) + path_len + 1);
+    sprintf (fname, "/var/lib/pacman/local/%s/desc", curr->name);
+    free (desc_file);
+    desc_file = guestfs___download_to_tmp (g, fs, fname, curr->name, 8192);
+
+    /* The desc files are small (4K). If the desc file does not exist or is
+     * larger than the 8K limit we've used, the database is probably corrupted,
+     * but we'll continue with the next package anyway.
+     */
+    if (desc_file == NULL)
+      continue;
+
+    fp = fopen (desc_file, "r");
+    if (fp == NULL) {
+      perrorf (g, "fopen: %s", desc_file);
+      goto out;
+    }
+
+    while ((len = getline(&line, &allocsize, fp)) != -1) {
+      if (len > 0 && line[len-1] == '\n') {
+        line[--len] = '\0';
+      }
+
+      /* empty line */
+      if (len == 0) {
+        key = NULL;
+        continue;
+      }
+
+      if (key != NULL) {
+        *key = safe_strdup (g, line);
+        key = NULL;
+        continue;
+      }
+
+      if (STREQ (line, "%NAME%"))
+        key = &name;
+      else if (STREQ (line, "%VERSION%"))
+        key = &version;
+      else if (STREQ (line, "%DESC%"))
+        key = &desc;
+      else if (STREQ (line, "%URL%"))
+        key = &url;
+      else if (STREQ (line, "%ARCH%"))
+        key = &arch;
+    }
+
+    if ((name == NULL) || (version == NULL) || (arch == NULL))
+       /* Those are mandatory fields. The file is corrupted */
+       goto after_add_application;
+
+    /* version: [epoch:]ver-rel */
+    p = strchr (version, ':');
+    if (p) {
+      *p = '\0';
+      epoch = guestfs___parse_unsigned_int (g, version); /* -1 on error */
+      ver = p + 1;
+    } else {
+      epoch = 0;
+      ver = version;
+    }
+
+    p = strchr (ver, '-');
+    if (p) {
+      *p = '\0';
+      rel = p + 1;
+    } else /* release is a mandatory field */
+      goto after_add_application;
+
+    if ((epoch >= 0) && (ver[0] != '\0') && (rel[0] != '\0'))
+      add_application (g, apps, name, "", epoch, ver, rel, arch, "", "",
+                       url ? : "", desc ? : "");
+
+    after_add_application:
+     key = NULL;
+     free (name);
+     free (version);
+     free (desc);
+     free (arch);
+     free (url);
+     name = version = desc = arch = url = NULL;
+     rel = ver = NULL; /* haven't allocated memory for those */
+
+     if (fclose (fp) == -1) {
+       perrorf (g, "fclose: %s", desc_file);
+       goto out;
+     }
+
+  }
+
+  ret = apps;
+
+  out:
+    if (ret == NULL)
+      guestfs_free_application2_list (apps);
+
   return ret;
 }
 

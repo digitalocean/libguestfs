@@ -1510,8 +1510,8 @@ EXTRA_DIST = \
 	run-bindtests \
 	t/*.ml
 
-CLEANFILES = *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so t/*.cmi \
-	t/*.cmo t/*.cmx t/*.o t/*.a t/*.so $(am__append_2)
+CLEANFILES = *.annot *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so \
+	t/*.cmi t/*.cmo t/*.cmx t/*.o t/*.a t/*.so $(am__append_2)
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@noinst_DATA = mlguestfs.cma META $(am__append_1) \
