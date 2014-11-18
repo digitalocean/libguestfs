@@ -69,7 +69,7 @@ class input_disk verbose input_format disk = object
       s_disk_id = 0;
       s_qemu_uri = disk_absolute;
       s_format = Some format;
-      s_target_dev = None;
+      s_controller = None;
     } in
 
     (* Give the guest a simple generic network interface. *)
@@ -80,7 +80,7 @@ class input_disk verbose input_format disk = object
     } in
 
     let source = {
-      s_dom_type = "kvm";
+      s_hypervisor = `UnknownHV;
       s_name = name; s_orig_name = name;
       s_memory = 2048L *^ 1024L *^ 1024L; (* 2048 MB *)
       s_vcpu = 1;                         (* 1 vCPU is a safe default *)

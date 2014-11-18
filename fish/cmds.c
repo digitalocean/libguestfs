@@ -1422,7 +1422,7 @@ struct command_entry fstrim_cmd_entry = {
 
 struct command_entry get_append_cmd_entry = {
   .name = "get-append",
-  .help = "NAME\n    get-append - get the additional kernel options\n\nSYNOPSIS\n     get-append\n\nDESCRIPTION\n    Return the additional kernel options which are added to the guest kernel\n    command line.\n\n    If \"NULL\" then no options are added.\n\n",
+  .help = "NAME\n    get-append - get the additional kernel options\n\nSYNOPSIS\n     get-append\n\nDESCRIPTION\n    Return the additional kernel options which are added to the libguestfs\n    appliance kernel command line.\n\n    If \"NULL\" then no options are added.\n\n",
   .run = run_get_append
 };
 
@@ -3078,7 +3078,7 @@ struct command_entry scrub_freespace_cmd_entry = {
 
 struct command_entry set_append_cmd_entry = {
   .name = "set-append",
-  .help = "NAME\n    set-append - add options to kernel command line\n\nSYNOPSIS\n     set-append append\n\nDESCRIPTION\n    This function is used to add additional options to the guest kernel\n    command line.\n\n    The default is \"NULL\" unless overridden by setting \"LIBGUESTFS_APPEND\"\n    environment variable.\n\n    Setting \"append\" to \"NULL\" means *no* additional options are passed\n    (libguestfs always adds a few of its own).\n\n    You can use 'append' as an alias for this command.\n\n",
+  .help = "NAME\n    set-append - add options to kernel command line\n\nSYNOPSIS\n     set-append append\n\nDESCRIPTION\n    This function is used to add additional options to the libguestfs\n    appliance kernel command line.\n\n    The default is \"NULL\" unless overridden by setting \"LIBGUESTFS_APPEND\"\n    environment variable.\n\n    Setting \"append\" to \"NULL\" means *no* additional options are passed\n    (libguestfs always adds a few of its own).\n\n    You can use 'append' as an alias for this command.\n\n",
   .run = run_set_append
 };
 

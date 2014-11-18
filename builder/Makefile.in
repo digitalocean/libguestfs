@@ -1555,7 +1555,7 @@ EXTRA_DIST = \
 	virt-builder.pod \
 	virt-index-validate.pod
 
-CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-builder \
+CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o virt-builder \
 	$(am__append_4) index-parse.c index-parse.h index-scan.c \
 	stamp-virt-index-validate.pod
 

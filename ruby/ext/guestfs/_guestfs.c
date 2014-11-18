@@ -6539,7 +6539,7 @@ ruby_guestfs_fstrim (int argc, VALUE *argv, VALUE gv)
  * get the additional kernel options
  *
  * Return the additional kernel options which are added to
- * the guest kernel command line.
+ * the libguestfs appliance kernel command line.
  * 
  * If "NULL" then no options are added.
  *
@@ -20686,7 +20686,7 @@ ruby_guestfs_scrub_freespace (VALUE gv, VALUE dirv)
  * add options to kernel command line
  *
  * This function is used to add additional options to the
- * guest kernel command line.
+ * libguestfs appliance kernel command line.
  * 
  * The default is "NULL" unless overridden by setting
  * "LIBGUESTFS_APPEND" environment variable.

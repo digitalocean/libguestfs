@@ -1439,7 +1439,7 @@ top_srcdir = @top_srcdir@
 EXTRA_DIST = \
 	$(filter-out config.ml,$(SOURCES))
 
-CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o
+CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o
 
 # Alphabetical order.
 SOURCES = \

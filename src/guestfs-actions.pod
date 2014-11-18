@@ -3711,7 +3711,7 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
  guestfs_get_append (guestfs_h *g);
 
 Return the additional kernel options which are added to the
-guest kernel command line.
+libguestfs appliance kernel command line.
 
 If C<NULL> then no options are added.
 
@@ -10858,7 +10858,7 @@ This function returns 0 on success or -1 on error.
                      const char *append);
 
 This function is used to add additional options to the
-guest kernel command line.
+libguestfs appliance kernel command line.
 
 The default is C<NULL> unless overridden by setting
 C<LIBGUESTFS_APPEND> environment variable.

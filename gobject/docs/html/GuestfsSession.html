@@ -11519,8 +11519,8 @@ calling <a class="link" href="GuestfsSession.html#guestfs-session-zero-free-spac
 guestfs_session_get_append (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                             <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>get the additional kernel options</p>
-<p>Return the additional kernel options which are added to the guest kernel
-command line.</p>
+<p>Return the additional kernel options which are added to the libguestfs
+appliance kernel command line.</p>
 <p>If <em class="parameter"><code>NULL</code></em>
  then no options are added.</p>
 <div class="refsect3">
@@ -27119,8 +27119,8 @@ guestfs_session_set_append (<em class="parameter"><code><a class="link" href="Gu
                             <em class="parameter"><code>const <span class="type">gchar</span> *append</code></em>,
                             <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>add options to kernel command line</p>
-<p>This function is used to add additional options to the guest kernel
-command line.</p>
+<p>This function is used to add additional options to the libguestfs
+appliance kernel command line.</p>
 <p>The default is <em class="parameter"><code>NULL</code></em>
  unless overridden by setting <em class="parameter"><code>LIBGUESTFS_APPEND</code></em>
 

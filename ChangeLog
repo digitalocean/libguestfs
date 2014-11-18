@@ -1,3 +1,167 @@
+commit 28f2cb7e3a3be4232f1403136b1e235ddfec417b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 18 16:55:21 2014 +0000
+
+    Version 1.29.8.
+
+commit 467bbf72f74527ca00678cfea80b1785868cd842
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 18 14:17:35 2014 +0000
+
+    v2v: linux: Refactor device replacement code.
+    
+    No functional change.  This should be equivalent to previously.
+
+commit b1053150a2da121b3cb8ddc197d0d8e49d930130
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 18 14:16:39 2014 +0000
+
+    v2v: linux: Always match partition number in regexp.
+    
+    Change the rex_device_p regular expression to always include a
+    partition number.
+    
+    There should be no functional change here.
+
+commit e25f68c47efaab886ada330b7ab596681705b02b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 18 13:53:13 2014 +0000
+
+    v2v: linux: Print block device map in verbose mode.
+    
+    Very useful for debugging device mapping problems.
+
+commit 4c7026fb7a7514838a01771abb4c7e62a4e4485f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 18 13:37:21 2014 +0000
+
+    v2v: Don't change Augeas device entries unless the value has changed.
+    
+    When remapping block devices, don't change an entry unless its value
+    has changed.  This avoids unnecessary Augeas writes.
+
+commit 9ebc12572317efe5c1ae83fcb61c7767dec40203
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 18 13:07:42 2014 +0000
+
+    v2v: Don't use <target dev> attribute, use <target bus> instead.
+    
+    The <target dev> attribute in libvirt isn't very informative.  What we
+    really want to know is whether the source disk used IDE or SCSI, as
+    that allows us to remap block devices accurately during conversion.
+    For example, if the source was IDE and RHEL 5, and after conversion
+    virtio will be supported, then we know that we need to remap
+    "/dev/hda" to "/dev/vda".
+    
+    Drop the s_target_dev and s_removable_target_dev fields and replace
+    them with s_controller and s_removable_controller.
+    
+    For -i libvirt, use the <target bus> attribute to get this information.
+    
+    For -i ova, use the OVF disk controller's ResourceType.
+    (http://blogs.vmware.com/vapp/2009/11/virtual-hardware-in-ovf-part-1.html)
+
+commit 78f6d3aff59ab0a539b8f2a90b88a2b6f7c994f6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 18 12:35:38 2014 +0000
+
+    v2v: -i ova: XML is case-sensitive, so replace 'InstanceId' with 'InstanceID'.
+
+commit 01bdfe7d81b56e385c3f47c9dc6c007fe91ea41b
+Author: Nikos Skalkotos <skalkoto@gmail.com>
+Date:   Mon Nov 17 19:24:03 2014 +0000
+
+    list-applications: Add support for pacman
+    
+    Extend the guestfs_inspect_list_applications2 API call to work on Arch
+    Linux guest images.
+    
+    Signed-off-by: Nikos Skalkotos <skalkoto@gmail.com>
+
+commit e260460a8f608cb30093d7512b12f6ee11841456
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Nov 17 13:11:38 2014 +0000
+
+    inspection: rpm: Return Epoch field of RPMs in application data.
+    
+    Bug found by: Nikos Skalkotos
+
+commit 42391913287d935e582b0c67571a17e657aa8e2e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Nov 17 10:33:35 2014 +0000
+
+    inspection: Allow /etc/favicon.png to be a symbolic link (RHBZ#1164619).
+    
+    If /etc/favicon.png is a symbolic link, follow it.
+    
+    Unfortunately RHEL 7 and Fedora have crappy 16x16 /etc/favicon.png
+    symlinks in the base distro.  It would be nice to ignore this symlink,
+    but it's almost impossible to determine if the symlink is part of the
+    base distro or was added by the user.  (This is a bug in those
+    distros.)  virt-inspector and virt-mananger both ignore favicons.
+
+commit c8a608ecf8576bb754749db982714fa35cedfbe4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Nov 17 10:25:33 2014 +0000
+
+    inspection: Get icons from RHEL and CentOS 7 (RHBZ#1164619).
+
+commit 6dd371f913332a840b34ad00d52e9fa52711fb0e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Nov 17 10:07:28 2014 +0000
+
+    Fix description of 'set_append' and 'get_append' APIs (RHBZ#1164732).
+    
+    These should refer to the libguestfs appliance kernel command
+    line, not the guest kernel command line.
+    
+    Thanks: Lingfei Kong
+
+commit 88f2bc1a7bf769424fc219dae925a70a04b19294
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Nov 17 09:31:55 2014 +0000
+
+    Fix minor typo in release notes (RHBZ#1164697).
+
+commit 40cd76eb79cb64ff412847cd43b1b2f1f5427429
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Nov 17 08:58:08 2014 +0000
+
+    v2v: Simplify calculation of Mbps in verbose output.
+
+commit e02b261e48863191f755be4ff65bc54d5ba1c874
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Nov 17 08:57:34 2014 +0000
+
+    v2v: Comment change.
+
+commit a5bb1a4ccbe82ab4939b5d240877009d1762d49c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Nov 15 18:26:54 2014 +0000
+
+    v2v: Make source s.hypervisor field type-safe.
+
+commit 5920f7a56879d8d4ae2f13ba1978fb5235213a8b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Nov 15 17:42:19 2014 +0000
+
+    v2v: Rename source field 's_dom_type' to 's_hypervisor'.
+    
+    Also the source hypervisor cannot be "kvm".  Choose another example
+    for the comment.
+    
+    For disks, set the source hypervisor string to "unknown".
+
+commit f421c7cae8bf574bc43c1c185be7d638a0502e04
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Nov 15 17:38:00 2014 +0000
+
+    ocaml: Remove *.annot files when doing 'make clean'.
+    
+    Commit fd70cdc3c58a9f240ef8dbbef73ed13054917220 passes the -annot flag
+    to the compiler, generating *.annot files (containing type information
+    used by emacs and IDEs).  Remove these files when doing 'make clean'.
+
 commit 52dfb831dbb6a7e85ddfd022678be8e72ad86e35
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sat Nov 15 17:09:59 2014 +0000
