@@ -1,3 +1,107 @@
+commit ac1b4bcd7d3aadc1ae56f4be7e442371c00bc3b4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 20 21:49:03 2014 +0000
+
+    Version 1.29.9.
+
+commit 25b979a0c4a5942aaf62fcbe0e48d7526bd5e9b0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 20 16:08:43 2014 +0000
+
+    p2v: Make the "Cancel Conversion" button work (RHBZ#1165569).
+    
+    This relies on the remote to keep sending us data.  If it hangs, then
+    the cancel button won't work.  This could also be fixed by introducing
+    a timeout to the read syscall.
+
+commit 98dd01728f61bd810f6c65a6b9e52d78365b96bd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 20 16:01:09 2014 +0000
+
+    p2v: Disable "Cancel Conversion" button after the conversion (RHBZ#1165569).
+    
+    Actually this bug does nothing and remains cancelled all the
+    way through.  The next commit makes it function.
+
+commit 141832e2b22267f8369693d5f4afb27747668889
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 20 15:59:50 2014 +0000
+
+    p2v: Add 'Reboot' button to the GUI (RHBZ#1165564).
+
+commit 5d695d37a56a01b8f72a086eaa3bc9de94f6fe3c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 20 15:37:44 2014 +0000
+
+    p2v: gui: Get the correct button for cancel_button.
+    
+    I was fetching cancel_button from the wrong dialog (conv_dlg, not
+    run_dlg), and therefore getting the wrong button.
+    
+    This explains why the back button on the conversion dialog was always
+    insensitive.  It's because cancel_button was assigned to this button,
+    and then I was setting cancel_button to insensitive.
+
+commit 11347db5762441cd97791367d3cdf7e0c5a0ddc5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 20 16:10:08 2014 +0000
+
+    p2v: Remove --fullscreen option.
+    
+    It did nothing and was left over from an earlier attempt to add
+    fullscreen mode.  That is not needed any longer since we now run
+    virt-p2v under the matchbox window manager.
+
+commit 3dabc7a7bae709e884b56e297e7ece222e653d0c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 20 13:05:26 2014 +0000
+
+    appliance: When running systemd-tmpfiles, pass --boot option (RHBZ#1165785).
+    
+    This causes all tmpfiles to be created.
+
+commit 8e78a830671897376c3d7585f23ce3fba684f7f1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 20 13:04:45 2014 +0000
+
+    appliance: Create tmpfiles before running udev.
+    
+    This is the same order as systemd would run them.
+
+commit 63d67ac8ac6ae609514c995704a4dbd6f5ff5647
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 20 11:22:32 2014 +0000
+
+    v2v: linux: Delete the LVM cache which may reference old devices (RHBZ#1164853).
+    
+    Thanks: Bryn M. Reeves
+
+commit 7b8c6e762e10033b174f8554145d48489718b8b5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 20 10:08:51 2014 +0000
+
+    v2v: linux: Remap device names in /boot/grub2/device.map (RHBZ#1165975).
+    
+    Thanks: Junquin Zhou
+
+commit 171e6383a217b9f575316929047300d5c8ab4948
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Nov 19 13:20:13 2014 +0000
+
+    v2v: linux: In verbose mode, add dracut --verbose parameter.
+    
+    So we can see exactly what dracut is doing in the debug output.
+
+commit 6aaff1fffaa7d62bf75d55cd99ed291d7a143ed3
+Author: Nikos Skalkotos <skalkoto@gmail.com>
+Date:   Mon Nov 17 22:48:01 2014 +0000
+
+    inspection: deb: Seperate epoch field from version
+    
+    Return it in the app2_epoch field of the guestfs_application2 struct
+    
+    Signed-off-by: Nikos Skalkotos <skalkoto@gmail.com>
+
 commit 28f2cb7e3a3be4232f1403136b1e235ddfec417b
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Nov 18 16:55:21 2014 +0000

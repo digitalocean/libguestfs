@@ -34,6 +34,8 @@
 #pragma GCC diagnostic ignored "-Wstrict-prototypes" /* error in <gtk.h> */
 #include <gtk/gtk.h>
 
+#include "ignore-value.h"
+
 #include "p2v.h"
 
 /* Interactive GUI configuration. */
@@ -65,7 +67,7 @@ static GtkWidget *conv_dlg,
 /* The running dialog which is displayed when virt-v2v is running. */
 static GtkWidget *run_dlg,
   *v2v_output_sw, *v2v_output, *log_label, *status_label,
-  *cancel_button;
+  *cancel_button, *reboot_button;
 
 /* The entry point from the main program.
  * Note that gtk_init etc have already been called in main().
@@ -1056,6 +1058,8 @@ static void set_log_dir (const char *remote_dir);
 static void set_status (const char *msg);
 static void add_v2v_output (const char *msg);
 static void *start_conversion_thread (void *data);
+static void cancel_conversion_clicked (GtkWidget *w, gpointer data);
+static void reboot_clicked (GtkWidget *w, gpointer data);
 
 static void
 create_running_dialog (void)
@@ -1092,13 +1096,20 @@ create_running_dialog (void)
   /* Buttons. */
   gtk_dialog_add_buttons (GTK_DIALOG (run_dlg),
                           _("Cancel conversion"), 1,
+                          _("Reboot"), 2,
                           NULL);
-  cancel_button = gtk_dialog_get_widget_for_response (GTK_DIALOG (conv_dlg), 1);
+  cancel_button = gtk_dialog_get_widget_for_response (GTK_DIALOG (run_dlg), 1);
   gtk_widget_set_sensitive (cancel_button, FALSE);
+  reboot_button = gtk_dialog_get_widget_for_response (GTK_DIALOG (run_dlg), 2);
+  gtk_widget_set_sensitive (reboot_button, FALSE);
 
   /* Signals. */
   g_signal_connect_swapped (G_OBJECT (run_dlg), "destroy",
                             G_CALLBACK (gtk_main_quit), NULL);
+  g_signal_connect (G_OBJECT (cancel_button), "clicked",
+                    G_CALLBACK (cancel_conversion_clicked), NULL);
+  g_signal_connect (G_OBJECT (reboot_button), "clicked",
+                    G_CALLBACK (reboot_clicked), NULL);
 }
 
 static void
@@ -1110,7 +1121,8 @@ show_running_dialog (void)
 
   /* Show the running dialog. */
   gtk_widget_show_all (run_dlg);
-  gtk_widget_set_sensitive (cancel_button, FALSE);
+  gtk_widget_set_sensitive (cancel_button, TRUE);
+  gtk_widget_set_sensitive (reboot_button, FALSE);
 }
 
 static void
@@ -1315,6 +1327,12 @@ start_conversion_thread (void *data)
     gtk_widget_destroy (dlg);
   }
 
+  /* Disable the cancel button. */
+  gtk_widget_set_sensitive (cancel_button, FALSE);
+
+  /* Enable the reboot button. */
+  gtk_widget_set_sensitive (reboot_button, TRUE);
+
   gdk_threads_leave ();
 
   /* Thread is detached anyway, so no one is waiting for the status. */
@@ -1346,4 +1364,19 @@ notify_ui_callback (int type, const char *data)
   }
 
   gdk_threads_leave ();
+}
+
+static void
+cancel_conversion_clicked (GtkWidget *w, gpointer data)
+{
+  /* This makes start_conversion return an error (eventually). */
+  cancel_conversion ();
+}
+
+static void
+reboot_clicked (GtkWidget *w, gpointer data)
+{
+  sync ();
+  sleep (2);
+  ignore_value (system ("/sbin/reboot"));
 }
