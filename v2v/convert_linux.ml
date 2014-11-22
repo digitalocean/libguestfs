@@ -846,11 +846,12 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
 
       if g#is_file ~followsymlinks:true "/sbin/dracut" then (
         (* Dracut. *)
-        ignore (
-          g#command [| "/sbin/dracut";
-                       "--add-drivers"; String.concat " " modules;
-                       initrd; mkinitrd_kv |]
-        )
+        let args =
+          [ "/sbin/dracut" ]
+          @ (if verbose then [ "--verbose" ] else [])
+          @ [ "--add-drivers"; String.concat " " modules; initrd; mkinitrd_kv ]
+        in
+        ignore (g#command (Array.of_list args))
       )
       else if family = `SUSE_family
            && g#is_file ~followsymlinks:true "/sbin/mkinitrd" then (
@@ -1292,6 +1293,7 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
       "/files/etc/sysconfig/grub/GRUB_CMDLINE_LINUX";
       "/files/etc/default/grub/GRUB_CMDLINE_LINUX";
       "/files/etc/default/grub/GRUB_CMDLINE_LINUX_DEFAULT";
+      "/files/boot/grub2/device.map/*[label() != \"#comment\"]";
     ] in
 
     (* Which of these paths actually exist? *)
@@ -1377,8 +1379,14 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
 
     (* Delete blkid caches if they exist, since they will refer to the old
      * device names.  blkid will rebuild these on demand.
+     *
+     * Delete the LVM cache since it will contain references to the
+     * old devices (RHBZ#1164853).
      *)
-    List.iter g#rm_f ["/etc/blkid/blkid.tab"; "/etc/blkid.tab"]
+    List.iter g#rm_f [
+      "/etc/blkid/blkid.tab"; "/etc/blkid.tab";
+      "/etc/lvm/cache/.cache"
+    ];
   in
 
   augeas_grub_configuration ();
