@@ -129,6 +129,7 @@
     <keyword type="function" name="guestfs_session_blockdev_getsz ()" link="GuestfsSession.html#guestfs-session-blockdev-getsz"/>
     <keyword type="function" name="guestfs_session_blockdev_rereadpt ()" link="GuestfsSession.html#guestfs-session-blockdev-rereadpt"/>
     <keyword type="function" name="guestfs_session_blockdev_setbsz ()" link="GuestfsSession.html#guestfs-session-blockdev-setbsz"/>
+    <keyword type="function" name="guestfs_session_blockdev_setra ()" link="GuestfsSession.html#guestfs-session-blockdev-setra"/>
     <keyword type="function" name="guestfs_session_blockdev_setro ()" link="GuestfsSession.html#guestfs-session-blockdev-setro"/>
     <keyword type="function" name="guestfs_session_blockdev_setrw ()" link="GuestfsSession.html#guestfs-session-blockdev-setrw"/>
     <keyword type="function" name="guestfs_session_btrfs_device_add ()" link="GuestfsSession.html#guestfs-session-btrfs-device-add"/>

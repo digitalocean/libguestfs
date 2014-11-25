@@ -74,6 +74,7 @@
         guestfs_blockdev_getsz;
         guestfs_blockdev_rereadpt;
         guestfs_blockdev_setbsz;
+        guestfs_blockdev_setra;
         guestfs_blockdev_setro;
         guestfs_blockdev_setrw;
         guestfs_btrfs_device_add;

@@ -2921,6 +2921,11 @@ struct guestfs_internal_lstatnslist_ret {
   guestfs_int_statns_list statbufs;
 };
 
+struct guestfs_blockdev_setra_args {
+  string device<>;
+  int sectors;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3335,10 +3340,11 @@ enum guestfs_procedure {
   GUESTFS_PROC_JOURNAL_GET_REALTIME_USEC = 420,
   GUESTFS_PROC_STATNS = 421,
   GUESTFS_PROC_LSTATNS = 422,
-  GUESTFS_PROC_INTERNAL_LSTATNSLIST = 423
+  GUESTFS_PROC_INTERNAL_LSTATNSLIST = 423,
+  GUESTFS_PROC_BLOCKDEV_SETRA = 424
 };
 
-const GUESTFS_MAX_PROC_NR = 423;
+const GUESTFS_MAX_PROC_NR = 424;
 
 /* The remote procedure call protocol. */
 

@@ -2428,6 +2428,38 @@ ocaml_guestfs_blockdev_setbsz (value gv, value devicev, value blocksizev)
 }
 
 /* Automatically generated wrapper for function
+ * val blockdev_setra : t -> string -> int -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_blockdev_setra (value gv, value devicev, value sectorsv);
+
+value
+ocaml_guestfs_blockdev_setra (value gv, value devicev, value sectorsv)
+{
+  CAMLparam3 (gv, devicev, sectorsv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("blockdev_setra");
+
+  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  int sectors = Int_val (sectorsv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_blockdev_setra (g, device, sectors);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "blockdev_setra");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val blockdev_setro : t -> string -> unit
  */
 

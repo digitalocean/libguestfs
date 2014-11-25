@@ -439,4 +439,5 @@ const char *function_names[] = {
   [421] = "statns",
   [422] = "lstatns",
   [423] = "internal_lstatnslist",
+  [424] = "blockdev_setra",
 };

@@ -61,6 +61,7 @@ module Guestfs (
   blockdev_getsz,
   blockdev_rereadpt,
   blockdev_setbsz,
+  blockdev_setra,
   blockdev_setro,
   blockdev_setrw,
   btrfs_device_add,
@@ -968,6 +969,18 @@ foreign import ccall unsafe "guestfs.h guestfs_blockdev_setbsz" c_blockdev_setbs
 blockdev_setbsz :: GuestfsH -> String -> Int -> IO ()
 blockdev_setbsz h device blocksize = do
   r <- withCString device $ \device -> withForeignPtr h (\p -> c_blockdev_setbsz p device (fromIntegral blocksize))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_blockdev_setra" c_blockdev_setra
+  :: GuestfsP -> CString -> CInt -> IO CInt
+
+blockdev_setra :: GuestfsH -> String -> Int -> IO ()
+blockdev_setra h device sectors = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_blockdev_setra p device (fromIntegral sectors))
   if (r == -1)
     then do
       err <- last_error h

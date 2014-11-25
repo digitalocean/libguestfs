@@ -84,6 +84,7 @@ static const char *const commands[] = {
   "blockdev-getsz",
   "blockdev-rereadpt",
   "blockdev-setbsz",
+  "blockdev-setra",
   "blockdev-setro",
   "blockdev-setrw",
   "btrfs-device-add",

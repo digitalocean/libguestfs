@@ -973,6 +973,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_blockdev_setra (IntPtr h, [In] string device, int sectors);
+
+    /// <summary>
+    /// set readahead
+    /// </summary>
+    public void blockdev_setra (string device, int sectors)
+    {
+      int r;
+      r = guestfs_blockdev_setra (_handle, device, sectors);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_blockdev_setro (IntPtr h, [In] string device);
 
     /// <summary>
@@ -1102,7 +1116,7 @@ namespace Guestfs
     static extern int guestfs_btrfs_subvolume_create (IntPtr h, [In] string dest);
 
     /// <summary>
-    /// create a btrfs snapshot
+    /// create a btrfs subvolume
     /// </summary>
     public void btrfs_subvolume_create (string dest)
     {
@@ -1116,7 +1130,7 @@ namespace Guestfs
     static extern int guestfs_btrfs_subvolume_delete (IntPtr h, [In] string subvolume);
 
     /// <summary>
-    /// delete a btrfs snapshot
+    /// delete a btrfs subvolume or snapshot
     /// </summary>
     public void btrfs_subvolume_delete (string subvolume)
     {

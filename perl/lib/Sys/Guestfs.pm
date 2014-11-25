@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.423';
+$VERSION = '0.424';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -1137,6 +1137,12 @@ Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
 
+=item $g->blockdev_setra ($device, $sectors);
+
+Set readahead (in 512-byte sectors) for the device.
+
+This uses the L<blockdev(8)> command.
+
 =item $g->blockdev_setro ($device);
 
 Sets the block device named C<device> to read-only.
@@ -1202,11 +1208,11 @@ a btrfs filesystem.
 =item $g->btrfs_subvolume_create ($dest);
 
 Create a btrfs subvolume.  The C<dest> argument is the destination
-directory and the name of the snapshot, in the form C</path/to/dest/name>.
+directory and the name of the subvolume, in the form C</path/to/dest/name>.
 
 =item $g->btrfs_subvolume_delete ($subvolume);
 
-Delete the named btrfs subvolume.
+Delete the named btrfs subvolume or snapshot.
 
 =item @subvolumes = $g->btrfs_subvolume_list ($fs);
 
@@ -8038,6 +8044,15 @@ use vars qw(%guestfs_introspection);
     name => "blockdev_setbsz",
     description => "set blocksize of block device",
   },
+  "blockdev_setra" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'sectors', 'int', 1 ],
+    ],
+    name => "blockdev_setra",
+    description => "set readahead",
+  },
   "blockdev_setro" => {
     ret => 'void',
     args => [
@@ -8126,7 +8141,7 @@ use vars qw(%guestfs_introspection);
       [ 'dest', 'string(path)', 0 ],
     ],
     name => "btrfs_subvolume_create",
-    description => "create a btrfs snapshot",
+    description => "create a btrfs subvolume",
   },
   "btrfs_subvolume_delete" => {
     ret => 'void',
@@ -8134,7 +8149,7 @@ use vars qw(%guestfs_introspection);
       [ 'subvolume', 'string(path)', 0 ],
     ],
     name => "btrfs_subvolume_delete",
-    description => "delete a btrfs snapshot",
+    description => "delete a btrfs subvolume or snapshot",
   },
   "btrfs_subvolume_list" => {
     ret => 'struct btrfssubvolume list',

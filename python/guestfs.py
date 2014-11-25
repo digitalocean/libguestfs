@@ -1110,6 +1110,15 @@ class GuestFS(object):
         r = libguestfsmod.blockdev_setbsz (self._o, device, blocksize)
         return r
 
+    def blockdev_setra (self, device, sectors):
+        """Set readahead (in 512-byte sectors) for the device.
+        
+        This uses the blockdev(8) command.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.blockdev_setra (self._o, device, sectors)
+        return r
+
     def blockdev_setro (self, device):
         """Sets the block device named "device" to read-only.
         
@@ -1201,7 +1210,7 @@ class GuestFS(object):
 
     def btrfs_subvolume_create (self, dest):
         """Create a btrfs subvolume. The "dest" argument is the
-        destination directory and the name of the snapshot, in
+        destination directory and the name of the subvolume, in
         the form "/path/to/dest/name".
         """
         self._check_not_closed ()
@@ -1209,7 +1218,7 @@ class GuestFS(object):
         return r
 
     def btrfs_subvolume_delete (self, subvolume):
-        """Delete the named btrfs subvolume.
+        """Delete the named btrfs subvolume or snapshot.
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_subvolume_delete (self._o, subvolume)

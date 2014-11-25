@@ -1273,6 +1273,27 @@ Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1setbsz  (JNIEnv *env, jobject 
 }
 
 JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1setra  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jsectors)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *device;
+  int sectors;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  sectors = jsectors;
+
+  r = guestfs_blockdev_setra (g, device, sectors);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1setro  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;

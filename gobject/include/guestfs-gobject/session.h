@@ -168,6 +168,7 @@ gint32 guestfs_session_blockdev_getss (GuestfsSession *session, const gchar *dev
 gint64 guestfs_session_blockdev_getsz (GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_blockdev_rereadpt (GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_blockdev_setbsz (GuestfsSession *session, const gchar *device, gint32 blocksize, GError **err);
+gboolean guestfs_session_blockdev_setra (GuestfsSession *session, const gchar *device, gint32 sectors, GError **err);
 gboolean guestfs_session_blockdev_setro (GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_blockdev_setrw (GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_btrfs_device_add (GuestfsSession *session, gchar *const *devices, const gchar *fs, GError **err);

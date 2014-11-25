@@ -1922,6 +1922,23 @@ func (g *Guestfs) Blockdev_setbsz (device string, blocksize int) *GuestfsError {
     return nil
 }
 
+/* blockdev_setra : set readahead */
+func (g *Guestfs) Blockdev_setra (device string, sectors int) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("blockdev_setra")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_blockdev_setra (g.g, c_device, C.int (sectors))
+
+    if r == -1 {
+        return get_error_from_handle (g, "blockdev_setra")
+    }
+    return nil
+}
+
 /* blockdev_setro : set block device to read-only */
 func (g *Guestfs) Blockdev_setro (device string) *GuestfsError {
     if g.g == nil {
@@ -2119,7 +2136,7 @@ func (g *Guestfs) Btrfs_set_seeding (device string, seeding bool) *GuestfsError 
     return nil
 }
 
-/* btrfs_subvolume_create : create a btrfs snapshot */
+/* btrfs_subvolume_create : create a btrfs subvolume */
 func (g *Guestfs) Btrfs_subvolume_create (dest string) *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("btrfs_subvolume_create")
@@ -2136,7 +2153,7 @@ func (g *Guestfs) Btrfs_subvolume_create (dest string) *GuestfsError {
     return nil
 }
 
-/* btrfs_subvolume_delete : delete a btrfs snapshot */
+/* btrfs_subvolume_delete : delete a btrfs subvolume or snapshot */
 func (g *Guestfs) Btrfs_subvolume_delete (subvolume string) *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("btrfs_subvolume_delete")

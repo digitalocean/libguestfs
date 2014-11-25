@@ -85,6 +85,7 @@ static int run_blockdev_getss (const char *cmd, size_t argc, char *argv[]);
 static int run_blockdev_getsz (const char *cmd, size_t argc, char *argv[]);
 static int run_blockdev_rereadpt (const char *cmd, size_t argc, char *argv[]);
 static int run_blockdev_setbsz (const char *cmd, size_t argc, char *argv[]);
+static int run_blockdev_setra (const char *cmd, size_t argc, char *argv[]);
 static int run_blockdev_setro (const char *cmd, size_t argc, char *argv[]);
 static int run_blockdev_setrw (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_device_add (const char *cmd, size_t argc, char *argv[]);
@@ -928,6 +929,12 @@ struct command_entry blockdev_setbsz_cmd_entry = {
   .run = run_blockdev_setbsz
 };
 
+struct command_entry blockdev_setra_cmd_entry = {
+  .name = "blockdev-setra",
+  .help = "NAME\n    blockdev-setra - set readahead\n\nSYNOPSIS\n     blockdev-setra device sectors\n\nDESCRIPTION\n    Set readahead (in 512-byte sectors) for the device.\n\n    This uses the blockdev(8) command.\n\n",
+  .run = run_blockdev_setra
+};
+
 struct command_entry blockdev_setro_cmd_entry = {
   .name = "blockdev-setro",
   .help = "NAME\n    blockdev-setro - set block device to read-only\n\nSYNOPSIS\n     blockdev-setro device\n\nDESCRIPTION\n    Sets the block device named \"device\" to read-only.\n\n    This uses the blockdev(8) command.\n\n",
@@ -984,13 +991,13 @@ struct command_entry btrfs_set_seeding_cmd_entry = {
 
 struct command_entry btrfs_subvolume_create_cmd_entry = {
   .name = "btrfs-subvolume-create",
-  .help = "NAME\n    btrfs-subvolume-create - create a btrfs snapshot\n\nSYNOPSIS\n     btrfs-subvolume-create dest\n\nDESCRIPTION\n    Create a btrfs subvolume. The \"dest\" argument is the destination\n    directory and the name of the snapshot, in the form\n    \"/path/to/dest/name\".\n\n",
+  .help = "NAME\n    btrfs-subvolume-create - create a btrfs subvolume\n\nSYNOPSIS\n     btrfs-subvolume-create dest\n\nDESCRIPTION\n    Create a btrfs subvolume. The \"dest\" argument is the destination\n    directory and the name of the subvolume, in the form\n    \"/path/to/dest/name\".\n\n",
   .run = run_btrfs_subvolume_create
 };
 
 struct command_entry btrfs_subvolume_delete_cmd_entry = {
   .name = "btrfs-subvolume-delete",
-  .help = "NAME\n    btrfs-subvolume-delete - delete a btrfs snapshot\n\nSYNOPSIS\n     btrfs-subvolume-delete subvolume\n\nDESCRIPTION\n    Delete the named btrfs subvolume.\n\n",
+  .help = "NAME\n    btrfs-subvolume-delete - delete a btrfs subvolume or snapshot\n\nSYNOPSIS\n     btrfs-subvolume-delete subvolume\n\nDESCRIPTION\n    Delete the named btrfs subvolume or snapshot.\n\n",
   .run = run_btrfs_subvolume_delete
 };
 
@@ -3852,6 +3859,7 @@ list_commands (void)
   printf ("%-20s %s\n", "blockdev-getsz", _("get total size of device in 512-byte sectors"));
   printf ("%-20s %s\n", "blockdev-rereadpt", _("reread partition table"));
   printf ("%-20s %s\n", "blockdev-setbsz", _("set blocksize of block device"));
+  printf ("%-20s %s\n", "blockdev-setra", _("set readahead"));
   printf ("%-20s %s\n", "blockdev-setro", _("set block device to read-only"));
   printf ("%-20s %s\n", "blockdev-setrw", _("set block device to read-write"));
   printf ("%-20s %s\n", "btrfs-device-add", _("add devices to a btrfs filesystem"));
@@ -3861,8 +3869,8 @@ list_commands (void)
   printf ("%-20s %s\n", "btrfs-filesystem-sync", _("sync a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-fsck", _("check a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-set-seeding", _("enable or disable the seeding feature of device"));
-  printf ("%-20s %s\n", "btrfs-subvolume-create", _("create a btrfs snapshot"));
-  printf ("%-20s %s\n", "btrfs-subvolume-delete", _("delete a btrfs snapshot"));
+  printf ("%-20s %s\n", "btrfs-subvolume-create", _("create a btrfs subvolume"));
+  printf ("%-20s %s\n", "btrfs-subvolume-delete", _("delete a btrfs subvolume or snapshot"));
   printf ("%-20s %s\n", "btrfs-subvolume-list", _("list btrfs snapshots and subvolumes"));
   printf ("%-20s %s\n", "btrfs-subvolume-set-default", _("set default btrfs subvolume"));
   printf ("%-20s %s\n", "btrfs-subvolume-snapshot", _("create a writable btrfs snapshot"));
@@ -6339,6 +6347,52 @@ run_blockdev_setbsz (const char *cmd, size_t argc, char *argv[])
   ret = 0;
  out:
  out_blocksize:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_blockdev_setra (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  int sectors;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, ngettext("%s should have %d parameter\n",
+                              "%s should have %d parameters\n",
+                              2),
+                     cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "sectors", "xstrtoll", xerr);
+      goto out_sectors;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "sectors");
+      goto out_sectors;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    sectors = r;
+  }
+  r = guestfs_blockdev_setra (g, device, sectors);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_sectors:
  out_noargs:
   return ret;
 }

@@ -77,6 +77,7 @@ extern struct command_entry blockdev_getss_cmd_entry;
 extern struct command_entry blockdev_getsz_cmd_entry;
 extern struct command_entry blockdev_rereadpt_cmd_entry;
 extern struct command_entry blockdev_setbsz_cmd_entry;
+extern struct command_entry blockdev_setra_cmd_entry;
 extern struct command_entry blockdev_setro_cmd_entry;
 extern struct command_entry blockdev_setrw_cmd_entry;
 extern struct command_entry btrfs_device_add_cmd_entry;
@@ -662,6 +663,8 @@ blockdev_rereadpt, &blockdev_rereadpt_cmd_entry
 blockdev-rereadpt, &blockdev_rereadpt_cmd_entry
 blockdev_setbsz, &blockdev_setbsz_cmd_entry
 blockdev-setbsz, &blockdev_setbsz_cmd_entry
+blockdev_setra, &blockdev_setra_cmd_entry
+blockdev-setra, &blockdev_setra_cmd_entry
 blockdev_setro, &blockdev_setro_cmd_entry
 blockdev-setro, &blockdev_setro_cmd_entry
 blockdev_setrw, &blockdev_setrw_cmd_entry

@@ -15605,6 +15605,40 @@ done_no_free:
   return;
 }
 
+static void
+blockdev_setra_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_blockdev_setra_args args;
+  CLEANUP_FREE char *device = NULL;
+  int sectors;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_blockdev_setra_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.device, device, , goto done);
+  sectors = args.sectors;
+
+  r = do_blockdev_setra (device, sectors);
+  if (r == -1)
+    /* do_blockdev_setra has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_blockdev_setra_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -16846,6 +16880,9 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_INTERNAL_LSTATNSLIST:
       internal_lstatnslist_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BLOCKDEV_SETRA:
+      blockdev_setra_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

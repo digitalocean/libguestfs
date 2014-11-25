@@ -2829,6 +2829,42 @@ py_guestfs_blockdev_setbsz (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_blockdev_setra (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *device;
+  int sectors;
+
+  if (!PyArg_ParseTuple (args, (char *) "Osi:guestfs_blockdev_setra",
+                         &py_g, &device, &sectors))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_blockdev_setra (g, device, sectors);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_blockdev_setro (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -22425,6 +22461,7 @@ static PyMethodDef methods[] = {
   { (char *) "blockdev_getsz", py_guestfs_blockdev_getsz, METH_VARARGS, NULL },
   { (char *) "blockdev_rereadpt", py_guestfs_blockdev_rereadpt, METH_VARARGS, NULL },
   { (char *) "blockdev_setbsz", py_guestfs_blockdev_setbsz, METH_VARARGS, NULL },
+  { (char *) "blockdev_setra", py_guestfs_blockdev_setra, METH_VARARGS, NULL },
   { (char *) "blockdev_setro", py_guestfs_blockdev_setro, METH_VARARGS, NULL },
   { (char *) "blockdev_setrw", py_guestfs_blockdev_setrw, METH_VARARGS, NULL },
   { (char *) "btrfs_device_add", py_guestfs_btrfs_device_add, METH_VARARGS, NULL },

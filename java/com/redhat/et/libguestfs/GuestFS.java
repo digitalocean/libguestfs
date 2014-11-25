@@ -1925,6 +1925,27 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * set readahead
+   * <p>
+   * Set readahead (in 512-byte sectors) for the device.
+   * <p>
+   * This uses the blockdev(8) command.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void blockdev_setra (String device, int sectors)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("blockdev_setra: handle is closed");
+
+    _blockdev_setra (g, device, sectors);
+  }
+
+  private native void _blockdev_setra (long g, String device, int sectors)
+    throws LibGuestFSException;
+
+  /**
    * set block device to read-only
    * <p>
    * Sets the block device named "device" to read-only.
@@ -2174,10 +2195,10 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * create a btrfs snapshot
+   * create a btrfs subvolume
    * <p>
    * Create a btrfs subvolume. The "dest" argument is the
-   * destination directory and the name of the snapshot, in
+   * destination directory and the name of the subvolume, in
    * the form "/path/to/dest/name".
    * <p>
    * @throws LibGuestFSException
@@ -2195,9 +2216,9 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * delete a btrfs snapshot
+   * delete a btrfs subvolume or snapshot
    * <p>
-   * Delete the named btrfs subvolume.
+   * Delete the named btrfs subvolume or snapshot.
    * <p>
    * @throws LibGuestFSException
    */

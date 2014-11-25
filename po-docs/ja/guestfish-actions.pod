@@ -909,6 +909,14 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+=head2 blockdev-setra
+
+ blockdev-setra device sectors
+
+Set readahead (in 512-byte sectors) for the device.
+
+これは L<blockdev(8)> コマンドを使用します。
+
 =head2 blockdev-setro
 
  blockdev-setro device
@@ -994,14 +1002,14 @@ btrfs ファイルシステムを含むデバイスの seeding 機能を有効�
 
  btrfs-subvolume-create dest
 
-btrfs サブツリーを作成します。The C<dest> 引数は、C</path/to/dest/name>
-形式となる、スナップショットの宛先ディレクトリーおよび名前です。
+Create a btrfs subvolume.  The C<dest> argument is the destination directory
+and the name of the subvolume, in the form C</path/to/dest/name>.
 
 =head2 btrfs-subvolume-delete
 
  btrfs-subvolume-delete subvolume
 
-名前付き btrfs サブボリュームを削除します。
+Delete the named btrfs subvolume or snapshot.
 
 =head2 btrfs-subvolume-list
 

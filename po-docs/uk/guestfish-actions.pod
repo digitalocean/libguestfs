@@ -922,6 +922,14 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+=head2 blockdev-setra
+
+ blockdev-setra device sectors
+
+Set readahead (in 512-byte sectors) for the device.
+
+Використовується програма L<blockdev(8)>.
+
 =head2 blockdev-setro
 
  blockdev-setro пристрій
@@ -1013,13 +1021,13 @@ filesystem.
  btrfs-subvolume-create призначення
 
 Create a btrfs subvolume.  The C<dest> argument is the destination directory
-and the name of the snapshot, in the form C</path/to/dest/name>.
+and the name of the subvolume, in the form C</path/to/dest/name>.
 
 =head2 btrfs-subvolume-delete
 
  btrfs-subvolume-delete subvolume
 
-Delete the named btrfs subvolume.
+Delete the named btrfs subvolume or snapshot.
 
 =head2 btrfs-subvolume-list
 

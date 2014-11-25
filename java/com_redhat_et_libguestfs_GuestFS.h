@@ -399,6 +399,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1setbsz
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _blockdev_setra
+ * Signature: (JLjava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1setra
+  (JNIEnv *, jobject, jlong, jstring, jint);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _blockdev_setro
  * Signature: (JLjava/lang/String;)V
  */
