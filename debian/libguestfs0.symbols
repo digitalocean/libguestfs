@@ -52,6 +52,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_blockdev_getsz@Base 1.10
  guestfs_blockdev_rereadpt@Base 1.10
  guestfs_blockdev_setbsz@Base 1.10
+ guestfs_blockdev_setra@Base 1:1.29.10
  guestfs_blockdev_setro@Base 1.10
  guestfs_blockdev_setrw@Base 1.10
  guestfs_btrfs_device_add@Base 1:1.18
