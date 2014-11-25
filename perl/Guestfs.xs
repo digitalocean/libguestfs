@@ -1016,6 +1016,18 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
+blockdev_setra (g, device, sectors)
+      guestfs_h *g;
+      char *device;
+      int sectors;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_blockdev_setra (g, device, sectors);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
 blockdev_setro (g, device)
       guestfs_h *g;
       char *device;

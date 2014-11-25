@@ -1,3 +1,152 @@
+commit 55f6dc7f3d5e4c05f4dd179b21741768c89f4cd0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 25 19:38:44 2014 +0000
+
+    Version 1.29.10.
+
+commit f3dbf340b87e4b82a10336ad8e1ecef050481541
+Author: Nikos Skalkotos <skalkoto@gmail.com>
+Date:   Fri Nov 21 21:47:12 2014 +0000
+
+    Add tests for Arch Linux
+    
+    Signed-off-by: Nikos Skalkotos <skalkoto@gmail.com>
+
+commit 7ce73d898025b07c391d6d66a7aa13314cbc453f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Nov 25 11:53:11 2014 +0100
+
+    mllib: check the right out channel for tty
+    
+    Make sure to check whether the given output channel is a tty before
+    sending ANSI terminal codes to it, instead of always check what stdout
+    is.
+
+commit b2b65bcefbb8e93c0e3af4bfbee66622837644a7
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Nov 25 11:46:02 2014 +0100
+
+    mllib: remove the TTY module
+    
+    The only function provided is isatty_stdout, which is no more used now
+    in favour of Unix.isatty.
+
+commit 8a56fc8e08e4b3080ea96abf928ce280f4440d90
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Nov 25 11:40:04 2014 +0100
+
+    mllib: use Unix.isatty
+    
+    Make use of Unix.isatty instead of our TTY.isatty_stdout, as the
+    supported OCaml provides the former already.
+
+commit bd61f25625da9a9090ee5e1b0bc8aa2f834b2c3a
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Tue Nov 25 13:10:43 2014 +0800
+
+    generator: force longdesc to begin with uppercase
+    
+    As contrast to shortdesc which is forced to begin with lowercase, this
+    patch forces longdesc to begin with uppercase.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 7030635e51050514b8a597911c9b1f9077d89a56
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 25 14:33:55 2014 +0000
+
+    v2v: -i ova: Small correction to warning message.
+    
+    Thanks: Pino Toscano
+
+commit 350b6eec4d36884bf927bf0790c2044daec5c688
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Nov 23 14:31:43 2014 +0000
+
+    New API: guestfs_blockdev_setra: Adjust readahead for filesystems and devices.
+    
+    This adds a binding for 'blockdev --setra', allowing you to adjust the
+    readahead parameter for filesystems and devices.
+
+commit dbdfa79d91f23d6fa12217961cf2633fc560eadb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 25 14:31:42 2014 +0000
+
+    daemon: blockdev: Allow extraarg to be 0.
+    
+    No change, since extraarg is not actually used.
+
+commit 79fb3debc42b02a7104041f3279ab81bfff03b90
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Nov 24 15:59:36 2014 +0000
+
+    v2v: -i ova: Remove incorrect warning for disks that have no parent controller (RHBZ#1167302).
+    
+    Don't assume every disk <Item> has a <Parent> field.  For floppy disks
+    this is not the case.
+    
+    Thanks: Junqin Zhou
+
+commit dc845c9a6694dc7f06894e0df137176a4da73c66
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Nov 24 10:56:57 2014 +0000
+
+    ntfsresize: Capture errors sent to stdout (RHBZ#1166618).
+    
+    ntfsresize sends error messages to stdout.  Capture those error
+    messages.
+
+commit e90ab1530e1f1683a3b1559199ee34922aeb0fa3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Nov 23 14:28:46 2014 +0000
+
+    lib: guestfs_disk_create: Allow vmdk as a valid backingformat.
+    
+    Commit 588af1953e5f7ab74009b9175cc5d3efb8bb651a started with a very
+    conservative list of permitted backing formats (just "raw" or
+    "qcow2").  We can allow almost any format permitted by qemu, but this
+    commit just adds "vmdk" to this whitelist.
+
+commit 5a84407f574be6a0b22781272156c25cf5a75413
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Nov 21 13:17:55 2014 +0800
+
+    btrfs: correct words about subvolume and snapshot
+    
+    btrfs_subvolume_create creates only subvolumes. btrfs_subvolume_delete
+    deletes subvolumes or snapshots.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 99263616cafc29852be4d76909bb35e1f7770022
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Nov 21 16:10:33 2014 +0100
+
+    src: inspect: move read_package within the -Wno-cast-align block
+    
+    Starting from commit e260460a8f608cb30093d7512b12f6ee11841456 be32toh is
+    used, which means possible "unaligned cast" warnings (already covered in
+    get_rpm_header_tag).
+
+commit 2305fe3fc642020108e755246f03d95640eb8adb
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Nov 21 16:08:50 2014 +0100
+
+    build: mllib: put $(LIBTINFO_LIBS) within '...'
+    
+    This helps when $(LIBTINFO_LIBS) contains spaces (i.e. more than one
+    "word").
+
+commit c64467a4c1a31de1134084a15a4acb841557140f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 20 22:22:49 2014 +0000
+
+    p2v: Include version and md5sum in kickstart.
+    
+    Include the version of virt-p2v and its MD5 checksum in the source
+    kickstart.  This is useful for working out which version of virt-p2v
+    the kickstart corresponds to.
+
 commit ac1b4bcd7d3aadc1ae56f4be7e442371c00bc3b4
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Nov 20 21:49:03 2014 +0000

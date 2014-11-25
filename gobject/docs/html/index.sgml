@@ -50,6 +50,7 @@
 <ANCHOR id="guestfs-session-blockdev-getsz" href="guestfs/GuestfsSession.html#guestfs-session-blockdev-getsz">
 <ANCHOR id="guestfs-session-blockdev-rereadpt" href="guestfs/GuestfsSession.html#guestfs-session-blockdev-rereadpt">
 <ANCHOR id="guestfs-session-blockdev-setbsz" href="guestfs/GuestfsSession.html#guestfs-session-blockdev-setbsz">
+<ANCHOR id="guestfs-session-blockdev-setra" href="guestfs/GuestfsSession.html#guestfs-session-blockdev-setra">
 <ANCHOR id="guestfs-session-blockdev-setro" href="guestfs/GuestfsSession.html#guestfs-session-blockdev-setro">
 <ANCHOR id="guestfs-session-blockdev-setrw" href="guestfs/GuestfsSession.html#guestfs-session-blockdev-setrw">
 <ANCHOR id="guestfs-session-btrfs-device-add" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-device-add">

@@ -2532,6 +2532,41 @@ guestfs_session_blockdev_setbsz (GuestfsSession *session, const gchar *device, g
 }
 
 /**
+ * guestfs_session_blockdev_setra:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @sectors: (type gint32):
+ * @err: A GError object to receive any generated errors
+ *
+ * set readahead
+ *
+ * Set readahead (in 512-byte sectors) for the device.
+ * 
+ * This uses the blockdev(8) command.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_blockdev_setra (GuestfsSession *session, const gchar *device, gint32 sectors, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "blockdev_setra");
+    return FALSE;
+  }
+
+  int ret = guestfs_blockdev_setra (g, device, sectors);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_blockdev_setro:
  * @session: (transfer none): A GuestfsSession object
  * @device: (transfer none) (type filename):
@@ -2891,10 +2926,10 @@ guestfs_session_btrfs_set_seeding (GuestfsSession *session, const gchar *device,
  * @dest: (transfer none) (type filename):
  * @err: A GError object to receive any generated errors
  *
- * create a btrfs snapshot
+ * create a btrfs subvolume
  *
  * Create a btrfs subvolume. The @dest argument is the destination
- * directory and the name of the snapshot, in the form
+ * directory and the name of the subvolume, in the form
  * "/path/to/dest/name".
  * 
  * Returns: true on success, false on error
@@ -2925,9 +2960,9 @@ guestfs_session_btrfs_subvolume_create (GuestfsSession *session, const gchar *de
  * @subvolume: (transfer none) (type filename):
  * @err: A GError object to receive any generated errors
  *
- * delete a btrfs snapshot
+ * delete a btrfs subvolume or snapshot
  *
- * Delete the named btrfs subvolume.
+ * Delete the named btrfs subvolume or snapshot.
  * 
  * Returns: true on success, false on error
  */

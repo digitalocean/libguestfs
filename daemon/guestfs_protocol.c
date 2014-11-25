@@ -8203,6 +8203,18 @@ xdr_guestfs_internal_lstatnslist_ret (XDR *xdrs, guestfs_internal_lstatnslist_re
 }
 
 bool_t
+xdr_guestfs_blockdev_setra_args (XDR *xdrs, guestfs_blockdev_setra_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->sectors))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

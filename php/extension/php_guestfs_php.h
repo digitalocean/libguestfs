@@ -77,6 +77,7 @@ PHP_FUNCTION (guestfs_blockdev_getss);
 PHP_FUNCTION (guestfs_blockdev_getsz);
 PHP_FUNCTION (guestfs_blockdev_rereadpt);
 PHP_FUNCTION (guestfs_blockdev_setbsz);
+PHP_FUNCTION (guestfs_blockdev_setra);
 PHP_FUNCTION (guestfs_blockdev_setro);
 PHP_FUNCTION (guestfs_blockdev_setrw);
 PHP_FUNCTION (guestfs_btrfs_device_add);

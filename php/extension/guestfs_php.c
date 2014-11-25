@@ -103,6 +103,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_blockdev_getsz, NULL)
   PHP_FE (guestfs_blockdev_rereadpt, NULL)
   PHP_FE (guestfs_blockdev_setbsz, NULL)
+  PHP_FE (guestfs_blockdev_setra, NULL)
   PHP_FE (guestfs_blockdev_setro, NULL)
   PHP_FE (guestfs_blockdev_setrw, NULL)
   PHP_FE (guestfs_btrfs_device_add, NULL)
@@ -2313,6 +2314,40 @@ PHP_FUNCTION (guestfs_blockdev_setbsz)
 
   int r;
   r = guestfs_blockdev_setbsz (g, device, blocksize);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_blockdev_setra)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  int device_size;
+  long sectors;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rsl",
+        &z_g, &device, &device_size, &sectors) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: blockdev_setra: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_blockdev_setra (g, device, sectors);
 
   if (r == -1) {
     RETURN_FALSE;

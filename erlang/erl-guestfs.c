@@ -1389,6 +1389,20 @@ run_blockdev_setbsz (ETERM *message)
 }
 
 static ETERM *
+run_blockdev_setra (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int sectors = get_int (ARG (1));
+  int r;
+
+  r = guestfs_blockdev_setra (g, device, sectors);
+  if (r == -1)
+    return make_error ("blockdev_setra");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_blockdev_setro (ETERM *message)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
@@ -10628,6 +10642,8 @@ dispatch (ETERM *message)
     return run_blockdev_rereadpt (message);
   else if (atom_equals (fun, "blockdev_setbsz"))
     return run_blockdev_setbsz (message);
+  else if (atom_equals (fun, "blockdev_setra"))
+    return run_blockdev_setra (message);
   else if (atom_equals (fun, "blockdev_setro"))
     return run_blockdev_setro (message);
   else if (atom_equals (fun, "blockdev_setrw"))

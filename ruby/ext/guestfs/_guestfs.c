@@ -2592,6 +2592,40 @@ ruby_guestfs_blockdev_setbsz (VALUE gv, VALUE devicev, VALUE blocksizev)
 
 /*
  * call-seq:
+ *   g.blockdev_setra(device, sectors) -> nil
+ *
+ * set readahead
+ *
+ * Set readahead (in 512-byte sectors) for the device.
+ * 
+ * This uses the blockdev(8) command.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_blockdev_setra+[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_setra]).
+ */
+static VALUE
+ruby_guestfs_blockdev_setra (VALUE gv, VALUE devicev, VALUE sectorsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "blockdev_setra");
+
+  const char *device = StringValueCStr (devicev);
+  int sectors = NUM2INT (sectorsv);
+
+  int r;
+
+  r = guestfs_blockdev_setra (g, device, sectors);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
  *   g.blockdev_setro(device) -> nil
  *
  * set block device to read-only
@@ -2969,10 +3003,10 @@ ruby_guestfs_btrfs_set_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
  * call-seq:
  *   g.btrfs_subvolume_create(dest) -> nil
  *
- * create a btrfs snapshot
+ * create a btrfs subvolume
  *
  * Create a btrfs subvolume. The "dest" argument is the
- * destination directory and the name of the snapshot, in
+ * destination directory and the name of the subvolume, in
  * the form "/path/to/dest/name".
  *
  *
@@ -3002,9 +3036,9 @@ ruby_guestfs_btrfs_subvolume_create (VALUE gv, VALUE destv)
  * call-seq:
  *   g.btrfs_subvolume_delete(subvolume) -> nil
  *
- * delete a btrfs snapshot
+ * delete a btrfs subvolume or snapshot
  *
- * Delete the named btrfs subvolume.
+ * Delete the named btrfs subvolume or snapshot.
  *
  *
  * (For the C API documentation for this function, see
@@ -26354,6 +26388,8 @@ Init__guestfs (void)
         ruby_guestfs_blockdev_rereadpt, 1);
   rb_define_method (c_guestfs, "blockdev_setbsz",
         ruby_guestfs_blockdev_setbsz, 2);
+  rb_define_method (c_guestfs, "blockdev_setra",
+        ruby_guestfs_blockdev_setra, 2);
   rb_define_method (c_guestfs, "blockdev_setro",
         ruby_guestfs_blockdev_setro, 1);
   rb_define_method (c_guestfs, "blockdev_setrw",

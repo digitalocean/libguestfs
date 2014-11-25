@@ -600,5 +600,6 @@ extern int64_t do_journal_get_realtime_usec (void);
 extern guestfs_int_statns *do_statns (const char *path);
 extern guestfs_int_statns *do_lstatns (const char *path);
 extern guestfs_int_statns_list *do_internal_lstatnslist (const char *path, char *const *names);
+extern int do_blockdev_setra (const char *device, int sectors);
 
 #endif /* GUESTFSD_ACTIONS_H */

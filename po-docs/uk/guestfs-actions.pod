@@ -1298,6 +1298,19 @@ C<guestfs_mkfs>.
 
 (Додано у 0.9.3)
 
+=head2 guestfs_blockdev_setra
+
+ int
+ guestfs_blockdev_setra (guestfs_h *g,
+                         const char *device,
+                         int sectors);
+
+Set readahead (in 512-byte sectors) for the device.
+
+Використовується програма L<blockdev(8)>.
+
+Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
 =head2 guestfs_blockdev_setro
 
  int
@@ -1501,7 +1514,7 @@ filesystem.
                                  const char *dest);
 
 Create a btrfs subvolume.  The C<dest> argument is the destination directory
-and the name of the snapshot, in the form C</path/to/dest/name>.
+and the name of the subvolume, in the form C</path/to/dest/name>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -1513,7 +1526,7 @@ and the name of the snapshot, in the form C</path/to/dest/name>.
  guestfs_btrfs_subvolume_delete (guestfs_h *g,
                                  const char *subvolume);
 
-Delete the named btrfs subvolume.
+Delete the named btrfs subvolume or snapshot.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 

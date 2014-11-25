@@ -282,10 +282,8 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__virt_sparsify_SOURCES_DIST = $(top_builddir)/fish/progress.c \
-	$(top_builddir)/mllib/tty-c.c \
 	$(top_builddir)/mllib/progress-c.c statvfs-c.c
 am__objects_1 = virt_sparsify-progress.$(OBJEXT) \
-	virt_sparsify-tty-c.$(OBJEXT) \
 	virt_sparsify-progress-c.$(OBJEXT) \
 	virt_sparsify-statvfs-c.$(OBJEXT)
 @HAVE_OCAML_TRUE@am_virt_sparsify_OBJECTS = $(am__objects_1)
@@ -1524,7 +1522,6 @@ SOURCES_ML = \
 
 SOURCES_C = \
 	$(top_builddir)/fish/progress.c \
-	$(top_builddir)/mllib/tty-c.c \
 	$(top_builddir)/mllib/progress-c.c \
 	statvfs-c.c
 
@@ -1541,7 +1538,6 @@ SOURCES_C = \
 
 @HAVE_OCAML_TRUE@BOBJECTS = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/tTY.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/progress.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmo \
@@ -1681,7 +1677,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_sparsify-progress-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_sparsify-progress.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_sparsify-statvfs-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_sparsify-tty-c.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1717,20 +1712,6 @@ virt_sparsify-progress.obj: $(top_builddir)/fish/progress.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/fish/progress.c' object='virt_sparsify-progress.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sparsify_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -c -o virt_sparsify-progress.obj `if test -f '$(top_builddir)/fish/progress.c'; then $(CYGPATH_W) '$(top_builddir)/fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/fish/progress.c'; fi`
-
-virt_sparsify-tty-c.o: $(top_builddir)/mllib/tty-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sparsify_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -MT virt_sparsify-tty-c.o -MD -MP -MF $(DEPDIR)/virt_sparsify-tty-c.Tpo -c -o virt_sparsify-tty-c.o `test -f '$(top_builddir)/mllib/tty-c.c' || echo '$(srcdir)/'`$(top_builddir)/mllib/tty-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sparsify-tty-c.Tpo $(DEPDIR)/virt_sparsify-tty-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/mllib/tty-c.c' object='virt_sparsify-tty-c.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sparsify_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -c -o virt_sparsify-tty-c.o `test -f '$(top_builddir)/mllib/tty-c.c' || echo '$(srcdir)/'`$(top_builddir)/mllib/tty-c.c
-
-virt_sparsify-tty-c.obj: $(top_builddir)/mllib/tty-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sparsify_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -MT virt_sparsify-tty-c.obj -MD -MP -MF $(DEPDIR)/virt_sparsify-tty-c.Tpo -c -o virt_sparsify-tty-c.obj `if test -f '$(top_builddir)/mllib/tty-c.c'; then $(CYGPATH_W) '$(top_builddir)/mllib/tty-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/mllib/tty-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sparsify-tty-c.Tpo $(DEPDIR)/virt_sparsify-tty-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/mllib/tty-c.c' object='virt_sparsify-tty-c.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sparsify_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -c -o virt_sparsify-tty-c.obj `if test -f '$(top_builddir)/mllib/tty-c.c'; then $(CYGPATH_W) '$(top_builddir)/mllib/tty-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/mllib/tty-c.c'; fi`
 
 virt_sparsify-progress-c.o: $(top_builddir)/mllib/progress-c.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sparsify_CPPFLAGS) $(CPPFLAGS) $(virt_sparsify_CFLAGS) $(CFLAGS) -MT virt_sparsify-progress-c.o -MD -MP -MF $(DEPDIR)/virt_sparsify-progress-c.Tpo -c -o virt_sparsify-progress-c.o `test -f '$(top_builddir)/mllib/progress-c.c' || echo '$(srcdir)/'`$(top_builddir)/mllib/progress-c.c

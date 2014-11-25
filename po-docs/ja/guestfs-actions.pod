@@ -1282,6 +1282,19 @@ C<guestfs_mkfs>.
 
 (0.9.3 において追加)
 
+=head2 guestfs_blockdev_setra
+
+ int
+ guestfs_blockdev_setra (guestfs_h *g,
+                         const char *device,
+                         int sectors);
+
+Set readahead (in 512-byte sectors) for the device.
+
+これは L<blockdev(8)> コマンドを使用します。
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
 =head2 guestfs_blockdev_setro
 
  int
@@ -1481,8 +1494,8 @@ btrfs ファイルシステムを含むデバイスの seeding 機能を有効�
  guestfs_btrfs_subvolume_create (guestfs_h *g,
                                  const char *dest);
 
-btrfs サブツリーを作成します。The C<dest> 引数は、C</path/to/dest/name>
-形式となる、スナップショットの宛先ディレクトリーおよび名前です。
+Create a btrfs subvolume.  The C<dest> argument is the destination directory
+and the name of the subvolume, in the form C</path/to/dest/name>.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -1494,7 +1507,7 @@ btrfs サブツリーを作成します。The C<dest> 引数は、C</path/to/des
  guestfs_btrfs_subvolume_delete (guestfs_h *g,
                                  const char *subvolume);
 
-名前付き btrfs サブボリュームを削除します。
+Delete the named btrfs subvolume or snapshot.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 

@@ -170,10 +170,10 @@ object
       | 6 -> Some `SCSI
       | 5 -> Some `IDE
       | 0 ->
-        warning (f_"ova hard disk has no parent controller, please report this as a bug supplying the *.ovf file extracted from the ova");
+        warning (f_"ova disk has no parent controller, please report this as a bug supplying the *.ovf file extracted from the ova");
         None
       | _ ->
-        warning (f_"ova hard disk has an unknown VMware controller type (%d), please report this as a bug supplying the *.ovf file extracted from the ova")
+        warning (f_"ova disk has an unknown VMware controller type (%d), please report this as a bug supplying the *.ovf file extracted from the ova")
           controller;
         None
     in
@@ -187,14 +187,17 @@ object
       for i = 0 to nr_nodes-1 do
         let n = Xml.xpathobj_node doc obj i in
         Xml.xpathctx_set_current_context xpathctx n;
-        let parent_id = xpath_to_int "rasd:Parent/text()" 0 in
 
         (* XXX We assume the OVF lists these in order.
         let address = xpath_to_int "rasd:AddressOnParent/text()" 0 in
         *)
 
         (* Find the parent controller. *)
-        let controller = parent_controller parent_id in
+        let parent_id = xpath_to_int "rasd:Parent/text()" 0 in
+        let controller =
+          match parent_id with
+          | 0 -> None
+          | id -> parent_controller id in
 
         Xml.xpathctx_set_current_context xpathctx n;
         let file_id = xpath_to_string "rasd:HostResource/text()" "" in
@@ -255,14 +258,17 @@ object
         Xml.xpathctx_set_current_context xpathctx n;
         let id = xpath_to_int "rasd:ResourceType/text()" 0 in
         assert (id = 14 || id = 15 || id = 16);
-        let parent_id = xpath_to_int "rasd:Parent/text()" 0 in
 
         (* XXX We assume the OVF lists these in order.
         let address = xpath_to_int "rasd:AddressOnParent/text()" 0 in
         *)
 
         (* Find the parent controller. *)
-        let controller = parent_controller parent_id in
+        let parent_id = xpath_to_int "rasd:Parent/text()" 0 in
+        let controller =
+          match parent_id with
+          | 0 -> None
+          | id -> parent_controller id in
 
         let typ =
           match id with

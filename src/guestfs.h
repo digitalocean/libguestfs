@@ -964,6 +964,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_blockdev_rereadpt (guestfs_h *g, const cha
 extern GUESTFS_DLL_PUBLIC int guestfs_blockdev_setbsz (guestfs_h *g, const char *device, int blocksize)
   GUESTFS_DEPRECATED_BY ("mkfs");
 
+#define GUESTFS_HAVE_BLOCKDEV_SETRA 1
+extern GUESTFS_DLL_PUBLIC int guestfs_blockdev_setra (guestfs_h *g, const char *device, int sectors);
+
 #define GUESTFS_HAVE_BLOCKDEV_SETRO 1
 extern GUESTFS_DLL_PUBLIC int guestfs_blockdev_setro (guestfs_h *g, const char *device);
 
@@ -3704,6 +3707,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_BLOCKDEV_GETSZ 1
 #define LIBGUESTFS_HAVE_BLOCKDEV_REREADPT 1
 #define LIBGUESTFS_HAVE_BLOCKDEV_SETBSZ 1
+#define LIBGUESTFS_HAVE_BLOCKDEV_SETRA 1
 #define LIBGUESTFS_HAVE_BLOCKDEV_SETRO 1
 #define LIBGUESTFS_HAVE_BLOCKDEV_SETRW 1
 #define LIBGUESTFS_HAVE_BTRFS_DEVICE_ADD 1

@@ -1463,9 +1463,6 @@ SOURCES = \
 	progress.ml \
 	regedit.mli \
 	regedit.ml \
-	tty-c.c \
-	tTY.mli \
-	tTY.ml \
 	uri-c.c \
 	uRI.mli \
 	uRI.ml
@@ -1478,7 +1475,6 @@ SOURCES = \
 @HAVE_OCAML_TRUE@ocaml_modules = config \
 @HAVE_OCAML_TRUE@	libdir \
 @HAVE_OCAML_TRUE@	common_gettext \
-@HAVE_OCAML_TRUE@	tTY \
 @HAVE_OCAML_TRUE@	common_utils \
 @HAVE_OCAML_TRUE@	fsync \
 @HAVE_OCAML_TRUE@	progress \
@@ -1489,7 +1485,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	JSON
 
 @HAVE_OCAML_TRUE@OBJECTS = $(top_builddir)/fish/guestfish-progress.o \
-@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o tty-c.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
 @HAVE_OCAML_TRUE@	fsync-c.o progress-c.o uri-c.o mkdtemp-c.o \
 @HAVE_OCAML_TRUE@	$(am__append_1) $(am__append_2)
 @HAVE_OCAML_TRUE@noinst_SCRIPTS = dummy
@@ -1923,12 +1919,12 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@.c.o:
 @HAVE_OCAML_TRUE@	$(CC) $(CFLAGS) $(PROF_CFLAGS) $(DEFAULT_INCLUDES) -c $< -o $@
 
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmx tty-c.o tTY.cmx common_utils.cmx common_utils_tests.cmx
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmx common_utils.cmx common_utils_tests.cmx
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib $(LIBTINFO_LIBS) -o $@
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmo tty-c.o tTY.cmo common_utils.cmo common_utils_tests.cmo
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib '$(LIBTINFO_LIBS)' -o $@
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmo common_utils.cmo common_utils_tests.cmo
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  mlguestfs.cma -linkpkg $^ -cclib $(LIBTINFO_LIBS) -custom -o $@
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  mlguestfs.cma -linkpkg $^ -cclib '$(LIBTINFO_LIBS)' -custom -o $@
 
 @HAVE_OCAML_TRUE@check-valgrind:
 @HAVE_OCAML_TRUE@	$(MAKE) VG="$(top_builddir)/run @VG@" check

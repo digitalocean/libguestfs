@@ -65,6 +65,7 @@
 -export([blockdev_getsz/2]).
 -export([blockdev_rereadpt/2]).
 -export([blockdev_setbsz/3]).
+-export([blockdev_setra/3]).
 -export([blockdev_setro/2]).
 -export([blockdev_setrw/2]).
 -export([btrfs_device_add/3]).
@@ -757,6 +758,9 @@ blockdev_rereadpt(G, Device) ->
 
 blockdev_setbsz(G, Device, Blocksize) ->
   call_port(G, {blockdev_setbsz, Device, Blocksize}).
+
+blockdev_setra(G, Device, Sectors) ->
+  call_port(G, {blockdev_setra, Device, Sectors}).
 
 blockdev_setro(G, Device) ->
   call_port(G, {blockdev_setro, Device}).

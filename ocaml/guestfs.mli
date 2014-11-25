@@ -521,6 +521,9 @@ val blockdev_setbsz : t -> string -> int -> unit
     @deprecated Use {!mkfs} instead
  *)
 
+val blockdev_setra : t -> string -> int -> unit
+(** set readahead *)
+
 val blockdev_setro : t -> string -> unit
 (** set block device to read-only *)
 
@@ -549,10 +552,10 @@ val btrfs_set_seeding : t -> string -> bool -> unit
 (** enable or disable the seeding feature of device *)
 
 val btrfs_subvolume_create : t -> string -> unit
-(** create a btrfs snapshot *)
+(** create a btrfs subvolume *)
 
 val btrfs_subvolume_delete : t -> string -> unit
-(** delete a btrfs snapshot *)
+(** delete a btrfs subvolume or snapshot *)
 
 val btrfs_subvolume_list : t -> string -> btrfssubvolume array
 (** list btrfs snapshots and subvolumes *)
@@ -2258,6 +2261,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method blockdev_getsz : string -> int64
   method blockdev_rereadpt : string -> unit
   method blockdev_setbsz : string -> int -> unit
+  method blockdev_setra : string -> int -> unit
   method blockdev_setro : string -> unit
   method blockdev_setrw : string -> unit
   method btrfs_device_add : string array -> string -> unit

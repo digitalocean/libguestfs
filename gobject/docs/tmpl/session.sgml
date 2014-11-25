@@ -626,6 +626,18 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_blockdev_setra ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@sectors: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_blockdev_setro ##### -->
 <para>
 

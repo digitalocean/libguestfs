@@ -3774,6 +3774,12 @@ struct guestfs_internal_lstatnslist_ret {
 };
 typedef struct guestfs_internal_lstatnslist_ret guestfs_internal_lstatnslist_ret;
 
+struct guestfs_blockdev_setra_args {
+	char *device;
+	int sectors;
+};
+typedef struct guestfs_blockdev_setra_args guestfs_blockdev_setra_args;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -4188,9 +4194,10 @@ enum guestfs_procedure {
 	GUESTFS_PROC_STATNS = 421,
 	GUESTFS_PROC_LSTATNS = 422,
 	GUESTFS_PROC_INTERNAL_LSTATNSLIST = 423,
+	GUESTFS_PROC_BLOCKDEV_SETRA = 424,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 423
+#define GUESTFS_MAX_PROC_NR 424
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4839,6 +4846,7 @@ extern  bool_t xdr_guestfs_lstatns_args (XDR *, guestfs_lstatns_args*);
 extern  bool_t xdr_guestfs_lstatns_ret (XDR *, guestfs_lstatns_ret*);
 extern  bool_t xdr_guestfs_internal_lstatnslist_args (XDR *, guestfs_internal_lstatnslist_args*);
 extern  bool_t xdr_guestfs_internal_lstatnslist_ret (XDR *, guestfs_internal_lstatnslist_ret*);
+extern  bool_t xdr_guestfs_blockdev_setra_args (XDR *, guestfs_blockdev_setra_args*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5437,6 +5445,7 @@ extern bool_t xdr_guestfs_lstatns_args ();
 extern bool_t xdr_guestfs_lstatns_ret ();
 extern bool_t xdr_guestfs_internal_lstatnslist_args ();
 extern bool_t xdr_guestfs_internal_lstatnslist_ret ();
+extern bool_t xdr_guestfs_blockdev_setra_args ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

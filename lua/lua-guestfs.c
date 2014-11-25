@@ -1456,6 +1456,29 @@ guestfs_lua_blockdev_setbsz (lua_State *L)
 }
 
 static int
+guestfs_lua_blockdev_setra (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  int sectors;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "blockdev_setra");
+
+  device = luaL_checkstring (L, 2);
+  sectors = luaL_checkint (L, 3);
+
+  r = guestfs_blockdev_setra (g, device, sectors);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_blockdev_setro (lua_State *L)
 {
   int r;
@@ -15315,6 +15338,7 @@ static luaL_Reg methods[] = {
   { "blockdev_getsz", guestfs_lua_blockdev_getsz },
   { "blockdev_rereadpt", guestfs_lua_blockdev_rereadpt },
   { "blockdev_setbsz", guestfs_lua_blockdev_setbsz },
+  { "blockdev_setra", guestfs_lua_blockdev_setra },
   { "blockdev_setro", guestfs_lua_blockdev_setro },
   { "blockdev_setrw", guestfs_lua_blockdev_setrw },
   { "btrfs_device_add", guestfs_lua_btrfs_device_add },
