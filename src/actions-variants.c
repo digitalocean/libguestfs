@@ -360,6 +360,134 @@ guestfs_btrfs_fsck_va (guestfs_h *g,
 }
 
 int
+guestfs_btrfs_subvolume_create_opts (guestfs_h *g,
+                                     const char *dest,
+                                     ...)
+{
+  va_list optargs;
+
+  int r;
+
+  va_start (optargs, dest);
+  r = guestfs_btrfs_subvolume_create_opts_va (g, dest, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_btrfs_subvolume_create_opts_va (guestfs_h *g,
+                                        const char *dest,
+                                        va_list args)
+{
+  struct guestfs_btrfs_subvolume_create_opts_argv optargs_s;
+  struct guestfs_btrfs_subvolume_create_opts_argv *optargs = &optargs_s;
+  int i;
+  uint64_t i_mask;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID:
+      optargs_s.qgroupid = va_arg (args, const char *);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "btrfs_subvolume_create", i);
+      return -1;
+    }
+
+    i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "btrfs_subvolume_create");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_btrfs_subvolume_create_opts_argv (g, dest, optargs);
+}
+
+int
+guestfs_btrfs_subvolume_create (guestfs_h *g,
+                                const char *dest)
+{
+  struct guestfs_btrfs_subvolume_create_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_subvolume_create_opts_argv *optargs = &optargs_s;
+
+  return guestfs_btrfs_subvolume_create_opts_argv (g, dest, optargs);
+}
+
+int
+guestfs_btrfs_subvolume_snapshot_opts (guestfs_h *g,
+                                       const char *source,
+                                       const char *dest,
+                                       ...)
+{
+  va_list optargs;
+
+  int r;
+
+  va_start (optargs, dest);
+  r = guestfs_btrfs_subvolume_snapshot_opts_va (g, source, dest, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_btrfs_subvolume_snapshot_opts_va (guestfs_h *g,
+                                          const char *source,
+                                          const char *dest,
+                                          va_list args)
+{
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv optargs_s;
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs = &optargs_s;
+  int i;
+  uint64_t i_mask;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO:
+      optargs_s.ro = va_arg (args, int);
+      break;
+    case GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID:
+      optargs_s.qgroupid = va_arg (args, const char *);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "btrfs_subvolume_snapshot", i);
+      return -1;
+    }
+
+    i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "btrfs_subvolume_snapshot");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_btrfs_subvolume_snapshot_opts_argv (g, source, dest, optargs);
+}
+
+int
+guestfs_btrfs_subvolume_snapshot (guestfs_h *g,
+                                  const char *source,
+                                  const char *dest)
+{
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs = &optargs_s;
+
+  return guestfs_btrfs_subvolume_snapshot_opts_argv (g, source, dest, optargs);
+}
+
+int
 guestfs_compress_device_out (guestfs_h *g,
                              const char *ctype,
                              const char *device,

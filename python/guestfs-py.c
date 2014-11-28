@@ -3225,18 +3225,34 @@ py_guestfs_btrfs_subvolume_create (PyObject *self, PyObject *args)
   PyObject *py_g;
   guestfs_h *g;
   PyObject *py_r = NULL;
+  struct guestfs_btrfs_subvolume_create_opts_argv optargs_s;
+  struct guestfs_btrfs_subvolume_create_opts_argv *optargs = &optargs_s;
   int r;
   const char *dest;
+  PyObject *py_qgroupid;
 
-  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_subvolume_create",
-                         &py_g, &dest))
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OsO:guestfs_btrfs_subvolume_create",
+                         &py_g, &dest, &py_qgroupid))
     goto out;
   g = get_handle (py_g);
+
+  if (py_qgroupid != Py_None) {
+    optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.qgroupid = PyString_AsString (py_qgroupid);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_qgroupid);
+    optargs_s.qgroupid = PyBytes_AS_STRING (bytes);
+#endif
+  }
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_btrfs_subvolume_create (g, dest);
+  r = guestfs_btrfs_subvolume_create_opts_argv (g, dest, optargs);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -3366,19 +3382,41 @@ py_guestfs_btrfs_subvolume_snapshot (PyObject *self, PyObject *args)
   PyObject *py_g;
   guestfs_h *g;
   PyObject *py_r = NULL;
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv optargs_s;
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs = &optargs_s;
   int r;
   const char *source;
   const char *dest;
+  PyObject *py_ro;
+  PyObject *py_qgroupid;
 
-  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_btrfs_subvolume_snapshot",
-                         &py_g, &source, &dest))
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OssOO:guestfs_btrfs_subvolume_snapshot",
+                         &py_g, &source, &dest, &py_ro, &py_qgroupid))
     goto out;
   g = get_handle (py_g);
+
+  if (py_ro != Py_None) {
+    optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO_BITMASK;
+    optargs_s.ro = PyLong_AsLong (py_ro);
+    if (PyErr_Occurred ()) goto out;
+  }
+  if (py_qgroupid != Py_None) {
+    optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.qgroupid = PyString_AsString (py_qgroupid);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_qgroupid);
+    optargs_s.qgroupid = PyBytes_AS_STRING (bytes);
+#endif
+  }
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_btrfs_subvolume_snapshot (g, source, dest);
+  r = guestfs_btrfs_subvolume_snapshot_opts_argv (g, source, dest, optargs);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);

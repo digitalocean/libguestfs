@@ -2924,18 +2924,20 @@ guestfs_session_btrfs_set_seeding (GuestfsSession *session, const gchar *device,
  * guestfs_session_btrfs_subvolume_create:
  * @session: (transfer none): A GuestfsSession object
  * @dest: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsBTRFSSubvolumeCreate containing optional arguments
  * @err: A GError object to receive any generated errors
  *
  * create a btrfs subvolume
  *
  * Create a btrfs subvolume. The @dest argument is the destination
  * directory and the name of the subvolume, in the form
- * "/path/to/dest/name".
+ * "/path/to/dest/name". The optional parameter @qgroupid represents the
+ * qgroup which the newly created subvolume will be added to.
  * 
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_btrfs_subvolume_create (GuestfsSession *session, const gchar *dest, GError **err)
+guestfs_session_btrfs_subvolume_create (GuestfsSession *session, const gchar *dest, GuestfsBTRFSSubvolumeCreate *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -2945,7 +2947,23 @@ guestfs_session_btrfs_subvolume_create (GuestfsSession *session, const gchar *de
     return FALSE;
   }
 
-  int ret = guestfs_btrfs_subvolume_create (g, dest);
+  struct guestfs_btrfs_subvolume_create_opts_argv argv;
+  struct guestfs_btrfs_subvolume_create_opts_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue qgroupid_v = {0, };
+    g_value_init (&qgroupid_v, G_TYPE_STRING);
+    g_object_get_property (G_OBJECT (optargs), "qgroupid", &qgroupid_v);
+    const gchar *qgroupid = g_value_get_string (&qgroupid_v);
+    if (qgroupid != NULL) {
+      argv.bitmask |= GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK;
+      argv.qgroupid = qgroupid;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_btrfs_subvolume_create_opts_argv (g, dest, argvp);
   if (ret == -1) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return FALSE;
@@ -3069,18 +3087,22 @@ guestfs_session_btrfs_subvolume_set_default (GuestfsSession *session, gint64 id,
  * @session: (transfer none): A GuestfsSession object
  * @source: (transfer none) (type filename):
  * @dest: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsBTRFSSubvolumeSnapshot containing optional arguments
  * @err: A GError object to receive any generated errors
  *
- * create a writable btrfs snapshot
+ * create a btrfs snapshot
  *
- * Create a writable snapshot of the btrfs subvolume @source. The @dest
- * argument is the destination directory and the name of the snapshot, in
- * the form "/path/to/dest/name".
+ * Create a snapshot of the btrfs subvolume @source. The @dest argument is
+ * the destination directory and the name of the snapshot, in the form
+ * "/path/to/dest/name". By default the newly created snapshot is writable,
+ * if the value of optional parameter @ro is true, then a readonly snapshot
+ * is created. The optional parameter @qgroupid represents the qgroup which
+ * the newly created snapshot will be added to.
  * 
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_btrfs_subvolume_snapshot (GuestfsSession *session, const gchar *source, const gchar *dest, GError **err)
+guestfs_session_btrfs_subvolume_snapshot (GuestfsSession *session, const gchar *source, const gchar *dest, GuestfsBTRFSSubvolumeSnapshot *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -3090,7 +3112,31 @@ guestfs_session_btrfs_subvolume_snapshot (GuestfsSession *session, const gchar *
     return FALSE;
   }
 
-  int ret = guestfs_btrfs_subvolume_snapshot (g, source, dest);
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv argv;
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue ro_v = {0, };
+    g_value_init (&ro_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "ro", &ro_v);
+    GuestfsTristate ro = g_value_get_enum (&ro_v);
+    if (ro != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO_BITMASK;
+      argv.ro = ro;
+    }
+    GValue qgroupid_v = {0, };
+    g_value_init (&qgroupid_v, G_TYPE_STRING);
+    g_object_get_property (G_OBJECT (optargs), "qgroupid", &qgroupid_v);
+    const gchar *qgroupid = g_value_get_string (&qgroupid_v);
+    if (qgroupid != NULL) {
+      argv.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK;
+      argv.qgroupid = qgroupid;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_btrfs_subvolume_snapshot_opts_argv (g, source, dest, argvp);
   if (ret == -1) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return FALSE;

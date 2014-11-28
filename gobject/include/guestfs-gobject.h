@@ -48,6 +48,8 @@
 #include <guestfs-gobject/optargs-add_drive_scratch.h>
 #include <guestfs-gobject/optargs-btrfs_filesystem_resize.h>
 #include <guestfs-gobject/optargs-btrfs_fsck.h>
+#include <guestfs-gobject/optargs-btrfs_subvolume_create.h>
+#include <guestfs-gobject/optargs-btrfs_subvolume_snapshot.h>
 #include <guestfs-gobject/optargs-compress_device_out.h>
 #include <guestfs-gobject/optargs-compress_out.h>
 #include <guestfs-gobject/optargs-copy_attributes.h>

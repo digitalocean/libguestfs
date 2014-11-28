@@ -991,7 +991,7 @@ struct command_entry btrfs_set_seeding_cmd_entry = {
 
 struct command_entry btrfs_subvolume_create_cmd_entry = {
   .name = "btrfs-subvolume-create",
-  .help = "NAME\n    btrfs-subvolume-create - create a btrfs subvolume\n\nSYNOPSIS\n     btrfs-subvolume-create dest\n\nDESCRIPTION\n    Create a btrfs subvolume. The \"dest\" argument is the destination\n    directory and the name of the subvolume, in the form\n    \"/path/to/dest/name\".\n\n",
+  .help = "NAME\n    btrfs-subvolume-create - create a btrfs subvolume\n\nSYNOPSIS\n     btrfs-subvolume-create dest [qgroupid:..]\n\nDESCRIPTION\n    Create a btrfs subvolume. The \"dest\" argument is the destination\n    directory and the name of the subvolume, in the form\n    \"/path/to/dest/name\". The optional parameter \"qgroupid\" represents the\n    qgroup which the newly created subvolume will be added to.\n\n    You can use 'btrfs-subvolume-create-opts' as an alias for this command.\n\n",
   .run = run_btrfs_subvolume_create
 };
 
@@ -1015,7 +1015,7 @@ struct command_entry btrfs_subvolume_set_default_cmd_entry = {
 
 struct command_entry btrfs_subvolume_snapshot_cmd_entry = {
   .name = "btrfs-subvolume-snapshot",
-  .help = "NAME\n    btrfs-subvolume-snapshot - create a writable btrfs snapshot\n\nSYNOPSIS\n     btrfs-subvolume-snapshot source dest\n\nDESCRIPTION\n    Create a writable snapshot of the btrfs subvolume \"source\". The \"dest\"\n    argument is the destination directory and the name of the snapshot, in\n    the form \"/path/to/dest/name\".\n\n",
+  .help = "NAME\n    btrfs-subvolume-snapshot - create a btrfs snapshot\n\nSYNOPSIS\n     btrfs-subvolume-snapshot source dest [ro:true|false] [qgroupid:..]\n\nDESCRIPTION\n    Create a snapshot of the btrfs subvolume \"source\". The \"dest\" argument\n    is the destination directory and the name of the snapshot, in the form\n    \"/path/to/dest/name\". By default the newly created snapshot is writable,\n    if the value of optional parameter \"ro\" is true, then a readonly\n    snapshot is created. The optional parameter \"qgroupid\" represents the\n    qgroup which the newly created snapshot will be added to.\n\n    You can use 'btrfs-subvolume-snapshot-opts' as an alias for this\n    command.\n\n",
   .run = run_btrfs_subvolume_snapshot
 };
 
@@ -3873,7 +3873,7 @@ list_commands (void)
   printf ("%-20s %s\n", "btrfs-subvolume-delete", _("delete a btrfs subvolume or snapshot"));
   printf ("%-20s %s\n", "btrfs-subvolume-list", _("list btrfs snapshots and subvolumes"));
   printf ("%-20s %s\n", "btrfs-subvolume-set-default", _("set default btrfs subvolume"));
-  printf ("%-20s %s\n", "btrfs-subvolume-snapshot", _("create a writable btrfs snapshot"));
+  printf ("%-20s %s\n", "btrfs-subvolume-snapshot", _("create a btrfs snapshot"));
   printf ("%-20s ", "cachedir");
   printf (_("alias for '%s'"), "set-cachedir");
   putchar ('\n');
@@ -6739,19 +6739,42 @@ run_btrfs_subvolume_create (const char *cmd, size_t argc, char *argv[])
   int ret = -1;
   int r;
   char *dest;
+  struct guestfs_btrfs_subvolume_create_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_subvolume_create_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc != 1) {
-    fprintf (stderr, ngettext("%s should have %d parameter\n",
-                              "%s should have %d parameters\n",
-                              1),
-                     cmd, 1);
+  if (argc < 1 || argc > 2) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
   dest = win_prefix (argv[i++]); /* process "win:" prefix */
   if (dest == NULL) goto out_dest;
-  r = guestfs_btrfs_subvolume_create (g, dest);
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "qgroupid:")) {
+      optargs_s.qgroupid = &argv[i][9];
+      this_mask = GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK;
+      this_arg = "qgroupid";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_btrfs_subvolume_create_opts_argv (g, dest, optargs);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -6869,13 +6892,12 @@ run_btrfs_subvolume_snapshot (const char *cmd, size_t argc, char *argv[])
   int r;
   char *source;
   char *dest;
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc != 2) {
-    fprintf (stderr, ngettext("%s should have %d parameter\n",
-                              "%s should have %d parameters\n",
-                              2),
-                     cmd, 2);
+  if (argc < 2 || argc > 4) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -6883,7 +6905,40 @@ run_btrfs_subvolume_snapshot (const char *cmd, size_t argc, char *argv[])
   if (source == NULL) goto out_source;
   dest = win_prefix (argv[i++]); /* process "win:" prefix */
   if (dest == NULL) goto out_dest;
-  r = guestfs_btrfs_subvolume_snapshot (g, source, dest);
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "ro:")) {
+      switch (is_true (&argv[i][3])) {
+        case -1: goto out;
+        case 0:  optargs_s.ro = 0; break;
+        default: optargs_s.ro = 1;
+      }
+      this_mask = GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO_BITMASK;
+      this_arg = "ro";
+    }
+    else if (STRPREFIX (argv[i], "qgroupid:")) {
+      optargs_s.qgroupid = &argv[i][9];
+      this_mask = GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK;
+      this_arg = "qgroupid";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_btrfs_subvolume_snapshot_opts_argv (g, source, dest, optargs);
   if (r == -1) goto out;
   ret = 0;
  out:

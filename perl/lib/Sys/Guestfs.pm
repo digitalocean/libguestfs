@@ -1205,10 +1205,24 @@ filesystem is stored.
 Enable or disable the seeding feature of a device that contains
 a btrfs filesystem.
 
-=item $g->btrfs_subvolume_create ($dest);
+=item $g->btrfs_subvolume_create ($dest [, qgroupid => $qgroupid]);
 
 Create a btrfs subvolume.  The C<dest> argument is the destination
 directory and the name of the subvolume, in the form C</path/to/dest/name>.
+The optional parameter C<qgroupid> represents the qgroup which the newly
+created subvolume will be added to.
+
+=item $g->btrfs_subvolume_create_opts ($dest [, qgroupid => $qgroupid]);
+
+This is an alias of L</btrfs_subvolume_create>.
+
+=cut
+
+sub btrfs_subvolume_create_opts {
+  &btrfs_subvolume_create (@_)
+}
+
+=pod
 
 =item $g->btrfs_subvolume_delete ($subvolume);
 
@@ -1225,11 +1239,27 @@ Set the subvolume of the btrfs filesystem C<fs> which will
 be mounted by default.  See C<$g-E<gt>btrfs_subvolume_list> to
 get a list of subvolumes.
 
-=item $g->btrfs_subvolume_snapshot ($source, $dest);
+=item $g->btrfs_subvolume_snapshot ($source, $dest [, ro => $ro] [, qgroupid => $qgroupid]);
 
-Create a writable snapshot of the btrfs subvolume C<source>.
+Create a snapshot of the btrfs subvolume C<source>.
 The C<dest> argument is the destination directory and the name
-of the snapshot, in the form C</path/to/dest/name>.
+of the snapshot, in the form C</path/to/dest/name>. By default
+the newly created snapshot is writable, if the value of optional
+parameter C<ro> is true, then a readonly snapshot is created. The
+optional parameter C<qgroupid> represents the qgroup which the
+newly created snapshot will be added to.
+
+=item $g->btrfs_subvolume_snapshot_opts ($source, $dest [, ro => $ro] [, qgroupid => $qgroupid]);
+
+This is an alias of L</btrfs_subvolume_snapshot>.
+
+=cut
+
+sub btrfs_subvolume_snapshot_opts {
+  &btrfs_subvolume_snapshot (@_)
+}
+
+=pod
 
 =item $canonical = $g->canonical_device_name ($device);
 
@@ -8140,6 +8170,9 @@ use vars qw(%guestfs_introspection);
     args => [
       [ 'dest', 'string(path)', 0 ],
     ],
+    optargs => {
+      qgroupid => [ 'qgroupid', 'string', 0 ],
+    },
     name => "btrfs_subvolume_create",
     description => "create a btrfs subvolume",
   },
@@ -8174,8 +8207,12 @@ use vars qw(%guestfs_introspection);
       [ 'source', 'string(path)', 0 ],
       [ 'dest', 'string(path)', 1 ],
     ],
+    optargs => {
+      ro => [ 'ro', 'bool', 0 ],
+      qgroupid => [ 'qgroupid', 'string', 1 ],
+    },
     name => "btrfs_subvolume_snapshot",
-    description => "create a writable btrfs snapshot",
+    description => "create a btrfs snapshot",
   },
   "canonical_device_name" => {
     ret => 'string',
@@ -12608,32 +12645,36 @@ use vars qw(%guestfs_introspection);
 # Add aliases to the introspection hash.
 my %ielem0 = %{$guestfs_introspection{add_drive}};
 $guestfs_introspection{add_drive_opts} = \%ielem0;
-my %ielem1 = %{$guestfs_introspection{grep}};
-$guestfs_introspection{grep_opts} = \%ielem1;
-my %ielem2 = %{$guestfs_introspection{is_blockdev}};
-$guestfs_introspection{is_blockdev_opts} = \%ielem2;
-my %ielem3 = %{$guestfs_introspection{is_chardev}};
-$guestfs_introspection{is_chardev_opts} = \%ielem3;
-my %ielem4 = %{$guestfs_introspection{is_dir}};
-$guestfs_introspection{is_dir_opts} = \%ielem4;
-my %ielem5 = %{$guestfs_introspection{is_fifo}};
-$guestfs_introspection{is_fifo_opts} = \%ielem5;
-my %ielem6 = %{$guestfs_introspection{is_file}};
-$guestfs_introspection{is_file_opts} = \%ielem6;
-my %ielem7 = %{$guestfs_introspection{is_socket}};
-$guestfs_introspection{is_socket_opts} = \%ielem7;
-my %ielem8 = %{$guestfs_introspection{mkfs}};
-$guestfs_introspection{mkfs_opts} = \%ielem8;
-my %ielem9 = %{$guestfs_introspection{mkswap}};
-$guestfs_introspection{mkswap_opts} = \%ielem9;
-my %ielem10 = %{$guestfs_introspection{ntfsresize}};
-$guestfs_introspection{ntfsresize_opts} = \%ielem10;
-my %ielem11 = %{$guestfs_introspection{tar_in}};
-$guestfs_introspection{tar_in_opts} = \%ielem11;
-my %ielem12 = %{$guestfs_introspection{tar_out}};
-$guestfs_introspection{tar_out_opts} = \%ielem12;
-my %ielem13 = %{$guestfs_introspection{umount}};
-$guestfs_introspection{umount_opts} = \%ielem13;
+my %ielem1 = %{$guestfs_introspection{btrfs_subvolume_create}};
+$guestfs_introspection{btrfs_subvolume_create_opts} = \%ielem1;
+my %ielem2 = %{$guestfs_introspection{btrfs_subvolume_snapshot}};
+$guestfs_introspection{btrfs_subvolume_snapshot_opts} = \%ielem2;
+my %ielem3 = %{$guestfs_introspection{grep}};
+$guestfs_introspection{grep_opts} = \%ielem3;
+my %ielem4 = %{$guestfs_introspection{is_blockdev}};
+$guestfs_introspection{is_blockdev_opts} = \%ielem4;
+my %ielem5 = %{$guestfs_introspection{is_chardev}};
+$guestfs_introspection{is_chardev_opts} = \%ielem5;
+my %ielem6 = %{$guestfs_introspection{is_dir}};
+$guestfs_introspection{is_dir_opts} = \%ielem6;
+my %ielem7 = %{$guestfs_introspection{is_fifo}};
+$guestfs_introspection{is_fifo_opts} = \%ielem7;
+my %ielem8 = %{$guestfs_introspection{is_file}};
+$guestfs_introspection{is_file_opts} = \%ielem8;
+my %ielem9 = %{$guestfs_introspection{is_socket}};
+$guestfs_introspection{is_socket_opts} = \%ielem9;
+my %ielem10 = %{$guestfs_introspection{mkfs}};
+$guestfs_introspection{mkfs_opts} = \%ielem10;
+my %ielem11 = %{$guestfs_introspection{mkswap}};
+$guestfs_introspection{mkswap_opts} = \%ielem11;
+my %ielem12 = %{$guestfs_introspection{ntfsresize}};
+$guestfs_introspection{ntfsresize_opts} = \%ielem12;
+my %ielem13 = %{$guestfs_introspection{tar_in}};
+$guestfs_introspection{tar_in_opts} = \%ielem13;
+my %ielem14 = %{$guestfs_introspection{tar_out}};
+$guestfs_introspection{tar_out_opts} = \%ielem14;
+my %ielem15 = %{$guestfs_introspection{umount}};
+$guestfs_introspection{umount_opts} = \%ielem15;
 
 1;
 

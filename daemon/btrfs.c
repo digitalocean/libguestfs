@@ -208,7 +208,8 @@ do_mkfs_btrfs (char *const *devices,
 }
 
 int
-do_btrfs_subvolume_snapshot (const char *source, const char *dest)
+do_btrfs_subvolume_snapshot (const char *source, const char *dest, int ro,
+                             const char *qgroupid)
 {
   const size_t MAX_ARGS = 64;
   const char *argv[MAX_ARGS];
@@ -231,6 +232,17 @@ do_btrfs_subvolume_snapshot (const char *source, const char *dest)
   ADD_ARG (argv, i, str_btrfs);
   ADD_ARG (argv, i, "subvolume");
   ADD_ARG (argv, i, "snapshot");
+
+  /* Optional arguments. */
+  if ((optargs_bitmask & GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_RO_BITMASK) &&
+      ro)
+    ADD_ARG (argv, i, "-r");
+
+  if (optargs_bitmask & GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_QGROUPID_BITMASK) {
+    ADD_ARG (argv, i, "-i");
+    ADD_ARG (argv, i, qgroupid);
+  }
+
   ADD_ARG (argv, i, source_buf);
   ADD_ARG (argv, i, dest_buf);
   ADD_ARG (argv, i, NULL);
@@ -276,7 +288,7 @@ do_btrfs_subvolume_delete (const char *subvolume)
 }
 
 int
-do_btrfs_subvolume_create (const char *dest)
+do_btrfs_subvolume_create (const char *dest, const char *qgroupid)
 {
   const size_t MAX_ARGS = 64;
   const char *argv[MAX_ARGS];
@@ -294,6 +306,14 @@ do_btrfs_subvolume_create (const char *dest)
   ADD_ARG (argv, i, str_btrfs);
   ADD_ARG (argv, i, "subvolume");
   ADD_ARG (argv, i, "create");
+
+  /* Optional arguments. */
+  if (optargs_bitmask & GUESTFS_BTRFS_SUBVOLUME_CREATE_QGROUPID_BITMASK) {
+    ADD_ARG (argv, i, "-i");
+    ADD_ARG (argv, i, qgroupid);
+  }
+
+
   ADD_ARG (argv, i, dest_buf);
   ADD_ARG (argv, i, NULL);
 

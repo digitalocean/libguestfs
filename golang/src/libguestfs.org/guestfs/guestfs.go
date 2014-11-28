@@ -2136,16 +2136,31 @@ func (g *Guestfs) Btrfs_set_seeding (device string, seeding bool) *GuestfsError 
     return nil
 }
 
+/* Struct carrying optional arguments for Btrfs_subvolume_create */
+type OptargsBtrfs_subvolume_create struct {
+    /* Qgroupid field is ignored unless Qgroupid_is_set == true */
+    Qgroupid_is_set bool
+    Qgroupid string
+}
+
 /* btrfs_subvolume_create : create a btrfs subvolume */
-func (g *Guestfs) Btrfs_subvolume_create (dest string) *GuestfsError {
+func (g *Guestfs) Btrfs_subvolume_create (dest string, optargs *OptargsBtrfs_subvolume_create) *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("btrfs_subvolume_create")
     }
 
     c_dest := C.CString (dest)
     defer C.free (unsafe.Pointer (c_dest))
+    c_optargs := C.struct_guestfs_btrfs_subvolume_create_opts_argv{}
+    if optargs != nil {
+        if optargs.Qgroupid_is_set {
+            c_optargs.bitmask |= C.GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK
+            c_optargs.qgroupid = C.CString (optargs.Qgroupid)
+            defer C.free (unsafe.Pointer (c_optargs.qgroupid))
+        }
+    }
 
-    r := C.guestfs_btrfs_subvolume_create (g.g, c_dest)
+    r := C.guestfs_btrfs_subvolume_create_opts_argv (g.g, c_dest, &c_optargs)
 
     if r == -1 {
         return get_error_from_handle (g, "btrfs_subvolume_create")
@@ -2205,8 +2220,18 @@ func (g *Guestfs) Btrfs_subvolume_set_default (id int64, fs string) *GuestfsErro
     return nil
 }
 
-/* btrfs_subvolume_snapshot : create a writable btrfs snapshot */
-func (g *Guestfs) Btrfs_subvolume_snapshot (source string, dest string) *GuestfsError {
+/* Struct carrying optional arguments for Btrfs_subvolume_snapshot */
+type OptargsBtrfs_subvolume_snapshot struct {
+    /* Ro field is ignored unless Ro_is_set == true */
+    Ro_is_set bool
+    Ro bool
+    /* Qgroupid field is ignored unless Qgroupid_is_set == true */
+    Qgroupid_is_set bool
+    Qgroupid string
+}
+
+/* btrfs_subvolume_snapshot : create a btrfs snapshot */
+func (g *Guestfs) Btrfs_subvolume_snapshot (source string, dest string, optargs *OptargsBtrfs_subvolume_snapshot) *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("btrfs_subvolume_snapshot")
     }
@@ -2216,8 +2241,20 @@ func (g *Guestfs) Btrfs_subvolume_snapshot (source string, dest string) *Guestfs
 
     c_dest := C.CString (dest)
     defer C.free (unsafe.Pointer (c_dest))
+    c_optargs := C.struct_guestfs_btrfs_subvolume_snapshot_opts_argv{}
+    if optargs != nil {
+        if optargs.Ro_is_set {
+            c_optargs.bitmask |= C.GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO_BITMASK
+            if optargs.Ro { c_optargs.ro = 1 } else { c_optargs.ro = 0}
+        }
+        if optargs.Qgroupid_is_set {
+            c_optargs.bitmask |= C.GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK
+            c_optargs.qgroupid = C.CString (optargs.Qgroupid)
+            defer C.free (unsafe.Pointer (c_optargs.qgroupid))
+        }
+    }
 
-    r := C.guestfs_btrfs_subvolume_snapshot (g.g, c_source, c_dest)
+    r := C.guestfs_btrfs_subvolume_snapshot_opts_argv (g.g, c_source, c_dest, &c_optargs)
 
     if r == -1 {
         return get_error_from_handle (g, "btrfs_subvolume_snapshot")

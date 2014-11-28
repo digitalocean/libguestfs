@@ -84,6 +84,40 @@ guestfs_btrfs_fsck_get_type
 </SECTION>
 
 <SECTION>
+<FILE>optargs-btrfs_subvolume_create</FILE>
+<TITLE>GuestfsBTRFSSubvolumeCreate</TITLE>
+GuestfsBTRFSSubvolumeCreate
+GuestfsBTRFSSubvolumeCreateClass
+guestfs_btrfs_subvolume_create_new
+<SUBSECTION Standard>
+GUESTFS_BTRFS_SUBVOLUME_CREATE
+GUESTFS_BTRFS_SUBVOLUME_CREATE_CLASS
+GUESTFS_BTRFS_SUBVOLUME_CREATE_GET_CLASS
+GUESTFS_IS_BTRFS_SUBVOLUME_CREATE
+GUESTFS_IS_BTRFS_SUBVOLUME_CREATE_CLASS
+GUESTFS_TYPE_BTRFS_SUBVOLUME_CREATE
+GuestfsBTRFSSubvolumeCreatePrivate
+guestfs_btrfs_subvolume_create_get_type
+</SECTION>
+
+<SECTION>
+<FILE>optargs-btrfs_subvolume_snapshot</FILE>
+<TITLE>GuestfsBTRFSSubvolumeSnapshot</TITLE>
+GuestfsBTRFSSubvolumeSnapshot
+GuestfsBTRFSSubvolumeSnapshotClass
+guestfs_btrfs_subvolume_snapshot_new
+<SUBSECTION Standard>
+GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT
+GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_CLASS
+GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_GET_CLASS
+GUESTFS_IS_BTRFS_SUBVOLUME_SNAPSHOT
+GUESTFS_IS_BTRFS_SUBVOLUME_SNAPSHOT_CLASS
+GUESTFS_TYPE_BTRFS_SUBVOLUME_SNAPSHOT
+GuestfsBTRFSSubvolumeSnapshotPrivate
+guestfs_btrfs_subvolume_snapshot_get_type
+</SECTION>
+
+<SECTION>
 <FILE>optargs-compress_device_out</FILE>
 <TITLE>GuestfsCompressDeviceOut</TITLE>
 GuestfsCompressDeviceOut

@@ -551,8 +551,10 @@ val btrfs_fsck : t -> ?superblock:int64 -> ?repair:bool -> string -> unit
 val btrfs_set_seeding : t -> string -> bool -> unit
 (** enable or disable the seeding feature of device *)
 
-val btrfs_subvolume_create : t -> string -> unit
+val btrfs_subvolume_create : t -> ?qgroupid:string -> string -> unit
 (** create a btrfs subvolume *)
+
+val btrfs_subvolume_create_opts : t -> ?qgroupid:string -> string -> unit
 
 val btrfs_subvolume_delete : t -> string -> unit
 (** delete a btrfs subvolume or snapshot *)
@@ -563,8 +565,10 @@ val btrfs_subvolume_list : t -> string -> btrfssubvolume array
 val btrfs_subvolume_set_default : t -> int64 -> string -> unit
 (** set default btrfs subvolume *)
 
-val btrfs_subvolume_snapshot : t -> string -> string -> unit
-(** create a writable btrfs snapshot *)
+val btrfs_subvolume_snapshot : t -> ?ro:bool -> ?qgroupid:string -> string -> string -> unit
+(** create a btrfs snapshot *)
+
+val btrfs_subvolume_snapshot_opts : t -> ?ro:bool -> ?qgroupid:string -> string -> string -> unit
 
 val canonical_device_name : t -> string -> string
 (** return canonical device name *)
@@ -2271,11 +2275,13 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method btrfs_filesystem_sync : string -> unit
   method btrfs_fsck : ?superblock:int64 -> ?repair:bool -> string -> unit
   method btrfs_set_seeding : string -> bool -> unit
-  method btrfs_subvolume_create : string -> unit
+  method btrfs_subvolume_create : ?qgroupid:string -> string -> unit
+  method btrfs_subvolume_create_opts : ?qgroupid:string -> string -> unit
   method btrfs_subvolume_delete : string -> unit
   method btrfs_subvolume_list : string -> btrfssubvolume array
   method btrfs_subvolume_set_default : int64 -> string -> unit
-  method btrfs_subvolume_snapshot : string -> string -> unit
+  method btrfs_subvolume_snapshot : ?ro:bool -> ?qgroupid:string -> string -> string -> unit
+  method btrfs_subvolume_snapshot_opts : ?ro:bool -> ?qgroupid:string -> string -> string -> unit
   method canonical_device_name : string -> string
   method cap_get_file : string -> string
   method cap_set_file : string -> string -> unit

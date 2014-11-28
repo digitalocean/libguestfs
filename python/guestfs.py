@@ -1208,14 +1208,18 @@ class GuestFS(object):
         r = libguestfsmod.btrfs_set_seeding (self._o, device, seeding)
         return r
 
-    def btrfs_subvolume_create (self, dest):
+    def btrfs_subvolume_create (self, dest, qgroupid=None):
         """Create a btrfs subvolume. The "dest" argument is the
         destination directory and the name of the subvolume, in
-        the form "/path/to/dest/name".
+        the form "/path/to/dest/name". The optional parameter
+        "qgroupid" represents the qgroup which the newly created
+        subvolume will be added to.
         """
         self._check_not_closed ()
-        r = libguestfsmod.btrfs_subvolume_create (self._o, dest)
+        r = libguestfsmod.btrfs_subvolume_create (self._o, dest, qgroupid)
         return r
+
+    btrfs_subvolume_create_opts = btrfs_subvolume_create
 
     def btrfs_subvolume_delete (self, subvolume):
         """Delete the named btrfs subvolume or snapshot.
@@ -1244,15 +1248,21 @@ class GuestFS(object):
         r = libguestfsmod.btrfs_subvolume_set_default (self._o, id, fs)
         return r
 
-    def btrfs_subvolume_snapshot (self, source, dest):
-        """Create a writable snapshot of the btrfs subvolume
-        "source". The "dest" argument is the destination
-        directory and the name of the snapshot, in the form
-        "/path/to/dest/name".
+    def btrfs_subvolume_snapshot (self, source, dest, ro=None, qgroupid=None):
+        """Create a snapshot of the btrfs subvolume "source". The
+        "dest" argument is the destination directory and the
+        name of the snapshot, in the form "/path/to/dest/name".
+        By default the newly created snapshot is writable, if
+        the value of optional parameter "ro" is true, then a
+        readonly snapshot is created. The optional parameter
+        "qgroupid" represents the qgroup which the newly created
+        snapshot will be added to.
         """
         self._check_not_closed ()
-        r = libguestfsmod.btrfs_subvolume_snapshot (self._o, source, dest)
+        r = libguestfsmod.btrfs_subvolume_snapshot (self._o, source, dest, ro, qgroupid)
         return r
+
+    btrfs_subvolume_snapshot_opts = btrfs_subvolume_snapshot
 
     def canonical_device_name (self, device):
         """This utility function is useful when displaying device

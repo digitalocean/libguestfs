@@ -84,11 +84,11 @@ extern int optgroup_zerofree_available (void);
   int __attribute__((noreturn)) do_btrfs_filesystem_sync (const char *fs) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_fsck (const char *device, int64_t superblock, int repair) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_set_seeding (const char *device, int seeding) { abort (); } \
-  int __attribute__((noreturn)) do_btrfs_subvolume_create (const char *dest) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_subvolume_create (const char *dest, const char *qgroupid) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_subvolume_delete (const char *subvolume) { abort (); } \
   guestfs_int_btrfssubvolume_list *__attribute__((noreturn)) do_btrfs_subvolume_list (const mountable_t *fs) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_subvolume_set_default (int64_t id, const char *fs) { abort (); } \
-  int __attribute__((noreturn)) do_btrfs_subvolume_snapshot (const char *source, const char *dest) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_subvolume_snapshot (const char *source, const char *dest, int ro, const char *qgroupid) { abort (); } \
   int __attribute__((noreturn)) do_mkfs_btrfs (char *const *devices, int64_t allocstart, int64_t bytecount, const char *datatype, int leafsize, const char *label, const char *metadata, int nodesize, int sectorsize) { abort (); } \
   int optgroup_btrfs_available (void) { return 0; }
 

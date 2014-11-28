@@ -10217,24 +10217,30 @@ See C<guestfs_get_e2generation>." };
 
   { defaults with
     name = "btrfs_subvolume_snapshot";
-    style = RErr, [Pathname "source"; Pathname "dest"], [];
+    style = RErr, [Pathname "source"; Pathname "dest"], [OBool "ro"; OString "qgroupid"];
     proc_nr = Some 322;
+    once_had_no_optargs = true;
     optional = Some "btrfs"; camel_name = "BTRFSSubvolumeSnapshot";
     tests = [
       InitPartition, Always, TestRun (
         [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
          ["mount"; "/dev/sda1"; "/"];
          ["mkdir"; "/dir"];
-         ["btrfs_subvolume_create"; "/test1"];
-         ["btrfs_subvolume_create"; "/test2"];
-         ["btrfs_subvolume_create"; "/dir/test3"];
-         ["btrfs_subvolume_snapshot"; "/dir/test3"; "/dir/test4"]]), []
+         ["btrfs_subvolume_create"; "/test1"; "NOARG"];
+         ["btrfs_subvolume_create"; "/test2"; "NOARG"];
+         ["btrfs_subvolume_create"; "/dir/test3"; "NOARG"];
+         ["btrfs_subvolume_snapshot"; "/dir/test3"; "/dir/test5"; "true"; "NOARG"];
+         ["btrfs_subvolume_snapshot"; "/dir/test3"; "/dir/test6"; ""; "0/1000"]]), []
     ];
-    shortdesc = "create a writable btrfs snapshot";
+    shortdesc = "create a btrfs snapshot";
     longdesc = "\
-Create a writable snapshot of the btrfs subvolume C<source>.
+Create a snapshot of the btrfs subvolume C<source>.
 The C<dest> argument is the destination directory and the name
-of the snapshot, in the form C</path/to/dest/name>." };
+of the snapshot, in the form C</path/to/dest/name>. By default
+the newly created snapshot is writable, if the value of optional
+parameter C<ro> is true, then a readonly snapshot is created. The
+optional parameter C<qgroupid> represents the qgroup which the
+newly created snapshot will be added to." };
 
   { defaults with
     name = "btrfs_subvolume_delete";
@@ -10245,7 +10251,7 @@ of the snapshot, in the form C</path/to/dest/name>." };
       InitPartition, Always, TestRun (
         [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
          ["mount"; "/dev/sda1"; "/"];
-         ["btrfs_subvolume_create"; "/test1"];
+         ["btrfs_subvolume_create"; "/test1"; "NOARG"];
          ["btrfs_subvolume_delete"; "/test1"]]), []
     ];
     shortdesc = "delete a btrfs subvolume or snapshot";
@@ -10254,13 +10260,16 @@ Delete the named btrfs subvolume or snapshot." };
 
   { defaults with
     name = "btrfs_subvolume_create";
-    style = RErr, [Pathname "dest"], [];
+    style = RErr, [Pathname "dest"], [OString "qgroupid"];
     proc_nr = Some 324;
+    once_had_no_optargs = true;
     optional = Some "btrfs"; camel_name = "BTRFSSubvolumeCreate";
     shortdesc = "create a btrfs subvolume";
     longdesc = "\
 Create a btrfs subvolume.  The C<dest> argument is the destination
-directory and the name of the subvolume, in the form C</path/to/dest/name>." };
+directory and the name of the subvolume, in the form C</path/to/dest/name>.
+The optional parameter C<qgroupid> represents the qgroup which the newly
+created subvolume will be added to." };
 
   { defaults with
     name = "btrfs_subvolume_list";
@@ -10294,7 +10303,7 @@ get a list of subvolumes." };
       InitPartition, Always, TestRun (
         [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
          ["mount"; "/dev/sda1"; "/"];
-         ["btrfs_subvolume_create"; "/test1"];
+         ["btrfs_subvolume_create"; "/test1"; "NOARG"];
          ["btrfs_filesystem_sync"; "/test1"];
          ["btrfs_filesystem_balance"; "/test1"]]), []
     ];

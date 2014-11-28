@@ -1,3 +1,83 @@
+commit 7ee6977f7ea6f8c6b710b2b41ac61eaf8b069677
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Nov 26 16:15:40 2014 +0000
+
+    Version 1.29.11.
+
+commit 5e81c838e82922fc3c6b4781c8fe2d425194b34f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Nov 26 15:09:33 2014 +0100
+
+    Update gobject/Makefile.inc and POTFILES
+    
+    Followup of commit a120449c979993f4b5bd458ece00fadb339546d3.
+
+commit 1622e3d21816d8baf3c7e2798a43b3b8471785aa
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Wed Nov 26 17:04:06 2014 +0800
+
+    btrfs: add optional parameter `qgroupid' to btrfs_subvolume_create
+    
+    Parameter `qgroupid' is for adding the created subvolume to a qgroup.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 9e7b9ef97f3cd67ef2cdf214e2557205f9629942
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Wed Nov 26 17:04:05 2014 +0800
+
+    btrfs: add optional parameter `qgroupid' to btrfs_subvolume_snapshot
+    
+    Parameter `qgroupid' is for adding the created snapshot to a qgroup.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 5f608f0735a737075ea1cc52795fe897693da0bc
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Nov 26 14:51:33 2014 +0100
+
+    Update gobject/Makefile.inc and POTFILES
+    
+    Followup of commit 0b3c1762965f339915fd080884a61dbb36545204.
+
+commit b349076aeee7c83e5270f3e36cafb22258bd076c
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Wed Nov 26 17:04:04 2014 +0800
+
+    btrfs: add optional parameter `ro' to btrfs_subvolume_snapshot
+    
+    Parameter `ro' is for creating readonly btrfs snapshot.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 8cd2620448779a0c2740d3f4b2c777e6a9915ae6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Nov 23 14:32:46 2014 +0000
+
+    Add debug APIs: bmap-file, bmap-device, bmap.
+    
+    Add *interim* support for a block mapping API, used by the 'virt-bmap'
+    tool.  These are debug APIs so they will eventually be replaced by
+    real APIs along the lines described here:
+    
+    https://www.redhat.com/archives/libguestfs/2014-November/msg00197.html
+
+commit dc1f15aa3e1e9be57334b36c95600a3c3e0c2c62
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Wed Nov 26 18:10:07 2014 +0800
+
+    typo fix: commmand -> command
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit b6f6454678d8d4ae567259985e079feac56384ea
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Wed Nov 26 18:10:06 2014 +0800
+
+    typo fix: preceeding -> preceding
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
 commit 55f6dc7f3d5e4c05f4dd179b21741768c89f4cd0
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Nov 25 19:38:44 2014 +0000

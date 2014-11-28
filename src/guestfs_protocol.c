@@ -6211,6 +6211,10 @@ xdr_guestfs_btrfs_subvolume_snapshot_args (XDR *xdrs, guestfs_btrfs_subvolume_sn
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->dest, ~0))
 		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->ro))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->qgroupid, ~0))
+		 return FALSE;
 	return TRUE;
 }
 
@@ -6230,6 +6234,8 @@ xdr_guestfs_btrfs_subvolume_create_args (XDR *xdrs, guestfs_btrfs_subvolume_crea
 	register int32_t *buf;
 
 	 if (!xdr_string (xdrs, &objp->dest, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->qgroupid, ~0))
 		 return FALSE;
 	return TRUE;
 }

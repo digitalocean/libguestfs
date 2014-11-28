@@ -89,10 +89,16 @@
         guestfs_btrfs_fsck_va;
         guestfs_btrfs_set_seeding;
         guestfs_btrfs_subvolume_create;
+        guestfs_btrfs_subvolume_create_opts;
+        guestfs_btrfs_subvolume_create_opts_argv;
+        guestfs_btrfs_subvolume_create_opts_va;
         guestfs_btrfs_subvolume_delete;
         guestfs_btrfs_subvolume_list;
         guestfs_btrfs_subvolume_set_default;
         guestfs_btrfs_subvolume_snapshot;
+        guestfs_btrfs_subvolume_snapshot_opts;
+        guestfs_btrfs_subvolume_snapshot_opts_argv;
+        guestfs_btrfs_subvolume_snapshot_opts_va;
         guestfs_canonical_device_name;
         guestfs_cap_get_file;
         guestfs_cap_set_file;
