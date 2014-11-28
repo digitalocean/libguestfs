@@ -749,6 +749,7 @@ GuestfsSession
 
 @session: 
 @dest: 
+@optargs: 
 @err: 
 @Returns: 
 
@@ -795,6 +796,7 @@ GuestfsSession
 @session: 
 @source: 
 @dest: 
+@optargs: 
 @err: 
 @Returns: 
 

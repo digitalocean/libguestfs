@@ -102,6 +102,9 @@
 #define GUESTFS_MKFS_BTRFS_NODESIZE_BITMASK (UINT64_C(1)<<6)
 #define GUESTFS_MKFS_BTRFS_SECTORSIZE_BITMASK (UINT64_C(1)<<7)
 #define GUESTFS_SET_E2ATTRS_CLEAR_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_RO_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_QGROUPID_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_BTRFS_SUBVOLUME_CREATE_QGROUPID_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_BTRFS_FSCK_SUPERBLOCK_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_BTRFS_FSCK_REPAIR_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_FSTRIM_OFFSET_BITMASK (UINT64_C(1)<<0)
@@ -498,9 +501,9 @@ extern char *do_get_e2attrs (const char *file);
 extern int do_set_e2attrs (const char *file, const char *attrs, int clear);
 extern int64_t do_get_e2generation (const char *file);
 extern int do_set_e2generation (const char *file, int64_t generation);
-extern int do_btrfs_subvolume_snapshot (const char *source, const char *dest);
+extern int do_btrfs_subvolume_snapshot (const char *source, const char *dest, int ro, const char *qgroupid);
 extern int do_btrfs_subvolume_delete (const char *subvolume);
-extern int do_btrfs_subvolume_create (const char *dest);
+extern int do_btrfs_subvolume_create (const char *dest, const char *qgroupid);
 extern guestfs_int_btrfssubvolume_list *do_btrfs_subvolume_list (const mountable_t *fs);
 extern int do_btrfs_subvolume_set_default (int64_t id, const char *fs);
 extern int do_btrfs_filesystem_sync (const char *fs);

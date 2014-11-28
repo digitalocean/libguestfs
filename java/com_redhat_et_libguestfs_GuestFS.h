@@ -480,10 +480,10 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1set_1seedi
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _btrfs_subvolume_create
- * Signature: (JLjava/lang/String;)V
+ * Signature: (JLjava/lang/String;JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1subvolume_1create
-  (JNIEnv *, jobject, jlong, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jlong, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
@@ -512,10 +512,10 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1subvolume_
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _btrfs_subvolume_snapshot
- * Signature: (JLjava/lang/String;Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;Ljava/lang/String;JZLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1subvolume_1snapshot
-  (JNIEnv *, jobject, jlong, jstring, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jstring, jlong, jboolean, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS

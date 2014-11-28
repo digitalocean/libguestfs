@@ -2958,6 +2958,8 @@ typedef struct guestfs_set_e2generation_args guestfs_set_e2generation_args;
 struct guestfs_btrfs_subvolume_snapshot_args {
 	char *source;
 	char *dest;
+	bool_t ro;
+	char *qgroupid;
 };
 typedef struct guestfs_btrfs_subvolume_snapshot_args guestfs_btrfs_subvolume_snapshot_args;
 
@@ -2968,6 +2970,7 @@ typedef struct guestfs_btrfs_subvolume_delete_args guestfs_btrfs_subvolume_delet
 
 struct guestfs_btrfs_subvolume_create_args {
 	char *dest;
+	char *qgroupid;
 };
 typedef struct guestfs_btrfs_subvolume_create_args guestfs_btrfs_subvolume_create_args;
 

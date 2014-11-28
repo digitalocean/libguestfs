@@ -1706,6 +1706,8 @@ guestfs_lua_btrfs_subvolume_create (lua_State *L)
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
   const char *dest;
+  struct guestfs_btrfs_subvolume_create_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_subvolume_create_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
     return luaL_error (L, "Guestfs.%s: handle is closed",
@@ -1713,7 +1715,15 @@ guestfs_lua_btrfs_subvolume_create (lua_State *L)
 
   dest = luaL_checkstring (L, 2);
 
-  r = guestfs_btrfs_subvolume_create (g, dest);
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 3) == LUA_TTABLE) {
+    OPTARG_IF_SET (3, "qgroupid",
+      optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK;
+      optargs_s.qgroupid = luaL_checkstring (L, -1);
+    );
+  }
+
+  r = guestfs_btrfs_subvolume_create_opts_argv (g, dest, optargs);
   if (r == -1)
     return last_error (L, g);
 
@@ -1795,6 +1805,8 @@ guestfs_lua_btrfs_subvolume_snapshot (lua_State *L)
   guestfs_h *g = u->g;
   const char *source;
   const char *dest;
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
     return luaL_error (L, "Guestfs.%s: handle is closed",
@@ -1803,7 +1815,19 @@ guestfs_lua_btrfs_subvolume_snapshot (lua_State *L)
   source = luaL_checkstring (L, 2);
   dest = luaL_checkstring (L, 3);
 
-  r = guestfs_btrfs_subvolume_snapshot (g, source, dest);
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 4) == LUA_TTABLE) {
+    OPTARG_IF_SET (4, "ro",
+      optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO_BITMASK;
+      optargs_s.ro = lua_toboolean (L, -1);
+    );
+    OPTARG_IF_SET (4, "qgroupid",
+      optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK;
+      optargs_s.qgroupid = luaL_checkstring (L, -1);
+    );
+  }
+
+  r = guestfs_btrfs_subvolume_snapshot_opts_argv (g, source, dest, optargs);
   if (r == -1)
     return last_error (L, g);
 

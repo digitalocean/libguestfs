@@ -178,11 +178,11 @@ gboolean guestfs_session_btrfs_filesystem_resize (GuestfsSession *session, const
 gboolean guestfs_session_btrfs_filesystem_sync (GuestfsSession *session, const gchar *fs, GError **err);
 gboolean guestfs_session_btrfs_fsck (GuestfsSession *session, const gchar *device, GuestfsBtrfsFsck *optargs, GError **err);
 gboolean guestfs_session_btrfs_set_seeding (GuestfsSession *session, const gchar *device, gboolean seeding, GError **err);
-gboolean guestfs_session_btrfs_subvolume_create (GuestfsSession *session, const gchar *dest, GError **err);
+gboolean guestfs_session_btrfs_subvolume_create (GuestfsSession *session, const gchar *dest, GuestfsBTRFSSubvolumeCreate *optargs, GError **err);
 gboolean guestfs_session_btrfs_subvolume_delete (GuestfsSession *session, const gchar *subvolume, GError **err);
 GuestfsBTRFSSubvolume **guestfs_session_btrfs_subvolume_list (GuestfsSession *session, const gchar *fs, GError **err);
 gboolean guestfs_session_btrfs_subvolume_set_default (GuestfsSession *session, gint64 id, const gchar *fs, GError **err);
-gboolean guestfs_session_btrfs_subvolume_snapshot (GuestfsSession *session, const gchar *source, const gchar *dest, GError **err);
+gboolean guestfs_session_btrfs_subvolume_snapshot (GuestfsSession *session, const gchar *source, const gchar *dest, GuestfsBTRFSSubvolumeSnapshot *optargs, GError **err);
 gchar *guestfs_session_canonical_device_name (GuestfsSession *session, const gchar *device, GError **err);
 gchar *guestfs_session_cap_get_file (GuestfsSession *session, const gchar *path, GError **err);
 gboolean guestfs_session_cap_set_file (GuestfsSession *session, const gchar *path, const gchar *cap, GError **err);

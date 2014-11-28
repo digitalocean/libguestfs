@@ -11618,6 +11618,8 @@ btrfs_subvolume_snapshot_stub (XDR *xdr_in)
   struct guestfs_btrfs_subvolume_snapshot_args args;
   const char *source;
   const char *dest;
+  int ro;
+  const char *qgroupid;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
@@ -11625,8 +11627,8 @@ btrfs_subvolume_snapshot_stub (XDR *xdr_in)
     goto done_no_free;
   }
 
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffc)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
 
@@ -11640,9 +11642,11 @@ btrfs_subvolume_snapshot_stub (XDR *xdr_in)
   ABS_PATH (source, , goto done);
   dest = args.dest;
   ABS_PATH (dest, , goto done);
+  ro = args.ro;
+  qgroupid = args.qgroupid;
 
   NEED_ROOT (, goto done);
-  r = do_btrfs_subvolume_snapshot (source, dest);
+  r = do_btrfs_subvolume_snapshot (source, dest, ro, qgroupid);
   if (r == -1)
     /* do_btrfs_subvolume_snapshot has already called reply_with_error */
     goto done;
@@ -11700,6 +11704,7 @@ btrfs_subvolume_create_stub (XDR *xdr_in)
   int r;
   struct guestfs_btrfs_subvolume_create_args args;
   const char *dest;
+  const char *qgroupid;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
@@ -11707,8 +11712,8 @@ btrfs_subvolume_create_stub (XDR *xdr_in)
     goto done_no_free;
   }
 
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
 
@@ -11720,9 +11725,10 @@ btrfs_subvolume_create_stub (XDR *xdr_in)
   }
   dest = args.dest;
   ABS_PATH (dest, , goto done);
+  qgroupid = args.qgroupid;
 
   NEED_ROOT (, goto done);
-  r = do_btrfs_subvolume_create (dest);
+  r = do_btrfs_subvolume_create (dest, qgroupid);
   if (r == -1)
     /* do_btrfs_subvolume_create has already called reply_with_error */
     goto done;

@@ -2199,20 +2199,57 @@ public class GuestFS {
    * <p>
    * Create a btrfs subvolume. The "dest" argument is the
    * destination directory and the name of the subvolume, in
-   * the form "/path/to/dest/name".
+   * the form "/path/to/dest/name". The optional parameter
+   * "qgroupid" represents the qgroup which the newly created
+   * subvolume will be added to.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
    * <p>
    * @throws LibGuestFSException
    */
-  public void btrfs_subvolume_create (String dest)
+  public void btrfs_subvolume_create (String dest, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("btrfs_subvolume_create: handle is closed");
 
-    _btrfs_subvolume_create (g, dest);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    String qgroupid = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("qgroupid");
+    if (_optobj != null) {
+      qgroupid = ((String) _optobj);
+      _optargs_bitmask |= 1L;
+    }
+
+    _btrfs_subvolume_create (g, dest, _optargs_bitmask, qgroupid);
   }
 
-  private native void _btrfs_subvolume_create (long g, String dest)
+  public void btrfs_subvolume_create (String dest)
+    throws LibGuestFSException
+  {
+    btrfs_subvolume_create (dest, null);
+  }
+
+  public void btrfs_subvolume_create_opts (String dest, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    btrfs_subvolume_create (dest, optargs);
+  }
+
+  public void btrfs_subvolume_create_opts (String dest)
+    throws LibGuestFSException
+  {
+    btrfs_subvolume_create (dest, null);
+  }
+
+  private native void _btrfs_subvolume_create (long g, String dest, long _optargs_bitmask, String qgroupid)
     throws LibGuestFSException;
 
   /**
@@ -2276,25 +2313,72 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * create a writable btrfs snapshot
+   * create a btrfs snapshot
    * <p>
-   * Create a writable snapshot of the btrfs subvolume
-   * "source". The "dest" argument is the destination
-   * directory and the name of the snapshot, in the form
-   * "/path/to/dest/name".
+   * Create a snapshot of the btrfs subvolume "source". The
+   * "dest" argument is the destination directory and the
+   * name of the snapshot, in the form "/path/to/dest/name".
+   * By default the newly created snapshot is writable, if
+   * the value of optional parameter "ro" is true, then a
+   * readonly snapshot is created. The optional parameter
+   * "qgroupid" represents the qgroup which the newly created
+   * snapshot will be added to.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
    * <p>
    * @throws LibGuestFSException
    */
-  public void btrfs_subvolume_snapshot (String source, String dest)
+  public void btrfs_subvolume_snapshot (String source, String dest, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("btrfs_subvolume_snapshot: handle is closed");
 
-    _btrfs_subvolume_snapshot (g, source, dest);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean ro = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("ro");
+    if (_optobj != null) {
+      ro = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+    String qgroupid = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("qgroupid");
+    if (_optobj != null) {
+      qgroupid = ((String) _optobj);
+      _optargs_bitmask |= 2L;
+    }
+
+    _btrfs_subvolume_snapshot (g, source, dest, _optargs_bitmask, ro, qgroupid);
   }
 
-  private native void _btrfs_subvolume_snapshot (long g, String source, String dest)
+  public void btrfs_subvolume_snapshot (String source, String dest)
+    throws LibGuestFSException
+  {
+    btrfs_subvolume_snapshot (source, dest, null);
+  }
+
+  public void btrfs_subvolume_snapshot_opts (String source, String dest, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    btrfs_subvolume_snapshot (source, dest, optargs);
+  }
+
+  public void btrfs_subvolume_snapshot_opts (String source, String dest)
+    throws LibGuestFSException
+  {
+    btrfs_subvolume_snapshot (source, dest, null);
+  }
+
+  private native void _btrfs_subvolume_snapshot (long g, String source, String dest, long _optargs_bitmask, boolean ro, String qgroupid)
     throws LibGuestFSException;
 
   /**

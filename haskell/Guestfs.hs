@@ -69,10 +69,8 @@ module Guestfs (
   btrfs_filesystem_balance,
   btrfs_filesystem_sync,
   btrfs_set_seeding,
-  btrfs_subvolume_create,
   btrfs_subvolume_delete,
   btrfs_subvolume_set_default,
-  btrfs_subvolume_snapshot,
   canonical_device_name,
   cap_get_file,
   cap_set_file,
@@ -1071,18 +1069,6 @@ btrfs_set_seeding h device seeding = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs.h guestfs_btrfs_subvolume_create" c_btrfs_subvolume_create
-  :: GuestfsP -> CString -> IO CInt
-
-btrfs_subvolume_create :: GuestfsH -> String -> IO ()
-btrfs_subvolume_create h dest = do
-  r <- withCString dest $ \dest -> withForeignPtr h (\p -> c_btrfs_subvolume_create p dest)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return ()
-
 foreign import ccall unsafe "guestfs.h guestfs_btrfs_subvolume_delete" c_btrfs_subvolume_delete
   :: GuestfsP -> CString -> IO CInt
 
@@ -1101,18 +1087,6 @@ foreign import ccall unsafe "guestfs.h guestfs_btrfs_subvolume_set_default" c_bt
 btrfs_subvolume_set_default :: GuestfsH -> Integer -> String -> IO ()
 btrfs_subvolume_set_default h id fs = do
   r <- withCString fs $ \fs -> withForeignPtr h (\p -> c_btrfs_subvolume_set_default p (fromIntegral id) fs)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return ()
-
-foreign import ccall unsafe "guestfs.h guestfs_btrfs_subvolume_snapshot" c_btrfs_subvolume_snapshot
-  :: GuestfsP -> CString -> CString -> IO CInt
-
-btrfs_subvolume_snapshot :: GuestfsH -> String -> String -> IO ()
-btrfs_subvolume_snapshot h source dest = do
-  r <- withCString source $ \source -> withCString dest $ \dest -> withForeignPtr h (\p -> c_btrfs_subvolume_snapshot p source dest)
   if (r == -1)
     then do
       err <- last_error h

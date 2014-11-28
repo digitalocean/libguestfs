@@ -2760,16 +2760,16 @@ ocaml_guestfs_btrfs_set_seeding (value gv, value devicev, value seedingv)
 }
 
 /* Automatically generated wrapper for function
- * val btrfs_subvolume_create : t -> string -> unit
+ * val btrfs_subvolume_create : t -> ?qgroupid:string -> string -> unit
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_btrfs_subvolume_create (value gv, value destv);
+value ocaml_guestfs_btrfs_subvolume_create (value gv, value qgroupidv, value destv);
 
 value
-ocaml_guestfs_btrfs_subvolume_create (value gv, value destv)
+ocaml_guestfs_btrfs_subvolume_create (value gv, value qgroupidv, value destv)
 {
-  CAMLparam2 (gv, destv);
+  CAMLparam3 (gv, qgroupidv, destv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -2777,12 +2777,20 @@ ocaml_guestfs_btrfs_subvolume_create (value gv, value destv)
     ocaml_guestfs_raise_closed ("btrfs_subvolume_create");
 
   char *dest = guestfs___safe_strdup (g, String_val (destv));
+  struct guestfs_btrfs_subvolume_create_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_subvolume_create_opts_argv *optargs = &optargs_s;
+  if (qgroupidv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK;
+    optargs_s.qgroupid = guestfs___safe_strdup (g, String_val (Field (qgroupidv, 0)));
+  }
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_btrfs_subvolume_create (g, dest);
+  r = guestfs_btrfs_subvolume_create_opts_argv (g, dest, optargs);
   caml_leave_blocking_section ();
   free (dest);
+  if (qgroupidv != Val_int (0))
+    free ((char *) optargs_s.qgroupid);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "btrfs_subvolume_create");
 
@@ -2886,16 +2894,16 @@ ocaml_guestfs_btrfs_subvolume_set_default (value gv, value idv, value fsv)
 }
 
 /* Automatically generated wrapper for function
- * val btrfs_subvolume_snapshot : t -> string -> string -> unit
+ * val btrfs_subvolume_snapshot : t -> ?ro:bool -> ?qgroupid:string -> string -> string -> unit
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_btrfs_subvolume_snapshot (value gv, value sourcev, value destv);
+value ocaml_guestfs_btrfs_subvolume_snapshot (value gv, value rov, value qgroupidv, value sourcev, value destv);
 
 value
-ocaml_guestfs_btrfs_subvolume_snapshot (value gv, value sourcev, value destv)
+ocaml_guestfs_btrfs_subvolume_snapshot (value gv, value rov, value qgroupidv, value sourcev, value destv)
 {
-  CAMLparam3 (gv, sourcev, destv);
+  CAMLparam5 (gv, rov, qgroupidv, sourcev, destv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -2904,13 +2912,25 @@ ocaml_guestfs_btrfs_subvolume_snapshot (value gv, value sourcev, value destv)
 
   char *source = guestfs___safe_strdup (g, String_val (sourcev));
   char *dest = guestfs___safe_strdup (g, String_val (destv));
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs = &optargs_s;
+  if (rov != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO_BITMASK;
+    optargs_s.ro = Bool_val (Field (rov, 0));
+  }
+  if (qgroupidv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK;
+    optargs_s.qgroupid = guestfs___safe_strdup (g, String_val (Field (qgroupidv, 0)));
+  }
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_btrfs_subvolume_snapshot (g, source, dest);
+  r = guestfs_btrfs_subvolume_snapshot_opts_argv (g, source, dest, optargs);
   caml_leave_blocking_section ();
   free (source);
   free (dest);
+  if (qgroupidv != Val_int (0))
+    free ((char *) optargs_s.qgroupid);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "btrfs_subvolume_snapshot");
 

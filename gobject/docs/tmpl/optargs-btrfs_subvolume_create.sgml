@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsBTRFSSubvolumeCreate
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsBTRFSSubvolumeCreate ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsBTRFSSubvolumeCreate:qgroupid ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsBTRFSSubvolumeCreateClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_btrfs_subvolume_create_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

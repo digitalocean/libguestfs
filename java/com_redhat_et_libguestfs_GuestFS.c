@@ -1508,17 +1508,23 @@ Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1set_1seeding  (JNIEnv *env, jobje
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1subvolume_1create  (JNIEnv *env, jobject obj, jlong jg, jstring jdest)
+Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1subvolume_1create  (JNIEnv *env, jobject obj, jlong jg, jstring jdest, jlong joptargs_bitmask, jstring jqgroupid)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *dest;
+  struct guestfs_btrfs_subvolume_create_opts_argv optargs_s;
+  const struct guestfs_btrfs_subvolume_create_opts_argv *optargs = &optargs_s;
 
   dest = (*env)->GetStringUTFChars (env, jdest, NULL);
 
-  r = guestfs_btrfs_subvolume_create (g, dest);
+  optargs_s.qgroupid = (*env)->GetStringUTFChars (env, jqgroupid, NULL);
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_btrfs_subvolume_create_opts_argv (g, dest, optargs);
 
   (*env)->ReleaseStringUTFChars (env, jdest, dest);
+  (*env)->ReleaseStringUTFChars (env, jqgroupid, optargs_s.qgroupid);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -1613,20 +1619,27 @@ Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1subvolume_1set_1default  (JNIEnv 
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1subvolume_1snapshot  (JNIEnv *env, jobject obj, jlong jg, jstring jsource, jstring jdest)
+Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1subvolume_1snapshot  (JNIEnv *env, jobject obj, jlong jg, jstring jsource, jstring jdest, jlong joptargs_bitmask, jboolean jro, jstring jqgroupid)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *source;
   const char *dest;
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv optargs_s;
+  const struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs = &optargs_s;
 
   source = (*env)->GetStringUTFChars (env, jsource, NULL);
   dest = (*env)->GetStringUTFChars (env, jdest, NULL);
 
-  r = guestfs_btrfs_subvolume_snapshot (g, source, dest);
+  optargs_s.ro = jro;
+  optargs_s.qgroupid = (*env)->GetStringUTFChars (env, jqgroupid, NULL);
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_btrfs_subvolume_snapshot_opts_argv (g, source, dest, optargs);
 
   (*env)->ReleaseStringUTFChars (env, jsource, source);
   (*env)->ReleaseStringUTFChars (env, jdest, dest);
+  (*env)->ReleaseStringUTFChars (env, jqgroupid, optargs_s.qgroupid);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));

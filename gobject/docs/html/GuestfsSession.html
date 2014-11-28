@@ -7471,12 +7471,15 @@ filesystem.</p>
 guestfs_session_btrfs_subvolume_create
                                (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                 <em class="parameter"><code>const <span class="type">gchar</span> *dest</code></em>,
+                                <em class="parameter"><code><a class="link" href="GuestfsBTRFSSubvolumeCreate.html" title="GuestfsBTRFSSubvolumeCreate"><span class="type">GuestfsBTRFSSubvolumeCreate</span></a> *optargs</code></em>,
                                 <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>create a btrfs subvolume</p>
 <p>Create a btrfs subvolume. The <em class="parameter"><code>dest</code></em>
  argument is the destination
 directory and the name of the subvolume, in the form
-"/path/to/dest/name".</p>
+"/path/to/dest/name". The optional parameter <em class="parameter"><code>qgroupid</code></em>
+ represents the
+qgroup which the newly created subvolume will be added to.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.55.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -7495,6 +7498,11 @@ directory and the name of the subvolume, in the form
 <td class="parameter_name"><p>dest</p></td>
 <td class="parameter_description"><p>. </p></td>
 <td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>optargs</p></td>
+<td class="parameter_description"><p> a GuestfsBTRFSSubvolumeCreate containing optional arguments. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
 </tr>
 <tr>
 <td class="parameter_name"><p>err</p></td>
@@ -7657,13 +7665,19 @@ guestfs_session_btrfs_subvolume_snapshot
                                (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                 <em class="parameter"><code>const <span class="type">gchar</span> *source</code></em>,
                                 <em class="parameter"><code>const <span class="type">gchar</span> *dest</code></em>,
+                                <em class="parameter"><code><a class="link" href="GuestfsBTRFSSubvolumeSnapshot.html" title="GuestfsBTRFSSubvolumeSnapshot"><span class="type">GuestfsBTRFSSubvolumeSnapshot</span></a> *optargs</code></em>,
                                 <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
-<p>create a writable btrfs snapshot</p>
-<p>Create a writable snapshot of the btrfs subvolume <em class="parameter"><code>source</code></em>
+<p>create a btrfs snapshot</p>
+<p>Create a snapshot of the btrfs subvolume <em class="parameter"><code>source</code></em>
 . The <em class="parameter"><code>dest</code></em>
-
-argument is the destination directory and the name of the snapshot, in
-the form "/path/to/dest/name".</p>
+ argument is
+the destination directory and the name of the snapshot, in the form
+"/path/to/dest/name". By default the newly created snapshot is writable,
+if the value of optional parameter <em class="parameter"><code>ro</code></em>
+ is true, then a readonly snapshot
+is created. The optional parameter <em class="parameter"><code>qgroupid</code></em>
+ represents the qgroup which
+the newly created snapshot will be added to.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.59.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -7687,6 +7701,11 @@ the form "/path/to/dest/name".</p>
 <td class="parameter_name"><p>dest</p></td>
 <td class="parameter_description"><p>. </p></td>
 <td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>optargs</p></td>
+<td class="parameter_description"><p> a GuestfsBTRFSSubvolumeSnapshot containing optional arguments. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
 </tr>
 <tr>
 <td class="parameter_name"><p>err</p></td>

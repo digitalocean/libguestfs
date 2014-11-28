@@ -3001,31 +3001,53 @@ ruby_guestfs_btrfs_set_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
 
 /*
  * call-seq:
- *   g.btrfs_subvolume_create(dest) -> nil
+ *   g.btrfs_subvolume_create(dest, {optargs...}) -> nil
  *
  * create a btrfs subvolume
  *
  * Create a btrfs subvolume. The "dest" argument is the
  * destination directory and the name of the subvolume, in
- * the form "/path/to/dest/name".
+ * the form "/path/to/dest/name". The optional parameter
+ * "qgroupid" represents the qgroup which the newly created
+ * subvolume will be added to.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_btrfs_subvolume_create+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_create]).
  */
 static VALUE
-ruby_guestfs_btrfs_subvolume_create (VALUE gv, VALUE destv)
+ruby_guestfs_btrfs_subvolume_create (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_subvolume_create");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE destv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *dest = StringValueCStr (destv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_btrfs_subvolume_create_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_subvolume_create_opts_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("qgroupid")));
+  if (v != Qnil) {
+    optargs_s.qgroupid = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK;
+  }
 
   int r;
 
-  r = guestfs_btrfs_subvolume_create (g, dest);
+  r = guestfs_btrfs_subvolume_create_opts_argv (g, dest, optargs);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -3141,33 +3163,63 @@ ruby_guestfs_btrfs_subvolume_set_default (VALUE gv, VALUE idv, VALUE fsv)
 
 /*
  * call-seq:
- *   g.btrfs_subvolume_snapshot(source, dest) -> nil
+ *   g.btrfs_subvolume_snapshot(source, dest, {optargs...}) -> nil
  *
- * create a writable btrfs snapshot
+ * create a btrfs snapshot
  *
- * Create a writable snapshot of the btrfs subvolume
- * "source". The "dest" argument is the destination
- * directory and the name of the snapshot, in the form
- * "/path/to/dest/name".
+ * Create a snapshot of the btrfs subvolume "source". The
+ * "dest" argument is the destination directory and the
+ * name of the snapshot, in the form "/path/to/dest/name".
+ * By default the newly created snapshot is writable, if
+ * the value of optional parameter "ro" is true, then a
+ * readonly snapshot is created. The optional parameter
+ * "qgroupid" represents the qgroup which the newly created
+ * snapshot will be added to.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_btrfs_subvolume_snapshot+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_snapshot]).
  */
 static VALUE
-ruby_guestfs_btrfs_subvolume_snapshot (VALUE gv, VALUE sourcev, VALUE destv)
+ruby_guestfs_btrfs_subvolume_snapshot (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_subvolume_snapshot");
 
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE sourcev = argv[0];
+  volatile VALUE destv = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
+
   const char *source = StringValueCStr (sourcev);
   const char *dest = StringValueCStr (destv);
 
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("ro")));
+  if (v != Qnil) {
+    optargs_s.ro = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("qgroupid")));
+  if (v != Qnil) {
+    optargs_s.qgroupid = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK;
+  }
+
   int r;
 
-  r = guestfs_btrfs_subvolume_snapshot (g, source, dest);
+  r = guestfs_btrfs_subvolume_snapshot_opts_argv (g, source, dest, optargs);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -26409,7 +26461,9 @@ Init__guestfs (void)
   rb_define_method (c_guestfs, "btrfs_set_seeding",
         ruby_guestfs_btrfs_set_seeding, 2);
   rb_define_method (c_guestfs, "btrfs_subvolume_create",
-        ruby_guestfs_btrfs_subvolume_create, 1);
+        ruby_guestfs_btrfs_subvolume_create, -1);
+  rb_define_method (c_guestfs, "btrfs_subvolume_create_opts",
+        ruby_guestfs_btrfs_subvolume_create, -1);
   rb_define_method (c_guestfs, "btrfs_subvolume_delete",
         ruby_guestfs_btrfs_subvolume_delete, 1);
   rb_define_method (c_guestfs, "btrfs_subvolume_list",
@@ -26417,7 +26471,9 @@ Init__guestfs (void)
   rb_define_method (c_guestfs, "btrfs_subvolume_set_default",
         ruby_guestfs_btrfs_subvolume_set_default, 2);
   rb_define_method (c_guestfs, "btrfs_subvolume_snapshot",
-        ruby_guestfs_btrfs_subvolume_snapshot, 2);
+        ruby_guestfs_btrfs_subvolume_snapshot, -1);
+  rb_define_method (c_guestfs, "btrfs_subvolume_snapshot_opts",
+        ruby_guestfs_btrfs_subvolume_snapshot, -1);
   rb_define_method (c_guestfs, "canonical_device_name",
         ruby_guestfs_canonical_device_name, 1);
   rb_define_method (c_guestfs, "cap_get_file",

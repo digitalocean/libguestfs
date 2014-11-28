@@ -1056,10 +1056,16 @@ a btrfs filesystem.
 
 =head2 btrfs-subvolume-create
 
- btrfs-subvolume-create dest
+=head2 btrfs-subvolume-create-opts
+
+ btrfs-subvolume-create dest [qgroupid:..]
 
 Create a btrfs subvolume.  The C<dest> argument is the destination
 directory and the name of the subvolume, in the form C</path/to/dest/name>.
+The optional parameter C<qgroupid> represents the qgroup which the newly
+created subvolume will be added to.
+
+This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 
 =head2 btrfs-subvolume-delete
 
@@ -1084,11 +1090,19 @@ get a list of subvolumes.
 
 =head2 btrfs-subvolume-snapshot
 
- btrfs-subvolume-snapshot source dest
+=head2 btrfs-subvolume-snapshot-opts
 
-Create a writable snapshot of the btrfs subvolume C<source>.
+ btrfs-subvolume-snapshot source dest [ro:true|false] [qgroupid:..]
+
+Create a snapshot of the btrfs subvolume C<source>.
 The C<dest> argument is the destination directory and the name
-of the snapshot, in the form C</path/to/dest/name>.
+of the snapshot, in the form C</path/to/dest/name>. By default
+the newly created snapshot is writable, if the value of optional
+parameter C<ro> is true, then a readonly snapshot is created. The
+optional parameter C<qgroupid> represents the qgroup which the
+newly created snapshot will be added to.
+
+This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 
 =head2 canonical-device-name
 

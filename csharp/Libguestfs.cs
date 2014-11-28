@@ -1113,7 +1113,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_btrfs_subvolume_create (IntPtr h, [In] string dest);
+    static extern int guestfs_btrfs_subvolume_create_opts_argv (IntPtr h, [In] string dest, void *);
 
     /// <summary>
     /// create a btrfs subvolume
@@ -1121,9 +1121,14 @@ namespace Guestfs
     public void btrfs_subvolume_create (string dest)
     {
       int r;
-      r = guestfs_btrfs_subvolume_create (_handle, dest);
+      r = guestfs_btrfs_subvolume_create_opts_argv (_handle, dest, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
+    }
+
+    public void btrfs_subvolume_create_opts (string dest)
+    {
+      btrfs_subvolume_create (dest);
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -1170,17 +1175,22 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_btrfs_subvolume_snapshot (IntPtr h, [In] string source, [In] string dest);
+    static extern int guestfs_btrfs_subvolume_snapshot_opts_argv (IntPtr h, [In] string source, [In] string dest, void *);
 
     /// <summary>
-    /// create a writable btrfs snapshot
+    /// create a btrfs snapshot
     /// </summary>
     public void btrfs_subvolume_snapshot (string source, string dest)
     {
       int r;
-      r = guestfs_btrfs_subvolume_snapshot (_handle, source, dest);
+      r = guestfs_btrfs_subvolume_snapshot_opts_argv (_handle, source, dest, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
+    }
+
+    public void btrfs_subvolume_snapshot_opts (string source, string dest)
+    {
+      btrfs_subvolume_snapshot (source, dest);
     }
 
     [DllImport ("libguestfs.so.0")]

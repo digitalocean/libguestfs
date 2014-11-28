@@ -5028,10 +5028,17 @@ guestfs_set_e2attrs_argv (guestfs_h *g,
 }
 
 GUESTFS_DLL_PUBLIC int
-guestfs_btrfs_subvolume_snapshot (guestfs_h *g,
-                                  const char *source,
-                                  const char *dest)
+guestfs_btrfs_subvolume_snapshot_opts_argv (guestfs_h *g,
+                                            const char *source,
+                                            const char *dest,
+                                            const struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs)
 {
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv optargs_null;
+  if (!optargs) {
+    optargs_null.bitmask = 0;
+    optargs = &optargs_null;
+  }
+
   struct guestfs_btrfs_subvolume_snapshot_args args;
   guestfs_message_header hdr;
   guestfs_message_error err;
@@ -5046,12 +5053,24 @@ guestfs_btrfs_subvolume_snapshot (guestfs_h *g,
                                     "btrfs_subvolume_snapshot", 24);
   if (source == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "btrfs_subvolume_snapshot", "source");
+           "btrfs_subvolume_snapshot_opts", "source");
     return -1;
   }
   if (dest == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "btrfs_subvolume_snapshot", "dest");
+           "btrfs_subvolume_snapshot_opts", "dest");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK) &&
+      optargs->qgroupid == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "btrfs_subvolume_snapshot_opts", "qgroupid");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffffc)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "btrfs_subvolume_snapshot_opts", "btrfs_subvolume_snapshot_opts");
     return -1;
   }
 
@@ -5060,6 +5079,12 @@ guestfs_btrfs_subvolume_snapshot (guestfs_h *g,
     fprintf (trace_buffer.fp, "%s", "btrfs_subvolume_snapshot");
     fprintf (trace_buffer.fp, " \"%s\"", source);
     fprintf (trace_buffer.fp, " \"%s\"", dest);
+    if (optargs->bitmask & GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "ro", optargs->ro ? "true" : "false");
+    }
+    if (optargs->bitmask & GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "qgroupid", optargs->qgroupid);
+    }
     guestfs___trace_send_line (g, &trace_buffer);
   }
 
@@ -5072,8 +5097,18 @@ guestfs_btrfs_subvolume_snapshot (guestfs_h *g,
 
   args.source = (char *) source;
   args.dest = (char *) dest;
+  if (optargs->bitmask & GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO_BITMASK) {
+    args.ro = optargs->ro;
+  } else {
+    args.ro = 0;
+  }
+  if (optargs->bitmask & GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK) {
+    args.qgroupid = (char *) optargs->qgroupid;
+  } else {
+    args.qgroupid = (char *) "";
+  }
   serial = guestfs___send (g, GUESTFS_PROC_BTRFS_SUBVOLUME_SNAPSHOT,
-                           progress_hint, 0,
+                           progress_hint, optargs->bitmask,
                            (xdrproc_t) xdr_guestfs_btrfs_subvolume_snapshot_args, (char *) &args);
   if (serial == -1) {
     if (trace_flag)
@@ -5131,9 +5166,16 @@ guestfs_btrfs_subvolume_snapshot (guestfs_h *g,
 }
 
 GUESTFS_DLL_PUBLIC int
-guestfs_btrfs_subvolume_create (guestfs_h *g,
-                                const char *dest)
+guestfs_btrfs_subvolume_create_opts_argv (guestfs_h *g,
+                                          const char *dest,
+                                          const struct guestfs_btrfs_subvolume_create_opts_argv *optargs)
 {
+  struct guestfs_btrfs_subvolume_create_opts_argv optargs_null;
+  if (!optargs) {
+    optargs_null.bitmask = 0;
+    optargs = &optargs_null;
+  }
+
   struct guestfs_btrfs_subvolume_create_args args;
   guestfs_message_header hdr;
   guestfs_message_error err;
@@ -5148,7 +5190,19 @@ guestfs_btrfs_subvolume_create (guestfs_h *g,
                                     "btrfs_subvolume_create", 22);
   if (dest == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "btrfs_subvolume_create", "dest");
+           "btrfs_subvolume_create_opts", "dest");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK) &&
+      optargs->qgroupid == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "btrfs_subvolume_create_opts", "qgroupid");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffffe)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "btrfs_subvolume_create_opts", "btrfs_subvolume_create_opts");
     return -1;
   }
 
@@ -5156,6 +5210,9 @@ guestfs_btrfs_subvolume_create (guestfs_h *g,
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "btrfs_subvolume_create");
     fprintf (trace_buffer.fp, " \"%s\"", dest);
+    if (optargs->bitmask & GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "qgroupid", optargs->qgroupid);
+    }
     guestfs___trace_send_line (g, &trace_buffer);
   }
 
@@ -5167,8 +5224,13 @@ guestfs_btrfs_subvolume_create (guestfs_h *g,
   }
 
   args.dest = (char *) dest;
+  if (optargs->bitmask & GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK) {
+    args.qgroupid = (char *) optargs->qgroupid;
+  } else {
+    args.qgroupid = (char *) "";
+  }
   serial = guestfs___send (g, GUESTFS_PROC_BTRFS_SUBVOLUME_CREATE,
-                           progress_hint, 0,
+                           progress_hint, optargs->bitmask,
                            (xdrproc_t) xdr_guestfs_btrfs_subvolume_create_args, (char *) &args);
   if (serial == -1) {
     if (trace_flag)

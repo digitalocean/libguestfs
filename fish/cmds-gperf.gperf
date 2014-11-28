@@ -685,6 +685,7 @@ btrfs_set_seeding, &btrfs_set_seeding_cmd_entry
 btrfs-set-seeding, &btrfs_set_seeding_cmd_entry
 btrfs_subvolume_create, &btrfs_subvolume_create_cmd_entry
 btrfs-subvolume-create, &btrfs_subvolume_create_cmd_entry
+btrfs-subvolume-create-opts, &btrfs_subvolume_create_cmd_entry
 btrfs_subvolume_delete, &btrfs_subvolume_delete_cmd_entry
 btrfs-subvolume-delete, &btrfs_subvolume_delete_cmd_entry
 btrfs_subvolume_list, &btrfs_subvolume_list_cmd_entry
@@ -693,6 +694,7 @@ btrfs_subvolume_set_default, &btrfs_subvolume_set_default_cmd_entry
 btrfs-subvolume-set-default, &btrfs_subvolume_set_default_cmd_entry
 btrfs_subvolume_snapshot, &btrfs_subvolume_snapshot_cmd_entry
 btrfs-subvolume-snapshot, &btrfs_subvolume_snapshot_cmd_entry
+btrfs-subvolume-snapshot-opts, &btrfs_subvolume_snapshot_cmd_entry
 canonical_device_name, &canonical_device_name_cmd_entry
 canonical-device-name, &canonical_device_name_cmd_entry
 cap_get_file, &cap_get_file_cmd_entry

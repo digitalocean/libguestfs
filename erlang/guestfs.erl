@@ -75,11 +75,13 @@
 -export([btrfs_filesystem_sync/2]).
 -export([btrfs_fsck/2, btrfs_fsck/3]).
 -export([btrfs_set_seeding/3]).
--export([btrfs_subvolume_create/2]).
+-export([btrfs_subvolume_create/2, btrfs_subvolume_create/3]).
+-export([btrfs_subvolume_create_opts/2, btrfs_subvolume_create_opts/3]).
 -export([btrfs_subvolume_delete/2]).
 -export([btrfs_subvolume_list/2]).
 -export([btrfs_subvolume_set_default/3]).
--export([btrfs_subvolume_snapshot/3]).
+-export([btrfs_subvolume_snapshot/3, btrfs_subvolume_snapshot/4]).
+-export([btrfs_subvolume_snapshot_opts/3, btrfs_subvolume_snapshot_opts/4]).
 -export([canonical_device_name/2]).
 -export([cap_get_file/2]).
 -export([cap_set_file/3]).
@@ -793,8 +795,14 @@ btrfs_fsck(G, Device) ->
 btrfs_set_seeding(G, Device, Seeding) ->
   call_port(G, {btrfs_set_seeding, Device, Seeding}).
 
+btrfs_subvolume_create(G, Dest, Optargs) ->
+  call_port(G, {btrfs_subvolume_create, Dest, Optargs}).
 btrfs_subvolume_create(G, Dest) ->
-  call_port(G, {btrfs_subvolume_create, Dest}).
+  btrfs_subvolume_create(G, Dest, []).
+btrfs_subvolume_create_opts(G, Dest, Optargs) ->
+  btrfs_subvolume_create(G, Dest, Optargs).
+btrfs_subvolume_create_opts(G, Dest) ->
+  btrfs_subvolume_create(G, Dest).
 
 btrfs_subvolume_delete(G, Subvolume) ->
   call_port(G, {btrfs_subvolume_delete, Subvolume}).
@@ -805,8 +813,14 @@ btrfs_subvolume_list(G, Fs) ->
 btrfs_subvolume_set_default(G, Id, Fs) ->
   call_port(G, {btrfs_subvolume_set_default, Id, Fs}).
 
+btrfs_subvolume_snapshot(G, Source, Dest, Optargs) ->
+  call_port(G, {btrfs_subvolume_snapshot, Source, Dest, Optargs}).
 btrfs_subvolume_snapshot(G, Source, Dest) ->
-  call_port(G, {btrfs_subvolume_snapshot, Source, Dest}).
+  btrfs_subvolume_snapshot(G, Source, Dest, []).
+btrfs_subvolume_snapshot_opts(G, Source, Dest, Optargs) ->
+  btrfs_subvolume_snapshot(G, Source, Dest, Optargs).
+btrfs_subvolume_snapshot_opts(G, Source, Dest) ->
+  btrfs_subvolume_snapshot(G, Source, Dest).
 
 canonical_device_name(G, Device) ->
   call_port(G, {canonical_device_name, Device}).

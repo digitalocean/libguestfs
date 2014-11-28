@@ -2281,6 +2281,8 @@ struct guestfs_set_e2generation_args {
 struct guestfs_btrfs_subvolume_snapshot_args {
   string source<>;
   string dest<>;
+  bool ro;
+  string qgroupid<>;
 };
 
 struct guestfs_btrfs_subvolume_delete_args {
@@ -2289,6 +2291,7 @@ struct guestfs_btrfs_subvolume_delete_args {
 
 struct guestfs_btrfs_subvolume_create_args {
   string dest<>;
+  string qgroupid<>;
 };
 
 struct guestfs_btrfs_subvolume_list_args {

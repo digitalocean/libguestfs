@@ -1557,12 +1557,55 @@ This function returns 0 on success or -1 on error.
  guestfs_btrfs_subvolume_create (guestfs_h *g,
                                  const char *dest);
 
+This function is provided for backwards compatibility
+with earlier versions of libguestfs.  It simply calls
+L</guestfs_btrfs_subvolume_create_opts> with no optional arguments.
+
+(Added in 1.17.35)
+
+
+=head2 guestfs_btrfs_subvolume_create_opts
+
+ int
+ guestfs_btrfs_subvolume_create_opts (guestfs_h *g,
+                                      const char *dest,
+                                      ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID, const char *qgroupid,
+
 Create a btrfs subvolume.  The C<dest> argument is the destination
 directory and the name of the subvolume, in the form C</path/to/dest/name>.
+The optional parameter C<qgroupid> represents the qgroup which the newly
+created subvolume will be added to.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.17.35)
+=head2 guestfs_btrfs_subvolume_create_opts_va
+
+ int
+ guestfs_btrfs_subvolume_create_opts_va (guestfs_h *g,
+                                         const char *dest,
+                                         va_list args);
+
+This is the "va_list variant" of L</guestfs_btrfs_subvolume_create_opts>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_btrfs_subvolume_create_opts_argv
+
+ int
+ guestfs_btrfs_subvolume_create_opts_argv (guestfs_h *g,
+                                           const char *dest,
+                                           const struct guestfs_btrfs_subvolume_create_opts_argv *optargs);
+
+This is the "argv variant" of L</guestfs_btrfs_subvolume_create_opts>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_btrfs_subvolume_delete
 
@@ -1613,13 +1656,62 @@ This function returns 0 on success or -1 on error.
                                    const char *source,
                                    const char *dest);
 
-Create a writable snapshot of the btrfs subvolume C<source>.
+This function is provided for backwards compatibility
+with earlier versions of libguestfs.  It simply calls
+L</guestfs_btrfs_subvolume_snapshot_opts> with no optional arguments.
+
+(Added in 1.17.35)
+
+
+=head2 guestfs_btrfs_subvolume_snapshot_opts
+
+ int
+ guestfs_btrfs_subvolume_snapshot_opts (guestfs_h *g,
+                                        const char *source,
+                                        const char *dest,
+                                        ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO, int ro,
+ GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID, const char *qgroupid,
+
+Create a snapshot of the btrfs subvolume C<source>.
 The C<dest> argument is the destination directory and the name
-of the snapshot, in the form C</path/to/dest/name>.
+of the snapshot, in the form C</path/to/dest/name>. By default
+the newly created snapshot is writable, if the value of optional
+parameter C<ro> is true, then a readonly snapshot is created. The
+optional parameter C<qgroupid> represents the qgroup which the
+newly created snapshot will be added to.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.17.35)
+=head2 guestfs_btrfs_subvolume_snapshot_opts_va
+
+ int
+ guestfs_btrfs_subvolume_snapshot_opts_va (guestfs_h *g,
+                                           const char *source,
+                                           const char *dest,
+                                           va_list args);
+
+This is the "va_list variant" of L</guestfs_btrfs_subvolume_snapshot_opts>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_btrfs_subvolume_snapshot_opts_argv
+
+ int
+ guestfs_btrfs_subvolume_snapshot_opts_argv (guestfs_h *g,
+                                             const char *source,
+                                             const char *dest,
+                                             const struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs);
+
+This is the "argv variant" of L</guestfs_btrfs_subvolume_snapshot_opts>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_canonical_device_name
 

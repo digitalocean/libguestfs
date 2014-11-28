@@ -31,6 +31,8 @@
       <sub name="GuestfsAddDriveScratch" link="GuestfsAddDriveScratch.html"/>
       <sub name="GuestfsBTRFSFilesystemResize" link="GuestfsBTRFSFilesystemResize.html"/>
       <sub name="GuestfsBtrfsFsck" link="GuestfsBtrfsFsck.html"/>
+      <sub name="GuestfsBTRFSSubvolumeCreate" link="GuestfsBTRFSSubvolumeCreate.html"/>
+      <sub name="GuestfsBTRFSSubvolumeSnapshot" link="GuestfsBTRFSSubvolumeSnapshot.html"/>
       <sub name="GuestfsCompressDeviceOut" link="GuestfsCompressDeviceOut.html"/>
       <sub name="GuestfsCompressOut" link="GuestfsCompressOut.html"/>
       <sub name="GuestfsCopyAttributes" link="GuestfsCopyAttributes.html"/>
@@ -713,6 +715,15 @@
     <keyword type="struct" name="struct GuestfsBtrfsFsckClass" link="GuestfsBtrfsFsck.html#GuestfsBtrfsFsckClass"/>
     <keyword type="property" name="The “repair” property" link="GuestfsBtrfsFsck.html#GuestfsBtrfsFsck--repair"/>
     <keyword type="property" name="The “superblock” property" link="GuestfsBtrfsFsck.html#GuestfsBtrfsFsck--superblock"/>
+    <keyword type="function" name="guestfs_btrfs_subvolume_create_new ()" link="GuestfsBTRFSSubvolumeCreate.html#guestfs-btrfs-subvolume-create-new"/>
+    <keyword type="struct" name="struct GuestfsBTRFSSubvolumeCreate" link="GuestfsBTRFSSubvolumeCreate.html#GuestfsBTRFSSubvolumeCreate-struct"/>
+    <keyword type="struct" name="struct GuestfsBTRFSSubvolumeCreateClass" link="GuestfsBTRFSSubvolumeCreate.html#GuestfsBTRFSSubvolumeCreateClass"/>
+    <keyword type="property" name="The “qgroupid” property" link="GuestfsBTRFSSubvolumeCreate.html#GuestfsBTRFSSubvolumeCreate--qgroupid"/>
+    <keyword type="function" name="guestfs_btrfs_subvolume_snapshot_new ()" link="GuestfsBTRFSSubvolumeSnapshot.html#guestfs-btrfs-subvolume-snapshot-new"/>
+    <keyword type="struct" name="struct GuestfsBTRFSSubvolumeSnapshot" link="GuestfsBTRFSSubvolumeSnapshot.html#GuestfsBTRFSSubvolumeSnapshot-struct"/>
+    <keyword type="struct" name="struct GuestfsBTRFSSubvolumeSnapshotClass" link="GuestfsBTRFSSubvolumeSnapshot.html#GuestfsBTRFSSubvolumeSnapshotClass"/>
+    <keyword type="property" name="The “qgroupid” property" link="GuestfsBTRFSSubvolumeSnapshot.html#GuestfsBTRFSSubvolumeSnapshot--qgroupid"/>
+    <keyword type="property" name="The “ro” property" link="GuestfsBTRFSSubvolumeSnapshot.html#GuestfsBTRFSSubvolumeSnapshot--ro"/>
     <keyword type="function" name="guestfs_compress_device_out_new ()" link="GuestfsCompressDeviceOut.html#guestfs-compress-device-out-new"/>
     <keyword type="struct" name="struct GuestfsCompressDeviceOut" link="GuestfsCompressDeviceOut.html#GuestfsCompressDeviceOut-struct"/>
     <keyword type="struct" name="struct GuestfsCompressDeviceOutClass" link="GuestfsCompressDeviceOut.html#GuestfsCompressDeviceOutClass"/>

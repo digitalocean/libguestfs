@@ -2745,9 +2745,13 @@ PHP_FUNCTION (guestfs_btrfs_subvolume_create)
   guestfs_h *g;
   char *dest;
   int dest_size;
+  struct guestfs_btrfs_subvolume_create_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_subvolume_create_opts_argv *optargs = &optargs_s;
+  char *optargs_t_qgroupid = NULL;
+  int optargs_t_qgroupid_size = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
-        &z_g, &dest, &dest_size) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|s",
+        &z_g, &dest, &dest_size, &optargs_t_qgroupid, &optargs_t_qgroupid_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -2762,8 +2766,13 @@ PHP_FUNCTION (guestfs_btrfs_subvolume_create)
     RETURN_FALSE;
   }
 
+  if (optargs_t_qgroupid != NULL) {
+    optargs_s.qgroupid = optargs_t_qgroupid;
+    optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK;
+  }
+
   int r;
-  r = guestfs_btrfs_subvolume_create (g, dest);
+  r = guestfs_btrfs_subvolume_create_opts_argv (g, dest, optargs);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -2891,9 +2900,14 @@ PHP_FUNCTION (guestfs_btrfs_subvolume_snapshot)
   int source_size;
   char *dest;
   int dest_size;
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs = &optargs_s;
+  zend_bool optargs_t_ro = -1;
+  char *optargs_t_qgroupid = NULL;
+  int optargs_t_qgroupid_size = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss",
-        &z_g, &source, &source_size, &dest, &dest_size) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss|bs",
+        &z_g, &source, &source_size, &dest, &dest_size, &optargs_t_ro, &optargs_t_qgroupid, &optargs_t_qgroupid_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -2913,8 +2927,17 @@ PHP_FUNCTION (guestfs_btrfs_subvolume_snapshot)
     RETURN_FALSE;
   }
 
+  if (optargs_t_ro != (zend_bool)-1) {
+    optargs_s.ro = optargs_t_ro;
+    optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO_BITMASK;
+  }
+  if (optargs_t_qgroupid != NULL) {
+    optargs_s.qgroupid = optargs_t_qgroupid;
+    optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK;
+  }
+
   int r;
-  r = guestfs_btrfs_subvolume_snapshot (g, source, dest);
+  r = guestfs_btrfs_subvolume_snapshot_opts_argv (g, source, dest, optargs);
 
   if (r == -1) {
     RETURN_FALSE;

@@ -1020,6 +1020,19 @@ extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_set_seeding (guestfs_h *g, const cha
 #define GUESTFS_HAVE_BTRFS_SUBVOLUME_CREATE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_subvolume_create (guestfs_h *g, const char *dest);
 
+#define GUESTFS_HAVE_BTRFS_SUBVOLUME_CREATE_OPTS 1
+#define GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID 0
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_subvolume_create_opts (guestfs_h *g, const char *dest, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_subvolume_create_opts_va (guestfs_h *g, const char *dest, va_list args);
+
+struct guestfs_btrfs_subvolume_create_opts_argv {
+  uint64_t bitmask;
+# define GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK (UINT64_C(1)<<0)
+  const char *qgroupid;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_subvolume_create_opts_argv (guestfs_h *g, const char *dest, const struct guestfs_btrfs_subvolume_create_opts_argv *optargs);
+
 #define GUESTFS_HAVE_BTRFS_SUBVOLUME_DELETE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_subvolume_delete (guestfs_h *g, const char *subvolume);
 
@@ -1031,6 +1044,22 @@ extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_subvolume_set_default (guestfs_h *g,
 
 #define GUESTFS_HAVE_BTRFS_SUBVOLUME_SNAPSHOT 1
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_subvolume_snapshot (guestfs_h *g, const char *source, const char *dest);
+
+#define GUESTFS_HAVE_BTRFS_SUBVOLUME_SNAPSHOT_OPTS 1
+#define GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO 0
+#define GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_subvolume_snapshot_opts (guestfs_h *g, const char *source, const char *dest, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_subvolume_snapshot_opts_va (guestfs_h *g, const char *source, const char *dest, va_list args);
+
+struct guestfs_btrfs_subvolume_snapshot_opts_argv {
+  uint64_t bitmask;
+# define GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO_BITMASK (UINT64_C(1)<<0)
+  int ro;
+# define GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK (UINT64_C(1)<<1)
+  const char *qgroupid;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_subvolume_snapshot_opts_argv (guestfs_h *g, const char *source, const char *dest, const struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs);
 
 #define GUESTFS_HAVE_CANONICAL_DEVICE_NAME 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_canonical_device_name (guestfs_h *g, const char *device);

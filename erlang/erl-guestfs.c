@@ -1567,9 +1567,29 @@ static ETERM *
 run_btrfs_subvolume_create (ETERM *message)
 {
   CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_btrfs_subvolume_create_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_subvolume_create_opts_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "qgroupid")) {
+      optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK;
+      optargs_s.qgroupid = erl_iolist_to_string (hd_value);
+    }
+    else
+      return unknown_optarg ("btrfs_subvolume_create", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
   int r;
 
-  r = guestfs_btrfs_subvolume_create (g, dest);
+  r = guestfs_btrfs_subvolume_create_opts_argv (g, dest, optargs);
+  if ((optargs_s.bitmask & GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK))
+    free ((char *) optargs_s.qgroupid);
   if (r == -1)
     return make_error ("btrfs_subvolume_create");
 
@@ -1623,9 +1643,34 @@ run_btrfs_subvolume_snapshot (ETERM *message)
 {
   CLEANUP_FREE char *source = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
+
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (2);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "ro")) {
+      optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO_BITMASK;
+      optargs_s.ro = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "qgroupid")) {
+      optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK;
+      optargs_s.qgroupid = erl_iolist_to_string (hd_value);
+    }
+    else
+      return unknown_optarg ("btrfs_subvolume_snapshot", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
   int r;
 
-  r = guestfs_btrfs_subvolume_snapshot (g, source, dest);
+  r = guestfs_btrfs_subvolume_snapshot_opts_argv (g, source, dest, optargs);
+  if ((optargs_s.bitmask & GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK))
+    free ((char *) optargs_s.qgroupid);
   if (r == -1)
     return make_error ("btrfs_subvolume_snapshot");
 

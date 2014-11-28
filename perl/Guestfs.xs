@@ -1178,13 +1178,34 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
-btrfs_subvolume_create (g, dest)
+btrfs_subvolume_create (g, dest, ...)
       guestfs_h *g;
       char *dest;
 PREINIT:
       int r;
+      struct guestfs_btrfs_subvolume_create_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_btrfs_subvolume_create_opts_argv *optargs = &optargs_s;
+      size_t items_i;
  PPCODE:
-      r = guestfs_btrfs_subvolume_create (g, dest);
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "qgroupid")) {
+          optargs_s.qgroupid = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_btrfs_subvolume_create_opts_argv (g, dest, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -1234,14 +1255,39 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
-btrfs_subvolume_snapshot (g, source, dest)
+btrfs_subvolume_snapshot (g, source, dest, ...)
       guestfs_h *g;
       char *source;
       char *dest;
 PREINIT:
       int r;
+      struct guestfs_btrfs_subvolume_snapshot_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs = &optargs_s;
+      size_t items_i;
  PPCODE:
-      r = guestfs_btrfs_subvolume_snapshot (g, source, dest);
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "ro")) {
+          optargs_s.ro = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO_BITMASK;
+        }
+        else if (STREQ (this_arg, "qgroupid")) {
+          optargs_s.qgroupid = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_btrfs_subvolume_snapshot_opts_argv (g, source, dest, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
