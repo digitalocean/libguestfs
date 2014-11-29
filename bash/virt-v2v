@@ -1,5 +1,5 @@
-# guestmount bash completion script -*- shell-script -*-
-# Copyright (C) 2010-2014 Red Hat Inc.
+# virt-v2v bash completion script -*- shell-script -*-
+# Copyright (C) 2014 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,53 +15,40 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# List all local libvirt domains.
-_guestfs_virsh_list ()
-{
-    local flag_ro=$1 flags
-
-    if [ "$flag_ro" -eq 1 ]; then
-        flags="--all"
-    else
-        flags="--inactive"
-    fi
-    virsh list $flags | head -n -1 | tail -n +3 | awk '{print $2}'
-}
-
-_guestmount ()
+_virt_v2v ()
 {
     local cur prev words cword split
-    local shortopts longopts flag_ro=0 c=1 word doms
+    local shortopts longopts items
 
     _init_completion -s || return
 
-    # See if user has specified certain options anywhere on the
-    # command line before the current word.
-    while [ $c -lt $COMP_CWORD ]; do
-        word="${COMP_WORDS[c]}"
-        case "$word" in
-            -r|--ro) flag_ro=1 ;;
-        esac
-        c=$((++c))
-    done
-
     case "$prev" in
-        -d|--domain)
-            doms=$(_guestfs_virsh_list "$flag_ro")
-            COMPREPLY=( $(compgen -W "$doms" -- "$cur") )
+        -i)
+            items="$(virt-v2v --machine-readable | awk -F':' '/input:/ {print $2;}')"
+            COMPREPLY=( $( compgen -W "$items" -- "$cur") )
+            return ;;
+        -o)
+            items="$(virt-v2v --machine-readable | awk -F':' '/output:/ {print $2;}')"
+            COMPREPLY=( $( compgen -W "$items" -- "$cur") )
+            return ;;
+        -oa)
+            COMPREPLY=( $( compgen -W "sparse preallocated" -- "$cur") )
+            return ;;
+        --vmtype)
+            COMPREPLY=( $( compgen -W "server desktop" -- "$cur") )
             return ;;
     esac
 
     case "$cur" in
         --*)
             # --options
-            longopts="$(guestmount --long-options)"
+            longopts="$(virt-v2v --long-options)"
             COMPREPLY=( $(compgen -W "$longopts" -- "$cur") )
             return ;;
         -*)
             # -o and --options
-            shortopts="$(guestmount --short-options)"
-            longopts="$(guestmount --long-options)"
+            shortopts="$(virt-v2v --short-options)"
+            longopts="$(virt-v2v --long-options)"
             COMPREPLY=( $(compgen -W "$shortopts $longopts" -- "$cur") )
             return ;;
         *)
@@ -69,4 +56,4 @@ _guestmount ()
             return ;;
     esac
 } &&
-complete -o default -F _guestmount guestmount
+complete -o default -F _virt_v2v virt-v2v

@@ -1,3 +1,116 @@
+commit 3a5613eb22bd9d10818fb0ee98c388b904638aad
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Nov 28 19:51:47 2014 +0000
+
+    Version 1.29.12.
+
+commit 4a63cddae4a597dd6d34d9d817ab85a70e84a548
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Nov 28 19:50:56 2014 +0000
+
+    Add HACKING file to EXTRA_DIST.
+    
+    Updates commit 3d3694610fc353ae28c9cf88ff105a04da108c4a.
+
+commit d0a676c91c842d2226660b51ebbecd5c4835167e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Nov 28 14:43:11 2014 +0000
+
+    lib: Add COMPILE_REGEXP macro to hide regexp constructors/destructors.
+
+commit 282132c58bc81216a391fc62c28fc6f01b8c8fb6
+Author: Nikos Skalkotos <skalkoto@grnet.gr>
+Date:   Thu Nov 27 18:30:33 2014 +0200
+
+    inspect: Fix a bug in the *BSD root detection
+    
+    The assumption that Linux will map the MBR partition to /dev/sda1
+    and the BSD 'a' partition to /dev/sda5 is not always correct.
+    
+    Signed-off-by: Nikos Skalkotos <skalkoto@grnet.gr>
+
+commit b53ba64a26af802413463b089b2cb3365a12b772
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Nov 28 15:58:07 2014 +0800
+
+    uuid: make alias get-uuid for vfs_uuid
+    
+    Because get-uuid looks more like a counterpart to set-uuid, and is
+    more likely come to mind if one knows set-uuid.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 45266e3d49d347d596dd92c5542ffd6fad2c8fd5
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Nov 28 15:58:06 2014 +0800
+
+    uuid: cannot change btrfs filesystem's UUID
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 95644f33cd51e37467ba32086e7b1ee01bd21dfe
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Nov 28 15:58:05 2014 +0800
+
+    uuid: add support to change uuid of swap partition
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 196813ea7466c54d26f71ff1760b433bdc29c081
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 27 17:40:52 2014 +0000
+
+    v2v: Fix command line --help output for --no-trim option.
+
+commit 6faa7b4c844df0357f27326d88e50a3f15bbee48
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Nov 26 11:28:24 2014 +0100
+
+    bash: add a completion module for virt-v2v
+
+commit e3834188a9c7a4e91025ef93e5246894c10b4c2c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Nov 25 20:08:46 2014 +0100
+
+    bash: complete some params for resize, sparsify, and builder
+    
+    Hardcode the list of fixed arguments for some of the parameters of these
+    tools.
+
+commit 1784cd26330481814916e3bd961f9d66030aac46
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Nov 25 18:36:14 2014 +0100
+
+    bash: complete also short options
+    
+    Propose both short and long options when trying to complete a single
+    dash ("-").
+
+commit 4b792354f068b80a01782f85b71a471e3aa6f031
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Nov 25 18:15:37 2014 +0100
+
+    bash: execute --long-options only when needed
+    
+    Delay the execution of $tool --long-options only when really using its
+    output.
+
+commit b00adf3b78f47a5839842735f5031eccaaa309e1
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Nov 25 16:47:34 2014 +0100
+
+    tools: implement --short-options
+    
+    Just like --long-options, it makes it possible to know which short
+    options are supported by each tool; this can help improving the bash
+    completion, for example.
+
+commit 3d3694610fc353ae28c9cf88ff105a04da108c4a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 27 14:39:31 2014 +0000
+
+    p2v: Add HACKING file.
+
 commit 7ee6977f7ea6f8c6b710b2b41ac61eaf8b069677
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Nov 26 16:15:40 2014 +0000

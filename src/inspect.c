@@ -32,10 +32,16 @@
 #include <endian.h>
 #endif
 
+#include "ignore-value.h"
+
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
+
+COMPILE_REGEXP (re_primary_partition, "^/dev/(?:h|s|v)d.[1234]$", 0)
+
+static void check_for_duplicated_bsd_root (guestfs_h *g);
 
 /* The main inspection code. */
 char **
@@ -64,6 +70,12 @@ guestfs__inspect_os (guestfs_h *g)
     }
   }
 
+  /* Check if the same filesystem was listed twice as root in g->fses.
+   * This may happen for the *BSD root partition where an MBR partition
+   * is a shadow of the real root partition probably /dev/sda5
+   */
+  check_for_duplicated_bsd_root (g);
+
   /* At this point we have, in the handle, a list of all filesystems
    * found and data about each one.  Now we assemble the list of
    * filesystems which are root devices and return that to the user.
@@ -73,6 +85,40 @@ guestfs__inspect_os (guestfs_h *g)
   if (ret == NULL)
     guestfs___free_inspect_info (g);
   return ret;
+}
+
+/* On *BSD systems, sometimes /dev/sda[1234] is a shadow of the real root
+ * filesystem that is probably /dev/sda5
+ * (see: http://www.freebsd.org/doc/handbook/disk-organization.html)
+ */
+static void
+check_for_duplicated_bsd_root (guestfs_h *g)
+{
+  size_t i;
+  struct inspect_fs *bsd_primary = NULL;
+
+  for (i = 0; i < g->nr_fses; ++i) {
+    bool is_bsd;
+    struct inspect_fs *fs = &g->fses[i];
+
+    is_bsd =
+      fs->type == OS_TYPE_FREEBSD ||
+      fs->type == OS_TYPE_NETBSD ||
+      fs->type == OS_TYPE_OPENBSD;
+
+    if (fs->is_root && is_bsd &&
+        match (g, fs->mountable, re_primary_partition)) {
+      bsd_primary = fs;
+      continue;
+    }
+
+    if (fs->is_root && bsd_primary && bsd_primary->type == fs->type) {
+      /* remove the is root flag from the bsd_primary */
+      bsd_primary->is_root = 0;
+      bsd_primary->format = OS_FORMAT_UNKNOWN;
+      return;
+    }
+  }
 }
 
 static int

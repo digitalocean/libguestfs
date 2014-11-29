@@ -7702,6 +7702,8 @@ the filesystem type.  For example a string such as C<ext3> or C<ntfs>.
 
 =head2 vfs-uuid
 
+=head2 get-uuid
+
  vfs-uuid mountable
 
 This returns the filesystem UUID of the filesystem on C<mountable>.

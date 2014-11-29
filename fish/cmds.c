@@ -3571,7 +3571,7 @@ struct command_entry vfs_type_cmd_entry = {
 
 struct command_entry vfs_uuid_cmd_entry = {
   .name = "vfs-uuid",
-  .help = "NAME\n    vfs-uuid - get the filesystem UUID\n\nSYNOPSIS\n     vfs-uuid mountable\n\nDESCRIPTION\n    This returns the filesystem UUID of the filesystem on \"mountable\".\n\n    If the filesystem does not have a UUID, this returns the empty string.\n\n    To find a filesystem from the UUID, use \"findfs_uuid\".\n\n",
+  .help = "NAME\n    vfs-uuid - get the filesystem UUID\n\nSYNOPSIS\n     vfs-uuid mountable\n\nDESCRIPTION\n    This returns the filesystem UUID of the filesystem on \"mountable\".\n\n    If the filesystem does not have a UUID, this returns the empty string.\n\n    To find a filesystem from the UUID, use \"findfs_uuid\".\n\n    You can use 'get-uuid' as an alias for this command.\n\n",
   .run = run_vfs_uuid
 };
 
@@ -3961,6 +3961,9 @@ list_commands (void)
   printf ("%-20s %s\n", "findfs-uuid", _("find a filesystem by UUID"));
   printf ("%-20s %s\n", "fsck", _("run the filesystem checker"));
   printf ("%-20s %s\n", "fstrim", _("trim free space in a filesystem"));
+  printf ("%-20s ", "get-uuid");
+  printf (_("alias for '%s'"), "vfs-uuid");
+  putchar ('\n');
   printf ("%-20s %s\n", "get-append", _("get the additional kernel options"));
   printf ("%-20s %s\n", "get-attach-method", _("get the backend"));
   printf ("%-20s %s\n", "get-autosync", _("get autosync mode"));

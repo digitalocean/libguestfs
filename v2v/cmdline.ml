@@ -154,12 +154,13 @@ let parse_cmdline () =
     "-ic",       Arg.Set_string input_conn, "uri " ^ s_"Libvirt URI";
     "-if",       Arg.Set_string input_format,
     "format " ^ s_"Input format (for -i disk)";
+    "--short-options", Arg.Unit display_short_options, " " ^ s_"List short options";
     "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
     "--machine-readable", Arg.Set machine_readable, " " ^ s_"Make output machine readable";
     "-n",        Arg.String add_network,    "in:out " ^ s_"Map network 'in' to 'out'";
     "--network", Arg.String add_network,    "in:out " ^ ditto;
     "--no-copy", Arg.Clear do_copy,         " " ^ s_"Just write the metadata";
-    "--no-trim", Arg.String set_no_trim,    "all|mp,mp,.." ^ s_"Don't trim selected mounts";
+    "--no-trim", Arg.String set_no_trim,    "all|mp,mp,.." ^ " " ^ s_"Don't trim selected mounts";
     "-o",        Arg.String set_output_mode, o_options ^ " " ^ s_"Set output mode (default: libvirt)";
     "-oa",       Arg.String set_output_alloc, "sparse|preallocated " ^ s_"Set output allocation mode";
     "-oc",       Arg.Set_string output_conn, "uri " ^ s_"Libvirt URI";

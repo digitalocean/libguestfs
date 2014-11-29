@@ -42,42 +42,7 @@
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 
-/* Compile all the regular expressions once when the shared library is
- * loaded.  PCRE is thread safe so we're supposedly OK here if
- * multiple threads call into the libguestfs API functions below
- * simultaneously.
- */
-static pcre *re_first_partition;
-static pcre *re_major_minor;
-
-static void compile_regexps (void) __attribute__((constructor));
-static void free_regexps (void) __attribute__((destructor));
-
-static void
-compile_regexps (void)
-{
-  const char *err;
-  int offset;
-
-#define COMPILE(re,pattern,options)                                     \
-  do {                                                                  \
-    re = pcre_compile ((pattern), (options), &err, &offset, NULL);      \
-    if (re == NULL) {                                                   \
-      ignore_value (write (2, err, strlen (err)));                      \
-      abort ();                                                         \
-    }                                                                   \
-  } while (0)
-
-  COMPILE (re_first_partition, "^/dev/(?:h|s|v)d.1$", 0);
-  COMPILE (re_major_minor, "(\\d+)\\.(\\d+)", 0);
-}
-
-static void
-free_regexps (void)
-{
-  pcre_free (re_first_partition);
-  pcre_free (re_major_minor);
-}
+COMPILE_REGEXP (re_major_minor, "(\\d+)\\.(\\d+)", 0)
 
 static int check_filesystem (guestfs_h *g, const char *mountable,
                              const struct guestfs_internal_mountable *m,
@@ -207,14 +172,6 @@ check_filesystem (guestfs_h *g, const char *mountable,
            is_dir_bin &&
            guestfs_is_file (g, "/etc/freebsd-update.conf") > 0 &&
            guestfs_is_file (g, "/etc/fstab") > 0) {
-    /* Ignore /dev/sda1 which is a shadow of the real root filesystem
-     * that is probably /dev/sda5 (see:
-     * http://www.freebsd.org/doc/handbook/disk-organization.html)
-     */
-    if (m->im_type == MOUNTABLE_DEVICE &&
-        match (g, m->im_device, re_first_partition))
-      return 0;
-
     fs->is_root = 1;
     fs->format = OS_FORMAT_INSTALLED;
     if (guestfs___check_freebsd_root (g, fs) == -1)
@@ -225,14 +182,6 @@ check_filesystem (guestfs_h *g, const char *mountable,
            guestfs_is_file (g, "/netbsd") > 0 &&
            guestfs_is_file (g, "/etc/fstab") > 0 &&
            guestfs_is_file (g, "/etc/release") > 0) {
-    /* Ignore /dev/sda1 which is a shadow of the real root filesystem
-     * that is probably /dev/sda5 (see:
-     * http://www.freebsd.org/doc/handbook/disk-organization.html)
-     */
-    if (m->im_type == MOUNTABLE_DEVICE &&
-        match (g, m->im_device, re_first_partition))
-      return 0;
-
     fs->is_root = 1;
     fs->format = OS_FORMAT_INSTALLED;
     if (guestfs___check_netbsd_root (g, fs) == -1)

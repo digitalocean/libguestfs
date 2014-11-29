@@ -1491,6 +1491,7 @@ vfs_type, &vfs_type_cmd_entry
 vfs-type, &vfs_type_cmd_entry
 vfs_uuid, &vfs_uuid_cmd_entry
 vfs-uuid, &vfs_uuid_cmd_entry
+get-uuid, &vfs_uuid_cmd_entry
 vg_activate, &vg_activate_cmd_entry
 vg-activate, &vg_activate_cmd_entry
 vg_activate_all, &vg_activate_all_cmd_entry
