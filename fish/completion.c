@@ -586,6 +586,7 @@ static const char *const commands[] = {
   "vfs-label",
   "vfs-type",
   "vfs-uuid",
+  "get-uuid",
   "vg-activate",
   "vg-activate-all",
   "vgchange-uuid",

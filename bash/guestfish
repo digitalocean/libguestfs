@@ -31,11 +31,9 @@ _guestfs_virsh_list ()
 _guestfish ()
 {
     local cur prev words cword split
-    local longopts flag_ro=0 c=1 word cmds doms
+    local shortopts longopts flag_ro=0 c=1 word cmds doms
 
     _init_completion -s || return
-
-    longopts="$(guestfish --long-options)"
 
     # See if user has specified certain options anywhere on the
     # command line before the current word.
@@ -60,7 +58,14 @@ _guestfish ()
     case "$cur" in
         --*)
             # --options
+            longopts="$(guestfish --long-options)"
             COMPREPLY=( $(compgen -W "$longopts" -- "$cur") )
+            return ;;
+        -*)
+            # -o and --options
+            shortopts="$(guestfish --short-options)"
+            longopts="$(guestfish --long-options)"
+            COMPREPLY=( $(compgen -W "$shortopts $longopts" -- "$cur") )
             return ;;
         *)
             # Might be a guestfish command.

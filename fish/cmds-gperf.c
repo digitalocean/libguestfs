@@ -580,7 +580,7 @@ extern struct command_entry zgrepi_cmd_entry;
 #line 578 "cmds-gperf.gperf"
 struct command_table;
 
-#define TOTAL_KEYWORDS 965
+#define TOTAL_KEYWORDS 966
 #define MIN_WORD_LENGTH 2
 #define MAX_WORD_LENGTH 42
 #define MIN_HASH_VALUE 4
@@ -1302,7 +1302,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
 #line 1357 "cmds-gperf.gperf"
       {"set_label", &set_label_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1508 "cmds-gperf.gperf"
+#line 1509 "cmds-gperf.gperf"
       {"vgs", &vgs_cmd_entry},
 #line 622 "cmds-gperf.gperf"
       {"aug_label", &aug_label_cmd_entry},
@@ -1327,7 +1327,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {"vi", &edit_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1520 "cmds-gperf.gperf"
+#line 1521 "cmds-gperf.gperf"
       {"write", &write_cmd_entry},
 #line 1392 "cmds-gperf.gperf"
       {"tmpdir", &set_tmpdir_cmd_entry},
@@ -1369,7 +1369,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {"inspect_get_arch", &inspect_get_arch_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 1507 "cmds-gperf.gperf"
+#line 1508 "cmds-gperf.gperf"
       {"vgrename", &vgrename_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -1393,7 +1393,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0},
 #line 1204 "cmds-gperf.gperf"
       {"mount_local_run", &mount_local_run_cmd_entry},
-#line 1511 "cmds-gperf.gperf"
+#line 1512 "cmds-gperf.gperf"
       {"vgscan", &vgscan_cmd_entry},
       {(char*)0},
 #line 717 "cmds-gperf.gperf"
@@ -1417,7 +1417,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0},
 #line 760 "cmds-gperf.gperf"
       {"disk_create", &disk_create_cmd_entry},
-#line 1502 "cmds-gperf.gperf"
+#line 1503 "cmds-gperf.gperf"
       {"vgcreate", &vgcreate_cmd_entry},
       {(char*)0},
 #line 1089 "cmds-gperf.gperf"
@@ -1495,14 +1495,14 @@ lookup_fish_command (register const char *str, register unsigned int len)
 #line 1476 "cmds-gperf.gperf"
       {"unmount-all", &umount_all_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1513 "cmds-gperf.gperf"
+#line 1514 "cmds-gperf.gperf"
       {"wc_c", &wc_c_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
 #line 1181 "cmds-gperf.gperf"
       {"mkmountpoint", &mkmountpoint_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1514 "cmds-gperf.gperf"
+#line 1515 "cmds-gperf.gperf"
       {"wc-c", &wc_c_cmd_entry},
 #line 748 "cmds-gperf.gperf"
       {"debug", &debug_cmd_entry},
@@ -1518,20 +1518,20 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1504 "cmds-gperf.gperf"
+#line 1505 "cmds-gperf.gperf"
       {"vgmeta", &vgmeta_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1523 "cmds-gperf.gperf"
+#line 1524 "cmds-gperf.gperf"
       {"write_file", &write_file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
 #line 734 "cmds-gperf.gperf"
       {"copy_in", &copy_in_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1524 "cmds-gperf.gperf"
+#line 1525 "cmds-gperf.gperf"
       {"write-file", &write_file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
 #line 1316 "cmds-gperf.gperf"
@@ -1702,7 +1702,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
 #line 1403 "cmds-gperf.gperf"
       {"setxattr", &setxattr_cmd_entry},
       {(char*)0},
-#line 1515 "cmds-gperf.gperf"
+#line 1516 "cmds-gperf.gperf"
       {"wc_l", &wc_l_cmd_entry},
       {(char*)0}, {(char*)0},
 #line 880 "cmds-gperf.gperf"
@@ -1711,7 +1711,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {"file", &file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1516 "cmds-gperf.gperf"
+#line 1517 "cmds-gperf.gperf"
       {"wc-l", &wc_l_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
@@ -2041,7 +2041,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
 #line 624 "cmds-gperf.gperf"
       {"aug_load", &aug_load_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1512 "cmds-gperf.gperf"
+#line 1513 "cmds-gperf.gperf"
       {"vguuid", &vguuid_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
@@ -2169,10 +2169,10 @@ lookup_fish_command (register const char *str, register unsigned int len)
 #line 705 "cmds-gperf.gperf"
       {"case-sensitive-path", &case_sensitive_path_cmd_entry},
       {(char*)0},
-#line 1519 "cmds-gperf.gperf"
+#line 1520 "cmds-gperf.gperf"
       {"wipefs", &wipefs_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1506 "cmds-gperf.gperf"
+#line 1507 "cmds-gperf.gperf"
       {"vgremove", &vgremove_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2561,13 +2561,13 @@ lookup_fish_command (register const char *str, register unsigned int len)
 #line 1412 "cmds-gperf.gperf"
       {"sfdisk_l", &sfdisk_l_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1529 "cmds-gperf.gperf"
+#line 1530 "cmds-gperf.gperf"
       {"xfs_info", &xfs_info_cmd_entry},
 #line 823 "cmds-gperf.gperf"
       {"get-backend", &get_backend_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1530 "cmds-gperf.gperf"
+#line 1531 "cmds-gperf.gperf"
       {"xfs-info", &xfs_info_cmd_entry},
 #line 1093 "cmds-gperf.gperf"
       {"ln_f", &ln_f_cmd_entry},
@@ -2593,7 +2593,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
 #line 1008 "cmds-gperf.gperf"
       {"is-file", &is_file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1517 "cmds-gperf.gperf"
+#line 1518 "cmds-gperf.gperf"
       {"wc_w", &wc_w_cmd_entry},
       {(char*)0},
 #line 1042 "cmds-gperf.gperf"
@@ -2603,7 +2603,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
 #line 1417 "cmds-gperf.gperf"
       {"shutdown", &shutdown_cmd_entry},
       {(char*)0},
-#line 1518 "cmds-gperf.gperf"
+#line 1519 "cmds-gperf.gperf"
       {"wc-w", &wc_w_cmd_entry},
       {(char*)0},
 #line 1043 "cmds-gperf.gperf"
@@ -2619,13 +2619,13 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1521 "cmds-gperf.gperf"
+#line 1522 "cmds-gperf.gperf"
       {"write_append", &write_append_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
 #line 1296 "cmds-gperf.gperf"
       {"remove_drive", &remove_drive_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1522 "cmds-gperf.gperf"
+#line 1523 "cmds-gperf.gperf"
       {"write-append", &write_append_cmd_entry},
 #line 1309 "cmds-gperf.gperf"
       {"rm_rf", &rm_rf_cmd_entry},
@@ -2718,7 +2718,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
 #line 1219 "cmds-gperf.gperf"
       {"ntfs_3g_probe", &ntfs_3g_probe_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1535 "cmds-gperf.gperf"
+#line 1536 "cmds-gperf.gperf"
       {"zero", &zero_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
@@ -2751,7 +2751,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
 #line 1040 "cmds-gperf.gperf"
       {"journal_skip", &journal_skip_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1509 "cmds-gperf.gperf"
+#line 1510 "cmds-gperf.gperf"
       {"vgs_full", &vgs_full_cmd_entry},
       {(char*)0}, {(char*)0},
 #line 1019 "cmds-gperf.gperf"
@@ -2760,10 +2760,10 @@ lookup_fish_command (register const char *str, register unsigned int len)
 #line 1041 "cmds-gperf.gperf"
       {"journal-skip", &journal_skip_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1510 "cmds-gperf.gperf"
+#line 1511 "cmds-gperf.gperf"
       {"vgs-full", &vgs_full_cmd_entry},
       {(char*)0},
-#line 1545 "cmds-gperf.gperf"
+#line 1546 "cmds-gperf.gperf"
       {"zgrepi", &zgrepi_cmd_entry},
 #line 1020 "cmds-gperf.gperf"
       {"is-zero", &is_zero_cmd_entry},
@@ -2778,7 +2778,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {"journal-get-data-threshold", &journal_get_data_threshold_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1544 "cmds-gperf.gperf"
+#line 1545 "cmds-gperf.gperf"
       {"zgrep", &zgrep_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
 #line 582 "cmds-gperf.gperf"
@@ -2786,7 +2786,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
 #line 1128 "cmds-gperf.gperf"
       {"lvm_remove_all", &lvm_remove_all_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1533 "cmds-gperf.gperf"
+#line 1534 "cmds-gperf.gperf"
       {"zegrep", &zegrep_cmd_entry},
       {(char*)0}, {(char*)0},
 #line 1281 "cmds-gperf.gperf"
@@ -2844,14 +2844,16 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0},
 #line 884 "cmds-gperf.gperf"
       {"glob-expand", &glob_expand_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 1494 "cmds-gperf.gperf"
+      {"get-uuid", &vfs_uuid_cmd_entry},
+      {(char*)0}, {(char*)0}, {(char*)0},
 #line 1378 "cmds-gperf.gperf"
       {"set_qemu", &set_qemu_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
 #line 863 "cmds-gperf.gperf"
       {"get_qemu", &get_qemu_cmd_entry},
       {(char*)0},
-#line 1498 "cmds-gperf.gperf"
+#line 1499 "cmds-gperf.gperf"
       {"vgchange_uuid", &vgchange_uuid_cmd_entry},
       {(char*)0}, {(char*)0},
 #line 1379 "cmds-gperf.gperf"
@@ -2859,9 +2861,9 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
 #line 864 "cmds-gperf.gperf"
       {"get-qemu", &get_qemu_cmd_entry},
-#line 1500 "cmds-gperf.gperf"
+#line 1501 "cmds-gperf.gperf"
       {"vgchange_uuid_all", &vgchange_uuid_all_cmd_entry},
-#line 1499 "cmds-gperf.gperf"
+#line 1500 "cmds-gperf.gperf"
       {"vgchange-uuid", &vgchange_uuid_cmd_entry},
 #line 919 "cmds-gperf.gperf"
       {"hivex_root", &hivex_root_cmd_entry},
@@ -2872,7 +2874,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {"hivex-root", &hivex_root_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1501 "cmds-gperf.gperf"
+#line 1502 "cmds-gperf.gperf"
       {"vgchange-uuid-all", &vgchange_uuid_all_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2941,7 +2943,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
 #line 1363 "cmds-gperf.gperf"
       {"set_memsize", &set_memsize_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1525 "cmds-gperf.gperf"
+#line 1526 "cmds-gperf.gperf"
       {"xfs_admin", &xfs_admin_cmd_entry},
       {(char*)0},
 #line 850 "cmds-gperf.gperf"
@@ -2953,7 +2955,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
 #line 1364 "cmds-gperf.gperf"
       {"set-memsize", &set_memsize_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1526 "cmds-gperf.gperf"
+#line 1527 "cmds-gperf.gperf"
       {"xfs-admin", &xfs_admin_cmd_entry},
       {(char*)0},
 #line 851 "cmds-gperf.gperf"
@@ -3310,13 +3312,13 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1494 "cmds-gperf.gperf"
+#line 1495 "cmds-gperf.gperf"
       {"vg_activate", &vg_activate_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
 #line 909 "cmds-gperf.gperf"
       {"hivex_node_name", &hivex_node_name_cmd_entry},
-#line 1495 "cmds-gperf.gperf"
+#line 1496 "cmds-gperf.gperf"
       {"vg-activate", &vg_activate_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -3447,7 +3449,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
 #line 687 "cmds-gperf.gperf"
       {"btrfs-subvolume-create", &btrfs_subvolume_create_cmd_entry},
       {(char*)0},
-#line 1541 "cmds-gperf.gperf"
+#line 1542 "cmds-gperf.gperf"
       {"zfgrep", &zfgrep_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
 #line 656 "cmds-gperf.gperf"
@@ -3505,7 +3507,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0},
 #line 1304 "cmds-gperf.gperf"
       {"resize2fs_size", &resize2fs_size_cmd_entry},
-#line 1538 "cmds-gperf.gperf"
+#line 1539 "cmds-gperf.gperf"
       {"zero_free_space", &zero_free_space_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
 #line 928 "cmds-gperf.gperf"
@@ -3518,7 +3520,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
 #line 1466 "cmds-gperf.gperf"
       {"txz_in", &txz_in_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1539 "cmds-gperf.gperf"
+#line 1540 "cmds-gperf.gperf"
       {"zero-free-space", &zero_free_space_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
@@ -3534,7 +3536,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0},
 #line 804 "cmds-gperf.gperf"
       {"fill_dir", &fill_dir_cmd_entry},
-#line 1543 "cmds-gperf.gperf"
+#line 1544 "cmds-gperf.gperf"
       {"zfile", &zfile_cmd_entry},
       {(char*)0},
 #line 1126 "cmds-gperf.gperf"
@@ -3572,7 +3574,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {"is_zero_device", &is_zero_device_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1505 "cmds-gperf.gperf"
+#line 1506 "cmds-gperf.gperf"
       {"vgpvuuids", &vgpvuuids_cmd_entry},
       {(char*)0},
 #line 810 "cmds-gperf.gperf"
@@ -3594,14 +3596,14 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1496 "cmds-gperf.gperf"
+#line 1497 "cmds-gperf.gperf"
       {"vg_activate_all", &vg_activate_all_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1497 "cmds-gperf.gperf"
+#line 1498 "cmds-gperf.gperf"
       {"vg-activate-all", &vg_activate_all_cmd_entry},
 #line 935 "cmds-gperf.gperf"
       {"inotify_close", &inotify_close_cmd_entry},
@@ -3655,7 +3657,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {"mkdtemp", &mkdtemp_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 1503 "cmds-gperf.gperf"
+#line 1504 "cmds-gperf.gperf"
       {"vglvuuids", &vglvuuids_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -3700,12 +3702,12 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1527 "cmds-gperf.gperf"
+#line 1528 "cmds-gperf.gperf"
       {"xfs_growfs", &xfs_growfs_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1528 "cmds-gperf.gperf"
+#line 1529 "cmds-gperf.gperf"
       {"xfs-growfs", &xfs_growfs_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
 #line 915 "cmds-gperf.gperf"
@@ -3782,7 +3784,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1534 "cmds-gperf.gperf"
+#line 1535 "cmds-gperf.gperf"
       {"zegrepi", &zegrepi_cmd_entry},
       {(char*)0}, {(char*)0},
 #line 1174 "cmds-gperf.gperf"
@@ -3917,7 +3919,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 1540 "cmds-gperf.gperf"
+#line 1541 "cmds-gperf.gperf"
       {"zerofree", &zerofree_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -4007,12 +4009,12 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 1536 "cmds-gperf.gperf"
+#line 1537 "cmds-gperf.gperf"
       {"zero_device", &zero_device_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1537 "cmds-gperf.gperf"
+#line 1538 "cmds-gperf.gperf"
       {"zero-device", &zero_device_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -4036,12 +4038,12 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1531 "cmds-gperf.gperf"
+#line 1532 "cmds-gperf.gperf"
       {"xfs_repair", &xfs_repair_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1532 "cmds-gperf.gperf"
+#line 1533 "cmds-gperf.gperf"
       {"xfs-repair", &xfs_repair_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -4163,7 +4165,7 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1542 "cmds-gperf.gperf"
+#line 1543 "cmds-gperf.gperf"
       {"zfgrepi", &zfgrepi_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},

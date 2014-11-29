@@ -1512,7 +1512,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-EXTRA_DIST = issue launch-virt-p2v.in p2v.ks.in p2v.service \
+EXTRA_DIST = HACKING issue launch-virt-p2v.in p2v.ks.in p2v.service \
 	virt-p2v.pod virt-p2v-make-disk.in virt-p2v-make-disk.pod \
 	virt-p2v-make-kickstart.in virt-p2v-make-kickstart.pod \
 	$(TESTS) test-virt-p2v-ssh.sh
