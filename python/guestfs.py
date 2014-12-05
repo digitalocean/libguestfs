@@ -3531,6 +3531,9 @@ class GuestFS(object):
         "fedora"
         Fedora.
         
+        "freebsd"
+        FreeBSD.
+        
         "freedos"
         FreeDOS.
         
@@ -3548,6 +3551,9 @@ class GuestFS(object):
         
         "meego"
         MeeGo.
+        
+        "netbsd"
+        NetBSD.
         
         "openbsd"
         OpenBSD.

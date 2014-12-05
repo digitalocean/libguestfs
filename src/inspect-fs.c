@@ -177,6 +177,7 @@ check_filesystem (guestfs_h *g, const char *mountable,
     if (guestfs___check_freebsd_root (g, fs) == -1)
       return -1;
   }
+  /* NetBSD root? */
   else if (is_dir_etc &&
            is_dir_bin &&
            guestfs_is_file (g, "/netbsd") > 0 &&
@@ -185,6 +186,17 @@ check_filesystem (guestfs_h *g, const char *mountable,
     fs->is_root = 1;
     fs->format = OS_FORMAT_INSTALLED;
     if (guestfs___check_netbsd_root (g, fs) == -1)
+      return -1;
+  }
+  /* OpenBSD root? */
+  else if (is_dir_etc &&
+           is_dir_bin &&
+           guestfs_is_file (g, "/bsd") > 0 &&
+           guestfs_is_file (g, "/etc/fstab") > 0 &&
+           guestfs_is_file (g, "/etc/motd") > 0) {
+    fs->is_root = 1;
+    fs->format = OS_FORMAT_INSTALLED;
+    if (guestfs___check_openbsd_root (g, fs) == -1)
       return -1;
   }
   /* Hurd root? */
@@ -436,6 +448,8 @@ guestfs___check_package_format (guestfs_h *g, struct inspect_fs *fs)
   case OS_DISTRO_BUILDROOT:
   case OS_DISTRO_CIRROS:
   case OS_DISTRO_FREEDOS:
+  case OS_DISTRO_FREEBSD:
+  case OS_DISTRO_NETBSD:
   case OS_DISTRO_OPENBSD:
   case OS_DISTRO_UNKNOWN:
     fs->package_format = OS_PACKAGE_FORMAT_UNKNOWN;
@@ -495,6 +509,8 @@ guestfs___check_package_management (guestfs_h *g, struct inspect_fs *fs)
   case OS_DISTRO_BUILDROOT:
   case OS_DISTRO_CIRROS:
   case OS_DISTRO_FREEDOS:
+  case OS_DISTRO_FREEBSD:
+  case OS_DISTRO_NETBSD:
   case OS_DISTRO_OPENBSD:
   case OS_DISTRO_UNKNOWN:
     fs->package_management = OS_PACKAGE_MANAGEMENT_UNKNOWN;

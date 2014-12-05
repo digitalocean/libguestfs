@@ -9445,6 +9445,9 @@ ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
  * "fedora"
  * Fedora.
  * 
+ * "freebsd"
+ * FreeBSD.
+ * 
  * "freedos"
  * FreeDOS.
  * 
@@ -9462,6 +9465,9 @@ ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
  * 
  * "meego"
  * MeeGo.
+ * 
+ * "netbsd"
+ * NetBSD.
  * 
  * "openbsd"
  * OpenBSD.

@@ -51,12 +51,14 @@ to a port (usually TCP port 22) on the conversion server.  Note that the
 physical machine may reconnect several times during the conversion process.
 
 The reverse port forwarding feature of ssh (ie. C<ssh -R>) is required by
-virt-p2v, and it will not work if this is disabled on the conversion server.
+virt-p2v, and it will not work if this is disabled on the conversion
+server.  (C<AllowTcpForwarding> must be C<yes> in the L<sshd_config(5)> file
+on the conversion server).
 
 The conversion server does not need to be a physical machine.  It could be a
 virtual machine, as long as it has sufficient memory and disk space to do
 the conversion, and as long as the physical machine can connect directly to
-its SSH port.
+its SSH port.  (See also L<virt-v2v(1)/RESOURCE REQUIREMENTS>).
 
 Because all of the data on the physical server's hard drive(s) has to be
 copied over the network, the speed of conversion is largely determined by
@@ -572,7 +574,8 @@ to be displayed in the graphical UI.
 =head1 関連項目
 
 L<virt-p2v-make-disk(1)>, L<virt-p2v-make-kickstart(1)>, L<virt-v2v(1)>,
-L<qemu-nbd(1)>, L<ssh(1)>, L<http://libguestfs.org/>.
+L<qemu-nbd(1)>, L<ssh(1)>, L<sshd(8)>, L<sshd_config(5)>,
+L<http://libguestfs.org/>.
 
 =head1 著者
 
