@@ -543,6 +543,8 @@ enum inspect_os_distro {
   OS_DISTRO_SLES,
   OS_DISTRO_OPENBSD,
   OS_DISTRO_ORACLE_LINUX,
+  OS_DISTRO_FREEBSD,
+  OS_DISTRO_NETBSD,
 };
 
 enum inspect_os_package_format {
@@ -782,6 +784,7 @@ extern void guestfs___check_package_management (guestfs_h *g, struct inspect_fs 
 extern int guestfs___check_linux_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs___check_freebsd_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs___check_netbsd_root (guestfs_h *g, struct inspect_fs *fs);
+extern int guestfs___check_openbsd_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs___check_hurd_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs___check_minix_root (guestfs_h *g, struct inspect_fs *fs);
 

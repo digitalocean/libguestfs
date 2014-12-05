@@ -1,3 +1,228 @@
+commit ee57b5f45a71ebf82ca87d7c40d2e803b78ff252
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 5 16:15:57 2014 +0000
+
+    Version 1.29.13.
+
+commit d4ffaad98390141f1830c1aa41425e79c23ecb02
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Dec 5 15:23:28 2014 +0100
+
+    sysprep: user-account: mark "changed file" if users were removed
+    
+    Removing an user causes /etc/passwd, /etc/shadow, and /etc/group to
+    change, so mark the side effects as such if any user has been removed.
+
+commit acb6e8f344c547ebbca5cf0a8ee2303d65a538cf
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Dec 5 15:20:37 2014 +0100
+
+    sysprep: add a "changed file" side effect
+
+commit 1ea9b684b2571775834c382de62592ed26c04e3b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Dec 5 15:14:17 2014 +0100
+
+    customize, sysprep: add a short SELinux note
+    
+    Add a short paragraph about SELinux, mostly to point to the
+    documentation about it provided in the documentation of virt-builder.
+
+commit be73b1750f3ce52ea137014083ed51d3b64f53a5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 5 15:04:03 2014 +0000
+
+    v2v: Add documentation about what to do about BSOD 0x0000007B (RHBZ#1161333).
+    
+    After a very long and trying episode with a Windows guest that refused
+    to boot after conversion, we managed to successfully boot it by
+    disabling Windows Group Policy.  It appears that Group Policy
+    prevented the virtio driver from being used.
+    
+    Document this in the manual.
+
+commit a5423897677ff813baf708e28a53347ecfda33d2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 5 14:29:26 2014 +0000
+
+    v2v: Remove documentation about Windows Recovery Console not supported.
+    
+    We have now successfully converted guests using WRC, so this statement
+    is no longer necessary.
+
+commit 1bd779c983d62f36bf50ad613928cf209f98fbce
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 5 13:52:25 2014 +0000
+
+    v2v: Fix missing loop device which breaks conversion of RHEL 3 guests (RHBZ#1171130).
+
+commit 205a8c7ca1ed1d66bef56d75c3c244e726e3bbbf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 5 13:09:10 2014 +0000
+
+    v2v: Don't use epoch prefix on RPM command line for RHEL <= 4 (RHBZ#1170685).
+    
+    See the explanation here:
+    https://bugzilla.redhat.com/show_bug.cgi?id=1170685#c7
+
+commit eddc8862e06728bcceb675f4c705c4078a962eb0
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Thu Dec 4 16:40:58 2014 +0800
+
+    fish: fix build warning when readline-devel is missing
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 212660f70f2377a2c8dface018bb7ea4cf980864
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 5 09:00:11 2014 +0000
+
+    builder: Add support for RHEL 3, RHEL 4.
+
+commit 20098d45343276036c76c79ce5cb571aadf90031
+Author: Nikos Skalkotos <skalkoto@grnet.gr>
+Date:   Wed Dec 3 16:13:12 2014 +0200
+
+    Add freebsd and netbsd distros
+    
+    Prior to this commit the distro for a FreeBSD or a NetBSD system, in
+    conjuction to what happened for OpenBSD, was shown as 'unknown'.
+    *BSDs are complete OSes, not a kernel like Linux, but theoritically you
+    could have FreeBSD as ostype and PC-BSD as distro.
+    
+    Signed-off-by: Nikos Skalkotos <skalkoto@grnet.gr>
+
+commit b58022eca783cbc8662c6c393727aa7748e42f5f
+Author: Nikos Skalkotos <skalkoto@grnet.gr>
+Date:   Wed Dec 3 16:12:22 2014 +0200
+
+    Fix fstab block device resolution for FreeBSD
+    
+    Take into granted that partition 'c' has a special purpose. It has
+    always the same size as the enclosing slice and is not mapped under
+    Linux.
+    
+    This is a best effort try. The mapping will be incorrect if there is a
+    gap in the disklabel partitions sequence, e.g. 'b' (swap) partition is
+    missing but 'd' partition is defined.
+    
+    Signed-off-by: Nikos Skalkotos <skalkoto@grnet.gr>
+
+commit af6ea8fa8f42a36f6c96c3c189ca0144630db3d5
+Author: Nikos Skalkotos <skalkoto@grnet.gr>
+Date:   Wed Dec 3 16:11:33 2014 +0200
+
+    Support fstab block device resolution for NetBSD
+    
+    Make a best effort try to map NetBSD disklabel partitions to Linux
+    partitions. The mapping will be incorrect if there is a gap in the
+    disklabel partitions sequence, e.g. 'b' (swap) partition is missing but
+    'e' partition is defined.
+    
+    Signed-off-by: Nikos Skalkotos <skalkoto@grnet.gr>
+
+commit 7adbf72f1bcc1d39d6a5c7c125e5abb51c62ef00
+Author: Nikos Skalkotos <skalkoto@grnet.gr>
+Date:   Wed Dec 3 16:10:48 2014 +0200
+
+    inspect_os: Add support for detecting OpenBSD
+    
+    Signed-off-by: Nikos Skalkotos <skalkoto@grnet.gr>
+
+commit 0c2e676f6c92efce890006903585dabd1f72f3b1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Dec 4 09:13:23 2014 +0000
+
+    v2v: When picking a default kernel, favour non-debug kernels over debug kernels (RHBZ#1170073).
+
+commit c712f880db640163a0ce913e42115ecf4f6aa0c2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Dec 4 22:00:35 2014 +0000
+
+    mllib: Add Common_utils.string_suffix function and extend test coverage.
+
+commit 39d64121ec809076703b109053e12a3c91b9c2ea
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Dec 4 09:12:27 2014 +0000
+
+    v2v: Disable autoreboot when converting Windows guests.
+    
+    This allows users to see stop errors, so we can get an accurate report
+    when things go wrong.
+
+commit 1033847f0005470b5f2845fd548d81bc7a2f559b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Dec 4 17:09:32 2014 +0100
+
+    gobject: link against uninstalled libraries
+    
+    Make sure to link the gobject library and the gir using the in-tree
+    built libguestfs, so a system library won't be used accidentally.
+
+commit 7c7755eb608e91658445be0adb312121f7438edf
+Author: Nikos Skalkotos <skalkoto@grnet.gr>
+Date:   Tue Dec 2 19:11:55 2014 +0200
+
+    Remove extra space in inspect-fs-unix.c
+    
+    Signed-off-by: Nikos Skalkotos <skalkoto@grnet.gr>
+
+commit de0b7c4e66ca97b97cebd842226eacd66a0633a4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 2 09:50:02 2014 +0000
+
+    build: Map host CPU 'powerpc64le' to qemu-system-ppc64.
+    
+    Make the corresponding change in libguestfs-test-tool as well.
+    
+    Thanks: Dan Horák
+
+commit a21ab21b1a2a9311b3e5f6783bfb4a1a91b104ee
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Mon Dec 1 18:26:12 2014 +0800
+
+    fish: show synopsis if command syntax is wrong
+    
+    This patch lets guestfish show command synopsis if the syntax of command issued
+    by user is wrong, rather than telling user that the number of parameters is wrong.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 391d90d9e7b86890c3de3cd5fc200375fb8c6b0a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Nov 29 18:20:52 2014 +0000
+
+    p2v: Refer to virt-v2v resource requirements in virt-p2v man page.
+
+commit 1b52139339caaf8cdc347f05b559128b08fcee39
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Nov 29 18:20:00 2014 +0000
+
+    p2v: Mention sshd_config setting in the manual page.
+    
+    The precise sshd configuration has confused some users of virt-p2v.
+    Only one setting (AllowTcpForwarding=yes) is required, so document it.
+
+commit 4d9a14fc751979caa9e62bb1f9183ba9d884eedb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Nov 29 12:01:48 2014 +0000
+
+    configure: Require yajl >= 2.0.4 (RHBZ#1169045).
+    
+    Earlier versions fail to parse integers from 'qemu-img info' output
+    correctly, resulting in bugs like
+    https://bugzilla.redhat.com/show_bug.cgi?id=1169045
+    
+    Thanks: muued @ IRC
+
+commit 2990db8d1a4f8afab3087de00de4ddad6baec91c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Nov 28 22:26:57 2014 +0000
+
+    tests/c-api: Test that the library can really be loaded with dlopen.
+    
+    Answer is yes, but it was good to know.
+
 commit 3a5613eb22bd9d10818fb0ee98c388b904638aad
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Nov 28 19:51:47 2014 +0000

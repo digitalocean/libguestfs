@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [29])
-m4_define([libguestfs_release], [12])
+m4_define([libguestfs_release], [13])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -581,6 +581,13 @@ AC_ARG_WITH([extra-packages],
     [EXTRA_PACKAGES=])
 AC_SUBST([EXTRA_PACKAGES])
 
+dnl Check for libdl/dlopen (optional - only used to test if the library
+dnl can be used with libdl).
+AC_CHECK_LIB([dl],[dlopen],[have_libdl=yes],[have_libdl=no])
+AC_CHECK_HEADERS([dlfcn.h],[have_dlfcn=yes],[have_dlfcn=no])
+AM_CONDITIONAL([HAVE_LIBDL],
+               [test "x$have_libdl" = "xyes" && test "x$have_dlfcn" = "xyes"])
+
 dnl Check for rpcgen and XDR library.  rpcgen is optional.
 AC_CHECK_PROG([RPCGEN],[rpcgen],[rpcgen],[no])
 AM_CONDITIONAL([HAVE_RPCGEN],[test "x$RPCGEN" != "xno"])
@@ -753,7 +760,7 @@ AS_CASE([$host_cpu],
         [i@<:@456@:>@86],[qemu_cpu=i386],
         [arm*],[qemu_cpu=arm],
         [amd64],[qemu_cpu=x86_64],
-        [powerpc64 | ppc64le],[qemu_cpu=ppc64],
+        [powerpc64 | ppc64le | powerpc64le],[qemu_cpu=ppc64],
         [qemu_cpu=$host_cpu])
 default_qemu="qemu-kvm kvm qemu-system-$qemu_cpu qemu"
 AC_ARG_WITH([qemu],
@@ -1029,7 +1036,7 @@ AS_IF([test "x$enable_fuse" != "xno"],[
 AM_CONDITIONAL([HAVE_FUSE],[test "x$enable_fuse" != "xno"])
 
 dnl Check for yajl JSON library (optional).
-PKG_CHECK_MODULES([YAJL], [yajl >= 2], [
+PKG_CHECK_MODULES([YAJL], [yajl >= 2.0.4], [
     AC_SUBST([YAJL_CFLAGS])
     AC_SUBST([YAJL_LIBS])
     AC_DEFINE([HAVE_YAJL],[1],[Define to 1 if you have yajl.])

@@ -211,6 +211,13 @@ Enable N E<ge> 2 virtual CPUs for I<--run> scripts to use.
 
 __CUSTOMIZE_OPTIONS__
 
+=head1 SELINUX
+
+For guests which make use of SELinux, special handling for them might be
+needed when using operations which create new files or alter existing ones.
+
+For further details, see L<virt-builder(1)/SELINUX>.
+
 =head1 СТАН ВИХОДУ
 
 This program returns 0 on success, or 1 if there was an error.

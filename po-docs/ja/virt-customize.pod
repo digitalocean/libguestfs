@@ -202,6 +202,13 @@ libguestfs API 呼び出しのトレースを有効にします。
 
 __CUSTOMIZE_OPTIONS__
 
+=head1 SELinux
+
+For guests which make use of SELinux, special handling for them might be
+needed when using operations which create new files or alter existing ones.
+
+For further details, see L<virt-builder(1)/SELINUX>.
+
 =head1 終了ステータス
 
 このプログラムは、成功すると 0 を返します。または、エラーが起きると 1 を返します。

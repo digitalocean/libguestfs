@@ -6745,6 +6745,9 @@ public class GuestFS {
    * "fedora"
    * Fedora.
    * <p>
+   * "freebsd"
+   * FreeBSD.
+   * <p>
    * "freedos"
    * FreeDOS.
    * <p>
@@ -6762,6 +6765,9 @@ public class GuestFS {
    * <p>
    * "meego"
    * MeeGo.
+   * <p>
+   * "netbsd"
+   * NetBSD.
    * <p>
    * "openbsd"
    * OpenBSD.

@@ -49,13 +49,14 @@ type kernel_info = {
   ki_modules : string list;        (* The list of module names. *)
   ki_supports_virtio : bool;       (* Kernel has virtio drivers? *)
   ki_is_xen_kernel : bool;         (* Is a Xen paravirt kernel? *)
+  ki_is_debug : bool;              (* Is debug kernel? *)
 }
 
 let string_of_kernel_info ki =
-  sprintf "(%s, %s, %s, %s, %s, virtio=%b, xen=%b)"
+  sprintf "(%s, %s, %s, %s, %s, virtio=%b, xen=%b, debug=%b)"
     ki.ki_name ki.ki_version ki.ki_arch ki.ki_vmlinuz
     (match ki.ki_initrd with None -> "None" | Some f -> f)
-    ki.ki_supports_virtio ki.ki_is_xen_kernel
+    ki.ki_supports_virtio ki.ki_is_xen_kernel ki.ki_is_debug
 
 (* The conversion function. *)
 let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
@@ -241,6 +242,13 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
              let supports_virtio = List.mem "virtio_net" modules in
              let is_xen_kernel = List.mem "xennet" modules in
 
+             (* If the package name is like "kernel-debug", then it's
+              * a debug kernel.
+              *)
+             let is_debug =
+               string_suffix app.G.app2_name "-debug" ||
+               string_suffix app.G.app2_name "-dbg" in
+
              Some {
                ki_app  = app;
                ki_name = name;
@@ -253,6 +261,7 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
                ki_modules = modules;
                ki_supports_virtio = supports_virtio;
                ki_is_xen_kernel = is_xen_kernel;
+               ki_is_debug = is_debug;
              }
            )
 
@@ -745,7 +754,12 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
       let compare_best_kernels k1 k2 =
         let i = compare k1.ki_supports_virtio k2.ki_supports_virtio in
         if i <> 0 then i
-        else compare_app2_versions k1.ki_app k2.ki_app
+        else (
+          let i = compare_app2_versions k1.ki_app k2.ki_app in
+          if i <> 0 then i
+          (* Favour non-debug kernels over debug kernels (RHBZ#1170073). *)
+          else compare k2.ki_is_debug k1.ki_is_debug
+        )
       in
       let kernels = grub_kernels in
       let kernels = List.filter (fun { ki_is_xen_kernel = is_xen_kernel } -> not is_xen_kernel) kernels in
@@ -876,13 +890,29 @@ let rec convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
         (* loop is a module in RHEL 5. Try to load it. Doesn't matter
          * for other OSs if it doesn't exist, but RHEL 5 will complain:
          *   "All of your loopback devices are in use."
-         *
-         * XXX RHEL 3 unfortunately will give this error anyway.
-         * mkinitrd runs the nash command `findlodev' which is
-         * essentially incompatible with modern kernels that don't
-         * have fixed /dev/loopN devices.
          *)
         (try g#modprobe "loop" with G.Error _ -> ());
+
+        (* On RHEL 3 we have to take extra gritty to get a working
+         * loopdev.  mkinitrd runs the nash command `findlodev'
+         * which does this:
+         *
+         * for (devNum = 0; devNum < 256; devNum++) {
+         *   sprintf(devName, "/dev/loop%s%d", separator, devNum);
+         *   if ((fd = open(devName, O_RDONLY)) < 0) return 0;
+         *   if (ioctl(fd, LOOP_GET_STATUS, &loopInfo)) {
+         *     close(fd);
+         *     printf("%s\n", devName);
+         *     return 0;
+         * // etc
+         *
+         * In a modern kernel, /dev/loop<N> isn't created until it is
+         * used.  But we can create /dev/loop0 manually.  Note we have
+         * to do this in the appliance /dev.  (RHBZ#1171130)
+         *)
+        if family = `RHEL_family && inspect.i_major_version = 3 then
+          ignore (g#debug "sh" [| "mknod"; "-m"; "0666";
+                                  "/dev/loop0"; "b"; "7"; "0" |]);
 
         (* RHEL 4 mkinitrd determines if the root filesystem is on LVM
          * by checking if the device name (after following symlinks)

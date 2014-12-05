@@ -141,16 +141,23 @@ check_PROGRAMS = tests$(EXEEXT) test-command$(EXEEXT) \
 	test-last-errno$(EXEEXT) test-backend-settings$(EXEEXT) \
 	test-private-data$(EXEEXT) test-user-cancel$(EXEEXT) \
 	test-debug-to-file$(EXEEXT) test-environment$(EXEEXT) \
-	test-pwd$(EXEEXT) test-event-string$(EXEEXT) $(am__EXEEXT_1)
+	test-pwd$(EXEEXT) test-event-string$(EXEEXT) $(am__EXEEXT_1) \
+	$(am__EXEEXT_2)
+@HAVE_LIBDL_TRUE@am__append_1 = \
+@HAVE_LIBDL_TRUE@	test-dlopen
+
 TESTS = tests$(EXEEXT) test-just-header$(EXEEXT) \
-	test-create-handle$(EXEEXT) test-config$(EXEEXT) \
-	test-add-drive-opts$(EXEEXT) test-last-errno$(EXEEXT) \
-	test-backend-settings$(EXEEXT) test-private-data$(EXEEXT) \
-	test-user-cancel$(EXEEXT) test-debug-to-file$(EXEEXT) \
-	test-environment$(EXEEXT) test-event-string$(EXEEXT) \
-	$(am__EXEEXT_1)
-@HAVE_CXX_TRUE@am__append_1 = test-just-header-cxx
-@HAVE_CXX_TRUE@am__append_2 = test-just-header-cxx
+	test-create-handle$(EXEEXT) test-dlopen$(EXEEXT) \
+	test-config$(EXEEXT) test-add-drive-opts$(EXEEXT) \
+	test-last-errno$(EXEEXT) test-backend-settings$(EXEEXT) \
+	test-private-data$(EXEEXT) test-user-cancel$(EXEEXT) \
+	test-debug-to-file$(EXEEXT) test-environment$(EXEEXT) \
+	test-event-string$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2)
+@HAVE_LIBDL_TRUE@am__append_2 = \
+@HAVE_LIBDL_TRUE@	test-dlopen
+
+@HAVE_CXX_TRUE@am__append_3 = test-just-header-cxx
+@HAVE_CXX_TRUE@am__append_4 = test-just-header-cxx
 subdir = tests/c-api
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -289,7 +296,8 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@HAVE_CXX_TRUE@am__EXEEXT_1 = test-just-header-cxx$(EXEEXT)
+@HAVE_LIBDL_TRUE@am__EXEEXT_1 = test-dlopen$(EXEEXT)
+@HAVE_CXX_TRUE@am__EXEEXT_2 = test-just-header-cxx$(EXEEXT)
 am_test_add_drive_opts_OBJECTS =  \
 	test_add_drive_opts-test-add-drive-opts.$(OBJEXT)
 test_add_drive_opts_OBJECTS = $(am_test_add_drive_opts_OBJECTS)
@@ -342,6 +350,14 @@ test_debug_to_file_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(test_debug_to_file_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am__test_dlopen_SOURCES_DIST = test-dlopen.c
+@HAVE_LIBDL_TRUE@am_test_dlopen_OBJECTS =  \
+@HAVE_LIBDL_TRUE@	test_dlopen-test-dlopen.$(OBJEXT)
+test_dlopen_OBJECTS = $(am_test_dlopen_OBJECTS)
+test_dlopen_DEPENDENCIES =
+test_dlopen_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(test_dlopen_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_test_environment_OBJECTS =  \
 	test_environment-test-environment.$(OBJEXT)
 test_environment_OBJECTS = $(am_test_environment_OBJECTS)
@@ -474,16 +490,18 @@ am__v_CXXLD_1 =
 SOURCES = $(test_add_drive_opts_SOURCES) \
 	$(test_backend_settings_SOURCES) $(test_command_SOURCES) \
 	$(test_config_SOURCES) $(test_create_handle_SOURCES) \
-	$(test_debug_to_file_SOURCES) $(test_environment_SOURCES) \
-	$(test_event_string_SOURCES) $(test_just_header_SOURCES) \
-	$(test_just_header_cxx_SOURCES) $(test_last_errno_SOURCES) \
-	$(test_private_data_SOURCES) $(test_pwd_SOURCES) \
-	$(test_user_cancel_SOURCES) $(tests_SOURCES)
+	$(test_debug_to_file_SOURCES) $(test_dlopen_SOURCES) \
+	$(test_environment_SOURCES) $(test_event_string_SOURCES) \
+	$(test_just_header_SOURCES) $(test_just_header_cxx_SOURCES) \
+	$(test_last_errno_SOURCES) $(test_private_data_SOURCES) \
+	$(test_pwd_SOURCES) $(test_user_cancel_SOURCES) \
+	$(tests_SOURCES)
 DIST_SOURCES = $(test_add_drive_opts_SOURCES) \
 	$(test_backend_settings_SOURCES) $(test_command_SOURCES) \
 	$(test_config_SOURCES) $(test_create_handle_SOURCES) \
-	$(test_debug_to_file_SOURCES) $(test_environment_SOURCES) \
-	$(test_event_string_SOURCES) $(test_just_header_SOURCES) \
+	$(test_debug_to_file_SOURCES) $(am__test_dlopen_SOURCES_DIST) \
+	$(test_environment_SOURCES) $(test_event_string_SOURCES) \
+	$(test_just_header_SOURCES) \
 	$(am__test_just_header_cxx_SOURCES_DIST) \
 	$(test_last_errno_SOURCES) $(test_private_data_SOURCES) \
 	$(test_pwd_SOURCES) $(test_user_cancel_SOURCES) \
@@ -1712,6 +1730,17 @@ test_create_handle_CFLAGS = \
 test_create_handle_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
+@HAVE_LIBDL_TRUE@test_dlopen_SOURCES = test-dlopen.c
+@HAVE_LIBDL_TRUE@test_dlopen_CPPFLAGS = \
+@HAVE_LIBDL_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src
+
+@HAVE_LIBDL_TRUE@test_dlopen_CFLAGS = \
+@HAVE_LIBDL_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+@HAVE_LIBDL_TRUE@	-DLIBRARY=\"$(top_builddir)/src/.libs/libguestfs.so.0\"
+
+@HAVE_LIBDL_TRUE@test_dlopen_LDADD = \
+@HAVE_LIBDL_TRUE@	-ldl
+
 test_config_SOURCES = test-config.c
 test_config_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src
@@ -1890,6 +1919,10 @@ test-debug-to-file$(EXEEXT): $(test_debug_to_file_OBJECTS) $(test_debug_to_file_
 	@rm -f test-debug-to-file$(EXEEXT)
 	$(AM_V_CCLD)$(test_debug_to_file_LINK) $(test_debug_to_file_OBJECTS) $(test_debug_to_file_LDADD) $(LIBS)
 
+test-dlopen$(EXEEXT): $(test_dlopen_OBJECTS) $(test_dlopen_DEPENDENCIES) $(EXTRA_test_dlopen_DEPENDENCIES) 
+	@rm -f test-dlopen$(EXEEXT)
+	$(AM_V_CCLD)$(test_dlopen_LINK) $(test_dlopen_OBJECTS) $(test_dlopen_LDADD) $(LIBS)
+
 test-environment$(EXEEXT): $(test_environment_OBJECTS) $(test_environment_DEPENDENCIES) $(EXTRA_test_environment_DEPENDENCIES) 
 	@rm -f test-environment$(EXEEXT)
 	$(AM_V_CCLD)$(test_environment_LINK) $(test_environment_OBJECTS) $(test_environment_LDADD) $(LIBS)
@@ -1939,6 +1972,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_config-test-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_create_handle-test-create-handle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_debug_to_file-test-debug-to-file.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_dlopen-test-dlopen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_environment-test-environment.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_event_string-test-event-string.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_just_header-test-just-header.Po@am__quote@
@@ -2039,6 +2073,20 @@ test_debug_to_file-test-debug-to-file.obj: test-debug-to-file.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-debug-to-file.c' object='test_debug_to_file-test-debug-to-file.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_debug_to_file_CPPFLAGS) $(CPPFLAGS) $(test_debug_to_file_CFLAGS) $(CFLAGS) -c -o test_debug_to_file-test-debug-to-file.obj `if test -f 'test-debug-to-file.c'; then $(CYGPATH_W) 'test-debug-to-file.c'; else $(CYGPATH_W) '$(srcdir)/test-debug-to-file.c'; fi`
+
+test_dlopen-test-dlopen.o: test-dlopen.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_dlopen_CPPFLAGS) $(CPPFLAGS) $(test_dlopen_CFLAGS) $(CFLAGS) -MT test_dlopen-test-dlopen.o -MD -MP -MF $(DEPDIR)/test_dlopen-test-dlopen.Tpo -c -o test_dlopen-test-dlopen.o `test -f 'test-dlopen.c' || echo '$(srcdir)/'`test-dlopen.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_dlopen-test-dlopen.Tpo $(DEPDIR)/test_dlopen-test-dlopen.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-dlopen.c' object='test_dlopen-test-dlopen.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_dlopen_CPPFLAGS) $(CPPFLAGS) $(test_dlopen_CFLAGS) $(CFLAGS) -c -o test_dlopen-test-dlopen.o `test -f 'test-dlopen.c' || echo '$(srcdir)/'`test-dlopen.c
+
+test_dlopen-test-dlopen.obj: test-dlopen.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_dlopen_CPPFLAGS) $(CPPFLAGS) $(test_dlopen_CFLAGS) $(CFLAGS) -MT test_dlopen-test-dlopen.obj -MD -MP -MF $(DEPDIR)/test_dlopen-test-dlopen.Tpo -c -o test_dlopen-test-dlopen.obj `if test -f 'test-dlopen.c'; then $(CYGPATH_W) 'test-dlopen.c'; else $(CYGPATH_W) '$(srcdir)/test-dlopen.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_dlopen-test-dlopen.Tpo $(DEPDIR)/test_dlopen-test-dlopen.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-dlopen.c' object='test_dlopen-test-dlopen.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_dlopen_CPPFLAGS) $(CPPFLAGS) $(test_dlopen_CFLAGS) $(CFLAGS) -c -o test_dlopen-test-dlopen.obj `if test -f 'test-dlopen.c'; then $(CYGPATH_W) 'test-dlopen.c'; else $(CYGPATH_W) '$(srcdir)/test-dlopen.c'; fi`
 
 test_environment-test-environment.o: test-environment.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_environment_CPPFLAGS) $(CPPFLAGS) $(test_environment_CFLAGS) $(CFLAGS) -MT test_environment-test-environment.o -MD -MP -MF $(DEPDIR)/test_environment-test-environment.Tpo -c -o test_environment-test-environment.o `test -f 'test-environment.c' || echo '$(srcdir)/'`test-environment.c

@@ -9100,6 +9100,9 @@ guestfs_session_inspect_get_arch (GuestfsSession *session, const gchar *root, GE
  * "fedora"
  * Fedora.
  * 
+ * "freebsd"
+ * FreeBSD.
+ * 
  * "freedos"
  * FreeDOS.
  * 
@@ -9117,6 +9120,9 @@ guestfs_session_inspect_get_arch (GuestfsSession *session, const gchar *root, GE
  * 
  * "meego"
  * MeeGo.
+ * 
+ * "netbsd"
+ * NetBSD.
  * 
  * "openbsd"
  * OpenBSD.
