@@ -1,9 +1,9 @@
 libguestfs.so.0 libguestfs0 #MINVER#
- guestfs___add_libvirt_dom@Base 1:1.22
- guestfs___safe_calloc@Base 1:1.20
- guestfs___safe_malloc@Base 1:1.20
- guestfs___safe_memdup@Base 1:1.20
- guestfs___safe_strdup@Base 1:1.20
+ (optional)guestfs___add_libvirt_dom@Base 1:1.22
+ (optional)guestfs___safe_calloc@Base 1:1.20
+ (optional)guestfs___safe_malloc@Base 1:1.20
+ (optional)guestfs___safe_memdup@Base 1:1.20
+ (optional)guestfs___safe_strdup@Base 1:1.20
  guestfs_acl_delete_def_file@Base 1:1.20
  guestfs_acl_get_file@Base 1:1.20
  guestfs_acl_set_file@Base 1:1.20
@@ -21,6 +21,9 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_add_drive_scratch_argv@Base 1:1.23.10
  guestfs_add_drive_scratch_va@Base 1:1.23.10
  guestfs_add_drive_with_if@Base 1.10
+ guestfs_add_libvirt_dom@Base 1:1.29.14
+ guestfs_add_libvirt_dom_argv@Base 1:1.29.14
+ guestfs_add_libvirt_dom_va@Base 1:1.29.14
  guestfs_aug_clear@Base 1.10
  guestfs_aug_close@Base 1.10
  guestfs_aug_defnode@Base 1.10
