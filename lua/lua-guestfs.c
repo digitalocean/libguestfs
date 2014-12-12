@@ -763,6 +763,62 @@ guestfs_lua_add_drive_with_if (lua_State *L)
 }
 
 static int
+guestfs_lua_add_libvirt_dom (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  void * /* virDomainPtr */ dom;
+  struct guestfs_add_libvirt_dom_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_add_libvirt_dom_argv *optargs = &optargs_s;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "add_libvirt_dom");
+
+  dom = POINTER_NOT_IMPLEMENTED ("virDomainPtr");
+
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 3) == LUA_TTABLE) {
+    OPTARG_IF_SET (3, "readonly",
+      optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLY_BITMASK;
+      optargs_s.readonly = lua_toboolean (L, -1);
+    );
+    OPTARG_IF_SET (3, "iface",
+      optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK;
+      optargs_s.iface = luaL_checkstring (L, -1);
+    );
+    OPTARG_IF_SET (3, "live",
+      optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_LIVE_BITMASK;
+      optargs_s.live = lua_toboolean (L, -1);
+    );
+    OPTARG_IF_SET (3, "readonlydisk",
+      optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK;
+      optargs_s.readonlydisk = luaL_checkstring (L, -1);
+    );
+    OPTARG_IF_SET (3, "cachemode",
+      optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK;
+      optargs_s.cachemode = luaL_checkstring (L, -1);
+    );
+    OPTARG_IF_SET (3, "discard",
+      optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK;
+      optargs_s.discard = luaL_checkstring (L, -1);
+    );
+    OPTARG_IF_SET (3, "copyonread",
+      optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD_BITMASK;
+      optargs_s.copyonread = lua_toboolean (L, -1);
+    );
+  }
+
+  r = guestfs_add_libvirt_dom_argv (g, dom, optargs);
+  if (r == -1)
+    return last_error (L, g);
+
+  lua_pushinteger (L, r);
+  return 1;
+}
+
+static int
 guestfs_lua_aug_clear (lua_State *L)
 {
   int r;
@@ -15331,6 +15387,7 @@ static luaL_Reg methods[] = {
   { "add_drive_ro_with_if", guestfs_lua_add_drive_ro_with_if },
   { "add_drive_scratch", guestfs_lua_add_drive_scratch },
   { "add_drive_with_if", guestfs_lua_add_drive_with_if },
+  { "add_libvirt_dom", guestfs_lua_add_libvirt_dom },
   { "aug_clear", guestfs_lua_aug_clear },
   { "aug_close", guestfs_lua_aug_close },
   { "aug_defnode", guestfs_lua_aug_defnode },

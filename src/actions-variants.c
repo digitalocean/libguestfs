@@ -255,6 +255,75 @@ guestfs_add_drive_scratch_va (guestfs_h *g,
 }
 
 int
+guestfs_add_libvirt_dom (guestfs_h *g,
+                         void * /* really virDomainPtr */ dom,
+                         ...)
+{
+  va_list optargs;
+
+  int r;
+
+  va_start (optargs, dom);
+  r = guestfs_add_libvirt_dom_va (g, dom, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_add_libvirt_dom_va (guestfs_h *g,
+                            void * /* really virDomainPtr */ dom,
+                            va_list args)
+{
+  struct guestfs_add_libvirt_dom_argv optargs_s;
+  struct guestfs_add_libvirt_dom_argv *optargs = &optargs_s;
+  int i;
+  uint64_t i_mask;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_ADD_LIBVIRT_DOM_READONLY:
+      optargs_s.readonly = va_arg (args, int);
+      break;
+    case GUESTFS_ADD_LIBVIRT_DOM_IFACE:
+      optargs_s.iface = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_LIBVIRT_DOM_LIVE:
+      optargs_s.live = va_arg (args, int);
+      break;
+    case GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK:
+      optargs_s.readonlydisk = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE:
+      optargs_s.cachemode = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_LIBVIRT_DOM_DISCARD:
+      optargs_s.discard = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD:
+      optargs_s.copyonread = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "add_libvirt_dom", i);
+      return -1;
+    }
+
+    i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "add_libvirt_dom");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_add_libvirt_dom_argv (g, dom, optargs);
+}
+
+int
 guestfs_btrfs_filesystem_resize (guestfs_h *g,
                                  const char *mountpoint,
                                  ...)

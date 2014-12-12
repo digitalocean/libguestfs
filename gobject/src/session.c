@@ -1294,6 +1294,134 @@ guestfs_session_add_drive_with_if (GuestfsSession *session, const gchar *filenam
 }
 
 /**
+ * guestfs_session_add_libvirt_dom:
+ * @session: (transfer none): A GuestfsSession object
+ * @dom:pointer (not implemented in gobject bindings)
+ * @optargs: (transfer none) (allow-none): a GuestfsAddLibvirtDom containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * add the disk(s) from a libvirt domain
+ *
+ * This function adds the disk(s) attached to the libvirt domain @dom. It
+ * works by requesting the domain XML from libvirt, parsing it for disks,
+ * and calling guestfs_session_add_drive_opts() on each one.
+ * 
+ * In the C API we declare "void *dom", but really it has type
+ * "virDomainPtr dom". This is so we don't need &lt;libvirt.h&gt;.
+ * 
+ * The number of disks added is returned. This operation is atomic: if an
+ * error is returned, then no disks are added.
+ * 
+ * This function does some minimal checks to make sure the libvirt domain
+ * is not running (unless @readonly is true). In a future version we will
+ * try to acquire the libvirt lock on each disk.
+ * 
+ * Disks must be accessible locally. This often means that adding disks
+ * from a remote libvirt connection (see <ulink
+ * url='http://libvirt.org/remote.html'> http://libvirt.org/remote.html
+ * </ulink>) will fail unless those disks are accessible via the same
+ * device path locally too.
+ * 
+ * The optional @live flag controls whether this call will try to connect
+ * to a running virtual machine @guestfsd process if it sees a suitable
+ * &lt;channel&gt; element in the libvirt XML definition. The default (if
+ * the flag is omitted) is never to try. See "ATTACHING TO RUNNING DAEMONS"
+ * in guestfs(3) for more information.
+ * 
+ * The optional @readonlydisk parameter controls what we do for disks which
+ * are marked &lt;readonly/&gt; in the libvirt XML. See
+ * guestfs_session_add_domain() for possible values.
+ * 
+ * The other optional parameters are passed directly through to
+ * guestfs_session_add_drive_opts().
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint32
+guestfs_session_add_libvirt_dom (GuestfsSession *session, void * /* virDomainPtr */ dom, GuestfsAddLibvirtDom *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "add_libvirt_dom");
+    return -1;
+  }
+
+  struct guestfs_add_libvirt_dom_argv argv;
+  struct guestfs_add_libvirt_dom_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue readonly_v = {0, };
+    g_value_init (&readonly_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "readonly", &readonly_v);
+    GuestfsTristate readonly = g_value_get_enum (&readonly_v);
+    if (readonly != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLY_BITMASK;
+      argv.readonly = readonly;
+    }
+    GValue iface_v = {0, };
+    g_value_init (&iface_v, G_TYPE_STRING);
+    g_object_get_property (G_OBJECT (optargs), "iface", &iface_v);
+    const gchar *iface = g_value_get_string (&iface_v);
+    if (iface != NULL) {
+      argv.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK;
+      argv.iface = iface;
+    }
+    GValue live_v = {0, };
+    g_value_init (&live_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "live", &live_v);
+    GuestfsTristate live = g_value_get_enum (&live_v);
+    if (live != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_LIVE_BITMASK;
+      argv.live = live;
+    }
+    GValue readonlydisk_v = {0, };
+    g_value_init (&readonlydisk_v, G_TYPE_STRING);
+    g_object_get_property (G_OBJECT (optargs), "readonlydisk", &readonlydisk_v);
+    const gchar *readonlydisk = g_value_get_string (&readonlydisk_v);
+    if (readonlydisk != NULL) {
+      argv.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK;
+      argv.readonlydisk = readonlydisk;
+    }
+    GValue cachemode_v = {0, };
+    g_value_init (&cachemode_v, G_TYPE_STRING);
+    g_object_get_property (G_OBJECT (optargs), "cachemode", &cachemode_v);
+    const gchar *cachemode = g_value_get_string (&cachemode_v);
+    if (cachemode != NULL) {
+      argv.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK;
+      argv.cachemode = cachemode;
+    }
+    GValue discard_v = {0, };
+    g_value_init (&discard_v, G_TYPE_STRING);
+    g_object_get_property (G_OBJECT (optargs), "discard", &discard_v);
+    const gchar *discard = g_value_get_string (&discard_v);
+    if (discard != NULL) {
+      argv.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK;
+      argv.discard = discard;
+    }
+    GValue copyonread_v = {0, };
+    g_value_init (&copyonread_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "copyonread", &copyonread_v);
+    GuestfsTristate copyonread = g_value_get_enum (&copyonread_v);
+    if (copyonread != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD_BITMASK;
+      argv.copyonread = copyonread;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_add_libvirt_dom_argv (g, dom, argvp);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
  * guestfs_session_aug_clear:
  * @session: (transfer none): A GuestfsSession object
  * @augpath: (transfer none) (type utf8):
@@ -17339,9 +17467,6 @@ guestfs_session_mktemp (GuestfsSession *session, const gchar *tmpl, GuestfsMktem
  * load a kernel module
  *
  * This loads a kernel module in the appliance.
- * 
- * The kernel module must have been whitelisted when libguestfs was built
- * (see "appliance/kmod.whitelist.in" in the source).
  * 
  * Returns: true on success, false on error
  */

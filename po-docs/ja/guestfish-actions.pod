@@ -5223,9 +5223,6 @@ is appended to the temporary name.
 
 アプライアンスにカーネルモジュールを読み込みます。
 
-The kernel module must have been whitelisted when libguestfs was built (see
-C<appliance/kmod.whitelist.in> in the source).
-
 =head2 mount
 
  mount mountable mountpoint

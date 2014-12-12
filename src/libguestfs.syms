@@ -21,7 +21,6 @@
 
 {
     global:
-        guestfs___add_libvirt_dom;
         guestfs___safe_calloc;
         guestfs___safe_malloc;
         guestfs___safe_memdup;
@@ -43,6 +42,9 @@
         guestfs_add_drive_scratch_argv;
         guestfs_add_drive_scratch_va;
         guestfs_add_drive_with_if;
+        guestfs_add_libvirt_dom;
+        guestfs_add_libvirt_dom_argv;
+        guestfs_add_libvirt_dom_va;
         guestfs_aug_clear;
         guestfs_aug_close;
         guestfs_aug_defnode;

@@ -1732,6 +1732,109 @@ py_guestfs_add_drive_with_if (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_add_libvirt_dom (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_add_libvirt_dom_argv optargs_s;
+  struct guestfs_add_libvirt_dom_argv *optargs = &optargs_s;
+  int r;
+  void * /* virDomainPtr */ dom;
+  PyObject *dom_long;
+  PyObject *py_readonly;
+  PyObject *py_iface;
+  PyObject *py_live;
+  PyObject *py_readonlydisk;
+  PyObject *py_cachemode;
+  PyObject *py_discard;
+  PyObject *py_copyonread;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OOOOOOOOO:guestfs_add_libvirt_dom",
+                         &py_g, &dom_long, &py_readonly, &py_iface, &py_live, &py_readonlydisk, &py_cachemode, &py_discard, &py_copyonread))
+    goto out;
+  g = get_handle (py_g);
+  dom = PyLong_AsVoidPtr (dom_long);
+
+  if (py_readonly != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLY_BITMASK;
+    optargs_s.readonly = PyLong_AsLong (py_readonly);
+    if (PyErr_Occurred ()) goto out;
+  }
+  if (py_iface != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.iface = PyString_AsString (py_iface);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_iface);
+    optargs_s.iface = PyBytes_AS_STRING (bytes);
+#endif
+  }
+  if (py_live != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_LIVE_BITMASK;
+    optargs_s.live = PyLong_AsLong (py_live);
+    if (PyErr_Occurred ()) goto out;
+  }
+  if (py_readonlydisk != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.readonlydisk = PyString_AsString (py_readonlydisk);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_readonlydisk);
+    optargs_s.readonlydisk = PyBytes_AS_STRING (bytes);
+#endif
+  }
+  if (py_cachemode != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.cachemode = PyString_AsString (py_cachemode);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_cachemode);
+    optargs_s.cachemode = PyBytes_AS_STRING (bytes);
+#endif
+  }
+  if (py_discard != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.discard = PyString_AsString (py_discard);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_discard);
+    optargs_s.discard = PyBytes_AS_STRING (bytes);
+#endif
+  }
+  if (py_copyonread != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD_BITMASK;
+    optargs_s.copyonread = PyLong_AsLong (py_copyonread);
+    if (PyErr_Occurred ()) goto out;
+  }
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_add_libvirt_dom_argv (g, dom, optargs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = PyLong_FromLong ((long) r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_aug_clear (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -22468,6 +22571,7 @@ static PyMethodDef methods[] = {
   { (char *) "add_drive_ro_with_if", py_guestfs_add_drive_ro_with_if, METH_VARARGS, NULL },
   { (char *) "add_drive_scratch", py_guestfs_add_drive_scratch, METH_VARARGS, NULL },
   { (char *) "add_drive_with_if", py_guestfs_add_drive_with_if, METH_VARARGS, NULL },
+  { (char *) "add_libvirt_dom", py_guestfs_add_libvirt_dom, METH_VARARGS, NULL },
   { (char *) "aug_clear", py_guestfs_aug_clear, METH_VARARGS, NULL },
   { (char *) "aug_close", py_guestfs_aug_close, METH_VARARGS, NULL },
   { (char *) "aug_defnode", py_guestfs_aug_defnode, METH_VARARGS, NULL },

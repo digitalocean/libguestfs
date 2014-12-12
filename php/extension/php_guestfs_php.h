@@ -46,6 +46,7 @@ PHP_FUNCTION (guestfs_add_drive_ro);
 PHP_FUNCTION (guestfs_add_drive_ro_with_if);
 PHP_FUNCTION (guestfs_add_drive_scratch);
 PHP_FUNCTION (guestfs_add_drive_with_if);
+PHP_FUNCTION (guestfs_add_libvirt_dom);
 PHP_FUNCTION (guestfs_aug_clear);
 PHP_FUNCTION (guestfs_aug_close);
 PHP_FUNCTION (guestfs_aug_defnode);

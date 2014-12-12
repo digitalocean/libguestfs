@@ -137,6 +137,7 @@ gboolean guestfs_session_add_drive_ro (GuestfsSession *session, const gchar *fil
 gboolean guestfs_session_add_drive_ro_with_if (GuestfsSession *session, const gchar *filename, const gchar *iface, GError **err);
 gboolean guestfs_session_add_drive_scratch (GuestfsSession *session, gint64 size, GuestfsAddDriveScratch *optargs, GError **err);
 gboolean guestfs_session_add_drive_with_if (GuestfsSession *session, const gchar *filename, const gchar *iface, GError **err);
+gint32 guestfs_session_add_libvirt_dom (GuestfsSession *session, void * /* virDomainPtr */ dom, GuestfsAddLibvirtDom *optargs, GError **err);
 gboolean guestfs_session_aug_clear (GuestfsSession *session, const gchar *augpath, GError **err);
 gboolean guestfs_session_aug_close (GuestfsSession *session, GError **err);
 GuestfsIntBool *guestfs_session_aug_defnode (GuestfsSession *session, const gchar *name, const gchar *expr, const gchar *val, GError **err);

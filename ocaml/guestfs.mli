@@ -425,6 +425,9 @@ val add_drive_with_if : t -> string -> string -> unit
     @deprecated Use {!add_drive} instead
  *)
 
+val add_libvirt_dom : t -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?readonlydisk:string -> ?cachemode:string -> ?discard:string -> ?copyonread:bool -> int64 -> int
+(** add the disk(s) from a libvirt domain *)
+
 val aug_clear : t -> string -> unit
 (** clear Augeas path *)
 
@@ -2234,6 +2237,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method add_drive_ro_with_if : string -> string -> unit
   method add_drive_scratch : ?name:string -> ?label:string -> int64 -> unit
   method add_drive_with_if : string -> string -> unit
+  method add_libvirt_dom : ?readonly:bool -> ?iface:string -> ?live:bool -> ?readonlydisk:string -> ?cachemode:string -> ?discard:string -> ?copyonread:bool -> int64 -> int
   method aug_clear : string -> unit
   method aug_close : unit -> unit
   method aug_defnode : string -> string -> string -> int_bool

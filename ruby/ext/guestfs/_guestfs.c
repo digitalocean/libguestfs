@@ -1332,6 +1332,124 @@ ruby_guestfs_add_drive_with_if (VALUE gv, VALUE filenamev, VALUE ifacev)
 
 /*
  * call-seq:
+ *   g.add_libvirt_dom(dom, {optargs...}) -> fixnum
+ *
+ * add the disk(s) from a libvirt domain
+ *
+ * This function adds the disk(s) attached to the libvirt
+ * domain "dom". It works by requesting the domain XML from
+ * libvirt, parsing it for disks, and calling
+ * "g.add_drive_opts" on each one.
+ * 
+ * In the C API we declare "void *dom", but really it has
+ * type "virDomainPtr dom". This is so we don't need
+ * <libvirt.h>.
+ * 
+ * The number of disks added is returned. This operation is
+ * atomic: if an error is returned, then no disks are
+ * added.
+ * 
+ * This function does some minimal checks to make sure the
+ * libvirt domain is not running (unless "readonly" is
+ * true). In a future version we will try to acquire the
+ * libvirt lock on each disk.
+ * 
+ * Disks must be accessible locally. This often means that
+ * adding disks from a remote libvirt connection (see
+ * <http://libvirt.org/remote.html>) will fail unless those
+ * disks are accessible via the same device path locally
+ * too.
+ * 
+ * The optional "live" flag controls whether this call will
+ * try to connect to a running virtual machine "guestfsd"
+ * process if it sees a suitable <channel> element in the
+ * libvirt XML definition. The default (if the flag is
+ * omitted) is never to try. See "ATTACHING TO RUNNING
+ * DAEMONS" in guestfs(3) for more information.
+ * 
+ * The optional "readonlydisk" parameter controls what we
+ * do for disks which are marked <readonly/> in the libvirt
+ * XML. See "g.add_domain" for possible values.
+ * 
+ * The other optional parameters are passed directly
+ * through to "g.add_drive_opts".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_add_libvirt_dom+[http://libguestfs.org/guestfs.3.html#guestfs_add_libvirt_dom]).
+ */
+static VALUE
+ruby_guestfs_add_libvirt_dom (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "add_libvirt_dom");
+
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE domv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
+  (void) domv;
+  void * /* virDomainPtr */ dom = POINTER_NOT_IMPLEMENTED ("virDomainPtr");
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_add_libvirt_dom_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_add_libvirt_dom_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("readonly")));
+  if (v != Qnil) {
+    optargs_s.readonly = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLY_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("iface")));
+  if (v != Qnil) {
+    optargs_s.iface = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("live")));
+  if (v != Qnil) {
+    optargs_s.live = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_LIVE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("readonlydisk")));
+  if (v != Qnil) {
+    optargs_s.readonlydisk = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("cachemode")));
+  if (v != Qnil) {
+    optargs_s.cachemode = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("discard")));
+  if (v != Qnil) {
+    optargs_s.discard = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("copyonread")));
+  if (v != Qnil) {
+    optargs_s.copyonread = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_add_libvirt_dom_argv (g, dom, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
  *   g.aug_clear(augpath) -> nil
  *
  * clear Augeas path
@@ -17423,10 +17541,6 @@ ruby_guestfs_mktemp (int argc, VALUE *argv, VALUE gv)
  * load a kernel module
  *
  * This loads a kernel module in the appliance.
- * 
- * The kernel module must have been whitelisted when
- * libguestfs was built (see "appliance/kmod.whitelist.in"
- * in the source).
  *
  *
  * (For the C API documentation for this function, see
@@ -26384,6 +26498,8 @@ Init__guestfs (void)
         ruby_guestfs_add_drive_scratch, -1);
   rb_define_method (c_guestfs, "add_drive_with_if",
         ruby_guestfs_add_drive_with_if, 2);
+  rb_define_method (c_guestfs, "add_libvirt_dom",
+        ruby_guestfs_add_libvirt_dom, -1);
   rb_define_method (c_guestfs, "aug_clear",
         ruby_guestfs_aug_clear, 1);
   rb_define_method (c_guestfs, "aug_close",

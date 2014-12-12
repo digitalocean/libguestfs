@@ -760,6 +760,41 @@ Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
 
+=item $nrdisks = $g->add_libvirt_dom ($dom [, readonly => $readonly] [, iface => $iface] [, live => $live] [, readonlydisk => $readonlydisk] [, cachemode => $cachemode] [, discard => $discard] [, copyonread => $copyonread]);
+
+This function adds the disk(s) attached to the libvirt domain C<dom>.
+It works by requesting the domain XML from libvirt, parsing it for
+disks, and calling C<$g-E<gt>add_drive_opts> on each one.
+
+In the C API we declare C<void *dom>, but really it has type
+C<virDomainPtr dom>.  This is so we don't need E<lt>libvirt.hE<gt>.
+
+The number of disks added is returned.  This operation is atomic:
+if an error is returned, then no disks are added.
+
+This function does some minimal checks to make sure the libvirt
+domain is not running (unless C<readonly> is true).  In a future
+version we will try to acquire the libvirt lock on each disk.
+
+Disks must be accessible locally.  This often means that adding disks
+from a remote libvirt connection (see L<http://libvirt.org/remote.html>)
+will fail unless those disks are accessible via the same device path
+locally too.
+
+The optional C<live> flag controls whether this call will try
+to connect to a running virtual machine C<guestfsd> process if
+it sees a suitable E<lt>channelE<gt> element in the libvirt
+XML definition.  The default (if the flag is omitted) is never
+to try.  See L<guestfs(3)/ATTACHING TO RUNNING DAEMONS> for more
+information.
+
+The optional C<readonlydisk> parameter controls what we do for
+disks which are marked E<lt>readonly/E<gt> in the libvirt XML.
+See C<$g-E<gt>add_domain> for possible values.
+
+The other optional parameters are passed directly through to
+C<$g-E<gt>add_drive_opts>.
+
 =item $g->aug_clear ($augpath);
 
 Set the value associated with C<path> to C<NULL>.  This
@@ -5223,9 +5258,6 @@ See also: C<$g-E<gt>mkdtemp>.
 
 This loads a kernel module in the appliance.
 
-The kernel module must have been whitelisted when libguestfs
-was built (see C<appliance/kmod.whitelist.in> in the source).
-
 =item $g->mount ($mountable, $mountpoint);
 
 Mount a guest disk at a position in the filesystem.  Block devices
@@ -7824,6 +7856,23 @@ use vars qw(%guestfs_introspection);
     ],
     name => "add_drive_with_if",
     description => "add a drive specifying the QEMU block emulation to use",
+  },
+  "add_libvirt_dom" => {
+    ret => 'int',
+    args => [
+      [ 'dom', 'pointer(virDomainPtr)', 0 ],
+    ],
+    optargs => {
+      readonly => [ 'readonly', 'bool', 0 ],
+      iface => [ 'iface', 'string', 1 ],
+      live => [ 'live', 'bool', 2 ],
+      readonlydisk => [ 'readonlydisk', 'string', 3 ],
+      cachemode => [ 'cachemode', 'string', 4 ],
+      discard => [ 'discard', 'string', 5 ],
+      copyonread => [ 'copyonread', 'bool', 6 ],
+    },
+    name => "add_libvirt_dom",
+    description => "add the disk(s) from a libvirt domain",
   },
   "aug_clear" => {
     ret => 'void',

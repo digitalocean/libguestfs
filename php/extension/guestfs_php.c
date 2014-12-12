@@ -40,6 +40,7 @@
 #include <php_guestfs_php.h>
 
 #include "guestfs.h"
+#include "guestfs-internal-frontend.h"
 
 static int res_guestfs_h;
 
@@ -72,6 +73,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_add_drive_ro_with_if, NULL)
   PHP_FE (guestfs_add_drive_scratch, NULL)
   PHP_FE (guestfs_add_drive_with_if, NULL)
+  PHP_FE (guestfs_add_libvirt_dom, NULL)
   PHP_FE (guestfs_aug_clear, NULL)
   PHP_FE (guestfs_aug_close, NULL)
   PHP_FE (guestfs_aug_defnode, NULL)
@@ -1195,6 +1197,76 @@ PHP_FUNCTION (guestfs_add_drive_with_if)
   }
 
   RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_add_libvirt_dom)
+{
+  zval *z_g;
+  guestfs_h *g;
+  void * /* virDomainPtr */ dom;
+  struct guestfs_add_libvirt_dom_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_add_libvirt_dom_argv *optargs = &optargs_s;
+  zend_bool optargs_t_readonly = -1;
+  char *optargs_t_iface = NULL;
+  int optargs_t_iface_size = -1;
+  zend_bool optargs_t_live = -1;
+  char *optargs_t_readonlydisk = NULL;
+  int optargs_t_readonlydisk_size = -1;
+  char *optargs_t_cachemode = NULL;
+  int optargs_t_cachemode_size = -1;
+  char *optargs_t_discard = NULL;
+  int optargs_t_discard_size = -1;
+  zend_bool optargs_t_copyonread = -1;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "r|bsbsssb",
+        &z_g, &optargs_t_readonly, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_live, &optargs_t_readonlydisk, &optargs_t_readonlydisk_size, &optargs_t_cachemode, &optargs_t_cachemode_size, &optargs_t_discard, &optargs_t_discard_size, &optargs_t_copyonread) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  dom = POINTER_NOT_IMPLEMENTED ("virDomainPtr");
+  if (optargs_t_readonly != (zend_bool)-1) {
+    optargs_s.readonly = optargs_t_readonly;
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLY_BITMASK;
+  }
+  if (optargs_t_iface != NULL) {
+    optargs_s.iface = optargs_t_iface;
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK;
+  }
+  if (optargs_t_live != (zend_bool)-1) {
+    optargs_s.live = optargs_t_live;
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_LIVE_BITMASK;
+  }
+  if (optargs_t_readonlydisk != NULL) {
+    optargs_s.readonlydisk = optargs_t_readonlydisk;
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK;
+  }
+  if (optargs_t_cachemode != NULL) {
+    optargs_s.cachemode = optargs_t_cachemode;
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK;
+  }
+  if (optargs_t_discard != NULL) {
+    optargs_s.discard = optargs_t_discard;
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK;
+  }
+  if (optargs_t_copyonread != (zend_bool)-1) {
+    optargs_s.copyonread = optargs_t_copyonread;
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD_BITMASK;
+  }
+
+  int r;
+  r = guestfs_add_libvirt_dom_argv (g, dom, optargs);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_LONG (r);
 }
 
 PHP_FUNCTION (guestfs_aug_clear)

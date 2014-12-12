@@ -105,6 +105,7 @@ extern char *guestfs__inspect_get_windows_systemroot (guestfs_h *g, const char *
 extern char **guestfs__inspect_get_roots (guestfs_h *g);
 extern char **guestfs__debug_drives (guestfs_h *g);
 extern int guestfs__add_domain (guestfs_h *g, const char *dom, const struct guestfs_add_domain_argv *optargs);
+extern int guestfs__add_libvirt_dom (guestfs_h *g, void * /* really virDomainPtr */ dom, const struct guestfs_add_libvirt_dom_argv *optargs);
 extern char *guestfs__inspect_get_package_format (guestfs_h *g, const char *root);
 extern char *guestfs__inspect_get_package_management (guestfs_h *g, const char *root);
 extern struct guestfs_application_list *guestfs__inspect_list_applications (guestfs_h *g, const char *root);

@@ -127,39 +127,6 @@ extern void guestfs___cleanup_pclose (void *ptr);
  */
 #include "guestfs-internal-frontend-cleanups.h"
 
-#if defined(HAVE_LIBVIRT)
-
-#include <libvirt/libvirt.h>
-
-/* This was proposed as an external API, but there's a problem: the
- * generator is unable to bind a virDomainPtr in any language other
- * than C.  For now this API is only used by virt-df and
- * virt-alignment-scan (both C tools) and it's only exported
- * internally within the libguestfs code, not to external users.
- */
-
-struct guestfs___add_libvirt_dom_argv {
-  uint64_t bitmask;
-#define GUESTFS___ADD_LIBVIRT_DOM_READONLY_BITMASK (UINT64_C(1)<<0)
-  int readonly;
-#define GUESTFS___ADD_LIBVIRT_DOM_IFACE_BITMASK (UINT64_C(1)<<1)
-  const char *iface;
-#define GUESTFS___ADD_LIBVIRT_DOM_LIVE_BITMASK (UINT64_C(1)<<2)
-  int live;
-#define GUESTFS___ADD_LIBVIRT_DOM_READONLYDISK_BITMASK (UINT64_C(1)<<3)
-  const char *readonlydisk;
-#define GUESTFS___ADD_LIBVIRT_DOM_CACHEMODE_BITMASK (UINT64_C(1)<<4)
-  const char *cachemode;
-#define GUESTFS___ADD_LIBVIRT_DOM_DISCARD_BITMASK (UINT64_C(1)<<5)
-  const char *discard;
-#define GUESTFS___ADD_LIBVIRT_DOM_COPYONREAD_BITMASK (UINT64_C(1)<<6)
-  int copyonread;
-};
-
-extern GUESTFS_DLL_PUBLIC int guestfs___add_libvirt_dom (guestfs_h *g, virDomainPtr dom, const struct guestfs___add_libvirt_dom_argv *optargs);
-
-#endif /* HAVE_LIBVIRT */
-
 /* Current program name.  Note <errno.h> must be included in all files
  * that want to use 'program_name'.
  */
@@ -182,5 +149,16 @@ extern GUESTFS_DLL_PUBLIC int guestfs___add_libvirt_dom (guestfs_h *g, virDomain
         close (fd);                                                     \
     }                                                                   \
   } while (0)
+
+/* Not all language bindings know how to deal with Pointer arguments.
+ * Those that don't will use this macro which complains noisily and
+ * returns NULL.
+ */
+#define POINTER_NOT_IMPLEMENTED(type)                                   \
+  (                                                                     \
+   fprintf (stderr, "*** WARNING: this language binding does not support conversion of Pointer(%s), so the current function will always fail.  Patches to fix this should be sent to the libguestfs upstream mailing list.\n", \
+            type),                                                      \
+   NULL                                                                 \
+)
 
 #endif /* GUESTFS_INTERNAL_FRONTEND_H_ */

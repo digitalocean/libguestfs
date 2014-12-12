@@ -1,3 +1,208 @@
+commit 5a1204594c5691d58ed2032f95df0b3492bc8e18
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Dec 11 16:29:29 2014 +0000
+
+    Version 1.29.14.
+
+commit 90e9ad7ff963571718935ff22f96582515b55763
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Dec 11 14:32:46 2014 +0000
+
+    python: Add a regression test for disk labelling.
+
+commit 39f7eaea80c103d9b1cdf1826c4bc70c304c860e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Dec 11 14:05:47 2014 +0000
+
+    launch: libvirt: Fix labelling of overlay files.
+    
+    We had code (added for RHBZ#912499) which labels overlay files
+    correctly so that libvirt can read them.  Unfortunately this code was
+    broken by subsequent commits: the new backend setting for the
+    imagelabel is only copied to the 'data' struct during launch, but the
+    create_cow_overlay callback is called before launch (when adding
+    drives).
+    
+    The fix is easy: ensure create_cow_overlay_libvirt checks for the
+    backend setting and initializes the 'data' struct.
+    
+    This change also means we need to free (data->selinux_imagelabel)
+    before setting it in launch (and we do the same for
+    data->selinux_label, although that's not strictly necessary).
+    
+    For background on this, see:
+    https://bugzilla.redhat.com/show_bug.cgi?id=912499#c10
+
+commit f4b4dcc03aa06a4afdb02d81b56806f8a9c6dd78
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Dec 11 13:47:01 2014 +0000
+
+    debug: add-domain: Dump XML of original domain.
+    
+    Useful for debugging labelling issues.
+
+commit 2c9f6da03464279db9a2baa24c32e2a9b64f713a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 10 20:53:27 2014 +0000
+
+    python: Implement Pointer ("virDomainPtr", _) (RHBZ#1075164).
+    
+    This allows the Python binding of guestfs_add_libvirt_dom to work.
+    
+    There is a regression test to ensure this keeps working.
+    
+    Note this requires a patched libvirt-python, supporting the
+    c_pointer() method.
+
+commit db1c8a6436c12b4a7f2e29bd4b926c5b064048b7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 10 21:33:24 2014 +0000
+
+    python: Improve harness for running Python tests.
+    
+    It now understands exit code 77 == skip, amongst other improvements.
+
+commit 96158d42f5cb9b6c472b4630f2c97edae600f6d3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 10 17:11:31 2014 +0000
+
+    New(ish) API: guestfs_add_libvirt_dom.
+    
+    This API already existed (as guestfs___add_libvirt_dom), and was used
+    by a few tools.
+    
+    This commit changes it to a public API.
+    
+    Note that for reasons outlined in the previous commit message, it is
+    impossible to call this from guestfish or from non-C language
+    bindings.
+
+commit fd9ac7f47d769e8319ec597ae6688d4e2bfa55a6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 10 17:04:38 2014 +0000
+
+    generator: Implement Pointer arguments.
+    
+    This implements Pointer arguments properly, at least for certain
+    limited definitions of "implements" and "properly".
+    
+    'Pointer' as an argument type is meant to indicate a pointer passed to
+    an API.  The canonical example is the following proposed API:
+    
+      int guestfs_add_libvirt_dom (guestfs_h *g, virDomainPtr dom, ...);
+    
+    where 'dom' is described in the generator as:
+    
+      Pointer ("virDomainPtr", "dom")
+    
+    Pointer existed already in the generator, but the implementation was
+    broken.  It is not used by any existing API.
+    
+    There are two basic difficulties of implementing Pointer:
+    
+    (1) In language bindings there is no portable way to turn (eg.) a Perl
+    Sys::Virt 'dom' object into a C virDomainPtr.
+    
+    (2) We can't rely on <libvirt/libvirt.h> being included (since it's an
+    optional dependency).
+    
+    In this commit, we solve (2) by using a 'void *'.
+    
+    We don't solve (1), really.  Instead we have a macro
+    POINTER_NOT_IMPLEMENTED which is used by currently all the non-C
+    language bindings.  It complains loudly and passes a NULL to the
+    underlying function.  The underlying function detects the NULL and
+    safely returns an error.  It is to be hoped that people will
+    contribute patches to make each language binding work, although in
+    some bindings it will always remain impossible to implement.
+
+commit 841aa0faf3b1495fd167e32b8105b0bc6faaea60
+Author: John Eckersberg <jeckersb@redhat.com>
+Date:   Thu Dec 11 08:38:49 2014 -0500
+
+    p2v: show error dialog if virt-v2v fails (RHBZ#1167601)
+    
+    Ensure the control connection exits with the same status code as
+    virt-v2v, and return an error from start_conversion if virt-v2v
+    failed.
+
+commit 3d7ea11272dad32ef7ba4bf7c75f0231c5543cc7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 10 13:28:35 2014 +0000
+
+    lib: Don't mention whitelist in guestfs_modprobe documentation.
+    
+    There is no such whitelist any longer.  All modules are copied into
+    the appliance.
+
+commit e1fd9615cc4a9ceb68f4a47a289712fc31a0af5e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 10 13:03:55 2014 +0000
+
+    v2v: linux: Fix modifications to default kernel for legacy grub.
+    
+    This didn't work at all because the regular expression did not match
+    the returned Augeas path.
+    
+    In future if the regular expression doesn't match, this will give an
+    internal error instead of continuing with a bogus value.
+    
+    Thanks: Junqin Zhou for providing the test case and debug information.
+
+commit 7a34855265d66321ff1f7ee7a2bb4c4d69056a20
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 9 19:16:57 2014 +0000
+
+    builder: Add Fedora 21 image, remove RHEL 7 RC image.
+
+commit 6468b9d60172bcef76b36c14b72f9a1913d94954
+Author: Kashyap Chamarthy <kchamart@redhat.com>
+Date:   Tue Dec 9 16:58:11 2014 +0000
+
+    arm: Use -cpu host on KVM.
+
+commit bdf772db3286487adefa56b966435f2dd638e0a8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 9 14:06:18 2014 +0000
+
+    inspection: Not an installer if there are multiple partitions (RHBZ#1171666).
+    
+    Regular EFI disks have /EFI on the first (VFAT) partition, but they
+    are not installers.
+    
+    Fix this by only considering something to be an installer if it has a
+    single partition (or whole disks like ISOs).
+    
+    Implementing this is quite complex since when checking a filesystem,
+    we don't have information about whether we are even looking at a
+    partition, nor about whether it's the first partition out of how many.
+    The majority of the commit is changing the code to collect that
+    information.
+
+commit 9d6f0b6a86d68438b27a3d783677c63f39ec6627
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Mon Dec 8 11:20:54 2014 +0800
+
+    resize: fix 'No space left on device' problem when copying to an extended partition (RHBZ#1169015)
+    
+    Because of the size of an extended partition reported by Linux is always 1024
+    bytes, so it will always fail to copy to an extended partition.
+    
+    This patch fixes this problem by copying to the offset of an extended
+    partition in the destination disk.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 33098d23020bd3824a2954823a0dbaff751c814d
+Author: John Eckersberg <jeckersb@redhat.com>
+Date:   Fri Dec 5 16:58:13 2014 -0500
+
+    p2v: wait for qemu-nbd before starting conversion (RHBZ#1167774)
+    
+    Wait up to 10 seconds for qemu-nbd to start up and respond to clients.
+    Otherwise the conversion server may attempt to connect before qemu-nbd
+    is ready to serve it.
+
 commit ee57b5f45a71ebf82ca87d7c40d2e803b78ff252
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Dec 5 16:15:57 2014 +0000

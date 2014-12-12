@@ -638,6 +638,50 @@ class GuestFS(object):
         r = libguestfsmod.add_drive_with_if (self._o, filename, iface)
         return r
 
+    def add_libvirt_dom (self, dom, readonly=None, iface=None, live=None, readonlydisk=None, cachemode=None, discard=None, copyonread=None):
+        """This function adds the disk(s) attached to the libvirt
+        domain "dom". It works by requesting the domain XML from
+        libvirt, parsing it for disks, and calling
+        "g.add_drive_opts" on each one.
+        
+        In the C API we declare "void *dom", but really it has
+        type "virDomainPtr dom". This is so we don't need
+        <libvirt.h>.
+        
+        The number of disks added is returned. This operation is
+        atomic: if an error is returned, then no disks are
+        added.
+        
+        This function does some minimal checks to make sure the
+        libvirt domain is not running (unless "readonly" is
+        true). In a future version we will try to acquire the
+        libvirt lock on each disk.
+        
+        Disks must be accessible locally. This often means that
+        adding disks from a remote libvirt connection (see
+        <http://libvirt.org/remote.html>) will fail unless those
+        disks are accessible via the same device path locally
+        too.
+        
+        The optional "live" flag controls whether this call will
+        try to connect to a running virtual machine "guestfsd"
+        process if it sees a suitable <channel> element in the
+        libvirt XML definition. The default (if the flag is
+        omitted) is never to try. See "ATTACHING TO RUNNING
+        DAEMONS" in guestfs(3) for more information.
+        
+        The optional "readonlydisk" parameter controls what we
+        do for disks which are marked <readonly/> in the libvirt
+        XML. See "g.add_domain" for possible values.
+        
+        The other optional parameters are passed directly
+        through to "g.add_drive_opts".
+        """
+        dom = dom.c_pointer()
+        self._check_not_closed ()
+        r = libguestfsmod.add_libvirt_dom (self._o, dom, readonly, iface, live, readonlydisk, cachemode, discard, copyonread)
+        return r
+
     def aug_clear (self, augpath):
         """Set the value associated with "path" to "NULL". This is
         the same as the augtool(1) "clear" command.
@@ -6189,10 +6233,6 @@ class GuestFS(object):
 
     def modprobe (self, modulename):
         """This loads a kernel module in the appliance.
-        
-        The kernel module must have been whitelisted when
-        libguestfs was built (see "appliance/kmod.whitelist.in"
-        in the source).
         """
         self._check_not_closed ()
         r = libguestfsmod.modprobe (self._o, modulename)

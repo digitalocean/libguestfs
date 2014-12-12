@@ -364,6 +364,7 @@ am__objects_1 = libguestfs_gobject_1_0_la-session.lo \
 	libguestfs_gobject_1_0_la-optargs-add_domain.lo \
 	libguestfs_gobject_1_0_la-optargs-add_drive.lo \
 	libguestfs_gobject_1_0_la-optargs-add_drive_scratch.lo \
+	libguestfs_gobject_1_0_la-optargs-add_libvirt_dom.lo \
 	libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.lo \
 	libguestfs_gobject_1_0_la-optargs-btrfs_fsck.lo \
 	libguestfs_gobject_1_0_la-optargs-btrfs_subvolume_create.lo \
@@ -1681,6 +1682,7 @@ guestfs_gobject_headers = \
   include/guestfs-gobject/optargs-add_domain.h \
   include/guestfs-gobject/optargs-add_drive.h \
   include/guestfs-gobject/optargs-add_drive_scratch.h \
+  include/guestfs-gobject/optargs-add_libvirt_dom.h \
   include/guestfs-gobject/optargs-btrfs_filesystem_resize.h \
   include/guestfs-gobject/optargs-btrfs_fsck.h \
   include/guestfs-gobject/optargs-btrfs_subvolume_create.h \
@@ -1761,6 +1763,7 @@ guestfs_gobject_sources = \
   src/optargs-add_domain.c \
   src/optargs-add_drive.c \
   src/optargs-add_drive_scratch.c \
+  src/optargs-add_libvirt_dom.c \
   src/optargs-btrfs_filesystem_resize.c \
   src/optargs-btrfs_fsck.c \
   src/optargs-btrfs_subvolume_create.c \
@@ -1950,6 +1953,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_domain.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_drive.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_drive_scratch.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_libvirt_dom.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_fsck.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_subvolume_create.Plo@am__quote@
@@ -2228,6 +2232,13 @@ libguestfs_gobject_1_0_la-optargs-add_drive_scratch.lo: src/optargs-add_drive_sc
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-add_drive_scratch.c' object='libguestfs_gobject_1_0_la-optargs-add_drive_scratch.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-add_drive_scratch.lo `test -f 'src/optargs-add_drive_scratch.c' || echo '$(srcdir)/'`src/optargs-add_drive_scratch.c
+
+libguestfs_gobject_1_0_la-optargs-add_libvirt_dom.lo: src/optargs-add_libvirt_dom.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-add_libvirt_dom.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_libvirt_dom.Tpo -c -o libguestfs_gobject_1_0_la-optargs-add_libvirt_dom.lo `test -f 'src/optargs-add_libvirt_dom.c' || echo '$(srcdir)/'`src/optargs-add_libvirt_dom.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_libvirt_dom.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_libvirt_dom.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-add_libvirt_dom.c' object='libguestfs_gobject_1_0_la-optargs-add_libvirt_dom.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-add_libvirt_dom.lo `test -f 'src/optargs-add_libvirt_dom.c' || echo '$(srcdir)/'`src/optargs-add_libvirt_dom.c
 
 libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.lo: src/optargs-btrfs_filesystem_resize.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.Tpo -c -o libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.lo `test -f 'src/optargs-btrfs_filesystem_resize.c' || echo '$(srcdir)/'`src/optargs-btrfs_filesystem_resize.c
