@@ -440,6 +440,111 @@ guestfs_get_selinux (guestfs_h *g)
   return r;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_add_libvirt_dom_argv (guestfs_h *g,
+                              void * /* really virDomainPtr */ dom,
+                              const struct guestfs_add_libvirt_dom_argv *optargs)
+{
+  struct guestfs_add_libvirt_dom_argv optargs_null;
+  if (!optargs) {
+    optargs_null.bitmask = 0;
+    optargs = &optargs_null;
+  }
+
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  if (g->state != CONFIG) {
+    error (g, "%s: this function can only be called in the config state",
+              "add_libvirt_dom");
+    return -1;
+  }
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "add_libvirt_dom", 15);
+  if (dom == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "add_libvirt_dom", "dom");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK) &&
+      optargs->iface == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_libvirt_dom", "iface");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK) &&
+      optargs->readonlydisk == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_libvirt_dom", "readonlydisk");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK) &&
+      optargs->cachemode == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_libvirt_dom", "cachemode");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK) &&
+      optargs->discard == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_libvirt_dom", "discard");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xffffffffffffff80)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "add_libvirt_dom", "add_libvirt_dom");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "add_libvirt_dom");
+    fprintf (trace_buffer.fp, " (virDomainPtr)%p", dom);
+    if (optargs->bitmask & GUESTFS_ADD_LIBVIRT_DOM_READONLY_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "readonly", optargs->readonly ? "true" : "false");
+    }
+    if (optargs->bitmask & GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "iface", optargs->iface);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_LIBVIRT_DOM_LIVE_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "live", optargs->live ? "true" : "false");
+    }
+    if (optargs->bitmask & GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "readonlydisk", optargs->readonlydisk);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "cachemode", optargs->cachemode);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "discard", optargs->discard);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "copyonread", optargs->copyonread ? "true" : "false");
+    }
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__add_libvirt_dom (g, dom, optargs);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "add_libvirt_dom");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "add_libvirt_dom", "-1");
+  }
+
+  return r;
+}
+
 GUESTFS_DLL_PUBLIC char *
 guestfs_inspect_get_hostname (guestfs_h *g,
                               const char *root)

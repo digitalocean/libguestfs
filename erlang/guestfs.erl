@@ -34,6 +34,7 @@
 -export([add_drive_ro_with_if/3]).
 -export([add_drive_scratch/2, add_drive_scratch/3]).
 -export([add_drive_with_if/3]).
+-export([add_libvirt_dom/2, add_libvirt_dom/3]).
 -export([aug_clear/2]).
 -export([aug_close/1]).
 -export([aug_defnode/4]).
@@ -667,6 +668,11 @@ add_drive_scratch(G, Size) ->
 
 add_drive_with_if(G, Filename, Iface) ->
   call_port(G, {add_drive_with_if, Filename, Iface}).
+
+add_libvirt_dom(G, Dom, Optargs) ->
+  call_port(G, {add_libvirt_dom, Dom, Optargs}).
+add_libvirt_dom(G, Dom) ->
+  add_libvirt_dom(G, Dom, []).
 
 aug_clear(G, Augpath) ->
   call_port(G, {aug_clear, Augpath}).

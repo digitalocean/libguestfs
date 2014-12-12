@@ -591,6 +591,65 @@ PREINIT:
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
+SV *
+add_libvirt_dom (g, dom, ...)
+      guestfs_h *g;
+      void * /* virDomainPtr */ dom;
+PREINIT:
+      int r;
+      struct guestfs_add_libvirt_dom_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_add_libvirt_dom_argv *optargs = &optargs_s;
+      size_t items_i;
+   CODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "readonly")) {
+          optargs_s.readonly = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_ADD_LIBVIRT_DOM_READONLY_BITMASK;
+        }
+        else if (STREQ (this_arg, "iface")) {
+          optargs_s.iface = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK;
+        }
+        else if (STREQ (this_arg, "live")) {
+          optargs_s.live = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_ADD_LIBVIRT_DOM_LIVE_BITMASK;
+        }
+        else if (STREQ (this_arg, "readonlydisk")) {
+          optargs_s.readonlydisk = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK;
+        }
+        else if (STREQ (this_arg, "cachemode")) {
+          optargs_s.cachemode = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK;
+        }
+        else if (STREQ (this_arg, "discard")) {
+          optargs_s.discard = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK;
+        }
+        else if (STREQ (this_arg, "copyonread")) {
+          optargs_s.copyonread = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_add_libvirt_dom_argv (g, dom, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
 void
 aug_clear (g, augpath)
       guestfs_h *g;

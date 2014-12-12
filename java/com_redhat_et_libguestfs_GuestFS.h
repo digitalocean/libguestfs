@@ -151,6 +151,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1with_
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _add_libvirt_dom
+ * Signature: (JJJZLjava/lang/String;ZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)I
+ */
+JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1add_1libvirt_1dom
+  (JNIEnv *, jobject, jlong, jlong, jlong, jboolean, jstring, jboolean, jstring, jstring, jstring, jboolean);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _aug_clear
  * Signature: (JLjava/lang/String;)V
  */

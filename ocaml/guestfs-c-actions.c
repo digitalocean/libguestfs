@@ -1433,6 +1433,84 @@ ocaml_guestfs_add_drive_with_if (value gv, value filenamev, value ifacev)
 }
 
 /* Automatically generated wrapper for function
+ * val add_libvirt_dom : t -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?readonlydisk:string -> ?cachemode:string -> ?discard:string -> ?copyonread:bool -> int64 -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_add_libvirt_dom (value gv, value readonlyv, value ifacev, value livev, value readonlydiskv, value cachemodev, value discardv, value copyonreadv, value domv);
+
+value
+ocaml_guestfs_add_libvirt_dom (value gv, value readonlyv, value ifacev, value livev, value readonlydiskv, value cachemodev, value discardv, value copyonreadv, value domv)
+{
+  CAMLparam5 (gv, readonlyv, ifacev, livev, readonlydiskv);
+  CAMLxparam4 (cachemodev, discardv, copyonreadv, domv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("add_libvirt_dom");
+
+  void * /* virDomainPtr */ dom = POINTER_NOT_IMPLEMENTED ("virDomainPtr");
+  struct guestfs_add_libvirt_dom_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_add_libvirt_dom_argv *optargs = &optargs_s;
+  if (readonlyv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLY_BITMASK;
+    optargs_s.readonly = Bool_val (Field (readonlyv, 0));
+  }
+  if (ifacev != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK;
+    optargs_s.iface = guestfs___safe_strdup (g, String_val (Field (ifacev, 0)));
+  }
+  if (livev != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_LIVE_BITMASK;
+    optargs_s.live = Bool_val (Field (livev, 0));
+  }
+  if (readonlydiskv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK;
+    optargs_s.readonlydisk = guestfs___safe_strdup (g, String_val (Field (readonlydiskv, 0)));
+  }
+  if (cachemodev != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK;
+    optargs_s.cachemode = guestfs___safe_strdup (g, String_val (Field (cachemodev, 0)));
+  }
+  if (discardv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK;
+    optargs_s.discard = guestfs___safe_strdup (g, String_val (Field (discardv, 0)));
+  }
+  if (copyonreadv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD_BITMASK;
+    optargs_s.copyonread = Bool_val (Field (copyonreadv, 0));
+  }
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_add_libvirt_dom_argv (g, dom, optargs);
+  caml_leave_blocking_section ();
+  if (ifacev != Val_int (0))
+    free ((char *) optargs_s.iface);
+  if (readonlydiskv != Val_int (0))
+    free ((char *) optargs_s.readonlydisk);
+  if (cachemodev != Val_int (0))
+    free ((char *) optargs_s.cachemode);
+  if (discardv != Val_int (0))
+    free ((char *) optargs_s.discard);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "add_libvirt_dom");
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_add_libvirt_dom_byte (value *argv, int argn);
+
+value
+ocaml_guestfs_add_libvirt_dom_byte (value *argv, int argn ATTRIBUTE_UNUSED)
+{
+  return ocaml_guestfs_add_libvirt_dom (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8]);
+}
+
+/* Automatically generated wrapper for function
  * val aug_clear : t -> string -> unit
  */
 

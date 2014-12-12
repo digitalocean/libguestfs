@@ -553,6 +553,40 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1with_1if  (JNIEnv *env, jobj
   }
 }
 
+JNIEXPORT jint JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1add_1libvirt_1dom  (JNIEnv *env, jobject obj, jlong jg, jlong jdom, jlong joptargs_bitmask, jboolean jreadonly, jstring jiface, jboolean jlive, jstring jreadonlydisk, jstring jcachemode, jstring jdiscard, jboolean jcopyonread)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  void * /* virDomainPtr */ dom;
+  struct guestfs_add_libvirt_dom_argv optargs_s;
+  const struct guestfs_add_libvirt_dom_argv *optargs = &optargs_s;
+
+  dom = POINTER_NOT_IMPLEMENTED ("virDomainPtr");
+
+  optargs_s.readonly = jreadonly;
+  optargs_s.iface = (*env)->GetStringUTFChars (env, jiface, NULL);
+  optargs_s.live = jlive;
+  optargs_s.readonlydisk = (*env)->GetStringUTFChars (env, jreadonlydisk, NULL);
+  optargs_s.cachemode = (*env)->GetStringUTFChars (env, jcachemode, NULL);
+  optargs_s.discard = (*env)->GetStringUTFChars (env, jdiscard, NULL);
+  optargs_s.copyonread = jcopyonread;
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_add_libvirt_dom_argv (g, dom, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jiface, optargs_s.iface);
+  (*env)->ReleaseStringUTFChars (env, jreadonlydisk, optargs_s.readonlydisk);
+  (*env)->ReleaseStringUTFChars (env, jcachemode, optargs_s.cachemode);
+  (*env)->ReleaseStringUTFChars (env, jdiscard, optargs_s.discard);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return -1;
+  }
+  return (jint) r;
+}
+
 JNIEXPORT void JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1aug_1clear  (JNIEnv *env, jobject obj, jlong jg, jstring jaugpath)
 {

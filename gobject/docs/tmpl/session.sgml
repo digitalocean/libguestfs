@@ -274,6 +274,18 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_add_libvirt_dom ##### -->
+<para>
+
+</para>
+
+@session: 
+@dom: 
+@optargs: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_aug_clear ##### -->
 <para>
 

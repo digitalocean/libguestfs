@@ -1,6 +1,7 @@
 guestfs_add_domain_get_type
 guestfs_add_drive_get_type
 guestfs_add_drive_scratch_get_type
+guestfs_add_libvirt_dom_get_type
 guestfs_application2_get_type
 guestfs_application_get_type
 guestfs_btrfs_filesystem_resize_get_type

@@ -520,6 +520,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_add_libvirt_dom_argv (IntPtr h, long dom, void *);
+
+    /// <summary>
+    /// add the disk(s) from a libvirt domain
+    /// </summary>
+    public int add_libvirt_dom (long dom)
+    {
+      int r;
+      r = guestfs_add_libvirt_dom_argv (_handle, dom, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_aug_clear (IntPtr h, [In] string augpath);
 
     /// <summary>

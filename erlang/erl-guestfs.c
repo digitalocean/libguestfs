@@ -952,6 +952,75 @@ run_add_drive_with_if (ETERM *message)
 }
 
 static ETERM *
+run_add_libvirt_dom (ETERM *message)
+{
+  void * /* virDomainPtr */ dom = POINTER_NOT_IMPLEMENTED ("virDomainPtr");
+
+  struct guestfs_add_libvirt_dom_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_add_libvirt_dom_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "readonly")) {
+      optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLY_BITMASK;
+      optargs_s.readonly = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "iface")) {
+      optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK;
+      optargs_s.iface = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "live")) {
+      optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_LIVE_BITMASK;
+      optargs_s.live = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "readonlydisk")) {
+      optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK;
+      optargs_s.readonlydisk = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "cachemode")) {
+      optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK;
+      optargs_s.cachemode = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "discard")) {
+      optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK;
+      optargs_s.discard = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "copyonread")) {
+      optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD_BITMASK;
+      optargs_s.copyonread = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("add_libvirt_dom", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_add_libvirt_dom_argv (g, dom, optargs);
+  if ((optargs_s.bitmask & GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK))
+    free ((char *) optargs_s.iface);
+  if ((optargs_s.bitmask & GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK))
+    free ((char *) optargs_s.readonlydisk);
+  if ((optargs_s.bitmask & GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK))
+    free ((char *) optargs_s.cachemode);
+  if ((optargs_s.bitmask & GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK))
+    free ((char *) optargs_s.discard);
+  if (r == -1)
+    return make_error ("add_libvirt_dom");
+
+  return erl_mk_int (r);
+}
+
+static ETERM *
 run_aug_clear (ETERM *message)
 {
   CLEANUP_FREE char *augpath = erl_iolist_to_string (ARG (0));
@@ -10625,6 +10694,8 @@ dispatch (ETERM *message)
     return run_add_drive_scratch (message);
   else if (atom_equals (fun, "add_drive_with_if"))
     return run_add_drive_with_if (message);
+  else if (atom_equals (fun, "add_libvirt_dom"))
+    return run_add_libvirt_dom (message);
   else if (atom_equals (fun, "aug_clear"))
     return run_aug_clear (message);
   else if (atom_equals (fun, "aug_close"))

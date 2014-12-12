@@ -1705,12 +1705,10 @@ Disks with the E<lt>readonly/E<gt> flag are skipped.
 The other optional parameters are passed directly through to
 C<guestfs_add_drive_opts>." };
 
-(*
-This interface is not quite baked yet. -- RWMJ 2010-11-11
   { defaults with
     name = "add_libvirt_dom";
-    style = RInt "nrdisks", [Pointer ("virDomainPtr", "dom")], [Bool "readonly"; String "iface"; Bool "live"; String "readonlydisk"; OString "cachemode"; OString "discard"; OBool "copyonread"];
-    in_fish = false;
+    style = RInt "nrdisks", [Pointer ("virDomainPtr", "dom")], [OBool "readonly"; OString "iface"; OBool "live"; OString "readonlydisk"; OString "cachemode"; OString "discard"; OBool "copyonread"];
+    config_only = true;
     shortdesc = "add the disk(s) from a libvirt domain";
     longdesc = "\
 This function adds the disk(s) attached to the libvirt domain C<dom>.
@@ -1745,7 +1743,6 @@ See C<guestfs_add_domain> for possible values.
 
 The other optional parameters are passed directly through to
 C<guestfs_add_drive_opts>." };
-*)
 
   { defaults with
     name = "inspect_get_package_format";
@@ -7264,10 +7261,7 @@ See also C<guestfs_mke2journal_U>." };
     ];
     shortdesc = "load a kernel module";
     longdesc = "\
-This loads a kernel module in the appliance.
-
-The kernel module must have been whitelisted when libguestfs
-was built (see C<appliance/kmod.whitelist.in> in the source)." };
+This loads a kernel module in the appliance." };
 
   { defaults with
     name = "echo_daemon";
@@ -12403,9 +12397,16 @@ let is_documented { visibility = v } = match v with
   | VPublic | VStateTest -> true
   | VBindTest | VDebug | VInternal -> false
 
-let is_fish { visibility = v } = match v with
-  | VPublic | VDebug -> true
+let is_fish { visibility = v; style = (_, args, _) } =
+  (* Internal functions are not exported to guestfish. *)
+  match v with
   | VStateTest | VBindTest | VInternal -> false
+  | VPublic | VDebug ->
+    (* Functions that take Pointer parameters cannot be used in
+     * guestfish, since there is no way the user could safely
+     * generate a pointer.
+     *)
+    not (List.exists (function Pointer _ -> true | _ -> false) args)
 
 let external_functions =
   List.filter is_external all_functions

@@ -2984,7 +2984,7 @@ struct command_entry mktemp_cmd_entry = {
 
 struct command_entry modprobe_cmd_entry = {
   .name = "modprobe",
-  .help = "NAME\n    modprobe - load a kernel module\n\nSYNOPSIS\n     modprobe modulename\n\nDESCRIPTION\n    This loads a kernel module in the appliance.\n\n    The kernel module must have been whitelisted when libguestfs was built\n    (see \"appliance/kmod.whitelist.in\" in the source).\n\n",
+  .help = "NAME\n    modprobe - load a kernel module\n\nSYNOPSIS\n     modprobe modulename\n\nDESCRIPTION\n    This loads a kernel module in the appliance.\n\n",
   .synopsis = "modprobe modulename",
   .run = run_modprobe
 };

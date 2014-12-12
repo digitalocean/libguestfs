@@ -1361,6 +1361,80 @@ func (g *Guestfs) Add_drive_with_if (filename string, iface string) *GuestfsErro
     return nil
 }
 
+/* Struct carrying optional arguments for Add_libvirt_dom */
+type OptargsAdd_libvirt_dom struct {
+    /* Readonly field is ignored unless Readonly_is_set == true */
+    Readonly_is_set bool
+    Readonly bool
+    /* Iface field is ignored unless Iface_is_set == true */
+    Iface_is_set bool
+    Iface string
+    /* Live field is ignored unless Live_is_set == true */
+    Live_is_set bool
+    Live bool
+    /* Readonlydisk field is ignored unless Readonlydisk_is_set == true */
+    Readonlydisk_is_set bool
+    Readonlydisk string
+    /* Cachemode field is ignored unless Cachemode_is_set == true */
+    Cachemode_is_set bool
+    Cachemode string
+    /* Discard field is ignored unless Discard_is_set == true */
+    Discard_is_set bool
+    Discard string
+    /* Copyonread field is ignored unless Copyonread_is_set == true */
+    Copyonread_is_set bool
+    Copyonread bool
+}
+
+/* add_libvirt_dom : add the disk(s) from a libvirt domain */
+func (g *Guestfs) Add_libvirt_dom (dom int64, optargs *OptargsAdd_libvirt_dom) (int, *GuestfsError) {
+    if g.g == nil {
+        return 0, closed_handle_error ("add_libvirt_dom")
+    }
+    c_optargs := C.struct_guestfs_add_libvirt_dom_argv{}
+    if optargs != nil {
+        if optargs.Readonly_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_LIBVIRT_DOM_READONLY_BITMASK
+            if optargs.Readonly { c_optargs.readonly = 1 } else { c_optargs.readonly = 0}
+        }
+        if optargs.Iface_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK
+            c_optargs.iface = C.CString (optargs.Iface)
+            defer C.free (unsafe.Pointer (c_optargs.iface))
+        }
+        if optargs.Live_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_LIBVIRT_DOM_LIVE_BITMASK
+            if optargs.Live { c_optargs.live = 1 } else { c_optargs.live = 0}
+        }
+        if optargs.Readonlydisk_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK
+            c_optargs.readonlydisk = C.CString (optargs.Readonlydisk)
+            defer C.free (unsafe.Pointer (c_optargs.readonlydisk))
+        }
+        if optargs.Cachemode_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK
+            c_optargs.cachemode = C.CString (optargs.Cachemode)
+            defer C.free (unsafe.Pointer (c_optargs.cachemode))
+        }
+        if optargs.Discard_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK
+            c_optargs.discard = C.CString (optargs.Discard)
+            defer C.free (unsafe.Pointer (c_optargs.discard))
+        }
+        if optargs.Copyonread_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD_BITMASK
+            if optargs.Copyonread { c_optargs.copyonread = 1 } else { c_optargs.copyonread = 0}
+        }
+    }
+
+    r := C.guestfs_add_libvirt_dom_argv (g.g, nil, &c_optargs)
+
+    if r == -1 {
+        return 0, get_error_from_handle (g, "add_libvirt_dom")
+    }
+    return int (r), nil
+}
+
 /* aug_clear : clear Augeas path */
 func (g *Guestfs) Aug_clear (augpath string) *GuestfsError {
     if g.g == nil {

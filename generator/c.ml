@@ -148,7 +148,7 @@ let rec generate_prototype ?(extern = true) ?(static = false)
         pr "size_t %s_size" n
     | Pointer (t, n) ->
         next ();
-        pr "%s %s" t n
+        pr "void * /* really %s */ %s" t n
   ) args;
   if is_RBufferOut then (next (); pr "size_t *size_r");
   if optargs <> [] then (
@@ -2182,9 +2182,6 @@ and generate_linker_script () =
     "guestfs___safe_malloc";
     "guestfs___safe_strdup";
     "guestfs___safe_memdup";
-
-    (* Used only by virt-df and virt-alignment-scan. *)
-    "guestfs___add_libvirt_dom";
   ] in
   let functions =
     List.flatten (

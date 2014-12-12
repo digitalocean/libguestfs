@@ -871,6 +871,37 @@ extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_scratch_argv (guestfs_h *g, int6
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_with_if (guestfs_h *g, const char *filename, const char *iface)
   GUESTFS_DEPRECATED_BY ("add_drive");
 
+#define GUESTFS_HAVE_ADD_LIBVIRT_DOM 1
+#define GUESTFS_ADD_LIBVIRT_DOM_READONLY 0
+#define GUESTFS_ADD_LIBVIRT_DOM_IFACE 1
+#define GUESTFS_ADD_LIBVIRT_DOM_LIVE 2
+#define GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK 3
+#define GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE 4
+#define GUESTFS_ADD_LIBVIRT_DOM_DISCARD 5
+#define GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD 6
+extern GUESTFS_DLL_PUBLIC int guestfs_add_libvirt_dom (guestfs_h *g, void * /* really virDomainPtr */ dom, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_add_libvirt_dom_va (guestfs_h *g, void * /* really virDomainPtr */ dom, va_list args);
+
+struct guestfs_add_libvirt_dom_argv {
+  uint64_t bitmask;
+# define GUESTFS_ADD_LIBVIRT_DOM_READONLY_BITMASK (UINT64_C(1)<<0)
+  int readonly;
+# define GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK (UINT64_C(1)<<1)
+  const char *iface;
+# define GUESTFS_ADD_LIBVIRT_DOM_LIVE_BITMASK (UINT64_C(1)<<2)
+  int live;
+# define GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK (UINT64_C(1)<<3)
+  const char *readonlydisk;
+# define GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK (UINT64_C(1)<<4)
+  const char *cachemode;
+# define GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK (UINT64_C(1)<<5)
+  const char *discard;
+# define GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD_BITMASK (UINT64_C(1)<<6)
+  int copyonread;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_add_libvirt_dom_argv (guestfs_h *g, void * /* really virDomainPtr */ dom, const struct guestfs_add_libvirt_dom_argv *optargs);
+
 #define GUESTFS_HAVE_AUG_CLEAR 1
 extern GUESTFS_DLL_PUBLIC int guestfs_aug_clear (guestfs_h *g, const char *augpath);
 
@@ -3705,6 +3736,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_ADD_DRIVE_RO_WITH_IF 1
 #define LIBGUESTFS_HAVE_ADD_DRIVE_SCRATCH 1
 #define LIBGUESTFS_HAVE_ADD_DRIVE_WITH_IF 1
+#define LIBGUESTFS_HAVE_ADD_LIBVIRT_DOM 1
 #define LIBGUESTFS_HAVE_AUG_CLEAR 1
 #define LIBGUESTFS_HAVE_AUG_CLOSE 1
 #define LIBGUESTFS_HAVE_AUG_DEFNODE 1

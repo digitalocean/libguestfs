@@ -1093,6 +1093,132 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * add the disk(s) from a libvirt domain
+   * <p>
+   * This function adds the disk(s) attached to the libvirt
+   * domain "dom". It works by requesting the domain XML from
+   * libvirt, parsing it for disks, and calling
+   * "g.add_drive_opts" on each one.
+   * <p>
+   * In the C API we declare "void *dom", but really it has
+   * type "virDomainPtr dom". This is so we don't need
+   * <libvirt.h>.
+   * <p>
+   * The number of disks added is returned. This operation is
+   * atomic: if an error is returned, then no disks are
+   * added.
+   * <p>
+   * This function does some minimal checks to make sure the
+   * libvirt domain is not running (unless "readonly" is
+   * true). In a future version we will try to acquire the
+   * libvirt lock on each disk.
+   * <p>
+   * Disks must be accessible locally. This often means that
+   * adding disks from a remote libvirt connection (see
+   * <http://libvirt.org/remote.html>) will fail unless those
+   * disks are accessible via the same device path locally
+   * too.
+   * <p>
+   * The optional "live" flag controls whether this call will
+   * try to connect to a running virtual machine "guestfsd"
+   * process if it sees a suitable <channel> element in the
+   * libvirt XML definition. The default (if the flag is
+   * omitted) is never to try. See "ATTACHING TO RUNNING
+   * DAEMONS" in guestfs(3) for more information.
+   * <p>
+   * The optional "readonlydisk" parameter controls what we
+   * do for disks which are marked <readonly/> in the libvirt
+   * XML. See "g.add_domain" for possible values.
+   * <p>
+   * The other optional parameters are passed directly
+   * through to "g.add_drive_opts".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int add_libvirt_dom (long dom, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("add_libvirt_dom: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean readonly = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("readonly");
+    if (_optobj != null) {
+      readonly = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+    String iface = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("iface");
+    if (_optobj != null) {
+      iface = ((String) _optobj);
+      _optargs_bitmask |= 2L;
+    }
+    boolean live = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("live");
+    if (_optobj != null) {
+      live = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 4L;
+    }
+    String readonlydisk = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("readonlydisk");
+    if (_optobj != null) {
+      readonlydisk = ((String) _optobj);
+      _optargs_bitmask |= 8L;
+    }
+    String cachemode = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("cachemode");
+    if (_optobj != null) {
+      cachemode = ((String) _optobj);
+      _optargs_bitmask |= 16L;
+    }
+    String discard = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("discard");
+    if (_optobj != null) {
+      discard = ((String) _optobj);
+      _optargs_bitmask |= 32L;
+    }
+    boolean copyonread = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("copyonread");
+    if (_optobj != null) {
+      copyonread = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 64L;
+    }
+
+    return _add_libvirt_dom (g, dom, _optargs_bitmask, readonly, iface, live, readonlydisk, cachemode, discard, copyonread);
+  }
+
+  public int add_libvirt_dom (long dom)
+    throws LibGuestFSException
+  {
+    return add_libvirt_dom (dom, null);
+  }
+
+  private native int _add_libvirt_dom (long g, long dom, long _optargs_bitmask, boolean readonly, String iface, boolean live, String readonlydisk, String cachemode, String discard, boolean copyonread)
+    throws LibGuestFSException;
+
+  /**
    * clear Augeas path
    * <p>
    * Set the value associated with "path" to "NULL". This is
@@ -12538,10 +12664,6 @@ public class GuestFS {
    * load a kernel module
    * <p>
    * This loads a kernel module in the appliance.
-   * <p>
-   * The kernel module must have been whitelisted when
-   * libguestfs was built (see "appliance/kmod.whitelist.in"
-   * in the source).
    * <p>
    * @throws LibGuestFSException
    */

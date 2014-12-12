@@ -29,6 +29,7 @@
       <sub name="GuestfsAddDomain" link="GuestfsAddDomain.html"/>
       <sub name="GuestfsAddDrive" link="GuestfsAddDrive.html"/>
       <sub name="GuestfsAddDriveScratch" link="GuestfsAddDriveScratch.html"/>
+      <sub name="GuestfsAddLibvirtDom" link="GuestfsAddLibvirtDom.html"/>
       <sub name="GuestfsBTRFSFilesystemResize" link="GuestfsBTRFSFilesystemResize.html"/>
       <sub name="GuestfsBtrfsFsck" link="GuestfsBtrfsFsck.html"/>
       <sub name="GuestfsBTRFSSubvolumeCreate" link="GuestfsBTRFSSubvolumeCreate.html"/>
@@ -100,6 +101,7 @@
     <keyword type="function" name="guestfs_session_add_drive_ro_with_if ()" link="GuestfsSession.html#guestfs-session-add-drive-ro-with-if"/>
     <keyword type="function" name="guestfs_session_add_drive_scratch ()" link="GuestfsSession.html#guestfs-session-add-drive-scratch"/>
     <keyword type="function" name="guestfs_session_add_drive_with_if ()" link="GuestfsSession.html#guestfs-session-add-drive-with-if"/>
+    <keyword type="function" name="guestfs_session_add_libvirt_dom ()" link="GuestfsSession.html#guestfs-session-add-libvirt-dom"/>
     <keyword type="function" name="guestfs_session_aug_clear ()" link="GuestfsSession.html#guestfs-session-aug-clear"/>
     <keyword type="function" name="guestfs_session_aug_close ()" link="GuestfsSession.html#guestfs-session-aug-close"/>
     <keyword type="function" name="guestfs_session_aug_defnode ()" link="GuestfsSession.html#guestfs-session-aug-defnode"/>
@@ -706,6 +708,16 @@
     <keyword type="struct" name="struct GuestfsAddDriveScratchClass" link="GuestfsAddDriveScratch.html#GuestfsAddDriveScratchClass"/>
     <keyword type="property" name="The “label” property" link="GuestfsAddDriveScratch.html#GuestfsAddDriveScratch--label"/>
     <keyword type="property" name="The “name” property" link="GuestfsAddDriveScratch.html#GuestfsAddDriveScratch--name"/>
+    <keyword type="function" name="guestfs_add_libvirt_dom_new ()" link="GuestfsAddLibvirtDom.html#guestfs-add-libvirt-dom-new"/>
+    <keyword type="struct" name="struct GuestfsAddLibvirtDom" link="GuestfsAddLibvirtDom.html#GuestfsAddLibvirtDom-struct"/>
+    <keyword type="struct" name="struct GuestfsAddLibvirtDomClass" link="GuestfsAddLibvirtDom.html#GuestfsAddLibvirtDomClass"/>
+    <keyword type="property" name="The “cachemode” property" link="GuestfsAddLibvirtDom.html#GuestfsAddLibvirtDom--cachemode"/>
+    <keyword type="property" name="The “copyonread” property" link="GuestfsAddLibvirtDom.html#GuestfsAddLibvirtDom--copyonread"/>
+    <keyword type="property" name="The “discard” property" link="GuestfsAddLibvirtDom.html#GuestfsAddLibvirtDom--discard"/>
+    <keyword type="property" name="The “iface” property" link="GuestfsAddLibvirtDom.html#GuestfsAddLibvirtDom--iface"/>
+    <keyword type="property" name="The “live” property" link="GuestfsAddLibvirtDom.html#GuestfsAddLibvirtDom--live"/>
+    <keyword type="property" name="The “readonly” property" link="GuestfsAddLibvirtDom.html#GuestfsAddLibvirtDom--readonly"/>
+    <keyword type="property" name="The “readonlydisk” property" link="GuestfsAddLibvirtDom.html#GuestfsAddLibvirtDom--readonlydisk"/>
     <keyword type="function" name="guestfs_btrfs_filesystem_resize_new ()" link="GuestfsBTRFSFilesystemResize.html#guestfs-btrfs-filesystem-resize-new"/>
     <keyword type="struct" name="struct GuestfsBTRFSFilesystemResize" link="GuestfsBTRFSFilesystemResize.html#GuestfsBTRFSFilesystemResize-struct"/>
     <keyword type="struct" name="struct GuestfsBTRFSFilesystemResizeClass" link="GuestfsBTRFSFilesystemResize.html#GuestfsBTRFSFilesystemResizeClass"/>
