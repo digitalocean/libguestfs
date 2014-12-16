@@ -1,3 +1,52 @@
+commit 6264c255d461b2c84a9693c09a807d18cdf0b348
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 16 13:25:35 2014 +0000
+
+    Version 1.29.18.
+
+commit 8e0fc5fb469cdb67eb82e61036749f7d114e2c6f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 16 13:16:07 2014 +0000
+
+    python: Fix regression test so it works when KVM is not available.
+    
+    The test assumed (for no particular reason) that it could always run a
+    KVM guest.  When run on a machine without KVM, or in a VM without
+    nested KVM, you get this error:
+    
+    libvirt: Domain Config error : internal error: no supported architecture for os type 'hvm'
+    Traceback (most recent call last):
+      File "./t/820-rhbz912499.py", line 77, in <module>
+        dom = conn.createXML (xml, libvirt.VIR_DOMAIN_START_AUTODESTROY)
+      File "/usr/lib64/python2.7/site-packages/libvirt.py", line 3523, in createXML
+        if ret is None:raise libvirtError('virDomainCreateXML() failed', conn=self)
+    libvirt.libvirtError: internal error: no supported architecture for os type 'hvm'
+    FAIL: ./t/820-rhbz912499.py
+    
+    Use a qemu guest instead, which should have a better chance of working
+    on all hosts.
+
+commit 974216f612256b19ce3918e0544120aa5fcef16c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 16 11:06:43 2014 +0000
+
+    p2v: Document that virt-p2v-make-kickstart copies the virt-p2v binary into the kickstart.
+
+commit 54f85f8482c2aef209da64da49cbd96c3140ec32
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 16 11:06:15 2014 +0000
+
+    p2v: virt-p2v-make-kickstart(1): Fix various typos in the man page.
+
+commit cf979dd7969032612b5bb05acb2211a6c0093cca
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 16 09:45:29 2014 +0000
+
+    p2v: virt-p2v-make-kickstart: Add URL example to the man page.
+    
+    It turns out this is required for Fedora 21 (or perhaps livecd-creator
+    is broken yet again, who knows).
+
 commit 2912fa7a43b8f7fdc3f13b4e77041833413232f3
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon Dec 15 22:45:35 2014 +0000
