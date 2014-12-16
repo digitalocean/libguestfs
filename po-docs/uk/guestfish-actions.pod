@@ -1009,6 +1009,59 @@ filesystem is stored.
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
 
+=head2 btrfs-qgroup-assign
+
+ btrfs-qgroup-assign src dst path
+
+Add qgroup C<src> to parent qgroup C<dst>. This command can group several
+qgroups into a parent qgroup to share common limit.
+
+=head2 btrfs-qgroup-create
+
+ btrfs-qgroup-create qgroupid subvolume
+
+Create a quota group (qgroup) for subvolume at C<subvolume>.
+
+=head2 btrfs-qgroup-destroy
+
+ btrfs-qgroup-destroy qgroupid subvolume
+
+Destroy a quota group.
+
+=head2 btrfs-qgroup-limit
+
+ btrfs-qgroup-limit subvolume size
+
+Limit the size of a subvolume which's path is C<subvolume>. C<size> can have
+suffix of G, M, or K.
+
+=head2 btrfs-qgroup-remove
+
+ btrfs-qgroup-remove src dst path
+
+Remove qgroup C<src> from the parent qgroup C<dst>.
+
+=head2 btrfs-qgroup-show
+
+ btrfs-qgroup-show path
+
+Show all subvolume quota groups in a btrfs filesystem, inclding their
+usages.
+
+=head2 btrfs-quota-enable
+
+ btrfs-quota-enable fs true|false
+
+Enable or disable subvolume quota support for filesystem which contains
+C<path>.
+
+=head2 btrfs-quota-rescan
+
+ btrfs-quota-rescan fs
+
+Trash all qgroup numbers and scan the metadata again with the current
+config.
+
 =head2 btrfs-set-seeding
 
  btrfs-set-seeding device true|false
@@ -1036,6 +1089,13 @@ ARGUMENTS>.
 
 Delete the named btrfs subvolume or snapshot.
 
+=head2 btrfs-subvolume-get-default
+
+ btrfs-subvolume-get-default fs
+
+Get the default subvolume or snapshot of a filesystem mounted at
+C<mountpoint>.
+
 =head2 btrfs-subvolume-list
 
  btrfs-subvolume-list фс
@@ -1049,6 +1109,12 @@ mounted at C<fs>.
 
 Set the subvolume of the btrfs filesystem C<fs> which will be mounted by
 default.  See L</btrfs-subvolume-list> to get a list of subvolumes.
+
+=head2 btrfs-subvolume-show
+
+ btrfs-subvolume-show subvolume
+
+Return detailed information of the subvolume.
 
 =head2 btrfs-subvolume-snapshot
 
@@ -1065,6 +1131,14 @@ newly created snapshot will be added to.
 
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
+
+=head2 c-pointer
+
+ c-pointer
+
+In non-C language bindings, this allows you to retrieve the underlying C
+pointer to the handle (ie. L</h *>).  The purpose of this is to allow other
+libraries to interwork with libguestfs.
 
 =head2 canonical-device-name
 
@@ -3438,8 +3512,8 @@ L</inspect-get-filesystems>.
 
 This function and L</inspect-get-package-management> return the package
 format and package management tool used by the inspected operating system.
-For example for Fedora these functions would return C<rpm> (package format)
-and C<yum> (package management).
+For example for Fedora these functions would return C<rpm> (package format),
+and C<yum> or C<dnf> (package management).
 
 This returns the string C<unknown> if we could not determine the package
 format I<or> if the operating system does not have a real packaging system
@@ -3456,14 +3530,14 @@ C<pkgsrc>.  Future versions of libguestfs may return other strings.
 
 L</inspect-get-package-format> and this function return the package format
 and package management tool used by the inspected operating system.  For
-example for Fedora these functions would return C<rpm> (package format) and
-C<yum> (package management).
+example for Fedora these functions would return C<rpm> (package format), and
+C<yum> or C<dnf> (package management).
 
 This returns the string C<unknown> if we could not determine the package
 management tool I<or> if the operating system does not have a real packaging
 system (eg. Windows).
 
-Possible strings include: C<yum>, C<up2date>, C<apt> (for all Debian
+Possible strings include: C<yum>, C<dnf>, C<up2date>, C<apt> (for all Debian
 derivatives), C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>.  Future
 versions of libguestfs may return other strings.
 

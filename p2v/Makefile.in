@@ -172,7 +172,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/fsusage.m4 $(top_srcdir)/m4/ftell.m4 \
 	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
 	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
-	$(top_srcdir)/m4/getaddrinfo.m4 $(top_srcdir)/m4/getcwd.m4 \
+	$(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
+	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
@@ -228,12 +230,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
 	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
 	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
-	$(top_srcdir)/m4/rmdir.m4 $(top_srcdir)/m4/safe-read.m4 \
-	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
-	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
-	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
-	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/sigaction.m4 \
-	$(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/rewinddir.m4 $(top_srcdir)/m4/rmdir.m4 \
+	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
+	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/secure_getenv.m4 \
+	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
+	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
+	$(top_srcdir)/m4/sigaction.m4 $(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
 	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
 	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
@@ -270,9 +272,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
 	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
 	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
-	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
-	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
+	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -282,9 +284,9 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(virtp2vdatadir)"
 PROGRAMS = $(libexec_PROGRAMS)
-am_virt_p2v_OBJECTS = virt_p2v-authors.$(OBJEXT) \
-	virt_p2v-config.$(OBJEXT) virt_p2v-conversion.$(OBJEXT) \
-	virt_p2v-copying.$(OBJEXT) virt_p2v-gui.$(OBJEXT) \
+am_virt_p2v_OBJECTS = virt_p2v-about-authors.$(OBJEXT) \
+	virt_p2v-about-license.$(OBJEXT) virt_p2v-config.$(OBJEXT) \
+	virt_p2v-conversion.$(OBJEXT) virt_p2v-gui.$(OBJEXT) \
 	virt_p2v-kernel.$(OBJEXT) virt_p2v-main.$(OBJEXT) \
 	virt_p2v-miniexpect.$(OBJEXT) virt_p2v-ssh.$(OBJEXT)
 virt_p2v_OBJECTS = $(am_virt_p2v_OBJECTS)
@@ -1525,10 +1527,10 @@ CLEANFILES = \
 # Note that miniexpect comes from here:
 # http://git.annexia.org/?p=miniexpect.git;a=summary
 virt_p2v_SOURCES = \
-	authors.c \
+	about-authors.c \
+	about-license.c \
 	config.c \
 	conversion.c \
-	copying.c \
 	gui.c \
 	kernel.c \
 	main.c \
@@ -1720,10 +1722,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-authors.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-about-authors.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-about-license.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-conversion.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-copying.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-gui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-kernel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-main.Po@am__quote@
@@ -1751,19 +1753,33 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-virt_p2v-authors.o: authors.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-authors.o -MD -MP -MF $(DEPDIR)/virt_p2v-authors.Tpo -c -o virt_p2v-authors.o `test -f 'authors.c' || echo '$(srcdir)/'`authors.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-authors.Tpo $(DEPDIR)/virt_p2v-authors.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='authors.c' object='virt_p2v-authors.o' libtool=no @AMDEPBACKSLASH@
+virt_p2v-about-authors.o: about-authors.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-about-authors.o -MD -MP -MF $(DEPDIR)/virt_p2v-about-authors.Tpo -c -o virt_p2v-about-authors.o `test -f 'about-authors.c' || echo '$(srcdir)/'`about-authors.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-about-authors.Tpo $(DEPDIR)/virt_p2v-about-authors.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='about-authors.c' object='virt_p2v-about-authors.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-authors.o `test -f 'authors.c' || echo '$(srcdir)/'`authors.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-about-authors.o `test -f 'about-authors.c' || echo '$(srcdir)/'`about-authors.c
 
-virt_p2v-authors.obj: authors.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-authors.obj -MD -MP -MF $(DEPDIR)/virt_p2v-authors.Tpo -c -o virt_p2v-authors.obj `if test -f 'authors.c'; then $(CYGPATH_W) 'authors.c'; else $(CYGPATH_W) '$(srcdir)/authors.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-authors.Tpo $(DEPDIR)/virt_p2v-authors.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='authors.c' object='virt_p2v-authors.obj' libtool=no @AMDEPBACKSLASH@
+virt_p2v-about-authors.obj: about-authors.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-about-authors.obj -MD -MP -MF $(DEPDIR)/virt_p2v-about-authors.Tpo -c -o virt_p2v-about-authors.obj `if test -f 'about-authors.c'; then $(CYGPATH_W) 'about-authors.c'; else $(CYGPATH_W) '$(srcdir)/about-authors.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-about-authors.Tpo $(DEPDIR)/virt_p2v-about-authors.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='about-authors.c' object='virt_p2v-about-authors.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-authors.obj `if test -f 'authors.c'; then $(CYGPATH_W) 'authors.c'; else $(CYGPATH_W) '$(srcdir)/authors.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-about-authors.obj `if test -f 'about-authors.c'; then $(CYGPATH_W) 'about-authors.c'; else $(CYGPATH_W) '$(srcdir)/about-authors.c'; fi`
+
+virt_p2v-about-license.o: about-license.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-about-license.o -MD -MP -MF $(DEPDIR)/virt_p2v-about-license.Tpo -c -o virt_p2v-about-license.o `test -f 'about-license.c' || echo '$(srcdir)/'`about-license.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-about-license.Tpo $(DEPDIR)/virt_p2v-about-license.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='about-license.c' object='virt_p2v-about-license.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-about-license.o `test -f 'about-license.c' || echo '$(srcdir)/'`about-license.c
+
+virt_p2v-about-license.obj: about-license.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-about-license.obj -MD -MP -MF $(DEPDIR)/virt_p2v-about-license.Tpo -c -o virt_p2v-about-license.obj `if test -f 'about-license.c'; then $(CYGPATH_W) 'about-license.c'; else $(CYGPATH_W) '$(srcdir)/about-license.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-about-license.Tpo $(DEPDIR)/virt_p2v-about-license.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='about-license.c' object='virt_p2v-about-license.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-about-license.obj `if test -f 'about-license.c'; then $(CYGPATH_W) 'about-license.c'; else $(CYGPATH_W) '$(srcdir)/about-license.c'; fi`
 
 virt_p2v-config.o: config.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-config.o -MD -MP -MF $(DEPDIR)/virt_p2v-config.Tpo -c -o virt_p2v-config.o `test -f 'config.c' || echo '$(srcdir)/'`config.c
@@ -1792,20 +1808,6 @@ virt_p2v-conversion.obj: conversion.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='conversion.c' object='virt_p2v-conversion.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-conversion.obj `if test -f 'conversion.c'; then $(CYGPATH_W) 'conversion.c'; else $(CYGPATH_W) '$(srcdir)/conversion.c'; fi`
-
-virt_p2v-copying.o: copying.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-copying.o -MD -MP -MF $(DEPDIR)/virt_p2v-copying.Tpo -c -o virt_p2v-copying.o `test -f 'copying.c' || echo '$(srcdir)/'`copying.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-copying.Tpo $(DEPDIR)/virt_p2v-copying.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='copying.c' object='virt_p2v-copying.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-copying.o `test -f 'copying.c' || echo '$(srcdir)/'`copying.c
-
-virt_p2v-copying.obj: copying.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-copying.obj -MD -MP -MF $(DEPDIR)/virt_p2v-copying.Tpo -c -o virt_p2v-copying.obj `if test -f 'copying.c'; then $(CYGPATH_W) 'copying.c'; else $(CYGPATH_W) '$(srcdir)/copying.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-copying.Tpo $(DEPDIR)/virt_p2v-copying.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='copying.c' object='virt_p2v-copying.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-copying.obj `if test -f 'copying.c'; then $(CYGPATH_W) 'copying.c'; else $(CYGPATH_W) '$(srcdir)/copying.c'; fi`
 
 virt_p2v-gui.o: gui.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-gui.o -MD -MP -MF $(DEPDIR)/virt_p2v-gui.Tpo -c -o virt_p2v-gui.o `test -f 'gui.c' || echo '$(srcdir)/'`gui.c

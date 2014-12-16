@@ -1,3 +1,370 @@
+commit 2912fa7a43b8f7fdc3f13b4e77041833413232f3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 22:45:35 2014 +0000
+
+    Version 1.29.17.
+
+commit 2162d09b2c9e138779d95f1fc7c3409765a5a40c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 22:26:51 2014 +0000
+
+    Use -fno-strict-overflow throughout the build.
+    
+    Builds of bison-generated files currently fail with:
+    
+    index-parse.y: In function 'yyparse':
+    index-parse.c:1256:6: error: assuming pointer wraparound does not occur when comparing P +- C1 with P +- C2 [-Werror=strict-overflow]
+         if (yyss + yystacksize - 1 <= yyssp)
+            ^
+    
+    This error only occurred on one machine, and it was unclear why.  It
+    turned out to be because the other build machines I use had:
+    
+      CFLAGS="-Wall" ./configure ...
+    
+    whereas on the failing machine I was just using ./configure w/o CFLAGS.
+    
+    This caused the compile flags of index-parse.c to be changed from:
+    
+      gcc -Wstrict-overflow ... index-parse.c
+    
+    to:
+    
+      gcc -Wstrict-overflow -Wall ... index-parse.c
+    
+    but since -Wstrict-overflow is short for -Wstrict-overflow=2, and
+    -Wall is short for -Wstrict-overflow=1, and since the error only
+    occurs at level >= 2, using CFLAGS="-Wall" was effectively turned off
+    the warning.
+    
+    Anyway, I believe the optimizations that GCC does when
+    -fstrict-overflow is enabled to be dubious, frequently dangerous, and
+    useless.  They are only done because we want C99 to work on
+    architectures that don't exist in reality (and which even if they did
+    exist, libguestfs would probably not support).
+    
+    The Linux kernel uses -fno-strict-overflow, and we should too, for the
+    same reasons.
+
+commit 8a33d534e55f9cb9c49d99a0104ecbf9dfd0bc99
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 18:29:00 2014 +0000
+
+    Version 1.29.16.
+
+commit 5a4fd83176a93d0190b7584d799c3236f5c2ba48
+Author: Gabriele Cerami <gcerami@redhat.com>
+Date:   Mon Dec 15 19:19:39 2014 +0100
+
+    diff/diff.c: diff output to show correct file handles and presence symbol
+
+commit 09080a28878a17b991c812e2b93a8d8394383d04
+Author: John Eckersberg <jeckersb@redhat.com>
+Date:   Mon Dec 15 13:19:06 2014 -0500
+
+    p2v: avoid connecting to ourself while probing qemu-nbd (RHBZ#1167774)
+
+commit f843abe400bc4e6fbcbee5f6cda2f3e9da33909a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 17:28:30 2014 +0000
+
+    tests: Fix memory leaks in test-add-libvirt-dom.
+    
+    Found by valgrind.
+    
+    This fixes commit df9782ec3a12ac46e1b8ffa31630c7a1e64162fe
+    and commit 96158d42f5cb9b6c472b4630f2c97edae600f6d3.
+
+commit e74bd45111c94d5506f9f35792bff340e2ce1a29
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:33 2014 +0800
+
+    New API: btrfs_qgroup_remove
+    
+    btrfs_qgroup_remove removes a qgroup from its parent qgroup.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit bd4a114272d589335be92782bfb283d2ccad3433
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:32 2014 +0800
+
+    New API: btrfs_qgroup_assign
+    
+    btrfs_qgroup_assign adds a qgroup to a parent qgroup.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 2b7f7810ed801edf811c5ba43fefe6cf350def7f
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:31 2014 +0800
+
+    New API: btrfs_qgroup_show
+    
+    btrfs_qgroup_show shows all qgroups on a btrfs filesystem.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 3617938b4803f0871c8811b42f8a0b4c1969a424
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:30 2014 +0800
+
+    New API: btrfs_qgroup_destroy
+    
+    btrfs_qgroup_destroy destroys a qgroup.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 1144c692dc8bca6bd51900a78e2e7f66b644a716
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:29 2014 +0800
+
+    New API: btrfs_qgroup_create
+    
+    btrfs_qgroup_create creates a new qgroup.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit a325f887b35618c141ea79b826b4bf9f64a644e2
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:28 2014 +0800
+
+    New API: btrfs_qgroup_limit
+    
+    btrfs_qgroup_limit limits the size of a qgroup.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 4e145bb44d5d58a70fc4cc8b0c199c6c29e6482e
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:27 2014 +0800
+
+    New API: btrfs_quota_rescan
+    
+    btrfs_quota_rescan trashs all qgroup numbers and scans the metadata
+    again with the current config.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 29812b8fd6aca26b4a8601f40e8fd011830d134e
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:26 2014 +0800
+
+    New API: btrfs_quota_enable
+    
+    btrfs_quota_enable enables or disables quota for btrfs filesystems.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 7a25a6d14115207d8c93cfbd7fe7f487b3c18d9d
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:25 2014 +0800
+
+    New API: btrfs_subvolume_show
+    
+    btrfs_subvolume_show shows the detailed information of a subvolume or
+    snapshot.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 56732ed6a08af7e3f7f1f17e89e8dc62cf3d4f4a
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:24 2014 +0800
+
+    New API: btrfs_subvolume_get_default
+    
+    btrfs_subvolume_get_default is for getting the default subvolume of
+    a btrfs filesystem.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 152d17ddbf7e6db4b3b23224083780fb979f28b5
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:23 2014 +0800
+
+    daemon: btrfs: add helper functions mount and umount
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit d3e93e1011fa4bf0099c3c0538022bfd9c2473f2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 14:29:51 2014 +0000
+
+    inspection: Recognise 'dnf' as the package manager in Fedora 22.
+    
+    Also fix virt-sysprep and virt-customize so they can work with dnf.
+    
+    I also sorted some of the lists alphabetically.
+
+commit 7a218cbdf635af543479256593e448100406ea1e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 13:43:34 2014 +0000
+
+    v2v: Password attr in domain XML should be 'passwd=' (RHBZ#1174123).
+
+commit dfded7c94118e8888dec38f11c2af62d8156a59e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 08:55:12 2014 +0000
+
+    v2v: Get passwords in domain XML (RHBZ#1174123).
+    
+    Thanks: Tingting Zheng
+
+commit 9c4af17add53b50ce0b6756c6216380862f10631
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 08:54:59 2014 +0000
+
+    v2v: Whitespace change.
+
+commit da34797987296ffc3e365902c8eb4d9b8024e8af
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Dec 13 19:34:29 2014 +0000
+
+    p2v: Add more authors.
+
+commit 5a964144b27cab4a4a8d220dba6ad53f4655fd5e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Dec 13 19:30:00 2014 +0000
+
+    p2v: Rename authors.c, copying.c -> about-* to avoid confusion.
+    
+    Just file renaming, no other change.
+
+commit f9e0aee1497028c79619325e0bf105dbcc2f004b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 22:25:47 2014 +0000
+
+    sysprep: Use automake to build the library.
+    
+    Normally this requires the program to have at least one C source file.
+    virt-sysprep doesn't have this, but it uses C sources from other
+    directories, and therefore we can make it work.
+
+commit 604bb7fd7b7087d8002cfbf5392a546819278943
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 22:25:47 2014 +0000
+
+    mllib: Use automake to build the library.
+
+commit ccb1f2a4a02da2f56649b5452f6b9c0356f91798
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Dec 13 14:49:32 2014 +0000
+
+    recipes: Tidy up section about hex-dumping and hex-editing sectors.
+
+commit 603d0fbd95fecebed75ebd02f5b1cd4d1b729571
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 17:41:47 2014 +0000
+
+    p2v: Test two disk guest.
+    
+    Make the test harder (evil grin).
+
+commit 402bba35059056fdea83689e408806071c478e44
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 17:13:51 2014 +0000
+
+    Version 1.29.15.
+
+commit f4b846445e222315060eb579d86ada5870c0174a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 15:58:05 2014 +0000
+
+    builder: Try again to fix the infinitely recursive index-parse.h rule.
+    
+    I ran 'make clean && make' hundreds of times in the builder
+    subdirectory and it didn't fail.
+
+commit b547b627895c137d96bdc06401415be643fee490
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 15:11:57 2014 +0000
+
+    v2v: C files are located in srcdir, not builddir.
+
+commit 9d3a02792ff0a5502dbeda42db4c28651a3688b0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 15:11:37 2014 +0000
+
+    sparsify: C files are located in srcdir, not builddir.
+
+commit d8c43d556b45f4c9676fdbfce0e9fe07b709635a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 14:44:54 2014 +0000
+
+    New API: guestfs_c_pointer
+    
+    This returns the C pointer to the guestfs_h handle (ie. guestfs_h *).
+    
+    The purpose of this API is to interwork with other non-C libraries.
+    See RHBZ#1075164 for the rationale when applied to another library.
+
+commit 1e7a6d9f10008a922ae63e2893d76e44bd61b5b0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 14:32:11 2014 +0000
+
+    perl: Implement Pointer ("virDomainPtr", _).
+    
+    This allows the Perl binding of guestfs_add_libvirt_dom to work.
+    
+    This relies on the internal Perl representation of virDomainPtr, but
+    Dan assures me this isn't going to change.
+
+commit df9782ec3a12ac46e1b8ffa31630c7a1e64162fe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 13:31:08 2014 +0000
+
+    tests: Enable and fix test-add-libvirt-dom test.
+    
+    Commit 96158d42f5cb9b6c472b4630f2c97edae600f6d3 enabled the previously
+    private guestfs_add_libvirt_dom API.  It also tried to enable the
+    existing test for this API, but failed to do that correctly.  Also the
+    test was broken.  Fix all of this.
+    
+    This fixes commit 96158d42f5cb9b6c472b4630f2c97edae600f6d3.
+
+commit 741403d7186c238c89780b1f3cee0a30641830b3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 13:23:58 2014 +0000
+
+    v2v: Replace .. with $(top_builddir)
+    
+    No functional change.
+
+commit 85b664dacd4284ff8127d09ba541590cfc8e9785
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 12:50:16 2014 +0000
+
+    builder: index-parse: Remove unused destructor.
+    
+      YACC     index-parse.c
+    index-parse.y:97.34-41: warning: type <fields> is used, but is not associated to any symbol [-Wother]
+     %destructor { field_free ($$); } <fields>
+                                      ^^^^^^^^
+    index-parse.y:95.36-45: warning: type <sections> is used, but is not associated to any symbol [-Wother]
+     %destructor { section_free ($$); } <sections>
+                                        ^^^^^^^^^^
+
+commit 9135129b0f6e8eb171131ea0f7d729a960b74cb3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 09:43:52 2014 +0000
+
+    builder: Use automake to build the binary.
+    
+    As this has the side effect of enabling warnings in the C code, I had
+    to fix a lot of C problems in this commit too.
+
+commit e87df1d58140b52f0cf48c9adb287655bc76e5a1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 09:43:52 2014 +0000
+
+    customize: Use automake to build the binary.
+
+commit bd74c6f09a5b5a0211accd689c88471589fec0f4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 09:43:52 2014 +0000
+
+    resize: Use automake to build the binary.
+
 commit 5a1204594c5691d58ed2032f95df0b3492bc8e18
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Dec 11 16:29:29 2014 +0000

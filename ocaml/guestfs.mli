@@ -159,6 +159,12 @@ type application2 = {
   app2_spare4 : string;
 }
 
+type btrfsqgroup = {
+  btrfsqgroup_id : string;
+  btrfsqgroup_rfer : int64;
+  btrfsqgroup_excl : int64;
+}
+
 type btrfssubvolume = {
   btrfssubvolume_id : int64;
   btrfssubvolume_top_level_id : int64;
@@ -551,6 +557,30 @@ val btrfs_filesystem_sync : t -> string -> unit
 val btrfs_fsck : t -> ?superblock:int64 -> ?repair:bool -> string -> unit
 (** check a btrfs filesystem *)
 
+val btrfs_qgroup_assign : t -> string -> string -> string -> unit
+(** add a qgroup to a parent qgroup *)
+
+val btrfs_qgroup_create : t -> string -> string -> unit
+(** create a subvolume quota group *)
+
+val btrfs_qgroup_destroy : t -> string -> string -> unit
+(** destroy a subvolume quota group *)
+
+val btrfs_qgroup_limit : t -> string -> int64 -> unit
+(** limit the size of a subvolume *)
+
+val btrfs_qgroup_remove : t -> string -> string -> string -> unit
+(** remove a qgroup from its parent qgroup *)
+
+val btrfs_qgroup_show : t -> string -> btrfsqgroup array
+(** show subvolume quota groups *)
+
+val btrfs_quota_enable : t -> string -> bool -> unit
+(** enable or disable subvolume quota support *)
+
+val btrfs_quota_rescan : t -> string -> unit
+(** trash all qgroup numbers and scan the metadata again with the current config *)
+
 val btrfs_set_seeding : t -> string -> bool -> unit
 (** enable or disable the seeding feature of device *)
 
@@ -562,16 +592,25 @@ val btrfs_subvolume_create_opts : t -> ?qgroupid:string -> string -> unit
 val btrfs_subvolume_delete : t -> string -> unit
 (** delete a btrfs subvolume or snapshot *)
 
+val btrfs_subvolume_get_default : t -> string -> int64
+(** get the default subvolume or snapshot of a filesystem *)
+
 val btrfs_subvolume_list : t -> string -> btrfssubvolume array
 (** list btrfs snapshots and subvolumes *)
 
 val btrfs_subvolume_set_default : t -> int64 -> string -> unit
 (** set default btrfs subvolume *)
 
+val btrfs_subvolume_show : t -> string -> (string * string) list
+(** return detailed information of the subvolume *)
+
 val btrfs_subvolume_snapshot : t -> ?ro:bool -> ?qgroupid:string -> string -> string -> unit
 (** create a btrfs snapshot *)
 
 val btrfs_subvolume_snapshot_opts : t -> ?ro:bool -> ?qgroupid:string -> string -> string -> unit
+
+val c_pointer : t -> int64
+(** return the C pointer to the guestfs_h handle *)
 
 val canonical_device_name : t -> string -> string
 (** return canonical device name *)
@@ -2278,14 +2317,25 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method btrfs_filesystem_resize : ?size:int64 -> string -> unit
   method btrfs_filesystem_sync : string -> unit
   method btrfs_fsck : ?superblock:int64 -> ?repair:bool -> string -> unit
+  method btrfs_qgroup_assign : string -> string -> string -> unit
+  method btrfs_qgroup_create : string -> string -> unit
+  method btrfs_qgroup_destroy : string -> string -> unit
+  method btrfs_qgroup_limit : string -> int64 -> unit
+  method btrfs_qgroup_remove : string -> string -> string -> unit
+  method btrfs_qgroup_show : string -> btrfsqgroup array
+  method btrfs_quota_enable : string -> bool -> unit
+  method btrfs_quota_rescan : string -> unit
   method btrfs_set_seeding : string -> bool -> unit
   method btrfs_subvolume_create : ?qgroupid:string -> string -> unit
   method btrfs_subvolume_create_opts : ?qgroupid:string -> string -> unit
   method btrfs_subvolume_delete : string -> unit
+  method btrfs_subvolume_get_default : string -> int64
   method btrfs_subvolume_list : string -> btrfssubvolume array
   method btrfs_subvolume_set_default : int64 -> string -> unit
+  method btrfs_subvolume_show : string -> (string * string) list
   method btrfs_subvolume_snapshot : ?ro:bool -> ?qgroupid:string -> string -> string -> unit
   method btrfs_subvolume_snapshot_opts : ?ro:bool -> ?qgroupid:string -> string -> string -> unit
+  method c_pointer : unit -> int64
   method canonical_device_name : string -> string
   method cap_get_file : string -> string
   method cap_set_file : string -> string -> unit

@@ -7094,3 +7094,101 @@ guestfs_copy_attributes_argv (guestfs_h *g,
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC struct guestfs_btrfsqgroup_list *
+guestfs_btrfs_qgroup_show (guestfs_h *g,
+                           const char *path)
+{
+  struct guestfs_btrfs_qgroup_show_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_btrfs_qgroup_show_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  struct guestfs_btrfsqgroup_list *ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "btrfs_qgroup_show", 17);
+  if (path == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfs_qgroup_show", "path");
+    return NULL;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "btrfs_qgroup_show");
+    fprintf (trace_buffer.fp, " \"%s\"", path);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "btrfs_qgroup_show") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_qgroup_show", "NULL");
+    return NULL;
+  }
+
+  args.path = (char *) path;
+  serial = guestfs___send (g, GUESTFS_PROC_BTRFS_QGROUP_SHOW,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_btrfs_qgroup_show_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_qgroup_show", "NULL");
+    return NULL;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "btrfs_qgroup_show", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_btrfs_qgroup_show_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_qgroup_show", "NULL");
+    return NULL;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_BTRFS_QGROUP_SHOW, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_qgroup_show", "NULL");
+    return NULL;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_qgroup_show", "NULL");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "btrfs_qgroup_show", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "btrfs_qgroup_show",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return NULL;
+  }
+
+  /* caller will free this */
+  ret_v = safe_memdup (g, &ret.qgroups, sizeof (ret.qgroups));
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "btrfs_qgroup_show");
+    fprintf (trace_buffer.fp, "<struct guestfs_btrfsqgroup_list *>");
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+

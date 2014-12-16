@@ -519,6 +519,28 @@ libguestfs generated file
  void guestfs_free_btrfssubvolume (struct guestfs_btrfssubvolume *);
  void guestfs_free_btrfssubvolume_list (struct guestfs_btrfssubvolume_list *);
 
+=head2 guestfs_btrfsqgroup
+
+ struct guestfs_btrfsqgroup {
+   char *btrfsqgroup_id;
+   uint64_t btrfsqgroup_rfer;
+   uint64_t btrfsqgroup_excl;
+ };
+ 
+ struct guestfs_btrfsqgroup_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_btrfsqgroup *val; /* Elements. */
+ };
+
+ int guestfs_compare_btrfsqgroup (const struct guestfs_btrfsqgroup *, const struct guestfs_btrfsqgroup *);
+ int guestfs_compare_btrfsqgroup_list (const struct guestfs_btrfsqgroup_list *, const struct guestfs_btrfsqgroup_list *);
+ 
+ struct guestfs_btrfsqgroup *guestfs_copy_btrfsqgroup (const struct guestfs_btrfsqgroup *);
+ struct guestfs_btrfsqgroup_list *guestfs_copy_btrfsqgroup_list (const struct guestfs_btrfsqgroup_list *);
+ 
+ void guestfs_free_btrfsqgroup (struct guestfs_btrfsqgroup *);
+ void guestfs_free_btrfsqgroup_list (struct guestfs_btrfsqgroup_list *);
+
 =head2 guestfs_xfsinfo
 
  struct guestfs_xfsinfo {

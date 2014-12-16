@@ -1225,6 +1225,113 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
+btrfs_qgroup_assign (g, src, dst, path)
+      guestfs_h *g;
+      char *src;
+      char *dst;
+      char *path;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfs_qgroup_assign (g, src, dst, path);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_qgroup_create (g, qgroupid, subvolume)
+      guestfs_h *g;
+      char *qgroupid;
+      char *subvolume;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfs_qgroup_create (g, qgroupid, subvolume);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_qgroup_destroy (g, qgroupid, subvolume)
+      guestfs_h *g;
+      char *qgroupid;
+      char *subvolume;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfs_qgroup_destroy (g, qgroupid, subvolume);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_qgroup_limit (g, subvolume, size)
+      guestfs_h *g;
+      char *subvolume;
+      int64_t size;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfs_qgroup_limit (g, subvolume, size);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_qgroup_remove (g, src, dst, path)
+      guestfs_h *g;
+      char *src;
+      char *dst;
+      char *path;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfs_qgroup_remove (g, src, dst, path);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_qgroup_show (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      struct guestfs_btrfsqgroup_list *r;
+      size_t i;
+      HV *hv;
+ PPCODE:
+      r = guestfs_btrfs_qgroup_show (g, path);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
+        hv = newHV ();
+        (void) hv_store (hv, "btrfsqgroup_id", 14, newSVpv (r->val[i].btrfsqgroup_id, 0), 0);
+        (void) hv_store (hv, "btrfsqgroup_rfer", 16, my_newSVull (r->val[i].btrfsqgroup_rfer), 0);
+        (void) hv_store (hv, "btrfsqgroup_excl", 16, my_newSVull (r->val[i].btrfsqgroup_excl), 0);
+        PUSHs (sv_2mortal (newRV ((SV *) hv)));
+      }
+      guestfs_free_btrfsqgroup_list (r);
+
+void
+btrfs_quota_enable (g, fs, enable)
+      guestfs_h *g;
+      char *fs;
+      int enable;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfs_quota_enable (g, fs, enable);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_quota_rescan (g, fs)
+      guestfs_h *g;
+      char *fs;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfs_quota_rescan (g, fs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
 btrfs_set_seeding (g, device, seeding)
       guestfs_h *g;
       char *device;
@@ -1279,6 +1386,20 @@ PREINIT:
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
+SV *
+btrfs_subvolume_get_default (g, fs)
+      guestfs_h *g;
+      char *fs;
+PREINIT:
+      int64_t r;
+   CODE:
+      r = guestfs_btrfs_subvolume_get_default (g, fs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = my_newSVll (r);
+ OUTPUT:
+      RETVAL
+
 void
 btrfs_subvolume_list (g, fs)
       guestfs_h *g;
@@ -1312,6 +1433,25 @@ PREINIT:
       r = guestfs_btrfs_subvolume_set_default (g, id, fs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_subvolume_show (g, subvolume)
+      guestfs_h *g;
+      char *subvolume;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_btrfs_subvolume_show (g, subvolume);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
 
 void
 btrfs_subvolume_snapshot (g, source, dest, ...)
@@ -1349,6 +1489,19 @@ PREINIT:
       r = guestfs_btrfs_subvolume_snapshot_opts_argv (g, source, dest, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
+
+SV *
+c_pointer (g)
+      guestfs_h *g;
+PREINIT:
+      int64_t r;
+   CODE:
+      r = guestfs_c_pointer (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = my_newSVll (r);
+ OUTPUT:
+      RETVAL
 
 SV *
 canonical_device_name (g, device)

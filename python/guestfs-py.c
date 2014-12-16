@@ -307,6 +307,25 @@ put_application2 (struct guestfs_application2 *application2)
 };
 
 static PyObject *
+put_btrfsqgroup (struct guestfs_btrfsqgroup *btrfsqgroup)
+{
+  PyObject *dict;
+
+  dict = PyDict_New ();
+  PyDict_SetItemString (dict, "btrfsqgroup_id",
+#ifdef HAVE_PYSTRING_ASSTRING
+                        PyString_FromString (btrfsqgroup->btrfsqgroup_id));
+#else
+                        PyUnicode_FromString (btrfsqgroup->btrfsqgroup_id));
+#endif
+  PyDict_SetItemString (dict, "btrfsqgroup_rfer",
+                        PyLong_FromUnsignedLongLong (btrfsqgroup->btrfsqgroup_rfer));
+  PyDict_SetItemString (dict, "btrfsqgroup_excl",
+                        PyLong_FromUnsignedLongLong (btrfsqgroup->btrfsqgroup_excl));
+  return dict;
+};
+
+static PyObject *
 put_btrfssubvolume (struct guestfs_btrfssubvolume *btrfssubvolume)
 {
   PyObject *dict;
@@ -1021,6 +1040,18 @@ put_dirent_list (struct guestfs_dirent_list *dirents)
   list = PyList_New (dirents->len);
   for (i = 0; i < dirents->len; ++i)
     PyList_SetItem (list, i, put_dirent (&dirents->val[i]));
+  return list;
+};
+
+static PyObject *
+put_btrfsqgroup_list (struct guestfs_btrfsqgroup_list *btrfsqgroups)
+{
+  PyObject *list;
+  size_t i;
+
+  list = PyList_New (btrfsqgroups->len);
+  for (i = 0; i < btrfsqgroups->len; ++i)
+    PyList_SetItem (list, i, put_btrfsqgroup (&btrfsqgroups->val[i]));
   return list;
 };
 
@@ -3286,6 +3317,294 @@ py_guestfs_btrfs_fsck (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_btrfs_qgroup_assign (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *src;
+  const char *dst;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Osss:guestfs_btrfs_qgroup_assign",
+                         &py_g, &src, &dst, &path))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_qgroup_assign (g, src, dst, path);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_qgroup_create (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *qgroupid;
+  const char *subvolume;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_btrfs_qgroup_create",
+                         &py_g, &qgroupid, &subvolume))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_qgroup_create (g, qgroupid, subvolume);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_qgroup_destroy (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *qgroupid;
+  const char *subvolume;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_btrfs_qgroup_destroy",
+                         &py_g, &qgroupid, &subvolume))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_qgroup_destroy (g, qgroupid, subvolume);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_qgroup_limit (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *subvolume;
+  long long size;
+
+  if (!PyArg_ParseTuple (args, (char *) "OsL:guestfs_btrfs_qgroup_limit",
+                         &py_g, &subvolume, &size))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_qgroup_limit (g, subvolume, size);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_qgroup_remove (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *src;
+  const char *dst;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Osss:guestfs_btrfs_qgroup_remove",
+                         &py_g, &src, &dst, &path))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_qgroup_remove (g, src, dst, path);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_qgroup_show (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_btrfsqgroup_list *r;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_qgroup_show",
+                         &py_g, &path))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_qgroup_show (g, path);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = put_btrfsqgroup_list (r);
+  guestfs_free_btrfsqgroup_list (r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_quota_enable (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *fs;
+  int enable;
+
+  if (!PyArg_ParseTuple (args, (char *) "Osi:guestfs_btrfs_quota_enable",
+                         &py_g, &fs, &enable))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_quota_enable (g, fs, enable);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_quota_rescan (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *fs;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_quota_rescan",
+                         &py_g, &fs))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_quota_rescan (g, fs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_btrfs_set_seeding (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -3408,6 +3727,40 @@ py_guestfs_btrfs_subvolume_delete (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_btrfs_subvolume_get_default (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int64_t r;
+  const char *fs;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_subvolume_get_default",
+                         &py_g, &fs))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_subvolume_get_default (g, fs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = PyLong_FromLongLong (r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_btrfs_subvolume_list (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -3479,6 +3832,41 @@ py_guestfs_btrfs_subvolume_set_default (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_btrfs_subvolume_show (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  char **r;
+  const char *subvolume;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_subvolume_show",
+                         &py_g, &subvolume))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_subvolume_show (g, subvolume);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = put_table (r);
+  guestfs___free_string_list (r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_btrfs_subvolume_snapshot (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -3531,6 +3919,39 @@ py_guestfs_btrfs_subvolume_snapshot (PyObject *self, PyObject *args)
 
   Py_INCREF (Py_None);
   py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_c_pointer (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int64_t r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_c_pointer",
+                         &py_g))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_c_pointer (g);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = PyLong_FromLongLong (r);
 
  out:
   return py_r;
@@ -22612,12 +23033,23 @@ static PyMethodDef methods[] = {
   { (char *) "btrfs_filesystem_resize", py_guestfs_btrfs_filesystem_resize, METH_VARARGS, NULL },
   { (char *) "btrfs_filesystem_sync", py_guestfs_btrfs_filesystem_sync, METH_VARARGS, NULL },
   { (char *) "btrfs_fsck", py_guestfs_btrfs_fsck, METH_VARARGS, NULL },
+  { (char *) "btrfs_qgroup_assign", py_guestfs_btrfs_qgroup_assign, METH_VARARGS, NULL },
+  { (char *) "btrfs_qgroup_create", py_guestfs_btrfs_qgroup_create, METH_VARARGS, NULL },
+  { (char *) "btrfs_qgroup_destroy", py_guestfs_btrfs_qgroup_destroy, METH_VARARGS, NULL },
+  { (char *) "btrfs_qgroup_limit", py_guestfs_btrfs_qgroup_limit, METH_VARARGS, NULL },
+  { (char *) "btrfs_qgroup_remove", py_guestfs_btrfs_qgroup_remove, METH_VARARGS, NULL },
+  { (char *) "btrfs_qgroup_show", py_guestfs_btrfs_qgroup_show, METH_VARARGS, NULL },
+  { (char *) "btrfs_quota_enable", py_guestfs_btrfs_quota_enable, METH_VARARGS, NULL },
+  { (char *) "btrfs_quota_rescan", py_guestfs_btrfs_quota_rescan, METH_VARARGS, NULL },
   { (char *) "btrfs_set_seeding", py_guestfs_btrfs_set_seeding, METH_VARARGS, NULL },
   { (char *) "btrfs_subvolume_create", py_guestfs_btrfs_subvolume_create, METH_VARARGS, NULL },
   { (char *) "btrfs_subvolume_delete", py_guestfs_btrfs_subvolume_delete, METH_VARARGS, NULL },
+  { (char *) "btrfs_subvolume_get_default", py_guestfs_btrfs_subvolume_get_default, METH_VARARGS, NULL },
   { (char *) "btrfs_subvolume_list", py_guestfs_btrfs_subvolume_list, METH_VARARGS, NULL },
   { (char *) "btrfs_subvolume_set_default", py_guestfs_btrfs_subvolume_set_default, METH_VARARGS, NULL },
+  { (char *) "btrfs_subvolume_show", py_guestfs_btrfs_subvolume_show, METH_VARARGS, NULL },
   { (char *) "btrfs_subvolume_snapshot", py_guestfs_btrfs_subvolume_snapshot, METH_VARARGS, NULL },
+  { (char *) "c_pointer", py_guestfs_c_pointer, METH_VARARGS, NULL },
   { (char *) "canonical_device_name", py_guestfs_canonical_device_name, METH_VARARGS, NULL },
   { (char *) "cap_get_file", py_guestfs_cap_get_file, METH_VARARGS, NULL },
   { (char *) "cap_set_file", py_guestfs_cap_set_file, METH_VARARGS, NULL },

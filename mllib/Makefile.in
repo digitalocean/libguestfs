@@ -135,10 +135,10 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
-	$(srcdir)/Makefile.am $(srcdir)/config.ml.in
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = $(patsubst %,%.cmx,$(ocaml_modules))
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@am__append_2 = $(patsubst %,%.cmo,$(ocaml_modules))
-@HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_3 = -package gettext-stub
+	$(srcdir)/Makefile.am $(srcdir)/link.sh.in \
+	$(srcdir)/config.ml.in $(top_srcdir)/build-aux/depcomp
+@HAVE_OCAML_TRUE@noinst_PROGRAMS = dummy$(EXEEXT)
+@HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
 subdir = mllib
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -170,7 +170,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/fsusage.m4 $(top_srcdir)/m4/ftell.m4 \
 	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
 	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
-	$(top_srcdir)/m4/getaddrinfo.m4 $(top_srcdir)/m4/getcwd.m4 \
+	$(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
+	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
@@ -226,12 +228,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
 	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
 	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
-	$(top_srcdir)/m4/rmdir.m4 $(top_srcdir)/m4/safe-read.m4 \
-	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
-	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
-	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
-	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/sigaction.m4 \
-	$(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/rewinddir.m4 $(top_srcdir)/m4/rmdir.m4 \
+	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
+	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/secure_getenv.m4 \
+	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
+	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
+	$(top_srcdir)/m4/sigaction.m4 $(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
 	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
 	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
@@ -268,16 +270,25 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
 	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
 	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
-	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
-	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
+	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = config.ml
+CONFIG_CLEAN_FILES = link.sh config.ml
 CONFIG_CLEAN_VPATH_FILES =
-SCRIPTS = $(noinst_SCRIPTS)
+PROGRAMS = $(noinst_PROGRAMS)
+am__dummy_SOURCES_DIST = $(top_srcdir)/fish/progress.c \
+	$(top_srcdir)/fish/uri.c fsync-c.c mkdtemp-c.c progress-c.c \
+	uri-c.c
+am__objects_1 = dummy-progress.$(OBJEXT) dummy-uri.$(OBJEXT) \
+	dummy-fsync-c.$(OBJEXT) dummy-mkdtemp-c.$(OBJEXT) \
+	dummy-progress-c.$(OBJEXT) dummy-uri-c.$(OBJEXT)
+@HAVE_OCAML_TRUE@am_dummy_OBJECTS = $(am__objects_1)
+dummy_OBJECTS = $(am_dummy_OBJECTS)
+dummy_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -290,7 +301,34 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-DIST_SOURCES =
+DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
+am__depfiles_maybe = depfiles
+am__mv = mv -f
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
+SOURCES = $(dummy_SOURCES)
+DIST_SOURCES = $(am__dummy_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1437,93 +1475,91 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = \
-	$(filter-out config.ml,$(SOURCES))
+	$(SOURCES_MLI) \
+	$(filter-out config.ml libdir.ml,$(SOURCES_ML)) \
+	$(SOURCES_C) \
+	common_utils_tests.ml
 
 CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o
+SOURCES_MLI = \
+	common_utils.mli \
+	fsync.mli \
+	JSON.mli \
+	mkdtemp.mli \
+	planner.mli \
+	progress.mli \
+	regedit.mli \
+	uRI.mli
 
-# Alphabetical order.
-SOURCES = \
+SOURCES_ML = \
+	config.ml \
+	libdir.ml \
 	common_gettext.ml \
 	common_utils.ml \
-	common_utils.mli \
-	common_utils_tests.ml \
-	config.ml \
-	fsync-c.c \
-	fsync.mli \
 	fsync.ml \
-	JSON.mli \
-	JSON.ml \
-	mkdtemp.mli \
-	mkdtemp.ml \
-	mkdtemp-c.c \
-	planner.mli \
-	planner.ml \
-	progress-c.c \
-	progress.mli \
 	progress.ml \
-	regedit.mli \
+	uRI.ml \
+	mkdtemp.ml \
+	planner.ml \
 	regedit.ml \
-	uri-c.c \
-	uRI.mli \
-	uRI.ml
+	JSON.ml
 
+SOURCES_C = \
+	$(top_srcdir)/fish/progress.c \
+	$(top_srcdir)/fish/uri.c \
+	fsync-c.c \
+	mkdtemp-c.c \
+	progress-c.c \
+	uri-c.c
 
-# Notes:
-# - We're not actually building a functioning program here, we're just
-#   linking everything together to check all the modules build OK.
-# - This list must be in dependency order.
-@HAVE_OCAML_TRUE@ocaml_modules = config \
-@HAVE_OCAML_TRUE@	libdir \
-@HAVE_OCAML_TRUE@	common_gettext \
-@HAVE_OCAML_TRUE@	common_utils \
-@HAVE_OCAML_TRUE@	fsync \
-@HAVE_OCAML_TRUE@	progress \
-@HAVE_OCAML_TRUE@	uRI \
-@HAVE_OCAML_TRUE@	mkdtemp \
-@HAVE_OCAML_TRUE@	planner \
-@HAVE_OCAML_TRUE@	regedit \
-@HAVE_OCAML_TRUE@	JSON
+@HAVE_OCAML_TRUE@dummy_SOURCES = $(SOURCES_C)
+@HAVE_OCAML_TRUE@dummy_CPPFLAGS = \
+@HAVE_OCAML_TRUE@	-I. \
+@HAVE_OCAML_TRUE@	-I$(top_builddir) \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
+@HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/src \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/fish
 
-@HAVE_OCAML_TRUE@OBJECTS = $(top_builddir)/fish/guestfish-progress.o \
-@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
-@HAVE_OCAML_TRUE@	fsync-c.o progress-c.o uri-c.o mkdtemp-c.o \
-@HAVE_OCAML_TRUE@	$(am__append_1) $(am__append_2)
-@HAVE_OCAML_TRUE@noinst_SCRIPTS = dummy
+@HAVE_OCAML_TRUE@dummy_CFLAGS = \
+@HAVE_OCAML_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+@HAVE_OCAML_TRUE@	$(LIBVIRT_CFLAGS) $(LIBXML2_CFLAGS)
+
+@HAVE_OCAML_TRUE@BOBJECTS = $(SOURCES_ML:.ml=.cmo)
+@HAVE_OCAML_TRUE@XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
 @HAVE_OCAML_TRUE@OCAMLPACKAGES = -package str,unix -I \
-@HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I ../ocaml \
-@HAVE_OCAML_TRUE@	$(am__append_3)
-@HAVE_OCAML_TRUE@OCAMLCFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR) $(OCAMLPACKAGES)
-@HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
-@HAVE_OCAML_TRUE@OCAMLCLIBS = \
-@HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) $(LIBINTL) $(LIBTINFO_LIBS) -lcrypt \
-@HAVE_OCAML_TRUE@	-L../src/.libs -lutils \
-@HAVE_OCAML_TRUE@	-L../gnulib/lib/.libs -lgnu
-
-
-# automake will decide we don't need C support in this file.  Really
-# we do, so we have to provide it ourselves.
-@HAVE_OCAML_TRUE@DEFAULT_INCLUDES = \
-@HAVE_OCAML_TRUE@	$(LIBVIRT_CFLAGS) \
-@HAVE_OCAML_TRUE@	-I. \
-@HAVE_OCAML_TRUE@	-I$(top_builddir) \
-@HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
-@HAVE_OCAML_TRUE@	-I$(top_srcdir)/src \
-@HAVE_OCAML_TRUE@	-I$(top_srcdir)/fish
+@HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/gnulib/lib/.libs -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/ocaml $(am__append_1)
+@HAVE_OCAML_TRUE@OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OBJECTS = $(BOBJECTS)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OBJECTS = $(XOBJECTS)
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@BEST = c
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@BEST = opt
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OCAMLLINKFLAGS = mlguestfs.cma -custom
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OCAMLLINKFLAGS = mlguestfs.cmxa
+@HAVE_OCAML_TRUE@dummy_DEPENDENCIES = $(OBJECTS)
+@HAVE_OCAML_TRUE@dummy_LINK = \
+@HAVE_OCAML_TRUE@	./link.sh \
+@HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
+@HAVE_OCAML_TRUE@	  $(OBJECTS) -o $@
 
 
 # Tests.
-@HAVE_OCAML_TRUE@check_SCRIPTS = common_utils_tests
+@HAVE_OCAML_TRUE@check_SCRIPTS = \
+@HAVE_OCAML_TRUE@	common_utils_tests
+
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
 @HAVE_OCAML_TRUE@TESTS = common_utils_tests
 DISTCLEANFILES = .depend
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .cmi .cmo .cmx .ml .mli .o
+.SUFFIXES: .c .cmi .cmo .cmx .lo .ml .mli .o .obj
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -1555,8 +1591,141 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+link.sh: $(top_builddir)/config.status $(srcdir)/link.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 config.ml: $(top_builddir)/config.status $(srcdir)/config.ml.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+
+clean-noinstPROGRAMS:
+	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
+
+dummy$(EXEEXT): $(dummy_OBJECTS) $(dummy_DEPENDENCIES) $(EXTRA_dummy_DEPENDENCIES) 
+	@rm -f dummy$(EXEEXT)
+	$(AM_V_GEN)$(dummy_LINK) $(dummy_OBJECTS) $(dummy_LDADD) $(LIBS)
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT)
+
+distclean-compile:
+	-rm -f *.tab.c
+
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy-fsync-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy-mkdtemp-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy-progress-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy-progress.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy-uri-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy-uri.Po@am__quote@
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+.c.lo:
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+dummy-progress.o: $(top_srcdir)/fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-progress.o -MD -MP -MF $(DEPDIR)/dummy-progress.Tpo -c -o dummy-progress.o `test -f '$(top_srcdir)/fish/progress.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dummy-progress.Tpo $(DEPDIR)/dummy-progress.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/progress.c' object='dummy-progress.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o dummy-progress.o `test -f '$(top_srcdir)/fish/progress.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/progress.c
+
+dummy-progress.obj: $(top_srcdir)/fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-progress.obj -MD -MP -MF $(DEPDIR)/dummy-progress.Tpo -c -o dummy-progress.obj `if test -f '$(top_srcdir)/fish/progress.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/progress.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dummy-progress.Tpo $(DEPDIR)/dummy-progress.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/progress.c' object='dummy-progress.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o dummy-progress.obj `if test -f '$(top_srcdir)/fish/progress.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/progress.c'; fi`
+
+dummy-uri.o: $(top_srcdir)/fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-uri.o -MD -MP -MF $(DEPDIR)/dummy-uri.Tpo -c -o dummy-uri.o `test -f '$(top_srcdir)/fish/uri.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dummy-uri.Tpo $(DEPDIR)/dummy-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/uri.c' object='dummy-uri.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o dummy-uri.o `test -f '$(top_srcdir)/fish/uri.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/uri.c
+
+dummy-uri.obj: $(top_srcdir)/fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-uri.obj -MD -MP -MF $(DEPDIR)/dummy-uri.Tpo -c -o dummy-uri.obj `if test -f '$(top_srcdir)/fish/uri.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dummy-uri.Tpo $(DEPDIR)/dummy-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/uri.c' object='dummy-uri.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o dummy-uri.obj `if test -f '$(top_srcdir)/fish/uri.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/uri.c'; fi`
+
+dummy-fsync-c.o: fsync-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-fsync-c.o -MD -MP -MF $(DEPDIR)/dummy-fsync-c.Tpo -c -o dummy-fsync-c.o `test -f 'fsync-c.c' || echo '$(srcdir)/'`fsync-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dummy-fsync-c.Tpo $(DEPDIR)/dummy-fsync-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='fsync-c.c' object='dummy-fsync-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o dummy-fsync-c.o `test -f 'fsync-c.c' || echo '$(srcdir)/'`fsync-c.c
+
+dummy-fsync-c.obj: fsync-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-fsync-c.obj -MD -MP -MF $(DEPDIR)/dummy-fsync-c.Tpo -c -o dummy-fsync-c.obj `if test -f 'fsync-c.c'; then $(CYGPATH_W) 'fsync-c.c'; else $(CYGPATH_W) '$(srcdir)/fsync-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dummy-fsync-c.Tpo $(DEPDIR)/dummy-fsync-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='fsync-c.c' object='dummy-fsync-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o dummy-fsync-c.obj `if test -f 'fsync-c.c'; then $(CYGPATH_W) 'fsync-c.c'; else $(CYGPATH_W) '$(srcdir)/fsync-c.c'; fi`
+
+dummy-mkdtemp-c.o: mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-mkdtemp-c.o -MD -MP -MF $(DEPDIR)/dummy-mkdtemp-c.Tpo -c -o dummy-mkdtemp-c.o `test -f 'mkdtemp-c.c' || echo '$(srcdir)/'`mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dummy-mkdtemp-c.Tpo $(DEPDIR)/dummy-mkdtemp-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mkdtemp-c.c' object='dummy-mkdtemp-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o dummy-mkdtemp-c.o `test -f 'mkdtemp-c.c' || echo '$(srcdir)/'`mkdtemp-c.c
+
+dummy-mkdtemp-c.obj: mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-mkdtemp-c.obj -MD -MP -MF $(DEPDIR)/dummy-mkdtemp-c.Tpo -c -o dummy-mkdtemp-c.obj `if test -f 'mkdtemp-c.c'; then $(CYGPATH_W) 'mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/mkdtemp-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dummy-mkdtemp-c.Tpo $(DEPDIR)/dummy-mkdtemp-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mkdtemp-c.c' object='dummy-mkdtemp-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o dummy-mkdtemp-c.obj `if test -f 'mkdtemp-c.c'; then $(CYGPATH_W) 'mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/mkdtemp-c.c'; fi`
+
+dummy-progress-c.o: progress-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-progress-c.o -MD -MP -MF $(DEPDIR)/dummy-progress-c.Tpo -c -o dummy-progress-c.o `test -f 'progress-c.c' || echo '$(srcdir)/'`progress-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dummy-progress-c.Tpo $(DEPDIR)/dummy-progress-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='progress-c.c' object='dummy-progress-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o dummy-progress-c.o `test -f 'progress-c.c' || echo '$(srcdir)/'`progress-c.c
+
+dummy-progress-c.obj: progress-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-progress-c.obj -MD -MP -MF $(DEPDIR)/dummy-progress-c.Tpo -c -o dummy-progress-c.obj `if test -f 'progress-c.c'; then $(CYGPATH_W) 'progress-c.c'; else $(CYGPATH_W) '$(srcdir)/progress-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dummy-progress-c.Tpo $(DEPDIR)/dummy-progress-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='progress-c.c' object='dummy-progress-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o dummy-progress-c.obj `if test -f 'progress-c.c'; then $(CYGPATH_W) 'progress-c.c'; else $(CYGPATH_W) '$(srcdir)/progress-c.c'; fi`
+
+dummy-uri-c.o: uri-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-uri-c.o -MD -MP -MF $(DEPDIR)/dummy-uri-c.Tpo -c -o dummy-uri-c.o `test -f 'uri-c.c' || echo '$(srcdir)/'`uri-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dummy-uri-c.Tpo $(DEPDIR)/dummy-uri-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='uri-c.c' object='dummy-uri-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o dummy-uri-c.o `test -f 'uri-c.c' || echo '$(srcdir)/'`uri-c.c
+
+dummy-uri-c.obj: uri-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-uri-c.obj -MD -MP -MF $(DEPDIR)/dummy-uri-c.Tpo -c -o dummy-uri-c.obj `if test -f 'uri-c.c'; then $(CYGPATH_W) 'uri-c.c'; else $(CYGPATH_W) '$(srcdir)/uri-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dummy-uri-c.Tpo $(DEPDIR)/dummy-uri-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='uri-c.c' object='dummy-uri-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o dummy-uri-c.obj `if test -f 'uri-c.c'; then $(CYGPATH_W) 'uri-c.c'; else $(CYGPATH_W) '$(srcdir)/uri-c.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1743,7 +1912,7 @@ check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) $(check_SCRIPTS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
-all-am: Makefile $(SCRIPTS)
+all-am: Makefile $(PROGRAMS)
 installdirs:
 install: install-am
 install-exec: install-exec-am
@@ -1779,11 +1948,14 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
+	mostlyclean-am
 
 distclean: distclean-am
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-tags
+distclean-am: clean-am distclean-compile distclean-generic \
+	distclean-tags
 
 dvi: dvi-am
 
@@ -1826,12 +1998,14 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-generic mostlyclean-libtool
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool
 
 pdf: pdf-am
 
@@ -1846,15 +2020,16 @@ uninstall-am:
 .MAKE: check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
-	clean-generic clean-libtool cscopelist-am ctags ctags-am \
-	distclean distclean-generic distclean-libtool distclean-tags \
-	distdir dvi dvi-am html html-am info info-am install \
-	install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
+	clean-generic clean-libtool clean-noinstPROGRAMS cscopelist-am \
+	ctags ctags-am distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am
 
@@ -1891,23 +2066,12 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-@HAVE_OCAML_TRUE@dummy: $(OBJECTS)
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ \
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  -cclib '$(OCAMLCLIBS)' \
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  -o $@
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  mlguestfs.cma -linkpkg $^ \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  -cclib '$(OCAMLCLIBS)' \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  -custom \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  -o $@
-
 @HAVE_OCAML_TRUE@.mli.cmi:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAML_TRUE@.ml.cmo:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@.ml.cmx:
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -c $< -o $@
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 # This OCaml module has to be generated by make (configure will put
 # unexpanded prefix macro in).
@@ -1916,14 +2080,11 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	echo 'let libdir = "$(libdir)"' > $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
 
-@HAVE_OCAML_TRUE@.c.o:
-@HAVE_OCAML_TRUE@	$(CC) $(CFLAGS) $(PROF_CFLAGS) $(DEFAULT_INCLUDES) -c $< -o $@
-
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmx common_utils.cmx common_utils_tests.cmx
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) \
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib '$(LIBTINFO_LIBS)' -o $@
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmo common_utils.cmo common_utils_tests.cmo
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) \
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) \
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  mlguestfs.cma -linkpkg $^ -cclib '$(LIBTINFO_LIBS)' -custom -o $@
 
 @HAVE_OCAML_TRUE@check-valgrind:

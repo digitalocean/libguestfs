@@ -122,23 +122,24 @@ TESTS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-ftello.sh test-ftello2.sh test-ftello3$(EXEEXT) \
 	test-ftello4.sh test-ftruncate.sh test-futimens$(EXEEXT) \
 	test-fwrite$(EXEEXT) test-getaddrinfo$(EXEEXT) \
-	test-getcwd-lgpl$(EXEEXT) test-getdelim$(EXEEXT) \
-	test-getdtablesize$(EXEEXT) test-getline$(EXEEXT) \
-	test-getopt$(EXEEXT) test-gettimeofday$(EXEEXT) \
-	test-glob$(EXEEXT) test-hash$(EXEEXT) test-i-ring$(EXEEXT) \
-	test-iconv$(EXEEXT) test-ignore-value$(EXEEXT) \
-	test-inet_ntop$(EXEEXT) test-inet_pton$(EXEEXT) \
-	test-intprops$(EXEEXT) test-inttostr$(EXEEXT) \
-	test-inttypes$(EXEEXT) test-ioctl$(EXEEXT) \
-	test-isatty$(EXEEXT) test-listen$(EXEEXT) test-locale$(EXEEXT) \
-	test-localeconv$(EXEEXT) test-localename$(EXEEXT) \
-	test-lock$(EXEEXT) test-lseek.sh test-lstat$(EXEEXT) \
-	test-malloca$(EXEEXT) test-mbrtowc1.sh test-mbrtowc2.sh \
-	test-mbrtowc3.sh test-mbrtowc4.sh test-mbrtowc-w32-1.sh \
-	test-mbrtowc-w32-2.sh test-mbrtowc-w32-3.sh \
-	test-mbrtowc-w32-4.sh test-mbrtowc-w32-5.sh test-mbsinit.sh \
-	test-mbsrtowcs1.sh test-mbsrtowcs2.sh test-mbsrtowcs3.sh \
-	test-mbsrtowcs4.sh test-memchr$(EXEEXT) test-memmem$(EXEEXT) \
+	test-getcwd-lgpl$(EXEEXT) test-getcwd.sh \
+	test-getdelim$(EXEEXT) test-getdtablesize$(EXEEXT) \
+	test-getline$(EXEEXT) test-getopt$(EXEEXT) \
+	test-gettimeofday$(EXEEXT) test-glob$(EXEEXT) \
+	test-hash$(EXEEXT) test-i-ring$(EXEEXT) test-iconv$(EXEEXT) \
+	test-ignore-value$(EXEEXT) test-inet_ntop$(EXEEXT) \
+	test-inet_pton$(EXEEXT) test-intprops$(EXEEXT) \
+	test-inttostr$(EXEEXT) test-inttypes$(EXEEXT) \
+	test-ioctl$(EXEEXT) test-isatty$(EXEEXT) test-listen$(EXEEXT) \
+	test-locale$(EXEEXT) test-localeconv$(EXEEXT) \
+	test-localename$(EXEEXT) test-lock$(EXEEXT) test-lseek.sh \
+	test-lstat$(EXEEXT) test-malloca$(EXEEXT) test-mbrtowc1.sh \
+	test-mbrtowc2.sh test-mbrtowc3.sh test-mbrtowc4.sh \
+	test-mbrtowc-w32-1.sh test-mbrtowc-w32-2.sh \
+	test-mbrtowc-w32-3.sh test-mbrtowc-w32-4.sh \
+	test-mbrtowc-w32-5.sh test-mbsinit.sh test-mbsrtowcs1.sh \
+	test-mbsrtowcs2.sh test-mbsrtowcs3.sh test-mbsrtowcs4.sh \
+	test-memchr$(EXEEXT) test-memmem$(EXEEXT) \
 	test-memrchr$(EXEEXT) test-nanosleep$(EXEEXT) \
 	test-netdb$(EXEEXT) test-netinet_in$(EXEEXT) \
 	test-open$(EXEEXT) test-openat-safer$(EXEEXT) \
@@ -206,27 +207,27 @@ check_PROGRAMS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-ftello3$(EXEEXT) test-ftello4$(EXEEXT) \
 	test-ftruncate$(EXEEXT) test-futimens$(EXEEXT) \
 	test-fwrite$(EXEEXT) test-getaddrinfo$(EXEEXT) \
-	test-getcwd-lgpl$(EXEEXT) test-getdelim$(EXEEXT) \
-	test-getdtablesize$(EXEEXT) test-getline$(EXEEXT) \
-	test-getopt$(EXEEXT) test-gettimeofday$(EXEEXT) \
-	test-glob$(EXEEXT) test-hash$(EXEEXT) test-i-ring$(EXEEXT) \
-	test-iconv$(EXEEXT) test-ignore-value$(EXEEXT) \
-	test-inet_ntop$(EXEEXT) test-inet_pton$(EXEEXT) \
-	test-intprops$(EXEEXT) test-inttostr$(EXEEXT) \
-	test-inttypes$(EXEEXT) test-ioctl$(EXEEXT) \
-	test-isatty$(EXEEXT) test-listen$(EXEEXT) test-locale$(EXEEXT) \
-	test-localeconv$(EXEEXT) test-localename$(EXEEXT) \
-	test-lock$(EXEEXT) test-lseek$(EXEEXT) test-lstat$(EXEEXT) \
-	test-malloca$(EXEEXT) test-mbrtowc$(EXEEXT) \
-	test-mbrtowc-w32$(EXEEXT) test-mbsinit$(EXEEXT) \
-	test-mbsrtowcs$(EXEEXT) test-memchr$(EXEEXT) \
-	test-memmem$(EXEEXT) test-memrchr$(EXEEXT) \
-	test-nanosleep$(EXEEXT) test-netdb$(EXEEXT) \
-	test-netinet_in$(EXEEXT) test-open$(EXEEXT) \
-	test-openat-safer$(EXEEXT) test-openat$(EXEEXT) \
-	test-pathmax$(EXEEXT) test-perror$(EXEEXT) \
-	test-perror2$(EXEEXT) test-pipe$(EXEEXT) test-pipe2$(EXEEXT) \
-	test-pread$(EXEEXT) test-priv-set$(EXEEXT) \
+	test-getcwd-lgpl$(EXEEXT) test-getcwd$(EXEEXT) \
+	test-getdelim$(EXEEXT) test-getdtablesize$(EXEEXT) \
+	test-getline$(EXEEXT) test-getopt$(EXEEXT) \
+	test-gettimeofday$(EXEEXT) test-glob$(EXEEXT) \
+	test-hash$(EXEEXT) test-i-ring$(EXEEXT) test-iconv$(EXEEXT) \
+	test-ignore-value$(EXEEXT) test-inet_ntop$(EXEEXT) \
+	test-inet_pton$(EXEEXT) test-intprops$(EXEEXT) \
+	test-inttostr$(EXEEXT) test-inttypes$(EXEEXT) \
+	test-ioctl$(EXEEXT) test-isatty$(EXEEXT) test-listen$(EXEEXT) \
+	test-locale$(EXEEXT) test-localeconv$(EXEEXT) \
+	test-localename$(EXEEXT) test-lock$(EXEEXT) \
+	test-lseek$(EXEEXT) test-lstat$(EXEEXT) test-malloca$(EXEEXT) \
+	test-mbrtowc$(EXEEXT) test-mbrtowc-w32$(EXEEXT) \
+	test-mbsinit$(EXEEXT) test-mbsrtowcs$(EXEEXT) \
+	test-memchr$(EXEEXT) test-memmem$(EXEEXT) \
+	test-memrchr$(EXEEXT) test-nanosleep$(EXEEXT) \
+	test-netdb$(EXEEXT) test-netinet_in$(EXEEXT) \
+	test-open$(EXEEXT) test-openat-safer$(EXEEXT) \
+	test-openat$(EXEEXT) test-pathmax$(EXEEXT) \
+	test-perror$(EXEEXT) test-perror2$(EXEEXT) test-pipe$(EXEEXT) \
+	test-pipe2$(EXEEXT) test-pread$(EXEEXT) test-priv-set$(EXEEXT) \
 	test-ptsname_r$(EXEEXT) test-quotearg-simple$(EXEEXT) \
 	test-raise$(EXEEXT) test-rawmemchr$(EXEEXT) \
 	test-read-file$(EXEEXT) test-read$(EXEEXT) \
@@ -296,7 +297,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/fsusage.m4 $(top_srcdir)/m4/ftell.m4 \
 	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
 	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
-	$(top_srcdir)/m4/getaddrinfo.m4 $(top_srcdir)/m4/getcwd.m4 \
+	$(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
+	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
@@ -352,12 +355,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
 	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
 	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
-	$(top_srcdir)/m4/rmdir.m4 $(top_srcdir)/m4/safe-read.m4 \
-	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
-	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
-	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
-	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/sigaction.m4 \
-	$(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/rewinddir.m4 $(top_srcdir)/m4/rmdir.m4 \
+	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
+	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/secure_getenv.m4 \
+	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
+	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
+	$(top_srcdir)/m4/sigaction.m4 $(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
 	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
 	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
@@ -394,9 +397,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
 	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
 	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
-	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
-	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
+	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -665,6 +668,9 @@ test_fwrite_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
 test_getaddrinfo_SOURCES = test-getaddrinfo.c
 test_getaddrinfo_OBJECTS = test-getaddrinfo.$(OBJEXT)
 test_getaddrinfo_DEPENDENCIES = $(am__DEPENDENCIES_2)
+test_getcwd_SOURCES = test-getcwd.c
+test_getcwd_OBJECTS = test-getcwd.$(OBJEXT)
+test_getcwd_DEPENDENCIES = $(am__DEPENDENCIES_2)
 test_getcwd_lgpl_SOURCES = test-getcwd-lgpl.c
 test_getcwd_lgpl_OBJECTS = test-getcwd-lgpl.$(OBJEXT)
 test_getcwd_lgpl_DEPENDENCIES = $(am__DEPENDENCIES_2) \
@@ -1247,7 +1253,7 @@ SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-fnmatch.c test-fpending.c test-fputc.c test-fread.c \
 	test-fstat.c test-fstatat.c test-ftell.c test-ftell3.c \
 	test-ftello.c test-ftello3.c test-ftello4.c test-ftruncate.c \
-	test-futimens.c test-fwrite.c test-getaddrinfo.c \
+	test-futimens.c test-fwrite.c test-getaddrinfo.c test-getcwd.c \
 	test-getcwd-lgpl.c test-getdelim.c test-getdtablesize.c \
 	test-getline.c test-getopt.c test-gettimeofday.c test-glob.c \
 	test-hash.c test-i-ring.c test-iconv.c test-ignore-value.c \
@@ -1297,7 +1303,7 @@ DIST_SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-fnmatch.c test-fpending.c test-fputc.c test-fread.c \
 	test-fstat.c test-fstatat.c test-ftell.c test-ftell3.c \
 	test-ftello.c test-ftello3.c test-ftello4.c test-ftruncate.c \
-	test-futimens.c test-fwrite.c test-getaddrinfo.c \
+	test-futimens.c test-fwrite.c test-getaddrinfo.c test-getcwd.c \
 	test-getcwd-lgpl.c test-getdelim.c test-getdtablesize.c \
 	test-getline.c test-getopt.c test-gettimeofday.c test-glob.c \
 	test-hash.c test-i-ring.c test-iconv.c test-ignore-value.c \
@@ -2582,10 +2588,11 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 	macros.h nap.h test-futimens.h test-utimens-common.h \
 	test-futimens.c signature.h macros.h test-fwrite.c signature.h \
 	macros.h signature.h test-getaddrinfo.c test-getcwd-lgpl.c \
-	signature.h macros.h test-getdelim.c signature.h macros.h \
-	test-getdtablesize.c signature.h macros.h test-getline.c \
-	signature.h macros.h macros.h signature.h test-getopt.c \
-	test-getopt.h test-getopt_long.h getpagesize.c \
+	signature.h macros.h test-getcwd.c test-getcwd.sh \
+	test-getdelim.c signature.h macros.h test-getdtablesize.c \
+	signature.h macros.h test-getline.c signature.h macros.h \
+	macros.h signature.h test-getopt.c test-getopt.h \
+	test-getopt_long.h getpagesize.c \
 	$(top_srcdir)/build-aux/config.rpath signature.h \
 	test-gettimeofday.c test-glob.c signature.h macros.h \
 	test-hash.c macros.h test-i-ring.c macros.h test-iconv.c \
@@ -2728,6 +2735,7 @@ test_fstatat_LDADD = $(LDADD) @LIBINTL@
 test_futimens_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME) $(LIB_NANOSLEEP) @LIBINTL@
 test_getaddrinfo_LDADD = $(LDADD) @GETADDRINFO_LIB@ @LIBINTL@
 test_getcwd_lgpl_LDADD = $(LDADD) $(LIBINTL)
+test_getcwd_LDADD = $(LDADD) @LIBINTL@
 test_getopt_LDADD = $(LDADD) $(LIBINTL)
 test_iconv_LDADD = $(LDADD) @LIBICONV@
 test_inet_ntop_LDADD = $(LDADD) @INET_NTOP_LIB@
@@ -3049,6 +3057,10 @@ test-fwrite$(EXEEXT): $(test_fwrite_OBJECTS) $(test_fwrite_DEPENDENCIES) $(EXTRA
 test-getaddrinfo$(EXEEXT): $(test_getaddrinfo_OBJECTS) $(test_getaddrinfo_DEPENDENCIES) $(EXTRA_test_getaddrinfo_DEPENDENCIES) 
 	@rm -f test-getaddrinfo$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_getaddrinfo_OBJECTS) $(test_getaddrinfo_LDADD) $(LIBS)
+
+test-getcwd$(EXEEXT): $(test_getcwd_OBJECTS) $(test_getcwd_DEPENDENCIES) $(EXTRA_test_getcwd_DEPENDENCIES) 
+	@rm -f test-getcwd$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_getcwd_OBJECTS) $(test_getcwd_LDADD) $(LIBS)
 
 test-getcwd-lgpl$(EXEEXT): $(test_getcwd_lgpl_OBJECTS) $(test_getcwd_lgpl_DEPENDENCIES) $(EXTRA_test_getcwd_lgpl_DEPENDENCIES) 
 	@rm -f test-getcwd-lgpl$(EXEEXT)
@@ -3615,6 +3627,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-fwrite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-getaddrinfo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-getcwd-lgpl.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-getcwd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-getdelim.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-getdtablesize.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-getline.Po@am__quote@

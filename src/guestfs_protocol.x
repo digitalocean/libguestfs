@@ -298,6 +298,14 @@ struct guestfs_int_btrfssubvolume {
 
 typedef struct guestfs_int_btrfssubvolume guestfs_int_btrfssubvolume_list<>;
 
+struct guestfs_int_btrfsqgroup {
+  string btrfsqgroup_id<>;
+  uint64_t btrfsqgroup_rfer;
+  uint64_t btrfsqgroup_excl;
+};
+
+typedef struct guestfs_int_btrfsqgroup guestfs_int_btrfsqgroup_list<>;
+
 struct guestfs_int_xfsinfo {
   string xfs_mntpoint<>;
   unsigned int xfs_inodesize;
@@ -2929,6 +2937,66 @@ struct guestfs_blockdev_setra_args {
   int sectors;
 };
 
+struct guestfs_btrfs_subvolume_get_default_args {
+  string fs<>;
+};
+
+struct guestfs_btrfs_subvolume_get_default_ret {
+  int64_t id;
+};
+
+struct guestfs_btrfs_subvolume_show_args {
+  string subvolume<>;
+};
+
+struct guestfs_btrfs_subvolume_show_ret {
+  guestfs_str btrfssubvolumeinfo<>;
+};
+
+struct guestfs_btrfs_quota_enable_args {
+  string fs<>;
+  bool enable;
+};
+
+struct guestfs_btrfs_quota_rescan_args {
+  string fs<>;
+};
+
+struct guestfs_btrfs_qgroup_limit_args {
+  string subvolume<>;
+  int64_t size;
+};
+
+struct guestfs_btrfs_qgroup_create_args {
+  string qgroupid<>;
+  string subvolume<>;
+};
+
+struct guestfs_btrfs_qgroup_destroy_args {
+  string qgroupid<>;
+  string subvolume<>;
+};
+
+struct guestfs_btrfs_qgroup_show_args {
+  string path<>;
+};
+
+struct guestfs_btrfs_qgroup_show_ret {
+  guestfs_int_btrfsqgroup_list qgroups;
+};
+
+struct guestfs_btrfs_qgroup_assign_args {
+  string src<>;
+  string dst<>;
+  string path<>;
+};
+
+struct guestfs_btrfs_qgroup_remove_args {
+  string src<>;
+  string dst<>;
+  string path<>;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3344,10 +3412,20 @@ enum guestfs_procedure {
   GUESTFS_PROC_STATNS = 421,
   GUESTFS_PROC_LSTATNS = 422,
   GUESTFS_PROC_INTERNAL_LSTATNSLIST = 423,
-  GUESTFS_PROC_BLOCKDEV_SETRA = 424
+  GUESTFS_PROC_BLOCKDEV_SETRA = 424,
+  GUESTFS_PROC_BTRFS_SUBVOLUME_GET_DEFAULT = 425,
+  GUESTFS_PROC_BTRFS_SUBVOLUME_SHOW = 426,
+  GUESTFS_PROC_BTRFS_QUOTA_ENABLE = 427,
+  GUESTFS_PROC_BTRFS_QUOTA_RESCAN = 428,
+  GUESTFS_PROC_BTRFS_QGROUP_LIMIT = 429,
+  GUESTFS_PROC_BTRFS_QGROUP_CREATE = 430,
+  GUESTFS_PROC_BTRFS_QGROUP_DESTROY = 431,
+  GUESTFS_PROC_BTRFS_QGROUP_SHOW = 432,
+  GUESTFS_PROC_BTRFS_QGROUP_ASSIGN = 433,
+  GUESTFS_PROC_BTRFS_QGROUP_REMOVE = 434
 };
 
-const GUESTFS_MAX_PROC_NR = 424;
+const GUESTFS_MAX_PROC_NR = 434;
 
 /* The remote procedure call protocol. */
 

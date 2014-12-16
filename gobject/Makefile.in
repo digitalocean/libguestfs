@@ -196,7 +196,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/fsusage.m4 $(top_srcdir)/m4/ftell.m4 \
 	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
 	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
-	$(top_srcdir)/m4/getaddrinfo.m4 $(top_srcdir)/m4/getcwd.m4 \
+	$(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
+	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
@@ -252,12 +254,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
 	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
 	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
-	$(top_srcdir)/m4/rmdir.m4 $(top_srcdir)/m4/safe-read.m4 \
-	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
-	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
-	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
-	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/sigaction.m4 \
-	$(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/rewinddir.m4 $(top_srcdir)/m4/rmdir.m4 \
+	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
+	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/secure_getenv.m4 \
+	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
+	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
+	$(top_srcdir)/m4/sigaction.m4 $(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
 	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
 	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
@@ -294,9 +296,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
 	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
 	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
-	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
-	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
+	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -342,6 +344,7 @@ am__objects_1 = libguestfs_gobject_1_0_la-session.lo \
 	libguestfs_gobject_1_0_la-tristate.lo \
 	libguestfs_gobject_1_0_la-struct-application.lo \
 	libguestfs_gobject_1_0_la-struct-application2.lo \
+	libguestfs_gobject_1_0_la-struct-btrfsqgroup.lo \
 	libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo \
 	libguestfs_gobject_1_0_la-struct-dirent.lo \
 	libguestfs_gobject_1_0_la-struct-hivex_node.lo \
@@ -1660,6 +1663,7 @@ guestfs_gobject_headers = \
   include/guestfs-gobject/tristate.h \
   include/guestfs-gobject/struct-application.h \
   include/guestfs-gobject/struct-application2.h \
+  include/guestfs-gobject/struct-btrfsqgroup.h \
   include/guestfs-gobject/struct-btrfssubvolume.h \
   include/guestfs-gobject/struct-dirent.h \
   include/guestfs-gobject/struct-hivex_node.h \
@@ -1741,6 +1745,7 @@ guestfs_gobject_sources = \
   src/tristate.c \
   src/struct-application.c \
   src/struct-application2.c \
+  src/struct-btrfsqgroup.c \
   src/struct-btrfssubvolume.c \
   src/struct-dirent.c \
   src/struct-hivex_node.c \
@@ -2009,6 +2014,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-session.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-application.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-application2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-btrfsqgroup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-btrfssubvolume.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-dirent.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_node.Plo@am__quote@
@@ -2078,6 +2084,13 @@ libguestfs_gobject_1_0_la-struct-application2.lo: src/struct-application2.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-application2.c' object='libguestfs_gobject_1_0_la-struct-application2.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-application2.lo `test -f 'src/struct-application2.c' || echo '$(srcdir)/'`src/struct-application2.c
+
+libguestfs_gobject_1_0_la-struct-btrfsqgroup.lo: src/struct-btrfsqgroup.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-btrfsqgroup.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-btrfsqgroup.Tpo -c -o libguestfs_gobject_1_0_la-struct-btrfsqgroup.lo `test -f 'src/struct-btrfsqgroup.c' || echo '$(srcdir)/'`src/struct-btrfsqgroup.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-btrfsqgroup.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-btrfsqgroup.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-btrfsqgroup.c' object='libguestfs_gobject_1_0_la-struct-btrfsqgroup.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-btrfsqgroup.lo `test -f 'src/struct-btrfsqgroup.c' || echo '$(srcdir)/'`src/struct-btrfsqgroup.c
 
 libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo: src/struct-btrfssubvolume.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-btrfssubvolume.Tpo -c -o libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo `test -f 'src/struct-btrfssubvolume.c' || echo '$(srcdir)/'`src/struct-btrfssubvolume.c

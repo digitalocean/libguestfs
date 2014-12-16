@@ -237,6 +237,18 @@ guestfs___cleanup_free_btrfssubvolume_list (void *ptr)
 }
 
 void
+guestfs___cleanup_free_btrfsqgroup (void *ptr)
+{
+  guestfs_free_btrfsqgroup (* (struct guestfs_btrfsqgroup **) ptr);
+}
+
+void
+guestfs___cleanup_free_btrfsqgroup_list (void *ptr)
+{
+  guestfs_free_btrfsqgroup_list (* (struct guestfs_btrfsqgroup_list **) ptr);
+}
+
+void
 guestfs___cleanup_free_xfsinfo (void *ptr)
 {
   guestfs_free_xfsinfo (* (struct guestfs_xfsinfo **) ptr);

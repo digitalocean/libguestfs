@@ -343,6 +343,18 @@ typedef struct {
 	guestfs_int_btrfssubvolume *guestfs_int_btrfssubvolume_list_val;
 } guestfs_int_btrfssubvolume_list;
 
+struct guestfs_int_btrfsqgroup {
+	char *btrfsqgroup_id;
+	uint64_t btrfsqgroup_rfer;
+	uint64_t btrfsqgroup_excl;
+};
+typedef struct guestfs_int_btrfsqgroup guestfs_int_btrfsqgroup;
+
+typedef struct {
+	u_int guestfs_int_btrfsqgroup_list_len;
+	guestfs_int_btrfsqgroup *guestfs_int_btrfsqgroup_list_val;
+} guestfs_int_btrfsqgroup_list;
+
 struct guestfs_int_xfsinfo {
 	char *xfs_mntpoint;
 	u_int xfs_inodesize;
@@ -3783,6 +3795,82 @@ struct guestfs_blockdev_setra_args {
 };
 typedef struct guestfs_blockdev_setra_args guestfs_blockdev_setra_args;
 
+struct guestfs_btrfs_subvolume_get_default_args {
+	char *fs;
+};
+typedef struct guestfs_btrfs_subvolume_get_default_args guestfs_btrfs_subvolume_get_default_args;
+
+struct guestfs_btrfs_subvolume_get_default_ret {
+	int64_t id;
+};
+typedef struct guestfs_btrfs_subvolume_get_default_ret guestfs_btrfs_subvolume_get_default_ret;
+
+struct guestfs_btrfs_subvolume_show_args {
+	char *subvolume;
+};
+typedef struct guestfs_btrfs_subvolume_show_args guestfs_btrfs_subvolume_show_args;
+
+struct guestfs_btrfs_subvolume_show_ret {
+	struct {
+		u_int btrfssubvolumeinfo_len;
+		guestfs_str *btrfssubvolumeinfo_val;
+	} btrfssubvolumeinfo;
+};
+typedef struct guestfs_btrfs_subvolume_show_ret guestfs_btrfs_subvolume_show_ret;
+
+struct guestfs_btrfs_quota_enable_args {
+	char *fs;
+	bool_t enable;
+};
+typedef struct guestfs_btrfs_quota_enable_args guestfs_btrfs_quota_enable_args;
+
+struct guestfs_btrfs_quota_rescan_args {
+	char *fs;
+};
+typedef struct guestfs_btrfs_quota_rescan_args guestfs_btrfs_quota_rescan_args;
+
+struct guestfs_btrfs_qgroup_limit_args {
+	char *subvolume;
+	int64_t size;
+};
+typedef struct guestfs_btrfs_qgroup_limit_args guestfs_btrfs_qgroup_limit_args;
+
+struct guestfs_btrfs_qgroup_create_args {
+	char *qgroupid;
+	char *subvolume;
+};
+typedef struct guestfs_btrfs_qgroup_create_args guestfs_btrfs_qgroup_create_args;
+
+struct guestfs_btrfs_qgroup_destroy_args {
+	char *qgroupid;
+	char *subvolume;
+};
+typedef struct guestfs_btrfs_qgroup_destroy_args guestfs_btrfs_qgroup_destroy_args;
+
+struct guestfs_btrfs_qgroup_show_args {
+	char *path;
+};
+typedef struct guestfs_btrfs_qgroup_show_args guestfs_btrfs_qgroup_show_args;
+
+struct guestfs_btrfs_qgroup_show_ret {
+	guestfs_int_btrfsqgroup_list qgroups;
+};
+typedef struct guestfs_btrfs_qgroup_show_ret guestfs_btrfs_qgroup_show_ret;
+
+struct guestfs_btrfs_qgroup_assign_args {
+	char *src;
+	char *dst;
+	char *path;
+};
+typedef struct guestfs_btrfs_qgroup_assign_args guestfs_btrfs_qgroup_assign_args;
+
+struct guestfs_btrfs_qgroup_remove_args {
+	char *src;
+	char *dst;
+	char *path;
+};
+typedef struct guestfs_btrfs_qgroup_remove_args guestfs_btrfs_qgroup_remove_args;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -4198,9 +4286,19 @@ enum guestfs_procedure {
 	GUESTFS_PROC_LSTATNS = 422,
 	GUESTFS_PROC_INTERNAL_LSTATNSLIST = 423,
 	GUESTFS_PROC_BLOCKDEV_SETRA = 424,
+	GUESTFS_PROC_BTRFS_SUBVOLUME_GET_DEFAULT = 425,
+	GUESTFS_PROC_BTRFS_SUBVOLUME_SHOW = 426,
+	GUESTFS_PROC_BTRFS_QUOTA_ENABLE = 427,
+	GUESTFS_PROC_BTRFS_QUOTA_RESCAN = 428,
+	GUESTFS_PROC_BTRFS_QGROUP_LIMIT = 429,
+	GUESTFS_PROC_BTRFS_QGROUP_CREATE = 430,
+	GUESTFS_PROC_BTRFS_QGROUP_DESTROY = 431,
+	GUESTFS_PROC_BTRFS_QGROUP_SHOW = 432,
+	GUESTFS_PROC_BTRFS_QGROUP_ASSIGN = 433,
+	GUESTFS_PROC_BTRFS_QGROUP_REMOVE = 434,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 424
+#define GUESTFS_MAX_PROC_NR 434
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4295,6 +4393,8 @@ extern  bool_t xdr_guestfs_int_mdstat (XDR *, guestfs_int_mdstat*);
 extern  bool_t xdr_guestfs_int_mdstat_list (XDR *, guestfs_int_mdstat_list*);
 extern  bool_t xdr_guestfs_int_btrfssubvolume (XDR *, guestfs_int_btrfssubvolume*);
 extern  bool_t xdr_guestfs_int_btrfssubvolume_list (XDR *, guestfs_int_btrfssubvolume_list*);
+extern  bool_t xdr_guestfs_int_btrfsqgroup (XDR *, guestfs_int_btrfsqgroup*);
+extern  bool_t xdr_guestfs_int_btrfsqgroup_list (XDR *, guestfs_int_btrfsqgroup_list*);
 extern  bool_t xdr_guestfs_int_xfsinfo (XDR *, guestfs_int_xfsinfo*);
 extern  bool_t xdr_guestfs_int_xfsinfo_list (XDR *, guestfs_int_xfsinfo_list*);
 extern  bool_t xdr_guestfs_int_utsname (XDR *, guestfs_int_utsname*);
@@ -4850,6 +4950,19 @@ extern  bool_t xdr_guestfs_lstatns_ret (XDR *, guestfs_lstatns_ret*);
 extern  bool_t xdr_guestfs_internal_lstatnslist_args (XDR *, guestfs_internal_lstatnslist_args*);
 extern  bool_t xdr_guestfs_internal_lstatnslist_ret (XDR *, guestfs_internal_lstatnslist_ret*);
 extern  bool_t xdr_guestfs_blockdev_setra_args (XDR *, guestfs_blockdev_setra_args*);
+extern  bool_t xdr_guestfs_btrfs_subvolume_get_default_args (XDR *, guestfs_btrfs_subvolume_get_default_args*);
+extern  bool_t xdr_guestfs_btrfs_subvolume_get_default_ret (XDR *, guestfs_btrfs_subvolume_get_default_ret*);
+extern  bool_t xdr_guestfs_btrfs_subvolume_show_args (XDR *, guestfs_btrfs_subvolume_show_args*);
+extern  bool_t xdr_guestfs_btrfs_subvolume_show_ret (XDR *, guestfs_btrfs_subvolume_show_ret*);
+extern  bool_t xdr_guestfs_btrfs_quota_enable_args (XDR *, guestfs_btrfs_quota_enable_args*);
+extern  bool_t xdr_guestfs_btrfs_quota_rescan_args (XDR *, guestfs_btrfs_quota_rescan_args*);
+extern  bool_t xdr_guestfs_btrfs_qgroup_limit_args (XDR *, guestfs_btrfs_qgroup_limit_args*);
+extern  bool_t xdr_guestfs_btrfs_qgroup_create_args (XDR *, guestfs_btrfs_qgroup_create_args*);
+extern  bool_t xdr_guestfs_btrfs_qgroup_destroy_args (XDR *, guestfs_btrfs_qgroup_destroy_args*);
+extern  bool_t xdr_guestfs_btrfs_qgroup_show_args (XDR *, guestfs_btrfs_qgroup_show_args*);
+extern  bool_t xdr_guestfs_btrfs_qgroup_show_ret (XDR *, guestfs_btrfs_qgroup_show_ret*);
+extern  bool_t xdr_guestfs_btrfs_qgroup_assign_args (XDR *, guestfs_btrfs_qgroup_assign_args*);
+extern  bool_t xdr_guestfs_btrfs_qgroup_remove_args (XDR *, guestfs_btrfs_qgroup_remove_args*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -4894,6 +5007,8 @@ extern bool_t xdr_guestfs_int_mdstat ();
 extern bool_t xdr_guestfs_int_mdstat_list ();
 extern bool_t xdr_guestfs_int_btrfssubvolume ();
 extern bool_t xdr_guestfs_int_btrfssubvolume_list ();
+extern bool_t xdr_guestfs_int_btrfsqgroup ();
+extern bool_t xdr_guestfs_int_btrfsqgroup_list ();
 extern bool_t xdr_guestfs_int_xfsinfo ();
 extern bool_t xdr_guestfs_int_xfsinfo_list ();
 extern bool_t xdr_guestfs_int_utsname ();
@@ -5449,6 +5564,19 @@ extern bool_t xdr_guestfs_lstatns_ret ();
 extern bool_t xdr_guestfs_internal_lstatnslist_args ();
 extern bool_t xdr_guestfs_internal_lstatnslist_ret ();
 extern bool_t xdr_guestfs_blockdev_setra_args ();
+extern bool_t xdr_guestfs_btrfs_subvolume_get_default_args ();
+extern bool_t xdr_guestfs_btrfs_subvolume_get_default_ret ();
+extern bool_t xdr_guestfs_btrfs_subvolume_show_args ();
+extern bool_t xdr_guestfs_btrfs_subvolume_show_ret ();
+extern bool_t xdr_guestfs_btrfs_quota_enable_args ();
+extern bool_t xdr_guestfs_btrfs_quota_rescan_args ();
+extern bool_t xdr_guestfs_btrfs_qgroup_limit_args ();
+extern bool_t xdr_guestfs_btrfs_qgroup_create_args ();
+extern bool_t xdr_guestfs_btrfs_qgroup_destroy_args ();
+extern bool_t xdr_guestfs_btrfs_qgroup_show_args ();
+extern bool_t xdr_guestfs_btrfs_qgroup_show_ret ();
+extern bool_t xdr_guestfs_btrfs_qgroup_assign_args ();
+extern bool_t xdr_guestfs_btrfs_qgroup_remove_args ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

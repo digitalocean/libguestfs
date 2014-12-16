@@ -1010,12 +1010,23 @@ guestfs_session_btrfs_filesystem_balance
 guestfs_session_btrfs_filesystem_resize
 guestfs_session_btrfs_filesystem_sync
 guestfs_session_btrfs_fsck
+guestfs_session_btrfs_qgroup_assign
+guestfs_session_btrfs_qgroup_create
+guestfs_session_btrfs_qgroup_destroy
+guestfs_session_btrfs_qgroup_limit
+guestfs_session_btrfs_qgroup_remove
+guestfs_session_btrfs_qgroup_show
+guestfs_session_btrfs_quota_enable
+guestfs_session_btrfs_quota_rescan
 guestfs_session_btrfs_set_seeding
 guestfs_session_btrfs_subvolume_create
 guestfs_session_btrfs_subvolume_delete
+guestfs_session_btrfs_subvolume_get_default
 guestfs_session_btrfs_subvolume_list
 guestfs_session_btrfs_subvolume_set_default
+guestfs_session_btrfs_subvolume_show
 guestfs_session_btrfs_subvolume_snapshot
+guestfs_session_c_pointer
 guestfs_session_canonical_device_name
 guestfs_session_cap_get_file
 guestfs_session_cap_set_file
@@ -1536,6 +1547,13 @@ guestfs_application_get_type
 GuestfsApplication2
 <SUBSECTION Standard>
 guestfs_application2_get_type
+</SECTION>
+
+<SECTION>
+<FILE>struct-btrfsqgroup</FILE>
+GuestfsBTRFSQgroup
+<SUBSECTION Standard>
+guestfs_btrfsqgroup_get_type
 </SECTION>
 
 <SECTION>

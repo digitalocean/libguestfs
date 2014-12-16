@@ -68,9 +68,19 @@ module Guestfs (
   btrfs_device_delete,
   btrfs_filesystem_balance,
   btrfs_filesystem_sync,
+  btrfs_qgroup_assign,
+  btrfs_qgroup_create,
+  btrfs_qgroup_destroy,
+  btrfs_qgroup_limit,
+  btrfs_qgroup_remove,
+  btrfs_quota_enable,
+  btrfs_quota_rescan,
   btrfs_set_seeding,
   btrfs_subvolume_delete,
+  btrfs_subvolume_get_default,
   btrfs_subvolume_set_default,
+  btrfs_subvolume_show,
+  c_pointer,
   canonical_device_name,
   cap_get_file,
   cap_set_file,
@@ -1057,6 +1067,90 @@ btrfs_filesystem_sync h fs = do
       fail err
     else return ()
 
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_qgroup_assign" c_btrfs_qgroup_assign
+  :: GuestfsP -> CString -> CString -> CString -> IO CInt
+
+btrfs_qgroup_assign :: GuestfsH -> String -> String -> String -> IO ()
+btrfs_qgroup_assign h src dst path = do
+  r <- withCString src $ \src -> withCString dst $ \dst -> withCString path $ \path -> withForeignPtr h (\p -> c_btrfs_qgroup_assign p src dst path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_qgroup_create" c_btrfs_qgroup_create
+  :: GuestfsP -> CString -> CString -> IO CInt
+
+btrfs_qgroup_create :: GuestfsH -> String -> String -> IO ()
+btrfs_qgroup_create h qgroupid subvolume = do
+  r <- withCString qgroupid $ \qgroupid -> withCString subvolume $ \subvolume -> withForeignPtr h (\p -> c_btrfs_qgroup_create p qgroupid subvolume)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_qgroup_destroy" c_btrfs_qgroup_destroy
+  :: GuestfsP -> CString -> CString -> IO CInt
+
+btrfs_qgroup_destroy :: GuestfsH -> String -> String -> IO ()
+btrfs_qgroup_destroy h qgroupid subvolume = do
+  r <- withCString qgroupid $ \qgroupid -> withCString subvolume $ \subvolume -> withForeignPtr h (\p -> c_btrfs_qgroup_destroy p qgroupid subvolume)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_qgroup_limit" c_btrfs_qgroup_limit
+  :: GuestfsP -> CString -> Int64 -> IO CInt
+
+btrfs_qgroup_limit :: GuestfsH -> String -> Integer -> IO ()
+btrfs_qgroup_limit h subvolume size = do
+  r <- withCString subvolume $ \subvolume -> withForeignPtr h (\p -> c_btrfs_qgroup_limit p subvolume (fromIntegral size))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_qgroup_remove" c_btrfs_qgroup_remove
+  :: GuestfsP -> CString -> CString -> CString -> IO CInt
+
+btrfs_qgroup_remove :: GuestfsH -> String -> String -> String -> IO ()
+btrfs_qgroup_remove h src dst path = do
+  r <- withCString src $ \src -> withCString dst $ \dst -> withCString path $ \path -> withForeignPtr h (\p -> c_btrfs_qgroup_remove p src dst path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_quota_enable" c_btrfs_quota_enable
+  :: GuestfsP -> CString -> CInt -> IO CInt
+
+btrfs_quota_enable :: GuestfsH -> String -> Bool -> IO ()
+btrfs_quota_enable h fs enable = do
+  r <- withCString fs $ \fs -> withForeignPtr h (\p -> c_btrfs_quota_enable p fs (fromBool enable))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_quota_rescan" c_btrfs_quota_rescan
+  :: GuestfsP -> CString -> IO CInt
+
+btrfs_quota_rescan :: GuestfsH -> String -> IO ()
+btrfs_quota_rescan h fs = do
+  r <- withCString fs $ \fs -> withForeignPtr h (\p -> c_btrfs_quota_rescan p fs)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
 foreign import ccall unsafe "guestfs.h guestfs_btrfs_set_seeding" c_btrfs_set_seeding
   :: GuestfsP -> CString -> CInt -> IO CInt
 
@@ -1081,6 +1175,18 @@ btrfs_subvolume_delete h subvolume = do
       fail err
     else return ()
 
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_subvolume_get_default" c_btrfs_subvolume_get_default
+  :: GuestfsP -> CString -> IO Int64
+
+btrfs_subvolume_get_default :: GuestfsH -> String -> IO Int64
+btrfs_subvolume_get_default h fs = do
+  r <- withCString fs $ \fs -> withForeignPtr h (\p -> c_btrfs_subvolume_get_default p fs)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
 foreign import ccall unsafe "guestfs.h guestfs_btrfs_subvolume_set_default" c_btrfs_subvolume_set_default
   :: GuestfsP -> Int64 -> CString -> IO CInt
 
@@ -1092,6 +1198,33 @@ btrfs_subvolume_set_default h id fs = do
       err <- last_error h
       fail err
     else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_subvolume_show" c_btrfs_subvolume_show
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+btrfs_subvolume_show :: GuestfsH -> String -> IO [(String, String)]
+btrfs_subvolume_show h subvolume = do
+  r <- withCString subvolume $ \subvolume -> withForeignPtr h (\p -> c_btrfs_subvolume_show p subvolume)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else do
+      arr <- peekArray0 nullPtr r
+      arr <- mapM peekCString arr
+      return (assocListOfHashtable arr)
+
+foreign import ccall unsafe "guestfs.h guestfs_c_pointer" c_c_pointer
+  :: GuestfsP -> IO Int64
+
+c_pointer :: GuestfsH -> IO Int64
+c_pointer h = do
+  r <- withForeignPtr h (\p -> c_c_pointer p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
 
 foreign import ccall unsafe "guestfs.h guestfs_canonical_device_name" c_canonical_device_name
   :: GuestfsP -> CString -> IO CString

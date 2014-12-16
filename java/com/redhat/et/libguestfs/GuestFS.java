@@ -2301,6 +2301,165 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * add a qgroup to a parent qgroup
+   * <p>
+   * Add qgroup "src" to parent qgroup "dst". This command
+   * can group several qgroups into a parent qgroup to share
+   * common limit.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_qgroup_assign (String src, String dst, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_qgroup_assign: handle is closed");
+
+    _btrfs_qgroup_assign (g, src, dst, path);
+  }
+
+  private native void _btrfs_qgroup_assign (long g, String src, String dst, String path)
+    throws LibGuestFSException;
+
+  /**
+   * create a subvolume quota group
+   * <p>
+   * Create a quota group (qgroup) for subvolume at
+   * "subvolume".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_qgroup_create (String qgroupid, String subvolume)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_qgroup_create: handle is closed");
+
+    _btrfs_qgroup_create (g, qgroupid, subvolume);
+  }
+
+  private native void _btrfs_qgroup_create (long g, String qgroupid, String subvolume)
+    throws LibGuestFSException;
+
+  /**
+   * destroy a subvolume quota group
+   * <p>
+   * Destroy a quota group.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_qgroup_destroy (String qgroupid, String subvolume)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_qgroup_destroy: handle is closed");
+
+    _btrfs_qgroup_destroy (g, qgroupid, subvolume);
+  }
+
+  private native void _btrfs_qgroup_destroy (long g, String qgroupid, String subvolume)
+    throws LibGuestFSException;
+
+  /**
+   * limit the size of a subvolume
+   * <p>
+   * Limit the size of a subvolume which's path is
+   * "subvolume". "size" can have suffix of G, M, or K.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_qgroup_limit (String subvolume, long size)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_qgroup_limit: handle is closed");
+
+    _btrfs_qgroup_limit (g, subvolume, size);
+  }
+
+  private native void _btrfs_qgroup_limit (long g, String subvolume, long size)
+    throws LibGuestFSException;
+
+  /**
+   * remove a qgroup from its parent qgroup
+   * <p>
+   * Remove qgroup "src" from the parent qgroup "dst".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_qgroup_remove (String src, String dst, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_qgroup_remove: handle is closed");
+
+    _btrfs_qgroup_remove (g, src, dst, path);
+  }
+
+  private native void _btrfs_qgroup_remove (long g, String src, String dst, String path)
+    throws LibGuestFSException;
+
+  /**
+   * show subvolume quota groups
+   * <p>
+   * Show all subvolume quota groups in a btrfs filesystem,
+   * inclding their usages.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public BTRFSQgroup[] btrfs_qgroup_show (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_qgroup_show: handle is closed");
+
+    return _btrfs_qgroup_show (g, path);
+  }
+
+  private native BTRFSQgroup[] _btrfs_qgroup_show (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * enable or disable subvolume quota support
+   * <p>
+   * Enable or disable subvolume quota support for filesystem
+   * which contains "path".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_quota_enable (String fs, boolean enable)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_quota_enable: handle is closed");
+
+    _btrfs_quota_enable (g, fs, enable);
+  }
+
+  private native void _btrfs_quota_enable (long g, String fs, boolean enable)
+    throws LibGuestFSException;
+
+  /**
+   * trash all qgroup numbers and scan the metadata again with the current config
+   * <p>
+   * Trash all qgroup numbers and scan the metadata again
+   * with the current config.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_quota_rescan (String fs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_quota_rescan: handle is closed");
+
+    _btrfs_quota_rescan (g, fs);
+  }
+
+  private native void _btrfs_quota_rescan (long g, String fs)
+    throws LibGuestFSException;
+
+  /**
    * enable or disable the seeding feature of device
    * <p>
    * Enable or disable the seeding feature of a device that
@@ -2398,6 +2557,26 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * get the default subvolume or snapshot of a filesystem
+   * <p>
+   * Get the default subvolume or snapshot of a filesystem
+   * mounted at "mountpoint".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long btrfs_subvolume_get_default (String fs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_subvolume_get_default: handle is closed");
+
+    return _btrfs_subvolume_get_default (g, fs);
+  }
+
+  private native long _btrfs_subvolume_get_default (long g, String fs)
+    throws LibGuestFSException;
+
+  /**
    * list btrfs snapshots and subvolumes
    * <p>
    * List the btrfs snapshots and subvolumes of the btrfs
@@ -2436,6 +2615,30 @@ public class GuestFS {
   }
 
   private native void _btrfs_subvolume_set_default (long g, long id, String fs)
+    throws LibGuestFSException;
+
+  /**
+   * return detailed information of the subvolume
+   * <p>
+   * Return detailed information of the subvolume.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public Map<String,String> btrfs_subvolume_show (String subvolume)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_subvolume_show: handle is closed");
+
+    String[] r = _btrfs_subvolume_show (g, subvolume);
+
+    HashMap<String, String> rhash = new HashMap<String, String> ();
+    for (int i = 0; i < r.length; i += 2)
+      rhash.put (r[i], r[i+1]);
+    return rhash;
+  }
+
+  private native String[] _btrfs_subvolume_show (long g, String subvolume)
     throws LibGuestFSException;
 
   /**
@@ -2505,6 +2708,28 @@ public class GuestFS {
   }
 
   private native void _btrfs_subvolume_snapshot (long g, String source, String dest, long _optargs_bitmask, boolean ro, String qgroupid)
+    throws LibGuestFSException;
+
+  /**
+   * return the C pointer to the guestfs_h handle
+   * <p>
+   * In non-C language bindings, this allows you to retrieve
+   * the underlying C pointer to the handle (ie. "g.h *").
+   * The purpose of this is to allow other libraries to
+   * interwork with libguestfs.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long c_pointer ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("c_pointer: handle is closed");
+
+    return _c_pointer (g);
+  }
+
+  private native long _c_pointer (long g)
     throws LibGuestFSException;
 
   /**
@@ -7321,7 +7546,7 @@ public class GuestFS {
    * return the package format and package management tool
    * used by the inspected operating system. For example for
    * Fedora these functions would return "rpm" (package
-   * format) and "yum" (package management).
+   * format), and "yum" or "dnf" (package management).
    * <p>
    * This returns the string "unknown" if we could not
    * determine the package format *or* if the operating
@@ -7354,18 +7579,18 @@ public class GuestFS {
    * "g.inspect_get_package_format" and this function return
    * the package format and package management tool used by
    * the inspected operating system. For example for Fedora
-   * these functions would return "rpm" (package format) and
-   * "yum" (package management).
+   * these functions would return "rpm" (package format), and
+   * "yum" or "dnf" (package management).
    * <p>
    * This returns the string "unknown" if we could not
    * determine the package management tool *or* if the
    * operating system does not have a real packaging system
    * (eg. Windows).
    * <p>
-   * Possible strings include: "yum", "up2date", "apt" (for
-   * all Debian derivatives), "portage", "pisi", "pacman",
-   * "urpmi", "zypper". Future versions of libguestfs may
-   * return other strings.
+   * Possible strings include: "yum", "dnf", "up2date", "apt"
+   * (for all Debian derivatives), "portage", "pisi",
+   * "pacman", "urpmi", "zypper". Future versions of
+   * libguestfs may return other strings.
    * <p>
    * Please read "INSPECTION" in guestfs(3) for more details.
    * <p>

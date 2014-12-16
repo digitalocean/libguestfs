@@ -142,7 +142,7 @@ check_PROGRAMS = tests$(EXEEXT) test-command$(EXEEXT) \
 	test-private-data$(EXEEXT) test-user-cancel$(EXEEXT) \
 	test-debug-to-file$(EXEEXT) test-environment$(EXEEXT) \
 	test-pwd$(EXEEXT) test-event-string$(EXEEXT) $(am__EXEEXT_1) \
-	$(am__EXEEXT_2)
+	$(am__EXEEXT_2) $(am__EXEEXT_3)
 @HAVE_LIBDL_TRUE@am__append_1 = \
 @HAVE_LIBDL_TRUE@	test-dlopen
 
@@ -152,12 +152,15 @@ TESTS = tests$(EXEEXT) test-just-header$(EXEEXT) \
 	test-last-errno$(EXEEXT) test-backend-settings$(EXEEXT) \
 	test-private-data$(EXEEXT) test-user-cancel$(EXEEXT) \
 	test-debug-to-file$(EXEEXT) test-environment$(EXEEXT) \
-	test-event-string$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2)
+	test-event-string$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2) \
+	$(am__EXEEXT_3)
 @HAVE_LIBDL_TRUE@am__append_2 = \
 @HAVE_LIBDL_TRUE@	test-dlopen
 
 @HAVE_CXX_TRUE@am__append_3 = test-just-header-cxx
 @HAVE_CXX_TRUE@am__append_4 = test-just-header-cxx
+@HAVE_LIBVIRT_TRUE@am__append_5 = test-add-libvirt-dom
+@HAVE_LIBVIRT_TRUE@am__append_6 = test-add-libvirt-dom
 subdir = tests/c-api
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -189,7 +192,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/fsusage.m4 $(top_srcdir)/m4/ftell.m4 \
 	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
 	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
-	$(top_srcdir)/m4/getaddrinfo.m4 $(top_srcdir)/m4/getcwd.m4 \
+	$(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
+	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
@@ -245,12 +250,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
 	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
 	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
-	$(top_srcdir)/m4/rmdir.m4 $(top_srcdir)/m4/safe-read.m4 \
-	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
-	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
-	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
-	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/sigaction.m4 \
-	$(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/rewinddir.m4 $(top_srcdir)/m4/rmdir.m4 \
+	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
+	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/secure_getenv.m4 \
+	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
+	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
+	$(top_srcdir)/m4/sigaction.m4 $(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
 	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
 	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
@@ -287,9 +292,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
 	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
 	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
-	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
-	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
+	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -298,6 +303,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 @HAVE_LIBDL_TRUE@am__EXEEXT_1 = test-dlopen$(EXEEXT)
 @HAVE_CXX_TRUE@am__EXEEXT_2 = test-just-header-cxx$(EXEEXT)
+@HAVE_LIBVIRT_TRUE@am__EXEEXT_3 = test-add-libvirt-dom$(EXEEXT)
 am_test_add_drive_opts_OBJECTS =  \
 	test_add_drive_opts-test-add-drive-opts.$(OBJEXT)
 test_add_drive_opts_OBJECTS = $(am_test_add_drive_opts_OBJECTS)
@@ -310,10 +316,21 @@ test_add_drive_opts_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(test_add_drive_opts_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am__test_add_libvirt_dom_SOURCES_DIST = test-add-libvirt-dom.c
+@HAVE_LIBVIRT_TRUE@am_test_add_libvirt_dom_OBJECTS = test_add_libvirt_dom-test-add-libvirt-dom.$(OBJEXT)
+test_add_libvirt_dom_OBJECTS = $(am_test_add_libvirt_dom_OBJECTS)
+am__DEPENDENCIES_1 =
+@HAVE_LIBVIRT_TRUE@test_add_libvirt_dom_DEPENDENCIES =  \
+@HAVE_LIBVIRT_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_LIBVIRT_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+@HAVE_LIBVIRT_TRUE@	$(top_builddir)/gnulib/lib/libgnu.la
+test_add_libvirt_dom_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(test_add_libvirt_dom_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am_test_backend_settings_OBJECTS =  \
 	test_backend_settings-test-backend-settings.$(OBJEXT)
 test_backend_settings_OBJECTS = $(am_test_backend_settings_OBJECTS)
-am__DEPENDENCIES_1 =
 test_backend_settings_DEPENDENCIES =  \
 	$(top_builddir)/src/libutils_la-utils.lo $(am__DEPENDENCIES_1) \
 	$(top_builddir)/src/libguestfs.la
@@ -488,6 +505,7 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(test_add_drive_opts_SOURCES) \
+	$(test_add_libvirt_dom_SOURCES) \
 	$(test_backend_settings_SOURCES) $(test_command_SOURCES) \
 	$(test_config_SOURCES) $(test_create_handle_SOURCES) \
 	$(test_debug_to_file_SOURCES) $(test_dlopen_SOURCES) \
@@ -497,6 +515,7 @@ SOURCES = $(test_add_drive_opts_SOURCES) \
 	$(test_pwd_SOURCES) $(test_user_cancel_SOURCES) \
 	$(tests_SOURCES)
 DIST_SOURCES = $(test_add_drive_opts_SOURCES) \
+	$(am__test_add_libvirt_dom_SOURCES_DIST) \
 	$(test_backend_settings_SOURCES) $(test_command_SOURCES) \
 	$(test_config_SOURCES) $(test_create_handle_SOURCES) \
 	$(test_debug_to_file_SOURCES) $(am__test_dlopen_SOURCES_DIST) \
@@ -1653,12 +1672,6 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 generator_built = tests.c
 BUILT_SOURCES = $(generator_built)
-
-# The API behind this test is not baked yet.
-#if HAVE_LIBVIRT
-#check_PROGRAMS += test-add-libvirt-dom
-#TESTS += test-add-libvirt-dom
-#endif
 EXTRA_DIST = $(BUILT_SOURCES) test-add-libvirt-dom.c
 TESTS_ENVIRONMENT = \
 	SKIP_TEST_COMMAND=$(shell ldd test-command | grep -sq 'not a dynamic executable' || echo 1) \
@@ -1851,7 +1864,9 @@ test_event_string_LDADD = \
 
 @HAVE_LIBVIRT_TRUE@test_add_libvirt_dom_SOURCES = test-add-libvirt-dom.c
 @HAVE_LIBVIRT_TRUE@test_add_libvirt_dom_CPPFLAGS = \
-@HAVE_LIBVIRT_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src -I$(top_srcdir)/gnulib/lib
+@HAVE_LIBVIRT_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_LIBVIRT_TRUE@	-I$(top_srcdir)/gnulib/lib \
+@HAVE_LIBVIRT_TRUE@	-I$(top_builddir)/gnulib/lib
 
 @HAVE_LIBVIRT_TRUE@test_add_libvirt_dom_CFLAGS = \
 @HAVE_LIBVIRT_TRUE@	$(LIBVIRT_CFLAGS) \
@@ -1910,6 +1925,10 @@ clean-checkPROGRAMS:
 test-add-drive-opts$(EXEEXT): $(test_add_drive_opts_OBJECTS) $(test_add_drive_opts_DEPENDENCIES) $(EXTRA_test_add_drive_opts_DEPENDENCIES) 
 	@rm -f test-add-drive-opts$(EXEEXT)
 	$(AM_V_CCLD)$(test_add_drive_opts_LINK) $(test_add_drive_opts_OBJECTS) $(test_add_drive_opts_LDADD) $(LIBS)
+
+test-add-libvirt-dom$(EXEEXT): $(test_add_libvirt_dom_OBJECTS) $(test_add_libvirt_dom_DEPENDENCIES) $(EXTRA_test_add_libvirt_dom_DEPENDENCIES) 
+	@rm -f test-add-libvirt-dom$(EXEEXT)
+	$(AM_V_CCLD)$(test_add_libvirt_dom_LINK) $(test_add_libvirt_dom_OBJECTS) $(test_add_libvirt_dom_LDADD) $(LIBS)
 
 test-backend-settings$(EXEEXT): $(test_backend_settings_OBJECTS) $(test_backend_settings_DEPENDENCIES) $(EXTRA_test_backend_settings_DEPENDENCIES) 
 	@rm -f test-backend-settings$(EXEEXT)
@@ -1980,6 +1999,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-command.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-pwd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_add_drive_opts-test-add-drive-opts.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_add_libvirt_dom-test-add-libvirt-dom.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_backend_settings-test-backend-settings.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_config-test-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_create_handle-test-create-handle.Po@am__quote@
@@ -2029,6 +2049,20 @@ test_add_drive_opts-test-add-drive-opts.obj: test-add-drive-opts.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-add-drive-opts.c' object='test_add_drive_opts-test-add-drive-opts.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_add_drive_opts_CPPFLAGS) $(CPPFLAGS) $(test_add_drive_opts_CFLAGS) $(CFLAGS) -c -o test_add_drive_opts-test-add-drive-opts.obj `if test -f 'test-add-drive-opts.c'; then $(CYGPATH_W) 'test-add-drive-opts.c'; else $(CYGPATH_W) '$(srcdir)/test-add-drive-opts.c'; fi`
+
+test_add_libvirt_dom-test-add-libvirt-dom.o: test-add-libvirt-dom.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_add_libvirt_dom_CPPFLAGS) $(CPPFLAGS) $(test_add_libvirt_dom_CFLAGS) $(CFLAGS) -MT test_add_libvirt_dom-test-add-libvirt-dom.o -MD -MP -MF $(DEPDIR)/test_add_libvirt_dom-test-add-libvirt-dom.Tpo -c -o test_add_libvirt_dom-test-add-libvirt-dom.o `test -f 'test-add-libvirt-dom.c' || echo '$(srcdir)/'`test-add-libvirt-dom.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_add_libvirt_dom-test-add-libvirt-dom.Tpo $(DEPDIR)/test_add_libvirt_dom-test-add-libvirt-dom.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-add-libvirt-dom.c' object='test_add_libvirt_dom-test-add-libvirt-dom.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_add_libvirt_dom_CPPFLAGS) $(CPPFLAGS) $(test_add_libvirt_dom_CFLAGS) $(CFLAGS) -c -o test_add_libvirt_dom-test-add-libvirt-dom.o `test -f 'test-add-libvirt-dom.c' || echo '$(srcdir)/'`test-add-libvirt-dom.c
+
+test_add_libvirt_dom-test-add-libvirt-dom.obj: test-add-libvirt-dom.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_add_libvirt_dom_CPPFLAGS) $(CPPFLAGS) $(test_add_libvirt_dom_CFLAGS) $(CFLAGS) -MT test_add_libvirt_dom-test-add-libvirt-dom.obj -MD -MP -MF $(DEPDIR)/test_add_libvirt_dom-test-add-libvirt-dom.Tpo -c -o test_add_libvirt_dom-test-add-libvirt-dom.obj `if test -f 'test-add-libvirt-dom.c'; then $(CYGPATH_W) 'test-add-libvirt-dom.c'; else $(CYGPATH_W) '$(srcdir)/test-add-libvirt-dom.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_add_libvirt_dom-test-add-libvirt-dom.Tpo $(DEPDIR)/test_add_libvirt_dom-test-add-libvirt-dom.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-add-libvirt-dom.c' object='test_add_libvirt_dom-test-add-libvirt-dom.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_add_libvirt_dom_CPPFLAGS) $(CPPFLAGS) $(test_add_libvirt_dom_CFLAGS) $(CFLAGS) -c -o test_add_libvirt_dom-test-add-libvirt-dom.obj `if test -f 'test-add-libvirt-dom.c'; then $(CYGPATH_W) 'test-add-libvirt-dom.c'; else $(CYGPATH_W) '$(srcdir)/test-add-libvirt-dom.c'; fi`
 
 test_backend_settings-test-backend-settings.o: test-backend-settings.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_backend_settings_CPPFLAGS) $(CPPFLAGS) $(test_backend_settings_CFLAGS) $(CFLAGS) -MT test_backend_settings-test-backend-settings.o -MD -MP -MF $(DEPDIR)/test_backend_settings-test-backend-settings.Tpo -c -o test_backend_settings-test-backend-settings.o `test -f 'test-backend-settings.c' || echo '$(srcdir)/'`test-backend-settings.c

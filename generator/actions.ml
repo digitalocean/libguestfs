@@ -1752,8 +1752,8 @@ C<guestfs_add_drive_opts>." };
 This function and C<guestfs_inspect_get_package_management> return
 the package format and package management tool used by the
 inspected operating system.  For example for Fedora these
-functions would return C<rpm> (package format) and
-C<yum> (package management).
+functions would return C<rpm> (package format), and
+C<yum> or C<dnf> (package management).
 
 This returns the string C<unknown> if we could not determine the
 package format I<or> if the operating system does not have
@@ -1773,14 +1773,14 @@ Please read L<guestfs(3)/INSPECTION> for more details." };
 C<guestfs_inspect_get_package_format> and this function return
 the package format and package management tool used by the
 inspected operating system.  For example for Fedora these
-functions would return C<rpm> (package format) and
-C<yum> (package management).
+functions would return C<rpm> (package format), and
+C<yum> or C<dnf> (package management).
 
 This returns the string C<unknown> if we could not determine the
 package management tool I<or> if the operating system does not have
 a real packaging system (eg. Windows).
 
-Possible strings include: C<yum>, C<up2date>,
+Possible strings include: C<yum>, C<dnf>, C<up2date>,
 C<apt> (for all Debian derivatives),
 C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>.
 Future versions of libguestfs may return other strings.
@@ -3295,6 +3295,19 @@ is a symbolic link, then the link is stat-ed, not the file it
 refers to.
 
 This is the same as the C<lstat(2)> system call." };
+
+  { defaults with
+    name = "c_pointer";
+    style = RInt64 "ptr", [], [];
+    tests = [
+      InitNone, Always, TestRun (
+        [["c_pointer"]]), []
+    ];
+    shortdesc = "return the C pointer to the guestfs_h handle";
+    longdesc = "\
+In non-C language bindings, this allows you to retrieve the underlying
+C pointer to the handle (ie. C<guestfs_h *>).  The purpose of this is
+to allow other libraries to interwork with libguestfs." };
 
 ]
 
@@ -12028,6 +12041,209 @@ This is the internal call which implements C<guestfs_lstatnslist>." };
 Set readahead (in 512-byte sectors) for the device.
 
 This uses the L<blockdev(8)> command." };
+
+  { defaults with
+    name = "btrfs_subvolume_get_default";
+    style = RInt64 "id", [Mountable_or_Path "fs"], [];
+    proc_nr = Some 425;
+    optional = Some "btrfs"; camel_name = "BTRFSSubvolumeGetDefault";
+    tests = [
+      InitPartition, Always, TestResult (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["btrfs_subvolume_get_default"; "/dev/sda1"]], "ret > 0"), [];
+      InitPartition, Always, TestResult (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_subvolume_get_default"; "/"]], "ret > 0"), []
+    ];
+    shortdesc = "get the default subvolume or snapshot of a filesystem";
+    longdesc = "\
+Get the default subvolume or snapshot of a filesystem mounted at C<mountpoint>." };
+
+  { defaults with
+    name = "btrfs_subvolume_show";
+    style = RHashtable "btrfssubvolumeinfo", [Pathname "subvolume"], [];
+    proc_nr = Some 426;
+    optional = Some "btrfs"; camel_name = "BTRFSSubvolumeShow";
+    tests = [
+      InitPartition, Always, TestLastFail (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_subvolume_show"; "/"]]), [];
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_subvolume_create"; "/sub1"; "NOARG"];
+         ["btrfs_subvolume_show"; "/sub1"]]), [];
+      InitPartition, Always, TestLastFail (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["mkdir"; "/dir1"];
+         ["btrfs_subvolume_show"; "/dir1"]]), [];
+    ];
+    shortdesc = "return detailed information of the subvolume";
+    longdesc = "\
+Return detailed information of the subvolume." };
+
+  { defaults with
+    name = "btrfs_quota_enable";
+    style = RErr, [Mountable_or_Path "fs"; Bool "enable"], [];
+    proc_nr = Some 427;
+    optional = Some "btrfs"; camel_name = "BTRFSQuotaEnable";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["btrfs_quota_enable"; "/dev/sda1"; "true"]]), [];
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "true"]]), [];
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["btrfs_quota_enable"; "/dev/sda1"; "false"]]), [];
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "false"]]), [];
+    ];
+    shortdesc = "enable or disable subvolume quota support";
+    longdesc = "\
+Enable or disable subvolume quota support for filesystem which contains C<path>." };
+
+  { defaults with
+    name = "btrfs_quota_rescan";
+    style = RErr, [Mountable_or_Path "fs"], [];
+    proc_nr = Some 428;
+    optional = Some "btrfs"; camel_name = "BTRFSQuotaRescan";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["btrfs_quota_enable"; "/dev/sda1"; "true"];
+         ["btrfs_quota_rescan"; "/dev/sda1"]]), [];
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "true"];
+         ["btrfs_quota_rescan"; "/"]]), [];
+    ];
+
+    shortdesc = "trash all qgroup numbers and scan the metadata again with the current config";
+    longdesc = "\
+Trash all qgroup numbers and scan the metadata again with the current config." };
+
+  { defaults with
+    name = "btrfs_qgroup_limit";
+    style = RErr, [Pathname "subvolume"; Int64 "size"], [];
+    proc_nr = Some 429;
+    optional = Some "btrfs"; camel_name = "BTRFSQgroupLimit";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "true"];
+         ["btrfs_qgroup_limit"; "/"; "10737418240"]]), [];
+      InitPartition, Always, TestLastFail (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "false"];
+         ["btrfs_qgroup_limit"; "/"; "10737418240"]]), [];
+    ];
+    shortdesc = "limit the size of a subvolume";
+    longdesc = "\
+Limit the size of a subvolume which's path is C<subvolume>. C<size>
+can have suffix of G, M, or K. " };
+
+  { defaults with
+    name = "btrfs_qgroup_create";
+    style = RErr, [String "qgroupid"; Pathname "subvolume"], [];
+    proc_nr = Some 430;
+    optional = Some "btrfs"; camel_name = "BTRFSQgroupCreate";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "true"];
+         ["btrfs_subvolume_create"; "/sub1"; "NOARG"];
+         ["btrfs_qgroup_create"; "0/1000"; "/sub1"]]), [];
+    ];
+    shortdesc = "create a subvolume quota group";
+    longdesc = "\
+Create a quota group (qgroup) for subvolume at C<subvolume>." };
+
+  { defaults with
+    name = "btrfs_qgroup_destroy";
+    style = RErr, [String "qgroupid"; Pathname "subvolume"], [];
+    proc_nr = Some 431;
+    optional = Some "btrfs"; camel_name = "BTRFSQgroupDestroy";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "true"];
+         ["btrfs_subvolume_create"; "/sub1"; "NOARG"];
+         ["btrfs_qgroup_create"; "0/1000"; "/sub1"];
+         ["btrfs_qgroup_destroy"; "0/1000"; "/sub1"]]), [];
+    ];
+    shortdesc = "destroy a subvolume quota group";
+    longdesc = "\
+Destroy a quota group." };
+
+  { defaults with
+    name = "btrfs_qgroup_show";
+    style = RStructList ("qgroups", "btrfsqgroup"), [Pathname "path"], [];
+    proc_nr = Some 432;
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "true"];
+         ["btrfs_subvolume_create"; "/sub1"; "NOARG"];
+         ["btrfs_qgroup_create"; "0/1000"; "/sub1"];
+         ["btrfs_qgroup_show"; "/"]]), [];
+    ];
+    optional = Some "btrfs"; camel_name = "BTRFSQgroupShow";
+    shortdesc = "show subvolume quota groups";
+    longdesc = "\
+Show all subvolume quota groups in a btrfs filesystem, inclding their
+usages." };
+
+  { defaults with
+    name = "btrfs_qgroup_assign";
+    style = RErr, [String "src"; String "dst"; Pathname "path"], [];
+    proc_nr = Some 433;
+    optional = Some "btrfs"; camel_name = "BTRFSQgroupAssign";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "true"];
+         ["btrfs_qgroup_create"; "0/1000"; "/"];
+         ["btrfs_qgroup_create"; "1/1000"; "/"];
+         ["btrfs_qgroup_assign"; "0/1000"; "1/1000"; "/"]]), [];
+    ];
+    shortdesc = "add a qgroup to a parent qgroup";
+    longdesc = "\
+Add qgroup C<src> to parent qgroup C<dst>. This command can group
+several qgroups into a parent qgroup to share common limit." };
+
+  { defaults with
+    name = "btrfs_qgroup_remove";
+    style = RErr, [String "src"; String "dst"; Pathname "path"], [];
+    proc_nr = Some 434;
+    optional = Some "btrfs"; camel_name = "BTRFSQgroupRemove";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "true"];
+         ["btrfs_qgroup_create"; "0/1000"; "/"];
+         ["btrfs_qgroup_create"; "1/1000"; "/"];
+         ["btrfs_qgroup_assign"; "0/1000"; "1/1000"; "/"];
+         ["btrfs_qgroup_remove"; "0/1000"; "1/1000"; "/"]]), [];
+    ];
+    shortdesc = "remove a qgroup from its parent qgroup";
+    longdesc = "\
+Remove qgroup C<src> from the parent qgroup C<dst>." };
 
 ]
 

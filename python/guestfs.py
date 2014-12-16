@@ -1244,6 +1244,72 @@ class GuestFS(object):
         r = libguestfsmod.btrfs_fsck (self._o, device, superblock, repair)
         return r
 
+    def btrfs_qgroup_assign (self, src, dst, path):
+        """Add qgroup "src" to parent qgroup "dst". This command
+        can group several qgroups into a parent qgroup to share
+        common limit.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_qgroup_assign (self._o, src, dst, path)
+        return r
+
+    def btrfs_qgroup_create (self, qgroupid, subvolume):
+        """Create a quota group (qgroup) for subvolume at
+        "subvolume".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_qgroup_create (self._o, qgroupid, subvolume)
+        return r
+
+    def btrfs_qgroup_destroy (self, qgroupid, subvolume):
+        """Destroy a quota group.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_qgroup_destroy (self._o, qgroupid, subvolume)
+        return r
+
+    def btrfs_qgroup_limit (self, subvolume, size):
+        """Limit the size of a subvolume which's path is
+        "subvolume". "size" can have suffix of G, M, or K.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_qgroup_limit (self._o, subvolume, size)
+        return r
+
+    def btrfs_qgroup_remove (self, src, dst, path):
+        """Remove qgroup "src" from the parent qgroup "dst".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_qgroup_remove (self._o, src, dst, path)
+        return r
+
+    def btrfs_qgroup_show (self, path):
+        """Show all subvolume quota groups in a btrfs filesystem,
+        inclding their usages.
+        
+        This function returns a list of btrfsqgroups. Each
+        btrfsqgroup is represented as a dictionary.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_qgroup_show (self._o, path)
+        return r
+
+    def btrfs_quota_enable (self, fs, enable):
+        """Enable or disable subvolume quota support for filesystem
+        which contains "path".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_quota_enable (self._o, fs, enable)
+        return r
+
+    def btrfs_quota_rescan (self, fs):
+        """Trash all qgroup numbers and scan the metadata again
+        with the current config.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_quota_rescan (self._o, fs)
+        return r
+
     def btrfs_set_seeding (self, device, seeding):
         """Enable or disable the seeding feature of a device that
         contains a btrfs filesystem.
@@ -1272,6 +1338,14 @@ class GuestFS(object):
         r = libguestfsmod.btrfs_subvolume_delete (self._o, subvolume)
         return r
 
+    def btrfs_subvolume_get_default (self, fs):
+        """Get the default subvolume or snapshot of a filesystem
+        mounted at "mountpoint".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_subvolume_get_default (self._o, fs)
+        return r
+
     def btrfs_subvolume_list (self, fs):
         """List the btrfs snapshots and subvolumes of the btrfs
         filesystem which is mounted at "fs".
@@ -1292,6 +1366,20 @@ class GuestFS(object):
         r = libguestfsmod.btrfs_subvolume_set_default (self._o, id, fs)
         return r
 
+    def btrfs_subvolume_show (self, subvolume):
+        """Return detailed information of the subvolume.
+        
+        This function returns a hash. If the GuestFS constructor
+        was called with python_return_dict=True (recommended)
+        then the return value is in fact a Python dict.
+        Otherwise the return value is a list of pairs of
+        strings, for compatibility with old code.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_subvolume_show (self._o, subvolume)
+        r = self._maybe_convert_to_dict (r)
+        return r
+
     def btrfs_subvolume_snapshot (self, source, dest, ro=None, qgroupid=None):
         """Create a snapshot of the btrfs subvolume "source". The
         "dest" argument is the destination directory and the
@@ -1307,6 +1395,16 @@ class GuestFS(object):
         return r
 
     btrfs_subvolume_snapshot_opts = btrfs_subvolume_snapshot
+
+    def c_pointer (self):
+        """In non-C language bindings, this allows you to retrieve
+        the underlying C pointer to the handle (ie. "g.h *").
+        The purpose of this is to allow other libraries to
+        interwork with libguestfs.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.c_pointer (self._o)
+        return r
 
     def canonical_device_name (self, device):
         """This utility function is useful when displaying device
@@ -3892,7 +3990,7 @@ class GuestFS(object):
         return the package format and package management tool
         used by the inspected operating system. For example for
         Fedora these functions would return "rpm" (package
-        format) and "yum" (package management).
+        format), and "yum" or "dnf" (package management).
         
         This returns the string "unknown" if we could not
         determine the package format *or* if the operating
@@ -3913,18 +4011,18 @@ class GuestFS(object):
         """"g.inspect_get_package_format" and this function return
         the package format and package management tool used by
         the inspected operating system. For example for Fedora
-        these functions would return "rpm" (package format) and
-        "yum" (package management).
+        these functions would return "rpm" (package format), and
+        "yum" or "dnf" (package management).
         
         This returns the string "unknown" if we could not
         determine the package management tool *or* if the
         operating system does not have a real packaging system
         (eg. Windows).
         
-        Possible strings include: "yum", "up2date", "apt" (for
-        all Debian derivatives), "portage", "pisi", "pacman",
-        "urpmi", "zypper". Future versions of libguestfs may
-        return other strings.
+        Possible strings include: "yum", "dnf", "up2date", "apt"
+        (for all Debian derivatives), "portage", "pisi",
+        "pacman", "urpmi", "zypper". Future versions of
+        libguestfs may return other strings.
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """

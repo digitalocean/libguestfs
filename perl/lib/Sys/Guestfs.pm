@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.424';
+$VERSION = '0.434';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -1235,6 +1235,41 @@ Force sync on the btrfs filesystem mounted at C<fs>.
 Used to check a btrfs filesystem, C<device> is the device file where the
 filesystem is stored.
 
+=item $g->btrfs_qgroup_assign ($src, $dst, $path);
+
+Add qgroup C<src> to parent qgroup C<dst>. This command can group
+several qgroups into a parent qgroup to share common limit.
+
+=item $g->btrfs_qgroup_create ($qgroupid, $subvolume);
+
+Create a quota group (qgroup) for subvolume at C<subvolume>.
+
+=item $g->btrfs_qgroup_destroy ($qgroupid, $subvolume);
+
+Destroy a quota group.
+
+=item $g->btrfs_qgroup_limit ($subvolume, $size);
+
+Limit the size of a subvolume which's path is C<subvolume>. C<size>
+can have suffix of G, M, or K. 
+
+=item $g->btrfs_qgroup_remove ($src, $dst, $path);
+
+Remove qgroup C<src> from the parent qgroup C<dst>.
+
+=item @qgroups = $g->btrfs_qgroup_show ($path);
+
+Show all subvolume quota groups in a btrfs filesystem, inclding their
+usages.
+
+=item $g->btrfs_quota_enable ($fs, $enable);
+
+Enable or disable subvolume quota support for filesystem which contains C<path>.
+
+=item $g->btrfs_quota_rescan ($fs);
+
+Trash all qgroup numbers and scan the metadata again with the current config.
+
 =item $g->btrfs_set_seeding ($device, $seeding);
 
 Enable or disable the seeding feature of a device that contains
@@ -1263,6 +1298,10 @@ sub btrfs_subvolume_create_opts {
 
 Delete the named btrfs subvolume or snapshot.
 
+=item $id = $g->btrfs_subvolume_get_default ($fs);
+
+Get the default subvolume or snapshot of a filesystem mounted at C<mountpoint>.
+
 =item @subvolumes = $g->btrfs_subvolume_list ($fs);
 
 List the btrfs snapshots and subvolumes of the btrfs filesystem
@@ -1273,6 +1312,10 @@ which is mounted at C<fs>.
 Set the subvolume of the btrfs filesystem C<fs> which will
 be mounted by default.  See C<$g-E<gt>btrfs_subvolume_list> to
 get a list of subvolumes.
+
+=item %btrfssubvolumeinfo = $g->btrfs_subvolume_show ($subvolume);
+
+Return detailed information of the subvolume.
 
 =item $g->btrfs_subvolume_snapshot ($source, $dest [, ro => $ro] [, qgroupid => $qgroupid]);
 
@@ -1295,6 +1338,12 @@ sub btrfs_subvolume_snapshot_opts {
 }
 
 =pod
+
+=item $ptr = $g->c_pointer ();
+
+In non-C language bindings, this allows you to retrieve the underlying
+C pointer to the handle (ie. C<$g-E<gt>h *>).  The purpose of this is
+to allow other libraries to interwork with libguestfs.
 
 =item $canonical = $g->canonical_device_name ($device);
 
@@ -3470,8 +3519,8 @@ See also C<$g-E<gt>inspect_get_filesystems>.
 This function and C<$g-E<gt>inspect_get_package_management> return
 the package format and package management tool used by the
 inspected operating system.  For example for Fedora these
-functions would return C<rpm> (package format) and
-C<yum> (package management).
+functions would return C<rpm> (package format), and
+C<yum> or C<dnf> (package management).
 
 This returns the string C<unknown> if we could not determine the
 package format I<or> if the operating system does not have
@@ -3488,14 +3537,14 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 C<$g-E<gt>inspect_get_package_format> and this function return
 the package format and package management tool used by the
 inspected operating system.  For example for Fedora these
-functions would return C<rpm> (package format) and
-C<yum> (package management).
+functions would return C<rpm> (package format), and
+C<yum> or C<dnf> (package management).
 
 This returns the string C<unknown> if we could not determine the
 package management tool I<or> if the operating system does not have
 a real packaging system (eg. Windows).
 
-Possible strings include: C<yum>, C<up2date>,
+Possible strings include: C<yum>, C<dnf>, C<up2date>,
 C<apt> (for all Debian derivatives),
 C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>.
 Future versions of libguestfs may return other strings.
@@ -8213,6 +8262,78 @@ use vars qw(%guestfs_introspection);
     name => "btrfs_fsck",
     description => "check a btrfs filesystem",
   },
+  "btrfs_qgroup_assign" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string', 0 ],
+      [ 'dst', 'string', 1 ],
+      [ 'path', 'string(path)', 2 ],
+    ],
+    name => "btrfs_qgroup_assign",
+    description => "add a qgroup to a parent qgroup",
+  },
+  "btrfs_qgroup_create" => {
+    ret => 'void',
+    args => [
+      [ 'qgroupid', 'string', 0 ],
+      [ 'subvolume', 'string(path)', 1 ],
+    ],
+    name => "btrfs_qgroup_create",
+    description => "create a subvolume quota group",
+  },
+  "btrfs_qgroup_destroy" => {
+    ret => 'void',
+    args => [
+      [ 'qgroupid', 'string', 0 ],
+      [ 'subvolume', 'string(path)', 1 ],
+    ],
+    name => "btrfs_qgroup_destroy",
+    description => "destroy a subvolume quota group",
+  },
+  "btrfs_qgroup_limit" => {
+    ret => 'void',
+    args => [
+      [ 'subvolume', 'string(path)', 0 ],
+      [ 'size', 'int64', 1 ],
+    ],
+    name => "btrfs_qgroup_limit",
+    description => "limit the size of a subvolume",
+  },
+  "btrfs_qgroup_remove" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string', 0 ],
+      [ 'dst', 'string', 1 ],
+      [ 'path', 'string(path)', 2 ],
+    ],
+    name => "btrfs_qgroup_remove",
+    description => "remove a qgroup from its parent qgroup",
+  },
+  "btrfs_qgroup_show" => {
+    ret => 'struct btrfsqgroup list',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "btrfs_qgroup_show",
+    description => "show subvolume quota groups",
+  },
+  "btrfs_quota_enable" => {
+    ret => 'void',
+    args => [
+      [ 'fs', 'string(mountable_or_path)', 0 ],
+      [ 'enable', 'bool', 1 ],
+    ],
+    name => "btrfs_quota_enable",
+    description => "enable or disable subvolume quota support",
+  },
+  "btrfs_quota_rescan" => {
+    ret => 'void',
+    args => [
+      [ 'fs', 'string(mountable_or_path)', 0 ],
+    ],
+    name => "btrfs_quota_rescan",
+    description => "trash all qgroup numbers and scan the metadata again with the current config",
+  },
   "btrfs_set_seeding" => {
     ret => 'void',
     args => [
@@ -8241,6 +8362,14 @@ use vars qw(%guestfs_introspection);
     name => "btrfs_subvolume_delete",
     description => "delete a btrfs subvolume or snapshot",
   },
+  "btrfs_subvolume_get_default" => {
+    ret => 'int64',
+    args => [
+      [ 'fs', 'string(mountable_or_path)', 0 ],
+    ],
+    name => "btrfs_subvolume_get_default",
+    description => "get the default subvolume or snapshot of a filesystem",
+  },
   "btrfs_subvolume_list" => {
     ret => 'struct btrfssubvolume list',
     args => [
@@ -8258,6 +8387,14 @@ use vars qw(%guestfs_introspection);
     name => "btrfs_subvolume_set_default",
     description => "set default btrfs subvolume",
   },
+  "btrfs_subvolume_show" => {
+    ret => 'hash',
+    args => [
+      [ 'subvolume', 'string(path)', 0 ],
+    ],
+    name => "btrfs_subvolume_show",
+    description => "return detailed information of the subvolume",
+  },
   "btrfs_subvolume_snapshot" => {
     ret => 'void',
     args => [
@@ -8270,6 +8407,13 @@ use vars qw(%guestfs_introspection);
     },
     name => "btrfs_subvolume_snapshot",
     description => "create a btrfs snapshot",
+  },
+  "c_pointer" => {
+    ret => 'int64',
+    args => [
+    ],
+    name => "c_pointer",
+    description => "return the C pointer to the guestfs_h handle",
   },
   "canonical_device_name" => {
     ret => 'string',

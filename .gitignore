@@ -59,6 +59,7 @@ Makefile.in
 /builder/index-parse.h
 /builder/index-scan.c
 /builder/libguestfs.conf
+/builder/link.sh
 /builder/*.qcow2
 /builder/stamp-virt-builder.pod
 /builder/stamp-virt-index-validate.pod
@@ -94,6 +95,7 @@ Makefile.in
 /customize/customize_cmdline.mli
 /customize/customize-options.pod
 /customize/customize-synopsis.pod
+/customize/link.sh
 /customize/stamp-virt-customize.pod
 /customize/virt-customize
 /customize/virt-customize.1
@@ -307,6 +309,7 @@ Makefile.in
 /mllib/config.ml
 /mllib/dummy
 /mllib/libdir.ml
+/mllib/link.sh
 /ocaml/bindtests.bc
 /ocaml/bindtests.opt
 /ocaml/bindtests.ml
@@ -415,6 +418,7 @@ Makefile.in
 /rescue/virt-rescue
 /rescue/virt-rescue.1
 /resize/.depend
+/resize/link.sh
 /resize/stamp-virt-resize.pod
 /resize/virt-resize
 /resize/virt-resize.1
@@ -466,6 +470,7 @@ Makefile.in
 /stamp-guestfs-release-notes.pod
 /stamp-h1
 /sysprep/.depend
+/sysprep/link.sh
 /sysprep/stamp-script1.sh
 /sysprep/stamp-script2.sh
 /sysprep/stamp-script4.sh

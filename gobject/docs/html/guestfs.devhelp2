@@ -7,6 +7,7 @@
       <sub name="GuestfsTristate" link="guestfs-GuestfsTristate.html"/>
       <sub name="GuestfsApplication" link="GuestfsApplication.html"/>
       <sub name="GuestfsApplication2" link="GuestfsApplication2.html"/>
+      <sub name="GuestfsBTRFSQgroup" link="GuestfsBTRFSQgroup.html"/>
       <sub name="GuestfsBTRFSSubvolume" link="GuestfsBTRFSSubvolume.html"/>
       <sub name="GuestfsDirent" link="GuestfsDirent.html"/>
       <sub name="GuestfsHivexNode" link="GuestfsHivexNode.html"/>
@@ -142,12 +143,23 @@
     <keyword type="function" name="guestfs_session_btrfs_filesystem_resize ()" link="GuestfsSession.html#guestfs-session-btrfs-filesystem-resize"/>
     <keyword type="function" name="guestfs_session_btrfs_filesystem_sync ()" link="GuestfsSession.html#guestfs-session-btrfs-filesystem-sync"/>
     <keyword type="function" name="guestfs_session_btrfs_fsck ()" link="GuestfsSession.html#guestfs-session-btrfs-fsck"/>
+    <keyword type="function" name="guestfs_session_btrfs_qgroup_assign ()" link="GuestfsSession.html#guestfs-session-btrfs-qgroup-assign"/>
+    <keyword type="function" name="guestfs_session_btrfs_qgroup_create ()" link="GuestfsSession.html#guestfs-session-btrfs-qgroup-create"/>
+    <keyword type="function" name="guestfs_session_btrfs_qgroup_destroy ()" link="GuestfsSession.html#guestfs-session-btrfs-qgroup-destroy"/>
+    <keyword type="function" name="guestfs_session_btrfs_qgroup_limit ()" link="GuestfsSession.html#guestfs-session-btrfs-qgroup-limit"/>
+    <keyword type="function" name="guestfs_session_btrfs_qgroup_remove ()" link="GuestfsSession.html#guestfs-session-btrfs-qgroup-remove"/>
+    <keyword type="function" name="guestfs_session_btrfs_qgroup_show ()" link="GuestfsSession.html#guestfs-session-btrfs-qgroup-show"/>
+    <keyword type="function" name="guestfs_session_btrfs_quota_enable ()" link="GuestfsSession.html#guestfs-session-btrfs-quota-enable"/>
+    <keyword type="function" name="guestfs_session_btrfs_quota_rescan ()" link="GuestfsSession.html#guestfs-session-btrfs-quota-rescan"/>
     <keyword type="function" name="guestfs_session_btrfs_set_seeding ()" link="GuestfsSession.html#guestfs-session-btrfs-set-seeding"/>
     <keyword type="function" name="guestfs_session_btrfs_subvolume_create ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-create"/>
     <keyword type="function" name="guestfs_session_btrfs_subvolume_delete ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-delete"/>
+    <keyword type="function" name="guestfs_session_btrfs_subvolume_get_default ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-get-default"/>
     <keyword type="function" name="guestfs_session_btrfs_subvolume_list ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-list"/>
     <keyword type="function" name="guestfs_session_btrfs_subvolume_set_default ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-set-default"/>
+    <keyword type="function" name="guestfs_session_btrfs_subvolume_show ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-show"/>
     <keyword type="function" name="guestfs_session_btrfs_subvolume_snapshot ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-snapshot"/>
+    <keyword type="function" name="guestfs_session_c_pointer ()" link="GuestfsSession.html#guestfs-session-c-pointer"/>
     <keyword type="function" name="guestfs_session_canonical_device_name ()" link="GuestfsSession.html#guestfs-session-canonical-device-name"/>
     <keyword type="function" name="guestfs_session_cap_get_file ()" link="GuestfsSession.html#guestfs-session-cap-get-file"/>
     <keyword type="function" name="guestfs_session_cap_set_file ()" link="GuestfsSession.html#guestfs-session-cap-set-file"/>
@@ -658,6 +670,7 @@
     <keyword type="enum" name="enum GuestfsTristate" link="guestfs-GuestfsTristate.html#GuestfsTristate"/>
     <keyword type="struct" name="struct GuestfsApplication" link="GuestfsApplication.html#GuestfsApplication-struct"/>
     <keyword type="struct" name="struct GuestfsApplication2" link="GuestfsApplication2.html#GuestfsApplication2-struct"/>
+    <keyword type="struct" name="struct GuestfsBTRFSQgroup" link="GuestfsBTRFSQgroup.html#GuestfsBTRFSQgroup-struct"/>
     <keyword type="struct" name="struct GuestfsBTRFSSubvolume" link="GuestfsBTRFSSubvolume.html#GuestfsBTRFSSubvolume-struct"/>
     <keyword type="struct" name="struct GuestfsDirent" link="GuestfsDirent.html#GuestfsDirent-struct"/>
     <keyword type="struct" name="struct GuestfsHivexNode" link="GuestfsHivexNode.html#GuestfsHivexNode-struct"/>

@@ -341,6 +341,24 @@ guestfs_free_btrfssubvolume_list (struct guestfs_btrfssubvolume_list *x)
 }
 
 GUESTFS_DLL_PUBLIC void
+guestfs_free_btrfsqgroup (struct guestfs_btrfsqgroup *x)
+{
+  if (x) {
+    xdr_free ((xdrproc_t) xdr_guestfs_int_btrfsqgroup, (char *) x);
+    free (x);
+  }
+}
+
+GUESTFS_DLL_PUBLIC void
+guestfs_free_btrfsqgroup_list (struct guestfs_btrfsqgroup_list *x)
+{
+  if (x) {
+    xdr_free ((xdrproc_t) xdr_guestfs_int_btrfsqgroup_list, (char *) x);
+    free (x);
+  }
+}
+
+GUESTFS_DLL_PUBLIC void
 guestfs_free_xfsinfo (struct guestfs_xfsinfo *x)
 {
   if (x) {

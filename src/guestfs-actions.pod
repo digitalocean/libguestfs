@@ -1614,6 +1614,99 @@ This is the "argv variant" of L</guestfs_btrfs_fsck>.
 
 See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
+=head2 guestfs_btrfs_qgroup_assign
+
+ int
+ guestfs_btrfs_qgroup_assign (guestfs_h *g,
+                              const char *src,
+                              const char *dst,
+                              const char *path);
+
+Add qgroup C<src> to parent qgroup C<dst>. This command can group
+several qgroups into a parent qgroup to share common limit.
+
+This function returns 0 on success or -1 on error.
+
+=head2 guestfs_btrfs_qgroup_create
+
+ int
+ guestfs_btrfs_qgroup_create (guestfs_h *g,
+                              const char *qgroupid,
+                              const char *subvolume);
+
+Create a quota group (qgroup) for subvolume at C<subvolume>.
+
+This function returns 0 on success or -1 on error.
+
+=head2 guestfs_btrfs_qgroup_destroy
+
+ int
+ guestfs_btrfs_qgroup_destroy (guestfs_h *g,
+                               const char *qgroupid,
+                               const char *subvolume);
+
+Destroy a quota group.
+
+This function returns 0 on success or -1 on error.
+
+=head2 guestfs_btrfs_qgroup_limit
+
+ int
+ guestfs_btrfs_qgroup_limit (guestfs_h *g,
+                             const char *subvolume,
+                             int64_t size);
+
+Limit the size of a subvolume which's path is C<subvolume>. C<size>
+can have suffix of G, M, or K. 
+
+This function returns 0 on success or -1 on error.
+
+=head2 guestfs_btrfs_qgroup_remove
+
+ int
+ guestfs_btrfs_qgroup_remove (guestfs_h *g,
+                              const char *src,
+                              const char *dst,
+                              const char *path);
+
+Remove qgroup C<src> from the parent qgroup C<dst>.
+
+This function returns 0 on success or -1 on error.
+
+=head2 guestfs_btrfs_qgroup_show
+
+ struct guestfs_btrfsqgroup_list *
+ guestfs_btrfs_qgroup_show (guestfs_h *g,
+                            const char *path);
+
+Show all subvolume quota groups in a btrfs filesystem, inclding their
+usages.
+
+This function returns a C<struct guestfs_btrfsqgroup_list *>,
+or NULL if there was an error.
+I<The caller must call C<guestfs_free_btrfsqgroup_list> after use>.
+
+=head2 guestfs_btrfs_quota_enable
+
+ int
+ guestfs_btrfs_quota_enable (guestfs_h *g,
+                             const char *fs,
+                             int enable);
+
+Enable or disable subvolume quota support for filesystem which contains C<path>.
+
+This function returns 0 on success or -1 on error.
+
+=head2 guestfs_btrfs_quota_rescan
+
+ int
+ guestfs_btrfs_quota_rescan (guestfs_h *g,
+                             const char *fs);
+
+Trash all qgroup numbers and scan the metadata again with the current config.
+
+This function returns 0 on success or -1 on error.
+
 =head2 guestfs_btrfs_set_seeding
 
  int
@@ -1696,6 +1789,16 @@ This function returns 0 on success or -1 on error.
 
 (Added in 1.17.35)
 
+=head2 guestfs_btrfs_subvolume_get_default
+
+ int64_t
+ guestfs_btrfs_subvolume_get_default (guestfs_h *g,
+                                      const char *fs);
+
+Get the default subvolume or snapshot of a filesystem mounted at C<mountpoint>.
+
+On error this function returns -1.
+
 =head2 guestfs_btrfs_subvolume_list
 
  struct guestfs_btrfssubvolume_list *
@@ -1725,6 +1828,20 @@ get a list of subvolumes.
 This function returns 0 on success or -1 on error.
 
 (Added in 1.17.35)
+
+=head2 guestfs_btrfs_subvolume_show
+
+ char **
+ guestfs_btrfs_subvolume_show (guestfs_h *g,
+                               const char *subvolume);
+
+Return detailed information of the subvolume.
+
+This function returns a NULL-terminated array of
+strings, or NULL if there was an error.
+The array of strings will always have length C<2n+1>, where
+C<n> keys and values alternate, followed by the trailing NULL entry.
+I<The caller must free the strings and the array after use>.
 
 =head2 guestfs_btrfs_subvolume_snapshot
 
@@ -1789,6 +1906,17 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
 This is the "argv variant" of L</guestfs_btrfs_subvolume_snapshot_opts>.
 
 See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_c_pointer
+
+ int64_t
+ guestfs_c_pointer (guestfs_h *g);
+
+In non-C language bindings, this allows you to retrieve the underlying
+C pointer to the handle (ie. C<guestfs_h *>).  The purpose of this is
+to allow other libraries to interwork with libguestfs.
+
+On error this function returns -1.
 
 =head2 guestfs_canonical_device_name
 
@@ -5760,8 +5888,8 @@ I<The caller must free the strings and the array after use>.
 This function and C<guestfs_inspect_get_package_management> return
 the package format and package management tool used by the
 inspected operating system.  For example for Fedora these
-functions would return C<rpm> (package format) and
-C<yum> (package management).
+functions would return C<rpm> (package format), and
+C<yum> or C<dnf> (package management).
 
 This returns the string C<unknown> if we could not determine the
 package format I<or> if the operating system does not have
@@ -5787,14 +5915,14 @@ I<The caller must free the returned string after use>.
 C<guestfs_inspect_get_package_format> and this function return
 the package format and package management tool used by the
 inspected operating system.  For example for Fedora these
-functions would return C<rpm> (package format) and
-C<yum> (package management).
+functions would return C<rpm> (package format), and
+C<yum> or C<dnf> (package management).
 
 This returns the string C<unknown> if we could not determine the
 package management tool I<or> if the operating system does not have
 a real packaging system (eg. Windows).
 
-Possible strings include: C<yum>, C<up2date>,
+Possible strings include: C<yum>, C<dnf>, C<up2date>,
 C<apt> (for all Debian derivatives),
 C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>.
 Future versions of libguestfs may return other strings.

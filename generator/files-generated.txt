@@ -84,6 +84,7 @@ gobject/include/guestfs-gobject/optargs-xfs_repair.h
 gobject/include/guestfs-gobject/session.h
 gobject/include/guestfs-gobject/struct-application.h
 gobject/include/guestfs-gobject/struct-application2.h
+gobject/include/guestfs-gobject/struct-btrfsqgroup.h
 gobject/include/guestfs-gobject/struct-btrfssubvolume.h
 gobject/include/guestfs-gobject/struct-dirent.h
 gobject/include/guestfs-gobject/struct-hivex_node.h
@@ -163,6 +164,7 @@ gobject/src/optargs-xfs_repair.c
 gobject/src/session.c
 gobject/src/struct-application.c
 gobject/src/struct-application2.c
+gobject/src/struct-btrfsqgroup.c
 gobject/src/struct-btrfssubvolume.c
 gobject/src/struct-dirent.c
 gobject/src/struct-hivex_node.c
@@ -192,6 +194,7 @@ java/Makefile.inc
 java/com/redhat/et/libguestfs/.gitignore
 java/com/redhat/et/libguestfs/Application.java
 java/com/redhat/et/libguestfs/Application2.java
+java/com/redhat/et/libguestfs/BTRFSQgroup.java
 java/com/redhat/et/libguestfs/BTRFSSubvolume.java
 java/com/redhat/et/libguestfs/Dirent.java
 java/com/redhat/et/libguestfs/GuestFS.java

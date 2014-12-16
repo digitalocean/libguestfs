@@ -98,12 +98,23 @@ static int run_btrfs_filesystem_balance (const char *cmd, size_t argc, char *arg
 static int run_btrfs_filesystem_resize (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_filesystem_sync (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_fsck (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_qgroup_assign (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_qgroup_create (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_qgroup_destroy (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_qgroup_limit (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_qgroup_remove (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_qgroup_show (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_quota_enable (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_quota_rescan (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_set_seeding (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_subvolume_create (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_subvolume_delete (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_subvolume_get_default (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_subvolume_list (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_subvolume_set_default (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_subvolume_show (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_subvolume_snapshot (const char *cmd, size_t argc, char *argv[]);
+static int run_c_pointer (const char *cmd, size_t argc, char *argv[]);
 static int run_canonical_device_name (const char *cmd, size_t argc, char *argv[]);
 static int run_cap_get_file (const char *cmd, size_t argc, char *argv[]);
 static int run_cap_set_file (const char *cmd, size_t argc, char *argv[]);
@@ -1057,6 +1068,62 @@ struct command_entry btrfs_fsck_cmd_entry = {
   .run = run_btrfs_fsck
 };
 
+struct command_entry btrfs_qgroup_assign_cmd_entry = {
+  .name = "btrfs-qgroup-assign",
+  .help = "NAME\n    btrfs-qgroup-assign - add a qgroup to a parent qgroup\n\nSYNOPSIS\n     btrfs-qgroup-assign src dst path\n\nDESCRIPTION\n    Add qgroup \"src\" to parent qgroup \"dst\". This command can group several\n    qgroups into a parent qgroup to share common limit.\n\n",
+  .synopsis = "btrfs-qgroup-assign src dst path",
+  .run = run_btrfs_qgroup_assign
+};
+
+struct command_entry btrfs_qgroup_create_cmd_entry = {
+  .name = "btrfs-qgroup-create",
+  .help = "NAME\n    btrfs-qgroup-create - create a subvolume quota group\n\nSYNOPSIS\n     btrfs-qgroup-create qgroupid subvolume\n\nDESCRIPTION\n    Create a quota group (qgroup) for subvolume at \"subvolume\".\n\n",
+  .synopsis = "btrfs-qgroup-create qgroupid subvolume",
+  .run = run_btrfs_qgroup_create
+};
+
+struct command_entry btrfs_qgroup_destroy_cmd_entry = {
+  .name = "btrfs-qgroup-destroy",
+  .help = "NAME\n    btrfs-qgroup-destroy - destroy a subvolume quota group\n\nSYNOPSIS\n     btrfs-qgroup-destroy qgroupid subvolume\n\nDESCRIPTION\n    Destroy a quota group.\n\n",
+  .synopsis = "btrfs-qgroup-destroy qgroupid subvolume",
+  .run = run_btrfs_qgroup_destroy
+};
+
+struct command_entry btrfs_qgroup_limit_cmd_entry = {
+  .name = "btrfs-qgroup-limit",
+  .help = "NAME\n    btrfs-qgroup-limit - limit the size of a subvolume\n\nSYNOPSIS\n     btrfs-qgroup-limit subvolume size\n\nDESCRIPTION\n    Limit the size of a subvolume which's path is \"subvolume\". \"size\" can\n    have suffix of G, M, or K.\n\n",
+  .synopsis = "btrfs-qgroup-limit subvolume size",
+  .run = run_btrfs_qgroup_limit
+};
+
+struct command_entry btrfs_qgroup_remove_cmd_entry = {
+  .name = "btrfs-qgroup-remove",
+  .help = "NAME\n    btrfs-qgroup-remove - remove a qgroup from its parent qgroup\n\nSYNOPSIS\n     btrfs-qgroup-remove src dst path\n\nDESCRIPTION\n    Remove qgroup \"src\" from the parent qgroup \"dst\".\n\n",
+  .synopsis = "btrfs-qgroup-remove src dst path",
+  .run = run_btrfs_qgroup_remove
+};
+
+struct command_entry btrfs_qgroup_show_cmd_entry = {
+  .name = "btrfs-qgroup-show",
+  .help = "NAME\n    btrfs-qgroup-show - show subvolume quota groups\n\nSYNOPSIS\n     btrfs-qgroup-show path\n\nDESCRIPTION\n    Show all subvolume quota groups in a btrfs filesystem, inclding their\n    usages.\n\n",
+  .synopsis = "btrfs-qgroup-show path",
+  .run = run_btrfs_qgroup_show
+};
+
+struct command_entry btrfs_quota_enable_cmd_entry = {
+  .name = "btrfs-quota-enable",
+  .help = "NAME\n    btrfs-quota-enable - enable or disable subvolume quota support\n\nSYNOPSIS\n     btrfs-quota-enable fs enable\n\nDESCRIPTION\n    Enable or disable subvolume quota support for filesystem which contains\n    \"path\".\n\n",
+  .synopsis = "btrfs-quota-enable fs enable",
+  .run = run_btrfs_quota_enable
+};
+
+struct command_entry btrfs_quota_rescan_cmd_entry = {
+  .name = "btrfs-quota-rescan",
+  .help = "NAME\n    btrfs-quota-rescan - trash all qgroup numbers and scan the metadata\n    again with the current config\n\nSYNOPSIS\n     btrfs-quota-rescan fs\n\nDESCRIPTION\n    Trash all qgroup numbers and scan the metadata again with the current\n    config.\n\n",
+  .synopsis = "btrfs-quota-rescan fs",
+  .run = run_btrfs_quota_rescan
+};
+
 struct command_entry btrfs_set_seeding_cmd_entry = {
   .name = "btrfs-set-seeding",
   .help = "NAME\n    btrfs-set-seeding - enable or disable the seeding feature of device\n\nSYNOPSIS\n     btrfs-set-seeding device seeding\n\nDESCRIPTION\n    Enable or disable the seeding feature of a device that contains a btrfs\n    filesystem.\n\n",
@@ -1078,6 +1145,13 @@ struct command_entry btrfs_subvolume_delete_cmd_entry = {
   .run = run_btrfs_subvolume_delete
 };
 
+struct command_entry btrfs_subvolume_get_default_cmd_entry = {
+  .name = "btrfs-subvolume-get-default",
+  .help = "NAME\n    btrfs-subvolume-get-default - get the default subvolume or snapshot of a\n    filesystem\n\nSYNOPSIS\n     btrfs-subvolume-get-default fs\n\nDESCRIPTION\n    Get the default subvolume or snapshot of a filesystem mounted at\n    \"mountpoint\".\n\n",
+  .synopsis = "btrfs-subvolume-get-default fs",
+  .run = run_btrfs_subvolume_get_default
+};
+
 struct command_entry btrfs_subvolume_list_cmd_entry = {
   .name = "btrfs-subvolume-list",
   .help = "NAME\n    btrfs-subvolume-list - list btrfs snapshots and subvolumes\n\nSYNOPSIS\n     btrfs-subvolume-list fs\n\nDESCRIPTION\n    List the btrfs snapshots and subvolumes of the btrfs filesystem which is\n    mounted at \"fs\".\n\n",
@@ -1092,11 +1166,25 @@ struct command_entry btrfs_subvolume_set_default_cmd_entry = {
   .run = run_btrfs_subvolume_set_default
 };
 
+struct command_entry btrfs_subvolume_show_cmd_entry = {
+  .name = "btrfs-subvolume-show",
+  .help = "NAME\n    btrfs-subvolume-show - return detailed information of the subvolume\n\nSYNOPSIS\n     btrfs-subvolume-show subvolume\n\nDESCRIPTION\n    Return detailed information of the subvolume.\n\n",
+  .synopsis = "btrfs-subvolume-show subvolume",
+  .run = run_btrfs_subvolume_show
+};
+
 struct command_entry btrfs_subvolume_snapshot_cmd_entry = {
   .name = "btrfs-subvolume-snapshot",
   .help = "NAME\n    btrfs-subvolume-snapshot - create a btrfs snapshot\n\nSYNOPSIS\n     btrfs-subvolume-snapshot source dest [ro:true|false] [qgroupid:..]\n\nDESCRIPTION\n    Create a snapshot of the btrfs subvolume \"source\". The \"dest\" argument\n    is the destination directory and the name of the snapshot, in the form\n    \"/path/to/dest/name\". By default the newly created snapshot is writable,\n    if the value of optional parameter \"ro\" is true, then a readonly\n    snapshot is created. The optional parameter \"qgroupid\" represents the\n    qgroup which the newly created snapshot will be added to.\n\n    You can use 'btrfs-subvolume-snapshot-opts' as an alias for this\n    command.\n\n",
   .synopsis = "btrfs-subvolume-snapshot source dest [ro:true|false] [qgroupid:..]",
   .run = run_btrfs_subvolume_snapshot
+};
+
+struct command_entry c_pointer_cmd_entry = {
+  .name = "c-pointer",
+  .help = "NAME\n    c-pointer - return the C pointer to the guestfs_h handle\n\nSYNOPSIS\n     c-pointer\n\nDESCRIPTION\n    In non-C language bindings, this allows you to retrieve the underlying C\n    pointer to the handle (ie. \"h *\"). The purpose of this is to allow other\n    libraries to interwork with libguestfs.\n\n",
+  .synopsis = "c-pointer",
+  .run = run_c_pointer
 };
 
 struct command_entry canonical_device_name_cmd_entry = {
@@ -2109,14 +2197,14 @@ struct command_entry inspect_get_mountpoints_cmd_entry = {
 
 struct command_entry inspect_get_package_format_cmd_entry = {
   .name = "inspect-get-package-format",
-  .help = "NAME\n    inspect-get-package-format - get package format used by the operating\n    system\n\nSYNOPSIS\n     inspect-get-package-format root\n\nDESCRIPTION\n    This function and \"inspect_get_package_management\" return the package\n    format and package management tool used by the inspected operating\n    system. For example for Fedora these functions would return \"rpm\"\n    (package format) and \"yum\" (package management).\n\n    This returns the string \"unknown\" if we could not determine the package\n    format *or* if the operating system does not have a real packaging\n    system (eg. Windows).\n\n    Possible strings include: \"rpm\", \"deb\", \"ebuild\", \"pisi\", \"pacman\",\n    \"pkgsrc\". Future versions of libguestfs may return other strings.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-package-format - get package format used by the operating\n    system\n\nSYNOPSIS\n     inspect-get-package-format root\n\nDESCRIPTION\n    This function and \"inspect_get_package_management\" return the package\n    format and package management tool used by the inspected operating\n    system. For example for Fedora these functions would return \"rpm\"\n    (package format), and \"yum\" or \"dnf\" (package management).\n\n    This returns the string \"unknown\" if we could not determine the package\n    format *or* if the operating system does not have a real packaging\n    system (eg. Windows).\n\n    Possible strings include: \"rpm\", \"deb\", \"ebuild\", \"pisi\", \"pacman\",\n    \"pkgsrc\". Future versions of libguestfs may return other strings.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .synopsis = "inspect-get-package-format root",
   .run = run_inspect_get_package_format
 };
 
 struct command_entry inspect_get_package_management_cmd_entry = {
   .name = "inspect-get-package-management",
-  .help = "NAME\n    inspect-get-package-management - get package management tool used by the\n    operating system\n\nSYNOPSIS\n     inspect-get-package-management root\n\nDESCRIPTION\n    \"inspect_get_package_format\" and this function return the package format\n    and package management tool used by the inspected operating system. For\n    example for Fedora these functions would return \"rpm\" (package format)\n    and \"yum\" (package management).\n\n    This returns the string \"unknown\" if we could not determine the package\n    management tool *or* if the operating system does not have a real\n    packaging system (eg. Windows).\n\n    Possible strings include: \"yum\", \"up2date\", \"apt\" (for all Debian\n    derivatives), \"portage\", \"pisi\", \"pacman\", \"urpmi\", \"zypper\". Future\n    versions of libguestfs may return other strings.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-package-management - get package management tool used by the\n    operating system\n\nSYNOPSIS\n     inspect-get-package-management root\n\nDESCRIPTION\n    \"inspect_get_package_format\" and this function return the package format\n    and package management tool used by the inspected operating system. For\n    example for Fedora these functions would return \"rpm\" (package format),\n    and \"yum\" or \"dnf\" (package management).\n\n    This returns the string \"unknown\" if we could not determine the package\n    management tool *or* if the operating system does not have a real\n    packaging system (eg. Windows).\n\n    Possible strings include: \"yum\", \"dnf\", \"up2date\", \"apt\" (for all Debian\n    derivatives), \"portage\", \"pisi\", \"pacman\", \"urpmi\", \"zypper\". Future\n    versions of libguestfs may return other strings.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .synopsis = "inspect-get-package-management root",
   .run = run_inspect_get_package_management
 };
@@ -4410,12 +4498,23 @@ list_commands (void)
   printf ("%-20s %s\n", "btrfs-filesystem-resize", _("resize a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-filesystem-sync", _("sync a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-fsck", _("check a btrfs filesystem"));
+  printf ("%-20s %s\n", "btrfs-qgroup-assign", _("add a qgroup to a parent qgroup"));
+  printf ("%-20s %s\n", "btrfs-qgroup-create", _("create a subvolume quota group"));
+  printf ("%-20s %s\n", "btrfs-qgroup-destroy", _("destroy a subvolume quota group"));
+  printf ("%-20s %s\n", "btrfs-qgroup-limit", _("limit the size of a subvolume"));
+  printf ("%-20s %s\n", "btrfs-qgroup-remove", _("remove a qgroup from its parent qgroup"));
+  printf ("%-20s %s\n", "btrfs-qgroup-show", _("show subvolume quota groups"));
+  printf ("%-20s %s\n", "btrfs-quota-enable", _("enable or disable subvolume quota support"));
+  printf ("%-20s %s\n", "btrfs-quota-rescan", _("trash all qgroup numbers and scan the metadata again with the current config"));
   printf ("%-20s %s\n", "btrfs-set-seeding", _("enable or disable the seeding feature of device"));
   printf ("%-20s %s\n", "btrfs-subvolume-create", _("create a btrfs subvolume"));
   printf ("%-20s %s\n", "btrfs-subvolume-delete", _("delete a btrfs subvolume or snapshot"));
+  printf ("%-20s %s\n", "btrfs-subvolume-get-default", _("get the default subvolume or snapshot of a filesystem"));
   printf ("%-20s %s\n", "btrfs-subvolume-list", _("list btrfs snapshots and subvolumes"));
   printf ("%-20s %s\n", "btrfs-subvolume-set-default", _("set default btrfs subvolume"));
+  printf ("%-20s %s\n", "btrfs-subvolume-show", _("return detailed information of the subvolume"));
   printf ("%-20s %s\n", "btrfs-subvolume-snapshot", _("create a btrfs snapshot"));
+  printf ("%-20s %s\n", "c-pointer", _("return the C pointer to the guestfs_h handle"));
   printf ("%-20s ", "cachedir");
   printf (_("alias for '%s'"), "set-cachedir");
   putchar ('\n');
@@ -5032,6 +5131,14 @@ print_application2_indent (struct guestfs_application2 *application2, const char
 }
 
 static void
+print_btrfsqgroup_indent (struct guestfs_btrfsqgroup *btrfsqgroup, const char *indent)
+{
+  printf ("%sbtrfsqgroup_id: %s\n", indent, btrfsqgroup->btrfsqgroup_id);
+  printf ("%sbtrfsqgroup_rfer: %" PRIu64 "\n", indent, btrfsqgroup->btrfsqgroup_rfer);
+  printf ("%sbtrfsqgroup_excl: %" PRIu64 "\n", indent, btrfsqgroup->btrfsqgroup_excl);
+}
+
+static void
 print_btrfssubvolume_indent (struct guestfs_btrfssubvolume *btrfssubvolume, const char *indent)
 {
   printf ("%sbtrfssubvolume_id: %" PRIu64 "\n", indent, btrfssubvolume->btrfssubvolume_id);
@@ -5343,6 +5450,18 @@ print_dirent_list (struct guestfs_dirent_list *dirents)
   for (i = 0; i < dirents->len; ++i) {
     printf ("[%d] = {\n", i);
     print_dirent_indent (&dirents->val[i], "  ");
+    printf ("}\n");
+  }
+}
+
+static void
+print_btrfsqgroup_list (struct guestfs_btrfsqgroup_list *btrfsqgroups)
+{
+  unsigned int i;
+
+  for (i = 0; i < btrfsqgroups->len; ++i) {
+    printf ("[%d] = {\n", i);
+    print_btrfsqgroup_indent (&btrfsqgroups->val[i], "  ");
     printf ("}\n");
   }
 }
@@ -7074,6 +7193,234 @@ run_btrfs_fsck (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_btrfs_qgroup_assign (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *src;
+  const char *dst;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 3) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  src = argv[i++];
+  dst = argv[i++];
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_btrfs_qgroup_assign (g, src, dst, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_qgroup_create (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *qgroupid;
+  char *subvolume;
+  size_t i = 0;
+
+  if (argc != 2) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  qgroupid = argv[i++];
+  subvolume = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (subvolume == NULL) goto out_subvolume;
+  r = guestfs_btrfs_qgroup_create (g, qgroupid, subvolume);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (subvolume);
+ out_subvolume:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_qgroup_destroy (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *qgroupid;
+  char *subvolume;
+  size_t i = 0;
+
+  if (argc != 2) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  qgroupid = argv[i++];
+  subvolume = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (subvolume == NULL) goto out_subvolume;
+  r = guestfs_btrfs_qgroup_destroy (g, qgroupid, subvolume);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (subvolume);
+ out_subvolume:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_qgroup_limit (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  char *subvolume;
+  int64_t size;
+  size_t i = 0;
+
+  if (argc != 2) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  subvolume = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (subvolume == NULL) goto out_subvolume;
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "size", "xstrtoll", xerr);
+      goto out_size;
+    }
+    size = r;
+  }
+  r = guestfs_btrfs_qgroup_limit (g, subvolume, size);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_size:
+  free (subvolume);
+ out_subvolume:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_qgroup_remove (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *src;
+  const char *dst;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 3) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  src = argv[i++];
+  dst = argv[i++];
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_btrfs_qgroup_remove (g, src, dst, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_qgroup_show (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  struct guestfs_btrfsqgroup_list *r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_btrfs_qgroup_show (g, path);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_btrfsqgroup_list (r);
+  guestfs_free_btrfsqgroup_list (r);
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_quota_enable (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  char *fs;
+  int enable;
+  size_t i = 0;
+
+  if (argc != 2) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  fs = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (fs == NULL) goto out_fs;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_enable;
+    case 0:  enable = 0; break;
+    default: enable = 1;
+  }
+  r = guestfs_btrfs_quota_enable (g, fs, enable);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_enable:
+  free (fs);
+ out_fs:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_quota_rescan (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  char *fs;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  fs = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (fs == NULL) goto out_fs;
+  r = guestfs_btrfs_quota_rescan (g, fs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (fs);
+ out_fs:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_btrfs_set_seeding (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -7176,6 +7523,31 @@ run_btrfs_subvolume_delete (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_btrfs_subvolume_get_default (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int64_t r;
+  char *fs;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  fs = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (fs == NULL) goto out_fs;
+  r = guestfs_btrfs_subvolume_get_default (g, fs);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
+ out:
+  free (fs);
+ out_fs:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_btrfs_subvolume_list (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -7241,6 +7613,32 @@ run_btrfs_subvolume_set_default (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_btrfs_subvolume_show (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  char **r;
+  char *subvolume;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  subvolume = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (subvolume == NULL) goto out_subvolume;
+  r = guestfs_btrfs_subvolume_show (g, subvolume);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_table (r);
+  guestfs___free_string_list (r);
+ out:
+  free (subvolume);
+ out_subvolume:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_btrfs_subvolume_snapshot (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -7300,6 +7698,25 @@ run_btrfs_subvolume_snapshot (const char *cmd, size_t argc, char *argv[])
  out_dest:
   free (source);
  out_source:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_c_pointer (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int64_t r;
+
+  if (argc != 0) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  r = guestfs_c_pointer (g);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
+ out:
  out_noargs:
   return ret;
 }

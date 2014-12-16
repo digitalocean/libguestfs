@@ -191,7 +191,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/fsusage.m4 $(top_srcdir)/m4/ftell.m4 \
 	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
 	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
-	$(top_srcdir)/m4/getaddrinfo.m4 $(top_srcdir)/m4/getcwd.m4 \
+	$(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
+	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
@@ -247,12 +249,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
 	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
 	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
-	$(top_srcdir)/m4/rmdir.m4 $(top_srcdir)/m4/safe-read.m4 \
-	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
-	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
-	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
-	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/sigaction.m4 \
-	$(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/rewinddir.m4 $(top_srcdir)/m4/rmdir.m4 \
+	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
+	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/secure_getenv.m4 \
+	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
+	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
+	$(top_srcdir)/m4/sigaction.m4 $(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
 	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
 	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
@@ -289,9 +291,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
 	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
 	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
-	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
-	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
+	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -300,13 +302,13 @@ CONFIG_CLEAN_FILES = link.sh test-v2v-networks-and-bridges.xml
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__virt_v2v_SOURCES_DIST = $(top_builddir)/fish/progress.c \
-	$(top_builddir)/fish/file-edit.c \
-	$(top_builddir)/mllib/progress-c.c \
-	$(top_builddir)/mllib/mkdtemp-c.c \
-	$(top_builddir)/customize/crypt-c.c \
-	$(top_builddir)/customize/perl_edit-c.c domainxml-c.c \
-	kvmuid-c.c utils-c.c xml-c.c
+am__virt_v2v_SOURCES_DIST = $(top_srcdir)/fish/progress.c \
+	$(top_srcdir)/fish/file-edit.c \
+	$(top_srcdir)/mllib/progress-c.c \
+	$(top_srcdir)/mllib/mkdtemp-c.c \
+	$(top_srcdir)/customize/crypt-c.c \
+	$(top_srcdir)/customize/perl_edit-c.c domainxml-c.c kvmuid-c.c \
+	utils-c.c xml-c.c
 am__objects_1 = virt_v2v-progress.$(OBJEXT) \
 	virt_v2v-file-edit.$(OBJEXT) virt_v2v-progress-c.$(OBJEXT) \
 	virt_v2v-mkdtemp-c.$(OBJEXT) virt_v2v-crypt-c.$(OBJEXT) \
@@ -1608,12 +1610,12 @@ SOURCES_ML = \
 	v2v.ml
 
 SOURCES_C = \
-	$(top_builddir)/fish/progress.c \
-	$(top_builddir)/fish/file-edit.c \
-	$(top_builddir)/mllib/progress-c.c \
-	$(top_builddir)/mllib/mkdtemp-c.c \
-	$(top_builddir)/customize/crypt-c.c \
-	$(top_builddir)/customize/perl_edit-c.c \
+	$(top_srcdir)/fish/progress.c \
+	$(top_srcdir)/fish/file-edit.c \
+	$(top_srcdir)/mllib/progress-c.c \
+	$(top_srcdir)/mllib/mkdtemp-c.c \
+	$(top_srcdir)/customize/crypt-c.c \
+	$(top_srcdir)/customize/perl_edit-c.c \
 	domainxml-c.c \
 	kvmuid-c.c \
 	utils-c.c \
@@ -1660,8 +1662,9 @@ SOURCES_C = \
 # installed copy of libguestfs.
 @HAVE_OCAML_TRUE@OCAMLPACKAGES = -package str,unix -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I \
-@HAVE_OCAML_TRUE@	../gnulib/lib/.libs -I $(top_builddir)/ocaml \
-@HAVE_OCAML_TRUE@	-I $(top_builddir)/mllib -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/gnulib/lib/.libs -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/ocaml -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize $(am__append_1)
 @HAVE_OCAML_TRUE@OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OBJECTS = $(BOBJECTS)
@@ -1854,89 +1857,89 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-virt_v2v-progress.o: $(top_builddir)/fish/progress.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-progress.o -MD -MP -MF $(DEPDIR)/virt_v2v-progress.Tpo -c -o virt_v2v-progress.o `test -f '$(top_builddir)/fish/progress.c' || echo '$(srcdir)/'`$(top_builddir)/fish/progress.c
+virt_v2v-progress.o: $(top_srcdir)/fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-progress.o -MD -MP -MF $(DEPDIR)/virt_v2v-progress.Tpo -c -o virt_v2v-progress.o `test -f '$(top_srcdir)/fish/progress.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/progress.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-progress.Tpo $(DEPDIR)/virt_v2v-progress.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/fish/progress.c' object='virt_v2v-progress.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/progress.c' object='virt_v2v-progress.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-progress.o `test -f '$(top_builddir)/fish/progress.c' || echo '$(srcdir)/'`$(top_builddir)/fish/progress.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-progress.o `test -f '$(top_srcdir)/fish/progress.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/progress.c
 
-virt_v2v-progress.obj: $(top_builddir)/fish/progress.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-progress.obj -MD -MP -MF $(DEPDIR)/virt_v2v-progress.Tpo -c -o virt_v2v-progress.obj `if test -f '$(top_builddir)/fish/progress.c'; then $(CYGPATH_W) '$(top_builddir)/fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/fish/progress.c'; fi`
+virt_v2v-progress.obj: $(top_srcdir)/fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-progress.obj -MD -MP -MF $(DEPDIR)/virt_v2v-progress.Tpo -c -o virt_v2v-progress.obj `if test -f '$(top_srcdir)/fish/progress.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/progress.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-progress.Tpo $(DEPDIR)/virt_v2v-progress.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/fish/progress.c' object='virt_v2v-progress.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/progress.c' object='virt_v2v-progress.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-progress.obj `if test -f '$(top_builddir)/fish/progress.c'; then $(CYGPATH_W) '$(top_builddir)/fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/fish/progress.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-progress.obj `if test -f '$(top_srcdir)/fish/progress.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/progress.c'; fi`
 
-virt_v2v-file-edit.o: $(top_builddir)/fish/file-edit.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-file-edit.o -MD -MP -MF $(DEPDIR)/virt_v2v-file-edit.Tpo -c -o virt_v2v-file-edit.o `test -f '$(top_builddir)/fish/file-edit.c' || echo '$(srcdir)/'`$(top_builddir)/fish/file-edit.c
+virt_v2v-file-edit.o: $(top_srcdir)/fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-file-edit.o -MD -MP -MF $(DEPDIR)/virt_v2v-file-edit.Tpo -c -o virt_v2v-file-edit.o `test -f '$(top_srcdir)/fish/file-edit.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/file-edit.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-file-edit.Tpo $(DEPDIR)/virt_v2v-file-edit.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/fish/file-edit.c' object='virt_v2v-file-edit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/file-edit.c' object='virt_v2v-file-edit.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-file-edit.o `test -f '$(top_builddir)/fish/file-edit.c' || echo '$(srcdir)/'`$(top_builddir)/fish/file-edit.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-file-edit.o `test -f '$(top_srcdir)/fish/file-edit.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/file-edit.c
 
-virt_v2v-file-edit.obj: $(top_builddir)/fish/file-edit.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-file-edit.obj -MD -MP -MF $(DEPDIR)/virt_v2v-file-edit.Tpo -c -o virt_v2v-file-edit.obj `if test -f '$(top_builddir)/fish/file-edit.c'; then $(CYGPATH_W) '$(top_builddir)/fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/fish/file-edit.c'; fi`
+virt_v2v-file-edit.obj: $(top_srcdir)/fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-file-edit.obj -MD -MP -MF $(DEPDIR)/virt_v2v-file-edit.Tpo -c -o virt_v2v-file-edit.obj `if test -f '$(top_srcdir)/fish/file-edit.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/file-edit.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-file-edit.Tpo $(DEPDIR)/virt_v2v-file-edit.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/fish/file-edit.c' object='virt_v2v-file-edit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/file-edit.c' object='virt_v2v-file-edit.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-file-edit.obj `if test -f '$(top_builddir)/fish/file-edit.c'; then $(CYGPATH_W) '$(top_builddir)/fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/fish/file-edit.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-file-edit.obj `if test -f '$(top_srcdir)/fish/file-edit.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/file-edit.c'; fi`
 
-virt_v2v-progress-c.o: $(top_builddir)/mllib/progress-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-progress-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-progress-c.Tpo -c -o virt_v2v-progress-c.o `test -f '$(top_builddir)/mllib/progress-c.c' || echo '$(srcdir)/'`$(top_builddir)/mllib/progress-c.c
+virt_v2v-progress-c.o: $(top_srcdir)/mllib/progress-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-progress-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-progress-c.Tpo -c -o virt_v2v-progress-c.o `test -f '$(top_srcdir)/mllib/progress-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/progress-c.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-progress-c.Tpo $(DEPDIR)/virt_v2v-progress-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/mllib/progress-c.c' object='virt_v2v-progress-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/progress-c.c' object='virt_v2v-progress-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-progress-c.o `test -f '$(top_builddir)/mllib/progress-c.c' || echo '$(srcdir)/'`$(top_builddir)/mllib/progress-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-progress-c.o `test -f '$(top_srcdir)/mllib/progress-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/progress-c.c
 
-virt_v2v-progress-c.obj: $(top_builddir)/mllib/progress-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-progress-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v-progress-c.Tpo -c -o virt_v2v-progress-c.obj `if test -f '$(top_builddir)/mllib/progress-c.c'; then $(CYGPATH_W) '$(top_builddir)/mllib/progress-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/mllib/progress-c.c'; fi`
+virt_v2v-progress-c.obj: $(top_srcdir)/mllib/progress-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-progress-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v-progress-c.Tpo -c -o virt_v2v-progress-c.obj `if test -f '$(top_srcdir)/mllib/progress-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/progress-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/progress-c.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-progress-c.Tpo $(DEPDIR)/virt_v2v-progress-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/mllib/progress-c.c' object='virt_v2v-progress-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/progress-c.c' object='virt_v2v-progress-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-progress-c.obj `if test -f '$(top_builddir)/mllib/progress-c.c'; then $(CYGPATH_W) '$(top_builddir)/mllib/progress-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/mllib/progress-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-progress-c.obj `if test -f '$(top_srcdir)/mllib/progress-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/progress-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/progress-c.c'; fi`
 
-virt_v2v-mkdtemp-c.o: $(top_builddir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-mkdtemp-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-mkdtemp-c.Tpo -c -o virt_v2v-mkdtemp-c.o `test -f '$(top_builddir)/mllib/mkdtemp-c.c' || echo '$(srcdir)/'`$(top_builddir)/mllib/mkdtemp-c.c
+virt_v2v-mkdtemp-c.o: $(top_srcdir)/mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-mkdtemp-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-mkdtemp-c.Tpo -c -o virt_v2v-mkdtemp-c.o `test -f '$(top_srcdir)/mllib/mkdtemp-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/mkdtemp-c.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-mkdtemp-c.Tpo $(DEPDIR)/virt_v2v-mkdtemp-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/mllib/mkdtemp-c.c' object='virt_v2v-mkdtemp-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/mkdtemp-c.c' object='virt_v2v-mkdtemp-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-mkdtemp-c.o `test -f '$(top_builddir)/mllib/mkdtemp-c.c' || echo '$(srcdir)/'`$(top_builddir)/mllib/mkdtemp-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-mkdtemp-c.o `test -f '$(top_srcdir)/mllib/mkdtemp-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/mkdtemp-c.c
 
-virt_v2v-mkdtemp-c.obj: $(top_builddir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-mkdtemp-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v-mkdtemp-c.Tpo -c -o virt_v2v-mkdtemp-c.obj `if test -f '$(top_builddir)/mllib/mkdtemp-c.c'; then $(CYGPATH_W) '$(top_builddir)/mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/mllib/mkdtemp-c.c'; fi`
+virt_v2v-mkdtemp-c.obj: $(top_srcdir)/mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-mkdtemp-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v-mkdtemp-c.Tpo -c -o virt_v2v-mkdtemp-c.obj `if test -f '$(top_srcdir)/mllib/mkdtemp-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/mkdtemp-c.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-mkdtemp-c.Tpo $(DEPDIR)/virt_v2v-mkdtemp-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/mllib/mkdtemp-c.c' object='virt_v2v-mkdtemp-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/mkdtemp-c.c' object='virt_v2v-mkdtemp-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-mkdtemp-c.obj `if test -f '$(top_builddir)/mllib/mkdtemp-c.c'; then $(CYGPATH_W) '$(top_builddir)/mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/mllib/mkdtemp-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-mkdtemp-c.obj `if test -f '$(top_srcdir)/mllib/mkdtemp-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/mkdtemp-c.c'; fi`
 
-virt_v2v-crypt-c.o: $(top_builddir)/customize/crypt-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-crypt-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-crypt-c.Tpo -c -o virt_v2v-crypt-c.o `test -f '$(top_builddir)/customize/crypt-c.c' || echo '$(srcdir)/'`$(top_builddir)/customize/crypt-c.c
+virt_v2v-crypt-c.o: $(top_srcdir)/customize/crypt-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-crypt-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-crypt-c.Tpo -c -o virt_v2v-crypt-c.o `test -f '$(top_srcdir)/customize/crypt-c.c' || echo '$(srcdir)/'`$(top_srcdir)/customize/crypt-c.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-crypt-c.Tpo $(DEPDIR)/virt_v2v-crypt-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/customize/crypt-c.c' object='virt_v2v-crypt-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/customize/crypt-c.c' object='virt_v2v-crypt-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-crypt-c.o `test -f '$(top_builddir)/customize/crypt-c.c' || echo '$(srcdir)/'`$(top_builddir)/customize/crypt-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-crypt-c.o `test -f '$(top_srcdir)/customize/crypt-c.c' || echo '$(srcdir)/'`$(top_srcdir)/customize/crypt-c.c
 
-virt_v2v-crypt-c.obj: $(top_builddir)/customize/crypt-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-crypt-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v-crypt-c.Tpo -c -o virt_v2v-crypt-c.obj `if test -f '$(top_builddir)/customize/crypt-c.c'; then $(CYGPATH_W) '$(top_builddir)/customize/crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/customize/crypt-c.c'; fi`
+virt_v2v-crypt-c.obj: $(top_srcdir)/customize/crypt-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-crypt-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v-crypt-c.Tpo -c -o virt_v2v-crypt-c.obj `if test -f '$(top_srcdir)/customize/crypt-c.c'; then $(CYGPATH_W) '$(top_srcdir)/customize/crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/customize/crypt-c.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-crypt-c.Tpo $(DEPDIR)/virt_v2v-crypt-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/customize/crypt-c.c' object='virt_v2v-crypt-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/customize/crypt-c.c' object='virt_v2v-crypt-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-crypt-c.obj `if test -f '$(top_builddir)/customize/crypt-c.c'; then $(CYGPATH_W) '$(top_builddir)/customize/crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/customize/crypt-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-crypt-c.obj `if test -f '$(top_srcdir)/customize/crypt-c.c'; then $(CYGPATH_W) '$(top_srcdir)/customize/crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/customize/crypt-c.c'; fi`
 
-virt_v2v-perl_edit-c.o: $(top_builddir)/customize/perl_edit-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-perl_edit-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-perl_edit-c.Tpo -c -o virt_v2v-perl_edit-c.o `test -f '$(top_builddir)/customize/perl_edit-c.c' || echo '$(srcdir)/'`$(top_builddir)/customize/perl_edit-c.c
+virt_v2v-perl_edit-c.o: $(top_srcdir)/customize/perl_edit-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-perl_edit-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-perl_edit-c.Tpo -c -o virt_v2v-perl_edit-c.o `test -f '$(top_srcdir)/customize/perl_edit-c.c' || echo '$(srcdir)/'`$(top_srcdir)/customize/perl_edit-c.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-perl_edit-c.Tpo $(DEPDIR)/virt_v2v-perl_edit-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/customize/perl_edit-c.c' object='virt_v2v-perl_edit-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/customize/perl_edit-c.c' object='virt_v2v-perl_edit-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-perl_edit-c.o `test -f '$(top_builddir)/customize/perl_edit-c.c' || echo '$(srcdir)/'`$(top_builddir)/customize/perl_edit-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-perl_edit-c.o `test -f '$(top_srcdir)/customize/perl_edit-c.c' || echo '$(srcdir)/'`$(top_srcdir)/customize/perl_edit-c.c
 
-virt_v2v-perl_edit-c.obj: $(top_builddir)/customize/perl_edit-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-perl_edit-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v-perl_edit-c.Tpo -c -o virt_v2v-perl_edit-c.obj `if test -f '$(top_builddir)/customize/perl_edit-c.c'; then $(CYGPATH_W) '$(top_builddir)/customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/customize/perl_edit-c.c'; fi`
+virt_v2v-perl_edit-c.obj: $(top_srcdir)/customize/perl_edit-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-perl_edit-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v-perl_edit-c.Tpo -c -o virt_v2v-perl_edit-c.obj `if test -f '$(top_srcdir)/customize/perl_edit-c.c'; then $(CYGPATH_W) '$(top_srcdir)/customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/customize/perl_edit-c.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-perl_edit-c.Tpo $(DEPDIR)/virt_v2v-perl_edit-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_builddir)/customize/perl_edit-c.c' object='virt_v2v-perl_edit-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/customize/perl_edit-c.c' object='virt_v2v-perl_edit-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-perl_edit-c.obj `if test -f '$(top_builddir)/customize/perl_edit-c.c'; then $(CYGPATH_W) '$(top_builddir)/customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/customize/perl_edit-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-perl_edit-c.obj `if test -f '$(top_srcdir)/customize/perl_edit-c.c'; then $(CYGPATH_W) '$(top_srcdir)/customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/customize/perl_edit-c.c'; fi`
 
 virt_v2v-domainxml-c.o: domainxml-c.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-domainxml-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-domainxml-c.Tpo -c -o virt_v2v-domainxml-c.o `test -f 'domainxml-c.c' || echo '$(srcdir)/'`domainxml-c.c

@@ -3015,6 +3015,285 @@ guestfs_session_btrfs_fsck (GuestfsSession *session, const gchar *device, Guestf
 }
 
 /**
+ * guestfs_session_btrfs_qgroup_assign:
+ * @session: (transfer none): A GuestfsSession object
+ * @src: (transfer none) (type utf8):
+ * @dst: (transfer none) (type utf8):
+ * @path: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * add a qgroup to a parent qgroup
+ *
+ * Add qgroup @src to parent qgroup @dst. This command can group several
+ * qgroups into a parent qgroup to share common limit.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_qgroup_assign (GuestfsSession *session, const gchar *src, const gchar *dst, const gchar *path, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_qgroup_assign");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfs_qgroup_assign (g, src, dst, path);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_btrfs_qgroup_create:
+ * @session: (transfer none): A GuestfsSession object
+ * @qgroupid: (transfer none) (type utf8):
+ * @subvolume: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * create a subvolume quota group
+ *
+ * Create a quota group (qgroup) for subvolume at @subvolume.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_qgroup_create (GuestfsSession *session, const gchar *qgroupid, const gchar *subvolume, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_qgroup_create");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfs_qgroup_create (g, qgroupid, subvolume);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_btrfs_qgroup_destroy:
+ * @session: (transfer none): A GuestfsSession object
+ * @qgroupid: (transfer none) (type utf8):
+ * @subvolume: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * destroy a subvolume quota group
+ *
+ * Destroy a quota group.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_qgroup_destroy (GuestfsSession *session, const gchar *qgroupid, const gchar *subvolume, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_qgroup_destroy");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfs_qgroup_destroy (g, qgroupid, subvolume);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_btrfs_qgroup_limit:
+ * @session: (transfer none): A GuestfsSession object
+ * @subvolume: (transfer none) (type filename):
+ * @size: (type gint64):
+ * @err: A GError object to receive any generated errors
+ *
+ * limit the size of a subvolume
+ *
+ * Limit the size of a subvolume which's path is @subvolume. @size can have
+ * suffix of G, M, or K.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_qgroup_limit (GuestfsSession *session, const gchar *subvolume, gint64 size, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_qgroup_limit");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfs_qgroup_limit (g, subvolume, size);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_btrfs_qgroup_remove:
+ * @session: (transfer none): A GuestfsSession object
+ * @src: (transfer none) (type utf8):
+ * @dst: (transfer none) (type utf8):
+ * @path: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * remove a qgroup from its parent qgroup
+ *
+ * Remove qgroup @src from the parent qgroup @dst.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_qgroup_remove (GuestfsSession *session, const gchar *src, const gchar *dst, const gchar *path, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_qgroup_remove");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfs_qgroup_remove (g, src, dst, path);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_btrfs_qgroup_show:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * show subvolume quota groups
+ *
+ * Show all subvolume quota groups in a btrfs filesystem, inclding their
+ * usages.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsBTRFSQgroup): an array of BTRFSQgroup objects, or NULL on error
+ */
+GuestfsBTRFSQgroup **
+guestfs_session_btrfs_qgroup_show (GuestfsSession *session, const gchar *path, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_qgroup_show");
+    return NULL;
+  }
+
+  struct guestfs_btrfsqgroup_list *ret = guestfs_btrfs_qgroup_show (g, path);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  GuestfsBTRFSQgroup **l = g_malloc (sizeof (GuestfsBTRFSQgroup*) * (ret->len + 1));
+  gsize i;
+  for (i = 0; i < ret->len; i++) {
+    l[i] = g_slice_new0 (GuestfsBTRFSQgroup);
+    if (ret->val[i].btrfsqgroup_id) l[i]->btrfsqgroup_id = g_strdup (ret->val[i].btrfsqgroup_id);
+    l[i]->btrfsqgroup_rfer = ret->val[i].btrfsqgroup_rfer;
+    l[i]->btrfsqgroup_excl = ret->val[i].btrfsqgroup_excl;
+  }
+  guestfs_free_btrfsqgroup_list (ret);
+  l[i] = NULL;
+  return l;
+}
+
+/**
+ * guestfs_session_btrfs_quota_enable:
+ * @session: (transfer none): A GuestfsSession object
+ * @fs: (transfer none) (type filename):
+ * @enable: (type gboolean):
+ * @err: A GError object to receive any generated errors
+ *
+ * enable or disable subvolume quota support
+ *
+ * Enable or disable subvolume quota support for filesystem which contains
+ * @path.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_quota_enable (GuestfsSession *session, const gchar *fs, gboolean enable, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_quota_enable");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfs_quota_enable (g, fs, enable);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_btrfs_quota_rescan:
+ * @session: (transfer none): A GuestfsSession object
+ * @fs: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * trash all qgroup numbers and scan the metadata again with the current config
+ *
+ * Trash all qgroup numbers and scan the metadata again with the current
+ * config.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_quota_rescan (GuestfsSession *session, const gchar *fs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_quota_rescan");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfs_quota_rescan (g, fs);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_btrfs_set_seeding:
  * @session: (transfer none): A GuestfsSession object
  * @device: (transfer none) (type filename):
@@ -3133,6 +3412,39 @@ guestfs_session_btrfs_subvolume_delete (GuestfsSession *session, const gchar *su
 }
 
 /**
+ * guestfs_session_btrfs_subvolume_get_default:
+ * @session: (transfer none): A GuestfsSession object
+ * @fs: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * get the default subvolume or snapshot of a filesystem
+ *
+ * Get the default subvolume or snapshot of a filesystem mounted at
+ * @mountpoint.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint64
+guestfs_session_btrfs_subvolume_get_default (GuestfsSession *session, const gchar *fs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_subvolume_get_default");
+    return -1;
+  }
+
+  int64_t ret = guestfs_btrfs_subvolume_get_default (g, fs);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
  * guestfs_session_btrfs_subvolume_list:
  * @session: (transfer none): A GuestfsSession object
  * @fs: (transfer none) (type filename):
@@ -3211,6 +3523,46 @@ guestfs_session_btrfs_subvolume_set_default (GuestfsSession *session, gint64 id,
 }
 
 /**
+ * guestfs_session_btrfs_subvolume_show:
+ * @session: (transfer none): A GuestfsSession object
+ * @subvolume: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * return detailed information of the subvolume
+ *
+ * Return detailed information of the subvolume.
+ * 
+ * Returns: (transfer full) (element-type utf8 utf8): a GHashTable of results, or NULL on error
+ */
+GHashTable *
+guestfs_session_btrfs_subvolume_show (GuestfsSession *session, const gchar *subvolume, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_subvolume_show");
+    return NULL;
+  }
+
+  char **ret = guestfs_btrfs_subvolume_show (g, subvolume);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  GHashTable *h = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+  char **i = ret;
+  while (*i) {
+    char *key = *i; i++;
+    char *value = *i; i++;
+    g_hash_table_insert (h, key, value);
+  };
+  g_free (ret);
+  return h;
+}
+
+/**
  * guestfs_session_btrfs_subvolume_snapshot:
  * @session: (transfer none): A GuestfsSession object
  * @source: (transfer none) (type filename):
@@ -3271,6 +3623,39 @@ guestfs_session_btrfs_subvolume_snapshot (GuestfsSession *session, const gchar *
   }
 
   return TRUE;
+}
+
+/**
+ * guestfs_session_c_pointer:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * return the C pointer to the guestfs_h handle
+ *
+ * In non-C language bindings, this allows you to retrieve the underlying C
+ * pointer to the handle (ie. "guestfs_h *"). The purpose of this is to
+ * allow other libraries to interwork with libguestfs.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint64
+guestfs_session_c_pointer (GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "c_pointer");
+    return -1;
+  }
+
+  int64_t ret = guestfs_c_pointer (g);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return -1;
+  }
+
+  return ret;
 }
 
 /**
@@ -9768,7 +10153,7 @@ guestfs_session_inspect_get_mountpoints (GuestfsSession *session, const gchar *r
  * This function and guestfs_session_inspect_get_package_management()
  * return the package format and package management tool used by the
  * inspected operating system. For example for Fedora these functions would
- * return @rpm (package format) and @yum (package management).
+ * return @rpm (package format), and @yum or @dnf (package management).
  * 
  * This returns the string @unknown if we could not determine the package
  * format *or* if the operating system does not have a real packaging
@@ -9812,13 +10197,13 @@ guestfs_session_inspect_get_package_format (GuestfsSession *session, const gchar
  * guestfs_session_inspect_get_package_format() and this function return
  * the package format and package management tool used by the inspected
  * operating system. For example for Fedora these functions would return
- * @rpm (package format) and @yum (package management).
+ * @rpm (package format), and @yum or @dnf (package management).
  * 
  * This returns the string @unknown if we could not determine the package
  * management tool *or* if the operating system does not have a real
  * packaging system (eg. Windows).
  * 
- * Possible strings include: @yum, @up2date, @apt (for all Debian
+ * Possible strings include: @yum, @dnf, @up2date, @apt (for all Debian
  * derivatives), @portage, @pisi, @pacman, @urpmi, @zypper. Future versions
  * of libguestfs may return other strings.
  * 

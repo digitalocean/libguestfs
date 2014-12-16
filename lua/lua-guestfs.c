@@ -90,6 +90,8 @@ static void push_lvm_lv_list (lua_State *L, struct guestfs_lvm_lv_list *v);
 static void push_dirent (lua_State *L, struct guestfs_dirent *v);
 static void push_dirent_list (lua_State *L, struct guestfs_dirent_list *v);
 static void push_utsname (lua_State *L, struct guestfs_utsname *v);
+static void push_btrfsqgroup (lua_State *L, struct guestfs_btrfsqgroup *v);
+static void push_btrfsqgroup_list (lua_State *L, struct guestfs_btrfsqgroup_list *v);
 static void push_version (lua_State *L, struct guestfs_version *v);
 static void push_int_bool (lua_State *L, struct guestfs_int_bool *v);
 static void push_partition (lua_State *L, struct guestfs_partition *v);
@@ -1733,6 +1735,192 @@ guestfs_lua_btrfs_fsck (lua_State *L)
 }
 
 static int
+guestfs_lua_btrfs_qgroup_assign (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *src;
+  const char *dst;
+  const char *path;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_qgroup_assign");
+
+  src = luaL_checkstring (L, 2);
+  dst = luaL_checkstring (L, 3);
+  path = luaL_checkstring (L, 4);
+
+  r = guestfs_btrfs_qgroup_assign (g, src, dst, path);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_btrfs_qgroup_create (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *qgroupid;
+  const char *subvolume;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_qgroup_create");
+
+  qgroupid = luaL_checkstring (L, 2);
+  subvolume = luaL_checkstring (L, 3);
+
+  r = guestfs_btrfs_qgroup_create (g, qgroupid, subvolume);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_btrfs_qgroup_destroy (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *qgroupid;
+  const char *subvolume;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_qgroup_destroy");
+
+  qgroupid = luaL_checkstring (L, 2);
+  subvolume = luaL_checkstring (L, 3);
+
+  r = guestfs_btrfs_qgroup_destroy (g, qgroupid, subvolume);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_btrfs_qgroup_limit (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *subvolume;
+  int64_t size;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_qgroup_limit");
+
+  subvolume = luaL_checkstring (L, 2);
+  size = get_int64 (L, 3);
+
+  r = guestfs_btrfs_qgroup_limit (g, subvolume, size);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_btrfs_qgroup_remove (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *src;
+  const char *dst;
+  const char *path;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_qgroup_remove");
+
+  src = luaL_checkstring (L, 2);
+  dst = luaL_checkstring (L, 3);
+  path = luaL_checkstring (L, 4);
+
+  r = guestfs_btrfs_qgroup_remove (g, src, dst, path);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_btrfs_qgroup_show (lua_State *L)
+{
+  struct guestfs_btrfsqgroup_list *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *path;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_qgroup_show");
+
+  path = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfs_qgroup_show (g, path);
+  if (r == NULL)
+    return last_error (L, g);
+
+  push_btrfsqgroup_list (L, r);
+  guestfs_free_btrfsqgroup_list (r);
+  return 1;
+}
+
+static int
+guestfs_lua_btrfs_quota_enable (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *fs;
+  int enable;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_quota_enable");
+
+  fs = luaL_checkstring (L, 2);
+  enable = lua_toboolean (L, 3);
+
+  r = guestfs_btrfs_quota_enable (g, fs, enable);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_btrfs_quota_rescan (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *fs;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_quota_rescan");
+
+  fs = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfs_quota_rescan (g, fs);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_btrfs_set_seeding (lua_State *L)
 {
   int r;
@@ -1808,6 +1996,28 @@ guestfs_lua_btrfs_subvolume_delete (lua_State *L)
 }
 
 static int
+guestfs_lua_btrfs_subvolume_get_default (lua_State *L)
+{
+  int64_t r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *fs;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_subvolume_get_default");
+
+  fs = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfs_subvolume_get_default (g, fs);
+  if (r == -1)
+    return last_error (L, g);
+
+  push_int64 (L, r);
+  return 1;
+}
+
+static int
 guestfs_lua_btrfs_subvolume_list (lua_State *L)
 {
   struct guestfs_btrfssubvolume_list *r;
@@ -1854,6 +2064,29 @@ guestfs_lua_btrfs_subvolume_set_default (lua_State *L)
 }
 
 static int
+guestfs_lua_btrfs_subvolume_show (lua_State *L)
+{
+  char **r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *subvolume;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_subvolume_show");
+
+  subvolume = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfs_subvolume_show (g, subvolume);
+  if (r == NULL)
+    return last_error (L, g);
+
+  push_table (L, r);
+  guestfs___free_string_list (r);
+  return 1;
+}
+
+static int
 guestfs_lua_btrfs_subvolume_snapshot (lua_State *L)
 {
   int r;
@@ -1888,6 +2121,26 @@ guestfs_lua_btrfs_subvolume_snapshot (lua_State *L)
     return last_error (L, g);
 
   return 0;
+}
+
+static int
+guestfs_lua_c_pointer (lua_State *L)
+{
+  int64_t r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "c_pointer");
+
+
+  r = guestfs_c_pointer (g);
+  if (r == -1)
+    return last_error (L, g);
+
+  push_int64 (L, r);
+  return 1;
 }
 
 static int
@@ -14572,6 +14825,33 @@ push_utsname (lua_State *L, struct guestfs_utsname *v)
 }
 
 static void
+push_btrfsqgroup (lua_State *L, struct guestfs_btrfsqgroup *v)
+{
+  lua_newtable (L);
+  lua_pushliteral (L, "btrfsqgroup_id");
+  lua_pushstring (L, v->btrfsqgroup_id);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsqgroup_rfer");
+  push_int64 (L, (int64_t) v->btrfsqgroup_rfer);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsqgroup_excl");
+  push_int64 (L, (int64_t) v->btrfsqgroup_excl);
+  lua_settable (L, -3);
+}
+
+static void
+push_btrfsqgroup_list (lua_State *L, struct guestfs_btrfsqgroup_list *v)
+{
+  size_t i;
+
+  lua_newtable (L);
+  for (i = 0; i < v->len; ++i) {
+    push_btrfsqgroup (L, &v->val[i]);
+    lua_rawseti (L, -2, i+1 /* because of base 1 arrays */);
+  }
+}
+
+static void
 push_version (lua_State *L, struct guestfs_version *v)
 {
   lua_newtable (L);
@@ -15428,12 +15708,23 @@ static luaL_Reg methods[] = {
   { "btrfs_filesystem_resize", guestfs_lua_btrfs_filesystem_resize },
   { "btrfs_filesystem_sync", guestfs_lua_btrfs_filesystem_sync },
   { "btrfs_fsck", guestfs_lua_btrfs_fsck },
+  { "btrfs_qgroup_assign", guestfs_lua_btrfs_qgroup_assign },
+  { "btrfs_qgroup_create", guestfs_lua_btrfs_qgroup_create },
+  { "btrfs_qgroup_destroy", guestfs_lua_btrfs_qgroup_destroy },
+  { "btrfs_qgroup_limit", guestfs_lua_btrfs_qgroup_limit },
+  { "btrfs_qgroup_remove", guestfs_lua_btrfs_qgroup_remove },
+  { "btrfs_qgroup_show", guestfs_lua_btrfs_qgroup_show },
+  { "btrfs_quota_enable", guestfs_lua_btrfs_quota_enable },
+  { "btrfs_quota_rescan", guestfs_lua_btrfs_quota_rescan },
   { "btrfs_set_seeding", guestfs_lua_btrfs_set_seeding },
   { "btrfs_subvolume_create", guestfs_lua_btrfs_subvolume_create },
   { "btrfs_subvolume_delete", guestfs_lua_btrfs_subvolume_delete },
+  { "btrfs_subvolume_get_default", guestfs_lua_btrfs_subvolume_get_default },
   { "btrfs_subvolume_list", guestfs_lua_btrfs_subvolume_list },
   { "btrfs_subvolume_set_default", guestfs_lua_btrfs_subvolume_set_default },
+  { "btrfs_subvolume_show", guestfs_lua_btrfs_subvolume_show },
   { "btrfs_subvolume_snapshot", guestfs_lua_btrfs_subvolume_snapshot },
+  { "c_pointer", guestfs_lua_c_pointer },
   { "canonical_device_name", guestfs_lua_canonical_device_name },
   { "cap_get_file", guestfs_lua_cap_get_file },
   { "cap_set_file", guestfs_lua_cap_set_file },

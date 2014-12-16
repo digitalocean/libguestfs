@@ -115,6 +115,12 @@ type application2 = {
   app2_spare4 : string;
 }
 
+type btrfsqgroup = {
+  btrfsqgroup_id : string;
+  btrfsqgroup_rfer : int64;
+  btrfsqgroup_excl : int64;
+}
+
 type btrfssubvolume = {
   btrfssubvolume_id : int64;
   btrfssubvolume_top_level_id : int64;
@@ -392,14 +398,25 @@ external btrfs_filesystem_balance : t -> string -> unit = "ocaml_guestfs_btrfs_f
 external btrfs_filesystem_resize : t -> ?size:int64 -> string -> unit = "ocaml_guestfs_btrfs_filesystem_resize"
 external btrfs_filesystem_sync : t -> string -> unit = "ocaml_guestfs_btrfs_filesystem_sync"
 external btrfs_fsck : t -> ?superblock:int64 -> ?repair:bool -> string -> unit = "ocaml_guestfs_btrfs_fsck"
+external btrfs_qgroup_assign : t -> string -> string -> string -> unit = "ocaml_guestfs_btrfs_qgroup_assign"
+external btrfs_qgroup_create : t -> string -> string -> unit = "ocaml_guestfs_btrfs_qgroup_create"
+external btrfs_qgroup_destroy : t -> string -> string -> unit = "ocaml_guestfs_btrfs_qgroup_destroy"
+external btrfs_qgroup_limit : t -> string -> int64 -> unit = "ocaml_guestfs_btrfs_qgroup_limit"
+external btrfs_qgroup_remove : t -> string -> string -> string -> unit = "ocaml_guestfs_btrfs_qgroup_remove"
+external btrfs_qgroup_show : t -> string -> btrfsqgroup array = "ocaml_guestfs_btrfs_qgroup_show"
+external btrfs_quota_enable : t -> string -> bool -> unit = "ocaml_guestfs_btrfs_quota_enable"
+external btrfs_quota_rescan : t -> string -> unit = "ocaml_guestfs_btrfs_quota_rescan"
 external btrfs_set_seeding : t -> string -> bool -> unit = "ocaml_guestfs_btrfs_set_seeding"
 external btrfs_subvolume_create : t -> ?qgroupid:string -> string -> unit = "ocaml_guestfs_btrfs_subvolume_create"
 let btrfs_subvolume_create_opts = btrfs_subvolume_create
 external btrfs_subvolume_delete : t -> string -> unit = "ocaml_guestfs_btrfs_subvolume_delete"
+external btrfs_subvolume_get_default : t -> string -> int64 = "ocaml_guestfs_btrfs_subvolume_get_default"
 external btrfs_subvolume_list : t -> string -> btrfssubvolume array = "ocaml_guestfs_btrfs_subvolume_list"
 external btrfs_subvolume_set_default : t -> int64 -> string -> unit = "ocaml_guestfs_btrfs_subvolume_set_default"
+external btrfs_subvolume_show : t -> string -> (string * string) list = "ocaml_guestfs_btrfs_subvolume_show"
 external btrfs_subvolume_snapshot : t -> ?ro:bool -> ?qgroupid:string -> string -> string -> unit = "ocaml_guestfs_btrfs_subvolume_snapshot"
 let btrfs_subvolume_snapshot_opts = btrfs_subvolume_snapshot
+external c_pointer : t -> int64 = "ocaml_guestfs_c_pointer"
 external canonical_device_name : t -> string -> string = "ocaml_guestfs_canonical_device_name"
 external cap_get_file : t -> string -> string = "ocaml_guestfs_cap_get_file"
 external cap_set_file : t -> string -> string -> unit = "ocaml_guestfs_cap_set_file"
@@ -968,14 +985,25 @@ class guestfs ?environment ?close_on_exit () =
     method btrfs_filesystem_resize = btrfs_filesystem_resize g
     method btrfs_filesystem_sync = btrfs_filesystem_sync g
     method btrfs_fsck = btrfs_fsck g
+    method btrfs_qgroup_assign = btrfs_qgroup_assign g
+    method btrfs_qgroup_create = btrfs_qgroup_create g
+    method btrfs_qgroup_destroy = btrfs_qgroup_destroy g
+    method btrfs_qgroup_limit = btrfs_qgroup_limit g
+    method btrfs_qgroup_remove = btrfs_qgroup_remove g
+    method btrfs_qgroup_show = btrfs_qgroup_show g
+    method btrfs_quota_enable = btrfs_quota_enable g
+    method btrfs_quota_rescan = btrfs_quota_rescan g
     method btrfs_set_seeding = btrfs_set_seeding g
     method btrfs_subvolume_create = btrfs_subvolume_create g
     method btrfs_subvolume_create_opts = self#btrfs_subvolume_create
     method btrfs_subvolume_delete = btrfs_subvolume_delete g
+    method btrfs_subvolume_get_default = btrfs_subvolume_get_default g
     method btrfs_subvolume_list = btrfs_subvolume_list g
     method btrfs_subvolume_set_default = btrfs_subvolume_set_default g
+    method btrfs_subvolume_show = btrfs_subvolume_show g
     method btrfs_subvolume_snapshot = btrfs_subvolume_snapshot g
     method btrfs_subvolume_snapshot_opts = self#btrfs_subvolume_snapshot
+    method c_pointer () = c_pointer g
     method canonical_device_name = canonical_device_name g
     method cap_get_file = cap_get_file g
     method cap_set_file = cap_set_file g

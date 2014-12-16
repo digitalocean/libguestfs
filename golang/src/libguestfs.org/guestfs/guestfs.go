@@ -279,6 +279,31 @@ func return_Application2_list (c *C.struct_guestfs_application2_list) *[]Applica
     return &r
 }
 
+type BTRFSQgroup struct {
+    btrfsqgroup_id string
+    btrfsqgroup_rfer uint64
+    btrfsqgroup_excl uint64
+}
+
+func return_BTRFSQgroup (c *C.struct_guestfs_btrfsqgroup) *BTRFSQgroup {
+    r := BTRFSQgroup{}
+    r.btrfsqgroup_id = C.GoString (c.btrfsqgroup_id)
+    r.btrfsqgroup_rfer = uint64 (c.btrfsqgroup_rfer)
+    r.btrfsqgroup_excl = uint64 (c.btrfsqgroup_excl)
+    return &r
+}
+
+func return_BTRFSQgroup_list (c *C.struct_guestfs_btrfsqgroup_list) *[]BTRFSQgroup {
+    nrelems := int (c.len)
+    ptr := uintptr (unsafe.Pointer (c.val))
+    elemsize := unsafe.Sizeof (*c.val)
+    r := make ([]BTRFSQgroup, nrelems)
+    for i := 0; i < nrelems; i++ {
+        r[i] = *return_BTRFSQgroup ((*C.struct_guestfs_btrfsqgroup) (unsafe.Pointer (ptr)))
+        ptr += elemsize    }
+    return &r
+}
+
 type BTRFSSubvolume struct {
     btrfssubvolume_id uint64
     btrfssubvolume_top_level_id uint64
@@ -2190,6 +2215,164 @@ func (g *Guestfs) Btrfs_fsck (device string, optargs *OptargsBtrfs_fsck) *Guestf
     return nil
 }
 
+/* btrfs_qgroup_assign : add a qgroup to a parent qgroup */
+func (g *Guestfs) Btrfs_qgroup_assign (src string, dst string, path string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_qgroup_assign")
+    }
+
+    c_src := C.CString (src)
+    defer C.free (unsafe.Pointer (c_src))
+
+    c_dst := C.CString (dst)
+    defer C.free (unsafe.Pointer (c_dst))
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+
+    r := C.guestfs_btrfs_qgroup_assign (g.g, c_src, c_dst, c_path)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_qgroup_assign")
+    }
+    return nil
+}
+
+/* btrfs_qgroup_create : create a subvolume quota group */
+func (g *Guestfs) Btrfs_qgroup_create (qgroupid string, subvolume string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_qgroup_create")
+    }
+
+    c_qgroupid := C.CString (qgroupid)
+    defer C.free (unsafe.Pointer (c_qgroupid))
+
+    c_subvolume := C.CString (subvolume)
+    defer C.free (unsafe.Pointer (c_subvolume))
+
+    r := C.guestfs_btrfs_qgroup_create (g.g, c_qgroupid, c_subvolume)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_qgroup_create")
+    }
+    return nil
+}
+
+/* btrfs_qgroup_destroy : destroy a subvolume quota group */
+func (g *Guestfs) Btrfs_qgroup_destroy (qgroupid string, subvolume string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_qgroup_destroy")
+    }
+
+    c_qgroupid := C.CString (qgroupid)
+    defer C.free (unsafe.Pointer (c_qgroupid))
+
+    c_subvolume := C.CString (subvolume)
+    defer C.free (unsafe.Pointer (c_subvolume))
+
+    r := C.guestfs_btrfs_qgroup_destroy (g.g, c_qgroupid, c_subvolume)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_qgroup_destroy")
+    }
+    return nil
+}
+
+/* btrfs_qgroup_limit : limit the size of a subvolume */
+func (g *Guestfs) Btrfs_qgroup_limit (subvolume string, size int64) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_qgroup_limit")
+    }
+
+    c_subvolume := C.CString (subvolume)
+    defer C.free (unsafe.Pointer (c_subvolume))
+
+    r := C.guestfs_btrfs_qgroup_limit (g.g, c_subvolume, C.int64_t (size))
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_qgroup_limit")
+    }
+    return nil
+}
+
+/* btrfs_qgroup_remove : remove a qgroup from its parent qgroup */
+func (g *Guestfs) Btrfs_qgroup_remove (src string, dst string, path string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_qgroup_remove")
+    }
+
+    c_src := C.CString (src)
+    defer C.free (unsafe.Pointer (c_src))
+
+    c_dst := C.CString (dst)
+    defer C.free (unsafe.Pointer (c_dst))
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+
+    r := C.guestfs_btrfs_qgroup_remove (g.g, c_src, c_dst, c_path)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_qgroup_remove")
+    }
+    return nil
+}
+
+/* btrfs_qgroup_show : show subvolume quota groups */
+func (g *Guestfs) Btrfs_qgroup_show (path string) (*[]BTRFSQgroup, *GuestfsError) {
+    if g.g == nil {
+        return nil, closed_handle_error ("btrfs_qgroup_show")
+    }
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+
+    r := C.guestfs_btrfs_qgroup_show (g.g, c_path)
+
+    if r == nil {
+        return nil, get_error_from_handle (g, "btrfs_qgroup_show")
+    }
+    defer C.guestfs_free_btrfsqgroup_list (r)
+    return return_BTRFSQgroup_list (r), nil
+}
+
+/* btrfs_quota_enable : enable or disable subvolume quota support */
+func (g *Guestfs) Btrfs_quota_enable (fs string, enable bool) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_quota_enable")
+    }
+
+    c_fs := C.CString (fs)
+    defer C.free (unsafe.Pointer (c_fs))
+
+    var c_enable C.int
+    if enable { c_enable = 1 } else { c_enable = 0 }
+
+    r := C.guestfs_btrfs_quota_enable (g.g, c_fs, c_enable)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_quota_enable")
+    }
+    return nil
+}
+
+/* btrfs_quota_rescan : trash all qgroup numbers and scan the metadata again with the current config */
+func (g *Guestfs) Btrfs_quota_rescan (fs string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_quota_rescan")
+    }
+
+    c_fs := C.CString (fs)
+    defer C.free (unsafe.Pointer (c_fs))
+
+    r := C.guestfs_btrfs_quota_rescan (g.g, c_fs)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_quota_rescan")
+    }
+    return nil
+}
+
 /* btrfs_set_seeding : enable or disable the seeding feature of device */
 func (g *Guestfs) Btrfs_set_seeding (device string, seeding bool) *GuestfsError {
     if g.g == nil {
@@ -2259,6 +2442,23 @@ func (g *Guestfs) Btrfs_subvolume_delete (subvolume string) *GuestfsError {
     return nil
 }
 
+/* btrfs_subvolume_get_default : get the default subvolume or snapshot of a filesystem */
+func (g *Guestfs) Btrfs_subvolume_get_default (fs string) (int64, *GuestfsError) {
+    if g.g == nil {
+        return 0, closed_handle_error ("btrfs_subvolume_get_default")
+    }
+
+    c_fs := C.CString (fs)
+    defer C.free (unsafe.Pointer (c_fs))
+
+    r := C.guestfs_btrfs_subvolume_get_default (g.g, c_fs)
+
+    if r == -1 {
+        return 0, get_error_from_handle (g, "btrfs_subvolume_get_default")
+    }
+    return int64 (r), nil
+}
+
 /* btrfs_subvolume_list : list btrfs snapshots and subvolumes */
 func (g *Guestfs) Btrfs_subvolume_list (fs string) (*[]BTRFSSubvolume, *GuestfsError) {
     if g.g == nil {
@@ -2292,6 +2492,24 @@ func (g *Guestfs) Btrfs_subvolume_set_default (id int64, fs string) *GuestfsErro
         return get_error_from_handle (g, "btrfs_subvolume_set_default")
     }
     return nil
+}
+
+/* btrfs_subvolume_show : return detailed information of the subvolume */
+func (g *Guestfs) Btrfs_subvolume_show (subvolume string) (map[string]string, *GuestfsError) {
+    if g.g == nil {
+        return nil, closed_handle_error ("btrfs_subvolume_show")
+    }
+
+    c_subvolume := C.CString (subvolume)
+    defer C.free (unsafe.Pointer (c_subvolume))
+
+    r := C.guestfs_btrfs_subvolume_show (g.g, c_subvolume)
+
+    if r == nil {
+        return nil, get_error_from_handle (g, "btrfs_subvolume_show")
+    }
+    defer free_string_list (r)
+    return return_hashtable (r), nil
 }
 
 /* Struct carrying optional arguments for Btrfs_subvolume_snapshot */
@@ -2334,6 +2552,20 @@ func (g *Guestfs) Btrfs_subvolume_snapshot (source string, dest string, optargs 
         return get_error_from_handle (g, "btrfs_subvolume_snapshot")
     }
     return nil
+}
+
+/* c_pointer : return the C pointer to the guestfs_h handle */
+func (g *Guestfs) C_pointer () (int64, *GuestfsError) {
+    if g.g == nil {
+        return 0, closed_handle_error ("c_pointer")
+    }
+
+    r := C.guestfs_c_pointer (g.g)
+
+    if r == -1 {
+        return 0, get_error_from_handle (g, "c_pointer")
+    }
+    return int64 (r), nil
 }
 
 /* canonical_device_name : return canonical device name */

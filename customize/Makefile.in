@@ -136,7 +136,9 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(top_srcdir)/subdir-rules.mk \
 	$(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
-	$(srcdir)/Makefile.am
+	$(srcdir)/Makefile.am $(srcdir)/link.sh.in \
+	$(top_srcdir)/build-aux/depcomp
+@HAVE_OCAML_TRUE@bin_PROGRAMS = virt-customize$(EXEEXT)
 @HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
 subdir = customize
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -169,7 +171,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/fsusage.m4 $(top_srcdir)/m4/ftell.m4 \
 	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
 	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
-	$(top_srcdir)/m4/getaddrinfo.m4 $(top_srcdir)/m4/getcwd.m4 \
+	$(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
+	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
@@ -225,12 +229,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
 	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
 	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
-	$(top_srcdir)/m4/rmdir.m4 $(top_srcdir)/m4/safe-read.m4 \
-	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
-	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
-	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
-	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/sigaction.m4 \
-	$(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/rewinddir.m4 $(top_srcdir)/m4/rmdir.m4 \
+	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
+	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/secure_getenv.m4 \
+	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
+	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
+	$(top_srcdir)/m4/sigaction.m4 $(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
 	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
 	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
@@ -267,15 +271,73 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
 	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
 	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
-	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
-	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
+	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = link.sh
 CONFIG_CLEAN_VPATH_FILES =
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
+PROGRAMS = $(bin_PROGRAMS)
+am__virt_customize_SOURCES_DIST = $(top_srcdir)/fish/uri.c \
+	$(top_srcdir)/fish/file-edit.c $(top_srcdir)/fish/file-edit.h \
+	$(top_srcdir)/mllib/uri-c.c crypt-c.c perl_edit-c.c
+am__objects_1 = virt_customize-uri.$(OBJEXT) \
+	virt_customize-file-edit.$(OBJEXT) \
+	virt_customize-uri-c.$(OBJEXT) \
+	virt_customize-crypt-c.$(OBJEXT) \
+	virt_customize-perl_edit-c.$(OBJEXT)
+@HAVE_OCAML_TRUE@am_virt_customize_OBJECTS = $(am__objects_1)
+virt_customize_OBJECTS = $(am_virt_customize_OBJECTS)
+virt_customize_LDADD = $(LDADD)
+AM_V_P = $(am__v_P_@AM_V@)
+am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
+am__v_P_0 = false
+am__v_P_1 = :
+AM_V_GEN = $(am__v_GEN_@AM_V@)
+am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
+am__v_GEN_0 = @echo "  GEN     " $@;
+am__v_GEN_1 = 
+AM_V_at = $(am__v_at_@AM_V@)
+am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
+am__v_at_0 = @
+am__v_at_1 = 
+DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
+am__depfiles_maybe = depfiles
+am__mv = mv -f
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
+SOURCES = $(virt_customize_SOURCES)
+DIST_SOURCES = $(am__virt_customize_SOURCES_DIST)
+am__can_run_installinfo = \
+  case $$AM_UPDATE_INFO_DIR in \
+    n|no|NO) false;; \
+    *) (install-info --version) >/dev/null 2>&1;; \
+  esac
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -303,26 +365,6 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
-SCRIPTS = $(bin_SCRIPTS)
-AM_V_P = $(am__v_P_@AM_V@)
-am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
-am__v_P_0 = false
-am__v_P_1 = :
-AM_V_GEN = $(am__v_GEN_@AM_V@)
-am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
-am__v_GEN_0 = @echo "  GEN     " $@;
-am__v_GEN_1 = 
-AM_V_at = $(am__v_at_@AM_V@)
-am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
-am__v_at_0 = @
-am__v_at_1 = 
-DIST_SOURCES =
-am__can_run_installinfo = \
-  case $$AM_UPDATE_INFO_DIR in \
-    n|no|NO) false;; \
-    *) (install-info --version) >/dev/null 2>&1;; \
-  esac
 man1dir = $(mandir)/man1
 NROFF = nroff
 MANS = $(man_MANS)
@@ -1468,7 +1510,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = \
-	$(SOURCES) \
+	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	test-virt-customize.sh \
 	virt-customize.pod
 
@@ -1483,97 +1525,88 @@ generator_built = \
 	customize-options.pod \
 	customize-synopsis.pod
 
-
-# Alphabetical order.
-SOURCES = \
-	crypt.ml \
+SOURCES_MLI = \
 	crypt.mli \
-	crypt-c.c \
-	customize_cmdline.ml \
 	customize_cmdline.mli \
-	customize_run.ml \
 	customize_run.mli \
-	customize_utils.ml \
-	firstboot.ml \
 	firstboot.mli \
-	hostname.ml \
 	hostname.mli \
-	customize_main.ml \
-	password.ml \
 	password.mli \
-	perl_edit-c.c \
-	perl_edit.ml \
 	perl_edit.mli \
-	random_seed.ml \
 	random_seed.mli \
-	ssh_key.ml \
 	ssh_key.mli \
-	timezone.ml \
 	timezone.mli \
-	urandom.ml \
 	urandom.mli
 
-@HAVE_OCAML_TRUE@deps = \
-@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
-@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-file-edit.o \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/regedit.cmx \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uri-c.o \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmx \
-@HAVE_OCAML_TRUE@	crypt-c.o \
-@HAVE_OCAML_TRUE@	perl_edit-c.o
-
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OBJECTS = $(patsubst \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	%.cmx,%.cmo,$(deps)) \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	$(patsubst \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	%,%.cmo,$(ocaml_modules))
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OBJECTS = $(deps) $(patsubst \
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	%,%.cmx,$(ocaml_modules))
 
 # This list must be in dependency order.
-@HAVE_OCAML_TRUE@ocaml_modules = \
-@HAVE_OCAML_TRUE@	customize_utils \
-@HAVE_OCAML_TRUE@	crypt \
-@HAVE_OCAML_TRUE@	firstboot \
-@HAVE_OCAML_TRUE@	hostname \
-@HAVE_OCAML_TRUE@	urandom \
-@HAVE_OCAML_TRUE@	password \
-@HAVE_OCAML_TRUE@	perl_edit \
-@HAVE_OCAML_TRUE@	random_seed \
-@HAVE_OCAML_TRUE@	ssh_key \
-@HAVE_OCAML_TRUE@	timezone \
-@HAVE_OCAML_TRUE@	customize_cmdline \
-@HAVE_OCAML_TRUE@	customize_run \
-@HAVE_OCAML_TRUE@	customize_main
+SOURCES_ML = \
+	customize_utils.ml \
+	crypt.ml \
+	firstboot.ml \
+	hostname.ml \
+	urandom.ml \
+	password.ml \
+	perl_edit.ml \
+	random_seed.ml \
+	ssh_key.ml \
+	timezone.ml \
+	customize_cmdline.ml \
+	customize_run.ml \
+	customize_main.ml
 
-@HAVE_OCAML_TRUE@bin_SCRIPTS = virt-customize
+SOURCES_C = \
+	$(top_srcdir)/fish/uri.c \
+	$(top_srcdir)/fish/file-edit.c \
+	$(top_srcdir)/fish/file-edit.h \
+	$(top_srcdir)/mllib/uri-c.c \
+	crypt-c.c \
+	perl_edit-c.c
+
+@HAVE_OCAML_TRUE@virt_customize_SOURCES = $(SOURCES_C)
+@HAVE_OCAML_TRUE@virt_customize_CPPFLAGS = \
+@HAVE_OCAML_TRUE@	-I. \
+@HAVE_OCAML_TRUE@	-I$(top_builddir) \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
+@HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/src \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/fish
+
+@HAVE_OCAML_TRUE@virt_customize_CFLAGS = \
+@HAVE_OCAML_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+@HAVE_OCAML_TRUE@	$(LIBVIRT_CFLAGS) \
+@HAVE_OCAML_TRUE@	$(LIBXML2_CFLAGS)
+
+@HAVE_OCAML_TRUE@BOBJECTS = \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/regedit.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmo \
+@HAVE_OCAML_TRUE@	$(SOURCES_ML:.ml=.cmo)
+
+@HAVE_OCAML_TRUE@XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
 @HAVE_OCAML_TRUE@OCAMLPACKAGES = -package str,unix -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/gnulib/lib/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib $(am__append_1)
-@HAVE_OCAML_TRUE@OCAMLCFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR) $(OCAMLPACKAGES)
-@HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
-@HAVE_OCAML_TRUE@OCAMLCLIBS = \
-@HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) $(LIBINTL) $(LIBTINFO_LIBS) -lcrypt \
-@HAVE_OCAML_TRUE@	-L../src/.libs -lutils \
-@HAVE_OCAML_TRUE@	-L../gnulib/lib/.libs -lgnu
-
-
-# automake will decide we don't need C support in this file.  Really
-# we do, so we have to provide it ourselves.
-@HAVE_OCAML_TRUE@DEFAULT_INCLUDES = \
-@HAVE_OCAML_TRUE@	$(LIBVIRT_CFLAGS) \
-@HAVE_OCAML_TRUE@	-I. \
-@HAVE_OCAML_TRUE@	-I$(top_builddir) \
-@HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
-@HAVE_OCAML_TRUE@	-I$(top_srcdir)/src \
-@HAVE_OCAML_TRUE@	-I$(top_srcdir)/fish
+@HAVE_OCAML_TRUE@OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OBJECTS = $(BOBJECTS)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OBJECTS = $(XOBJECTS)
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@BEST = c
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@BEST = opt
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OCAMLLINKFLAGS = mlguestfs.cma -custom
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OCAMLLINKFLAGS = mlguestfs.cmxa
+@HAVE_OCAML_TRUE@virt_customize_DEPENDENCIES = $(OBJECTS)
+@HAVE_OCAML_TRUE@virt_customize_LINK = \
+@HAVE_OCAML_TRUE@	./link.sh \
+@HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
+@HAVE_OCAML_TRUE@	  $(OBJECTS) -o $@
 
 
 # Manual pages and HTML files for the website.
@@ -1587,7 +1620,7 @@ DISTCLEANFILES = .depend
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .cmi .cmo .cmx .ml .mli .o
+.SUFFIXES: .c .cmi .cmo .cmx .lo .ml .mli .o .obj
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -1619,41 +1652,164 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-install-binSCRIPTS: $(bin_SCRIPTS)
+link.sh: $(top_builddir)/config.status $(srcdir)/link.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
-	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
 	if test -n "$$list"; then \
 	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
 	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
 	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
+	for p in $$list; do echo "$$p $$p"; done | \
+	sed 's/$(EXEEXT)$$//' | \
+	while read p p1; do if test -f $$p \
+	 || test -f $$p1 \
+	  ; then echo "$$p"; echo "$$p"; else :; fi; \
 	done | \
-	sed -e 'p;s,.*/,,;n' \
-	    -e 'h;s|.*|.|' \
-	    -e 'p;x;s,.*/,,;$(transform)' | sed 'N;N;N;s,\n, ,g' | \
-	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1; } \
+	sed -e 'p;s,.*/,,;n;h' \
+	    -e 's|.*|.|' \
+	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
+	sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
 	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
-	    if ($$2 == $$4) { files[d] = files[d] " " $$1; \
-	      if (++n[d] == $(am__install_max)) { \
-		print "f", d, files[d]; n[d] = 0; files[d] = "" } } \
-	    else { print "f", d "/" $$4, $$1 } } \
+	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
+	    else { print "f", $$3 "/" $$4, $$1; } } \
 	  END { for (d in files) print "f", d, files[d] }' | \
 	while read type dir files; do \
-	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
-	     test -z "$$files" || { \
-	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(bindir)$$dir'"; \
-	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
-	     } \
+	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	    test -z "$$files" || { \
+	    echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	    $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	    } \
 	; done
 
-uninstall-binSCRIPTS:
+uninstall-binPROGRAMS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
 	files=`for p in $$list; do echo "$$p"; done | \
-	       sed -e 's,.*/,,;$(transform)'`; \
-	dir='$(DESTDIR)$(bindir)'; $(am__uninstall_files_from_dir)
+	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
+	      -e 's/$$/$(EXEEXT)/' \
+	`; \
+	test -n "$$list" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(bindir)" && rm -f $$files
+
+clean-binPROGRAMS:
+	@list='$(bin_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
+
+virt-customize$(EXEEXT): $(virt_customize_OBJECTS) $(virt_customize_DEPENDENCIES) $(EXTRA_virt_customize_DEPENDENCIES) 
+	@rm -f virt-customize$(EXEEXT)
+	$(AM_V_GEN)$(virt_customize_LINK) $(virt_customize_OBJECTS) $(virt_customize_LDADD) $(LIBS)
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT)
+
+distclean-compile:
+	-rm -f *.tab.c
+
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_customize-crypt-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_customize-file-edit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_customize-perl_edit-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_customize-uri-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_customize-uri.Po@am__quote@
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+.c.lo:
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+virt_customize-uri.o: $(top_srcdir)/fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -MT virt_customize-uri.o -MD -MP -MF $(DEPDIR)/virt_customize-uri.Tpo -c -o virt_customize-uri.o `test -f '$(top_srcdir)/fish/uri.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_customize-uri.Tpo $(DEPDIR)/virt_customize-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/uri.c' object='virt_customize-uri.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -c -o virt_customize-uri.o `test -f '$(top_srcdir)/fish/uri.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/uri.c
+
+virt_customize-uri.obj: $(top_srcdir)/fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -MT virt_customize-uri.obj -MD -MP -MF $(DEPDIR)/virt_customize-uri.Tpo -c -o virt_customize-uri.obj `if test -f '$(top_srcdir)/fish/uri.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_customize-uri.Tpo $(DEPDIR)/virt_customize-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/uri.c' object='virt_customize-uri.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -c -o virt_customize-uri.obj `if test -f '$(top_srcdir)/fish/uri.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/uri.c'; fi`
+
+virt_customize-file-edit.o: $(top_srcdir)/fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -MT virt_customize-file-edit.o -MD -MP -MF $(DEPDIR)/virt_customize-file-edit.Tpo -c -o virt_customize-file-edit.o `test -f '$(top_srcdir)/fish/file-edit.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_customize-file-edit.Tpo $(DEPDIR)/virt_customize-file-edit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/file-edit.c' object='virt_customize-file-edit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -c -o virt_customize-file-edit.o `test -f '$(top_srcdir)/fish/file-edit.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/file-edit.c
+
+virt_customize-file-edit.obj: $(top_srcdir)/fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -MT virt_customize-file-edit.obj -MD -MP -MF $(DEPDIR)/virt_customize-file-edit.Tpo -c -o virt_customize-file-edit.obj `if test -f '$(top_srcdir)/fish/file-edit.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/file-edit.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_customize-file-edit.Tpo $(DEPDIR)/virt_customize-file-edit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/file-edit.c' object='virt_customize-file-edit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -c -o virt_customize-file-edit.obj `if test -f '$(top_srcdir)/fish/file-edit.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/file-edit.c'; fi`
+
+virt_customize-uri-c.o: $(top_srcdir)/mllib/uri-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -MT virt_customize-uri-c.o -MD -MP -MF $(DEPDIR)/virt_customize-uri-c.Tpo -c -o virt_customize-uri-c.o `test -f '$(top_srcdir)/mllib/uri-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/uri-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_customize-uri-c.Tpo $(DEPDIR)/virt_customize-uri-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/uri-c.c' object='virt_customize-uri-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -c -o virt_customize-uri-c.o `test -f '$(top_srcdir)/mllib/uri-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/uri-c.c
+
+virt_customize-uri-c.obj: $(top_srcdir)/mllib/uri-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -MT virt_customize-uri-c.obj -MD -MP -MF $(DEPDIR)/virt_customize-uri-c.Tpo -c -o virt_customize-uri-c.obj `if test -f '$(top_srcdir)/mllib/uri-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/uri-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/uri-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_customize-uri-c.Tpo $(DEPDIR)/virt_customize-uri-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/uri-c.c' object='virt_customize-uri-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -c -o virt_customize-uri-c.obj `if test -f '$(top_srcdir)/mllib/uri-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/uri-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/uri-c.c'; fi`
+
+virt_customize-crypt-c.o: crypt-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -MT virt_customize-crypt-c.o -MD -MP -MF $(DEPDIR)/virt_customize-crypt-c.Tpo -c -o virt_customize-crypt-c.o `test -f 'crypt-c.c' || echo '$(srcdir)/'`crypt-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_customize-crypt-c.Tpo $(DEPDIR)/virt_customize-crypt-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='crypt-c.c' object='virt_customize-crypt-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -c -o virt_customize-crypt-c.o `test -f 'crypt-c.c' || echo '$(srcdir)/'`crypt-c.c
+
+virt_customize-crypt-c.obj: crypt-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -MT virt_customize-crypt-c.obj -MD -MP -MF $(DEPDIR)/virt_customize-crypt-c.Tpo -c -o virt_customize-crypt-c.obj `if test -f 'crypt-c.c'; then $(CYGPATH_W) 'crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/crypt-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_customize-crypt-c.Tpo $(DEPDIR)/virt_customize-crypt-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='crypt-c.c' object='virt_customize-crypt-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -c -o virt_customize-crypt-c.obj `if test -f 'crypt-c.c'; then $(CYGPATH_W) 'crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/crypt-c.c'; fi`
+
+virt_customize-perl_edit-c.o: perl_edit-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -MT virt_customize-perl_edit-c.o -MD -MP -MF $(DEPDIR)/virt_customize-perl_edit-c.Tpo -c -o virt_customize-perl_edit-c.o `test -f 'perl_edit-c.c' || echo '$(srcdir)/'`perl_edit-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_customize-perl_edit-c.Tpo $(DEPDIR)/virt_customize-perl_edit-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='perl_edit-c.c' object='virt_customize-perl_edit-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -c -o virt_customize-perl_edit-c.o `test -f 'perl_edit-c.c' || echo '$(srcdir)/'`perl_edit-c.c
+
+virt_customize-perl_edit-c.obj: perl_edit-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -MT virt_customize-perl_edit-c.obj -MD -MP -MF $(DEPDIR)/virt_customize-perl_edit-c.Tpo -c -o virt_customize-perl_edit-c.obj `if test -f 'perl_edit-c.c'; then $(CYGPATH_W) 'perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/perl_edit-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_customize-perl_edit-c.Tpo $(DEPDIR)/virt_customize-perl_edit-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='perl_edit-c.c' object='virt_customize-perl_edit-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_customize_CPPFLAGS) $(CPPFLAGS) $(virt_customize_CFLAGS) $(CFLAGS) -c -o virt_customize-perl_edit-c.obj `if test -f 'perl_edit-c.c'; then $(CYGPATH_W) 'perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/perl_edit-c.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1882,7 +2038,7 @@ distdir: $(DISTFILES)
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
-all-am: Makefile $(SCRIPTS) $(MANS) $(DATA)
+all-am: Makefile $(PROGRAMS) $(MANS) $(DATA)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -1921,11 +2077,13 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-tags
+distclean-am: clean-am distclean-compile distclean-generic \
+	distclean-tags
 
 dvi: dvi-am
 
@@ -1945,7 +2103,7 @@ install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-binSCRIPTS
+install-exec-am: install-binPROGRAMS
 
 install-html: install-html-am
 
@@ -1968,12 +2126,14 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-generic mostlyclean-libtool
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool
 
 pdf: pdf-am
 
@@ -1983,25 +2143,26 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binSCRIPTS uninstall-man
+uninstall-am: uninstall-binPROGRAMS uninstall-man
 
 uninstall-man: uninstall-man1
 
 .MAKE: check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
-	clean-generic clean-libtool cscopelist-am ctags ctags-am \
-	distclean distclean-generic distclean-libtool distclean-tags \
-	distdir dvi dvi-am html html-am info info-am install \
-	install-am install-binSCRIPTS install-data install-data-am \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-man install-man1 install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am tags tags-am uninstall uninstall-am \
-	uninstall-binSCRIPTS uninstall-man uninstall-man1
+	clean-binPROGRAMS clean-generic clean-libtool cscopelist-am \
+	ctags ctags-am distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-binPROGRAMS \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-man1 \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags tags-am uninstall uninstall-am \
+	uninstall-binPROGRAMS uninstall-man uninstall-man1
 
 
 -include $(top_builddir)/localenv
@@ -2036,26 +2197,12 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-@HAVE_OCAML_TRUE@virt-customize: $(OBJECTS)
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ \
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  -cclib '$(OCAMLCLIBS)' \
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  -o $@
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  mlguestfs.cma -linkpkg $^ \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  -cclib '$(OCAMLCLIBS)' \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  -custom \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  -o $@
-
 @HAVE_OCAML_TRUE@.mli.cmi:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAML_TRUE@.ml.cmo:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@.ml.cmx:
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -c $< -o $@
-
-@HAVE_OCAML_TRUE@.c.o:
-@HAVE_OCAML_TRUE@	$(CC) $(CFLAGS) $(PROF_CFLAGS) $(DEFAULT_INCLUDES) -c $< -o $@
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 @HAVE_OCAML_TRUE@virt-customize.1 $(top_builddir)/html/virt-customize.1.html: stamp-virt-customize.pod
 

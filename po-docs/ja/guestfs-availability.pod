@@ -41,13 +41,18 @@ The following functions: L</guestfs_blkdiscardzeroes>
 
 =item B<btrfs>
 
-次の関数: L</guestfs_btrfs_device_add> L</guestfs_btrfs_device_delete>
-L</guestfs_btrfs_filesystem_balance> L</guestfs_btrfs_filesystem_resize>
-L</guestfs_btrfs_filesystem_sync> L</guestfs_btrfs_fsck>
-L</guestfs_btrfs_set_seeding> L</guestfs_btrfs_subvolume_create>
-L</guestfs_btrfs_subvolume_delete> L</guestfs_btrfs_subvolume_list>
-L</guestfs_btrfs_subvolume_set_default> L</guestfs_btrfs_subvolume_snapshot>
-L</guestfs_mkfs_btrfs>
+The following functions: L</guestfs_btrfs_device_add>
+L</guestfs_btrfs_device_delete> L</guestfs_btrfs_filesystem_balance>
+L</guestfs_btrfs_filesystem_resize> L</guestfs_btrfs_filesystem_sync>
+L</guestfs_btrfs_fsck> L</guestfs_btrfs_qgroup_assign>
+L</guestfs_btrfs_qgroup_create> L</guestfs_btrfs_qgroup_destroy>
+L</guestfs_btrfs_qgroup_limit> L</guestfs_btrfs_qgroup_remove>
+L</guestfs_btrfs_qgroup_show> L</guestfs_btrfs_quota_enable>
+L</guestfs_btrfs_quota_rescan> L</guestfs_btrfs_set_seeding>
+L</guestfs_btrfs_subvolume_create> L</guestfs_btrfs_subvolume_delete>
+L</guestfs_btrfs_subvolume_get_default> L</guestfs_btrfs_subvolume_list>
+L</guestfs_btrfs_subvolume_set_default> L</guestfs_btrfs_subvolume_show>
+L</guestfs_btrfs_subvolume_snapshot> L</guestfs_mkfs_btrfs>
 
 =item B<extlinux>
 

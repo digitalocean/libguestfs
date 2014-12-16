@@ -604,5 +604,15 @@ extern guestfs_int_statns *do_statns (const char *path);
 extern guestfs_int_statns *do_lstatns (const char *path);
 extern guestfs_int_statns_list *do_internal_lstatnslist (const char *path, char *const *names);
 extern int do_blockdev_setra (const char *device, int sectors);
+extern int64_t do_btrfs_subvolume_get_default (const mountable_t *fs);
+extern char **do_btrfs_subvolume_show (const char *subvolume);
+extern int do_btrfs_quota_enable (const mountable_t *fs, int enable);
+extern int do_btrfs_quota_rescan (const mountable_t *fs);
+extern int do_btrfs_qgroup_limit (const char *subvolume, int64_t size);
+extern int do_btrfs_qgroup_create (const char *qgroupid, const char *subvolume);
+extern int do_btrfs_qgroup_destroy (const char *qgroupid, const char *subvolume);
+extern guestfs_int_btrfsqgroup_list *do_btrfs_qgroup_show (const char *path);
+extern int do_btrfs_qgroup_assign (const char *src, const char *dst, const char *path);
+extern int do_btrfs_qgroup_remove (const char *src, const char *dst, const char *path);
 
 #endif /* GUESTFSD_ACTIONS_H */

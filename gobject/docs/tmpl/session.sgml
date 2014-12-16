@@ -742,6 +742,102 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_btrfs_qgroup_assign ##### -->
+<para>
+
+</para>
+
+@session: 
+@src: 
+@dst: 
+@path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfs_qgroup_create ##### -->
+<para>
+
+</para>
+
+@session: 
+@qgroupid: 
+@subvolume: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfs_qgroup_destroy ##### -->
+<para>
+
+</para>
+
+@session: 
+@qgroupid: 
+@subvolume: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfs_qgroup_limit ##### -->
+<para>
+
+</para>
+
+@session: 
+@subvolume: 
+@size: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfs_qgroup_remove ##### -->
+<para>
+
+</para>
+
+@session: 
+@src: 
+@dst: 
+@path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfs_qgroup_show ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfs_quota_enable ##### -->
+<para>
+
+</para>
+
+@session: 
+@fs: 
+@enable: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfs_quota_rescan ##### -->
+<para>
+
+</para>
+
+@session: 
+@fs: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_btrfs_set_seeding ##### -->
 <para>
 
@@ -777,6 +873,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_btrfs_subvolume_get_default ##### -->
+<para>
+
+</para>
+
+@session: 
+@fs: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_btrfs_subvolume_list ##### -->
 <para>
 
@@ -800,6 +907,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_btrfs_subvolume_show ##### -->
+<para>
+
+</para>
+
+@session: 
+@subvolume: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_btrfs_subvolume_snapshot ##### -->
 <para>
 
@@ -809,6 +927,16 @@ GuestfsSession
 @source: 
 @dest: 
 @optargs: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_c_pointer ##### -->
+<para>
+
+</para>
+
+@session: 
 @err: 
 @Returns: 
 

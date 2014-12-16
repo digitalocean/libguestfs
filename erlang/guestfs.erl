@@ -75,14 +75,25 @@
 -export([btrfs_filesystem_resize/2, btrfs_filesystem_resize/3]).
 -export([btrfs_filesystem_sync/2]).
 -export([btrfs_fsck/2, btrfs_fsck/3]).
+-export([btrfs_qgroup_assign/4]).
+-export([btrfs_qgroup_create/3]).
+-export([btrfs_qgroup_destroy/3]).
+-export([btrfs_qgroup_limit/3]).
+-export([btrfs_qgroup_remove/4]).
+-export([btrfs_qgroup_show/2]).
+-export([btrfs_quota_enable/3]).
+-export([btrfs_quota_rescan/2]).
 -export([btrfs_set_seeding/3]).
 -export([btrfs_subvolume_create/2, btrfs_subvolume_create/3]).
 -export([btrfs_subvolume_create_opts/2, btrfs_subvolume_create_opts/3]).
 -export([btrfs_subvolume_delete/2]).
+-export([btrfs_subvolume_get_default/2]).
 -export([btrfs_subvolume_list/2]).
 -export([btrfs_subvolume_set_default/3]).
+-export([btrfs_subvolume_show/2]).
 -export([btrfs_subvolume_snapshot/3, btrfs_subvolume_snapshot/4]).
 -export([btrfs_subvolume_snapshot_opts/3, btrfs_subvolume_snapshot_opts/4]).
+-export([c_pointer/1]).
 -export([canonical_device_name/2]).
 -export([cap_get_file/2]).
 -export([cap_set_file/3]).
@@ -798,6 +809,30 @@ btrfs_fsck(G, Device, Optargs) ->
 btrfs_fsck(G, Device) ->
   btrfs_fsck(G, Device, []).
 
+btrfs_qgroup_assign(G, Src, Dst, Path) ->
+  call_port(G, {btrfs_qgroup_assign, Src, Dst, Path}).
+
+btrfs_qgroup_create(G, Qgroupid, Subvolume) ->
+  call_port(G, {btrfs_qgroup_create, Qgroupid, Subvolume}).
+
+btrfs_qgroup_destroy(G, Qgroupid, Subvolume) ->
+  call_port(G, {btrfs_qgroup_destroy, Qgroupid, Subvolume}).
+
+btrfs_qgroup_limit(G, Subvolume, Size) ->
+  call_port(G, {btrfs_qgroup_limit, Subvolume, Size}).
+
+btrfs_qgroup_remove(G, Src, Dst, Path) ->
+  call_port(G, {btrfs_qgroup_remove, Src, Dst, Path}).
+
+btrfs_qgroup_show(G, Path) ->
+  call_port(G, {btrfs_qgroup_show, Path}).
+
+btrfs_quota_enable(G, Fs, Enable) ->
+  call_port(G, {btrfs_quota_enable, Fs, Enable}).
+
+btrfs_quota_rescan(G, Fs) ->
+  call_port(G, {btrfs_quota_rescan, Fs}).
+
 btrfs_set_seeding(G, Device, Seeding) ->
   call_port(G, {btrfs_set_seeding, Device, Seeding}).
 
@@ -813,11 +848,17 @@ btrfs_subvolume_create_opts(G, Dest) ->
 btrfs_subvolume_delete(G, Subvolume) ->
   call_port(G, {btrfs_subvolume_delete, Subvolume}).
 
+btrfs_subvolume_get_default(G, Fs) ->
+  call_port(G, {btrfs_subvolume_get_default, Fs}).
+
 btrfs_subvolume_list(G, Fs) ->
   call_port(G, {btrfs_subvolume_list, Fs}).
 
 btrfs_subvolume_set_default(G, Id, Fs) ->
   call_port(G, {btrfs_subvolume_set_default, Id, Fs}).
+
+btrfs_subvolume_show(G, Subvolume) ->
+  call_port(G, {btrfs_subvolume_show, Subvolume}).
 
 btrfs_subvolume_snapshot(G, Source, Dest, Optargs) ->
   call_port(G, {btrfs_subvolume_snapshot, Source, Dest, Optargs}).
@@ -827,6 +868,9 @@ btrfs_subvolume_snapshot_opts(G, Source, Dest, Optargs) ->
   btrfs_subvolume_snapshot(G, Source, Dest, Optargs).
 btrfs_subvolume_snapshot_opts(G, Source, Dest) ->
   btrfs_subvolume_snapshot(G, Source, Dest).
+
+c_pointer(G) ->
+  call_port(G, {c_pointer}).
 
 canonical_device_name(G, Device) ->
   call_port(G, {canonical_device_name, Device}).

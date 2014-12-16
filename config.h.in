@@ -126,6 +126,10 @@
 #undef GNULIB_FSCANF
 
 /* Define to a C preprocessor expression that evaluates to 1 or 0, depending
+   whether the gnulib module getcwd shall be considered present. */
+#undef GNULIB_GETCWD
+
+/* Define to a C preprocessor expression that evaluates to 1 or 0, depending
    whether the gnulib module lock shall be considered present. */
 #undef GNULIB_LOCK
 
@@ -361,6 +365,9 @@
 /* Define to 1 when the gnulib module realloc-posix should be tested. */
 #undef GNULIB_TEST_REALLOC_POSIX
 
+/* Define to 1 when the gnulib module rewinddir should be tested. */
+#undef GNULIB_TEST_REWINDDIR
+
 /* Define to 1 when the gnulib module rmdir should be tested. */
 #undef GNULIB_TEST_RMDIR
 
@@ -566,6 +573,10 @@
 /* Define to 1 if you have the declaration of `getaddrinfo', and to 0 if you
    don't. */
 #undef HAVE_DECL_GETADDRINFO
+
+/* Define to 1 if you have the declaration of `getcwd', and to 0 if you don't.
+   */
+#undef HAVE_DECL_GETCWD
 
 /* Define to 1 if you have the declaration of `getc_unlocked', and to 0 if you
    don't. */
@@ -979,6 +990,10 @@
 /* Define to 1 if you have the `memrchr' function. */
 #undef HAVE_MEMRCHR
 
+/* Define to 1 if getcwd minimally works, that is, its result can be trusted
+   when it succeeds. */
+#undef HAVE_MINIMALLY_WORKING_GETCWD
+
 /* Define to 1 if you have the `mkdtemp' function. */
 #undef HAVE_MKDTEMP
 
@@ -1024,6 +1039,10 @@
 
 /* Define to 1 if you have the <OS.h> header file. */
 #undef HAVE_OS_H
+
+/* Define to 1 if getcwd works, except it sometimes fails when it shouldn't,
+   setting errno to ERANGE, ENAMETOOLONG, or ENOENT. */
+#undef HAVE_PARTLY_WORKING_GETCWD
 
 /* Define to 1 if you have the 'pipe' function. */
 #undef HAVE_PIPE
@@ -1748,6 +1767,9 @@
 
 /* Define to 1 if you have the `removexattr' function. */
 #undef HAVE_REMOVEXATTR
+
+/* Define to 1 if you have the `rewinddir' function. */
+#undef HAVE_REWINDDIR
 
 /* Define to 1 if you have the `rl_completion_matches' function. */
 #undef HAVE_RL_COMPLETION_MATCHES
