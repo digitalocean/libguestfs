@@ -12573,6 +12573,11 @@ ruby_guestfs_internal_test_set_output (VALUE gv, VALUE filenamev)
  * symlink (or chain of symlinks) that ends with a block
  * device also causes the function to return true.
  * 
+ * This call only looks at files within the guest
+ * filesystem. Libguestfs partitions and block devices (eg.
+ * "/dev/sda") cannot be used as the "path" parameter of
+ * this call.
+ * 
  * See also "g.stat".
  * 
  * Optional arguments are supplied in the final hash
@@ -19611,10 +19616,10 @@ ruby_guestfs_part_to_partnum (VALUE gv, VALUE partitionv)
  * ping the guest daemon
  *
  * This is a test probe into the guestfs daemon running
- * inside the hypervisor. Calling this function checks that
- * the daemon responds to the ping message, without
- * affecting the daemon or attached block device(s) in any
- * other way.
+ * inside the libguestfs appliance. Calling this function
+ * checks that the daemon responds to the ping message,
+ * without affecting the daemon or attached block device(s)
+ * in any other way.
  *
  *
  * (For the C API documentation for this function, see

@@ -207,6 +207,8 @@ And hence L<virsh(1)>, L<virt-manager(1)>, and similar tools.
 
 =item Scientific Linux 3, 4, 5, 6, 7
 
+=item Oracle Linux
+
 =item Fedora
 
 =item SLES 10 and up
@@ -822,7 +824,12 @@ The libvirt URI of a vCenter server looks something like this:
 
 =item C<користувач@>
 
-is the (optional, but recommended) user to connect as
+is the (optional, but recommended) user to connect as.
+
+If the username contains a backslash (eg. C<DOMAIN\USER>) then you will need
+to URI-escape that character using C<%5c>: C<DOMAIN%5cUSER> (5c is the
+hexadecimal ASCII code for backslash.)  Other punctuation may also have to
+be escaped.
 
 =item C<server>
 

@@ -1,3 +1,134 @@
+commit 791db53b104da3a5c8c28ca4ef57db1aa7ee2f50
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 23 15:25:26 2014 +0000
+
+    Version 1.29.19.
+
+commit 29df51d9bc24eaae9e42c3794b7dac9c78d8b3bd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 23 15:29:26 2014 +0000
+
+    v2v: Add a note about escaping username like DOMAIN\user.
+    
+    Thanks: Ben Hooper.
+
+commit 91b5863a7d4d0001d864b46045e6e2958ee159d4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 23 06:27:18 2014 -0500
+
+    aarch64: builder: Silence gcc warnings from flex-generated code.
+
+commit fdf6221f33f40e3cc702ddb5f5d2557ffedd03bf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Dec 21 18:47:30 2014 +0000
+
+    fish: c-pointer: Print the pointer in hexadecimal.
+    
+    $ guestfish
+    ><fs> c-pointer
+    0x1fb4f80
+    
+    This updates commit d8c43d556b45f4c9676fdbfce0e9fe07b709635a.
+
+commit 92575d0eabadd77a39a38d272c5e759cd6c61be3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 19 19:38:37 2014 +0000
+
+    errors: Even clearer error message.
+    
+    Obviously no one reads the FAQ, so make the error message
+    even clearer.
+    
+    The new error messages are variation on this:
+    
+    libguestfs: error: /bin/false exited with error status 1.
+    To see full error messages you may need to enable debugging.
+    Do:
+      export LIBGUESTFS_DEBUG=1 LIBGUESTFS_TRACE=1
+    and run the command again.  For further information, read:
+      http://libguestfs.org/guestfs-faq.1.html#debugging-libguestfs
+    You can also run 'libguestfs-test-tool' and post the *complete* output
+    into a bug report or message to the libguestfs mailing list.
+
+commit f6e74ecd73d9aeeb4c9ef0044d7112645b09172f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Dec 18 10:59:15 2014 +0000
+
+    ping-daemon: Fix error in the description of this API (RHBZ#1175676).
+    
+    Thanks: Lingfei Kong
+
+commit 47d909808aa8cd285f46cab5ea08c7971f8f2f85
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Dec 18 08:30:18 2014 +0000
+
+    v2v: -o libvirt: Replace List.mapi with mapi.
+    
+    Don't depend on OCaml >= 4.00.
+    
+    https://bugs.gentoo.org/show_bug.cgi?id=532698
+    
+    Thanks: Fabian Ohler
+
+commit 045dcfbd1848cb1c591dafe962d9bed45c1a9879
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 14:51:57 2014 +0000
+
+    v2v: Treat "oraclelinux" as if it was plain RHEL (RHBZ#1174280).
+
+commit f1ecd6af808f22af913a589754ae11dc1e35b658
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 17 13:02:06 2014 +0000
+
+    fish: Add regression test for RHBZ#1175196.
+
+commit 5f6677ebd0fd6f6712de808ca27eab4468f966bc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 17 12:52:46 2014 +0000
+
+    environment: Use guestfs___is_true when parsing various boolean environment variables (RHBZ#1175196).
+    
+    You can now use LIBGUESTFS_DEBUG=true (etc.)
+    
+    You can disable debugging/tracing by setting LIBGUESTFS_DEBUG=0 (etc.)
+
+commit bdcd2fabe9a5ba6f61e662986fcd92e352f203c0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 17 12:34:53 2014 +0000
+
+    fish: Move 'is_true' function to library utilities.
+    
+    The 'is_true' function can be useful elsewhere, not just for parsing
+    guestfish command parameters.
+    
+    This is just code motion.
+
+commit d375b7818a506e011b5f61c9a42c801180636201
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 17 14:37:55 2014 +0000
+
+    v2v: -o qemu: Replace List.iteri with iteri.
+    
+    So we don't have to depend on OCaml >= 4.00 which is when this
+    function was added to the stdlib.
+    
+    https://bugs.gentoo.org/show_bug.cgi?id=532698
+
+commit abf51ec70b3edfcb5048ef209a1a3b1837aa06e5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 17 10:25:57 2014 +0000
+
+    is-blockdev: Clarify documentation (RHBZ#1175035).
+
+commit 1f7db85b30d27ccdbb674dc9ee111db6756b59ae
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Dec 16 15:52:32 2014 +0100
+
+    builder: recommend use of --selinux-relabel
+    
+    Add a small documentation paragraph in the "SELINUX" section
+    recommending the usage of --selinux-relabel for guests using SELinux.
+
 commit 6264c255d461b2c84a9693c09a807d18cdf0b348
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Dec 16 13:25:35 2014 +0000

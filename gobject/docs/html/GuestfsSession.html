@@ -18070,9 +18070,13 @@ guestfs_session_is_blockdev (<em class="parameter"><code><a class="link" href="G
  is true, then a symlink (or chain
 of symlinks) that ends with a block device also causes the function to
 return true.</p>
+<p>This call only looks at files within the guest filesystem. Libguestfs
+partitions and block devices (eg. "/dev/sda") cannot be used as the
+<em class="parameter"><code>path</code></em>
+ parameter of this call.</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-stat" title="guestfs_session_stat ()"><code class="function">guestfs_session_stat()</code></a>.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.257.8"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.257.9"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -18104,7 +18108,7 @@ return true.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.257.9"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.257.10"></a><h4>Returns</h4>
 <p> the returned value, or -1 on error</p>
 <p></p>
 </div>
@@ -25953,9 +25957,9 @@ guestfs_session_ping_daemon (<em class="parameter"><code><a class="link" href="G
                              <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>ping the guest daemon</p>
 <p>This is a test probe into the guestfs daemon running inside the
-hypervisor. Calling this function checks that the daemon responds to the
-ping message, without affecting the daemon or attached block device(s)
-in any other way.</p>
+libguestfs appliance. Calling this function checks that the daemon
+responds to the ping message, without affecting the daemon or attached
+block device(s) in any other way.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.408.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">

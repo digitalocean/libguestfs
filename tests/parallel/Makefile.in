@@ -279,7 +279,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am_test_parallel_OBJECTS = test_parallel-test-parallel.$(OBJEXT)
 test_parallel_OBJECTS = $(am_test_parallel_OBJECTS)
-test_parallel_DEPENDENCIES = $(top_builddir)/src/libguestfs.la \
+test_parallel_DEPENDENCIES = $(top_builddir)/src/libutils.la \
+	$(top_builddir)/src/libguestfs.la \
 	$(top_builddir)/gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -1481,6 +1482,7 @@ test_parallel_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 test_parallel_LDADD = \
+	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
 	$(top_builddir)/gnulib/lib/libgnu.la
 

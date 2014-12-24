@@ -3862,6 +3862,10 @@ If the optional flag C<followsymlinks> is true, then a symlink (or chain of
 symlinks) that ends with a block device also causes the function to return
 true.
 
+This call only looks at files within the guest filesystem.  Libguestfs
+partitions and block devices (eg. C</dev/sda>) cannot be used as the C<path>
+parameter of this call.
+
 L</stat> 参照。
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
@@ -5843,9 +5847,10 @@ L</part-to-dev> 参照。
 
  ping-daemon
 
-This is a test probe into the guestfs daemon running inside the hypervisor.
-Calling this function checks that the daemon responds to the ping message,
-without affecting the daemon or attached block device(s) in any other way.
+This is a test probe into the guestfs daemon running inside the libguestfs
+appliance.  Calling this function checks that the daemon responds to the
+ping message, without affecting the daemon or attached block device(s) in
+any other way.
 
 =head2 pread
 

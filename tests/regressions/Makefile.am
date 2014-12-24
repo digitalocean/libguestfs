@@ -42,6 +42,7 @@ EXTRA_DIST = \
 	rhbz1044014.xml \
 	rhbz1054761.sh \
 	rhbz1091803.sh \
+	rhbz1175196.sh \
 	test-noexec-stack.pl
 
 TESTS = \
@@ -66,6 +67,7 @@ TESTS = \
 	rhbz1054761.sh \
 	rhbz1055452 \
 	rhbz1091803.sh \
+	rhbz1175196.sh \
 	test-noexec-stack.pl
 
 if HAVE_LIBVIRT
@@ -111,6 +113,7 @@ rhbz914931_CFLAGS = \
 	-pthread \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 rhbz914931_LDADD = \
+	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la
 
 rhbz1055452_SOURCES = rhbz1055452.c

@@ -30,12 +30,15 @@
 #include <string.h>
 #include <inttypes.h>
 #include <libintl.h>
+#include <errno.h>
 
 #include "c-ctype.h"
 #include "full-write.h"
 #include "xstrtol.h"
 
-#include <guestfs.h>
+#include "guestfs.h"
+#include "guestfs-internal-frontend.h"
+
 #include "fish.h"
 #include "fish-cmds.h"
 #include "options.h"
@@ -2295,7 +2298,7 @@ struct command_entry inspect_os_cmd_entry = {
 
 struct command_entry is_blockdev_cmd_entry = {
   .name = "is-blockdev",
-  .help = "NAME\n    is-blockdev - test if block device\n\nSYNOPSIS\n     is-blockdev path [followsymlinks:true|false]\n\nDESCRIPTION\n    This returns \"true\" if and only if there is a block device with the\n    given \"path\" name.\n\n    If the optional flag \"followsymlinks\" is true, then a symlink (or chain\n    of symlinks) that ends with a block device also causes the function to\n    return true.\n\n    See also \"stat\".\n\n    You can use 'is-blockdev-opts' as an alias for this command.\n\n",
+  .help = "NAME\n    is-blockdev - test if block device\n\nSYNOPSIS\n     is-blockdev path [followsymlinks:true|false]\n\nDESCRIPTION\n    This returns \"true\" if and only if there is a block device with the\n    given \"path\" name.\n\n    If the optional flag \"followsymlinks\" is true, then a symlink (or chain\n    of symlinks) that ends with a block device also causes the function to\n    return true.\n\n    This call only looks at files within the guest filesystem. Libguestfs\n    partitions and block devices (eg. \"/dev/sda\") cannot be used as the\n    \"path\" parameter of this call.\n\n    See also \"stat\".\n\n    You can use 'is-blockdev-opts' as an alias for this command.\n\n",
   .synopsis = "is-blockdev path [followsymlinks:true|false]",
   .run = run_is_blockdev
 };
@@ -3331,7 +3334,7 @@ struct command_entry part_to_partnum_cmd_entry = {
 
 struct command_entry ping_daemon_cmd_entry = {
   .name = "ping-daemon",
-  .help = "NAME\n    ping-daemon - ping the guest daemon\n\nSYNOPSIS\n     ping-daemon\n\nDESCRIPTION\n    This is a test probe into the guestfs daemon running inside the\n    hypervisor. Calling this function checks that the daemon responds to the\n    ping message, without affecting the daemon or attached block device(s)\n    in any other way.\n\n",
+  .help = "NAME\n    ping-daemon - ping the guest daemon\n\nSYNOPSIS\n     ping-daemon\n\nDESCRIPTION\n    This is a test probe into the guestfs daemon running inside the\n    libguestfs appliance. Calling this function checks that the daemon\n    responds to the ping message, without affecting the daemon or attached\n    block device(s) in any other way.\n\n",
   .synopsis = "ping-daemon",
   .run = run_ping_daemon
 };
@@ -5797,8 +5800,12 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
       this_arg = "libvirturi";
     }
     else if (STRPREFIX (argv[i], "readonly:")) {
-      switch (is_true (&argv[i][9])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][9])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][9]);
+          goto out;
         case 0:  optargs_s.readonly = 0; break;
         default: optargs_s.readonly = 1;
       }
@@ -5811,8 +5818,12 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
       this_arg = "iface";
     }
     else if (STRPREFIX (argv[i], "live:")) {
-      switch (is_true (&argv[i][5])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][5])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][5]);
+          goto out;
         case 0:  optargs_s.live = 0; break;
         default: optargs_s.live = 1;
       }
@@ -5820,8 +5831,12 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
       this_arg = "live";
     }
     else if (STRPREFIX (argv[i], "allowuuid:")) {
-      switch (is_true (&argv[i][10])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][10])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][10]);
+          goto out;
         case 0:  optargs_s.allowuuid = 0; break;
         default: optargs_s.allowuuid = 1;
       }
@@ -5844,8 +5859,12 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
       this_arg = "discard";
     }
     else if (STRPREFIX (argv[i], "copyonread:")) {
-      switch (is_true (&argv[i][11])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][11])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][11]);
+          goto out;
         case 0:  optargs_s.copyonread = 0; break;
         default: optargs_s.copyonread = 1;
       }
@@ -5896,8 +5915,12 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "readonly:")) {
-      switch (is_true (&argv[i][9])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][9])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][9]);
+          goto out;
         case 0:  optargs_s.readonly = 0; break;
         default: optargs_s.readonly = 1;
       }
@@ -5956,8 +5979,12 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
       this_arg = "discard";
     }
     else if (STRPREFIX (argv[i], "copyonread:")) {
-      switch (is_true (&argv[i][11])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][11])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][11]);
+          goto out;
         case 0:  optargs_s.copyonread = 0; break;
         default: optargs_s.copyonread = 1;
       }
@@ -6296,8 +6323,12 @@ run_aug_insert (const char *cmd, size_t argc, char *argv[])
   }
   augpath = argv[i++];
   label = argv[i++];
-  switch (is_true (argv[i++])) {
-    case -1: goto out_before;
+  switch (guestfs___is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               program_name, argv[i-1]);
+      goto out_before;
     case 0:  before = 0; break;
     default: before = 1;
   }
@@ -7162,8 +7193,12 @@ run_btrfs_fsck (const char *cmd, size_t argc, char *argv[])
       this_arg = "superblock";
     }
     else if (STRPREFIX (argv[i], "repair:")) {
-      switch (is_true (&argv[i][7])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][7]);
+          goto out;
         case 0:  optargs_s.repair = 0; break;
         default: optargs_s.repair = 1;
       }
@@ -7380,8 +7415,12 @@ run_btrfs_quota_enable (const char *cmd, size_t argc, char *argv[])
   }
   fs = win_prefix (argv[i++]); /* process "win:" prefix */
   if (fs == NULL) goto out_fs;
-  switch (is_true (argv[i++])) {
-    case -1: goto out_enable;
+  switch (guestfs___is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               program_name, argv[i-1]);
+      goto out_enable;
     case 0:  enable = 0; break;
     default: enable = 1;
   }
@@ -7434,8 +7473,12 @@ run_btrfs_set_seeding (const char *cmd, size_t argc, char *argv[])
     goto out_noargs;
   }
   device = argv[i++];
-  switch (is_true (argv[i++])) {
-    case -1: goto out_seeding;
+  switch (guestfs___is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               program_name, argv[i-1]);
+      goto out_seeding;
     case 0:  seeding = 0; break;
     default: seeding = 1;
   }
@@ -7663,8 +7706,12 @@ run_btrfs_subvolume_snapshot (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "ro:")) {
-      switch (is_true (&argv[i][3])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][3])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][3]);
+          goto out;
         case 0:  optargs_s.ro = 0; break;
         default: optargs_s.ro = 1;
       }
@@ -7715,7 +7762,7 @@ run_c_pointer (const char *cmd, size_t argc, char *argv[])
   r = guestfs_c_pointer (g);
   if (r == -1) goto out;
   ret = 0;
-  printf ("%" PRIi64 "\n", r);
+  printf ("%s%" PRIx64 "\n", r != 0 ? "0x" : "", r);
  out:
  out_noargs:
   return ret;
@@ -8313,8 +8360,12 @@ run_copy_attributes (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "all:")) {
-      switch (is_true (&argv[i][4])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][4])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][4]);
+          goto out;
         case 0:  optargs_s.all = 0; break;
         default: optargs_s.all = 1;
       }
@@ -8322,8 +8373,12 @@ run_copy_attributes (const char *cmd, size_t argc, char *argv[])
       this_arg = "all";
     }
     else if (STRPREFIX (argv[i], "mode:")) {
-      switch (is_true (&argv[i][5])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][5])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][5]);
+          goto out;
         case 0:  optargs_s.mode = 0; break;
         default: optargs_s.mode = 1;
       }
@@ -8331,8 +8386,12 @@ run_copy_attributes (const char *cmd, size_t argc, char *argv[])
       this_arg = "mode";
     }
     else if (STRPREFIX (argv[i], "xattributes:")) {
-      switch (is_true (&argv[i][12])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][12])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][12]);
+          goto out;
         case 0:  optargs_s.xattributes = 0; break;
         default: optargs_s.xattributes = 1;
       }
@@ -8340,8 +8399,12 @@ run_copy_attributes (const char *cmd, size_t argc, char *argv[])
       this_arg = "xattributes";
     }
     else if (STRPREFIX (argv[i], "ownership:")) {
-      switch (is_true (&argv[i][10])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][10])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][10]);
+          goto out;
         case 0:  optargs_s.ownership = 0; break;
         default: optargs_s.ownership = 1;
       }
@@ -8448,8 +8511,12 @@ run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
       this_arg = "size";
     }
     else if (STRPREFIX (argv[i], "sparse:")) {
-      switch (is_true (&argv[i][7])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][7]);
+          goto out;
         case 0:  optargs_s.sparse = 0; break;
         default: optargs_s.sparse = 1;
       }
@@ -8553,8 +8620,12 @@ run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
       this_arg = "size";
     }
     else if (STRPREFIX (argv[i], "sparse:")) {
-      switch (is_true (&argv[i][7])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][7]);
+          goto out;
         case 0:  optargs_s.sparse = 0; break;
         default: optargs_s.sparse = 1;
       }
@@ -8660,8 +8731,12 @@ run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
       this_arg = "size";
     }
     else if (STRPREFIX (argv[i], "sparse:")) {
-      switch (is_true (&argv[i][7])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][7]);
+          goto out;
         case 0:  optargs_s.sparse = 0; break;
         default: optargs_s.sparse = 1;
       }
@@ -8768,8 +8843,12 @@ run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
       this_arg = "size";
     }
     else if (STRPREFIX (argv[i], "sparse:")) {
-      switch (is_true (&argv[i][7])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][7]);
+          goto out;
         case 0:  optargs_s.sparse = 0; break;
         default: optargs_s.sparse = 1;
       }
@@ -9534,8 +9613,12 @@ run_e2fsck (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "correct:")) {
-      switch (is_true (&argv[i][8])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][8])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][8]);
+          goto out;
         case 0:  optargs_s.correct = 0; break;
         default: optargs_s.correct = 1;
       }
@@ -9543,8 +9626,12 @@ run_e2fsck (const char *cmd, size_t argc, char *argv[])
       this_arg = "correct";
     }
     else if (STRPREFIX (argv[i], "forceall:")) {
-      switch (is_true (&argv[i][9])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][9])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][9]);
+          goto out;
         case 0:  optargs_s.forceall = 0; break;
         default: optargs_s.forceall = 1;
       }
@@ -11215,8 +11302,12 @@ run_grep (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "extended:")) {
-      switch (is_true (&argv[i][9])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][9])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][9]);
+          goto out;
         case 0:  optargs_s.extended = 0; break;
         default: optargs_s.extended = 1;
       }
@@ -11224,8 +11315,12 @@ run_grep (const char *cmd, size_t argc, char *argv[])
       this_arg = "extended";
     }
     else if (STRPREFIX (argv[i], "fixed:")) {
-      switch (is_true (&argv[i][6])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][6])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][6]);
+          goto out;
         case 0:  optargs_s.fixed = 0; break;
         default: optargs_s.fixed = 1;
       }
@@ -11233,8 +11328,12 @@ run_grep (const char *cmd, size_t argc, char *argv[])
       this_arg = "fixed";
     }
     else if (STRPREFIX (argv[i], "insensitive:")) {
-      switch (is_true (&argv[i][12])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][12])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][12]);
+          goto out;
         case 0:  optargs_s.insensitive = 0; break;
         default: optargs_s.insensitive = 1;
       }
@@ -11242,8 +11341,12 @@ run_grep (const char *cmd, size_t argc, char *argv[])
       this_arg = "insensitive";
     }
     else if (STRPREFIX (argv[i], "compressed:")) {
-      switch (is_true (&argv[i][11])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][11])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][11]);
+          goto out;
         case 0:  optargs_s.compressed = 0; break;
         default: optargs_s.compressed = 1;
       }
@@ -11835,8 +11938,12 @@ run_hivex_open (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "verbose:")) {
-      switch (is_true (&argv[i][8])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][8])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][8]);
+          goto out;
         case 0:  optargs_s.verbose = 0; break;
         default: optargs_s.verbose = 1;
       }
@@ -11844,8 +11951,12 @@ run_hivex_open (const char *cmd, size_t argc, char *argv[])
       this_arg = "verbose";
     }
     else if (STRPREFIX (argv[i], "debug:")) {
-      switch (is_true (&argv[i][6])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][6])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][6]);
+          goto out;
         case 0:  optargs_s.debug = 0; break;
         default: optargs_s.debug = 1;
       }
@@ -11853,8 +11964,12 @@ run_hivex_open (const char *cmd, size_t argc, char *argv[])
       this_arg = "debug";
     }
     else if (STRPREFIX (argv[i], "write:")) {
-      switch (is_true (&argv[i][6])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][6])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][6]);
+          goto out;
         case 0:  optargs_s.write = 0; break;
         default: optargs_s.write = 1;
       }
@@ -12455,8 +12570,12 @@ run_inspect_get_icon (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "favicon:")) {
-      switch (is_true (&argv[i][8])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][8])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][8]);
+          goto out;
         case 0:  optargs_s.favicon = 0; break;
         default: optargs_s.favicon = 1;
       }
@@ -12464,8 +12583,12 @@ run_inspect_get_icon (const char *cmd, size_t argc, char *argv[])
       this_arg = "favicon";
     }
     else if (STRPREFIX (argv[i], "highquality:")) {
-      switch (is_true (&argv[i][12])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][12])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][12]);
+          goto out;
         case 0:  optargs_s.highquality = 0; break;
         default: optargs_s.highquality = 1;
       }
@@ -12902,8 +13025,12 @@ run_is_blockdev (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "followsymlinks:")) {
-      switch (is_true (&argv[i][15])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][15])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][15]);
+          goto out;
         case 0:  optargs_s.followsymlinks = 0; break;
         default: optargs_s.followsymlinks = 1;
       }
@@ -12957,8 +13084,12 @@ run_is_chardev (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "followsymlinks:")) {
-      switch (is_true (&argv[i][15])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][15])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][15]);
+          goto out;
         case 0:  optargs_s.followsymlinks = 0; break;
         default: optargs_s.followsymlinks = 1;
       }
@@ -13031,8 +13162,12 @@ run_is_dir (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "followsymlinks:")) {
-      switch (is_true (&argv[i][15])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][15])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][15]);
+          goto out;
         case 0:  optargs_s.followsymlinks = 0; break;
         default: optargs_s.followsymlinks = 1;
       }
@@ -13086,8 +13221,12 @@ run_is_fifo (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "followsymlinks:")) {
-      switch (is_true (&argv[i][15])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][15])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][15]);
+          goto out;
         case 0:  optargs_s.followsymlinks = 0; break;
         default: optargs_s.followsymlinks = 1;
       }
@@ -13141,8 +13280,12 @@ run_is_file (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "followsymlinks:")) {
-      switch (is_true (&argv[i][15])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][15])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][15]);
+          goto out;
         case 0:  optargs_s.followsymlinks = 0; break;
         default: optargs_s.followsymlinks = 1;
       }
@@ -13218,8 +13361,12 @@ run_is_socket (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "followsymlinks:")) {
-      switch (is_true (&argv[i][15])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][15])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][15]);
+          goto out;
         case 0:  optargs_s.followsymlinks = 0; break;
         default: optargs_s.followsymlinks = 1;
       }
@@ -15871,8 +16018,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "uuid";
     }
     else if (STRPREFIX (argv[i], "forcecreate:")) {
-      switch (is_true (&argv[i][12])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][12])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][12]);
+          goto out;
         case 0:  optargs_s.forcecreate = 0; break;
         default: optargs_s.forcecreate = 1;
       }
@@ -15880,8 +16031,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "forcecreate";
     }
     else if (STRPREFIX (argv[i], "writesbandgrouponly:")) {
-      switch (is_true (&argv[i][20])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][20])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][20]);
+          goto out;
         case 0:  optargs_s.writesbandgrouponly = 0; break;
         default: optargs_s.writesbandgrouponly = 1;
       }
@@ -15889,8 +16044,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "writesbandgrouponly";
     }
     else if (STRPREFIX (argv[i], "lazyitableinit:")) {
-      switch (is_true (&argv[i][15])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][15])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][15]);
+          goto out;
         case 0:  optargs_s.lazyitableinit = 0; break;
         default: optargs_s.lazyitableinit = 1;
       }
@@ -15898,8 +16057,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "lazyitableinit";
     }
     else if (STRPREFIX (argv[i], "lazyjournalinit:")) {
-      switch (is_true (&argv[i][16])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][16])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][16]);
+          goto out;
         case 0:  optargs_s.lazyjournalinit = 0; break;
         default: optargs_s.lazyjournalinit = 1;
       }
@@ -15907,8 +16070,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "lazyjournalinit";
     }
     else if (STRPREFIX (argv[i], "testfs:")) {
-      switch (is_true (&argv[i][7])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][7]);
+          goto out;
         case 0:  optargs_s.testfs = 0; break;
         default: optargs_s.testfs = 1;
       }
@@ -15916,8 +16083,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "testfs";
     }
     else if (STRPREFIX (argv[i], "discard:")) {
-      switch (is_true (&argv[i][8])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][8])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][8]);
+          goto out;
         case 0:  optargs_s.discard = 0; break;
         default: optargs_s.discard = 1;
       }
@@ -15925,8 +16096,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "discard";
     }
     else if (STRPREFIX (argv[i], "quotatype:")) {
-      switch (is_true (&argv[i][10])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][10])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][10]);
+          goto out;
         case 0:  optargs_s.quotatype = 0; break;
         default: optargs_s.quotatype = 1;
       }
@@ -15934,8 +16109,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "quotatype";
     }
     else if (STRPREFIX (argv[i], "extent:")) {
-      switch (is_true (&argv[i][7])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][7]);
+          goto out;
         case 0:  optargs_s.extent = 0; break;
         default: optargs_s.extent = 1;
       }
@@ -15943,8 +16122,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "extent";
     }
     else if (STRPREFIX (argv[i], "filetype:")) {
-      switch (is_true (&argv[i][9])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][9])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][9]);
+          goto out;
         case 0:  optargs_s.filetype = 0; break;
         default: optargs_s.filetype = 1;
       }
@@ -15952,8 +16135,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "filetype";
     }
     else if (STRPREFIX (argv[i], "flexbg:")) {
-      switch (is_true (&argv[i][7])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][7]);
+          goto out;
         case 0:  optargs_s.flexbg = 0; break;
         default: optargs_s.flexbg = 1;
       }
@@ -15961,8 +16148,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "flexbg";
     }
     else if (STRPREFIX (argv[i], "hasjournal:")) {
-      switch (is_true (&argv[i][11])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][11])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][11]);
+          goto out;
         case 0:  optargs_s.hasjournal = 0; break;
         default: optargs_s.hasjournal = 1;
       }
@@ -15970,8 +16161,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "hasjournal";
     }
     else if (STRPREFIX (argv[i], "journaldev:")) {
-      switch (is_true (&argv[i][11])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][11])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][11]);
+          goto out;
         case 0:  optargs_s.journaldev = 0; break;
         default: optargs_s.journaldev = 1;
       }
@@ -15979,8 +16174,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "journaldev";
     }
     else if (STRPREFIX (argv[i], "largefile:")) {
-      switch (is_true (&argv[i][10])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][10])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][10]);
+          goto out;
         case 0:  optargs_s.largefile = 0; break;
         default: optargs_s.largefile = 1;
       }
@@ -15988,8 +16187,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "largefile";
     }
     else if (STRPREFIX (argv[i], "quota:")) {
-      switch (is_true (&argv[i][6])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][6])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][6]);
+          goto out;
         case 0:  optargs_s.quota = 0; break;
         default: optargs_s.quota = 1;
       }
@@ -15997,8 +16200,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "quota";
     }
     else if (STRPREFIX (argv[i], "resizeinode:")) {
-      switch (is_true (&argv[i][12])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][12])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][12]);
+          goto out;
         case 0:  optargs_s.resizeinode = 0; break;
         default: optargs_s.resizeinode = 1;
       }
@@ -16006,8 +16213,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "resizeinode";
     }
     else if (STRPREFIX (argv[i], "sparsesuper:")) {
-      switch (is_true (&argv[i][12])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][12])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][12]);
+          goto out;
         case 0:  optargs_s.sparsesuper = 0; break;
         default: optargs_s.sparsesuper = 1;
       }
@@ -16015,8 +16226,12 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "sparsesuper";
     }
     else if (STRPREFIX (argv[i], "uninitbg:")) {
-      switch (is_true (&argv[i][9])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][9])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][9]);
+          goto out;
         case 0:  optargs_s.uninitbg = 0; break;
         default: optargs_s.uninitbg = 1;
       }
@@ -17277,8 +17492,12 @@ run_mount_local (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "readonly:")) {
-      switch (is_true (&argv[i][9])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][9])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][9]);
+          goto out;
         case 0:  optargs_s.readonly = 0; break;
         default: optargs_s.readonly = 1;
       }
@@ -17314,8 +17533,12 @@ run_mount_local (const char *cmd, size_t argc, char *argv[])
       this_arg = "cachetimeout";
     }
     else if (STRPREFIX (argv[i], "debugcalls:")) {
-      switch (is_true (&argv[i][11])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][11])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][11]);
+          goto out;
         case 0:  optargs_s.debugcalls = 0; break;
         default: optargs_s.debugcalls = 1;
       }
@@ -17567,8 +17790,12 @@ run_ntfs_3g_probe (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (is_true (argv[i++])) {
-    case -1: goto out_rw;
+  switch (guestfs___is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               program_name, argv[i-1]);
+      goto out_rw;
     case 0:  rw = 0; break;
     default: rw = 1;
   }
@@ -17633,8 +17860,12 @@ run_ntfsclone_out (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "metadataonly:")) {
-      switch (is_true (&argv[i][13])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][13])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][13]);
+          goto out;
         case 0:  optargs_s.metadataonly = 0; break;
         default: optargs_s.metadataonly = 1;
       }
@@ -17642,8 +17873,12 @@ run_ntfsclone_out (const char *cmd, size_t argc, char *argv[])
       this_arg = "metadataonly";
     }
     else if (STRPREFIX (argv[i], "rescue:")) {
-      switch (is_true (&argv[i][7])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][7]);
+          goto out;
         case 0:  optargs_s.rescue = 0; break;
         default: optargs_s.rescue = 1;
       }
@@ -17651,8 +17886,12 @@ run_ntfsclone_out (const char *cmd, size_t argc, char *argv[])
       this_arg = "rescue";
     }
     else if (STRPREFIX (argv[i], "ignorefscheck:")) {
-      switch (is_true (&argv[i][14])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][14])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][14]);
+          goto out;
         case 0:  optargs_s.ignorefscheck = 0; break;
         default: optargs_s.ignorefscheck = 1;
       }
@@ -17660,8 +17899,12 @@ run_ntfsclone_out (const char *cmd, size_t argc, char *argv[])
       this_arg = "ignorefscheck";
     }
     else if (STRPREFIX (argv[i], "preservetimestamps:")) {
-      switch (is_true (&argv[i][19])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][19])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][19]);
+          goto out;
         case 0:  optargs_s.preservetimestamps = 0; break;
         default: optargs_s.preservetimestamps = 1;
       }
@@ -17669,8 +17912,12 @@ run_ntfsclone_out (const char *cmd, size_t argc, char *argv[])
       this_arg = "preservetimestamps";
     }
     else if (STRPREFIX (argv[i], "force:")) {
-      switch (is_true (&argv[i][6])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][6])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][6]);
+          goto out;
         case 0:  optargs_s.force = 0; break;
         default: optargs_s.force = 1;
       }
@@ -17722,8 +17969,12 @@ run_ntfsfix (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "clearbadsectors:")) {
-      switch (is_true (&argv[i][16])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][16])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][16]);
+          goto out;
         case 0:  optargs_s.clearbadsectors = 0; break;
         default: optargs_s.clearbadsectors = 1;
       }
@@ -17790,8 +18041,12 @@ run_ntfsresize (const char *cmd, size_t argc, char *argv[])
       this_arg = "size";
     }
     else if (STRPREFIX (argv[i], "force:")) {
-      switch (is_true (&argv[i][6])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][6])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][6]);
+          goto out;
         case 0:  optargs_s.force = 0; break;
         default: optargs_s.force = 1;
       }
@@ -18293,8 +18548,12 @@ run_part_set_bootable (const char *cmd, size_t argc, char *argv[])
     /* The check above should ensure this assignment does not overflow. */
     partnum = r;
   }
-  switch (is_true (argv[i++])) {
-    case -1: goto out_bootable;
+  switch (guestfs___is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               program_name, argv[i-1]);
+      goto out_bootable;
     case 0:  bootable = 0; break;
     default: bootable = 1;
   }
@@ -19129,8 +19388,12 @@ run_remount (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "rw:")) {
-      switch (is_true (&argv[i][3])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][3])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][3]);
+          goto out;
         case 0:  optargs_s.rw = 0; break;
         default: optargs_s.rw = 1;
       }
@@ -19457,8 +19720,12 @@ run_rsync (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "archive:")) {
-      switch (is_true (&argv[i][8])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][8])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][8]);
+          goto out;
         case 0:  optargs_s.archive = 0; break;
         default: optargs_s.archive = 1;
       }
@@ -19466,8 +19733,12 @@ run_rsync (const char *cmd, size_t argc, char *argv[])
       this_arg = "archive";
     }
     else if (STRPREFIX (argv[i], "deletedest:")) {
-      switch (is_true (&argv[i][11])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][11])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][11]);
+          goto out;
         case 0:  optargs_s.deletedest = 0; break;
         default: optargs_s.deletedest = 1;
       }
@@ -19524,8 +19795,12 @@ run_rsync_in (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "archive:")) {
-      switch (is_true (&argv[i][8])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][8])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][8]);
+          goto out;
         case 0:  optargs_s.archive = 0; break;
         default: optargs_s.archive = 1;
       }
@@ -19533,8 +19808,12 @@ run_rsync_in (const char *cmd, size_t argc, char *argv[])
       this_arg = "archive";
     }
     else if (STRPREFIX (argv[i], "deletedest:")) {
-      switch (is_true (&argv[i][11])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][11])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][11]);
+          goto out;
         case 0:  optargs_s.deletedest = 0; break;
         default: optargs_s.deletedest = 1;
       }
@@ -19589,8 +19868,12 @@ run_rsync_out (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "archive:")) {
-      switch (is_true (&argv[i][8])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][8])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][8]);
+          goto out;
         case 0:  optargs_s.archive = 0; break;
         default: optargs_s.archive = 1;
       }
@@ -19598,8 +19881,12 @@ run_rsync_out (const char *cmd, size_t argc, char *argv[])
       this_arg = "archive";
     }
     else if (STRPREFIX (argv[i], "deletedest:")) {
-      switch (is_true (&argv[i][11])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][11])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][11]);
+          goto out;
         case 0:  optargs_s.deletedest = 0; break;
         default: optargs_s.deletedest = 1;
       }
@@ -19754,8 +20041,12 @@ run_set_autosync (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (is_true (argv[i++])) {
-    case -1: goto out_autosync;
+  switch (guestfs___is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               program_name, argv[i-1]);
+      goto out_autosync;
     case 0:  autosync = 0; break;
     default: autosync = 1;
   }
@@ -19870,8 +20161,12 @@ run_set_direct (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (is_true (argv[i++])) {
-    case -1: goto out_direct;
+  switch (guestfs___is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               program_name, argv[i-1]);
+      goto out_direct;
     case 0:  direct = 0; break;
     default: direct = 1;
   }
@@ -19908,8 +20203,12 @@ run_set_e2attrs (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "clear:")) {
-      switch (is_true (&argv[i][6])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][6])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][6]);
+          goto out;
         case 0:  optargs_s.clear = 0; break;
         default: optargs_s.clear = 1;
       }
@@ -20190,8 +20489,12 @@ run_set_network (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (is_true (argv[i++])) {
-    case -1: goto out_network;
+  switch (guestfs___is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               program_name, argv[i-1]);
+      goto out_network;
     case 0:  network = 0; break;
     default: network = 1;
   }
@@ -20238,8 +20541,12 @@ run_set_pgroup (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (is_true (argv[i++])) {
-    case -1: goto out_pgroup;
+  switch (guestfs___is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               program_name, argv[i-1]);
+      goto out_pgroup;
     case 0:  pgroup = 0; break;
     default: pgroup = 1;
   }
@@ -20307,8 +20614,12 @@ run_set_recovery_proc (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (is_true (argv[i++])) {
-    case -1: goto out_recoveryproc;
+  switch (guestfs___is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               program_name, argv[i-1]);
+      goto out_recoveryproc;
     case 0:  recoveryproc = 0; break;
     default: recoveryproc = 1;
   }
@@ -20333,8 +20644,12 @@ run_set_selinux (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (is_true (argv[i++])) {
-    case -1: goto out_selinux;
+  switch (guestfs___is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               program_name, argv[i-1]);
+      goto out_selinux;
     case 0:  selinux = 0; break;
     default: selinux = 1;
   }
@@ -20421,8 +20736,12 @@ run_set_trace (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (is_true (argv[i++])) {
-    case -1: goto out_trace;
+  switch (guestfs___is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               program_name, argv[i-1]);
+      goto out_trace;
     case 0:  trace = 0; break;
     default: trace = 1;
   }
@@ -20470,8 +20789,12 @@ run_set_verbose (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (is_true (argv[i++])) {
-    case -1: goto out_verbose;
+  switch (guestfs___is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               program_name, argv[i-1]);
+      goto out_verbose;
     case 0:  verbose = 0; break;
     default: verbose = 1;
   }
@@ -21477,8 +21800,12 @@ run_tar_out (const char *cmd, size_t argc, char *argv[])
       this_arg = "compress";
     }
     else if (STRPREFIX (argv[i], "numericowner:")) {
-      switch (is_true (&argv[i][13])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][13])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][13]);
+          goto out;
         case 0:  optargs_s.numericowner = 0; break;
         default: optargs_s.numericowner = 1;
       }
@@ -21684,8 +22011,12 @@ run_tune2fs (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "force:")) {
-      switch (is_true (&argv[i][6])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][6])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][6]);
+          goto out;
         case 0:  optargs_s.force = 0; break;
         default: optargs_s.force = 1;
       }
@@ -22011,8 +22342,12 @@ run_umount (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "force:")) {
-      switch (is_true (&argv[i][6])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][6])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][6]);
+          goto out;
         case 0:  optargs_s.force = 0; break;
         default: optargs_s.force = 1;
       }
@@ -22020,8 +22355,12 @@ run_umount (const char *cmd, size_t argc, char *argv[])
       this_arg = "force";
     }
     else if (STRPREFIX (argv[i], "lazyunmount:")) {
-      switch (is_true (&argv[i][12])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][12])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][12]);
+          goto out;
         case 0:  optargs_s.lazyunmount = 0; break;
         default: optargs_s.lazyunmount = 1;
       }
@@ -22089,8 +22428,12 @@ run_umount_local (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "retry:")) {
-      switch (is_true (&argv[i][6])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][6])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][6]);
+          goto out;
         case 0:  optargs_s.retry = 0; break;
         default: optargs_s.retry = 1;
       }
@@ -22416,8 +22759,12 @@ run_vg_activate (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (is_true (argv[i++])) {
-    case -1: goto out_activate;
+  switch (guestfs___is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               program_name, argv[i-1]);
+      goto out_activate;
     case 0:  activate = 0; break;
     default: activate = 1;
   }
@@ -22446,8 +22793,12 @@ run_vg_activate_all (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (is_true (argv[i++])) {
-    case -1: goto out_activate;
+  switch (guestfs___is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               program_name, argv[i-1]);
+      goto out_activate;
     case 0:  activate = 0; break;
     default: activate = 1;
   }
@@ -22946,8 +23297,12 @@ run_xfs_admin (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "extunwritten:")) {
-      switch (is_true (&argv[i][13])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][13])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][13]);
+          goto out;
         case 0:  optargs_s.extunwritten = 0; break;
         default: optargs_s.extunwritten = 1;
       }
@@ -22955,8 +23310,12 @@ run_xfs_admin (const char *cmd, size_t argc, char *argv[])
       this_arg = "extunwritten";
     }
     else if (STRPREFIX (argv[i], "imgfile:")) {
-      switch (is_true (&argv[i][8])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][8])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][8]);
+          goto out;
         case 0:  optargs_s.imgfile = 0; break;
         default: optargs_s.imgfile = 1;
       }
@@ -22964,8 +23323,12 @@ run_xfs_admin (const char *cmd, size_t argc, char *argv[])
       this_arg = "imgfile";
     }
     else if (STRPREFIX (argv[i], "v2log:")) {
-      switch (is_true (&argv[i][6])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][6])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][6]);
+          goto out;
         case 0:  optargs_s.v2log = 0; break;
         default: optargs_s.v2log = 1;
       }
@@ -22973,8 +23336,12 @@ run_xfs_admin (const char *cmd, size_t argc, char *argv[])
       this_arg = "v2log";
     }
     else if (STRPREFIX (argv[i], "projid32bit:")) {
-      switch (is_true (&argv[i][12])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][12])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][12]);
+          goto out;
         case 0:  optargs_s.projid32bit = 0; break;
         default: optargs_s.projid32bit = 1;
       }
@@ -22982,8 +23349,12 @@ run_xfs_admin (const char *cmd, size_t argc, char *argv[])
       this_arg = "projid32bit";
     }
     else if (STRPREFIX (argv[i], "lazycounter:")) {
-      switch (is_true (&argv[i][12])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][12])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][12]);
+          goto out;
         case 0:  optargs_s.lazycounter = 0; break;
         default: optargs_s.lazycounter = 1;
       }
@@ -23044,8 +23415,12 @@ run_xfs_growfs (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "datasec:")) {
-      switch (is_true (&argv[i][8])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][8])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][8]);
+          goto out;
         case 0:  optargs_s.datasec = 0; break;
         default: optargs_s.datasec = 1;
       }
@@ -23053,8 +23428,12 @@ run_xfs_growfs (const char *cmd, size_t argc, char *argv[])
       this_arg = "datasec";
     }
     else if (STRPREFIX (argv[i], "logsec:")) {
-      switch (is_true (&argv[i][7])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][7]);
+          goto out;
         case 0:  optargs_s.logsec = 0; break;
         default: optargs_s.logsec = 1;
       }
@@ -23062,8 +23441,12 @@ run_xfs_growfs (const char *cmd, size_t argc, char *argv[])
       this_arg = "logsec";
     }
     else if (STRPREFIX (argv[i], "rtsec:")) {
-      switch (is_true (&argv[i][6])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][6])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][6]);
+          goto out;
         case 0:  optargs_s.rtsec = 0; break;
         default: optargs_s.rtsec = 1;
       }
@@ -23233,8 +23616,12 @@ run_xfs_repair (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "forcelogzero:")) {
-      switch (is_true (&argv[i][13])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][13])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][13]);
+          goto out;
         case 0:  optargs_s.forcelogzero = 0; break;
         default: optargs_s.forcelogzero = 1;
       }
@@ -23242,8 +23629,12 @@ run_xfs_repair (const char *cmd, size_t argc, char *argv[])
       this_arg = "forcelogzero";
     }
     else if (STRPREFIX (argv[i], "nomodify:")) {
-      switch (is_true (&argv[i][9])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][9])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][9]);
+          goto out;
         case 0:  optargs_s.nomodify = 0; break;
         default: optargs_s.nomodify = 1;
       }
@@ -23251,8 +23642,12 @@ run_xfs_repair (const char *cmd, size_t argc, char *argv[])
       this_arg = "nomodify";
     }
     else if (STRPREFIX (argv[i], "noprefetch:")) {
-      switch (is_true (&argv[i][11])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][11])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][11]);
+          goto out;
         case 0:  optargs_s.noprefetch = 0; break;
         default: optargs_s.noprefetch = 1;
       }
@@ -23260,8 +23655,12 @@ run_xfs_repair (const char *cmd, size_t argc, char *argv[])
       this_arg = "noprefetch";
     }
     else if (STRPREFIX (argv[i], "forcegeometry:")) {
-      switch (is_true (&argv[i][14])) {
-        case -1: goto out;
+      switch (guestfs___is_true (&argv[i][14])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][14]);
+          goto out;
         case 0:  optargs_s.forcegeometry = 0; break;
         default: optargs_s.forcegeometry = 1;
       }

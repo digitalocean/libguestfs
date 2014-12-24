@@ -9080,6 +9080,11 @@ public class GuestFS {
    * symlink (or chain of symlinks) that ends with a block
    * device also causes the function to return true.
    * <p>
+   * This call only looks at files within the guest
+   * filesystem. Libguestfs partitions and block devices (eg.
+   * "/dev/sda") cannot be used as the "path" parameter of
+   * this call.
+   * <p>
    * See also "g.stat".
    * <p>
    * Optional arguments are supplied in the final
@@ -14118,10 +14123,10 @@ public class GuestFS {
    * ping the guest daemon
    * <p>
    * This is a test probe into the guestfs daemon running
-   * inside the hypervisor. Calling this function checks that
-   * the daemon responds to the ping message, without
-   * affecting the daemon or attached block device(s) in any
-   * other way.
+   * inside the libguestfs appliance. Calling this function
+   * checks that the daemon responds to the ping message,
+   * without affecting the daemon or attached block device(s)
+   * in any other way.
    * <p>
    * @throws LibGuestFSException
    */

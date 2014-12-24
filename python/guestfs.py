@@ -4588,6 +4588,11 @@ class GuestFS(object):
         symlink (or chain of symlinks) that ends with a block
         device also causes the function to return true.
         
+        This call only looks at files within the guest
+        filesystem. Libguestfs partitions and block devices (eg.
+        "/dev/sda") cannot be used as the "path" parameter of
+        this call.
+        
         See also "g.stat".
         """
         self._check_not_closed ()
@@ -6935,10 +6940,10 @@ class GuestFS(object):
 
     def ping_daemon (self):
         """This is a test probe into the guestfs daemon running
-        inside the hypervisor. Calling this function checks that
-        the daemon responds to the ping message, without
-        affecting the daemon or attached block device(s) in any
-        other way.
+        inside the libguestfs appliance. Calling this function
+        checks that the daemon responds to the ping message,
+        without affecting the daemon or attached block device(s)
+        in any other way.
         """
         self._check_not_closed ()
         r = libguestfsmod.ping_daemon (self._o)
