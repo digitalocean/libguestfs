@@ -1,3 +1,124 @@
+commit 9d9ef2960cf4da913277c6bf5f8443f661112186
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 17 09:02:37 2015 +0000
+
+    Version 1.29.20.
+
+commit c5800dc97d7e197ed187d3c5bb4d9a1f49ecf6ef
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 17 09:08:08 2015 +0000
+
+    Update copyright dates for 2015.
+
+commit 378ed3be5e8fffbd45df785fee68b6862eb55398
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 1 06:11:39 2015 +0000
+
+    ocaml: Convert debug_logging example from C to OCaml.
+    
+    Continue gradual conversion of C examples to other languages.
+
+commit 4bd0d1704756ab0bb8438078229b1a6848d2bad6
+Author: Kashyap Chamarthy <kchamart@redhat.com>
+Date:   Tue Jan 13 19:31:09 2015 +0100
+
+    virt-buider: doc: Use osinfo-query to get OS variants
+    
+    Upstream dropped[1] support for '--os-variant list' in favor of using
+    `osinfo-query` tool provided by the libosinfo project.
+    
+    To get a list of all accepted operating systems, invoke:
+    
+      osinfo-query os
+    
+    [1] https://git.fedorahosted.org/cgit/virt-manager.git/commit/?id=bcb60f0
+
+commit ea761df6875b2fa7fd9fcd3bc4c5b43812a426dd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jan 9 11:14:35 2015 +0100
+
+    builder: export the "osinfo" attribute to json
+    
+    Thanks to: Federico Simoncelli.
+
+commit 4f51519c9feaba5a0da9e43886415bb32dcc2049
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jan 7 15:07:07 2015 +0100
+
+    ocaml: findlib is required when building from git
+    
+    Update README according to the current requirement.
+    
+    Thanks to: Gabriele Cerami.
+
+commit e6f77d23453ffe3cb0b215c88d83082ba2df8986
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Sun Dec 28 08:33:30 2014 +0100
+
+    Fix out-of-tree build: Don't create empty .y file in builddir
+
+commit 14d11916faf68afb672d1626348931f2b90afd08
+Author: Shahar Havivi <shaharh@redhat.com>
+Date:   Thu Dec 25 11:57:12 2014 +0200
+
+    v2v: adding --vdsm-ovf-output option
+    
+    This option is needed by vdsm for writing the ovf to a specific directory.
+    The default is current directory.
+    
+    Bug-Url: https://bugzilla.redhat.com/show_bug.cgi?id=1176598
+    Signed-off-by: Shahar Havivi <shaharh@redhat.com>
+
+commit 3a080c3fbffa5846f71528c6fd978be7853b33b8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 24 18:10:37 2014 +0000
+
+    v2v: Reduce use of polymorphic variants.
+    
+    Ordinary variants prevent coding errors.
+
+commit 70c28f3d5e9cb90a7d1124b5cf61e72809d327b3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 24 17:46:08 2014 +0000
+
+    v2v: -i libvirtxml: Only handle NBD source with host 'localhost', for virt-p2v.
+    
+    We only care/support virt-p2v for network disks.  Give a warning about
+    anything else.
+    
+    This avoids a potential quoting issue.
+
+commit 45bd4f604d461e5acd753d485ea02fa8813da37e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 24 17:05:39 2014 +0000
+
+    v2v: Update TODO.
+
+commit c5e11785afd03bc3d9f9f23ab4590e4a08ede9d2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 24 16:51:15 2014 +0000
+
+    v2v: DOM: Fix quoting of XML comments.
+    
+    We need to quote at least & and > in XML comments.
+
+commit 86a08d860af4b0f914cc18d6308891ab0bb26106
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 24 13:34:26 2014 +0000
+
+    v2v: Hide implementation of 'element'.
+    
+    Following the previous commit, the implementation of 'element'
+    does not need to be public.
+
+commit 47b54a7ba5a49af33a08d47b284c664695c523ea
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 24 13:32:18 2014 +0000
+
+    v2v: Move append_* functions to DOM module.
+    
+    Just code motion.
+
 commit 791db53b104da3a5c8c28ca4ef57db1aa7ee2f50
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Dec 23 15:25:26 2014 +0000

@@ -201,5 +201,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2014
+Copyright (C) 2009-2015 Red Hat Inc.
 

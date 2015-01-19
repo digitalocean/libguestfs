@@ -1,5 +1,5 @@
 # libguestfs virt-builder tool
-# Copyright (C) 2013-2014 Red Hat Inc.
+# Copyright (C) 2013-2015 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -309,7 +309,7 @@ CLEANFILES += \
 if HAVE_OCAML
 # Automake-generated makefile has a rule ".y.c" but lacks a rule ".y.h".
 index-parse.h: index-parse.y
-	touch index-parse.y
+	touch $(srcdir)/index-parse.y
 	$(MAKE) index-parse.c
 # Also it doesn't generate dependencies for the C files that include
 # index-parse.h.

@@ -569,6 +569,8 @@ first VirtIO disk.
 
 =item B<--vdsm-vm-uuid> UUID
 
+=item B<--vdsm-ovf-output>
+
 Normally the RHEV output mode chooses random UUIDs for the target guest.
 However VDSM needs to control the UUIDs and passes these parameters when
 virt-v2v runs under VDSM control.  The parameters control:
@@ -587,7 +589,11 @@ for each guest disk)
 
 =item *
 
-the VM and OVF file (I<--vdsm-vm-uuid>).
+the OVF file name (I<--vdsm-vm-uuid>).
+
+=item *
+
+the OVF output directory (default current directory) (I<--vdsm-ovf-output>).
 
 =back
 
@@ -1460,5 +1466,5 @@ Tingting Zheng
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2014 Red Hat Inc.
+Copyright (C) 2009-2015 Red Hat Inc.
 

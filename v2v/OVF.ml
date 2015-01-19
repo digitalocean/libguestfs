@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -297,10 +297,6 @@ let rec create_ovf verbose source targets guestcaps inspect
 
   (* Return the OVF document. *)
   ovf
-
-and append_child child = function
-  | PCData _ | Comment _ -> assert false
-  | Element e -> e.e_children <- e.e_children @ [child]
 
 (* This modifies the OVF DOM, adding a section for each disk. *)
 and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =

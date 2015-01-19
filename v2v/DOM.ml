@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,9 @@ let e name attrs children =
  *)
 let rec node_to_chan ?(indent = 0) chan = function
   | PCData str -> output_string chan (xml_quote_pcdata str)
-  | Comment str -> output_spaces chan indent; fprintf chan "<!-- %s -->" str
+  | Comment str ->
+    output_spaces chan indent;
+    fprintf chan "<!-- %s -->" (xml_quote_pcdata str)
   | Element e -> element_to_chan ~indent chan e
 and element_to_chan ?(indent = 0) chan
     { e_name = name; e_attrs = attrs; e_children = children } =
@@ -128,3 +130,11 @@ let find_node_by_attr nodes attr =
   match filter_node_list_by_attr nodes attr with
   | [] -> raise Not_found
   | x::_ -> x
+
+let append_attr attr = function
+  | PCData _ | Comment _ -> invalid_arg "append_attr"
+  | Element e -> e.e_attrs <- e.e_attrs @ [attr]
+
+let append_child child = function
+  | PCData _ | Comment _ -> invalid_arg "append_child"
+  | Element e -> e.e_children <- e.e_children @ [child]
