@@ -1,5 +1,5 @@
 /* libguestfs-test-tool
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ static void
 usage (void)
 {
   printf (_("libguestfs-test-tool: interactive test tool\n"
-            "Copyright (C) 2009-2014 Red Hat Inc.\n"
+            "Copyright (C) 2009-2015 Red Hat Inc.\n"
             "Usage:\n"
             "  libguestfs-test-tool [--options]\n"
             "Options:\n"
@@ -93,7 +93,7 @@ main (int argc, char *argv[])
   char **pp;
   guestfs_h *g;
   char *qemu = NULL;
-  int qemu_use_wrapper;
+  int qemu_use_wrapper = 0;
 
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);

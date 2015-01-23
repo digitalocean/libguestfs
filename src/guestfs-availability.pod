@@ -5,7 +5,7 @@ libguestfs generated file
    generator/ *.ml
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
- Copyright (C) 2009-2014 Red Hat Inc.
+ Copyright (C) 2009-2015 Red Hat Inc.
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -45,17 +45,36 @@ L</guestfs_blkdiscardzeroes>
 =item B<btrfs>
 
 The following functions:
+L</guestfs_btrfs_balance_cancel>
+L</guestfs_btrfs_balance_pause>
+L</guestfs_btrfs_balance_resume>
 L</guestfs_btrfs_device_add>
 L</guestfs_btrfs_device_delete>
 L</guestfs_btrfs_filesystem_balance>
+L</guestfs_btrfs_filesystem_defragment>
 L</guestfs_btrfs_filesystem_resize>
 L</guestfs_btrfs_filesystem_sync>
 L</guestfs_btrfs_fsck>
+L</guestfs_btrfs_qgroup_assign>
+L</guestfs_btrfs_qgroup_create>
+L</guestfs_btrfs_qgroup_destroy>
+L</guestfs_btrfs_qgroup_limit>
+L</guestfs_btrfs_qgroup_remove>
+L</guestfs_btrfs_qgroup_show>
+L</guestfs_btrfs_quota_enable>
+L</guestfs_btrfs_quota_rescan>
+L</guestfs_btrfs_rescue_chunk_recover>
+L</guestfs_btrfs_rescue_super_recover>
+L</guestfs_btrfs_scrub_cancel>
+L</guestfs_btrfs_scrub_resume>
+L</guestfs_btrfs_scrub_start>
 L</guestfs_btrfs_set_seeding>
 L</guestfs_btrfs_subvolume_create>
 L</guestfs_btrfs_subvolume_delete>
+L</guestfs_btrfs_subvolume_get_default>
 L</guestfs_btrfs_subvolume_list>
 L</guestfs_btrfs_subvolume_set_default>
+L</guestfs_btrfs_subvolume_show>
 L</guestfs_btrfs_subvolume_snapshot>
 L</guestfs_mkfs_btrfs>
 

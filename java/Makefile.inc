@@ -3,7 +3,7 @@
 #   generator/ *.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2014 Red Hat Inc.
+# Copyright (C) 2009-2015 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 java_built_sources = \
 	com/redhat/et/libguestfs/Application.java \
 	com/redhat/et/libguestfs/Application2.java \
+	com/redhat/et/libguestfs/BTRFSQgroup.java \
 	com/redhat/et/libguestfs/BTRFSSubvolume.java \
 	com/redhat/et/libguestfs/Dirent.java \
 	com/redhat/et/libguestfs/HivexNode.java \

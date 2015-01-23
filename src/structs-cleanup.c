@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -234,6 +234,18 @@ void
 guestfs___cleanup_free_btrfssubvolume_list (void *ptr)
 {
   guestfs_free_btrfssubvolume_list (* (struct guestfs_btrfssubvolume_list **) ptr);
+}
+
+void
+guestfs___cleanup_free_btrfsqgroup (void *ptr)
+{
+  guestfs_free_btrfsqgroup (* (struct guestfs_btrfsqgroup **) ptr);
+}
+
+void
+guestfs___cleanup_free_btrfsqgroup_list (void *ptr)
+{
+  guestfs_free_btrfsqgroup_list (* (struct guestfs_btrfsqgroup_list **) ptr);
 }
 
 void

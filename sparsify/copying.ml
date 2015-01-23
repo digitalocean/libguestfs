@@ -1,5 +1,5 @@
 (* virt-sparsify
- * Copyright (C) 2011-2014 Red Hat Inc.
+ * Copyright (C) 2011-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -311,7 +311,7 @@ You can ignore this warning or change it to a hard failure using the
       (match option with
       | None -> ""
       | Some option -> " -o " ^ quote option)
-      (quote overlaydisk) (quote outdisk) in
+      (quote overlaydisk) (quote (qemu_input_filename outdisk)) in
   if verbose then
     printf "%s\n%!" cmd;
   if Sys.command cmd <> 0 then

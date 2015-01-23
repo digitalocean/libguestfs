@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include <guestfs-gobject/tristate.h>
 #include <guestfs-gobject/struct-application.h>
 #include <guestfs-gobject/struct-application2.h>
+#include <guestfs-gobject/struct-btrfsqgroup.h>
 #include <guestfs-gobject/struct-btrfssubvolume.h>
 #include <guestfs-gobject/struct-dirent.h>
 #include <guestfs-gobject/struct-hivex_node.h>
@@ -47,6 +48,7 @@
 #include <guestfs-gobject/optargs-add_drive.h>
 #include <guestfs-gobject/optargs-add_drive_scratch.h>
 #include <guestfs-gobject/optargs-add_libvirt_dom.h>
+#include <guestfs-gobject/optargs-btrfs_filesystem_defragment.h>
 #include <guestfs-gobject/optargs-btrfs_filesystem_resize.h>
 #include <guestfs-gobject/optargs-btrfs_fsck.h>
 #include <guestfs-gobject/optargs-btrfs_subvolume_create.h>

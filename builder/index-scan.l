@@ -25,11 +25,23 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* Silence gcc warnings from the generated code. */
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+/* flex creates macros that it doesn't use */
+#pragma GCC diagnostic ignored "-Wunused-macros"
+/* on aarch64, flex doesn't know that char is unsigned */
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#endif
+
 #include "index-struct.h"
 #include "index-parse.h"
 
 #define YY_EXTRA_TYPE struct parse_context *
 #define YY_USER_ACTION yylloc->first_line = yylloc->last_line = yylineno;
+
+extern void scanner_init (yyscan_t *scanner, struct parse_context *context, FILE *in);
+extern void scanner_destroy (yyscan_t scanner);
 
 %}
 

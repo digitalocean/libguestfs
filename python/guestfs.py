@@ -4,7 +4,7 @@
 #   generator/ *.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2014 Red Hat Inc.
+# Copyright (C) 2009-2015 Red Hat Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -1181,6 +1181,27 @@ class GuestFS(object):
         r = libguestfsmod.blockdev_setrw (self._o, device)
         return r
 
+    def btrfs_balance_cancel (self, path):
+        """Cancel a running balance on a btrfs filesystem.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_balance_cancel (self._o, path)
+        return r
+
+    def btrfs_balance_pause (self, path):
+        """Pause a running balance on a btrfs filesystem.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_balance_pause (self._o, path)
+        return r
+
+    def btrfs_balance_resume (self, path):
+        """Resume a paused balance on a btrfs filesystem.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_balance_resume (self._o, path)
+        return r
+
     def btrfs_device_add (self, devices, fs):
         """Add the list of device(s) in "devices" to the btrfs
         filesystem mounted at "fs". If "devices" is an empty
@@ -1207,6 +1228,14 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_filesystem_balance (self._o, fs)
+        return r
+
+    def btrfs_filesystem_defragment (self, path, flush=None, compress=None):
+        """Defragment a file or directory on a btrfs filesystem.
+        compress is one of zlib or lzo.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_filesystem_defragment (self._o, path, flush, compress)
         return r
 
     def btrfs_filesystem_resize (self, mountpoint, size=None):
@@ -1244,6 +1273,111 @@ class GuestFS(object):
         r = libguestfsmod.btrfs_fsck (self._o, device, superblock, repair)
         return r
 
+    def btrfs_qgroup_assign (self, src, dst, path):
+        """Add qgroup "src" to parent qgroup "dst". This command
+        can group several qgroups into a parent qgroup to share
+        common limit.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_qgroup_assign (self._o, src, dst, path)
+        return r
+
+    def btrfs_qgroup_create (self, qgroupid, subvolume):
+        """Create a quota group (qgroup) for subvolume at
+        "subvolume".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_qgroup_create (self._o, qgroupid, subvolume)
+        return r
+
+    def btrfs_qgroup_destroy (self, qgroupid, subvolume):
+        """Destroy a quota group.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_qgroup_destroy (self._o, qgroupid, subvolume)
+        return r
+
+    def btrfs_qgroup_limit (self, subvolume, size):
+        """Limit the size of a subvolume which's path is
+        "subvolume". "size" can have suffix of G, M, or K.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_qgroup_limit (self._o, subvolume, size)
+        return r
+
+    def btrfs_qgroup_remove (self, src, dst, path):
+        """Remove qgroup "src" from the parent qgroup "dst".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_qgroup_remove (self._o, src, dst, path)
+        return r
+
+    def btrfs_qgroup_show (self, path):
+        """Show all subvolume quota groups in a btrfs filesystem,
+        inclding their usages.
+        
+        This function returns a list of btrfsqgroups. Each
+        btrfsqgroup is represented as a dictionary.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_qgroup_show (self._o, path)
+        return r
+
+    def btrfs_quota_enable (self, fs, enable):
+        """Enable or disable subvolume quota support for filesystem
+        which contains "path".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_quota_enable (self._o, fs, enable)
+        return r
+
+    def btrfs_quota_rescan (self, fs):
+        """Trash all qgroup numbers and scan the metadata again
+        with the current config.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_quota_rescan (self._o, fs)
+        return r
+
+    def btrfs_rescue_chunk_recover (self, device):
+        """Recover the chunk tree of btrfs filesystem by scannning
+        the devices one by one.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_rescue_chunk_recover (self._o, device)
+        return r
+
+    def btrfs_rescue_super_recover (self, device):
+        """Recover bad superblocks from good copies.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_rescue_super_recover (self._o, device)
+        return r
+
+    def btrfs_scrub_cancel (self, path):
+        """Cancel a running scrub on a btrfs filesystem.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_scrub_cancel (self._o, path)
+        return r
+
+    def btrfs_scrub_resume (self, path):
+        """Resume a previously canceled or interrupted scrub on a
+        btrfs filesystem.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_scrub_resume (self._o, path)
+        return r
+
+    def btrfs_scrub_start (self, path):
+        """Reads all the data and metadata on the filesystem, and
+        uses checksums and the duplicate copies from RAID
+        storage to identify and repair any corrupt data.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_scrub_start (self._o, path)
+        return r
+
     def btrfs_set_seeding (self, device, seeding):
         """Enable or disable the seeding feature of a device that
         contains a btrfs filesystem.
@@ -1272,6 +1406,14 @@ class GuestFS(object):
         r = libguestfsmod.btrfs_subvolume_delete (self._o, subvolume)
         return r
 
+    def btrfs_subvolume_get_default (self, fs):
+        """Get the default subvolume or snapshot of a filesystem
+        mounted at "mountpoint".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_subvolume_get_default (self._o, fs)
+        return r
+
     def btrfs_subvolume_list (self, fs):
         """List the btrfs snapshots and subvolumes of the btrfs
         filesystem which is mounted at "fs".
@@ -1292,6 +1434,20 @@ class GuestFS(object):
         r = libguestfsmod.btrfs_subvolume_set_default (self._o, id, fs)
         return r
 
+    def btrfs_subvolume_show (self, subvolume):
+        """Return detailed information of the subvolume.
+        
+        This function returns a hash. If the GuestFS constructor
+        was called with python_return_dict=True (recommended)
+        then the return value is in fact a Python dict.
+        Otherwise the return value is a list of pairs of
+        strings, for compatibility with old code.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_subvolume_show (self._o, subvolume)
+        r = self._maybe_convert_to_dict (r)
+        return r
+
     def btrfs_subvolume_snapshot (self, source, dest, ro=None, qgroupid=None):
         """Create a snapshot of the btrfs subvolume "source". The
         "dest" argument is the destination directory and the
@@ -1307,6 +1463,16 @@ class GuestFS(object):
         return r
 
     btrfs_subvolume_snapshot_opts = btrfs_subvolume_snapshot
+
+    def c_pointer (self):
+        """In non-C language bindings, this allows you to retrieve
+        the underlying C pointer to the handle (ie. "g.h *").
+        The purpose of this is to allow other libraries to
+        interwork with libguestfs.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.c_pointer (self._o)
+        return r
 
     def canonical_device_name (self, device):
         """This utility function is useful when displaying device
@@ -3892,7 +4058,7 @@ class GuestFS(object):
         return the package format and package management tool
         used by the inspected operating system. For example for
         Fedora these functions would return "rpm" (package
-        format) and "yum" (package management).
+        format), and "yum" or "dnf" (package management).
         
         This returns the string "unknown" if we could not
         determine the package format *or* if the operating
@@ -3913,18 +4079,18 @@ class GuestFS(object):
         """"g.inspect_get_package_format" and this function return
         the package format and package management tool used by
         the inspected operating system. For example for Fedora
-        these functions would return "rpm" (package format) and
-        "yum" (package management).
+        these functions would return "rpm" (package format), and
+        "yum" or "dnf" (package management).
         
         This returns the string "unknown" if we could not
         determine the package management tool *or* if the
         operating system does not have a real packaging system
         (eg. Windows).
         
-        Possible strings include: "yum", "up2date", "apt" (for
-        all Debian derivatives), "portage", "pisi", "pacman",
-        "urpmi", "zypper". Future versions of libguestfs may
-        return other strings.
+        Possible strings include: "yum", "dnf", "up2date", "apt"
+        (for all Debian derivatives), "portage", "pisi",
+        "pacman", "urpmi", "zypper". Future versions of
+        libguestfs may return other strings.
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
@@ -4489,6 +4655,11 @@ class GuestFS(object):
         If the optional flag "followsymlinks" is true, then a
         symlink (or chain of symlinks) that ends with a block
         device also causes the function to return true.
+        
+        This call only looks at files within the guest
+        filesystem. Libguestfs partitions and block devices (eg.
+        "/dev/sda") cannot be used as the "path" parameter of
+        this call.
         
         See also "g.stat".
         """
@@ -5958,13 +6129,16 @@ class GuestFS(object):
         mode "mode". It is just a convenient wrapper around
         "g.mknod".
         
+        Unlike with "g.mknod", "mode" must contain only
+        permissions bits.
+        
         The mode actually set is affected by the umask.
         """
         self._check_not_closed ()
         r = libguestfsmod.mkfifo (self._o, mode, path)
         return r
 
-    def mkfs (self, fstype, device, blocksize=None, features=None, inode=None, sectorsize=None):
+    def mkfs (self, fstype, device, blocksize=None, features=None, inode=None, sectorsize=None, label=None):
         """This function creates a filesystem on "device". The
         filesystem type is "fstype", for example "ext3".
         
@@ -6002,7 +6176,7 @@ class GuestFS(object):
         filesystem.
         """
         self._check_not_closed ()
-        r = libguestfsmod.mkfs (self._o, fstype, device, blocksize, features, inode, sectorsize)
+        r = libguestfsmod.mkfs (self._o, fstype, device, blocksize, features, inode, sectorsize, label)
         return r
 
     mkfs_opts = mkfs
@@ -6130,6 +6304,9 @@ class GuestFS(object):
         "devminor". It is just a convenient wrapper around
         "g.mknod".
         
+        Unlike with "g.mknod", "mode" must contain only
+        permissions bits.
+        
         The mode actually set is affected by the umask.
         """
         self._check_not_closed ()
@@ -6141,6 +6318,9 @@ class GuestFS(object):
         mode "mode" and device major/minor "devmajor" and
         "devminor". It is just a convenient wrapper around
         "g.mknod".
+        
+        Unlike with "g.mknod", "mode" must contain only
+        permissions bits.
         
         The mode actually set is affected by the umask.
         """
@@ -6837,10 +7017,10 @@ class GuestFS(object):
 
     def ping_daemon (self):
         """This is a test probe into the guestfs daemon running
-        inside the hypervisor. Calling this function checks that
-        the daemon responds to the ping message, without
-        affecting the daemon or attached block device(s) in any
-        other way.
+        inside the libguestfs appliance. Calling this function
+        checks that the daemon responds to the ping message,
+        without affecting the daemon or attached block device(s)
+        in any other way.
         """
         self._check_not_closed ()
         r = libguestfsmod.ping_daemon (self._o)

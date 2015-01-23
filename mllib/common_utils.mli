@@ -1,5 +1,5 @@
 (* Common utilities for OCaml tools in libguestfs.
- * Copyright (C) 2010-2014 Red Hat Inc.
+ * Copyright (C) 2010-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,3 +131,11 @@ val is_directory : string -> bool
 
 val absolute_path : string -> string
 (** Convert any path to an absolute path. *)
+
+val qemu_input_filename : string -> string
+(** Sanitizes a filename for passing it safely to qemu/qemu-img.
+
+    If the filename is something like "file:foo" then qemu-img will
+    try to interpret that as "foo" in the file:/// protocol.  To
+    avoid that, if the path is relative prefix it with "./" since
+    qemu-img won't try to interpret such a path. *)

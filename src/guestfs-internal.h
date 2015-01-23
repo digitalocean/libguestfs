@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -567,6 +567,7 @@ enum inspect_os_package_management {
   OS_PACKAGE_MANAGEMENT_PISI,
   OS_PACKAGE_MANAGEMENT_URPMI,
   OS_PACKAGE_MANAGEMENT_ZYPPER,
+  OS_PACKAGE_MANAGEMENT_DNF,
 };
 
 struct inspect_fs {
@@ -751,6 +752,7 @@ extern const char *guestfs___drive_protocol_to_string (enum drive_protocol proto
 
 /* appliance.c */
 extern int guestfs___build_appliance (guestfs_h *g, char **kernel, char **dtb, char **initrd, char **appliance);
+extern int guestfs___get_uefi (guestfs_h *g, char **code, char **vars);
 
 /* launch.c */
 extern int64_t guestfs___timeval_diff (const struct timeval *x, const struct timeval *y);

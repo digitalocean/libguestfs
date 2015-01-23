@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -329,6 +329,16 @@ let structs = [
     "btrfssubvolume_path", FString;
     ];
     s_camel_name = "BTRFSSubvolume" };
+
+  (* btrfs qgroup show output *)
+  { defaults with
+    s_name = "btrfsqgroup";
+    s_cols = [
+    "btrfsqgroup_id", FString;
+    "btrfsqgroup_rfer", FUInt64;
+    "btrfsqgroup_excl", FUInt64;
+    ];
+    s_camel_name = "BTRFSQgroup" };
 
   (* XFS info descriptor. *)
   { defaults with

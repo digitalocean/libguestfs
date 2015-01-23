@@ -3,7 +3,7 @@
 #   generator/ *.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2014 Red Hat Inc.
+# Copyright (C) 2009-2015 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -79,9 +79,15 @@
         guestfs_blockdev_setra;
         guestfs_blockdev_setro;
         guestfs_blockdev_setrw;
+        guestfs_btrfs_balance_cancel;
+        guestfs_btrfs_balance_pause;
+        guestfs_btrfs_balance_resume;
         guestfs_btrfs_device_add;
         guestfs_btrfs_device_delete;
         guestfs_btrfs_filesystem_balance;
+        guestfs_btrfs_filesystem_defragment;
+        guestfs_btrfs_filesystem_defragment_argv;
+        guestfs_btrfs_filesystem_defragment_va;
         guestfs_btrfs_filesystem_resize;
         guestfs_btrfs_filesystem_resize_argv;
         guestfs_btrfs_filesystem_resize_va;
@@ -89,18 +95,34 @@
         guestfs_btrfs_fsck;
         guestfs_btrfs_fsck_argv;
         guestfs_btrfs_fsck_va;
+        guestfs_btrfs_qgroup_assign;
+        guestfs_btrfs_qgroup_create;
+        guestfs_btrfs_qgroup_destroy;
+        guestfs_btrfs_qgroup_limit;
+        guestfs_btrfs_qgroup_remove;
+        guestfs_btrfs_qgroup_show;
+        guestfs_btrfs_quota_enable;
+        guestfs_btrfs_quota_rescan;
+        guestfs_btrfs_rescue_chunk_recover;
+        guestfs_btrfs_rescue_super_recover;
+        guestfs_btrfs_scrub_cancel;
+        guestfs_btrfs_scrub_resume;
+        guestfs_btrfs_scrub_start;
         guestfs_btrfs_set_seeding;
         guestfs_btrfs_subvolume_create;
         guestfs_btrfs_subvolume_create_opts;
         guestfs_btrfs_subvolume_create_opts_argv;
         guestfs_btrfs_subvolume_create_opts_va;
         guestfs_btrfs_subvolume_delete;
+        guestfs_btrfs_subvolume_get_default;
         guestfs_btrfs_subvolume_list;
         guestfs_btrfs_subvolume_set_default;
+        guestfs_btrfs_subvolume_show;
         guestfs_btrfs_subvolume_snapshot;
         guestfs_btrfs_subvolume_snapshot_opts;
         guestfs_btrfs_subvolume_snapshot_opts_argv;
         guestfs_btrfs_subvolume_snapshot_opts_va;
+        guestfs_c_pointer;
         guestfs_canonical_device_name;
         guestfs_cap_get_file;
         guestfs_cap_set_file;
@@ -119,6 +141,8 @@
         guestfs_compare_application2;
         guestfs_compare_application2_list;
         guestfs_compare_application_list;
+        guestfs_compare_btrfsqgroup;
+        guestfs_compare_btrfsqgroup_list;
         guestfs_compare_btrfssubvolume;
         guestfs_compare_btrfssubvolume_list;
         guestfs_compare_dirent;
@@ -173,6 +197,8 @@
         guestfs_copy_attributes;
         guestfs_copy_attributes_argv;
         guestfs_copy_attributes_va;
+        guestfs_copy_btrfsqgroup;
+        guestfs_copy_btrfsqgroup_list;
         guestfs_copy_btrfssubvolume;
         guestfs_copy_btrfssubvolume_list;
         guestfs_copy_device_to_device;
@@ -285,6 +311,8 @@
         guestfs_free_application2;
         guestfs_free_application2_list;
         guestfs_free_application_list;
+        guestfs_free_btrfsqgroup;
+        guestfs_free_btrfsqgroup_list;
         guestfs_free_btrfssubvolume;
         guestfs_free_btrfssubvolume_list;
         guestfs_free_dirent;

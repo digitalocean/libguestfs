@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,20 +87,41 @@ static const char *const commands[] = {
   "blockdev-setra",
   "blockdev-setro",
   "blockdev-setrw",
+  "btrfs-balance-cancel",
+  "btrfs-balance-pause",
+  "btrfs-balance-resume",
   "btrfs-device-add",
   "btrfs-device-delete",
   "btrfs-filesystem-balance",
+  "btrfs-balance",
+  "btrfs-filesystem-defragment",
   "btrfs-filesystem-resize",
   "btrfs-filesystem-sync",
   "btrfs-fsck",
+  "btrfs-qgroup-assign",
+  "btrfs-qgroup-create",
+  "btrfs-qgroup-destroy",
+  "btrfs-qgroup-limit",
+  "btrfs-qgroup-remove",
+  "btrfs-qgroup-show",
+  "btrfs-quota-enable",
+  "btrfs-quota-rescan",
+  "btrfs-rescue-chunk-recover",
+  "btrfs-rescue-super-recover",
+  "btrfs-scrub-cancel",
+  "btrfs-scrub-resume",
+  "btrfs-scrub-start",
   "btrfs-set-seeding",
   "btrfs-subvolume-create",
   "btrfs-subvolume-create-opts",
   "btrfs-subvolume-delete",
+  "btrfs-subvolume-get-default",
   "btrfs-subvolume-list",
   "btrfs-subvolume-set-default",
+  "btrfs-subvolume-show",
   "btrfs-subvolume-snapshot",
   "btrfs-subvolume-snapshot-opts",
+  "c-pointer",
   "canonical-device-name",
   "cap-get-file",
   "cap-set-file",

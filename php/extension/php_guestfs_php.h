@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -81,18 +81,38 @@ PHP_FUNCTION (guestfs_blockdev_setbsz);
 PHP_FUNCTION (guestfs_blockdev_setra);
 PHP_FUNCTION (guestfs_blockdev_setro);
 PHP_FUNCTION (guestfs_blockdev_setrw);
+PHP_FUNCTION (guestfs_btrfs_balance_cancel);
+PHP_FUNCTION (guestfs_btrfs_balance_pause);
+PHP_FUNCTION (guestfs_btrfs_balance_resume);
 PHP_FUNCTION (guestfs_btrfs_device_add);
 PHP_FUNCTION (guestfs_btrfs_device_delete);
 PHP_FUNCTION (guestfs_btrfs_filesystem_balance);
+PHP_FUNCTION (guestfs_btrfs_filesystem_defragment);
 PHP_FUNCTION (guestfs_btrfs_filesystem_resize);
 PHP_FUNCTION (guestfs_btrfs_filesystem_sync);
 PHP_FUNCTION (guestfs_btrfs_fsck);
+PHP_FUNCTION (guestfs_btrfs_qgroup_assign);
+PHP_FUNCTION (guestfs_btrfs_qgroup_create);
+PHP_FUNCTION (guestfs_btrfs_qgroup_destroy);
+PHP_FUNCTION (guestfs_btrfs_qgroup_limit);
+PHP_FUNCTION (guestfs_btrfs_qgroup_remove);
+PHP_FUNCTION (guestfs_btrfs_qgroup_show);
+PHP_FUNCTION (guestfs_btrfs_quota_enable);
+PHP_FUNCTION (guestfs_btrfs_quota_rescan);
+PHP_FUNCTION (guestfs_btrfs_rescue_chunk_recover);
+PHP_FUNCTION (guestfs_btrfs_rescue_super_recover);
+PHP_FUNCTION (guestfs_btrfs_scrub_cancel);
+PHP_FUNCTION (guestfs_btrfs_scrub_resume);
+PHP_FUNCTION (guestfs_btrfs_scrub_start);
 PHP_FUNCTION (guestfs_btrfs_set_seeding);
 PHP_FUNCTION (guestfs_btrfs_subvolume_create);
 PHP_FUNCTION (guestfs_btrfs_subvolume_delete);
+PHP_FUNCTION (guestfs_btrfs_subvolume_get_default);
 PHP_FUNCTION (guestfs_btrfs_subvolume_list);
 PHP_FUNCTION (guestfs_btrfs_subvolume_set_default);
+PHP_FUNCTION (guestfs_btrfs_subvolume_show);
 PHP_FUNCTION (guestfs_btrfs_subvolume_snapshot);
+PHP_FUNCTION (guestfs_c_pointer);
 PHP_FUNCTION (guestfs_canonical_device_name);
 PHP_FUNCTION (guestfs_cap_get_file);
 PHP_FUNCTION (guestfs_cap_set_file);

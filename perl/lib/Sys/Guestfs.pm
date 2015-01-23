@@ -3,7 +3,7 @@
 #   generator/ *.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2014 Red Hat Inc.
+# Copyright (C) 2009-2015 Red Hat Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.424';
+$VERSION = '0.445';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -1190,6 +1190,18 @@ Sets the block device named C<device> to read-write.
 
 This uses the L<blockdev(8)> command.
 
+=item $g->btrfs_balance_cancel ($path);
+
+Cancel a running balance on a btrfs filesystem.
+
+=item $g->btrfs_balance_pause ($path);
+
+Pause a running balance on a btrfs filesystem.
+
+=item $g->btrfs_balance_resume ($path);
+
+Resume a paused balance on a btrfs filesystem.
+
 =item $g->btrfs_device_add (\@devices, $fs);
 
 Add the list of device(s) in C<devices> to the btrfs filesystem
@@ -1204,6 +1216,10 @@ If C<devices> is an empty list, this does nothing.
 
 Balance the chunks in the btrfs filesystem mounted at C<fs>
 across the underlying devices.
+
+=item $g->btrfs_filesystem_defragment ($path [, flush => $flush] [, compress => $compress]);
+
+Defragment a file or directory on a btrfs filesystem. compress is one of zlib or lzo.
 
 =item $g->btrfs_filesystem_resize ($mountpoint [, size => $size]);
 
@@ -1235,6 +1251,63 @@ Force sync on the btrfs filesystem mounted at C<fs>.
 Used to check a btrfs filesystem, C<device> is the device file where the
 filesystem is stored.
 
+=item $g->btrfs_qgroup_assign ($src, $dst, $path);
+
+Add qgroup C<src> to parent qgroup C<dst>. This command can group
+several qgroups into a parent qgroup to share common limit.
+
+=item $g->btrfs_qgroup_create ($qgroupid, $subvolume);
+
+Create a quota group (qgroup) for subvolume at C<subvolume>.
+
+=item $g->btrfs_qgroup_destroy ($qgroupid, $subvolume);
+
+Destroy a quota group.
+
+=item $g->btrfs_qgroup_limit ($subvolume, $size);
+
+Limit the size of a subvolume which's path is C<subvolume>. C<size>
+can have suffix of G, M, or K. 
+
+=item $g->btrfs_qgroup_remove ($src, $dst, $path);
+
+Remove qgroup C<src> from the parent qgroup C<dst>.
+
+=item @qgroups = $g->btrfs_qgroup_show ($path);
+
+Show all subvolume quota groups in a btrfs filesystem, inclding their
+usages.
+
+=item $g->btrfs_quota_enable ($fs, $enable);
+
+Enable or disable subvolume quota support for filesystem which contains C<path>.
+
+=item $g->btrfs_quota_rescan ($fs);
+
+Trash all qgroup numbers and scan the metadata again with the current config.
+
+=item $g->btrfs_rescue_chunk_recover ($device);
+
+Recover the chunk tree of btrfs filesystem by scannning the devices one by one.
+
+=item $g->btrfs_rescue_super_recover ($device);
+
+Recover bad superblocks from good copies.
+
+=item $g->btrfs_scrub_cancel ($path);
+
+Cancel a running scrub on a btrfs filesystem.
+
+=item $g->btrfs_scrub_resume ($path);
+
+Resume a previously canceled or interrupted scrub on a btrfs filesystem.
+
+=item $g->btrfs_scrub_start ($path);
+
+Reads all the data and metadata on the filesystem, and uses checksums
+and the duplicate copies from RAID storage to identify and repair any
+corrupt data.
+
 =item $g->btrfs_set_seeding ($device, $seeding);
 
 Enable or disable the seeding feature of a device that contains
@@ -1263,6 +1336,10 @@ sub btrfs_subvolume_create_opts {
 
 Delete the named btrfs subvolume or snapshot.
 
+=item $id = $g->btrfs_subvolume_get_default ($fs);
+
+Get the default subvolume or snapshot of a filesystem mounted at C<mountpoint>.
+
 =item @subvolumes = $g->btrfs_subvolume_list ($fs);
 
 List the btrfs snapshots and subvolumes of the btrfs filesystem
@@ -1273,6 +1350,10 @@ which is mounted at C<fs>.
 Set the subvolume of the btrfs filesystem C<fs> which will
 be mounted by default.  See C<$g-E<gt>btrfs_subvolume_list> to
 get a list of subvolumes.
+
+=item %btrfssubvolumeinfo = $g->btrfs_subvolume_show ($subvolume);
+
+Return detailed information of the subvolume.
 
 =item $g->btrfs_subvolume_snapshot ($source, $dest [, ro => $ro] [, qgroupid => $qgroupid]);
 
@@ -1295,6 +1376,12 @@ sub btrfs_subvolume_snapshot_opts {
 }
 
 =pod
+
+=item $ptr = $g->c_pointer ();
+
+In non-C language bindings, this allows you to retrieve the underlying
+C pointer to the handle (ie. C<$g-E<gt>h *>).  The purpose of this is
+to allow other libraries to interwork with libguestfs.
 
 =item $canonical = $g->canonical_device_name ($device);
 
@@ -3470,8 +3557,8 @@ See also C<$g-E<gt>inspect_get_filesystems>.
 This function and C<$g-E<gt>inspect_get_package_management> return
 the package format and package management tool used by the
 inspected operating system.  For example for Fedora these
-functions would return C<rpm> (package format) and
-C<yum> (package management).
+functions would return C<rpm> (package format), and
+C<yum> or C<dnf> (package management).
 
 This returns the string C<unknown> if we could not determine the
 package format I<or> if the operating system does not have
@@ -3488,14 +3575,14 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 C<$g-E<gt>inspect_get_package_format> and this function return
 the package format and package management tool used by the
 inspected operating system.  For example for Fedora these
-functions would return C<rpm> (package format) and
-C<yum> (package management).
+functions would return C<rpm> (package format), and
+C<yum> or C<dnf> (package management).
 
 This returns the string C<unknown> if we could not determine the
 package management tool I<or> if the operating system does not have
 a real packaging system (eg. Windows).
 
-Possible strings include: C<yum>, C<up2date>,
+Possible strings include: C<yum>, C<dnf>, C<up2date>,
 C<apt> (for all Debian derivatives),
 C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>.
 Future versions of libguestfs may return other strings.
@@ -3891,6 +3978,10 @@ with the given C<path> name.
 If the optional flag C<followsymlinks> is true, then a symlink
 (or chain of symlinks) that ends with a block device also causes the
 function to return true.
+
+This call only looks at files within the guest filesystem.  Libguestfs
+partitions and block devices (eg. C</dev/sda>) cannot be used as the
+C<path> parameter of this call.
 
 See also C<$g-E<gt>stat>.
 
@@ -5011,9 +5102,12 @@ This call creates a FIFO (named pipe) called C<path> with
 mode C<mode>.  It is just a convenient wrapper around
 C<$g-E<gt>mknod>.
 
+Unlike with C<$g-E<gt>mknod>, C<mode> B<must> contain only permissions
+bits.
+
 The mode actually set is affected by the umask.
 
-=item $g->mkfs ($fstype, $device [, blocksize => $blocksize] [, features => $features] [, inode => $inode] [, sectorsize => $sectorsize]);
+=item $g->mkfs ($fstype, $device [, blocksize => $blocksize] [, features => $features] [, inode => $inode] [, sectorsize => $sectorsize] [, label => $label]);
 
 This function creates a filesystem on C<device>.  The filesystem
 type is C<fstype>, for example C<ext3>.
@@ -5056,7 +5150,7 @@ which sets sector size for ufs filesystem.
 
 =back
 
-=item $g->mkfs_opts ($fstype, $device [, blocksize => $blocksize] [, features => $features] [, inode => $inode] [, sectorsize => $sectorsize]);
+=item $g->mkfs_opts ($fstype, $device [, blocksize => $blocksize] [, features => $features] [, inode => $inode] [, sectorsize => $sectorsize] [, label => $label]);
 
 This is an alias of L</mkfs>.
 
@@ -5168,6 +5262,9 @@ This call creates a block device node called C<path> with
 mode C<mode> and device major/minor C<devmajor> and C<devminor>.
 It is just a convenient wrapper around C<$g-E<gt>mknod>.
 
+Unlike with C<$g-E<gt>mknod>, C<mode> B<must> contain only permissions
+bits.
+
 The mode actually set is affected by the umask.
 
 =item $g->mknod_c ($mode, $devmajor, $devminor, $path);
@@ -5175,6 +5272,9 @@ The mode actually set is affected by the umask.
 This call creates a char device node called C<path> with
 mode C<mode> and device major/minor C<devmajor> and C<devminor>.
 It is just a convenient wrapper around C<$g-E<gt>mknod>.
+
+Unlike with C<$g-E<gt>mknod>, C<mode> B<must> contain only permissions
+bits.
 
 The mode actually set is affected by the umask.
 
@@ -5761,7 +5861,7 @@ See also C<$g-E<gt>part_to_dev>.
 =item $g->ping_daemon ();
 
 This is a test probe into the guestfs daemon running inside
-the hypervisor.  Calling this function checks that the
+the libguestfs appliance.  Calling this function checks that the
 daemon responds to the ping message, without affecting the daemon
 or attached block device(s) in any other way.
 
@@ -8156,6 +8256,30 @@ use vars qw(%guestfs_introspection);
     name => "blockdev_setrw",
     description => "set block device to read-write",
   },
+  "btrfs_balance_cancel" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "btrfs_balance_cancel",
+    description => "cancel a running or paused balance",
+  },
+  "btrfs_balance_pause" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "btrfs_balance_pause",
+    description => "pause a running balance",
+  },
+  "btrfs_balance_resume" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "btrfs_balance_resume",
+    description => "resume a paused balance",
+  },
   "btrfs_device_add" => {
     ret => 'void',
     args => [
@@ -8181,6 +8305,18 @@ use vars qw(%guestfs_introspection);
     ],
     name => "btrfs_filesystem_balance",
     description => "balance a btrfs filesystem",
+  },
+  "btrfs_filesystem_defragment" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    optargs => {
+      flush => [ 'flush', 'bool', 0 ],
+      compress => [ 'compress', 'string', 1 ],
+    },
+    name => "btrfs_filesystem_defragment",
+    description => "defragment a file or directory",
   },
   "btrfs_filesystem_resize" => {
     ret => 'void',
@@ -8213,6 +8349,118 @@ use vars qw(%guestfs_introspection);
     name => "btrfs_fsck",
     description => "check a btrfs filesystem",
   },
+  "btrfs_qgroup_assign" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string', 0 ],
+      [ 'dst', 'string', 1 ],
+      [ 'path', 'string(path)', 2 ],
+    ],
+    name => "btrfs_qgroup_assign",
+    description => "add a qgroup to a parent qgroup",
+  },
+  "btrfs_qgroup_create" => {
+    ret => 'void',
+    args => [
+      [ 'qgroupid', 'string', 0 ],
+      [ 'subvolume', 'string(path)', 1 ],
+    ],
+    name => "btrfs_qgroup_create",
+    description => "create a subvolume quota group",
+  },
+  "btrfs_qgroup_destroy" => {
+    ret => 'void',
+    args => [
+      [ 'qgroupid', 'string', 0 ],
+      [ 'subvolume', 'string(path)', 1 ],
+    ],
+    name => "btrfs_qgroup_destroy",
+    description => "destroy a subvolume quota group",
+  },
+  "btrfs_qgroup_limit" => {
+    ret => 'void',
+    args => [
+      [ 'subvolume', 'string(path)', 0 ],
+      [ 'size', 'int64', 1 ],
+    ],
+    name => "btrfs_qgroup_limit",
+    description => "limit the size of a subvolume",
+  },
+  "btrfs_qgroup_remove" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string', 0 ],
+      [ 'dst', 'string', 1 ],
+      [ 'path', 'string(path)', 2 ],
+    ],
+    name => "btrfs_qgroup_remove",
+    description => "remove a qgroup from its parent qgroup",
+  },
+  "btrfs_qgroup_show" => {
+    ret => 'struct btrfsqgroup list',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "btrfs_qgroup_show",
+    description => "show subvolume quota groups",
+  },
+  "btrfs_quota_enable" => {
+    ret => 'void',
+    args => [
+      [ 'fs', 'string(mountable_or_path)', 0 ],
+      [ 'enable', 'bool', 1 ],
+    ],
+    name => "btrfs_quota_enable",
+    description => "enable or disable subvolume quota support",
+  },
+  "btrfs_quota_rescan" => {
+    ret => 'void',
+    args => [
+      [ 'fs', 'string(mountable_or_path)', 0 ],
+    ],
+    name => "btrfs_quota_rescan",
+    description => "trash all qgroup numbers and scan the metadata again with the current config",
+  },
+  "btrfs_rescue_chunk_recover" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "btrfs_rescue_chunk_recover",
+    description => "recover the chunk tree of btrfs filesystem",
+  },
+  "btrfs_rescue_super_recover" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "btrfs_rescue_super_recover",
+    description => "recover bad superblocks from good copies",
+  },
+  "btrfs_scrub_cancel" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "btrfs_scrub_cancel",
+    description => "cancel a running scrub",
+  },
+  "btrfs_scrub_resume" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "btrfs_scrub_resume",
+    description => "resume a previously canceled or interrupted scrub",
+  },
+  "btrfs_scrub_start" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "btrfs_scrub_start",
+    description => "read all data from all disks and verify checksums",
+  },
   "btrfs_set_seeding" => {
     ret => 'void',
     args => [
@@ -8241,6 +8489,14 @@ use vars qw(%guestfs_introspection);
     name => "btrfs_subvolume_delete",
     description => "delete a btrfs subvolume or snapshot",
   },
+  "btrfs_subvolume_get_default" => {
+    ret => 'int64',
+    args => [
+      [ 'fs', 'string(mountable_or_path)', 0 ],
+    ],
+    name => "btrfs_subvolume_get_default",
+    description => "get the default subvolume or snapshot of a filesystem",
+  },
   "btrfs_subvolume_list" => {
     ret => 'struct btrfssubvolume list',
     args => [
@@ -8258,6 +8514,14 @@ use vars qw(%guestfs_introspection);
     name => "btrfs_subvolume_set_default",
     description => "set default btrfs subvolume",
   },
+  "btrfs_subvolume_show" => {
+    ret => 'hash',
+    args => [
+      [ 'subvolume', 'string(path)', 0 ],
+    ],
+    name => "btrfs_subvolume_show",
+    description => "return detailed information of the subvolume",
+  },
   "btrfs_subvolume_snapshot" => {
     ret => 'void',
     args => [
@@ -8270,6 +8534,13 @@ use vars qw(%guestfs_introspection);
     },
     name => "btrfs_subvolume_snapshot",
     description => "create a btrfs snapshot",
+  },
+  "c_pointer" => {
+    ret => 'int64',
+    args => [
+    ],
+    name => "c_pointer",
+    description => "return the C pointer to the guestfs_h handle",
   },
   "canonical_device_name" => {
     ret => 'string',
@@ -10835,6 +11106,7 @@ use vars qw(%guestfs_introspection);
       features => [ 'features', 'string', 1 ],
       inode => [ 'inode', 'int', 2 ],
       sectorsize => [ 'sectorsize', 'int', 3 ],
+      label => [ 'label', 'string', 4 ],
     },
     name => "mkfs",
     description => "make a filesystem",
@@ -12811,7 +13083,7 @@ with some unique string, to avoid conflicts with other users.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2014 Red Hat Inc.
+Copyright (C) 2009-2015 Red Hat Inc.
 
 =head1 LICENSE
 

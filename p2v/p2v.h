@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,10 +114,10 @@ extern int v2v_release;
 extern char **input_drivers;
 extern char **output_drivers;
 
-/* authors.c */
+/* about-authors.c */
 extern const char *authors[];
 
-/* copying.c */
+/* about-license.c */
 extern const char *gplv2plus;
 
 #endif /* P2V_H */

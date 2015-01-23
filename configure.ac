@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2014 Red Hat Inc.
+# Copyright (C) 2009-2015 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [29])
-m4_define([libguestfs_release], [14])
+m4_define([libguestfs_release], [22])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -202,6 +202,14 @@ AC_C_PROTOTYPES
 test "x$U" != "x" && AC_MSG_ERROR([Compiler not ANSI compliant])
 
 AM_PROG_CC_C_O
+
+# Provide a global place to set CFLAGS.  (Note that setting AM_CFLAGS
+# is no use because it doesn't override target_CFLAGS).
+#---
+# Kill -fstrict-overflow which is a license for the C compiler to make
+# dubious and often unsafe optimizations, in a time-wasting attempt to
+# deal with CPU architectures that do not exist.
+CFLAGS="$CFLAGS -fno-strict-overflow -Wno-strict-overflow"
 
 dnl Work out how to specify the linker script to the linker.
 VERSION_SCRIPT_FLAGS=-Wl,--version-script=
@@ -1007,12 +1015,19 @@ PKG_CHECK_MODULES([HIVEX], [hivex],[
 AM_CONDITIONAL([HAVE_HIVEX],[test "x$HIVEX_LIBS" != "x"])
 
 dnl systemd journal library (optional)
-PKG_CHECK_MODULES([SD_JOURNAL], [libsystemd-journal >= 196],[
+PKG_CHECK_MODULES([SD_JOURNAL], [libsystemd],[
     AC_SUBST([SD_JOURNAL_CFLAGS])
     AC_SUBST([SD_JOURNAL_LIBS])
     AC_DEFINE([HAVE_SD_JOURNAL],[1],[systemd journal library found at compile time.])
-],
-    [AC_MSG_WARN([systemd journal library not found, some features will be disabled])])
+],[
+    PKG_CHECK_MODULES([SD_JOURNAL], [libsystemd-journal >= 196],[
+        AC_SUBST([SD_JOURNAL_CFLAGS])
+        AC_SUBST([SD_JOURNAL_LIBS])
+        AC_DEFINE([HAVE_SD_JOURNAL],[1],[systemd journal library found at compile time.])
+    ],[
+        AC_MSG_WARN([systemd journal library not found, some features will be disabled])
+    ])
+])
 
 dnl FUSE is optional to build the FUSE module.
 AC_ARG_ENABLE([fuse],
@@ -1665,8 +1680,14 @@ mkdir -p \
 dnl http://www.mail-archive.com/automake@gnu.org/msg10204.html
 AC_CONFIG_FILES([appliance/libguestfs-make-fixed-appliance],
                 [chmod +x,-w appliance/libguestfs-make-fixed-appliance])
+AC_CONFIG_FILES([builder/link.sh],
+                [chmod +x,-w builder/link.sh])
+AC_CONFIG_FILES([customize/link.sh],
+                [chmod +x,-w customize/link.sh])
 AC_CONFIG_FILES([inspector/test-xmllint.sh],
                 [chmod +x,-w inspector/test-xmllint.sh])
+AC_CONFIG_FILES([mllib/link.sh],
+                [chmod +x,-w mllib/link.sh])
 AC_CONFIG_FILES([p2v/virt-p2v-make-disk],
                 [chmod +x,-w p2v/virt-p2v-make-disk])
 AC_CONFIG_FILES([p2v/virt-p2v-make-kickstart],
@@ -1677,10 +1698,14 @@ AC_CONFIG_FILES([pick-guests.pl],
                 [chmod +x,-w pick-guests.pl])
 AC_CONFIG_FILES([podwrapper.pl],
                 [chmod +x,-w podwrapper.pl])
+AC_CONFIG_FILES([resize/link.sh],
+                [chmod +x,-w resize/link.sh])
 AC_CONFIG_FILES([run],
                 [chmod +x,-w run])
 AC_CONFIG_FILES([sparsify/link.sh],
                 [chmod +x,-w sparsify/link.sh])
+AC_CONFIG_FILES([sysprep/link.sh],
+                [chmod +x,-w sysprep/link.sh])
 AC_CONFIG_FILES([v2v/link.sh],
                 [chmod +x,-w v2v/link.sh])
 

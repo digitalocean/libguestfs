@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1752,8 +1752,8 @@ C<guestfs_add_drive_opts>." };
 This function and C<guestfs_inspect_get_package_management> return
 the package format and package management tool used by the
 inspected operating system.  For example for Fedora these
-functions would return C<rpm> (package format) and
-C<yum> (package management).
+functions would return C<rpm> (package format), and
+C<yum> or C<dnf> (package management).
 
 This returns the string C<unknown> if we could not determine the
 package format I<or> if the operating system does not have
@@ -1773,14 +1773,14 @@ Please read L<guestfs(3)/INSPECTION> for more details." };
 C<guestfs_inspect_get_package_format> and this function return
 the package format and package management tool used by the
 inspected operating system.  For example for Fedora these
-functions would return C<rpm> (package format) and
-C<yum> (package management).
+functions would return C<rpm> (package format), and
+C<yum> or C<dnf> (package management).
 
 This returns the string C<unknown> if we could not determine the
 package management tool I<or> if the operating system does not have
 a real packaging system (eg. Windows).
 
-Possible strings include: C<yum>, C<up2date>,
+Possible strings include: C<yum>, C<dnf>, C<up2date>,
 C<apt> (for all Debian derivatives),
 C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>.
 Future versions of libguestfs may return other strings.
@@ -3296,6 +3296,20 @@ refers to.
 
 This is the same as the C<lstat(2)> system call." };
 
+  { defaults with
+    name = "c_pointer";
+    style = RInt64 "ptr", [], [];
+    fish_output = Some FishOutputHexadecimal;
+    tests = [
+      InitNone, Always, TestRun (
+        [["c_pointer"]]), []
+    ];
+    shortdesc = "return the C pointer to the guestfs_h handle";
+    longdesc = "\
+In non-C language bindings, this allows you to retrieve the underlying
+C pointer to the handle (ie. C<guestfs_h *>).  The purpose of this is
+to allow other libraries to interwork with libguestfs." };
+
 ]
 
 (* daemon_functions are any functions which cause some action
@@ -3310,7 +3324,7 @@ let daemon_functions = [
     tests = [
       InitEmpty, Always, TestResultString (
         [["part_disk"; "/dev/sda"; "mbr"];
-         ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""];
+         ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
          ["mount"; "/dev/sda1"; "/"];
          ["write"; "/new"; "new file contents"];
          ["cat"; "/new"]], "new file contents"), []
@@ -4124,12 +4138,12 @@ characters does I<not> work, even if the length is specified." };
     tests = [
       InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
-         ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""];
+         ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
          ["mount"; "/dev/sda1"; "/"];
          ["mounts"]], "is_device_list (ret, 1, \"/dev/sda1\")"), [];
       InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
-         ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""];
+         ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
          ["mount"; "/dev/sda1"; "/"];
          ["umount"; "/"; "false"; "false"];
          ["mounts"]], "is_string_list (ret, 0)"), []
@@ -4172,9 +4186,9 @@ See also: C<guestfs_mountpoints>" };
          ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
          ["part_add"; "/dev/sda"; "p"; "204800"; "409599"];
          ["part_add"; "/dev/sda"; "p"; "409600"; "-64"];
-         ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""];
-         ["mkfs"; "ext2"; "/dev/sda2"; ""; "NOARG"; ""; ""];
-         ["mkfs"; "ext2"; "/dev/sda3"; ""; "NOARG"; ""; ""];
+         ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
+         ["mkfs"; "ext2"; "/dev/sda2"; ""; "NOARG"; ""; ""; "NOARG"];
+         ["mkfs"; "ext2"; "/dev/sda3"; ""; "NOARG"; ""; ""; "NOARG"];
          ["mount"; "/dev/sda1"; "/"];
          ["mkdir"; "/mp1"];
          ["mount"; "/dev/sda2"; "/mp1"];
@@ -5320,7 +5334,7 @@ running the program." };
     shortdesc = "ping the guest daemon";
     longdesc = "\
 This is a test probe into the guestfs daemon running inside
-the hypervisor.  Calling this function checks that the
+the libguestfs appliance.  Calling this function checks that the
 daemon responds to the ping message, without affecting the daemon
 or attached block device(s) in any other way." };
 
@@ -5464,7 +5478,7 @@ the human-readable, canonical hex dump of the file." };
     tests = [
       InitNone, Always, TestResultString (
         [["part_disk"; "/dev/sda"; "mbr"];
-         ["mkfs"; "ext3"; "/dev/sda1"; ""; "NOARG"; ""; ""];
+         ["mkfs"; "ext3"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
          ["mount"; "/dev/sda1"; "/"];
          ["write"; "/new"; "test file"];
          ["umount"; "/dev/sda1"; "false"; "false"];
@@ -5588,7 +5602,7 @@ are activated or deactivated." };
          ["pvcreate"; "/dev/sda1"];
          ["vgcreate"; "VG"; "/dev/sda1"];
          ["lvcreate"; "LV"; "VG"; "10"];
-         ["mkfs"; "ext2"; "/dev/VG/LV"; ""; "NOARG"; ""; ""];
+         ["mkfs"; "ext2"; "/dev/VG/LV"; ""; "NOARG"; ""; ""; "NOARG"];
          ["mount"; "/dev/VG/LV"; "/"];
          ["write"; "/new"; "test content"];
          ["umount"; "/"; "false"; "false"];
@@ -5655,11 +5669,11 @@ Sleep for C<secs> seconds." };
     tests = [
       InitNone, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
-         ["mkfs"; "ntfs"; "/dev/sda1"; ""; "NOARG"; ""; ""];
+         ["mkfs"; "ntfs"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
          ["ntfs_3g_probe"; "true"; "/dev/sda1"]], "ret == 0"), [];
       InitNone, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
-         ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""];
+         ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
          ["ntfs_3g_probe"; "true"; "/dev/sda1"]], "ret == 12"), []
     ];
     shortdesc = "probe NTFS volume";
@@ -6159,13 +6173,18 @@ The mode actually set is affected by the umask." };
       InitScratchFS, Always, TestResult (
         [["mkfifo"; "0o777"; "/mkfifo"];
          ["stat"; "/mkfifo"]],
-        "S_ISFIFO (ret->mode) && (ret->mode & 0777) == 0755"), []
+        "S_ISFIFO (ret->mode) && (ret->mode & 0777) == 0755"), [];
+      InitScratchFS, Always, TestLastFail (
+        [["mkfifo"; "0o20777"; "/mkfifo-2"]]), [];
     ];
     shortdesc = "make FIFO (named pipe)";
     longdesc = "\
 This call creates a FIFO (named pipe) called C<path> with
 mode C<mode>.  It is just a convenient wrapper around
 C<guestfs_mknod>.
+
+Unlike with C<guestfs_mknod>, C<mode> B<must> contain only permissions
+bits.
 
 The mode actually set is affected by the umask." };
 
@@ -6178,13 +6197,18 @@ The mode actually set is affected by the umask." };
       InitScratchFS, Always, TestResult (
         [["mknod_b"; "0o777"; "99"; "66"; "/mknod_b"];
          ["stat"; "/mknod_b"]],
-        "S_ISBLK (ret->mode) && (ret->mode & 0777) == 0755"), []
+        "S_ISBLK (ret->mode) && (ret->mode & 0777) == 0755"), [];
+      InitScratchFS, Always, TestLastFail (
+        [["mknod_b"; "0o10777"; "99"; "66"; "/mknod_b-2"]]), [];
     ];
     shortdesc = "make block device node";
     longdesc = "\
 This call creates a block device node called C<path> with
 mode C<mode> and device major/minor C<devmajor> and C<devminor>.
 It is just a convenient wrapper around C<guestfs_mknod>.
+
+Unlike with C<guestfs_mknod>, C<mode> B<must> contain only permissions
+bits.
 
 The mode actually set is affected by the umask." };
 
@@ -6197,13 +6221,18 @@ The mode actually set is affected by the umask." };
       InitScratchFS, Always, TestResult (
         [["mknod_c"; "0o777"; "99"; "66"; "/mknod_c"];
          ["stat"; "/mknod_c"]],
-        "S_ISCHR (ret->mode) && (ret->mode & 0777) == 0755"), []
+        "S_ISCHR (ret->mode) && (ret->mode & 0777) == 0755"), [];
+      InitScratchFS, Always, TestLastFail (
+        [["mknod_c"; "0o20777"; "99"; "66"; "/mknod_c-2"]]), [];
     ];
     shortdesc = "make char device node";
     longdesc = "\
 This call creates a char device node called C<path> with
 mode C<mode> and device major/minor C<devmajor> and C<devminor>.
 It is just a convenient wrapper around C<guestfs_mknod>.
+
+Unlike with C<guestfs_mknod>, C<mode> B<must> contain only permissions
+bits.
 
 The mode actually set is affected by the umask." };
 
@@ -8529,7 +8558,11 @@ a file in the host and attach it as a device." };
     tests = [
       InitBasicFS, Always, TestResultString (
         [["set_label"; "/dev/sda1"; "LTEST"];
-         ["vfs_label"; "/dev/sda1"]], "LTEST"), []
+         ["vfs_label"; "/dev/sda1"]], "LTEST"), [];
+      InitEmpty, Always, TestResultString (
+        [["part_disk"; "/dev/sda"; "mbr"];
+         ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""; "test-label"];
+         ["vfs_label"; "/dev/sda1"]], "test-label"), [];
     ];
     shortdesc = "get the filesystem label";
     longdesc = "\
@@ -8783,6 +8816,10 @@ If the optional flag C<followsymlinks> is true, then a symlink
 (or chain of symlinks) that ends with a block device also causes the
 function to return true.
 
+This call only looks at files within the guest filesystem.  Libguestfs
+partitions and block devices (eg. C</dev/sda>) cannot be used as the
+C<path> parameter of this call.
+
 See also C<guestfs_stat>." };
 
   { defaults with
@@ -8997,13 +9034,13 @@ See also C<guestfs_is_lv>, C<guestfs_canonical_device_name>." };
 
   { defaults with
     name = "mkfs";
-    style = RErr, [String "fstype"; Device "device"], [OInt "blocksize"; OString "features"; OInt "inode"; OInt "sectorsize"];
+    style = RErr, [String "fstype"; Device "device"], [OInt "blocksize"; OString "features"; OInt "inode"; OInt "sectorsize"; OString "label"];
     proc_nr = Some 278;
     once_had_no_optargs = true;
     tests = [
       InitEmpty, Always, TestResultString (
         [["part_disk"; "/dev/sda"; "mbr"];
-         ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""];
+         ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
          ["mount"; "/dev/sda1"; "/"];
          ["write"; "/new"; "new file contents"];
          ["cat"; "/new"]], "new file contents"), []
@@ -9743,7 +9780,7 @@ device." };
     optional = Some "ntfs3g";
     tests = [
       InitPartition, Always, TestRun (
-        [["mkfs"; "ntfs"; "/dev/sda1"; ""; "NOARG"; ""; ""];
+        [["mkfs"; "ntfs"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
          ["ntfsfix"; "/dev/sda1"; "false"]]), []
     ];
     shortdesc = "fix common errors and force Windows to check NTFS";
@@ -9802,7 +9839,7 @@ any existing contents of this device." };
         [["set_label"; "/dev/sda1"; "testlabel"];
          ["vfs_label"; "/dev/sda1"]], "testlabel"), [];
       InitPartition, IfAvailable "ntfs3g", TestResultString (
-        [["mkfs"; "ntfs"; "/dev/sda1"; ""; "NOARG"; ""; ""];
+        [["mkfs"; "ntfs"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
          ["set_label"; "/dev/sda1"; "testlabel2"];
          ["vfs_label"; "/dev/sda1"]], "testlabel2"), [];
       InitPartition, Always, TestLastFail (
@@ -10317,6 +10354,7 @@ Force sync on the btrfs filesystem mounted at C<fs>." };
   { defaults with
     name = "btrfs_filesystem_balance";
     style = RErr, [Pathname "fs"], [];
+    fish_alias = ["btrfs-balance"];
     proc_nr = Some 328;
     optional = Some "btrfs"; camel_name = "BTRFSFilesystemBalance";
     shortdesc = "balance a btrfs filesystem";
@@ -10467,7 +10505,7 @@ call C<guestfs_max_disks>." };
     tests = [
       InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
-         ["mkfs"; "xfs"; "/dev/sda1"; ""; "NOARG"; ""; ""];
+         ["mkfs"; "xfs"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
          ["mount"; "/dev/sda1"; "/"];
          ["xfs_info"; "/"]], "ret->xfs_blocksize == 4096"), []
     ];
@@ -10567,7 +10605,7 @@ in the returned structure is defined by the API." };
          ["pvcreate"; "/dev/sda1"];
          ["vgcreate"; "VG"; "/dev/sda1"];
          ["lvcreate"; "LV"; "VG"; "40"];
-         ["mkfs"; "xfs"; "/dev/VG/LV"; ""; "NOARG"; ""; ""];
+         ["mkfs"; "xfs"; "/dev/VG/LV"; ""; "NOARG"; ""; ""; "NOARG"];
          ["lvresize"; "/dev/VG/LV"; "80"];
          ["mount"; "/dev/VG/LV"; "/"];
          ["xfs_growfs"; "/"; "true"; "false"; "false"; ""; ""; ""; ""; ""];
@@ -10704,7 +10742,7 @@ with zeroes)." };
     tests = [
       InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
-         ["mkfs"; "xfs"; "/dev/sda1"; ""; "NOARG"; ""; ""];
+         ["mkfs"; "xfs"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
          ["xfs_admin"; "/dev/sda1"; ""; ""; ""; ""; "false"; "NOARG"; "NOARG"];
          ["mount"; "/dev/sda1"; "/"];
          ["xfs_info"; "/"]], "ret->xfs_lazycount == 0"), [];
@@ -10938,7 +10976,7 @@ This is a wrapper around the L<hivex(3)> call of the same name." };
     tests = [
       InitEmpty, Always, TestRun (
         [["part_disk"; "/dev/sda"; "mbr"];
-         ["mkfs"; "xfs"; "/dev/sda1"; ""; "NOARG"; ""; ""];
+         ["mkfs"; "xfs"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
          ["xfs_repair"; "/dev/sda1"; ""; "true"; ""; ""; ""; ""; ""; ""; "NOARG"; "NOARG"]
         ]), []
     ];
@@ -12028,6 +12066,324 @@ This is the internal call which implements C<guestfs_lstatnslist>." };
 Set readahead (in 512-byte sectors) for the device.
 
 This uses the L<blockdev(8)> command." };
+
+  { defaults with
+    name = "btrfs_subvolume_get_default";
+    style = RInt64 "id", [Mountable_or_Path "fs"], [];
+    proc_nr = Some 425;
+    optional = Some "btrfs"; camel_name = "BTRFSSubvolumeGetDefault";
+    tests = [
+      InitPartition, Always, TestResult (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["btrfs_subvolume_get_default"; "/dev/sda1"]], "ret > 0"), [];
+      InitPartition, Always, TestResult (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_subvolume_get_default"; "/"]], "ret > 0"), []
+    ];
+    shortdesc = "get the default subvolume or snapshot of a filesystem";
+    longdesc = "\
+Get the default subvolume or snapshot of a filesystem mounted at C<mountpoint>." };
+
+  { defaults with
+    name = "btrfs_subvolume_show";
+    style = RHashtable "btrfssubvolumeinfo", [Pathname "subvolume"], [];
+    proc_nr = Some 426;
+    optional = Some "btrfs"; camel_name = "BTRFSSubvolumeShow";
+    tests = [
+      InitPartition, Always, TestLastFail (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_subvolume_show"; "/"]]), [];
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_subvolume_create"; "/sub1"; "NOARG"];
+         ["btrfs_subvolume_show"; "/sub1"]]), [];
+      InitPartition, Always, TestLastFail (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["mkdir"; "/dir1"];
+         ["btrfs_subvolume_show"; "/dir1"]]), [];
+    ];
+    shortdesc = "return detailed information of the subvolume";
+    longdesc = "\
+Return detailed information of the subvolume." };
+
+  { defaults with
+    name = "btrfs_quota_enable";
+    style = RErr, [Mountable_or_Path "fs"; Bool "enable"], [];
+    proc_nr = Some 427;
+    optional = Some "btrfs"; camel_name = "BTRFSQuotaEnable";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["btrfs_quota_enable"; "/dev/sda1"; "true"]]), [];
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "true"]]), [];
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["btrfs_quota_enable"; "/dev/sda1"; "false"]]), [];
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "false"]]), [];
+    ];
+    shortdesc = "enable or disable subvolume quota support";
+    longdesc = "\
+Enable or disable subvolume quota support for filesystem which contains C<path>." };
+
+  { defaults with
+    name = "btrfs_quota_rescan";
+    style = RErr, [Mountable_or_Path "fs"], [];
+    proc_nr = Some 428;
+    optional = Some "btrfs"; camel_name = "BTRFSQuotaRescan";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["btrfs_quota_enable"; "/dev/sda1"; "true"];
+         ["btrfs_quota_rescan"; "/dev/sda1"]]), [];
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "true"];
+         ["btrfs_quota_rescan"; "/"]]), [];
+    ];
+
+    shortdesc = "trash all qgroup numbers and scan the metadata again with the current config";
+    longdesc = "\
+Trash all qgroup numbers and scan the metadata again with the current config." };
+
+  { defaults with
+    name = "btrfs_qgroup_limit";
+    style = RErr, [Pathname "subvolume"; Int64 "size"], [];
+    proc_nr = Some 429;
+    optional = Some "btrfs"; camel_name = "BTRFSQgroupLimit";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "true"];
+         ["btrfs_qgroup_limit"; "/"; "10737418240"]]), [];
+      InitPartition, Always, TestLastFail (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "false"];
+         ["btrfs_qgroup_limit"; "/"; "10737418240"]]), [];
+    ];
+    shortdesc = "limit the size of a subvolume";
+    longdesc = "\
+Limit the size of a subvolume which's path is C<subvolume>. C<size>
+can have suffix of G, M, or K. " };
+
+  { defaults with
+    name = "btrfs_qgroup_create";
+    style = RErr, [String "qgroupid"; Pathname "subvolume"], [];
+    proc_nr = Some 430;
+    optional = Some "btrfs"; camel_name = "BTRFSQgroupCreate";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "true"];
+         ["btrfs_subvolume_create"; "/sub1"; "NOARG"];
+         ["btrfs_qgroup_create"; "0/1000"; "/sub1"]]), [];
+    ];
+    shortdesc = "create a subvolume quota group";
+    longdesc = "\
+Create a quota group (qgroup) for subvolume at C<subvolume>." };
+
+  { defaults with
+    name = "btrfs_qgroup_destroy";
+    style = RErr, [String "qgroupid"; Pathname "subvolume"], [];
+    proc_nr = Some 431;
+    optional = Some "btrfs"; camel_name = "BTRFSQgroupDestroy";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "true"];
+         ["btrfs_subvolume_create"; "/sub1"; "NOARG"];
+         ["btrfs_qgroup_create"; "0/1000"; "/sub1"];
+         ["btrfs_qgroup_destroy"; "0/1000"; "/sub1"]]), [];
+    ];
+    shortdesc = "destroy a subvolume quota group";
+    longdesc = "\
+Destroy a quota group." };
+
+  { defaults with
+    name = "btrfs_qgroup_show";
+    style = RStructList ("qgroups", "btrfsqgroup"), [Pathname "path"], [];
+    proc_nr = Some 432;
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "true"];
+         ["btrfs_subvolume_create"; "/sub1"; "NOARG"];
+         ["btrfs_qgroup_create"; "0/1000"; "/sub1"];
+         ["btrfs_qgroup_show"; "/"]]), [];
+    ];
+    optional = Some "btrfs"; camel_name = "BTRFSQgroupShow";
+    shortdesc = "show subvolume quota groups";
+    longdesc = "\
+Show all subvolume quota groups in a btrfs filesystem, inclding their
+usages." };
+
+  { defaults with
+    name = "btrfs_qgroup_assign";
+    style = RErr, [String "src"; String "dst"; Pathname "path"], [];
+    proc_nr = Some 433;
+    optional = Some "btrfs"; camel_name = "BTRFSQgroupAssign";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "true"];
+         ["btrfs_qgroup_create"; "0/1000"; "/"];
+         ["btrfs_qgroup_create"; "1/1000"; "/"];
+         ["btrfs_qgroup_assign"; "0/1000"; "1/1000"; "/"]]), [];
+    ];
+    shortdesc = "add a qgroup to a parent qgroup";
+    longdesc = "\
+Add qgroup C<src> to parent qgroup C<dst>. This command can group
+several qgroups into a parent qgroup to share common limit." };
+
+  { defaults with
+    name = "btrfs_qgroup_remove";
+    style = RErr, [String "src"; String "dst"; Pathname "path"], [];
+    proc_nr = Some 434;
+    optional = Some "btrfs"; camel_name = "BTRFSQgroupRemove";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_quota_enable"; "/"; "true"];
+         ["btrfs_qgroup_create"; "0/1000"; "/"];
+         ["btrfs_qgroup_create"; "1/1000"; "/"];
+         ["btrfs_qgroup_assign"; "0/1000"; "1/1000"; "/"];
+         ["btrfs_qgroup_remove"; "0/1000"; "1/1000"; "/"]]), [];
+    ];
+    shortdesc = "remove a qgroup from its parent qgroup";
+    longdesc = "\
+Remove qgroup C<src> from the parent qgroup C<dst>." };
+
+  { defaults with
+    name = "btrfs_scrub_start";
+    style = RErr, [Pathname "path"], [];
+    proc_nr = Some 435;
+    optional = Some "btrfs"; camel_name = "BTRFSScrubStart";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_scrub_start"; "/"]]), [];
+    ];
+    shortdesc = "read all data from all disks and verify checksums";
+    longdesc = "\
+Reads all the data and metadata on the filesystem, and uses checksums
+and the duplicate copies from RAID storage to identify and repair any
+corrupt data." };
+
+  { defaults with
+    name = "btrfs_scrub_cancel";
+    style = RErr, [Pathname "path"], [];
+    proc_nr = Some 436;
+    optional = Some "btrfs"; camel_name = "BTRFSScrubCancel";
+    test_excuse = "test disk isn't large enough that btrfs_scrub_start completes before we can cancel it";
+    shortdesc = "cancel a running scrub";
+    longdesc = "\
+Cancel a running scrub on a btrfs filesystem." };
+
+  { defaults with
+    name = "btrfs_scrub_resume";
+    style = RErr, [Pathname "path"], [];
+    proc_nr = Some 437;
+    optional = Some "btrfs"; camel_name = "BTRFSScrubResume";
+    test_excuse = "test disk isn't large enough that btrfs_scrub_start completes before we can cancel and resume it";
+    shortdesc = "resume a previously canceled or interrupted scrub";
+    longdesc = "\
+Resume a previously canceled or interrupted scrub on a btrfs filesystem." };
+
+{ defaults with
+    name = "btrfs_balance_pause";
+    style = RErr, [Pathname "path"], [];
+    proc_nr = Some 438;
+    optional = Some "btrfs"; camel_name = "BTRFSBalancePause";
+    test_excuse = "test disk isn't large enough to test this thoroughly";
+    shortdesc = "pause a running balance";
+    longdesc = "\
+Pause a running balance on a btrfs filesystem." };
+
+{ defaults with
+    name = "btrfs_balance_cancel";
+    style = RErr, [Pathname "path"], [];
+    proc_nr = Some 439;
+    optional = Some "btrfs"; camel_name = "BTRFSBalanceCancel";
+    test_excuse = "test disk isn't large enough that btrfs_balance completes before we can cancel it";
+    shortdesc = "cancel a running or paused balance";
+    longdesc = "\
+Cancel a running balance on a btrfs filesystem." };
+
+{ defaults with
+    name = "btrfs_balance_resume";
+    style = RErr, [Pathname "path"], [];
+    proc_nr = Some 440;
+    optional = Some "btrfs"; camel_name = "BTRFSBalanceResume";
+    test_excuse = "test disk isn't large enough that btrfs_balance completes before we can pause and resume it";
+    shortdesc = "resume a paused balance";
+    longdesc = "\
+Resume a paused balance on a btrfs filesystem." };
+
+  { defaults with
+    name = "btrfs_filesystem_defragment";
+    style = RErr, [Pathname "path"], [OBool "flush"; OString "compress"];
+    proc_nr = Some 443;
+    optional = Some "btrfs"; camel_name = "BTRFSFilesystemDefragment";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_filesystem_defragment"; "/"; "true"; "lzo"]]), [];
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["touch"; "/hello"];
+         ["btrfs_filesystem_defragment"; "/hello"; ""; "zlib"]]), [];
+    ];
+    shortdesc = "defragment a file or directory";
+    longdesc = "\
+Defragment a file or directory on a btrfs filesystem. compress is one of zlib or lzo." };
+
+  { defaults with
+    name = "btrfs_rescue_chunk_recover";
+    style = RErr, [Device "device"], [];
+    proc_nr = Some 444;
+    optional = Some "btrfs"; camel_name = "BTRFSRescueChunkRecover";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["btrfs_rescue_chunk_recover"; "/dev/sda1"]]), [];
+    ];
+    shortdesc = "recover the chunk tree of btrfs filesystem";
+    longdesc = "\
+Recover the chunk tree of btrfs filesystem by scannning the devices one by one." };
+
+  { defaults with
+    name = "btrfs_rescue_super_recover";
+    style = RErr, [Device "device"], [];
+    proc_nr = Some 445;
+    optional = Some "btrfs"; camel_name = "BTRFSRescueSuperRecover";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["btrfs_rescue_super_recover"; "/dev/sda1"]]), [];
+    ];
+    shortdesc = "recover bad superblocks from good copies";
+    longdesc = "\
+Recover bad superblocks from good copies." };
 
 ]
 

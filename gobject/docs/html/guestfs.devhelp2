@@ -7,6 +7,7 @@
       <sub name="GuestfsTristate" link="guestfs-GuestfsTristate.html"/>
       <sub name="GuestfsApplication" link="GuestfsApplication.html"/>
       <sub name="GuestfsApplication2" link="GuestfsApplication2.html"/>
+      <sub name="GuestfsBTRFSQgroup" link="GuestfsBTRFSQgroup.html"/>
       <sub name="GuestfsBTRFSSubvolume" link="GuestfsBTRFSSubvolume.html"/>
       <sub name="GuestfsDirent" link="GuestfsDirent.html"/>
       <sub name="GuestfsHivexNode" link="GuestfsHivexNode.html"/>
@@ -30,6 +31,7 @@
       <sub name="GuestfsAddDrive" link="GuestfsAddDrive.html"/>
       <sub name="GuestfsAddDriveScratch" link="GuestfsAddDriveScratch.html"/>
       <sub name="GuestfsAddLibvirtDom" link="GuestfsAddLibvirtDom.html"/>
+      <sub name="GuestfsBTRFSFilesystemDefragment" link="GuestfsBTRFSFilesystemDefragment.html"/>
       <sub name="GuestfsBTRFSFilesystemResize" link="GuestfsBTRFSFilesystemResize.html"/>
       <sub name="GuestfsBtrfsFsck" link="GuestfsBtrfsFsck.html"/>
       <sub name="GuestfsBTRFSSubvolumeCreate" link="GuestfsBTRFSSubvolumeCreate.html"/>
@@ -136,18 +138,38 @@
     <keyword type="function" name="guestfs_session_blockdev_setra ()" link="GuestfsSession.html#guestfs-session-blockdev-setra"/>
     <keyword type="function" name="guestfs_session_blockdev_setro ()" link="GuestfsSession.html#guestfs-session-blockdev-setro"/>
     <keyword type="function" name="guestfs_session_blockdev_setrw ()" link="GuestfsSession.html#guestfs-session-blockdev-setrw"/>
+    <keyword type="function" name="guestfs_session_btrfs_balance_cancel ()" link="GuestfsSession.html#guestfs-session-btrfs-balance-cancel"/>
+    <keyword type="function" name="guestfs_session_btrfs_balance_pause ()" link="GuestfsSession.html#guestfs-session-btrfs-balance-pause"/>
+    <keyword type="function" name="guestfs_session_btrfs_balance_resume ()" link="GuestfsSession.html#guestfs-session-btrfs-balance-resume"/>
     <keyword type="function" name="guestfs_session_btrfs_device_add ()" link="GuestfsSession.html#guestfs-session-btrfs-device-add"/>
     <keyword type="function" name="guestfs_session_btrfs_device_delete ()" link="GuestfsSession.html#guestfs-session-btrfs-device-delete"/>
     <keyword type="function" name="guestfs_session_btrfs_filesystem_balance ()" link="GuestfsSession.html#guestfs-session-btrfs-filesystem-balance"/>
+    <keyword type="function" name="guestfs_session_btrfs_filesystem_defragment ()" link="GuestfsSession.html#guestfs-session-btrfs-filesystem-defragment"/>
     <keyword type="function" name="guestfs_session_btrfs_filesystem_resize ()" link="GuestfsSession.html#guestfs-session-btrfs-filesystem-resize"/>
     <keyword type="function" name="guestfs_session_btrfs_filesystem_sync ()" link="GuestfsSession.html#guestfs-session-btrfs-filesystem-sync"/>
     <keyword type="function" name="guestfs_session_btrfs_fsck ()" link="GuestfsSession.html#guestfs-session-btrfs-fsck"/>
+    <keyword type="function" name="guestfs_session_btrfs_qgroup_assign ()" link="GuestfsSession.html#guestfs-session-btrfs-qgroup-assign"/>
+    <keyword type="function" name="guestfs_session_btrfs_qgroup_create ()" link="GuestfsSession.html#guestfs-session-btrfs-qgroup-create"/>
+    <keyword type="function" name="guestfs_session_btrfs_qgroup_destroy ()" link="GuestfsSession.html#guestfs-session-btrfs-qgroup-destroy"/>
+    <keyword type="function" name="guestfs_session_btrfs_qgroup_limit ()" link="GuestfsSession.html#guestfs-session-btrfs-qgroup-limit"/>
+    <keyword type="function" name="guestfs_session_btrfs_qgroup_remove ()" link="GuestfsSession.html#guestfs-session-btrfs-qgroup-remove"/>
+    <keyword type="function" name="guestfs_session_btrfs_qgroup_show ()" link="GuestfsSession.html#guestfs-session-btrfs-qgroup-show"/>
+    <keyword type="function" name="guestfs_session_btrfs_quota_enable ()" link="GuestfsSession.html#guestfs-session-btrfs-quota-enable"/>
+    <keyword type="function" name="guestfs_session_btrfs_quota_rescan ()" link="GuestfsSession.html#guestfs-session-btrfs-quota-rescan"/>
+    <keyword type="function" name="guestfs_session_btrfs_rescue_chunk_recover ()" link="GuestfsSession.html#guestfs-session-btrfs-rescue-chunk-recover"/>
+    <keyword type="function" name="guestfs_session_btrfs_rescue_super_recover ()" link="GuestfsSession.html#guestfs-session-btrfs-rescue-super-recover"/>
+    <keyword type="function" name="guestfs_session_btrfs_scrub_cancel ()" link="GuestfsSession.html#guestfs-session-btrfs-scrub-cancel"/>
+    <keyword type="function" name="guestfs_session_btrfs_scrub_resume ()" link="GuestfsSession.html#guestfs-session-btrfs-scrub-resume"/>
+    <keyword type="function" name="guestfs_session_btrfs_scrub_start ()" link="GuestfsSession.html#guestfs-session-btrfs-scrub-start"/>
     <keyword type="function" name="guestfs_session_btrfs_set_seeding ()" link="GuestfsSession.html#guestfs-session-btrfs-set-seeding"/>
     <keyword type="function" name="guestfs_session_btrfs_subvolume_create ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-create"/>
     <keyword type="function" name="guestfs_session_btrfs_subvolume_delete ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-delete"/>
+    <keyword type="function" name="guestfs_session_btrfs_subvolume_get_default ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-get-default"/>
     <keyword type="function" name="guestfs_session_btrfs_subvolume_list ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-list"/>
     <keyword type="function" name="guestfs_session_btrfs_subvolume_set_default ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-set-default"/>
+    <keyword type="function" name="guestfs_session_btrfs_subvolume_show ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-show"/>
     <keyword type="function" name="guestfs_session_btrfs_subvolume_snapshot ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-snapshot"/>
+    <keyword type="function" name="guestfs_session_c_pointer ()" link="GuestfsSession.html#guestfs-session-c-pointer"/>
     <keyword type="function" name="guestfs_session_canonical_device_name ()" link="GuestfsSession.html#guestfs-session-canonical-device-name"/>
     <keyword type="function" name="guestfs_session_cap_get_file ()" link="GuestfsSession.html#guestfs-session-cap-get-file"/>
     <keyword type="function" name="guestfs_session_cap_set_file ()" link="GuestfsSession.html#guestfs-session-cap-set-file"/>
@@ -658,6 +680,7 @@
     <keyword type="enum" name="enum GuestfsTristate" link="guestfs-GuestfsTristate.html#GuestfsTristate"/>
     <keyword type="struct" name="struct GuestfsApplication" link="GuestfsApplication.html#GuestfsApplication-struct"/>
     <keyword type="struct" name="struct GuestfsApplication2" link="GuestfsApplication2.html#GuestfsApplication2-struct"/>
+    <keyword type="struct" name="struct GuestfsBTRFSQgroup" link="GuestfsBTRFSQgroup.html#GuestfsBTRFSQgroup-struct"/>
     <keyword type="struct" name="struct GuestfsBTRFSSubvolume" link="GuestfsBTRFSSubvolume.html#GuestfsBTRFSSubvolume-struct"/>
     <keyword type="struct" name="struct GuestfsDirent" link="GuestfsDirent.html#GuestfsDirent-struct"/>
     <keyword type="struct" name="struct GuestfsHivexNode" link="GuestfsHivexNode.html#GuestfsHivexNode-struct"/>
@@ -718,6 +741,11 @@
     <keyword type="property" name="The “live” property" link="GuestfsAddLibvirtDom.html#GuestfsAddLibvirtDom--live"/>
     <keyword type="property" name="The “readonly” property" link="GuestfsAddLibvirtDom.html#GuestfsAddLibvirtDom--readonly"/>
     <keyword type="property" name="The “readonlydisk” property" link="GuestfsAddLibvirtDom.html#GuestfsAddLibvirtDom--readonlydisk"/>
+    <keyword type="function" name="guestfs_btrfs_filesystem_defragment_new ()" link="GuestfsBTRFSFilesystemDefragment.html#guestfs-btrfs-filesystem-defragment-new"/>
+    <keyword type="struct" name="struct GuestfsBTRFSFilesystemDefragment" link="GuestfsBTRFSFilesystemDefragment.html#GuestfsBTRFSFilesystemDefragment-struct"/>
+    <keyword type="struct" name="struct GuestfsBTRFSFilesystemDefragmentClass" link="GuestfsBTRFSFilesystemDefragment.html#GuestfsBTRFSFilesystemDefragmentClass"/>
+    <keyword type="property" name="The “compress” property" link="GuestfsBTRFSFilesystemDefragment.html#GuestfsBTRFSFilesystemDefragment--compress"/>
+    <keyword type="property" name="The “flush” property" link="GuestfsBTRFSFilesystemDefragment.html#GuestfsBTRFSFilesystemDefragment--flush"/>
     <keyword type="function" name="guestfs_btrfs_filesystem_resize_new ()" link="GuestfsBTRFSFilesystemResize.html#guestfs-btrfs-filesystem-resize-new"/>
     <keyword type="struct" name="struct GuestfsBTRFSFilesystemResize" link="GuestfsBTRFSFilesystemResize.html#GuestfsBTRFSFilesystemResize-struct"/>
     <keyword type="struct" name="struct GuestfsBTRFSFilesystemResizeClass" link="GuestfsBTRFSFilesystemResize.html#GuestfsBTRFSFilesystemResizeClass"/>
@@ -982,6 +1010,7 @@
     <keyword type="property" name="The “blocksize” property" link="GuestfsMkfs.html#GuestfsMkfs--blocksize"/>
     <keyword type="property" name="The “features” property" link="GuestfsMkfs.html#GuestfsMkfs--features"/>
     <keyword type="property" name="The “inode” property" link="GuestfsMkfs.html#GuestfsMkfs--inode"/>
+    <keyword type="property" name="The “label” property" link="GuestfsMkfs.html#GuestfsMkfs--label"/>
     <keyword type="property" name="The “sectorsize” property" link="GuestfsMkfs.html#GuestfsMkfs--sectorsize"/>
     <keyword type="function" name="guestfs_mkfs_btrfs_new ()" link="GuestfsMkfsBtrfs.html#guestfs-mkfs-btrfs-new"/>
     <keyword type="struct" name="struct GuestfsMkfsBtrfs" link="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs-struct"/>

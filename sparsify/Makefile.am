@@ -1,5 +1,5 @@
 # libguestfs virt-sparsify tool
-# Copyright (C) 2011-2014 Red Hat Inc.
+# Copyright (C) 2011-2015 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,8 +33,8 @@ SOURCES_ML = \
 	sparsify.ml
 
 SOURCES_C = \
-	$(top_builddir)/fish/progress.c \
-	$(top_builddir)/mllib/progress-c.c \
+	$(top_srcdir)/fish/progress.c \
+	$(top_srcdir)/mllib/progress-c.c \
 	statvfs-c.c
 
 if HAVE_OCAML

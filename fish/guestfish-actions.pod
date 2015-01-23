@@ -5,7 +5,7 @@ libguestfs generated file
    generator/ *.ml
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
- Copyright (C) 2009-2014 Red Hat Inc.
+ Copyright (C) 2009-2015 Red Hat Inc.
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -986,6 +986,24 @@ Sets the block device named C<device> to read-write.
 
 This uses the L<blockdev(8)> command.
 
+=head2 btrfs-balance-cancel
+
+ btrfs-balance-cancel path
+
+Cancel a running balance on a btrfs filesystem.
+
+=head2 btrfs-balance-pause
+
+ btrfs-balance-pause path
+
+Pause a running balance on a btrfs filesystem.
+
+=head2 btrfs-balance-resume
+
+ btrfs-balance-resume path
+
+Resume a paused balance on a btrfs filesystem.
+
 =head2 btrfs-device-add
 
  btrfs-device-add 'devices ...' fs
@@ -1002,10 +1020,20 @@ If C<devices> is an empty list, this does nothing.
 
 =head2 btrfs-filesystem-balance
 
+=head2 btrfs-balance
+
  btrfs-filesystem-balance fs
 
 Balance the chunks in the btrfs filesystem mounted at C<fs>
 across the underlying devices.
+
+=head2 btrfs-filesystem-defragment
+
+ btrfs-filesystem-defragment path [flush:true|false] [compress:..]
+
+Defragment a file or directory on a btrfs filesystem. compress is one of zlib or lzo.
+
+This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 
 =head2 btrfs-filesystem-resize
 
@@ -1047,6 +1075,89 @@ filesystem is stored.
 
 This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 
+=head2 btrfs-qgroup-assign
+
+ btrfs-qgroup-assign src dst path
+
+Add qgroup C<src> to parent qgroup C<dst>. This command can group
+several qgroups into a parent qgroup to share common limit.
+
+=head2 btrfs-qgroup-create
+
+ btrfs-qgroup-create qgroupid subvolume
+
+Create a quota group (qgroup) for subvolume at C<subvolume>.
+
+=head2 btrfs-qgroup-destroy
+
+ btrfs-qgroup-destroy qgroupid subvolume
+
+Destroy a quota group.
+
+=head2 btrfs-qgroup-limit
+
+ btrfs-qgroup-limit subvolume size
+
+Limit the size of a subvolume which's path is C<subvolume>. C<size>
+can have suffix of G, M, or K. 
+
+=head2 btrfs-qgroup-remove
+
+ btrfs-qgroup-remove src dst path
+
+Remove qgroup C<src> from the parent qgroup C<dst>.
+
+=head2 btrfs-qgroup-show
+
+ btrfs-qgroup-show path
+
+Show all subvolume quota groups in a btrfs filesystem, inclding their
+usages.
+
+=head2 btrfs-quota-enable
+
+ btrfs-quota-enable fs true|false
+
+Enable or disable subvolume quota support for filesystem which contains C<path>.
+
+=head2 btrfs-quota-rescan
+
+ btrfs-quota-rescan fs
+
+Trash all qgroup numbers and scan the metadata again with the current config.
+
+=head2 btrfs-rescue-chunk-recover
+
+ btrfs-rescue-chunk-recover device
+
+Recover the chunk tree of btrfs filesystem by scannning the devices one by one.
+
+=head2 btrfs-rescue-super-recover
+
+ btrfs-rescue-super-recover device
+
+Recover bad superblocks from good copies.
+
+=head2 btrfs-scrub-cancel
+
+ btrfs-scrub-cancel path
+
+Cancel a running scrub on a btrfs filesystem.
+
+=head2 btrfs-scrub-resume
+
+ btrfs-scrub-resume path
+
+Resume a previously canceled or interrupted scrub on a btrfs filesystem.
+
+=head2 btrfs-scrub-start
+
+ btrfs-scrub-start path
+
+Reads all the data and metadata on the filesystem, and uses checksums
+and the duplicate copies from RAID storage to identify and repair any
+corrupt data.
+
 =head2 btrfs-set-seeding
 
  btrfs-set-seeding device true|false
@@ -1073,6 +1184,12 @@ This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 
 Delete the named btrfs subvolume or snapshot.
 
+=head2 btrfs-subvolume-get-default
+
+ btrfs-subvolume-get-default fs
+
+Get the default subvolume or snapshot of a filesystem mounted at C<mountpoint>.
+
 =head2 btrfs-subvolume-list
 
  btrfs-subvolume-list fs
@@ -1087,6 +1204,12 @@ which is mounted at C<fs>.
 Set the subvolume of the btrfs filesystem C<fs> which will
 be mounted by default.  See L</btrfs-subvolume-list> to
 get a list of subvolumes.
+
+=head2 btrfs-subvolume-show
+
+ btrfs-subvolume-show subvolume
+
+Return detailed information of the subvolume.
 
 =head2 btrfs-subvolume-snapshot
 
@@ -1103,6 +1226,14 @@ optional parameter C<qgroupid> represents the qgroup which the
 newly created snapshot will be added to.
 
 This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
+
+=head2 c-pointer
+
+ c-pointer
+
+In non-C language bindings, this allows you to retrieve the underlying
+C pointer to the handle (ie. L</h *>).  The purpose of this is
+to allow other libraries to interwork with libguestfs.
 
 =head2 canonical-device-name
 
@@ -3589,8 +3720,8 @@ See also L</inspect-get-filesystems>.
 This function and L</inspect-get-package-management> return
 the package format and package management tool used by the
 inspected operating system.  For example for Fedora these
-functions would return C<rpm> (package format) and
-C<yum> (package management).
+functions would return C<rpm> (package format), and
+C<yum> or C<dnf> (package management).
 
 This returns the string C<unknown> if we could not determine the
 package format I<or> if the operating system does not have
@@ -3609,14 +3740,14 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 L</inspect-get-package-format> and this function return
 the package format and package management tool used by the
 inspected operating system.  For example for Fedora these
-functions would return C<rpm> (package format) and
-C<yum> (package management).
+functions would return C<rpm> (package format), and
+C<yum> or C<dnf> (package management).
 
 This returns the string C<unknown> if we could not determine the
 package management tool I<or> if the operating system does not have
 a real packaging system (eg. Windows).
 
-Possible strings include: C<yum>, C<up2date>,
+Possible strings include: C<yum>, C<dnf>, C<up2date>,
 C<apt> (for all Debian derivatives),
 C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>.
 Future versions of libguestfs may return other strings.
@@ -4040,6 +4171,10 @@ with the given C<path> name.
 If the optional flag C<followsymlinks> is true, then a symlink
 (or chain of symlinks) that ends with a block device also causes the
 function to return true.
+
+This call only looks at files within the guest filesystem.  Libguestfs
+partitions and block devices (eg. C</dev/sda>) cannot be used as the
+C<path> parameter of this call.
 
 See also L</stat>.
 
@@ -5309,13 +5444,16 @@ This call creates a FIFO (named pipe) called C<path> with
 mode C<mode>.  It is just a convenient wrapper around
 L</mknod>.
 
+Unlike with L</mknod>, C<mode> B<must> contain only permissions
+bits.
+
 The mode actually set is affected by the umask.
 
 =head2 mkfs
 
 =head2 mkfs-opts
 
- mkfs fstype device [blocksize:N] [features:..] [inode:N] [sectorsize:N]
+ mkfs fstype device [blocksize:N] [features:..] [inode:N] [sectorsize:N] [label:..]
 
 This function creates a filesystem on C<device>.  The filesystem
 type is C<fstype>, for example C<ext3>.
@@ -5474,6 +5612,9 @@ This call creates a block device node called C<path> with
 mode C<mode> and device major/minor C<devmajor> and C<devminor>.
 It is just a convenient wrapper around L</mknod>.
 
+Unlike with L</mknod>, C<mode> B<must> contain only permissions
+bits.
+
 The mode actually set is affected by the umask.
 
 =head2 mknod-c
@@ -5483,6 +5624,9 @@ The mode actually set is affected by the umask.
 This call creates a char device node called C<path> with
 mode C<mode> and device major/minor C<devmajor> and C<devminor>.
 It is just a convenient wrapper around L</mknod>.
+
+Unlike with L</mknod>, C<mode> B<must> contain only permissions
+bits.
 
 The mode actually set is affected by the umask.
 
@@ -6153,7 +6297,7 @@ See also L</part-to-dev>.
  ping-daemon
 
 This is a test probe into the guestfs daemon running inside
-the hypervisor.  Calling this function checks that the
+the libguestfs appliance.  Calling this function checks that the
 daemon responds to the ping message, without affecting the daemon
 or attached block device(s) in any other way.
 

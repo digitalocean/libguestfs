@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -172,18 +172,38 @@ gboolean guestfs_session_blockdev_setbsz (GuestfsSession *session, const gchar *
 gboolean guestfs_session_blockdev_setra (GuestfsSession *session, const gchar *device, gint32 sectors, GError **err);
 gboolean guestfs_session_blockdev_setro (GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_blockdev_setrw (GuestfsSession *session, const gchar *device, GError **err);
+gboolean guestfs_session_btrfs_balance_cancel (GuestfsSession *session, const gchar *path, GError **err);
+gboolean guestfs_session_btrfs_balance_pause (GuestfsSession *session, const gchar *path, GError **err);
+gboolean guestfs_session_btrfs_balance_resume (GuestfsSession *session, const gchar *path, GError **err);
 gboolean guestfs_session_btrfs_device_add (GuestfsSession *session, gchar *const *devices, const gchar *fs, GError **err);
 gboolean guestfs_session_btrfs_device_delete (GuestfsSession *session, gchar *const *devices, const gchar *fs, GError **err);
 gboolean guestfs_session_btrfs_filesystem_balance (GuestfsSession *session, const gchar *fs, GError **err);
+gboolean guestfs_session_btrfs_filesystem_defragment (GuestfsSession *session, const gchar *path, GuestfsBTRFSFilesystemDefragment *optargs, GError **err);
 gboolean guestfs_session_btrfs_filesystem_resize (GuestfsSession *session, const gchar *mountpoint, GuestfsBTRFSFilesystemResize *optargs, GError **err);
 gboolean guestfs_session_btrfs_filesystem_sync (GuestfsSession *session, const gchar *fs, GError **err);
 gboolean guestfs_session_btrfs_fsck (GuestfsSession *session, const gchar *device, GuestfsBtrfsFsck *optargs, GError **err);
+gboolean guestfs_session_btrfs_qgroup_assign (GuestfsSession *session, const gchar *src, const gchar *dst, const gchar *path, GError **err);
+gboolean guestfs_session_btrfs_qgroup_create (GuestfsSession *session, const gchar *qgroupid, const gchar *subvolume, GError **err);
+gboolean guestfs_session_btrfs_qgroup_destroy (GuestfsSession *session, const gchar *qgroupid, const gchar *subvolume, GError **err);
+gboolean guestfs_session_btrfs_qgroup_limit (GuestfsSession *session, const gchar *subvolume, gint64 size, GError **err);
+gboolean guestfs_session_btrfs_qgroup_remove (GuestfsSession *session, const gchar *src, const gchar *dst, const gchar *path, GError **err);
+GuestfsBTRFSQgroup **guestfs_session_btrfs_qgroup_show (GuestfsSession *session, const gchar *path, GError **err);
+gboolean guestfs_session_btrfs_quota_enable (GuestfsSession *session, const gchar *fs, gboolean enable, GError **err);
+gboolean guestfs_session_btrfs_quota_rescan (GuestfsSession *session, const gchar *fs, GError **err);
+gboolean guestfs_session_btrfs_rescue_chunk_recover (GuestfsSession *session, const gchar *device, GError **err);
+gboolean guestfs_session_btrfs_rescue_super_recover (GuestfsSession *session, const gchar *device, GError **err);
+gboolean guestfs_session_btrfs_scrub_cancel (GuestfsSession *session, const gchar *path, GError **err);
+gboolean guestfs_session_btrfs_scrub_resume (GuestfsSession *session, const gchar *path, GError **err);
+gboolean guestfs_session_btrfs_scrub_start (GuestfsSession *session, const gchar *path, GError **err);
 gboolean guestfs_session_btrfs_set_seeding (GuestfsSession *session, const gchar *device, gboolean seeding, GError **err);
 gboolean guestfs_session_btrfs_subvolume_create (GuestfsSession *session, const gchar *dest, GuestfsBTRFSSubvolumeCreate *optargs, GError **err);
 gboolean guestfs_session_btrfs_subvolume_delete (GuestfsSession *session, const gchar *subvolume, GError **err);
+gint64 guestfs_session_btrfs_subvolume_get_default (GuestfsSession *session, const gchar *fs, GError **err);
 GuestfsBTRFSSubvolume **guestfs_session_btrfs_subvolume_list (GuestfsSession *session, const gchar *fs, GError **err);
 gboolean guestfs_session_btrfs_subvolume_set_default (GuestfsSession *session, gint64 id, const gchar *fs, GError **err);
+GHashTable *guestfs_session_btrfs_subvolume_show (GuestfsSession *session, const gchar *subvolume, GError **err);
 gboolean guestfs_session_btrfs_subvolume_snapshot (GuestfsSession *session, const gchar *source, const gchar *dest, GuestfsBTRFSSubvolumeSnapshot *optargs, GError **err);
+gint64 guestfs_session_c_pointer (GuestfsSession *session, GError **err);
 gchar *guestfs_session_canonical_device_name (GuestfsSession *session, const gchar *device, GError **err);
 gchar *guestfs_session_cap_get_file (GuestfsSession *session, const gchar *path, GError **err);
 gboolean guestfs_session_cap_set_file (GuestfsSession *session, const gchar *path, const gchar *cap, GError **err);

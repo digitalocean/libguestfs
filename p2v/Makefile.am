@@ -1,5 +1,5 @@
 # libguestfs virt-p2v
-# Copyright (C) 2009-2014 Red Hat Inc.
+# Copyright (C) 2009-2015 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -44,10 +44,10 @@ libexec_PROGRAMS = virt-p2v
 # Note that miniexpect comes from here:
 # http://git.annexia.org/?p=miniexpect.git;a=summary
 virt_p2v_SOURCES = \
-	authors.c \
+	about-authors.c \
+	about-license.c \
 	config.c \
 	conversion.c \
-	copying.c \
 	gui.c \
 	kernel.c \
 	main.c \

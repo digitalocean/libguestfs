@@ -66,13 +66,17 @@ Calling any function/method on a closed handle raises
 C<Guestfs.Handle_closed>.  The single parameter is the name of the function
 that you called.
 
-=head1 例 1: ディスクイメージの作成
+=head1 例: ディスクイメージの作成
 
-@EXAMPLE1@
+@CREATE_DISK@
 
-=head1 例 2: 仮想マシンのディスクイメージの検査
+=head1 例: 仮想マシンのディスクイメージの検査
 
-@EXAMPLE2@
+@INSPECT_VM@
+
+=head1 例: デバッグおよびロギングの有効化
+
+@DEBUG_LOGGING@
 
 =head1 関連項目
 

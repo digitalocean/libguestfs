@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9889,8 +9889,9 @@ mkfs_stub (XDR *xdr_in)
   const char *features;
   int inode;
   int sectorsize;
+  const char *label;
 
-  if (optargs_bitmask & UINT64_C(0xfffffffffffffff0)) {
+  if (optargs_bitmask & UINT64_C(0xffffffffffffffe0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
@@ -9907,8 +9908,9 @@ mkfs_stub (XDR *xdr_in)
   features = args.features;
   inode = args.inode;
   sectorsize = args.sectorsize;
+  label = args.label;
 
-  r = do_mkfs (fstype, device, blocksize, features, inode, sectorsize);
+  r = do_mkfs (fstype, device, blocksize, features, inode, sectorsize, label);
   if (r == -1)
     /* do_mkfs has already called reply_with_error */
     goto done;
@@ -15645,6 +15647,789 @@ done_no_free:
   return;
 }
 
+static void
+btrfs_subvolume_get_default_stub (XDR *xdr_in)
+{
+  int64_t r;
+  struct guestfs_btrfs_subvolume_get_default_args args;
+  CLEANUP_FREE_MOUNTABLE mountable_t fs
+      = { .device = NULL, .volume = NULL };
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_subvolume_get_default_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  REQUIRE_ROOT_OR_RESOLVE_MOUNTABLE (args.fs, fs, , goto done);
+
+  r = do_btrfs_subvolume_get_default (&fs);
+  if (r == -1)
+    /* do_btrfs_subvolume_get_default has already called reply_with_error */
+    goto done;
+
+  struct guestfs_btrfs_subvolume_get_default_ret ret;
+  ret.id = r;
+  reply ((xdrproc_t) &xdr_guestfs_btrfs_subvolume_get_default_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_subvolume_get_default_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_subvolume_show_stub (XDR *xdr_in)
+{
+  char **r;
+  struct guestfs_btrfs_subvolume_show_args args;
+  const char *subvolume;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_subvolume_show_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  subvolume = args.subvolume;
+  ABS_PATH (subvolume, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_subvolume_show (subvolume);
+  if (r == NULL)
+    /* do_btrfs_subvolume_show has already called reply_with_error */
+    goto done;
+
+  struct guestfs_btrfs_subvolume_show_ret ret;
+  ret.btrfssubvolumeinfo.btrfssubvolumeinfo_len = count_strings (r);
+  ret.btrfssubvolumeinfo.btrfssubvolumeinfo_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_btrfs_subvolume_show_ret, (char *) &ret);
+  free_strings (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_subvolume_show_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_quota_enable_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_quota_enable_args args;
+  CLEANUP_FREE_MOUNTABLE mountable_t fs
+      = { .device = NULL, .volume = NULL };
+  int enable;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_quota_enable_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  REQUIRE_ROOT_OR_RESOLVE_MOUNTABLE (args.fs, fs, , goto done);
+  enable = args.enable;
+
+  r = do_btrfs_quota_enable (&fs, enable);
+  if (r == -1)
+    /* do_btrfs_quota_enable has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_quota_enable_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_quota_rescan_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_quota_rescan_args args;
+  CLEANUP_FREE_MOUNTABLE mountable_t fs
+      = { .device = NULL, .volume = NULL };
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_quota_rescan_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  REQUIRE_ROOT_OR_RESOLVE_MOUNTABLE (args.fs, fs, , goto done);
+
+  r = do_btrfs_quota_rescan (&fs);
+  if (r == -1)
+    /* do_btrfs_quota_rescan has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_quota_rescan_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_qgroup_limit_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_qgroup_limit_args args;
+  const char *subvolume;
+  int64_t size;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_qgroup_limit_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  subvolume = args.subvolume;
+  ABS_PATH (subvolume, , goto done);
+  size = args.size;
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_qgroup_limit (subvolume, size);
+  if (r == -1)
+    /* do_btrfs_qgroup_limit has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_qgroup_limit_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_qgroup_create_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_qgroup_create_args args;
+  const char *qgroupid;
+  const char *subvolume;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_qgroup_create_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  qgroupid = args.qgroupid;
+  subvolume = args.subvolume;
+  ABS_PATH (subvolume, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_qgroup_create (qgroupid, subvolume);
+  if (r == -1)
+    /* do_btrfs_qgroup_create has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_qgroup_create_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_qgroup_destroy_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_qgroup_destroy_args args;
+  const char *qgroupid;
+  const char *subvolume;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_qgroup_destroy_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  qgroupid = args.qgroupid;
+  subvolume = args.subvolume;
+  ABS_PATH (subvolume, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_qgroup_destroy (qgroupid, subvolume);
+  if (r == -1)
+    /* do_btrfs_qgroup_destroy has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_qgroup_destroy_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_qgroup_show_stub (XDR *xdr_in)
+{
+  guestfs_int_btrfsqgroup_list *r;
+  struct guestfs_btrfs_qgroup_show_args args;
+  const char *path;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_qgroup_show_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_qgroup_show (path);
+  if (r == NULL)
+    /* do_btrfs_qgroup_show has already called reply_with_error */
+    goto done;
+
+  struct guestfs_btrfs_qgroup_show_ret ret;
+  ret.qgroups = *r;
+  free (r);
+  reply ((xdrproc_t) xdr_guestfs_btrfs_qgroup_show_ret, (char *) &ret);
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_qgroup_show_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_qgroup_show_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_qgroup_assign_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_qgroup_assign_args args;
+  const char *src;
+  const char *dst;
+  const char *path;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_qgroup_assign_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  src = args.src;
+  dst = args.dst;
+  path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_qgroup_assign (src, dst, path);
+  if (r == -1)
+    /* do_btrfs_qgroup_assign has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_qgroup_assign_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_qgroup_remove_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_qgroup_remove_args args;
+  const char *src;
+  const char *dst;
+  const char *path;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_qgroup_remove_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  src = args.src;
+  dst = args.dst;
+  path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_qgroup_remove (src, dst, path);
+  if (r == -1)
+    /* do_btrfs_qgroup_remove has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_qgroup_remove_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_scrub_start_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_scrub_start_args args;
+  const char *path;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_scrub_start_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_scrub_start (path);
+  if (r == -1)
+    /* do_btrfs_scrub_start has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_scrub_start_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_scrub_cancel_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_scrub_cancel_args args;
+  const char *path;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_scrub_cancel_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_scrub_cancel (path);
+  if (r == -1)
+    /* do_btrfs_scrub_cancel has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_scrub_cancel_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_scrub_resume_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_scrub_resume_args args;
+  const char *path;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_scrub_resume_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_scrub_resume (path);
+  if (r == -1)
+    /* do_btrfs_scrub_resume has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_scrub_resume_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_balance_pause_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_balance_pause_args args;
+  const char *path;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_balance_pause_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_balance_pause (path);
+  if (r == -1)
+    /* do_btrfs_balance_pause has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_balance_pause_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_balance_cancel_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_balance_cancel_args args;
+  const char *path;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_balance_cancel_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_balance_cancel (path);
+  if (r == -1)
+    /* do_btrfs_balance_cancel has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_balance_cancel_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_balance_resume_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_balance_resume_args args;
+  const char *path;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_balance_resume_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_balance_resume (path);
+  if (r == -1)
+    /* do_btrfs_balance_resume has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_balance_resume_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_filesystem_defragment_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_filesystem_defragment_args args;
+  const char *path;
+  int flush;
+  const char *compress;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffc)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_filesystem_defragment_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+  flush = args.flush;
+  compress = args.compress;
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_filesystem_defragment (path, flush, compress);
+  if (r == -1)
+    /* do_btrfs_filesystem_defragment has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_filesystem_defragment_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_rescue_chunk_recover_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_rescue_chunk_recover_args args;
+  CLEANUP_FREE char *device = NULL;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_rescue_chunk_recover_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.device, device, , goto done);
+
+  r = do_btrfs_rescue_chunk_recover (device);
+  if (r == -1)
+    /* do_btrfs_rescue_chunk_recover has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_rescue_chunk_recover_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_rescue_super_recover_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_rescue_super_recover_args args;
+  CLEANUP_FREE char *device = NULL;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_rescue_super_recover_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.device, device, , goto done);
+
+  r = do_btrfs_rescue_super_recover (device);
+  if (r == -1)
+    /* do_btrfs_rescue_super_recover has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_rescue_super_recover_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -16889,6 +17674,63 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_BLOCKDEV_SETRA:
       blockdev_setra_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_SUBVOLUME_GET_DEFAULT:
+      btrfs_subvolume_get_default_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_SUBVOLUME_SHOW:
+      btrfs_subvolume_show_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_QUOTA_ENABLE:
+      btrfs_quota_enable_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_QUOTA_RESCAN:
+      btrfs_quota_rescan_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_QGROUP_LIMIT:
+      btrfs_qgroup_limit_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_QGROUP_CREATE:
+      btrfs_qgroup_create_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_QGROUP_DESTROY:
+      btrfs_qgroup_destroy_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_QGROUP_SHOW:
+      btrfs_qgroup_show_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_QGROUP_ASSIGN:
+      btrfs_qgroup_assign_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_QGROUP_REMOVE:
+      btrfs_qgroup_remove_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_SCRUB_START:
+      btrfs_scrub_start_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_SCRUB_CANCEL:
+      btrfs_scrub_cancel_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_SCRUB_RESUME:
+      btrfs_scrub_resume_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_BALANCE_PAUSE:
+      btrfs_balance_pause_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_BALANCE_CANCEL:
+      btrfs_balance_cancel_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_BALANCE_RESUME:
+      btrfs_balance_resume_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_FILESYSTEM_DEFRAGMENT:
+      btrfs_filesystem_defragment_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_RESCUE_CHUNK_RECOVER:
+      btrfs_rescue_chunk_recover_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_RESCUE_SUPER_RECOVER:
+      btrfs_rescue_super_recover_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

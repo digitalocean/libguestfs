@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -9080,6 +9080,239 @@ guestfs_lstatns (guestfs_h *g,
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "lstatns");
     fprintf (trace_buffer.fp, "<struct guestfs_statns *>");
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_btrfs_qgroup_destroy (guestfs_h *g,
+                              const char *qgroupid,
+                              const char *subvolume)
+{
+  struct guestfs_btrfs_qgroup_destroy_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "btrfs_qgroup_destroy", 20);
+  if (qgroupid == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfs_qgroup_destroy", "qgroupid");
+    return -1;
+  }
+  if (subvolume == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfs_qgroup_destroy", "subvolume");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "btrfs_qgroup_destroy");
+    fprintf (trace_buffer.fp, " \"%s\"", qgroupid);
+    fprintf (trace_buffer.fp, " \"%s\"", subvolume);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "btrfs_qgroup_destroy") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_qgroup_destroy", "-1");
+    return -1;
+  }
+
+  args.qgroupid = (char *) qgroupid;
+  args.subvolume = (char *) subvolume;
+  serial = guestfs___send (g, GUESTFS_PROC_BTRFS_QGROUP_DESTROY,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_btrfs_qgroup_destroy_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_qgroup_destroy", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "btrfs_qgroup_destroy", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_qgroup_destroy", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_BTRFS_QGROUP_DESTROY, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_qgroup_destroy", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_qgroup_destroy", "-1");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "btrfs_qgroup_destroy", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "btrfs_qgroup_destroy",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "btrfs_qgroup_destroy");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_btrfs_filesystem_defragment_argv (guestfs_h *g,
+                                          const char *path,
+                                          const struct guestfs_btrfs_filesystem_defragment_argv *optargs)
+{
+  struct guestfs_btrfs_filesystem_defragment_argv optargs_null;
+  if (!optargs) {
+    optargs_null.bitmask = 0;
+    optargs = &optargs_null;
+  }
+
+  struct guestfs_btrfs_filesystem_defragment_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "btrfs_filesystem_defragment", 27);
+  if (path == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfs_filesystem_defragment", "path");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK) &&
+      optargs->compress == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "btrfs_filesystem_defragment", "compress");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffffc)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "btrfs_filesystem_defragment", "btrfs_filesystem_defragment");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "btrfs_filesystem_defragment");
+    fprintf (trace_buffer.fp, " \"%s\"", path);
+    if (optargs->bitmask & GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "flush", optargs->flush ? "true" : "false");
+    }
+    if (optargs->bitmask & GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "compress", optargs->compress);
+    }
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "btrfs_filesystem_defragment") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_filesystem_defragment", "-1");
+    return -1;
+  }
+
+  args.path = (char *) path;
+  if (optargs->bitmask & GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK) {
+    args.flush = optargs->flush;
+  } else {
+    args.flush = 0;
+  }
+  if (optargs->bitmask & GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK) {
+    args.compress = (char *) optargs->compress;
+  } else {
+    args.compress = (char *) "";
+  }
+  serial = guestfs___send (g, GUESTFS_PROC_BTRFS_FILESYSTEM_DEFRAGMENT,
+                           progress_hint, optargs->bitmask,
+                           (xdrproc_t) xdr_guestfs_btrfs_filesystem_defragment_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_filesystem_defragment", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "btrfs_filesystem_defragment", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_filesystem_defragment", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_BTRFS_FILESYSTEM_DEFRAGMENT, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_filesystem_defragment", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_filesystem_defragment", "-1");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "btrfs_filesystem_defragment", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "btrfs_filesystem_defragment",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "btrfs_filesystem_defragment");
+    fprintf (trace_buffer.fp, "%d", ret_v);
     guestfs___trace_send_line (g, &trace_buffer);
   }
 

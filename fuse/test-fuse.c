@@ -1,5 +1,5 @@
 /* Test FUSE.
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -658,6 +658,7 @@ test_fuse (void)
       fprintf (stderr, "unexpected acl: %s\n", acl_text);
       return -1;
     }
+    acl_free (acl_text);
     acl_free (acl);
   }
 #endif

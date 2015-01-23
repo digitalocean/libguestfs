@@ -43,6 +43,11 @@ GuestfsMkfs
 
 </para>
 
+<!-- ##### ARG GuestfsMkfs:label ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GuestfsMkfs:sectorsize ##### -->
 <para>
 

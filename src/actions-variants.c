@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -321,6 +321,60 @@ guestfs_add_libvirt_dom_va (guestfs_h *g,
   }
 
   return guestfs_add_libvirt_dom_argv (g, dom, optargs);
+}
+
+int
+guestfs_btrfs_filesystem_defragment (guestfs_h *g,
+                                     const char *path,
+                                     ...)
+{
+  va_list optargs;
+
+  int r;
+
+  va_start (optargs, path);
+  r = guestfs_btrfs_filesystem_defragment_va (g, path, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_btrfs_filesystem_defragment_va (guestfs_h *g,
+                                        const char *path,
+                                        va_list args)
+{
+  struct guestfs_btrfs_filesystem_defragment_argv optargs_s;
+  struct guestfs_btrfs_filesystem_defragment_argv *optargs = &optargs_s;
+  int i;
+  uint64_t i_mask;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH:
+      optargs_s.flush = va_arg (args, int);
+      break;
+    case GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS:
+      optargs_s.compress = va_arg (args, const char *);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "btrfs_filesystem_defragment", i);
+      return -1;
+    }
+
+    i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "btrfs_filesystem_defragment");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_btrfs_filesystem_defragment_argv (g, path, optargs);
 }
 
 int
@@ -2394,6 +2448,9 @@ guestfs_mkfs_opts_va (guestfs_h *g,
       break;
     case GUESTFS_MKFS_OPTS_SECTORSIZE:
       optargs_s.sectorsize = va_arg (args, int);
+      break;
+    case GUESTFS_MKFS_OPTS_LABEL:
+      optargs_s.label = va_arg (args, const char *);
       break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",

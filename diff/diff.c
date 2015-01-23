@@ -94,7 +94,7 @@ usage (int status)
   else {
     fprintf (stdout,
            _("%s: list differences between virtual machines\n"
-             "Copyright (C) 2010-2014 Red Hat Inc.\n"
+             "Copyright (C) 2010-2015 Red Hat Inc.\n"
              "Usage:\n"
              "  %s [--options] -d domain1 -D domain2\n"
              "  %s [--options] -a disk1.img -A disk2.img [-a|-A ...]\n"
@@ -608,7 +608,7 @@ static void
 deleted (guestfs_h *g, struct file *file)
 {
   output_start_line ();
-  output_string ("+");
+  output_string ("-");
   output_file (g, file);
   output_end_line ();
 }
@@ -669,7 +669,7 @@ changed (guestfs_h *g1, struct file *file1,
     output_end_line ();
     output_start_line ();
     output_string ("+");
-    output_file (g1, file1);
+    output_file (g2, file2);
     output_end_line ();
 
     /* Display stats fields that changed. */

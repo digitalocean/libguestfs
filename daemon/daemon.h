@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -261,6 +261,12 @@ extern int copy_xattrs (const char *src, const char *dest);
 extern char *debug_bmap (const char *subcmd, size_t argc, char *const *const argv);
 extern char *debug_bmap_file (const char *subcmd, size_t argc, char *const *const argv);
 extern char *debug_bmap_device (const char *subcmd, size_t argc, char *const *const argv);
+
+/*-- in btrfs.c --*/
+extern char *btrfs_get_label (const char *device);
+
+/*-- in ntfs.c --*/
+extern char *ntfs_get_label (const char *device);
 
 /* ordinary daemon functions use these to indicate errors
  * NB: you don't need to prefix the string with the current command,

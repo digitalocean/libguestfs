@@ -1,3 +1,1052 @@
+commit 34b118a25a726e30efddee94947e84d2b5a5c26c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 21 20:45:17 2015 +0000
+
+    Version 1.29.22.
+
+commit d4c8433e6e6525c9b83e28878c412c17c7b2aece
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:47 2015 +0800
+
+    New API: add btrfs_rescue_super_recover
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 15c75eaace30d6c8786532482eb040071a3f28ec
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:46 2015 +0800
+
+    New API: add btrfs_rescue_chunk_recover
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit e32b59c926eb480913140a57e1ec501cf44726b5
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:45 2015 +0800
+
+    New API: add btrfs_filesystem_defragment
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit fd7df408d16a484f9d2607e1404aaccc44408fbb
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:42 2015 +0800
+
+    New API: btrfs_balance_resume
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit a72204bde771fdd1016fb00b4be59af559cf2d02
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:41 2015 +0800
+
+    New API: btrfs_balance_cancel
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 9f11ddd29e6291445a8994d5bd89139c0e75ad78
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:40 2015 +0800
+
+    New API: btrfs_balance_pause
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 47f0336e09faf49ec68cdd389fc1a07907b43211
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:39 2015 +0800
+
+    btrfs: replace "btrfs filesystem balance" with "btrfs balance"
+    
+    "btrfs filesystem balance" is deprecated in favor of "btrfs balance".
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 9e6122265edc287f70217dc159362b17af7f6d71
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:38 2015 +0800
+
+    New API: btrfs_scrub_resume
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 55bfd127d4ef6a83e042db58369075e12ee668ef
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:37 2015 +0800
+
+    New API: btrfs_scrub_cancel
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit a4d6cc525a1406d76873e9e4605ae37f21a11b56
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:36 2015 +0800
+
+    New API: btrfs_scrub
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 7e4b7a346a4558a02aeb58f82d518509ce6e5d03
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 21 05:37:56 2015 -0500
+
+    aarch64: launch: libvirt: As a workaround, pass -cpu parameter to qemu.
+    
+    When libguestfs is running using TCG on aarch64, we need to pass the
+    -cpu cortex-a57 parameter to qemu.  Libvirt doesn't let us do this,
+    complaining "Unable to find CPU definition".
+    
+    As a temporary workaround only, use <qemu:commandline> to pass this
+    argument directly to qemu.  When libvirt is fixed we can remove this
+    hack.
+    
+    This is a workaround for libvirt bug RHBZ#1184411.
+    
+    See:
+    https://www.redhat.com/archives/libvirt-users/2014-August/msg00043.html
+    https://bugzilla.redhat.com/show_bug.cgi?id=1184411
+
+commit 7dc837c7be84936690f4f613fea82dba4787ceec
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 21 05:10:37 2015 -0500
+
+    aarch64: appliance: Use AAVMF (UEFI) if available for running the appliance.
+    
+    AAVMF is an open source UEFI implementation for aarch64 based on OVMF.
+    As aarch64 is heading for requiring UEFI even inside guests, if the
+    AAVMF firmware is installed on the host, use it as a hint that we
+    should boot the guest using AAVMF instead of the default "empty
+    machine".
+    
+    Note this requires very recent AAVMF, libvirt, qemu.  However that's
+    OK since it's only applicable to aarch64.  On non-aarch64, this patch
+    does nothing.
+    
+    Thanks: Laszlo Ersek for a lot of help getting this right.
+
+commit cb0c2c33576aa601e308c6bf53b9d989dc6f62fc
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 20 16:23:12 2015 +0100
+
+    launch: libvirt: do not leak the backend string on error
+    
+    Make sure to free the backend string after using it.
+
+commit bff99cec4df3916f2fc33e628223cdd3df2c3829
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 20 14:35:36 2015 +0100
+
+    fish: remove extra "prompt" checks
+    
+    The code is already within a "if (prompt) {...}" block, so checking for
+    "prompt" again is redundant.
+
+commit 7618e41d33e731f6392d783510705492cbf82eef
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 20 14:09:36 2015 +0100
+
+    daemon: readdir: fix invalid memory access on error
+    
+    If "strdup (d->d_name)" fails with "i" > 0, then both "p" and
+    "ret->guestfs_int_dirent_list_val" are non-null pointers, but the latter
+    is no more valid (since "p" is the new realloc'ed buffer). Hence, trying
+    to free both will access to invalid memory.
+    
+    Make sure to free only one of them, "p" if not null or
+    "ret->guestfs_int_dirent_list_val" otherwise.
+
+commit 0eedddad2f02d687c58d5875d258ace1417885f1
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 20 16:08:38 2015 +0100
+
+    fuse: test-fuse: free "acl_text"
+    
+    Make sure to free the buffer returned by acl_to_any_text.
+
+commit 91c34ff8ff59a45accf179394257e36cff6a30e9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 20 09:42:12 2015 +0000
+
+    p2v: Fix wait_qemu_nbd to use getaddrinfo.
+    
+    wait_qemu_nbd would fail in Rawhide where /etc/hosts contains:
+    
+      127.0.0.1   localhost [...]
+      ::1         localhost [...]
+    
+    This peculiar mapping caused qemu-nbd to always select an IPv6
+    address.  However since we used the obsolete inet_pton function and
+    forced AF_INET, we were always trying to connect to the IPv4
+    localhost.
+    
+    As this was never going to work anyway, fix the code to use
+    getaddrinfo to resolve "localhost", and use a loop to connect to all
+    possible addresses.
+    
+    Also: Add a short sleep in the reconnection loop so that we don't
+    hammer the qemu-nbd server while it is starting up.
+
+commit 0b54e111e42a4433064a4167f29081d870cb0ad7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 20 07:58:34 2015 +0000
+
+    p2v: Move debug message earlier.
+    
+    This ensures we can see the port numbers even when the
+    connection fails.
+
+commit 3ca0ce45af50da5322087b4d4faf5b7c5a7773c7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 20 07:45:18 2015 +0000
+
+    p2v: Correct garbled comments in test script.
+
+commit f45b6928c5339321dc99ef66ca9fe93e10e1580d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 20 07:35:11 2015 +0000
+
+    aarch64: python: Skip test that requires IDE.
+    
+    This test launches a dummy guest using IDE.  Aarch64 doesn't support
+    IDE, and because it also doesn't support PCI (virtio-mmio instead)
+    it's hard to formulate libvirt XML that will work on both x86 and
+    virtio-mmio.
+    
+    Since this bug is not architecture specific (RHBZ#912499), skip it on
+    non-x86.  The test will print:
+    
+      skipping test: arch is not x86 and does not support IDE
+
+commit 9bf6f7f0561507e9d90fe95c2f37e9227e0bcea6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 19 19:19:12 2015 +0000
+
+    Version 1.29.21.
+
+commit cfc142399f78200f520768b111a1fa7178aee305
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jan 19 16:20:44 2015 +0100
+
+    gobject: fix printf conversion specifier
+    
+    Use PRIu64 to correctly handle uint64_t.
+
+commit 52528729f6484897c42c899f5ab4fd6cbcd1eabe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 19 16:05:41 2015 +0000
+
+    gcc5: test-tool: Initialize local variable.
+    
+    gcc 5 cannot prove that the variable is always initialized
+    and therefore prints a warning.
+
+commit fceab826471e352fcfea17ac5bf6cdd60435e510
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jan 19 15:58:36 2015 +0100
+
+    build: check for single libsystemd before libsystemd-journal
+    
+    Since systemd 209, all the functionalities of the former libsystemd-*
+    (including libsystemd-journal) have been merged into a single
+    libsystemd, with the former libraries left as compatibility ones.
+    
+    Thus, first look for libsystemd, and if not found try again with the
+    libsystemd-journal as used before.
+
+commit 1709263613ac97cb1f37333e1a429c34f6b79f26
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jan 16 19:25:26 2015 +0100
+
+    sparsify: handle output filenames with ':'
+    
+    With commit a594b7f90a682e2a9327b142138edb76ad8ba8ff the checks for
+    input and output files with ':' were removed; while the input file is
+    handled correctly by the disk_create API, an output filename with ':'
+    could still be handled as specifying a transport, failing the last
+    "qemu-img convert" call.
+    
+    Use the new qemu_input_filename helper to handle the output filename
+    correctly.
+
+commit c796280a8ee45c223a184b956423c55e3af68d81
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jan 16 19:19:16 2015 +0100
+
+    mllib: add simple qemu filename sanitizing function
+    
+    It mimics a bit in OCaml the logic used in
+    commit a95214b1985e694946e3426120a6fdc13a3f081f (for the main library)
+    and commit 588af1953e5f7ab74009b9175cc5d3efb8bb651a (in disk-create),
+    so in OCaml tools direct calls to qemu/qemu-img with filenames provided
+    by the user can properly handle filenames with e.g. ':'.
+
+commit 8b9ca28e111e38eafe8db7265e7fe18c5f31b460
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 15 14:40:17 2015 +0100
+
+    mknod: filter modes in mkfifo, mknod_b, mknod_c (RHBZ#1182463).
+    
+    Since mkfifo, mknod_b, and mknod_c add the correct file type to the
+    modes of the resulting file, make sure the specified mode contains only
+    permissions bits.
+
+commit 8ad667f1983e98347f4d292c07f971d5362ff052
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jan 14 18:59:57 2015 +0100
+
+    daemon: use ntfslabel(1) to get ntfs labels
+    
+    blkid(1) (or actually, libblkid) seems to handle filesystem labels up
+    to 127 characters. Considering that btrfs labels can be up to 128
+    characters, this means long labels are not read correctly (i.e. get
+    truncated) by blkid.  Furthermore, ntfs labels are actually unicode,
+    and libblkid seems to not decode them correctly.
+    
+    Hence, if ntfsprogs is available invoke `ntfslabel` to get the label
+    of ntfs filesystems.
+    
+    Related to RHBZ#1164708.
+
+commit 6db3c100e7c18820ff9ecc22415940eb5fedc64e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jan 14 18:55:13 2015 +0100
+
+    daemon: use btrfs(1) to get btrfs labels
+    
+    blkid(1) (or actually, libblkid) seems to handle filesystem labels up
+    to 127 characters. Considering that btrfs labels can be up to 255
+    characters, this means long labels are not read correctly (i.e. get
+    truncated) by blkid.
+    
+    Get the filesystem type, and if btrfs is available invoke
+    `btrfs filesystem` to get the label of btrfs filesystems.
+    
+    Related to RHBZ#1164708.
+
+commit d7abf5c8f2b9c0895faaa3166eb3a3f72ede17a2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jan 9 18:57:24 2015 +0100
+
+    format, make-fs: specify the label on mkfs
+    
+    If specified, pass the label for the new filesystem directly to the
+    mkfs (or mkfs_btrfs) call.
+    
+    This saves one set_label call, mostly.
+
+commit 7723614a91ad0179c190613fbb277f1c71dc88fd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jan 9 18:56:28 2015 +0100
+
+    mkfs: add 'label' optional argument
+    
+    Add the 'label' optional argument to the mkfs action, so it is possible
+    to set a filesystem label direct when creating it. There may be
+    filesystems not supporting changing the label of existing filesystems
+    but only setting it at creation time, so this new optarg will help.
+    
+    Implement it for the most common filesystems (ext*, fat, ntfs, btrfs,
+    xfs), giving an error for all the others, just like set_label does.
+
+commit 19c09bcdee62f86f78c6338de0ccddc3bce4d955
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 19 15:00:57 2015 +0000
+
+    tests/lvm: Remove use of deprecated sfdiskM API.
+    
+    See: https://bugzilla.redhat.com/show_bug.cgi?id=1183236
+    for the sorry tale.
+
+commit eb85ac6a0def18cd7dd5c3bda97c5775c0ba34a8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 19 13:03:24 2015 +0000
+
+    valgrind: Remove suppression for fixed memory leak in libselinux.
+    
+    This memory leak has been fixed since libselinux 2.1.13.
+    
+    Thanks: Daniel Walsh
+
+commit 4f3c288a1bac741fbcc9a8cd790d30618093a03e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jan 18 07:38:58 2015 +0000
+
+    lua: Define luaL_checkint which was deprecated in lua 5.3.
+
+commit 5ab3a75e1dba7cacd45ff9a094bf27c517edd117
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 17 14:24:35 2015 +0000
+
+    tests/lvm: Allow test-lvm-mapping.pl to be skipped.
+
+commit 9d9ef2960cf4da913277c6bf5f8443f661112186
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 17 09:02:37 2015 +0000
+
+    Version 1.29.20.
+
+commit c5800dc97d7e197ed187d3c5bb4d9a1f49ecf6ef
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 17 09:08:08 2015 +0000
+
+    Update copyright dates for 2015.
+
+commit 378ed3be5e8fffbd45df785fee68b6862eb55398
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 1 06:11:39 2015 +0000
+
+    ocaml: Convert debug_logging example from C to OCaml.
+    
+    Continue gradual conversion of C examples to other languages.
+
+commit 4bd0d1704756ab0bb8438078229b1a6848d2bad6
+Author: Kashyap Chamarthy <kchamart@redhat.com>
+Date:   Tue Jan 13 19:31:09 2015 +0100
+
+    virt-buider: doc: Use osinfo-query to get OS variants
+    
+    Upstream dropped[1] support for '--os-variant list' in favor of using
+    `osinfo-query` tool provided by the libosinfo project.
+    
+    To get a list of all accepted operating systems, invoke:
+    
+      osinfo-query os
+    
+    [1] https://git.fedorahosted.org/cgit/virt-manager.git/commit/?id=bcb60f0
+
+commit ea761df6875b2fa7fd9fcd3bc4c5b43812a426dd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jan 9 11:14:35 2015 +0100
+
+    builder: export the "osinfo" attribute to json
+    
+    Thanks to: Federico Simoncelli.
+
+commit 4f51519c9feaba5a0da9e43886415bb32dcc2049
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jan 7 15:07:07 2015 +0100
+
+    ocaml: findlib is required when building from git
+    
+    Update README according to the current requirement.
+    
+    Thanks to: Gabriele Cerami.
+
+commit e6f77d23453ffe3cb0b215c88d83082ba2df8986
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Sun Dec 28 08:33:30 2014 +0100
+
+    Fix out-of-tree build: Don't create empty .y file in builddir
+
+commit 14d11916faf68afb672d1626348931f2b90afd08
+Author: Shahar Havivi <shaharh@redhat.com>
+Date:   Thu Dec 25 11:57:12 2014 +0200
+
+    v2v: adding --vdsm-ovf-output option
+    
+    This option is needed by vdsm for writing the ovf to a specific directory.
+    The default is current directory.
+    
+    Bug-Url: https://bugzilla.redhat.com/show_bug.cgi?id=1176598
+    Signed-off-by: Shahar Havivi <shaharh@redhat.com>
+
+commit 3a080c3fbffa5846f71528c6fd978be7853b33b8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 24 18:10:37 2014 +0000
+
+    v2v: Reduce use of polymorphic variants.
+    
+    Ordinary variants prevent coding errors.
+
+commit 70c28f3d5e9cb90a7d1124b5cf61e72809d327b3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 24 17:46:08 2014 +0000
+
+    v2v: -i libvirtxml: Only handle NBD source with host 'localhost', for virt-p2v.
+    
+    We only care/support virt-p2v for network disks.  Give a warning about
+    anything else.
+    
+    This avoids a potential quoting issue.
+
+commit 45bd4f604d461e5acd753d485ea02fa8813da37e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 24 17:05:39 2014 +0000
+
+    v2v: Update TODO.
+
+commit c5e11785afd03bc3d9f9f23ab4590e4a08ede9d2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 24 16:51:15 2014 +0000
+
+    v2v: DOM: Fix quoting of XML comments.
+    
+    We need to quote at least & and > in XML comments.
+
+commit 86a08d860af4b0f914cc18d6308891ab0bb26106
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 24 13:34:26 2014 +0000
+
+    v2v: Hide implementation of 'element'.
+    
+    Following the previous commit, the implementation of 'element'
+    does not need to be public.
+
+commit 47b54a7ba5a49af33a08d47b284c664695c523ea
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 24 13:32:18 2014 +0000
+
+    v2v: Move append_* functions to DOM module.
+    
+    Just code motion.
+
+commit 791db53b104da3a5c8c28ca4ef57db1aa7ee2f50
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 23 15:25:26 2014 +0000
+
+    Version 1.29.19.
+
+commit 29df51d9bc24eaae9e42c3794b7dac9c78d8b3bd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 23 15:29:26 2014 +0000
+
+    v2v: Add a note about escaping username like DOMAIN\user.
+    
+    Thanks: Ben Hooper.
+
+commit 91b5863a7d4d0001d864b46045e6e2958ee159d4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 23 06:27:18 2014 -0500
+
+    aarch64: builder: Silence gcc warnings from flex-generated code.
+
+commit fdf6221f33f40e3cc702ddb5f5d2557ffedd03bf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Dec 21 18:47:30 2014 +0000
+
+    fish: c-pointer: Print the pointer in hexadecimal.
+    
+    $ guestfish
+    ><fs> c-pointer
+    0x1fb4f80
+    
+    This updates commit d8c43d556b45f4c9676fdbfce0e9fe07b709635a.
+
+commit 92575d0eabadd77a39a38d272c5e759cd6c61be3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 19 19:38:37 2014 +0000
+
+    errors: Even clearer error message.
+    
+    Obviously no one reads the FAQ, so make the error message
+    even clearer.
+    
+    The new error messages are variation on this:
+    
+    libguestfs: error: /bin/false exited with error status 1.
+    To see full error messages you may need to enable debugging.
+    Do:
+      export LIBGUESTFS_DEBUG=1 LIBGUESTFS_TRACE=1
+    and run the command again.  For further information, read:
+      http://libguestfs.org/guestfs-faq.1.html#debugging-libguestfs
+    You can also run 'libguestfs-test-tool' and post the *complete* output
+    into a bug report or message to the libguestfs mailing list.
+
+commit f6e74ecd73d9aeeb4c9ef0044d7112645b09172f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Dec 18 10:59:15 2014 +0000
+
+    ping-daemon: Fix error in the description of this API (RHBZ#1175676).
+    
+    Thanks: Lingfei Kong
+
+commit 47d909808aa8cd285f46cab5ea08c7971f8f2f85
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Dec 18 08:30:18 2014 +0000
+
+    v2v: -o libvirt: Replace List.mapi with mapi.
+    
+    Don't depend on OCaml >= 4.00.
+    
+    https://bugs.gentoo.org/show_bug.cgi?id=532698
+    
+    Thanks: Fabian Ohler
+
+commit 045dcfbd1848cb1c591dafe962d9bed45c1a9879
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 14:51:57 2014 +0000
+
+    v2v: Treat "oraclelinux" as if it was plain RHEL (RHBZ#1174280).
+
+commit f1ecd6af808f22af913a589754ae11dc1e35b658
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 17 13:02:06 2014 +0000
+
+    fish: Add regression test for RHBZ#1175196.
+
+commit 5f6677ebd0fd6f6712de808ca27eab4468f966bc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 17 12:52:46 2014 +0000
+
+    environment: Use guestfs___is_true when parsing various boolean environment variables (RHBZ#1175196).
+    
+    You can now use LIBGUESTFS_DEBUG=true (etc.)
+    
+    You can disable debugging/tracing by setting LIBGUESTFS_DEBUG=0 (etc.)
+
+commit bdcd2fabe9a5ba6f61e662986fcd92e352f203c0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 17 12:34:53 2014 +0000
+
+    fish: Move 'is_true' function to library utilities.
+    
+    The 'is_true' function can be useful elsewhere, not just for parsing
+    guestfish command parameters.
+    
+    This is just code motion.
+
+commit d375b7818a506e011b5f61c9a42c801180636201
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 17 14:37:55 2014 +0000
+
+    v2v: -o qemu: Replace List.iteri with iteri.
+    
+    So we don't have to depend on OCaml >= 4.00 which is when this
+    function was added to the stdlib.
+    
+    https://bugs.gentoo.org/show_bug.cgi?id=532698
+
+commit abf51ec70b3edfcb5048ef209a1a3b1837aa06e5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 17 10:25:57 2014 +0000
+
+    is-blockdev: Clarify documentation (RHBZ#1175035).
+
+commit 1f7db85b30d27ccdbb674dc9ee111db6756b59ae
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Dec 16 15:52:32 2014 +0100
+
+    builder: recommend use of --selinux-relabel
+    
+    Add a small documentation paragraph in the "SELINUX" section
+    recommending the usage of --selinux-relabel for guests using SELinux.
+
+commit 6264c255d461b2c84a9693c09a807d18cdf0b348
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 16 13:25:35 2014 +0000
+
+    Version 1.29.18.
+
+commit 8e0fc5fb469cdb67eb82e61036749f7d114e2c6f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 16 13:16:07 2014 +0000
+
+    python: Fix regression test so it works when KVM is not available.
+    
+    The test assumed (for no particular reason) that it could always run a
+    KVM guest.  When run on a machine without KVM, or in a VM without
+    nested KVM, you get this error:
+    
+    libvirt: Domain Config error : internal error: no supported architecture for os type 'hvm'
+    Traceback (most recent call last):
+      File "./t/820-rhbz912499.py", line 77, in <module>
+        dom = conn.createXML (xml, libvirt.VIR_DOMAIN_START_AUTODESTROY)
+      File "/usr/lib64/python2.7/site-packages/libvirt.py", line 3523, in createXML
+        if ret is None:raise libvirtError('virDomainCreateXML() failed', conn=self)
+    libvirt.libvirtError: internal error: no supported architecture for os type 'hvm'
+    FAIL: ./t/820-rhbz912499.py
+    
+    Use a qemu guest instead, which should have a better chance of working
+    on all hosts.
+
+commit 974216f612256b19ce3918e0544120aa5fcef16c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 16 11:06:43 2014 +0000
+
+    p2v: Document that virt-p2v-make-kickstart copies the virt-p2v binary into the kickstart.
+
+commit 54f85f8482c2aef209da64da49cbd96c3140ec32
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 16 11:06:15 2014 +0000
+
+    p2v: virt-p2v-make-kickstart(1): Fix various typos in the man page.
+
+commit cf979dd7969032612b5bb05acb2211a6c0093cca
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 16 09:45:29 2014 +0000
+
+    p2v: virt-p2v-make-kickstart: Add URL example to the man page.
+    
+    It turns out this is required for Fedora 21 (or perhaps livecd-creator
+    is broken yet again, who knows).
+
+commit 2912fa7a43b8f7fdc3f13b4e77041833413232f3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 22:45:35 2014 +0000
+
+    Version 1.29.17.
+
+commit 2162d09b2c9e138779d95f1fc7c3409765a5a40c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 22:26:51 2014 +0000
+
+    Use -fno-strict-overflow throughout the build.
+    
+    Builds of bison-generated files currently fail with:
+    
+    index-parse.y: In function 'yyparse':
+    index-parse.c:1256:6: error: assuming pointer wraparound does not occur when comparing P +- C1 with P +- C2 [-Werror=strict-overflow]
+         if (yyss + yystacksize - 1 <= yyssp)
+            ^
+    
+    This error only occurred on one machine, and it was unclear why.  It
+    turned out to be because the other build machines I use had:
+    
+      CFLAGS="-Wall" ./configure ...
+    
+    whereas on the failing machine I was just using ./configure w/o CFLAGS.
+    
+    This caused the compile flags of index-parse.c to be changed from:
+    
+      gcc -Wstrict-overflow ... index-parse.c
+    
+    to:
+    
+      gcc -Wstrict-overflow -Wall ... index-parse.c
+    
+    but since -Wstrict-overflow is short for -Wstrict-overflow=2, and
+    -Wall is short for -Wstrict-overflow=1, and since the error only
+    occurs at level >= 2, using CFLAGS="-Wall" was effectively turned off
+    the warning.
+    
+    Anyway, I believe the optimizations that GCC does when
+    -fstrict-overflow is enabled to be dubious, frequently dangerous, and
+    useless.  They are only done because we want C99 to work on
+    architectures that don't exist in reality (and which even if they did
+    exist, libguestfs would probably not support).
+    
+    The Linux kernel uses -fno-strict-overflow, and we should too, for the
+    same reasons.
+
+commit 8a33d534e55f9cb9c49d99a0104ecbf9dfd0bc99
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 18:29:00 2014 +0000
+
+    Version 1.29.16.
+
+commit 5a4fd83176a93d0190b7584d799c3236f5c2ba48
+Author: Gabriele Cerami <gcerami@redhat.com>
+Date:   Mon Dec 15 19:19:39 2014 +0100
+
+    diff/diff.c: diff output to show correct file handles and presence symbol
+
+commit 09080a28878a17b991c812e2b93a8d8394383d04
+Author: John Eckersberg <jeckersb@redhat.com>
+Date:   Mon Dec 15 13:19:06 2014 -0500
+
+    p2v: avoid connecting to ourself while probing qemu-nbd (RHBZ#1167774)
+
+commit f843abe400bc4e6fbcbee5f6cda2f3e9da33909a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 17:28:30 2014 +0000
+
+    tests: Fix memory leaks in test-add-libvirt-dom.
+    
+    Found by valgrind.
+    
+    This fixes commit df9782ec3a12ac46e1b8ffa31630c7a1e64162fe
+    and commit 96158d42f5cb9b6c472b4630f2c97edae600f6d3.
+
+commit e74bd45111c94d5506f9f35792bff340e2ce1a29
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:33 2014 +0800
+
+    New API: btrfs_qgroup_remove
+    
+    btrfs_qgroup_remove removes a qgroup from its parent qgroup.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit bd4a114272d589335be92782bfb283d2ccad3433
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:32 2014 +0800
+
+    New API: btrfs_qgroup_assign
+    
+    btrfs_qgroup_assign adds a qgroup to a parent qgroup.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 2b7f7810ed801edf811c5ba43fefe6cf350def7f
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:31 2014 +0800
+
+    New API: btrfs_qgroup_show
+    
+    btrfs_qgroup_show shows all qgroups on a btrfs filesystem.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 3617938b4803f0871c8811b42f8a0b4c1969a424
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:30 2014 +0800
+
+    New API: btrfs_qgroup_destroy
+    
+    btrfs_qgroup_destroy destroys a qgroup.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 1144c692dc8bca6bd51900a78e2e7f66b644a716
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:29 2014 +0800
+
+    New API: btrfs_qgroup_create
+    
+    btrfs_qgroup_create creates a new qgroup.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit a325f887b35618c141ea79b826b4bf9f64a644e2
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:28 2014 +0800
+
+    New API: btrfs_qgroup_limit
+    
+    btrfs_qgroup_limit limits the size of a qgroup.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 4e145bb44d5d58a70fc4cc8b0c199c6c29e6482e
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:27 2014 +0800
+
+    New API: btrfs_quota_rescan
+    
+    btrfs_quota_rescan trashs all qgroup numbers and scans the metadata
+    again with the current config.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 29812b8fd6aca26b4a8601f40e8fd011830d134e
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:26 2014 +0800
+
+    New API: btrfs_quota_enable
+    
+    btrfs_quota_enable enables or disables quota for btrfs filesystems.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 7a25a6d14115207d8c93cfbd7fe7f487b3c18d9d
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:25 2014 +0800
+
+    New API: btrfs_subvolume_show
+    
+    btrfs_subvolume_show shows the detailed information of a subvolume or
+    snapshot.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 56732ed6a08af7e3f7f1f17e89e8dc62cf3d4f4a
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:24 2014 +0800
+
+    New API: btrfs_subvolume_get_default
+    
+    btrfs_subvolume_get_default is for getting the default subvolume of
+    a btrfs filesystem.
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 152d17ddbf7e6db4b3b23224083780fb979f28b5
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Dec 12 15:03:23 2014 +0800
+
+    daemon: btrfs: add helper functions mount and umount
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit d3e93e1011fa4bf0099c3c0538022bfd9c2473f2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 14:29:51 2014 +0000
+
+    inspection: Recognise 'dnf' as the package manager in Fedora 22.
+    
+    Also fix virt-sysprep and virt-customize so they can work with dnf.
+    
+    I also sorted some of the lists alphabetically.
+
+commit 7a218cbdf635af543479256593e448100406ea1e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 13:43:34 2014 +0000
+
+    v2v: Password attr in domain XML should be 'passwd=' (RHBZ#1174123).
+
+commit dfded7c94118e8888dec38f11c2af62d8156a59e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 08:55:12 2014 +0000
+
+    v2v: Get passwords in domain XML (RHBZ#1174123).
+    
+    Thanks: Tingting Zheng
+
+commit 9c4af17add53b50ce0b6756c6216380862f10631
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 15 08:54:59 2014 +0000
+
+    v2v: Whitespace change.
+
+commit da34797987296ffc3e365902c8eb4d9b8024e8af
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Dec 13 19:34:29 2014 +0000
+
+    p2v: Add more authors.
+
+commit 5a964144b27cab4a4a8d220dba6ad53f4655fd5e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Dec 13 19:30:00 2014 +0000
+
+    p2v: Rename authors.c, copying.c -> about-* to avoid confusion.
+    
+    Just file renaming, no other change.
+
+commit f9e0aee1497028c79619325e0bf105dbcc2f004b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 22:25:47 2014 +0000
+
+    sysprep: Use automake to build the library.
+    
+    Normally this requires the program to have at least one C source file.
+    virt-sysprep doesn't have this, but it uses C sources from other
+    directories, and therefore we can make it work.
+
+commit 604bb7fd7b7087d8002cfbf5392a546819278943
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 22:25:47 2014 +0000
+
+    mllib: Use automake to build the library.
+
+commit ccb1f2a4a02da2f56649b5452f6b9c0356f91798
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Dec 13 14:49:32 2014 +0000
+
+    recipes: Tidy up section about hex-dumping and hex-editing sectors.
+
+commit 603d0fbd95fecebed75ebd02f5b1cd4d1b729571
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 17:41:47 2014 +0000
+
+    p2v: Test two disk guest.
+    
+    Make the test harder (evil grin).
+
+commit 402bba35059056fdea83689e408806071c478e44
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 17:13:51 2014 +0000
+
+    Version 1.29.15.
+
+commit f4b846445e222315060eb579d86ada5870c0174a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 15:58:05 2014 +0000
+
+    builder: Try again to fix the infinitely recursive index-parse.h rule.
+    
+    I ran 'make clean && make' hundreds of times in the builder
+    subdirectory and it didn't fail.
+
+commit b547b627895c137d96bdc06401415be643fee490
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 15:11:57 2014 +0000
+
+    v2v: C files are located in srcdir, not builddir.
+
+commit 9d3a02792ff0a5502dbeda42db4c28651a3688b0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 15:11:37 2014 +0000
+
+    sparsify: C files are located in srcdir, not builddir.
+
+commit d8c43d556b45f4c9676fdbfce0e9fe07b709635a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 14:44:54 2014 +0000
+
+    New API: guestfs_c_pointer
+    
+    This returns the C pointer to the guestfs_h handle (ie. guestfs_h *).
+    
+    The purpose of this API is to interwork with other non-C libraries.
+    See RHBZ#1075164 for the rationale when applied to another library.
+
+commit 1e7a6d9f10008a922ae63e2893d76e44bd61b5b0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 14:32:11 2014 +0000
+
+    perl: Implement Pointer ("virDomainPtr", _).
+    
+    This allows the Perl binding of guestfs_add_libvirt_dom to work.
+    
+    This relies on the internal Perl representation of virDomainPtr, but
+    Dan assures me this isn't going to change.
+
+commit df9782ec3a12ac46e1b8ffa31630c7a1e64162fe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 13:31:08 2014 +0000
+
+    tests: Enable and fix test-add-libvirt-dom test.
+    
+    Commit 96158d42f5cb9b6c472b4630f2c97edae600f6d3 enabled the previously
+    private guestfs_add_libvirt_dom API.  It also tried to enable the
+    existing test for this API, but failed to do that correctly.  Also the
+    test was broken.  Fix all of this.
+    
+    This fixes commit 96158d42f5cb9b6c472b4630f2c97edae600f6d3.
+
+commit 741403d7186c238c89780b1f3cee0a30641830b3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 13:23:58 2014 +0000
+
+    v2v: Replace .. with $(top_builddir)
+    
+    No functional change.
+
+commit 85b664dacd4284ff8127d09ba541590cfc8e9785
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 12:50:16 2014 +0000
+
+    builder: index-parse: Remove unused destructor.
+    
+      YACC     index-parse.c
+    index-parse.y:97.34-41: warning: type <fields> is used, but is not associated to any symbol [-Wother]
+     %destructor { field_free ($$); } <fields>
+                                      ^^^^^^^^
+    index-parse.y:95.36-45: warning: type <sections> is used, but is not associated to any symbol [-Wother]
+     %destructor { section_free ($$); } <sections>
+                                        ^^^^^^^^^^
+
+commit 9135129b0f6e8eb171131ea0f7d729a960b74cb3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 09:43:52 2014 +0000
+
+    builder: Use automake to build the binary.
+    
+    As this has the side effect of enabling warnings in the C code, I had
+    to fix a lot of C problems in this commit too.
+
+commit e87df1d58140b52f0cf48c9adb287655bc76e5a1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 09:43:52 2014 +0000
+
+    customize: Use automake to build the binary.
+
+commit bd74c6f09a5b5a0211accd689c88471589fec0f4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 12 09:43:52 2014 +0000
+
+    resize: Use automake to build the binary.
+
 commit 5a1204594c5691d58ed2032f95df0b3492bc8e18
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Dec 11 16:29:29 2014 +0000

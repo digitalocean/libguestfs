@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,14 +61,6 @@ let target_features_of_capabilities_doc doc arch =
     !features
   )
 
-let append_child child = function
-  | PCData _ | Comment _  -> assert false
-  | Element e -> e.e_children <- e.e_children @ [child]
-
-let append_attr attr = function
-  | PCData _ | Comment _ -> assert false
-  | Element e -> e.e_attrs <- e.e_attrs @ [attr]
-
 let create_libvirt_xml ?pool source targets guestcaps target_features =
   let memory_k = source.s_memory /^ 1024L in
 
@@ -114,7 +106,7 @@ let create_libvirt_xml ?pool source targets guestcaps target_features =
     let block_bus =
       match guestcaps.gcaps_block_bus with
       | Virtio_blk -> "virtio" | IDE -> "ide" in
-    List.mapi (
+    mapi (
       fun i t ->
         e "disk" [
           "type", if pool = None then "file" else "volume";
@@ -158,7 +150,7 @@ let create_libvirt_xml ?pool source targets guestcaps target_features =
 
     List.map (
       function
-      | { s_removable_type = `CDROM } ->
+      | { s_removable_type = CDROM } ->
         let i = !cdrom_index in
         incr cdrom_index;
         let name = cdrom_block_prefix ^ drive_name i in
@@ -167,7 +159,7 @@ let create_libvirt_xml ?pool source targets guestcaps target_features =
           e "target" [ "dev", name; "bus", cdrom_bus ] []
         ]
 
-      | { s_removable_type = `Floppy } ->
+      | { s_removable_type = Floppy } ->
         let i = !fd_index in
         incr fd_index;
         let name = "fd" ^ drive_name i in
@@ -229,7 +221,7 @@ let create_libvirt_xml ?pool source targets guestcaps target_features =
     | Some { s_keymap = Some km } -> append_attr ("keymap", km) graphics
     | _ -> ());
     (match source.s_display with
-    | Some { s_password = Some pw } -> append_attr ("password", pw) graphics
+    | Some { s_password = Some pw } -> append_attr ("passwd", pw) graphics
     | _ -> ());
 
     video, graphics in

@@ -1,5 +1,5 @@
 /* guestfish - guest filesystem shell
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,7 +108,7 @@ usage (int status)
     fprintf (stdout,
            _("%s: guest filesystem shell\n"
              "%s lets you edit virtual machine filesystems\n"
-             "Copyright (C) 2009-2014 Red Hat Inc.\n"
+             "Copyright (C) 2009-2015 Red Hat Inc.\n"
              "Usage:\n"
              "  %s [--options] cmd [: cmd : cmd ...]\n"
              "Options:\n"
@@ -661,8 +661,8 @@ rl_gets (int prompt)
       line_read = NULL;
     }
 
-    p = prompt && ps1 ? decode_ps1 (ps1) : NULL;
-    line_read = readline (prompt ? (ps1 ? p : FISH) : "");
+    p = ps1 ? decode_ps1 (ps1) : NULL;
+    line_read = readline (ps1 ? p : FISH);
 
     if (ps_output) {            /* GUESTFISH_OUTPUT */
       CLEANUP_FREE char *po = decode_ps1 (ps_output);
@@ -1300,32 +1300,6 @@ print_table (char *const *argv)
 
   for (i = 0; argv[i] != NULL; i += 2)
     printf ("%s: %s\n", argv[i], argv[i+1]);
-}
-
-int
-is_true (const char *str)
-{
-  /* Similar to Tcl_GetBoolean. */
-
-  if (STREQ (str, "1") ||
-      STRCASEEQ (str, "true") ||
-      STRCASEEQ (str, "t") ||
-      STRCASEEQ (str, "yes") ||
-      STRCASEEQ (str, "y") ||
-      STRCASEEQ (str, "on"))
-    return 1;
-
-  if (STREQ (str, "0") ||
-      STRCASEEQ (str, "false") ||
-      STRCASEEQ (str, "f") ||
-      STRCASEEQ (str, "no") ||
-      STRCASEEQ (str, "n") ||
-      STRCASEEQ (str, "off"))
-    return 0;
-
-  fprintf (stderr, _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-           program_name, str);
-  return -1;
 }
 
 /* Free strings from a non-NULL terminated char** */

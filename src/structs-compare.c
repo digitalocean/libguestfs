@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -777,6 +777,37 @@ guestfs_compare_btrfssubvolume_list (const struct guestfs_btrfssubvolume_list *s
 
     for (i = 0; i < s1->len; ++i) {
       r = guestfs_compare_btrfssubvolume (&s1->val[i], &s2->val[i]);
+      if (r != 0) return r;
+    }
+    return 0;
+  }
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_compare_btrfsqgroup (const struct guestfs_btrfsqgroup *s1, const struct guestfs_btrfsqgroup *s2)
+{
+  int r;
+
+  r = strcmp (s1->btrfsqgroup_id, s2->btrfsqgroup_id);
+  if (r != 0) return r;
+  if (s1->btrfsqgroup_rfer < s2->btrfsqgroup_rfer) return -1;
+  else if (s1->btrfsqgroup_rfer > s2->btrfsqgroup_rfer) return 1;
+  if (s1->btrfsqgroup_excl < s2->btrfsqgroup_excl) return -1;
+  else if (s1->btrfsqgroup_excl > s2->btrfsqgroup_excl) return 1;
+  return 0;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_compare_btrfsqgroup_list (const struct guestfs_btrfsqgroup_list *s1, const struct guestfs_btrfsqgroup_list *s2)
+{
+  if (s1->len < s2->len) return -1;
+  else if (s1->len > s2->len) return 1;
+  else {
+    size_t i;
+    int r;
+
+    for (i = 0; i < s1->len; ++i) {
+      r = guestfs_compare_btrfsqgroup (&s1->val[i], &s2->val[i]);
       if (r != 0) return r;
     }
     return 0;

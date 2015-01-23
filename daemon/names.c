@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -440,4 +440,23 @@ const char *function_names[] = {
   [422] = "lstatns",
   [423] = "internal_lstatnslist",
   [424] = "blockdev_setra",
+  [425] = "btrfs_subvolume_get_default",
+  [426] = "btrfs_subvolume_show",
+  [427] = "btrfs_quota_enable",
+  [428] = "btrfs_quota_rescan",
+  [429] = "btrfs_qgroup_limit",
+  [430] = "btrfs_qgroup_create",
+  [431] = "btrfs_qgroup_destroy",
+  [432] = "btrfs_qgroup_show",
+  [433] = "btrfs_qgroup_assign",
+  [434] = "btrfs_qgroup_remove",
+  [435] = "btrfs_scrub_start",
+  [436] = "btrfs_scrub_cancel",
+  [437] = "btrfs_scrub_resume",
+  [438] = "btrfs_balance_pause",
+  [439] = "btrfs_balance_cancel",
+  [440] = "btrfs_balance_resume",
+  [443] = "btrfs_filesystem_defragment",
+  [444] = "btrfs_rescue_chunk_recover",
+  [445] = "btrfs_rescue_super_recover",
 };

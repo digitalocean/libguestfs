@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -297,6 +297,14 @@ struct guestfs_int_btrfssubvolume {
 };
 
 typedef struct guestfs_int_btrfssubvolume guestfs_int_btrfssubvolume_list<>;
+
+struct guestfs_int_btrfsqgroup {
+  string btrfsqgroup_id<>;
+  uint64_t btrfsqgroup_rfer;
+  uint64_t btrfsqgroup_excl;
+};
+
+typedef struct guestfs_int_btrfsqgroup guestfs_int_btrfsqgroup_list<>;
 
 struct guestfs_int_xfsinfo {
   string xfs_mntpoint<>;
@@ -1982,6 +1990,7 @@ struct guestfs_mkfs_args {
   string features<>;
   int inode;
   int sectorsize;
+  string label<>;
 };
 
 struct guestfs_getxattr_args {
@@ -2929,6 +2938,104 @@ struct guestfs_blockdev_setra_args {
   int sectors;
 };
 
+struct guestfs_btrfs_subvolume_get_default_args {
+  string fs<>;
+};
+
+struct guestfs_btrfs_subvolume_get_default_ret {
+  int64_t id;
+};
+
+struct guestfs_btrfs_subvolume_show_args {
+  string subvolume<>;
+};
+
+struct guestfs_btrfs_subvolume_show_ret {
+  guestfs_str btrfssubvolumeinfo<>;
+};
+
+struct guestfs_btrfs_quota_enable_args {
+  string fs<>;
+  bool enable;
+};
+
+struct guestfs_btrfs_quota_rescan_args {
+  string fs<>;
+};
+
+struct guestfs_btrfs_qgroup_limit_args {
+  string subvolume<>;
+  int64_t size;
+};
+
+struct guestfs_btrfs_qgroup_create_args {
+  string qgroupid<>;
+  string subvolume<>;
+};
+
+struct guestfs_btrfs_qgroup_destroy_args {
+  string qgroupid<>;
+  string subvolume<>;
+};
+
+struct guestfs_btrfs_qgroup_show_args {
+  string path<>;
+};
+
+struct guestfs_btrfs_qgroup_show_ret {
+  guestfs_int_btrfsqgroup_list qgroups;
+};
+
+struct guestfs_btrfs_qgroup_assign_args {
+  string src<>;
+  string dst<>;
+  string path<>;
+};
+
+struct guestfs_btrfs_qgroup_remove_args {
+  string src<>;
+  string dst<>;
+  string path<>;
+};
+
+struct guestfs_btrfs_scrub_start_args {
+  string path<>;
+};
+
+struct guestfs_btrfs_scrub_cancel_args {
+  string path<>;
+};
+
+struct guestfs_btrfs_scrub_resume_args {
+  string path<>;
+};
+
+struct guestfs_btrfs_balance_pause_args {
+  string path<>;
+};
+
+struct guestfs_btrfs_balance_cancel_args {
+  string path<>;
+};
+
+struct guestfs_btrfs_balance_resume_args {
+  string path<>;
+};
+
+struct guestfs_btrfs_filesystem_defragment_args {
+  string path<>;
+  bool flush;
+  string compress<>;
+};
+
+struct guestfs_btrfs_rescue_chunk_recover_args {
+  string device<>;
+};
+
+struct guestfs_btrfs_rescue_super_recover_args {
+  string device<>;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3344,10 +3451,29 @@ enum guestfs_procedure {
   GUESTFS_PROC_STATNS = 421,
   GUESTFS_PROC_LSTATNS = 422,
   GUESTFS_PROC_INTERNAL_LSTATNSLIST = 423,
-  GUESTFS_PROC_BLOCKDEV_SETRA = 424
+  GUESTFS_PROC_BLOCKDEV_SETRA = 424,
+  GUESTFS_PROC_BTRFS_SUBVOLUME_GET_DEFAULT = 425,
+  GUESTFS_PROC_BTRFS_SUBVOLUME_SHOW = 426,
+  GUESTFS_PROC_BTRFS_QUOTA_ENABLE = 427,
+  GUESTFS_PROC_BTRFS_QUOTA_RESCAN = 428,
+  GUESTFS_PROC_BTRFS_QGROUP_LIMIT = 429,
+  GUESTFS_PROC_BTRFS_QGROUP_CREATE = 430,
+  GUESTFS_PROC_BTRFS_QGROUP_DESTROY = 431,
+  GUESTFS_PROC_BTRFS_QGROUP_SHOW = 432,
+  GUESTFS_PROC_BTRFS_QGROUP_ASSIGN = 433,
+  GUESTFS_PROC_BTRFS_QGROUP_REMOVE = 434,
+  GUESTFS_PROC_BTRFS_SCRUB_START = 435,
+  GUESTFS_PROC_BTRFS_SCRUB_CANCEL = 436,
+  GUESTFS_PROC_BTRFS_SCRUB_RESUME = 437,
+  GUESTFS_PROC_BTRFS_BALANCE_PAUSE = 438,
+  GUESTFS_PROC_BTRFS_BALANCE_CANCEL = 439,
+  GUESTFS_PROC_BTRFS_BALANCE_RESUME = 440,
+  GUESTFS_PROC_BTRFS_FILESYSTEM_DEFRAGMENT = 443,
+  GUESTFS_PROC_BTRFS_RESCUE_CHUNK_RECOVER = 444,
+  GUESTFS_PROC_BTRFS_RESCUE_SUPER_RECOVER = 445
 };
 
-const GUESTFS_MAX_PROC_NR = 424;
+const GUESTFS_MAX_PROC_NR = 445;
 
 /* The remote procedure call protocol. */
 

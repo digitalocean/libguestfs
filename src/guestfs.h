@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -254,6 +254,26 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_application2_list *guestfs_copy_applica
 
 extern GUESTFS_DLL_PUBLIC void guestfs_free_application2 (struct guestfs_application2 *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_application2_list (struct guestfs_application2_list *);
+
+struct guestfs_btrfsqgroup {
+  char *btrfsqgroup_id;
+  uint64_t btrfsqgroup_rfer;
+  uint64_t btrfsqgroup_excl;
+};
+
+struct guestfs_btrfsqgroup_list {
+  uint32_t len;
+  struct guestfs_btrfsqgroup *val;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_btrfsqgroup (const struct guestfs_btrfsqgroup *, const struct guestfs_btrfsqgroup *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_btrfsqgroup_list (const struct guestfs_btrfsqgroup_list *, const struct guestfs_btrfsqgroup_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_btrfsqgroup *guestfs_copy_btrfsqgroup (const struct guestfs_btrfsqgroup *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_btrfsqgroup_list *guestfs_copy_btrfsqgroup_list (const struct guestfs_btrfsqgroup_list *);
+
+extern GUESTFS_DLL_PUBLIC void guestfs_free_btrfsqgroup (struct guestfs_btrfsqgroup *);
+extern GUESTFS_DLL_PUBLIC void guestfs_free_btrfsqgroup_list (struct guestfs_btrfsqgroup_list *);
 
 struct guestfs_btrfssubvolume {
   uint64_t btrfssubvolume_id;
@@ -1004,6 +1024,15 @@ extern GUESTFS_DLL_PUBLIC int guestfs_blockdev_setro (guestfs_h *g, const char *
 #define GUESTFS_HAVE_BLOCKDEV_SETRW 1
 extern GUESTFS_DLL_PUBLIC int guestfs_blockdev_setrw (guestfs_h *g, const char *device);
 
+#define GUESTFS_HAVE_BTRFS_BALANCE_CANCEL 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_balance_cancel (guestfs_h *g, const char *path);
+
+#define GUESTFS_HAVE_BTRFS_BALANCE_PAUSE 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_balance_pause (guestfs_h *g, const char *path);
+
+#define GUESTFS_HAVE_BTRFS_BALANCE_RESUME 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_balance_resume (guestfs_h *g, const char *path);
+
 #define GUESTFS_HAVE_BTRFS_DEVICE_ADD 1
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_device_add (guestfs_h *g, char *const *devices, const char *fs);
 
@@ -1012,6 +1041,22 @@ extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_device_delete (guestfs_h *g, char *c
 
 #define GUESTFS_HAVE_BTRFS_FILESYSTEM_BALANCE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_filesystem_balance (guestfs_h *g, const char *fs);
+
+#define GUESTFS_HAVE_BTRFS_FILESYSTEM_DEFRAGMENT 1
+#define GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH 0
+#define GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_filesystem_defragment (guestfs_h *g, const char *path, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_filesystem_defragment_va (guestfs_h *g, const char *path, va_list args);
+
+struct guestfs_btrfs_filesystem_defragment_argv {
+  uint64_t bitmask;
+# define GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK (UINT64_C(1)<<0)
+  int flush;
+# define GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK (UINT64_C(1)<<1)
+  const char *compress;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_filesystem_defragment_argv (guestfs_h *g, const char *path, const struct guestfs_btrfs_filesystem_defragment_argv *optargs);
 
 #define GUESTFS_HAVE_BTRFS_FILESYSTEM_RESIZE 1
 #define GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE 0
@@ -1045,6 +1090,45 @@ struct guestfs_btrfs_fsck_argv {
 
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_fsck_argv (guestfs_h *g, const char *device, const struct guestfs_btrfs_fsck_argv *optargs);
 
+#define GUESTFS_HAVE_BTRFS_QGROUP_ASSIGN 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_qgroup_assign (guestfs_h *g, const char *src, const char *dst, const char *path);
+
+#define GUESTFS_HAVE_BTRFS_QGROUP_CREATE 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_qgroup_create (guestfs_h *g, const char *qgroupid, const char *subvolume);
+
+#define GUESTFS_HAVE_BTRFS_QGROUP_DESTROY 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_qgroup_destroy (guestfs_h *g, const char *qgroupid, const char *subvolume);
+
+#define GUESTFS_HAVE_BTRFS_QGROUP_LIMIT 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_qgroup_limit (guestfs_h *g, const char *subvolume, int64_t size);
+
+#define GUESTFS_HAVE_BTRFS_QGROUP_REMOVE 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_qgroup_remove (guestfs_h *g, const char *src, const char *dst, const char *path);
+
+#define GUESTFS_HAVE_BTRFS_QGROUP_SHOW 1
+extern GUESTFS_DLL_PUBLIC struct guestfs_btrfsqgroup_list *guestfs_btrfs_qgroup_show (guestfs_h *g, const char *path);
+
+#define GUESTFS_HAVE_BTRFS_QUOTA_ENABLE 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_quota_enable (guestfs_h *g, const char *fs, int enable);
+
+#define GUESTFS_HAVE_BTRFS_QUOTA_RESCAN 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_quota_rescan (guestfs_h *g, const char *fs);
+
+#define GUESTFS_HAVE_BTRFS_RESCUE_CHUNK_RECOVER 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_rescue_chunk_recover (guestfs_h *g, const char *device);
+
+#define GUESTFS_HAVE_BTRFS_RESCUE_SUPER_RECOVER 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_rescue_super_recover (guestfs_h *g, const char *device);
+
+#define GUESTFS_HAVE_BTRFS_SCRUB_CANCEL 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_scrub_cancel (guestfs_h *g, const char *path);
+
+#define GUESTFS_HAVE_BTRFS_SCRUB_RESUME 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_scrub_resume (guestfs_h *g, const char *path);
+
+#define GUESTFS_HAVE_BTRFS_SCRUB_START 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_scrub_start (guestfs_h *g, const char *path);
+
 #define GUESTFS_HAVE_BTRFS_SET_SEEDING 1
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_set_seeding (guestfs_h *g, const char *device, int seeding);
 
@@ -1067,11 +1151,17 @@ extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_subvolume_create_opts_argv (guestfs_
 #define GUESTFS_HAVE_BTRFS_SUBVOLUME_DELETE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_subvolume_delete (guestfs_h *g, const char *subvolume);
 
+#define GUESTFS_HAVE_BTRFS_SUBVOLUME_GET_DEFAULT 1
+extern GUESTFS_DLL_PUBLIC int64_t guestfs_btrfs_subvolume_get_default (guestfs_h *g, const char *fs);
+
 #define GUESTFS_HAVE_BTRFS_SUBVOLUME_LIST 1
 extern GUESTFS_DLL_PUBLIC struct guestfs_btrfssubvolume_list *guestfs_btrfs_subvolume_list (guestfs_h *g, const char *fs);
 
 #define GUESTFS_HAVE_BTRFS_SUBVOLUME_SET_DEFAULT 1
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_subvolume_set_default (guestfs_h *g, int64_t id, const char *fs);
+
+#define GUESTFS_HAVE_BTRFS_SUBVOLUME_SHOW 1
+extern GUESTFS_DLL_PUBLIC char **guestfs_btrfs_subvolume_show (guestfs_h *g, const char *subvolume);
 
 #define GUESTFS_HAVE_BTRFS_SUBVOLUME_SNAPSHOT 1
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_subvolume_snapshot (guestfs_h *g, const char *source, const char *dest);
@@ -1091,6 +1181,9 @@ struct guestfs_btrfs_subvolume_snapshot_opts_argv {
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_subvolume_snapshot_opts_argv (guestfs_h *g, const char *source, const char *dest, const struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs);
+
+#define GUESTFS_HAVE_C_POINTER 1
+extern GUESTFS_DLL_PUBLIC int64_t guestfs_c_pointer (guestfs_h *g);
 
 #define GUESTFS_HAVE_CANONICAL_DEVICE_NAME 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_canonical_device_name (guestfs_h *g, const char *device);
@@ -2325,6 +2418,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_mkfs (guestfs_h *g, const char *fstype, co
 #define GUESTFS_MKFS_OPTS_FEATURES 1
 #define GUESTFS_MKFS_OPTS_INODE 2
 #define GUESTFS_MKFS_OPTS_SECTORSIZE 3
+#define GUESTFS_MKFS_OPTS_LABEL 4
 extern GUESTFS_DLL_PUBLIC int guestfs_mkfs_opts (guestfs_h *g, const char *fstype, const char *device, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_mkfs_opts_va (guestfs_h *g, const char *fstype, const char *device, va_list args);
 
@@ -2338,6 +2432,8 @@ struct guestfs_mkfs_opts_argv {
   int inode;
 # define GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK (UINT64_C(1)<<3)
   int sectorsize;
+# define GUESTFS_MKFS_OPTS_LABEL_BITMASK (UINT64_C(1)<<4)
+  const char *label;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_mkfs_opts_argv (guestfs_h *g, const char *fstype, const char *device, const struct guestfs_mkfs_opts_argv *optargs);
@@ -3771,18 +3867,38 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_BLOCKDEV_SETRA 1
 #define LIBGUESTFS_HAVE_BLOCKDEV_SETRO 1
 #define LIBGUESTFS_HAVE_BLOCKDEV_SETRW 1
+#define LIBGUESTFS_HAVE_BTRFS_BALANCE_CANCEL 1
+#define LIBGUESTFS_HAVE_BTRFS_BALANCE_PAUSE 1
+#define LIBGUESTFS_HAVE_BTRFS_BALANCE_RESUME 1
 #define LIBGUESTFS_HAVE_BTRFS_DEVICE_ADD 1
 #define LIBGUESTFS_HAVE_BTRFS_DEVICE_DELETE 1
 #define LIBGUESTFS_HAVE_BTRFS_FILESYSTEM_BALANCE 1
+#define LIBGUESTFS_HAVE_BTRFS_FILESYSTEM_DEFRAGMENT 1
 #define LIBGUESTFS_HAVE_BTRFS_FILESYSTEM_RESIZE 1
 #define LIBGUESTFS_HAVE_BTRFS_FILESYSTEM_SYNC 1
 #define LIBGUESTFS_HAVE_BTRFS_FSCK 1
+#define LIBGUESTFS_HAVE_BTRFS_QGROUP_ASSIGN 1
+#define LIBGUESTFS_HAVE_BTRFS_QGROUP_CREATE 1
+#define LIBGUESTFS_HAVE_BTRFS_QGROUP_DESTROY 1
+#define LIBGUESTFS_HAVE_BTRFS_QGROUP_LIMIT 1
+#define LIBGUESTFS_HAVE_BTRFS_QGROUP_REMOVE 1
+#define LIBGUESTFS_HAVE_BTRFS_QGROUP_SHOW 1
+#define LIBGUESTFS_HAVE_BTRFS_QUOTA_ENABLE 1
+#define LIBGUESTFS_HAVE_BTRFS_QUOTA_RESCAN 1
+#define LIBGUESTFS_HAVE_BTRFS_RESCUE_CHUNK_RECOVER 1
+#define LIBGUESTFS_HAVE_BTRFS_RESCUE_SUPER_RECOVER 1
+#define LIBGUESTFS_HAVE_BTRFS_SCRUB_CANCEL 1
+#define LIBGUESTFS_HAVE_BTRFS_SCRUB_RESUME 1
+#define LIBGUESTFS_HAVE_BTRFS_SCRUB_START 1
 #define LIBGUESTFS_HAVE_BTRFS_SET_SEEDING 1
 #define LIBGUESTFS_HAVE_BTRFS_SUBVOLUME_CREATE 1
 #define LIBGUESTFS_HAVE_BTRFS_SUBVOLUME_DELETE 1
+#define LIBGUESTFS_HAVE_BTRFS_SUBVOLUME_GET_DEFAULT 1
 #define LIBGUESTFS_HAVE_BTRFS_SUBVOLUME_LIST 1
 #define LIBGUESTFS_HAVE_BTRFS_SUBVOLUME_SET_DEFAULT 1
+#define LIBGUESTFS_HAVE_BTRFS_SUBVOLUME_SHOW 1
 #define LIBGUESTFS_HAVE_BTRFS_SUBVOLUME_SNAPSHOT 1
+#define LIBGUESTFS_HAVE_C_POINTER 1
 #define LIBGUESTFS_HAVE_CANONICAL_DEVICE_NAME 1
 #define LIBGUESTFS_HAVE_CAP_GET_FILE 1
 #define LIBGUESTFS_HAVE_CAP_SET_FILE 1

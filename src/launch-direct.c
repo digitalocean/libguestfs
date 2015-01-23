@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -236,6 +236,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   int sv[2];
   char guestfsd_sock[256];
   struct sockaddr_un addr;
+  CLEANUP_FREE char *uefi_code = NULL, *uefi_vars = NULL;
   CLEANUP_FREE char *kernel = NULL, *dtb = NULL,
     *initrd = NULL, *appliance = NULL;
   int has_appliance_drive;
@@ -444,6 +445,19 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
     ADD_CMDLINE ("kvm-pit.lost_tick_policy=discard");
   }
 
+  /* UEFI (firmware) if required. */
+  if (guestfs___get_uefi (g, &uefi_code, &uefi_vars) == -1)
+    goto cleanup0;
+  if (uefi_code) {
+    ADD_CMDLINE ("-drive");
+    ADD_CMDLINE_PRINTF ("if=pflash,format=raw,file=%s,readonly", uefi_code);
+    if (uefi_vars) {
+      ADD_CMDLINE ("-drive");
+      ADD_CMDLINE_PRINTF ("if=pflash,format=raw,file=%s", uefi_vars);
+    }
+  }
+
+  /* Kernel, DTB and initrd. */
   ADD_CMDLINE ("-kernel");
   ADD_CMDLINE (kernel);
   if (dtb) {

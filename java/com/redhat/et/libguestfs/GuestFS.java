@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2114,6 +2114,63 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * cancel a running or paused balance
+   * <p>
+   * Cancel a running balance on a btrfs filesystem.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_balance_cancel (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_balance_cancel: handle is closed");
+
+    _btrfs_balance_cancel (g, path);
+  }
+
+  private native void _btrfs_balance_cancel (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * pause a running balance
+   * <p>
+   * Pause a running balance on a btrfs filesystem.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_balance_pause (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_balance_pause: handle is closed");
+
+    _btrfs_balance_pause (g, path);
+  }
+
+  private native void _btrfs_balance_pause (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * resume a paused balance
+   * <p>
+   * Resume a paused balance on a btrfs filesystem.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_balance_resume (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_balance_resume: handle is closed");
+
+    _btrfs_balance_resume (g, path);
+  }
+
+  private native void _btrfs_balance_resume (long g, String path)
+    throws LibGuestFSException;
+
+  /**
    * add devices to a btrfs filesystem
    * <p>
    * Add the list of device(s) in "devices" to the btrfs
@@ -2173,6 +2230,57 @@ public class GuestFS {
   }
 
   private native void _btrfs_filesystem_balance (long g, String fs)
+    throws LibGuestFSException;
+
+  /**
+   * defragment a file or directory
+   * <p>
+   * Defragment a file or directory on a btrfs filesystem.
+   * compress is one of zlib or lzo.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_filesystem_defragment (String path, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_filesystem_defragment: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean flush = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("flush");
+    if (_optobj != null) {
+      flush = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+    String compress = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("compress");
+    if (_optobj != null) {
+      compress = ((String) _optobj);
+      _optargs_bitmask |= 2L;
+    }
+
+    _btrfs_filesystem_defragment (g, path, _optargs_bitmask, flush, compress);
+  }
+
+  public void btrfs_filesystem_defragment (String path)
+    throws LibGuestFSException
+  {
+    btrfs_filesystem_defragment (path, null);
+  }
+
+  private native void _btrfs_filesystem_defragment (long g, String path, long _optargs_bitmask, boolean flush, String compress)
     throws LibGuestFSException;
 
   /**
@@ -2301,6 +2409,264 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * add a qgroup to a parent qgroup
+   * <p>
+   * Add qgroup "src" to parent qgroup "dst". This command
+   * can group several qgroups into a parent qgroup to share
+   * common limit.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_qgroup_assign (String src, String dst, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_qgroup_assign: handle is closed");
+
+    _btrfs_qgroup_assign (g, src, dst, path);
+  }
+
+  private native void _btrfs_qgroup_assign (long g, String src, String dst, String path)
+    throws LibGuestFSException;
+
+  /**
+   * create a subvolume quota group
+   * <p>
+   * Create a quota group (qgroup) for subvolume at
+   * "subvolume".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_qgroup_create (String qgroupid, String subvolume)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_qgroup_create: handle is closed");
+
+    _btrfs_qgroup_create (g, qgroupid, subvolume);
+  }
+
+  private native void _btrfs_qgroup_create (long g, String qgroupid, String subvolume)
+    throws LibGuestFSException;
+
+  /**
+   * destroy a subvolume quota group
+   * <p>
+   * Destroy a quota group.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_qgroup_destroy (String qgroupid, String subvolume)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_qgroup_destroy: handle is closed");
+
+    _btrfs_qgroup_destroy (g, qgroupid, subvolume);
+  }
+
+  private native void _btrfs_qgroup_destroy (long g, String qgroupid, String subvolume)
+    throws LibGuestFSException;
+
+  /**
+   * limit the size of a subvolume
+   * <p>
+   * Limit the size of a subvolume which's path is
+   * "subvolume". "size" can have suffix of G, M, or K.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_qgroup_limit (String subvolume, long size)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_qgroup_limit: handle is closed");
+
+    _btrfs_qgroup_limit (g, subvolume, size);
+  }
+
+  private native void _btrfs_qgroup_limit (long g, String subvolume, long size)
+    throws LibGuestFSException;
+
+  /**
+   * remove a qgroup from its parent qgroup
+   * <p>
+   * Remove qgroup "src" from the parent qgroup "dst".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_qgroup_remove (String src, String dst, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_qgroup_remove: handle is closed");
+
+    _btrfs_qgroup_remove (g, src, dst, path);
+  }
+
+  private native void _btrfs_qgroup_remove (long g, String src, String dst, String path)
+    throws LibGuestFSException;
+
+  /**
+   * show subvolume quota groups
+   * <p>
+   * Show all subvolume quota groups in a btrfs filesystem,
+   * inclding their usages.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public BTRFSQgroup[] btrfs_qgroup_show (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_qgroup_show: handle is closed");
+
+    return _btrfs_qgroup_show (g, path);
+  }
+
+  private native BTRFSQgroup[] _btrfs_qgroup_show (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * enable or disable subvolume quota support
+   * <p>
+   * Enable or disable subvolume quota support for filesystem
+   * which contains "path".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_quota_enable (String fs, boolean enable)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_quota_enable: handle is closed");
+
+    _btrfs_quota_enable (g, fs, enable);
+  }
+
+  private native void _btrfs_quota_enable (long g, String fs, boolean enable)
+    throws LibGuestFSException;
+
+  /**
+   * trash all qgroup numbers and scan the metadata again with the current config
+   * <p>
+   * Trash all qgroup numbers and scan the metadata again
+   * with the current config.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_quota_rescan (String fs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_quota_rescan: handle is closed");
+
+    _btrfs_quota_rescan (g, fs);
+  }
+
+  private native void _btrfs_quota_rescan (long g, String fs)
+    throws LibGuestFSException;
+
+  /**
+   * recover the chunk tree of btrfs filesystem
+   * <p>
+   * Recover the chunk tree of btrfs filesystem by scannning
+   * the devices one by one.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_rescue_chunk_recover (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_rescue_chunk_recover: handle is closed");
+
+    _btrfs_rescue_chunk_recover (g, device);
+  }
+
+  private native void _btrfs_rescue_chunk_recover (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * recover bad superblocks from good copies
+   * <p>
+   * Recover bad superblocks from good copies.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_rescue_super_recover (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_rescue_super_recover: handle is closed");
+
+    _btrfs_rescue_super_recover (g, device);
+  }
+
+  private native void _btrfs_rescue_super_recover (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * cancel a running scrub
+   * <p>
+   * Cancel a running scrub on a btrfs filesystem.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_scrub_cancel (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_scrub_cancel: handle is closed");
+
+    _btrfs_scrub_cancel (g, path);
+  }
+
+  private native void _btrfs_scrub_cancel (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * resume a previously canceled or interrupted scrub
+   * <p>
+   * Resume a previously canceled or interrupted scrub on a
+   * btrfs filesystem.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_scrub_resume (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_scrub_resume: handle is closed");
+
+    _btrfs_scrub_resume (g, path);
+  }
+
+  private native void _btrfs_scrub_resume (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * read all data from all disks and verify checksums
+   * <p>
+   * Reads all the data and metadata on the filesystem, and
+   * uses checksums and the duplicate copies from RAID
+   * storage to identify and repair any corrupt data.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_scrub_start (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_scrub_start: handle is closed");
+
+    _btrfs_scrub_start (g, path);
+  }
+
+  private native void _btrfs_scrub_start (long g, String path)
+    throws LibGuestFSException;
+
+  /**
    * enable or disable the seeding feature of device
    * <p>
    * Enable or disable the seeding feature of a device that
@@ -2398,6 +2764,26 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * get the default subvolume or snapshot of a filesystem
+   * <p>
+   * Get the default subvolume or snapshot of a filesystem
+   * mounted at "mountpoint".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long btrfs_subvolume_get_default (String fs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_subvolume_get_default: handle is closed");
+
+    return _btrfs_subvolume_get_default (g, fs);
+  }
+
+  private native long _btrfs_subvolume_get_default (long g, String fs)
+    throws LibGuestFSException;
+
+  /**
    * list btrfs snapshots and subvolumes
    * <p>
    * List the btrfs snapshots and subvolumes of the btrfs
@@ -2436,6 +2822,30 @@ public class GuestFS {
   }
 
   private native void _btrfs_subvolume_set_default (long g, long id, String fs)
+    throws LibGuestFSException;
+
+  /**
+   * return detailed information of the subvolume
+   * <p>
+   * Return detailed information of the subvolume.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public Map<String,String> btrfs_subvolume_show (String subvolume)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_subvolume_show: handle is closed");
+
+    String[] r = _btrfs_subvolume_show (g, subvolume);
+
+    HashMap<String, String> rhash = new HashMap<String, String> ();
+    for (int i = 0; i < r.length; i += 2)
+      rhash.put (r[i], r[i+1]);
+    return rhash;
+  }
+
+  private native String[] _btrfs_subvolume_show (long g, String subvolume)
     throws LibGuestFSException;
 
   /**
@@ -2505,6 +2915,28 @@ public class GuestFS {
   }
 
   private native void _btrfs_subvolume_snapshot (long g, String source, String dest, long _optargs_bitmask, boolean ro, String qgroupid)
+    throws LibGuestFSException;
+
+  /**
+   * return the C pointer to the guestfs_h handle
+   * <p>
+   * In non-C language bindings, this allows you to retrieve
+   * the underlying C pointer to the handle (ie. "g.h *").
+   * The purpose of this is to allow other libraries to
+   * interwork with libguestfs.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long c_pointer ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("c_pointer: handle is closed");
+
+    return _c_pointer (g);
+  }
+
+  private native long _c_pointer (long g)
     throws LibGuestFSException;
 
   /**
@@ -7321,7 +7753,7 @@ public class GuestFS {
    * return the package format and package management tool
    * used by the inspected operating system. For example for
    * Fedora these functions would return "rpm" (package
-   * format) and "yum" (package management).
+   * format), and "yum" or "dnf" (package management).
    * <p>
    * This returns the string "unknown" if we could not
    * determine the package format *or* if the operating
@@ -7354,18 +7786,18 @@ public class GuestFS {
    * "g.inspect_get_package_format" and this function return
    * the package format and package management tool used by
    * the inspected operating system. For example for Fedora
-   * these functions would return "rpm" (package format) and
-   * "yum" (package management).
+   * these functions would return "rpm" (package format), and
+   * "yum" or "dnf" (package management).
    * <p>
    * This returns the string "unknown" if we could not
    * determine the package management tool *or* if the
    * operating system does not have a real packaging system
    * (eg. Windows).
    * <p>
-   * Possible strings include: "yum", "up2date", "apt" (for
-   * all Debian derivatives), "portage", "pisi", "pacman",
-   * "urpmi", "zypper". Future versions of libguestfs may
-   * return other strings.
+   * Possible strings include: "yum", "dnf", "up2date", "apt"
+   * (for all Debian derivatives), "portage", "pisi",
+   * "pacman", "urpmi", "zypper". Future versions of
+   * libguestfs may return other strings.
    * <p>
    * Please read "INSPECTION" in guestfs(3) for more details.
    * <p>
@@ -8854,6 +9286,11 @@ public class GuestFS {
    * If the optional flag "followsymlinks" is true, then a
    * symlink (or chain of symlinks) that ends with a block
    * device also causes the function to return true.
+   * <p>
+   * This call only looks at files within the guest
+   * filesystem. Libguestfs partitions and block devices (eg.
+   * "/dev/sda") cannot be used as the "path" parameter of
+   * this call.
    * <p>
    * See also "g.stat".
    * <p>
@@ -12022,6 +12459,9 @@ public class GuestFS {
    * mode "mode". It is just a convenient wrapper around
    * "g.mknod".
    * <p>
+   * Unlike with "g.mknod", "mode" must contain only
+   * permissions bits.
+   * <p>
    * The mode actually set is affected by the umask.
    * <p>
    * @throws LibGuestFSException
@@ -12125,8 +12565,16 @@ public class GuestFS {
       sectorsize = ((Integer) _optobj).intValue();
       _optargs_bitmask |= 8L;
     }
+    String label = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("label");
+    if (_optobj != null) {
+      label = ((String) _optobj);
+      _optargs_bitmask |= 16L;
+    }
 
-    _mkfs (g, fstype, device, _optargs_bitmask, blocksize, features, inode, sectorsize);
+    _mkfs (g, fstype, device, _optargs_bitmask, blocksize, features, inode, sectorsize, label);
   }
 
   public void mkfs (String fstype, String device)
@@ -12147,7 +12595,7 @@ public class GuestFS {
     mkfs (fstype, device, null);
   }
 
-  private native void _mkfs (long g, String fstype, String device, long _optargs_bitmask, int blocksize, String features, int inode, int sectorsize)
+  private native void _mkfs (long g, String fstype, String device, long _optargs_bitmask, int blocksize, String features, int inode, int sectorsize, String label)
     throws LibGuestFSException;
 
   /**
@@ -12413,6 +12861,9 @@ public class GuestFS {
    * "devminor". It is just a convenient wrapper around
    * "g.mknod".
    * <p>
+   * Unlike with "g.mknod", "mode" must contain only
+   * permissions bits.
+   * <p>
    * The mode actually set is affected by the umask.
    * <p>
    * @throws LibGuestFSException
@@ -12436,6 +12887,9 @@ public class GuestFS {
    * mode "mode" and device major/minor "devmajor" and
    * "devminor". It is just a convenient wrapper around
    * "g.mknod".
+   * <p>
+   * Unlike with "g.mknod", "mode" must contain only
+   * permissions bits.
    * <p>
    * The mode actually set is affected by the umask.
    * <p>
@@ -13893,10 +14347,10 @@ public class GuestFS {
    * ping the guest daemon
    * <p>
    * This is a test probe into the guestfs daemon running
-   * inside the hypervisor. Calling this function checks that
-   * the daemon responds to the ping message, without
-   * affecting the daemon or attached block device(s) in any
-   * other way.
+   * inside the libguestfs appliance. Calling this function
+   * checks that the daemon responds to the ping message,
+   * without affecting the daemon or attached block device(s)
+   * in any other way.
    * <p>
    * @throws LibGuestFSException
    */

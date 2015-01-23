@@ -579,11 +579,19 @@ L<http://libguestfs.org/>.
 
 =head1 АВТОРИ
 
+Matthew Booth
+
+John Eckersberg
+
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
-Matthew Booth
+Mike Latimer
+
+Pino Toscano
+
+Tingting Zheng
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2014
+Copyright (C) 2009-2015 Red Hat Inc.
 

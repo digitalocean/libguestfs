@@ -207,6 +207,8 @@ And hence L<virsh(1)>, L<virt-manager(1)>, and similar tools.
 
 =item Scientific Linux 3, 4, 5, 6, 7
 
+=item Oracle Linux
+
 =item Fedora
 
 =item SLES 10 and up
@@ -567,6 +569,8 @@ first VirtIO disk.
 
 =item B<--vdsm-vm-uuid> UUID
 
+=item B<--vdsm-ovf-output>
+
 Normally the RHEV output mode chooses random UUIDs for the target guest.
 However VDSM needs to control the UUIDs and passes these parameters when
 virt-v2v runs under VDSM control.  The parameters control:
@@ -585,7 +589,11 @@ for each guest disk)
 
 =item *
 
-the VM and OVF file (I<--vdsm-vm-uuid>).
+the OVF file name (I<--vdsm-vm-uuid>).
+
+=item *
+
+the OVF output directory (default current directory) (I<--vdsm-ovf-output>).
 
 =back
 
@@ -821,7 +829,12 @@ where:
 
 =item C<user@>
 
-is the (optional, but recommended) user to connect as
+is the (optional, but recommended) user to connect as.
+
+If the username contains a backslash (eg. C<DOMAIN\USER>) then you will need
+to URI-escape that character using C<%5c>: C<DOMAIN%5cUSER> (5c is the
+hexadecimal ASCII code for backslash.)  Other punctuation may also have to
+be escaped.
 
 =item C<server>
 
@@ -1453,5 +1466,5 @@ Tingting Zheng
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2014 Red Hat Inc.
+Copyright (C) 2009-2015 Red Hat Inc.
 

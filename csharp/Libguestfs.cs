@@ -3,7 +3,7 @@
 //   generator/ *.ml
 // ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 //
-// Copyright (C) 2009-2014 Red Hat Inc.
+// Copyright (C) 2009-2015 Red Hat Inc.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -122,6 +122,13 @@ namespace Guestfs
       string app2_spare2;
       string app2_spare3;
       string app2_spare4;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    public class _btrfsqgroup {
+      string btrfsqgroup_id;
+      ulong btrfsqgroup_rfer;
+      ulong btrfsqgroup_excl;
     }
 
     [StructLayout (LayoutKind.Sequential)]
@@ -1030,6 +1037,48 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_balance_cancel (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// cancel a running or paused balance
+    /// </summary>
+    public void btrfs_balance_cancel (string path)
+    {
+      int r;
+      r = guestfs_btrfs_balance_cancel (_handle, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_balance_pause (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// pause a running balance
+    /// </summary>
+    public void btrfs_balance_pause (string path)
+    {
+      int r;
+      r = guestfs_btrfs_balance_pause (_handle, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_balance_resume (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// resume a paused balance
+    /// </summary>
+    public void btrfs_balance_resume (string path)
+    {
+      int r;
+      r = guestfs_btrfs_balance_resume (_handle, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_btrfs_device_add (IntPtr h, [In] string[] devices, [In] string fs);
 
     /// <summary>
@@ -1072,6 +1121,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_filesystem_defragment_argv (IntPtr h, [In] string path, void *);
+
+    /// <summary>
+    /// defragment a file or directory
+    /// </summary>
+    public void btrfs_filesystem_defragment (string path)
+    {
+      int r;
+      r = guestfs_btrfs_filesystem_defragment_argv (_handle, path, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_btrfs_filesystem_resize_argv (IntPtr h, [In] string mountpoint, void *);
 
     /// <summary>
@@ -1109,6 +1172,189 @@ namespace Guestfs
     {
       int r;
       r = guestfs_btrfs_fsck_argv (_handle, device, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_qgroup_assign (IntPtr h, [In] string src, [In] string dst, [In] string path);
+
+    /// <summary>
+    /// add a qgroup to a parent qgroup
+    /// </summary>
+    public void btrfs_qgroup_assign (string src, string dst, string path)
+    {
+      int r;
+      r = guestfs_btrfs_qgroup_assign (_handle, src, dst, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_qgroup_create (IntPtr h, [In] string qgroupid, [In] string subvolume);
+
+    /// <summary>
+    /// create a subvolume quota group
+    /// </summary>
+    public void btrfs_qgroup_create (string qgroupid, string subvolume)
+    {
+      int r;
+      r = guestfs_btrfs_qgroup_create (_handle, qgroupid, subvolume);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_qgroup_destroy (IntPtr h, [In] string qgroupid, [In] string subvolume);
+
+    /// <summary>
+    /// destroy a subvolume quota group
+    /// </summary>
+    public void btrfs_qgroup_destroy (string qgroupid, string subvolume)
+    {
+      int r;
+      r = guestfs_btrfs_qgroup_destroy (_handle, qgroupid, subvolume);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_qgroup_limit (IntPtr h, [In] string subvolume, long size);
+
+    /// <summary>
+    /// limit the size of a subvolume
+    /// </summary>
+    public void btrfs_qgroup_limit (string subvolume, long size)
+    {
+      int r;
+      r = guestfs_btrfs_qgroup_limit (_handle, subvolume, size);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_qgroup_remove (IntPtr h, [In] string src, [In] string dst, [In] string path);
+
+    /// <summary>
+    /// remove a qgroup from its parent qgroup
+    /// </summary>
+    public void btrfs_qgroup_remove (string src, string dst, string path)
+    {
+      int r;
+      r = guestfs_btrfs_qgroup_remove (_handle, src, dst, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _btrfsqgroup[] guestfs_btrfs_qgroup_show (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// show subvolume quota groups
+    /// </summary>
+    public _btrfsqgroup[] btrfs_qgroup_show (string path)
+    {
+      _btrfsqgroup[] r;
+      r = guestfs_btrfs_qgroup_show (_handle, path);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_quota_enable (IntPtr h, [In] string fs, bool enable);
+
+    /// <summary>
+    /// enable or disable subvolume quota support
+    /// </summary>
+    public void btrfs_quota_enable (string fs, bool enable)
+    {
+      int r;
+      r = guestfs_btrfs_quota_enable (_handle, fs, enable);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_quota_rescan (IntPtr h, [In] string fs);
+
+    /// <summary>
+    /// trash all qgroup numbers and scan the metadata again with the current config
+    /// </summary>
+    public void btrfs_quota_rescan (string fs)
+    {
+      int r;
+      r = guestfs_btrfs_quota_rescan (_handle, fs);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_rescue_chunk_recover (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// recover the chunk tree of btrfs filesystem
+    /// </summary>
+    public void btrfs_rescue_chunk_recover (string device)
+    {
+      int r;
+      r = guestfs_btrfs_rescue_chunk_recover (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_rescue_super_recover (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// recover bad superblocks from good copies
+    /// </summary>
+    public void btrfs_rescue_super_recover (string device)
+    {
+      int r;
+      r = guestfs_btrfs_rescue_super_recover (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_scrub_cancel (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// cancel a running scrub
+    /// </summary>
+    public void btrfs_scrub_cancel (string path)
+    {
+      int r;
+      r = guestfs_btrfs_scrub_cancel (_handle, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_scrub_resume (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// resume a previously canceled or interrupted scrub
+    /// </summary>
+    public void btrfs_scrub_resume (string path)
+    {
+      int r;
+      r = guestfs_btrfs_scrub_resume (_handle, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_scrub_start (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// read all data from all disks and verify checksums
+    /// </summary>
+    public void btrfs_scrub_start (string path)
+    {
+      int r;
+      r = guestfs_btrfs_scrub_start (_handle, path);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -1161,6 +1407,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_btrfs_subvolume_get_default (IntPtr h, [In] string fs);
+
+    /// <summary>
+    /// get the default subvolume or snapshot of a filesystem
+    /// </summary>
+    public long btrfs_subvolume_get_default (string fs)
+    {
+      long r;
+      r = guestfs_btrfs_subvolume_get_default (_handle, fs);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern _btrfssubvolume[] guestfs_btrfs_subvolume_list (IntPtr h, [In] string fs);
 
     /// <summary>
@@ -1190,6 +1451,24 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_btrfs_subvolume_show (IntPtr h, [In] string subvolume);
+
+    /// <summary>
+    /// return detailed information of the subvolume
+    /// </summary>
+    public Hashtable btrfs_subvolume_show (string subvolume)
+    {
+      string[] r;
+      r = guestfs_btrfs_subvolume_show (_handle, subvolume);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      Hashtable rr = new Hashtable ();
+      for (size_t i = 0; i < r.Length; i += 2)
+        rr.Add (r[i], r[i+1]);
+      return rr;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_btrfs_subvolume_snapshot_opts_argv (IntPtr h, [In] string source, [In] string dest, void *);
 
     /// <summary>
@@ -1206,6 +1485,21 @@ namespace Guestfs
     public void btrfs_subvolume_snapshot_opts (string source, string dest)
     {
       btrfs_subvolume_snapshot (source, dest);
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_c_pointer (IntPtr h);
+
+    /// <summary>
+    /// return the C pointer to the guestfs_h handle
+    /// </summary>
+    public long c_pointer ()
+    {
+      long r;
+      r = guestfs_c_pointer (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
     }
 
     [DllImport ("libguestfs.so.0")]

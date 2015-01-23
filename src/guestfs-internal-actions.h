@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -174,5 +174,6 @@ extern int guestfs__set_backend_setting (guestfs_h *g, const char *name, const c
 extern int guestfs__clear_backend_setting (guestfs_h *g, const char *name);
 extern struct guestfs_stat *guestfs__stat (guestfs_h *g, const char *path);
 extern struct guestfs_stat *guestfs__lstat (guestfs_h *g, const char *path);
+extern int64_t guestfs__c_pointer (guestfs_h *g);
 
 #endif /* GUESTFS_INTERNAL_ACTIONS_H_ */

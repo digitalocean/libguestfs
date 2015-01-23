@@ -166,8 +166,10 @@ AC_DEFUN([gl_EARLY],
   # Code from module fwrite-tests:
   # Code from module getaddrinfo:
   # Code from module getaddrinfo-tests:
+  # Code from module getcwd:
   # Code from module getcwd-lgpl:
   # Code from module getcwd-lgpl-tests:
+  # Code from module getcwd-tests:
   # Code from module getdelim:
   # Code from module getdelim-tests:
   # Code from module getdtablesize:
@@ -309,6 +311,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module readlinkat:
   # Code from module readlinkat-tests:
   # Code from module realloc-posix:
+  # Code from module rewinddir:
   # Code from module rmdir:
   # Code from module rmdir-tests:
   # Code from module root-uid:
@@ -462,6 +465,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module xalloc-die:
   # Code from module xalloc-die-tests:
   # Code from module xalloc-oversized:
+  # Code from module xgetcwd:
   # Code from module xsize:
   # Code from module xstrtol:
   # Code from module xstrtol-tests:
@@ -652,6 +656,13 @@ AC_SUBST([LTALLOCA])
     AC_LIBOBJ([gai_strerror])
   fi
   gl_NETDB_MODULE_INDICATOR([getaddrinfo])
+  gl_FUNC_GETCWD
+  if test $REPLACE_GETCWD = 1; then
+    AC_LIBOBJ([getcwd])
+    gl_PREREQ_GETCWD
+  fi
+  gl_MODULE_INDICATOR([getcwd])
+  gl_UNISTD_MODULE_INDICATOR([getcwd])
   gl_FUNC_GETCWD_LGPL
   if test $REPLACE_GETCWD = 1; then
     AC_LIBOBJ([getcwd-lgpl])
@@ -928,6 +939,11 @@ AC_SUBST([LTALLOCA])
     AC_LIBOBJ([realloc])
   fi
   gl_STDLIB_MODULE_INDICATOR([realloc-posix])
+  gl_FUNC_REWINDDIR
+  if test $HAVE_REWINDDIR = 0; then
+    AC_LIBOBJ([rewinddir])
+  fi
+  gl_DIRENT_MODULE_INDICATOR([rewinddir])
   gl_PREREQ_SAFE_READ
   gl_PREREQ_SAFE_WRITE
   gl_SAVE_CWD
@@ -1103,6 +1119,7 @@ AC_SUBST([LTALLOCA])
   fi
   gl_UNISTD_MODULE_INDICATOR([write])
   gl_XALLOC
+  gl_XGETCWD
   gl_XSIZE
   gl_XSTRTOL
   AC_LIBOBJ([xstrtoll])
@@ -1568,6 +1585,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/gai_strerror.c
   lib/getaddrinfo.c
   lib/getcwd-lgpl.c
+  lib/getcwd.c
   lib/getdelim.c
   lib/getdtablesize.c
   lib/getline.c
@@ -1662,6 +1680,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/realloc.c
   lib/ref-add.sin
   lib/ref-del.sin
+  lib/rewinddir.c
   lib/safe-read.c
   lib/safe-read.h
   lib/safe-write.c
@@ -1746,6 +1765,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/xalloc-oversized.h
   lib/xalloc.h
   lib/xasprintf.c
+  lib/xgetcwd.c
+  lib/xgetcwd.h
   lib/xmalloc.c
   lib/xsize.c
   lib/xsize.h
@@ -1814,6 +1835,8 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/fts.m4
   m4/futimens.m4
   m4/getaddrinfo.m4
+  m4/getcwd-abort-bug.m4
+  m4/getcwd-path-max.m4
   m4/getcwd.m4
   m4/getdelim.m4
   m4/getdtablesize.m4
@@ -1917,6 +1940,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/readlink.m4
   m4/readlinkat.m4
   m4/realloc.m4
+  m4/rewinddir.m4
   m4/rmdir.m4
   m4/safe-read.m4
   m4/safe-write.m4
@@ -1998,6 +2022,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/wint_t.m4
   m4/write.m4
   m4/xalloc.m4
+  m4/xgetcwd.m4
   m4/xsize.m4
   m4/xstrtol.m4
   m4/xvasprintf.m4
@@ -2072,6 +2097,8 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-fwrite.c
   tests/test-getaddrinfo.c
   tests/test-getcwd-lgpl.c
+  tests/test-getcwd.c
+  tests/test-getcwd.sh
   tests/test-getdelim.c
   tests/test-getdtablesize.c
   tests/test-getline.c

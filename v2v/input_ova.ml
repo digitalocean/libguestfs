@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -167,8 +167,8 @@ object
 
       (* 6: iscsi controller, 5: ide *)
       match controller with
-      | 6 -> Some `SCSI
-      | 5 -> Some `IDE
+      | 6 -> Some Source_SCSI
+      | 5 -> Some Source_IDE
       | 0 ->
         warning (f_"ova disk has no parent controller, please report this as a bug supplying the *.ovf file extracted from the ova");
         None
@@ -272,8 +272,8 @@ object
 
         let typ =
           match id with
-            | 14 -> `Floppy
-            | 15 | 16 -> `CDROM
+            | 14 -> Floppy
+            | 15 | 16 -> CDROM
             | _ -> assert false in
         let disk = {
           s_removable_type = typ;

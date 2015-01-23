@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,18 +80,38 @@ extern struct command_entry blockdev_setbsz_cmd_entry;
 extern struct command_entry blockdev_setra_cmd_entry;
 extern struct command_entry blockdev_setro_cmd_entry;
 extern struct command_entry blockdev_setrw_cmd_entry;
+extern struct command_entry btrfs_balance_cancel_cmd_entry;
+extern struct command_entry btrfs_balance_pause_cmd_entry;
+extern struct command_entry btrfs_balance_resume_cmd_entry;
 extern struct command_entry btrfs_device_add_cmd_entry;
 extern struct command_entry btrfs_device_delete_cmd_entry;
 extern struct command_entry btrfs_filesystem_balance_cmd_entry;
+extern struct command_entry btrfs_filesystem_defragment_cmd_entry;
 extern struct command_entry btrfs_filesystem_resize_cmd_entry;
 extern struct command_entry btrfs_filesystem_sync_cmd_entry;
 extern struct command_entry btrfs_fsck_cmd_entry;
+extern struct command_entry btrfs_qgroup_assign_cmd_entry;
+extern struct command_entry btrfs_qgroup_create_cmd_entry;
+extern struct command_entry btrfs_qgroup_destroy_cmd_entry;
+extern struct command_entry btrfs_qgroup_limit_cmd_entry;
+extern struct command_entry btrfs_qgroup_remove_cmd_entry;
+extern struct command_entry btrfs_qgroup_show_cmd_entry;
+extern struct command_entry btrfs_quota_enable_cmd_entry;
+extern struct command_entry btrfs_quota_rescan_cmd_entry;
+extern struct command_entry btrfs_rescue_chunk_recover_cmd_entry;
+extern struct command_entry btrfs_rescue_super_recover_cmd_entry;
+extern struct command_entry btrfs_scrub_cancel_cmd_entry;
+extern struct command_entry btrfs_scrub_resume_cmd_entry;
+extern struct command_entry btrfs_scrub_start_cmd_entry;
 extern struct command_entry btrfs_set_seeding_cmd_entry;
 extern struct command_entry btrfs_subvolume_create_cmd_entry;
 extern struct command_entry btrfs_subvolume_delete_cmd_entry;
+extern struct command_entry btrfs_subvolume_get_default_cmd_entry;
 extern struct command_entry btrfs_subvolume_list_cmd_entry;
 extern struct command_entry btrfs_subvolume_set_default_cmd_entry;
+extern struct command_entry btrfs_subvolume_show_cmd_entry;
 extern struct command_entry btrfs_subvolume_snapshot_cmd_entry;
+extern struct command_entry c_pointer_cmd_entry;
 extern struct command_entry canonical_device_name_cmd_entry;
 extern struct command_entry cap_get_file_cmd_entry;
 extern struct command_entry cap_set_file_cmd_entry;
@@ -669,18 +689,53 @@ blockdev_setro, &blockdev_setro_cmd_entry
 blockdev-setro, &blockdev_setro_cmd_entry
 blockdev_setrw, &blockdev_setrw_cmd_entry
 blockdev-setrw, &blockdev_setrw_cmd_entry
+btrfs_balance_cancel, &btrfs_balance_cancel_cmd_entry
+btrfs-balance-cancel, &btrfs_balance_cancel_cmd_entry
+btrfs_balance_pause, &btrfs_balance_pause_cmd_entry
+btrfs-balance-pause, &btrfs_balance_pause_cmd_entry
+btrfs_balance_resume, &btrfs_balance_resume_cmd_entry
+btrfs-balance-resume, &btrfs_balance_resume_cmd_entry
 btrfs_device_add, &btrfs_device_add_cmd_entry
 btrfs-device-add, &btrfs_device_add_cmd_entry
 btrfs_device_delete, &btrfs_device_delete_cmd_entry
 btrfs-device-delete, &btrfs_device_delete_cmd_entry
 btrfs_filesystem_balance, &btrfs_filesystem_balance_cmd_entry
 btrfs-filesystem-balance, &btrfs_filesystem_balance_cmd_entry
+btrfs-balance, &btrfs_filesystem_balance_cmd_entry
+btrfs_filesystem_defragment, &btrfs_filesystem_defragment_cmd_entry
+btrfs-filesystem-defragment, &btrfs_filesystem_defragment_cmd_entry
 btrfs_filesystem_resize, &btrfs_filesystem_resize_cmd_entry
 btrfs-filesystem-resize, &btrfs_filesystem_resize_cmd_entry
 btrfs_filesystem_sync, &btrfs_filesystem_sync_cmd_entry
 btrfs-filesystem-sync, &btrfs_filesystem_sync_cmd_entry
 btrfs_fsck, &btrfs_fsck_cmd_entry
 btrfs-fsck, &btrfs_fsck_cmd_entry
+btrfs_qgroup_assign, &btrfs_qgroup_assign_cmd_entry
+btrfs-qgroup-assign, &btrfs_qgroup_assign_cmd_entry
+btrfs_qgroup_create, &btrfs_qgroup_create_cmd_entry
+btrfs-qgroup-create, &btrfs_qgroup_create_cmd_entry
+btrfs_qgroup_destroy, &btrfs_qgroup_destroy_cmd_entry
+btrfs-qgroup-destroy, &btrfs_qgroup_destroy_cmd_entry
+btrfs_qgroup_limit, &btrfs_qgroup_limit_cmd_entry
+btrfs-qgroup-limit, &btrfs_qgroup_limit_cmd_entry
+btrfs_qgroup_remove, &btrfs_qgroup_remove_cmd_entry
+btrfs-qgroup-remove, &btrfs_qgroup_remove_cmd_entry
+btrfs_qgroup_show, &btrfs_qgroup_show_cmd_entry
+btrfs-qgroup-show, &btrfs_qgroup_show_cmd_entry
+btrfs_quota_enable, &btrfs_quota_enable_cmd_entry
+btrfs-quota-enable, &btrfs_quota_enable_cmd_entry
+btrfs_quota_rescan, &btrfs_quota_rescan_cmd_entry
+btrfs-quota-rescan, &btrfs_quota_rescan_cmd_entry
+btrfs_rescue_chunk_recover, &btrfs_rescue_chunk_recover_cmd_entry
+btrfs-rescue-chunk-recover, &btrfs_rescue_chunk_recover_cmd_entry
+btrfs_rescue_super_recover, &btrfs_rescue_super_recover_cmd_entry
+btrfs-rescue-super-recover, &btrfs_rescue_super_recover_cmd_entry
+btrfs_scrub_cancel, &btrfs_scrub_cancel_cmd_entry
+btrfs-scrub-cancel, &btrfs_scrub_cancel_cmd_entry
+btrfs_scrub_resume, &btrfs_scrub_resume_cmd_entry
+btrfs-scrub-resume, &btrfs_scrub_resume_cmd_entry
+btrfs_scrub_start, &btrfs_scrub_start_cmd_entry
+btrfs-scrub-start, &btrfs_scrub_start_cmd_entry
 btrfs_set_seeding, &btrfs_set_seeding_cmd_entry
 btrfs-set-seeding, &btrfs_set_seeding_cmd_entry
 btrfs_subvolume_create, &btrfs_subvolume_create_cmd_entry
@@ -688,13 +743,19 @@ btrfs-subvolume-create, &btrfs_subvolume_create_cmd_entry
 btrfs-subvolume-create-opts, &btrfs_subvolume_create_cmd_entry
 btrfs_subvolume_delete, &btrfs_subvolume_delete_cmd_entry
 btrfs-subvolume-delete, &btrfs_subvolume_delete_cmd_entry
+btrfs_subvolume_get_default, &btrfs_subvolume_get_default_cmd_entry
+btrfs-subvolume-get-default, &btrfs_subvolume_get_default_cmd_entry
 btrfs_subvolume_list, &btrfs_subvolume_list_cmd_entry
 btrfs-subvolume-list, &btrfs_subvolume_list_cmd_entry
 btrfs_subvolume_set_default, &btrfs_subvolume_set_default_cmd_entry
 btrfs-subvolume-set-default, &btrfs_subvolume_set_default_cmd_entry
+btrfs_subvolume_show, &btrfs_subvolume_show_cmd_entry
+btrfs-subvolume-show, &btrfs_subvolume_show_cmd_entry
 btrfs_subvolume_snapshot, &btrfs_subvolume_snapshot_cmd_entry
 btrfs-subvolume-snapshot, &btrfs_subvolume_snapshot_cmd_entry
 btrfs-subvolume-snapshot-opts, &btrfs_subvolume_snapshot_cmd_entry
+c_pointer, &c_pointer_cmd_entry
+c-pointer, &c_pointer_cmd_entry
 canonical_device_name, &canonical_device_name_cmd_entry
 canonical-device-name, &canonical_device_name_cmd_entry
 cap_get_file, &cap_get_file_cmd_entry

@@ -518,6 +518,15 @@ EXTRA_DIST += test-getcwd-lgpl.c signature.h macros.h
 
 ## end   gnulib module getcwd-lgpl-tests
 
+## begin gnulib module getcwd-tests
+
+TESTS += test-getcwd.sh
+check_PROGRAMS += test-getcwd
+test_getcwd_LDADD = $(LDADD) @LIBINTL@
+EXTRA_DIST += test-getcwd.c test-getcwd.sh
+
+## end   gnulib module getcwd-tests
+
 ## begin gnulib module getdelim-tests
 
 TESTS += test-getdelim

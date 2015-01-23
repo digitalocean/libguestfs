@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -113,6 +113,12 @@ type application2 = {
   app2_spare2 : string;
   app2_spare3 : string;
   app2_spare4 : string;
+}
+
+type btrfsqgroup = {
+  btrfsqgroup_id : string;
+  btrfsqgroup_rfer : int64;
+  btrfsqgroup_excl : int64;
 }
 
 type btrfssubvolume = {
@@ -386,20 +392,40 @@ external blockdev_setbsz : t -> string -> int -> unit = "ocaml_guestfs_blockdev_
 external blockdev_setra : t -> string -> int -> unit = "ocaml_guestfs_blockdev_setra"
 external blockdev_setro : t -> string -> unit = "ocaml_guestfs_blockdev_setro"
 external blockdev_setrw : t -> string -> unit = "ocaml_guestfs_blockdev_setrw"
+external btrfs_balance_cancel : t -> string -> unit = "ocaml_guestfs_btrfs_balance_cancel"
+external btrfs_balance_pause : t -> string -> unit = "ocaml_guestfs_btrfs_balance_pause"
+external btrfs_balance_resume : t -> string -> unit = "ocaml_guestfs_btrfs_balance_resume"
 external btrfs_device_add : t -> string array -> string -> unit = "ocaml_guestfs_btrfs_device_add"
 external btrfs_device_delete : t -> string array -> string -> unit = "ocaml_guestfs_btrfs_device_delete"
 external btrfs_filesystem_balance : t -> string -> unit = "ocaml_guestfs_btrfs_filesystem_balance"
+external btrfs_filesystem_defragment : t -> ?flush:bool -> ?compress:string -> string -> unit = "ocaml_guestfs_btrfs_filesystem_defragment"
 external btrfs_filesystem_resize : t -> ?size:int64 -> string -> unit = "ocaml_guestfs_btrfs_filesystem_resize"
 external btrfs_filesystem_sync : t -> string -> unit = "ocaml_guestfs_btrfs_filesystem_sync"
 external btrfs_fsck : t -> ?superblock:int64 -> ?repair:bool -> string -> unit = "ocaml_guestfs_btrfs_fsck"
+external btrfs_qgroup_assign : t -> string -> string -> string -> unit = "ocaml_guestfs_btrfs_qgroup_assign"
+external btrfs_qgroup_create : t -> string -> string -> unit = "ocaml_guestfs_btrfs_qgroup_create"
+external btrfs_qgroup_destroy : t -> string -> string -> unit = "ocaml_guestfs_btrfs_qgroup_destroy"
+external btrfs_qgroup_limit : t -> string -> int64 -> unit = "ocaml_guestfs_btrfs_qgroup_limit"
+external btrfs_qgroup_remove : t -> string -> string -> string -> unit = "ocaml_guestfs_btrfs_qgroup_remove"
+external btrfs_qgroup_show : t -> string -> btrfsqgroup array = "ocaml_guestfs_btrfs_qgroup_show"
+external btrfs_quota_enable : t -> string -> bool -> unit = "ocaml_guestfs_btrfs_quota_enable"
+external btrfs_quota_rescan : t -> string -> unit = "ocaml_guestfs_btrfs_quota_rescan"
+external btrfs_rescue_chunk_recover : t -> string -> unit = "ocaml_guestfs_btrfs_rescue_chunk_recover"
+external btrfs_rescue_super_recover : t -> string -> unit = "ocaml_guestfs_btrfs_rescue_super_recover"
+external btrfs_scrub_cancel : t -> string -> unit = "ocaml_guestfs_btrfs_scrub_cancel"
+external btrfs_scrub_resume : t -> string -> unit = "ocaml_guestfs_btrfs_scrub_resume"
+external btrfs_scrub_start : t -> string -> unit = "ocaml_guestfs_btrfs_scrub_start"
 external btrfs_set_seeding : t -> string -> bool -> unit = "ocaml_guestfs_btrfs_set_seeding"
 external btrfs_subvolume_create : t -> ?qgroupid:string -> string -> unit = "ocaml_guestfs_btrfs_subvolume_create"
 let btrfs_subvolume_create_opts = btrfs_subvolume_create
 external btrfs_subvolume_delete : t -> string -> unit = "ocaml_guestfs_btrfs_subvolume_delete"
+external btrfs_subvolume_get_default : t -> string -> int64 = "ocaml_guestfs_btrfs_subvolume_get_default"
 external btrfs_subvolume_list : t -> string -> btrfssubvolume array = "ocaml_guestfs_btrfs_subvolume_list"
 external btrfs_subvolume_set_default : t -> int64 -> string -> unit = "ocaml_guestfs_btrfs_subvolume_set_default"
+external btrfs_subvolume_show : t -> string -> (string * string) list = "ocaml_guestfs_btrfs_subvolume_show"
 external btrfs_subvolume_snapshot : t -> ?ro:bool -> ?qgroupid:string -> string -> string -> unit = "ocaml_guestfs_btrfs_subvolume_snapshot"
 let btrfs_subvolume_snapshot_opts = btrfs_subvolume_snapshot
+external c_pointer : t -> int64 = "ocaml_guestfs_c_pointer"
 external canonical_device_name : t -> string -> string = "ocaml_guestfs_canonical_device_name"
 external cap_get_file : t -> string -> string = "ocaml_guestfs_cap_get_file"
 external cap_set_file : t -> string -> string -> unit = "ocaml_guestfs_cap_set_file"
@@ -694,7 +720,7 @@ external mke2journal : t -> int -> string -> unit = "ocaml_guestfs_mke2journal"
 external mke2journal_L : t -> int -> string -> string -> unit = "ocaml_guestfs_mke2journal_L"
 external mke2journal_U : t -> int -> string -> string -> unit = "ocaml_guestfs_mke2journal_U"
 external mkfifo : t -> int -> string -> unit = "ocaml_guestfs_mkfifo"
-external mkfs : t -> ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> string -> string -> unit = "ocaml_guestfs_mkfs_byte" "ocaml_guestfs_mkfs"
+external mkfs : t -> ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> ?label:string -> string -> string -> unit = "ocaml_guestfs_mkfs_byte" "ocaml_guestfs_mkfs"
 let mkfs_opts = mkfs
 external mkfs_b : t -> string -> int -> string -> unit = "ocaml_guestfs_mkfs_b"
 external mkfs_btrfs : t -> ?allocstart:int64 -> ?bytecount:int64 -> ?datatype:string -> ?leafsize:int -> ?label:string -> ?metadata:string -> ?nodesize:int -> ?sectorsize:int -> string array -> unit = "ocaml_guestfs_mkfs_btrfs_byte" "ocaml_guestfs_mkfs_btrfs"
@@ -962,20 +988,40 @@ class guestfs ?environment ?close_on_exit () =
     method blockdev_setra = blockdev_setra g
     method blockdev_setro = blockdev_setro g
     method blockdev_setrw = blockdev_setrw g
+    method btrfs_balance_cancel = btrfs_balance_cancel g
+    method btrfs_balance_pause = btrfs_balance_pause g
+    method btrfs_balance_resume = btrfs_balance_resume g
     method btrfs_device_add = btrfs_device_add g
     method btrfs_device_delete = btrfs_device_delete g
     method btrfs_filesystem_balance = btrfs_filesystem_balance g
+    method btrfs_filesystem_defragment = btrfs_filesystem_defragment g
     method btrfs_filesystem_resize = btrfs_filesystem_resize g
     method btrfs_filesystem_sync = btrfs_filesystem_sync g
     method btrfs_fsck = btrfs_fsck g
+    method btrfs_qgroup_assign = btrfs_qgroup_assign g
+    method btrfs_qgroup_create = btrfs_qgroup_create g
+    method btrfs_qgroup_destroy = btrfs_qgroup_destroy g
+    method btrfs_qgroup_limit = btrfs_qgroup_limit g
+    method btrfs_qgroup_remove = btrfs_qgroup_remove g
+    method btrfs_qgroup_show = btrfs_qgroup_show g
+    method btrfs_quota_enable = btrfs_quota_enable g
+    method btrfs_quota_rescan = btrfs_quota_rescan g
+    method btrfs_rescue_chunk_recover = btrfs_rescue_chunk_recover g
+    method btrfs_rescue_super_recover = btrfs_rescue_super_recover g
+    method btrfs_scrub_cancel = btrfs_scrub_cancel g
+    method btrfs_scrub_resume = btrfs_scrub_resume g
+    method btrfs_scrub_start = btrfs_scrub_start g
     method btrfs_set_seeding = btrfs_set_seeding g
     method btrfs_subvolume_create = btrfs_subvolume_create g
     method btrfs_subvolume_create_opts = self#btrfs_subvolume_create
     method btrfs_subvolume_delete = btrfs_subvolume_delete g
+    method btrfs_subvolume_get_default = btrfs_subvolume_get_default g
     method btrfs_subvolume_list = btrfs_subvolume_list g
     method btrfs_subvolume_set_default = btrfs_subvolume_set_default g
+    method btrfs_subvolume_show = btrfs_subvolume_show g
     method btrfs_subvolume_snapshot = btrfs_subvolume_snapshot g
     method btrfs_subvolume_snapshot_opts = self#btrfs_subvolume_snapshot
+    method c_pointer () = c_pointer g
     method canonical_device_name = canonical_device_name g
     method cap_get_file = cap_get_file g
     method cap_set_file = cap_set_file g

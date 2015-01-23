@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,17 +77,36 @@ extern int optgroup_zerofree_available (void);
   int optgroup_blkdiscardzeroes_available (void) { return 0; }
 
 #define OPTGROUP_BTRFS_NOT_AVAILABLE \
+  int __attribute__((noreturn)) do_btrfs_balance_cancel (const char *path) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_balance_pause (const char *path) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_balance_resume (const char *path) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_device_add (char *const *devices, const char *fs) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_device_delete (char *const *devices, const char *fs) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_filesystem_balance (const char *fs) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_filesystem_defragment (const char *path, int flush, const char *compress) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_filesystem_resize (const char *mountpoint, int64_t size) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_filesystem_sync (const char *fs) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_fsck (const char *device, int64_t superblock, int repair) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_qgroup_assign (const char *src, const char *dst, const char *path) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_qgroup_create (const char *qgroupid, const char *subvolume) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_qgroup_destroy (const char *qgroupid, const char *subvolume) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_qgroup_limit (const char *subvolume, int64_t size) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_qgroup_remove (const char *src, const char *dst, const char *path) { abort (); } \
+  guestfs_int_btrfsqgroup_list *__attribute__((noreturn)) do_btrfs_qgroup_show (const char *path) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_quota_enable (const mountable_t *fs, int enable) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_quota_rescan (const mountable_t *fs) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_rescue_chunk_recover (const char *device) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_rescue_super_recover (const char *device) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_scrub_cancel (const char *path) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_scrub_resume (const char *path) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_scrub_start (const char *path) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_set_seeding (const char *device, int seeding) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_subvolume_create (const char *dest, const char *qgroupid) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_subvolume_delete (const char *subvolume) { abort (); } \
+  int64_t __attribute__((noreturn)) do_btrfs_subvolume_get_default (const mountable_t *fs) { abort (); } \
   guestfs_int_btrfssubvolume_list *__attribute__((noreturn)) do_btrfs_subvolume_list (const mountable_t *fs) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_subvolume_set_default (int64_t id, const char *fs) { abort (); } \
+  char **__attribute__((noreturn)) do_btrfs_subvolume_show (const char *subvolume) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_subvolume_snapshot (const char *source, const char *dest, int ro, const char *qgroupid) { abort (); } \
   int __attribute__((noreturn)) do_mkfs_btrfs (char *const *devices, int64_t allocstart, int64_t bytecount, const char *datatype, int leafsize, const char *label, const char *metadata, int nodesize, int sectorsize) { abort (); } \
   int optgroup_btrfs_available (void) { return 0; }

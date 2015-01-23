@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,17 +18,14 @@
 
 (** Poor man's XML DOM, mutable for ease of modification. *)
 
+type element
+type doc = element
+type attr = string * string
+
 type node =
   | PCData of string                    (** Text. *)
   | Comment of string                   (** <!-- comment --> *)
   | Element of element                  (** <element/> with attrs and children *)
-and element = {
-  e_name : string;                      (** Name of element. *)
-  mutable e_attrs : attr list;          (** Attributes. *)
-  mutable e_children : node list;       (** Child elements. *)
-}
-and attr = string * string
-and doc = element
 
 val doc : string -> attr list -> node list -> doc
 (** A quick way to create a document. *)
@@ -51,3 +48,15 @@ val find_node_by_attr : node list -> attr -> node
 (** Find the first DOM element which has a particular attribute
     name=value (not recursively).  If not found, raises
     [Not_found]. *)
+
+val append_attr : attr -> node -> unit
+(** [element] must be an [Element _] node.  [append_attr attr element]
+    appends [attr] to the attributes of [element].
+
+    This mutates [element]. *)
+
+val append_child : node -> node -> unit
+(** [element] must be an [Element _] node.  [append_child child
+    element] appends [child] to the children of [element].
+
+    This mutates [element]. *)

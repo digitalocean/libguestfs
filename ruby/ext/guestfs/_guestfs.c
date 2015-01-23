@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2810,6 +2810,99 @@ ruby_guestfs_blockdev_setrw (VALUE gv, VALUE devicev)
 
 /*
  * call-seq:
+ *   g.btrfs_balance_cancel(path) -> nil
+ *
+ * cancel a running or paused balance
+ *
+ * Cancel a running balance on a btrfs filesystem.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_balance_cancel+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_cancel]).
+ */
+static VALUE
+ruby_guestfs_btrfs_balance_cancel (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_balance_cancel");
+
+  const char *path = StringValueCStr (pathv);
+
+  int r;
+
+  r = guestfs_btrfs_balance_cancel (g, path);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_balance_pause(path) -> nil
+ *
+ * pause a running balance
+ *
+ * Pause a running balance on a btrfs filesystem.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_balance_pause+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_pause]).
+ */
+static VALUE
+ruby_guestfs_btrfs_balance_pause (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_balance_pause");
+
+  const char *path = StringValueCStr (pathv);
+
+  int r;
+
+  r = guestfs_btrfs_balance_pause (g, path);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_balance_resume(path) -> nil
+ *
+ * resume a paused balance
+ *
+ * Resume a paused balance on a btrfs filesystem.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_balance_resume+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_resume]).
+ */
+static VALUE
+ruby_guestfs_btrfs_balance_resume (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_balance_resume");
+
+  const char *path = StringValueCStr (pathv);
+
+  int r;
+
+  r = guestfs_btrfs_balance_resume (g, path);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
  *   g.btrfs_device_add(devices, fs) -> nil
  *
  * add devices to a btrfs filesystem
@@ -2926,6 +3019,63 @@ ruby_guestfs_btrfs_filesystem_balance (VALUE gv, VALUE fsv)
   int r;
 
   r = guestfs_btrfs_filesystem_balance (g, fs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_filesystem_defragment(path, {optargs...}) -> nil
+ *
+ * defragment a file or directory
+ *
+ * Defragment a file or directory on a btrfs filesystem.
+ * compress is one of zlib or lzo.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_filesystem_defragment+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_defragment]).
+ */
+static VALUE
+ruby_guestfs_btrfs_filesystem_defragment (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_filesystem_defragment");
+
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE pathv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
+  const char *path = StringValueCStr (pathv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_btrfs_filesystem_defragment_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_filesystem_defragment_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("flush")));
+  if (v != Qnil) {
+    optargs_s.flush = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("compress")));
+  if (v != Qnil) {
+    optargs_s.compress = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_btrfs_filesystem_defragment_argv (g, path, optargs);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -3086,6 +3236,438 @@ ruby_guestfs_btrfs_fsck (int argc, VALUE *argv, VALUE gv)
 
 /*
  * call-seq:
+ *   g.btrfs_qgroup_assign(src, dst, path) -> nil
+ *
+ * add a qgroup to a parent qgroup
+ *
+ * Add qgroup "src" to parent qgroup "dst". This command
+ * can group several qgroups into a parent qgroup to share
+ * common limit.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_qgroup_assign+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_assign]).
+ */
+static VALUE
+ruby_guestfs_btrfs_qgroup_assign (VALUE gv, VALUE srcv, VALUE dstv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_qgroup_assign");
+
+  const char *src = StringValueCStr (srcv);
+  const char *dst = StringValueCStr (dstv);
+  const char *path = StringValueCStr (pathv);
+
+  int r;
+
+  r = guestfs_btrfs_qgroup_assign (g, src, dst, path);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_qgroup_create(qgroupid, subvolume) -> nil
+ *
+ * create a subvolume quota group
+ *
+ * Create a quota group (qgroup) for subvolume at
+ * "subvolume".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_qgroup_create+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_create]).
+ */
+static VALUE
+ruby_guestfs_btrfs_qgroup_create (VALUE gv, VALUE qgroupidv, VALUE subvolumev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_qgroup_create");
+
+  const char *qgroupid = StringValueCStr (qgroupidv);
+  const char *subvolume = StringValueCStr (subvolumev);
+
+  int r;
+
+  r = guestfs_btrfs_qgroup_create (g, qgroupid, subvolume);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_qgroup_destroy(qgroupid, subvolume) -> nil
+ *
+ * destroy a subvolume quota group
+ *
+ * Destroy a quota group.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_qgroup_destroy+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_destroy]).
+ */
+static VALUE
+ruby_guestfs_btrfs_qgroup_destroy (VALUE gv, VALUE qgroupidv, VALUE subvolumev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_qgroup_destroy");
+
+  const char *qgroupid = StringValueCStr (qgroupidv);
+  const char *subvolume = StringValueCStr (subvolumev);
+
+  int r;
+
+  r = guestfs_btrfs_qgroup_destroy (g, qgroupid, subvolume);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_qgroup_limit(subvolume, size) -> nil
+ *
+ * limit the size of a subvolume
+ *
+ * Limit the size of a subvolume which's path is
+ * "subvolume". "size" can have suffix of G, M, or K.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_qgroup_limit+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_limit]).
+ */
+static VALUE
+ruby_guestfs_btrfs_qgroup_limit (VALUE gv, VALUE subvolumev, VALUE sizev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_qgroup_limit");
+
+  const char *subvolume = StringValueCStr (subvolumev);
+  long long size = NUM2LL (sizev);
+
+  int r;
+
+  r = guestfs_btrfs_qgroup_limit (g, subvolume, size);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_qgroup_remove(src, dst, path) -> nil
+ *
+ * remove a qgroup from its parent qgroup
+ *
+ * Remove qgroup "src" from the parent qgroup "dst".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_qgroup_remove+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_remove]).
+ */
+static VALUE
+ruby_guestfs_btrfs_qgroup_remove (VALUE gv, VALUE srcv, VALUE dstv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_qgroup_remove");
+
+  const char *src = StringValueCStr (srcv);
+  const char *dst = StringValueCStr (dstv);
+  const char *path = StringValueCStr (pathv);
+
+  int r;
+
+  r = guestfs_btrfs_qgroup_remove (g, src, dst, path);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_qgroup_show(path) -> list
+ *
+ * show subvolume quota groups
+ *
+ * Show all subvolume quota groups in a btrfs filesystem,
+ * inclding their usages.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_qgroup_show+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_show]).
+ */
+static VALUE
+ruby_guestfs_btrfs_qgroup_show (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_qgroup_show");
+
+  const char *path = StringValueCStr (pathv);
+
+  struct guestfs_btrfsqgroup_list *r;
+
+  r = guestfs_btrfs_qgroup_show (g, path);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_ary_new2 (r->len);
+  size_t i;
+  for (i = 0; i < r->len; ++i) {
+    volatile VALUE hv = rb_hash_new ();
+    rb_hash_aset (hv, rb_str_new2 ("btrfsqgroup_id"), rb_str_new2 (r->val[i].btrfsqgroup_id));
+    rb_hash_aset (hv, rb_str_new2 ("btrfsqgroup_rfer"), ULL2NUM (r->val[i].btrfsqgroup_rfer));
+    rb_hash_aset (hv, rb_str_new2 ("btrfsqgroup_excl"), ULL2NUM (r->val[i].btrfsqgroup_excl));
+    rb_ary_push (rv, hv);
+  }
+  guestfs_free_btrfsqgroup_list (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_quota_enable(fs, enable) -> nil
+ *
+ * enable or disable subvolume quota support
+ *
+ * Enable or disable subvolume quota support for filesystem
+ * which contains "path".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_quota_enable+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_quota_enable]).
+ */
+static VALUE
+ruby_guestfs_btrfs_quota_enable (VALUE gv, VALUE fsv, VALUE enablev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_quota_enable");
+
+  const char *fs = StringValueCStr (fsv);
+  int enable = RTEST (enablev);
+
+  int r;
+
+  r = guestfs_btrfs_quota_enable (g, fs, enable);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_quota_rescan(fs) -> nil
+ *
+ * trash all qgroup numbers and scan the metadata again with the current config
+ *
+ * Trash all qgroup numbers and scan the metadata again
+ * with the current config.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_quota_rescan+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_quota_rescan]).
+ */
+static VALUE
+ruby_guestfs_btrfs_quota_rescan (VALUE gv, VALUE fsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_quota_rescan");
+
+  const char *fs = StringValueCStr (fsv);
+
+  int r;
+
+  r = guestfs_btrfs_quota_rescan (g, fs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_rescue_chunk_recover(device) -> nil
+ *
+ * recover the chunk tree of btrfs filesystem
+ *
+ * Recover the chunk tree of btrfs filesystem by scannning
+ * the devices one by one.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_rescue_chunk_recover+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_rescue_chunk_recover]).
+ */
+static VALUE
+ruby_guestfs_btrfs_rescue_chunk_recover (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_rescue_chunk_recover");
+
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_btrfs_rescue_chunk_recover (g, device);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_rescue_super_recover(device) -> nil
+ *
+ * recover bad superblocks from good copies
+ *
+ * Recover bad superblocks from good copies.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_rescue_super_recover+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_rescue_super_recover]).
+ */
+static VALUE
+ruby_guestfs_btrfs_rescue_super_recover (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_rescue_super_recover");
+
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_btrfs_rescue_super_recover (g, device);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_scrub_cancel(path) -> nil
+ *
+ * cancel a running scrub
+ *
+ * Cancel a running scrub on a btrfs filesystem.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_scrub_cancel+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_cancel]).
+ */
+static VALUE
+ruby_guestfs_btrfs_scrub_cancel (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_scrub_cancel");
+
+  const char *path = StringValueCStr (pathv);
+
+  int r;
+
+  r = guestfs_btrfs_scrub_cancel (g, path);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_scrub_resume(path) -> nil
+ *
+ * resume a previously canceled or interrupted scrub
+ *
+ * Resume a previously canceled or interrupted scrub on a
+ * btrfs filesystem.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_scrub_resume+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_resume]).
+ */
+static VALUE
+ruby_guestfs_btrfs_scrub_resume (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_scrub_resume");
+
+  const char *path = StringValueCStr (pathv);
+
+  int r;
+
+  r = guestfs_btrfs_scrub_resume (g, path);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_scrub_start(path) -> nil
+ *
+ * read all data from all disks and verify checksums
+ *
+ * Reads all the data and metadata on the filesystem, and
+ * uses checksums and the duplicate copies from RAID
+ * storage to identify and repair any corrupt data.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_scrub_start+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_start]).
+ */
+static VALUE
+ruby_guestfs_btrfs_scrub_start (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_scrub_start");
+
+  const char *path = StringValueCStr (pathv);
+
+  int r;
+
+  r = guestfs_btrfs_scrub_start (g, path);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
  *   g.btrfs_set_seeding(device, seeding) -> nil
  *
  * enable or disable the seeding feature of device
@@ -3205,6 +3787,38 @@ ruby_guestfs_btrfs_subvolume_delete (VALUE gv, VALUE subvolumev)
 
 /*
  * call-seq:
+ *   g.btrfs_subvolume_get_default(fs) -> fixnum
+ *
+ * get the default subvolume or snapshot of a filesystem
+ *
+ * Get the default subvolume or snapshot of a filesystem
+ * mounted at "mountpoint".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_subvolume_get_default+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_get_default]).
+ */
+static VALUE
+ruby_guestfs_btrfs_subvolume_get_default (VALUE gv, VALUE fsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_subvolume_get_default");
+
+  const char *fs = StringValueCStr (fsv);
+
+  int64_t r;
+
+  r = guestfs_btrfs_subvolume_get_default (g, fs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
+}
+
+/*
+ * call-seq:
  *   g.btrfs_subvolume_list(fs) -> list
  *
  * list btrfs snapshots and subvolumes
@@ -3281,6 +3895,45 @@ ruby_guestfs_btrfs_subvolume_set_default (VALUE gv, VALUE idv, VALUE fsv)
 
 /*
  * call-seq:
+ *   g.btrfs_subvolume_show(subvolume) -> hash
+ *
+ * return detailed information of the subvolume
+ *
+ * Return detailed information of the subvolume.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_subvolume_show+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_show]).
+ */
+static VALUE
+ruby_guestfs_btrfs_subvolume_show (VALUE gv, VALUE subvolumev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_subvolume_show");
+
+  const char *subvolume = StringValueCStr (subvolumev);
+
+  char **r;
+
+  r = guestfs_btrfs_subvolume_show (g, subvolume);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_hash_new ();
+  size_t i;
+  for (i = 0; r[i] != NULL; i+=2) {
+    rb_hash_aset (rv, rb_str_new2 (r[i]), rb_str_new2 (r[i+1]));
+    free (r[i]);
+    free (r[i+1]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
  *   g.btrfs_subvolume_snapshot(source, dest, {optargs...}) -> nil
  *
  * create a btrfs snapshot
@@ -3342,6 +3995,39 @@ ruby_guestfs_btrfs_subvolume_snapshot (int argc, VALUE *argv, VALUE gv)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.c_pointer() -> fixnum
+ *
+ * return the C pointer to the guestfs_h handle
+ *
+ * In non-C language bindings, this allows you to retrieve
+ * the underlying C pointer to the handle (ie. "g.h *").
+ * The purpose of this is to allow other libraries to
+ * interwork with libguestfs.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_c_pointer+[http://libguestfs.org/guestfs.3.html#guestfs_c_pointer]).
+ */
+static VALUE
+ruby_guestfs_c_pointer (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "c_pointer");
+
+
+  int64_t r;
+
+  r = guestfs_c_pointer (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
 }
 
 /*
@@ -10138,7 +10824,7 @@ ruby_guestfs_inspect_get_mountpoints (VALUE gv, VALUE rootv)
  * return the package format and package management tool
  * used by the inspected operating system. For example for
  * Fedora these functions would return "rpm" (package
- * format) and "yum" (package management).
+ * format), and "yum" or "dnf" (package management).
  * 
  * This returns the string "unknown" if we could not
  * determine the package format *or* if the operating
@@ -10185,18 +10871,18 @@ ruby_guestfs_inspect_get_package_format (VALUE gv, VALUE rootv)
  * "g.inspect_get_package_format" and this function return
  * the package format and package management tool used by
  * the inspected operating system. For example for Fedora
- * these functions would return "rpm" (package format) and
- * "yum" (package management).
+ * these functions would return "rpm" (package format), and
+ * "yum" or "dnf" (package management).
  * 
  * This returns the string "unknown" if we could not
  * determine the package management tool *or* if the
  * operating system does not have a real packaging system
  * (eg. Windows).
  * 
- * Possible strings include: "yum", "up2date", "apt" (for
- * all Debian derivatives), "portage", "pisi", "pacman",
- * "urpmi", "zypper". Future versions of libguestfs may
- * return other strings.
+ * Possible strings include: "yum", "dnf", "up2date", "apt"
+ * (for all Debian derivatives), "portage", "pisi",
+ * "pacman", "urpmi", "zypper". Future versions of
+ * libguestfs may return other strings.
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
@@ -12195,6 +12881,11 @@ ruby_guestfs_internal_test_set_output (VALUE gv, VALUE filenamev)
  * If the optional flag "followsymlinks" is true, then a
  * symlink (or chain of symlinks) that ends with a block
  * device also causes the function to return true.
+ * 
+ * This call only looks at files within the guest
+ * filesystem. Libguestfs partitions and block devices (eg.
+ * "/dev/sda") cannot be used as the "path" parameter of
+ * this call.
  * 
  * See also "g.stat".
  * 
@@ -16770,6 +17461,9 @@ ruby_guestfs_mke2journal_U (VALUE gv, VALUE blocksizev, VALUE uuidv, VALUE devic
  * mode "mode". It is just a convenient wrapper around
  * "g.mknod".
  * 
+ * Unlike with "g.mknod", "mode" must contain only
+ * permissions bits.
+ * 
  * The mode actually set is affected by the umask.
  *
  *
@@ -16887,6 +17581,11 @@ ruby_guestfs_mkfs (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.sectorsize = NUM2INT (v);
     optargs_s.bitmask |= GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("label")));
+  if (v != Qnil) {
+    optargs_s.label = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MKFS_OPTS_LABEL_BITMASK;
   }
 
   int r;
@@ -17217,6 +17916,9 @@ ruby_guestfs_mknod (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, VAL
  * "devminor". It is just a convenient wrapper around
  * "g.mknod".
  * 
+ * Unlike with "g.mknod", "mode" must contain only
+ * permissions bits.
+ * 
  * The mode actually set is affected by the umask.
  *
  *
@@ -17255,6 +17957,9 @@ ruby_guestfs_mknod_b (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, V
  * mode "mode" and device major/minor "devmajor" and
  * "devminor". It is just a convenient wrapper around
  * "g.mknod".
+ * 
+ * Unlike with "g.mknod", "mode" must contain only
+ * permissions bits.
  * 
  * The mode actually set is affected by the umask.
  *
@@ -19234,10 +19939,10 @@ ruby_guestfs_part_to_partnum (VALUE gv, VALUE partitionv)
  * ping the guest daemon
  *
  * This is a test probe into the guestfs daemon running
- * inside the hypervisor. Calling this function checks that
- * the daemon responds to the ping message, without
- * affecting the daemon or attached block device(s) in any
- * other way.
+ * inside the libguestfs appliance. Calling this function
+ * checks that the daemon responds to the ping message,
+ * without affecting the daemon or attached block device(s)
+ * in any other way.
  *
  *
  * (For the C API documentation for this function, see
@@ -26568,18 +27273,52 @@ Init__guestfs (void)
         ruby_guestfs_blockdev_setro, 1);
   rb_define_method (c_guestfs, "blockdev_setrw",
         ruby_guestfs_blockdev_setrw, 1);
+  rb_define_method (c_guestfs, "btrfs_balance_cancel",
+        ruby_guestfs_btrfs_balance_cancel, 1);
+  rb_define_method (c_guestfs, "btrfs_balance_pause",
+        ruby_guestfs_btrfs_balance_pause, 1);
+  rb_define_method (c_guestfs, "btrfs_balance_resume",
+        ruby_guestfs_btrfs_balance_resume, 1);
   rb_define_method (c_guestfs, "btrfs_device_add",
         ruby_guestfs_btrfs_device_add, 2);
   rb_define_method (c_guestfs, "btrfs_device_delete",
         ruby_guestfs_btrfs_device_delete, 2);
   rb_define_method (c_guestfs, "btrfs_filesystem_balance",
         ruby_guestfs_btrfs_filesystem_balance, 1);
+  rb_define_method (c_guestfs, "btrfs_filesystem_defragment",
+        ruby_guestfs_btrfs_filesystem_defragment, -1);
   rb_define_method (c_guestfs, "btrfs_filesystem_resize",
         ruby_guestfs_btrfs_filesystem_resize, -1);
   rb_define_method (c_guestfs, "btrfs_filesystem_sync",
         ruby_guestfs_btrfs_filesystem_sync, 1);
   rb_define_method (c_guestfs, "btrfs_fsck",
         ruby_guestfs_btrfs_fsck, -1);
+  rb_define_method (c_guestfs, "btrfs_qgroup_assign",
+        ruby_guestfs_btrfs_qgroup_assign, 3);
+  rb_define_method (c_guestfs, "btrfs_qgroup_create",
+        ruby_guestfs_btrfs_qgroup_create, 2);
+  rb_define_method (c_guestfs, "btrfs_qgroup_destroy",
+        ruby_guestfs_btrfs_qgroup_destroy, 2);
+  rb_define_method (c_guestfs, "btrfs_qgroup_limit",
+        ruby_guestfs_btrfs_qgroup_limit, 2);
+  rb_define_method (c_guestfs, "btrfs_qgroup_remove",
+        ruby_guestfs_btrfs_qgroup_remove, 3);
+  rb_define_method (c_guestfs, "btrfs_qgroup_show",
+        ruby_guestfs_btrfs_qgroup_show, 1);
+  rb_define_method (c_guestfs, "btrfs_quota_enable",
+        ruby_guestfs_btrfs_quota_enable, 2);
+  rb_define_method (c_guestfs, "btrfs_quota_rescan",
+        ruby_guestfs_btrfs_quota_rescan, 1);
+  rb_define_method (c_guestfs, "btrfs_rescue_chunk_recover",
+        ruby_guestfs_btrfs_rescue_chunk_recover, 1);
+  rb_define_method (c_guestfs, "btrfs_rescue_super_recover",
+        ruby_guestfs_btrfs_rescue_super_recover, 1);
+  rb_define_method (c_guestfs, "btrfs_scrub_cancel",
+        ruby_guestfs_btrfs_scrub_cancel, 1);
+  rb_define_method (c_guestfs, "btrfs_scrub_resume",
+        ruby_guestfs_btrfs_scrub_resume, 1);
+  rb_define_method (c_guestfs, "btrfs_scrub_start",
+        ruby_guestfs_btrfs_scrub_start, 1);
   rb_define_method (c_guestfs, "btrfs_set_seeding",
         ruby_guestfs_btrfs_set_seeding, 2);
   rb_define_method (c_guestfs, "btrfs_subvolume_create",
@@ -26588,14 +27327,20 @@ Init__guestfs (void)
         ruby_guestfs_btrfs_subvolume_create, -1);
   rb_define_method (c_guestfs, "btrfs_subvolume_delete",
         ruby_guestfs_btrfs_subvolume_delete, 1);
+  rb_define_method (c_guestfs, "btrfs_subvolume_get_default",
+        ruby_guestfs_btrfs_subvolume_get_default, 1);
   rb_define_method (c_guestfs, "btrfs_subvolume_list",
         ruby_guestfs_btrfs_subvolume_list, 1);
   rb_define_method (c_guestfs, "btrfs_subvolume_set_default",
         ruby_guestfs_btrfs_subvolume_set_default, 2);
+  rb_define_method (c_guestfs, "btrfs_subvolume_show",
+        ruby_guestfs_btrfs_subvolume_show, 1);
   rb_define_method (c_guestfs, "btrfs_subvolume_snapshot",
         ruby_guestfs_btrfs_subvolume_snapshot, -1);
   rb_define_method (c_guestfs, "btrfs_subvolume_snapshot_opts",
         ruby_guestfs_btrfs_subvolume_snapshot, -1);
+  rb_define_method (c_guestfs, "c_pointer",
+        ruby_guestfs_c_pointer, 0);
   rb_define_method (c_guestfs, "canonical_device_name",
         ruby_guestfs_canonical_device_name, 1);
   rb_define_method (c_guestfs, "cap_get_file",

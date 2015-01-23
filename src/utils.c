@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -269,4 +269,27 @@ guestfs___drive_name (size_t index, char *ret)
   *ret++ = 'a' + index;
   *ret = '\0';
   return ret;
+}
+
+/* Similar to Tcl_GetBoolean. */
+int
+guestfs___is_true (const char *str)
+{
+  if (STREQ (str, "1") ||
+      STRCASEEQ (str, "true") ||
+      STRCASEEQ (str, "t") ||
+      STRCASEEQ (str, "yes") ||
+      STRCASEEQ (str, "y") ||
+      STRCASEEQ (str, "on"))
+    return 1;
+
+  if (STREQ (str, "0") ||
+      STRCASEEQ (str, "false") ||
+      STRCASEEQ (str, "f") ||
+      STRCASEEQ (str, "no") ||
+      STRCASEEQ (str, "n") ||
+      STRCASEEQ (str, "off"))
+    return 0;
+
+  return -1;
 }

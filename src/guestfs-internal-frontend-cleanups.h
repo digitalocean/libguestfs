@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -99,6 +99,10 @@
   __attribute__((cleanup(guestfs___cleanup_free_btrfssubvolume)))
 #define CLEANUP_FREE_BTRFSSUBVOLUME_LIST \
   __attribute__((cleanup(guestfs___cleanup_free_btrfssubvolume_list)))
+#define CLEANUP_FREE_BTRFSQGROUP \
+  __attribute__((cleanup(guestfs___cleanup_free_btrfsqgroup)))
+#define CLEANUP_FREE_BTRFSQGROUP_LIST \
+  __attribute__((cleanup(guestfs___cleanup_free_btrfsqgroup_list)))
 #define CLEANUP_FREE_XFSINFO \
   __attribute__((cleanup(guestfs___cleanup_free_xfsinfo)))
 #define CLEANUP_FREE_XFSINFO_LIST \
@@ -154,6 +158,8 @@
 #define CLEANUP_FREE_MDSTAT_LIST
 #define CLEANUP_FREE_BTRFSSUBVOLUME
 #define CLEANUP_FREE_BTRFSSUBVOLUME_LIST
+#define CLEANUP_FREE_BTRFSQGROUP
+#define CLEANUP_FREE_BTRFSQGROUP_LIST
 #define CLEANUP_FREE_XFSINFO
 #define CLEANUP_FREE_XFSINFO_LIST
 #define CLEANUP_FREE_UTSNAME
@@ -204,6 +210,8 @@ extern void guestfs___cleanup_free_mdstat (void *ptr);
 extern void guestfs___cleanup_free_mdstat_list (void *ptr);
 extern void guestfs___cleanup_free_btrfssubvolume (void *ptr);
 extern void guestfs___cleanup_free_btrfssubvolume_list (void *ptr);
+extern void guestfs___cleanup_free_btrfsqgroup (void *ptr);
+extern void guestfs___cleanup_free_btrfsqgroup_list (void *ptr);
 extern void guestfs___cleanup_free_xfsinfo (void *ptr);
 extern void guestfs___cleanup_free_xfsinfo_list (void *ptr);
 extern void guestfs___cleanup_free_utsname (void *ptr);

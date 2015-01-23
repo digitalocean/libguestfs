@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2012-2014 Red Hat Inc.
+ * Copyright (C) 2012-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -722,6 +722,7 @@ let generate_gobject_session_source () =
   #include <stdint.h>
   #include <stdio.h>
   #include <string.h>
+  #include <inttypes.h>
 
 /* Error quark */
 
@@ -780,7 +781,7 @@ guestfs_session_event_from_guestfs_event (uint64_t event)
 pr "
   }
 
-  g_warning (\"guestfs_session_event_from_guestfs_event: invalid event %%lu\",
+  g_warning (\"guestfs_session_event_from_guestfs_event: invalid event %%\" PRIu64,
             event);
   return UINT32_MAX;
 }

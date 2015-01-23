@@ -1,5 +1,5 @@
 # libguestfs virt-v2v tool
-# Copyright (C) 2009-2014 Red Hat Inc.
+# Copyright (C) 2009-2015 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -93,12 +93,12 @@ SOURCES_ML = \
 	v2v.ml
 
 SOURCES_C = \
-	$(top_builddir)/fish/progress.c \
-	$(top_builddir)/fish/file-edit.c \
-	$(top_builddir)/mllib/progress-c.c \
-	$(top_builddir)/mllib/mkdtemp-c.c \
-	$(top_builddir)/customize/crypt-c.c \
-	$(top_builddir)/customize/perl_edit-c.c \
+	$(top_srcdir)/fish/progress.c \
+	$(top_srcdir)/fish/file-edit.c \
+	$(top_srcdir)/mllib/progress-c.c \
+	$(top_srcdir)/mllib/mkdtemp-c.c \
+	$(top_srcdir)/customize/crypt-c.c \
+	$(top_srcdir)/customize/perl_edit-c.c \
 	domainxml-c.c \
 	kvmuid-c.c \
 	utils-c.c \
@@ -148,7 +148,7 @@ XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 OCAMLPACKAGES = \
 	-package str,unix \
 	-I $(top_builddir)/src/.libs \
-	-I ../gnulib/lib/.libs \
+	-I $(top_builddir)/gnulib/lib/.libs \
 	-I $(top_builddir)/ocaml \
 	-I $(top_builddir)/mllib \
 	-I $(top_builddir)/customize

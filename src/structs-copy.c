@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1465,6 +1465,86 @@ error: ;
   err = errno;
   for (j = 0; j < i; ++j)
     free_btrfssubvolume (&ret->val[j]);
+  free (ret->val);
+  free (ret);
+  errno = err;
+  return NULL;
+}
+
+static void
+free_btrfsqgroup (struct guestfs_btrfsqgroup *s)
+{
+  free (s->btrfsqgroup_id);
+}
+
+static int
+copy_btrfsqgroup (const struct guestfs_btrfsqgroup *inp, struct guestfs_btrfsqgroup *out)
+{
+  int err;
+
+  out->btrfsqgroup_id = NULL;
+  out->btrfsqgroup_id = strdup (inp->btrfsqgroup_id);
+  if (out->btrfsqgroup_id == NULL) goto error;
+  out->btrfsqgroup_rfer = inp->btrfsqgroup_rfer;
+  out->btrfsqgroup_excl = inp->btrfsqgroup_excl;
+  return 0;
+
+error: ;
+  err = errno;
+  free_btrfsqgroup (out);
+  errno = err;
+  return -1;
+}
+
+GUESTFS_DLL_PUBLIC struct guestfs_btrfsqgroup *
+guestfs_copy_btrfsqgroup (const struct guestfs_btrfsqgroup *inp)
+{
+  struct guestfs_btrfsqgroup *ret;
+
+  ret = malloc (sizeof *ret);
+  if (ret == NULL)
+    return NULL;
+
+  if (copy_btrfsqgroup (inp, ret) == -1) {
+    int err;
+
+    err = errno;
+    free (ret);
+    errno = err;
+    return NULL;
+  }
+
+  return ret;
+}
+
+GUESTFS_DLL_PUBLIC struct guestfs_btrfsqgroup_list *
+guestfs_copy_btrfsqgroup_list (const struct guestfs_btrfsqgroup_list *inp)
+{
+  int err;
+  struct guestfs_btrfsqgroup_list *ret;
+  size_t i = 0;
+  size_t j;
+
+  ret = malloc (sizeof *ret);
+  if (ret == NULL)
+    return NULL;
+
+  ret->len = inp->len;
+  ret->val = malloc (sizeof (struct guestfs_btrfsqgroup) * ret->len);
+  if (ret->val == NULL)
+    goto error;
+
+  for (i = 0; i < ret->len; ++i) {
+    if (copy_btrfsqgroup (&inp->val[i], &ret->val[i]) == -1)
+      goto error;
+  }
+
+  return ret;
+
+error: ;
+  err = errno;
+  for (j = 0; j < i; ++j)
+    free_btrfsqgroup (&ret->val[j]);
   free (ret->val);
   free (ret);
   errno = err;

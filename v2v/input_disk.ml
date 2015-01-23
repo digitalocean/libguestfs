@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ class input_disk verbose input_format disk = object
       s_vcpu = 1;                         (* 1 vCPU is a safe default *)
       s_features = [ "acpi"; "apic"; "pae" ];
       s_display =
-        Some { s_display_type = `Window; s_keymap = None; s_password = None };
+        Some { s_display_type = Window; s_keymap = None; s_password = None };
       s_disks = [disk];
       s_removables = [];
       s_nics = [network];

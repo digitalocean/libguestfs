@@ -24,11 +24,13 @@
 #include <pcre.h>
 #include <string.h>
 #include <unistd.h>
+#include <assert.h>
 
 #include "daemon.h"
 #include "actions.h"
 #include "optgroups.h"
 #include "xstrtol.h"
+#include "c-ctype.h"
 
 GUESTFSD_EXT_CMD(str_btrfs, btrfs);
 GUESTFSD_EXT_CMD(str_btrfstune, btrfstune);
@@ -40,6 +42,30 @@ int
 optgroup_btrfs_available (void)
 {
   return prog_exists (str_btrfs) && filesystem_available ("btrfs") > 0;
+}
+
+char *
+btrfs_get_label (const char *device)
+{
+  int r;
+  CLEANUP_FREE char *err = NULL;
+  char *out = NULL;
+  size_t len;
+
+  r = command (&out, &err, str_btrfs, "filesystem", "label",
+               device, NULL);
+  if (r == -1) {
+    reply_with_error ("%s", err);
+    free (out);
+    return NULL;
+  }
+
+  /* Trim trailing \n if present. */
+  len = strlen (out);
+  if (len > 0 && out[len-1] == '\n')
+    out[len-1] = '\0';
+
+  return out;
 }
 
 /* Takes optional arguments, consult optargs_bitmask. */
@@ -326,6 +352,59 @@ do_btrfs_subvolume_create (const char *dest, const char *qgroupid)
   return 0;
 }
 
+static char *
+mount (const mountable_t *fs)
+{
+  char *fs_buf;
+
+  if (fs->type == MOUNTABLE_PATH) {
+    fs_buf = sysroot_path (fs->device);
+    if (fs_buf == NULL)
+      reply_with_perror ("malloc");
+  } else {
+    fs_buf = strdup ("/tmp/btrfs.XXXXXX");
+    if (fs_buf == NULL) {
+      reply_with_perror ("strdup");
+      return NULL;
+    }
+
+    if (mkdtemp (fs_buf) == NULL) {
+      reply_with_perror ("mkdtemp");
+      free (fs_buf);
+      return NULL;
+    }
+
+    if (mount_vfs_nochroot ("", NULL, fs, fs_buf, "<internal>") == -1) {
+      if (rmdir (fs_buf) == -1 && errno != ENOENT)
+        perror ("rmdir");
+      free (fs_buf);
+      return NULL;
+    }
+  }
+
+  return fs_buf;
+}
+
+static int
+umount (char *fs_buf, const mountable_t *fs)
+{
+  if (fs->type != MOUNTABLE_PATH) {
+    CLEANUP_FREE char *err = NULL;
+
+    if (command (NULL, &err, str_umount, fs_buf, NULL) == -1) {
+      reply_with_error ("umount: %s", err);
+      return -1;
+    }
+
+    if (rmdir (fs_buf) == -1 && errno != ENOENT) {
+      reply_with_perror ("rmdir");
+      return -1;
+    }
+  }
+  free (fs_buf);
+  return 0;
+}
+
 guestfs_int_btrfssubvolume_list *
 do_btrfs_subvolume_list (const mountable_t *fs)
 {
@@ -336,42 +415,10 @@ do_btrfs_subvolume_list (const mountable_t *fs)
 
   /* Execute 'btrfs subvolume list <fs>', and split the output into lines */
   {
-    CLEANUP_FREE char *fs_buf = NULL;
+    char *fs_buf = mount (fs);
 
-    if (fs->type == MOUNTABLE_PATH) {
-      fs_buf = sysroot_path (fs->device);
-      if (fs_buf == NULL) {
-        reply_with_perror ("malloc");
-
-      cmderror:
-        if (fs->type != MOUNTABLE_PATH && fs_buf) {
-          CLEANUP_FREE char *err = NULL;
-          if (command (NULL, &err, str_umount, fs_buf, NULL) == -1)
-            fprintf (stderr, "%s\n", err);
-
-          if (rmdir (fs_buf) == -1 && errno != ENOENT)
-            fprintf (stderr, "rmdir: %m\n");
-        }
-        return NULL;
-      }
-    }
-
-    else {
-      fs_buf = strdup ("/tmp/btrfs.XXXXXX");
-      if (fs_buf == NULL) {
-        reply_with_perror ("strdup");
-        goto cmderror;
-      }
-
-      if (mkdtemp (fs_buf) == NULL) {
-        reply_with_perror ("mkdtemp");
-        goto cmderror;
-      }
-
-      if (mount_vfs_nochroot ("", NULL, fs, fs_buf, "<internal>") == -1) {
-        goto cmderror;
-      }
-    }
+    if (!fs_buf)
+      return NULL;
 
     ADD_ARG (argv, i, str_btrfs);
     ADD_ARG (argv, i, "subvolume");
@@ -382,18 +429,8 @@ do_btrfs_subvolume_list (const mountable_t *fs)
     CLEANUP_FREE char *out = NULL, *errout = NULL;
     int r = commandv (&out, &errout, argv);
 
-    if (fs->type != MOUNTABLE_PATH) {
-      CLEANUP_FREE char *err = NULL;
-      if (command (NULL, &err, str_umount, fs_buf, NULL) == -1) {
-        reply_with_error ("%s", err ? err : "malloc");
-        goto cmderror;
-      }
-
-      if (rmdir (fs_buf) == -1 && errno != ENOENT) {
-        reply_with_error ("rmdir: %m\n");
-        goto cmderror;
-      }
-    }
+    if (umount (fs_buf, fs) != 0)
+      return NULL;
 
     if (r == -1) {
       CLEANUP_FREE char *fs_desc = mountable_to_string (fs);
@@ -401,7 +438,7 @@ do_btrfs_subvolume_list (const mountable_t *fs)
         fprintf (stderr, "malloc: %m");
       }
       reply_with_error ("%s: %s", fs_desc ? fs_desc : "malloc", errout);
-      goto cmderror;
+      return NULL;
     }
 
     lines = split_lines (out);
@@ -545,6 +582,45 @@ do_btrfs_subvolume_set_default (int64_t id, const char *fs)
   return 0;
 }
 
+int64_t
+do_btrfs_subvolume_get_default (const mountable_t *fs)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  char *fs_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+  int64_t ret = -1;
+
+  fs_buf = mount (fs);
+  if (fs_buf == NULL)
+    goto error;
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "subvolume");
+  ADD_ARG (argv, i, "get-default");
+  ADD_ARG (argv, i, fs_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", fs_buf, err);
+    goto error;
+  }
+  if (sscanf (out, "ID %" SCNi64, &ret) != 1) {
+    reply_with_error ("%s: could not parse subvolume id: %s.", argv[0], out);
+    ret = -1;
+    goto error;
+  }
+
+error:
+  if (fs_buf && umount (fs_buf, fs) != 0)
+    return -1;
+  return ret;
+}
+
 int
 do_btrfs_filesystem_sync (const char *fs)
 {
@@ -593,7 +669,6 @@ do_btrfs_filesystem_balance (const char *fs)
   }
 
   ADD_ARG (argv, i, str_btrfs);
-  ADD_ARG (argv, i, "filesystem");
   ADD_ARG (argv, i, "balance");
   ADD_ARG (argv, i, fs_buf);
   ADD_ARG (argv, i, NULL);
@@ -765,6 +840,818 @@ do_btrfs_fsck (const char *device, int64_t superblock, int repair)
   ADD_ARG (argv, i, NULL);
 
   r = commandv (NULL, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", device, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+/* analyze_line: analyze one line contains key:value pair.
+ * returns the next position following \n.
+ */
+static char *
+analyze_line (char *line, char **key, char **value)
+{
+  char *p = line;
+  char *next = NULL;
+  char delimiter = ':';
+  char *del_pos = NULL;
+
+  if (!line || *line == '\0') {
+    *key = NULL;
+    *value = NULL;
+    return NULL;
+  }
+
+  next = strchr (p, '\n');
+  if (next) {
+    *next = '\0';
+    ++next;
+  }
+
+  /* leading spaces and tabs */
+  while (*p && c_isspace (*p))
+    ++p;
+
+  assert (key);
+  if (*p == delimiter)
+    *key = NULL;
+  else
+    *key = p;
+
+  del_pos = strchr (p, delimiter);
+  if (del_pos) {
+    *del_pos = '\0';
+
+    /* leading spaces and tabs */
+    do {
+      ++del_pos;
+    } while (*del_pos && c_isspace (*del_pos));
+    assert (value);
+    *value = del_pos;
+  } else
+    *value = NULL;
+
+  return next;
+}
+
+char **
+do_btrfs_subvolume_show (const char *subvolume)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *subvolume_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  char *p, *key = NULL, *value = NULL;
+  DECLARE_STRINGSBUF (ret);
+  int r;
+
+  subvolume_buf = sysroot_path (subvolume);
+  if (subvolume_buf == NULL) {
+    reply_with_perror ("malloc");
+    return NULL;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "subvolume");
+  ADD_ARG (argv, i, "show");
+  ADD_ARG (argv, i, subvolume_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", subvolume, err);
+    return NULL;
+  }
+
+  /* If the path is the btrfs root, `btrfs subvolume show' reports:
+   *   <path> is btrfs root
+   */
+  if (out && strstr (out, "is btrfs root") != NULL) {
+    reply_with_error ("%s is btrfs root", subvolume);
+    return NULL;
+  }
+
+  /* If the path is a normal directory, `btrfs subvolume show' reports:
+   *   ERROR: <path> is not a subvolume
+   */
+  if (err && strstr (err, "is not a subvolume")) {
+    reply_with_error ("%s is not a subvolume", subvolume);
+    return NULL;
+  }
+
+  /* Output is:
+   *
+   * /
+   *         Name:                   root
+   *         uuid:                   c875169e-cf4e-a04d-9959-b667dec36234
+   *         Parent uuid:            -
+   *         Creation time:          2014-11-13 10:13:08
+   *         Object ID:              256
+   *         Generation (Gen):       6579
+   *         Gen at creation:        5
+   *         Parent:                 5
+   *         Top Level:              5
+   *         Flags:                  -
+   *         Snapshot(s):
+   *                                 snapshots/test1
+   *                                 snapshots/test2
+   *                                 snapshots/test3
+   *
+   */
+  p = analyze_line(out, &key, &value);
+  if (!p) {
+    reply_with_error ("truncated output: %s", out);
+    return NULL;
+  }
+
+  /* The first line is the path of the subvolume. */
+  if (key && !value) {
+    if (add_string (&ret, "path") == -1)
+      return NULL;
+    if (add_string (&ret, key) == -1)
+      return NULL;
+  } else {
+    if (add_string (&ret, key) == -1)
+      return NULL;
+    if (add_string (&ret, value) == -1)
+      return NULL;
+  }
+
+  /* Read the lines and split into "key: value". */
+  p = analyze_line(p, &key, &value);
+  while (key) {
+    /* snapshot is special, see the output above */
+    if (STREQLEN (key, "Snapshot(s)", sizeof ("Snapshot(s)") - 1)) {
+      char *ss = NULL;
+      int ss_len = 0;
+
+      if (add_string (&ret, key) == -1)
+        return NULL;
+
+      p = analyze_line(p, &key, &value);
+
+      while (key && !value) {
+          ss = realloc (ss, ss_len + strlen (key) + 1);
+          if (!ss)
+            return NULL;
+
+          if (ss_len != 0)
+            ss[ss_len++] = ',';
+
+          memcpy (ss + ss_len, key, strlen (key));
+          ss_len += strlen (key);
+          ss[ss_len] = '\0';
+
+          p = analyze_line(p, &key, &value);
+      }
+
+      if (ss) {
+        if (add_string_nodup (&ret, ss) == -1) {
+          free (ss);
+          return NULL;
+        }
+      } else {
+        if (add_string (&ret, "") == -1)
+          return NULL;
+      }
+    } else {
+      if (add_string (&ret, key ? key : "") == -1)
+        return NULL;
+      if (value && !STREQ(value, "-")) {
+        if (add_string (&ret, value) == -1)
+          return NULL;
+      } else {
+        if (add_string (&ret, "") == -1)
+          return NULL;
+      }
+
+      p = analyze_line(p, &key, &value);
+    }
+  }
+
+  if (end_stringsbuf (&ret) == -1)
+    return NULL;
+
+  return ret.argv;
+}
+
+int
+do_btrfs_quota_enable (const mountable_t *fs, int enable)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  char *fs_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r = -1;
+
+  fs_buf = mount (fs);
+  if (fs_buf == NULL)
+    goto error;
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "quota");
+  if (enable)
+    ADD_ARG (argv, i, "enable");
+  else
+    ADD_ARG (argv, i, "disable");
+  ADD_ARG (argv, i, fs_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", fs_buf, err);
+    goto error;
+  }
+
+error:
+  if (fs_buf && umount (fs_buf, fs) != 0)
+    return -1;
+  return r;
+}
+
+int
+do_btrfs_quota_rescan (const mountable_t *fs)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  char *fs_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r = -1;
+
+  fs_buf = mount (fs);
+  if (fs_buf == NULL)
+    goto error;
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "quota");
+  ADD_ARG (argv, i, "rescan");
+  ADD_ARG (argv, i, fs_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", fs_buf, err);
+    goto error;
+  }
+
+error:
+  if (fs_buf && umount (fs_buf, fs) != 0)
+    return -1;
+  return r;
+}
+
+int
+do_btrfs_qgroup_limit (const char *subvolume, int64_t size)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *subvolume_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  char size_str[32];
+  int r;
+
+  subvolume_buf = sysroot_path (subvolume);
+  if (subvolume_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "qgroup");
+  ADD_ARG (argv, i, "limit");
+  snprintf (size_str, sizeof size_str, "%" PRIi64, size);
+  ADD_ARG (argv, i, size_str);
+  ADD_ARG (argv, i, subvolume_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", subvolume, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_qgroup_create (const char *qgroupid, const char *subvolume)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *subvolume_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  subvolume_buf = sysroot_path (subvolume);
+  if (subvolume_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "qgroup");
+  ADD_ARG (argv, i, "create");
+  ADD_ARG (argv, i, qgroupid);
+  ADD_ARG (argv, i, subvolume_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", subvolume, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_qgroup_destroy (const char *qgroupid, const char *subvolume)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *subvolume_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  subvolume_buf = sysroot_path (subvolume);
+  if (subvolume_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "qgroup");
+  ADD_ARG (argv, i, "destroy");
+  ADD_ARG (argv, i, qgroupid);
+  ADD_ARG (argv, i, subvolume_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", subvolume, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+guestfs_int_btrfsqgroup_list *
+do_btrfs_qgroup_show (const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+  char **lines;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return NULL;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "qgroup");
+  ADD_ARG (argv, i, "show");
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return NULL;
+  }
+
+  lines = split_lines (out);
+  if (!lines)
+    return NULL;
+
+  /* line 0 and 1 are:
+   *
+   * qgroupid rfer          excl
+   * -------- ----          ----
+   */
+  size_t nr_qgroups = count_strings (lines) - 2;
+  guestfs_int_btrfsqgroup_list *ret = NULL;
+  ret = malloc (sizeof *ret);
+  if (!ret) {
+    reply_with_perror ("malloc");
+    goto error;
+  }
+
+  ret->guestfs_int_btrfsqgroup_list_len = nr_qgroups;
+  ret->guestfs_int_btrfsqgroup_list_val =
+    calloc (nr_qgroups, sizeof (struct guestfs_int_btrfsqgroup));
+  if (ret->guestfs_int_btrfsqgroup_list_val == NULL) {
+    reply_with_perror ("malloc");
+    goto error;
+  }
+
+  for (i = 0; i < nr_qgroups; ++i) {
+    char *line = lines[i + 2];
+    struct guestfs_int_btrfsqgroup *this  =
+      &ret->guestfs_int_btrfsqgroup_list_val[i];
+    uint64_t dummy1, dummy2;
+    char *p;
+
+    if (sscanf (line, "%" SCNu64 "/%" SCNu64 " %" SCNu64 " %" SCNu64,
+                &dummy1, &dummy2, &this->btrfsqgroup_rfer,
+                &this->btrfsqgroup_excl) != 4) {
+      reply_with_perror ("sscanf");
+      goto error;
+    }
+    p = strchr(line, ' ');
+    if (!p) {
+      reply_with_error ("truncated line: %s", line);
+      goto error;
+    }
+    *p = '\0';
+    this->btrfsqgroup_id = line;
+  }
+
+  free (lines);
+  return ret;
+
+error:
+  free_stringslen (lines, nr_qgroups + 2);
+  if (ret)
+    free (ret->guestfs_int_btrfsqgroup_list_val);
+  free (ret);
+
+  return NULL;
+}
+
+int
+do_btrfs_qgroup_assign (const char *src, const char *dst, const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "qgroup");
+  ADD_ARG (argv, i, "assign");
+  ADD_ARG (argv, i, src);
+  ADD_ARG (argv, i, dst);
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_qgroup_remove (const char *src, const char *dst, const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "qgroup");
+  ADD_ARG (argv, i, "remove");
+  ADD_ARG (argv, i, src);
+  ADD_ARG (argv, i, dst);
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_scrub_start (const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "scrub");
+  ADD_ARG (argv, i, "start");
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_scrub_cancel (const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "scrub");
+  ADD_ARG (argv, i, "cancel");
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_scrub_resume (const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "scrub");
+  ADD_ARG (argv, i, "resume");
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_balance_pause (const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "balance");
+  ADD_ARG (argv, i, "pause");
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_balance_cancel (const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "balance");
+  ADD_ARG (argv, i, "cancel");
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_balance_resume (const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "balance");
+  ADD_ARG (argv, i, "resume");
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+/* Takes optional arguments, consult optargs_bitmask. */
+int
+do_btrfs_filesystem_defragment (const char *path, int flush, const char *compress)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "filesystem");
+  ADD_ARG (argv, i, "defragment");
+  ADD_ARG (argv, i, "-r");
+
+  /* Optional arguments. */
+  if ((optargs_bitmask & GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK) && flush)
+    ADD_ARG (argv, i, "-f");
+  if (optargs_bitmask & GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK) {
+    if (STREQ(compress, "zlib"))
+      ADD_ARG (argv, i, "-czlib");
+    else if (STREQ(compress, "lzo"))
+      ADD_ARG (argv, i, "-clzo");
+    else {
+      reply_with_error ("unknown compress method: %s", compress);
+      return -1;
+    }
+  }
+
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_rescue_chunk_recover (const char *device)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "rescue");
+  ADD_ARG (argv, i, "chunk-recover");
+  ADD_ARG (argv, i, "-y");
+  ADD_ARG (argv, i, device);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", device, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_rescue_super_recover (const char *device)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "rescue");
+  ADD_ARG (argv, i, "super-recover");
+  ADD_ARG (argv, i, "-y");
+  ADD_ARG (argv, i, device);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
   if (r == -1) {
     reply_with_error ("%s: %s", device, err);
     return -1;

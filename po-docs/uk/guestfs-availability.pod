@@ -6,7 +6,7 @@ libguestfs generated file
    generator/ *.ml
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
-© Red Hat Inc., 2009–2014
+ Copyright (C) 2009-2015 Red Hat Inc.
 
  Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
  змінювати її за умов дотримання GNU General Public License  утому вигляді, що
@@ -41,12 +41,22 @@ L</guestfs_acl_set_file>
 
 =item B<btrfs>
 
-Такі функції: L</guestfs_btrfs_device_add> L</guestfs_btrfs_device_delete>
-L</guestfs_btrfs_filesystem_balance> L</guestfs_btrfs_filesystem_resize>
-L</guestfs_btrfs_filesystem_sync> L</guestfs_btrfs_fsck>
+The following functions: L</guestfs_btrfs_balance_cancel>
+L</guestfs_btrfs_balance_pause> L</guestfs_btrfs_balance_resume>
+L</guestfs_btrfs_device_add> L</guestfs_btrfs_device_delete>
+L</guestfs_btrfs_filesystem_balance> L</guestfs_btrfs_filesystem_defragment>
+L</guestfs_btrfs_filesystem_resize> L</guestfs_btrfs_filesystem_sync>
+L</guestfs_btrfs_fsck> L</guestfs_btrfs_qgroup_assign>
+L</guestfs_btrfs_qgroup_create> L</guestfs_btrfs_qgroup_destroy>
+L</guestfs_btrfs_qgroup_limit> L</guestfs_btrfs_qgroup_remove>
+L</guestfs_btrfs_qgroup_show> L</guestfs_btrfs_quota_enable>
+L</guestfs_btrfs_quota_rescan> L</guestfs_btrfs_rescue_chunk_recover>
+L</guestfs_btrfs_rescue_super_recover> L</guestfs_btrfs_scrub_cancel>
+L</guestfs_btrfs_scrub_resume> L</guestfs_btrfs_scrub_start>
 L</guestfs_btrfs_set_seeding> L</guestfs_btrfs_subvolume_create>
-L</guestfs_btrfs_subvolume_delete> L</guestfs_btrfs_subvolume_list>
-L</guestfs_btrfs_subvolume_set_default> L</guestfs_btrfs_subvolume_snapshot>
+L</guestfs_btrfs_subvolume_delete> L</guestfs_btrfs_subvolume_get_default>
+L</guestfs_btrfs_subvolume_list> L</guestfs_btrfs_subvolume_set_default>
+L</guestfs_btrfs_subvolume_show> L</guestfs_btrfs_subvolume_snapshot>
 L</guestfs_mkfs_btrfs>
 
 =item B<extlinux>

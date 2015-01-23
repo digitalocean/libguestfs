@@ -1254,5 +1254,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2012-2014 Red Hat Inc.
+Copyright (C) 2012-2015 Red Hat Inc.
 

@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -141,6 +141,22 @@ copy_application2 (const struct guestfs_application2 *application2)
   Store_field (rv, 15, v);
   v = caml_copy_string (application2->app2_spare4);
   Store_field (rv, 16, v);
+  CAMLreturn (rv);
+}
+
+static value
+copy_btrfsqgroup (const struct guestfs_btrfsqgroup *btrfsqgroup)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (3, 0);
+  v = caml_copy_string (btrfsqgroup->btrfsqgroup_id);
+  Store_field (rv, 0, v);
+  v = caml_copy_int64 (btrfsqgroup->btrfsqgroup_rfer);
+  Store_field (rv, 1, v);
+  v = caml_copy_int64 (btrfsqgroup->btrfsqgroup_excl);
+  Store_field (rv, 2, v);
   CAMLreturn (rv);
 }
 
@@ -716,6 +732,25 @@ copy_dirent_list (const struct guestfs_dirent_list *dirents)
     rv = caml_alloc (dirents->len, 0);
     for (i = 0; i < dirents->len; ++i) {
       v = copy_dirent (&dirents->val[i]);
+      Store_field (rv, i, v);
+    }
+    CAMLreturn (rv);
+  }
+}
+
+static value
+copy_btrfsqgroup_list (const struct guestfs_btrfsqgroup_list *btrfsqgroups)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+  unsigned int i;
+
+  if (btrfsqgroups->len == 0)
+    CAMLreturn (Atom (0));
+  else {
+    rv = caml_alloc (btrfsqgroups->len, 0);
+    for (i = 0; i < btrfsqgroups->len; ++i) {
+      v = copy_btrfsqgroup (&btrfsqgroups->val[i]);
       Store_field (rv, i, v);
     }
     CAMLreturn (rv);
@@ -2600,6 +2635,99 @@ ocaml_guestfs_blockdev_setrw (value gv, value devicev)
 }
 
 /* Automatically generated wrapper for function
+ * val btrfs_balance_cancel : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_balance_cancel (value gv, value pathv);
+
+value
+ocaml_guestfs_btrfs_balance_cancel (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_balance_cancel");
+
+  char *path = guestfs___safe_strdup (g, String_val (pathv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_balance_cancel (g, path);
+  caml_leave_blocking_section ();
+  free (path);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_balance_cancel");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfs_balance_pause : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_balance_pause (value gv, value pathv);
+
+value
+ocaml_guestfs_btrfs_balance_pause (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_balance_pause");
+
+  char *path = guestfs___safe_strdup (g, String_val (pathv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_balance_pause (g, path);
+  caml_leave_blocking_section ();
+  free (path);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_balance_pause");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfs_balance_resume : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_balance_resume (value gv, value pathv);
+
+value
+ocaml_guestfs_btrfs_balance_resume (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_balance_resume");
+
+  char *path = guestfs___safe_strdup (g, String_val (pathv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_balance_resume (g, path);
+  caml_leave_blocking_section ();
+  free (path);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_balance_resume");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val btrfs_device_add : t -> string array -> string -> unit
  */
 
@@ -2691,6 +2819,49 @@ ocaml_guestfs_btrfs_filesystem_balance (value gv, value fsv)
   free (fs);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "btrfs_filesystem_balance");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfs_filesystem_defragment : t -> ?flush:bool -> ?compress:string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_filesystem_defragment (value gv, value flushv, value compressv, value pathv);
+
+value
+ocaml_guestfs_btrfs_filesystem_defragment (value gv, value flushv, value compressv, value pathv)
+{
+  CAMLparam4 (gv, flushv, compressv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_filesystem_defragment");
+
+  char *path = guestfs___safe_strdup (g, String_val (pathv));
+  struct guestfs_btrfs_filesystem_defragment_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_filesystem_defragment_argv *optargs = &optargs_s;
+  if (flushv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK;
+    optargs_s.flush = Bool_val (Field (flushv, 0));
+  }
+  if (compressv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK;
+    optargs_s.compress = guestfs___safe_strdup (g, String_val (Field (compressv, 0)));
+  }
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_filesystem_defragment_argv (g, path, optargs);
+  caml_leave_blocking_section ();
+  free (path);
+  if (compressv != Val_int (0))
+    free ((char *) optargs_s.compress);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_filesystem_defragment");
 
   rv = Val_unit;
   CAMLreturn (rv);
@@ -2806,6 +2977,424 @@ ocaml_guestfs_btrfs_fsck (value gv, value superblockv, value repairv, value devi
 }
 
 /* Automatically generated wrapper for function
+ * val btrfs_qgroup_assign : t -> string -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_qgroup_assign (value gv, value srcv, value dstv, value pathv);
+
+value
+ocaml_guestfs_btrfs_qgroup_assign (value gv, value srcv, value dstv, value pathv)
+{
+  CAMLparam4 (gv, srcv, dstv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_qgroup_assign");
+
+  char *src = guestfs___safe_strdup (g, String_val (srcv));
+  char *dst = guestfs___safe_strdup (g, String_val (dstv));
+  char *path = guestfs___safe_strdup (g, String_val (pathv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_qgroup_assign (g, src, dst, path);
+  caml_leave_blocking_section ();
+  free (src);
+  free (dst);
+  free (path);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_qgroup_assign");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfs_qgroup_create : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_qgroup_create (value gv, value qgroupidv, value subvolumev);
+
+value
+ocaml_guestfs_btrfs_qgroup_create (value gv, value qgroupidv, value subvolumev)
+{
+  CAMLparam3 (gv, qgroupidv, subvolumev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_qgroup_create");
+
+  char *qgroupid = guestfs___safe_strdup (g, String_val (qgroupidv));
+  char *subvolume = guestfs___safe_strdup (g, String_val (subvolumev));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_qgroup_create (g, qgroupid, subvolume);
+  caml_leave_blocking_section ();
+  free (qgroupid);
+  free (subvolume);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_qgroup_create");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfs_qgroup_destroy : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_qgroup_destroy (value gv, value qgroupidv, value subvolumev);
+
+value
+ocaml_guestfs_btrfs_qgroup_destroy (value gv, value qgroupidv, value subvolumev)
+{
+  CAMLparam3 (gv, qgroupidv, subvolumev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_qgroup_destroy");
+
+  char *qgroupid = guestfs___safe_strdup (g, String_val (qgroupidv));
+  char *subvolume = guestfs___safe_strdup (g, String_val (subvolumev));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_qgroup_destroy (g, qgroupid, subvolume);
+  caml_leave_blocking_section ();
+  free (qgroupid);
+  free (subvolume);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_qgroup_destroy");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfs_qgroup_limit : t -> string -> int64 -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_qgroup_limit (value gv, value subvolumev, value sizev);
+
+value
+ocaml_guestfs_btrfs_qgroup_limit (value gv, value subvolumev, value sizev)
+{
+  CAMLparam3 (gv, subvolumev, sizev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_qgroup_limit");
+
+  char *subvolume = guestfs___safe_strdup (g, String_val (subvolumev));
+  int64_t size = Int64_val (sizev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_qgroup_limit (g, subvolume, size);
+  caml_leave_blocking_section ();
+  free (subvolume);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_qgroup_limit");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfs_qgroup_remove : t -> string -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_qgroup_remove (value gv, value srcv, value dstv, value pathv);
+
+value
+ocaml_guestfs_btrfs_qgroup_remove (value gv, value srcv, value dstv, value pathv)
+{
+  CAMLparam4 (gv, srcv, dstv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_qgroup_remove");
+
+  char *src = guestfs___safe_strdup (g, String_val (srcv));
+  char *dst = guestfs___safe_strdup (g, String_val (dstv));
+  char *path = guestfs___safe_strdup (g, String_val (pathv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_qgroup_remove (g, src, dst, path);
+  caml_leave_blocking_section ();
+  free (src);
+  free (dst);
+  free (path);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_qgroup_remove");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfs_qgroup_show : t -> string -> btrfsqgroup array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_qgroup_show (value gv, value pathv);
+
+value
+ocaml_guestfs_btrfs_qgroup_show (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_qgroup_show");
+
+  char *path = guestfs___safe_strdup (g, String_val (pathv));
+  struct guestfs_btrfsqgroup_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_qgroup_show (g, path);
+  caml_leave_blocking_section ();
+  free (path);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "btrfs_qgroup_show");
+
+  rv = copy_btrfsqgroup_list (r);
+  guestfs_free_btrfsqgroup_list (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfs_quota_enable : t -> string -> bool -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_quota_enable (value gv, value fsv, value enablev);
+
+value
+ocaml_guestfs_btrfs_quota_enable (value gv, value fsv, value enablev)
+{
+  CAMLparam3 (gv, fsv, enablev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_quota_enable");
+
+  char *fs = guestfs___safe_strdup (g, String_val (fsv));
+  int enable = Bool_val (enablev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_quota_enable (g, fs, enable);
+  caml_leave_blocking_section ();
+  free (fs);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_quota_enable");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfs_quota_rescan : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_quota_rescan (value gv, value fsv);
+
+value
+ocaml_guestfs_btrfs_quota_rescan (value gv, value fsv)
+{
+  CAMLparam2 (gv, fsv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_quota_rescan");
+
+  char *fs = guestfs___safe_strdup (g, String_val (fsv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_quota_rescan (g, fs);
+  caml_leave_blocking_section ();
+  free (fs);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_quota_rescan");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfs_rescue_chunk_recover : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_rescue_chunk_recover (value gv, value devicev);
+
+value
+ocaml_guestfs_btrfs_rescue_chunk_recover (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_rescue_chunk_recover");
+
+  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_rescue_chunk_recover (g, device);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_rescue_chunk_recover");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfs_rescue_super_recover : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_rescue_super_recover (value gv, value devicev);
+
+value
+ocaml_guestfs_btrfs_rescue_super_recover (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_rescue_super_recover");
+
+  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_rescue_super_recover (g, device);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_rescue_super_recover");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfs_scrub_cancel : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_scrub_cancel (value gv, value pathv);
+
+value
+ocaml_guestfs_btrfs_scrub_cancel (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_scrub_cancel");
+
+  char *path = guestfs___safe_strdup (g, String_val (pathv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_scrub_cancel (g, path);
+  caml_leave_blocking_section ();
+  free (path);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_scrub_cancel");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfs_scrub_resume : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_scrub_resume (value gv, value pathv);
+
+value
+ocaml_guestfs_btrfs_scrub_resume (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_scrub_resume");
+
+  char *path = guestfs___safe_strdup (g, String_val (pathv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_scrub_resume (g, path);
+  caml_leave_blocking_section ();
+  free (path);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_scrub_resume");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfs_scrub_start : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_scrub_start (value gv, value pathv);
+
+value
+ocaml_guestfs_btrfs_scrub_start (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_scrub_start");
+
+  char *path = guestfs___safe_strdup (g, String_val (pathv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_scrub_start (g, path);
+  caml_leave_blocking_section ();
+  free (path);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_scrub_start");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val btrfs_set_seeding : t -> string -> bool -> unit
  */
 
@@ -2908,6 +3497,37 @@ ocaml_guestfs_btrfs_subvolume_delete (value gv, value subvolumev)
 }
 
 /* Automatically generated wrapper for function
+ * val btrfs_subvolume_get_default : t -> string -> int64
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_subvolume_get_default (value gv, value fsv);
+
+value
+ocaml_guestfs_btrfs_subvolume_get_default (value gv, value fsv)
+{
+  CAMLparam2 (gv, fsv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_subvolume_get_default");
+
+  char *fs = guestfs___safe_strdup (g, String_val (fsv));
+  int64_t r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_subvolume_get_default (g, fs);
+  caml_leave_blocking_section ();
+  free (fs);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_subvolume_get_default");
+
+  rv = caml_copy_int64 (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val btrfs_subvolume_list : t -> string -> btrfssubvolume array
  */
 
@@ -2972,6 +3592,40 @@ ocaml_guestfs_btrfs_subvolume_set_default (value gv, value idv, value fsv)
 }
 
 /* Automatically generated wrapper for function
+ * val btrfs_subvolume_show : t -> string -> (string * string) list
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_subvolume_show (value gv, value subvolumev);
+
+value
+ocaml_guestfs_btrfs_subvolume_show (value gv, value subvolumev)
+{
+  CAMLparam2 (gv, subvolumev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_subvolume_show");
+
+  char *subvolume = guestfs___safe_strdup (g, String_val (subvolumev));
+  size_t i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_subvolume_show (g, subvolume);
+  caml_leave_blocking_section ();
+  free (subvolume);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "btrfs_subvolume_show");
+
+  rv = copy_table (r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val btrfs_subvolume_snapshot : t -> ?ro:bool -> ?qgroupid:string -> string -> string -> unit
  */
 
@@ -3013,6 +3667,35 @@ ocaml_guestfs_btrfs_subvolume_snapshot (value gv, value rov, value qgroupidv, va
     ocaml_guestfs_raise_error (g, "btrfs_subvolume_snapshot");
 
   rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val c_pointer : t -> int64
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_c_pointer (value gv);
+
+value
+ocaml_guestfs_c_pointer (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("c_pointer");
+
+  int64_t r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_c_pointer (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "c_pointer");
+
+  rv = caml_copy_int64 (r);
   CAMLreturn (rv);
 }
 
@@ -12913,17 +13596,17 @@ ocaml_guestfs_mkfifo (value gv, value modev, value pathv)
 }
 
 /* Automatically generated wrapper for function
- * val mkfs : t -> ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> string -> string -> unit
+ * val mkfs : t -> ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> ?label:string -> string -> string -> unit
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_mkfs (value gv, value blocksizev, value featuresv, value inodev, value sectorsizev, value fstypev, value devicev);
+value ocaml_guestfs_mkfs (value gv, value blocksizev, value featuresv, value inodev, value sectorsizev, value labelv, value fstypev, value devicev);
 
 value
-ocaml_guestfs_mkfs (value gv, value blocksizev, value featuresv, value inodev, value sectorsizev, value fstypev, value devicev)
+ocaml_guestfs_mkfs (value gv, value blocksizev, value featuresv, value inodev, value sectorsizev, value labelv, value fstypev, value devicev)
 {
   CAMLparam5 (gv, blocksizev, featuresv, inodev, sectorsizev);
-  CAMLxparam2 (fstypev, devicev);
+  CAMLxparam3 (labelv, fstypev, devicev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -12950,6 +13633,10 @@ ocaml_guestfs_mkfs (value gv, value blocksizev, value featuresv, value inodev, v
     optargs_s.bitmask |= GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK;
     optargs_s.sectorsize = Int_val (Field (sectorsizev, 0));
   }
+  if (labelv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_MKFS_OPTS_LABEL_BITMASK;
+    optargs_s.label = guestfs___safe_strdup (g, String_val (Field (labelv, 0)));
+  }
   int r;
 
   caml_enter_blocking_section ();
@@ -12959,6 +13646,8 @@ ocaml_guestfs_mkfs (value gv, value blocksizev, value featuresv, value inodev, v
   free (device);
   if (featuresv != Val_int (0))
     free ((char *) optargs_s.features);
+  if (labelv != Val_int (0))
+    free ((char *) optargs_s.label);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "mkfs");
 
@@ -12972,7 +13661,7 @@ value ocaml_guestfs_mkfs_byte (value *argv, int argn);
 value
 ocaml_guestfs_mkfs_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_mkfs (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
+  return ocaml_guestfs_mkfs (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7]);
 }
 
 /* Automatically generated wrapper for function

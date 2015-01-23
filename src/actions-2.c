@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -6191,6 +6191,405 @@ guestfs_statns (guestfs_h *g,
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "statns");
     fprintf (trace_buffer.fp, "<struct guestfs_statns *>");
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC char **
+guestfs_btrfs_subvolume_show (guestfs_h *g,
+                              const char *subvolume)
+{
+  struct guestfs_btrfs_subvolume_show_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_btrfs_subvolume_show_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  char **ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "btrfs_subvolume_show", 20);
+  if (subvolume == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfs_subvolume_show", "subvolume");
+    return NULL;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "btrfs_subvolume_show");
+    fprintf (trace_buffer.fp, " \"%s\"", subvolume);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "btrfs_subvolume_show") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_subvolume_show", "NULL");
+    return NULL;
+  }
+
+  args.subvolume = (char *) subvolume;
+  serial = guestfs___send (g, GUESTFS_PROC_BTRFS_SUBVOLUME_SHOW,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_btrfs_subvolume_show_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_subvolume_show", "NULL");
+    return NULL;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "btrfs_subvolume_show", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_btrfs_subvolume_show_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_subvolume_show", "NULL");
+    return NULL;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_BTRFS_SUBVOLUME_SHOW, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_subvolume_show", "NULL");
+    return NULL;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_subvolume_show", "NULL");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "btrfs_subvolume_show", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "btrfs_subvolume_show",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return NULL;
+  }
+
+  /* caller will free this, but we need to add a NULL entry */
+  ret.btrfssubvolumeinfo.btrfssubvolumeinfo_val =
+    safe_realloc (g, ret.btrfssubvolumeinfo.btrfssubvolumeinfo_val,
+                  sizeof (char *) * (ret.btrfssubvolumeinfo.btrfssubvolumeinfo_len + 1));
+  ret.btrfssubvolumeinfo.btrfssubvolumeinfo_val[ret.btrfssubvolumeinfo.btrfssubvolumeinfo_len] = NULL;
+  ret_v = ret.btrfssubvolumeinfo.btrfssubvolumeinfo_val;
+  if (trace_flag) {
+    size_t i;
+
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "btrfs_subvolume_show");
+    fputs ("[", trace_buffer.fp);
+    for (i = 0; ret_v[i]; ++i) {
+      if (i > 0) fputs (", ", trace_buffer.fp);
+      fputs ("\"", trace_buffer.fp);
+      fputs (ret_v[i], trace_buffer.fp);
+      fputs ("\"", trace_buffer.fp);
+    }
+    fputs ("]", trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_btrfs_quota_rescan (guestfs_h *g,
+                            const char *fs)
+{
+  struct guestfs_btrfs_quota_rescan_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "btrfs_quota_rescan", 18);
+  if (fs == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfs_quota_rescan", "fs");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "btrfs_quota_rescan");
+    fprintf (trace_buffer.fp, " \"%s\"", fs);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "btrfs_quota_rescan") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_quota_rescan", "-1");
+    return -1;
+  }
+
+  args.fs = (char *) fs;
+  serial = guestfs___send (g, GUESTFS_PROC_BTRFS_QUOTA_RESCAN,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_btrfs_quota_rescan_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_quota_rescan", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "btrfs_quota_rescan", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_quota_rescan", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_BTRFS_QUOTA_RESCAN, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_quota_rescan", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_quota_rescan", "-1");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "btrfs_quota_rescan", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "btrfs_quota_rescan",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "btrfs_quota_rescan");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_btrfs_qgroup_limit (guestfs_h *g,
+                            const char *subvolume,
+                            int64_t size)
+{
+  struct guestfs_btrfs_qgroup_limit_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "btrfs_qgroup_limit", 18);
+  if (subvolume == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfs_qgroup_limit", "subvolume");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "btrfs_qgroup_limit");
+    fprintf (trace_buffer.fp, " \"%s\"", subvolume);
+    fprintf (trace_buffer.fp, " %" PRIi64, size);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "btrfs_qgroup_limit") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_qgroup_limit", "-1");
+    return -1;
+  }
+
+  args.subvolume = (char *) subvolume;
+  args.size = size;
+  serial = guestfs___send (g, GUESTFS_PROC_BTRFS_QGROUP_LIMIT,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_btrfs_qgroup_limit_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_qgroup_limit", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "btrfs_qgroup_limit", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_qgroup_limit", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_BTRFS_QGROUP_LIMIT, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_qgroup_limit", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_qgroup_limit", "-1");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "btrfs_qgroup_limit", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "btrfs_qgroup_limit",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "btrfs_qgroup_limit");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_btrfs_balance_cancel (guestfs_h *g,
+                              const char *path)
+{
+  struct guestfs_btrfs_balance_cancel_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "btrfs_balance_cancel", 20);
+  if (path == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfs_balance_cancel", "path");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "btrfs_balance_cancel");
+    fprintf (trace_buffer.fp, " \"%s\"", path);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "btrfs_balance_cancel") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_balance_cancel", "-1");
+    return -1;
+  }
+
+  args.path = (char *) path;
+  serial = guestfs___send (g, GUESTFS_PROC_BTRFS_BALANCE_CANCEL,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_btrfs_balance_cancel_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_balance_cancel", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "btrfs_balance_cancel", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_balance_cancel", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_BTRFS_BALANCE_CANCEL, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_balance_cancel", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_balance_cancel", "-1");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "btrfs_balance_cancel", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "btrfs_balance_cancel",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "btrfs_balance_cancel");
+    fprintf (trace_buffer.fp, "%d", ret_v);
     guestfs___trace_send_line (g, &trace_buffer);
   }
 

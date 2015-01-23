@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2014 Red Hat Inc.
+ * Copyright (C) 2009-2015 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,10 +98,10 @@ let parse_libvirt_xml ~verbose xml =
       match xpath_to_string "@type" "" with
       | "" -> None
       | "vnc" ->
-        Some { s_display_type = `VNC;
+        Some { s_display_type = VNC;
                s_keymap = keymap; s_password = password }
       | "spice" ->
-        Some { s_display_type = `Spice;
+        Some { s_display_type = Spice;
                s_keymap = keymap; s_password = password }
       | "sdl"|"desktop" as t ->
         warning (f_"virt-v2v does not support local displays, so <graphics type='%s'> in the input libvirt XML was ignored") t;
@@ -140,9 +140,9 @@ let parse_libvirt_xml ~verbose xml =
         let target_bus = xpath_to_string "target/@bus" "" in
         match target_bus with
         | "" -> None
-        | "ide" -> Some `IDE
-        | "scsi" -> Some `SCSI
-        | "virtio" -> Some `Virtio_blk
+        | "ide" -> Some Source_IDE
+        | "scsi" -> Some Source_SCSI
+        | "virtio" -> Some Source_virtio_blk
         | _ -> None in
 
       let format =
@@ -165,23 +165,19 @@ let parse_libvirt_xml ~verbose xml =
           add_disk path format controller (P_source_file path)
       | "network" ->
         (* We only handle <source protocol="nbd"> here, and that is
-         * intended only for virt-p2v.  Any other network disk is
-         * currently ignored.
+         * intended only for virt-p2v.
          *)
-        (match xpath_to_string "source/@protocol" "" with
-        | "nbd" ->
-          let host = xpath_to_string "source/host/@name" "" in
-          let port = xpath_to_int "source/host/@port" 0 in
-          if host <> "" && port > 0 then (
-            (* Generate a qemu nbd URL.
-             * XXX Quoting, although it's not needed for virt-p2v.
-             *)
-            let path = sprintf "nbd:%s:%d" host port in
-            add_disk path format controller P_dont_rewrite
-          )
-        | "" -> ()
-        | protocol ->
-          warning (f_"network <disk> with <source protocol='%s'> was ignored")
+        (match (xpath_to_string "source/@protocol" "",
+                xpath_to_string "source/host/@name" "",
+                xpath_to_int "source/host/@port" 0) with
+        | "", _, _ ->
+          warning (f_"<disk type=network> was ignored")
+        | "nbd", ("localhost" as host), port when port > 0 ->
+          (* virt-p2v: Generate a qemu nbd URL. *)
+          let path = sprintf "nbd:%s:%d" host port in
+          add_disk path format controller P_dont_rewrite
+        | protocol, _, _ ->
+          warning (f_"<disk type='network'> with <source protocol='%s'> was ignored")
             protocol
         )
       | disk_type ->
@@ -204,15 +200,15 @@ let parse_libvirt_xml ~verbose xml =
         let target_bus = xpath_to_string "target/@bus" "" in
         match target_bus with
         | "" -> None
-        | "ide" -> Some `IDE
-        | "scsi" -> Some `SCSI
-        | "virtio" -> Some `Virtio_blk
+        | "ide" -> Some Source_IDE
+        | "scsi" -> Some Source_SCSI
+        | "virtio" -> Some Source_virtio_blk
         | _ -> None in
 
       let typ =
         match xpath_to_string "@device" "" with
-        | "cdrom" -> `CDROM
-        | "floppy" -> `Floppy
+        | "cdrom" -> CDROM
+        | "floppy" -> Floppy
         | _ -> assert false (* libxml2 error? *) in
 
       let disk =
