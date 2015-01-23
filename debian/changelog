@@ -1,3 +1,11 @@
+libguestfs (1:1.29.22-1) experimental; urgency=medium
+
+  * New upstream development version
+  * Added libncursesw5-dev to build dependencies
+  * Updated symbols file
+
+ -- Hilko Bengen <bengen@debian.org>  Fri, 23 Jan 2015 13:25:18 +0100
+
 libguestfs (1:1.29.14-1) experimental; urgency=medium
 
   * New upstream development version
