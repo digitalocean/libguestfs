@@ -7197,3 +7197,98 @@ guestfs_btrfs_qgroup_create (guestfs_h *g,
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_btrfs_rescue_super_recover (guestfs_h *g,
+                                    const char *device)
+{
+  struct guestfs_btrfs_rescue_super_recover_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "btrfs_rescue_super_recover", 26);
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfs_rescue_super_recover", "device");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "btrfs_rescue_super_recover");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "btrfs_rescue_super_recover") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_rescue_super_recover", "-1");
+    return -1;
+  }
+
+  args.device = (char *) device;
+  serial = guestfs___send (g, GUESTFS_PROC_BTRFS_RESCUE_SUPER_RECOVER,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_btrfs_rescue_super_recover_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_rescue_super_recover", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "btrfs_rescue_super_recover", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_rescue_super_recover", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_BTRFS_RESCUE_SUPER_RECOVER, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_rescue_super_recover", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_rescue_super_recover", "-1");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "btrfs_rescue_super_recover", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "btrfs_rescue_super_recover",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "btrfs_rescue_super_recover");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+

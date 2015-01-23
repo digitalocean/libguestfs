@@ -80,9 +80,13 @@ extern struct command_entry blockdev_setbsz_cmd_entry;
 extern struct command_entry blockdev_setra_cmd_entry;
 extern struct command_entry blockdev_setro_cmd_entry;
 extern struct command_entry blockdev_setrw_cmd_entry;
+extern struct command_entry btrfs_balance_cancel_cmd_entry;
+extern struct command_entry btrfs_balance_pause_cmd_entry;
+extern struct command_entry btrfs_balance_resume_cmd_entry;
 extern struct command_entry btrfs_device_add_cmd_entry;
 extern struct command_entry btrfs_device_delete_cmd_entry;
 extern struct command_entry btrfs_filesystem_balance_cmd_entry;
+extern struct command_entry btrfs_filesystem_defragment_cmd_entry;
 extern struct command_entry btrfs_filesystem_resize_cmd_entry;
 extern struct command_entry btrfs_filesystem_sync_cmd_entry;
 extern struct command_entry btrfs_fsck_cmd_entry;
@@ -94,6 +98,11 @@ extern struct command_entry btrfs_qgroup_remove_cmd_entry;
 extern struct command_entry btrfs_qgroup_show_cmd_entry;
 extern struct command_entry btrfs_quota_enable_cmd_entry;
 extern struct command_entry btrfs_quota_rescan_cmd_entry;
+extern struct command_entry btrfs_rescue_chunk_recover_cmd_entry;
+extern struct command_entry btrfs_rescue_super_recover_cmd_entry;
+extern struct command_entry btrfs_scrub_cancel_cmd_entry;
+extern struct command_entry btrfs_scrub_resume_cmd_entry;
+extern struct command_entry btrfs_scrub_start_cmd_entry;
 extern struct command_entry btrfs_set_seeding_cmd_entry;
 extern struct command_entry btrfs_subvolume_create_cmd_entry;
 extern struct command_entry btrfs_subvolume_delete_cmd_entry;
@@ -680,12 +689,21 @@ blockdev_setro, &blockdev_setro_cmd_entry
 blockdev-setro, &blockdev_setro_cmd_entry
 blockdev_setrw, &blockdev_setrw_cmd_entry
 blockdev-setrw, &blockdev_setrw_cmd_entry
+btrfs_balance_cancel, &btrfs_balance_cancel_cmd_entry
+btrfs-balance-cancel, &btrfs_balance_cancel_cmd_entry
+btrfs_balance_pause, &btrfs_balance_pause_cmd_entry
+btrfs-balance-pause, &btrfs_balance_pause_cmd_entry
+btrfs_balance_resume, &btrfs_balance_resume_cmd_entry
+btrfs-balance-resume, &btrfs_balance_resume_cmd_entry
 btrfs_device_add, &btrfs_device_add_cmd_entry
 btrfs-device-add, &btrfs_device_add_cmd_entry
 btrfs_device_delete, &btrfs_device_delete_cmd_entry
 btrfs-device-delete, &btrfs_device_delete_cmd_entry
 btrfs_filesystem_balance, &btrfs_filesystem_balance_cmd_entry
 btrfs-filesystem-balance, &btrfs_filesystem_balance_cmd_entry
+btrfs-balance, &btrfs_filesystem_balance_cmd_entry
+btrfs_filesystem_defragment, &btrfs_filesystem_defragment_cmd_entry
+btrfs-filesystem-defragment, &btrfs_filesystem_defragment_cmd_entry
 btrfs_filesystem_resize, &btrfs_filesystem_resize_cmd_entry
 btrfs-filesystem-resize, &btrfs_filesystem_resize_cmd_entry
 btrfs_filesystem_sync, &btrfs_filesystem_sync_cmd_entry
@@ -708,6 +726,16 @@ btrfs_quota_enable, &btrfs_quota_enable_cmd_entry
 btrfs-quota-enable, &btrfs_quota_enable_cmd_entry
 btrfs_quota_rescan, &btrfs_quota_rescan_cmd_entry
 btrfs-quota-rescan, &btrfs_quota_rescan_cmd_entry
+btrfs_rescue_chunk_recover, &btrfs_rescue_chunk_recover_cmd_entry
+btrfs-rescue-chunk-recover, &btrfs_rescue_chunk_recover_cmd_entry
+btrfs_rescue_super_recover, &btrfs_rescue_super_recover_cmd_entry
+btrfs-rescue-super-recover, &btrfs_rescue_super_recover_cmd_entry
+btrfs_scrub_cancel, &btrfs_scrub_cancel_cmd_entry
+btrfs-scrub-cancel, &btrfs_scrub_cancel_cmd_entry
+btrfs_scrub_resume, &btrfs_scrub_resume_cmd_entry
+btrfs-scrub-resume, &btrfs_scrub_resume_cmd_entry
+btrfs_scrub_start, &btrfs_scrub_start_cmd_entry
+btrfs-scrub-start, &btrfs_scrub_start_cmd_entry
 btrfs_set_seeding, &btrfs_set_seeding_cmd_entry
 btrfs-set-seeding, &btrfs_set_seeding_cmd_entry
 btrfs_subvolume_create, &btrfs_subvolume_create_cmd_entry

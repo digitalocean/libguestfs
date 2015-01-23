@@ -69,9 +69,13 @@
 -export([blockdev_setra/3]).
 -export([blockdev_setro/2]).
 -export([blockdev_setrw/2]).
+-export([btrfs_balance_cancel/2]).
+-export([btrfs_balance_pause/2]).
+-export([btrfs_balance_resume/2]).
 -export([btrfs_device_add/3]).
 -export([btrfs_device_delete/3]).
 -export([btrfs_filesystem_balance/2]).
+-export([btrfs_filesystem_defragment/2, btrfs_filesystem_defragment/3]).
 -export([btrfs_filesystem_resize/2, btrfs_filesystem_resize/3]).
 -export([btrfs_filesystem_sync/2]).
 -export([btrfs_fsck/2, btrfs_fsck/3]).
@@ -83,6 +87,11 @@
 -export([btrfs_qgroup_show/2]).
 -export([btrfs_quota_enable/3]).
 -export([btrfs_quota_rescan/2]).
+-export([btrfs_rescue_chunk_recover/2]).
+-export([btrfs_rescue_super_recover/2]).
+-export([btrfs_scrub_cancel/2]).
+-export([btrfs_scrub_resume/2]).
+-export([btrfs_scrub_start/2]).
 -export([btrfs_set_seeding/3]).
 -export([btrfs_subvolume_create/2, btrfs_subvolume_create/3]).
 -export([btrfs_subvolume_create_opts/2, btrfs_subvolume_create_opts/3]).
@@ -787,6 +796,15 @@ blockdev_setro(G, Device) ->
 blockdev_setrw(G, Device) ->
   call_port(G, {blockdev_setrw, Device}).
 
+btrfs_balance_cancel(G, Path) ->
+  call_port(G, {btrfs_balance_cancel, Path}).
+
+btrfs_balance_pause(G, Path) ->
+  call_port(G, {btrfs_balance_pause, Path}).
+
+btrfs_balance_resume(G, Path) ->
+  call_port(G, {btrfs_balance_resume, Path}).
+
 btrfs_device_add(G, Devices, Fs) ->
   call_port(G, {btrfs_device_add, Devices, Fs}).
 
@@ -795,6 +813,11 @@ btrfs_device_delete(G, Devices, Fs) ->
 
 btrfs_filesystem_balance(G, Fs) ->
   call_port(G, {btrfs_filesystem_balance, Fs}).
+
+btrfs_filesystem_defragment(G, Path, Optargs) ->
+  call_port(G, {btrfs_filesystem_defragment, Path, Optargs}).
+btrfs_filesystem_defragment(G, Path) ->
+  btrfs_filesystem_defragment(G, Path, []).
 
 btrfs_filesystem_resize(G, Mountpoint, Optargs) ->
   call_port(G, {btrfs_filesystem_resize, Mountpoint, Optargs}).
@@ -832,6 +855,21 @@ btrfs_quota_enable(G, Fs, Enable) ->
 
 btrfs_quota_rescan(G, Fs) ->
   call_port(G, {btrfs_quota_rescan, Fs}).
+
+btrfs_rescue_chunk_recover(G, Device) ->
+  call_port(G, {btrfs_rescue_chunk_recover, Device}).
+
+btrfs_rescue_super_recover(G, Device) ->
+  call_port(G, {btrfs_rescue_super_recover, Device}).
+
+btrfs_scrub_cancel(G, Path) ->
+  call_port(G, {btrfs_scrub_cancel, Path}).
+
+btrfs_scrub_resume(G, Path) ->
+  call_port(G, {btrfs_scrub_resume, Path}).
+
+btrfs_scrub_start(G, Path) ->
+  call_port(G, {btrfs_scrub_start, Path}).
 
 btrfs_set_seeding(G, Device, Seeding) ->
   call_port(G, {btrfs_set_seeding, Device, Seeding}).

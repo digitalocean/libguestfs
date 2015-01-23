@@ -3069,6 +3069,111 @@ py_guestfs_blockdev_setrw (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_btrfs_balance_cancel (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_balance_cancel",
+                         &py_g, &path))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_balance_cancel (g, path);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_balance_pause (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_balance_pause",
+                         &py_g, &path))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_balance_pause (g, path);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_balance_resume (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_balance_resume",
+                         &py_g, &path))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_balance_resume (g, path);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_btrfs_device_add (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -3167,6 +3272,63 @@ py_guestfs_btrfs_filesystem_balance (PyObject *self, PyObject *args)
     py_save = PyEval_SaveThread ();
 
   r = guestfs_btrfs_filesystem_balance (g, fs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_filesystem_defragment (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_btrfs_filesystem_defragment_argv optargs_s;
+  struct guestfs_btrfs_filesystem_defragment_argv *optargs = &optargs_s;
+  int r;
+  const char *path;
+  PyObject *py_flush;
+  PyObject *py_compress;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OsOO:guestfs_btrfs_filesystem_defragment",
+                         &py_g, &path, &py_flush, &py_compress))
+    goto out;
+  g = get_handle (py_g);
+
+  if (py_flush != Py_None) {
+    optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK;
+    optargs_s.flush = PyLong_AsLong (py_flush);
+    if (PyErr_Occurred ()) goto out;
+  }
+  if (py_compress != Py_None) {
+    optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.compress = PyString_AsString (py_compress);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_compress);
+    optargs_s.compress = PyBytes_AS_STRING (bytes);
+#endif
+  }
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_filesystem_defragment_argv (g, path, optargs);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -3588,6 +3750,181 @@ py_guestfs_btrfs_quota_rescan (PyObject *self, PyObject *args)
     py_save = PyEval_SaveThread ();
 
   r = guestfs_btrfs_quota_rescan (g, fs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_rescue_chunk_recover (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *device;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_rescue_chunk_recover",
+                         &py_g, &device))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_rescue_chunk_recover (g, device);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_rescue_super_recover (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *device;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_rescue_super_recover",
+                         &py_g, &device))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_rescue_super_recover (g, device);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_scrub_cancel (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_scrub_cancel",
+                         &py_g, &path))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_scrub_cancel (g, path);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_scrub_resume (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_scrub_resume",
+                         &py_g, &path))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_scrub_resume (g, path);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_scrub_start (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_scrub_start",
+                         &py_g, &path))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_scrub_start (g, path);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -15057,11 +15394,12 @@ py_guestfs_mkfs (PyObject *self, PyObject *args)
   PyObject *py_features;
   PyObject *py_inode;
   PyObject *py_sectorsize;
+  PyObject *py_label;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OssOOOO:guestfs_mkfs",
-                         &py_g, &fstype, &device, &py_blocksize, &py_features, &py_inode, &py_sectorsize))
+  if (!PyArg_ParseTuple (args, (char *) "OssOOOOO:guestfs_mkfs",
+                         &py_g, &fstype, &device, &py_blocksize, &py_features, &py_inode, &py_sectorsize, &py_label))
     goto out;
   g = get_handle (py_g);
 
@@ -15089,6 +15427,16 @@ py_guestfs_mkfs (PyObject *self, PyObject *args)
     optargs_s.bitmask |= GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK;
     optargs_s.sectorsize = PyLong_AsLong (py_sectorsize);
     if (PyErr_Occurred ()) goto out;
+  }
+  if (py_label != Py_None) {
+    optargs_s.bitmask |= GUESTFS_MKFS_OPTS_LABEL_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.label = PyString_AsString (py_label);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_label);
+    optargs_s.label = PyBytes_AS_STRING (bytes);
+#endif
   }
 
   if (PyEval_ThreadsInitialized ())
@@ -23027,9 +23375,13 @@ static PyMethodDef methods[] = {
   { (char *) "blockdev_setra", py_guestfs_blockdev_setra, METH_VARARGS, NULL },
   { (char *) "blockdev_setro", py_guestfs_blockdev_setro, METH_VARARGS, NULL },
   { (char *) "blockdev_setrw", py_guestfs_blockdev_setrw, METH_VARARGS, NULL },
+  { (char *) "btrfs_balance_cancel", py_guestfs_btrfs_balance_cancel, METH_VARARGS, NULL },
+  { (char *) "btrfs_balance_pause", py_guestfs_btrfs_balance_pause, METH_VARARGS, NULL },
+  { (char *) "btrfs_balance_resume", py_guestfs_btrfs_balance_resume, METH_VARARGS, NULL },
   { (char *) "btrfs_device_add", py_guestfs_btrfs_device_add, METH_VARARGS, NULL },
   { (char *) "btrfs_device_delete", py_guestfs_btrfs_device_delete, METH_VARARGS, NULL },
   { (char *) "btrfs_filesystem_balance", py_guestfs_btrfs_filesystem_balance, METH_VARARGS, NULL },
+  { (char *) "btrfs_filesystem_defragment", py_guestfs_btrfs_filesystem_defragment, METH_VARARGS, NULL },
   { (char *) "btrfs_filesystem_resize", py_guestfs_btrfs_filesystem_resize, METH_VARARGS, NULL },
   { (char *) "btrfs_filesystem_sync", py_guestfs_btrfs_filesystem_sync, METH_VARARGS, NULL },
   { (char *) "btrfs_fsck", py_guestfs_btrfs_fsck, METH_VARARGS, NULL },
@@ -23041,6 +23393,11 @@ static PyMethodDef methods[] = {
   { (char *) "btrfs_qgroup_show", py_guestfs_btrfs_qgroup_show, METH_VARARGS, NULL },
   { (char *) "btrfs_quota_enable", py_guestfs_btrfs_quota_enable, METH_VARARGS, NULL },
   { (char *) "btrfs_quota_rescan", py_guestfs_btrfs_quota_rescan, METH_VARARGS, NULL },
+  { (char *) "btrfs_rescue_chunk_recover", py_guestfs_btrfs_rescue_chunk_recover, METH_VARARGS, NULL },
+  { (char *) "btrfs_rescue_super_recover", py_guestfs_btrfs_rescue_super_recover, METH_VARARGS, NULL },
+  { (char *) "btrfs_scrub_cancel", py_guestfs_btrfs_scrub_cancel, METH_VARARGS, NULL },
+  { (char *) "btrfs_scrub_resume", py_guestfs_btrfs_scrub_resume, METH_VARARGS, NULL },
+  { (char *) "btrfs_scrub_start", py_guestfs_btrfs_scrub_start, METH_VARARGS, NULL },
   { (char *) "btrfs_set_seeding", py_guestfs_btrfs_set_seeding, METH_VARARGS, NULL },
   { (char *) "btrfs_subvolume_create", py_guestfs_btrfs_subvolume_create, METH_VARARGS, NULL },
   { (char *) "btrfs_subvolume_delete", py_guestfs_btrfs_subvolume_delete, METH_VARARGS, NULL },

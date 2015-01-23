@@ -76,6 +76,12 @@
 <td class="property_flags">Read / Write / Construct</td>
 </tr>
 <tr>
+<td class="property_type">
+<span class="type">gchar</span> *</td>
+<td class="property_name"><a class="link" href="GuestfsMkfs.html#GuestfsMkfs--label" title="The “label” property">label</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+<tr>
 <td class="property_type"><span class="type">gint</span></td>
 <td class="property_name"><a class="link" href="GuestfsMkfs.html#GuestfsMkfs--sectorsize" title="The “sectorsize” property">sectorsize</a></td>
 <td class="property_flags">Read / Write / Construct</td>
@@ -125,7 +131,7 @@
 guestfs_mkfs_new (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
 <p>Create a new GuestfsMkfs object</p>
 <div class="refsect3">
-<a name="id-1.2.59.9.2.5"></a><h4>Returns</h4>
+<a name="id-1.2.60.9.2.5"></a><h4>Returns</h4>
 <p> a new GuestfsMkfs object. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
 </div>
@@ -147,7 +153,7 @@ guestfs_mkfs_new (<em class="parameter"><code><span class="type">void</span></co
 </pre>
 <p>A class metadata object for GuestfsMkfs.</p>
 <div class="refsect3">
-<a name="id-1.2.59.10.3.5"></a><h4>Members</h4>
+<a name="id-1.2.60.10.3.5"></a><h4>Members</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="300px" class="struct_members_name">
@@ -187,6 +193,14 @@ guestfs_mkfs_new (<em class="parameter"><code><span class="type">void</span></co
 <p>A 32-bit integer.</p>
 <p>Flags: Read / Write / Construct</p>
 <p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMkfs--label"></a><h3>The <code class="literal">“label”</code> property</h3>
+<pre class="programlisting">  “label”                    <span class="type">gchar</span> *</pre>
+<p>A string.</p>
+<p>Flags: Read / Write / Construct</p>
+<p>Default value: NULL</p>
 </div>
 <hr>
 <div class="refsect2">

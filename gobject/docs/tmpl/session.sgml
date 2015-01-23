@@ -672,6 +672,39 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_btrfs_balance_cancel ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfs_balance_pause ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfs_balance_resume ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_btrfs_device_add ##### -->
 <para>
 
@@ -703,6 +736,18 @@ GuestfsSession
 
 @session: 
 @fs: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfs_filesystem_defragment ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@optargs: 
 @err: 
 @Returns: 
 
@@ -834,6 +879,61 @@ GuestfsSession
 
 @session: 
 @fs: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfs_rescue_chunk_recover ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfs_rescue_super_recover ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfs_scrub_cancel ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfs_scrub_resume ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfs_scrub_start ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
 @err: 
 @Returns: 
 

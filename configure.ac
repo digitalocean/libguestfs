@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [29])
-m4_define([libguestfs_release], [20])
+m4_define([libguestfs_release], [22])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1015,12 +1015,19 @@ PKG_CHECK_MODULES([HIVEX], [hivex],[
 AM_CONDITIONAL([HAVE_HIVEX],[test "x$HIVEX_LIBS" != "x"])
 
 dnl systemd journal library (optional)
-PKG_CHECK_MODULES([SD_JOURNAL], [libsystemd-journal >= 196],[
+PKG_CHECK_MODULES([SD_JOURNAL], [libsystemd],[
     AC_SUBST([SD_JOURNAL_CFLAGS])
     AC_SUBST([SD_JOURNAL_LIBS])
     AC_DEFINE([HAVE_SD_JOURNAL],[1],[systemd journal library found at compile time.])
-],
-    [AC_MSG_WARN([systemd journal library not found, some features will be disabled])])
+],[
+    PKG_CHECK_MODULES([SD_JOURNAL], [libsystemd-journal >= 196],[
+        AC_SUBST([SD_JOURNAL_CFLAGS])
+        AC_SUBST([SD_JOURNAL_LIBS])
+        AC_DEFINE([HAVE_SD_JOURNAL],[1],[systemd journal library found at compile time.])
+    ],[
+        AC_MSG_WARN([systemd journal library not found, some features will be disabled])
+    ])
+])
 
 dnl FUSE is optional to build the FUSE module.
 AC_ARG_ENABLE([fuse],

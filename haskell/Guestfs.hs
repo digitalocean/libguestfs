@@ -64,6 +64,9 @@ module Guestfs (
   blockdev_setra,
   blockdev_setro,
   blockdev_setrw,
+  btrfs_balance_cancel,
+  btrfs_balance_pause,
+  btrfs_balance_resume,
   btrfs_device_add,
   btrfs_device_delete,
   btrfs_filesystem_balance,
@@ -75,6 +78,11 @@ module Guestfs (
   btrfs_qgroup_remove,
   btrfs_quota_enable,
   btrfs_quota_rescan,
+  btrfs_rescue_chunk_recover,
+  btrfs_rescue_super_recover,
+  btrfs_scrub_cancel,
+  btrfs_scrub_resume,
+  btrfs_scrub_start,
   btrfs_set_seeding,
   btrfs_subvolume_delete,
   btrfs_subvolume_get_default,
@@ -1019,6 +1027,42 @@ blockdev_setrw h device = do
       fail err
     else return ()
 
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_balance_cancel" c_btrfs_balance_cancel
+  :: GuestfsP -> CString -> IO CInt
+
+btrfs_balance_cancel :: GuestfsH -> String -> IO ()
+btrfs_balance_cancel h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_btrfs_balance_cancel p path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_balance_pause" c_btrfs_balance_pause
+  :: GuestfsP -> CString -> IO CInt
+
+btrfs_balance_pause :: GuestfsH -> String -> IO ()
+btrfs_balance_pause h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_btrfs_balance_pause p path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_balance_resume" c_btrfs_balance_resume
+  :: GuestfsP -> CString -> IO CInt
+
+btrfs_balance_resume :: GuestfsH -> String -> IO ()
+btrfs_balance_resume h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_btrfs_balance_resume p path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
 foreign import ccall unsafe "guestfs.h guestfs_btrfs_device_add" c_btrfs_device_add
   :: GuestfsP -> Ptr CString -> CString -> IO CInt
 
@@ -1145,6 +1189,66 @@ foreign import ccall unsafe "guestfs.h guestfs_btrfs_quota_rescan" c_btrfs_quota
 btrfs_quota_rescan :: GuestfsH -> String -> IO ()
 btrfs_quota_rescan h fs = do
   r <- withCString fs $ \fs -> withForeignPtr h (\p -> c_btrfs_quota_rescan p fs)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_rescue_chunk_recover" c_btrfs_rescue_chunk_recover
+  :: GuestfsP -> CString -> IO CInt
+
+btrfs_rescue_chunk_recover :: GuestfsH -> String -> IO ()
+btrfs_rescue_chunk_recover h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_btrfs_rescue_chunk_recover p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_rescue_super_recover" c_btrfs_rescue_super_recover
+  :: GuestfsP -> CString -> IO CInt
+
+btrfs_rescue_super_recover :: GuestfsH -> String -> IO ()
+btrfs_rescue_super_recover h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_btrfs_rescue_super_recover p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_scrub_cancel" c_btrfs_scrub_cancel
+  :: GuestfsP -> CString -> IO CInt
+
+btrfs_scrub_cancel :: GuestfsH -> String -> IO ()
+btrfs_scrub_cancel h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_btrfs_scrub_cancel p path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_scrub_resume" c_btrfs_scrub_resume
+  :: GuestfsP -> CString -> IO CInt
+
+btrfs_scrub_resume :: GuestfsH -> String -> IO ()
+btrfs_scrub_resume h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_btrfs_scrub_resume p path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_scrub_start" c_btrfs_scrub_start
+  :: GuestfsP -> CString -> IO CInt
+
+btrfs_scrub_start :: GuestfsH -> String -> IO ()
+btrfs_scrub_start h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_btrfs_scrub_start p path)
   if (r == -1)
     then do
       err <- last_error h

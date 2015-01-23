@@ -22,13 +22,17 @@ use warnings;
 
 use Sys::Guestfs;
 
+exit 77 if $ENV{SKIP_TEST_LVM_MAPPING_PL};
+
 my $g = Sys::Guestfs->new ();
 
 $g->add_drive_scratch (256 * 1024 * 1024);
 $g->launch ();
 
 # Create an arrangement of PVs, VGs and LVs.
-$g->sfdiskM ("/dev/sda", [",127", "128,"]);
+$g->part_init ("/dev/sda", "mbr");
+$g->part_add ("/dev/sda", "p", 2048, 128*1024/2-1);
+$g->part_add ("/dev/sda", "p", 128*1024/2, -64);
 
 $g->pvcreate ("/dev/sda1");
 $g->pvcreate ("/dev/sda2");

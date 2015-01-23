@@ -1366,6 +1366,63 @@ Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1setrw  (JNIEnv *env, jobject o
 }
 
 JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1balance_1cancel  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *path;
+
+  path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
+  r = guestfs_btrfs_balance_cancel (g, path);
+
+  (*env)->ReleaseStringUTFChars (env, jpath, path);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1balance_1pause  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *path;
+
+  path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
+  r = guestfs_btrfs_balance_pause (g, path);
+
+  (*env)->ReleaseStringUTFChars (env, jpath, path);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1balance_1resume  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *path;
+
+  path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
+  r = guestfs_btrfs_balance_resume (g, path);
+
+  (*env)->ReleaseStringUTFChars (env, jpath, path);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1device_1add  (JNIEnv *env, jobject obj, jlong jg, jobjectArray jdevices, jstring jfs)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
@@ -1445,6 +1502,32 @@ Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1filesystem_1balance  (JNIEnv *env
   r = guestfs_btrfs_filesystem_balance (g, fs);
 
   (*env)->ReleaseStringUTFChars (env, jfs, fs);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1filesystem_1defragment  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jlong joptargs_bitmask, jboolean jflush, jstring jcompress)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *path;
+  struct guestfs_btrfs_filesystem_defragment_argv optargs_s;
+  const struct guestfs_btrfs_filesystem_defragment_argv *optargs = &optargs_s;
+
+  path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
+  optargs_s.flush = jflush;
+  optargs_s.compress = (*env)->GetStringUTFChars (env, jcompress, NULL);
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_btrfs_filesystem_defragment_argv (g, path, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jpath, path);
+  (*env)->ReleaseStringUTFChars (env, jcompress, optargs_s.compress);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -1714,6 +1797,101 @@ Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1quota_1rescan  (JNIEnv *env, jobj
   r = guestfs_btrfs_quota_rescan (g, fs);
 
   (*env)->ReleaseStringUTFChars (env, jfs, fs);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1rescue_1chunk_1recover  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *device;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
+  r = guestfs_btrfs_rescue_chunk_recover (g, device);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1rescue_1super_1recover  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *device;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
+  r = guestfs_btrfs_rescue_super_recover (g, device);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1scrub_1cancel  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *path;
+
+  path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
+  r = guestfs_btrfs_scrub_cancel (g, path);
+
+  (*env)->ReleaseStringUTFChars (env, jpath, path);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1scrub_1resume  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *path;
+
+  path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
+  r = guestfs_btrfs_scrub_resume (g, path);
+
+  (*env)->ReleaseStringUTFChars (env, jpath, path);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1scrub_1start  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *path;
+
+  path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
+  r = guestfs_btrfs_scrub_start (g, path);
+
+  (*env)->ReleaseStringUTFChars (env, jpath, path);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -9880,7 +10058,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1mkfifo  (JNIEnv *env, jobject obj, jlong
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mkfs  (JNIEnv *env, jobject obj, jlong jg, jstring jfstype, jstring jdevice, jlong joptargs_bitmask, jint jblocksize, jstring jfeatures, jint jinode, jint jsectorsize)
+Java_com_redhat_et_libguestfs_GuestFS__1mkfs  (JNIEnv *env, jobject obj, jlong jg, jstring jfstype, jstring jdevice, jlong joptargs_bitmask, jint jblocksize, jstring jfeatures, jint jinode, jint jsectorsize, jstring jlabel)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -9896,6 +10074,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1mkfs  (JNIEnv *env, jobject obj, jlong j
   optargs_s.features = (*env)->GetStringUTFChars (env, jfeatures, NULL);
   optargs_s.inode = jinode;
   optargs_s.sectorsize = jsectorsize;
+  optargs_s.label = (*env)->GetStringUTFChars (env, jlabel, NULL);
   optargs_s.bitmask = joptargs_bitmask;
 
   r = guestfs_mkfs_opts_argv (g, fstype, device, optargs);
@@ -9903,6 +10082,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1mkfs  (JNIEnv *env, jobject obj, jlong j
   (*env)->ReleaseStringUTFChars (env, jfstype, fstype);
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jfeatures, optargs_s.features);
+  (*env)->ReleaseStringUTFChars (env, jlabel, optargs_s.label);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));

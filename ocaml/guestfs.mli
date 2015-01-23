@@ -539,6 +539,15 @@ val blockdev_setro : t -> string -> unit
 val blockdev_setrw : t -> string -> unit
 (** set block device to read-write *)
 
+val btrfs_balance_cancel : t -> string -> unit
+(** cancel a running or paused balance *)
+
+val btrfs_balance_pause : t -> string -> unit
+(** pause a running balance *)
+
+val btrfs_balance_resume : t -> string -> unit
+(** resume a paused balance *)
+
 val btrfs_device_add : t -> string array -> string -> unit
 (** add devices to a btrfs filesystem *)
 
@@ -547,6 +556,9 @@ val btrfs_device_delete : t -> string array -> string -> unit
 
 val btrfs_filesystem_balance : t -> string -> unit
 (** balance a btrfs filesystem *)
+
+val btrfs_filesystem_defragment : t -> ?flush:bool -> ?compress:string -> string -> unit
+(** defragment a file or directory *)
 
 val btrfs_filesystem_resize : t -> ?size:int64 -> string -> unit
 (** resize a btrfs filesystem *)
@@ -580,6 +592,21 @@ val btrfs_quota_enable : t -> string -> bool -> unit
 
 val btrfs_quota_rescan : t -> string -> unit
 (** trash all qgroup numbers and scan the metadata again with the current config *)
+
+val btrfs_rescue_chunk_recover : t -> string -> unit
+(** recover the chunk tree of btrfs filesystem *)
+
+val btrfs_rescue_super_recover : t -> string -> unit
+(** recover bad superblocks from good copies *)
+
+val btrfs_scrub_cancel : t -> string -> unit
+(** cancel a running scrub *)
+
+val btrfs_scrub_resume : t -> string -> unit
+(** resume a previously canceled or interrupted scrub *)
+
+val btrfs_scrub_start : t -> string -> unit
+(** read all data from all disks and verify checksums *)
 
 val btrfs_set_seeding : t -> string -> bool -> unit
 (** enable or disable the seeding feature of device *)
@@ -1526,10 +1553,10 @@ val mke2journal_U : t -> int -> string -> string -> unit
 val mkfifo : t -> int -> string -> unit
 (** make FIFO (named pipe) *)
 
-val mkfs : t -> ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> string -> string -> unit
+val mkfs : t -> ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> ?label:string -> string -> string -> unit
 (** make a filesystem *)
 
-val mkfs_opts : t -> ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> string -> string -> unit
+val mkfs_opts : t -> ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> ?label:string -> string -> string -> unit
 
 val mkfs_b : t -> string -> int -> string -> unit
 (** make a filesystem with block size
@@ -2311,9 +2338,13 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method blockdev_setra : string -> int -> unit
   method blockdev_setro : string -> unit
   method blockdev_setrw : string -> unit
+  method btrfs_balance_cancel : string -> unit
+  method btrfs_balance_pause : string -> unit
+  method btrfs_balance_resume : string -> unit
   method btrfs_device_add : string array -> string -> unit
   method btrfs_device_delete : string array -> string -> unit
   method btrfs_filesystem_balance : string -> unit
+  method btrfs_filesystem_defragment : ?flush:bool -> ?compress:string -> string -> unit
   method btrfs_filesystem_resize : ?size:int64 -> string -> unit
   method btrfs_filesystem_sync : string -> unit
   method btrfs_fsck : ?superblock:int64 -> ?repair:bool -> string -> unit
@@ -2325,6 +2356,11 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method btrfs_qgroup_show : string -> btrfsqgroup array
   method btrfs_quota_enable : string -> bool -> unit
   method btrfs_quota_rescan : string -> unit
+  method btrfs_rescue_chunk_recover : string -> unit
+  method btrfs_rescue_super_recover : string -> unit
+  method btrfs_scrub_cancel : string -> unit
+  method btrfs_scrub_resume : string -> unit
+  method btrfs_scrub_start : string -> unit
   method btrfs_set_seeding : string -> bool -> unit
   method btrfs_subvolume_create : ?qgroupid:string -> string -> unit
   method btrfs_subvolume_create_opts : ?qgroupid:string -> string -> unit
@@ -2630,8 +2666,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method mke2journal_L : int -> string -> string -> unit
   method mke2journal_U : int -> string -> string -> unit
   method mkfifo : int -> string -> unit
-  method mkfs : ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> string -> string -> unit
-  method mkfs_opts : ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> string -> string -> unit
+  method mkfs : ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> ?label:string -> string -> string -> unit
+  method mkfs_opts : ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> ?label:string -> string -> string -> unit
   method mkfs_b : string -> int -> string -> unit
   method mkfs_btrfs : ?allocstart:int64 -> ?bytecount:int64 -> ?datatype:string -> ?leafsize:int -> ?label:string -> ?metadata:string -> ?nodesize:int -> ?sectorsize:int -> string array -> unit
   method mklost_and_found : string -> unit

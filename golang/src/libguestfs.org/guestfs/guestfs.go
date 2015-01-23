@@ -2072,6 +2072,57 @@ func (g *Guestfs) Blockdev_setrw (device string) *GuestfsError {
     return nil
 }
 
+/* btrfs_balance_cancel : cancel a running or paused balance */
+func (g *Guestfs) Btrfs_balance_cancel (path string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_balance_cancel")
+    }
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+
+    r := C.guestfs_btrfs_balance_cancel (g.g, c_path)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_balance_cancel")
+    }
+    return nil
+}
+
+/* btrfs_balance_pause : pause a running balance */
+func (g *Guestfs) Btrfs_balance_pause (path string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_balance_pause")
+    }
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+
+    r := C.guestfs_btrfs_balance_pause (g.g, c_path)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_balance_pause")
+    }
+    return nil
+}
+
+/* btrfs_balance_resume : resume a paused balance */
+func (g *Guestfs) Btrfs_balance_resume (path string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_balance_resume")
+    }
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+
+    r := C.guestfs_btrfs_balance_resume (g.g, c_path)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_balance_resume")
+    }
+    return nil
+}
+
 /* btrfs_device_add : add devices to a btrfs filesystem */
 func (g *Guestfs) Btrfs_device_add (devices []string, fs string) *GuestfsError {
     if g.g == nil {
@@ -2125,6 +2176,45 @@ func (g *Guestfs) Btrfs_filesystem_balance (fs string) *GuestfsError {
 
     if r == -1 {
         return get_error_from_handle (g, "btrfs_filesystem_balance")
+    }
+    return nil
+}
+
+/* Struct carrying optional arguments for Btrfs_filesystem_defragment */
+type OptargsBtrfs_filesystem_defragment struct {
+    /* Flush field is ignored unless Flush_is_set == true */
+    Flush_is_set bool
+    Flush bool
+    /* Compress field is ignored unless Compress_is_set == true */
+    Compress_is_set bool
+    Compress string
+}
+
+/* btrfs_filesystem_defragment : defragment a file or directory */
+func (g *Guestfs) Btrfs_filesystem_defragment (path string, optargs *OptargsBtrfs_filesystem_defragment) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_filesystem_defragment")
+    }
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+    c_optargs := C.struct_guestfs_btrfs_filesystem_defragment_argv{}
+    if optargs != nil {
+        if optargs.Flush_is_set {
+            c_optargs.bitmask |= C.GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK
+            if optargs.Flush { c_optargs.flush = 1 } else { c_optargs.flush = 0}
+        }
+        if optargs.Compress_is_set {
+            c_optargs.bitmask |= C.GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK
+            c_optargs.compress = C.CString (optargs.Compress)
+            defer C.free (unsafe.Pointer (c_optargs.compress))
+        }
+    }
+
+    r := C.guestfs_btrfs_filesystem_defragment_argv (g.g, c_path, &c_optargs)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_filesystem_defragment")
     }
     return nil
 }
@@ -2369,6 +2459,91 @@ func (g *Guestfs) Btrfs_quota_rescan (fs string) *GuestfsError {
 
     if r == -1 {
         return get_error_from_handle (g, "btrfs_quota_rescan")
+    }
+    return nil
+}
+
+/* btrfs_rescue_chunk_recover : recover the chunk tree of btrfs filesystem */
+func (g *Guestfs) Btrfs_rescue_chunk_recover (device string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_rescue_chunk_recover")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_btrfs_rescue_chunk_recover (g.g, c_device)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_rescue_chunk_recover")
+    }
+    return nil
+}
+
+/* btrfs_rescue_super_recover : recover bad superblocks from good copies */
+func (g *Guestfs) Btrfs_rescue_super_recover (device string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_rescue_super_recover")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_btrfs_rescue_super_recover (g.g, c_device)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_rescue_super_recover")
+    }
+    return nil
+}
+
+/* btrfs_scrub_cancel : cancel a running scrub */
+func (g *Guestfs) Btrfs_scrub_cancel (path string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_scrub_cancel")
+    }
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+
+    r := C.guestfs_btrfs_scrub_cancel (g.g, c_path)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_scrub_cancel")
+    }
+    return nil
+}
+
+/* btrfs_scrub_resume : resume a previously canceled or interrupted scrub */
+func (g *Guestfs) Btrfs_scrub_resume (path string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_scrub_resume")
+    }
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+
+    r := C.guestfs_btrfs_scrub_resume (g.g, c_path)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_scrub_resume")
+    }
+    return nil
+}
+
+/* btrfs_scrub_start : read all data from all disks and verify checksums */
+func (g *Guestfs) Btrfs_scrub_start (path string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_scrub_start")
+    }
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+
+    r := C.guestfs_btrfs_scrub_start (g.g, c_path)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_scrub_start")
     }
     return nil
 }
@@ -8896,6 +9071,9 @@ type OptargsMkfs struct {
     /* Sectorsize field is ignored unless Sectorsize_is_set == true */
     Sectorsize_is_set bool
     Sectorsize int
+    /* Label field is ignored unless Label_is_set == true */
+    Label_is_set bool
+    Label string
 }
 
 /* mkfs : make a filesystem */
@@ -8927,6 +9105,11 @@ func (g *Guestfs) Mkfs (fstype string, device string, optargs *OptargsMkfs) *Gue
         if optargs.Sectorsize_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK
             c_optargs.sectorsize = C.int (optargs.Sectorsize)
+        }
+        if optargs.Label_is_set {
+            c_optargs.bitmask |= C.GUESTFS_MKFS_OPTS_LABEL_BITMASK
+            c_optargs.label = C.CString (optargs.Label)
+            defer C.free (unsafe.Pointer (c_optargs.label))
         }
     }
 

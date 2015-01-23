@@ -450,4 +450,13 @@ const char *function_names[] = {
   [432] = "btrfs_qgroup_show",
   [433] = "btrfs_qgroup_assign",
   [434] = "btrfs_qgroup_remove",
+  [435] = "btrfs_scrub_start",
+  [436] = "btrfs_scrub_cancel",
+  [437] = "btrfs_scrub_resume",
+  [438] = "btrfs_balance_pause",
+  [439] = "btrfs_balance_cancel",
+  [440] = "btrfs_balance_resume",
+  [443] = "btrfs_filesystem_defragment",
+  [444] = "btrfs_rescue_chunk_recover",
+  [445] = "btrfs_rescue_super_recover",
 };

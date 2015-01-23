@@ -1181,6 +1181,27 @@ class GuestFS(object):
         r = libguestfsmod.blockdev_setrw (self._o, device)
         return r
 
+    def btrfs_balance_cancel (self, path):
+        """Cancel a running balance on a btrfs filesystem.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_balance_cancel (self._o, path)
+        return r
+
+    def btrfs_balance_pause (self, path):
+        """Pause a running balance on a btrfs filesystem.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_balance_pause (self._o, path)
+        return r
+
+    def btrfs_balance_resume (self, path):
+        """Resume a paused balance on a btrfs filesystem.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_balance_resume (self._o, path)
+        return r
+
     def btrfs_device_add (self, devices, fs):
         """Add the list of device(s) in "devices" to the btrfs
         filesystem mounted at "fs". If "devices" is an empty
@@ -1207,6 +1228,14 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_filesystem_balance (self._o, fs)
+        return r
+
+    def btrfs_filesystem_defragment (self, path, flush=None, compress=None):
+        """Defragment a file or directory on a btrfs filesystem.
+        compress is one of zlib or lzo.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_filesystem_defragment (self._o, path, flush, compress)
         return r
 
     def btrfs_filesystem_resize (self, mountpoint, size=None):
@@ -1308,6 +1337,45 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_quota_rescan (self._o, fs)
+        return r
+
+    def btrfs_rescue_chunk_recover (self, device):
+        """Recover the chunk tree of btrfs filesystem by scannning
+        the devices one by one.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_rescue_chunk_recover (self._o, device)
+        return r
+
+    def btrfs_rescue_super_recover (self, device):
+        """Recover bad superblocks from good copies.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_rescue_super_recover (self._o, device)
+        return r
+
+    def btrfs_scrub_cancel (self, path):
+        """Cancel a running scrub on a btrfs filesystem.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_scrub_cancel (self._o, path)
+        return r
+
+    def btrfs_scrub_resume (self, path):
+        """Resume a previously canceled or interrupted scrub on a
+        btrfs filesystem.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_scrub_resume (self._o, path)
+        return r
+
+    def btrfs_scrub_start (self, path):
+        """Reads all the data and metadata on the filesystem, and
+        uses checksums and the duplicate copies from RAID
+        storage to identify and repair any corrupt data.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_scrub_start (self._o, path)
         return r
 
     def btrfs_set_seeding (self, device, seeding):
@@ -6061,13 +6129,16 @@ class GuestFS(object):
         mode "mode". It is just a convenient wrapper around
         "g.mknod".
         
+        Unlike with "g.mknod", "mode" must contain only
+        permissions bits.
+        
         The mode actually set is affected by the umask.
         """
         self._check_not_closed ()
         r = libguestfsmod.mkfifo (self._o, mode, path)
         return r
 
-    def mkfs (self, fstype, device, blocksize=None, features=None, inode=None, sectorsize=None):
+    def mkfs (self, fstype, device, blocksize=None, features=None, inode=None, sectorsize=None, label=None):
         """This function creates a filesystem on "device". The
         filesystem type is "fstype", for example "ext3".
         
@@ -6105,7 +6176,7 @@ class GuestFS(object):
         filesystem.
         """
         self._check_not_closed ()
-        r = libguestfsmod.mkfs (self._o, fstype, device, blocksize, features, inode, sectorsize)
+        r = libguestfsmod.mkfs (self._o, fstype, device, blocksize, features, inode, sectorsize, label)
         return r
 
     mkfs_opts = mkfs
@@ -6233,6 +6304,9 @@ class GuestFS(object):
         "devminor". It is just a convenient wrapper around
         "g.mknod".
         
+        Unlike with "g.mknod", "mode" must contain only
+        permissions bits.
+        
         The mode actually set is affected by the umask.
         """
         self._check_not_closed ()
@@ -6244,6 +6318,9 @@ class GuestFS(object):
         mode "mode" and device major/minor "devmajor" and
         "devminor". It is just a convenient wrapper around
         "g.mknod".
+        
+        Unlike with "g.mknod", "mode" must contain only
+        permissions bits.
         
         The mode actually set is affected by the umask.
         """

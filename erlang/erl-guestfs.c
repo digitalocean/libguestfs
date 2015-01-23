@@ -1522,6 +1522,45 @@ run_blockdev_setrw (ETERM *message)
 }
 
 static ETERM *
+run_btrfs_balance_cancel (ETERM *message)
+{
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_btrfs_balance_cancel (g, path);
+  if (r == -1)
+    return make_error ("btrfs_balance_cancel");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_btrfs_balance_pause (ETERM *message)
+{
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_btrfs_balance_pause (g, path);
+  if (r == -1)
+    return make_error ("btrfs_balance_pause");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_btrfs_balance_resume (ETERM *message)
+{
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_btrfs_balance_resume (g, path);
+  if (r == -1)
+    return make_error ("btrfs_balance_resume");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_btrfs_device_add (ETERM *message)
 {
   CLEANUP_FREE_STRING_LIST char **devices = get_string_list (ARG (0));
@@ -1558,6 +1597,44 @@ run_btrfs_filesystem_balance (ETERM *message)
   r = guestfs_btrfs_filesystem_balance (g, fs);
   if (r == -1)
     return make_error ("btrfs_filesystem_balance");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_btrfs_filesystem_defragment (ETERM *message)
+{
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_btrfs_filesystem_defragment_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_filesystem_defragment_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "flush")) {
+      optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK;
+      optargs_s.flush = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "compress")) {
+      optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK;
+      optargs_s.compress = erl_iolist_to_string (hd_value);
+    }
+    else
+      return unknown_optarg ("btrfs_filesystem_defragment", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_btrfs_filesystem_defragment_argv (g, path, optargs);
+  if ((optargs_s.bitmask & GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK))
+    free ((char *) optargs_s.compress);
+  if (r == -1)
+    return make_error ("btrfs_filesystem_defragment");
 
   return erl_mk_atom ("ok");
 }
@@ -1752,6 +1829,71 @@ run_btrfs_quota_rescan (ETERM *message)
   r = guestfs_btrfs_quota_rescan (g, fs);
   if (r == -1)
     return make_error ("btrfs_quota_rescan");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_btrfs_rescue_chunk_recover (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_btrfs_rescue_chunk_recover (g, device);
+  if (r == -1)
+    return make_error ("btrfs_rescue_chunk_recover");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_btrfs_rescue_super_recover (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_btrfs_rescue_super_recover (g, device);
+  if (r == -1)
+    return make_error ("btrfs_rescue_super_recover");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_btrfs_scrub_cancel (ETERM *message)
+{
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_btrfs_scrub_cancel (g, path);
+  if (r == -1)
+    return make_error ("btrfs_scrub_cancel");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_btrfs_scrub_resume (ETERM *message)
+{
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_btrfs_scrub_resume (g, path);
+  if (r == -1)
+    return make_error ("btrfs_scrub_resume");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_btrfs_scrub_start (ETERM *message)
+{
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_btrfs_scrub_start (g, path);
+  if (r == -1)
+    return make_error ("btrfs_scrub_start");
 
   return erl_mk_atom ("ok");
 }
@@ -7208,6 +7350,11 @@ run_mkfs (ETERM *message)
       optargs_s.sectorsize = get_int (hd_value);
     }
     else
+    if (atom_equals (hd_name, "label")) {
+      optargs_s.bitmask |= GUESTFS_MKFS_OPTS_LABEL_BITMASK;
+      optargs_s.label = erl_iolist_to_string (hd_value);
+    }
+    else
       return unknown_optarg ("mkfs", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
@@ -7217,6 +7364,8 @@ run_mkfs (ETERM *message)
   r = guestfs_mkfs_opts_argv (g, fstype, device, optargs);
   if ((optargs_s.bitmask & GUESTFS_MKFS_OPTS_FEATURES_BITMASK))
     free ((char *) optargs_s.features);
+  if ((optargs_s.bitmask & GUESTFS_MKFS_OPTS_LABEL_BITMASK))
+    free ((char *) optargs_s.label);
   if (r == -1)
     return make_error ("mkfs");
 
@@ -10942,12 +11091,20 @@ dispatch (ETERM *message)
     return run_blockdev_setro (message);
   else if (atom_equals (fun, "blockdev_setrw"))
     return run_blockdev_setrw (message);
+  else if (atom_equals (fun, "btrfs_balance_cancel"))
+    return run_btrfs_balance_cancel (message);
+  else if (atom_equals (fun, "btrfs_balance_pause"))
+    return run_btrfs_balance_pause (message);
+  else if (atom_equals (fun, "btrfs_balance_resume"))
+    return run_btrfs_balance_resume (message);
   else if (atom_equals (fun, "btrfs_device_add"))
     return run_btrfs_device_add (message);
   else if (atom_equals (fun, "btrfs_device_delete"))
     return run_btrfs_device_delete (message);
   else if (atom_equals (fun, "btrfs_filesystem_balance"))
     return run_btrfs_filesystem_balance (message);
+  else if (atom_equals (fun, "btrfs_filesystem_defragment"))
+    return run_btrfs_filesystem_defragment (message);
   else if (atom_equals (fun, "btrfs_filesystem_resize"))
     return run_btrfs_filesystem_resize (message);
   else if (atom_equals (fun, "btrfs_filesystem_sync"))
@@ -10970,6 +11127,16 @@ dispatch (ETERM *message)
     return run_btrfs_quota_enable (message);
   else if (atom_equals (fun, "btrfs_quota_rescan"))
     return run_btrfs_quota_rescan (message);
+  else if (atom_equals (fun, "btrfs_rescue_chunk_recover"))
+    return run_btrfs_rescue_chunk_recover (message);
+  else if (atom_equals (fun, "btrfs_rescue_super_recover"))
+    return run_btrfs_rescue_super_recover (message);
+  else if (atom_equals (fun, "btrfs_scrub_cancel"))
+    return run_btrfs_scrub_cancel (message);
+  else if (atom_equals (fun, "btrfs_scrub_resume"))
+    return run_btrfs_scrub_resume (message);
+  else if (atom_equals (fun, "btrfs_scrub_start"))
+    return run_btrfs_scrub_start (message);
   else if (atom_equals (fun, "btrfs_set_seeding"))
     return run_btrfs_set_seeding (message);
   else if (atom_equals (fun, "btrfs_subvolume_create"))

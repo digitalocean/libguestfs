@@ -1990,6 +1990,7 @@ struct guestfs_mkfs_args {
   string features<>;
   int inode;
   int sectorsize;
+  string label<>;
 };
 
 struct guestfs_getxattr_args {
@@ -2997,6 +2998,44 @@ struct guestfs_btrfs_qgroup_remove_args {
   string path<>;
 };
 
+struct guestfs_btrfs_scrub_start_args {
+  string path<>;
+};
+
+struct guestfs_btrfs_scrub_cancel_args {
+  string path<>;
+};
+
+struct guestfs_btrfs_scrub_resume_args {
+  string path<>;
+};
+
+struct guestfs_btrfs_balance_pause_args {
+  string path<>;
+};
+
+struct guestfs_btrfs_balance_cancel_args {
+  string path<>;
+};
+
+struct guestfs_btrfs_balance_resume_args {
+  string path<>;
+};
+
+struct guestfs_btrfs_filesystem_defragment_args {
+  string path<>;
+  bool flush;
+  string compress<>;
+};
+
+struct guestfs_btrfs_rescue_chunk_recover_args {
+  string device<>;
+};
+
+struct guestfs_btrfs_rescue_super_recover_args {
+  string device<>;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3422,10 +3461,19 @@ enum guestfs_procedure {
   GUESTFS_PROC_BTRFS_QGROUP_DESTROY = 431,
   GUESTFS_PROC_BTRFS_QGROUP_SHOW = 432,
   GUESTFS_PROC_BTRFS_QGROUP_ASSIGN = 433,
-  GUESTFS_PROC_BTRFS_QGROUP_REMOVE = 434
+  GUESTFS_PROC_BTRFS_QGROUP_REMOVE = 434,
+  GUESTFS_PROC_BTRFS_SCRUB_START = 435,
+  GUESTFS_PROC_BTRFS_SCRUB_CANCEL = 436,
+  GUESTFS_PROC_BTRFS_SCRUB_RESUME = 437,
+  GUESTFS_PROC_BTRFS_BALANCE_PAUSE = 438,
+  GUESTFS_PROC_BTRFS_BALANCE_CANCEL = 439,
+  GUESTFS_PROC_BTRFS_BALANCE_RESUME = 440,
+  GUESTFS_PROC_BTRFS_FILESYSTEM_DEFRAGMENT = 443,
+  GUESTFS_PROC_BTRFS_RESCUE_CHUNK_RECOVER = 444,
+  GUESTFS_PROC_BTRFS_RESCUE_SUPER_RECOVER = 445
 };
 
-const GUESTFS_MAX_PROC_NR = 434;
+const GUESTFS_MAX_PROC_NR = 445;
 
 /* The remote procedure call protocol. */
 

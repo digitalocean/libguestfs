@@ -36,6 +36,7 @@
   #include <stdint.h>
   #include <stdio.h>
   #include <string.h>
+  #include <inttypes.h>
 
 /* Error quark */
 
@@ -92,7 +93,7 @@ guestfs_session_event_from_guestfs_event (uint64_t event)
     case GUESTFS_EVENT_WARNING: return GUESTFS_SESSION_EVENT_WARNING;
   }
 
-  g_warning ("guestfs_session_event_from_guestfs_event: invalid event %lu",
+  g_warning ("guestfs_session_event_from_guestfs_event: invalid event %" PRIu64,
             event);
   return UINT32_MAX;
 }
@@ -2763,6 +2764,102 @@ guestfs_session_blockdev_setrw (GuestfsSession *session, const gchar *device, GE
 }
 
 /**
+ * guestfs_session_btrfs_balance_cancel:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * cancel a running or paused balance
+ *
+ * Cancel a running balance on a btrfs filesystem.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_balance_cancel (GuestfsSession *session, const gchar *path, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_balance_cancel");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfs_balance_cancel (g, path);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_btrfs_balance_pause:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * pause a running balance
+ *
+ * Pause a running balance on a btrfs filesystem.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_balance_pause (GuestfsSession *session, const gchar *path, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_balance_pause");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfs_balance_pause (g, path);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_btrfs_balance_resume:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * resume a paused balance
+ *
+ * Resume a paused balance on a btrfs filesystem.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_balance_resume (GuestfsSession *session, const gchar *path, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_balance_resume");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfs_balance_resume (g, path);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_btrfs_device_add:
  * @session: (transfer none): A GuestfsSession object
  * @devices: (transfer none) (array zero-terminated=1) (element-type filename): an array of strings
@@ -2855,6 +2952,64 @@ guestfs_session_btrfs_filesystem_balance (GuestfsSession *session, const gchar *
   }
 
   int ret = guestfs_btrfs_filesystem_balance (g, fs);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_btrfs_filesystem_defragment:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsBTRFSFilesystemDefragment containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * defragment a file or directory
+ *
+ * Defragment a file or directory on a btrfs filesystem. compress is one of
+ * zlib or lzo.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_filesystem_defragment (GuestfsSession *session, const gchar *path, GuestfsBTRFSFilesystemDefragment *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_filesystem_defragment");
+    return FALSE;
+  }
+
+  struct guestfs_btrfs_filesystem_defragment_argv argv;
+  struct guestfs_btrfs_filesystem_defragment_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue flush_v = {0, };
+    g_value_init (&flush_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "flush", &flush_v);
+    GuestfsTristate flush = g_value_get_enum (&flush_v);
+    if (flush != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK;
+      argv.flush = flush;
+    }
+    GValue compress_v = {0, };
+    g_value_init (&compress_v, G_TYPE_STRING);
+    g_object_get_property (G_OBJECT (optargs), "compress", &compress_v);
+    const gchar *compress = g_value_get_string (&compress_v);
+    if (compress != NULL) {
+      argv.bitmask |= GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK;
+      argv.compress = compress;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_btrfs_filesystem_defragment_argv (g, path, argvp);
   if (ret == -1) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return FALSE;
@@ -3285,6 +3440,169 @@ guestfs_session_btrfs_quota_rescan (GuestfsSession *session, const gchar *fs, GE
   }
 
   int ret = guestfs_btrfs_quota_rescan (g, fs);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_btrfs_rescue_chunk_recover:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * recover the chunk tree of btrfs filesystem
+ *
+ * Recover the chunk tree of btrfs filesystem by scannning the devices one
+ * by one.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_rescue_chunk_recover (GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_rescue_chunk_recover");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfs_rescue_chunk_recover (g, device);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_btrfs_rescue_super_recover:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * recover bad superblocks from good copies
+ *
+ * Recover bad superblocks from good copies.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_rescue_super_recover (GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_rescue_super_recover");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfs_rescue_super_recover (g, device);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_btrfs_scrub_cancel:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * cancel a running scrub
+ *
+ * Cancel a running scrub on a btrfs filesystem.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_scrub_cancel (GuestfsSession *session, const gchar *path, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_scrub_cancel");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfs_scrub_cancel (g, path);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_btrfs_scrub_resume:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * resume a previously canceled or interrupted scrub
+ *
+ * Resume a previously canceled or interrupted scrub on a btrfs filesystem.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_scrub_resume (GuestfsSession *session, const gchar *path, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_scrub_resume");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfs_scrub_resume (g, path);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_btrfs_scrub_start:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * read all data from all disks and verify checksums
+ *
+ * Reads all the data and metadata on the filesystem, and uses checksums
+ * and the duplicate copies from RAID storage to identify and repair any
+ * corrupt data.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_scrub_start (GuestfsSession *session, const gchar *path, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_scrub_start");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfs_scrub_start (g, path);
   if (ret == -1) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return FALSE;
@@ -17097,6 +17415,9 @@ guestfs_session_mke2journal_U (GuestfsSession *session, gint32 blocksize, const 
  * This call creates a FIFO (named pipe) called @path with mode @mode. It
  * is just a convenient wrapper around guestfs_session_mknod().
  * 
+ * Unlike with guestfs_session_mknod(), @mode must contain only permissions
+ * bits.
+ * 
  * The mode actually set is affected by the umask.
  * 
  * Returns: true on success, false on error
@@ -17214,6 +17535,14 @@ guestfs_session_mkfs (GuestfsSession *session, const gchar *fstype, const gchar 
     if (sectorsize != -1) {
       argv.bitmask |= GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK;
       argv.sectorsize = sectorsize;
+    }
+    GValue label_v = {0, };
+    g_value_init (&label_v, G_TYPE_STRING);
+    g_object_get_property (G_OBJECT (optargs), "label", &label_v);
+    const gchar *label = g_value_get_string (&label_v);
+    if (label != NULL) {
+      argv.bitmask |= GUESTFS_MKFS_OPTS_LABEL_BITMASK;
+      argv.label = label;
     }
     argvp = &argv;
   }
@@ -17554,6 +17883,9 @@ guestfs_session_mknod (GuestfsSession *session, gint32 mode, gint32 devmajor, gi
  * device major/minor @devmajor and @devminor. It is just a convenient
  * wrapper around guestfs_session_mknod().
  * 
+ * Unlike with guestfs_session_mknod(), @mode must contain only permissions
+ * bits.
+ * 
  * The mode actually set is affected by the umask.
  * 
  * Returns: true on success, false on error
@@ -17592,6 +17924,9 @@ guestfs_session_mknod_b (GuestfsSession *session, gint32 mode, gint32 devmajor, 
  * This call creates a char device node called @path with mode @mode and
  * device major/minor @devmajor and @devminor. It is just a convenient
  * wrapper around guestfs_session_mknod().
+ * 
+ * Unlike with guestfs_session_mknod(), @mode must contain only permissions
+ * bits.
  * 
  * The mode actually set is affected by the umask.
  * 

@@ -1037,6 +1037,48 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_balance_cancel (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// cancel a running or paused balance
+    /// </summary>
+    public void btrfs_balance_cancel (string path)
+    {
+      int r;
+      r = guestfs_btrfs_balance_cancel (_handle, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_balance_pause (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// pause a running balance
+    /// </summary>
+    public void btrfs_balance_pause (string path)
+    {
+      int r;
+      r = guestfs_btrfs_balance_pause (_handle, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_balance_resume (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// resume a paused balance
+    /// </summary>
+    public void btrfs_balance_resume (string path)
+    {
+      int r;
+      r = guestfs_btrfs_balance_resume (_handle, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_btrfs_device_add (IntPtr h, [In] string[] devices, [In] string fs);
 
     /// <summary>
@@ -1074,6 +1116,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_btrfs_filesystem_balance (_handle, fs);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_filesystem_defragment_argv (IntPtr h, [In] string path, void *);
+
+    /// <summary>
+    /// defragment a file or directory
+    /// </summary>
+    public void btrfs_filesystem_defragment (string path)
+    {
+      int r;
+      r = guestfs_btrfs_filesystem_defragment_argv (_handle, path, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -1229,6 +1285,76 @@ namespace Guestfs
     {
       int r;
       r = guestfs_btrfs_quota_rescan (_handle, fs);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_rescue_chunk_recover (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// recover the chunk tree of btrfs filesystem
+    /// </summary>
+    public void btrfs_rescue_chunk_recover (string device)
+    {
+      int r;
+      r = guestfs_btrfs_rescue_chunk_recover (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_rescue_super_recover (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// recover bad superblocks from good copies
+    /// </summary>
+    public void btrfs_rescue_super_recover (string device)
+    {
+      int r;
+      r = guestfs_btrfs_rescue_super_recover (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_scrub_cancel (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// cancel a running scrub
+    /// </summary>
+    public void btrfs_scrub_cancel (string path)
+    {
+      int r;
+      r = guestfs_btrfs_scrub_cancel (_handle, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_scrub_resume (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// resume a previously canceled or interrupted scrub
+    /// </summary>
+    public void btrfs_scrub_resume (string path)
+    {
+      int r;
+      r = guestfs_btrfs_scrub_resume (_handle, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_scrub_start (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// read all data from all disks and verify checksums
+    /// </summary>
+    public void btrfs_scrub_start (string path)
+    {
+      int r;
+      r = guestfs_btrfs_scrub_start (_handle, path);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }

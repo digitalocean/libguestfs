@@ -1,3 +1,384 @@
+commit 34b118a25a726e30efddee94947e84d2b5a5c26c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 21 20:45:17 2015 +0000
+
+    Version 1.29.22.
+
+commit d4c8433e6e6525c9b83e28878c412c17c7b2aece
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:47 2015 +0800
+
+    New API: add btrfs_rescue_super_recover
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 15c75eaace30d6c8786532482eb040071a3f28ec
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:46 2015 +0800
+
+    New API: add btrfs_rescue_chunk_recover
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit e32b59c926eb480913140a57e1ec501cf44726b5
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:45 2015 +0800
+
+    New API: add btrfs_filesystem_defragment
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit fd7df408d16a484f9d2607e1404aaccc44408fbb
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:42 2015 +0800
+
+    New API: btrfs_balance_resume
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit a72204bde771fdd1016fb00b4be59af559cf2d02
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:41 2015 +0800
+
+    New API: btrfs_balance_cancel
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 9f11ddd29e6291445a8994d5bd89139c0e75ad78
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:40 2015 +0800
+
+    New API: btrfs_balance_pause
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 47f0336e09faf49ec68cdd389fc1a07907b43211
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:39 2015 +0800
+
+    btrfs: replace "btrfs filesystem balance" with "btrfs balance"
+    
+    "btrfs filesystem balance" is deprecated in favor of "btrfs balance".
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 9e6122265edc287f70217dc159362b17af7f6d71
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:38 2015 +0800
+
+    New API: btrfs_scrub_resume
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 55bfd127d4ef6a83e042db58369075e12ee668ef
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:37 2015 +0800
+
+    New API: btrfs_scrub_cancel
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit a4d6cc525a1406d76873e9e4605ae37f21a11b56
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Fri Jan 16 10:23:36 2015 +0800
+
+    New API: btrfs_scrub
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+
+commit 7e4b7a346a4558a02aeb58f82d518509ce6e5d03
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 21 05:37:56 2015 -0500
+
+    aarch64: launch: libvirt: As a workaround, pass -cpu parameter to qemu.
+    
+    When libguestfs is running using TCG on aarch64, we need to pass the
+    -cpu cortex-a57 parameter to qemu.  Libvirt doesn't let us do this,
+    complaining "Unable to find CPU definition".
+    
+    As a temporary workaround only, use <qemu:commandline> to pass this
+    argument directly to qemu.  When libvirt is fixed we can remove this
+    hack.
+    
+    This is a workaround for libvirt bug RHBZ#1184411.
+    
+    See:
+    https://www.redhat.com/archives/libvirt-users/2014-August/msg00043.html
+    https://bugzilla.redhat.com/show_bug.cgi?id=1184411
+
+commit 7dc837c7be84936690f4f613fea82dba4787ceec
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 21 05:10:37 2015 -0500
+
+    aarch64: appliance: Use AAVMF (UEFI) if available for running the appliance.
+    
+    AAVMF is an open source UEFI implementation for aarch64 based on OVMF.
+    As aarch64 is heading for requiring UEFI even inside guests, if the
+    AAVMF firmware is installed on the host, use it as a hint that we
+    should boot the guest using AAVMF instead of the default "empty
+    machine".
+    
+    Note this requires very recent AAVMF, libvirt, qemu.  However that's
+    OK since it's only applicable to aarch64.  On non-aarch64, this patch
+    does nothing.
+    
+    Thanks: Laszlo Ersek for a lot of help getting this right.
+
+commit cb0c2c33576aa601e308c6bf53b9d989dc6f62fc
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 20 16:23:12 2015 +0100
+
+    launch: libvirt: do not leak the backend string on error
+    
+    Make sure to free the backend string after using it.
+
+commit bff99cec4df3916f2fc33e628223cdd3df2c3829
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 20 14:35:36 2015 +0100
+
+    fish: remove extra "prompt" checks
+    
+    The code is already within a "if (prompt) {...}" block, so checking for
+    "prompt" again is redundant.
+
+commit 7618e41d33e731f6392d783510705492cbf82eef
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 20 14:09:36 2015 +0100
+
+    daemon: readdir: fix invalid memory access on error
+    
+    If "strdup (d->d_name)" fails with "i" > 0, then both "p" and
+    "ret->guestfs_int_dirent_list_val" are non-null pointers, but the latter
+    is no more valid (since "p" is the new realloc'ed buffer). Hence, trying
+    to free both will access to invalid memory.
+    
+    Make sure to free only one of them, "p" if not null or
+    "ret->guestfs_int_dirent_list_val" otherwise.
+
+commit 0eedddad2f02d687c58d5875d258ace1417885f1
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 20 16:08:38 2015 +0100
+
+    fuse: test-fuse: free "acl_text"
+    
+    Make sure to free the buffer returned by acl_to_any_text.
+
+commit 91c34ff8ff59a45accf179394257e36cff6a30e9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 20 09:42:12 2015 +0000
+
+    p2v: Fix wait_qemu_nbd to use getaddrinfo.
+    
+    wait_qemu_nbd would fail in Rawhide where /etc/hosts contains:
+    
+      127.0.0.1   localhost [...]
+      ::1         localhost [...]
+    
+    This peculiar mapping caused qemu-nbd to always select an IPv6
+    address.  However since we used the obsolete inet_pton function and
+    forced AF_INET, we were always trying to connect to the IPv4
+    localhost.
+    
+    As this was never going to work anyway, fix the code to use
+    getaddrinfo to resolve "localhost", and use a loop to connect to all
+    possible addresses.
+    
+    Also: Add a short sleep in the reconnection loop so that we don't
+    hammer the qemu-nbd server while it is starting up.
+
+commit 0b54e111e42a4433064a4167f29081d870cb0ad7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 20 07:58:34 2015 +0000
+
+    p2v: Move debug message earlier.
+    
+    This ensures we can see the port numbers even when the
+    connection fails.
+
+commit 3ca0ce45af50da5322087b4d4faf5b7c5a7773c7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 20 07:45:18 2015 +0000
+
+    p2v: Correct garbled comments in test script.
+
+commit f45b6928c5339321dc99ef66ca9fe93e10e1580d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 20 07:35:11 2015 +0000
+
+    aarch64: python: Skip test that requires IDE.
+    
+    This test launches a dummy guest using IDE.  Aarch64 doesn't support
+    IDE, and because it also doesn't support PCI (virtio-mmio instead)
+    it's hard to formulate libvirt XML that will work on both x86 and
+    virtio-mmio.
+    
+    Since this bug is not architecture specific (RHBZ#912499), skip it on
+    non-x86.  The test will print:
+    
+      skipping test: arch is not x86 and does not support IDE
+
+commit 9bf6f7f0561507e9d90fe95c2f37e9227e0bcea6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 19 19:19:12 2015 +0000
+
+    Version 1.29.21.
+
+commit cfc142399f78200f520768b111a1fa7178aee305
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jan 19 16:20:44 2015 +0100
+
+    gobject: fix printf conversion specifier
+    
+    Use PRIu64 to correctly handle uint64_t.
+
+commit 52528729f6484897c42c899f5ab4fd6cbcd1eabe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 19 16:05:41 2015 +0000
+
+    gcc5: test-tool: Initialize local variable.
+    
+    gcc 5 cannot prove that the variable is always initialized
+    and therefore prints a warning.
+
+commit fceab826471e352fcfea17ac5bf6cdd60435e510
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jan 19 15:58:36 2015 +0100
+
+    build: check for single libsystemd before libsystemd-journal
+    
+    Since systemd 209, all the functionalities of the former libsystemd-*
+    (including libsystemd-journal) have been merged into a single
+    libsystemd, with the former libraries left as compatibility ones.
+    
+    Thus, first look for libsystemd, and if not found try again with the
+    libsystemd-journal as used before.
+
+commit 1709263613ac97cb1f37333e1a429c34f6b79f26
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jan 16 19:25:26 2015 +0100
+
+    sparsify: handle output filenames with ':'
+    
+    With commit a594b7f90a682e2a9327b142138edb76ad8ba8ff the checks for
+    input and output files with ':' were removed; while the input file is
+    handled correctly by the disk_create API, an output filename with ':'
+    could still be handled as specifying a transport, failing the last
+    "qemu-img convert" call.
+    
+    Use the new qemu_input_filename helper to handle the output filename
+    correctly.
+
+commit c796280a8ee45c223a184b956423c55e3af68d81
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jan 16 19:19:16 2015 +0100
+
+    mllib: add simple qemu filename sanitizing function
+    
+    It mimics a bit in OCaml the logic used in
+    commit a95214b1985e694946e3426120a6fdc13a3f081f (for the main library)
+    and commit 588af1953e5f7ab74009b9175cc5d3efb8bb651a (in disk-create),
+    so in OCaml tools direct calls to qemu/qemu-img with filenames provided
+    by the user can properly handle filenames with e.g. ':'.
+
+commit 8b9ca28e111e38eafe8db7265e7fe18c5f31b460
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 15 14:40:17 2015 +0100
+
+    mknod: filter modes in mkfifo, mknod_b, mknod_c (RHBZ#1182463).
+    
+    Since mkfifo, mknod_b, and mknod_c add the correct file type to the
+    modes of the resulting file, make sure the specified mode contains only
+    permissions bits.
+
+commit 8ad667f1983e98347f4d292c07f971d5362ff052
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jan 14 18:59:57 2015 +0100
+
+    daemon: use ntfslabel(1) to get ntfs labels
+    
+    blkid(1) (or actually, libblkid) seems to handle filesystem labels up
+    to 127 characters. Considering that btrfs labels can be up to 128
+    characters, this means long labels are not read correctly (i.e. get
+    truncated) by blkid.  Furthermore, ntfs labels are actually unicode,
+    and libblkid seems to not decode them correctly.
+    
+    Hence, if ntfsprogs is available invoke `ntfslabel` to get the label
+    of ntfs filesystems.
+    
+    Related to RHBZ#1164708.
+
+commit 6db3c100e7c18820ff9ecc22415940eb5fedc64e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jan 14 18:55:13 2015 +0100
+
+    daemon: use btrfs(1) to get btrfs labels
+    
+    blkid(1) (or actually, libblkid) seems to handle filesystem labels up
+    to 127 characters. Considering that btrfs labels can be up to 255
+    characters, this means long labels are not read correctly (i.e. get
+    truncated) by blkid.
+    
+    Get the filesystem type, and if btrfs is available invoke
+    `btrfs filesystem` to get the label of btrfs filesystems.
+    
+    Related to RHBZ#1164708.
+
+commit d7abf5c8f2b9c0895faaa3166eb3a3f72ede17a2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jan 9 18:57:24 2015 +0100
+
+    format, make-fs: specify the label on mkfs
+    
+    If specified, pass the label for the new filesystem directly to the
+    mkfs (or mkfs_btrfs) call.
+    
+    This saves one set_label call, mostly.
+
+commit 7723614a91ad0179c190613fbb277f1c71dc88fd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jan 9 18:56:28 2015 +0100
+
+    mkfs: add 'label' optional argument
+    
+    Add the 'label' optional argument to the mkfs action, so it is possible
+    to set a filesystem label direct when creating it. There may be
+    filesystems not supporting changing the label of existing filesystems
+    but only setting it at creation time, so this new optarg will help.
+    
+    Implement it for the most common filesystems (ext*, fat, ntfs, btrfs,
+    xfs), giving an error for all the others, just like set_label does.
+
+commit 19c09bcdee62f86f78c6338de0ccddc3bce4d955
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 19 15:00:57 2015 +0000
+
+    tests/lvm: Remove use of deprecated sfdiskM API.
+    
+    See: https://bugzilla.redhat.com/show_bug.cgi?id=1183236
+    for the sorry tale.
+
+commit eb85ac6a0def18cd7dd5c3bda97c5775c0ba34a8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 19 13:03:24 2015 +0000
+
+    valgrind: Remove suppression for fixed memory leak in libselinux.
+    
+    This memory leak has been fixed since libselinux 2.1.13.
+    
+    Thanks: Daniel Walsh
+
+commit 4f3c288a1bac741fbcc9a8cd790d30618093a03e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jan 18 07:38:58 2015 +0000
+
+    lua: Define luaL_checkint which was deprecated in lua 5.3.
+
+commit 5ab3a75e1dba7cacd45ff9a094bf27c517edd117
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 17 14:24:35 2015 +0000
+
+    tests/lvm: Allow test-lvm-mapping.pl to be skipped.
+
 commit 9d9ef2960cf4da913277c6bf5f8443f661112186
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sat Jan 17 09:02:37 2015 +0000

@@ -79,9 +79,15 @@
         guestfs_blockdev_setra;
         guestfs_blockdev_setro;
         guestfs_blockdev_setrw;
+        guestfs_btrfs_balance_cancel;
+        guestfs_btrfs_balance_pause;
+        guestfs_btrfs_balance_resume;
         guestfs_btrfs_device_add;
         guestfs_btrfs_device_delete;
         guestfs_btrfs_filesystem_balance;
+        guestfs_btrfs_filesystem_defragment;
+        guestfs_btrfs_filesystem_defragment_argv;
+        guestfs_btrfs_filesystem_defragment_va;
         guestfs_btrfs_filesystem_resize;
         guestfs_btrfs_filesystem_resize_argv;
         guestfs_btrfs_filesystem_resize_va;
@@ -97,6 +103,11 @@
         guestfs_btrfs_qgroup_show;
         guestfs_btrfs_quota_enable;
         guestfs_btrfs_quota_rescan;
+        guestfs_btrfs_rescue_chunk_recover;
+        guestfs_btrfs_rescue_super_recover;
+        guestfs_btrfs_scrub_cancel;
+        guestfs_btrfs_scrub_resume;
+        guestfs_btrfs_scrub_start;
         guestfs_btrfs_set_seeding;
         guestfs_btrfs_subvolume_create;
         guestfs_btrfs_subvolume_create_opts;

@@ -1,0 +1,56 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsBTRFSFilesystemDefragment
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsBTRFSFilesystemDefragment ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsBTRFSFilesystemDefragment:compress ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsBTRFSFilesystemDefragment:flush ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsBTRFSFilesystemDefragmentClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_btrfs_filesystem_defragment_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

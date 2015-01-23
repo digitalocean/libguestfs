@@ -134,6 +134,8 @@ struct backend_libvirt_data {
   unsigned long qemu_version;   /* qemu version (from libvirt) */
   struct secret *secrets;       /* list of secrets */
   size_t nr_secrets;
+  char *uefi_code;		/* UEFI (firmware) code and variables. */
+  char *uefi_vars;
 };
 
 /* Parameters passed to construct_libvirt_xml and subfunctions.  We
@@ -355,6 +357,10 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
     guestfs___print_timestamped_message (g, "parsing capabilities XML");
 
   if (parse_capabilities (g, capabilities_xml, data) == -1)
+    goto cleanup;
+
+  /* UEFI code and variables, on architectures where that is required. */
+  if (guestfs___get_uefi (g, &data->uefi_code, &data->uefi_vars) == -1)
     goto cleanup;
 
   /* Misc backend settings. */
@@ -719,6 +725,8 @@ parse_capabilities (guestfs_h *g, const char *capabilities_xml,
    * appliance VM.
    */
   if (!seen_qemu && !seen_kvm) {
+    CLEANUP_FREE char *backend = guestfs_get_backend (g);
+
     error (g,
            _("libvirt hypervisor doesn't support qemu or KVM,\n"
              "so we cannot create the libguestfs appliance.\n"
@@ -730,7 +738,7 @@ parse_capabilities (guestfs_h *g, const char *capabilities_xml,
              "Or: if you want to have libguestfs run qemu directly, try:\n"
              "  export LIBGUESTFS_BACKEND=direct\n"
              "For further help, read the guestfs(3) man page and libguestfs FAQ."),
-           guestfs_get_backend (g));
+           backend);
     return -1;
   }
 
@@ -1079,12 +1087,16 @@ construct_libvirt_xml_cpu (guestfs_h *g,
         } end_element ();
       }
       else {
-        /* XXX This does not work, see:
+        /* XXX This does not work on aarch64, see:
          * https://www.redhat.com/archives/libvirt-users/2014-August/msg00043.html
+	 * https://bugzilla.redhat.com/show_bug.cgi?id=1184411
+	 * Instead we hack around it using <qemu:commandline> below.
          */
+#ifndef __aarch64__
         start_element ("model") {
           string (cpu_model);
         } end_element ();
+#endif
       }
     } end_element ();
   }
@@ -1144,6 +1156,20 @@ construct_libvirt_xml_boot (guestfs_h *g,
 #endif
       string ("hvm");
     } end_element ();
+
+    if (params->data->uefi_code) {
+      start_element ("loader") {
+	attribute ("readonly", "yes");
+	attribute ("type", "pflash");
+	string (params->data->uefi_code);
+      } end_element ();
+
+      if (params->data->uefi_vars) {
+	start_element ("nvram") {
+	  string (params->data->uefi_vars);
+	} end_element ();
+      }
+    }
 
     start_element ("kernel") {
       string (params->kernel);
@@ -1708,6 +1734,21 @@ construct_libvirt_xml_qemu_cmdline (guestfs_h *g,
       }
     }
 
+#ifdef __aarch64__
+    /* This is a temporary hack until RHBZ#1184411 is resolved.
+     * See comments above about cpu model and aarch64.
+     */
+    const char *cpu_model = guestfs___get_cpu_model (params->data->is_kvm);
+    if (STRNEQ (cpu_model, "host")) {
+      start_element ("qemu:arg") {
+        attribute ("value", "-cpu");
+      } end_element ();
+      start_element ("qemu:arg") {
+        attribute ("value", cpu_model);
+      } end_element ();
+    }
+#endif
+
   } end_element (); /* </qemu:commandline> */
 
   return 0;
@@ -1983,6 +2024,11 @@ shutdown_libvirt (guestfs_h *g, void *datav, int check_for_errors)
   free (data->secrets);
   data->secrets = NULL;
   data->nr_secrets = 0;
+
+  free (data->uefi_code);
+  data->uefi_code = NULL;
+  free (data->uefi_vars);
+  data->uefi_vars = NULL;
 
   return ret;
 }

@@ -933,6 +933,24 @@ C<device> という名前のブロックデバイスを読み書きに設定し�
 
 これは L<blockdev(8)> コマンドを使用します。
 
+=head2 btrfs-balance-cancel
+
+ btrfs-balance-cancel path
+
+Cancel a running balance on a btrfs filesystem.
+
+=head2 btrfs-balance-pause
+
+ btrfs-balance-pause path
+
+Pause a running balance on a btrfs filesystem.
+
+=head2 btrfs-balance-resume
+
+ btrfs-balance-resume path
+
+Resume a paused balance on a btrfs filesystem.
+
 =head2 btrfs-device-add
 
  btrfs-device-add 'devices ...' fs
@@ -949,10 +967,21 @@ C<devices> にあるデバイスの一覧を C<fs> にマウントされた btrf
 
 =head2 btrfs-filesystem-balance
 
+=head2 btrfs-balance
+
  btrfs-filesystem-balance fs
 
 Balance the chunks in the btrfs filesystem mounted at C<fs> across the
 underlying devices.
+
+=head2 btrfs-filesystem-defragment
+
+ btrfs-filesystem-defragment path [flush:true|false] [compress:..]
+
+Defragment a file or directory on a btrfs filesystem. compress is one of
+zlib or lzo.
+
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 btrfs-filesystem-resize
 
@@ -1044,6 +1073,39 @@ C<path>.
 
 Trash all qgroup numbers and scan the metadata again with the current
 config.
+
+=head2 btrfs-rescue-chunk-recover
+
+ btrfs-rescue-chunk-recover device
+
+Recover the chunk tree of btrfs filesystem by scannning the devices one by
+one.
+
+=head2 btrfs-rescue-super-recover
+
+ btrfs-rescue-super-recover device
+
+Recover bad superblocks from good copies.
+
+=head2 btrfs-scrub-cancel
+
+ btrfs-scrub-cancel path
+
+Cancel a running scrub on a btrfs filesystem.
+
+=head2 btrfs-scrub-resume
+
+ btrfs-scrub-resume path
+
+Resume a previously canceled or interrupted scrub on a btrfs filesystem.
+
+=head2 btrfs-scrub-start
+
+ btrfs-scrub-start path
+
+Reads all the data and metadata on the filesystem, and uses checksums and
+the duplicate copies from RAID storage to identify and repair any corrupt
+data.
 
 =head2 btrfs-set-seeding
 
@@ -5055,13 +5117,15 @@ these functions.
 This call creates a FIFO (named pipe) called C<path> with mode C<mode>.  It
 is just a convenient wrapper around L</mknod>.
 
+Unlike with L</mknod>, C<mode> B<must> contain only permissions bits.
+
 実際に設定されるモードは umask により影響されます。
 
 =head2 mkfs
 
 =head2 mkfs-opts
 
- mkfs fstype device [blocksize:N] [features:..] [inode:N] [sectorsize:N]
+ mkfs fstype device [blocksize:N] [features:..] [inode:N] [sectorsize:N] [label:..]
 
 This function creates a filesystem on C<device>.  The filesystem type is
 C<fstype>, for example C<ext3>.
@@ -5209,6 +5273,8 @@ This call creates a block device node called C<path> with mode C<mode> and
 device major/minor C<devmajor> and C<devminor>.  It is just a convenient
 wrapper around L</mknod>.
 
+Unlike with L</mknod>, C<mode> B<must> contain only permissions bits.
+
 実際に設定されるモードは umask により影響されます。
 
 =head2 mknod-c
@@ -5218,6 +5284,8 @@ wrapper around L</mknod>.
 This call creates a char device node called C<path> with mode C<mode> and
 device major/minor C<devmajor> and C<devminor>.  It is just a convenient
 wrapper around L</mknod>.
+
+Unlike with L</mknod>, C<mode> B<must> contain only permissions bits.
 
 実際に設定されるモードは umask により影響されます。
 

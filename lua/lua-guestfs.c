@@ -40,6 +40,12 @@
 #endif
 #endif
 
+#if LUA_VERSION_NUM >= 503
+#ifndef luaL_checkint
+#define luaL_checkint(L,n) ((int)luaL_checkinteger(L, (n)))
+#endif
+#endif
+
 #include <guestfs.h>
 #include "guestfs-internal-frontend.h"
 
@@ -1579,6 +1585,69 @@ guestfs_lua_blockdev_setrw (lua_State *L)
 }
 
 static int
+guestfs_lua_btrfs_balance_cancel (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *path;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_balance_cancel");
+
+  path = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfs_balance_cancel (g, path);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_btrfs_balance_pause (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *path;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_balance_pause");
+
+  path = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfs_balance_pause (g, path);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_btrfs_balance_resume (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *path;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_balance_resume");
+
+  path = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfs_balance_resume (g, path);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_btrfs_device_add (lua_State *L)
 {
   int r;
@@ -1641,6 +1710,41 @@ guestfs_lua_btrfs_filesystem_balance (lua_State *L)
   fs = luaL_checkstring (L, 2);
 
   r = guestfs_btrfs_filesystem_balance (g, fs);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_btrfs_filesystem_defragment (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *path;
+  struct guestfs_btrfs_filesystem_defragment_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_filesystem_defragment_argv *optargs = &optargs_s;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_filesystem_defragment");
+
+  path = luaL_checkstring (L, 2);
+
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 3) == LUA_TTABLE) {
+    OPTARG_IF_SET (3, "flush",
+      optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK;
+      optargs_s.flush = lua_toboolean (L, -1);
+    );
+    OPTARG_IF_SET (3, "compress",
+      optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK;
+      optargs_s.compress = luaL_checkstring (L, -1);
+    );
+  }
+
+  r = guestfs_btrfs_filesystem_defragment_argv (g, path, optargs);
   if (r == -1)
     return last_error (L, g);
 
@@ -1914,6 +2018,111 @@ guestfs_lua_btrfs_quota_rescan (lua_State *L)
   fs = luaL_checkstring (L, 2);
 
   r = guestfs_btrfs_quota_rescan (g, fs);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_btrfs_rescue_chunk_recover (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_rescue_chunk_recover");
+
+  device = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfs_rescue_chunk_recover (g, device);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_btrfs_rescue_super_recover (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_rescue_super_recover");
+
+  device = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfs_rescue_super_recover (g, device);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_btrfs_scrub_cancel (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *path;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_scrub_cancel");
+
+  path = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfs_scrub_cancel (g, path);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_btrfs_scrub_resume (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *path;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_scrub_resume");
+
+  path = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfs_scrub_resume (g, path);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_btrfs_scrub_start (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *path;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_scrub_start");
+
+  path = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfs_scrub_start (g, path);
   if (r == -1)
     return last_error (L, g);
 
@@ -9424,6 +9633,10 @@ guestfs_lua_mkfs (lua_State *L)
       optargs_s.bitmask |= GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK;
       optargs_s.sectorsize = luaL_checkint (L, -1);
     );
+    OPTARG_IF_SET (4, "label",
+      optargs_s.bitmask |= GUESTFS_MKFS_OPTS_LABEL_BITMASK;
+      optargs_s.label = luaL_checkstring (L, -1);
+    );
   }
 
   r = guestfs_mkfs_opts_argv (g, fstype, device, optargs);
@@ -15702,9 +15915,13 @@ static luaL_Reg methods[] = {
   { "blockdev_setra", guestfs_lua_blockdev_setra },
   { "blockdev_setro", guestfs_lua_blockdev_setro },
   { "blockdev_setrw", guestfs_lua_blockdev_setrw },
+  { "btrfs_balance_cancel", guestfs_lua_btrfs_balance_cancel },
+  { "btrfs_balance_pause", guestfs_lua_btrfs_balance_pause },
+  { "btrfs_balance_resume", guestfs_lua_btrfs_balance_resume },
   { "btrfs_device_add", guestfs_lua_btrfs_device_add },
   { "btrfs_device_delete", guestfs_lua_btrfs_device_delete },
   { "btrfs_filesystem_balance", guestfs_lua_btrfs_filesystem_balance },
+  { "btrfs_filesystem_defragment", guestfs_lua_btrfs_filesystem_defragment },
   { "btrfs_filesystem_resize", guestfs_lua_btrfs_filesystem_resize },
   { "btrfs_filesystem_sync", guestfs_lua_btrfs_filesystem_sync },
   { "btrfs_fsck", guestfs_lua_btrfs_fsck },
@@ -15716,6 +15933,11 @@ static luaL_Reg methods[] = {
   { "btrfs_qgroup_show", guestfs_lua_btrfs_qgroup_show },
   { "btrfs_quota_enable", guestfs_lua_btrfs_quota_enable },
   { "btrfs_quota_rescan", guestfs_lua_btrfs_quota_rescan },
+  { "btrfs_rescue_chunk_recover", guestfs_lua_btrfs_rescue_chunk_recover },
+  { "btrfs_rescue_super_recover", guestfs_lua_btrfs_rescue_super_recover },
+  { "btrfs_scrub_cancel", guestfs_lua_btrfs_scrub_cancel },
+  { "btrfs_scrub_resume", guestfs_lua_btrfs_scrub_resume },
+  { "btrfs_scrub_start", guestfs_lua_btrfs_scrub_start },
   { "btrfs_set_seeding", guestfs_lua_btrfs_set_seeding },
   { "btrfs_subvolume_create", guestfs_lua_btrfs_subvolume_create },
   { "btrfs_subvolume_delete", guestfs_lua_btrfs_subvolume_delete },

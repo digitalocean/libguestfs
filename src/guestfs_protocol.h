@@ -2581,6 +2581,7 @@ struct guestfs_mkfs_args {
 	char *features;
 	int inode;
 	int sectorsize;
+	char *label;
 };
 typedef struct guestfs_mkfs_args guestfs_mkfs_args;
 
@@ -3871,6 +3872,53 @@ struct guestfs_btrfs_qgroup_remove_args {
 };
 typedef struct guestfs_btrfs_qgroup_remove_args guestfs_btrfs_qgroup_remove_args;
 
+struct guestfs_btrfs_scrub_start_args {
+	char *path;
+};
+typedef struct guestfs_btrfs_scrub_start_args guestfs_btrfs_scrub_start_args;
+
+struct guestfs_btrfs_scrub_cancel_args {
+	char *path;
+};
+typedef struct guestfs_btrfs_scrub_cancel_args guestfs_btrfs_scrub_cancel_args;
+
+struct guestfs_btrfs_scrub_resume_args {
+	char *path;
+};
+typedef struct guestfs_btrfs_scrub_resume_args guestfs_btrfs_scrub_resume_args;
+
+struct guestfs_btrfs_balance_pause_args {
+	char *path;
+};
+typedef struct guestfs_btrfs_balance_pause_args guestfs_btrfs_balance_pause_args;
+
+struct guestfs_btrfs_balance_cancel_args {
+	char *path;
+};
+typedef struct guestfs_btrfs_balance_cancel_args guestfs_btrfs_balance_cancel_args;
+
+struct guestfs_btrfs_balance_resume_args {
+	char *path;
+};
+typedef struct guestfs_btrfs_balance_resume_args guestfs_btrfs_balance_resume_args;
+
+struct guestfs_btrfs_filesystem_defragment_args {
+	char *path;
+	bool_t flush;
+	char *compress;
+};
+typedef struct guestfs_btrfs_filesystem_defragment_args guestfs_btrfs_filesystem_defragment_args;
+
+struct guestfs_btrfs_rescue_chunk_recover_args {
+	char *device;
+};
+typedef struct guestfs_btrfs_rescue_chunk_recover_args guestfs_btrfs_rescue_chunk_recover_args;
+
+struct guestfs_btrfs_rescue_super_recover_args {
+	char *device;
+};
+typedef struct guestfs_btrfs_rescue_super_recover_args guestfs_btrfs_rescue_super_recover_args;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -4296,9 +4344,18 @@ enum guestfs_procedure {
 	GUESTFS_PROC_BTRFS_QGROUP_SHOW = 432,
 	GUESTFS_PROC_BTRFS_QGROUP_ASSIGN = 433,
 	GUESTFS_PROC_BTRFS_QGROUP_REMOVE = 434,
+	GUESTFS_PROC_BTRFS_SCRUB_START = 435,
+	GUESTFS_PROC_BTRFS_SCRUB_CANCEL = 436,
+	GUESTFS_PROC_BTRFS_SCRUB_RESUME = 437,
+	GUESTFS_PROC_BTRFS_BALANCE_PAUSE = 438,
+	GUESTFS_PROC_BTRFS_BALANCE_CANCEL = 439,
+	GUESTFS_PROC_BTRFS_BALANCE_RESUME = 440,
+	GUESTFS_PROC_BTRFS_FILESYSTEM_DEFRAGMENT = 443,
+	GUESTFS_PROC_BTRFS_RESCUE_CHUNK_RECOVER = 444,
+	GUESTFS_PROC_BTRFS_RESCUE_SUPER_RECOVER = 445,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 434
+#define GUESTFS_MAX_PROC_NR 445
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4963,6 +5020,15 @@ extern  bool_t xdr_guestfs_btrfs_qgroup_show_args (XDR *, guestfs_btrfs_qgroup_s
 extern  bool_t xdr_guestfs_btrfs_qgroup_show_ret (XDR *, guestfs_btrfs_qgroup_show_ret*);
 extern  bool_t xdr_guestfs_btrfs_qgroup_assign_args (XDR *, guestfs_btrfs_qgroup_assign_args*);
 extern  bool_t xdr_guestfs_btrfs_qgroup_remove_args (XDR *, guestfs_btrfs_qgroup_remove_args*);
+extern  bool_t xdr_guestfs_btrfs_scrub_start_args (XDR *, guestfs_btrfs_scrub_start_args*);
+extern  bool_t xdr_guestfs_btrfs_scrub_cancel_args (XDR *, guestfs_btrfs_scrub_cancel_args*);
+extern  bool_t xdr_guestfs_btrfs_scrub_resume_args (XDR *, guestfs_btrfs_scrub_resume_args*);
+extern  bool_t xdr_guestfs_btrfs_balance_pause_args (XDR *, guestfs_btrfs_balance_pause_args*);
+extern  bool_t xdr_guestfs_btrfs_balance_cancel_args (XDR *, guestfs_btrfs_balance_cancel_args*);
+extern  bool_t xdr_guestfs_btrfs_balance_resume_args (XDR *, guestfs_btrfs_balance_resume_args*);
+extern  bool_t xdr_guestfs_btrfs_filesystem_defragment_args (XDR *, guestfs_btrfs_filesystem_defragment_args*);
+extern  bool_t xdr_guestfs_btrfs_rescue_chunk_recover_args (XDR *, guestfs_btrfs_rescue_chunk_recover_args*);
+extern  bool_t xdr_guestfs_btrfs_rescue_super_recover_args (XDR *, guestfs_btrfs_rescue_super_recover_args*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5577,6 +5643,15 @@ extern bool_t xdr_guestfs_btrfs_qgroup_show_args ();
 extern bool_t xdr_guestfs_btrfs_qgroup_show_ret ();
 extern bool_t xdr_guestfs_btrfs_qgroup_assign_args ();
 extern bool_t xdr_guestfs_btrfs_qgroup_remove_args ();
+extern bool_t xdr_guestfs_btrfs_scrub_start_args ();
+extern bool_t xdr_guestfs_btrfs_scrub_cancel_args ();
+extern bool_t xdr_guestfs_btrfs_scrub_resume_args ();
+extern bool_t xdr_guestfs_btrfs_balance_pause_args ();
+extern bool_t xdr_guestfs_btrfs_balance_cancel_args ();
+extern bool_t xdr_guestfs_btrfs_balance_resume_args ();
+extern bool_t xdr_guestfs_btrfs_filesystem_defragment_args ();
+extern bool_t xdr_guestfs_btrfs_rescue_chunk_recover_args ();
+extern bool_t xdr_guestfs_btrfs_rescue_super_recover_args ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

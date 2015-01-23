@@ -2114,6 +2114,63 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * cancel a running or paused balance
+   * <p>
+   * Cancel a running balance on a btrfs filesystem.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_balance_cancel (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_balance_cancel: handle is closed");
+
+    _btrfs_balance_cancel (g, path);
+  }
+
+  private native void _btrfs_balance_cancel (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * pause a running balance
+   * <p>
+   * Pause a running balance on a btrfs filesystem.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_balance_pause (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_balance_pause: handle is closed");
+
+    _btrfs_balance_pause (g, path);
+  }
+
+  private native void _btrfs_balance_pause (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * resume a paused balance
+   * <p>
+   * Resume a paused balance on a btrfs filesystem.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_balance_resume (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_balance_resume: handle is closed");
+
+    _btrfs_balance_resume (g, path);
+  }
+
+  private native void _btrfs_balance_resume (long g, String path)
+    throws LibGuestFSException;
+
+  /**
    * add devices to a btrfs filesystem
    * <p>
    * Add the list of device(s) in "devices" to the btrfs
@@ -2173,6 +2230,57 @@ public class GuestFS {
   }
 
   private native void _btrfs_filesystem_balance (long g, String fs)
+    throws LibGuestFSException;
+
+  /**
+   * defragment a file or directory
+   * <p>
+   * Defragment a file or directory on a btrfs filesystem.
+   * compress is one of zlib or lzo.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_filesystem_defragment (String path, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_filesystem_defragment: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean flush = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("flush");
+    if (_optobj != null) {
+      flush = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+    String compress = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("compress");
+    if (_optobj != null) {
+      compress = ((String) _optobj);
+      _optargs_bitmask |= 2L;
+    }
+
+    _btrfs_filesystem_defragment (g, path, _optargs_bitmask, flush, compress);
+  }
+
+  public void btrfs_filesystem_defragment (String path)
+    throws LibGuestFSException
+  {
+    btrfs_filesystem_defragment (path, null);
+  }
+
+  private native void _btrfs_filesystem_defragment (long g, String path, long _optargs_bitmask, boolean flush, String compress)
     throws LibGuestFSException;
 
   /**
@@ -2457,6 +2565,105 @@ public class GuestFS {
   }
 
   private native void _btrfs_quota_rescan (long g, String fs)
+    throws LibGuestFSException;
+
+  /**
+   * recover the chunk tree of btrfs filesystem
+   * <p>
+   * Recover the chunk tree of btrfs filesystem by scannning
+   * the devices one by one.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_rescue_chunk_recover (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_rescue_chunk_recover: handle is closed");
+
+    _btrfs_rescue_chunk_recover (g, device);
+  }
+
+  private native void _btrfs_rescue_chunk_recover (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * recover bad superblocks from good copies
+   * <p>
+   * Recover bad superblocks from good copies.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_rescue_super_recover (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_rescue_super_recover: handle is closed");
+
+    _btrfs_rescue_super_recover (g, device);
+  }
+
+  private native void _btrfs_rescue_super_recover (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * cancel a running scrub
+   * <p>
+   * Cancel a running scrub on a btrfs filesystem.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_scrub_cancel (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_scrub_cancel: handle is closed");
+
+    _btrfs_scrub_cancel (g, path);
+  }
+
+  private native void _btrfs_scrub_cancel (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * resume a previously canceled or interrupted scrub
+   * <p>
+   * Resume a previously canceled or interrupted scrub on a
+   * btrfs filesystem.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_scrub_resume (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_scrub_resume: handle is closed");
+
+    _btrfs_scrub_resume (g, path);
+  }
+
+  private native void _btrfs_scrub_resume (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * read all data from all disks and verify checksums
+   * <p>
+   * Reads all the data and metadata on the filesystem, and
+   * uses checksums and the duplicate copies from RAID
+   * storage to identify and repair any corrupt data.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_scrub_start (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_scrub_start: handle is closed");
+
+    _btrfs_scrub_start (g, path);
+  }
+
+  private native void _btrfs_scrub_start (long g, String path)
     throws LibGuestFSException;
 
   /**
@@ -12252,6 +12459,9 @@ public class GuestFS {
    * mode "mode". It is just a convenient wrapper around
    * "g.mknod".
    * <p>
+   * Unlike with "g.mknod", "mode" must contain only
+   * permissions bits.
+   * <p>
    * The mode actually set is affected by the umask.
    * <p>
    * @throws LibGuestFSException
@@ -12355,8 +12565,16 @@ public class GuestFS {
       sectorsize = ((Integer) _optobj).intValue();
       _optargs_bitmask |= 8L;
     }
+    String label = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("label");
+    if (_optobj != null) {
+      label = ((String) _optobj);
+      _optargs_bitmask |= 16L;
+    }
 
-    _mkfs (g, fstype, device, _optargs_bitmask, blocksize, features, inode, sectorsize);
+    _mkfs (g, fstype, device, _optargs_bitmask, blocksize, features, inode, sectorsize, label);
   }
 
   public void mkfs (String fstype, String device)
@@ -12377,7 +12595,7 @@ public class GuestFS {
     mkfs (fstype, device, null);
   }
 
-  private native void _mkfs (long g, String fstype, String device, long _optargs_bitmask, int blocksize, String features, int inode, int sectorsize)
+  private native void _mkfs (long g, String fstype, String device, long _optargs_bitmask, int blocksize, String features, int inode, int sectorsize, String label)
     throws LibGuestFSException;
 
   /**
@@ -12643,6 +12861,9 @@ public class GuestFS {
    * "devminor". It is just a convenient wrapper around
    * "g.mknod".
    * <p>
+   * Unlike with "g.mknod", "mode" must contain only
+   * permissions bits.
+   * <p>
    * The mode actually set is affected by the umask.
    * <p>
    * @throws LibGuestFSException
@@ -12666,6 +12887,9 @@ public class GuestFS {
    * mode "mode" and device major/minor "devmajor" and
    * "devminor". It is just a convenient wrapper around
    * "g.mknod".
+   * <p>
+   * Unlike with "g.mknod", "mode" must contain only
+   * permissions bits.
    * <p>
    * The mode actually set is affected by the umask.
    * <p>

@@ -1109,6 +1109,39 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
+btrfs_balance_cancel (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfs_balance_cancel (g, path);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_balance_pause (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfs_balance_pause (g, path);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_balance_resume (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfs_balance_resume (g, path);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
 btrfs_device_add (g, devices, fs)
       guestfs_h *g;
       char **devices;
@@ -1142,6 +1175,42 @@ PREINIT:
       int r;
  PPCODE:
       r = guestfs_btrfs_filesystem_balance (g, fs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_filesystem_defragment (g, path, ...)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      int r;
+      struct guestfs_btrfs_filesystem_defragment_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_btrfs_filesystem_defragment_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "flush")) {
+          optargs_s.flush = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK;
+        }
+        else if (STREQ (this_arg, "compress")) {
+          optargs_s.compress = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_btrfs_filesystem_defragment_argv (g, path, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -1328,6 +1397,61 @@ PREINIT:
       int r;
  PPCODE:
       r = guestfs_btrfs_quota_rescan (g, fs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_rescue_chunk_recover (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfs_rescue_chunk_recover (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_rescue_super_recover (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfs_rescue_super_recover (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_scrub_cancel (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfs_scrub_cancel (g, path);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_scrub_resume (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfs_scrub_resume (g, path);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_scrub_start (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfs_scrub_start (g, path);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -7097,6 +7221,10 @@ PREINIT:
         else if (STREQ (this_arg, "sectorsize")) {
           optargs_s.sectorsize = SvIV (ST (items_i+1));
           this_mask = GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "label")) {
+          optargs_s.label = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_MKFS_OPTS_LABEL_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)

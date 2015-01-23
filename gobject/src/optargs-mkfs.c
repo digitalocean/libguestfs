@@ -41,6 +41,7 @@ struct _GuestfsMkfsPrivate {
   gchar *features;
   gint inode;
   gint sectorsize;
+  gchar *label;
 };
 
 G_DEFINE_TYPE (GuestfsMkfs, guestfs_mkfs, G_TYPE_OBJECT);
@@ -50,7 +51,8 @@ enum {
   PROP_GUESTFS_MKFS_BLOCKSIZE,
   PROP_GUESTFS_MKFS_FEATURES,
   PROP_GUESTFS_MKFS_INODE,
-  PROP_GUESTFS_MKFS_SECTORSIZE
+  PROP_GUESTFS_MKFS_SECTORSIZE,
+  PROP_GUESTFS_MKFS_LABEL
 };
 
 static void
@@ -75,6 +77,11 @@ guestfs_mkfs_set_property(GObject *object, guint property_id, const GValue *valu
 
     case PROP_GUESTFS_MKFS_SECTORSIZE:
       priv->sectorsize = g_value_get_int (value);
+      break;
+
+    case PROP_GUESTFS_MKFS_LABEL:
+      g_free (priv->label);
+      priv->label = g_value_dup_string (value);
       break;
 
     default:
@@ -106,6 +113,10 @@ guestfs_mkfs_get_property(GObject *object, guint property_id, GValue *value, GPa
       g_value_set_int (value, priv->sectorsize);
       break;
 
+    case PROP_GUESTFS_MKFS_LABEL:
+      g_value_set_string (value, priv->label);
+      break;
+
     default:
       /* Invalid property */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -119,6 +130,7 @@ guestfs_mkfs_finalize (GObject *object)
   GuestfsMkfsPrivate *priv = self->priv;
 
   g_free (priv->features);
+  g_free (priv->label);
   G_OBJECT_CLASS (guestfs_mkfs_parent_class)->finalize (object);
 }
 
@@ -193,6 +205,23 @@ guestfs_mkfs_class_init (GuestfsMkfsClass *klass)
       "sectorsize",
       "A 32-bit integer.",
       G_MININT32, G_MAXINT32, -1,
+      G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+    )
+  );
+
+  /**
+   * GuestfsMkfs:label:
+   *
+   * A string.
+   */
+  g_object_class_install_property (
+    object_class,
+    PROP_GUESTFS_MKFS_LABEL,
+    g_param_spec_string (
+      "label",
+      "label",
+      "A string.",
+      NULL,
       G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
     )
   );

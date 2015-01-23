@@ -1396,6 +1396,36 @@ C<device> という名前のブロックデバイスを読み書きに設定し�
 
 (0.9.3 において追加)
 
+=head2 guestfs_btrfs_balance_cancel
+
+ int
+ guestfs_btrfs_balance_cancel (guestfs_h *g,
+                               const char *path);
+
+Cancel a running balance on a btrfs filesystem.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_btrfs_balance_pause
+
+ int
+ guestfs_btrfs_balance_pause (guestfs_h *g,
+                              const char *path);
+
+Pause a running balance on a btrfs filesystem.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_btrfs_balance_resume
+
+ int
+ guestfs_btrfs_balance_resume (guestfs_h *g,
+                               const char *path);
+
+Resume a paused balance on a btrfs filesystem.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
 =head2 guestfs_btrfs_device_add
 
  int
@@ -1436,6 +1466,47 @@ underlying devices.
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (1.17.35 において追加)
+
+=head2 guestfs_btrfs_filesystem_defragment
+
+ int
+ guestfs_btrfs_filesystem_defragment (guestfs_h *g,
+                                      const char *path,
+                                      ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH, int flush,
+ GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS, const char *compress,
+
+Defragment a file or directory on a btrfs filesystem. compress is one of
+zlib or lzo.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_btrfs_filesystem_defragment_va
+
+ int
+ guestfs_btrfs_filesystem_defragment_va (guestfs_h *g,
+                                         const char *path,
+                                         va_list args);
+
+This is the "va_list variant" of L</guestfs_btrfs_filesystem_defragment>.
+
+L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
+
+=head2 guestfs_btrfs_filesystem_defragment_argv
+
+ int
+ guestfs_btrfs_filesystem_defragment_argv (guestfs_h *g,
+                                           const char *path,
+                                           const struct guestfs_btrfs_filesystem_defragment_argv *optargs);
+
+This is the "argv variant" of L</guestfs_btrfs_filesystem_defragment>.
+
+L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
 
 =head2 guestfs_btrfs_filesystem_resize
 
@@ -1640,6 +1711,59 @@ C<path>.
 
 Trash all qgroup numbers and scan the metadata again with the current
 config.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_btrfs_rescue_chunk_recover
+
+ int
+ guestfs_btrfs_rescue_chunk_recover (guestfs_h *g,
+                                     const char *device);
+
+Recover the chunk tree of btrfs filesystem by scannning the devices one by
+one.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_btrfs_rescue_super_recover
+
+ int
+ guestfs_btrfs_rescue_super_recover (guestfs_h *g,
+                                     const char *device);
+
+Recover bad superblocks from good copies.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_btrfs_scrub_cancel
+
+ int
+ guestfs_btrfs_scrub_cancel (guestfs_h *g,
+                             const char *path);
+
+Cancel a running scrub on a btrfs filesystem.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_btrfs_scrub_resume
+
+ int
+ guestfs_btrfs_scrub_resume (guestfs_h *g,
+                             const char *path);
+
+Resume a previously canceled or interrupted scrub on a btrfs filesystem.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_btrfs_scrub_start
+
+ int
+ guestfs_btrfs_scrub_start (guestfs_h *g,
+                            const char *path);
+
+Reads all the data and metadata on the filesystem, and uses checksums and
+the duplicate copies from RAID storage to identify and repair any corrupt
+data.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -8365,6 +8489,8 @@ This creates an ext2 external journal on C<device> with UUID C<uuid>.
 This call creates a FIFO (named pipe) called C<path> with mode C<mode>.  It
 is just a convenient wrapper around C<guestfs_mknod>.
 
+Unlike with C<guestfs_mknod>, C<mode> B<must> contain only permissions bits.
+
 実際に設定されるモードは umask により影響されます。
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
@@ -8402,6 +8528,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_MKFS_OPTS_FEATURES, const char *features,
  GUESTFS_MKFS_OPTS_INODE, int inode,
  GUESTFS_MKFS_OPTS_SECTORSIZE, int sectorsize,
+ GUESTFS_MKFS_OPTS_LABEL, const char *label,
 
 This function creates a filesystem on C<device>.  The filesystem type is
 C<fstype>, for example C<ext3>.
@@ -8650,6 +8777,8 @@ This call creates a block device node called C<path> with mode C<mode> and
 device major/minor C<devmajor> and C<devminor>.  It is just a convenient
 wrapper around C<guestfs_mknod>.
 
+Unlike with C<guestfs_mknod>, C<mode> B<must> contain only permissions bits.
+
 実際に設定されるモードは umask により影響されます。
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
@@ -8668,6 +8797,8 @@ wrapper around C<guestfs_mknod>.
 This call creates a char device node called C<path> with mode C<mode> and
 device major/minor C<devmajor> and C<devminor>.  It is just a convenient
 wrapper around C<guestfs_mknod>.
+
+Unlike with C<guestfs_mknod>, C<mode> B<must> contain only permissions bits.
 
 実際に設定されるモードは umask により影響されます。
 

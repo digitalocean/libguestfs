@@ -95,9 +95,13 @@ static int run_blockdev_setbsz (const char *cmd, size_t argc, char *argv[]);
 static int run_blockdev_setra (const char *cmd, size_t argc, char *argv[]);
 static int run_blockdev_setro (const char *cmd, size_t argc, char *argv[]);
 static int run_blockdev_setrw (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_balance_cancel (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_balance_pause (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_balance_resume (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_device_add (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_device_delete (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_filesystem_balance (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_filesystem_defragment (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_filesystem_resize (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_filesystem_sync (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_fsck (const char *cmd, size_t argc, char *argv[]);
@@ -109,6 +113,11 @@ static int run_btrfs_qgroup_remove (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_qgroup_show (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_quota_enable (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_quota_rescan (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_rescue_chunk_recover (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_rescue_super_recover (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_scrub_cancel (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_scrub_resume (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_scrub_start (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_set_seeding (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_subvolume_create (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_subvolume_delete (const char *cmd, size_t argc, char *argv[]);
@@ -1029,6 +1038,27 @@ struct command_entry blockdev_setrw_cmd_entry = {
   .run = run_blockdev_setrw
 };
 
+struct command_entry btrfs_balance_cancel_cmd_entry = {
+  .name = "btrfs-balance-cancel",
+  .help = "NAME\n    btrfs-balance-cancel - cancel a running or paused balance\n\nSYNOPSIS\n     btrfs-balance-cancel path\n\nDESCRIPTION\n    Cancel a running balance on a btrfs filesystem.\n\n",
+  .synopsis = "btrfs-balance-cancel path",
+  .run = run_btrfs_balance_cancel
+};
+
+struct command_entry btrfs_balance_pause_cmd_entry = {
+  .name = "btrfs-balance-pause",
+  .help = "NAME\n    btrfs-balance-pause - pause a running balance\n\nSYNOPSIS\n     btrfs-balance-pause path\n\nDESCRIPTION\n    Pause a running balance on a btrfs filesystem.\n\n",
+  .synopsis = "btrfs-balance-pause path",
+  .run = run_btrfs_balance_pause
+};
+
+struct command_entry btrfs_balance_resume_cmd_entry = {
+  .name = "btrfs-balance-resume",
+  .help = "NAME\n    btrfs-balance-resume - resume a paused balance\n\nSYNOPSIS\n     btrfs-balance-resume path\n\nDESCRIPTION\n    Resume a paused balance on a btrfs filesystem.\n\n",
+  .synopsis = "btrfs-balance-resume path",
+  .run = run_btrfs_balance_resume
+};
+
 struct command_entry btrfs_device_add_cmd_entry = {
   .name = "btrfs-device-add",
   .help = "NAME\n    btrfs-device-add - add devices to a btrfs filesystem\n\nSYNOPSIS\n     btrfs-device-add devices fs\n\nDESCRIPTION\n    Add the list of device(s) in \"devices\" to the btrfs filesystem mounted\n    at \"fs\". If \"devices\" is an empty list, this does nothing.\n\n",
@@ -1045,9 +1075,16 @@ struct command_entry btrfs_device_delete_cmd_entry = {
 
 struct command_entry btrfs_filesystem_balance_cmd_entry = {
   .name = "btrfs-filesystem-balance",
-  .help = "NAME\n    btrfs-filesystem-balance - balance a btrfs filesystem\n\nSYNOPSIS\n     btrfs-filesystem-balance fs\n\nDESCRIPTION\n    Balance the chunks in the btrfs filesystem mounted at \"fs\" across the\n    underlying devices.\n\n",
+  .help = "NAME\n    btrfs-filesystem-balance - balance a btrfs filesystem\n\nSYNOPSIS\n     btrfs-filesystem-balance fs\n\nDESCRIPTION\n    Balance the chunks in the btrfs filesystem mounted at \"fs\" across the\n    underlying devices.\n\n    You can use 'btrfs-balance' as an alias for this command.\n\n",
   .synopsis = "btrfs-filesystem-balance fs",
   .run = run_btrfs_filesystem_balance
+};
+
+struct command_entry btrfs_filesystem_defragment_cmd_entry = {
+  .name = "btrfs-filesystem-defragment",
+  .help = "NAME\n    btrfs-filesystem-defragment - defragment a file or directory\n\nSYNOPSIS\n     btrfs-filesystem-defragment path [flush:true|false] [compress:..]\n\nDESCRIPTION\n    Defragment a file or directory on a btrfs filesystem. compress is one of\n    zlib or lzo.\n\n",
+  .synopsis = "btrfs-filesystem-defragment path [flush:true|false] [compress:..]",
+  .run = run_btrfs_filesystem_defragment
 };
 
 struct command_entry btrfs_filesystem_resize_cmd_entry = {
@@ -1125,6 +1162,41 @@ struct command_entry btrfs_quota_rescan_cmd_entry = {
   .help = "NAME\n    btrfs-quota-rescan - trash all qgroup numbers and scan the metadata\n    again with the current config\n\nSYNOPSIS\n     btrfs-quota-rescan fs\n\nDESCRIPTION\n    Trash all qgroup numbers and scan the metadata again with the current\n    config.\n\n",
   .synopsis = "btrfs-quota-rescan fs",
   .run = run_btrfs_quota_rescan
+};
+
+struct command_entry btrfs_rescue_chunk_recover_cmd_entry = {
+  .name = "btrfs-rescue-chunk-recover",
+  .help = "NAME\n    btrfs-rescue-chunk-recover - recover the chunk tree of btrfs filesystem\n\nSYNOPSIS\n     btrfs-rescue-chunk-recover device\n\nDESCRIPTION\n    Recover the chunk tree of btrfs filesystem by scannning the devices one\n    by one.\n\n",
+  .synopsis = "btrfs-rescue-chunk-recover device",
+  .run = run_btrfs_rescue_chunk_recover
+};
+
+struct command_entry btrfs_rescue_super_recover_cmd_entry = {
+  .name = "btrfs-rescue-super-recover",
+  .help = "NAME\n    btrfs-rescue-super-recover - recover bad superblocks from good copies\n\nSYNOPSIS\n     btrfs-rescue-super-recover device\n\nDESCRIPTION\n    Recover bad superblocks from good copies.\n\n",
+  .synopsis = "btrfs-rescue-super-recover device",
+  .run = run_btrfs_rescue_super_recover
+};
+
+struct command_entry btrfs_scrub_cancel_cmd_entry = {
+  .name = "btrfs-scrub-cancel",
+  .help = "NAME\n    btrfs-scrub-cancel - cancel a running scrub\n\nSYNOPSIS\n     btrfs-scrub-cancel path\n\nDESCRIPTION\n    Cancel a running scrub on a btrfs filesystem.\n\n",
+  .synopsis = "btrfs-scrub-cancel path",
+  .run = run_btrfs_scrub_cancel
+};
+
+struct command_entry btrfs_scrub_resume_cmd_entry = {
+  .name = "btrfs-scrub-resume",
+  .help = "NAME\n    btrfs-scrub-resume - resume a previously canceled or interrupted scrub\n\nSYNOPSIS\n     btrfs-scrub-resume path\n\nDESCRIPTION\n    Resume a previously canceled or interrupted scrub on a btrfs filesystem.\n\n",
+  .synopsis = "btrfs-scrub-resume path",
+  .run = run_btrfs_scrub_resume
+};
+
+struct command_entry btrfs_scrub_start_cmd_entry = {
+  .name = "btrfs-scrub-start",
+  .help = "NAME\n    btrfs-scrub-start - read all data from all disks and verify checksums\n\nSYNOPSIS\n     btrfs-scrub-start path\n\nDESCRIPTION\n    Reads all the data and metadata on the filesystem, and uses checksums\n    and the duplicate copies from RAID storage to identify and repair any\n    corrupt data.\n\n",
+  .synopsis = "btrfs-scrub-start path",
+  .run = run_btrfs_scrub_start
 };
 
 struct command_entry btrfs_set_seeding_cmd_entry = {
@@ -2977,15 +3049,15 @@ struct command_entry mke2journal_U_cmd_entry = {
 
 struct command_entry mkfifo_cmd_entry = {
   .name = "mkfifo",
-  .help = "NAME\n    mkfifo - make FIFO (named pipe)\n\nSYNOPSIS\n     mkfifo mode path\n\nDESCRIPTION\n    This call creates a FIFO (named pipe) called \"path\" with mode \"mode\". It\n    is just a convenient wrapper around \"mknod\".\n\n    The mode actually set is affected by the umask.\n\n",
+  .help = "NAME\n    mkfifo - make FIFO (named pipe)\n\nSYNOPSIS\n     mkfifo mode path\n\nDESCRIPTION\n    This call creates a FIFO (named pipe) called \"path\" with mode \"mode\". It\n    is just a convenient wrapper around \"mknod\".\n\n    Unlike with \"mknod\", \"mode\" must contain only permissions bits.\n\n    The mode actually set is affected by the umask.\n\n",
   .synopsis = "mkfifo mode path",
   .run = run_mkfifo
 };
 
 struct command_entry mkfs_cmd_entry = {
   .name = "mkfs",
-  .help = "NAME\n    mkfs - make a filesystem\n\nSYNOPSIS\n     mkfs fstype device [blocksize:N] [features:..] [inode:N] [sectorsize:N]\n\nDESCRIPTION\n    This function creates a filesystem on \"device\". The filesystem type is\n    \"fstype\", for example \"ext3\".\n\n    The optional arguments are:\n\n    \"blocksize\"\n        The filesystem block size. Supported block sizes depend on the\n        filesystem type, but typically they are 1024, 2048 or 4096 for Linux\n        ext2/3 filesystems.\n\n        For VFAT and NTFS the \"blocksize\" parameter is treated as the\n        requested cluster size.\n\n        For UFS block sizes, please see mkfs.ufs(8).\n\n    \"features\"\n        This passes the *-O* parameter to the external mkfs program.\n\n        For certain filesystem types, this allows extra filesystem features\n        to be selected. See mke2fs(8) and mkfs.ufs(8) for more details.\n\n        You cannot use this optional parameter with the \"gfs\" or \"gfs2\"\n        filesystem type.\n\n    \"inode\"\n        This passes the *-I* parameter to the external mke2fs(8) program\n        which sets the inode size (only for ext2/3/4 filesystems at\n        present).\n\n    \"sectorsize\"\n        This passes the *-S* parameter to external mkfs.ufs(8) program,\n        which sets sector size for ufs filesystem.\n\n    You can use 'mkfs-opts' as an alias for this command.\n\n",
-  .synopsis = "mkfs fstype device [blocksize:N] [features:..] [inode:N] [sectorsize:N]",
+  .help = "NAME\n    mkfs - make a filesystem\n\nSYNOPSIS\n     mkfs fstype device [blocksize:N] [features:..] [inode:N] [sectorsize:N] [label:..]\n\nDESCRIPTION\n    This function creates a filesystem on \"device\". The filesystem type is\n    \"fstype\", for example \"ext3\".\n\n    The optional arguments are:\n\n    \"blocksize\"\n        The filesystem block size. Supported block sizes depend on the\n        filesystem type, but typically they are 1024, 2048 or 4096 for Linux\n        ext2/3 filesystems.\n\n        For VFAT and NTFS the \"blocksize\" parameter is treated as the\n        requested cluster size.\n\n        For UFS block sizes, please see mkfs.ufs(8).\n\n    \"features\"\n        This passes the *-O* parameter to the external mkfs program.\n\n        For certain filesystem types, this allows extra filesystem features\n        to be selected. See mke2fs(8) and mkfs.ufs(8) for more details.\n\n        You cannot use this optional parameter with the \"gfs\" or \"gfs2\"\n        filesystem type.\n\n    \"inode\"\n        This passes the *-I* parameter to the external mke2fs(8) program\n        which sets the inode size (only for ext2/3/4 filesystems at\n        present).\n\n    \"sectorsize\"\n        This passes the *-S* parameter to external mkfs.ufs(8) program,\n        which sets sector size for ufs filesystem.\n\n    You can use 'mkfs-opts' as an alias for this command.\n\n",
+  .synopsis = "mkfs fstype device [blocksize:N] [features:..] [inode:N] [sectorsize:N] [label:..]",
   .run = run_mkfs
 };
 
@@ -3026,14 +3098,14 @@ struct command_entry mknod_cmd_entry = {
 
 struct command_entry mknod_b_cmd_entry = {
   .name = "mknod-b",
-  .help = "NAME\n    mknod-b - make block device node\n\nSYNOPSIS\n     mknod-b mode devmajor devminor path\n\nDESCRIPTION\n    This call creates a block device node called \"path\" with mode \"mode\" and\n    device major/minor \"devmajor\" and \"devminor\". It is just a convenient\n    wrapper around \"mknod\".\n\n    The mode actually set is affected by the umask.\n\n",
+  .help = "NAME\n    mknod-b - make block device node\n\nSYNOPSIS\n     mknod-b mode devmajor devminor path\n\nDESCRIPTION\n    This call creates a block device node called \"path\" with mode \"mode\" and\n    device major/minor \"devmajor\" and \"devminor\". It is just a convenient\n    wrapper around \"mknod\".\n\n    Unlike with \"mknod\", \"mode\" must contain only permissions bits.\n\n    The mode actually set is affected by the umask.\n\n",
   .synopsis = "mknod-b mode devmajor devminor path",
   .run = run_mknod_b
 };
 
 struct command_entry mknod_c_cmd_entry = {
   .name = "mknod-c",
-  .help = "NAME\n    mknod-c - make char device node\n\nSYNOPSIS\n     mknod-c mode devmajor devminor path\n\nDESCRIPTION\n    This call creates a char device node called \"path\" with mode \"mode\" and\n    device major/minor \"devmajor\" and \"devminor\". It is just a convenient\n    wrapper around \"mknod\".\n\n    The mode actually set is affected by the umask.\n\n",
+  .help = "NAME\n    mknod-c - make char device node\n\nSYNOPSIS\n     mknod-c mode devmajor devminor path\n\nDESCRIPTION\n    This call creates a char device node called \"path\" with mode \"mode\" and\n    device major/minor \"devmajor\" and \"devminor\". It is just a convenient\n    wrapper around \"mknod\".\n\n    Unlike with \"mknod\", \"mode\" must contain only permissions bits.\n\n    The mode actually set is affected by the umask.\n\n",
   .synopsis = "mknod-c mode devmajor devminor path",
   .run = run_mknod_c
 };
@@ -4495,9 +4567,16 @@ list_commands (void)
   printf ("%-20s %s\n", "blockdev-setra", _("set readahead"));
   printf ("%-20s %s\n", "blockdev-setro", _("set block device to read-only"));
   printf ("%-20s %s\n", "blockdev-setrw", _("set block device to read-write"));
+  printf ("%-20s ", "btrfs-balance");
+  printf (_("alias for '%s'"), "btrfs-filesystem-balance");
+  putchar ('\n');
+  printf ("%-20s %s\n", "btrfs-balance-cancel", _("cancel a running or paused balance"));
+  printf ("%-20s %s\n", "btrfs-balance-pause", _("pause a running balance"));
+  printf ("%-20s %s\n", "btrfs-balance-resume", _("resume a paused balance"));
   printf ("%-20s %s\n", "btrfs-device-add", _("add devices to a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-device-delete", _("remove devices from a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-filesystem-balance", _("balance a btrfs filesystem"));
+  printf ("%-20s %s\n", "btrfs-filesystem-defragment", _("defragment a file or directory"));
   printf ("%-20s %s\n", "btrfs-filesystem-resize", _("resize a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-filesystem-sync", _("sync a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-fsck", _("check a btrfs filesystem"));
@@ -4509,6 +4588,11 @@ list_commands (void)
   printf ("%-20s %s\n", "btrfs-qgroup-show", _("show subvolume quota groups"));
   printf ("%-20s %s\n", "btrfs-quota-enable", _("enable or disable subvolume quota support"));
   printf ("%-20s %s\n", "btrfs-quota-rescan", _("trash all qgroup numbers and scan the metadata again with the current config"));
+  printf ("%-20s %s\n", "btrfs-rescue-chunk-recover", _("recover the chunk tree of btrfs filesystem"));
+  printf ("%-20s %s\n", "btrfs-rescue-super-recover", _("recover bad superblocks from good copies"));
+  printf ("%-20s %s\n", "btrfs-scrub-cancel", _("cancel a running scrub"));
+  printf ("%-20s %s\n", "btrfs-scrub-resume", _("resume a previously canceled or interrupted scrub"));
+  printf ("%-20s %s\n", "btrfs-scrub-start", _("read all data from all disks and verify checksums"));
   printf ("%-20s %s\n", "btrfs-set-seeding", _("enable or disable the seeding feature of device"));
   printf ("%-20s %s\n", "btrfs-subvolume-create", _("create a btrfs subvolume"));
   printf ("%-20s %s\n", "btrfs-subvolume-delete", _("delete a btrfs subvolume or snapshot"));
@@ -6988,6 +7072,78 @@ run_blockdev_setrw (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_btrfs_balance_cancel (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_btrfs_balance_cancel (g, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_balance_pause (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_btrfs_balance_pause (g, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_balance_resume (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_btrfs_balance_resume (g, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_btrfs_device_add (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -7065,6 +7221,69 @@ run_btrfs_filesystem_balance (const char *cmd, size_t argc, char *argv[])
  out:
   free (fs);
  out_fs:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_filesystem_defragment (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  char *path;
+  struct guestfs_btrfs_filesystem_defragment_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_filesystem_defragment_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 3) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "flush:")) {
+      switch (guestfs___is_true (&argv[i][6])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   program_name, &argv[i][6]);
+          goto out;
+        case 0:  optargs_s.flush = 0; break;
+        default: optargs_s.flush = 1;
+      }
+      this_mask = GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK;
+      this_arg = "flush";
+    }
+    else if (STRPREFIX (argv[i], "compress:")) {
+      optargs_s.compress = &argv[i][9];
+      this_mask = GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK;
+      this_arg = "compress";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_btrfs_filesystem_defragment_argv (g, path, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (path);
+ out_path:
  out_noargs:
   return ret;
 }
@@ -7455,6 +7674,120 @@ run_btrfs_quota_rescan (const char *cmd, size_t argc, char *argv[])
  out:
   free (fs);
  out_fs:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_rescue_chunk_recover (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_btrfs_rescue_chunk_recover (g, device);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_rescue_super_recover (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_btrfs_rescue_super_recover (g, device);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_scrub_cancel (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_btrfs_scrub_cancel (g, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_scrub_resume (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_btrfs_scrub_resume (g, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_scrub_start (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_btrfs_scrub_start (g, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (path);
+ out_path:
  out_noargs:
   return ret;
 }
@@ -16584,7 +16917,7 @@ run_mkfs (const char *cmd, size_t argc, char *argv[])
   struct guestfs_mkfs_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 6) {
+  if (argc < 2 || argc > 7) {
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
@@ -16668,6 +17001,11 @@ run_mkfs (const char *cmd, size_t argc, char *argv[])
       }
       this_mask = GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK;
       this_arg = "sectorsize";
+    }
+    else if (STRPREFIX (argv[i], "label:")) {
+      optargs_s.label = &argv[i][6];
+      this_mask = GUESTFS_MKFS_OPTS_LABEL_BITMASK;
+      this_arg = "label";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),

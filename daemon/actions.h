@@ -48,6 +48,7 @@
 #define GUESTFS_MKFS_FEATURES_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_MKFS_INODE_BITMASK (UINT64_C(1)<<2)
 #define GUESTFS_MKFS_SECTORSIZE_BITMASK (UINT64_C(1)<<3)
+#define GUESTFS_MKFS_LABEL_BITMASK (UINT64_C(1)<<4)
 #define GUESTFS_MOUNT_9P_OPTIONS_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_NTFSRESIZE_SIZE_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_NTFSRESIZE_FORCE_BITMASK (UINT64_C(1)<<1)
@@ -190,6 +191,8 @@
 #define GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK (UINT64_C(1)<<2)
 #define GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK (UINT64_C(1)<<3)
 #define GUESTFS_CPIO_OUT_FORMAT_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK (UINT64_C(1)<<1)
 extern int do_mount (const mountable_t *mountable, const char *mountpoint);
 extern int do_sync (void);
 extern int do_touch (const char *path);
@@ -457,7 +460,7 @@ extern int do_download_offset (const char *remotefilename, int64_t offset, int64
 extern int do_pwrite_device (const char *device, const char *content, size_t content_size, int64_t offset);
 extern char *do_pread_device (const char *device, int count, int64_t offset, size_t *size_r);
 extern char *do_lvm_canonical_lv_name (const char *lvname);
-extern int do_mkfs (const char *fstype, const char *device, int blocksize, const char *features, int inode, int sectorsize);
+extern int do_mkfs (const char *fstype, const char *device, int blocksize, const char *features, int inode, int sectorsize, const char *label);
 extern char *do_getxattr (const char *path, const char *name, size_t *size_r);
 extern char *do_lgetxattr (const char *path, const char *name, size_t *size_r);
 extern int do_resize2fs_M (const char *device);
@@ -614,5 +617,14 @@ extern int do_btrfs_qgroup_destroy (const char *qgroupid, const char *subvolume)
 extern guestfs_int_btrfsqgroup_list *do_btrfs_qgroup_show (const char *path);
 extern int do_btrfs_qgroup_assign (const char *src, const char *dst, const char *path);
 extern int do_btrfs_qgroup_remove (const char *src, const char *dst, const char *path);
+extern int do_btrfs_scrub_start (const char *path);
+extern int do_btrfs_scrub_cancel (const char *path);
+extern int do_btrfs_scrub_resume (const char *path);
+extern int do_btrfs_balance_pause (const char *path);
+extern int do_btrfs_balance_cancel (const char *path);
+extern int do_btrfs_balance_resume (const char *path);
+extern int do_btrfs_filesystem_defragment (const char *path, int flush, const char *compress);
+extern int do_btrfs_rescue_chunk_recover (const char *device);
+extern int do_btrfs_rescue_super_recover (const char *device);
 
 #endif /* GUESTFSD_ACTIONS_H */

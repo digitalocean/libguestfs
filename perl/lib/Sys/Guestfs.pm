@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.434';
+$VERSION = '0.445';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -1190,6 +1190,18 @@ Sets the block device named C<device> to read-write.
 
 This uses the L<blockdev(8)> command.
 
+=item $g->btrfs_balance_cancel ($path);
+
+Cancel a running balance on a btrfs filesystem.
+
+=item $g->btrfs_balance_pause ($path);
+
+Pause a running balance on a btrfs filesystem.
+
+=item $g->btrfs_balance_resume ($path);
+
+Resume a paused balance on a btrfs filesystem.
+
 =item $g->btrfs_device_add (\@devices, $fs);
 
 Add the list of device(s) in C<devices> to the btrfs filesystem
@@ -1204,6 +1216,10 @@ If C<devices> is an empty list, this does nothing.
 
 Balance the chunks in the btrfs filesystem mounted at C<fs>
 across the underlying devices.
+
+=item $g->btrfs_filesystem_defragment ($path [, flush => $flush] [, compress => $compress]);
+
+Defragment a file or directory on a btrfs filesystem. compress is one of zlib or lzo.
 
 =item $g->btrfs_filesystem_resize ($mountpoint [, size => $size]);
 
@@ -1269,6 +1285,28 @@ Enable or disable subvolume quota support for filesystem which contains C<path>.
 =item $g->btrfs_quota_rescan ($fs);
 
 Trash all qgroup numbers and scan the metadata again with the current config.
+
+=item $g->btrfs_rescue_chunk_recover ($device);
+
+Recover the chunk tree of btrfs filesystem by scannning the devices one by one.
+
+=item $g->btrfs_rescue_super_recover ($device);
+
+Recover bad superblocks from good copies.
+
+=item $g->btrfs_scrub_cancel ($path);
+
+Cancel a running scrub on a btrfs filesystem.
+
+=item $g->btrfs_scrub_resume ($path);
+
+Resume a previously canceled or interrupted scrub on a btrfs filesystem.
+
+=item $g->btrfs_scrub_start ($path);
+
+Reads all the data and metadata on the filesystem, and uses checksums
+and the duplicate copies from RAID storage to identify and repair any
+corrupt data.
 
 =item $g->btrfs_set_seeding ($device, $seeding);
 
@@ -5064,9 +5102,12 @@ This call creates a FIFO (named pipe) called C<path> with
 mode C<mode>.  It is just a convenient wrapper around
 C<$g-E<gt>mknod>.
 
+Unlike with C<$g-E<gt>mknod>, C<mode> B<must> contain only permissions
+bits.
+
 The mode actually set is affected by the umask.
 
-=item $g->mkfs ($fstype, $device [, blocksize => $blocksize] [, features => $features] [, inode => $inode] [, sectorsize => $sectorsize]);
+=item $g->mkfs ($fstype, $device [, blocksize => $blocksize] [, features => $features] [, inode => $inode] [, sectorsize => $sectorsize] [, label => $label]);
 
 This function creates a filesystem on C<device>.  The filesystem
 type is C<fstype>, for example C<ext3>.
@@ -5109,7 +5150,7 @@ which sets sector size for ufs filesystem.
 
 =back
 
-=item $g->mkfs_opts ($fstype, $device [, blocksize => $blocksize] [, features => $features] [, inode => $inode] [, sectorsize => $sectorsize]);
+=item $g->mkfs_opts ($fstype, $device [, blocksize => $blocksize] [, features => $features] [, inode => $inode] [, sectorsize => $sectorsize] [, label => $label]);
 
 This is an alias of L</mkfs>.
 
@@ -5221,6 +5262,9 @@ This call creates a block device node called C<path> with
 mode C<mode> and device major/minor C<devmajor> and C<devminor>.
 It is just a convenient wrapper around C<$g-E<gt>mknod>.
 
+Unlike with C<$g-E<gt>mknod>, C<mode> B<must> contain only permissions
+bits.
+
 The mode actually set is affected by the umask.
 
 =item $g->mknod_c ($mode, $devmajor, $devminor, $path);
@@ -5228,6 +5272,9 @@ The mode actually set is affected by the umask.
 This call creates a char device node called C<path> with
 mode C<mode> and device major/minor C<devmajor> and C<devminor>.
 It is just a convenient wrapper around C<$g-E<gt>mknod>.
+
+Unlike with C<$g-E<gt>mknod>, C<mode> B<must> contain only permissions
+bits.
 
 The mode actually set is affected by the umask.
 
@@ -8209,6 +8256,30 @@ use vars qw(%guestfs_introspection);
     name => "blockdev_setrw",
     description => "set block device to read-write",
   },
+  "btrfs_balance_cancel" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "btrfs_balance_cancel",
+    description => "cancel a running or paused balance",
+  },
+  "btrfs_balance_pause" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "btrfs_balance_pause",
+    description => "pause a running balance",
+  },
+  "btrfs_balance_resume" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "btrfs_balance_resume",
+    description => "resume a paused balance",
+  },
   "btrfs_device_add" => {
     ret => 'void',
     args => [
@@ -8234,6 +8305,18 @@ use vars qw(%guestfs_introspection);
     ],
     name => "btrfs_filesystem_balance",
     description => "balance a btrfs filesystem",
+  },
+  "btrfs_filesystem_defragment" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    optargs => {
+      flush => [ 'flush', 'bool', 0 ],
+      compress => [ 'compress', 'string', 1 ],
+    },
+    name => "btrfs_filesystem_defragment",
+    description => "defragment a file or directory",
   },
   "btrfs_filesystem_resize" => {
     ret => 'void',
@@ -8337,6 +8420,46 @@ use vars qw(%guestfs_introspection);
     ],
     name => "btrfs_quota_rescan",
     description => "trash all qgroup numbers and scan the metadata again with the current config",
+  },
+  "btrfs_rescue_chunk_recover" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "btrfs_rescue_chunk_recover",
+    description => "recover the chunk tree of btrfs filesystem",
+  },
+  "btrfs_rescue_super_recover" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "btrfs_rescue_super_recover",
+    description => "recover bad superblocks from good copies",
+  },
+  "btrfs_scrub_cancel" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "btrfs_scrub_cancel",
+    description => "cancel a running scrub",
+  },
+  "btrfs_scrub_resume" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "btrfs_scrub_resume",
+    description => "resume a previously canceled or interrupted scrub",
+  },
+  "btrfs_scrub_start" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "btrfs_scrub_start",
+    description => "read all data from all disks and verify checksums",
   },
   "btrfs_set_seeding" => {
     ret => 'void',
@@ -10983,6 +11106,7 @@ use vars qw(%guestfs_introspection);
       features => [ 'features', 'string', 1 ],
       inode => [ 'inode', 'int', 2 ],
       sectorsize => [ 'sectorsize', 'int', 3 ],
+      label => [ 'label', 'string', 4 ],
     },
     name => "mkfs",
     description => "make a filesystem",

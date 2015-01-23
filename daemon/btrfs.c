@@ -44,6 +44,30 @@ optgroup_btrfs_available (void)
   return prog_exists (str_btrfs) && filesystem_available ("btrfs") > 0;
 }
 
+char *
+btrfs_get_label (const char *device)
+{
+  int r;
+  CLEANUP_FREE char *err = NULL;
+  char *out = NULL;
+  size_t len;
+
+  r = command (&out, &err, str_btrfs, "filesystem", "label",
+               device, NULL);
+  if (r == -1) {
+    reply_with_error ("%s", err);
+    free (out);
+    return NULL;
+  }
+
+  /* Trim trailing \n if present. */
+  len = strlen (out);
+  if (len > 0 && out[len-1] == '\n')
+    out[len-1] = '\0';
+
+  return out;
+}
+
 /* Takes optional arguments, consult optargs_bitmask. */
 int
 do_btrfs_filesystem_resize (const char *filesystem, int64_t size)
@@ -645,7 +669,6 @@ do_btrfs_filesystem_balance (const char *fs)
   }
 
   ADD_ARG (argv, i, str_btrfs);
-  ADD_ARG (argv, i, "filesystem");
   ADD_ARG (argv, i, "balance");
   ADD_ARG (argv, i, fs_buf);
   ADD_ARG (argv, i, NULL);
@@ -1338,6 +1361,299 @@ do_btrfs_qgroup_remove (const char *src, const char *dst, const char *path)
   r = commandv (&out, &err, argv);
   if (r == -1) {
     reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_scrub_start (const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "scrub");
+  ADD_ARG (argv, i, "start");
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_scrub_cancel (const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "scrub");
+  ADD_ARG (argv, i, "cancel");
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_scrub_resume (const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "scrub");
+  ADD_ARG (argv, i, "resume");
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_balance_pause (const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "balance");
+  ADD_ARG (argv, i, "pause");
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_balance_cancel (const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "balance");
+  ADD_ARG (argv, i, "cancel");
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_balance_resume (const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "balance");
+  ADD_ARG (argv, i, "resume");
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+/* Takes optional arguments, consult optargs_bitmask. */
+int
+do_btrfs_filesystem_defragment (const char *path, int flush, const char *compress)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "filesystem");
+  ADD_ARG (argv, i, "defragment");
+  ADD_ARG (argv, i, "-r");
+
+  /* Optional arguments. */
+  if ((optargs_bitmask & GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK) && flush)
+    ADD_ARG (argv, i, "-f");
+  if (optargs_bitmask & GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK) {
+    if (STREQ(compress, "zlib"))
+      ADD_ARG (argv, i, "-czlib");
+    else if (STREQ(compress, "lzo"))
+      ADD_ARG (argv, i, "-clzo");
+    else {
+      reply_with_error ("unknown compress method: %s", compress);
+      return -1;
+    }
+  }
+
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_rescue_chunk_recover (const char *device)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "rescue");
+  ADD_ARG (argv, i, "chunk-recover");
+  ADD_ARG (argv, i, "-y");
+  ADD_ARG (argv, i, device);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", device, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_rescue_super_recover (const char *device)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "rescue");
+  ADD_ARG (argv, i, "super-recover");
+  ADD_ARG (argv, i, "-y");
+  ADD_ARG (argv, i, device);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", device, err);
     return -1;
   }
 
