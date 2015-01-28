@@ -1,3 +1,169 @@
+commit d0cecca27217c970cb11ec140cb56a34f4328f0c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 26 17:15:30 2015 +0000
+
+    Version 1.29.23.
+
+commit d6cfd24feb08ec9a2f8aa14736724f8330c5480d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 26 17:14:53 2015 +0000
+
+    .gitignore: Ignore mllib/oUnit-anon.cache file from oUnit.
+    
+    This updates commit d19eb31060e49d5631a7deb40bebf3886836b0a9.
+
+commit d0a2ba40c8f8aa610dc4a30ee0b2cdde0187682f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jan 26 16:34:59 2015 +0100
+
+    mllib: fix JSON_tests
+    
+    Properly write int64 values, so they are handled correctly also on 32bit
+    architectures.
+
+commit 889e55516869d1eadcdeae15e38dd8d3bbca8d20
+Author: Shahar Havivi <shaharh@redhat.com>
+Date:   Mon Jan 26 12:13:49 2015 +0200
+
+    v2v: -o vdsm should assume data domain at -os path
+    
+    Unlike -o rhev which have only one data domin, -o vdsm can and usually
+    does have multiple data domain.
+    The path to vdsm is pre mounted so no need to assume nfs path with -os
+    Example:
+    -o vdsm -os /rhev/data-center/<data-center-uuid>/<data-domain-uuid>
+    
+    Bug-Url: https://bugzilla.redhat.com/1176591
+    Signed-off-by: Shahar Havivi <shaharh@redhat.com>
+
+commit c24f242521e882380c28d0952007d8462040d998
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 24 15:40:05 2015 +0000
+
+    aarch64: Increase default appliance memory size on aarch64.
+    
+    Kernel 3.19 has problems uncompressing the RAM disk with <= 500 MB.
+    (This is likely to be a kernel bug)
+    
+    64 KB pages are common on aarch64, so treat this case the same as ppc,
+    and use a larger default appliance memory size.
+    
+    Thanks: Laszlo Ersek for help and reproducing the bug.
+
+commit 987273ebd019dbc63a87922db2807feb5743290b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 24 08:47:00 2015 +0000
+
+    launch: libvirt: When debugging the appliance dir, use 'ls -R'.
+    
+    Since libguestfs >= 1.26 / supermin 5, the appliance has lived in a
+    subdirectory of $TMPDIR/.guestfs-$UID.  As a result using 'ls -l'
+    didn't display any information about the files in the appliance.
+    
+    Using '-R' causes this information to be displayed again.
+
+commit f9c5b4aa2a6e8890eb20e15165bbe6820e6011b5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 24 08:45:48 2015 +0000
+
+    launch: libvirt: In debug messages use ls --lcontext instead of ls -Z.
+    
+    ls -Z stops ls from displaying the size field.  --lcontext uses longer
+    lines but has the advantage of still displaying the size field as well
+    as the SELinux context.
+
+commit b6cd5c3a2b5c35512599a63b420069bf5d9667fb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 23 13:29:25 2015 +0000
+
+    p2v: Add NetworkManager in the hope of getting working network.
+    
+    I know "working network" and "NetworkManager" are oxymorons, but
+    sometimes we have to live in hope.
+
+commit 9638b13ba00aa088e2bd56143b145fe689c99bef
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 23 12:16:31 2015 +0000
+
+    p2v: Set root password of virt-p2v ISO to 'p2v'.
+    
+    It is documented as 'p2v', but in fact this was not implemented
+    so there is no way to log in as root on the console.
+    
+    On RHEL we also have to add the 'passwd' package, else you get:
+    
+      Error creating Live CD : Unable to set unencrypted password due to lack of /usr/bin/passwd
+
+commit 515c3e3e73f7961d1d21b209d14b7fd7067a3b06
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jan 23 14:15:09 2015 +0100
+
+    mllib: do not show --short-options among the long options
+    
+    --long-options is ignored because it is only meant as aid for shell
+    completers, so --short-options should be too for the same reason.
+
+commit 6bc9976886df1269173b4001844e781cd87309a0
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jan 23 11:23:35 2015 +0100
+
+    mllib: add simple tests for the JSON module
+
+commit 6f14cae1ba932fe7c583a05b82d1dfe534909c8a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jan 23 11:08:27 2015 +0100
+
+    mllib: tests: add tests for string_lines_split
+
+commit d19eb31060e49d5631a7deb40bebf3886836b0a9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 22 18:33:07 2015 +0100
+
+    mllib: convert common_utils_tests to oUnit
+    
+    Covert common_utils_tests to use oUnit as testing framework, replacing
+    the hand-made assert in favour of structured unit tests and better
+    error reporting.
+    
+    common_utils_tests is now built only when the oUnit module has been
+    found.
+
+commit 1f5e525533f1f2d8c6f1f5cfe21271c0885dc6b5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 22 17:39:23 2015 +0100
+
+    configure: look for the oUnit OCaml module
+    
+    It will be used for the OCaml unit tests.
+
+commit eda41268689f824901d6c209ffd91c27ce9695b9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 22 17:07:02 2015 +0100
+
+    customize: add --commands-from-file
+    
+    Pass to --commands-from-file the name of a file containing customization
+    commands in each line, as if they were specified as command line
+    arguments.
+    
+    This eases the reuse of commands among different
+    builder/customize/sysprep invocations.
+
+commit 09f76fd2a9a699df5f72f3a8b1955b158b574e56
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 22 17:05:30 2015 +0100
+
+    mllib: add string_lines_split
+    
+    Introduce an helper function to split a text into lines, keeping into
+    accout continuation lines (i.e. with \ at the end).
+
+commit 145db4f62995b3366cde58d58ed49ed491c3ccc3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 22 10:44:32 2015 +0000
+
+    test: fuse: Add debugging of commands run in the test.
+
 commit 34b118a25a726e30efddee94947e84d2b5a5c26c
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Jan 21 20:45:17 2015 +0000

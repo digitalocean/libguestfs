@@ -308,8 +308,10 @@ Makefile.in
 /mllib/common_utils_tests
 /mllib/config.ml
 /mllib/dummy
+/mllib/JSON_tests
 /mllib/libdir.ml
 /mllib/link.sh
+/mllib/oUnit-anon.cache
 /ocaml/bindtests.bc
 /ocaml/bindtests.opt
 /ocaml/bindtests.ml

@@ -33,6 +33,28 @@ Change the permissions of C<FILE> to C<PERMISSIONS>.
 I<Note>: C<PERMISSIONS> by default would be decimal, unless you prefix it
 with C<0> to get octal, ie. use C<0700> not C<700>.
 
+=item B<--commands-from-file> FILENAME
+
+Read the customize commands from a file, one (and its arguments)  each line.
+
+Each line contains a single customization command and its arguments, for
+example:
+
+ delete /some/file
+ install some-package
+ password some-user:password:its-new-password
+
+Empty lines are ignored, and lines starting with C<#> are comments and are
+ignored as well.  Furthermore, arguments can be spread across multiple
+lines, by adding a C<\> (continuation character) at the of a line, for
+example
+
+ edit /some/file:\
+   s/^OPT=.*/OPT=ok/
+
+The commands are handled in the same order as they are in the file, as if
+they were specified as I<--delete /some/file> on the command line.
+
 =item B<--delete> PATH
 
 Delete a file from the guest.  Or delete a directory (and all its contents,

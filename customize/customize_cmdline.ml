@@ -38,6 +38,8 @@ type ops = {
 and op = [
   | `Chmod of string * string
       (* --chmod PERMISSIONS:FILE *)
+  | `CommandsFromFile of string
+      (* --commands-from-file FILENAME *)
   | `Delete of string
       (* --delete PATH *)
   | `Edit of string * string
@@ -125,7 +127,7 @@ let rec argspec () =
     | target :: lns -> target, lns
   in
 
-  let argspec = [
+  let rec argspec = [
     (
       "--chmod",
       Arg.String (
@@ -136,6 +138,16 @@ let rec argspec () =
       s_"PERMISSIONS:FILE" ^ " " ^ s_"Change the permissions of a file"
     ),
     Some "PERMISSIONS:FILE", "Change the permissions of C<FILE> to C<PERMISSIONS>.\n\nI<Note>: C<PERMISSIONS> by default would be decimal, unless you prefix\nit with C<0> to get octal, ie. use C<0700> not C<700>.";
+    (
+      "--commands-from-file",
+      Arg.String (
+        fun s ->
+          customize_read_from_file s;
+          ops := `CommandsFromFile s :: !ops
+      ),
+      s_"FILENAME" ^ " " ^ s_"Read customize commands from file"
+    ),
+    Some "FILENAME", "Read the customize commands from a file, one (and its arguments)\neach line.\n\nEach line contains a single customization command and its arguments,\nfor example:\n\n delete /some/file\n install some-package\n password some-user:password:its-new-password\n\nEmpty lines are ignored, and lines starting with C<#> are comments\nand are ignored as well.  Furthermore, arguments can be spread across\nmultiple lines, by adding a C<\\> (continuation character) at the of\na line, for example\n\n edit /some/file:\\\n   s/^OPT=.*/OPT=ok/\n\nThe commands are handled in the same order as they are in the file,\nas if they were specified as I<--delete /some/file> on the command\nline.";
     (
       "--delete",
       Arg.String (fun s -> ops := `Delete s :: !ops),
@@ -309,6 +321,41 @@ let rec argspec () =
       " " ^ s_"Relabel files with correct SELinux labels"
     ),
     None, "Relabel files in the guest so that they have the correct SELinux label.\n\nYou should only use this option for guests which support SELinux.";
-  ] in
+  ]
+  and customize_read_from_file filename =
+    let forbidden_commands = [
+      "commands-from-file";
+    ] in
+    let lines = read_whole_file filename in
+    let lines = string_lines_split lines in
+    let lines = List.filter (
+      fun line ->
+        String.length line > 0 && line.[0] <> '#'
+    ) lines in
+    let cmds = List.map (fun line -> string_split " " line) lines in
+    (* Check for commands not allowed in files containing commands. *)
+    List.iter (
+      fun (cmd, _) ->
+        if List.mem cmd forbidden_commands then
+          error (f_"command '%s' cannot be used in command files, see the man page")
+            cmd
+    ) cmds;
+    List.iter (
+      fun (cmd, arg) ->
+        try
+          let ((_, spec, _), _, _) = List.find (
+            fun ((key, _, _), _, _) ->
+              key = "--" ^ cmd
+          ) argspec in
+          (match spec with
+          | Arg.Unit fn -> fn ()
+          | Arg.String fn -> fn arg
+          | _ -> error "INTERNAL error: spec not handled for %s" cmd
+          )
+        with Not_found ->
+          error (f_"command '%s' not valid, see the man page")
+            cmd
+    ) cmds
+  in
 
   argspec, get_ops
