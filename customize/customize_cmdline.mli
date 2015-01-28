@@ -30,6 +30,8 @@ type ops = {
 and op = [
   | `Chmod of string * string
       (* --chmod PERMISSIONS:FILE *)
+  | `CommandsFromFile of string
+      (* --commands-from-file FILENAME *)
   | `Delete of string
       (* --delete PATH *)
   | `Edit of string * string

@@ -145,6 +145,8 @@ build_triplet = @build@
 host_triplet = @host@
 @HAVE_OCAML_TRUE@noinst_PROGRAMS = dummy$(EXEEXT)
 @HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_2 = -package oUnit
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_3 = common_utils_tests JSON_tests
 subdir = mllib
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1180,6 +1182,7 @@ OCAMLVERSION = @OCAMLVERSION@
 OCAML_FLAGS = @OCAML_FLAGS@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
+OCAML_PKG_oUnit = @OCAML_PKG_oUnit@
 OCAML_WARN_ERROR = @OCAML_WARN_ERROR@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
@@ -1488,7 +1491,8 @@ EXTRA_DIST = \
 	$(SOURCES_MLI) \
 	$(filter-out config.ml libdir.ml,$(SOURCES_ML)) \
 	$(SOURCES_C) \
-	common_utils_tests.ml
+	common_utils_tests.ml \
+	JSON_tests.ml
 
 CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o
 SOURCES_MLI = \
@@ -1545,6 +1549,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/gnulib/lib/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml $(am__append_1)
+@HAVE_OCAML_TRUE@OCAMLPACKAGES_TESTS = $(am__append_2)
 @HAVE_OCAML_TRUE@OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OBJECTS = $(BOBJECTS)
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OBJECTS = $(XOBJECTS)
@@ -1564,7 +1569,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	common_utils_tests
 
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
-@HAVE_OCAML_TRUE@TESTS = common_utils_tests
+@HAVE_OCAML_TRUE@TESTS = $(am__append_3)
 DISTCLEANFILES = .depend
 all: all-am
 
@@ -2091,11 +2096,23 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	echo 'let libdir = "$(libdir)"' > $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
 
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@common_utils_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmx common_utils.cmx common_utils_tests.cmx
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) \
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) \
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib '$(LIBTINFO_LIBS)' -o $@
+
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@JSON_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@JSON_tests: JSON.cmx JSON_tests.cmx
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) \
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib '$(LIBTINFO_LIBS)' -o $@
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@common_utils_tests.cmo: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmo common_utils.cmo common_utils_tests.cmo
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) \
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) \
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  mlguestfs.cma -linkpkg $^ -cclib '$(LIBTINFO_LIBS)' -custom -o $@
+
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@JSON_tests.cmo: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@JSON_tests: JSON.cmo JSON_tests.cmo
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) \
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  mlguestfs.cma -linkpkg $^ -cclib '$(LIBTINFO_LIBS)' -custom -o $@
 
 @HAVE_OCAML_TRUE@check-valgrind:
