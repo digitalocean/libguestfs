@@ -702,6 +702,12 @@ val copy_file_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:in
 val copy_file_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
 (** copy from source file to destination file *)
 
+val copy_in : t -> string -> string -> unit
+(** copy local files or directories into an image *)
+
+val copy_out : t -> string -> string -> unit
+(** copy remote files or directories out of an image *)
+
 val copy_size : t -> string -> string -> int64 -> unit
 (** copy size bytes from source to destination using dd
 
@@ -2393,6 +2399,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method copy_device_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
   method copy_file_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
   method copy_file_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
+  method copy_in : string -> string -> unit
+  method copy_out : string -> string -> unit
   method copy_size : string -> string -> int64 -> unit
   method cp : string -> string -> unit
   method cp_a : string -> string -> unit

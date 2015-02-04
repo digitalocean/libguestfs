@@ -2702,6 +2702,50 @@ Java_com_redhat_et_libguestfs_GuestFS__1copy_1file_1to_1file  (JNIEnv *env, jobj
 }
 
 JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1copy_1in  (JNIEnv *env, jobject obj, jlong jg, jstring jlocalpath, jstring jremotedir)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *localpath;
+  const char *remotedir;
+
+  localpath = (*env)->GetStringUTFChars (env, jlocalpath, NULL);
+  remotedir = (*env)->GetStringUTFChars (env, jremotedir, NULL);
+
+  r = guestfs_copy_in (g, localpath, remotedir);
+
+  (*env)->ReleaseStringUTFChars (env, jlocalpath, localpath);
+  (*env)->ReleaseStringUTFChars (env, jremotedir, remotedir);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1copy_1out  (JNIEnv *env, jobject obj, jlong jg, jstring jremotepath, jstring jlocaldir)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *remotepath;
+  const char *localdir;
+
+  remotepath = (*env)->GetStringUTFChars (env, jremotepath, NULL);
+  localdir = (*env)->GetStringUTFChars (env, jlocaldir, NULL);
+
+  r = guestfs_copy_out (g, remotepath, localdir);
+
+  (*env)->ReleaseStringUTFChars (env, jremotepath, remotepath);
+  (*env)->ReleaseStringUTFChars (env, jlocaldir, localdir);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1copy_1size  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest, jlong jsize)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;

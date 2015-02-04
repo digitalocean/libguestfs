@@ -103,6 +103,8 @@ module Guestfs (
   command,
   command_lines,
   config,
+  copy_in,
+  copy_out,
   copy_size,
   cp,
   cp_a,
@@ -1492,6 +1494,30 @@ foreign import ccall unsafe "guestfs.h guestfs_config" c_config
 config :: GuestfsH -> String -> Maybe String -> IO ()
 config h hvparam hvvalue = do
   r <- withCString hvparam $ \hvparam -> maybeWith withCString hvvalue $ \hvvalue -> withForeignPtr h (\p -> c_config p hvparam hvvalue)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_copy_in" c_copy_in
+  :: GuestfsP -> CString -> CString -> IO CInt
+
+copy_in :: GuestfsH -> String -> String -> IO ()
+copy_in h localpath remotedir = do
+  r <- withCString localpath $ \localpath -> withCString remotedir $ \remotedir -> withForeignPtr h (\p -> c_copy_in p localpath remotedir)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_copy_out" c_copy_out
+  :: GuestfsP -> CString -> CString -> IO CInt
+
+copy_out :: GuestfsH -> String -> String -> IO ()
+copy_out h remotepath localdir = do
+  r <- withCString remotepath $ \remotepath -> withCString localdir $ \localdir -> withForeignPtr h (\p -> c_copy_out p remotepath localdir)
   if (r == -1)
     then do
       err <- last_error h

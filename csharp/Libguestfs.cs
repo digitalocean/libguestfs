@@ -1806,6 +1806,34 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_copy_in (IntPtr h, [In] string localpath, [In] string remotedir);
+
+    /// <summary>
+    /// copy local files or directories into an image
+    /// </summary>
+    public void copy_in (string localpath, string remotedir)
+    {
+      int r;
+      r = guestfs_copy_in (_handle, localpath, remotedir);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_copy_out (IntPtr h, [In] string remotepath, [In] string localdir);
+
+    /// <summary>
+    /// copy remote files or directories out of an image
+    /// </summary>
+    public void copy_out (string remotepath, string localdir)
+    {
+      int r;
+      r = guestfs_copy_out (_handle, remotepath, localdir);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_copy_size (IntPtr h, [In] string src, [In] string dest, long size);
 
     /// <summary>

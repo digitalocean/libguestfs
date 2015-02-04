@@ -4544,6 +4544,72 @@ ocaml_guestfs_copy_file_to_file_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 }
 
 /* Automatically generated wrapper for function
+ * val copy_in : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_copy_in (value gv, value localpathv, value remotedirv);
+
+value
+ocaml_guestfs_copy_in (value gv, value localpathv, value remotedirv)
+{
+  CAMLparam3 (gv, localpathv, remotedirv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("copy_in");
+
+  char *localpath = guestfs___safe_strdup (g, String_val (localpathv));
+  char *remotedir = guestfs___safe_strdup (g, String_val (remotedirv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_copy_in (g, localpath, remotedir);
+  caml_leave_blocking_section ();
+  free (localpath);
+  free (remotedir);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "copy_in");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val copy_out : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_copy_out (value gv, value remotepathv, value localdirv);
+
+value
+ocaml_guestfs_copy_out (value gv, value remotepathv, value localdirv)
+{
+  CAMLparam3 (gv, remotepathv, localdirv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("copy_out");
+
+  char *remotepath = guestfs___safe_strdup (g, String_val (remotepathv));
+  char *localdir = guestfs___safe_strdup (g, String_val (localdirv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_copy_out (g, remotepath, localdir);
+  caml_leave_blocking_section ();
+  free (remotepath);
+  free (localdir);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "copy_out");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val copy_size : t -> string -> string -> int64 -> unit
  */
 

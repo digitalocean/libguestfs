@@ -161,6 +161,8 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_copy_device_to_file, NULL)
   PHP_FE (guestfs_copy_file_to_device, NULL)
   PHP_FE (guestfs_copy_file_to_file, NULL)
+  PHP_FE (guestfs_copy_in, NULL)
+  PHP_FE (guestfs_copy_out, NULL)
   PHP_FE (guestfs_copy_size, NULL)
   PHP_FE (guestfs_cp, NULL)
   PHP_FE (guestfs_cp_a, NULL)
@@ -4761,6 +4763,86 @@ PHP_FUNCTION (guestfs_copy_file_to_file)
 
   int r;
   r = guestfs_copy_file_to_file_argv (g, src, dest, optargs);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_copy_in)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *localpath;
+  int localpath_size;
+  char *remotedir;
+  int remotedir_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss",
+        &z_g, &localpath, &localpath_size, &remotedir, &remotedir_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (localpath) != localpath_size) {
+    fprintf (stderr, "libguestfs: copy_in: parameter 'localpath' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (strlen (remotedir) != remotedir_size) {
+    fprintf (stderr, "libguestfs: copy_in: parameter 'remotedir' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_copy_in (g, localpath, remotedir);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_copy_out)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *remotepath;
+  int remotepath_size;
+  char *localdir;
+  int localdir_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss",
+        &z_g, &remotepath, &remotepath_size, &localdir, &localdir_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (remotepath) != remotepath_size) {
+    fprintf (stderr, "libguestfs: copy_out: parameter 'remotepath' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (strlen (localdir) != localdir_size) {
+    fprintf (stderr, "libguestfs: copy_out: parameter 'localdir' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_copy_out (g, remotepath, localdir);
 
   if (r == -1) {
     RETURN_FALSE;

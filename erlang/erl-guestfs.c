@@ -2580,6 +2580,34 @@ run_copy_file_to_file (ETERM *message)
 }
 
 static ETERM *
+run_copy_in (ETERM *message)
+{
+  CLEANUP_FREE char *localpath = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *remotedir = erl_iolist_to_string (ARG (1));
+  int r;
+
+  r = guestfs_copy_in (g, localpath, remotedir);
+  if (r == -1)
+    return make_error ("copy_in");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_copy_out (ETERM *message)
+{
+  CLEANUP_FREE char *remotepath = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *localdir = erl_iolist_to_string (ARG (1));
+  int r;
+
+  r = guestfs_copy_out (g, remotepath, localdir);
+  if (r == -1)
+    return make_error ("copy_out");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_copy_size (ETERM *message)
 {
   CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
@@ -11197,6 +11225,10 @@ dispatch (ETERM *message)
     return run_copy_file_to_device (message);
   else if (atom_equals (fun, "copy_file_to_file"))
     return run_copy_file_to_file (message);
+  else if (atom_equals (fun, "copy_in"))
+    return run_copy_in (message);
+  else if (atom_equals (fun, "copy_out"))
+    return run_copy_out (message);
   else if (atom_equals (fun, "copy_size"))
     return run_copy_size (message);
   else if (atom_equals (fun, "cp"))

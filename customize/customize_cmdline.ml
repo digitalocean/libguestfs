@@ -40,6 +40,8 @@ and op = [
       (* --chmod PERMISSIONS:FILE *)
   | `CommandsFromFile of string
       (* --commands-from-file FILENAME *)
+  | `CopyIn of string * string
+      (* --copy-in LOCALPATH:REMOTEDIR *)
   | `Delete of string
       (* --delete PATH *)
   | `Edit of string * string
@@ -148,6 +150,16 @@ let rec argspec () =
       s_"FILENAME" ^ " " ^ s_"Read customize commands from file"
     ),
     Some "FILENAME", "Read the customize commands from a file, one (and its arguments)\neach line.\n\nEach line contains a single customization command and its arguments,\nfor example:\n\n delete /some/file\n install some-package\n password some-user:password:its-new-password\n\nEmpty lines are ignored, and lines starting with C<#> are comments\nand are ignored as well.  Furthermore, arguments can be spread across\nmultiple lines, by adding a C<\\> (continuation character) at the of\na line, for example\n\n edit /some/file:\\\n   s/^OPT=.*/OPT=ok/\n\nThe commands are handled in the same order as they are in the file,\nas if they were specified as I<--delete /some/file> on the command\nline.";
+    (
+      "--copy-in",
+      Arg.String (
+        fun s ->
+          let p = split_string_pair "copy-in" s in
+          ops := `CopyIn p :: !ops
+      ),
+      s_"LOCALPATH:REMOTEDIR" ^ " " ^ s_"Copy local files or directories into image"
+    ),
+    Some "LOCALPATH:REMOTEDIR", "Copy local files or directories recursively into the disk image,\nplacing them in the directory C<REMOTEDIR> (which must exist).\n\nWildcards cannot be used.";
     (
       "--delete",
       Arg.String (fun s -> ops := `Delete s :: !ops),
@@ -350,6 +362,7 @@ let rec argspec () =
           (match spec with
           | Arg.Unit fn -> fn ()
           | Arg.String fn -> fn arg
+          | Arg.Set varref -> varref := true
           | _ -> error "INTERNAL error: spec not handled for %s" cmd
           )
         with Not_found ->

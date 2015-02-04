@@ -3310,6 +3310,34 @@ In non-C language bindings, this allows you to retrieve the underlying
 C pointer to the handle (ie. C<guestfs_h *>).  The purpose of this is
 to allow other libraries to interwork with libguestfs." };
 
+  { defaults with
+    name = "copy_in";
+    style = RErr, [String "localpath"; Pathname "remotedir"], [];
+    visibility = VPublicNoFish;
+    shortdesc = "copy local files or directories into an image";
+    longdesc = "\
+C<guestfs_copy_in> copies local files or directories recursively into
+the disk image, placing them in the directory called C<remotedir>
+(which must exist).
+
+Wildcards cannot be used." };
+
+  { defaults with
+    name = "copy_out";
+    style = RErr, [Pathname "remotepath"; String "localdir"], [];
+    visibility = VPublicNoFish;
+    shortdesc = "copy remote files or directories out of an image";
+    longdesc = "\
+C<guestfs_copy_out> copies remote files or directories recursively
+out of the disk image, placing them on the host disk in a local
+directory called C<localdir> (which must exist).
+
+To download to the current directory, use C<.> as in:
+
+ C<guestfs_copy_out> /home .
+
+Wildcards cannot be used." };
+
 ]
 
 (* daemon_functions are any functions which cause some action
@@ -12744,19 +12772,19 @@ let non_daemon_functions, daemon_functions =
 let all_functions = non_daemon_functions @ daemon_functions
 
 let is_external { visibility = v } = match v with
-  | VPublic | VStateTest | VBindTest | VDebug -> true
+  | VPublic | VPublicNoFish | VStateTest | VBindTest | VDebug -> true
   | VInternal -> false
 
 let is_internal f = not (is_external f)
 
 let is_documented { visibility = v } = match v with
-  | VPublic | VStateTest -> true
+  | VPublic | VPublicNoFish | VStateTest -> true
   | VBindTest | VDebug | VInternal -> false
 
 let is_fish { visibility = v; style = (_, args, _) } =
   (* Internal functions are not exported to guestfish. *)
   match v with
-  | VStateTest | VBindTest | VInternal -> false
+  | VPublicNoFish | VStateTest | VBindTest | VInternal -> false
   | VPublic | VDebug ->
     (* Functions that take Pointer parameters cannot be used in
      * guestfish, since there is no way the user could safely

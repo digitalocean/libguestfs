@@ -1300,6 +1300,30 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_copy_in ##### -->
+<para>
+
+</para>
+
+@session: 
+@localpath: 
+@remotedir: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_copy_out ##### -->
+<para>
+
+</para>
+
+@session: 
+@remotepath: 
+@localdir: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_copy_size ##### -->
 <para>
 

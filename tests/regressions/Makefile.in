@@ -317,8 +317,9 @@ rhbz790721_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_rhbz914931_OBJECTS = rhbz914931-rhbz914931.$(OBJEXT)
 rhbz914931_OBJECTS = $(am_rhbz914931_OBJECTS)
+am__DEPENDENCIES_1 =
 rhbz914931_DEPENDENCIES = $(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la
+	$(am__DEPENDENCIES_1) $(top_builddir)/src/libguestfs.la
 rhbz914931_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(rhbz914931_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
@@ -1577,6 +1578,7 @@ rhbz914931_CFLAGS = \
 
 rhbz914931_LDADD = \
 	$(top_builddir)/src/libutils.la \
+	$(LTLIBINTL) \
 	$(top_builddir)/src/libguestfs.la
 
 rhbz1055452_SOURCES = rhbz1055452.c

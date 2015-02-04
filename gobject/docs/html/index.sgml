@@ -107,6 +107,8 @@
 <ANCHOR id="guestfs-session-copy-device-to-file" href="guestfs/GuestfsSession.html#guestfs-session-copy-device-to-file">
 <ANCHOR id="guestfs-session-copy-file-to-device" href="guestfs/GuestfsSession.html#guestfs-session-copy-file-to-device">
 <ANCHOR id="guestfs-session-copy-file-to-file" href="guestfs/GuestfsSession.html#guestfs-session-copy-file-to-file">
+<ANCHOR id="guestfs-session-copy-in" href="guestfs/GuestfsSession.html#guestfs-session-copy-in">
+<ANCHOR id="guestfs-session-copy-out" href="guestfs/GuestfsSession.html#guestfs-session-copy-out">
 <ANCHOR id="guestfs-session-copy-size" href="guestfs/GuestfsSession.html#guestfs-session-copy-size">
 <ANCHOR id="guestfs-session-cp" href="guestfs/GuestfsSession.html#guestfs-session-cp">
 <ANCHOR id="guestfs-session-cp-a" href="guestfs/GuestfsSession.html#guestfs-session-cp-a">

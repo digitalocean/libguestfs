@@ -134,6 +134,8 @@ PHP_FUNCTION (guestfs_copy_device_to_device);
 PHP_FUNCTION (guestfs_copy_device_to_file);
 PHP_FUNCTION (guestfs_copy_file_to_device);
 PHP_FUNCTION (guestfs_copy_file_to_file);
+PHP_FUNCTION (guestfs_copy_in);
+PHP_FUNCTION (guestfs_copy_out);
 PHP_FUNCTION (guestfs_copy_size);
 PHP_FUNCTION (guestfs_cp);
 PHP_FUNCTION (guestfs_cp_a);

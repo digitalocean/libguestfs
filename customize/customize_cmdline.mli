@@ -32,6 +32,8 @@ and op = [
       (* --chmod PERMISSIONS:FILE *)
   | `CommandsFromFile of string
       (* --commands-from-file FILENAME *)
+  | `CopyIn of string * string
+      (* --copy-in LOCALPATH:REMOTEDIR *)
   | `Delete of string
       (* --delete PATH *)
   | `Edit of string * string
