@@ -5239,6 +5239,83 @@ ruby_guestfs_copy_file_to_file (int argc, VALUE *argv, VALUE gv)
 
 /*
  * call-seq:
+ *   g.copy_in(localpath, remotedir) -> nil
+ *
+ * copy local files or directories into an image
+ *
+ * "g.copy_in" copies local files or directories
+ * recursively into the disk image, placing them in the
+ * directory called "remotedir" (which must exist).
+ * 
+ * Wildcards cannot be used.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_copy_in+[http://libguestfs.org/guestfs.3.html#guestfs_copy_in]).
+ */
+static VALUE
+ruby_guestfs_copy_in (VALUE gv, VALUE localpathv, VALUE remotedirv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "copy_in");
+
+  const char *localpath = StringValueCStr (localpathv);
+  const char *remotedir = StringValueCStr (remotedirv);
+
+  int r;
+
+  r = guestfs_copy_in (g, localpath, remotedir);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.copy_out(remotepath, localdir) -> nil
+ *
+ * copy remote files or directories out of an image
+ *
+ * "g.copy_out" copies remote files or directories
+ * recursively out of the disk image, placing them on the
+ * host disk in a local directory called "localdir" (which
+ * must exist).
+ * 
+ * To download to the current directory, use "." as in:
+ * 
+ * C<g.copy_out> /home .
+ * 
+ * Wildcards cannot be used.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_copy_out+[http://libguestfs.org/guestfs.3.html#guestfs_copy_out]).
+ */
+static VALUE
+ruby_guestfs_copy_out (VALUE gv, VALUE remotepathv, VALUE localdirv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "copy_out");
+
+  const char *remotepath = StringValueCStr (remotepathv);
+  const char *localdir = StringValueCStr (localdirv);
+
+  int r;
+
+  r = guestfs_copy_out (g, remotepath, localdir);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
  *   g.copy_size(src, dest, size) -> nil
  *
  * copy size bytes from source to destination using dd
@@ -27383,6 +27460,10 @@ Init__guestfs (void)
         ruby_guestfs_copy_file_to_device, -1);
   rb_define_method (c_guestfs, "copy_file_to_file",
         ruby_guestfs_copy_file_to_file, -1);
+  rb_define_method (c_guestfs, "copy_in",
+        ruby_guestfs_copy_in, 2);
+  rb_define_method (c_guestfs, "copy_out",
+        ruby_guestfs_copy_out, 2);
   rb_define_method (c_guestfs, "copy_size",
         ruby_guestfs_copy_size, 3);
   rb_define_method (c_guestfs, "cp",

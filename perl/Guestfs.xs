@@ -2125,6 +2125,30 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
+copy_in (g, localpath, remotedir)
+      guestfs_h *g;
+      char *localpath;
+      char *remotedir;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_copy_in (g, localpath, remotedir);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+copy_out (g, remotepath, localdir)
+      guestfs_h *g;
+      char *remotepath;
+      char *localdir;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_copy_out (g, remotepath, localdir);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
 copy_size (g, src, dest, size)
       guestfs_h *g;
       char *src;

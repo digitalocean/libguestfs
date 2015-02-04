@@ -363,15 +363,15 @@ am_libguestfs_la_OBJECTS = libguestfs_la-actions-0.lo \
 	libguestfs_la-actions-variants.lo libguestfs_la-alloc.lo \
 	libguestfs_la-appliance.lo libguestfs_la-bindtests.lo \
 	libguestfs_la-canonical-name.lo libguestfs_la-command.lo \
-	libguestfs_la-conn-socket.lo libguestfs_la-create.lo \
-	libguestfs_la-dbdump.lo libguestfs_la-drives.lo \
-	libguestfs_la-errors.lo libguestfs_la-event-string.lo \
-	libguestfs_la-events.lo libguestfs_la-file.lo \
-	libguestfs_la-filearch.lo libguestfs_la-fuse.lo \
-	libguestfs_la-guid.lo libguestfs_la-handle.lo \
-	libguestfs_la-info.lo libguestfs_la-inspect.lo \
-	libguestfs_la-inspect-apps.lo libguestfs_la-inspect-fs.lo \
-	libguestfs_la-inspect-fs-cd.lo \
+	libguestfs_la-conn-socket.lo libguestfs_la-copy-in-out.lo \
+	libguestfs_la-create.lo libguestfs_la-dbdump.lo \
+	libguestfs_la-drives.lo libguestfs_la-errors.lo \
+	libguestfs_la-event-string.lo libguestfs_la-events.lo \
+	libguestfs_la-file.lo libguestfs_la-filearch.lo \
+	libguestfs_la-fuse.lo libguestfs_la-guid.lo \
+	libguestfs_la-handle.lo libguestfs_la-info.lo \
+	libguestfs_la-inspect.lo libguestfs_la-inspect-apps.lo \
+	libguestfs_la-inspect-fs.lo libguestfs_la-inspect-fs-cd.lo \
 	libguestfs_la-inspect-fs-unix.lo \
 	libguestfs_la-inspect-fs-windows.lo \
 	libguestfs_la-inspect-icon.lo libguestfs_la-journal.lo \
@@ -1682,6 +1682,7 @@ libguestfs_la_SOURCES = \
 	canonical-name.c \
 	command.c \
 	conn-socket.c \
+	copy-in-out.c \
 	create.c \
 	dbdump.c \
 	drives.c \
@@ -1959,6 +1960,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-canonical-name.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-command.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-conn-socket.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-copy-in-out.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-create.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-dbdump.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-drives.Plo@am__quote@
@@ -2143,6 +2145,13 @@ libguestfs_la-conn-socket.lo: conn-socket.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='conn-socket.c' object='libguestfs_la-conn-socket.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-conn-socket.lo `test -f 'conn-socket.c' || echo '$(srcdir)/'`conn-socket.c
+
+libguestfs_la-copy-in-out.lo: copy-in-out.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-copy-in-out.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-copy-in-out.Tpo -c -o libguestfs_la-copy-in-out.lo `test -f 'copy-in-out.c' || echo '$(srcdir)/'`copy-in-out.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-copy-in-out.Tpo $(DEPDIR)/libguestfs_la-copy-in-out.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='copy-in-out.c' object='libguestfs_la-copy-in-out.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-copy-in-out.lo `test -f 'copy-in-out.c' || echo '$(srcdir)/'`copy-in-out.c
 
 libguestfs_la-create.lo: create.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-create.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-create.Tpo -c -o libguestfs_la-create.lo `test -f 'create.c' || echo '$(srcdir)/'`create.c

@@ -1441,6 +1441,55 @@ guestfs_journal_get (guestfs_h *g)
   return r;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_copy_in (guestfs_h *g,
+                 const char *localpath,
+                 const char *remotedir)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "copy_in", 7);
+  if (localpath == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "copy_in", "localpath");
+    return -1;
+  }
+  if (remotedir == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "copy_in", "remotedir");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "copy_in");
+    fprintf (trace_buffer.fp, " \"%s\"", localpath);
+    fprintf (trace_buffer.fp, " \"%s\"", remotedir);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__copy_in (g, localpath, remotedir);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "copy_in");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "copy_in", "-1");
+  }
+
+  return r;
+}
+
 GUESTFS_DLL_PUBLIC char *
 guestfs_ll (guestfs_h *g,
             const char *directory)

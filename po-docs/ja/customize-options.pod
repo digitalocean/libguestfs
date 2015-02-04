@@ -55,6 +55,13 @@ example
 The commands are handled in the same order as they are in the file, as if
 they were specified as I<--delete /some/file> on the command line.
 
+=item B<--copy-in> LOCALPATH:REMOTEDIR
+
+Copy local files or directories recursively into the disk image, placing
+them in the directory C<REMOTEDIR> (which must exist).
+
+Wildcards cannot be used.
+
 =item B<--delete> PATH
 
 Delete a file from the guest.  Or delete a directory (and all its contents,

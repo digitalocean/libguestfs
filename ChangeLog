@@ -1,3 +1,161 @@
+commit 725d95422bbd12cd59c860286ee84cf30d402a55
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 2 20:01:45 2015 +0000
+
+    Version 1.29.24.
+
+commit 573fe962b986e90584afa71aa3e9d9d4448190da
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 2 15:44:43 2015 +0100
+
+    customize: add copy-in operation (RHBZ#1135585).
+    
+    Add the copy-in operation to virt-customize/builder/sysprep, so it is
+    possible to easily copy directories at once in the guest.
+
+commit 5efce8c56d29f3c85d25396eba09fec39a86b708
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 2 15:44:42 2015 +0100
+
+    fish: use copy-in and copy-out
+    
+    Simply the copy-in & copy-out commands of guestfish using the new
+    implementations of copy-in & copy-out in the library.
+
+commit fb9bc908f87c82d4dedb339c1292f7a2ee816630
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 2 15:44:41 2015 +0100
+
+    New APIs: copy-in and copy-out
+    
+    Currently implemented as guestfish commands, provide them instead as
+    single source -> destination functions for the library, so they can be
+    used also in other places.
+    
+    These functions are not added to guestfish, since guestfish has its own
+    implementation (which will soon switch to call copy-in and copy-out for
+    multiple paths).
+
+commit 8aadde50b362ce5e2287c0ffe98f3033229f2846
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 2 15:44:40 2015 +0100
+
+    generator: add VPublicNoFish visibility type
+    
+    Usable to have public functions, i.e. like VPublic, but do not showing
+    them in guestfish.
+
+commit db055262d4a859cf5d38fef235a117e1fd0b7aff
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 2 15:44:39 2015 +0100
+
+    cmd: add the possibility to get a fd to the process stdin
+    
+    Add the possibility to forward to the stdin of the process, and get the
+    fd for it; only in async mode for now.
+
+commit 449fab3ed1a3c126a7208eb0743e077f478f0a9b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 2 15:44:38 2015 +0100
+
+    cmd: add a child-setup callback
+    
+    Easy way to do pre-exec setup in the child process.
+
+commit c5d3d198dcbceac928f430e2a9450ca58d6c0890
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 2 15:44:37 2015 +0100
+
+    cmd: add a way to run (and wait) asynchronously commands
+
+commit 4bb3c44a286beb0dd8cdf337d64d8ce71e361dd6
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 2 15:02:31 2015 +0100
+
+    sparsify: ignore read-only devices
+    
+    In copy mode, make sure to not zero-free-space devices mounted as
+    read-only, as we cannot write to them.
+    
+    Related to RHBZ#1079625.
+
+commit 864c2ee371f65388b18e737136663986cfc9eb08
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 2 14:50:52 2015 +0100
+
+    sparsify: ignore read-only btrfs snapshots (RHBZ#1079625)
+    
+    In copy mode, make sure to not zero-free-space read-only btrfs
+    snapshots, as we cannot write to them.
+
+commit 8d83f57799c5e542e7295d1b03a36ebb9737d90a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 28 14:19:19 2015 +0000
+
+    sparsify: Ignore read-only LVs (RHBZ#1185561).
+
+commit 7d784fb9c90038e94761d9ea928b1c12d62625e9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 28 14:18:48 2015 +0000
+
+    mllib: Add function for comparing LVM2 UUIDs, ignoring '-' characters.
+
+commit ab950f8290b681e5ca53c4fa9377b18f50b9b86e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 28 14:17:51 2015 +0000
+
+    mllib: Add a better List.assoc function.
+    
+    You can specify what comparison function is used; and instead of
+    having it raise 'Not_found', it returns a ~default value.
+
+commit 83eea0b197aed3b303fb7e986af7f4270e6cecde
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 29 12:00:32 2015 +0100
+
+    tests: don't add test-dlopen twice
+    
+    test-dlopen needs to be added only when libdl is available, and it is
+    like that already (within if HAVE_LIBDL); hence don't unconditionally
+    add it as well.
+
+commit e57ed7cd3468b1c099571eae20ba27c35cdc911a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 29 12:00:01 2015 +0100
+
+    build: use libintl where needed
+    
+    Followup of commit a5426cce5faa0fde0de1b62c8646cb8a9992ef2b.
+
+commit 2313f28895274b0ebea4b76c75473530edd3a77e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jan 28 14:37:14 2015 +0100
+
+    daemon: parted: use --part-type with recent sfdisk
+    
+    Check whether --part-type is supported (in the rewritten sfdisk in
+    util-linux >= 2.26), and use it instead of --print-id & --change-id.
+    
+    The actual result should be the same, just not using a (recently)
+    deprecated command line API.
+
+commit 6a195d0f9565ad0e6e46f3e9904a6dea129e59f4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 28 13:28:37 2015 +0000
+
+    v2v: -i ova: Make error message "unsupported file format" clearer.
+    
+    Thanks: Moran Goldboim
+
+commit 282a13167779c74feac6ad4bb69fbdbd3449a4ae
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 27 18:35:58 2015 +0100
+
+    customize: handle Arg.Set parameters in commands file
+    
+    When reading commands from a file, handle also Arg.Set parameters, so
+    they can be enabled as well.
+
 commit d0cecca27217c970cb11ec140cb56a34f4328f0c
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon Jan 26 17:15:30 2015 +0000

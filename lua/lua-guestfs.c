@@ -2979,6 +2979,52 @@ guestfs_lua_copy_file_to_file (lua_State *L)
 }
 
 static int
+guestfs_lua_copy_in (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *localpath;
+  const char *remotedir;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "copy_in");
+
+  localpath = luaL_checkstring (L, 2);
+  remotedir = luaL_checkstring (L, 3);
+
+  r = guestfs_copy_in (g, localpath, remotedir);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_copy_out (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *remotepath;
+  const char *localdir;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "copy_out");
+
+  remotepath = luaL_checkstring (L, 2);
+  localdir = luaL_checkstring (L, 3);
+
+  r = guestfs_copy_out (g, remotepath, localdir);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_copy_size (lua_State *L)
 {
   int r;
@@ -15968,6 +16014,8 @@ static luaL_Reg methods[] = {
   { "copy_device_to_file", guestfs_lua_copy_device_to_file },
   { "copy_file_to_device", guestfs_lua_copy_file_to_device },
   { "copy_file_to_file", guestfs_lua_copy_file_to_file },
+  { "copy_in", guestfs_lua_copy_in },
+  { "copy_out", guestfs_lua_copy_out },
   { "copy_size", guestfs_lua_copy_size },
   { "cp", guestfs_lua_cp },
   { "cp_a", guestfs_lua_cp_a },

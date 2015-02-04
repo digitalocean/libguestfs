@@ -47,7 +47,6 @@ TESTS = \
 	tests \
 	test-just-header \
 	test-create-handle \
-	test-dlopen \
 	test-config \
 	test-add-drive-opts \
 	test-last-errno \
@@ -250,6 +249,7 @@ test_add_libvirt_dom_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 test_add_libvirt_dom_LDADD = \
 	$(top_builddir)/src/libguestfs.la $(LIBVIRT_LIBS) \
+	$(LTLIBINTL) \
 	$(LTLIBTHREAD) $(top_builddir)/gnulib/lib/libgnu.la
 endif
 

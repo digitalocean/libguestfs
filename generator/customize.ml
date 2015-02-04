@@ -85,6 +85,17 @@ as if they were specified as I<--delete /some/file> on the command
 line.";
   };
 
+  { op_name = "copy-in";
+    op_type = StringPair "LOCALPATH:REMOTEDIR";
+    op_discrim = "`CopyIn";
+    op_shortdesc = "Copy local files or directories into image";
+    op_pod_longdesc = "\
+Copy local files or directories recursively into the disk image,
+placing them in the directory C<REMOTEDIR> (which must exist).
+
+Wildcards cannot be used.";
+  };
+
   { op_name = "delete";
     op_type = String "PATH";
     op_discrim = "`Delete";
@@ -683,6 +694,7 @@ pr "    ] in
           (match spec with
           | Arg.Unit fn -> fn ()
           | Arg.String fn -> fn arg
+          | Arg.Set varref -> varref := true
           | _ -> error \"INTERNAL error: spec not handled for %%s\" cmd
           )
         with Not_found ->

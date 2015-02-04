@@ -3888,6 +3888,57 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * copy local files or directories into an image
+   * <p>
+   * "g.copy_in" copies local files or directories
+   * recursively into the disk image, placing them in the
+   * directory called "remotedir" (which must exist).
+   * <p>
+   * Wildcards cannot be used.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void copy_in (String localpath, String remotedir)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("copy_in: handle is closed");
+
+    _copy_in (g, localpath, remotedir);
+  }
+
+  private native void _copy_in (long g, String localpath, String remotedir)
+    throws LibGuestFSException;
+
+  /**
+   * copy remote files or directories out of an image
+   * <p>
+   * "g.copy_out" copies remote files or directories
+   * recursively out of the disk image, placing them on the
+   * host disk in a local directory called "localdir" (which
+   * must exist).
+   * <p>
+   * To download to the current directory, use "." as in:
+   * <p>
+   * C<g.copy_out> /home .
+   * <p>
+   * Wildcards cannot be used.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void copy_out (String remotepath, String localdir)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("copy_out: handle is closed");
+
+    _copy_out (g, remotepath, localdir);
+  }
+
+  private native void _copy_out (long g, String remotepath, String localdir)
+    throws LibGuestFSException;
+
+  /**
    * copy size bytes from source to destination using dd
    * <p>
    * This command copies exactly "size" bytes from one source

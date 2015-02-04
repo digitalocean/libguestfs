@@ -5170,6 +5170,84 @@ guestfs_session_copy_file_to_file (GuestfsSession *session, const gchar *src, co
 }
 
 /**
+ * guestfs_session_copy_in:
+ * @session: (transfer none): A GuestfsSession object
+ * @localpath: (transfer none) (type utf8):
+ * @remotedir: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * copy local files or directories into an image
+ *
+ * guestfs_session_copy_in() copies local files or directories recursively
+ * into the disk image, placing them in the directory called @remotedir
+ * (which must exist).
+ * 
+ * Wildcards cannot be used.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_copy_in (GuestfsSession *session, const gchar *localpath, const gchar *remotedir, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "copy_in");
+    return FALSE;
+  }
+
+  int ret = guestfs_copy_in (g, localpath, remotedir);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_copy_out:
+ * @session: (transfer none): A GuestfsSession object
+ * @remotepath: (transfer none) (type filename):
+ * @localdir: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * copy remote files or directories out of an image
+ *
+ * guestfs_session_copy_out() copies remote files or directories
+ * recursively out of the disk image, placing them on the host disk in a
+ * local directory called @localdir (which must exist).
+ * 
+ * To download to the current directory, use "." as in:
+ * 
+ * <![CDATA[guestfs_session_copy_out() /home .]]>
+ * 
+ * Wildcards cannot be used.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_copy_out (GuestfsSession *session, const gchar *remotepath, const gchar *localdir, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "copy_out");
+    return FALSE;
+  }
+
+  int ret = guestfs_copy_out (g, remotepath, localdir);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_copy_size:
  * @session: (transfer none): A GuestfsSession object
  * @src: (transfer none) (type filename):

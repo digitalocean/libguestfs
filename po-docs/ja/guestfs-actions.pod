@@ -2746,6 +2746,40 @@ L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
 
 L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
 
+=head2 guestfs_copy_in
+
+ int
+ guestfs_copy_in (guestfs_h *g,
+                  const char *localpath,
+                  const char *remotedir);
+
+C<guestfs_copy_in> copies local files or directories recursively into the
+disk image, placing them in the directory called C<remotedir> (which must
+exist).
+
+Wildcards cannot be used.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_copy_out
+
+ int
+ guestfs_copy_out (guestfs_h *g,
+                   const char *remotepath,
+                   const char *localdir);
+
+C<guestfs_copy_out> copies remote files or directories recursively out of
+the disk image, placing them on the host disk in a local directory called
+C<localdir> (which must exist).
+
+To download to the current directory, use C<.> as in:
+
+ C<guestfs_copy_out> /home .
+
+Wildcards cannot be used.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
 =head2 guestfs_copy_size
 
  int

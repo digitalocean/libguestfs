@@ -191,6 +191,8 @@
     <keyword type="function" name="guestfs_session_copy_device_to_file ()" link="GuestfsSession.html#guestfs-session-copy-device-to-file"/>
     <keyword type="function" name="guestfs_session_copy_file_to_device ()" link="GuestfsSession.html#guestfs-session-copy-file-to-device"/>
     <keyword type="function" name="guestfs_session_copy_file_to_file ()" link="GuestfsSession.html#guestfs-session-copy-file-to-file"/>
+    <keyword type="function" name="guestfs_session_copy_in ()" link="GuestfsSession.html#guestfs-session-copy-in"/>
+    <keyword type="function" name="guestfs_session_copy_out ()" link="GuestfsSession.html#guestfs-session-copy-out"/>
     <keyword type="function" name="guestfs_session_copy_size ()" link="GuestfsSession.html#guestfs-session-copy-size"/>
     <keyword type="function" name="guestfs_session_cp ()" link="GuestfsSession.html#guestfs-session-cp"/>
     <keyword type="function" name="guestfs_session_cp_a ()" link="GuestfsSession.html#guestfs-session-cp-a"/>

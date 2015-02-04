@@ -447,6 +447,8 @@ external copy_device_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?
 external copy_device_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit = "ocaml_guestfs_copy_device_to_file_byte" "ocaml_guestfs_copy_device_to_file"
 external copy_file_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit = "ocaml_guestfs_copy_file_to_device_byte" "ocaml_guestfs_copy_file_to_device"
 external copy_file_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit = "ocaml_guestfs_copy_file_to_file_byte" "ocaml_guestfs_copy_file_to_file"
+external copy_in : t -> string -> string -> unit = "ocaml_guestfs_copy_in"
+external copy_out : t -> string -> string -> unit = "ocaml_guestfs_copy_out"
 external copy_size : t -> string -> string -> int64 -> unit = "ocaml_guestfs_copy_size"
 external cp : t -> string -> string -> unit = "ocaml_guestfs_cp"
 external cp_a : t -> string -> string -> unit = "ocaml_guestfs_cp_a"
@@ -1043,6 +1045,8 @@ class guestfs ?environment ?close_on_exit () =
     method copy_device_to_file = copy_device_to_file g
     method copy_file_to_device = copy_file_to_device g
     method copy_file_to_file = copy_file_to_file g
+    method copy_in = copy_in g
+    method copy_out = copy_out g
     method copy_size = copy_size g
     method cp = cp g
     method cp_a = cp_a g

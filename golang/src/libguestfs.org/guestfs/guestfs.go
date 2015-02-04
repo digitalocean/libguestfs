@@ -3359,6 +3359,46 @@ func (g *Guestfs) Copy_file_to_file (src string, dest string, optargs *OptargsCo
     return nil
 }
 
+/* copy_in : copy local files or directories into an image */
+func (g *Guestfs) Copy_in (localpath string, remotedir string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("copy_in")
+    }
+
+    c_localpath := C.CString (localpath)
+    defer C.free (unsafe.Pointer (c_localpath))
+
+    c_remotedir := C.CString (remotedir)
+    defer C.free (unsafe.Pointer (c_remotedir))
+
+    r := C.guestfs_copy_in (g.g, c_localpath, c_remotedir)
+
+    if r == -1 {
+        return get_error_from_handle (g, "copy_in")
+    }
+    return nil
+}
+
+/* copy_out : copy remote files or directories out of an image */
+func (g *Guestfs) Copy_out (remotepath string, localdir string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("copy_out")
+    }
+
+    c_remotepath := C.CString (remotepath)
+    defer C.free (unsafe.Pointer (c_remotepath))
+
+    c_localdir := C.CString (localdir)
+    defer C.free (unsafe.Pointer (c_localdir))
+
+    r := C.guestfs_copy_out (g.g, c_remotepath, c_localdir)
+
+    if r == -1 {
+        return get_error_from_handle (g, "copy_out")
+    }
+    return nil
+}
+
 /* copy_size : copy size bytes from source to destination using dd */
 func (g *Guestfs) Copy_size (src string, dest string, size int64) *GuestfsError {
     if g.g == nil {

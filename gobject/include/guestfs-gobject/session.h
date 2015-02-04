@@ -225,6 +225,8 @@ gboolean guestfs_session_copy_device_to_device (GuestfsSession *session, const g
 gboolean guestfs_session_copy_device_to_file (GuestfsSession *session, const gchar *src, const gchar *dest, GuestfsCopyDeviceToFile *optargs, GError **err);
 gboolean guestfs_session_copy_file_to_device (GuestfsSession *session, const gchar *src, const gchar *dest, GuestfsCopyFileToDevice *optargs, GError **err);
 gboolean guestfs_session_copy_file_to_file (GuestfsSession *session, const gchar *src, const gchar *dest, GuestfsCopyFileToFile *optargs, GError **err);
+gboolean guestfs_session_copy_in (GuestfsSession *session, const gchar *localpath, const gchar *remotedir, GError **err);
+gboolean guestfs_session_copy_out (GuestfsSession *session, const gchar *remotepath, const gchar *localdir, GError **err);
 gboolean guestfs_session_copy_size (GuestfsSession *session, const gchar *src, const gchar *dest, gint64 size, GError **err);
 gboolean guestfs_session_cp (GuestfsSession *session, const gchar *src, const gchar *dest, GError **err);
 gboolean guestfs_session_cp_a (GuestfsSession *session, const gchar *src, const gchar *dest, GError **err);

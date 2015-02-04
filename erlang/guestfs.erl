@@ -124,6 +124,8 @@
 -export([copy_device_to_file/3, copy_device_to_file/4]).
 -export([copy_file_to_device/3, copy_file_to_device/4]).
 -export([copy_file_to_file/3, copy_file_to_file/4]).
+-export([copy_in/3]).
+-export([copy_out/3]).
 -export([copy_size/4]).
 -export([cp/3]).
 -export([cp_a/3]).
@@ -986,6 +988,12 @@ copy_file_to_file(G, Src, Dest, Optargs) ->
   call_port(G, {copy_file_to_file, Src, Dest, Optargs}).
 copy_file_to_file(G, Src, Dest) ->
   copy_file_to_file(G, Src, Dest, []).
+
+copy_in(G, Localpath, Remotedir) ->
+  call_port(G, {copy_in, Localpath, Remotedir}).
+
+copy_out(G, Remotepath, Localdir) ->
+  call_port(G, {copy_out, Remotepath, Localdir}).
 
 copy_size(G, Src, Dest, Size) ->
   call_port(G, {copy_size, Src, Dest, Size}).

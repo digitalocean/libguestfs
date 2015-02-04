@@ -208,6 +208,11 @@ You can ignore this warning or change it to a hard failure using the
    * and selected swap partitions.
    *)
   let filesystems = g#list_filesystems () in
+  let btrfs_filesystems = List.filter (
+    fun (fs, fstype) ->
+      fstype = "btrfs"
+  ) filesystems in
+  let btrfs_filesystems = List.map fst btrfs_filesystems in
   let filesystems = List.map fst filesystems in
   let filesystems = List.sort compare filesystems in
 
@@ -216,9 +221,30 @@ You can ignore this warning or change it to a hard failure using the
     List.exists (fun fs' -> fs = g#canonical_device_name fs') ignores
   in
 
+  let is_read_only_lv = is_read_only_lv g in
+
+  let is_readonly_btrfs_snapshot fs mp =
+    try
+      let is_btrfs = List.mem fs btrfs_filesystems in
+      if is_btrfs then (
+        try
+          let vol_info = g#btrfs_subvolume_show mp in
+          string_find (List.assoc "Flags" vol_info) "readonly" <> -1
+        with G.Error _ -> false
+      ) else false
+    with Not_found -> false
+  in
+
+  let is_readonly_device mp =
+    let statvfs = g#statvfs mp in
+    let flags = statvfs.G.flag in
+    (* 0x01 is ST_RDONLY in Linux' GNU libc. *)
+    flags <> -1_L && (flags &^ 0x1_L) <> 0_L
+  in
+
   List.iter (
     fun fs ->
-      if not (is_ignored fs) then (
+      if not (is_ignored fs) && not (is_read_only_lv fs) then (
         if List.mem fs zeroes then (
           if not quiet then
             printf (f_"Zeroing %s ...\n%!") fs;
@@ -230,10 +256,18 @@ You can ignore this warning or change it to a hard failure using the
             with _ -> false in
 
           if mounted then (
-            if not quiet then
-              printf (f_"Fill free space in %s with zero ...\n%!") fs;
+            if is_readonly_btrfs_snapshot fs "/" then (
+              if not quiet then
+                printf (f_"Skipping %s, as it is a read-only btrfs snapshot.\n%!") fs;
+            ) else if is_readonly_device "/" then (
+              if not quiet then
+                printf (f_"Skipping %s, as it is a read-only device.\n%!") fs;
+            ) else (
+              if not quiet then
+                printf (f_"Fill free space in %s with zero ...\n%!") fs;
 
-            g#zero_free_space "/"
+              g#zero_free_space "/"
+            )
           ) else (
             let is_linux_x86_swap =
               (* Look for the signature for Linux swap on i386.

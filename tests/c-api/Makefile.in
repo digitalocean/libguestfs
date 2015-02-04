@@ -154,13 +154,12 @@ check_PROGRAMS = tests$(EXEEXT) test-command$(EXEEXT) \
 @HAVE_LIBDL_TRUE@	test-dlopen
 
 TESTS = tests$(EXEEXT) test-just-header$(EXEEXT) \
-	test-create-handle$(EXEEXT) test-dlopen$(EXEEXT) \
-	test-config$(EXEEXT) test-add-drive-opts$(EXEEXT) \
-	test-last-errno$(EXEEXT) test-backend-settings$(EXEEXT) \
-	test-private-data$(EXEEXT) test-user-cancel$(EXEEXT) \
-	test-debug-to-file$(EXEEXT) test-environment$(EXEEXT) \
-	test-event-string$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2) \
-	$(am__EXEEXT_3)
+	test-create-handle$(EXEEXT) test-config$(EXEEXT) \
+	test-add-drive-opts$(EXEEXT) test-last-errno$(EXEEXT) \
+	test-backend-settings$(EXEEXT) test-private-data$(EXEEXT) \
+	test-user-cancel$(EXEEXT) test-debug-to-file$(EXEEXT) \
+	test-environment$(EXEEXT) test-event-string$(EXEEXT) \
+	$(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_3)
 @HAVE_LIBDL_TRUE@am__append_2 = \
 @HAVE_LIBDL_TRUE@	test-dlopen
 
@@ -331,6 +330,7 @@ am__DEPENDENCIES_1 =
 @HAVE_LIBVIRT_TRUE@test_add_libvirt_dom_DEPENDENCIES =  \
 @HAVE_LIBVIRT_TRUE@	$(top_builddir)/src/libguestfs.la \
 @HAVE_LIBVIRT_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+@HAVE_LIBVIRT_TRUE@	$(am__DEPENDENCIES_1) \
 @HAVE_LIBVIRT_TRUE@	$(top_builddir)/gnulib/lib/libgnu.la
 test_add_libvirt_dom_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -1886,6 +1886,7 @@ test_event_string_LDADD = \
 
 @HAVE_LIBVIRT_TRUE@test_add_libvirt_dom_LDADD = \
 @HAVE_LIBVIRT_TRUE@	$(top_builddir)/src/libguestfs.la $(LIBVIRT_LIBS) \
+@HAVE_LIBVIRT_TRUE@	$(LTLIBINTL) \
 @HAVE_LIBVIRT_TRUE@	$(LTLIBTHREAD) $(top_builddir)/gnulib/lib/libgnu.la
 
 all: $(BUILT_SOURCES)

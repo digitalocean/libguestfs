@@ -1893,6 +1893,33 @@ class GuestFS(object):
         r = libguestfsmod.copy_file_to_file (self._o, src, dest, srcoffset, destoffset, size, sparse)
         return r
 
+    def copy_in (self, localpath, remotedir):
+        """"g.copy_in" copies local files or directories
+        recursively into the disk image, placing them in the
+        directory called "remotedir" (which must exist).
+        
+        Wildcards cannot be used.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.copy_in (self._o, localpath, remotedir)
+        return r
+
+    def copy_out (self, remotepath, localdir):
+        """"g.copy_out" copies remote files or directories
+        recursively out of the disk image, placing them on the
+        host disk in a local directory called "localdir" (which
+        must exist).
+        
+        To download to the current directory, use "." as in:
+        
+        C<g.copy_out> /home .
+        
+        Wildcards cannot be used.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.copy_out (self._o, remotepath, localdir)
+        return r
+
     def copy_size (self, src, dest, size):
         """This command copies exactly "size" bytes from one source
         device or file "src" to another destination device or

@@ -175,5 +175,7 @@ extern int guestfs__clear_backend_setting (guestfs_h *g, const char *name);
 extern struct guestfs_stat *guestfs__stat (guestfs_h *g, const char *path);
 extern struct guestfs_stat *guestfs__lstat (guestfs_h *g, const char *path);
 extern int64_t guestfs__c_pointer (guestfs_h *g);
+extern int guestfs__copy_in (guestfs_h *g, const char *localpath, const char *remotedir);
+extern int guestfs__copy_out (guestfs_h *g, const char *remotepath, const char *localdir);
 
 #endif /* GUESTFS_INTERNAL_ACTIONS_H_ */

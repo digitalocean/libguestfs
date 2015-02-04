@@ -1363,6 +1363,12 @@ struct guestfs_copy_file_to_file_argv {
 
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_file_to_file_argv (guestfs_h *g, const char *src, const char *dest, const struct guestfs_copy_file_to_file_argv *optargs);
 
+#define GUESTFS_HAVE_COPY_IN 1
+extern GUESTFS_DLL_PUBLIC int guestfs_copy_in (guestfs_h *g, const char *localpath, const char *remotedir);
+
+#define GUESTFS_HAVE_COPY_OUT 1
+extern GUESTFS_DLL_PUBLIC int guestfs_copy_out (guestfs_h *g, const char *remotepath, const char *localdir);
+
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_size (guestfs_h *g, const char *src, const char *dest, int64_t size)
   GUESTFS_DEPRECATED_BY ("copy_device_to_device");
 
@@ -3920,6 +3926,8 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_COPY_DEVICE_TO_FILE 1
 #define LIBGUESTFS_HAVE_COPY_FILE_TO_DEVICE 1
 #define LIBGUESTFS_HAVE_COPY_FILE_TO_FILE 1
+#define LIBGUESTFS_HAVE_COPY_IN 1
+#define LIBGUESTFS_HAVE_COPY_OUT 1
 #define LIBGUESTFS_HAVE_COPY_SIZE 1
 #define LIBGUESTFS_HAVE_CP 1
 #define LIBGUESTFS_HAVE_CP_A 1

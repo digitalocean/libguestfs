@@ -219,6 +219,7 @@
         guestfs_copy_hivex_node_list;
         guestfs_copy_hivex_value;
         guestfs_copy_hivex_value_list;
+        guestfs_copy_in;
         guestfs_copy_inotify_event;
         guestfs_copy_inotify_event_list;
         guestfs_copy_int_bool;
@@ -235,6 +236,7 @@
         guestfs_copy_lvm_vg_list;
         guestfs_copy_mdstat;
         guestfs_copy_mdstat_list;
+        guestfs_copy_out;
         guestfs_copy_partition;
         guestfs_copy_partition_list;
         guestfs_copy_size;

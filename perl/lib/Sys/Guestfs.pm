@@ -1741,6 +1741,26 @@ is for copying blocks within existing files.  See C<$g-E<gt>cp>,
 C<$g-E<gt>cp_a> and C<$g-E<gt>mv> for general file copying and
 moving functions.
 
+=item $g->copy_in ($localpath, $remotedir);
+
+C<$g-E<gt>copy_in> copies local files or directories recursively into
+the disk image, placing them in the directory called C<remotedir>
+(which must exist).
+
+Wildcards cannot be used.
+
+=item $g->copy_out ($remotepath, $localdir);
+
+C<$g-E<gt>copy_out> copies remote files or directories recursively
+out of the disk image, placing them on the host disk in a local
+directory called C<localdir> (which must exist).
+
+To download to the current directory, use C<.> as in:
+
+ C<$g-E<gt>copy_out> /home .
+
+Wildcards cannot be used.
+
 =item $g->copy_size ($src, $dest, $size);
 
 This command copies exactly C<size> bytes from one source device
@@ -8763,6 +8783,24 @@ use vars qw(%guestfs_introspection);
     },
     name => "copy_file_to_file",
     description => "copy from source file to destination file",
+  },
+  "copy_in" => {
+    ret => 'void',
+    args => [
+      [ 'localpath', 'string', 0 ],
+      [ 'remotedir', 'string(path)', 1 ],
+    ],
+    name => "copy_in",
+    description => "copy local files or directories into an image",
+  },
+  "copy_out" => {
+    ret => 'void',
+    args => [
+      [ 'remotepath', 'string(path)', 0 ],
+      [ 'localdir', 'string', 1 ],
+    ],
+    name => "copy_out",
+    description => "copy remote files or directories out of an image",
   },
   "copy_size" => {
     ret => 'void',

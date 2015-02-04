@@ -5236,6 +5236,78 @@ py_guestfs_copy_file_to_file (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_copy_in (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *localpath;
+  const char *remotedir;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_copy_in",
+                         &py_g, &localpath, &remotedir))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_copy_in (g, localpath, remotedir);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_copy_out (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *remotepath;
+  const char *localdir;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_copy_out",
+                         &py_g, &remotepath, &localdir))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_copy_out (g, remotepath, localdir);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_copy_size (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -23428,6 +23500,8 @@ static PyMethodDef methods[] = {
   { (char *) "copy_device_to_file", py_guestfs_copy_device_to_file, METH_VARARGS, NULL },
   { (char *) "copy_file_to_device", py_guestfs_copy_file_to_device, METH_VARARGS, NULL },
   { (char *) "copy_file_to_file", py_guestfs_copy_file_to_file, METH_VARARGS, NULL },
+  { (char *) "copy_in", py_guestfs_copy_in, METH_VARARGS, NULL },
+  { (char *) "copy_out", py_guestfs_copy_out, METH_VARARGS, NULL },
   { (char *) "copy_size", py_guestfs_copy_size, METH_VARARGS, NULL },
   { (char *) "cp", py_guestfs_cp, METH_VARARGS, NULL },
   { (char *) "cp_a", py_guestfs_cp_a, METH_VARARGS, NULL },

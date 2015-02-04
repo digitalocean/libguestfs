@@ -1022,6 +1022,55 @@ guestfs_get_backend_setting (guestfs_h *g,
   return r;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_copy_out (guestfs_h *g,
+                  const char *remotepath,
+                  const char *localdir)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "copy_out", 8);
+  if (remotepath == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "copy_out", "remotepath");
+    return -1;
+  }
+  if (localdir == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "copy_out", "localdir");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "copy_out");
+    fprintf (trace_buffer.fp, " \"%s\"", remotepath);
+    fprintf (trace_buffer.fp, " \"%s\"", localdir);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__copy_out (g, remotepath, localdir);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "copy_out");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "copy_out", "-1");
+  }
+
+  return r;
+}
+
 GUESTFS_DLL_PUBLIC char **
 guestfs_list_devices (guestfs_h *g)
 {
