@@ -198,6 +198,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_copy_hivex_node_list@Base 1:1.25.16
  guestfs_copy_hivex_value@Base 1:1.25.16
  guestfs_copy_hivex_value_list@Base 1:1.25.16
+ guestfs_copy_in@Base 1:1.29.24
  guestfs_copy_inotify_event@Base 1:1.25.16
  guestfs_copy_inotify_event_list@Base 1:1.25.16
  guestfs_copy_int_bool@Base 1:1.25.16
@@ -215,6 +216,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_copy_mdstat@Base 1:1.25.16
  guestfs_copy_mdstat_list@Base 1:1.25.16
  guestfs_copy_partition@Base 1:1.25.16
+ guestfs_copy_out@Base 1:1.29.24
  guestfs_copy_partition_list@Base 1:1.25.16
  guestfs_copy_size@Base 1.10
  guestfs_copy_stat@Base 1:1.25.16
