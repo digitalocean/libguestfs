@@ -672,6 +672,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_part_del@Base 1.10
  guestfs_part_disk@Base 1.10
  guestfs_part_get_bootable@Base 1.10
+ guestfs_part_get_gpt_guid@Base 1:1.29.25
  guestfs_part_get_gpt_type@Base 1:1.22
  guestfs_part_get_mbr_id@Base 1.10
  guestfs_part_get_name@Base 1:1.25.33
@@ -679,6 +680,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_part_init@Base 1.10
  guestfs_part_list@Base 1.10
  guestfs_part_set_bootable@Base 1.10
+ guestfs_part_set_gpt_guid@Base 1:1.29.25
  guestfs_part_set_gpt_type@Base 1:1.22
  guestfs_part_set_mbr_id@Base 1.10
  guestfs_part_set_name@Base 1.10
