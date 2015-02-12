@@ -19487,6 +19487,40 @@ ruby_guestfs_part_get_bootable (VALUE gv, VALUE devicev, VALUE partnumv)
 
 /*
  * call-seq:
+ *   g.part_get_gpt_guid(device, partnum) -> string
+ *
+ * get the GUID of a GPT partition
+ *
+ * Return the GUID of numbered GPT partition "partnum".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_part_get_gpt_guid+[http://libguestfs.org/guestfs.3.html#guestfs_part_get_gpt_guid]).
+ */
+static VALUE
+ruby_guestfs_part_get_gpt_guid (VALUE gv, VALUE devicev, VALUE partnumv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_get_gpt_guid");
+
+  const char *device = StringValueCStr (devicev);
+  int partnum = NUM2INT (partnumv);
+
+  char *r;
+
+  r = guestfs_part_get_gpt_guid (g, device, partnum);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
  *   g.part_get_gpt_type(device, partnum) -> string
  *
  * get the type GUID of a GPT partition
@@ -19807,6 +19841,41 @@ ruby_guestfs_part_set_bootable (VALUE gv, VALUE devicev, VALUE partnumv, VALUE b
   int r;
 
   r = guestfs_part_set_bootable (g, device, partnum, bootable);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.part_set_gpt_guid(device, partnum, guid) -> nil
+ *
+ * set the GUID of a GPT partition
+ *
+ * Set the GUID of numbered GPT partition "partnum" to
+ * "guid". Return an error if the partition table of
+ * "device" isn't GPT, or if "guid" is not a valid GUID.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_part_set_gpt_guid+[http://libguestfs.org/guestfs.3.html#guestfs_part_set_gpt_guid]).
+ */
+static VALUE
+ruby_guestfs_part_set_gpt_guid (VALUE gv, VALUE devicev, VALUE partnumv, VALUE guidv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_set_gpt_guid");
+
+  const char *device = StringValueCStr (devicev);
+  int partnum = NUM2INT (partnumv);
+  const char *guid = StringValueCStr (guidv);
+
+  int r;
+
+  r = guestfs_part_set_gpt_guid (g, device, partnum, guid);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -28092,6 +28161,8 @@ Init__guestfs (void)
         ruby_guestfs_part_disk, 2);
   rb_define_method (c_guestfs, "part_get_bootable",
         ruby_guestfs_part_get_bootable, 2);
+  rb_define_method (c_guestfs, "part_get_gpt_guid",
+        ruby_guestfs_part_get_gpt_guid, 2);
   rb_define_method (c_guestfs, "part_get_gpt_type",
         ruby_guestfs_part_get_gpt_type, 2);
   rb_define_method (c_guestfs, "part_get_mbr_id",
@@ -28106,6 +28177,8 @@ Init__guestfs (void)
         ruby_guestfs_part_list, 1);
   rb_define_method (c_guestfs, "part_set_bootable",
         ruby_guestfs_part_set_bootable, 3);
+  rb_define_method (c_guestfs, "part_set_gpt_guid",
+        ruby_guestfs_part_set_gpt_guid, 3);
   rb_define_method (c_guestfs, "part_set_gpt_type",
         ruby_guestfs_part_set_gpt_type, 3);
   rb_define_method (c_guestfs, "part_set_mbr_id",

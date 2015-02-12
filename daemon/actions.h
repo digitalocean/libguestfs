@@ -626,5 +626,7 @@ extern int do_btrfs_balance_resume (const char *path);
 extern int do_btrfs_filesystem_defragment (const char *path, int flush, const char *compress);
 extern int do_btrfs_rescue_chunk_recover (const char *device);
 extern int do_btrfs_rescue_super_recover (const char *device);
+extern int do_part_set_gpt_guid (const char *device, int partnum, const char *guid);
+extern char *do_part_get_gpt_guid (const char *device, int partnum);
 
 #endif /* GUESTFSD_ACTIONS_H */

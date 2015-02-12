@@ -352,12 +352,14 @@ module Guestfs (
   part_del,
   part_disk,
   part_get_bootable,
+  part_get_gpt_guid,
   part_get_gpt_type,
   part_get_mbr_id,
   part_get_name,
   part_get_parttype,
   part_init,
   part_set_bootable,
+  part_set_gpt_guid,
   part_set_gpt_type,
   part_set_mbr_id,
   part_set_name,
@@ -4512,6 +4514,18 @@ part_get_bootable h device partnum = do
       fail err
     else return (toBool r)
 
+foreign import ccall unsafe "guestfs.h guestfs_part_get_gpt_guid" c_part_get_gpt_guid
+  :: GuestfsP -> CString -> CInt -> IO CString
+
+part_get_gpt_guid :: GuestfsH -> String -> Int -> IO String
+part_get_gpt_guid h device partnum = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_get_gpt_guid p device (fromIntegral partnum))
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
 foreign import ccall unsafe "guestfs.h guestfs_part_get_gpt_type" c_part_get_gpt_type
   :: GuestfsP -> CString -> CInt -> IO CString
 
@@ -4578,6 +4592,18 @@ foreign import ccall unsafe "guestfs.h guestfs_part_set_bootable" c_part_set_boo
 part_set_bootable :: GuestfsH -> String -> Int -> Bool -> IO ()
 part_set_bootable h device partnum bootable = do
   r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_set_bootable p device (fromIntegral partnum) (fromBool bootable))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_part_set_gpt_guid" c_part_set_gpt_guid
+  :: GuestfsP -> CString -> CInt -> CString -> IO CInt
+
+part_set_gpt_guid :: GuestfsH -> String -> Int -> String -> IO ()
+part_set_gpt_guid h device partnum guid = do
+  r <- withCString device $ \device -> withCString guid $ \guid -> withForeignPtr h (\p -> c_part_set_gpt_guid p device (fromIntegral partnum) guid)
   if (r == -1)
     then do
       err <- last_error h

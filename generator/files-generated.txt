@@ -229,6 +229,7 @@ perl/bindtests.pl
 perl/lib/Sys/Guestfs.pm
 php/extension/guestfs_php.c
 php/extension/php_guestfs_php.h
+php/extension/tests/guestfs_php_bindtests.phpt
 python/bindtests.py
 python/guestfs-py.c
 python/guestfs.py

@@ -412,6 +412,7 @@
 <ANCHOR id="guestfs-session-part-del" href="guestfs/GuestfsSession.html#guestfs-session-part-del">
 <ANCHOR id="guestfs-session-part-disk" href="guestfs/GuestfsSession.html#guestfs-session-part-disk">
 <ANCHOR id="guestfs-session-part-get-bootable" href="guestfs/GuestfsSession.html#guestfs-session-part-get-bootable">
+<ANCHOR id="guestfs-session-part-get-gpt-guid" href="guestfs/GuestfsSession.html#guestfs-session-part-get-gpt-guid">
 <ANCHOR id="guestfs-session-part-get-gpt-type" href="guestfs/GuestfsSession.html#guestfs-session-part-get-gpt-type">
 <ANCHOR id="guestfs-session-part-get-mbr-id" href="guestfs/GuestfsSession.html#guestfs-session-part-get-mbr-id">
 <ANCHOR id="guestfs-session-part-get-name" href="guestfs/GuestfsSession.html#guestfs-session-part-get-name">
@@ -419,6 +420,7 @@
 <ANCHOR id="guestfs-session-part-init" href="guestfs/GuestfsSession.html#guestfs-session-part-init">
 <ANCHOR id="guestfs-session-part-list" href="guestfs/GuestfsSession.html#guestfs-session-part-list">
 <ANCHOR id="guestfs-session-part-set-bootable" href="guestfs/GuestfsSession.html#guestfs-session-part-set-bootable">
+<ANCHOR id="guestfs-session-part-set-gpt-guid" href="guestfs/GuestfsSession.html#guestfs-session-part-set-gpt-guid">
 <ANCHOR id="guestfs-session-part-set-gpt-type" href="guestfs/GuestfsSession.html#guestfs-session-part-set-gpt-type">
 <ANCHOR id="guestfs-session-part-set-mbr-id" href="guestfs/GuestfsSession.html#guestfs-session-part-set-mbr-id">
 <ANCHOR id="guestfs-session-part-set-name" href="guestfs/GuestfsSession.html#guestfs-session-part-set-name">

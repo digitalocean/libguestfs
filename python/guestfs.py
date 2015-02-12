@@ -6834,6 +6834,13 @@ class GuestFS(object):
         r = libguestfsmod.part_get_bootable (self._o, device, partnum)
         return r
 
+    def part_get_gpt_guid (self, device, partnum):
+        """Return the GUID of numbered GPT partition "partnum".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.part_get_gpt_guid (self._o, device, partnum)
+        return r
+
     def part_get_gpt_type (self, device, partnum):
         """Return the type GUID of numbered GPT partition
         "partnum". For MBR partitions, return an appropriate
@@ -6972,6 +6979,15 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.part_set_bootable (self._o, device, partnum, bootable)
+        return r
+
+    def part_set_gpt_guid (self, device, partnum, guid):
+        """Set the GUID of numbered GPT partition "partnum" to
+        "guid". Return an error if the partition table of
+        "device" isn't GPT, or if "guid" is not a valid GUID.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.part_set_gpt_guid (self._o, device, partnum, guid)
         return r
 
     def part_set_gpt_type (self, device, partnum, guid):

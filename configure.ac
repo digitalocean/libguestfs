@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [29])
-m4_define([libguestfs_release], [24])
+m4_define([libguestfs_release], [25])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -315,6 +315,7 @@ AC_CHECK_FUNCS([\
     be32toh \
     fsync \
     futimens \
+    getprogname \
     getxattr \
     htonl \
     htons \

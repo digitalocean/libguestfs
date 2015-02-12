@@ -44,6 +44,46 @@
 
 static int res_guestfs_h;
 
+/* Convert array to list of strings.
+ * http://marc.info/?l=pecl-dev&m=112205192100631&w=2
+ */
+static char**
+get_stringlist (zval *val)
+{
+  char **ret;
+  HashTable *a;
+  int n;
+  HashPosition p;
+  zval **d;
+  size_t c = 0;
+
+  a = Z_ARRVAL_P (val);
+  n = zend_hash_num_elements (a);
+  ret = safe_emalloc (n + 1, sizeof (char *), 0);
+  for (zend_hash_internal_pointer_reset_ex (a, &p);
+       zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
+       zend_hash_move_forward_ex (a, &p)) {
+    zval t = **d;
+    zval_copy_ctor (&t);
+    convert_to_string (&t);
+    ret[c] = estrndup (Z_STRVAL(t), Z_STRLEN (t));
+    zval_dtor (&t);
+    c++;
+  }
+  ret[c] = NULL;
+  return ret;
+}
+
+static void
+guestfs_efree_stringlist (char **p)
+{
+  size_t c = 0;
+
+  for (c = 0; p[c] != NULL; ++c)
+    efree (p[c]);
+  efree (p);
+}
+
 static void
 guestfs_php_handle_dtor (zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
@@ -467,6 +507,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_part_del, NULL)
   PHP_FE (guestfs_part_disk, NULL)
   PHP_FE (guestfs_part_get_bootable, NULL)
+  PHP_FE (guestfs_part_get_gpt_guid, NULL)
   PHP_FE (guestfs_part_get_gpt_type, NULL)
   PHP_FE (guestfs_part_get_mbr_id, NULL)
   PHP_FE (guestfs_part_get_name, NULL)
@@ -474,6 +515,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_part_init, NULL)
   PHP_FE (guestfs_part_list, NULL)
   PHP_FE (guestfs_part_set_bootable, NULL)
+  PHP_FE (guestfs_part_set_gpt_guid, NULL)
   PHP_FE (guestfs_part_set_gpt_type, NULL)
   PHP_FE (guestfs_part_set_mbr_id, NULL)
   PHP_FE (guestfs_part_set_name, NULL)
@@ -1011,28 +1053,7 @@ PHP_FUNCTION (guestfs_add_drive)
    * positively check that it gave us an array, otherwise ignore it.
    */
   if (optargs_t_server != NULL && Z_TYPE_P (optargs_t_server) == IS_ARRAY) {
-    char **r;
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (optargs_t_server);
-    n = zend_hash_num_elements (a);
-    r = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      r[c] = Z_STRVAL (t);
-      c++;
-    }
-    r[c] = NULL;
-
-    optargs_s.server = r;
+    optargs_s.server = get_stringlist (optargs_t_server);
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
   }
   if (optargs_t_username != NULL) {
@@ -1058,6 +1079,9 @@ PHP_FUNCTION (guestfs_add_drive)
 
   int r;
   r = guestfs_add_drive_opts_argv (g, filename, optargs);
+
+  if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK) != 0)
+    guestfs_efree_stringlist ((char **) optargs_s.server);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -1406,7 +1430,7 @@ PHP_FUNCTION (guestfs_aug_defvar)
   guestfs_h *g;
   char *name;
   int name_size;
-  char *expr;
+  char *expr = NULL;
   int expr_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss!",
@@ -1425,7 +1449,7 @@ PHP_FUNCTION (guestfs_aug_defvar)
     RETURN_FALSE;
   }
 
-  if (strlen (expr) != expr_size) {
+  if (expr != NULL && strlen (expr) != expr_size) {
     fprintf (stderr, "libguestfs: aug_defvar: parameter 'expr' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
@@ -1834,7 +1858,7 @@ PHP_FUNCTION (guestfs_aug_setm)
   guestfs_h *g;
   char *base;
   int base_size;
-  char *sub;
+  char *sub = NULL;
   int sub_size;
   char *val;
   int val_size;
@@ -1855,7 +1879,7 @@ PHP_FUNCTION (guestfs_aug_setm)
     RETURN_FALSE;
   }
 
-  if (strlen (sub) != sub_size) {
+  if (sub != NULL && strlen (sub) != sub_size) {
     fprintf (stderr, "libguestfs: aug_setm: parameter 'sub' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
@@ -1893,38 +1917,12 @@ PHP_FUNCTION (guestfs_available)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_groups);
-    n = zend_hash_num_elements (a);
-    groups = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      groups[c] = Z_STRVAL (t);
-      c++;
-    }
-    groups[c] = NULL;
-  }
+  groups = get_stringlist (z_groups);
 
   int r;
   r = guestfs_available (g, groups);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; groups[c] != NULL; ++c)
-      efree (groups[c]);
-    efree (groups);
-  }
+  guestfs_efree_stringlist (groups);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -2635,27 +2633,7 @@ PHP_FUNCTION (guestfs_btrfs_device_add)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_devices);
-    n = zend_hash_num_elements (a);
-    devices = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      devices[c] = Z_STRVAL (t);
-      c++;
-    }
-    devices[c] = NULL;
-  }
+  devices = get_stringlist (z_devices);
 
   if (strlen (fs) != fs_size) {
     fprintf (stderr, "libguestfs: btrfs_device_add: parameter 'fs' contains embedded ASCII NUL.\n");
@@ -2665,13 +2643,7 @@ PHP_FUNCTION (guestfs_btrfs_device_add)
   int r;
   r = guestfs_btrfs_device_add (g, devices, fs);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; devices[c] != NULL; ++c)
-      efree (devices[c]);
-    efree (devices);
-  }
+  guestfs_efree_stringlist (devices);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -2700,27 +2672,7 @@ PHP_FUNCTION (guestfs_btrfs_device_delete)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_devices);
-    n = zend_hash_num_elements (a);
-    devices = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      devices[c] = Z_STRVAL (t);
-      c++;
-    }
-    devices[c] = NULL;
-  }
+  devices = get_stringlist (z_devices);
 
   if (strlen (fs) != fs_size) {
     fprintf (stderr, "libguestfs: btrfs_device_delete: parameter 'fs' contains embedded ASCII NUL.\n");
@@ -2730,13 +2682,7 @@ PHP_FUNCTION (guestfs_btrfs_device_delete)
   int r;
   r = guestfs_btrfs_device_delete (g, devices, fs);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; devices[c] != NULL; ++c)
-      efree (devices[c]);
-    efree (devices);
-  }
+  guestfs_efree_stringlist (devices);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -4200,38 +4146,12 @@ PHP_FUNCTION (guestfs_command)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_arguments);
-    n = zend_hash_num_elements (a);
-    arguments = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      arguments[c] = Z_STRVAL (t);
-      c++;
-    }
-    arguments[c] = NULL;
-  }
+  arguments = get_stringlist (z_arguments);
 
   char *r;
   r = guestfs_command (g, arguments);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; arguments[c] != NULL; ++c)
-      efree (arguments[c]);
-    efree (arguments);
-  }
+  guestfs_efree_stringlist (arguments);
 
   if (r == NULL) {
     RETURN_FALSE;
@@ -4260,38 +4180,12 @@ PHP_FUNCTION (guestfs_command_lines)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_arguments);
-    n = zend_hash_num_elements (a);
-    arguments = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      arguments[c] = Z_STRVAL (t);
-      c++;
-    }
-    arguments[c] = NULL;
-  }
+  arguments = get_stringlist (z_arguments);
 
   char **r;
   r = guestfs_command_lines (g, arguments);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; arguments[c] != NULL; ++c)
-      efree (arguments[c]);
-    efree (arguments);
-  }
+  guestfs_efree_stringlist (arguments);
 
   if (r == NULL) {
     RETURN_FALSE;
@@ -4422,7 +4316,7 @@ PHP_FUNCTION (guestfs_config)
   guestfs_h *g;
   char *hvparam;
   int hvparam_size;
-  char *hvvalue;
+  char *hvvalue = NULL;
   int hvvalue_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss!",
@@ -4441,7 +4335,7 @@ PHP_FUNCTION (guestfs_config)
     RETURN_FALSE;
   }
 
-  if (strlen (hvvalue) != hvvalue_size) {
+  if (hvvalue != NULL && strlen (hvvalue) != hvvalue_size) {
     fprintf (stderr, "libguestfs: config: parameter 'hvvalue' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
@@ -5126,38 +5020,12 @@ PHP_FUNCTION (guestfs_debug)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_extraargs);
-    n = zend_hash_num_elements (a);
-    extraargs = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      extraargs[c] = Z_STRVAL (t);
-      c++;
-    }
-    extraargs[c] = NULL;
-  }
+  extraargs = get_stringlist (z_extraargs);
 
   char *r;
   r = guestfs_debug (g, subcmd, extraargs);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; extraargs[c] != NULL; ++c)
-      efree (extraargs[c]);
-    efree (extraargs);
-  }
+  guestfs_efree_stringlist (extraargs);
 
   if (r == NULL) {
     RETURN_FALSE;
@@ -5771,38 +5639,12 @@ PHP_FUNCTION (guestfs_echo_daemon)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_words);
-    n = zend_hash_num_elements (a);
-    words = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      words[c] = Z_STRVAL (t);
-      c++;
-    }
-    words[c] = NULL;
-  }
+  words = get_stringlist (z_words);
 
   char *r;
   r = guestfs_echo_daemon (g, words);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; words[c] != NULL; ++c)
-      efree (words[c]);
-    efree (words);
-  }
+  guestfs_efree_stringlist (words);
 
   if (r == NULL) {
     RETURN_FALSE;
@@ -6097,38 +5939,12 @@ PHP_FUNCTION (guestfs_feature_available)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_groups);
-    n = zend_hash_num_elements (a);
-    groups = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      groups[c] = Z_STRVAL (t);
-      c++;
-    }
-    groups[c] = NULL;
-  }
+  groups = get_stringlist (z_groups);
 
   int r;
   r = guestfs_feature_available (g, groups);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; groups[c] != NULL; ++c)
-      efree (groups[c]);
-    efree (groups);
-  }
+  guestfs_efree_stringlist (groups);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -8071,7 +7887,7 @@ PHP_FUNCTION (guestfs_hivex_commit)
 {
   zval *z_g;
   guestfs_h *g;
-  char *filename;
+  char *filename = NULL;
   int filename_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs!",
@@ -8085,7 +7901,7 @@ PHP_FUNCTION (guestfs_hivex_commit)
     RETURN_FALSE;
   }
 
-  if (strlen (filename) != filename_size) {
+  if (filename != NULL && strlen (filename) != filename_size) {
     fprintf (stderr, "libguestfs: hivex_commit: parameter 'filename' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
@@ -9751,7 +9567,7 @@ PHP_FUNCTION (guestfs_internal_test)
   guestfs_h *g;
   char *str;
   int str_size;
-  char *optstr;
+  char *optstr = NULL;
   int optstr_size;
   zval *z_strlist;
   char **strlist;
@@ -9789,32 +9605,12 @@ PHP_FUNCTION (guestfs_internal_test)
     RETURN_FALSE;
   }
 
-  if (strlen (optstr) != optstr_size) {
+  if (optstr != NULL && strlen (optstr) != optstr_size) {
     fprintf (stderr, "libguestfs: internal_test: parameter 'optstr' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_strlist);
-    n = zend_hash_num_elements (a);
-    strlist = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      strlist[c] = Z_STRVAL (t);
-      c++;
-    }
-    strlist[c] = NULL;
-  }
+  strlist = get_stringlist (z_strlist);
 
   if (strlen (filein) != filein_size) {
     fprintf (stderr, "libguestfs: internal_test: parameter 'filein' contains embedded ASCII NUL.\n");
@@ -9846,41 +9642,17 @@ PHP_FUNCTION (guestfs_internal_test)
    * positively check that it gave us an array, otherwise ignore it.
    */
   if (optargs_t_ostringlist != NULL && Z_TYPE_P (optargs_t_ostringlist) == IS_ARRAY) {
-    char **r;
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (optargs_t_ostringlist);
-    n = zend_hash_num_elements (a);
-    r = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      r[c] = Z_STRVAL (t);
-      c++;
-    }
-    r[c] = NULL;
-
-    optargs_s.ostringlist = r;
+    optargs_s.ostringlist = get_stringlist (optargs_t_ostringlist);
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK;
   }
 
   int r;
   r = guestfs_internal_test_argv (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, optargs);
 
-  {
-    size_t c = 0;
+  guestfs_efree_stringlist (strlist);
 
-    for (c = 0; strlist[c] != NULL; ++c)
-      efree (strlist[c]);
-    efree (strlist);
-  }
+  if ((optargs_s.bitmask & GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK) != 0)
+    guestfs_efree_stringlist ((char **) optargs_s.ostringlist);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -12227,38 +11999,12 @@ PHP_FUNCTION (guestfs_ldmtool_scan_devices)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_devices);
-    n = zend_hash_num_elements (a);
-    devices = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      devices[c] = Z_STRVAL (t);
-      c++;
-    }
-    devices[c] = NULL;
-  }
+  devices = get_stringlist (z_devices);
 
   char **r;
   r = guestfs_ldmtool_scan_devices (g, devices);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; devices[c] != NULL; ++c)
-      efree (devices[c]);
-    efree (devices);
-  }
+  guestfs_efree_stringlist (devices);
 
   if (r == NULL) {
     RETURN_FALSE;
@@ -13248,38 +12994,12 @@ PHP_FUNCTION (guestfs_lstatlist)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_names);
-    n = zend_hash_num_elements (a);
-    names = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      names[c] = Z_STRVAL (t);
-      c++;
-    }
-    names[c] = NULL;
-  }
+  names = get_stringlist (z_names);
 
   struct guestfs_stat_list *r;
   r = guestfs_lstatlist (g, path, names);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; names[c] != NULL; ++c)
-      efree (names[c]);
-    efree (names);
-  }
+  guestfs_efree_stringlist (names);
 
   if (r == NULL) {
     RETURN_FALSE;
@@ -13390,38 +13110,12 @@ PHP_FUNCTION (guestfs_lstatnslist)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_names);
-    n = zend_hash_num_elements (a);
-    names = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      names[c] = Z_STRVAL (t);
-      c++;
-    }
-    names[c] = NULL;
-  }
+  names = get_stringlist (z_names);
 
   struct guestfs_statns_list *r;
   r = guestfs_lstatnslist (g, path, names);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; names[c] != NULL; ++c)
-      efree (names[c]);
-    efree (names);
-  }
+  guestfs_efree_stringlist (names);
 
   if (r == NULL) {
     RETURN_FALSE;
@@ -13952,38 +13646,12 @@ PHP_FUNCTION (guestfs_lvm_set_filter)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_devices);
-    n = zend_hash_num_elements (a);
-    devices = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      devices[c] = Z_STRVAL (t);
-      c++;
-    }
-    devices[c] = NULL;
-  }
+  devices = get_stringlist (z_devices);
 
   int r;
   r = guestfs_lvm_set_filter (g, devices);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; devices[c] != NULL; ++c)
-      efree (devices[c]);
-    efree (devices);
-  }
+  guestfs_efree_stringlist (devices);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -14275,38 +13943,12 @@ PHP_FUNCTION (guestfs_lxattrlist)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_names);
-    n = zend_hash_num_elements (a);
-    names = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      names[c] = Z_STRVAL (t);
-      c++;
-    }
-    names[c] = NULL;
-  }
+  names = get_stringlist (z_names);
 
   struct guestfs_xattr_list *r;
   r = guestfs_lxattrlist (g, path, names);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; names[c] != NULL; ++c)
-      efree (names[c]);
-    efree (names);
-  }
+  guestfs_efree_stringlist (names);
 
   if (r == NULL) {
     RETURN_FALSE;
@@ -14384,27 +14026,7 @@ PHP_FUNCTION (guestfs_md_create)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_devices);
-    n = zend_hash_num_elements (a);
-    devices = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      devices[c] = Z_STRVAL (t);
-      c++;
-    }
-    devices[c] = NULL;
-  }
+  devices = get_stringlist (z_devices);
 
   if (optargs_t_missingbitmap != -1) {
     optargs_s.missingbitmap = optargs_t_missingbitmap;
@@ -14430,13 +14052,7 @@ PHP_FUNCTION (guestfs_md_create)
   int r;
   r = guestfs_md_create_argv (g, name, devices, optargs);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; devices[c] != NULL; ++c)
-      efree (devices[c]);
-    efree (devices);
-  }
+  guestfs_efree_stringlist (devices);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -15366,27 +14982,7 @@ PHP_FUNCTION (guestfs_mkfs_btrfs)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_devices);
-    n = zend_hash_num_elements (a);
-    devices = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      devices[c] = Z_STRVAL (t);
-      c++;
-    }
-    devices[c] = NULL;
-  }
+  devices = get_stringlist (z_devices);
 
   if (optargs_t_allocstart != -1) {
     optargs_s.allocstart = optargs_t_allocstart;
@@ -15424,13 +15020,7 @@ PHP_FUNCTION (guestfs_mkfs_btrfs)
   int r;
   r = guestfs_mkfs_btrfs_argv (g, devices, optargs);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; devices[c] != NULL; ++c)
-      efree (devices[c]);
-    efree (devices);
-  }
+  guestfs_efree_stringlist (devices);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -16642,38 +16232,12 @@ PHP_FUNCTION (guestfs_parse_environment_list)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_environment);
-    n = zend_hash_num_elements (a);
-    environment = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      environment[c] = Z_STRVAL (t);
-      c++;
-    }
-    environment[c] = NULL;
-  }
+  environment = get_stringlist (z_environment);
 
   int r;
   r = guestfs_parse_environment_list (g, environment);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; environment[c] != NULL; ++c)
-      efree (environment[c]);
-    efree (environment);
-  }
+  guestfs_efree_stringlist (environment);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -16830,6 +16394,42 @@ PHP_FUNCTION (guestfs_part_get_bootable)
   }
 
   RETURN_BOOL (r);
+}
+
+PHP_FUNCTION (guestfs_part_get_gpt_guid)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  int device_size;
+  long partnum;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rsl",
+        &z_g, &device, &device_size, &partnum) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: part_get_gpt_guid: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  char *r;
+  r = guestfs_part_get_gpt_guid (g, device, partnum);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  char *r_copy = estrdup (r);
+  free (r);
+  RETURN_STRING (r_copy, 0);
 }
 
 PHP_FUNCTION (guestfs_part_get_gpt_type)
@@ -17085,6 +16685,47 @@ PHP_FUNCTION (guestfs_part_set_bootable)
 
   int r;
   r = guestfs_part_set_bootable (g, device, partnum, bootable);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_part_set_gpt_guid)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  int device_size;
+  long partnum;
+  char *guid;
+  int guid_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rsls",
+        &z_g, &device, &device_size, &partnum, &guid, &guid_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: part_set_gpt_guid: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (strlen (guid) != guid_size) {
+    fprintf (stderr, "libguestfs: part_set_gpt_guid: parameter 'guid' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_part_set_gpt_guid (g, device, partnum, guid);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -17938,38 +17579,12 @@ PHP_FUNCTION (guestfs_readlinklist)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_names);
-    n = zend_hash_num_elements (a);
-    names = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      names[c] = Z_STRVAL (t);
-      c++;
-    }
-    names[c] = NULL;
-  }
+  names = get_stringlist (z_names);
 
   char **r;
   r = guestfs_readlinklist (g, path, names);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; names[c] != NULL; ++c)
-      efree (names[c]);
-    efree (names);
-  }
+  guestfs_efree_stringlist (names);
 
   if (r == NULL) {
     RETURN_FALSE;
@@ -18700,7 +18315,7 @@ PHP_FUNCTION (guestfs_set_append)
 {
   zval *z_g;
   guestfs_h *g;
-  char *append;
+  char *append = NULL;
   int append_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs!",
@@ -18714,7 +18329,7 @@ PHP_FUNCTION (guestfs_set_append)
     RETURN_FALSE;
   }
 
-  if (strlen (append) != append_size) {
+  if (append != NULL && strlen (append) != append_size) {
     fprintf (stderr, "libguestfs: set_append: parameter 'append' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
@@ -18880,38 +18495,12 @@ PHP_FUNCTION (guestfs_set_backend_settings)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_settings);
-    n = zend_hash_num_elements (a);
-    settings = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      settings[c] = Z_STRVAL (t);
-      c++;
-    }
-    settings[c] = NULL;
-  }
+  settings = get_stringlist (z_settings);
 
   int r;
   r = guestfs_set_backend_settings (g, settings);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; settings[c] != NULL; ++c)
-      efree (settings[c]);
-    efree (settings);
-  }
+  guestfs_efree_stringlist (settings);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -18924,7 +18513,7 @@ PHP_FUNCTION (guestfs_set_cachedir)
 {
   zval *z_g;
   guestfs_h *g;
-  char *cachedir;
+  char *cachedir = NULL;
   int cachedir_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs!",
@@ -18938,7 +18527,7 @@ PHP_FUNCTION (guestfs_set_cachedir)
     RETURN_FALSE;
   }
 
-  if (strlen (cachedir) != cachedir_size) {
+  if (cachedir != NULL && strlen (cachedir) != cachedir_size) {
     fprintf (stderr, "libguestfs: set_cachedir: parameter 'cachedir' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
@@ -19262,38 +18851,12 @@ PHP_FUNCTION (guestfs_set_libvirt_supported_credentials)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_creds);
-    n = zend_hash_num_elements (a);
-    creds = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      creds[c] = Z_STRVAL (t);
-      c++;
-    }
-    creds[c] = NULL;
-  }
+  creds = get_stringlist (z_creds);
 
   int r;
   r = guestfs_set_libvirt_supported_credentials (g, creds);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; creds[c] != NULL; ++c)
-      efree (creds[c]);
-    efree (creds);
-  }
+  guestfs_efree_stringlist (creds);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -19360,7 +18923,7 @@ PHP_FUNCTION (guestfs_set_path)
 {
   zval *z_g;
   guestfs_h *g;
-  char *searchpath;
+  char *searchpath = NULL;
   int searchpath_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs!",
@@ -19374,7 +18937,7 @@ PHP_FUNCTION (guestfs_set_path)
     RETURN_FALSE;
   }
 
-  if (strlen (searchpath) != searchpath_size) {
+  if (searchpath != NULL && strlen (searchpath) != searchpath_size) {
     fprintf (stderr, "libguestfs: set_path: parameter 'searchpath' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
@@ -19453,7 +19016,7 @@ PHP_FUNCTION (guestfs_set_qemu)
 {
   zval *z_g;
   guestfs_h *g;
-  char *hv;
+  char *hv = NULL;
   int hv_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs!",
@@ -19467,7 +19030,7 @@ PHP_FUNCTION (guestfs_set_qemu)
     RETURN_FALSE;
   }
 
-  if (strlen (hv) != hv_size) {
+  if (hv != NULL && strlen (hv) != hv_size) {
     fprintf (stderr, "libguestfs: set_qemu: parameter 'hv' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
@@ -19567,7 +19130,7 @@ PHP_FUNCTION (guestfs_set_tmpdir)
 {
   zval *z_g;
   guestfs_h *g;
-  char *tmpdir;
+  char *tmpdir = NULL;
   int tmpdir_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs!",
@@ -19581,7 +19144,7 @@ PHP_FUNCTION (guestfs_set_tmpdir)
     RETURN_FALSE;
   }
 
-  if (strlen (tmpdir) != tmpdir_size) {
+  if (tmpdir != NULL && strlen (tmpdir) != tmpdir_size) {
     fprintf (stderr, "libguestfs: set_tmpdir: parameter 'tmpdir' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
@@ -19799,38 +19362,12 @@ PHP_FUNCTION (guestfs_sfdisk)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_lines);
-    n = zend_hash_num_elements (a);
-    lines = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      lines[c] = Z_STRVAL (t);
-      c++;
-    }
-    lines[c] = NULL;
-  }
+  lines = get_stringlist (z_lines);
 
   int r;
   r = guestfs_sfdisk (g, device, cyls, heads, sectors, lines);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; lines[c] != NULL; ++c)
-      efree (lines[c]);
-    efree (lines);
-  }
+  guestfs_efree_stringlist (lines);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -19864,38 +19401,12 @@ PHP_FUNCTION (guestfs_sfdiskM)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_lines);
-    n = zend_hash_num_elements (a);
-    lines = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      lines[c] = Z_STRVAL (t);
-      c++;
-    }
-    lines[c] = NULL;
-  }
+  lines = get_stringlist (z_lines);
 
   int r;
   r = guestfs_sfdiskM (g, device, lines);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; lines[c] != NULL; ++c)
-      efree (lines[c]);
-    efree (lines);
-  }
+  guestfs_efree_stringlist (lines);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -20921,33 +20432,15 @@ PHP_FUNCTION (guestfs_tar_out)
    * positively check that it gave us an array, otherwise ignore it.
    */
   if (optargs_t_excludes != NULL && Z_TYPE_P (optargs_t_excludes) == IS_ARRAY) {
-    char **r;
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (optargs_t_excludes);
-    n = zend_hash_num_elements (a);
-    r = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      r[c] = Z_STRVAL (t);
-      c++;
-    }
-    r[c] = NULL;
-
-    optargs_s.excludes = r;
+    optargs_s.excludes = get_stringlist (optargs_t_excludes);
     optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK;
   }
 
   int r;
   r = guestfs_tar_out_opts_argv (g, directory, tarfile, optargs);
+
+  if ((optargs_s.bitmask & GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK) != 0)
+    guestfs_efree_stringlist ((char **) optargs_s.excludes);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -21807,38 +21300,12 @@ PHP_FUNCTION (guestfs_vg_activate)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_volgroups);
-    n = zend_hash_num_elements (a);
-    volgroups = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      volgroups[c] = Z_STRVAL (t);
-      c++;
-    }
-    volgroups[c] = NULL;
-  }
+  volgroups = get_stringlist (z_volgroups);
 
   int r;
   r = guestfs_vg_activate (g, activate, volgroups);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; volgroups[c] != NULL; ++c)
-      efree (volgroups[c]);
-    efree (volgroups);
-  }
+  guestfs_efree_stringlist (volgroups);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -21958,38 +21425,12 @@ PHP_FUNCTION (guestfs_vgcreate)
     RETURN_FALSE;
   }
 
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_physvols);
-    n = zend_hash_num_elements (a);
-    physvols = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      physvols[c] = Z_STRVAL (t);
-      c++;
-    }
-    physvols[c] = NULL;
-  }
+  physvols = get_stringlist (z_physvols);
 
   int r;
   r = guestfs_vgcreate (g, volgroup, physvols);
 
-  {
-    size_t c = 0;
-
-    for (c = 0; physvols[c] != NULL; ++c)
-      efree (physvols[c]);
-    efree (physvols);
-  }
+  guestfs_efree_stringlist (physvols);
 
   if (r == -1) {
     RETURN_FALSE;

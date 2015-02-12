@@ -459,4 +459,6 @@ const char *function_names[] = {
   [443] = "btrfs_filesystem_defragment",
   [444] = "btrfs_rescue_chunk_recover",
   [445] = "btrfs_rescue_super_recover",
+  [446] = "part_set_gpt_guid",
+  [447] = "part_get_gpt_guid",
 };

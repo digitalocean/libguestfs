@@ -7960,6 +7960,22 @@ PREINIT:
       RETVAL
 
 SV *
+part_get_gpt_guid (g, device, partnum)
+      guestfs_h *g;
+      char *device;
+      int partnum;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_part_get_gpt_guid (g, device, partnum);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
 part_get_gpt_type (g, device, partnum)
       guestfs_h *g;
       char *device;
@@ -8066,6 +8082,19 @@ PREINIT:
       int r;
  PPCODE:
       r = guestfs_part_set_bootable (g, device, partnum, bootable);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+part_set_gpt_guid (g, device, partnum, guid)
+      guestfs_h *g;
+      char *device;
+      int partnum;
+      char *guid;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_part_set_gpt_guid (g, device, partnum, guid);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 

@@ -1,3 +1,239 @@
+commit ab8a442952b53a32bf5a953b945fc7036320064a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 11 17:03:05 2015 +0000
+
+    Version 1.29.25.
+
+commit fb24d7405a3b86a21e007c471f1a9abf520265c1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 11 15:30:55 2015 +0000
+
+    tests/charsets: Fix bogus comparison of STRNEQ() == -1.
+    
+    gcc 5 rightly flags this code as bogus.
+
+commit e15722606442f6e3e960026bcc64f62081fe48f3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Feb 11 15:46:19 2015 +0100
+
+    java: further <p> fixes
+    
+    javadoc's HTML parser seems more limited, so just close <p> blocks
+    before opening <pre> or <ol>.
+    
+    Followup of commit f4186a7a492f94661cf367684af3c54e21700afc.
+
+commit 3b8d56d491d657e5c1377329d1212188e77fa2a2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 10 17:28:01 2015 +0100
+
+    php: add a simple bindtests test
+    
+    Generate a simple bindtests test for the PHP binding, so it is possible
+    to easily test all the argument types.
+    
+    Unlike the bindtests for other languages, optional arguments are not
+    tested, due to the limitations of optional arguments in PHP (or maybe
+    they way we implement them).
+
+commit 2b06c27fd76eb2d18a3c1287ed5dfaa80aab4816
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 10 16:09:57 2015 +0100
+
+    php: fix memory leak in OStringList optargs
+    
+    Make sure to free the char** created to convert the arguments.
+
+commit 8e4bf5cf9e5ab5ec5d9b129450e7dd5cfa2a4117
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 10 15:39:14 2015 +0100
+
+    php: fix invalid memory access with stringlist params
+    
+    Make sure to copy the strings we add to the char** array, otherwise they
+    are stale pointers which we'll try to free later.
+    
+    Also, properly destruct the temporary zval.
+
+commit ee65fabd973d50f983f22c794e69e4204ed44d7d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 10 16:04:06 2015 +0100
+
+    php: move common code in helper functions
+    
+    Simple code motion.
+
+commit 4debb44a44db5a2be6b110a1a6df2002a70bc4bf
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 10 15:32:59 2015 +0100
+
+    php: fix invalid memory access with OptString
+    
+    OptString maps to a "s!" argument, which makes zend_parse_parameters not
+    touch the variables (char* and length) when NULL is passed as parameter.
+    Hence, set both to NULL/0, and check for non-NULL char* variable before
+    checking its length.
+
+commit 85b6b5e589bea56046b85a5b0143a364e20dacd1
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 10 15:10:34 2015 +0100
+
+    java: add @Deprecated annotation for deprecated methods
+
+commit f4186a7a492f94661cf367684af3c54e21700afc
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 10 14:58:20 2015 +0100
+
+    java: fix/improve slightly the javadoc
+    
+    - use <p>..</p> for text paragraphs, instead of just using <p> to
+      separate them
+    - slightly improve the metadata in eventToString and set_event_callback
+    - fix the textual @see in set_event_callback, so it is accepted also in
+      JDK 8
+    - escape the doc text, so &, <, and > will not be considered as HTML
+      tags but actual text
+    - use the @deprecated tag instead of adding the customary deprecation
+      note to the doc text
+
+commit 8b268bd8970e183d765850fac09386cc2d32dadc
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 10 14:22:14 2015 +0100
+
+    generator: add a simple HTML escaping function
+
+commit 4905d6eb95643c34ac29dfeb09876280f6dabf8d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Feb 11 15:02:09 2015 +0100
+
+    Revert "java: Turn off doclint to prevent errors on JDK 8"
+    
+    The errors will be fixed for good, together will other small javadoc
+    improvements.
+    
+    This reverts commit 8940b03658e9e68adfea03dfd1044addd64d3d7a.
+
+commit 28462caacc07cb10fe0afb3ec5c511b5f8aa98ec
+Author: Margaret Lewicka <margaret@meaningless.name>
+Date:   Mon Feb 9 11:06:18 2015 +0000
+
+    macosx/bsd: Use getprogname() where available
+
+commit 8940b03658e9e68adfea03dfd1044addd64d3d7a
+Author: Margaret Lewicka <margaret@meaningless.name>
+Date:   Mon Feb 9 11:06:17 2015 +0000
+
+    java: Turn off doclint to prevent errors on JDK 8
+    
+    On JDK 8, doclint is enabled by default with strict validation of HTML
+    tags, which causes the build to fail. See
+    http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html
+
+commit 668c4784a999a9625debeb854e479a60d7228d68
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 5 18:18:30 2015 +0100
+
+    perl: tests: reenable set_path tests
+    
+    guestfs_set_path now does a copy of the passed string, so bindings don't
+    need to take care of the lifetime of strings parameters for it.
+
+commit 5cafedaa45d5993c54bf1827426171d9e23d77ae
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Feb 7 16:27:03 2015 +0000
+
+    lib: Change 'program_name' macro to avoid conflict with gnulib.
+    
+    The gnulib 'error' module uses 'program_name'.  On some platforms --
+    but not Linux / glibc -- it references it as:
+    
+      extern char *program_name;
+    
+    This means when you compile libguestfs on non-glibc (eg. Mac OS X)
+    gnulib requires 'program_name' as an external string reference, which
+    we don't provide.
+    
+    This change doesn't define this string reference for gnulib, but it
+    does change the name of the macro we use to avoid conflicts if we
+    eventually need to export 'program_name' as a string.
+    
+    Thanks: Margaret Lewicka
+
+commit 7ddf6bcbfdc66855b594afaaacdc4998177f2286
+Author: Margaret Lewicka <margaret@meaningless.name>
+Date:   Fri Feb 6 10:01:28 2015 +0000
+
+    macosx: Include <sys/un.h> and define SOCK_* for Mac OS X.
+
+commit eaae0b614c59f799885ee940117c4fb507a1f2d3
+Author: Margaret Lewicka <margaret@meaningless.name>
+Date:   Fri Feb 6 09:53:45 2015 +0000
+
+    macosx: ruby: Use correct dllib extension instead of assuming '.so'.
+
+commit f630677c14c7d5528e1ab39e4f805e0957b2ee3e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 5 08:13:05 2015 +0000
+
+    resize: Preserve GPT GUID so we don't break EFI bootloaders (RHBZ#1189284).
+    
+    When copying disks that use EFI, we created a new partition table,
+    randomizing the GPT GUID of the first partition.  Since EFI may store
+    the GUID in its NVRAM variables, this could make the guest unbootable.
+
+commit 40c133b2c81666f6dde43704e66bf59206d5c111
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 5 08:08:06 2015 +0000
+
+    New APIs: part-set-gpt-guid and part-get-gpt-guid
+    
+    In GPT, each partition has a GUID assigned randomly.  Allow this GUID
+    to be written and read.
+    
+    Note this is different from the GUID type code which is used to
+    identify the type of the partition.
+
+commit b3e3750b13a96fb6d1b79f7c0dabb4eeb37de5ef
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 5 08:01:48 2015 +0000
+
+    daemon: Fix whitespace.
+
+commit ff1cf989fd49cfb82db428e66034c7b2d6bebe8a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 4 13:17:40 2015 +0000
+
+    builder: Fix large performance regression in pxzcat (RHBZ#1188866).
+    
+    Commit 9135129b0f6e8eb171131ea0f7d729a960b74cb3 changed
+    two stack buffers to pointers:
+    
+    -  uint8_t buf[BUFFER_SIZE];
+    -  unsigned char outbuf[BUFFER_SIZE];
+    +  CLEANUP_FREE uint8_t *buf = NULL;
+    +  CLEANUP_FREE uint8_t *outbuf = NULL;
+    
+    but we were still using sizeof buf to calculate the size of the
+    buffer.  sizeof buf == 8 so the original code which used large buffers
+    for reading/writing the file changed to using 8 byte buffers.
+
+commit 5f663c2082446f2b9722c3cb0fcac6c5778978e8
+Author: Cédric Bosdonnat <cbosdonnat@suse.com>
+Date:   Tue Feb 3 14:38:02 2015 +0000
+
+    customize: Invoke zypper correctly.
+
+commit 8fd42310514166d287b9149bc8747e6a058433bf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 3 08:53:43 2015 +0000
+
+    btrfs: Proper error when output of 'btrfs qgroup show' command cannot be parsed.
+    
+    sscanf doesn't set errno in these cases so it's wrong to call perror
+    here.
+    
+    This fixes commit 2b7f7810ed801edf811c5ba43fefe6cf350def7f.
+
 commit 725d95422bbd12cd59c860286ee84cf30d402a55
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon Feb 2 20:01:45 2015 +0000

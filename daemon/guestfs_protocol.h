@@ -3919,6 +3919,24 @@ struct guestfs_btrfs_rescue_super_recover_args {
 };
 typedef struct guestfs_btrfs_rescue_super_recover_args guestfs_btrfs_rescue_super_recover_args;
 
+struct guestfs_part_set_gpt_guid_args {
+	char *device;
+	int partnum;
+	char *guid;
+};
+typedef struct guestfs_part_set_gpt_guid_args guestfs_part_set_gpt_guid_args;
+
+struct guestfs_part_get_gpt_guid_args {
+	char *device;
+	int partnum;
+};
+typedef struct guestfs_part_get_gpt_guid_args guestfs_part_get_gpt_guid_args;
+
+struct guestfs_part_get_gpt_guid_ret {
+	char *guid;
+};
+typedef struct guestfs_part_get_gpt_guid_ret guestfs_part_get_gpt_guid_ret;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -4353,9 +4371,11 @@ enum guestfs_procedure {
 	GUESTFS_PROC_BTRFS_FILESYSTEM_DEFRAGMENT = 443,
 	GUESTFS_PROC_BTRFS_RESCUE_CHUNK_RECOVER = 444,
 	GUESTFS_PROC_BTRFS_RESCUE_SUPER_RECOVER = 445,
+	GUESTFS_PROC_PART_SET_GPT_GUID = 446,
+	GUESTFS_PROC_PART_GET_GPT_GUID = 447,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 445
+#define GUESTFS_MAX_PROC_NR 447
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -5029,6 +5049,9 @@ extern  bool_t xdr_guestfs_btrfs_balance_resume_args (XDR *, guestfs_btrfs_balan
 extern  bool_t xdr_guestfs_btrfs_filesystem_defragment_args (XDR *, guestfs_btrfs_filesystem_defragment_args*);
 extern  bool_t xdr_guestfs_btrfs_rescue_chunk_recover_args (XDR *, guestfs_btrfs_rescue_chunk_recover_args*);
 extern  bool_t xdr_guestfs_btrfs_rescue_super_recover_args (XDR *, guestfs_btrfs_rescue_super_recover_args*);
+extern  bool_t xdr_guestfs_part_set_gpt_guid_args (XDR *, guestfs_part_set_gpt_guid_args*);
+extern  bool_t xdr_guestfs_part_get_gpt_guid_args (XDR *, guestfs_part_get_gpt_guid_args*);
+extern  bool_t xdr_guestfs_part_get_gpt_guid_ret (XDR *, guestfs_part_get_gpt_guid_ret*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5652,6 +5675,9 @@ extern bool_t xdr_guestfs_btrfs_balance_resume_args ();
 extern bool_t xdr_guestfs_btrfs_filesystem_defragment_args ();
 extern bool_t xdr_guestfs_btrfs_rescue_chunk_recover_args ();
 extern bool_t xdr_guestfs_btrfs_rescue_super_recover_args ();
+extern bool_t xdr_guestfs_part_set_gpt_guid_args ();
+extern bool_t xdr_guestfs_part_get_gpt_guid_args ();
+extern bool_t xdr_guestfs_part_get_gpt_guid_ret ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

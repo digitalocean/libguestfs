@@ -10064,6 +10064,24 @@ func (g *Guestfs) Part_get_bootable (device string, partnum int) (bool, *Guestfs
     return r != 0, nil
 }
 
+/* part_get_gpt_guid : get the GUID of a GPT partition */
+func (g *Guestfs) Part_get_gpt_guid (device string, partnum int) (string, *GuestfsError) {
+    if g.g == nil {
+        return "", closed_handle_error ("part_get_gpt_guid")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_part_get_gpt_guid (g.g, c_device, C.int (partnum))
+
+    if r == nil {
+        return "", get_error_from_handle (g, "part_get_gpt_guid")
+    }
+    defer C.free (unsafe.Pointer (r))
+    return C.GoString (r), nil
+}
+
 /* part_get_gpt_type : get the type GUID of a GPT partition */
 func (g *Guestfs) Part_get_gpt_type (device string, partnum int) (string, *GuestfsError) {
     if g.g == nil {
@@ -10189,6 +10207,26 @@ func (g *Guestfs) Part_set_bootable (device string, partnum int, bootable bool) 
 
     if r == -1 {
         return get_error_from_handle (g, "part_set_bootable")
+    }
+    return nil
+}
+
+/* part_set_gpt_guid : set the GUID of a GPT partition */
+func (g *Guestfs) Part_set_gpt_guid (device string, partnum int, guid string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("part_set_gpt_guid")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    c_guid := C.CString (guid)
+    defer C.free (unsafe.Pointer (c_guid))
+
+    r := C.guestfs_part_set_gpt_guid (g.g, c_device, C.int (partnum), c_guid)
+
+    if r == -1 {
+        return get_error_from_handle (g, "part_set_gpt_guid")
     }
     return nil
 }

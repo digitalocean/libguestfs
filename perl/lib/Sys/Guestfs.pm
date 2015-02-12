@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.445';
+$VERSION = '0.447';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -5683,6 +5683,10 @@ C<device> has the bootable flag set.
 
 See also C<$g-E<gt>part_set_bootable>.
 
+=item $guid = $g->part_get_gpt_guid ($device, $partnum);
+
+Return the GUID of numbered GPT partition C<partnum>.
+
 =item $guid = $g->part_get_gpt_type ($device, $partnum);
 
 Return the type GUID of numbered GPT partition C<partnum>. For MBR partitions,
@@ -5827,6 +5831,12 @@ device C<device>.  Note that partitions are numbered from 1.
 The bootable flag is used by some operating systems (notably
 Windows) to determine which partition to boot from.  It is by
 no means universally recognized.
+
+=item $g->part_set_gpt_guid ($device, $partnum, $guid);
+
+Set the GUID of numbered GPT partition C<partnum> to C<guid>.  Return an
+error if the partition table of C<device> isn't GPT, or if C<guid> is not a
+valid GUID.
 
 =item $g->part_set_gpt_type ($device, $partnum, $guid);
 
@@ -11513,6 +11523,15 @@ use vars qw(%guestfs_introspection);
     name => "part_get_bootable",
     description => "return true if a partition is bootable",
   },
+  "part_get_gpt_guid" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'partnum', 'int', 1 ],
+    ],
+    name => "part_get_gpt_guid",
+    description => "get the GUID of a GPT partition",
+  },
   "part_get_gpt_type" => {
     ret => 'string',
     args => [
@@ -11574,6 +11593,16 @@ use vars qw(%guestfs_introspection);
     ],
     name => "part_set_bootable",
     description => "make a partition bootable",
+  },
+  "part_set_gpt_guid" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'partnum', 'int', 1 ],
+      [ 'guid', 'string', 2 ],
+    ],
+    name => "part_set_gpt_guid",
+    description => "set the GUID of a GPT partition",
   },
   "part_set_gpt_type" => {
     ret => 'void',

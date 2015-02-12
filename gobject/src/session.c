@@ -19446,6 +19446,39 @@ guestfs_session_part_get_bootable (GuestfsSession *session, const gchar *device,
 }
 
 /**
+ * guestfs_session_part_get_gpt_guid:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @partnum: (type gint32):
+ * @err: A GError object to receive any generated errors
+ *
+ * get the GUID of a GPT partition
+ *
+ * Return the GUID of numbered GPT partition @partnum.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_part_get_gpt_guid (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_get_gpt_guid");
+    return NULL;
+  }
+
+  char *ret = guestfs_part_get_gpt_guid (g, device, partnum);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
  * guestfs_session_part_get_gpt_type:
  * @session: (transfer none): A GuestfsSession object
  * @device: (transfer none) (type filename):
@@ -19757,6 +19790,42 @@ guestfs_session_part_set_bootable (GuestfsSession *session, const gchar *device,
   }
 
   int ret = guestfs_part_set_bootable (g, device, partnum, bootable);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_part_set_gpt_guid:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @partnum: (type gint32):
+ * @guid: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the GUID of a GPT partition
+ *
+ * Set the GUID of numbered GPT partition @partnum to @guid. Return an
+ * error if the partition table of @device isn't GPT, or if @guid is not a
+ * valid GUID.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_part_set_gpt_guid (GuestfsSession *session, const gchar *device, gint32 partnum, const gchar *guid, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_set_gpt_guid");
+    return FALSE;
+  }
+
+  int ret = guestfs_part_set_gpt_guid (g, device, partnum, guid);
   if (ret == -1) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return FALSE;

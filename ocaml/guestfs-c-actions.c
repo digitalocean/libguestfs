@@ -15079,6 +15079,39 @@ ocaml_guestfs_part_get_bootable (value gv, value devicev, value partnumv)
 }
 
 /* Automatically generated wrapper for function
+ * val part_get_gpt_guid : t -> string -> int -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_part_get_gpt_guid (value gv, value devicev, value partnumv);
+
+value
+ocaml_guestfs_part_get_gpt_guid (value gv, value devicev, value partnumv)
+{
+  CAMLparam3 (gv, devicev, partnumv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("part_get_gpt_guid");
+
+  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  int partnum = Int_val (partnumv);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_get_gpt_guid (g, device, partnum);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "part_get_gpt_guid");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val part_get_gpt_type : t -> string -> int -> string
  */
 
@@ -15301,6 +15334,40 @@ ocaml_guestfs_part_set_bootable (value gv, value devicev, value partnumv, value 
   free (device);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "part_set_bootable");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val part_set_gpt_guid : t -> string -> int -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_part_set_gpt_guid (value gv, value devicev, value partnumv, value guidv);
+
+value
+ocaml_guestfs_part_set_gpt_guid (value gv, value devicev, value partnumv, value guidv)
+{
+  CAMLparam4 (gv, devicev, partnumv, guidv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("part_set_gpt_guid");
+
+  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  int partnum = Int_val (partnumv);
+  char *guid = guestfs___safe_strdup (g, String_val (guidv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_set_gpt_guid (g, device, partnum, guid);
+  caml_leave_blocking_section ();
+  free (device);
+  free (guid);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "part_set_gpt_guid");
 
   rv = Val_unit;
   CAMLreturn (rv);

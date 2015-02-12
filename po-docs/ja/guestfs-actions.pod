@@ -9675,6 +9675,17 @@ This function returns a C truth value on success or -1 on error.
 
 (1.3.2 において追加)
 
+=head2 guestfs_part_get_gpt_guid
+
+ char *
+ guestfs_part_get_gpt_guid (guestfs_h *g,
+                            const char *device,
+                            int partnum);
+
+Return the GUID of numbered GPT partition C<partnum>.
+
+この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
+
 =head2 guestfs_part_get_gpt_type
 
  char *
@@ -9880,6 +9891,20 @@ recognized.
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (1.0.78 において追加)
+
+=head2 guestfs_part_set_gpt_guid
+
+ int
+ guestfs_part_set_gpt_guid (guestfs_h *g,
+                            const char *device,
+                            int partnum,
+                            const char *guid);
+
+Set the GUID of numbered GPT partition C<partnum> to C<guid>.  Return an
+error if the partition table of C<device> isn't GPT, or if C<guid> is not a
+valid GUID.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 =head2 guestfs_part_set_gpt_type
 

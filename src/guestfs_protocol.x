@@ -3036,6 +3036,21 @@ struct guestfs_btrfs_rescue_super_recover_args {
   string device<>;
 };
 
+struct guestfs_part_set_gpt_guid_args {
+  string device<>;
+  int partnum;
+  string guid<>;
+};
+
+struct guestfs_part_get_gpt_guid_args {
+  string device<>;
+  int partnum;
+};
+
+struct guestfs_part_get_gpt_guid_ret {
+  string guid<>;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3470,10 +3485,12 @@ enum guestfs_procedure {
   GUESTFS_PROC_BTRFS_BALANCE_RESUME = 440,
   GUESTFS_PROC_BTRFS_FILESYSTEM_DEFRAGMENT = 443,
   GUESTFS_PROC_BTRFS_RESCUE_CHUNK_RECOVER = 444,
-  GUESTFS_PROC_BTRFS_RESCUE_SUPER_RECOVER = 445
+  GUESTFS_PROC_BTRFS_RESCUE_SUPER_RECOVER = 445,
+  GUESTFS_PROC_PART_SET_GPT_GUID = 446,
+  GUESTFS_PROC_PART_GET_GPT_GUID = 447
 };
 
-const GUESTFS_MAX_PROC_NR = 445;
+const GUESTFS_MAX_PROC_NR = 447;
 
 /* The remote procedure call protocol. */
 

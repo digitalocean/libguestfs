@@ -17074,6 +17074,46 @@ py_guestfs_part_get_bootable (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_part_get_gpt_guid (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  char *r;
+  const char *device;
+  int partnum;
+
+  if (!PyArg_ParseTuple (args, (char *) "Osi:guestfs_part_get_gpt_guid",
+                         &py_g, &device, &partnum))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_part_get_gpt_guid (g, device, partnum);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
+  free (r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_part_get_gpt_type (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -17319,6 +17359,43 @@ py_guestfs_part_set_bootable (PyObject *self, PyObject *args)
     py_save = PyEval_SaveThread ();
 
   r = guestfs_part_set_bootable (g, device, partnum, bootable);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_part_set_gpt_guid (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *device;
+  int partnum;
+  const char *guid;
+
+  if (!PyArg_ParseTuple (args, (char *) "Osis:guestfs_part_set_gpt_guid",
+                         &py_g, &device, &partnum, &guid))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_part_set_gpt_guid (g, device, partnum, guid);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -23806,6 +23883,7 @@ static PyMethodDef methods[] = {
   { (char *) "part_del", py_guestfs_part_del, METH_VARARGS, NULL },
   { (char *) "part_disk", py_guestfs_part_disk, METH_VARARGS, NULL },
   { (char *) "part_get_bootable", py_guestfs_part_get_bootable, METH_VARARGS, NULL },
+  { (char *) "part_get_gpt_guid", py_guestfs_part_get_gpt_guid, METH_VARARGS, NULL },
   { (char *) "part_get_gpt_type", py_guestfs_part_get_gpt_type, METH_VARARGS, NULL },
   { (char *) "part_get_mbr_id", py_guestfs_part_get_mbr_id, METH_VARARGS, NULL },
   { (char *) "part_get_name", py_guestfs_part_get_name, METH_VARARGS, NULL },
@@ -23813,6 +23891,7 @@ static PyMethodDef methods[] = {
   { (char *) "part_init", py_guestfs_part_init, METH_VARARGS, NULL },
   { (char *) "part_list", py_guestfs_part_list, METH_VARARGS, NULL },
   { (char *) "part_set_bootable", py_guestfs_part_set_bootable, METH_VARARGS, NULL },
+  { (char *) "part_set_gpt_guid", py_guestfs_part_set_gpt_guid, METH_VARARGS, NULL },
   { (char *) "part_set_gpt_type", py_guestfs_part_set_gpt_type, METH_VARARGS, NULL },
   { (char *) "part_set_mbr_id", py_guestfs_part_set_mbr_id, METH_VARARGS, NULL },
   { (char *) "part_set_name", py_guestfs_part_set_name, METH_VARARGS, NULL },

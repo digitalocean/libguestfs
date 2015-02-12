@@ -5828,6 +5828,12 @@ bootable flag set.
 
 Див. також L</part-set-bootable>.
 
+=head2 part-get-gpt-guid
+
+ part-get-gpt-guid device partnum
+
+Return the GUID of numbered GPT partition C<partnum>.
+
 =head2 part-get-gpt-type
 
  part-get-gpt-type device partnum
@@ -5983,6 +5989,14 @@ C<device>.  Note that partitions are numbered from 1.
 The bootable flag is used by some operating systems (notably Windows) to
 determine which partition to boot from.  It is by no means universally
 recognized.
+
+=head2 part-set-gpt-guid
+
+ part-set-gpt-guid device partnum guid
+
+Set the GUID of numbered GPT partition C<partnum> to C<guid>.  Return an
+error if the partition table of C<device> isn't GPT, or if C<guid> is not a
+valid GUID.
 
 =head2 part-set-gpt-type
 
