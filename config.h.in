@@ -817,6 +817,9 @@
 /* Define to 1 if you have the `getppriv' function. */
 #undef HAVE_GETPPRIV
 
+/* Define to 1 if you have the `getprogname' function. */
+#undef HAVE_GETPROGNAME
+
 /* Define to 1 if you have the 'getpwnam_r' function. */
 #undef HAVE_GETPWNAM_R
 

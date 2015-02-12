@@ -69,7 +69,8 @@ L</guestfs_mkfs_btrfs>
 
 =item B<gdisk>
 
-The following functions: L</guestfs_part_get_gpt_type>
+The following functions: L</guestfs_part_get_gpt_guid>
+L</guestfs_part_get_gpt_type> L</guestfs_part_set_gpt_guid>
 L</guestfs_part_set_gpt_type>
 
 =item B<grub>

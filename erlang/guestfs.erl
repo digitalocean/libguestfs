@@ -440,6 +440,7 @@
 -export([part_del/3]).
 -export([part_disk/3]).
 -export([part_get_bootable/3]).
+-export([part_get_gpt_guid/3]).
 -export([part_get_gpt_type/3]).
 -export([part_get_mbr_id/3]).
 -export([part_get_name/3]).
@@ -447,6 +448,7 @@
 -export([part_init/3]).
 -export([part_list/2]).
 -export([part_set_bootable/4]).
+-export([part_set_gpt_guid/4]).
 -export([part_set_gpt_type/4]).
 -export([part_set_mbr_id/4]).
 -export([part_set_name/4]).
@@ -2001,6 +2003,9 @@ part_disk(G, Device, Parttype) ->
 part_get_bootable(G, Device, Partnum) ->
   call_port(G, {part_get_bootable, Device, Partnum}).
 
+part_get_gpt_guid(G, Device, Partnum) ->
+  call_port(G, {part_get_gpt_guid, Device, Partnum}).
+
 part_get_gpt_type(G, Device, Partnum) ->
   call_port(G, {part_get_gpt_type, Device, Partnum}).
 
@@ -2021,6 +2026,9 @@ part_list(G, Device) ->
 
 part_set_bootable(G, Device, Partnum, Bootable) ->
   call_port(G, {part_set_bootable, Device, Partnum, Bootable}).
+
+part_set_gpt_guid(G, Device, Partnum, Guid) ->
+  call_port(G, {part_set_gpt_guid, Device, Partnum, Guid}).
 
 part_set_gpt_type(G, Device, Partnum, Guid) ->
   call_port(G, {part_set_gpt_type, Device, Partnum, Guid}).

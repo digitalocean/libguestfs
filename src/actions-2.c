@@ -6596,3 +6596,115 @@ guestfs_btrfs_balance_cancel (guestfs_h *g,
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_part_set_gpt_guid (guestfs_h *g,
+                           const char *device,
+                           int partnum,
+                           const char *guid)
+{
+  struct guestfs_part_set_gpt_guid_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "part_set_gpt_guid", 17);
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "part_set_gpt_guid", "device");
+    return -1;
+  }
+  if (guid == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "part_set_gpt_guid", "guid");
+    return -1;
+  }
+
+  if (!guestfs___validate_guid (guid)) {
+    error (g, "%s: %s: parameter is not a valid GUID",
+           "part_set_gpt_guid", "guid");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "part_set_gpt_guid");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " %d", partnum);
+    fprintf (trace_buffer.fp, " \"%s\"", guid);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "part_set_gpt_guid") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "part_set_gpt_guid", "-1");
+    return -1;
+  }
+
+  args.device = (char *) device;
+  args.partnum = partnum;
+  args.guid = (char *) guid;
+  serial = guestfs___send (g, GUESTFS_PROC_PART_SET_GPT_GUID,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_part_set_gpt_guid_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "part_set_gpt_guid", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "part_set_gpt_guid", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "part_set_gpt_guid", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_PART_SET_GPT_GUID, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "part_set_gpt_guid", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "part_set_gpt_guid", "-1");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "part_set_gpt_guid", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "part_set_gpt_guid",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "part_set_gpt_guid");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+

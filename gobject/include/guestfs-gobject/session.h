@@ -531,6 +531,7 @@ gboolean guestfs_session_part_add (GuestfsSession *session, const gchar *device,
 gboolean guestfs_session_part_del (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
 gboolean guestfs_session_part_disk (GuestfsSession *session, const gchar *device, const gchar *parttype, GError **err);
 gint8 guestfs_session_part_get_bootable (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
+gchar *guestfs_session_part_get_gpt_guid (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
 gchar *guestfs_session_part_get_gpt_type (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
 gint32 guestfs_session_part_get_mbr_id (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
 gchar *guestfs_session_part_get_name (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
@@ -538,6 +539,7 @@ gchar *guestfs_session_part_get_parttype (GuestfsSession *session, const gchar *
 gboolean guestfs_session_part_init (GuestfsSession *session, const gchar *device, const gchar *parttype, GError **err);
 GuestfsPartition **guestfs_session_part_list (GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_part_set_bootable (GuestfsSession *session, const gchar *device, gint32 partnum, gboolean bootable, GError **err);
+gboolean guestfs_session_part_set_gpt_guid (GuestfsSession *session, const gchar *device, gint32 partnum, const gchar *guid, GError **err);
 gboolean guestfs_session_part_set_gpt_type (GuestfsSession *session, const gchar *device, gint32 partnum, const gchar *guid, GError **err);
 gboolean guestfs_session_part_set_mbr_id (GuestfsSession *session, const gchar *device, gint32 partnum, gint32 idbyte, GError **err);
 gboolean guestfs_session_part_set_name (GuestfsSession *session, const gchar *device, gint32 partnum, const gchar *name, GError **err);

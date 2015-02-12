@@ -692,6 +692,7 @@
         guestfs_part_del;
         guestfs_part_disk;
         guestfs_part_get_bootable;
+        guestfs_part_get_gpt_guid;
         guestfs_part_get_gpt_type;
         guestfs_part_get_mbr_id;
         guestfs_part_get_name;
@@ -699,6 +700,7 @@
         guestfs_part_init;
         guestfs_part_list;
         guestfs_part_set_bootable;
+        guestfs_part_set_gpt_guid;
         guestfs_part_set_gpt_type;
         guestfs_part_set_mbr_id;
         guestfs_part_set_name;

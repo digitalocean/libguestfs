@@ -8157,6 +8157,22 @@ run_part_get_bootable (ETERM *message)
 }
 
 static ETERM *
+run_part_get_gpt_guid (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int partnum = get_int (ARG (1));
+  char *r;
+
+  r = guestfs_part_get_gpt_guid (g, device, partnum);
+  if (r == NULL)
+    return make_error ("part_get_gpt_guid");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
 run_part_get_gpt_type (ETERM *message)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
@@ -8257,6 +8273,21 @@ run_part_set_bootable (ETERM *message)
   r = guestfs_part_set_bootable (g, device, partnum, bootable);
   if (r == -1)
     return make_error ("part_set_bootable");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_part_set_gpt_guid (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int partnum = get_int (ARG (1));
+  CLEANUP_FREE char *guid = erl_iolist_to_string (ARG (2));
+  int r;
+
+  r = guestfs_part_set_gpt_guid (g, device, partnum, guid);
+  if (r == -1)
+    return make_error ("part_set_gpt_guid");
 
   return erl_mk_atom ("ok");
 }
@@ -11837,6 +11868,8 @@ dispatch (ETERM *message)
     return run_part_disk (message);
   else if (atom_equals (fun, "part_get_bootable"))
     return run_part_get_bootable (message);
+  else if (atom_equals (fun, "part_get_gpt_guid"))
+    return run_part_get_gpt_guid (message);
   else if (atom_equals (fun, "part_get_gpt_type"))
     return run_part_get_gpt_type (message);
   else if (atom_equals (fun, "part_get_mbr_id"))
@@ -11851,6 +11884,8 @@ dispatch (ETERM *message)
     return run_part_list (message);
   else if (atom_equals (fun, "part_set_bootable"))
     return run_part_set_bootable (message);
+  else if (atom_equals (fun, "part_set_gpt_guid"))
+    return run_part_set_gpt_guid (message);
   else if (atom_equals (fun, "part_set_gpt_type"))
     return run_part_set_gpt_type (message);
   else if (atom_equals (fun, "part_set_mbr_id"))

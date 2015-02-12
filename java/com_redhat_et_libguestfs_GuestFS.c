@@ -11033,6 +11033,31 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1bootable  (JNIEnv *env, jobje
 }
 
 JNIEXPORT jstring JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1gpt_1guid  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jstring jr;
+  char *r;
+  const char *device;
+  int partnum;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  partnum = jpartnum;
+
+  r = guestfs_part_get_gpt_guid (g, device, partnum);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    return NULL;
+  }
+  jr = (*env)->NewStringUTF (env, r);
+  free (r);
+  return jr;
+}
+
+JNIEXPORT jstring JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1gpt_1type  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
@@ -11213,6 +11238,30 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1bootable  (JNIEnv *env, jobje
   r = guestfs_part_set_bootable (g, device, partnum, bootable);
 
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1gpt_1guid  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum, jstring jguid)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *device;
+  int partnum;
+  const char *guid;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  partnum = jpartnum;
+  guid = (*env)->GetStringUTFChars (env, jguid, NULL);
+
+  r = guestfs_part_set_gpt_guid (g, device, partnum, guid);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+  (*env)->ReleaseStringUTFChars (env, jguid, guid);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));

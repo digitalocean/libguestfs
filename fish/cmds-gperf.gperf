@@ -419,6 +419,7 @@ extern struct command_entry part_add_cmd_entry;
 extern struct command_entry part_del_cmd_entry;
 extern struct command_entry part_disk_cmd_entry;
 extern struct command_entry part_get_bootable_cmd_entry;
+extern struct command_entry part_get_gpt_guid_cmd_entry;
 extern struct command_entry part_get_gpt_type_cmd_entry;
 extern struct command_entry part_get_mbr_id_cmd_entry;
 extern struct command_entry part_get_name_cmd_entry;
@@ -426,6 +427,7 @@ extern struct command_entry part_get_parttype_cmd_entry;
 extern struct command_entry part_init_cmd_entry;
 extern struct command_entry part_list_cmd_entry;
 extern struct command_entry part_set_bootable_cmd_entry;
+extern struct command_entry part_set_gpt_guid_cmd_entry;
 extern struct command_entry part_set_gpt_type_cmd_entry;
 extern struct command_entry part_set_mbr_id_cmd_entry;
 extern struct command_entry part_set_name_cmd_entry;
@@ -1300,6 +1302,8 @@ part_disk, &part_disk_cmd_entry
 part-disk, &part_disk_cmd_entry
 part_get_bootable, &part_get_bootable_cmd_entry
 part-get-bootable, &part_get_bootable_cmd_entry
+part_get_gpt_guid, &part_get_gpt_guid_cmd_entry
+part-get-gpt-guid, &part_get_gpt_guid_cmd_entry
 part_get_gpt_type, &part_get_gpt_type_cmd_entry
 part-get-gpt-type, &part_get_gpt_type_cmd_entry
 part_get_mbr_id, &part_get_mbr_id_cmd_entry
@@ -1314,6 +1318,8 @@ part_list, &part_list_cmd_entry
 part-list, &part_list_cmd_entry
 part_set_bootable, &part_set_bootable_cmd_entry
 part-set-bootable, &part_set_bootable_cmd_entry
+part_set_gpt_guid, &part_set_gpt_guid_cmd_entry
+part-set-gpt-guid, &part_set_gpt_guid_cmd_entry
 part_set_gpt_type, &part_set_gpt_type_cmd_entry
 part-set-gpt-type, &part_set_gpt_type_cmd_entry
 part_set_mbr_id, &part_set_mbr_id_cmd_entry

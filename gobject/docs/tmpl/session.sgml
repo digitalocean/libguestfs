@@ -4762,6 +4762,18 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_part_get_gpt_guid ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@partnum: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_part_get_gpt_type ##### -->
 <para>
 
@@ -4841,6 +4853,19 @@ GuestfsSession
 @device: 
 @partnum: 
 @bootable: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_part_set_gpt_guid ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@partnum: 
+@guid: 
 @err: 
 @Returns: 
 

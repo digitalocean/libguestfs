@@ -496,6 +496,7 @@
     <keyword type="function" name="guestfs_session_part_del ()" link="GuestfsSession.html#guestfs-session-part-del"/>
     <keyword type="function" name="guestfs_session_part_disk ()" link="GuestfsSession.html#guestfs-session-part-disk"/>
     <keyword type="function" name="guestfs_session_part_get_bootable ()" link="GuestfsSession.html#guestfs-session-part-get-bootable"/>
+    <keyword type="function" name="guestfs_session_part_get_gpt_guid ()" link="GuestfsSession.html#guestfs-session-part-get-gpt-guid"/>
     <keyword type="function" name="guestfs_session_part_get_gpt_type ()" link="GuestfsSession.html#guestfs-session-part-get-gpt-type"/>
     <keyword type="function" name="guestfs_session_part_get_mbr_id ()" link="GuestfsSession.html#guestfs-session-part-get-mbr-id"/>
     <keyword type="function" name="guestfs_session_part_get_name ()" link="GuestfsSession.html#guestfs-session-part-get-name"/>
@@ -503,6 +504,7 @@
     <keyword type="function" name="guestfs_session_part_init ()" link="GuestfsSession.html#guestfs-session-part-init"/>
     <keyword type="function" name="guestfs_session_part_list ()" link="GuestfsSession.html#guestfs-session-part-list"/>
     <keyword type="function" name="guestfs_session_part_set_bootable ()" link="GuestfsSession.html#guestfs-session-part-set-bootable"/>
+    <keyword type="function" name="guestfs_session_part_set_gpt_guid ()" link="GuestfsSession.html#guestfs-session-part-set-gpt-guid"/>
     <keyword type="function" name="guestfs_session_part_set_gpt_type ()" link="GuestfsSession.html#guestfs-session-part-set-gpt-type"/>
     <keyword type="function" name="guestfs_session_part_set_mbr_id ()" link="GuestfsSession.html#guestfs-session-part-set-mbr-id"/>
     <keyword type="function" name="guestfs_session_part_set_name ()" link="GuestfsSession.html#guestfs-session-part-set-name"/>

@@ -3303,6 +3303,14 @@ JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1bo
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _part_get_gpt_guid
+ * Signature: (JLjava/lang/String;I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1gpt_1guid
+  (JNIEnv *, jobject, jlong, jstring, jint);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _part_get_gpt_type
  * Signature: (JLjava/lang/String;I)Ljava/lang/String;
  */
@@ -3356,6 +3364,14 @@ JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1part_1lis
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1bootable
   (JNIEnv *, jobject, jlong, jstring, jint, jboolean);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _part_set_gpt_guid
+ * Signature: (JLjava/lang/String;ILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1gpt_1guid
+  (JNIEnv *, jobject, jlong, jstring, jint, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS

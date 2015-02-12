@@ -1691,6 +1691,9 @@ val part_disk : t -> string -> string -> unit
 val part_get_bootable : t -> string -> int -> bool
 (** return true if a partition is bootable *)
 
+val part_get_gpt_guid : t -> string -> int -> string
+(** get the GUID of a GPT partition *)
+
 val part_get_gpt_type : t -> string -> int -> string
 (** get the type GUID of a GPT partition *)
 
@@ -1711,6 +1714,9 @@ val part_list : t -> string -> partition array
 
 val part_set_bootable : t -> string -> int -> bool -> unit
 (** make a partition bootable *)
+
+val part_set_gpt_guid : t -> string -> int -> string -> unit
+(** set the GUID of a GPT partition *)
 
 val part_set_gpt_type : t -> string -> int -> string -> unit
 (** set the type GUID of a GPT partition *)
@@ -2715,6 +2721,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method part_del : string -> int -> unit
   method part_disk : string -> string -> unit
   method part_get_bootable : string -> int -> bool
+  method part_get_gpt_guid : string -> int -> string
   method part_get_gpt_type : string -> int -> string
   method part_get_mbr_id : string -> int -> int
   method part_get_name : string -> int -> string
@@ -2722,6 +2729,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method part_init : string -> string -> unit
   method part_list : string -> partition array
   method part_set_bootable : string -> int -> bool -> unit
+  method part_set_gpt_guid : string -> int -> string -> unit
   method part_set_gpt_type : string -> int -> string -> unit
   method part_set_mbr_id : string -> int -> int -> unit
   method part_set_name : string -> int -> string -> unit
