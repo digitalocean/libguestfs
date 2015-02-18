@@ -83,6 +83,7 @@ extern struct command_entry blockdev_setrw_cmd_entry;
 extern struct command_entry btrfs_balance_cancel_cmd_entry;
 extern struct command_entry btrfs_balance_pause_cmd_entry;
 extern struct command_entry btrfs_balance_resume_cmd_entry;
+extern struct command_entry btrfs_balance_status_cmd_entry;
 extern struct command_entry btrfs_device_add_cmd_entry;
 extern struct command_entry btrfs_device_delete_cmd_entry;
 extern struct command_entry btrfs_filesystem_balance_cmd_entry;
@@ -103,6 +104,7 @@ extern struct command_entry btrfs_rescue_super_recover_cmd_entry;
 extern struct command_entry btrfs_scrub_cancel_cmd_entry;
 extern struct command_entry btrfs_scrub_resume_cmd_entry;
 extern struct command_entry btrfs_scrub_start_cmd_entry;
+extern struct command_entry btrfs_scrub_status_cmd_entry;
 extern struct command_entry btrfs_set_seeding_cmd_entry;
 extern struct command_entry btrfs_subvolume_create_cmd_entry;
 extern struct command_entry btrfs_subvolume_delete_cmd_entry;
@@ -697,6 +699,8 @@ btrfs_balance_pause, &btrfs_balance_pause_cmd_entry
 btrfs-balance-pause, &btrfs_balance_pause_cmd_entry
 btrfs_balance_resume, &btrfs_balance_resume_cmd_entry
 btrfs-balance-resume, &btrfs_balance_resume_cmd_entry
+btrfs_balance_status, &btrfs_balance_status_cmd_entry
+btrfs-balance-status, &btrfs_balance_status_cmd_entry
 btrfs_device_add, &btrfs_device_add_cmd_entry
 btrfs-device-add, &btrfs_device_add_cmd_entry
 btrfs_device_delete, &btrfs_device_delete_cmd_entry
@@ -738,6 +742,8 @@ btrfs_scrub_resume, &btrfs_scrub_resume_cmd_entry
 btrfs-scrub-resume, &btrfs_scrub_resume_cmd_entry
 btrfs_scrub_start, &btrfs_scrub_start_cmd_entry
 btrfs-scrub-start, &btrfs_scrub_start_cmd_entry
+btrfs_scrub_status, &btrfs_scrub_status_cmd_entry
+btrfs-scrub-status, &btrfs_scrub_status_cmd_entry
 btrfs_set_seeding, &btrfs_set_seeding_cmd_entry
 btrfs-set-seeding, &btrfs_set_seeding_cmd_entry
 btrfs_subvolume_create, &btrfs_subvolume_create_cmd_entry

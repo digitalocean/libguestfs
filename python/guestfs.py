@@ -1202,6 +1202,18 @@ class GuestFS(object):
         r = libguestfsmod.btrfs_balance_resume (self._o, path)
         return r
 
+    def btrfs_balance_status (self, path):
+        """Show the status of a running or paused balance on a
+        btrfs filesystem.
+        
+        This function returns a dictionary, with keys matching
+        the various fields in the guestfs_btrfsbalance
+        structure.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_balance_status (self._o, path)
+        return r
+
     def btrfs_device_add (self, devices, fs):
         """Add the list of device(s) in "devices" to the btrfs
         filesystem mounted at "fs". If "devices" is an empty
@@ -1340,7 +1352,7 @@ class GuestFS(object):
         return r
 
     def btrfs_rescue_chunk_recover (self, device):
-        """Recover the chunk tree of btrfs filesystem by scannning
+        """Recover the chunk tree of btrfs filesystem by scanning
         the devices one by one.
         """
         self._check_not_closed ()
@@ -1376,6 +1388,17 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_scrub_start (self._o, path)
+        return r
+
+    def btrfs_scrub_status (self, path):
+        """Show status of running or finished scrub on a btrfs
+        filesystem.
+        
+        This function returns a dictionary, with keys matching
+        the various fields in the guestfs_btrfsscrub structure.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_scrub_status (self._o, path)
         return r
 
     def btrfs_set_seeding (self, device, seeding):
@@ -1489,7 +1512,7 @@ class GuestFS(object):
         "/dev/mapper/VG-LV"
         "/dev/dm-N"
         Converted to "/dev/VG/LV" form using
-        "g.lvm_canonical_lvm_name".
+        "g.lvm_canonical_lv_name".
         
         Other strings are returned unmodified.
         """
@@ -4959,8 +4982,8 @@ class GuestFS(object):
         
         The returned boolean tells you if there are any more
         journal records to read. "true" means you can read the
-        next record (eg. using "g.journal_get_data"), and
-        "false" means you have reached the end of the journal.
+        next record (eg. using "g.journal_get"), and "false"
+        means you have reached the end of the journal.
         """
         self._check_not_closed ()
         r = libguestfsmod.journal_next (self._o)

@@ -428,7 +428,7 @@ static const char *errno_to_string[] = {
   (sizeof errno_to_string / sizeof errno_to_string[0])
 
 const char *
-guestfs___errno_to_string (int errnum)
+guestfs_int_errno_to_string (int errnum)
 {
   /* See function documentation. */
   if (errnum == 0)
@@ -442,10 +442,10 @@ guestfs___errno_to_string (int errnum)
 }
 
 int
-guestfs___string_to_errno (const char *errnostr)
+guestfs_int_string_to_errno (const char *errnostr)
 {
   const struct errnostring_entry *v =
-    guestfs___string_to_errno_lookup (errnostr, strlen (errnostr));
+    guestfs_int_string_to_errno_lookup (errnostr, strlen (errnostr));
   if (v /* not necessary to check v->name != NULL here */)
     return v->errnum;
   else

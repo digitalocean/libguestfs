@@ -72,20 +72,20 @@ set_abs_path (guestfs_h *g, const char *tmpdir, char **tmpdir_ret)
 }
 
 int
-guestfs___set_env_tmpdir (guestfs_h *g, const char *tmpdir)
+guestfs_int_set_env_tmpdir (guestfs_h *g, const char *tmpdir)
 {
   return set_abs_path (g, tmpdir, &g->env_tmpdir);
 }
 
 int
-guestfs__set_tmpdir (guestfs_h *g, const char *tmpdir)
+guestfs_impl_set_tmpdir (guestfs_h *g, const char *tmpdir)
 {
   return set_abs_path (g, tmpdir, &g->int_tmpdir);
 }
 
 /* Note this actually calculates the tmpdir, so it never returns NULL. */
 char *
-guestfs__get_tmpdir (guestfs_h *g)
+guestfs_impl_get_tmpdir (guestfs_h *g)
 {
   const char *str;
 
@@ -100,14 +100,14 @@ guestfs__get_tmpdir (guestfs_h *g)
 }
 
 int
-guestfs__set_cachedir (guestfs_h *g, const char *cachedir)
+guestfs_impl_set_cachedir (guestfs_h *g, const char *cachedir)
 {
   return set_abs_path (g, cachedir, &g->int_cachedir);
 }
 
 /* Note this actually calculates the cachedir, so it never returns NULL. */
 char *
-guestfs__get_cachedir (guestfs_h *g)
+guestfs_impl_get_cachedir (guestfs_h *g)
 {
   const char *str;
 
@@ -126,7 +126,7 @@ guestfs__get_cachedir (guestfs_h *g)
  * first time it is used, or during launch.
  */
 int
-guestfs___lazy_make_tmpdir (guestfs_h *g)
+guestfs_int_lazy_make_tmpdir (guestfs_h *g)
 {
   if (!g->tmpdir) {
     CLEANUP_FREE char *tmpdir = guestfs_get_tmpdir (g);
@@ -147,19 +147,19 @@ guestfs___lazy_make_tmpdir (guestfs_h *g)
  * simpler and safer.
  */
 void
-guestfs___recursive_remove_dir (guestfs_h *g, const char *dir)
+guestfs_int_recursive_remove_dir (guestfs_h *g, const char *dir)
 {
-  CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
+  CLEANUP_CMD_CLOSE struct command *cmd = guestfs_int_new_command (g);
 
-  guestfs___cmd_add_arg (cmd, "rm");
-  guestfs___cmd_add_arg (cmd, "-rf");
-  guestfs___cmd_add_arg (cmd, dir);
-  ignore_value (guestfs___cmd_run (cmd));
+  guestfs_int_cmd_add_arg (cmd, "rm");
+  guestfs_int_cmd_add_arg (cmd, "-rf");
+  guestfs_int_cmd_add_arg (cmd, dir);
+  ignore_value (guestfs_int_cmd_run (cmd));
 }
 
 void
-guestfs___remove_tmpdir (guestfs_h *g)
+guestfs_int_remove_tmpdir (guestfs_h *g)
 {
   if (g->tmpdir)
-    guestfs___recursive_remove_dir (g, g->tmpdir);
+    guestfs_int_recursive_remove_dir (g, g->tmpdir);
 }

@@ -151,6 +151,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_btrfs_balance_cancel, NULL)
   PHP_FE (guestfs_btrfs_balance_pause, NULL)
   PHP_FE (guestfs_btrfs_balance_resume, NULL)
+  PHP_FE (guestfs_btrfs_balance_status, NULL)
   PHP_FE (guestfs_btrfs_device_add, NULL)
   PHP_FE (guestfs_btrfs_device_delete, NULL)
   PHP_FE (guestfs_btrfs_filesystem_balance, NULL)
@@ -171,6 +172,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_btrfs_scrub_cancel, NULL)
   PHP_FE (guestfs_btrfs_scrub_resume, NULL)
   PHP_FE (guestfs_btrfs_scrub_start, NULL)
+  PHP_FE (guestfs_btrfs_scrub_status, NULL)
   PHP_FE (guestfs_btrfs_set_seeding, NULL)
   PHP_FE (guestfs_btrfs_subvolume_create, NULL)
   PHP_FE (guestfs_btrfs_subvolume_delete, NULL)
@@ -2613,6 +2615,45 @@ PHP_FUNCTION (guestfs_btrfs_balance_resume)
   RETURN_TRUE;
 }
 
+PHP_FUNCTION (guestfs_btrfs_balance_status)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *path;
+  int path_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &path, &path_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (path) != path_size) {
+    fprintf (stderr, "libguestfs: btrfs_balance_status: parameter 'path' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  struct guestfs_btrfsbalance *r;
+  r = guestfs_btrfs_balance_status (g, path);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  array_init (return_value);
+  add_assoc_string (return_value, "btrfsbalance_status", r->btrfsbalance_status, 1);
+  add_assoc_long (return_value, "btrfsbalance_total", r->btrfsbalance_total);
+  add_assoc_long (return_value, "btrfsbalance_balanced", r->btrfsbalance_balanced);
+  add_assoc_long (return_value, "btrfsbalance_considered", r->btrfsbalance_considered);
+  add_assoc_long (return_value, "btrfsbalance_left", r->btrfsbalance_left);
+  guestfs_free_btrfsbalance (r);
+}
+
 PHP_FUNCTION (guestfs_btrfs_device_add)
 {
   zval *z_g;
@@ -3373,6 +3414,55 @@ PHP_FUNCTION (guestfs_btrfs_scrub_start)
   }
 
   RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_btrfs_scrub_status)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *path;
+  int path_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &path, &path_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (path) != path_size) {
+    fprintf (stderr, "libguestfs: btrfs_scrub_status: parameter 'path' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  struct guestfs_btrfsscrub *r;
+  r = guestfs_btrfs_scrub_status (g, path);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  array_init (return_value);
+  add_assoc_long (return_value, "btrfsscrub_data_extents_scrubbed", r->btrfsscrub_data_extents_scrubbed);
+  add_assoc_long (return_value, "btrfsscrub_tree_extents_scrubbed", r->btrfsscrub_tree_extents_scrubbed);
+  add_assoc_long (return_value, "btrfsscrub_data_bytes_scrubbed", r->btrfsscrub_data_bytes_scrubbed);
+  add_assoc_long (return_value, "btrfsscrub_tree_bytes_scrubbed", r->btrfsscrub_tree_bytes_scrubbed);
+  add_assoc_long (return_value, "btrfsscrub_read_errors", r->btrfsscrub_read_errors);
+  add_assoc_long (return_value, "btrfsscrub_csum_errors", r->btrfsscrub_csum_errors);
+  add_assoc_long (return_value, "btrfsscrub_verify_errors", r->btrfsscrub_verify_errors);
+  add_assoc_long (return_value, "btrfsscrub_no_csum", r->btrfsscrub_no_csum);
+  add_assoc_long (return_value, "btrfsscrub_csum_discards", r->btrfsscrub_csum_discards);
+  add_assoc_long (return_value, "btrfsscrub_super_errors", r->btrfsscrub_super_errors);
+  add_assoc_long (return_value, "btrfsscrub_malloc_errors", r->btrfsscrub_malloc_errors);
+  add_assoc_long (return_value, "btrfsscrub_uncorrectable_errors", r->btrfsscrub_uncorrectable_errors);
+  add_assoc_long (return_value, "btrfsscrub_unverified_errors", r->btrfsscrub_unverified_errors);
+  add_assoc_long (return_value, "btrfsscrub_corrected_errors", r->btrfsscrub_corrected_errors);
+  add_assoc_long (return_value, "btrfsscrub_last_physical", r->btrfsscrub_last_physical);
+  guestfs_free_btrfsscrub (r);
 }
 
 PHP_FUNCTION (guestfs_btrfs_set_seeding)

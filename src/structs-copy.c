@@ -1552,6 +1552,138 @@ error: ;
 }
 
 static void
+free_btrfsbalance (struct guestfs_btrfsbalance *s)
+{
+  free (s->btrfsbalance_status);
+}
+
+static int
+copy_btrfsbalance (const struct guestfs_btrfsbalance *inp, struct guestfs_btrfsbalance *out)
+{
+  int err;
+
+  out->btrfsbalance_status = NULL;
+  out->btrfsbalance_status = strdup (inp->btrfsbalance_status);
+  if (out->btrfsbalance_status == NULL) goto error;
+  out->btrfsbalance_total = inp->btrfsbalance_total;
+  out->btrfsbalance_balanced = inp->btrfsbalance_balanced;
+  out->btrfsbalance_considered = inp->btrfsbalance_considered;
+  out->btrfsbalance_left = inp->btrfsbalance_left;
+  return 0;
+
+error: ;
+  err = errno;
+  free_btrfsbalance (out);
+  errno = err;
+  return -1;
+}
+
+GUESTFS_DLL_PUBLIC struct guestfs_btrfsbalance *
+guestfs_copy_btrfsbalance (const struct guestfs_btrfsbalance *inp)
+{
+  struct guestfs_btrfsbalance *ret;
+
+  ret = malloc (sizeof *ret);
+  if (ret == NULL)
+    return NULL;
+
+  if (copy_btrfsbalance (inp, ret) == -1) {
+    int err;
+
+    err = errno;
+    free (ret);
+    errno = err;
+    return NULL;
+  }
+
+  return ret;
+}
+
+GUESTFS_DLL_PUBLIC struct guestfs_btrfsbalance_list *
+guestfs_copy_btrfsbalance_list (const struct guestfs_btrfsbalance_list *inp)
+{
+  int err;
+  struct guestfs_btrfsbalance_list *ret;
+  size_t i = 0;
+  size_t j;
+
+  ret = malloc (sizeof *ret);
+  if (ret == NULL)
+    return NULL;
+
+  ret->len = inp->len;
+  ret->val = malloc (sizeof (struct guestfs_btrfsbalance) * ret->len);
+  if (ret->val == NULL)
+    goto error;
+
+  for (i = 0; i < ret->len; ++i) {
+    if (copy_btrfsbalance (&inp->val[i], &ret->val[i]) == -1)
+      goto error;
+  }
+
+  return ret;
+
+error: ;
+  err = errno;
+  for (j = 0; j < i; ++j)
+    free_btrfsbalance (&ret->val[j]);
+  free (ret->val);
+  free (ret);
+  errno = err;
+  return NULL;
+}
+
+static void
+copy_btrfsscrub (const struct guestfs_btrfsscrub *inp, struct guestfs_btrfsscrub *out)
+{
+  memcpy (out, inp, sizeof *out);
+}
+
+GUESTFS_DLL_PUBLIC struct guestfs_btrfsscrub *
+guestfs_copy_btrfsscrub (const struct guestfs_btrfsscrub *inp)
+{
+  struct guestfs_btrfsscrub *ret;
+
+  ret = malloc (sizeof *ret);
+  if (ret == NULL)
+    return NULL;
+
+  copy_btrfsscrub (inp, ret);
+
+  return ret;
+}
+
+GUESTFS_DLL_PUBLIC struct guestfs_btrfsscrub_list *
+guestfs_copy_btrfsscrub_list (const struct guestfs_btrfsscrub_list *inp)
+{
+  int err;
+  struct guestfs_btrfsscrub_list *ret;
+  size_t i = 0;
+
+  ret = malloc (sizeof *ret);
+  if (ret == NULL)
+    return NULL;
+
+  ret->len = inp->len;
+  ret->val = malloc (sizeof (struct guestfs_btrfsscrub) * ret->len);
+  if (ret->val == NULL)
+    goto error;
+
+  for (i = 0; i < ret->len; ++i) {
+    copy_btrfsscrub (&inp->val[i], &ret->val[i]);
+  }
+
+  return ret;
+
+error: ;
+  err = errno;
+  free (ret->val);
+  free (ret);
+  errno = err;
+  return NULL;
+}
+
+static void
 free_xfsinfo (struct guestfs_xfsinfo *s)
 {
   free (s->xfs_mntpoint);

@@ -115,10 +115,36 @@ type application2 = {
   app2_spare4 : string;
 }
 
+type btrfsbalance = {
+  btrfsbalance_status : string;
+  btrfsbalance_total : int64;
+  btrfsbalance_balanced : int64;
+  btrfsbalance_considered : int64;
+  btrfsbalance_left : int64;
+}
+
 type btrfsqgroup = {
   btrfsqgroup_id : string;
   btrfsqgroup_rfer : int64;
   btrfsqgroup_excl : int64;
+}
+
+type btrfsscrub = {
+  btrfsscrub_data_extents_scrubbed : int64;
+  btrfsscrub_tree_extents_scrubbed : int64;
+  btrfsscrub_data_bytes_scrubbed : int64;
+  btrfsscrub_tree_bytes_scrubbed : int64;
+  btrfsscrub_read_errors : int64;
+  btrfsscrub_csum_errors : int64;
+  btrfsscrub_verify_errors : int64;
+  btrfsscrub_no_csum : int64;
+  btrfsscrub_csum_discards : int64;
+  btrfsscrub_super_errors : int64;
+  btrfsscrub_malloc_errors : int64;
+  btrfsscrub_uncorrectable_errors : int64;
+  btrfsscrub_unverified_errors : int64;
+  btrfsscrub_corrected_errors : int64;
+  btrfsscrub_last_physical : int64;
 }
 
 type btrfssubvolume = {
@@ -395,6 +421,7 @@ external blockdev_setrw : t -> string -> unit = "ocaml_guestfs_blockdev_setrw"
 external btrfs_balance_cancel : t -> string -> unit = "ocaml_guestfs_btrfs_balance_cancel"
 external btrfs_balance_pause : t -> string -> unit = "ocaml_guestfs_btrfs_balance_pause"
 external btrfs_balance_resume : t -> string -> unit = "ocaml_guestfs_btrfs_balance_resume"
+external btrfs_balance_status : t -> string -> btrfsbalance = "ocaml_guestfs_btrfs_balance_status"
 external btrfs_device_add : t -> string array -> string -> unit = "ocaml_guestfs_btrfs_device_add"
 external btrfs_device_delete : t -> string array -> string -> unit = "ocaml_guestfs_btrfs_device_delete"
 external btrfs_filesystem_balance : t -> string -> unit = "ocaml_guestfs_btrfs_filesystem_balance"
@@ -415,6 +442,7 @@ external btrfs_rescue_super_recover : t -> string -> unit = "ocaml_guestfs_btrfs
 external btrfs_scrub_cancel : t -> string -> unit = "ocaml_guestfs_btrfs_scrub_cancel"
 external btrfs_scrub_resume : t -> string -> unit = "ocaml_guestfs_btrfs_scrub_resume"
 external btrfs_scrub_start : t -> string -> unit = "ocaml_guestfs_btrfs_scrub_start"
+external btrfs_scrub_status : t -> string -> btrfsscrub = "ocaml_guestfs_btrfs_scrub_status"
 external btrfs_set_seeding : t -> string -> bool -> unit = "ocaml_guestfs_btrfs_set_seeding"
 external btrfs_subvolume_create : t -> ?qgroupid:string -> string -> unit = "ocaml_guestfs_btrfs_subvolume_create"
 let btrfs_subvolume_create_opts = btrfs_subvolume_create
@@ -995,6 +1023,7 @@ class guestfs ?environment ?close_on_exit () =
     method btrfs_balance_cancel = btrfs_balance_cancel g
     method btrfs_balance_pause = btrfs_balance_pause g
     method btrfs_balance_resume = btrfs_balance_resume g
+    method btrfs_balance_status = btrfs_balance_status g
     method btrfs_device_add = btrfs_device_add g
     method btrfs_device_delete = btrfs_device_delete g
     method btrfs_filesystem_balance = btrfs_filesystem_balance g
@@ -1015,6 +1044,7 @@ class guestfs ?environment ?close_on_exit () =
     method btrfs_scrub_cancel = btrfs_scrub_cancel g
     method btrfs_scrub_resume = btrfs_scrub_resume g
     method btrfs_scrub_start = btrfs_scrub_start g
+    method btrfs_scrub_status = btrfs_scrub_status g
     method btrfs_set_seeding = btrfs_set_seeding g
     method btrfs_subvolume_create = btrfs_subvolume_create g
     method btrfs_subvolume_create_opts = self#btrfs_subvolume_create

@@ -628,5 +628,7 @@ extern int do_btrfs_rescue_chunk_recover (const char *device);
 extern int do_btrfs_rescue_super_recover (const char *device);
 extern int do_part_set_gpt_guid (const char *device, int partnum, const char *guid);
 extern char *do_part_get_gpt_guid (const char *device, int partnum);
+extern guestfs_int_btrfsbalance *do_btrfs_balance_status (const char *path);
+extern guestfs_int_btrfsscrub *do_btrfs_scrub_status (const char *path);
 
 #endif /* GUESTFSD_ACTIONS_H */

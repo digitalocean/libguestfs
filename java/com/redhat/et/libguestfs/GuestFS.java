@@ -2260,6 +2260,28 @@ public class GuestFS {
 
   /**
    * <p>
+   * show the status of a running or paused balance
+   * </p><p>
+   * Show the status of a running or paused balance on a
+   * btrfs filesystem.
+   * </p><p>
+   * </p>
+   * @throws LibGuestFSException
+   */
+  public BTRFSBalance btrfs_balance_status (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_balance_status: handle is closed");
+
+    return _btrfs_balance_status (g, path);
+  }
+
+  private native BTRFSBalance _btrfs_balance_status (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * add devices to a btrfs filesystem
    * </p><p>
    * Add the list of device(s) in "devices" to the btrfs
@@ -2689,7 +2711,7 @@ public class GuestFS {
    * <p>
    * recover the chunk tree of btrfs filesystem
    * </p><p>
-   * Recover the chunk tree of btrfs filesystem by scannning
+   * Recover the chunk tree of btrfs filesystem by scanning
    * the devices one by one.
    * </p><p>
    * </p>
@@ -2792,6 +2814,28 @@ public class GuestFS {
   }
 
   private native void _btrfs_scrub_start (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * show status of running or finished scrub
+   * </p><p>
+   * Show status of running or finished scrub on a btrfs
+   * filesystem.
+   * </p><p>
+   * </p>
+   * @throws LibGuestFSException
+   */
+  public BTRFSScrub btrfs_scrub_status (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_scrub_status: handle is closed");
+
+    return _btrfs_scrub_status (g, path);
+  }
+
+  private native BTRFSScrub _btrfs_scrub_status (long g, String path)
     throws LibGuestFSException;
 
   /**
@@ -3103,7 +3147,7 @@ public class GuestFS {
    * "/dev/mapper/VG-LV"
    * "/dev/dm-N"
    * Converted to "/dev/VG/LV" form using
-   * "g.lvm_canonical_lvm_name".
+   * "g.lvm_canonical_lv_name".
    * </p><p>
    * Other strings are returned unmodified.
    * </p><p>
@@ -10476,8 +10520,8 @@ public class GuestFS {
    * </p><p>
    * The returned boolean tells you if there are any more
    * journal records to read. "true" means you can read the
-   * next record (eg. using "g.journal_get_data"), and
-   * "false" means you have reached the end of the journal.
+   * next record (eg. using "g.journal_get"), and "false"
+   * means you have reached the end of the journal.
    * </p><p>
    * </p>
    * @throws LibGuestFSException

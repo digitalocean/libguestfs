@@ -32,97 +32,105 @@
 
 #ifdef HAVE_ATTRIBUTE_CLEANUP
 #define CLEANUP_FREE_INT_BOOL \
-  __attribute__((cleanup(guestfs___cleanup_free_int_bool)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_int_bool)))
 #define CLEANUP_FREE_INT_BOOL_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_int_bool_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_int_bool_list)))
 #define CLEANUP_FREE_LVM_PV \
-  __attribute__((cleanup(guestfs___cleanup_free_lvm_pv)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_lvm_pv)))
 #define CLEANUP_FREE_LVM_PV_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_lvm_pv_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_lvm_pv_list)))
 #define CLEANUP_FREE_LVM_VG \
-  __attribute__((cleanup(guestfs___cleanup_free_lvm_vg)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_lvm_vg)))
 #define CLEANUP_FREE_LVM_VG_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_lvm_vg_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_lvm_vg_list)))
 #define CLEANUP_FREE_LVM_LV \
-  __attribute__((cleanup(guestfs___cleanup_free_lvm_lv)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_lvm_lv)))
 #define CLEANUP_FREE_LVM_LV_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_lvm_lv_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_lvm_lv_list)))
 #define CLEANUP_FREE_STAT \
-  __attribute__((cleanup(guestfs___cleanup_free_stat)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_stat)))
 #define CLEANUP_FREE_STAT_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_stat_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_stat_list)))
 #define CLEANUP_FREE_STATNS \
-  __attribute__((cleanup(guestfs___cleanup_free_statns)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_statns)))
 #define CLEANUP_FREE_STATNS_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_statns_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_statns_list)))
 #define CLEANUP_FREE_STATVFS \
-  __attribute__((cleanup(guestfs___cleanup_free_statvfs)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_statvfs)))
 #define CLEANUP_FREE_STATVFS_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_statvfs_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_statvfs_list)))
 #define CLEANUP_FREE_DIRENT \
-  __attribute__((cleanup(guestfs___cleanup_free_dirent)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_dirent)))
 #define CLEANUP_FREE_DIRENT_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_dirent_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_dirent_list)))
 #define CLEANUP_FREE_VERSION \
-  __attribute__((cleanup(guestfs___cleanup_free_version)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_version)))
 #define CLEANUP_FREE_VERSION_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_version_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_version_list)))
 #define CLEANUP_FREE_XATTR \
-  __attribute__((cleanup(guestfs___cleanup_free_xattr)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_xattr)))
 #define CLEANUP_FREE_XATTR_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_xattr_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_xattr_list)))
 #define CLEANUP_FREE_INOTIFY_EVENT \
-  __attribute__((cleanup(guestfs___cleanup_free_inotify_event)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_inotify_event)))
 #define CLEANUP_FREE_INOTIFY_EVENT_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_inotify_event_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_inotify_event_list)))
 #define CLEANUP_FREE_PARTITION \
-  __attribute__((cleanup(guestfs___cleanup_free_partition)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_partition)))
 #define CLEANUP_FREE_PARTITION_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_partition_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_partition_list)))
 #define CLEANUP_FREE_APPLICATION \
-  __attribute__((cleanup(guestfs___cleanup_free_application)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_application)))
 #define CLEANUP_FREE_APPLICATION_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_application_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_application_list)))
 #define CLEANUP_FREE_APPLICATION2 \
-  __attribute__((cleanup(guestfs___cleanup_free_application2)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_application2)))
 #define CLEANUP_FREE_APPLICATION2_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_application2_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_application2_list)))
 #define CLEANUP_FREE_ISOINFO \
-  __attribute__((cleanup(guestfs___cleanup_free_isoinfo)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_isoinfo)))
 #define CLEANUP_FREE_ISOINFO_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_isoinfo_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_isoinfo_list)))
 #define CLEANUP_FREE_MDSTAT \
-  __attribute__((cleanup(guestfs___cleanup_free_mdstat)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_mdstat)))
 #define CLEANUP_FREE_MDSTAT_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_mdstat_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_mdstat_list)))
 #define CLEANUP_FREE_BTRFSSUBVOLUME \
-  __attribute__((cleanup(guestfs___cleanup_free_btrfssubvolume)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_btrfssubvolume)))
 #define CLEANUP_FREE_BTRFSSUBVOLUME_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_btrfssubvolume_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_btrfssubvolume_list)))
 #define CLEANUP_FREE_BTRFSQGROUP \
-  __attribute__((cleanup(guestfs___cleanup_free_btrfsqgroup)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_btrfsqgroup)))
 #define CLEANUP_FREE_BTRFSQGROUP_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_btrfsqgroup_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_btrfsqgroup_list)))
+#define CLEANUP_FREE_BTRFSBALANCE \
+  __attribute__((cleanup(guestfs_int_cleanup_free_btrfsbalance)))
+#define CLEANUP_FREE_BTRFSBALANCE_LIST \
+  __attribute__((cleanup(guestfs_int_cleanup_free_btrfsbalance_list)))
+#define CLEANUP_FREE_BTRFSSCRUB \
+  __attribute__((cleanup(guestfs_int_cleanup_free_btrfsscrub)))
+#define CLEANUP_FREE_BTRFSSCRUB_LIST \
+  __attribute__((cleanup(guestfs_int_cleanup_free_btrfsscrub_list)))
 #define CLEANUP_FREE_XFSINFO \
-  __attribute__((cleanup(guestfs___cleanup_free_xfsinfo)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_xfsinfo)))
 #define CLEANUP_FREE_XFSINFO_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_xfsinfo_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_xfsinfo_list)))
 #define CLEANUP_FREE_UTSNAME \
-  __attribute__((cleanup(guestfs___cleanup_free_utsname)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_utsname)))
 #define CLEANUP_FREE_UTSNAME_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_utsname_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_utsname_list)))
 #define CLEANUP_FREE_HIVEX_NODE \
-  __attribute__((cleanup(guestfs___cleanup_free_hivex_node)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_hivex_node)))
 #define CLEANUP_FREE_HIVEX_NODE_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_hivex_node_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_hivex_node_list)))
 #define CLEANUP_FREE_HIVEX_VALUE \
-  __attribute__((cleanup(guestfs___cleanup_free_hivex_value)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_hivex_value)))
 #define CLEANUP_FREE_HIVEX_VALUE_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_hivex_value_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_hivex_value_list)))
 #define CLEANUP_FREE_INTERNAL_MOUNTABLE \
-  __attribute__((cleanup(guestfs___cleanup_free_internal_mountable)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_internal_mountable)))
 #define CLEANUP_FREE_INTERNAL_MOUNTABLE_LIST \
-  __attribute__((cleanup(guestfs___cleanup_free_internal_mountable_list)))
+  __attribute__((cleanup(guestfs_int_cleanup_free_internal_mountable_list)))
 #else /* !HAVE_ATTRIBUTE_CLEANUP */
 #define CLEANUP_FREE_INT_BOOL
 #define CLEANUP_FREE_INT_BOOL_LIST
@@ -160,6 +168,10 @@
 #define CLEANUP_FREE_BTRFSSUBVOLUME_LIST
 #define CLEANUP_FREE_BTRFSQGROUP
 #define CLEANUP_FREE_BTRFSQGROUP_LIST
+#define CLEANUP_FREE_BTRFSBALANCE
+#define CLEANUP_FREE_BTRFSBALANCE_LIST
+#define CLEANUP_FREE_BTRFSSCRUB
+#define CLEANUP_FREE_BTRFSSCRUB_LIST
 #define CLEANUP_FREE_XFSINFO
 #define CLEANUP_FREE_XFSINFO_LIST
 #define CLEANUP_FREE_UTSNAME
@@ -176,51 +188,55 @@
  * Don't call them directly.
  */
 
-extern void guestfs___cleanup_free_int_bool (void *ptr);
-extern void guestfs___cleanup_free_int_bool_list (void *ptr);
-extern void guestfs___cleanup_free_lvm_pv (void *ptr);
-extern void guestfs___cleanup_free_lvm_pv_list (void *ptr);
-extern void guestfs___cleanup_free_lvm_vg (void *ptr);
-extern void guestfs___cleanup_free_lvm_vg_list (void *ptr);
-extern void guestfs___cleanup_free_lvm_lv (void *ptr);
-extern void guestfs___cleanup_free_lvm_lv_list (void *ptr);
-extern void guestfs___cleanup_free_stat (void *ptr);
-extern void guestfs___cleanup_free_stat_list (void *ptr);
-extern void guestfs___cleanup_free_statns (void *ptr);
-extern void guestfs___cleanup_free_statns_list (void *ptr);
-extern void guestfs___cleanup_free_statvfs (void *ptr);
-extern void guestfs___cleanup_free_statvfs_list (void *ptr);
-extern void guestfs___cleanup_free_dirent (void *ptr);
-extern void guestfs___cleanup_free_dirent_list (void *ptr);
-extern void guestfs___cleanup_free_version (void *ptr);
-extern void guestfs___cleanup_free_version_list (void *ptr);
-extern void guestfs___cleanup_free_xattr (void *ptr);
-extern void guestfs___cleanup_free_xattr_list (void *ptr);
-extern void guestfs___cleanup_free_inotify_event (void *ptr);
-extern void guestfs___cleanup_free_inotify_event_list (void *ptr);
-extern void guestfs___cleanup_free_partition (void *ptr);
-extern void guestfs___cleanup_free_partition_list (void *ptr);
-extern void guestfs___cleanup_free_application (void *ptr);
-extern void guestfs___cleanup_free_application_list (void *ptr);
-extern void guestfs___cleanup_free_application2 (void *ptr);
-extern void guestfs___cleanup_free_application2_list (void *ptr);
-extern void guestfs___cleanup_free_isoinfo (void *ptr);
-extern void guestfs___cleanup_free_isoinfo_list (void *ptr);
-extern void guestfs___cleanup_free_mdstat (void *ptr);
-extern void guestfs___cleanup_free_mdstat_list (void *ptr);
-extern void guestfs___cleanup_free_btrfssubvolume (void *ptr);
-extern void guestfs___cleanup_free_btrfssubvolume_list (void *ptr);
-extern void guestfs___cleanup_free_btrfsqgroup (void *ptr);
-extern void guestfs___cleanup_free_btrfsqgroup_list (void *ptr);
-extern void guestfs___cleanup_free_xfsinfo (void *ptr);
-extern void guestfs___cleanup_free_xfsinfo_list (void *ptr);
-extern void guestfs___cleanup_free_utsname (void *ptr);
-extern void guestfs___cleanup_free_utsname_list (void *ptr);
-extern void guestfs___cleanup_free_hivex_node (void *ptr);
-extern void guestfs___cleanup_free_hivex_node_list (void *ptr);
-extern void guestfs___cleanup_free_hivex_value (void *ptr);
-extern void guestfs___cleanup_free_hivex_value_list (void *ptr);
-extern void guestfs___cleanup_free_internal_mountable (void *ptr);
-extern void guestfs___cleanup_free_internal_mountable_list (void *ptr);
+extern void guestfs_int_cleanup_free_int_bool (void *ptr);
+extern void guestfs_int_cleanup_free_int_bool_list (void *ptr);
+extern void guestfs_int_cleanup_free_lvm_pv (void *ptr);
+extern void guestfs_int_cleanup_free_lvm_pv_list (void *ptr);
+extern void guestfs_int_cleanup_free_lvm_vg (void *ptr);
+extern void guestfs_int_cleanup_free_lvm_vg_list (void *ptr);
+extern void guestfs_int_cleanup_free_lvm_lv (void *ptr);
+extern void guestfs_int_cleanup_free_lvm_lv_list (void *ptr);
+extern void guestfs_int_cleanup_free_stat (void *ptr);
+extern void guestfs_int_cleanup_free_stat_list (void *ptr);
+extern void guestfs_int_cleanup_free_statns (void *ptr);
+extern void guestfs_int_cleanup_free_statns_list (void *ptr);
+extern void guestfs_int_cleanup_free_statvfs (void *ptr);
+extern void guestfs_int_cleanup_free_statvfs_list (void *ptr);
+extern void guestfs_int_cleanup_free_dirent (void *ptr);
+extern void guestfs_int_cleanup_free_dirent_list (void *ptr);
+extern void guestfs_int_cleanup_free_version (void *ptr);
+extern void guestfs_int_cleanup_free_version_list (void *ptr);
+extern void guestfs_int_cleanup_free_xattr (void *ptr);
+extern void guestfs_int_cleanup_free_xattr_list (void *ptr);
+extern void guestfs_int_cleanup_free_inotify_event (void *ptr);
+extern void guestfs_int_cleanup_free_inotify_event_list (void *ptr);
+extern void guestfs_int_cleanup_free_partition (void *ptr);
+extern void guestfs_int_cleanup_free_partition_list (void *ptr);
+extern void guestfs_int_cleanup_free_application (void *ptr);
+extern void guestfs_int_cleanup_free_application_list (void *ptr);
+extern void guestfs_int_cleanup_free_application2 (void *ptr);
+extern void guestfs_int_cleanup_free_application2_list (void *ptr);
+extern void guestfs_int_cleanup_free_isoinfo (void *ptr);
+extern void guestfs_int_cleanup_free_isoinfo_list (void *ptr);
+extern void guestfs_int_cleanup_free_mdstat (void *ptr);
+extern void guestfs_int_cleanup_free_mdstat_list (void *ptr);
+extern void guestfs_int_cleanup_free_btrfssubvolume (void *ptr);
+extern void guestfs_int_cleanup_free_btrfssubvolume_list (void *ptr);
+extern void guestfs_int_cleanup_free_btrfsqgroup (void *ptr);
+extern void guestfs_int_cleanup_free_btrfsqgroup_list (void *ptr);
+extern void guestfs_int_cleanup_free_btrfsbalance (void *ptr);
+extern void guestfs_int_cleanup_free_btrfsbalance_list (void *ptr);
+extern void guestfs_int_cleanup_free_btrfsscrub (void *ptr);
+extern void guestfs_int_cleanup_free_btrfsscrub_list (void *ptr);
+extern void guestfs_int_cleanup_free_xfsinfo (void *ptr);
+extern void guestfs_int_cleanup_free_xfsinfo_list (void *ptr);
+extern void guestfs_int_cleanup_free_utsname (void *ptr);
+extern void guestfs_int_cleanup_free_utsname_list (void *ptr);
+extern void guestfs_int_cleanup_free_hivex_node (void *ptr);
+extern void guestfs_int_cleanup_free_hivex_node_list (void *ptr);
+extern void guestfs_int_cleanup_free_hivex_value (void *ptr);
+extern void guestfs_int_cleanup_free_hivex_value_list (void *ptr);
+extern void guestfs_int_cleanup_free_internal_mountable (void *ptr);
+extern void guestfs_int_cleanup_free_internal_mountable_list (void *ptr);
 
 #endif /* GUESTFS_INTERNAL_FRONTEND_CLEANUPS_H_ */

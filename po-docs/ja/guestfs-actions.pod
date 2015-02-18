@@ -1426,6 +1426,18 @@ Resume a paused balance on a btrfs filesystem.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
+=head2 guestfs_btrfs_balance_status
+
+ struct guestfs_btrfsbalance *
+ guestfs_btrfs_balance_status (guestfs_h *g,
+                               const char *path);
+
+Show the status of a running or paused balance on a btrfs filesystem.
+
+This function returns a C<struct guestfs_btrfsbalance *>, or NULL if there
+was an error.  I<The caller must call C<guestfs_free_btrfsbalance> after
+use>.
+
 =head2 guestfs_btrfs_device_add
 
  int
@@ -1720,7 +1732,7 @@ config.
  guestfs_btrfs_rescue_chunk_recover (guestfs_h *g,
                                      const char *device);
 
-Recover the chunk tree of btrfs filesystem by scannning the devices one by
+Recover the chunk tree of btrfs filesystem by scanning the devices one by
 one.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
@@ -1766,6 +1778,17 @@ the duplicate copies from RAID storage to identify and repair any corrupt
 data.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_btrfs_scrub_status
+
+ struct guestfs_btrfsscrub *
+ guestfs_btrfs_scrub_status (guestfs_h *g,
+                             const char *path);
+
+Show status of running or finished scrub on a btrfs filesystem.
+
+This function returns a C<struct guestfs_btrfsscrub *>, or NULL if there was
+an error.  I<The caller must call C<guestfs_free_btrfsscrub> after use>.
 
 =head2 guestfs_btrfs_set_seeding
 
@@ -1997,7 +2020,7 @@ described in L<guestfs(3)/BLOCK DEVICE NAMING>.
 
 =item C</dev/dm-N>
 
-C<guestfs_lvm_canonical_lvm_name> を使用して C</dev/VG/LV> 形式に変換します。
+Converted to C</dev/VG/LV> form using C<guestfs_lvm_canonical_lv_name>.
 
 =back
 
@@ -6873,8 +6896,8 @@ opening the handle before you are able to read data.
 
 The returned boolean tells you if there are any more journal records to
 read.  C<true> means you can read the next record (eg. using
-C<guestfs_journal_get_data>), and C<false> means you have reached the end of
-the journal.
+C<guestfs_journal_get>), and C<false> means you have reached the end of the
+journal.
 
 This function returns a C truth value on success or -1 on error.
 

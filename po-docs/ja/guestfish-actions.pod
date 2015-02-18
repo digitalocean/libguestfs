@@ -951,6 +951,12 @@ Pause a running balance on a btrfs filesystem.
 
 Resume a paused balance on a btrfs filesystem.
 
+=head2 btrfs-balance-status
+
+ btrfs-balance-status path
+
+Show the status of a running or paused balance on a btrfs filesystem.
+
 =head2 btrfs-device-add
 
  btrfs-device-add 'devices ...' fs
@@ -1078,7 +1084,7 @@ config.
 
  btrfs-rescue-chunk-recover device
 
-Recover the chunk tree of btrfs filesystem by scannning the devices one by
+Recover the chunk tree of btrfs filesystem by scanning the devices one by
 one.
 
 =head2 btrfs-rescue-super-recover
@@ -1106,6 +1112,12 @@ Resume a previously canceled or interrupted scrub on a btrfs filesystem.
 Reads all the data and metadata on the filesystem, and uses checksums and
 the duplicate copies from RAID storage to identify and repair any corrupt
 data.
+
+=head2 btrfs-scrub-status
+
+ btrfs-scrub-status path
+
+Show status of running or finished scrub on a btrfs filesystem.
 
 =head2 btrfs-set-seeding
 
@@ -1203,7 +1215,7 @@ described in L<guestfs(3)/BLOCK DEVICE NAMING>.
 
 =item C</dev/dm-N>
 
-L</lvm-canonical-lvm-name> を使用して C</dev/VG/LV> に変換されます。
+Converted to C</dev/VG/LV> form using L</lvm-canonical-lv-name>.
 
 =back
 
@@ -4135,7 +4147,7 @@ opening the handle before you are able to read data.
 
 The returned boolean tells you if there are any more journal records to
 read.  C<true> means you can read the next record (eg. using
-L</journal-get-data>), and C<false> means you have reached the end of the
+L</journal-get>), and C<false> means you have reached the end of the
 journal.
 
 =head2 journal-open

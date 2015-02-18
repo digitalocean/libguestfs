@@ -306,6 +306,36 @@ struct guestfs_int_btrfsqgroup {
 
 typedef struct guestfs_int_btrfsqgroup guestfs_int_btrfsqgroup_list<>;
 
+struct guestfs_int_btrfsbalance {
+  string btrfsbalance_status<>;
+  uint64_t btrfsbalance_total;
+  uint64_t btrfsbalance_balanced;
+  uint64_t btrfsbalance_considered;
+  uint64_t btrfsbalance_left;
+};
+
+typedef struct guestfs_int_btrfsbalance guestfs_int_btrfsbalance_list<>;
+
+struct guestfs_int_btrfsscrub {
+  uint64_t btrfsscrub_data_extents_scrubbed;
+  uint64_t btrfsscrub_tree_extents_scrubbed;
+  uint64_t btrfsscrub_data_bytes_scrubbed;
+  uint64_t btrfsscrub_tree_bytes_scrubbed;
+  uint64_t btrfsscrub_read_errors;
+  uint64_t btrfsscrub_csum_errors;
+  uint64_t btrfsscrub_verify_errors;
+  uint64_t btrfsscrub_no_csum;
+  uint64_t btrfsscrub_csum_discards;
+  uint64_t btrfsscrub_super_errors;
+  uint64_t btrfsscrub_malloc_errors;
+  uint64_t btrfsscrub_uncorrectable_errors;
+  uint64_t btrfsscrub_unverified_errors;
+  uint64_t btrfsscrub_corrected_errors;
+  uint64_t btrfsscrub_last_physical;
+};
+
+typedef struct guestfs_int_btrfsscrub guestfs_int_btrfsscrub_list<>;
+
 struct guestfs_int_xfsinfo {
   string xfs_mntpoint<>;
   unsigned int xfs_inodesize;
@@ -3051,6 +3081,22 @@ struct guestfs_part_get_gpt_guid_ret {
   string guid<>;
 };
 
+struct guestfs_btrfs_balance_status_args {
+  string path<>;
+};
+
+struct guestfs_btrfs_balance_status_ret {
+  guestfs_int_btrfsbalance status;
+};
+
+struct guestfs_btrfs_scrub_status_args {
+  string path<>;
+};
+
+struct guestfs_btrfs_scrub_status_ret {
+  guestfs_int_btrfsscrub status;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3487,10 +3533,12 @@ enum guestfs_procedure {
   GUESTFS_PROC_BTRFS_RESCUE_CHUNK_RECOVER = 444,
   GUESTFS_PROC_BTRFS_RESCUE_SUPER_RECOVER = 445,
   GUESTFS_PROC_PART_SET_GPT_GUID = 446,
-  GUESTFS_PROC_PART_GET_GPT_GUID = 447
+  GUESTFS_PROC_PART_GET_GPT_GUID = 447,
+  GUESTFS_PROC_BTRFS_BALANCE_STATUS = 448,
+  GUESTFS_PROC_BTRFS_SCRUB_STATUS = 449
 };
 
-const GUESTFS_MAX_PROC_NR = 447;
+const GUESTFS_MAX_PROC_NR = 449;
 
 /* The remote procedure call protocol. */
 
@@ -3549,7 +3597,7 @@ struct guestfs_chunk {
  *
  * Notes:
  *
- * (1) guestfs___recv_from_daemon assumes the XDR-encoded
+ * (1) guestfs_int_recv_from_daemon assumes the XDR-encoded
  * structure is 24 bytes long.
  *
  * (2) daemon/proto.c:async_safe_send_pulse assumes the progress

@@ -359,6 +359,42 @@ guestfs_free_btrfsqgroup_list (struct guestfs_btrfsqgroup_list *x)
 }
 
 GUESTFS_DLL_PUBLIC void
+guestfs_free_btrfsbalance (struct guestfs_btrfsbalance *x)
+{
+  if (x) {
+    xdr_free ((xdrproc_t) xdr_guestfs_int_btrfsbalance, (char *) x);
+    free (x);
+  }
+}
+
+GUESTFS_DLL_PUBLIC void
+guestfs_free_btrfsbalance_list (struct guestfs_btrfsbalance_list *x)
+{
+  if (x) {
+    xdr_free ((xdrproc_t) xdr_guestfs_int_btrfsbalance_list, (char *) x);
+    free (x);
+  }
+}
+
+GUESTFS_DLL_PUBLIC void
+guestfs_free_btrfsscrub (struct guestfs_btrfsscrub *x)
+{
+  if (x) {
+    xdr_free ((xdrproc_t) xdr_guestfs_int_btrfsscrub, (char *) x);
+    free (x);
+  }
+}
+
+GUESTFS_DLL_PUBLIC void
+guestfs_free_btrfsscrub_list (struct guestfs_btrfsscrub_list *x)
+{
+  if (x) {
+    xdr_free ((xdrproc_t) xdr_guestfs_int_btrfsscrub_list, (char *) x);
+    free (x);
+  }
+}
+
+GUESTFS_DLL_PUBLIC void
 guestfs_free_xfsinfo (struct guestfs_xfsinfo *x)
 {
   if (x) {

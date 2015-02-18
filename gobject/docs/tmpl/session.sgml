@@ -705,6 +705,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_btrfs_balance_status ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_btrfs_device_add ##### -->
 <para>
 
@@ -928,6 +939,17 @@ GuestfsSession
 
 
 <!-- ##### FUNCTION guestfs_session_btrfs_scrub_start ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfs_scrub_status ##### -->
 <para>
 
 </para>

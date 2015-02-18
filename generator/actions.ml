@@ -2415,7 +2415,7 @@ the algorithm described in L<guestfs(3)/BLOCK DEVICE NAMING>.
 
 =item C</dev/dm-N>
 
-Converted to C</dev/VG/LV> form using C<guestfs_lvm_canonical_lvm_name>.
+Converted to C</dev/VG/LV> form using C<guestfs_lvm_canonical_lv_name>.
 
 =back
 
@@ -11801,7 +11801,7 @@ to read data.
 
 The returned boolean tells you if there are any more journal
 records to read.  C<true> means you can read the next record
-(eg. using C<guestfs_journal_get_data>), and C<false> means you
+(eg. using C<guestfs_journal_get>), and C<false> means you
 have reached the end of the journal." };
 
   { defaults with
@@ -12397,7 +12397,7 @@ Defragment a file or directory on a btrfs filesystem. compress is one of zlib or
     ];
     shortdesc = "recover the chunk tree of btrfs filesystem";
     longdesc = "\
-Recover the chunk tree of btrfs filesystem by scannning the devices one by one." };
+Recover the chunk tree of btrfs filesystem by scanning the devices one by one." };
 
   { defaults with
     name = "btrfs_rescue_super_recover";
@@ -12448,6 +12448,32 @@ valid GUID." };
     shortdesc = "get the GUID of a GPT partition";
     longdesc = "\
 Return the GUID of numbered GPT partition C<partnum>." };
+
+{ defaults with
+    name = "btrfs_balance_status";
+    style = RStruct ("status", "btrfsbalance"), [Pathname "path"], [];
+    proc_nr = Some 448;
+    optional = Some "btrfs"; camel_name = "BTRFSBalanceStatus";
+    test_excuse = "test disk isn't large enough that btrfs_balance completes before we can get its status";
+    shortdesc = "show the status of a running or paused balance";
+    longdesc = "\
+Show the status of a running or paused balance on a btrfs filesystem." };
+
+  { defaults with
+    name = "btrfs_scrub_status";
+    style = RStruct ("status", "btrfsscrub"), [Pathname "path"], [];
+    proc_nr = Some 449;
+    optional = Some "btrfs"; camel_name = "BTRFSScrubStatus";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_scrub_start"; "/"];
+         ["btrfs_scrub_status"; "/"]]), [];
+    ];
+    shortdesc = "show status of running or finished scrub";
+    longdesc = "\
+Show status of running or finished scrub on a btrfs filesystem." };
 
 ]
 

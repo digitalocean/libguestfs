@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2014 Free Software Foundation, Inc.
+# Copyright (C) 2002-2015 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module argmatch-tests:
   # Code from module arpa_inet:
   # Code from module arpa_inet-tests:
+  # Code from module assure:
   # Code from module at-internal:
   # Code from module base64:
   # Code from module base64-tests:
@@ -219,6 +220,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module ioctl-tests:
   # Code from module isatty:
   # Code from module isatty-tests:
+  # Code from module langinfo:
+  # Code from module langinfo-tests:
   # Code from module largefile:
   AC_REQUIRE([AC_SYS_LARGEFILE])
   # Code from module listen:
@@ -930,7 +933,7 @@ AC_SUBST([LTALLOCA])
   fi
   gl_UNISTD_MODULE_INDICATOR([readlink])
   gl_FUNC_READLINKAT
-  if test $HAVE_READLINKAT = 0; then
+  if test $HAVE_READLINKAT = 0 || test $REPLACE_READLINKAT = 1; then
     AC_LIBOBJ([readlinkat])
   fi
   gl_UNISTD_MODULE_INDICATOR([readlinkat])
@@ -988,8 +991,8 @@ AC_SUBST([LTALLOCA])
     SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS=1
   fi
   gl_SYS_SOCKET_MODULE_INDICATOR([socket])
-  gl_SOCKETLIB
-  gl_SOCKETS
+  AC_REQUIRE([gl_SOCKETLIB])
+  AC_REQUIRE([gl_SOCKETS])
   gl_TYPE_SOCKLEN_T
   gt_TYPE_SSIZE_T
   gl_FUNC_STAT
@@ -1073,13 +1076,13 @@ AC_SUBST([LTALLOCA])
   fi
   gl_UNISTD_MODULE_INDICATOR([symlink])
   gl_FUNC_SYMLINKAT
-  if test $HAVE_SYMLINKAT = 0; then
+  if test $HAVE_SYMLINKAT = 0 || test $REPLACE_SYMLINKAT = 1; then
     AC_LIBOBJ([symlinkat])
   fi
   gl_UNISTD_MODULE_INDICATOR([symlinkat])
   gl_HEADER_SYS_SELECT
   AC_PROG_MKDIR_P
-  gl_HEADER_SYS_SOCKET
+  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
   AC_PROG_MKDIR_P
   gl_HEADER_SYS_STAT_H
   AC_PROG_MKDIR_P
@@ -1229,6 +1232,7 @@ changequote([, ])dnl
     AC_LIBOBJ([ioctl])
   fi
   gl_SYS_IOCTL_MODULE_INDICATOR([ioctl])
+  gl_LANGINFO_H
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])
   if test "$ac_cv_header_winsock2_h" = yes; then
     AC_LIBOBJ([listen])
@@ -1496,6 +1500,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/arpa_inet.in.h
   lib/asnprintf.c
   lib/asprintf.c
+  lib/assure.h
   lib/at-func.c
   lib/base64.c
   lib/base64.h
@@ -1871,6 +1876,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/inttypes_h.m4
   m4/ioctl.m4
   m4/isatty.m4
+  m4/langinfo_h.m4
   m4/largefile.m4
   m4/lcmessage.m4
   m4/lib-ld.m4
@@ -2119,6 +2125,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-inttypes.c
   tests/test-ioctl.c
   tests/test-isatty.c
+  tests/test-langinfo.c
   tests/test-listen.c
   tests/test-locale.c
   tests/test-localeconv.c
@@ -2286,6 +2293,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/inttostr.c
   tests=lib/inttostr.h
   tests=lib/ioctl.c
+  tests=lib/langinfo.in.h
   tests=lib/listen.c
   tests=lib/localename.c
   tests=lib/localename.h

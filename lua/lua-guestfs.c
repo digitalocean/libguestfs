@@ -112,6 +112,7 @@ static void push_xfsinfo (lua_State *L, struct guestfs_xfsinfo *v);
 static void push_application (lua_State *L, struct guestfs_application *v);
 static void push_application_list (lua_State *L, struct guestfs_application_list *v);
 static void push_isoinfo (lua_State *L, struct guestfs_isoinfo *v);
+static void push_btrfsscrub (lua_State *L, struct guestfs_btrfsscrub *v);
 static void push_hivex_value (lua_State *L, struct guestfs_hivex_value *v);
 static void push_hivex_value_list (lua_State *L, struct guestfs_hivex_value_list *v);
 static void push_xattr (lua_State *L, struct guestfs_xattr *v);
@@ -122,6 +123,7 @@ static void push_lvm_vg (lua_State *L, struct guestfs_lvm_vg *v);
 static void push_lvm_vg_list (lua_State *L, struct guestfs_lvm_vg_list *v);
 static void push_btrfssubvolume (lua_State *L, struct guestfs_btrfssubvolume *v);
 static void push_btrfssubvolume_list (lua_State *L, struct guestfs_btrfssubvolume_list *v);
+static void push_btrfsbalance (lua_State *L, struct guestfs_btrfsbalance *v);
 static void push_mdstat (lua_State *L, struct guestfs_mdstat *v);
 static void push_mdstat_list (lua_State *L, struct guestfs_mdstat_list *v);
 static void push_hivex_node (lua_State *L, struct guestfs_hivex_node *v);
@@ -1049,7 +1051,7 @@ guestfs_lua_aug_ls (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -1072,7 +1074,7 @@ guestfs_lua_aug_match (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -1228,7 +1230,7 @@ guestfs_lua_available_all_groups (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -1340,7 +1342,7 @@ guestfs_lua_blkid (lua_State *L)
     return last_error (L, g);
 
   push_table (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -1645,6 +1647,29 @@ guestfs_lua_btrfs_balance_resume (lua_State *L)
     return last_error (L, g);
 
   return 0;
+}
+
+static int
+guestfs_lua_btrfs_balance_status (lua_State *L)
+{
+  struct guestfs_btrfsbalance *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *path;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_balance_status");
+
+  path = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfs_balance_status (g, path);
+  if (r == NULL)
+    return last_error (L, g);
+
+  push_btrfsbalance (L, r);
+  guestfs_free_btrfsbalance (r);
+  return 1;
 }
 
 static int
@@ -2130,6 +2155,29 @@ guestfs_lua_btrfs_scrub_start (lua_State *L)
 }
 
 static int
+guestfs_lua_btrfs_scrub_status (lua_State *L)
+{
+  struct guestfs_btrfsscrub *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *path;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_scrub_status");
+
+  path = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfs_scrub_status (g, path);
+  if (r == NULL)
+    return last_error (L, g);
+
+  push_btrfsscrub (L, r);
+  guestfs_free_btrfsscrub (r);
+  return 1;
+}
+
+static int
 guestfs_lua_btrfs_set_seeding (lua_State *L)
 {
   int r;
@@ -2291,7 +2339,7 @@ guestfs_lua_btrfs_subvolume_show (lua_State *L)
     return last_error (L, g);
 
   push_table (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -2656,7 +2704,7 @@ guestfs_lua_command_lines (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -3217,7 +3265,7 @@ guestfs_lua_debug_drives (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -3643,7 +3691,7 @@ guestfs_lua_egrep (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -3668,7 +3716,7 @@ guestfs_lua_egrepi (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -3829,7 +3877,7 @@ guestfs_lua_fgrep (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -3854,7 +3902,7 @@ guestfs_lua_fgrepi (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -4040,7 +4088,7 @@ guestfs_lua_find (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -4295,7 +4343,7 @@ guestfs_lua_get_backend_settings (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -4538,7 +4586,7 @@ guestfs_lua_get_libvirt_requested_credentials (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -4932,7 +4980,7 @@ guestfs_lua_glob_expand (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -4979,7 +5027,7 @@ guestfs_lua_grep (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -5004,7 +5052,7 @@ guestfs_lua_grepi (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -5050,7 +5098,7 @@ guestfs_lua_head (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -5075,7 +5123,7 @@ guestfs_lua_head_n (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -5550,7 +5598,7 @@ guestfs_lua_initrd_list (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -5614,7 +5662,7 @@ guestfs_lua_inotify_files (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -5746,7 +5794,7 @@ guestfs_lua_inspect_get_drive_mappings (lua_State *L)
     return last_error (L, g);
 
   push_table (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -5769,7 +5817,7 @@ guestfs_lua_inspect_get_filesystems (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -5920,7 +5968,7 @@ guestfs_lua_inspect_get_mountpoints (lua_State *L)
     return last_error (L, g);
 
   push_table (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -6033,7 +6081,7 @@ guestfs_lua_inspect_get_roots (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -6235,7 +6283,7 @@ guestfs_lua_inspect_os (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -6815,7 +6863,7 @@ guestfs_lua_internal_test_rhashtable (lua_State *L)
     return last_error (L, g);
 
   push_table (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -6836,7 +6884,7 @@ guestfs_lua_internal_test_rhashtableerr (lua_State *L)
     return last_error (L, g);
 
   push_table (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -6987,7 +7035,7 @@ guestfs_lua_internal_test_rstringlist (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -7008,7 +7056,7 @@ guestfs_lua_internal_test_rstringlisterr (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -7814,7 +7862,7 @@ guestfs_lua_ldmtool_diskgroup_disks (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -7860,7 +7908,7 @@ guestfs_lua_ldmtool_diskgroup_volumes (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -7900,7 +7948,7 @@ guestfs_lua_ldmtool_scan (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -7924,7 +7972,7 @@ guestfs_lua_ldmtool_scan_devices (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -7974,7 +8022,7 @@ guestfs_lua_ldmtool_volume_partitions (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -8069,7 +8117,7 @@ guestfs_lua_list_9p (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -8090,7 +8138,7 @@ guestfs_lua_list_devices (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -8111,7 +8159,7 @@ guestfs_lua_list_disk_labels (lua_State *L)
     return last_error (L, g);
 
   push_table (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -8132,7 +8180,7 @@ guestfs_lua_list_dm_devices (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -8153,7 +8201,7 @@ guestfs_lua_list_filesystems (lua_State *L)
     return last_error (L, g);
 
   push_table (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -8174,7 +8222,7 @@ guestfs_lua_list_ldm_partitions (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -8195,7 +8243,7 @@ guestfs_lua_list_ldm_volumes (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -8216,7 +8264,7 @@ guestfs_lua_list_md_devices (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -8237,7 +8285,7 @@ guestfs_lua_list_partitions (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -8421,7 +8469,7 @@ guestfs_lua_ls (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -8988,7 +9036,7 @@ guestfs_lua_lvs (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -9151,7 +9199,7 @@ guestfs_lua_md_detail (lua_State *L)
     return last_error (L, g);
 
   push_table (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -10289,7 +10337,7 @@ guestfs_lua_mountpoints (lua_State *L)
     return last_error (L, g);
 
   push_table (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -10310,7 +10358,7 @@ guestfs_lua_mounts (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -11236,7 +11284,7 @@ guestfs_lua_pvs (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -11381,7 +11429,7 @@ guestfs_lua_read_lines (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -11453,7 +11501,7 @@ guestfs_lua_readlinklist (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -12804,7 +12852,7 @@ guestfs_lua_sh_lines (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -12936,7 +12984,7 @@ guestfs_lua_strings (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -12961,7 +13009,7 @@ guestfs_lua_strings_e (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -13202,7 +13250,7 @@ guestfs_lua_tail (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -13227,7 +13275,7 @@ guestfs_lua_tail_n (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -13503,7 +13551,7 @@ guestfs_lua_tune2fs_l (lua_State *L)
     return last_error (L, g);
 
   push_table (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -13993,7 +14041,7 @@ guestfs_lua_vglvuuids (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -14040,7 +14088,7 @@ guestfs_lua_vgpvuuids (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -14105,7 +14153,7 @@ guestfs_lua_vgs (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -14577,7 +14625,7 @@ guestfs_lua_zegrep (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -14602,7 +14650,7 @@ guestfs_lua_zegrepi (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -14711,7 +14759,7 @@ guestfs_lua_zfgrep (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -14736,7 +14784,7 @@ guestfs_lua_zfgrepi (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -14786,7 +14834,7 @@ guestfs_lua_zgrep (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -14811,7 +14859,7 @@ guestfs_lua_zgrepi (lua_State *L)
     return last_error (L, g);
 
   push_string_list (L, r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
   return 1;
 }
 
@@ -15596,6 +15644,57 @@ push_isoinfo (lua_State *L, struct guestfs_isoinfo *v)
 }
 
 static void
+push_btrfsscrub (lua_State *L, struct guestfs_btrfsscrub *v)
+{
+  lua_newtable (L);
+  lua_pushliteral (L, "btrfsscrub_data_extents_scrubbed");
+  push_int64 (L, (int64_t) v->btrfsscrub_data_extents_scrubbed);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsscrub_tree_extents_scrubbed");
+  push_int64 (L, (int64_t) v->btrfsscrub_tree_extents_scrubbed);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsscrub_data_bytes_scrubbed");
+  push_int64 (L, (int64_t) v->btrfsscrub_data_bytes_scrubbed);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsscrub_tree_bytes_scrubbed");
+  push_int64 (L, (int64_t) v->btrfsscrub_tree_bytes_scrubbed);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsscrub_read_errors");
+  push_int64 (L, (int64_t) v->btrfsscrub_read_errors);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsscrub_csum_errors");
+  push_int64 (L, (int64_t) v->btrfsscrub_csum_errors);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsscrub_verify_errors");
+  push_int64 (L, (int64_t) v->btrfsscrub_verify_errors);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsscrub_no_csum");
+  push_int64 (L, (int64_t) v->btrfsscrub_no_csum);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsscrub_csum_discards");
+  push_int64 (L, (int64_t) v->btrfsscrub_csum_discards);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsscrub_super_errors");
+  push_int64 (L, (int64_t) v->btrfsscrub_super_errors);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsscrub_malloc_errors");
+  push_int64 (L, (int64_t) v->btrfsscrub_malloc_errors);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsscrub_uncorrectable_errors");
+  push_int64 (L, (int64_t) v->btrfsscrub_uncorrectable_errors);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsscrub_unverified_errors");
+  push_int64 (L, (int64_t) v->btrfsscrub_unverified_errors);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsscrub_corrected_errors");
+  push_int64 (L, (int64_t) v->btrfsscrub_corrected_errors);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsscrub_last_physical");
+  push_int64 (L, (int64_t) v->btrfsscrub_last_physical);
+  lua_settable (L, -3);
+}
+
+static void
 push_hivex_value (lua_State *L, struct guestfs_hivex_value *v)
 {
   lua_newtable (L);
@@ -15800,6 +15899,27 @@ push_btrfssubvolume_list (lua_State *L, struct guestfs_btrfssubvolume_list *v)
     push_btrfssubvolume (L, &v->val[i]);
     lua_rawseti (L, -2, i+1 /* because of base 1 arrays */);
   }
+}
+
+static void
+push_btrfsbalance (lua_State *L, struct guestfs_btrfsbalance *v)
+{
+  lua_newtable (L);
+  lua_pushliteral (L, "btrfsbalance_status");
+  lua_pushstring (L, v->btrfsbalance_status);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsbalance_total");
+  push_int64 (L, (int64_t) v->btrfsbalance_total);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsbalance_balanced");
+  push_int64 (L, (int64_t) v->btrfsbalance_balanced);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsbalance_considered");
+  push_int64 (L, (int64_t) v->btrfsbalance_considered);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "btrfsbalance_left");
+  push_int64 (L, (int64_t) v->btrfsbalance_left);
+  lua_settable (L, -3);
 }
 
 static void
@@ -16014,6 +16134,7 @@ static luaL_Reg methods[] = {
   { "btrfs_balance_cancel", guestfs_lua_btrfs_balance_cancel },
   { "btrfs_balance_pause", guestfs_lua_btrfs_balance_pause },
   { "btrfs_balance_resume", guestfs_lua_btrfs_balance_resume },
+  { "btrfs_balance_status", guestfs_lua_btrfs_balance_status },
   { "btrfs_device_add", guestfs_lua_btrfs_device_add },
   { "btrfs_device_delete", guestfs_lua_btrfs_device_delete },
   { "btrfs_filesystem_balance", guestfs_lua_btrfs_filesystem_balance },
@@ -16034,6 +16155,7 @@ static luaL_Reg methods[] = {
   { "btrfs_scrub_cancel", guestfs_lua_btrfs_scrub_cancel },
   { "btrfs_scrub_resume", guestfs_lua_btrfs_scrub_resume },
   { "btrfs_scrub_start", guestfs_lua_btrfs_scrub_start },
+  { "btrfs_scrub_status", guestfs_lua_btrfs_scrub_status },
   { "btrfs_set_seeding", guestfs_lua_btrfs_set_seeding },
   { "btrfs_subvolume_create", guestfs_lua_btrfs_subvolume_create },
   { "btrfs_subvolume_delete", guestfs_lua_btrfs_subvolume_delete },

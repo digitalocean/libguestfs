@@ -159,10 +159,36 @@ type application2 = {
   app2_spare4 : string;
 }
 
+type btrfsbalance = {
+  btrfsbalance_status : string;
+  btrfsbalance_total : int64;
+  btrfsbalance_balanced : int64;
+  btrfsbalance_considered : int64;
+  btrfsbalance_left : int64;
+}
+
 type btrfsqgroup = {
   btrfsqgroup_id : string;
   btrfsqgroup_rfer : int64;
   btrfsqgroup_excl : int64;
+}
+
+type btrfsscrub = {
+  btrfsscrub_data_extents_scrubbed : int64;
+  btrfsscrub_tree_extents_scrubbed : int64;
+  btrfsscrub_data_bytes_scrubbed : int64;
+  btrfsscrub_tree_bytes_scrubbed : int64;
+  btrfsscrub_read_errors : int64;
+  btrfsscrub_csum_errors : int64;
+  btrfsscrub_verify_errors : int64;
+  btrfsscrub_no_csum : int64;
+  btrfsscrub_csum_discards : int64;
+  btrfsscrub_super_errors : int64;
+  btrfsscrub_malloc_errors : int64;
+  btrfsscrub_uncorrectable_errors : int64;
+  btrfsscrub_unverified_errors : int64;
+  btrfsscrub_corrected_errors : int64;
+  btrfsscrub_last_physical : int64;
 }
 
 type btrfssubvolume = {
@@ -548,6 +574,9 @@ val btrfs_balance_pause : t -> string -> unit
 val btrfs_balance_resume : t -> string -> unit
 (** resume a paused balance *)
 
+val btrfs_balance_status : t -> string -> btrfsbalance
+(** show the status of a running or paused balance *)
+
 val btrfs_device_add : t -> string array -> string -> unit
 (** add devices to a btrfs filesystem *)
 
@@ -607,6 +636,9 @@ val btrfs_scrub_resume : t -> string -> unit
 
 val btrfs_scrub_start : t -> string -> unit
 (** read all data from all disks and verify checksums *)
+
+val btrfs_scrub_status : t -> string -> btrfsscrub
+(** show status of running or finished scrub *)
 
 val btrfs_set_seeding : t -> string -> bool -> unit
 (** enable or disable the seeding feature of device *)
@@ -732,11 +764,17 @@ val dd : t -> string -> string -> unit
     @deprecated Use {!copy_device_to_device} instead
  *)
 
+(**/**)
 val debug : t -> string -> string array -> string
+(**/**)
 
+(**/**)
 val debug_drives : t -> string array
+(**/**)
 
+(**/**)
 val debug_upload : t -> string -> string -> int -> unit
+(**/**)
 
 val device_index : t -> string -> int
 (** convert device to index *)
@@ -1163,59 +1201,113 @@ val inspect_list_applications2 : t -> string -> application2 array
 val inspect_os : t -> string array
 (** inspect disk and return list of operating systems found *)
 
+(**/**)
 val internal_test : t -> ?obool:bool -> ?oint:int -> ?oint64:int64 -> ?ostring:string -> ?ostringlist:string array -> string -> string option -> string array -> bool -> int -> int64 -> string -> string -> string -> unit
+(**/**)
 
+(**/**)
 val internal_test_63_optargs : t -> ?opt1:int -> ?opt2:int -> ?opt3:int -> ?opt4:int -> ?opt5:int -> ?opt6:int -> ?opt7:int -> ?opt8:int -> ?opt9:int -> ?opt10:int -> ?opt11:int -> ?opt12:int -> ?opt13:int -> ?opt14:int -> ?opt15:int -> ?opt16:int -> ?opt17:int -> ?opt18:int -> ?opt19:int -> ?opt20:int -> ?opt21:int -> ?opt22:int -> ?opt23:int -> ?opt24:int -> ?opt25:int -> ?opt26:int -> ?opt27:int -> ?opt28:int -> ?opt29:int -> ?opt30:int -> ?opt31:int -> ?opt32:int -> ?opt33:int -> ?opt34:int -> ?opt35:int -> ?opt36:int -> ?opt37:int -> ?opt38:int -> ?opt39:int -> ?opt40:int -> ?opt41:int -> ?opt42:int -> ?opt43:int -> ?opt44:int -> ?opt45:int -> ?opt46:int -> ?opt47:int -> ?opt48:int -> ?opt49:int -> ?opt50:int -> ?opt51:int -> ?opt52:int -> ?opt53:int -> ?opt54:int -> ?opt55:int -> ?opt56:int -> ?opt57:int -> ?opt58:int -> ?opt59:int -> ?opt60:int -> ?opt61:int -> ?opt62:int -> ?opt63:int -> unit
+(**/**)
 
+(**/**)
 val internal_test_close_output : t -> unit
+(**/**)
 
+(**/**)
 val internal_test_only_optargs : t -> ?test:int -> unit
+(**/**)
 
+(**/**)
 val internal_test_rbool : t -> string -> bool
+(**/**)
 
+(**/**)
 val internal_test_rboolerr : t -> bool
+(**/**)
 
+(**/**)
 val internal_test_rbufferout : t -> string -> string
+(**/**)
 
+(**/**)
 val internal_test_rbufferouterr : t -> string
+(**/**)
 
+(**/**)
 val internal_test_rconstoptstring : t -> string -> string option
+(**/**)
 
+(**/**)
 val internal_test_rconstoptstringerr : t -> string option
+(**/**)
 
+(**/**)
 val internal_test_rconststring : t -> string -> string
+(**/**)
 
+(**/**)
 val internal_test_rconststringerr : t -> string
+(**/**)
 
+(**/**)
 val internal_test_rhashtable : t -> string -> (string * string) list
+(**/**)
 
+(**/**)
 val internal_test_rhashtableerr : t -> (string * string) list
+(**/**)
 
+(**/**)
 val internal_test_rint : t -> string -> int
+(**/**)
 
+(**/**)
 val internal_test_rint64 : t -> string -> int64
+(**/**)
 
+(**/**)
 val internal_test_rint64err : t -> int64
+(**/**)
 
+(**/**)
 val internal_test_rinterr : t -> int
+(**/**)
 
+(**/**)
 val internal_test_rstring : t -> string -> string
+(**/**)
 
+(**/**)
 val internal_test_rstringerr : t -> string
+(**/**)
 
+(**/**)
 val internal_test_rstringlist : t -> string -> string array
+(**/**)
 
+(**/**)
 val internal_test_rstringlisterr : t -> string array
+(**/**)
 
+(**/**)
 val internal_test_rstruct : t -> string -> lvm_pv
+(**/**)
 
+(**/**)
 val internal_test_rstructerr : t -> lvm_pv
+(**/**)
 
+(**/**)
 val internal_test_rstructlist : t -> string -> lvm_pv array
+(**/**)
 
+(**/**)
 val internal_test_rstructlisterr : t -> lvm_pv array
+(**/**)
 
+(**/**)
 val internal_test_set_output : t -> string -> unit
+(**/**)
 
 val is_blockdev : t -> ?followsymlinks:bool -> string -> bool
 (** test if block device *)
@@ -2353,6 +2445,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method btrfs_balance_cancel : string -> unit
   method btrfs_balance_pause : string -> unit
   method btrfs_balance_resume : string -> unit
+  method btrfs_balance_status : string -> btrfsbalance
   method btrfs_device_add : string array -> string -> unit
   method btrfs_device_delete : string array -> string -> unit
   method btrfs_filesystem_balance : string -> unit
@@ -2373,6 +2466,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method btrfs_scrub_cancel : string -> unit
   method btrfs_scrub_resume : string -> unit
   method btrfs_scrub_start : string -> unit
+  method btrfs_scrub_status : string -> btrfsscrub
   method btrfs_set_seeding : string -> bool -> unit
   method btrfs_subvolume_create : ?qgroupid:string -> string -> unit
   method btrfs_subvolume_create_opts : ?qgroupid:string -> string -> unit

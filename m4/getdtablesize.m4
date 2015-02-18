@@ -1,5 +1,5 @@
 # getdtablesize.m4 serial 5
-dnl Copyright (C) 2008-2014 Free Software Foundation, Inc.
+dnl Copyright (C) 2008-2015 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -26,7 +26,9 @@ AC_DEFUN([gl_FUNC_GETDTABLESIZE],
         [gl_cv_func_getdtablesize_works=yes],
         [gl_cv_func_getdtablesize_works=no],
         [case "$host_os" in
-          cygwin*) # on cygwin 1.5.25, getdtablesize() automatically grows
+          cygwin*|*-android*)
+          # on cygwin 1.5.25, getdtablesize() automatically grows
+          # on Android API level >= 21, the declaration is missing from unistd.h
             gl_cv_func_getdtablesize_works="guessing no" ;;
           *) gl_cv_func_getdtablesize_works="guessing yes" ;;
          esac])

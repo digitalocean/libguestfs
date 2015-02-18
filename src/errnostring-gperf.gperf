@@ -21,7 +21,7 @@
  */
 
 %language=ANSI-C
-%define lookup-function-name guestfs___string_to_errno_lookup
+%define lookup-function-name guestfs_int_string_to_errno_lookup
 %readonly-tables
 %null-strings
 

@@ -98,6 +98,7 @@ static int run_blockdev_setrw (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_balance_cancel (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_balance_pause (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_balance_resume (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_balance_status (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_device_add (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_device_delete (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_filesystem_balance (const char *cmd, size_t argc, char *argv[]);
@@ -118,6 +119,7 @@ static int run_btrfs_rescue_super_recover (const char *cmd, size_t argc, char *a
 static int run_btrfs_scrub_cancel (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_scrub_resume (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_scrub_start (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_scrub_status (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_set_seeding (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_subvolume_create (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_subvolume_delete (const char *cmd, size_t argc, char *argv[]);
@@ -1061,6 +1063,13 @@ struct command_entry btrfs_balance_resume_cmd_entry = {
   .run = run_btrfs_balance_resume
 };
 
+struct command_entry btrfs_balance_status_cmd_entry = {
+  .name = "btrfs-balance-status",
+  .help = "NAME\n    btrfs-balance-status - show the status of a running or paused balance\n\nSYNOPSIS\n     btrfs-balance-status path\n\nDESCRIPTION\n    Show the status of a running or paused balance on a btrfs filesystem.\n\n",
+  .synopsis = "btrfs-balance-status path",
+  .run = run_btrfs_balance_status
+};
+
 struct command_entry btrfs_device_add_cmd_entry = {
   .name = "btrfs-device-add",
   .help = "NAME\n    btrfs-device-add - add devices to a btrfs filesystem\n\nSYNOPSIS\n     btrfs-device-add devices fs\n\nDESCRIPTION\n    Add the list of device(s) in \"devices\" to the btrfs filesystem mounted\n    at \"fs\". If \"devices\" is an empty list, this does nothing.\n\n",
@@ -1168,7 +1177,7 @@ struct command_entry btrfs_quota_rescan_cmd_entry = {
 
 struct command_entry btrfs_rescue_chunk_recover_cmd_entry = {
   .name = "btrfs-rescue-chunk-recover",
-  .help = "NAME\n    btrfs-rescue-chunk-recover - recover the chunk tree of btrfs filesystem\n\nSYNOPSIS\n     btrfs-rescue-chunk-recover device\n\nDESCRIPTION\n    Recover the chunk tree of btrfs filesystem by scannning the devices one\n    by one.\n\n",
+  .help = "NAME\n    btrfs-rescue-chunk-recover - recover the chunk tree of btrfs filesystem\n\nSYNOPSIS\n     btrfs-rescue-chunk-recover device\n\nDESCRIPTION\n    Recover the chunk tree of btrfs filesystem by scanning the devices one\n    by one.\n\n",
   .synopsis = "btrfs-rescue-chunk-recover device",
   .run = run_btrfs_rescue_chunk_recover
 };
@@ -1199,6 +1208,13 @@ struct command_entry btrfs_scrub_start_cmd_entry = {
   .help = "NAME\n    btrfs-scrub-start - read all data from all disks and verify checksums\n\nSYNOPSIS\n     btrfs-scrub-start path\n\nDESCRIPTION\n    Reads all the data and metadata on the filesystem, and uses checksums\n    and the duplicate copies from RAID storage to identify and repair any\n    corrupt data.\n\n",
   .synopsis = "btrfs-scrub-start path",
   .run = run_btrfs_scrub_start
+};
+
+struct command_entry btrfs_scrub_status_cmd_entry = {
+  .name = "btrfs-scrub-status",
+  .help = "NAME\n    btrfs-scrub-status - show status of running or finished scrub\n\nSYNOPSIS\n     btrfs-scrub-status path\n\nDESCRIPTION\n    Show status of running or finished scrub on a btrfs filesystem.\n\n",
+  .synopsis = "btrfs-scrub-status path",
+  .run = run_btrfs_scrub_status
 };
 
 struct command_entry btrfs_set_seeding_cmd_entry = {
@@ -1266,7 +1282,7 @@ struct command_entry c_pointer_cmd_entry = {
 
 struct command_entry canonical_device_name_cmd_entry = {
   .name = "canonical-device-name",
-  .help = "NAME\n    canonical-device-name - return canonical device name\n\nSYNOPSIS\n     canonical-device-name device\n\nDESCRIPTION\n    This utility function is useful when displaying device names to the\n    user. It takes a number of irregular device names and returns them in a\n    consistent format:\n\n    \"/dev/hdX\"\n    \"/dev/vdX\"\n        These are returned as \"/dev/sdX\". Note this works for device names\n        and partition names. This is approximately the reverse of the\n        algorithm described in \"BLOCK DEVICE NAMING\" in guestfs(3).\n\n    \"/dev/mapper/VG-LV\"\n    \"/dev/dm-N\"\n        Converted to \"/dev/VG/LV\" form using \"lvm_canonical_lvm_name\".\n\n    Other strings are returned unmodified.\n\n",
+  .help = "NAME\n    canonical-device-name - return canonical device name\n\nSYNOPSIS\n     canonical-device-name device\n\nDESCRIPTION\n    This utility function is useful when displaying device names to the\n    user. It takes a number of irregular device names and returns them in a\n    consistent format:\n\n    \"/dev/hdX\"\n    \"/dev/vdX\"\n        These are returned as \"/dev/sdX\". Note this works for device names\n        and partition names. This is approximately the reverse of the\n        algorithm described in \"BLOCK DEVICE NAMING\" in guestfs(3).\n\n    \"/dev/mapper/VG-LV\"\n    \"/dev/dm-N\"\n        Converted to \"/dev/VG/LV\" form using \"lvm_canonical_lv_name\".\n\n    Other strings are returned unmodified.\n\n",
   .synopsis = "canonical-device-name device",
   .run = run_canonical_device_name
 };
@@ -2498,7 +2514,7 @@ struct command_entry journal_get_realtime_usec_cmd_entry = {
 
 struct command_entry journal_next_cmd_entry = {
   .name = "journal-next",
-  .help = "NAME\n    journal-next - move to the next journal entry\n\nSYNOPSIS\n     journal-next\n\nDESCRIPTION\n    Move to the next journal entry. You have to call this at least once\n    after opening the handle before you are able to read data.\n\n    The returned boolean tells you if there are any more journal records to\n    read. \"true\" means you can read the next record (eg. using\n    \"journal_get_data\"), and \"false\" means you have reached the end of the\n    journal.\n\n",
+  .help = "NAME\n    journal-next - move to the next journal entry\n\nSYNOPSIS\n     journal-next\n\nDESCRIPTION\n    Move to the next journal entry. You have to call this at least once\n    after opening the handle before you are able to read data.\n\n    The returned boolean tells you if there are any more journal records to\n    read. \"true\" means you can read the next record (eg. using\n    \"journal_get\"), and \"false\" means you have reached the end of the\n    journal.\n\n",
   .synopsis = "journal-next",
   .run = run_journal_next
 };
@@ -4589,6 +4605,7 @@ list_commands (void)
   printf ("%-20s %s\n", "btrfs-balance-cancel", _("cancel a running or paused balance"));
   printf ("%-20s %s\n", "btrfs-balance-pause", _("pause a running balance"));
   printf ("%-20s %s\n", "btrfs-balance-resume", _("resume a paused balance"));
+  printf ("%-20s %s\n", "btrfs-balance-status", _("show the status of a running or paused balance"));
   printf ("%-20s %s\n", "btrfs-device-add", _("add devices to a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-device-delete", _("remove devices from a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-filesystem-balance", _("balance a btrfs filesystem"));
@@ -4609,6 +4626,7 @@ list_commands (void)
   printf ("%-20s %s\n", "btrfs-scrub-cancel", _("cancel a running scrub"));
   printf ("%-20s %s\n", "btrfs-scrub-resume", _("resume a previously canceled or interrupted scrub"));
   printf ("%-20s %s\n", "btrfs-scrub-start", _("read all data from all disks and verify checksums"));
+  printf ("%-20s %s\n", "btrfs-scrub-status", _("show status of running or finished scrub"));
   printf ("%-20s %s\n", "btrfs-set-seeding", _("enable or disable the seeding feature of device"));
   printf ("%-20s %s\n", "btrfs-subvolume-create", _("create a btrfs subvolume"));
   printf ("%-20s %s\n", "btrfs-subvolume-delete", _("delete a btrfs subvolume or snapshot"));
@@ -5236,11 +5254,41 @@ print_application2_indent (struct guestfs_application2 *application2, const char
 }
 
 static void
+print_btrfsbalance_indent (struct guestfs_btrfsbalance *btrfsbalance, const char *indent)
+{
+  printf ("%sbtrfsbalance_status: %s\n", indent, btrfsbalance->btrfsbalance_status);
+  printf ("%sbtrfsbalance_total: %" PRIu64 "\n", indent, btrfsbalance->btrfsbalance_total);
+  printf ("%sbtrfsbalance_balanced: %" PRIu64 "\n", indent, btrfsbalance->btrfsbalance_balanced);
+  printf ("%sbtrfsbalance_considered: %" PRIu64 "\n", indent, btrfsbalance->btrfsbalance_considered);
+  printf ("%sbtrfsbalance_left: %" PRIu64 "\n", indent, btrfsbalance->btrfsbalance_left);
+}
+
+static void
 print_btrfsqgroup_indent (struct guestfs_btrfsqgroup *btrfsqgroup, const char *indent)
 {
   printf ("%sbtrfsqgroup_id: %s\n", indent, btrfsqgroup->btrfsqgroup_id);
   printf ("%sbtrfsqgroup_rfer: %" PRIu64 "\n", indent, btrfsqgroup->btrfsqgroup_rfer);
   printf ("%sbtrfsqgroup_excl: %" PRIu64 "\n", indent, btrfsqgroup->btrfsqgroup_excl);
+}
+
+static void
+print_btrfsscrub_indent (struct guestfs_btrfsscrub *btrfsscrub, const char *indent)
+{
+  printf ("%sbtrfsscrub_data_extents_scrubbed: %" PRIu64 "\n", indent, btrfsscrub->btrfsscrub_data_extents_scrubbed);
+  printf ("%sbtrfsscrub_tree_extents_scrubbed: %" PRIu64 "\n", indent, btrfsscrub->btrfsscrub_tree_extents_scrubbed);
+  printf ("%sbtrfsscrub_data_bytes_scrubbed: %" PRIu64 "\n", indent, btrfsscrub->btrfsscrub_data_bytes_scrubbed);
+  printf ("%sbtrfsscrub_tree_bytes_scrubbed: %" PRIu64 "\n", indent, btrfsscrub->btrfsscrub_tree_bytes_scrubbed);
+  printf ("%sbtrfsscrub_read_errors: %" PRIu64 "\n", indent, btrfsscrub->btrfsscrub_read_errors);
+  printf ("%sbtrfsscrub_csum_errors: %" PRIu64 "\n", indent, btrfsscrub->btrfsscrub_csum_errors);
+  printf ("%sbtrfsscrub_verify_errors: %" PRIu64 "\n", indent, btrfsscrub->btrfsscrub_verify_errors);
+  printf ("%sbtrfsscrub_no_csum: %" PRIu64 "\n", indent, btrfsscrub->btrfsscrub_no_csum);
+  printf ("%sbtrfsscrub_csum_discards: %" PRIu64 "\n", indent, btrfsscrub->btrfsscrub_csum_discards);
+  printf ("%sbtrfsscrub_super_errors: %" PRIu64 "\n", indent, btrfsscrub->btrfsscrub_super_errors);
+  printf ("%sbtrfsscrub_malloc_errors: %" PRIu64 "\n", indent, btrfsscrub->btrfsscrub_malloc_errors);
+  printf ("%sbtrfsscrub_uncorrectable_errors: %" PRIu64 "\n", indent, btrfsscrub->btrfsscrub_uncorrectable_errors);
+  printf ("%sbtrfsscrub_unverified_errors: %" PRIu64 "\n", indent, btrfsscrub->btrfsscrub_unverified_errors);
+  printf ("%sbtrfsscrub_corrected_errors: %" PRIu64 "\n", indent, btrfsscrub->btrfsscrub_corrected_errors);
+  printf ("%sbtrfsscrub_last_physical: %" PRIu64 "\n", indent, btrfsscrub->btrfsscrub_last_physical);
 }
 
 static void
@@ -5764,6 +5812,18 @@ print_isoinfo (struct guestfs_isoinfo *isoinfo)
 }
 
 static void
+print_btrfsscrub (struct guestfs_btrfsscrub *btrfsscrub)
+{
+  print_btrfsscrub_indent (btrfsscrub, "");
+}
+
+static void
+print_btrfsbalance (struct guestfs_btrfsbalance *btrfsbalance)
+{
+  print_btrfsbalance_indent (btrfsbalance, "");
+}
+
+static void
 print_stat (struct guestfs_stat *stat)
 {
   print_stat_indent (stat, "");
@@ -5902,11 +5962,11 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
       this_arg = "libvirturi";
     }
     else if (STRPREFIX (argv[i], "readonly:")) {
-      switch (guestfs___is_true (&argv[i][9])) {
+      switch (guestfs_int_is_true (&argv[i][9])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][9]);
+                   guestfs_int_program_name, &argv[i][9]);
           goto out;
         case 0:  optargs_s.readonly = 0; break;
         default: optargs_s.readonly = 1;
@@ -5920,11 +5980,11 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
       this_arg = "iface";
     }
     else if (STRPREFIX (argv[i], "live:")) {
-      switch (guestfs___is_true (&argv[i][5])) {
+      switch (guestfs_int_is_true (&argv[i][5])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][5]);
+                   guestfs_int_program_name, &argv[i][5]);
           goto out;
         case 0:  optargs_s.live = 0; break;
         default: optargs_s.live = 1;
@@ -5933,11 +5993,11 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
       this_arg = "live";
     }
     else if (STRPREFIX (argv[i], "allowuuid:")) {
-      switch (guestfs___is_true (&argv[i][10])) {
+      switch (guestfs_int_is_true (&argv[i][10])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][10]);
+                   guestfs_int_program_name, &argv[i][10]);
           goto out;
         case 0:  optargs_s.allowuuid = 0; break;
         default: optargs_s.allowuuid = 1;
@@ -5961,11 +6021,11 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
       this_arg = "discard";
     }
     else if (STRPREFIX (argv[i], "copyonread:")) {
-      switch (guestfs___is_true (&argv[i][11])) {
+      switch (guestfs_int_is_true (&argv[i][11])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][11]);
+                   guestfs_int_program_name, &argv[i][11]);
           goto out;
         case 0:  optargs_s.copyonread = 0; break;
         default: optargs_s.copyonread = 1;
@@ -6017,11 +6077,11 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "readonly:")) {
-      switch (guestfs___is_true (&argv[i][9])) {
+      switch (guestfs_int_is_true (&argv[i][9])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][9]);
+                   guestfs_int_program_name, &argv[i][9]);
           goto out;
         case 0:  optargs_s.readonly = 0; break;
         default: optargs_s.readonly = 1;
@@ -6081,11 +6141,11 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
       this_arg = "discard";
     }
     else if (STRPREFIX (argv[i], "copyonread:")) {
-      switch (guestfs___is_true (&argv[i][11])) {
+      switch (guestfs_int_is_true (&argv[i][11])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][11]);
+                   guestfs_int_program_name, &argv[i][11]);
           goto out;
         case 0:  optargs_s.copyonread = 0; break;
         default: optargs_s.copyonread = 1;
@@ -6113,7 +6173,7 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
  out:
   if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK) &&
       optargs_s.server != NULL)
-    guestfs___free_string_list ((char **) optargs_s.server);
+    guestfs_int_free_string_list ((char **) optargs_s.server);
  out_noargs:
   return ret;
 }
@@ -6425,11 +6485,11 @@ run_aug_insert (const char *cmd, size_t argc, char *argv[])
   }
   augpath = argv[i++];
   label = argv[i++];
-  switch (guestfs___is_true (argv[i++])) {
+  switch (guestfs_int_is_true (argv[i++])) {
     case -1:
       fprintf (stderr,
                _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-               guestfs___program_name, argv[i-1]);
+               guestfs_int_program_name, argv[i-1]);
       goto out_before;
     case 0:  before = 0; break;
     default: before = 1;
@@ -6501,7 +6561,7 @@ run_aug_ls (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -6524,7 +6584,7 @@ run_aug_match (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -6661,7 +6721,7 @@ run_available (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  guestfs___free_string_list (groups);
+  guestfs_int_free_string_list (groups);
  out_groups:
  out_noargs:
   return ret;
@@ -6681,7 +6741,7 @@ run_available_all_groups (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -6805,7 +6865,7 @@ run_blkid (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -7162,6 +7222,32 @@ run_btrfs_balance_resume (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_btrfs_balance_status (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  struct guestfs_btrfsbalance *r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_btrfs_balance_status (g, path);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_btrfsbalance (r);
+  guestfs_free_btrfsbalance (r);
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_btrfs_device_add (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -7184,7 +7270,7 @@ run_btrfs_device_add (const char *cmd, size_t argc, char *argv[])
  out:
   free (fs);
  out_fs:
-  guestfs___free_string_list (devices);
+  guestfs_int_free_string_list (devices);
  out_devices:
  out_noargs:
   return ret;
@@ -7213,7 +7299,7 @@ run_btrfs_device_delete (const char *cmd, size_t argc, char *argv[])
  out:
   free (fs);
  out_fs:
-  guestfs___free_string_list (devices);
+  guestfs_int_free_string_list (devices);
  out_devices:
  out_noargs:
   return ret;
@@ -7265,11 +7351,11 @@ run_btrfs_filesystem_defragment (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "flush:")) {
-      switch (guestfs___is_true (&argv[i][6])) {
+      switch (guestfs_int_is_true (&argv[i][6])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][6]);
+                   guestfs_int_program_name, &argv[i][6]);
           goto out;
         case 0:  optargs_s.flush = 0; break;
         default: optargs_s.flush = 1;
@@ -7430,11 +7516,11 @@ run_btrfs_fsck (const char *cmd, size_t argc, char *argv[])
       this_arg = "superblock";
     }
     else if (STRPREFIX (argv[i], "repair:")) {
-      switch (guestfs___is_true (&argv[i][7])) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][7]);
+                   guestfs_int_program_name, &argv[i][7]);
           goto out;
         case 0:  optargs_s.repair = 0; break;
         default: optargs_s.repair = 1;
@@ -7652,11 +7738,11 @@ run_btrfs_quota_enable (const char *cmd, size_t argc, char *argv[])
   }
   fs = win_prefix (argv[i++]); /* process "win:" prefix */
   if (fs == NULL) goto out_fs;
-  switch (guestfs___is_true (argv[i++])) {
+  switch (guestfs_int_is_true (argv[i++])) {
     case -1:
       fprintf (stderr,
                _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-               guestfs___program_name, argv[i-1]);
+               guestfs_int_program_name, argv[i-1]);
       goto out_enable;
     case 0:  enable = 0; break;
     default: enable = 1;
@@ -7811,6 +7897,32 @@ run_btrfs_scrub_start (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_btrfs_scrub_status (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  struct guestfs_btrfsscrub *r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_btrfs_scrub_status (g, path);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_btrfsscrub (r);
+  guestfs_free_btrfsscrub (r);
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_btrfs_set_seeding (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -7824,11 +7936,11 @@ run_btrfs_set_seeding (const char *cmd, size_t argc, char *argv[])
     goto out_noargs;
   }
   device = argv[i++];
-  switch (guestfs___is_true (argv[i++])) {
+  switch (guestfs_int_is_true (argv[i++])) {
     case -1:
       fprintf (stderr,
                _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-               guestfs___program_name, argv[i-1]);
+               guestfs_int_program_name, argv[i-1]);
       goto out_seeding;
     case 0:  seeding = 0; break;
     default: seeding = 1;
@@ -8024,7 +8136,7 @@ run_btrfs_subvolume_show (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (subvolume);
  out_subvolume:
@@ -8057,11 +8169,11 @@ run_btrfs_subvolume_snapshot (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "ro:")) {
-      switch (guestfs___is_true (&argv[i][3])) {
+      switch (guestfs_int_is_true (&argv[i][3])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][3]);
+                   guestfs_int_program_name, &argv[i][3]);
           goto out;
         case 0:  optargs_s.ro = 0; break;
         default: optargs_s.ro = 1;
@@ -8483,7 +8595,7 @@ run_command (const char *cmd, size_t argc, char *argv[])
   printf ("%s\n", r);
   free (r);
  out:
-  guestfs___free_string_list (arguments);
+  guestfs_int_free_string_list (arguments);
  out_arguments:
  out_noargs:
   return ret;
@@ -8507,9 +8619,9 @@ run_command_lines (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
-  guestfs___free_string_list (arguments);
+  guestfs_int_free_string_list (arguments);
  out_arguments:
  out_noargs:
   return ret;
@@ -8711,11 +8823,11 @@ run_copy_attributes (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "all:")) {
-      switch (guestfs___is_true (&argv[i][4])) {
+      switch (guestfs_int_is_true (&argv[i][4])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][4]);
+                   guestfs_int_program_name, &argv[i][4]);
           goto out;
         case 0:  optargs_s.all = 0; break;
         default: optargs_s.all = 1;
@@ -8724,11 +8836,11 @@ run_copy_attributes (const char *cmd, size_t argc, char *argv[])
       this_arg = "all";
     }
     else if (STRPREFIX (argv[i], "mode:")) {
-      switch (guestfs___is_true (&argv[i][5])) {
+      switch (guestfs_int_is_true (&argv[i][5])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][5]);
+                   guestfs_int_program_name, &argv[i][5]);
           goto out;
         case 0:  optargs_s.mode = 0; break;
         default: optargs_s.mode = 1;
@@ -8737,11 +8849,11 @@ run_copy_attributes (const char *cmd, size_t argc, char *argv[])
       this_arg = "mode";
     }
     else if (STRPREFIX (argv[i], "xattributes:")) {
-      switch (guestfs___is_true (&argv[i][12])) {
+      switch (guestfs_int_is_true (&argv[i][12])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][12]);
+                   guestfs_int_program_name, &argv[i][12]);
           goto out;
         case 0:  optargs_s.xattributes = 0; break;
         default: optargs_s.xattributes = 1;
@@ -8750,11 +8862,11 @@ run_copy_attributes (const char *cmd, size_t argc, char *argv[])
       this_arg = "xattributes";
     }
     else if (STRPREFIX (argv[i], "ownership:")) {
-      switch (guestfs___is_true (&argv[i][10])) {
+      switch (guestfs_int_is_true (&argv[i][10])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][10]);
+                   guestfs_int_program_name, &argv[i][10]);
           goto out;
         case 0:  optargs_s.ownership = 0; break;
         default: optargs_s.ownership = 1;
@@ -8862,11 +8974,11 @@ run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
       this_arg = "size";
     }
     else if (STRPREFIX (argv[i], "sparse:")) {
-      switch (guestfs___is_true (&argv[i][7])) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][7]);
+                   guestfs_int_program_name, &argv[i][7]);
           goto out;
         case 0:  optargs_s.sparse = 0; break;
         default: optargs_s.sparse = 1;
@@ -8971,11 +9083,11 @@ run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
       this_arg = "size";
     }
     else if (STRPREFIX (argv[i], "sparse:")) {
-      switch (guestfs___is_true (&argv[i][7])) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][7]);
+                   guestfs_int_program_name, &argv[i][7]);
           goto out;
         case 0:  optargs_s.sparse = 0; break;
         default: optargs_s.sparse = 1;
@@ -9082,11 +9194,11 @@ run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
       this_arg = "size";
     }
     else if (STRPREFIX (argv[i], "sparse:")) {
-      switch (guestfs___is_true (&argv[i][7])) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][7]);
+                   guestfs_int_program_name, &argv[i][7]);
           goto out;
         case 0:  optargs_s.sparse = 0; break;
         default: optargs_s.sparse = 1;
@@ -9194,11 +9306,11 @@ run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
       this_arg = "size";
     }
     else if (STRPREFIX (argv[i], "sparse:")) {
-      switch (guestfs___is_true (&argv[i][7])) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][7]);
+                   guestfs_int_program_name, &argv[i][7]);
           goto out;
         case 0:  optargs_s.sparse = 0; break;
         default: optargs_s.sparse = 1;
@@ -9466,7 +9578,7 @@ run_debug (const char *cmd, size_t argc, char *argv[])
   printf ("%s\n", r);
   free (r);
  out:
-  guestfs___free_string_list (extraargs);
+  guestfs_int_free_string_list (extraargs);
  out_extraargs:
  out_noargs:
   return ret;
@@ -9486,7 +9598,7 @@ run_debug_drives (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -9964,11 +10076,11 @@ run_e2fsck (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "correct:")) {
-      switch (guestfs___is_true (&argv[i][8])) {
+      switch (guestfs_int_is_true (&argv[i][8])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][8]);
+                   guestfs_int_program_name, &argv[i][8]);
           goto out;
         case 0:  optargs_s.correct = 0; break;
         default: optargs_s.correct = 1;
@@ -9977,11 +10089,11 @@ run_e2fsck (const char *cmd, size_t argc, char *argv[])
       this_arg = "correct";
     }
     else if (STRPREFIX (argv[i], "forceall:")) {
-      switch (guestfs___is_true (&argv[i][9])) {
+      switch (guestfs_int_is_true (&argv[i][9])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][9]);
+                   guestfs_int_program_name, &argv[i][9]);
           goto out;
         case 0:  optargs_s.forceall = 0; break;
         default: optargs_s.forceall = 1;
@@ -10052,7 +10164,7 @@ run_echo_daemon (const char *cmd, size_t argc, char *argv[])
   printf ("%s\n", r);
   free (r);
  out:
-  guestfs___free_string_list (words);
+  guestfs_int_free_string_list (words);
  out_words:
  out_noargs:
   return ret;
@@ -10078,7 +10190,7 @@ run_egrep (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -10106,7 +10218,7 @@ run_egrepi (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -10296,7 +10408,7 @@ run_feature_available (const char *cmd, size_t argc, char *argv[])
   ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
  out:
-  guestfs___free_string_list (groups);
+  guestfs_int_free_string_list (groups);
  out_groups:
  out_noargs:
   return ret;
@@ -10322,7 +10434,7 @@ run_fgrep (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -10350,7 +10462,7 @@ run_fgrepi (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -10633,7 +10745,7 @@ run_find (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (directory);
  out_directory:
@@ -10949,7 +11061,7 @@ run_get_backend_settings (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -11251,7 +11363,7 @@ run_get_libvirt_requested_credentials (const char *cmd, size_t argc, char *argv[
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -11621,7 +11733,7 @@ run_glob_expand (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (pattern);
  out_pattern:
@@ -11653,11 +11765,11 @@ run_grep (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "extended:")) {
-      switch (guestfs___is_true (&argv[i][9])) {
+      switch (guestfs_int_is_true (&argv[i][9])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][9]);
+                   guestfs_int_program_name, &argv[i][9]);
           goto out;
         case 0:  optargs_s.extended = 0; break;
         default: optargs_s.extended = 1;
@@ -11666,11 +11778,11 @@ run_grep (const char *cmd, size_t argc, char *argv[])
       this_arg = "extended";
     }
     else if (STRPREFIX (argv[i], "fixed:")) {
-      switch (guestfs___is_true (&argv[i][6])) {
+      switch (guestfs_int_is_true (&argv[i][6])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][6]);
+                   guestfs_int_program_name, &argv[i][6]);
           goto out;
         case 0:  optargs_s.fixed = 0; break;
         default: optargs_s.fixed = 1;
@@ -11679,11 +11791,11 @@ run_grep (const char *cmd, size_t argc, char *argv[])
       this_arg = "fixed";
     }
     else if (STRPREFIX (argv[i], "insensitive:")) {
-      switch (guestfs___is_true (&argv[i][12])) {
+      switch (guestfs_int_is_true (&argv[i][12])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][12]);
+                   guestfs_int_program_name, &argv[i][12]);
           goto out;
         case 0:  optargs_s.insensitive = 0; break;
         default: optargs_s.insensitive = 1;
@@ -11692,11 +11804,11 @@ run_grep (const char *cmd, size_t argc, char *argv[])
       this_arg = "insensitive";
     }
     else if (STRPREFIX (argv[i], "compressed:")) {
-      switch (guestfs___is_true (&argv[i][11])) {
+      switch (guestfs_int_is_true (&argv[i][11])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][11]);
+                   guestfs_int_program_name, &argv[i][11]);
           goto out;
         case 0:  optargs_s.compressed = 0; break;
         default: optargs_s.compressed = 1;
@@ -11722,7 +11834,7 @@ run_grep (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -11750,7 +11862,7 @@ run_grepi (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -11802,7 +11914,7 @@ run_head (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -11848,7 +11960,7 @@ run_head_n (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -12289,11 +12401,11 @@ run_hivex_open (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "verbose:")) {
-      switch (guestfs___is_true (&argv[i][8])) {
+      switch (guestfs_int_is_true (&argv[i][8])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][8]);
+                   guestfs_int_program_name, &argv[i][8]);
           goto out;
         case 0:  optargs_s.verbose = 0; break;
         default: optargs_s.verbose = 1;
@@ -12302,11 +12414,11 @@ run_hivex_open (const char *cmd, size_t argc, char *argv[])
       this_arg = "verbose";
     }
     else if (STRPREFIX (argv[i], "debug:")) {
-      switch (guestfs___is_true (&argv[i][6])) {
+      switch (guestfs_int_is_true (&argv[i][6])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][6]);
+                   guestfs_int_program_name, &argv[i][6]);
           goto out;
         case 0:  optargs_s.debug = 0; break;
         default: optargs_s.debug = 1;
@@ -12315,11 +12427,11 @@ run_hivex_open (const char *cmd, size_t argc, char *argv[])
       this_arg = "debug";
     }
     else if (STRPREFIX (argv[i], "write:")) {
-      switch (guestfs___is_true (&argv[i][6])) {
+      switch (guestfs_int_is_true (&argv[i][6])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][6]);
+                   guestfs_int_program_name, &argv[i][6]);
           goto out;
         case 0:  optargs_s.write = 0; break;
         default: optargs_s.write = 1;
@@ -12569,7 +12681,7 @@ run_initrd_list (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -12655,7 +12767,7 @@ run_inotify_files (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -12824,7 +12936,7 @@ run_inspect_get_drive_mappings (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -12847,7 +12959,7 @@ run_inspect_get_filesystems (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -12921,11 +13033,11 @@ run_inspect_get_icon (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "favicon:")) {
-      switch (guestfs___is_true (&argv[i][8])) {
+      switch (guestfs_int_is_true (&argv[i][8])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][8]);
+                   guestfs_int_program_name, &argv[i][8]);
           goto out;
         case 0:  optargs_s.favicon = 0; break;
         default: optargs_s.favicon = 1;
@@ -12934,11 +13046,11 @@ run_inspect_get_icon (const char *cmd, size_t argc, char *argv[])
       this_arg = "favicon";
     }
     else if (STRPREFIX (argv[i], "highquality:")) {
-      switch (guestfs___is_true (&argv[i][12])) {
+      switch (guestfs_int_is_true (&argv[i][12])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][12]);
+                   guestfs_int_program_name, &argv[i][12]);
           goto out;
         case 0:  optargs_s.highquality = 0; break;
         default: optargs_s.highquality = 1;
@@ -13035,7 +13147,7 @@ run_inspect_get_mountpoints (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -13147,7 +13259,7 @@ run_inspect_get_roots (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -13348,7 +13460,7 @@ run_inspect_os (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -13376,11 +13488,11 @@ run_is_blockdev (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "followsymlinks:")) {
-      switch (guestfs___is_true (&argv[i][15])) {
+      switch (guestfs_int_is_true (&argv[i][15])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][15]);
+                   guestfs_int_program_name, &argv[i][15]);
           goto out;
         case 0:  optargs_s.followsymlinks = 0; break;
         default: optargs_s.followsymlinks = 1;
@@ -13435,11 +13547,11 @@ run_is_chardev (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "followsymlinks:")) {
-      switch (guestfs___is_true (&argv[i][15])) {
+      switch (guestfs_int_is_true (&argv[i][15])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][15]);
+                   guestfs_int_program_name, &argv[i][15]);
           goto out;
         case 0:  optargs_s.followsymlinks = 0; break;
         default: optargs_s.followsymlinks = 1;
@@ -13513,11 +13625,11 @@ run_is_dir (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "followsymlinks:")) {
-      switch (guestfs___is_true (&argv[i][15])) {
+      switch (guestfs_int_is_true (&argv[i][15])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][15]);
+                   guestfs_int_program_name, &argv[i][15]);
           goto out;
         case 0:  optargs_s.followsymlinks = 0; break;
         default: optargs_s.followsymlinks = 1;
@@ -13572,11 +13684,11 @@ run_is_fifo (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "followsymlinks:")) {
-      switch (guestfs___is_true (&argv[i][15])) {
+      switch (guestfs_int_is_true (&argv[i][15])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][15]);
+                   guestfs_int_program_name, &argv[i][15]);
           goto out;
         case 0:  optargs_s.followsymlinks = 0; break;
         default: optargs_s.followsymlinks = 1;
@@ -13631,11 +13743,11 @@ run_is_file (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "followsymlinks:")) {
-      switch (guestfs___is_true (&argv[i][15])) {
+      switch (guestfs_int_is_true (&argv[i][15])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][15]);
+                   guestfs_int_program_name, &argv[i][15]);
           goto out;
         case 0:  optargs_s.followsymlinks = 0; break;
         default: optargs_s.followsymlinks = 1;
@@ -13712,11 +13824,11 @@ run_is_socket (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "followsymlinks:")) {
-      switch (guestfs___is_true (&argv[i][15])) {
+      switch (guestfs_int_is_true (&argv[i][15])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][15]);
+                   guestfs_int_program_name, &argv[i][15]);
           goto out;
         case 0:  optargs_s.followsymlinks = 0; break;
         default: optargs_s.followsymlinks = 1;
@@ -14217,7 +14329,7 @@ run_ldmtool_diskgroup_disks (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -14263,7 +14375,7 @@ run_ldmtool_diskgroup_volumes (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -14301,7 +14413,7 @@ run_ldmtool_scan (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -14325,9 +14437,9 @@ run_ldmtool_scan_devices (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
-  guestfs___free_string_list (devices);
+  guestfs_int_free_string_list (devices);
  out_devices:
  out_noargs:
   return ret;
@@ -14377,7 +14489,7 @@ run_ldmtool_volume_partitions (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -14481,7 +14593,7 @@ run_list_9p (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -14501,7 +14613,7 @@ run_list_devices (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -14521,7 +14633,7 @@ run_list_disk_labels (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -14541,7 +14653,7 @@ run_list_dm_devices (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -14561,7 +14673,7 @@ run_list_filesystems (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -14581,7 +14693,7 @@ run_list_ldm_partitions (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -14601,7 +14713,7 @@ run_list_ldm_volumes (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -14621,7 +14733,7 @@ run_list_md_devices (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -14641,7 +14753,7 @@ run_list_partitions (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -14847,7 +14959,7 @@ run_ls (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (directory);
  out_directory:
@@ -14982,7 +15094,7 @@ run_lstatlist (const char *cmd, size_t argc, char *argv[])
   print_stat_list (r);
   guestfs_free_stat_list (r);
  out:
-  guestfs___free_string_list (names);
+  guestfs_int_free_string_list (names);
  out_names:
   free (path);
  out_path:
@@ -15039,7 +15151,7 @@ run_lstatnslist (const char *cmd, size_t argc, char *argv[])
   print_statns_list (r);
   guestfs_free_statns_list (r);
  out:
-  guestfs___free_string_list (names);
+  guestfs_int_free_string_list (names);
  out_names:
   free (path);
  out_path:
@@ -15498,7 +15610,7 @@ run_lvm_set_filter (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  guestfs___free_string_list (devices);
+  guestfs_int_free_string_list (devices);
  out_devices:
  out_noargs:
   return ret;
@@ -15646,7 +15758,7 @@ run_lvs (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -15718,7 +15830,7 @@ run_lxattrlist (const char *cmd, size_t argc, char *argv[])
   print_xattr_list (r);
   guestfs_free_xattr_list (r);
  out:
-  guestfs___free_string_list (names);
+  guestfs_int_free_string_list (names);
  out_names:
   free (path);
  out_path:
@@ -15871,7 +15983,7 @@ run_md_create (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  guestfs___free_string_list (devices);
+  guestfs_int_free_string_list (devices);
  out_devices:
  out_noargs:
   return ret;
@@ -15894,7 +16006,7 @@ run_md_detail (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -16369,11 +16481,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "uuid";
     }
     else if (STRPREFIX (argv[i], "forcecreate:")) {
-      switch (guestfs___is_true (&argv[i][12])) {
+      switch (guestfs_int_is_true (&argv[i][12])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][12]);
+                   guestfs_int_program_name, &argv[i][12]);
           goto out;
         case 0:  optargs_s.forcecreate = 0; break;
         default: optargs_s.forcecreate = 1;
@@ -16382,11 +16494,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "forcecreate";
     }
     else if (STRPREFIX (argv[i], "writesbandgrouponly:")) {
-      switch (guestfs___is_true (&argv[i][20])) {
+      switch (guestfs_int_is_true (&argv[i][20])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][20]);
+                   guestfs_int_program_name, &argv[i][20]);
           goto out;
         case 0:  optargs_s.writesbandgrouponly = 0; break;
         default: optargs_s.writesbandgrouponly = 1;
@@ -16395,11 +16507,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "writesbandgrouponly";
     }
     else if (STRPREFIX (argv[i], "lazyitableinit:")) {
-      switch (guestfs___is_true (&argv[i][15])) {
+      switch (guestfs_int_is_true (&argv[i][15])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][15]);
+                   guestfs_int_program_name, &argv[i][15]);
           goto out;
         case 0:  optargs_s.lazyitableinit = 0; break;
         default: optargs_s.lazyitableinit = 1;
@@ -16408,11 +16520,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "lazyitableinit";
     }
     else if (STRPREFIX (argv[i], "lazyjournalinit:")) {
-      switch (guestfs___is_true (&argv[i][16])) {
+      switch (guestfs_int_is_true (&argv[i][16])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][16]);
+                   guestfs_int_program_name, &argv[i][16]);
           goto out;
         case 0:  optargs_s.lazyjournalinit = 0; break;
         default: optargs_s.lazyjournalinit = 1;
@@ -16421,11 +16533,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "lazyjournalinit";
     }
     else if (STRPREFIX (argv[i], "testfs:")) {
-      switch (guestfs___is_true (&argv[i][7])) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][7]);
+                   guestfs_int_program_name, &argv[i][7]);
           goto out;
         case 0:  optargs_s.testfs = 0; break;
         default: optargs_s.testfs = 1;
@@ -16434,11 +16546,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "testfs";
     }
     else if (STRPREFIX (argv[i], "discard:")) {
-      switch (guestfs___is_true (&argv[i][8])) {
+      switch (guestfs_int_is_true (&argv[i][8])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][8]);
+                   guestfs_int_program_name, &argv[i][8]);
           goto out;
         case 0:  optargs_s.discard = 0; break;
         default: optargs_s.discard = 1;
@@ -16447,11 +16559,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "discard";
     }
     else if (STRPREFIX (argv[i], "quotatype:")) {
-      switch (guestfs___is_true (&argv[i][10])) {
+      switch (guestfs_int_is_true (&argv[i][10])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][10]);
+                   guestfs_int_program_name, &argv[i][10]);
           goto out;
         case 0:  optargs_s.quotatype = 0; break;
         default: optargs_s.quotatype = 1;
@@ -16460,11 +16572,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "quotatype";
     }
     else if (STRPREFIX (argv[i], "extent:")) {
-      switch (guestfs___is_true (&argv[i][7])) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][7]);
+                   guestfs_int_program_name, &argv[i][7]);
           goto out;
         case 0:  optargs_s.extent = 0; break;
         default: optargs_s.extent = 1;
@@ -16473,11 +16585,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "extent";
     }
     else if (STRPREFIX (argv[i], "filetype:")) {
-      switch (guestfs___is_true (&argv[i][9])) {
+      switch (guestfs_int_is_true (&argv[i][9])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][9]);
+                   guestfs_int_program_name, &argv[i][9]);
           goto out;
         case 0:  optargs_s.filetype = 0; break;
         default: optargs_s.filetype = 1;
@@ -16486,11 +16598,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "filetype";
     }
     else if (STRPREFIX (argv[i], "flexbg:")) {
-      switch (guestfs___is_true (&argv[i][7])) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][7]);
+                   guestfs_int_program_name, &argv[i][7]);
           goto out;
         case 0:  optargs_s.flexbg = 0; break;
         default: optargs_s.flexbg = 1;
@@ -16499,11 +16611,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "flexbg";
     }
     else if (STRPREFIX (argv[i], "hasjournal:")) {
-      switch (guestfs___is_true (&argv[i][11])) {
+      switch (guestfs_int_is_true (&argv[i][11])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][11]);
+                   guestfs_int_program_name, &argv[i][11]);
           goto out;
         case 0:  optargs_s.hasjournal = 0; break;
         default: optargs_s.hasjournal = 1;
@@ -16512,11 +16624,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "hasjournal";
     }
     else if (STRPREFIX (argv[i], "journaldev:")) {
-      switch (guestfs___is_true (&argv[i][11])) {
+      switch (guestfs_int_is_true (&argv[i][11])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][11]);
+                   guestfs_int_program_name, &argv[i][11]);
           goto out;
         case 0:  optargs_s.journaldev = 0; break;
         default: optargs_s.journaldev = 1;
@@ -16525,11 +16637,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "journaldev";
     }
     else if (STRPREFIX (argv[i], "largefile:")) {
-      switch (guestfs___is_true (&argv[i][10])) {
+      switch (guestfs_int_is_true (&argv[i][10])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][10]);
+                   guestfs_int_program_name, &argv[i][10]);
           goto out;
         case 0:  optargs_s.largefile = 0; break;
         default: optargs_s.largefile = 1;
@@ -16538,11 +16650,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "largefile";
     }
     else if (STRPREFIX (argv[i], "quota:")) {
-      switch (guestfs___is_true (&argv[i][6])) {
+      switch (guestfs_int_is_true (&argv[i][6])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][6]);
+                   guestfs_int_program_name, &argv[i][6]);
           goto out;
         case 0:  optargs_s.quota = 0; break;
         default: optargs_s.quota = 1;
@@ -16551,11 +16663,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "quota";
     }
     else if (STRPREFIX (argv[i], "resizeinode:")) {
-      switch (guestfs___is_true (&argv[i][12])) {
+      switch (guestfs_int_is_true (&argv[i][12])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][12]);
+                   guestfs_int_program_name, &argv[i][12]);
           goto out;
         case 0:  optargs_s.resizeinode = 0; break;
         default: optargs_s.resizeinode = 1;
@@ -16564,11 +16676,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "resizeinode";
     }
     else if (STRPREFIX (argv[i], "sparsesuper:")) {
-      switch (guestfs___is_true (&argv[i][12])) {
+      switch (guestfs_int_is_true (&argv[i][12])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][12]);
+                   guestfs_int_program_name, &argv[i][12]);
           goto out;
         case 0:  optargs_s.sparsesuper = 0; break;
         default: optargs_s.sparsesuper = 1;
@@ -16577,11 +16689,11 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "sparsesuper";
     }
     else if (STRPREFIX (argv[i], "uninitbg:")) {
-      switch (guestfs___is_true (&argv[i][9])) {
+      switch (guestfs_int_is_true (&argv[i][9])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][9]);
+                   guestfs_int_program_name, &argv[i][9]);
           goto out;
         case 0:  optargs_s.uninitbg = 0; break;
         default: optargs_s.uninitbg = 1;
@@ -17248,7 +17360,7 @@ run_mkfs_btrfs (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  guestfs___free_string_list (devices);
+  guestfs_int_free_string_list (devices);
  out_devices:
  out_noargs:
   return ret;
@@ -17848,11 +17960,11 @@ run_mount_local (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "readonly:")) {
-      switch (guestfs___is_true (&argv[i][9])) {
+      switch (guestfs_int_is_true (&argv[i][9])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][9]);
+                   guestfs_int_program_name, &argv[i][9]);
           goto out;
         case 0:  optargs_s.readonly = 0; break;
         default: optargs_s.readonly = 1;
@@ -17889,11 +18001,11 @@ run_mount_local (const char *cmd, size_t argc, char *argv[])
       this_arg = "cachetimeout";
     }
     else if (STRPREFIX (argv[i], "debugcalls:")) {
-      switch (guestfs___is_true (&argv[i][11])) {
+      switch (guestfs_int_is_true (&argv[i][11])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][11]);
+                   guestfs_int_program_name, &argv[i][11]);
           goto out;
         case 0:  optargs_s.debugcalls = 0; break;
         default: optargs_s.debugcalls = 1;
@@ -18059,7 +18171,7 @@ run_mountpoints (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -18079,7 +18191,7 @@ run_mounts (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -18146,11 +18258,11 @@ run_ntfs_3g_probe (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (guestfs___is_true (argv[i++])) {
+  switch (guestfs_int_is_true (argv[i++])) {
     case -1:
       fprintf (stderr,
                _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-               guestfs___program_name, argv[i-1]);
+               guestfs_int_program_name, argv[i-1]);
       goto out_rw;
     case 0:  rw = 0; break;
     default: rw = 1;
@@ -18216,11 +18328,11 @@ run_ntfsclone_out (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "metadataonly:")) {
-      switch (guestfs___is_true (&argv[i][13])) {
+      switch (guestfs_int_is_true (&argv[i][13])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][13]);
+                   guestfs_int_program_name, &argv[i][13]);
           goto out;
         case 0:  optargs_s.metadataonly = 0; break;
         default: optargs_s.metadataonly = 1;
@@ -18229,11 +18341,11 @@ run_ntfsclone_out (const char *cmd, size_t argc, char *argv[])
       this_arg = "metadataonly";
     }
     else if (STRPREFIX (argv[i], "rescue:")) {
-      switch (guestfs___is_true (&argv[i][7])) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][7]);
+                   guestfs_int_program_name, &argv[i][7]);
           goto out;
         case 0:  optargs_s.rescue = 0; break;
         default: optargs_s.rescue = 1;
@@ -18242,11 +18354,11 @@ run_ntfsclone_out (const char *cmd, size_t argc, char *argv[])
       this_arg = "rescue";
     }
     else if (STRPREFIX (argv[i], "ignorefscheck:")) {
-      switch (guestfs___is_true (&argv[i][14])) {
+      switch (guestfs_int_is_true (&argv[i][14])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][14]);
+                   guestfs_int_program_name, &argv[i][14]);
           goto out;
         case 0:  optargs_s.ignorefscheck = 0; break;
         default: optargs_s.ignorefscheck = 1;
@@ -18255,11 +18367,11 @@ run_ntfsclone_out (const char *cmd, size_t argc, char *argv[])
       this_arg = "ignorefscheck";
     }
     else if (STRPREFIX (argv[i], "preservetimestamps:")) {
-      switch (guestfs___is_true (&argv[i][19])) {
+      switch (guestfs_int_is_true (&argv[i][19])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][19]);
+                   guestfs_int_program_name, &argv[i][19]);
           goto out;
         case 0:  optargs_s.preservetimestamps = 0; break;
         default: optargs_s.preservetimestamps = 1;
@@ -18268,11 +18380,11 @@ run_ntfsclone_out (const char *cmd, size_t argc, char *argv[])
       this_arg = "preservetimestamps";
     }
     else if (STRPREFIX (argv[i], "force:")) {
-      switch (guestfs___is_true (&argv[i][6])) {
+      switch (guestfs_int_is_true (&argv[i][6])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][6]);
+                   guestfs_int_program_name, &argv[i][6]);
           goto out;
         case 0:  optargs_s.force = 0; break;
         default: optargs_s.force = 1;
@@ -18325,11 +18437,11 @@ run_ntfsfix (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "clearbadsectors:")) {
-      switch (guestfs___is_true (&argv[i][16])) {
+      switch (guestfs_int_is_true (&argv[i][16])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][16]);
+                   guestfs_int_program_name, &argv[i][16]);
           goto out;
         case 0:  optargs_s.clearbadsectors = 0; break;
         default: optargs_s.clearbadsectors = 1;
@@ -18397,11 +18509,11 @@ run_ntfsresize (const char *cmd, size_t argc, char *argv[])
       this_arg = "size";
     }
     else if (STRPREFIX (argv[i], "force:")) {
-      switch (guestfs___is_true (&argv[i][6])) {
+      switch (guestfs_int_is_true (&argv[i][6])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][6]);
+                   guestfs_int_program_name, &argv[i][6]);
           goto out;
         case 0:  optargs_s.force = 0; break;
         default: optargs_s.force = 1;
@@ -18503,7 +18615,7 @@ run_parse_environment_list (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  guestfs___free_string_list (environment);
+  guestfs_int_free_string_list (environment);
  out_environment:
  out_noargs:
   return ret;
@@ -18948,11 +19060,11 @@ run_part_set_bootable (const char *cmd, size_t argc, char *argv[])
     /* The check above should ensure this assignment does not overflow. */
     partnum = r;
   }
-  switch (guestfs___is_true (argv[i++])) {
+  switch (guestfs_int_is_true (argv[i++])) {
     case -1:
       fprintf (stderr,
                _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-               guestfs___program_name, argv[i-1]);
+               guestfs_int_program_name, argv[i-1]);
       goto out_bootable;
     case 0:  bootable = 0; break;
     default: bootable = 1;
@@ -19508,7 +19620,7 @@ run_pvs (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -19693,7 +19805,7 @@ run_read_lines (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -19774,9 +19886,9 @@ run_readlinklist (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
-  guestfs___free_string_list (names);
+  guestfs_int_free_string_list (names);
  out_names:
   free (path);
  out_path:
@@ -19832,11 +19944,11 @@ run_remount (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "rw:")) {
-      switch (guestfs___is_true (&argv[i][3])) {
+      switch (guestfs_int_is_true (&argv[i][3])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][3]);
+                   guestfs_int_program_name, &argv[i][3]);
           goto out;
         case 0:  optargs_s.rw = 0; break;
         default: optargs_s.rw = 1;
@@ -20164,11 +20276,11 @@ run_rsync (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "archive:")) {
-      switch (guestfs___is_true (&argv[i][8])) {
+      switch (guestfs_int_is_true (&argv[i][8])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][8]);
+                   guestfs_int_program_name, &argv[i][8]);
           goto out;
         case 0:  optargs_s.archive = 0; break;
         default: optargs_s.archive = 1;
@@ -20177,11 +20289,11 @@ run_rsync (const char *cmd, size_t argc, char *argv[])
       this_arg = "archive";
     }
     else if (STRPREFIX (argv[i], "deletedest:")) {
-      switch (guestfs___is_true (&argv[i][11])) {
+      switch (guestfs_int_is_true (&argv[i][11])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][11]);
+                   guestfs_int_program_name, &argv[i][11]);
           goto out;
         case 0:  optargs_s.deletedest = 0; break;
         default: optargs_s.deletedest = 1;
@@ -20239,11 +20351,11 @@ run_rsync_in (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "archive:")) {
-      switch (guestfs___is_true (&argv[i][8])) {
+      switch (guestfs_int_is_true (&argv[i][8])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][8]);
+                   guestfs_int_program_name, &argv[i][8]);
           goto out;
         case 0:  optargs_s.archive = 0; break;
         default: optargs_s.archive = 1;
@@ -20252,11 +20364,11 @@ run_rsync_in (const char *cmd, size_t argc, char *argv[])
       this_arg = "archive";
     }
     else if (STRPREFIX (argv[i], "deletedest:")) {
-      switch (guestfs___is_true (&argv[i][11])) {
+      switch (guestfs_int_is_true (&argv[i][11])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][11]);
+                   guestfs_int_program_name, &argv[i][11]);
           goto out;
         case 0:  optargs_s.deletedest = 0; break;
         default: optargs_s.deletedest = 1;
@@ -20312,11 +20424,11 @@ run_rsync_out (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "archive:")) {
-      switch (guestfs___is_true (&argv[i][8])) {
+      switch (guestfs_int_is_true (&argv[i][8])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][8]);
+                   guestfs_int_program_name, &argv[i][8]);
           goto out;
         case 0:  optargs_s.archive = 0; break;
         default: optargs_s.archive = 1;
@@ -20325,11 +20437,11 @@ run_rsync_out (const char *cmd, size_t argc, char *argv[])
       this_arg = "archive";
     }
     else if (STRPREFIX (argv[i], "deletedest:")) {
-      switch (guestfs___is_true (&argv[i][11])) {
+      switch (guestfs_int_is_true (&argv[i][11])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][11]);
+                   guestfs_int_program_name, &argv[i][11]);
           goto out;
         case 0:  optargs_s.deletedest = 0; break;
         default: optargs_s.deletedest = 1;
@@ -20485,11 +20597,11 @@ run_set_autosync (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (guestfs___is_true (argv[i++])) {
+  switch (guestfs_int_is_true (argv[i++])) {
     case -1:
       fprintf (stderr,
                _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-               guestfs___program_name, argv[i-1]);
+               guestfs_int_program_name, argv[i-1]);
       goto out_autosync;
     case 0:  autosync = 0; break;
     default: autosync = 1;
@@ -20565,7 +20677,7 @@ run_set_backend_settings (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  guestfs___free_string_list (settings);
+  guestfs_int_free_string_list (settings);
  out_settings:
  out_noargs:
   return ret;
@@ -20605,11 +20717,11 @@ run_set_direct (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (guestfs___is_true (argv[i++])) {
+  switch (guestfs_int_is_true (argv[i++])) {
     case -1:
       fprintf (stderr,
                _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-               guestfs___program_name, argv[i-1]);
+               guestfs_int_program_name, argv[i-1]);
       goto out_direct;
     case 0:  direct = 0; break;
     default: direct = 1;
@@ -20647,11 +20759,11 @@ run_set_e2attrs (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "clear:")) {
-      switch (guestfs___is_true (&argv[i][6])) {
+      switch (guestfs_int_is_true (&argv[i][6])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][6]);
+                   guestfs_int_program_name, &argv[i][6]);
           goto out;
         case 0:  optargs_s.clear = 0; break;
         default: optargs_s.clear = 1;
@@ -20875,7 +20987,7 @@ run_set_libvirt_supported_credentials (const char *cmd, size_t argc, char *argv[
   if (r == -1) goto out;
   ret = 0;
  out:
-  guestfs___free_string_list (creds);
+  guestfs_int_free_string_list (creds);
  out_creds:
  out_noargs:
   return ret;
@@ -20933,11 +21045,11 @@ run_set_network (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (guestfs___is_true (argv[i++])) {
+  switch (guestfs_int_is_true (argv[i++])) {
     case -1:
       fprintf (stderr,
                _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-               guestfs___program_name, argv[i-1]);
+               guestfs_int_program_name, argv[i-1]);
       goto out_network;
     case 0:  network = 0; break;
     default: network = 1;
@@ -20985,11 +21097,11 @@ run_set_pgroup (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (guestfs___is_true (argv[i++])) {
+  switch (guestfs_int_is_true (argv[i++])) {
     case -1:
       fprintf (stderr,
                _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-               guestfs___program_name, argv[i-1]);
+               guestfs_int_program_name, argv[i-1]);
       goto out_pgroup;
     case 0:  pgroup = 0; break;
     default: pgroup = 1;
@@ -21058,11 +21170,11 @@ run_set_recovery_proc (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (guestfs___is_true (argv[i++])) {
+  switch (guestfs_int_is_true (argv[i++])) {
     case -1:
       fprintf (stderr,
                _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-               guestfs___program_name, argv[i-1]);
+               guestfs_int_program_name, argv[i-1]);
       goto out_recoveryproc;
     case 0:  recoveryproc = 0; break;
     default: recoveryproc = 1;
@@ -21088,11 +21200,11 @@ run_set_selinux (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (guestfs___is_true (argv[i++])) {
+  switch (guestfs_int_is_true (argv[i++])) {
     case -1:
       fprintf (stderr,
                _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-               guestfs___program_name, argv[i-1]);
+               guestfs_int_program_name, argv[i-1]);
       goto out_selinux;
     case 0:  selinux = 0; break;
     default: selinux = 1;
@@ -21180,11 +21292,11 @@ run_set_trace (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (guestfs___is_true (argv[i++])) {
+  switch (guestfs_int_is_true (argv[i++])) {
     case -1:
       fprintf (stderr,
                _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-               guestfs___program_name, argv[i-1]);
+               guestfs_int_program_name, argv[i-1]);
       goto out_trace;
     case 0:  trace = 0; break;
     default: trace = 1;
@@ -21233,11 +21345,11 @@ run_set_verbose (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (guestfs___is_true (argv[i++])) {
+  switch (guestfs_int_is_true (argv[i++])) {
     case -1:
       fprintf (stderr,
                _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-               guestfs___program_name, argv[i-1]);
+               guestfs_int_program_name, argv[i-1]);
       goto out_verbose;
     case 0:  verbose = 0; break;
     default: verbose = 1;
@@ -21401,7 +21513,7 @@ run_sfdisk (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  guestfs___free_string_list (lines);
+  guestfs_int_free_string_list (lines);
  out_lines:
  out_sectors:
  out_heads:
@@ -21430,7 +21542,7 @@ run_sfdiskM (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  guestfs___free_string_list (lines);
+  guestfs_int_free_string_list (lines);
  out_lines:
  out_noargs:
   return ret;
@@ -21652,7 +21764,7 @@ run_sh_lines (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -21812,7 +21924,7 @@ run_strings (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -21840,7 +21952,7 @@ run_strings_e (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -22105,7 +22217,7 @@ run_tail (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -22151,7 +22263,7 @@ run_tail_n (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -22244,11 +22356,11 @@ run_tar_out (const char *cmd, size_t argc, char *argv[])
       this_arg = "compress";
     }
     else if (STRPREFIX (argv[i], "numericowner:")) {
-      switch (guestfs___is_true (&argv[i][13])) {
+      switch (guestfs_int_is_true (&argv[i][13])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][13]);
+                   guestfs_int_program_name, &argv[i][13]);
           goto out;
         case 0:  optargs_s.numericowner = 0; break;
         default: optargs_s.numericowner = 1;
@@ -22282,7 +22394,7 @@ run_tar_out (const char *cmd, size_t argc, char *argv[])
  out:
   if ((optargs_s.bitmask & GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK) &&
       optargs_s.excludes != NULL)
-    guestfs___free_string_list ((char **) optargs_s.excludes);
+    guestfs_int_free_string_list ((char **) optargs_s.excludes);
   free (tarfile);
  out_tarfile:
  out_noargs:
@@ -22455,11 +22567,11 @@ run_tune2fs (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "force:")) {
-      switch (guestfs___is_true (&argv[i][6])) {
+      switch (guestfs_int_is_true (&argv[i][6])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][6]);
+                   guestfs_int_program_name, &argv[i][6]);
           goto out;
         case 0:  optargs_s.force = 0; break;
         default: optargs_s.force = 1;
@@ -22659,7 +22771,7 @@ run_tune2fs_l (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -22786,11 +22898,11 @@ run_umount (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "force:")) {
-      switch (guestfs___is_true (&argv[i][6])) {
+      switch (guestfs_int_is_true (&argv[i][6])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][6]);
+                   guestfs_int_program_name, &argv[i][6]);
           goto out;
         case 0:  optargs_s.force = 0; break;
         default: optargs_s.force = 1;
@@ -22799,11 +22911,11 @@ run_umount (const char *cmd, size_t argc, char *argv[])
       this_arg = "force";
     }
     else if (STRPREFIX (argv[i], "lazyunmount:")) {
-      switch (guestfs___is_true (&argv[i][12])) {
+      switch (guestfs_int_is_true (&argv[i][12])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][12]);
+                   guestfs_int_program_name, &argv[i][12]);
           goto out;
         case 0:  optargs_s.lazyunmount = 0; break;
         default: optargs_s.lazyunmount = 1;
@@ -22872,11 +22984,11 @@ run_umount_local (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "retry:")) {
-      switch (guestfs___is_true (&argv[i][6])) {
+      switch (guestfs_int_is_true (&argv[i][6])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][6]);
+                   guestfs_int_program_name, &argv[i][6]);
           goto out;
         case 0:  optargs_s.retry = 0; break;
         default: optargs_s.retry = 1;
@@ -23203,11 +23315,11 @@ run_vg_activate (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (guestfs___is_true (argv[i++])) {
+  switch (guestfs_int_is_true (argv[i++])) {
     case -1:
       fprintf (stderr,
                _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-               guestfs___program_name, argv[i-1]);
+               guestfs_int_program_name, argv[i-1]);
       goto out_activate;
     case 0:  activate = 0; break;
     default: activate = 1;
@@ -23218,7 +23330,7 @@ run_vg_activate (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  guestfs___free_string_list (volgroups);
+  guestfs_int_free_string_list (volgroups);
  out_volgroups:
  out_activate:
  out_noargs:
@@ -23237,11 +23349,11 @@ run_vg_activate_all (const char *cmd, size_t argc, char *argv[])
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  switch (guestfs___is_true (argv[i++])) {
+  switch (guestfs_int_is_true (argv[i++])) {
     case -1:
       fprintf (stderr,
                _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-               guestfs___program_name, argv[i-1]);
+               guestfs_int_program_name, argv[i-1]);
       goto out_activate;
     case 0:  activate = 0; break;
     default: activate = 1;
@@ -23314,7 +23426,7 @@ run_vgcreate (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  guestfs___free_string_list (physvols);
+  guestfs_int_free_string_list (physvols);
  out_physvols:
  out_noargs:
   return ret;
@@ -23337,7 +23449,7 @@ run_vglvuuids (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -23388,7 +23500,7 @@ run_vgpvuuids (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -23452,7 +23564,7 @@ run_vgs (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -23741,11 +23853,11 @@ run_xfs_admin (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "extunwritten:")) {
-      switch (guestfs___is_true (&argv[i][13])) {
+      switch (guestfs_int_is_true (&argv[i][13])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][13]);
+                   guestfs_int_program_name, &argv[i][13]);
           goto out;
         case 0:  optargs_s.extunwritten = 0; break;
         default: optargs_s.extunwritten = 1;
@@ -23754,11 +23866,11 @@ run_xfs_admin (const char *cmd, size_t argc, char *argv[])
       this_arg = "extunwritten";
     }
     else if (STRPREFIX (argv[i], "imgfile:")) {
-      switch (guestfs___is_true (&argv[i][8])) {
+      switch (guestfs_int_is_true (&argv[i][8])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][8]);
+                   guestfs_int_program_name, &argv[i][8]);
           goto out;
         case 0:  optargs_s.imgfile = 0; break;
         default: optargs_s.imgfile = 1;
@@ -23767,11 +23879,11 @@ run_xfs_admin (const char *cmd, size_t argc, char *argv[])
       this_arg = "imgfile";
     }
     else if (STRPREFIX (argv[i], "v2log:")) {
-      switch (guestfs___is_true (&argv[i][6])) {
+      switch (guestfs_int_is_true (&argv[i][6])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][6]);
+                   guestfs_int_program_name, &argv[i][6]);
           goto out;
         case 0:  optargs_s.v2log = 0; break;
         default: optargs_s.v2log = 1;
@@ -23780,11 +23892,11 @@ run_xfs_admin (const char *cmd, size_t argc, char *argv[])
       this_arg = "v2log";
     }
     else if (STRPREFIX (argv[i], "projid32bit:")) {
-      switch (guestfs___is_true (&argv[i][12])) {
+      switch (guestfs_int_is_true (&argv[i][12])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][12]);
+                   guestfs_int_program_name, &argv[i][12]);
           goto out;
         case 0:  optargs_s.projid32bit = 0; break;
         default: optargs_s.projid32bit = 1;
@@ -23793,11 +23905,11 @@ run_xfs_admin (const char *cmd, size_t argc, char *argv[])
       this_arg = "projid32bit";
     }
     else if (STRPREFIX (argv[i], "lazycounter:")) {
-      switch (guestfs___is_true (&argv[i][12])) {
+      switch (guestfs_int_is_true (&argv[i][12])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][12]);
+                   guestfs_int_program_name, &argv[i][12]);
           goto out;
         case 0:  optargs_s.lazycounter = 0; break;
         default: optargs_s.lazycounter = 1;
@@ -23859,11 +23971,11 @@ run_xfs_growfs (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "datasec:")) {
-      switch (guestfs___is_true (&argv[i][8])) {
+      switch (guestfs_int_is_true (&argv[i][8])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][8]);
+                   guestfs_int_program_name, &argv[i][8]);
           goto out;
         case 0:  optargs_s.datasec = 0; break;
         default: optargs_s.datasec = 1;
@@ -23872,11 +23984,11 @@ run_xfs_growfs (const char *cmd, size_t argc, char *argv[])
       this_arg = "datasec";
     }
     else if (STRPREFIX (argv[i], "logsec:")) {
-      switch (guestfs___is_true (&argv[i][7])) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][7]);
+                   guestfs_int_program_name, &argv[i][7]);
           goto out;
         case 0:  optargs_s.logsec = 0; break;
         default: optargs_s.logsec = 1;
@@ -23885,11 +23997,11 @@ run_xfs_growfs (const char *cmd, size_t argc, char *argv[])
       this_arg = "logsec";
     }
     else if (STRPREFIX (argv[i], "rtsec:")) {
-      switch (guestfs___is_true (&argv[i][6])) {
+      switch (guestfs_int_is_true (&argv[i][6])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][6]);
+                   guestfs_int_program_name, &argv[i][6]);
           goto out;
         case 0:  optargs_s.rtsec = 0; break;
         default: optargs_s.rtsec = 1;
@@ -24060,11 +24172,11 @@ run_xfs_repair (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "forcelogzero:")) {
-      switch (guestfs___is_true (&argv[i][13])) {
+      switch (guestfs_int_is_true (&argv[i][13])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][13]);
+                   guestfs_int_program_name, &argv[i][13]);
           goto out;
         case 0:  optargs_s.forcelogzero = 0; break;
         default: optargs_s.forcelogzero = 1;
@@ -24073,11 +24185,11 @@ run_xfs_repair (const char *cmd, size_t argc, char *argv[])
       this_arg = "forcelogzero";
     }
     else if (STRPREFIX (argv[i], "nomodify:")) {
-      switch (guestfs___is_true (&argv[i][9])) {
+      switch (guestfs_int_is_true (&argv[i][9])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][9]);
+                   guestfs_int_program_name, &argv[i][9]);
           goto out;
         case 0:  optargs_s.nomodify = 0; break;
         default: optargs_s.nomodify = 1;
@@ -24086,11 +24198,11 @@ run_xfs_repair (const char *cmd, size_t argc, char *argv[])
       this_arg = "nomodify";
     }
     else if (STRPREFIX (argv[i], "noprefetch:")) {
-      switch (guestfs___is_true (&argv[i][11])) {
+      switch (guestfs_int_is_true (&argv[i][11])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][11]);
+                   guestfs_int_program_name, &argv[i][11]);
           goto out;
         case 0:  optargs_s.noprefetch = 0; break;
         default: optargs_s.noprefetch = 1;
@@ -24099,11 +24211,11 @@ run_xfs_repair (const char *cmd, size_t argc, char *argv[])
       this_arg = "noprefetch";
     }
     else if (STRPREFIX (argv[i], "forcegeometry:")) {
-      switch (guestfs___is_true (&argv[i][14])) {
+      switch (guestfs_int_is_true (&argv[i][14])) {
         case -1:
           fprintf (stderr,
                    _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
-                   guestfs___program_name, &argv[i][14]);
+                   guestfs_int_program_name, &argv[i][14]);
           goto out;
         case 0:  optargs_s.forcegeometry = 0; break;
         default: optargs_s.forcegeometry = 1;
@@ -24234,7 +24346,7 @@ run_zegrep (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -24262,7 +24374,7 @@ run_zegrepi (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -24377,7 +24489,7 @@ run_zfgrep (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -24405,7 +24517,7 @@ run_zfgrepi (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -24461,7 +24573,7 @@ run_zgrep (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:
@@ -24489,7 +24601,7 @@ run_zgrepi (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  guestfs___free_string_list (r);
+  guestfs_int_free_string_list (r);
  out:
   free (path);
  out_path:

@@ -16515,6 +16515,94 @@ done_no_free:
   return;
 }
 
+static void
+btrfs_balance_status_stub (XDR *xdr_in)
+{
+  guestfs_int_btrfsbalance *r;
+  struct guestfs_btrfs_balance_status_args args;
+  const char *path;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_balance_status_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_balance_status (path);
+  if (r == NULL)
+    /* do_btrfs_balance_status has already called reply_with_error */
+    goto done;
+
+  struct guestfs_btrfs_balance_status_ret ret;
+  ret.status = *r;
+  free (r);
+  reply ((xdrproc_t) xdr_guestfs_btrfs_balance_status_ret, (char *) &ret);
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_balance_status_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_balance_status_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_scrub_status_stub (XDR *xdr_in)
+{
+  guestfs_int_btrfsscrub *r;
+  struct guestfs_btrfs_scrub_status_args args;
+  const char *path;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_scrub_status_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_scrub_status (path);
+  if (r == NULL)
+    /* do_btrfs_scrub_status has already called reply_with_error */
+    goto done;
+
+  struct guestfs_btrfs_scrub_status_ret ret;
+  ret.status = *r;
+  free (r);
+  reply ((xdrproc_t) xdr_guestfs_btrfs_scrub_status_ret, (char *) &ret);
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_scrub_status_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_scrub_status_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -17822,6 +17910,12 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_PART_GET_GPT_GUID:
       part_get_gpt_guid_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_BALANCE_STATUS:
+      btrfs_balance_status_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_SCRUB_STATUS:
+      btrfs_scrub_status_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

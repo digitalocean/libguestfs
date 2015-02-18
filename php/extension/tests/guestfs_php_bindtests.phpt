@@ -1,5 +1,10 @@
 --TEST--
 General PHP binding test.
+--SKIPIF--
+<?php
+if (PHP_INT_SIZE < 8)
+  print 'skip 32bit platforms due to limited int in PHP';
+?>
 --FILE--
 <?php
 $g = guestfs_create ();
