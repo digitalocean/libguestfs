@@ -255,6 +255,28 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_application2_list *guestfs_copy_applica
 extern GUESTFS_DLL_PUBLIC void guestfs_free_application2 (struct guestfs_application2 *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_application2_list (struct guestfs_application2_list *);
 
+struct guestfs_btrfsbalance {
+  char *btrfsbalance_status;
+  uint64_t btrfsbalance_total;
+  uint64_t btrfsbalance_balanced;
+  uint64_t btrfsbalance_considered;
+  uint64_t btrfsbalance_left;
+};
+
+struct guestfs_btrfsbalance_list {
+  uint32_t len;
+  struct guestfs_btrfsbalance *val;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_btrfsbalance (const struct guestfs_btrfsbalance *, const struct guestfs_btrfsbalance *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_btrfsbalance_list (const struct guestfs_btrfsbalance_list *, const struct guestfs_btrfsbalance_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_btrfsbalance *guestfs_copy_btrfsbalance (const struct guestfs_btrfsbalance *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_btrfsbalance_list *guestfs_copy_btrfsbalance_list (const struct guestfs_btrfsbalance_list *);
+
+extern GUESTFS_DLL_PUBLIC void guestfs_free_btrfsbalance (struct guestfs_btrfsbalance *);
+extern GUESTFS_DLL_PUBLIC void guestfs_free_btrfsbalance_list (struct guestfs_btrfsbalance_list *);
+
 struct guestfs_btrfsqgroup {
   char *btrfsqgroup_id;
   uint64_t btrfsqgroup_rfer;
@@ -274,6 +296,38 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_btrfsqgroup_list *guestfs_copy_btrfsqgr
 
 extern GUESTFS_DLL_PUBLIC void guestfs_free_btrfsqgroup (struct guestfs_btrfsqgroup *);
 extern GUESTFS_DLL_PUBLIC void guestfs_free_btrfsqgroup_list (struct guestfs_btrfsqgroup_list *);
+
+struct guestfs_btrfsscrub {
+  uint64_t btrfsscrub_data_extents_scrubbed;
+  uint64_t btrfsscrub_tree_extents_scrubbed;
+  uint64_t btrfsscrub_data_bytes_scrubbed;
+  uint64_t btrfsscrub_tree_bytes_scrubbed;
+  uint64_t btrfsscrub_read_errors;
+  uint64_t btrfsscrub_csum_errors;
+  uint64_t btrfsscrub_verify_errors;
+  uint64_t btrfsscrub_no_csum;
+  uint64_t btrfsscrub_csum_discards;
+  uint64_t btrfsscrub_super_errors;
+  uint64_t btrfsscrub_malloc_errors;
+  uint64_t btrfsscrub_uncorrectable_errors;
+  uint64_t btrfsscrub_unverified_errors;
+  uint64_t btrfsscrub_corrected_errors;
+  uint64_t btrfsscrub_last_physical;
+};
+
+struct guestfs_btrfsscrub_list {
+  uint32_t len;
+  struct guestfs_btrfsscrub *val;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_btrfsscrub (const struct guestfs_btrfsscrub *, const struct guestfs_btrfsscrub *);
+extern GUESTFS_DLL_PUBLIC int guestfs_compare_btrfsscrub_list (const struct guestfs_btrfsscrub_list *, const struct guestfs_btrfsscrub_list *);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_btrfsscrub *guestfs_copy_btrfsscrub (const struct guestfs_btrfsscrub *);
+extern GUESTFS_DLL_PUBLIC struct guestfs_btrfsscrub_list *guestfs_copy_btrfsscrub_list (const struct guestfs_btrfsscrub_list *);
+
+extern GUESTFS_DLL_PUBLIC void guestfs_free_btrfsscrub (struct guestfs_btrfsscrub *);
+extern GUESTFS_DLL_PUBLIC void guestfs_free_btrfsscrub_list (struct guestfs_btrfsscrub_list *);
 
 struct guestfs_btrfssubvolume {
   uint64_t btrfssubvolume_id;
@@ -1033,6 +1087,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_balance_pause (guestfs_h *g, const c
 #define GUESTFS_HAVE_BTRFS_BALANCE_RESUME 1
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_balance_resume (guestfs_h *g, const char *path);
 
+#define GUESTFS_HAVE_BTRFS_BALANCE_STATUS 1
+extern GUESTFS_DLL_PUBLIC struct guestfs_btrfsbalance *guestfs_btrfs_balance_status (guestfs_h *g, const char *path);
+
 #define GUESTFS_HAVE_BTRFS_DEVICE_ADD 1
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_device_add (guestfs_h *g, char *const *devices, const char *fs);
 
@@ -1128,6 +1185,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_scrub_resume (guestfs_h *g, const ch
 
 #define GUESTFS_HAVE_BTRFS_SCRUB_START 1
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_scrub_start (guestfs_h *g, const char *path);
+
+#define GUESTFS_HAVE_BTRFS_SCRUB_STATUS 1
+extern GUESTFS_DLL_PUBLIC struct guestfs_btrfsscrub *guestfs_btrfs_scrub_status (guestfs_h *g, const char *path);
 
 #define GUESTFS_HAVE_BTRFS_SET_SEEDING 1
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_set_seeding (guestfs_h *g, const char *device, int seeding);
@@ -3882,6 +3942,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_BTRFS_BALANCE_CANCEL 1
 #define LIBGUESTFS_HAVE_BTRFS_BALANCE_PAUSE 1
 #define LIBGUESTFS_HAVE_BTRFS_BALANCE_RESUME 1
+#define LIBGUESTFS_HAVE_BTRFS_BALANCE_STATUS 1
 #define LIBGUESTFS_HAVE_BTRFS_DEVICE_ADD 1
 #define LIBGUESTFS_HAVE_BTRFS_DEVICE_DELETE 1
 #define LIBGUESTFS_HAVE_BTRFS_FILESYSTEM_BALANCE 1
@@ -3902,6 +3963,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_BTRFS_SCRUB_CANCEL 1
 #define LIBGUESTFS_HAVE_BTRFS_SCRUB_RESUME 1
 #define LIBGUESTFS_HAVE_BTRFS_SCRUB_START 1
+#define LIBGUESTFS_HAVE_BTRFS_SCRUB_STATUS 1
 #define LIBGUESTFS_HAVE_BTRFS_SET_SEEDING 1
 #define LIBGUESTFS_HAVE_BTRFS_SUBVOLUME_CREATE 1
 #define LIBGUESTFS_HAVE_BTRFS_SUBVOLUME_DELETE 1

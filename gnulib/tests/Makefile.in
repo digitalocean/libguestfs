@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (C) 2002-2014 Free Software Foundation, Inc.
+# Copyright (C) 2002-2015 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -140,7 +140,8 @@ TESTS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-ignore-value$(EXEEXT) test-inet_ntop$(EXEEXT) \
 	test-inet_pton$(EXEEXT) test-intprops$(EXEEXT) \
 	test-inttostr$(EXEEXT) test-inttypes$(EXEEXT) \
-	test-ioctl$(EXEEXT) test-isatty$(EXEEXT) test-listen$(EXEEXT) \
+	test-ioctl$(EXEEXT) test-isatty$(EXEEXT) \
+	test-langinfo$(EXEEXT) test-listen$(EXEEXT) \
 	test-locale$(EXEEXT) test-localeconv$(EXEEXT) \
 	test-localename$(EXEEXT) test-lock$(EXEEXT) test-lseek.sh \
 	test-lstat$(EXEEXT) test-malloca$(EXEEXT) test-mbrtowc1.sh \
@@ -225,7 +226,8 @@ check_PROGRAMS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-ignore-value$(EXEEXT) test-inet_ntop$(EXEEXT) \
 	test-inet_pton$(EXEEXT) test-intprops$(EXEEXT) \
 	test-inttostr$(EXEEXT) test-inttypes$(EXEEXT) \
-	test-ioctl$(EXEEXT) test-isatty$(EXEEXT) test-listen$(EXEEXT) \
+	test-ioctl$(EXEEXT) test-isatty$(EXEEXT) \
+	test-langinfo$(EXEEXT) test-listen$(EXEEXT) \
 	test-locale$(EXEEXT) test-localeconv$(EXEEXT) \
 	test-localename$(EXEEXT) test-lock$(EXEEXT) \
 	test-lseek$(EXEEXT) test-lstat$(EXEEXT) test-malloca$(EXEEXT) \
@@ -326,26 +328,26 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/inttostr.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
 	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
 	$(top_srcdir)/m4/ioctl.m4 $(top_srcdir)/m4/isatty.m4 \
-	$(top_srcdir)/m4/largefile.m4 $(top_srcdir)/m4/lcmessage.m4 \
-	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
-	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/localcharset.m4 $(top_srcdir)/m4/locale-fr.m4 \
-	$(top_srcdir)/m4/locale-ja.m4 $(top_srcdir)/m4/locale-tr.m4 \
-	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
-	$(top_srcdir)/m4/localeconv.m4 $(top_srcdir)/m4/localename.m4 \
-	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
-	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
-	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
-	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
-	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
-	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/memmem.m4 \
-	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
-	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mkstemps.m4 \
-	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
-	$(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/langinfo_h.m4 $(top_srcdir)/m4/largefile.m4 \
+	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
+	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
+	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
+	$(top_srcdir)/m4/locale-tr.m4 $(top_srcdir)/m4/locale-zh.m4 \
+	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localeconv.m4 \
+	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
+	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
+	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
+	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
+	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
+	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
+	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
+	$(top_srcdir)/m4/memmem.m4 $(top_srcdir)/m4/mempcpy.m4 \
+	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
+	$(top_srcdir)/m4/mkstemps.m4 $(top_srcdir)/m4/mmap-anon.m4 \
+	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/nanosleep.m4 $(top_srcdir)/m4/netdb_h.m4 \
 	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nls.m4 \
@@ -761,6 +763,11 @@ test_isatty_SOURCES = test-isatty.c
 test_isatty_OBJECTS = test-isatty.$(OBJEXT)
 test_isatty_LDADD = $(LDADD)
 test_isatty_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
+	libtests.a $(am__DEPENDENCIES_1)
+test_langinfo_SOURCES = test-langinfo.c
+test_langinfo_OBJECTS = test-langinfo.$(OBJEXT)
+test_langinfo_LDADD = $(LDADD)
+test_langinfo_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
 	libtests.a $(am__DEPENDENCIES_1)
 test_listen_SOURCES = test-listen.c
 test_listen_OBJECTS = test-listen.$(OBJEXT)
@@ -1269,7 +1276,7 @@ SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-hash.c test-i-ring.c test-iconv.c test-ignore-value.c \
 	test-inet_ntop.c test-inet_pton.c test-intprops.c \
 	test-inttostr.c test-inttypes.c test-ioctl.c test-isatty.c \
-	test-listen.c test-locale.c test-localeconv.c \
+	test-langinfo.c test-listen.c test-locale.c test-localeconv.c \
 	test-localename.c test-lock.c test-lseek.c test-lstat.c \
 	test-malloca.c test-mbrtowc.c test-mbrtowc-w32.c \
 	test-mbsinit.c test-mbsrtowcs.c test-memchr.c test-memmem.c \
@@ -1319,7 +1326,7 @@ DIST_SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-hash.c test-i-ring.c test-iconv.c test-ignore-value.c \
 	test-inet_ntop.c test-inet_pton.c test-intprops.c \
 	test-inttostr.c test-inttypes.c test-ioctl.c test-isatty.c \
-	test-listen.c test-locale.c test-localeconv.c \
+	test-langinfo.c test-listen.c test-locale.c test-localeconv.c \
 	test-localename.c test-lock.c test-lseek.c test-lstat.c \
 	test-malloca.c test-mbrtowc.c test-mbrtowc-w32.c \
 	test-mbsinit.c test-mbsrtowcs.c test-memchr.c test-memmem.c \
@@ -1660,6 +1667,7 @@ GNULIB_MKSTEMP = @GNULIB_MKSTEMP@
 GNULIB_MKSTEMPS = @GNULIB_MKSTEMPS@
 GNULIB_MKTIME = @GNULIB_MKTIME@
 GNULIB_NANOSLEEP = @GNULIB_NANOSLEEP@
+GNULIB_NL_LANGINFO = @GNULIB_NL_LANGINFO@
 GNULIB_NONBLOCKING = @GNULIB_NONBLOCKING@
 GNULIB_OBSTACK_PRINTF = @GNULIB_OBSTACK_PRINTF@
 GNULIB_OBSTACK_PRINTF_POSIX = @GNULIB_OBSTACK_PRINTF_POSIX@
@@ -1912,12 +1920,18 @@ HAVE_GROUP_MEMBER = @HAVE_GROUP_MEMBER@
 HAVE_INTTYPES_H = @HAVE_INTTYPES_H@
 HAVE_ISWBLANK = @HAVE_ISWBLANK@
 HAVE_ISWCNTRL = @HAVE_ISWCNTRL@
+HAVE_LANGINFO_CODESET = @HAVE_LANGINFO_CODESET@
+HAVE_LANGINFO_ERA = @HAVE_LANGINFO_ERA@
+HAVE_LANGINFO_H = @HAVE_LANGINFO_H@
+HAVE_LANGINFO_T_FMT_AMPM = @HAVE_LANGINFO_T_FMT_AMPM@
+HAVE_LANGINFO_YESEXPR = @HAVE_LANGINFO_YESEXPR@
 HAVE_LCHMOD = @HAVE_LCHMOD@
 HAVE_LCHOWN = @HAVE_LCHOWN@
 HAVE_LINK = @HAVE_LINK@
 HAVE_LINKAT = @HAVE_LINKAT@
 HAVE_LONG_LONG_INT = @HAVE_LONG_LONG_INT@
 HAVE_LSTAT = @HAVE_LSTAT@
+HAVE_MAX_ALIGN_T = @HAVE_MAX_ALIGN_T@
 HAVE_MBRLEN = @HAVE_MBRLEN@
 HAVE_MBRTOWC = @HAVE_MBRTOWC@
 HAVE_MBSINIT = @HAVE_MBSINIT@
@@ -1940,6 +1954,7 @@ HAVE_MSVC_INVALID_PARAMETER_HANDLER = @HAVE_MSVC_INVALID_PARAMETER_HANDLER@
 HAVE_NANOSLEEP = @HAVE_NANOSLEEP@
 HAVE_NETDB_H = @HAVE_NETDB_H@
 HAVE_NETINET_IN_H = @HAVE_NETINET_IN_H@
+HAVE_NL_LANGINFO = @HAVE_NL_LANGINFO@
 HAVE_OPENAT = @HAVE_OPENAT@
 HAVE_OPENDIR = @HAVE_OPENDIR@
 HAVE_OS_H = @HAVE_OS_H@
@@ -2105,6 +2120,7 @@ LEXLIB = @LEXLIB@
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBCONFIG_CFLAGS = @LIBCONFIG_CFLAGS@
 LIBCONFIG_LIBS = @LIBCONFIG_LIBS@
+LIBCRYPT_LIBS = @LIBCRYPT_LIBS@
 LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
 LIBLZMA_CFLAGS = @LIBLZMA_CFLAGS@
@@ -2165,6 +2181,7 @@ NEXT_AS_FIRST_DIRECTIVE_FCNTL_H = @NEXT_AS_FIRST_DIRECTIVE_FCNTL_H@
 NEXT_AS_FIRST_DIRECTIVE_FLOAT_H = @NEXT_AS_FIRST_DIRECTIVE_FLOAT_H@
 NEXT_AS_FIRST_DIRECTIVE_GETOPT_H = @NEXT_AS_FIRST_DIRECTIVE_GETOPT_H@
 NEXT_AS_FIRST_DIRECTIVE_INTTYPES_H = @NEXT_AS_FIRST_DIRECTIVE_INTTYPES_H@
+NEXT_AS_FIRST_DIRECTIVE_LANGINFO_H = @NEXT_AS_FIRST_DIRECTIVE_LANGINFO_H@
 NEXT_AS_FIRST_DIRECTIVE_LOCALE_H = @NEXT_AS_FIRST_DIRECTIVE_LOCALE_H@
 NEXT_AS_FIRST_DIRECTIVE_NETDB_H = @NEXT_AS_FIRST_DIRECTIVE_NETDB_H@
 NEXT_AS_FIRST_DIRECTIVE_NETINET_IN_H = @NEXT_AS_FIRST_DIRECTIVE_NETINET_IN_H@
@@ -2193,6 +2210,7 @@ NEXT_FCNTL_H = @NEXT_FCNTL_H@
 NEXT_FLOAT_H = @NEXT_FLOAT_H@
 NEXT_GETOPT_H = @NEXT_GETOPT_H@
 NEXT_INTTYPES_H = @NEXT_INTTYPES_H@
+NEXT_LANGINFO_H = @NEXT_LANGINFO_H@
 NEXT_LOCALE_H = @NEXT_LOCALE_H@
 NEXT_NETDB_H = @NEXT_NETDB_H@
 NEXT_NETINET_IN_H = @NEXT_NETINET_IN_H@
@@ -2348,6 +2366,7 @@ REPLACE_MKNOD = @REPLACE_MKNOD@
 REPLACE_MKSTEMP = @REPLACE_MKSTEMP@
 REPLACE_MKTIME = @REPLACE_MKTIME@
 REPLACE_NANOSLEEP = @REPLACE_NANOSLEEP@
+REPLACE_NL_LANGINFO = @REPLACE_NL_LANGINFO@
 REPLACE_NULL = @REPLACE_NULL@
 REPLACE_OBSTACK_PRINTF = @REPLACE_OBSTACK_PRINTF@
 REPLACE_OPEN = @REPLACE_OPEN@
@@ -2368,6 +2387,7 @@ REPLACE_RAISE = @REPLACE_RAISE@
 REPLACE_RANDOM_R = @REPLACE_RANDOM_R@
 REPLACE_READ = @REPLACE_READ@
 REPLACE_READLINK = @REPLACE_READLINK@
+REPLACE_READLINKAT = @REPLACE_READLINKAT@
 REPLACE_REALLOC = @REPLACE_REALLOC@
 REPLACE_REALPATH = @REPLACE_REALPATH@
 REPLACE_REMOVE = @REPLACE_REMOVE@
@@ -2401,6 +2421,7 @@ REPLACE_STRTOUMAX = @REPLACE_STRTOUMAX@
 REPLACE_STRUCT_LCONV = @REPLACE_STRUCT_LCONV@
 REPLACE_STRUCT_TIMEVAL = @REPLACE_STRUCT_TIMEVAL@
 REPLACE_SYMLINK = @REPLACE_SYMLINK@
+REPLACE_SYMLINKAT = @REPLACE_SYMLINKAT@
 REPLACE_TIMEGM = @REPLACE_TIMEGM@
 REPLACE_TMPFILE = @REPLACE_TMPFILE@
 REPLACE_TOWLOWER = @REPLACE_TOWLOWER@
@@ -2452,6 +2473,7 @@ TIME_H_DEFINES_STRUCT_TIMESPEC = @TIME_H_DEFINES_STRUCT_TIMESPEC@
 UINT32_MAX_LT_UINTMAX_MAX = @UINT32_MAX_LT_UINTMAX_MAX@
 UINT64_MAX_EQ_ULONG_MAX = @UINT64_MAX_EQ_ULONG_MAX@
 UNDEFINE_STRTOK_R = @UNDEFINE_STRTOK_R@
+UNISTD_H_DEFINES_STRUCT_TIMESPEC = @UNISTD_H_DEFINES_STRUCT_TIMESPEC@
 UNISTD_H_HAVE_WINSOCK2_H = @UNISTD_H_HAVE_WINSOCK2_H@
 UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 UNZIP = @UNZIP@
@@ -2614,23 +2636,23 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 	macros.h test-intprops.c macros.h anytostr.c inttostr.h \
 	macros.h test-inttostr.c test-inttypes.c ioctl.c w32sock.h \
 	test-ioctl.c signature.h macros.h test-isatty.c signature.h \
-	macros.h listen.c w32sock.h test-listen.c signature.h macros.h \
-	test-locale.c test-localeconv.c signature.h macros.h \
-	localename.h test-localename.c macros.h test-lock.c \
-	test-lseek.c test-lseek.sh signature.h macros.h test-lstat.h \
-	test-lstat.c signature.h macros.h test-malloca.c \
-	test-mbrtowc1.sh test-mbrtowc2.sh test-mbrtowc3.sh \
-	test-mbrtowc4.sh test-mbrtowc.c test-mbrtowc-w32-1.sh \
-	test-mbrtowc-w32-2.sh test-mbrtowc-w32-3.sh \
-	test-mbrtowc-w32-4.sh test-mbrtowc-w32-5.sh test-mbrtowc-w32.c \
-	signature.h macros.h test-mbsinit.sh test-mbsinit.c \
-	signature.h macros.h test-mbsrtowcs1.sh test-mbsrtowcs2.sh \
-	test-mbsrtowcs3.sh test-mbsrtowcs4.sh test-mbsrtowcs.c \
-	signature.h macros.h mbtowc-impl.h mbtowc.c test-memchr.c \
-	zerosize-ptr.h signature.h macros.h test-memmem.c \
-	zerosize-ptr.h signature.h macros.h test-memrchr.c \
-	zerosize-ptr.h signature.h macros.h nanosleep.c \
-	test-nanosleep.c signature.h macros.h test-netdb.c \
+	macros.h langinfo.in.h test-langinfo.c listen.c w32sock.h \
+	test-listen.c signature.h macros.h test-locale.c \
+	test-localeconv.c signature.h macros.h localename.h \
+	test-localename.c macros.h test-lock.c test-lseek.c \
+	test-lseek.sh signature.h macros.h test-lstat.h test-lstat.c \
+	signature.h macros.h test-malloca.c test-mbrtowc1.sh \
+	test-mbrtowc2.sh test-mbrtowc3.sh test-mbrtowc4.sh \
+	test-mbrtowc.c test-mbrtowc-w32-1.sh test-mbrtowc-w32-2.sh \
+	test-mbrtowc-w32-3.sh test-mbrtowc-w32-4.sh \
+	test-mbrtowc-w32-5.sh test-mbrtowc-w32.c signature.h macros.h \
+	test-mbsinit.sh test-mbsinit.c signature.h macros.h \
+	test-mbsrtowcs1.sh test-mbsrtowcs2.sh test-mbsrtowcs3.sh \
+	test-mbsrtowcs4.sh test-mbsrtowcs.c signature.h macros.h \
+	mbtowc-impl.h mbtowc.c test-memchr.c zerosize-ptr.h \
+	signature.h macros.h test-memmem.c zerosize-ptr.h signature.h \
+	macros.h test-memrchr.c zerosize-ptr.h signature.h macros.h \
+	nanosleep.c test-nanosleep.c signature.h macros.h test-netdb.c \
 	test-netinet_in.c test-open.h test-open.c signature.h macros.h \
 	test-openat-safer.c macros.h test-openat.c test-open.h \
 	signature.h macros.h test-pathmax.c macros.h signature.h \
@@ -2703,12 +2725,14 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 # statements but through direct file reference. Therefore this snippet must be
 # present in all Makefile.am that need it. This is ensured by the applicability
 # 'all' defined above.
-BUILT_SOURCES = arg-nonnull.h c++defs.h warn-on-use.h sys/ioctl.h
+BUILT_SOURCES = langinfo.h arg-nonnull.h c++defs.h warn-on-use.h \
+	sys/ioctl.h
 SUFFIXES = 
 MOSTLYCLEANFILES = core *.stackdump test-fpending.t t-ftell3.tmp \
-	t-ftello3.tmp test-getdelim.txt test-getline.txt arg-nonnull.h \
-	arg-nonnull.h-t c++defs.h c++defs.h-t warn-on-use.h \
-	warn-on-use.h-t sys/ioctl.h sys/ioctl.h-t
+	t-ftello3.tmp test-getdelim.txt test-getline.txt langinfo.h \
+	langinfo.h-t arg-nonnull.h arg-nonnull.h-t c++defs.h \
+	c++defs.h-t warn-on-use.h warn-on-use.h-t sys/ioctl.h \
+	sys/ioctl.h-t
 MOSTLYCLEANDIRS = sys
 CLEANFILES = 
 DISTCLEANFILES = 
@@ -3145,6 +3169,10 @@ test-ioctl$(EXEEXT): $(test_ioctl_OBJECTS) $(test_ioctl_DEPENDENCIES) $(EXTRA_te
 test-isatty$(EXEEXT): $(test_isatty_OBJECTS) $(test_isatty_DEPENDENCIES) $(EXTRA_test_isatty_DEPENDENCIES) 
 	@rm -f test-isatty$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_isatty_OBJECTS) $(test_isatty_LDADD) $(LIBS)
+
+test-langinfo$(EXEEXT): $(test_langinfo_OBJECTS) $(test_langinfo_DEPENDENCIES) $(EXTRA_test_langinfo_DEPENDENCIES) 
+	@rm -f test-langinfo$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_langinfo_OBJECTS) $(test_langinfo_LDADD) $(LIBS)
 
 test-listen$(EXEEXT): $(test_listen_OBJECTS) $(test_listen_DEPENDENCIES) $(EXTRA_test_listen_DEPENDENCIES) 
 	@rm -f test-listen$(EXEEXT)
@@ -3657,6 +3685,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-inttypes.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-ioctl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-isatty.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-langinfo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-listen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-locale.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-localeconv.Po@am__quote@
@@ -4186,6 +4215,30 @@ uninstall-am:
 
 .PRECIOUS: Makefile
 
+
+# We need the following in order to create an empty placeholder for
+# <langinfo.h> when the system doesn't have one.
+langinfo.h: langinfo.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(WARN_ON_USE_H)
+	$(AM_V_GEN)rm -f $@-t $@ && \
+	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
+	  sed -e 's|@''GUARD_PREFIX''@|GL|g' \
+	      -e 's|@''HAVE_LANGINFO_H''@|$(HAVE_LANGINFO_H)|g' \
+	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
+	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
+	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
+	      -e 's|@''NEXT_LANGINFO_H''@|$(NEXT_LANGINFO_H)|g' \
+	      -e 's/@''GNULIB_NL_LANGINFO''@/$(GNULIB_NL_LANGINFO)/g' \
+	      -e 's|@''HAVE_LANGINFO_CODESET''@|$(HAVE_LANGINFO_CODESET)|g' \
+	      -e 's|@''HAVE_LANGINFO_T_FMT_AMPM''@|$(HAVE_LANGINFO_T_FMT_AMPM)|g' \
+	      -e 's|@''HAVE_LANGINFO_ERA''@|$(HAVE_LANGINFO_ERA)|g' \
+	      -e 's|@''HAVE_LANGINFO_YESEXPR''@|$(HAVE_LANGINFO_YESEXPR)|g' \
+	      -e 's|@''HAVE_NL_LANGINFO''@|$(HAVE_NL_LANGINFO)|g' \
+	      -e 's|@''REPLACE_NL_LANGINFO''@|$(REPLACE_NL_LANGINFO)|g' \
+	      -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \
+	      -e '/definition of _GL_WARN_ON_USE/r $(WARN_ON_USE_H)' \
+	      < $(srcdir)/langinfo.in.h; \
+	} > $@-t && \
+	mv $@-t $@
 # The arg-nonnull.h that gets inserted into generated .h files is the same as
 # build-aux/snippet/arg-nonnull.h, except that it has the copyright header cut
 # off.

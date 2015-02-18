@@ -48,6 +48,7 @@ The following functions:
 L</guestfs_btrfs_balance_cancel>
 L</guestfs_btrfs_balance_pause>
 L</guestfs_btrfs_balance_resume>
+L</guestfs_btrfs_balance_status>
 L</guestfs_btrfs_device_add>
 L</guestfs_btrfs_device_delete>
 L</guestfs_btrfs_filesystem_balance>
@@ -68,6 +69,7 @@ L</guestfs_btrfs_rescue_super_recover>
 L</guestfs_btrfs_scrub_cancel>
 L</guestfs_btrfs_scrub_resume>
 L</guestfs_btrfs_scrub_start>
+L</guestfs_btrfs_scrub_status>
 L</guestfs_btrfs_set_seeding>
 L</guestfs_btrfs_subvolume_create>
 L</guestfs_btrfs_subvolume_delete>

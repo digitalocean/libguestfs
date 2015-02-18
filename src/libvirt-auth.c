@@ -83,7 +83,7 @@ get_string_of_credtype (int credtype)
  * an error or not, so don't depend on the current behaviour.
  */
 int
-guestfs__set_libvirt_supported_credentials (guestfs_h *g, char *const *creds)
+guestfs_impl_set_libvirt_supported_credentials (guestfs_h *g, char *const *creds)
 {
   size_t i;
   int credtype;
@@ -138,7 +138,7 @@ libvirt_auth_callback (virConnectCredentialPtr cred,
   g->requested_credentials = cred;
   g->nr_requested_credentials = ncred;
 
-  guestfs___call_callbacks_message (g, GUESTFS_EVENT_LIBVIRT_AUTH,
+  guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_LIBVIRT_AUTH,
                                     g->saved_libvirt_uri,
                                     strlen (g->saved_libvirt_uri));
 
@@ -191,7 +191,7 @@ exists_libvirt_auth_event (guestfs_h *g)
 
 /* Open a libvirt connection (called from other parts of the library). */
 virConnectPtr
-guestfs___open_libvirt_connection (guestfs_h *g, const char *uri,
+guestfs_int_open_libvirt_connection (guestfs_h *g, const char *uri,
                                    unsigned int flags)
 {
   virConnectAuth authdata;
@@ -249,7 +249,7 @@ guestfs___open_libvirt_connection (guestfs_h *g, const char *uri,
   }
 
 char **
-guestfs__get_libvirt_requested_credentials (guestfs_h *g)
+guestfs_impl_get_libvirt_requested_credentials (guestfs_h *g)
 {
   DECLARE_STRINGSBUF (ret);
   size_t i;
@@ -258,15 +258,15 @@ guestfs__get_libvirt_requested_credentials (guestfs_h *g)
 
   /* Convert the requested_credentials types to a list of strings. */
   for (i = 0; i < g->nr_requested_credentials; ++i)
-    guestfs___add_string (g, &ret,
+    guestfs_int_add_string (g, &ret,
                           get_string_of_credtype (g->requested_credentials[i].type));
-  guestfs___end_stringsbuf (g, &ret);
+  guestfs_int_end_stringsbuf (g, &ret);
 
   return ret.argv;              /* caller frees */
 }
 
 char *
-guestfs__get_libvirt_requested_credential_prompt (guestfs_h *g, int index)
+guestfs_impl_get_libvirt_requested_credential_prompt (guestfs_h *g, int index)
 {
   size_t i;
 
@@ -286,7 +286,7 @@ guestfs__get_libvirt_requested_credential_prompt (guestfs_h *g, int index)
 }
 
 char *
-guestfs__get_libvirt_requested_credential_challenge (guestfs_h *g, int index)
+guestfs_impl_get_libvirt_requested_credential_challenge (guestfs_h *g, int index)
 {
   size_t i;
 
@@ -306,7 +306,7 @@ guestfs__get_libvirt_requested_credential_challenge (guestfs_h *g, int index)
 }
 
 char *
-guestfs__get_libvirt_requested_credential_defresult (guestfs_h *g, int index)
+guestfs_impl_get_libvirt_requested_credential_defresult (guestfs_h *g, int index)
 {
   size_t i;
 
@@ -326,7 +326,7 @@ guestfs__get_libvirt_requested_credential_defresult (guestfs_h *g, int index)
 }
 
 int
-guestfs__set_libvirt_requested_credential (guestfs_h *g, int index,
+guestfs_impl_set_libvirt_requested_credential (guestfs_h *g, int index,
                                            const char *cred, size_t cred_size)
 {
   size_t i;
@@ -360,37 +360,37 @@ guestfs__set_libvirt_requested_credential (guestfs_h *g, int index,
   return r
 
 int
-guestfs__set_libvirt_supported_credentials (guestfs_h *g, char *const *creds)
+guestfs_impl_set_libvirt_supported_credentials (guestfs_h *g, char *const *creds)
 {
   NOT_IMPL(-1);
 }
 
 char **
-guestfs__get_libvirt_requested_credentials (guestfs_h *g)
+guestfs_impl_get_libvirt_requested_credentials (guestfs_h *g)
 {
   NOT_IMPL(NULL);
 }
 
 char *
-guestfs__get_libvirt_requested_credential_prompt (guestfs_h *g, int index)
+guestfs_impl_get_libvirt_requested_credential_prompt (guestfs_h *g, int index)
 {
   NOT_IMPL(NULL);
 }
 
 char *
-guestfs__get_libvirt_requested_credential_challenge (guestfs_h *g, int index)
+guestfs_impl_get_libvirt_requested_credential_challenge (guestfs_h *g, int index)
 {
   NOT_IMPL(NULL);
 }
 
 char *
-guestfs__get_libvirt_requested_credential_defresult (guestfs_h *g, int index)
+guestfs_impl_get_libvirt_requested_credential_defresult (guestfs_h *g, int index)
 {
   NOT_IMPL(NULL);
 }
 
 int
-guestfs__set_libvirt_requested_credential (guestfs_h *g, int index, const char *cred, size_t cred_size)
+guestfs_impl_set_libvirt_requested_credential (guestfs_h *g, int index, const char *cred, size_t cred_size)
 {
   NOT_IMPL(-1);
 }

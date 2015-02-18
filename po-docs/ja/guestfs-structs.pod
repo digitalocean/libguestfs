@@ -542,6 +542,64 @@ libguestfs generated file
  void guestfs_free_btrfsqgroup (struct guestfs_btrfsqgroup *);
  void guestfs_free_btrfsqgroup_list (struct guestfs_btrfsqgroup_list *);
 
+=head2 guestfs_btrfsbalance
+
+ struct guestfs_btrfsbalance {
+   char *btrfsbalance_status;
+   uint64_t btrfsbalance_total;
+   uint64_t btrfsbalance_balanced;
+   uint64_t btrfsbalance_considered;
+   uint64_t btrfsbalance_left;
+ };
+ 
+ struct guestfs_btrfsbalance_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_btrfsbalance *val; /* Elements. */
+ };
+
+ int guestfs_compare_btrfsbalance (const struct guestfs_btrfsbalance *, const struct guestfs_btrfsbalance *);
+ int guestfs_compare_btrfsbalance_list (const struct guestfs_btrfsbalance_list *, const struct guestfs_btrfsbalance_list *);
+ 
+ struct guestfs_btrfsbalance *guestfs_copy_btrfsbalance (const struct guestfs_btrfsbalance *);
+ struct guestfs_btrfsbalance_list *guestfs_copy_btrfsbalance_list (const struct guestfs_btrfsbalance_list *);
+ 
+ void guestfs_free_btrfsbalance (struct guestfs_btrfsbalance *);
+ void guestfs_free_btrfsbalance_list (struct guestfs_btrfsbalance_list *);
+
+=head2 guestfs_btrfsscrub
+
+ struct guestfs_btrfsscrub {
+   uint64_t btrfsscrub_data_extents_scrubbed;
+   uint64_t btrfsscrub_tree_extents_scrubbed;
+   uint64_t btrfsscrub_data_bytes_scrubbed;
+   uint64_t btrfsscrub_tree_bytes_scrubbed;
+   uint64_t btrfsscrub_read_errors;
+   uint64_t btrfsscrub_csum_errors;
+   uint64_t btrfsscrub_verify_errors;
+   uint64_t btrfsscrub_no_csum;
+   uint64_t btrfsscrub_csum_discards;
+   uint64_t btrfsscrub_super_errors;
+   uint64_t btrfsscrub_malloc_errors;
+   uint64_t btrfsscrub_uncorrectable_errors;
+   uint64_t btrfsscrub_unverified_errors;
+   uint64_t btrfsscrub_corrected_errors;
+   uint64_t btrfsscrub_last_physical;
+ };
+ 
+ struct guestfs_btrfsscrub_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_btrfsscrub *val; /* Elements. */
+ };
+
+ int guestfs_compare_btrfsscrub (const struct guestfs_btrfsscrub *, const struct guestfs_btrfsscrub *);
+ int guestfs_compare_btrfsscrub_list (const struct guestfs_btrfsscrub_list *, const struct guestfs_btrfsscrub_list *);
+ 
+ struct guestfs_btrfsscrub *guestfs_copy_btrfsscrub (const struct guestfs_btrfsscrub *);
+ struct guestfs_btrfsscrub_list *guestfs_copy_btrfsscrub_list (const struct guestfs_btrfsscrub_list *);
+ 
+ void guestfs_free_btrfsscrub (struct guestfs_btrfsscrub *);
+ void guestfs_free_btrfsscrub_list (struct guestfs_btrfsscrub_list *);
+
 =head2 guestfs_xfsinfo
 
  struct guestfs_xfsinfo {

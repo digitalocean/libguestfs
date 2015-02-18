@@ -21,10 +21,6 @@
 
 {
     global:
-        guestfs___safe_calloc;
-        guestfs___safe_malloc;
-        guestfs___safe_memdup;
-        guestfs___safe_strdup;
         guestfs_acl_delete_def_file;
         guestfs_acl_get_file;
         guestfs_acl_set_file;
@@ -82,6 +78,7 @@
         guestfs_btrfs_balance_cancel;
         guestfs_btrfs_balance_pause;
         guestfs_btrfs_balance_resume;
+        guestfs_btrfs_balance_status;
         guestfs_btrfs_device_add;
         guestfs_btrfs_device_delete;
         guestfs_btrfs_filesystem_balance;
@@ -108,6 +105,7 @@
         guestfs_btrfs_scrub_cancel;
         guestfs_btrfs_scrub_resume;
         guestfs_btrfs_scrub_start;
+        guestfs_btrfs_scrub_status;
         guestfs_btrfs_set_seeding;
         guestfs_btrfs_subvolume_create;
         guestfs_btrfs_subvolume_create_opts;
@@ -141,8 +139,12 @@
         guestfs_compare_application2;
         guestfs_compare_application2_list;
         guestfs_compare_application_list;
+        guestfs_compare_btrfsbalance;
+        guestfs_compare_btrfsbalance_list;
         guestfs_compare_btrfsqgroup;
         guestfs_compare_btrfsqgroup_list;
+        guestfs_compare_btrfsscrub;
+        guestfs_compare_btrfsscrub_list;
         guestfs_compare_btrfssubvolume;
         guestfs_compare_btrfssubvolume_list;
         guestfs_compare_dirent;
@@ -197,8 +199,12 @@
         guestfs_copy_attributes;
         guestfs_copy_attributes_argv;
         guestfs_copy_attributes_va;
+        guestfs_copy_btrfsbalance;
+        guestfs_copy_btrfsbalance_list;
         guestfs_copy_btrfsqgroup;
         guestfs_copy_btrfsqgroup_list;
+        guestfs_copy_btrfsscrub;
+        guestfs_copy_btrfsscrub_list;
         guestfs_copy_btrfssubvolume;
         guestfs_copy_btrfssubvolume_list;
         guestfs_copy_device_to_device;
@@ -313,8 +319,12 @@
         guestfs_free_application2;
         guestfs_free_application2_list;
         guestfs_free_application_list;
+        guestfs_free_btrfsbalance;
+        guestfs_free_btrfsbalance_list;
         guestfs_free_btrfsqgroup;
         guestfs_free_btrfsqgroup_list;
+        guestfs_free_btrfsscrub;
+        guestfs_free_btrfsscrub_list;
         guestfs_free_btrfssubvolume;
         guestfs_free_btrfssubvolume_list;
         guestfs_free_dirent;
@@ -460,6 +470,10 @@
         guestfs_inspect_list_applications;
         guestfs_inspect_list_applications2;
         guestfs_inspect_os;
+        guestfs_int_safe_calloc;
+        guestfs_int_safe_malloc;
+        guestfs_int_safe_memdup;
+        guestfs_int_safe_strdup;
         guestfs_internal_autosync;
         guestfs_internal_exit;
         guestfs_internal_hot_add_drive;

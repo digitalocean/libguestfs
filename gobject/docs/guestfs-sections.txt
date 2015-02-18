@@ -1024,6 +1024,7 @@ guestfs_session_blockdev_setrw
 guestfs_session_btrfs_balance_cancel
 guestfs_session_btrfs_balance_pause
 guestfs_session_btrfs_balance_resume
+guestfs_session_btrfs_balance_status
 guestfs_session_btrfs_device_add
 guestfs_session_btrfs_device_delete
 guestfs_session_btrfs_filesystem_balance
@@ -1044,6 +1045,7 @@ guestfs_session_btrfs_rescue_super_recover
 guestfs_session_btrfs_scrub_cancel
 guestfs_session_btrfs_scrub_resume
 guestfs_session_btrfs_scrub_start
+guestfs_session_btrfs_scrub_status
 guestfs_session_btrfs_set_seeding
 guestfs_session_btrfs_subvolume_create
 guestfs_session_btrfs_subvolume_delete
@@ -1580,10 +1582,24 @@ guestfs_application2_get_type
 </SECTION>
 
 <SECTION>
+<FILE>struct-btrfsbalance</FILE>
+GuestfsBTRFSBalance
+<SUBSECTION Standard>
+guestfs_btrfsbalance_get_type
+</SECTION>
+
+<SECTION>
 <FILE>struct-btrfsqgroup</FILE>
 GuestfsBTRFSQgroup
 <SUBSECTION Standard>
 guestfs_btrfsqgroup_get_type
+</SECTION>
+
+<SECTION>
+<FILE>struct-btrfsscrub</FILE>
+GuestfsBTRFSScrub
+<SUBSECTION Standard>
+guestfs_btrfsscrub_get_type
 </SECTION>
 
 <SECTION>

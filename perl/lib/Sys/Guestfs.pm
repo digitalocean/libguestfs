@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.447';
+$VERSION = '0.449';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -1202,6 +1202,10 @@ Pause a running balance on a btrfs filesystem.
 
 Resume a paused balance on a btrfs filesystem.
 
+=item %status = $g->btrfs_balance_status ($path);
+
+Show the status of a running or paused balance on a btrfs filesystem.
+
 =item $g->btrfs_device_add (\@devices, $fs);
 
 Add the list of device(s) in C<devices> to the btrfs filesystem
@@ -1288,7 +1292,7 @@ Trash all qgroup numbers and scan the metadata again with the current config.
 
 =item $g->btrfs_rescue_chunk_recover ($device);
 
-Recover the chunk tree of btrfs filesystem by scannning the devices one by one.
+Recover the chunk tree of btrfs filesystem by scanning the devices one by one.
 
 =item $g->btrfs_rescue_super_recover ($device);
 
@@ -1307,6 +1311,10 @@ Resume a previously canceled or interrupted scrub on a btrfs filesystem.
 Reads all the data and metadata on the filesystem, and uses checksums
 and the duplicate copies from RAID storage to identify and repair any
 corrupt data.
+
+=item %status = $g->btrfs_scrub_status ($path);
+
+Show status of running or finished scrub on a btrfs filesystem.
 
 =item $g->btrfs_set_seeding ($device, $seeding);
 
@@ -1403,7 +1411,7 @@ the algorithm described in L<guestfs(3)/BLOCK DEVICE NAMING>.
 
 =item C</dev/dm-N>
 
-Converted to C</dev/VG/LV> form using C<$g-E<gt>lvm_canonical_lvm_name>.
+Converted to C</dev/VG/LV> form using C<$g-E<gt>lvm_canonical_lv_name>.
 
 =back
 
@@ -4254,7 +4262,7 @@ to read data.
 
 The returned boolean tells you if there are any more journal
 records to read.  C<true> means you can read the next record
-(eg. using C<$g-E<gt>journal_get_data>), and C<false> means you
+(eg. using C<$g-E<gt>journal_get>), and C<false> means you
 have reached the end of the journal.
 
 =item $g->journal_open ($directory);
@@ -8310,6 +8318,14 @@ use vars qw(%guestfs_introspection);
     name => "btrfs_balance_resume",
     description => "resume a paused balance",
   },
+  "btrfs_balance_status" => {
+    ret => 'struct btrfsbalance',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "btrfs_balance_status",
+    description => "show the status of a running or paused balance",
+  },
   "btrfs_device_add" => {
     ret => 'void',
     args => [
@@ -8490,6 +8506,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "btrfs_scrub_start",
     description => "read all data from all disks and verify checksums",
+  },
+  "btrfs_scrub_status" => {
+    ret => 'struct btrfsscrub',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "btrfs_scrub_status",
+    description => "show status of running or finished scrub",
   },
   "btrfs_set_seeding" => {
     ret => 'void',

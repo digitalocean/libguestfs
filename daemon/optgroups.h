@@ -80,6 +80,7 @@ extern int optgroup_zerofree_available (void);
   int __attribute__((noreturn)) do_btrfs_balance_cancel (const char *path) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_balance_pause (const char *path) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_balance_resume (const char *path) { abort (); } \
+  guestfs_int_btrfsbalance *__attribute__((noreturn)) do_btrfs_balance_status (const char *path) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_device_add (char *const *devices, const char *fs) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_device_delete (char *const *devices, const char *fs) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_filesystem_balance (const char *fs) { abort (); } \
@@ -100,6 +101,7 @@ extern int optgroup_zerofree_available (void);
   int __attribute__((noreturn)) do_btrfs_scrub_cancel (const char *path) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_scrub_resume (const char *path) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_scrub_start (const char *path) { abort (); } \
+  guestfs_int_btrfsscrub *__attribute__((noreturn)) do_btrfs_scrub_status (const char *path) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_set_seeding (const char *device, int seeding) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_subvolume_create (const char *dest, const char *qgroupid) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_subvolume_delete (const char *subvolume) { abort (); } \

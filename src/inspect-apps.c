@@ -35,11 +35,22 @@
 #include <sys/endian.h>
 #endif
 
-/* be32toh is usually a macro definend in <endian.h>, but it might be
+/* be32toh is usually a macro defined in <endian.h>, but it might be
  * a function in some system so check both, and if neither is defined
  * then define be32toh for RHEL 5.
  */
 #if !defined(HAVE_BE32TOH) && !defined(be32toh)
+
+#if defined __APPLE__ && defined __MACH__
+/* Define/include necessary items on MacOS X */
+#include <machine/endian.h>
+#define __BIG_ENDIAN    BIG_ENDIAN
+#define __LITTLE_ENDIAN   LITTLE_ENDIAN
+#define __BYTE_ORDER    BYTE_ORDER
+#include <libkern/OSByteOrder.h>
+#define __bswap_32      OSSwapConstInt32
+#endif /* __APPLE__ */
+
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 #define be32toh(x) __bswap_32 (x)
 #else
@@ -69,7 +80,7 @@ static void sort_applications (struct guestfs_application2_list *);
  * just a wrapper around guestfs_inspect_list_applications2.
  */
 struct guestfs_application_list *
-guestfs__inspect_list_applications (guestfs_h *g, const char *root)
+guestfs_impl_inspect_list_applications (guestfs_h *g, const char *root)
 {
   struct guestfs_application_list *ret;
   struct guestfs_application2_list *r;
@@ -116,10 +127,10 @@ guestfs__inspect_list_applications (guestfs_h *g, const char *root)
  * disks are mounted up, and reads files from the mounted disks.
  */
 struct guestfs_application2_list *
-guestfs__inspect_list_applications2 (guestfs_h *g, const char *root)
+guestfs_impl_inspect_list_applications2 (guestfs_h *g, const char *root)
 {
   struct guestfs_application2_list *ret = NULL;
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return NULL;
 
@@ -388,20 +399,20 @@ list_applications_rpm (guestfs_h *g, struct inspect_fs *fs)
   struct guestfs_application2_list *apps = NULL;
   struct read_package_data data;
 
-  Name = guestfs___download_to_tmp (g, fs,
+  Name = guestfs_int_download_to_tmp (g, fs,
                                     "/var/lib/rpm/Name", "rpm_Name",
                                     MAX_PKG_DB_SIZE);
   if (Name == NULL)
     goto error;
 
-  Packages = guestfs___download_to_tmp (g, fs,
+  Packages = guestfs_int_download_to_tmp (g, fs,
                                         "/var/lib/rpm/Packages", "rpm_Packages",
                                         MAX_PKG_DB_SIZE);
   if (Packages == NULL)
     goto error;
 
   /* Read Name database. */
-  if (guestfs___read_db_dump (g, Name, &list, read_rpm_name) == -1)
+  if (guestfs_int_read_db_dump (g, Name, &list, read_rpm_name) == -1)
     goto error;
 
   /* Sort the names by link field for fast searching. */
@@ -415,7 +426,7 @@ list_applications_rpm (guestfs_h *g, struct inspect_fs *fs)
   /* Read Packages database. */
   data.list = &list;
   data.apps = apps;
-  if (guestfs___read_db_dump (g, Packages, &data, read_package) == -1)
+  if (guestfs_int_read_db_dump (g, Packages, &data, read_package) == -1)
     goto error;
 
   free_rpm_names_list (&list);
@@ -443,7 +454,7 @@ list_applications_deb (guestfs_h *g, struct inspect_fs *fs)
   CLEANUP_FREE char *name = NULL, *version = NULL, *release = NULL, *arch = NULL;
   int installed_flag = 0;
 
-  status = guestfs___download_to_tmp (g, fs, "/var/lib/dpkg/status", "status",
+  status = guestfs_int_download_to_tmp (g, fs, "/var/lib/dpkg/status", "status",
                                       MAX_PKG_DB_SIZE);
   if (status == NULL)
     return NULL;
@@ -487,7 +498,7 @@ list_applications_deb (guestfs_h *g, struct inspect_fs *fs)
       p1 = strchr (&line[9], ':');
       if (p1) {
         *p1++ = '\0';
-        epoch = guestfs___parse_unsigned_int (g, &line[9]); /* -1 on error */
+        epoch = guestfs_int_parse_unsigned_int (g, &line[9]); /* -1 on error */
       } else {
         p1 = &line[9];
         epoch = 0;
@@ -570,7 +581,7 @@ list_applications_pacman (guestfs_h *g, struct inspect_fs *fs)
     fname = safe_malloc (g, strlen (curr->name) + path_len + 1);
     sprintf (fname, "/var/lib/pacman/local/%s/desc", curr->name);
     free (desc_file);
-    desc_file = guestfs___download_to_tmp (g, fs, fname, curr->name, 8192);
+    desc_file = guestfs_int_download_to_tmp (g, fs, fname, curr->name, 8192);
 
     /* The desc files are small (4K). If the desc file does not exist or is
      * larger than the 8K limit we've used, the database is probably corrupted,
@@ -622,7 +633,7 @@ list_applications_pacman (guestfs_h *g, struct inspect_fs *fs)
     p = strchr (version, ':');
     if (p) {
       *p = '\0';
-      epoch = guestfs___parse_unsigned_int (g, version); /* -1 on error */
+      epoch = guestfs_int_parse_unsigned_int (g, version); /* -1 on error */
       ver = p + 1;
     } else {
       epoch = 0;

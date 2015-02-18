@@ -1,7 +1,7 @@
 /*
    Copyright (C) 1995 Ian Jackson <iwj10@cus.cam.ac.uk>
    Copyright (C) 2001 Anthony Towns <aj@azure.humbug.org.au>
-   Copyright (C) 2008-2014 Free Software Foundation, Inc.
+   Copyright (C) 2008-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -37,6 +37,6 @@
    PREFIX VER2 SUFFIX) < 0.
 
    This function is intended to be a replacement for strverscmp. */
-int filevercmp (const char *s1, const char *s2);
+int filevercmp (const char *s1, const char *s2) _GL_ATTRIBUTE_PURE;
 
 #endif /* FILEVERCMP_H */

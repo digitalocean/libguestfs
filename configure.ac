@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [29])
-m4_define([libguestfs_release], [25])
+m4_define([libguestfs_release], [26])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -589,6 +589,15 @@ AC_ARG_WITH([extra-packages],
     [EXTRA_PACKAGES="$withval"],
     [EXTRA_PACKAGES=])
 AC_SUBST([EXTRA_PACKAGES])
+
+dnl Check if crypt() is provided by a separate library.
+old_LIBS="$LIBS"
+AC_SEARCH_LIBS([crypt],[crypt])
+LIBS="$old_LIBS"
+if test "$ac_cv_search_crypt" = "-lcrypt" ; then
+  LIBCRYPT_LIBS="-lcrypt"
+fi
+AC_SUBST([LIBCRYPT_LIBS])
 
 dnl Check for libdl/dlopen (optional - only used to test if the library
 dnl can be used with libdl).

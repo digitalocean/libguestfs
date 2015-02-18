@@ -31,7 +31,7 @@
  *
  * NOTE: It is an error to call this function with errnum == 0.
  */
-extern const char *guestfs___errno_to_string (int errnum);
+extern const char *guestfs_int_errno_to_string (int errnum);
 
 /* Convert string representation of an error (eg. "EIO") to the errno
  * value (EIO).  As for the function above, this only works for a
@@ -39,10 +39,10 @@ extern const char *guestfs___errno_to_string (int errnum);
  * system, EINVAL is returned (all POSIX-conforming systems must
  * support EINVAL).
  */
-extern int guestfs___string_to_errno (const char *errnostr);
+extern int guestfs_int_string_to_errno (const char *errnostr);
 
 /* Private structure and function used by the perfect hash implementation. */
 struct errnostring_entry { char *name; int errnum; };
-extern const struct errnostring_entry *guestfs___string_to_errno_lookup (register const char *str, register unsigned int len);
+extern const struct errnostring_entry *guestfs_int_string_to_errno_lookup (register const char *str, register unsigned int len);
 
 #endif /* GUESTFS_ERRNOSTRING_H_ */

@@ -88,7 +88,7 @@ guestfs_create_flags (unsigned flags, ...)
 
   g->conn = NULL;
 
-  guestfs___init_error_handler (g);
+  guestfs_int_init_error_handler (g);
   g->abort_cb = abort;
 
   g->recovery_proc = 1;
@@ -130,9 +130,9 @@ guestfs_create_flags (unsigned flags, ...)
 #endif
   if (!g->program) goto error;
 
-  if (guestfs___set_backend (g, DEFAULT_BACKEND) == -1) {
+  if (guestfs_int_set_backend (g, DEFAULT_BACKEND) == -1) {
     warning (g, _("libguestfs was built with an invalid default backend, using 'direct' instead"));
-    if (guestfs___set_backend (g, "direct") == -1) {
+    if (guestfs_int_set_backend (g, "direct") == -1) {
       warning (g, _("'direct' backend does not work"));
       goto error;
     }
@@ -161,7 +161,7 @@ guestfs_create_flags (unsigned flags, ...)
   return g;
 
  error:
-  guestfs___free_string_list (g->backend_settings);
+  guestfs_int_free_string_list (g->backend_settings);
   free (g->backend);
   free (g->program);
   free (g->path);
@@ -185,7 +185,7 @@ parse_environment (guestfs_h *g,
 
   str = do_getenv (data, "LIBGUESTFS_TRACE");
   if (str) {
-    b = guestfs___is_true (str);
+    b = guestfs_int_is_true (str);
     if (b == -1) {
       error (g, _("%s=%s: non-boolean value"), "LIBGUESTFS_TRACE", str);
       return -1;
@@ -195,7 +195,7 @@ parse_environment (guestfs_h *g,
 
   str = do_getenv (data, "LIBGUESTFS_DEBUG");
   if (str) {
-    b = guestfs___is_true (str);
+    b = guestfs_int_is_true (str);
     if (b == -1) {
       error (g, _("%s=%s: non-boolean value"), "LIBGUESTFS_TRACE", str);
       return -1;
@@ -216,7 +216,7 @@ parse_environment (guestfs_h *g,
   }
 
   str = do_getenv (data, "TMPDIR");
-  if (guestfs___set_env_tmpdir (g, str) == -1)
+  if (guestfs_int_set_env_tmpdir (g, str) == -1)
     return -1;
 
   str = do_getenv (data, "LIBGUESTFS_PATH");
@@ -263,7 +263,7 @@ parse_environment (guestfs_h *g,
 
   str = do_getenv (data, "LIBGUESTFS_BACKEND_SETTINGS");
   if (str) {
-    CLEANUP_FREE_STRING_LIST char **settings = guestfs___split_string (':', str);
+    CLEANUP_FREE_STRING_LIST char **settings = guestfs_int_split_string (':', str);
 
     if (settings == NULL) {
       perrorf (g, "split_string: malloc");
@@ -284,7 +284,7 @@ call_getenv (const void *data, const char *name)
 }
 
 int
-guestfs__parse_environment (guestfs_h *g)
+guestfs_impl_parse_environment (guestfs_h *g)
 {
   return parse_environment (g, call_getenv, NULL);
 }
@@ -303,7 +303,7 @@ getenv_from_strings (const void *stringsv, const char *name)
 }
 
 int
-guestfs__parse_environment_list (guestfs_h *g, char * const *strings)
+guestfs_impl_parse_environment_list (guestfs_h *g, char * const *strings)
 {
   return parse_environment (g, getenv_from_strings, strings);
 }
@@ -332,7 +332,7 @@ guestfs_close (guestfs_h *g)
   if (g->trace) {
     const char trace_msg[] = "close";
 
-    guestfs___call_callbacks_message (g, GUESTFS_EVENT_TRACE,
+    guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_TRACE,
                                       trace_msg, strlen (trace_msg));
   }
 
@@ -342,14 +342,14 @@ guestfs_close (guestfs_h *g)
     shutdown_backend (g, 0);
 
   /* Run user close callbacks. */
-  guestfs___call_callbacks_void (g, GUESTFS_EVENT_CLOSE);
+  guestfs_int_call_callbacks_void (g, GUESTFS_EVENT_CLOSE);
 
   /* Test output file used by bindtests. */
   if (g->test_fp != NULL)
     fclose (g->test_fp);
 
   /* Remove temporary directory. */
-  guestfs___remove_tmpdir (g);
+  guestfs_int_remove_tmpdir (g);
 
   /* Mark the handle as dead and then free up all memory. */
   g->state = NO_HANDLE;
@@ -359,11 +359,11 @@ guestfs_close (guestfs_h *g)
   g->events = NULL;
 
 #if HAVE_FUSE
-  guestfs___free_fuse (g);
+  guestfs_int_free_fuse (g);
 #endif
 
-  guestfs___free_inspect_info (g);
-  guestfs___free_drives (g);
+  guestfs_int_free_inspect_info (g);
+  guestfs_int_free_drives (g);
 
   for (hp = g->hv_params; hp; hp = hp_next) {
     free (hp->hv_param);
@@ -387,19 +387,19 @@ guestfs_close (guestfs_h *g)
   free (g->hv);
   free (g->backend);
   free (g->backend_data);
-  guestfs___free_string_list (g->backend_settings);
+  guestfs_int_free_string_list (g->backend_settings);
   free (g->append);
   free (g);
 }
 
 int64_t
-guestfs__c_pointer (guestfs_h *g)
+guestfs_impl_c_pointer (guestfs_h *g)
 {
   return (int64_t) g;
 }
 
 int
-guestfs__shutdown (guestfs_h *g)
+guestfs_impl_shutdown (guestfs_h *g)
 {
   return shutdown_backend (g, 1);
 }
@@ -450,7 +450,7 @@ shutdown_backend (guestfs_h *g, int check_for_errors)
     g->conn = NULL;
   }
 
-  guestfs___free_drives (g);
+  guestfs_int_free_drives (g);
 
   g->state = CONFIG;
 
@@ -465,33 +465,33 @@ close_handles (void)
 }
 
 int
-guestfs__set_verbose (guestfs_h *g, int v)
+guestfs_impl_set_verbose (guestfs_h *g, int v)
 {
   g->verbose = !!v;
   return 0;
 }
 
 int
-guestfs__get_verbose (guestfs_h *g)
+guestfs_impl_get_verbose (guestfs_h *g)
 {
   return g->verbose;
 }
 
 int
-guestfs__set_autosync (guestfs_h *g, int a)
+guestfs_impl_set_autosync (guestfs_h *g, int a)
 {
   g->autosync = !!a;
   return 0;
 }
 
 int
-guestfs__get_autosync (guestfs_h *g)
+guestfs_impl_get_autosync (guestfs_h *g)
 {
   return g->autosync;
 }
 
 int
-guestfs__set_path (guestfs_h *g, const char *path)
+guestfs_impl_set_path (guestfs_h *g, const char *path)
 {
   free (g->path);
   g->path = NULL;
@@ -503,13 +503,13 @@ guestfs__set_path (guestfs_h *g, const char *path)
 }
 
 const char *
-guestfs__get_path (guestfs_h *g)
+guestfs_impl_get_path (guestfs_h *g)
 {
   return g->path;
 }
 
 int
-guestfs__set_qemu (guestfs_h *g, const char *qemu)
+guestfs_impl_set_qemu (guestfs_h *g, const char *qemu)
 {
   char *new_hv;
 
@@ -535,13 +535,13 @@ guestfs__set_qemu (guestfs_h *g, const char *qemu)
 }
 
 const char *
-guestfs__get_qemu (guestfs_h *g)
+guestfs_impl_get_qemu (guestfs_h *g)
 {
   return g->hv;
 }
 
 int
-guestfs__set_hv (guestfs_h *g, const char *hv)
+guestfs_impl_set_hv (guestfs_h *g, const char *hv)
 {
   free (g->hv);
   g->hv = safe_strdup (g, hv);
@@ -549,13 +549,13 @@ guestfs__set_hv (guestfs_h *g, const char *hv)
 }
 
 char *
-guestfs__get_hv (guestfs_h *g)
+guestfs_impl_get_hv (guestfs_h *g)
 {
   return safe_strdup (g, g->hv);
 }
 
 int
-guestfs__set_append (guestfs_h *g, const char *append)
+guestfs_impl_set_append (guestfs_h *g, const char *append)
 {
   free (g->append);
   g->append = NULL;
@@ -565,13 +565,13 @@ guestfs__set_append (guestfs_h *g, const char *append)
 }
 
 const char *
-guestfs__get_append (guestfs_h *g)
+guestfs_impl_get_append (guestfs_h *g)
 {
   return g->append;
 }
 
 int
-guestfs__set_memsize (guestfs_h *g, int memsize)
+guestfs_impl_set_memsize (guestfs_h *g, int memsize)
 {
   if (memsize < MIN_MEMSIZE) {
     error (g, _("too small value for memsize (must be at least %d)"), MIN_MEMSIZE);
@@ -582,26 +582,26 @@ guestfs__set_memsize (guestfs_h *g, int memsize)
 }
 
 int
-guestfs__get_memsize (guestfs_h *g)
+guestfs_impl_get_memsize (guestfs_h *g)
 {
   return g->memsize;
 }
 
 int
-guestfs__set_selinux (guestfs_h *g, int selinux)
+guestfs_impl_set_selinux (guestfs_h *g, int selinux)
 {
   g->selinux = selinux;
   return 0;
 }
 
 int
-guestfs__get_selinux (guestfs_h *g)
+guestfs_impl_get_selinux (guestfs_h *g)
 {
   return g->selinux;
 }
 
 struct guestfs_version *
-guestfs__version (guestfs_h *g)
+guestfs_impl_version (guestfs_h *g)
 {
   struct guestfs_version *r;
 
@@ -614,59 +614,59 @@ guestfs__version (guestfs_h *g)
 }
 
 int
-guestfs__set_trace (guestfs_h *g, int t)
+guestfs_impl_set_trace (guestfs_h *g, int t)
 {
   g->trace = !!t;
   return 0;
 }
 
 int
-guestfs__get_trace (guestfs_h *g)
+guestfs_impl_get_trace (guestfs_h *g)
 {
   return g->trace;
 }
 
 int
-guestfs__set_direct (guestfs_h *g, int d)
+guestfs_impl_set_direct (guestfs_h *g, int d)
 {
   g->direct_mode = !!d;
   return 0;
 }
 
 int
-guestfs__get_direct (guestfs_h *g)
+guestfs_impl_get_direct (guestfs_h *g)
 {
   return g->direct_mode;
 }
 
 int
-guestfs__set_recovery_proc (guestfs_h *g, int f)
+guestfs_impl_set_recovery_proc (guestfs_h *g, int f)
 {
   g->recovery_proc = !!f;
   return 0;
 }
 
 int
-guestfs__get_recovery_proc (guestfs_h *g)
+guestfs_impl_get_recovery_proc (guestfs_h *g)
 {
   return g->recovery_proc;
 }
 
 int
-guestfs__set_network (guestfs_h *g, int v)
+guestfs_impl_set_network (guestfs_h *g, int v)
 {
   g->enable_network = !!v;
   return 0;
 }
 
 int
-guestfs__get_network (guestfs_h *g)
+guestfs_impl_get_network (guestfs_h *g)
 {
   return g->enable_network;
 }
 
 int
-guestfs__set_program (guestfs_h *g, const char *program)
+guestfs_impl_set_program (guestfs_h *g, const char *program)
 {
   free (g->program);
   g->program = safe_strdup (g, program);
@@ -675,15 +675,15 @@ guestfs__set_program (guestfs_h *g, const char *program)
 }
 
 const char *
-guestfs__get_program (guestfs_h *g)
+guestfs_impl_get_program (guestfs_h *g)
 {
   return g->program;
 }
 
 int
-guestfs__set_backend (guestfs_h *g, const char *method)
+guestfs_impl_set_backend (guestfs_h *g, const char *method)
 {
-  if (guestfs___set_backend (g, method) == -1) {
+  if (guestfs_int_set_backend (g, method) == -1) {
     error (g, "invalid backend: %s", method);
     return -1;
   }
@@ -692,19 +692,19 @@ guestfs__set_backend (guestfs_h *g, const char *method)
 }
 
 int
-guestfs__set_attach_method (guestfs_h *g, const char *method)
+guestfs_impl_set_attach_method (guestfs_h *g, const char *method)
 {
   return guestfs_set_backend (g, method);
 }
 
 char *
-guestfs__get_backend (guestfs_h *g)
+guestfs_impl_get_backend (guestfs_h *g)
 {
   return safe_strdup (g, g->backend);
 }
 
 char *
-guestfs__get_attach_method (guestfs_h *g)
+guestfs_impl_get_attach_method (guestfs_h *g)
 {
   if (STREQ (g->backend, "direct"))
     /* Return 'appliance' here for backwards compatibility. */
@@ -714,32 +714,32 @@ guestfs__get_attach_method (guestfs_h *g)
 }
 
 int
-guestfs__set_backend_settings (guestfs_h *g, char *const *settings)
+guestfs_impl_set_backend_settings (guestfs_h *g, char *const *settings)
 {
   char **copy;
 
-  copy = guestfs___copy_string_list (settings);
+  copy = guestfs_int_copy_string_list (settings);
   if (copy == NULL) {
     perrorf (g, "copy: malloc");
     return -1;
   }
 
-  guestfs___free_string_list (g->backend_settings);
+  guestfs_int_free_string_list (g->backend_settings);
   g->backend_settings = copy;
 
   return 0;
 }
 
 char **
-guestfs__get_backend_settings (guestfs_h *g)
+guestfs_impl_get_backend_settings (guestfs_h *g)
 {
   char *empty_list[1] = { NULL };
   char **ret;
 
   if (g->backend_settings == NULL)
-    ret = guestfs___copy_string_list (empty_list);
+    ret = guestfs_int_copy_string_list (empty_list);
   else
-    ret = guestfs___copy_string_list (g->backend_settings);
+    ret = guestfs_int_copy_string_list (g->backend_settings);
 
   if (ret == NULL) {
     perrorf (g, "copy: malloc");
@@ -750,7 +750,7 @@ guestfs__get_backend_settings (guestfs_h *g)
 }
 
 char *
-guestfs__get_backend_setting (guestfs_h *g, const char *name)
+guestfs_impl_get_backend_setting (guestfs_h *g, const char *name)
 {
   char **settings = g->backend_settings;
   size_t namelen = strlen (name);
@@ -769,12 +769,12 @@ guestfs__get_backend_setting (guestfs_h *g, const char *name)
   }
 
  not_found:
-  guestfs___error_errno (g, ESRCH, _("setting not found"));
+  guestfs_int_error_errno (g, ESRCH, _("setting not found"));
   return NULL;
 }
 
 int
-guestfs__clear_backend_setting (guestfs_h *g, const char *name)
+guestfs_impl_clear_backend_setting (guestfs_h *g, const char *name)
 {
   char **settings = g->backend_settings;
   size_t namelen = strlen (name);
@@ -802,7 +802,7 @@ guestfs__clear_backend_setting (guestfs_h *g, const char *name)
 }
 
 int
-guestfs__set_backend_setting (guestfs_h *g, const char *name, const char *value)
+guestfs_impl_set_backend_setting (guestfs_h *g, const char *name, const char *value)
 {
   char *new_setting;
   size_t len;
@@ -816,7 +816,7 @@ guestfs__set_backend_setting (guestfs_h *g, const char *name, const char *value)
   }
   else {
     ignore_value (guestfs_clear_backend_setting (g, name));
-    len = guestfs___count_strings (g->backend_settings);
+    len = guestfs_int_count_strings (g->backend_settings);
   }
 
   g->backend_settings =
@@ -831,7 +831,7 @@ guestfs__set_backend_setting (guestfs_h *g, const char *name, const char *value)
  * it as an API in future.
  */
 int
-guestfs___get_backend_setting_bool (guestfs_h *g, const char *name)
+guestfs_int_get_backend_setting_bool (guestfs_h *g, const char *name)
 {
   CLEANUP_FREE char *value = NULL;
   int b;
@@ -846,7 +846,7 @@ guestfs___get_backend_setting_bool (guestfs_h *g, const char *name)
   if (value == NULL)
     return -1;
 
-  b = guestfs___is_true (value);
+  b = guestfs_int_is_true (value);
   if (b == -1)
     return -1;
 
@@ -854,20 +854,20 @@ guestfs___get_backend_setting_bool (guestfs_h *g, const char *name)
 }
 
 int
-guestfs__set_pgroup (guestfs_h *g, int v)
+guestfs_impl_set_pgroup (guestfs_h *g, int v)
 {
   g->pgroup = !!v;
   return 0;
 }
 
 int
-guestfs__get_pgroup (guestfs_h *g)
+guestfs_impl_get_pgroup (guestfs_h *g)
 {
   return g->pgroup;
 }
 
 int
-guestfs__set_smp (guestfs_h *g, int v)
+guestfs_impl_set_smp (guestfs_h *g, int v)
 {
   if (v > 255) {
     error (g, "unsupported number of smp vcpus: %d", v);
@@ -882,7 +882,7 @@ guestfs__set_smp (guestfs_h *g, int v)
 }
 
 int
-guestfs__get_smp (guestfs_h *g)
+guestfs_impl_get_smp (guestfs_h *g)
 {
   return g->smp;
 }

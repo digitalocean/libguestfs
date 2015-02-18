@@ -259,7 +259,7 @@ ruby_set_event_callback (VALUE gv, VALUE cbv, VALUE event_bitmaskv)
 
   event_bitmask = NUM2ULL (event_bitmaskv);
 
-  root = guestfs___safe_malloc (g, sizeof *root);
+  root = guestfs_int_safe_malloc (g, sizeof *root);
   *root = cbv;
 
   eh = guestfs_set_event_callback (g, ruby_event_callback_wrapper,
@@ -430,7 +430,7 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   }
 
   /* Copy them into the return array. */
-  r = guestfs___safe_malloc (g, sizeof (VALUE *) * (*len_rtn));
+  r = guestfs_int_safe_malloc (g, sizeof (VALUE *) * (*len_rtn));
 
   i = 0;
   root = guestfs_first_private (g, &key);
@@ -2903,6 +2903,45 @@ ruby_guestfs_btrfs_balance_resume (VALUE gv, VALUE pathv)
 
 /*
  * call-seq:
+ *   g.btrfs_balance_status(path) -> hash
+ *
+ * show the status of a running or paused balance
+ *
+ * Show the status of a running or paused balance on a
+ * btrfs filesystem.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_balance_status+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_status]).
+ */
+static VALUE
+ruby_guestfs_btrfs_balance_status (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_balance_status");
+
+  const char *path = StringValueCStr (pathv);
+
+  struct guestfs_btrfsbalance *r;
+
+  r = guestfs_btrfs_balance_status (g, path);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_hash_new ();
+  rb_hash_aset (rv, rb_str_new2 ("btrfsbalance_status"), rb_str_new2 (r->btrfsbalance_status));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsbalance_total"), ULL2NUM (r->btrfsbalance_total));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsbalance_balanced"), ULL2NUM (r->btrfsbalance_balanced));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsbalance_considered"), ULL2NUM (r->btrfsbalance_considered));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsbalance_left"), ULL2NUM (r->btrfsbalance_left));
+  guestfs_free_btrfsbalance (r);
+  return rv;
+}
+
+/*
+ * call-seq:
  *   g.btrfs_device_add(devices, fs) -> nil
  *
  * add devices to a btrfs filesystem
@@ -3513,7 +3552,7 @@ ruby_guestfs_btrfs_quota_rescan (VALUE gv, VALUE fsv)
  *
  * recover the chunk tree of btrfs filesystem
  *
- * Recover the chunk tree of btrfs filesystem by scannning
+ * Recover the chunk tree of btrfs filesystem by scanning
  * the devices one by one.
  *
  *
@@ -3664,6 +3703,55 @@ ruby_guestfs_btrfs_scrub_start (VALUE gv, VALUE pathv)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_scrub_status(path) -> hash
+ *
+ * show status of running or finished scrub
+ *
+ * Show status of running or finished scrub on a btrfs
+ * filesystem.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_scrub_status+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_status]).
+ */
+static VALUE
+ruby_guestfs_btrfs_scrub_status (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_scrub_status");
+
+  const char *path = StringValueCStr (pathv);
+
+  struct guestfs_btrfsscrub *r;
+
+  r = guestfs_btrfs_scrub_status (g, path);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_hash_new ();
+  rb_hash_aset (rv, rb_str_new2 ("btrfsscrub_data_extents_scrubbed"), ULL2NUM (r->btrfsscrub_data_extents_scrubbed));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsscrub_tree_extents_scrubbed"), ULL2NUM (r->btrfsscrub_tree_extents_scrubbed));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsscrub_data_bytes_scrubbed"), ULL2NUM (r->btrfsscrub_data_bytes_scrubbed));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsscrub_tree_bytes_scrubbed"), ULL2NUM (r->btrfsscrub_tree_bytes_scrubbed));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsscrub_read_errors"), ULL2NUM (r->btrfsscrub_read_errors));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsscrub_csum_errors"), ULL2NUM (r->btrfsscrub_csum_errors));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsscrub_verify_errors"), ULL2NUM (r->btrfsscrub_verify_errors));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsscrub_no_csum"), ULL2NUM (r->btrfsscrub_no_csum));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsscrub_csum_discards"), ULL2NUM (r->btrfsscrub_csum_discards));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsscrub_super_errors"), ULL2NUM (r->btrfsscrub_super_errors));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsscrub_malloc_errors"), ULL2NUM (r->btrfsscrub_malloc_errors));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsscrub_uncorrectable_errors"), ULL2NUM (r->btrfsscrub_uncorrectable_errors));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsscrub_unverified_errors"), ULL2NUM (r->btrfsscrub_unverified_errors));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsscrub_corrected_errors"), ULL2NUM (r->btrfsscrub_corrected_errors));
+  rb_hash_aset (rv, rb_str_new2 ("btrfsscrub_last_physical"), ULL2NUM (r->btrfsscrub_last_physical));
+  guestfs_free_btrfsscrub (r);
+  return rv;
 }
 
 /*
@@ -4050,7 +4138,7 @@ ruby_guestfs_c_pointer (VALUE gv)
  * "/dev/mapper/VG-LV"
  * "/dev/dm-N"
  * Converted to "/dev/VG/LV" form using
- * "g.lvm_canonical_lvm_name".
+ * "g.lvm_canonical_lv_name".
  * 
  * Other strings are returned unmodified.
  *
@@ -13877,8 +13965,8 @@ ruby_guestfs_journal_get_realtime_usec (VALUE gv)
  * 
  * The returned boolean tells you if there are any more
  * journal records to read. "true" means you can read the
- * next record (eg. using "g.journal_get_data"), and
- * "false" means you have reached the end of the journal.
+ * next record (eg. using "g.journal_get"), and "false"
+ * means you have reached the end of the journal.
  *
  *
  * (For the C API documentation for this function, see
@@ -27425,6 +27513,8 @@ Init__guestfs (void)
         ruby_guestfs_btrfs_balance_pause, 1);
   rb_define_method (c_guestfs, "btrfs_balance_resume",
         ruby_guestfs_btrfs_balance_resume, 1);
+  rb_define_method (c_guestfs, "btrfs_balance_status",
+        ruby_guestfs_btrfs_balance_status, 1);
   rb_define_method (c_guestfs, "btrfs_device_add",
         ruby_guestfs_btrfs_device_add, 2);
   rb_define_method (c_guestfs, "btrfs_device_delete",
@@ -27465,6 +27555,8 @@ Init__guestfs (void)
         ruby_guestfs_btrfs_scrub_resume, 1);
   rb_define_method (c_guestfs, "btrfs_scrub_start",
         ruby_guestfs_btrfs_scrub_start, 1);
+  rb_define_method (c_guestfs, "btrfs_scrub_status",
+        ruby_guestfs_btrfs_scrub_status, 1);
   rb_define_method (c_guestfs, "btrfs_set_seeding",
         ruby_guestfs_btrfs_set_seeding, 2);
   rb_define_method (c_guestfs, "btrfs_subvolume_create",

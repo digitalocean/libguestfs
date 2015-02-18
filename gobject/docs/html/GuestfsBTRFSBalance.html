@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Libguestfs GObject Bindings Reference Manual: GuestfsBTRFSBalance</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsApplication2.html" title="GuestfsApplication2">
+<link rel="next" href="GuestfsBTRFSQgroup.html" title="GuestfsBTRFSQgroup">
+<meta name="generator" content="GTK-Doc V1.21 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#GuestfsBTRFSBalance.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#GuestfsBTRFSBalance.object-hierarchy" class="shortcut">Object Hierarchy</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="GuestfsApplication2.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="GuestfsBTRFSQgroup.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="GuestfsBTRFSBalance"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsBTRFSBalance.top_of_page"></a>GuestfsBTRFSBalance</span></h2>
+<p>GuestfsBTRFSBalance</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="GuestfsBTRFSBalance.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody><tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="GuestfsBTRFSBalance.html#GuestfsBTRFSBalance-struct" title="struct GuestfsBTRFSBalance">GuestfsBTRFSBalance</a></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="GuestfsBTRFSBalance.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    GBoxed
+    <span class="lineart">╰──</span> GuestfsBTRFSBalance
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsBTRFSBalance.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;guestfs-gobject.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsBTRFSBalance.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="GuestfsBTRFSBalance.functions_details"></a><h2>Functions</h2>
+</div>
+<div class="refsect1">
+<a name="GuestfsBTRFSBalance.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="GuestfsBTRFSBalance-struct"></a><h3>struct GuestfsBTRFSBalance</h3>
+<pre class="programlisting">struct GuestfsBTRFSBalance {
+  gchar *btrfsbalance_status;
+  guint64 btrfsbalance_total;
+  guint64 btrfsbalance_balanced;
+  guint64 btrfsbalance_considered;
+  guint64 btrfsbalance_left;
+};
+</pre>
+<div class="refsect3">
+<a name="id-1.2.6.8.2.4"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="struct_member_name"><p><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsBTRFSBalance-struct.btrfsbalance-status"></a>btrfsbalance_status</code></em>;</p></td>
+<td class="struct_member_description"><p>A NULL-terminated string</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><span class="type">guint64</span> <em class="structfield"><code><a name="GuestfsBTRFSBalance-struct.btrfsbalance-total"></a>btrfsbalance_total</code></em>;</p></td>
+<td class="struct_member_description"><p>An unsigned 64-bit integer</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><span class="type">guint64</span> <em class="structfield"><code><a name="GuestfsBTRFSBalance-struct.btrfsbalance-balanced"></a>btrfsbalance_balanced</code></em>;</p></td>
+<td class="struct_member_description"><p>An unsigned 64-bit integer</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><span class="type">guint64</span> <em class="structfield"><code><a name="GuestfsBTRFSBalance-struct.btrfsbalance-considered"></a>btrfsbalance_considered</code></em>;</p></td>
+<td class="struct_member_description"><p>An unsigned 64-bit integer</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><span class="type">guint64</span> <em class="structfield"><code><a name="GuestfsBTRFSBalance-struct.btrfsbalance-left"></a>btrfsbalance_left</code></em>;</p></td>
+<td class="struct_member_description"><p>An unsigned 64-bit integer</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.21</div>
+</body>
+</html>

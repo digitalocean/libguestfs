@@ -610,7 +610,7 @@ do_btrfs_subvolume_get_default (const mountable_t *fs)
     goto error;
   }
   if (sscanf (out, "ID %" SCNi64, &ret) != 1) {
-    reply_with_error ("%s: could not parse subvolume id: %s.", argv[0], out);
+    reply_with_error ("%s: could not parse subvolume id: %s", argv[0], out);
     ret = -1;
     goto error;
   }
@@ -1658,4 +1658,274 @@ do_btrfs_rescue_super_recover (const char *device)
   }
 
   return 0;
+}
+
+guestfs_int_btrfsbalance *
+do_btrfs_balance_status (const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  char *out;
+  int r;
+  guestfs_int_btrfsbalance *ret;
+  char **lines;
+  size_t nlines;
+  const char *errptr;
+  int erroffset;
+#define N_MATCH 2
+  int ovector[N_MATCH * 3];
+  pcre *re = NULL;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return NULL;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "balance");
+  ADD_ARG (argv, i, "status");
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return NULL;
+  }
+
+  lines = split_lines (out);
+  if (!lines)
+    return NULL;
+
+  nlines = count_strings (lines);
+
+  ret = malloc(sizeof *ret);
+  if (ret == NULL) {
+    reply_with_perror ("malloc");
+    goto error;
+  }
+  memset (ret, 0, sizeof(*ret));
+
+  /* Output of `btrfs balance status' is like:
+   *
+   * running:
+   *
+   *   Balance on '/' is running
+   *   3 out of about 8 chunks balanced (3 considered), 62% left
+   *
+   * paused:
+   *
+   *   Balance on '/' is paused
+   *   3 out of about 8 chunks balanced (3 considered), 62% left
+   *
+   * no balance running:
+   *
+   *   No Balance found on '/'
+   *
+   */
+  if (nlines < 1) {
+    reply_with_perror ("No balance status output");
+    return NULL;
+  }
+
+  if (strstr (lines[0], "No balance found on")) {
+    ret->btrfsbalance_status = strdup("none");
+    if (ret->btrfsbalance_status == NULL) {
+      reply_with_perror ("strdup");
+      return NULL;
+    }
+    return ret;
+  }
+
+  re = pcre_compile ("Balance on '.*' is (.*)", 0, &errptr, &erroffset, NULL);
+  if (re == NULL) {
+    reply_with_error ("pcre_compile (%i): %s", erroffset, errptr);
+    goto error;
+  }
+  if (pcre_exec (re, NULL, lines[0], strlen (lines[0]), 0, 0,
+                 ovector, N_MATCH * 3) < 0) {
+    reply_with_error ("unexpected output from 'btrfs balance status' command: %s", lines[0]);
+    goto error;
+  }
+#undef N_MATCH
+
+  if (STREQ (lines[0] + ovector[2], "running"))
+    ret->btrfsbalance_status = strdup("running");
+  else if (STREQ (lines[0] + ovector[2], "paused"))
+    ret->btrfsbalance_status = strdup("paused");
+  else {
+    reply_with_error ("unexpected output from 'btrfs balance status' command: %s", lines[0]);
+    goto error;
+  }
+
+  if (nlines < 2) {
+    reply_with_error ("truncated output from 'btrfs balance status' command");
+    goto error;
+  }
+
+  if (sscanf (lines[1], "%" SCNu64 " out of about %" SCNu64
+              " chunks balanced (%" SCNu64 " considered), %" SCNu64 "%% left",
+              &ret->btrfsbalance_balanced, &ret->btrfsbalance_total,
+              &ret->btrfsbalance_considered, &ret->btrfsbalance_left) != 4) {
+    reply_with_perror ("sscanf");
+    goto error;
+  }
+
+  pcre_free (re);
+  return ret;
+
+error:
+  free (ret->btrfsbalance_status);
+  free (ret);
+  pcre_free (re);
+
+  return NULL;
+}
+
+guestfs_int_btrfsscrub *
+do_btrfs_scrub_status (const char *path)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *path_buf = NULL;
+  CLEANUP_FREE char *err = NULL;
+  char *out;
+  int r;
+  guestfs_int_btrfsscrub *ret;
+  char **lines;
+
+  path_buf = sysroot_path (path);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return NULL;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "scrub");
+  ADD_ARG (argv, i, "status");
+  ADD_ARG (argv, i, "-R");
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    return NULL;
+  }
+
+  if (verbose)
+    fprintf (stderr, "output from 'btrfs scrub status -R %s' is:\n%s", path, out);
+
+  lines = split_lines (out);
+  if (!lines)
+    return NULL;
+
+  if (count_strings (lines) < 2) {
+    reply_with_error ("truncated output from 'btrfs scrub status -R' command");
+    return NULL;
+  }
+
+  ret = malloc (sizeof *ret);
+  if (ret == NULL) {
+    reply_with_perror ("malloc");
+    return NULL;
+  }
+  memset (ret, 0, sizeof(*ret));
+
+  /* Output of `btrfs scrub -R status' is like:
+   *
+   *   scrub status for 346121d1-1847-40f8-9b7b-2bf3d539c68f
+   *           scrub started at Mon Feb  2 17:39:38 2015, running for 93 seconds
+   *           data_extents_scrubbed: 136670
+   *           tree_extents_scrubbed: 30023
+   *           data_bytes_scrubbed: 4474441728
+   *           tree_bytes_scrubbed: 491896832
+   *           read_errors: 0
+   *           csum_errors: 0
+   *           verify_errors: 0
+   *           no_csum: 17760
+   *           csum_discards: 197622
+   *           super_errors: 0
+   *           malloc_errors: 0
+   *           uncorrectable_errors: 0
+   *           unverified_errors: 0
+   *           corrected_errors: 0
+   *           last_physical: 10301341696
+   *
+   * or:
+   *
+   *   scrub status for 346121d1-1847-40f8-9b7b-2bf3d539c68f
+   *           no stats available
+   */
+  for (i = 1; lines[i] != NULL; ++i) {
+    if ((i == 1) && STREQ (lines[i], "\tno stats available"))
+      return ret;
+    else if (STRPREFIX (lines[i], "\tscrub started at"))
+      continue;
+    else if (sscanf (lines[i], "\tdata_extents_scrubbed: %" SCNu64,
+                                 &ret->btrfsscrub_data_extents_scrubbed) == 1)
+      continue;
+    else if (sscanf (lines[i], "\ttree_extents_scrubbed: %" SCNu64,
+                                 &ret->btrfsscrub_tree_extents_scrubbed) == 1)
+      continue;
+    else if (sscanf (lines[i], "\tdata_bytes_scrubbed: %" SCNu64,
+                                 &ret->btrfsscrub_data_bytes_scrubbed) == 1)
+      continue;
+    else if (sscanf (lines[i], "\ttree_bytes_scrubbed: %" SCNu64,
+                                 &ret->btrfsscrub_tree_bytes_scrubbed) == 1)
+      continue;
+    else if (sscanf (lines[i], "\tread_errors: %" SCNu64,
+                                 &ret->btrfsscrub_read_errors) == 1)
+      continue;
+    else if (sscanf (lines[i], "\tcsum_errors: %" SCNu64,
+                                 &ret->btrfsscrub_csum_errors) == 1)
+      continue;
+    else if (sscanf (lines[i], "\tverify_errors: %" SCNu64,
+                                 &ret->btrfsscrub_verify_errors) == 1)
+      continue;
+    else if (sscanf (lines[i], "\tno_csum: %" SCNu64,
+                                 &ret->btrfsscrub_no_csum) == 1)
+      continue;
+    else if (sscanf (lines[i], "\tcsum_discards: %" SCNu64,
+                                  &ret->btrfsscrub_csum_discards) == 1)
+      continue;
+    else if (sscanf (lines[i], "\tsuper_errors: %" SCNu64,
+                                  &ret->btrfsscrub_super_errors) == 1)
+      continue;
+    else if (sscanf (lines[i], "\tmalloc_errors: %" SCNu64,
+                                  &ret->btrfsscrub_malloc_errors) == 1)
+      continue;
+    else if (sscanf (lines[i], "\tuncorrectable_errors: %" SCNu64,
+                                  &ret->btrfsscrub_uncorrectable_errors) == 1)
+      continue;
+    else if (sscanf (lines[i], "\tunverified_errors: %" SCNu64,
+                                  &ret->btrfsscrub_unverified_errors) == 1)
+      continue;
+    else if (sscanf (lines[i], "\tcorrected_errors: %" SCNu64,
+                                  &ret->btrfsscrub_corrected_errors) == 1)
+      continue;
+    else if (sscanf (lines[i], "\tlast_physical: %" SCNu64,
+                                  &ret->btrfsscrub_last_physical) == 1)
+      continue;
+    else
+      goto error;
+  }
+
+  if (i < 17) {
+    reply_with_error ("truncated output from 'btrfs scrub status -R' command");
+    free (ret);
+    return NULL;
+  }
+
+  return ret;
+
+error:
+  reply_with_error ("%s: could not parse btrfs scrub status.", lines[i]);
+  free (ret);
+  return NULL;
 }

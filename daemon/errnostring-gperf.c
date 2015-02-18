@@ -511,7 +511,7 @@ __attribute__ ((__gnu_inline__))
 #endif
 #endif
 const struct errnostring_entry *
-guestfs___string_to_errno_lookup (register const char *str, register unsigned int len)
+guestfs_int_string_to_errno_lookup (register const char *str, register unsigned int len)
 {
   static const struct errnostring_entry wordlist[] =
     {

@@ -355,6 +355,44 @@ typedef struct {
 	guestfs_int_btrfsqgroup *guestfs_int_btrfsqgroup_list_val;
 } guestfs_int_btrfsqgroup_list;
 
+struct guestfs_int_btrfsbalance {
+	char *btrfsbalance_status;
+	uint64_t btrfsbalance_total;
+	uint64_t btrfsbalance_balanced;
+	uint64_t btrfsbalance_considered;
+	uint64_t btrfsbalance_left;
+};
+typedef struct guestfs_int_btrfsbalance guestfs_int_btrfsbalance;
+
+typedef struct {
+	u_int guestfs_int_btrfsbalance_list_len;
+	guestfs_int_btrfsbalance *guestfs_int_btrfsbalance_list_val;
+} guestfs_int_btrfsbalance_list;
+
+struct guestfs_int_btrfsscrub {
+	uint64_t btrfsscrub_data_extents_scrubbed;
+	uint64_t btrfsscrub_tree_extents_scrubbed;
+	uint64_t btrfsscrub_data_bytes_scrubbed;
+	uint64_t btrfsscrub_tree_bytes_scrubbed;
+	uint64_t btrfsscrub_read_errors;
+	uint64_t btrfsscrub_csum_errors;
+	uint64_t btrfsscrub_verify_errors;
+	uint64_t btrfsscrub_no_csum;
+	uint64_t btrfsscrub_csum_discards;
+	uint64_t btrfsscrub_super_errors;
+	uint64_t btrfsscrub_malloc_errors;
+	uint64_t btrfsscrub_uncorrectable_errors;
+	uint64_t btrfsscrub_unverified_errors;
+	uint64_t btrfsscrub_corrected_errors;
+	uint64_t btrfsscrub_last_physical;
+};
+typedef struct guestfs_int_btrfsscrub guestfs_int_btrfsscrub;
+
+typedef struct {
+	u_int guestfs_int_btrfsscrub_list_len;
+	guestfs_int_btrfsscrub *guestfs_int_btrfsscrub_list_val;
+} guestfs_int_btrfsscrub_list;
+
 struct guestfs_int_xfsinfo {
 	char *xfs_mntpoint;
 	u_int xfs_inodesize;
@@ -3937,6 +3975,26 @@ struct guestfs_part_get_gpt_guid_ret {
 };
 typedef struct guestfs_part_get_gpt_guid_ret guestfs_part_get_gpt_guid_ret;
 
+struct guestfs_btrfs_balance_status_args {
+	char *path;
+};
+typedef struct guestfs_btrfs_balance_status_args guestfs_btrfs_balance_status_args;
+
+struct guestfs_btrfs_balance_status_ret {
+	guestfs_int_btrfsbalance status;
+};
+typedef struct guestfs_btrfs_balance_status_ret guestfs_btrfs_balance_status_ret;
+
+struct guestfs_btrfs_scrub_status_args {
+	char *path;
+};
+typedef struct guestfs_btrfs_scrub_status_args guestfs_btrfs_scrub_status_args;
+
+struct guestfs_btrfs_scrub_status_ret {
+	guestfs_int_btrfsscrub status;
+};
+typedef struct guestfs_btrfs_scrub_status_ret guestfs_btrfs_scrub_status_ret;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -4373,9 +4431,11 @@ enum guestfs_procedure {
 	GUESTFS_PROC_BTRFS_RESCUE_SUPER_RECOVER = 445,
 	GUESTFS_PROC_PART_SET_GPT_GUID = 446,
 	GUESTFS_PROC_PART_GET_GPT_GUID = 447,
+	GUESTFS_PROC_BTRFS_BALANCE_STATUS = 448,
+	GUESTFS_PROC_BTRFS_SCRUB_STATUS = 449,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 447
+#define GUESTFS_MAX_PROC_NR 449
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4472,6 +4532,10 @@ extern  bool_t xdr_guestfs_int_btrfssubvolume (XDR *, guestfs_int_btrfssubvolume
 extern  bool_t xdr_guestfs_int_btrfssubvolume_list (XDR *, guestfs_int_btrfssubvolume_list*);
 extern  bool_t xdr_guestfs_int_btrfsqgroup (XDR *, guestfs_int_btrfsqgroup*);
 extern  bool_t xdr_guestfs_int_btrfsqgroup_list (XDR *, guestfs_int_btrfsqgroup_list*);
+extern  bool_t xdr_guestfs_int_btrfsbalance (XDR *, guestfs_int_btrfsbalance*);
+extern  bool_t xdr_guestfs_int_btrfsbalance_list (XDR *, guestfs_int_btrfsbalance_list*);
+extern  bool_t xdr_guestfs_int_btrfsscrub (XDR *, guestfs_int_btrfsscrub*);
+extern  bool_t xdr_guestfs_int_btrfsscrub_list (XDR *, guestfs_int_btrfsscrub_list*);
 extern  bool_t xdr_guestfs_int_xfsinfo (XDR *, guestfs_int_xfsinfo*);
 extern  bool_t xdr_guestfs_int_xfsinfo_list (XDR *, guestfs_int_xfsinfo_list*);
 extern  bool_t xdr_guestfs_int_utsname (XDR *, guestfs_int_utsname*);
@@ -5052,6 +5116,10 @@ extern  bool_t xdr_guestfs_btrfs_rescue_super_recover_args (XDR *, guestfs_btrfs
 extern  bool_t xdr_guestfs_part_set_gpt_guid_args (XDR *, guestfs_part_set_gpt_guid_args*);
 extern  bool_t xdr_guestfs_part_get_gpt_guid_args (XDR *, guestfs_part_get_gpt_guid_args*);
 extern  bool_t xdr_guestfs_part_get_gpt_guid_ret (XDR *, guestfs_part_get_gpt_guid_ret*);
+extern  bool_t xdr_guestfs_btrfs_balance_status_args (XDR *, guestfs_btrfs_balance_status_args*);
+extern  bool_t xdr_guestfs_btrfs_balance_status_ret (XDR *, guestfs_btrfs_balance_status_ret*);
+extern  bool_t xdr_guestfs_btrfs_scrub_status_args (XDR *, guestfs_btrfs_scrub_status_args*);
+extern  bool_t xdr_guestfs_btrfs_scrub_status_ret (XDR *, guestfs_btrfs_scrub_status_ret*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5098,6 +5166,10 @@ extern bool_t xdr_guestfs_int_btrfssubvolume ();
 extern bool_t xdr_guestfs_int_btrfssubvolume_list ();
 extern bool_t xdr_guestfs_int_btrfsqgroup ();
 extern bool_t xdr_guestfs_int_btrfsqgroup_list ();
+extern bool_t xdr_guestfs_int_btrfsbalance ();
+extern bool_t xdr_guestfs_int_btrfsbalance_list ();
+extern bool_t xdr_guestfs_int_btrfsscrub ();
+extern bool_t xdr_guestfs_int_btrfsscrub_list ();
 extern bool_t xdr_guestfs_int_xfsinfo ();
 extern bool_t xdr_guestfs_int_xfsinfo_list ();
 extern bool_t xdr_guestfs_int_utsname ();
@@ -5678,6 +5750,10 @@ extern bool_t xdr_guestfs_btrfs_rescue_super_recover_args ();
 extern bool_t xdr_guestfs_part_set_gpt_guid_args ();
 extern bool_t xdr_guestfs_part_get_gpt_guid_args ();
 extern bool_t xdr_guestfs_part_get_gpt_guid_ret ();
+extern bool_t xdr_guestfs_btrfs_balance_status_args ();
+extern bool_t xdr_guestfs_btrfs_balance_status_ret ();
+extern bool_t xdr_guestfs_btrfs_scrub_status_args ();
+extern bool_t xdr_guestfs_btrfs_scrub_status_ret ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

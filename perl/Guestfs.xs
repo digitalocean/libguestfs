@@ -161,7 +161,7 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   }
 
   /* Copy them into the return array. */
-  r = guestfs___safe_malloc (g, sizeof (SV *) * (*len_rtn));
+  r = guestfs_int_safe_malloc (g, sizeof (SV *) * (*len_rtn));
 
   i = 0;
   cb = guestfs_first_private (g, &key);
@@ -480,7 +480,7 @@ PREINIT:
           /* Note av_len returns index of final element. */
           len = av_len (av) + 1;
 
-          r = guestfs___safe_malloc (g, (len+1) * sizeof (char *));
+          r = guestfs_int_safe_malloc (g, (len+1) * sizeof (char *));
           for (i = 0; i < len; ++i) {
             svp = av_fetch (av, i, 0);
             r[i] = SvPV_nolen (*svp);
@@ -1142,6 +1142,29 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
+btrfs_balance_status (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      struct guestfs_btrfsbalance *r;
+ PPCODE:
+      r = guestfs_btrfs_balance_status (g, path);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, 2 * 5);
+      PUSHs (sv_2mortal (newSVpv ("btrfsbalance_status", 0)));
+      PUSHs (sv_2mortal (newSVpv (r->btrfsbalance_status, 0)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsbalance_total", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsbalance_total)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsbalance_balanced", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsbalance_balanced)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsbalance_considered", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsbalance_considered)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsbalance_left", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsbalance_left)));
+      free (r);
+
+void
 btrfs_device_add (g, devices, fs)
       guestfs_h *g;
       char **devices;
@@ -1454,6 +1477,49 @@ PREINIT:
       r = guestfs_btrfs_scrub_start (g, path);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_scrub_status (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      struct guestfs_btrfsscrub *r;
+ PPCODE:
+      r = guestfs_btrfs_scrub_status (g, path);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, 2 * 15);
+      PUSHs (sv_2mortal (newSVpv ("btrfsscrub_data_extents_scrubbed", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_data_extents_scrubbed)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsscrub_tree_extents_scrubbed", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_tree_extents_scrubbed)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsscrub_data_bytes_scrubbed", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_data_bytes_scrubbed)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsscrub_tree_bytes_scrubbed", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_tree_bytes_scrubbed)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsscrub_read_errors", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_read_errors)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsscrub_csum_errors", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_csum_errors)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsscrub_verify_errors", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_verify_errors)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsscrub_no_csum", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_no_csum)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsscrub_csum_discards", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_csum_discards)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsscrub_super_errors", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_super_errors)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsscrub_malloc_errors", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_malloc_errors)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsscrub_uncorrectable_errors", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_uncorrectable_errors)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsscrub_unverified_errors", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_unverified_errors)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsscrub_corrected_errors", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_corrected_errors)));
+      PUSHs (sv_2mortal (newSVpv ("btrfsscrub_last_physical", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_last_physical)));
+      free (r);
 
 void
 btrfs_set_seeding (g, device, seeding)
@@ -4471,7 +4537,7 @@ PREINIT:
           /* Note av_len returns index of final element. */
           len = av_len (av) + 1;
 
-          r = guestfs___safe_malloc (g, (len+1) * sizeof (char *));
+          r = guestfs_int_safe_malloc (g, (len+1) * sizeof (char *));
           for (i = 0; i < len; ++i) {
             svp = av_fetch (av, i, 0);
             r[i] = SvPV_nolen (*svp);
@@ -9719,7 +9785,7 @@ PREINIT:
           /* Note av_len returns index of final element. */
           len = av_len (av) + 1;
 
-          r = guestfs___safe_malloc (g, (len+1) * sizeof (char *));
+          r = guestfs_int_safe_malloc (g, (len+1) * sizeof (char *));
           for (i = 0; i < len; ++i) {
             svp = av_fetch (av, i, 0);
             r[i] = SvPV_nolen (*svp);

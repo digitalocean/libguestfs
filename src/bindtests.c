@@ -33,7 +33,7 @@
 #include "guestfs_protocol.h"
 
 int
-guestfs__internal_test_set_output (guestfs_h *g, const char *filename)
+guestfs_impl_internal_test_set_output (guestfs_h *g, const char *filename)
 {
   FILE *fp;
 
@@ -54,7 +54,7 @@ guestfs__internal_test_set_output (guestfs_h *g, const char *filename)
 }
 
 int
-guestfs__internal_test_close_output (guestfs_h *g)
+guestfs_impl_internal_test_close_output (guestfs_h *g)
 {
   if (g->test_fp != NULL) {
     if (fclose (g->test_fp) == EOF) {
@@ -117,18 +117,18 @@ fill_lvm_pv (guestfs_h *g, struct guestfs_lvm_pv *pv, size_t i)
  * file set by internal_test_set_output.
  */
 int
-guestfs__internal_test (guestfs_h *g,
-                        const char *str,
-                        const char *optstr,
-                        char *const *strlist,
-                        int b,
-                        int integer,
-                        int64_t integer64,
-                        const char *filein,
-                        const char *fileout,
-                        const char *bufferin,
-                        size_t bufferin_size,
-                        const struct guestfs_internal_test_argv *optargs)
+guestfs_impl_internal_test (guestfs_h *g,
+                            const char *str,
+                            const char *optstr,
+                            char *const *strlist,
+                            int b,
+                            int integer,
+                            int64_t integer64,
+                            const char *filein,
+                            const char *fileout,
+                            const char *bufferin,
+                            size_t bufferin_size,
+                            const struct guestfs_internal_test_argv *optargs)
 {
   FILE *fp = get_fp (g);
 
@@ -185,8 +185,8 @@ guestfs__internal_test (guestfs_h *g,
  * file set by internal_test_set_output.
  */
 int
-guestfs__internal_test_only_optargs (guestfs_h *g,
-                                     const struct guestfs_internal_test_only_optargs_argv *optargs)
+guestfs_impl_internal_test_only_optargs (guestfs_h *g,
+                                         const struct guestfs_internal_test_only_optargs_argv *optargs)
 {
   FILE *fp = get_fp (g);
 
@@ -205,8 +205,8 @@ guestfs__internal_test_only_optargs (guestfs_h *g,
  * file set by internal_test_set_output.
  */
 int
-guestfs__internal_test_63_optargs (guestfs_h *g,
-                                   const struct guestfs_internal_test_63_optargs_argv *optargs)
+guestfs_impl_internal_test_63_optargs (guestfs_h *g,
+                                       const struct guestfs_internal_test_63_optargs_argv *optargs)
 {
   FILE *fp = get_fp (g);
 
@@ -595,8 +595,8 @@ guestfs__internal_test_63_optargs (guestfs_h *g,
 
 /* Test normal return. */
 int
-guestfs__internal_test_rint (guestfs_h *g,
-                             const char *val)
+guestfs_impl_internal_test_rint (guestfs_h *g,
+                                 const char *val)
 {
   int r;
   if (sscanf (val, "%d", &r) != 1) {
@@ -608,7 +608,7 @@ guestfs__internal_test_rint (guestfs_h *g,
 
 /* Test error return. */
 int
-guestfs__internal_test_rinterr (guestfs_h *g)
+guestfs_impl_internal_test_rinterr (guestfs_h *g)
 {
   error (g, "error");
   return -1;
@@ -616,8 +616,8 @@ guestfs__internal_test_rinterr (guestfs_h *g)
 
 /* Test normal return. */
 int64_t
-guestfs__internal_test_rint64 (guestfs_h *g,
-                               const char *val)
+guestfs_impl_internal_test_rint64 (guestfs_h *g,
+                                   const char *val)
 {
   int64_t r;
   if (sscanf (val, "%" SCNi64, &r) != 1) {
@@ -629,7 +629,7 @@ guestfs__internal_test_rint64 (guestfs_h *g,
 
 /* Test error return. */
 int64_t
-guestfs__internal_test_rint64err (guestfs_h *g)
+guestfs_impl_internal_test_rint64err (guestfs_h *g)
 {
   error (g, "error");
   return -1;
@@ -637,15 +637,15 @@ guestfs__internal_test_rint64err (guestfs_h *g)
 
 /* Test normal return. */
 int
-guestfs__internal_test_rbool (guestfs_h *g,
-                              const char *val)
+guestfs_impl_internal_test_rbool (guestfs_h *g,
+                                  const char *val)
 {
   return STREQ (val, "true");
 }
 
 /* Test error return. */
 int
-guestfs__internal_test_rboolerr (guestfs_h *g)
+guestfs_impl_internal_test_rboolerr (guestfs_h *g)
 {
   error (g, "error");
   return -1;
@@ -653,15 +653,15 @@ guestfs__internal_test_rboolerr (guestfs_h *g)
 
 /* Test normal return. */
 const char *
-guestfs__internal_test_rconststring (guestfs_h *g,
-                                     const char *val)
+guestfs_impl_internal_test_rconststring (guestfs_h *g,
+                                         const char *val)
 {
   return "static string";
 }
 
 /* Test error return. */
 const char *
-guestfs__internal_test_rconststringerr (guestfs_h *g)
+guestfs_impl_internal_test_rconststringerr (guestfs_h *g)
 {
   error (g, "error");
   return NULL;
@@ -669,15 +669,15 @@ guestfs__internal_test_rconststringerr (guestfs_h *g)
 
 /* Test normal return. */
 const char *
-guestfs__internal_test_rconstoptstring (guestfs_h *g,
-                                        const char *val)
+guestfs_impl_internal_test_rconstoptstring (guestfs_h *g,
+                                            const char *val)
 {
   return "static string";
 }
 
 /* Test error return. */
 const char *
-guestfs__internal_test_rconstoptstringerr (guestfs_h *g)
+guestfs_impl_internal_test_rconstoptstringerr (guestfs_h *g)
 {
   error (g, "error");
   return NULL;
@@ -685,15 +685,15 @@ guestfs__internal_test_rconstoptstringerr (guestfs_h *g)
 
 /* Test normal return. */
 char *
-guestfs__internal_test_rstring (guestfs_h *g,
-                                const char *val)
+guestfs_impl_internal_test_rstring (guestfs_h *g,
+                                    const char *val)
 {
   return strdup (val);
 }
 
 /* Test error return. */
 char *
-guestfs__internal_test_rstringerr (guestfs_h *g)
+guestfs_impl_internal_test_rstringerr (guestfs_h *g)
 {
   error (g, "error");
   return NULL;
@@ -701,8 +701,8 @@ guestfs__internal_test_rstringerr (guestfs_h *g)
 
 /* Test normal return. */
 char **
-guestfs__internal_test_rstringlist (guestfs_h *g,
-                                    const char *val)
+guestfs_impl_internal_test_rstringlist (guestfs_h *g,
+                                        const char *val)
 {
   char **strs;
   size_t n, i;
@@ -721,7 +721,7 @@ guestfs__internal_test_rstringlist (guestfs_h *g,
 
 /* Test error return. */
 char **
-guestfs__internal_test_rstringlisterr (guestfs_h *g)
+guestfs_impl_internal_test_rstringlisterr (guestfs_h *g)
 {
   error (g, "error");
   return NULL;
@@ -729,8 +729,8 @@ guestfs__internal_test_rstringlisterr (guestfs_h *g)
 
 /* Test normal return. */
 struct guestfs_lvm_pv *
-guestfs__internal_test_rstruct (guestfs_h *g,
-                                const char *val)
+guestfs_impl_internal_test_rstruct (guestfs_h *g,
+                                    const char *val)
 {
   struct guestfs_lvm_pv *r;
   r = safe_malloc (g, sizeof *r);
@@ -740,7 +740,7 @@ guestfs__internal_test_rstruct (guestfs_h *g,
 
 /* Test error return. */
 struct guestfs_lvm_pv *
-guestfs__internal_test_rstructerr (guestfs_h *g)
+guestfs_impl_internal_test_rstructerr (guestfs_h *g)
 {
   error (g, "error");
   return NULL;
@@ -748,8 +748,8 @@ guestfs__internal_test_rstructerr (guestfs_h *g)
 
 /* Test normal return. */
 struct guestfs_lvm_pv_list *
-guestfs__internal_test_rstructlist (guestfs_h *g,
-                                    const char *val)
+guestfs_impl_internal_test_rstructlist (guestfs_h *g,
+                                        const char *val)
 {
   struct guestfs_lvm_pv_list *r;
   uint32_t len;
@@ -767,7 +767,7 @@ guestfs__internal_test_rstructlist (guestfs_h *g,
 
 /* Test error return. */
 struct guestfs_lvm_pv_list *
-guestfs__internal_test_rstructlisterr (guestfs_h *g)
+guestfs_impl_internal_test_rstructlisterr (guestfs_h *g)
 {
   error (g, "error");
   return NULL;
@@ -775,8 +775,8 @@ guestfs__internal_test_rstructlisterr (guestfs_h *g)
 
 /* Test normal return. */
 char **
-guestfs__internal_test_rhashtable (guestfs_h *g,
-                                   const char *val)
+guestfs_impl_internal_test_rhashtable (guestfs_h *g,
+                                       const char *val)
 {
   char **strs;
   size_t n, i;
@@ -797,7 +797,7 @@ guestfs__internal_test_rhashtable (guestfs_h *g,
 
 /* Test error return. */
 char **
-guestfs__internal_test_rhashtableerr (guestfs_h *g)
+guestfs_impl_internal_test_rhashtableerr (guestfs_h *g)
 {
   error (g, "error");
   return NULL;
@@ -805,9 +805,9 @@ guestfs__internal_test_rhashtableerr (guestfs_h *g)
 
 /* Test normal return. */
 char *
-guestfs__internal_test_rbufferout (guestfs_h *g,
-                                   const char *val,
-                                   size_t *size_r)
+guestfs_impl_internal_test_rbufferout (guestfs_h *g,
+                                       const char *val,
+                                       size_t *size_r)
 {
   *size_r = strlen (val);
   return strdup (val);
@@ -815,8 +815,8 @@ guestfs__internal_test_rbufferout (guestfs_h *g,
 
 /* Test error return. */
 char *
-guestfs__internal_test_rbufferouterr (guestfs_h *g,
-                                      size_t *size_r)
+guestfs_impl_internal_test_rbufferouterr (guestfs_h *g,
+                                          size_t *size_r)
 {
   error (g, "error");
   return NULL;

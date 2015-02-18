@@ -46,7 +46,7 @@ static struct backend {
 static mode_t get_umask (guestfs_h *g);
 
 int
-guestfs__launch (guestfs_h *g)
+guestfs_impl_launch (guestfs_h *g)
 {
   /* Configured? */
   if (g->state != CONFIG) {
@@ -59,7 +59,7 @@ guestfs__launch (guestfs_h *g)
   TRACE0 (launch_start);
 
   /* Make the temporary directory. */
-  if (guestfs___lazy_make_tmpdir (g) == -1)
+  if (guestfs_int_lazy_make_tmpdir (g) == -1)
     return -1;
 
   /* Allow anyone to read the temporary directory.  The socket in this
@@ -113,16 +113,16 @@ guestfs__launch (guestfs_h *g)
  * (3) There is a hack in proto.c to make this work.
  */
 void
-guestfs___launch_send_progress (guestfs_h *g, int perdozen)
+guestfs_int_launch_send_progress (guestfs_h *g, int perdozen)
 {
   struct timeval tv;
 
   gettimeofday (&tv, NULL);
-  if (guestfs___timeval_diff (&g->launch_t, &tv) >= 5000) {
+  if (guestfs_int_timeval_diff (&g->launch_t, &tv) >= 5000) {
     guestfs_progress progress_message =
       { .proc = 0, .serial = 0, .position = perdozen, .total = 12 };
 
-    guestfs___progress_message_callback (g, &progress_message);
+    guestfs_int_progress_message_callback (g, &progress_message);
   }
 }
 
@@ -130,7 +130,7 @@ guestfs___launch_send_progress (guestfs_h *g, int perdozen)
  * from the parent process.
  */
 void
-guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...)
+guestfs_int_print_timestamped_message (guestfs_h *g, const char *fs, ...)
 {
   va_list args;
   char *msg;
@@ -146,7 +146,7 @@ guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...)
   gettimeofday (&tv, NULL);
 
   debug (g, "[%05" PRIi64 "ms] %s",
-         guestfs___timeval_diff (&g->launch_t, &tv), msg);
+         guestfs_int_timeval_diff (&g->launch_t, &tv), msg);
 
   free (msg);
 }
@@ -156,7 +156,7 @@ guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...)
  * http://www.mpp.mpg.de/~huber/util/timevaldiff.c
  */
 int64_t
-guestfs___timeval_diff (const struct timeval *x, const struct timeval *y)
+guestfs_int_timeval_diff (const struct timeval *x, const struct timeval *y)
 {
   int64_t msec;
 
@@ -166,7 +166,7 @@ guestfs___timeval_diff (const struct timeval *x, const struct timeval *y)
 }
 
 int
-guestfs__get_pid (guestfs_h *g)
+guestfs_impl_get_pid (guestfs_h *g)
 {
   if (g->state != READY || g->backend_ops == NULL) {
     error (g, _("get-pid can only be called after launch"));
@@ -182,7 +182,7 @@ guestfs__get_pid (guestfs_h *g)
 
 /* Maximum number of disks. */
 int
-guestfs__max_disks (guestfs_h *g)
+guestfs_impl_max_disks (guestfs_h *g)
 {
   if (g->backend_ops->max_disks == NULL)
     NOT_SUPPORTED (g, -1,
@@ -195,7 +195,7 @@ guestfs__max_disks (guestfs_h *g)
  * but it is now a no-op.
  */
 int
-guestfs__wait_ready (guestfs_h *g)
+guestfs_impl_wait_ready (guestfs_h *g)
 {
   if (g->state != READY)  {
     error (g, _("qemu has not been launched yet"));
@@ -206,46 +206,46 @@ guestfs__wait_ready (guestfs_h *g)
 }
 
 int
-guestfs__kill_subprocess (guestfs_h *g)
+guestfs_impl_kill_subprocess (guestfs_h *g)
 {
   return guestfs_shutdown (g);
 }
 
 /* Access current state. */
 int
-guestfs__is_config (guestfs_h *g)
+guestfs_impl_is_config (guestfs_h *g)
 {
   return g->state == CONFIG;
 }
 
 int
-guestfs__is_launching (guestfs_h *g)
+guestfs_impl_is_launching (guestfs_h *g)
 {
   return g->state == LAUNCHING;
 }
 
 int
-guestfs__is_ready (guestfs_h *g)
+guestfs_impl_is_ready (guestfs_h *g)
 {
   return g->state == READY;
 }
 
 int
-guestfs__is_busy (guestfs_h *g)
+guestfs_impl_is_busy (guestfs_h *g)
 {
   /* There used to be a BUSY state but it was removed in 1.17.36. */
   return 0;
 }
 
 int
-guestfs__get_state (guestfs_h *g)
+guestfs_impl_get_state (guestfs_h *g)
 {
   return g->state;
 }
 
 /* Add arbitrary qemu parameters.  Useful for testing. */
 int
-guestfs__config (guestfs_h *g,
+guestfs_impl_config (guestfs_h *g,
                  const char *hv_param, const char *hv_value)
 {
   struct hv_param *hp;
@@ -311,7 +311,7 @@ guestfs__config (guestfs_h *g,
 #endif
 
 char *
-guestfs___appliance_command_line (guestfs_h *g, const char *appliance_dev,
+guestfs_int_appliance_command_line (guestfs_h *g, const char *appliance_dev,
                                   int flags)
 {
   char root[64] = "";
@@ -324,7 +324,7 @@ guestfs___appliance_command_line (guestfs_h *g, const char *appliance_dev,
     snprintf (root, sizeof root, " root=%s", appliance_dev);
 
   if (tcg) {
-    int lpj = guestfs___get_lpj (g);
+    int lpj = guestfs_int_get_lpj (g);
     if (lpj > 0)
       snprintf (lpj_s, sizeof lpj_s, " lpj=%d", lpj);
   }
@@ -397,7 +397,7 @@ guestfs___appliance_command_line (guestfs_h *g, const char *appliance_dev,
  * is semi-broken in any way.
  */
 const char *
-guestfs___get_cpu_model (int kvm)
+guestfs_int_get_cpu_model (int kvm)
 {
 #if defined(__arm__)            /* 32 bit ARM. */
   if (kvm)
@@ -465,7 +465,7 @@ get_umask (guestfs_h *g)
 
 /* Register backends in a global list when the library is loaded. */
 void
-guestfs___register_backend (const char *name, const struct backend_ops *ops)
+guestfs_int_register_backend (const char *name, const struct backend_ops *ops)
 {
   struct backend *b;
 
@@ -485,7 +485,7 @@ guestfs___register_backend (const char *name, const struct backend_ops *ops)
  * handle initialization.  It can return an error code however.
  */
 int
-guestfs___set_backend (guestfs_h *g, const char *method)
+guestfs_int_set_backend (guestfs_h *g, const char *method)
 {
   struct backend *b;
   size_t len, arg_offs = 0;

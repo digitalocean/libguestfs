@@ -125,10 +125,38 @@ namespace Guestfs
     }
 
     [StructLayout (LayoutKind.Sequential)]
+    public class _btrfsbalance {
+      string btrfsbalance_status;
+      ulong btrfsbalance_total;
+      ulong btrfsbalance_balanced;
+      ulong btrfsbalance_considered;
+      ulong btrfsbalance_left;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
     public class _btrfsqgroup {
       string btrfsqgroup_id;
       ulong btrfsqgroup_rfer;
       ulong btrfsqgroup_excl;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    public class _btrfsscrub {
+      ulong btrfsscrub_data_extents_scrubbed;
+      ulong btrfsscrub_tree_extents_scrubbed;
+      ulong btrfsscrub_data_bytes_scrubbed;
+      ulong btrfsscrub_tree_bytes_scrubbed;
+      ulong btrfsscrub_read_errors;
+      ulong btrfsscrub_csum_errors;
+      ulong btrfsscrub_verify_errors;
+      ulong btrfsscrub_no_csum;
+      ulong btrfsscrub_csum_discards;
+      ulong btrfsscrub_super_errors;
+      ulong btrfsscrub_malloc_errors;
+      ulong btrfsscrub_uncorrectable_errors;
+      ulong btrfsscrub_unverified_errors;
+      ulong btrfsscrub_corrected_errors;
+      ulong btrfsscrub_last_physical;
     }
 
     [StructLayout (LayoutKind.Sequential)]
@@ -1079,6 +1107,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern _btrfsbalance guestfs_btrfs_balance_status (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// show the status of a running or paused balance
+    /// </summary>
+    public _btrfsbalance btrfs_balance_status (string path)
+    {
+      _btrfsbalance r;
+      r = guestfs_btrfs_balance_status (_handle, path);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_btrfs_device_add (IntPtr h, [In] string[] devices, [In] string fs);
 
     /// <summary>
@@ -1357,6 +1400,21 @@ namespace Guestfs
       r = guestfs_btrfs_scrub_start (_handle, path);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _btrfsscrub guestfs_btrfs_scrub_status (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// show status of running or finished scrub
+    /// </summary>
+    public _btrfsscrub btrfs_scrub_status (string path)
+    {
+      _btrfsscrub r;
+      r = guestfs_btrfs_scrub_status (_handle, path);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
     }
 
     [DllImport ("libguestfs.so.0")]

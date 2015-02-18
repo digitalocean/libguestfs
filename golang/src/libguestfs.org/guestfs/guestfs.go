@@ -279,6 +279,35 @@ func return_Application2_list (c *C.struct_guestfs_application2_list) *[]Applica
     return &r
 }
 
+type BTRFSBalance struct {
+    btrfsbalance_status string
+    btrfsbalance_total uint64
+    btrfsbalance_balanced uint64
+    btrfsbalance_considered uint64
+    btrfsbalance_left uint64
+}
+
+func return_BTRFSBalance (c *C.struct_guestfs_btrfsbalance) *BTRFSBalance {
+    r := BTRFSBalance{}
+    r.btrfsbalance_status = C.GoString (c.btrfsbalance_status)
+    r.btrfsbalance_total = uint64 (c.btrfsbalance_total)
+    r.btrfsbalance_balanced = uint64 (c.btrfsbalance_balanced)
+    r.btrfsbalance_considered = uint64 (c.btrfsbalance_considered)
+    r.btrfsbalance_left = uint64 (c.btrfsbalance_left)
+    return &r
+}
+
+func return_BTRFSBalance_list (c *C.struct_guestfs_btrfsbalance_list) *[]BTRFSBalance {
+    nrelems := int (c.len)
+    ptr := uintptr (unsafe.Pointer (c.val))
+    elemsize := unsafe.Sizeof (*c.val)
+    r := make ([]BTRFSBalance, nrelems)
+    for i := 0; i < nrelems; i++ {
+        r[i] = *return_BTRFSBalance ((*C.struct_guestfs_btrfsbalance) (unsafe.Pointer (ptr)))
+        ptr += elemsize    }
+    return &r
+}
+
 type BTRFSQgroup struct {
     btrfsqgroup_id string
     btrfsqgroup_rfer uint64
@@ -300,6 +329,55 @@ func return_BTRFSQgroup_list (c *C.struct_guestfs_btrfsqgroup_list) *[]BTRFSQgro
     r := make ([]BTRFSQgroup, nrelems)
     for i := 0; i < nrelems; i++ {
         r[i] = *return_BTRFSQgroup ((*C.struct_guestfs_btrfsqgroup) (unsafe.Pointer (ptr)))
+        ptr += elemsize    }
+    return &r
+}
+
+type BTRFSScrub struct {
+    btrfsscrub_data_extents_scrubbed uint64
+    btrfsscrub_tree_extents_scrubbed uint64
+    btrfsscrub_data_bytes_scrubbed uint64
+    btrfsscrub_tree_bytes_scrubbed uint64
+    btrfsscrub_read_errors uint64
+    btrfsscrub_csum_errors uint64
+    btrfsscrub_verify_errors uint64
+    btrfsscrub_no_csum uint64
+    btrfsscrub_csum_discards uint64
+    btrfsscrub_super_errors uint64
+    btrfsscrub_malloc_errors uint64
+    btrfsscrub_uncorrectable_errors uint64
+    btrfsscrub_unverified_errors uint64
+    btrfsscrub_corrected_errors uint64
+    btrfsscrub_last_physical uint64
+}
+
+func return_BTRFSScrub (c *C.struct_guestfs_btrfsscrub) *BTRFSScrub {
+    r := BTRFSScrub{}
+    r.btrfsscrub_data_extents_scrubbed = uint64 (c.btrfsscrub_data_extents_scrubbed)
+    r.btrfsscrub_tree_extents_scrubbed = uint64 (c.btrfsscrub_tree_extents_scrubbed)
+    r.btrfsscrub_data_bytes_scrubbed = uint64 (c.btrfsscrub_data_bytes_scrubbed)
+    r.btrfsscrub_tree_bytes_scrubbed = uint64 (c.btrfsscrub_tree_bytes_scrubbed)
+    r.btrfsscrub_read_errors = uint64 (c.btrfsscrub_read_errors)
+    r.btrfsscrub_csum_errors = uint64 (c.btrfsscrub_csum_errors)
+    r.btrfsscrub_verify_errors = uint64 (c.btrfsscrub_verify_errors)
+    r.btrfsscrub_no_csum = uint64 (c.btrfsscrub_no_csum)
+    r.btrfsscrub_csum_discards = uint64 (c.btrfsscrub_csum_discards)
+    r.btrfsscrub_super_errors = uint64 (c.btrfsscrub_super_errors)
+    r.btrfsscrub_malloc_errors = uint64 (c.btrfsscrub_malloc_errors)
+    r.btrfsscrub_uncorrectable_errors = uint64 (c.btrfsscrub_uncorrectable_errors)
+    r.btrfsscrub_unverified_errors = uint64 (c.btrfsscrub_unverified_errors)
+    r.btrfsscrub_corrected_errors = uint64 (c.btrfsscrub_corrected_errors)
+    r.btrfsscrub_last_physical = uint64 (c.btrfsscrub_last_physical)
+    return &r
+}
+
+func return_BTRFSScrub_list (c *C.struct_guestfs_btrfsscrub_list) *[]BTRFSScrub {
+    nrelems := int (c.len)
+    ptr := uintptr (unsafe.Pointer (c.val))
+    elemsize := unsafe.Sizeof (*c.val)
+    r := make ([]BTRFSScrub, nrelems)
+    for i := 0; i < nrelems; i++ {
+        r[i] = *return_BTRFSScrub ((*C.struct_guestfs_btrfsscrub) (unsafe.Pointer (ptr)))
         ptr += elemsize    }
     return &r
 }
@@ -2123,6 +2201,24 @@ func (g *Guestfs) Btrfs_balance_resume (path string) *GuestfsError {
     return nil
 }
 
+/* btrfs_balance_status : show the status of a running or paused balance */
+func (g *Guestfs) Btrfs_balance_status (path string) (*BTRFSBalance, *GuestfsError) {
+    if g.g == nil {
+        return &BTRFSBalance{}, closed_handle_error ("btrfs_balance_status")
+    }
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+
+    r := C.guestfs_btrfs_balance_status (g.g, c_path)
+
+    if r == nil {
+        return &BTRFSBalance{}, get_error_from_handle (g, "btrfs_balance_status")
+    }
+    defer C.guestfs_free_btrfsbalance (r)
+    return return_BTRFSBalance (r), nil
+}
+
 /* btrfs_device_add : add devices to a btrfs filesystem */
 func (g *Guestfs) Btrfs_device_add (devices []string, fs string) *GuestfsError {
     if g.g == nil {
@@ -2546,6 +2642,24 @@ func (g *Guestfs) Btrfs_scrub_start (path string) *GuestfsError {
         return get_error_from_handle (g, "btrfs_scrub_start")
     }
     return nil
+}
+
+/* btrfs_scrub_status : show status of running or finished scrub */
+func (g *Guestfs) Btrfs_scrub_status (path string) (*BTRFSScrub, *GuestfsError) {
+    if g.g == nil {
+        return &BTRFSScrub{}, closed_handle_error ("btrfs_scrub_status")
+    }
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+
+    r := C.guestfs_btrfs_scrub_status (g.g, c_path)
+
+    if r == nil {
+        return &BTRFSScrub{}, get_error_from_handle (g, "btrfs_scrub_status")
+    }
+    defer C.guestfs_free_btrfsscrub (r)
+    return return_BTRFSScrub (r), nil
 }
 
 /* btrfs_set_seeding : enable or disable the seeding feature of device */

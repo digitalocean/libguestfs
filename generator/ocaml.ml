@@ -144,9 +144,14 @@ end
     fun ({ name = name; style = style; deprecated_by = deprecated_by;
           non_c_aliases = non_c_aliases;
           shortdesc = shortdesc } as f) ->
+      let need_doc = is_documented f in
+
+      if not need_doc then
+        pr "(**/**)\n";
+
       generate_ocaml_prototype name style;
 
-      if is_documented f then (
+      if need_doc then (
         pr "(** %s" shortdesc;
         (match deprecated_by with
          | None -> ()
@@ -155,14 +160,18 @@ end
         );
         pr " *)\n";
       );
-      pr "\n";
 
       (* Aliases. *)
       List.iter (
         fun alias ->
-          generate_ocaml_prototype alias style;
           pr "\n";
+          generate_ocaml_prototype alias style;
       ) non_c_aliases;
+
+      if not need_doc then
+        pr "(**/**)\n";
+
+      pr "\n";
   ) external_functions_sorted;
 
   pr "\
@@ -522,14 +531,14 @@ copy_table (char * const * argv)
         | Key n
         | GUID n ->
             (* Copy strings in case the GC moves them: RHBZ#604691 *)
-            pr "  char *%s = guestfs___safe_strdup (g, String_val (%sv));\n" n n
+            pr "  char *%s = guestfs_int_safe_strdup (g, String_val (%sv));\n" n n
         | OptString n ->
             pr "  char *%s =\n" n;
             pr "    %sv != Val_int (0) ?\n" n;
-            pr "      guestfs___safe_strdup (g, String_val (Field (%sv, 0))) : NULL;\n" n
+            pr "      guestfs_int_safe_strdup (g, String_val (Field (%sv, 0))) : NULL;\n" n
         | BufferIn n ->
             pr "  size_t %s_size = caml_string_length (%sv);\n" n n;
-            pr "  char *%s = guestfs___safe_memdup (g, String_val (%sv), %s_size);\n" n n n
+            pr "  char *%s = guestfs_int_safe_memdup (g, String_val (%sv), %s_size);\n" n n n
         | StringList n | DeviceList n ->
             pr "  char **%s = ocaml_guestfs_strings_val (g, %sv);\n" n n
         | Bool n ->
@@ -558,7 +567,7 @@ copy_table (char * const * argv)
              | OInt _ -> pr "Int_val (Field (%sv, 0))" n
              | OInt64 _ -> pr "Int64_val (Field (%sv, 0))" n
              | OString _ ->
-                 pr "guestfs___safe_strdup (g, String_val (Field (%sv, 0)))" n
+                 pr "guestfs_int_safe_strdup (g, String_val (Field (%sv, 0)))" n
              | OStringList n ->
                  pr "ocaml_guestfs_strings_val (g, Field (%sv, 0))\n" n
             );
@@ -608,7 +617,7 @@ copy_table (char * const * argv)
         | Key n | GUID n ->
             pr "  free (%s);\n" n
         | StringList n | DeviceList n ->
-            pr "  guestfs___free_string_list (%s);\n" n;
+            pr "  guestfs_int_free_string_list (%s);\n" n;
         | Bool _ | Int _ | Int64 _ | Pointer _ -> ()
       ) args;
       List.iter (
@@ -619,7 +628,7 @@ copy_table (char * const * argv)
             pr "    free ((char *) optargs_s.%s);\n" n
         | OStringList n ->
             pr "  if (%sv != Val_int (0))\n" n;
-            pr "    guestfs___free_string_list ((char **) optargs_s.%s);\n" n;
+            pr "    guestfs_int_free_string_list ((char **) optargs_s.%s);\n" n;
       ) optargs;
 
       (match errcode_of_ret ret with

@@ -1,3 +1,288 @@
+commit fa36b70b20e9f3bcf5cd3a553e73274e4999e0d5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 17 12:11:41 2015 +0000
+
+    Version 1.29.26.
+
+commit c7de22b0d3afc89c046ff3efb0bef8654de3f618
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 17 12:11:12 2015 +0000
+
+    aarch64: Add fedora-aarch64.sh builder script to EXTRA_DIST.
+    
+    This fixes commit 5809a5a802f4999d759e247eec5bbdf664835e80.
+
+commit 568a33d7ef2faa0e5fd5be4afebc74e796033573
+Author: Maros Zatko <mzatko@redhat.com>
+Date:   Fri Feb 13 13:05:43 2015 +0100
+
+    inspector: add /reactos as systemroot
+    
+    Fixes RHBZ#709326
+    Related bug RHBZ#709327 seems to be already fixed in ReactOS 0.4.
+
+commit f2653718683bbdb3aaea64e034ac5dec12327813
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Sun Feb 15 20:45:18 2015 +0800
+
+    New API: btfs_scrub_status
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 88dbae4cbfe89da88f60dacd63b347fa13fddb3d
+Author: Hu Tao <hutao@cn.fujitsu.com>
+Date:   Sun Feb 15 20:45:17 2015 +0800
+
+    New API: btrfs_balance_status
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 6c6ce85f94c36803fe2db35a98db436bff0c14b0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Dec 20 17:46:53 2014 +0000
+
+    v2v: -o libvirt: Prevent possible XPath injection.
+    
+    Ensure the arch string is sane before using it in the following XPath
+    expression.  Since the arch string can be derived from untrusted guest
+    data [see src/filearch.c], this prevents a possible XPath injection
+    vulnerability.
+
+commit c3566da409ab686330be3be51964183b2b510f15
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Feb 14 17:21:48 2015 +0000
+
+    python: Call PyErr_Clear() on non-error paths out of the Python bindings.
+    
+    We also need to be more careful about PyString_FromString and similar
+    functions returning NULL on failure.  Currently we don't check this
+    every time.  This commit adds more checks, but is still not complete.
+
+commit 0f029a5f5831df518c317fca3ec78fedc37f4a74
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Feb 14 16:35:25 2015 +0000
+
+    Whitespace changes arising from the previous two commits.
+
+commit 1efd8aa8f1b5148ba8091e0df8be0b4afd6a596a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Feb 14 15:26:15 2015 +0000
+
+    Change guestfs__* to guestfs_impl_*
+    
+    libguestfs has used double and triple underscores in identifiers.
+    These aren't valid for global names in C++.
+    
+    The second step is to replace all guestfs__* (2 underscores) with
+    guestfs_impl_*.
+    
+    These functions are used where a libguestfs API call is implemented on
+    the library side.  The generator creates a wrapper function which
+    calls guestfs_impl_* to do the work.  (Libguestfs APIs which are
+    passed directly by the daemon work differently and don't require a
+    guestfs_impl_* function).
+    
+    This is an entirely mechanical change done using:
+      git ls-files | xargs perl -pi.bak -e 's/guestfs___/guestfs_impl_/g'
+    
+    Reference: http://stackoverflow.com/a/228797
+
+commit bfbcc01403ef99599568881aa9b3995d83859f05
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Feb 14 15:14:48 2015 +0000
+
+    Change guestfs___* to guestfs_int_*
+    
+    libguestfs has used double and triple underscores in identifiers.
+    These aren't valid for global names in C++.
+    
+    The first step is to replace all guestfs___* (3 underscores) with
+    guestfs_int_*.  We've used guestfs_int_* elsewhere already as a prefix
+    for internal identifiers.
+    
+    This is an entirely mechanical change done using:
+      git ls-files | xargs perl -pi.bak -e 's/guestfs___/guestfs_int_/g'
+    
+    Reference: http://stackoverflow.com/a/228797
+
+commit 46010912efe0910a942ed44ad706efb4a7e9b4e2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Feb 14 17:39:51 2015 +0000
+
+    Update gnulib to latest.
+
+commit 98aa470bc6d45bc6ee61bc4db9b779e1100b0ce1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Feb 14 17:08:05 2015 +0000
+
+    Update TODO.
+    
+    Remove some things which have been implemented already.
+
+commit 5f67d23cf549dbd036a50bdea5ac883f274fe0c4
+Author: Margaret Lewicka <margaret@meaningless.name>
+Date:   Fri Feb 13 21:26:14 2015 +0000
+
+    fuse: Alternatives for Linux-specific commands
+    
+    * fusermount is Linux-only; on BSD and OS X umount should be used
+    * fuser has no -v flag on BSD/OSX, and -c is the
+      POSIX-compatible equivalent of -m
+    * Does not solve the lack of pretty output of fuser -v, but does make it
+      work on Mac OS X.
+
+commit 88d16e6fb98ecaabd06da42b603a36b7623c33e0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 13 14:46:28 2015 +0000
+
+    aarch64: builder: Fix metadata so virt-builder --size works.
+    
+    The wrong partition was being expanded.
+    
+    This fixes commit 5809a5a802f4999d759e247eec5bbdf664835e80.
+
+commit f71168497d7a19116bd7e6c1c142520aec16ab62
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Feb 13 14:37:46 2015 +0100
+
+    php: skip bindtests on 32bit platforms
+    
+    bindtests checks also 64bit int values, which won't work when the
+    underlying platform has sizeof(long) < 8 (like on 32bit architectures).
+
+commit a34416091e9f79defa14cafd91f9e7ecd3ee6853
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 13 10:47:19 2015 +0000
+
+    daemon: btrfs: Remove full stop from end of error message.
+    
+    This fixes commit 56732ed6a08af7e3f7f1f17e89e8dc62cf3d4f4a.
+
+commit cae7909f5ed848ecfcb5ffe999f1290f7448ef26
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 13 09:36:47 2015 +0000
+
+    ./run: Use 'prepend' function to build paths.
+    
+    Add a bash function 'prepend' for intelligently prepending elements to
+    paths.  eg:
+    
+      prepend PYTHONPATH "/foo"
+    
+    would set PYTHONPATH to "/foo" or "/foo:<previous-contents-of-PYTHONPATH>"
+    
+    Tested by:
+    
+    (1) Building and testing libguestfs twice: first without libguestfs
+    installed as a system library, and then with it installed.
+    
+    (2) Examining the output of './run printenv' by hand and comparing
+    environment variables to the expected values.
+
+commit 928430f1118c5ff23cb7c4bd741e580b1b72581b
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Fri Feb 13 17:00:11 2015 +0800
+
+    actions.ml: fix a typo
+    
+    s/scannning/scanning
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit b969be72cd315e5c12c28ffc8d98822e4b96c571
+Author: Margaret Lewicka <margaret@meaningless.name>
+Date:   Thu Feb 12 22:37:07 2015 +0000
+
+    lib: Check if crypt() comes from a separate library
+    
+    Mac OS X includes crypt() in libc.
+
+commit cc4baac81552ef07b98eb904a752bdd2b1a319fb
+Author: Margaret Lewicka <margaret@meaningless.name>
+Date:   Thu Feb 12 22:37:06 2015 +0000
+
+    run: Set DYLD_LIBRARY_PATH along with LD_LIBRARY_PATH
+    
+    Mac OS X uses DYLD_LIBRARY_PATH rather than LD_LIBRARY_PATH.
+
+commit 5fc07e87bbd9f0472a1af8b0a52f40948ebcd2e1
+Author: Margaret Lewicka <margaret@meaningless.name>
+Date:   Thu Feb 12 17:28:46 2015 +0000
+
+    macosx: Includes/defines for byteswap operations
+
+commit e39ab27deaf1e124c4078db18fe883ad339c865b
+Author: Margaret Lewicka <margaret@meaningless.name>
+Date:   Thu Feb 12 17:28:48 2015 +0000
+
+    lib: Add third, zero parameter to xdrproc_t
+    
+    As advised by Daniel P. Berrange, the third parameter can be passed on all
+    platforms rather than specifically Mac.
+    
+    Quoting a libvirt commit rationale after Daniel:
+    
+     commit 9fa3a8ab6fd82ad2f5a14b490696085061418718
+     Author: Doug Goldstein <cardoe@cardoe.com>
+     Date:   Wed Oct 30 11:22:58 2013 -0500
+    
+       MacOS: Handle changes to xdrproc_t definition
+    
+       With Mac OS X 10.9, xdrproc_t is no longer defined as:
+    
+       typedef bool_t (*xdrproc_t)(XDR *, ...);
+    
+       but instead as:
+    
+       typedef bool_t (*xdrproc_t)(XDR *, void *, unsigned int);
+    
+       For reference, Linux systems typically define it as:
+    
+       typedef bool_t (*xdrproc_t)(XDR *, void *, ...);
+    
+       The rationale explained in the header is that using a vararg is
+       incorrect and has a potential to change the ABI slightly do to compiler
+       optimizations taken and the undefined behavior. They decided
+       to specify the exact number of parameters and for compatibility with old
+       code decided to make the signature require 3 arguments. The third
+       argument is ignored for cases that its not used and its recommended to
+       supply a 0.
+
+commit bbc8c20a2daf7c1febf970ab8c4a66fff51727c5
+Author: Margaret Lewicka <margaret@meaningless.name>
+Date:   Thu Feb 12 17:28:47 2015 +0000
+
+    builder: Check HAVE_POSIX_FADVISE before using it
+
+commit 5809a5a802f4999d759e247eec5bbdf664835e80
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 12 16:35:46 2015 +0000
+
+    aarch64: builder: Add script for building Fedora aarch64 images.
+
+commit a0892aa29e92bc906a011faca84befe58f0265bc
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 12 15:07:58 2015 +0100
+
+    ocaml: hide internal methods from apidocs
+
+commit 3dff1582d46866b153545f980e3273f4565077a2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 12 13:53:10 2015 +0100
+
+    actions: fix a couple of docs references
+
+commit 8c91a68b804f8385b6f26a3b0343d6e351447cd6
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 12 10:32:25 2015 +0100
+
+    gobject: generate deprecation markers
+    
+    Generate proper deprecation markers for API documentation and
+    introspection annotations.
+
 commit ab8a442952b53a32bf5a953b945fc7036320064a
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Feb 11 17:03:05 2015 +0000

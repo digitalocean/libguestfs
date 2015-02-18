@@ -175,6 +175,7 @@ gboolean guestfs_session_blockdev_setrw (GuestfsSession *session, const gchar *d
 gboolean guestfs_session_btrfs_balance_cancel (GuestfsSession *session, const gchar *path, GError **err);
 gboolean guestfs_session_btrfs_balance_pause (GuestfsSession *session, const gchar *path, GError **err);
 gboolean guestfs_session_btrfs_balance_resume (GuestfsSession *session, const gchar *path, GError **err);
+GuestfsBTRFSBalance *guestfs_session_btrfs_balance_status (GuestfsSession *session, const gchar *path, GError **err);
 gboolean guestfs_session_btrfs_device_add (GuestfsSession *session, gchar *const *devices, const gchar *fs, GError **err);
 gboolean guestfs_session_btrfs_device_delete (GuestfsSession *session, gchar *const *devices, const gchar *fs, GError **err);
 gboolean guestfs_session_btrfs_filesystem_balance (GuestfsSession *session, const gchar *fs, GError **err);
@@ -195,6 +196,7 @@ gboolean guestfs_session_btrfs_rescue_super_recover (GuestfsSession *session, co
 gboolean guestfs_session_btrfs_scrub_cancel (GuestfsSession *session, const gchar *path, GError **err);
 gboolean guestfs_session_btrfs_scrub_resume (GuestfsSession *session, const gchar *path, GError **err);
 gboolean guestfs_session_btrfs_scrub_start (GuestfsSession *session, const gchar *path, GError **err);
+GuestfsBTRFSScrub *guestfs_session_btrfs_scrub_status (GuestfsSession *session, const gchar *path, GError **err);
 gboolean guestfs_session_btrfs_set_seeding (GuestfsSession *session, const gchar *device, gboolean seeding, GError **err);
 gboolean guestfs_session_btrfs_subvolume_create (GuestfsSession *session, const gchar *dest, GuestfsBTRFSSubvolumeCreate *optargs, GError **err);
 gboolean guestfs_session_btrfs_subvolume_delete (GuestfsSession *session, const gchar *subvolume, GError **err);

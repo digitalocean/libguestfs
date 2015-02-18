@@ -24,7 +24,9 @@
 #include <guestfs-gobject/tristate.h>
 #include <guestfs-gobject/struct-application.h>
 #include <guestfs-gobject/struct-application2.h>
+#include <guestfs-gobject/struct-btrfsbalance.h>
 #include <guestfs-gobject/struct-btrfsqgroup.h>
+#include <guestfs-gobject/struct-btrfsscrub.h>
 #include <guestfs-gobject/struct-btrfssubvolume.h>
 #include <guestfs-gobject/struct-dirent.h>
 #include <guestfs-gobject/struct-hivex_node.h>

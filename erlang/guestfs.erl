@@ -72,6 +72,7 @@
 -export([btrfs_balance_cancel/2]).
 -export([btrfs_balance_pause/2]).
 -export([btrfs_balance_resume/2]).
+-export([btrfs_balance_status/2]).
 -export([btrfs_device_add/3]).
 -export([btrfs_device_delete/3]).
 -export([btrfs_filesystem_balance/2]).
@@ -92,6 +93,7 @@
 -export([btrfs_scrub_cancel/2]).
 -export([btrfs_scrub_resume/2]).
 -export([btrfs_scrub_start/2]).
+-export([btrfs_scrub_status/2]).
 -export([btrfs_set_seeding/3]).
 -export([btrfs_subvolume_create/2, btrfs_subvolume_create/3]).
 -export([btrfs_subvolume_create_opts/2, btrfs_subvolume_create_opts/3]).
@@ -809,6 +811,9 @@ btrfs_balance_pause(G, Path) ->
 btrfs_balance_resume(G, Path) ->
   call_port(G, {btrfs_balance_resume, Path}).
 
+btrfs_balance_status(G, Path) ->
+  call_port(G, {btrfs_balance_status, Path}).
+
 btrfs_device_add(G, Devices, Fs) ->
   call_port(G, {btrfs_device_add, Devices, Fs}).
 
@@ -874,6 +879,9 @@ btrfs_scrub_resume(G, Path) ->
 
 btrfs_scrub_start(G, Path) ->
   call_port(G, {btrfs_scrub_start, Path}).
+
+btrfs_scrub_status(G, Path) ->
+  call_port(G, {btrfs_scrub_status, Path}).
 
 btrfs_set_seeding(G, Device, Seeding) ->
   call_port(G, {btrfs_set_seeding, Device, Seeding}).

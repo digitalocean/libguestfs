@@ -461,4 +461,6 @@ const char *function_names[] = {
   [445] = "btrfs_rescue_super_recover",
   [446] = "part_set_gpt_guid",
   [447] = "part_get_gpt_guid",
+  [448] = "btrfs_balance_status",
+  [449] = "btrfs_scrub_status",
 };

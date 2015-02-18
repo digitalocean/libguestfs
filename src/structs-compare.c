@@ -815,6 +815,94 @@ guestfs_compare_btrfsqgroup_list (const struct guestfs_btrfsqgroup_list *s1, con
 }
 
 GUESTFS_DLL_PUBLIC int
+guestfs_compare_btrfsbalance (const struct guestfs_btrfsbalance *s1, const struct guestfs_btrfsbalance *s2)
+{
+  int r;
+
+  r = strcmp (s1->btrfsbalance_status, s2->btrfsbalance_status);
+  if (r != 0) return r;
+  if (s1->btrfsbalance_total < s2->btrfsbalance_total) return -1;
+  else if (s1->btrfsbalance_total > s2->btrfsbalance_total) return 1;
+  if (s1->btrfsbalance_balanced < s2->btrfsbalance_balanced) return -1;
+  else if (s1->btrfsbalance_balanced > s2->btrfsbalance_balanced) return 1;
+  if (s1->btrfsbalance_considered < s2->btrfsbalance_considered) return -1;
+  else if (s1->btrfsbalance_considered > s2->btrfsbalance_considered) return 1;
+  if (s1->btrfsbalance_left < s2->btrfsbalance_left) return -1;
+  else if (s1->btrfsbalance_left > s2->btrfsbalance_left) return 1;
+  return 0;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_compare_btrfsbalance_list (const struct guestfs_btrfsbalance_list *s1, const struct guestfs_btrfsbalance_list *s2)
+{
+  if (s1->len < s2->len) return -1;
+  else if (s1->len > s2->len) return 1;
+  else {
+    size_t i;
+    int r;
+
+    for (i = 0; i < s1->len; ++i) {
+      r = guestfs_compare_btrfsbalance (&s1->val[i], &s2->val[i]);
+      if (r != 0) return r;
+    }
+    return 0;
+  }
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_compare_btrfsscrub (const struct guestfs_btrfsscrub *s1, const struct guestfs_btrfsscrub *s2)
+{
+  if (s1->btrfsscrub_data_extents_scrubbed < s2->btrfsscrub_data_extents_scrubbed) return -1;
+  else if (s1->btrfsscrub_data_extents_scrubbed > s2->btrfsscrub_data_extents_scrubbed) return 1;
+  if (s1->btrfsscrub_tree_extents_scrubbed < s2->btrfsscrub_tree_extents_scrubbed) return -1;
+  else if (s1->btrfsscrub_tree_extents_scrubbed > s2->btrfsscrub_tree_extents_scrubbed) return 1;
+  if (s1->btrfsscrub_data_bytes_scrubbed < s2->btrfsscrub_data_bytes_scrubbed) return -1;
+  else if (s1->btrfsscrub_data_bytes_scrubbed > s2->btrfsscrub_data_bytes_scrubbed) return 1;
+  if (s1->btrfsscrub_tree_bytes_scrubbed < s2->btrfsscrub_tree_bytes_scrubbed) return -1;
+  else if (s1->btrfsscrub_tree_bytes_scrubbed > s2->btrfsscrub_tree_bytes_scrubbed) return 1;
+  if (s1->btrfsscrub_read_errors < s2->btrfsscrub_read_errors) return -1;
+  else if (s1->btrfsscrub_read_errors > s2->btrfsscrub_read_errors) return 1;
+  if (s1->btrfsscrub_csum_errors < s2->btrfsscrub_csum_errors) return -1;
+  else if (s1->btrfsscrub_csum_errors > s2->btrfsscrub_csum_errors) return 1;
+  if (s1->btrfsscrub_verify_errors < s2->btrfsscrub_verify_errors) return -1;
+  else if (s1->btrfsscrub_verify_errors > s2->btrfsscrub_verify_errors) return 1;
+  if (s1->btrfsscrub_no_csum < s2->btrfsscrub_no_csum) return -1;
+  else if (s1->btrfsscrub_no_csum > s2->btrfsscrub_no_csum) return 1;
+  if (s1->btrfsscrub_csum_discards < s2->btrfsscrub_csum_discards) return -1;
+  else if (s1->btrfsscrub_csum_discards > s2->btrfsscrub_csum_discards) return 1;
+  if (s1->btrfsscrub_super_errors < s2->btrfsscrub_super_errors) return -1;
+  else if (s1->btrfsscrub_super_errors > s2->btrfsscrub_super_errors) return 1;
+  if (s1->btrfsscrub_malloc_errors < s2->btrfsscrub_malloc_errors) return -1;
+  else if (s1->btrfsscrub_malloc_errors > s2->btrfsscrub_malloc_errors) return 1;
+  if (s1->btrfsscrub_uncorrectable_errors < s2->btrfsscrub_uncorrectable_errors) return -1;
+  else if (s1->btrfsscrub_uncorrectable_errors > s2->btrfsscrub_uncorrectable_errors) return 1;
+  if (s1->btrfsscrub_unverified_errors < s2->btrfsscrub_unverified_errors) return -1;
+  else if (s1->btrfsscrub_unverified_errors > s2->btrfsscrub_unverified_errors) return 1;
+  if (s1->btrfsscrub_corrected_errors < s2->btrfsscrub_corrected_errors) return -1;
+  else if (s1->btrfsscrub_corrected_errors > s2->btrfsscrub_corrected_errors) return 1;
+  if (s1->btrfsscrub_last_physical < s2->btrfsscrub_last_physical) return -1;
+  else if (s1->btrfsscrub_last_physical > s2->btrfsscrub_last_physical) return 1;
+  return 0;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_compare_btrfsscrub_list (const struct guestfs_btrfsscrub_list *s1, const struct guestfs_btrfsscrub_list *s2)
+{
+  if (s1->len < s2->len) return -1;
+  else if (s1->len > s2->len) return 1;
+  else {
+    size_t i;
+    int r;
+
+    for (i = 0; i < s1->len; ++i) {
+      r = guestfs_compare_btrfsscrub (&s1->val[i], &s2->val[i]);
+      if (r != 0) return r;
+    }
+    return 0;
+  }
+}
+
+GUESTFS_DLL_PUBLIC int
 guestfs_compare_xfsinfo (const struct guestfs_xfsinfo *s1, const struct guestfs_xfsinfo *s2)
 {
   int r;

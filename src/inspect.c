@@ -45,13 +45,13 @@ static void check_for_duplicated_bsd_root (guestfs_h *g);
 
 /* The main inspection code. */
 char **
-guestfs__inspect_os (guestfs_h *g)
+guestfs_impl_inspect_os (guestfs_h *g)
 {
   CLEANUP_FREE_STRING_LIST char **fses = NULL;
   char **fs, **ret;
 
   /* Remove any information previously stored in the handle. */
-  guestfs___free_inspect_info (g);
+  guestfs_int_free_inspect_info (g);
 
   if (guestfs_umount_all (g) == -1)
     return NULL;
@@ -64,8 +64,8 @@ guestfs__inspect_os (guestfs_h *g)
   if (fses == NULL) return NULL;
 
   for (fs = fses; *fs; fs += 2) {
-    if (guestfs___check_for_filesystem_on (g, *fs)) {
-      guestfs___free_inspect_info (g);
+    if (guestfs_int_check_for_filesystem_on (g, *fs)) {
+      guestfs_int_free_inspect_info (g);
       return NULL;
     }
   }
@@ -83,7 +83,7 @@ guestfs__inspect_os (guestfs_h *g)
    */
   ret = guestfs_inspect_get_roots (g);
   if (ret == NULL)
-    guestfs___free_inspect_info (g);
+    guestfs_int_free_inspect_info (g);
   return ret;
 }
 
@@ -131,7 +131,7 @@ compare_strings (const void *vp1, const void *vp2)
 }
 
 char **
-guestfs__inspect_get_roots (guestfs_h *g)
+guestfs_impl_inspect_get_roots (guestfs_h *g)
 {
   size_t i;
   DECLARE_STRINGSBUF (ret);
@@ -141,9 +141,9 @@ guestfs__inspect_get_roots (guestfs_h *g)
    */
   for (i = 0; i < g->nr_fses; ++i) {
     if (g->fses[i].is_root)
-      guestfs___add_string (g, &ret, g->fses[i].mountable);
+      guestfs_int_add_string (g, &ret, g->fses[i].mountable);
   }
-  guestfs___end_stringsbuf (g, &ret);
+  guestfs_int_end_stringsbuf (g, &ret);
 
   qsort (ret.argv, ret.size-1, sizeof (char *), compare_strings);
 
@@ -151,9 +151,9 @@ guestfs__inspect_get_roots (guestfs_h *g)
 }
 
 char *
-guestfs__inspect_get_type (guestfs_h *g, const char *root)
+guestfs_impl_inspect_get_type (guestfs_h *g, const char *root)
 {
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   char *ret = NULL;
 
   if (!fs)
@@ -178,9 +178,9 @@ guestfs__inspect_get_type (guestfs_h *g, const char *root)
 }
 
 char *
-guestfs__inspect_get_arch (guestfs_h *g, const char *root)
+guestfs_impl_inspect_get_arch (guestfs_h *g, const char *root)
 {
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return NULL;
 
@@ -188,9 +188,9 @@ guestfs__inspect_get_arch (guestfs_h *g, const char *root)
 }
 
 char *
-guestfs__inspect_get_distro (guestfs_h *g, const char *root)
+guestfs_impl_inspect_get_distro (guestfs_h *g, const char *root)
 {
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   char *ret = NULL;
 
   if (!fs)
@@ -234,9 +234,9 @@ guestfs__inspect_get_distro (guestfs_h *g, const char *root)
 }
 
 int
-guestfs__inspect_get_major_version (guestfs_h *g, const char *root)
+guestfs_impl_inspect_get_major_version (guestfs_h *g, const char *root)
 {
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return -1;
 
@@ -244,9 +244,9 @@ guestfs__inspect_get_major_version (guestfs_h *g, const char *root)
 }
 
 int
-guestfs__inspect_get_minor_version (guestfs_h *g, const char *root)
+guestfs_impl_inspect_get_minor_version (guestfs_h *g, const char *root)
 {
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return -1;
 
@@ -254,9 +254,9 @@ guestfs__inspect_get_minor_version (guestfs_h *g, const char *root)
 }
 
 char *
-guestfs__inspect_get_product_name (guestfs_h *g, const char *root)
+guestfs_impl_inspect_get_product_name (guestfs_h *g, const char *root)
 {
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return NULL;
 
@@ -264,9 +264,9 @@ guestfs__inspect_get_product_name (guestfs_h *g, const char *root)
 }
 
 char *
-guestfs__inspect_get_product_variant (guestfs_h *g, const char *root)
+guestfs_impl_inspect_get_product_variant (guestfs_h *g, const char *root)
 {
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return NULL;
 
@@ -274,9 +274,9 @@ guestfs__inspect_get_product_variant (guestfs_h *g, const char *root)
 }
 
 char *
-guestfs__inspect_get_windows_systemroot (guestfs_h *g, const char *root)
+guestfs_impl_inspect_get_windows_systemroot (guestfs_h *g, const char *root)
 {
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return NULL;
 
@@ -289,10 +289,10 @@ guestfs__inspect_get_windows_systemroot (guestfs_h *g, const char *root)
 }
 
 char *
-guestfs__inspect_get_windows_current_control_set (guestfs_h *g,
+guestfs_impl_inspect_get_windows_current_control_set (guestfs_h *g,
                                                   const char *root)
 {
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return NULL;
 
@@ -305,10 +305,10 @@ guestfs__inspect_get_windows_current_control_set (guestfs_h *g,
 }
 
 char *
-guestfs__inspect_get_format (guestfs_h *g, const char *root)
+guestfs_impl_inspect_get_format (guestfs_h *g, const char *root)
 {
   char *ret = NULL;
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return NULL;
 
@@ -325,9 +325,9 @@ guestfs__inspect_get_format (guestfs_h *g, const char *root)
 }
 
 int
-guestfs__inspect_is_live (guestfs_h *g, const char *root)
+guestfs_impl_inspect_is_live (guestfs_h *g, const char *root)
 {
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return -1;
 
@@ -335,9 +335,9 @@ guestfs__inspect_is_live (guestfs_h *g, const char *root)
 }
 
 int
-guestfs__inspect_is_netinst (guestfs_h *g, const char *root)
+guestfs_impl_inspect_is_netinst (guestfs_h *g, const char *root)
 {
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return -1;
 
@@ -345,9 +345,9 @@ guestfs__inspect_is_netinst (guestfs_h *g, const char *root)
 }
 
 int
-guestfs__inspect_is_multipart (guestfs_h *g, const char *root)
+guestfs_impl_inspect_is_multipart (guestfs_h *g, const char *root)
 {
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return -1;
 
@@ -355,13 +355,13 @@ guestfs__inspect_is_multipart (guestfs_h *g, const char *root)
 }
 
 char **
-guestfs__inspect_get_mountpoints (guestfs_h *g, const char *root)
+guestfs_impl_inspect_get_mountpoints (guestfs_h *g, const char *root)
 {
   char **ret;
   size_t i, count, nr;
   struct inspect_fs *fs;
 
-  fs = guestfs___search_for_root (g, root);
+  fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return NULL;
 
@@ -406,11 +406,11 @@ guestfs__inspect_get_mountpoints (guestfs_h *g, const char *root)
 }
 
 char **
-guestfs__inspect_get_filesystems (guestfs_h *g, const char *root)
+guestfs_impl_inspect_get_filesystems (guestfs_h *g, const char *root)
 {
   char **ret;
   size_t i, nr;
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
 
   if (!fs)
     return NULL;
@@ -436,30 +436,30 @@ guestfs__inspect_get_filesystems (guestfs_h *g, const char *root)
 }
 
 char **
-guestfs__inspect_get_drive_mappings (guestfs_h *g, const char *root)
+guestfs_impl_inspect_get_drive_mappings (guestfs_h *g, const char *root)
 {
   DECLARE_STRINGSBUF (ret);
   size_t i;
   struct inspect_fs *fs;
 
-  fs = guestfs___search_for_root (g, root);
+  fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return NULL;
 
   if (fs->drive_mappings) {
     for (i = 0; fs->drive_mappings[i] != NULL; ++i)
-      guestfs___add_string (g, &ret, fs->drive_mappings[i]);
+      guestfs_int_add_string (g, &ret, fs->drive_mappings[i]);
   }
 
-  guestfs___end_stringsbuf (g, &ret);
+  guestfs_int_end_stringsbuf (g, &ret);
   return ret.argv;
 }
 
 char *
-guestfs__inspect_get_package_format (guestfs_h *g, const char *root)
+guestfs_impl_inspect_get_package_format (guestfs_h *g, const char *root)
 {
   char *ret = NULL;
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return NULL;
 
@@ -482,10 +482,10 @@ guestfs__inspect_get_package_format (guestfs_h *g, const char *root)
 }
 
 char *
-guestfs__inspect_get_package_management (guestfs_h *g, const char *root)
+guestfs_impl_inspect_get_package_management (guestfs_h *g, const char *root)
 {
   char *ret = NULL;
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return NULL;
 
@@ -511,9 +511,9 @@ guestfs__inspect_get_package_management (guestfs_h *g, const char *root)
 }
 
 char *
-guestfs__inspect_get_hostname (guestfs_h *g, const char *root)
+guestfs_impl_inspect_get_hostname (guestfs_h *g, const char *root)
 {
-  struct inspect_fs *fs = guestfs___search_for_root (g, root);
+  struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   if (!fs)
     return NULL;
 
@@ -521,7 +521,7 @@ guestfs__inspect_get_hostname (guestfs_h *g, const char *root)
 }
 
 void
-guestfs___free_inspect_info (guestfs_h *g)
+guestfs_int_free_inspect_info (guestfs_h *g)
 {
   size_t i, j;
 
@@ -539,7 +539,7 @@ guestfs___free_inspect_info (guestfs_h *g)
     }
     free (g->fses[i].fstab);
     if (g->fses[i].drive_mappings)
-      guestfs___free_string_list (g->fses[i].drive_mappings);
+      guestfs_int_free_string_list (g->fses[i].drive_mappings);
   }
   free (g->fses);
   g->nr_fses = 0;
@@ -560,7 +560,7 @@ guestfs___free_inspect_info (guestfs_h *g)
  * to handle the case of multiple roots.
  */
 char *
-guestfs___download_to_tmp (guestfs_h *g, struct inspect_fs *fs,
+guestfs_int_download_to_tmp (guestfs_h *g, struct inspect_fs *fs,
                            const char *filename,
                            const char *basename, uint64_t max_size)
 {
@@ -620,7 +620,7 @@ guestfs___download_to_tmp (guestfs_h *g, struct inspect_fs *fs,
 }
 
 struct inspect_fs *
-guestfs___search_for_root (guestfs_h *g, const char *root)
+guestfs_int_search_for_root (guestfs_h *g, const char *root)
 {
   size_t i;
 
@@ -641,7 +641,7 @@ guestfs___search_for_root (guestfs_h *g, const char *root)
 }
 
 int
-guestfs___is_partition (guestfs_h *g, const char *partition)
+guestfs_int_is_partition (guestfs_h *g, const char *partition)
 {
   CLEANUP_FREE char *device = NULL;
 

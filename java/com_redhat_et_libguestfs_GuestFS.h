@@ -455,6 +455,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1balance_1r
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _btrfs_balance_status
+ * Signature: (JLjava/lang/String;)Lcom/redhat/et/libguestfs/BTRFSBalance;
+ */
+JNIEXPORT jobject JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1balance_1status
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _btrfs_device_add
  * Signature: (J[Ljava/lang/String;Ljava/lang/String;)V
  */
@@ -611,6 +619,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1scrub_1res
  * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1scrub_1start
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _btrfs_scrub_status
+ * Signature: (JLjava/lang/String;)Lcom/redhat/et/libguestfs/BTRFSScrub;
+ */
+JNIEXPORT jobject JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1scrub_1status
   (JNIEnv *, jobject, jlong, jstring);
 
 /*

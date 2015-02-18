@@ -35,6 +35,11 @@
 #include <sys/endian.h>
 #endif
 
+#if defined __APPLE__ && defined __MACH__
+#include <libkern/OSByteOrder.h>
+#define be64toh(x) OSSwapBigToHostInt64(x)
+#endif
+
 #include "full-read.h"
 
 #include "guestfs.h"
@@ -52,7 +57,7 @@
  * hashtable entries from that.
  */
 struct guestfs_xattr_list *
-guestfs__journal_get (guestfs_h *g)
+guestfs_impl_journal_get (guestfs_h *g)
 {
   CLEANUP_UNLINK_FREE char *tmpfile = NULL;
   CLEANUP_FREE char *buf = NULL;
@@ -63,7 +68,7 @@ guestfs__journal_get (guestfs_h *g)
   size_t i, j, size;
   uint64_t len;
 
-  if (guestfs___lazy_make_tmpdir (g) == -1)
+  if (guestfs_int_lazy_make_tmpdir (g) == -1)
     goto err;
 
   tmpfile = safe_asprintf (g, "%s/journal%d", g->tmpdir, ++g->unique);

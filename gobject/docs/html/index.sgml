@@ -57,6 +57,7 @@
 <ANCHOR id="guestfs-session-btrfs-balance-cancel" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-balance-cancel">
 <ANCHOR id="guestfs-session-btrfs-balance-pause" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-balance-pause">
 <ANCHOR id="guestfs-session-btrfs-balance-resume" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-balance-resume">
+<ANCHOR id="guestfs-session-btrfs-balance-status" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-balance-status">
 <ANCHOR id="guestfs-session-btrfs-device-add" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-device-add">
 <ANCHOR id="guestfs-session-btrfs-device-delete" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-device-delete">
 <ANCHOR id="guestfs-session-btrfs-filesystem-balance" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-filesystem-balance">
@@ -77,6 +78,7 @@
 <ANCHOR id="guestfs-session-btrfs-scrub-cancel" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-scrub-cancel">
 <ANCHOR id="guestfs-session-btrfs-scrub-resume" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-scrub-resume">
 <ANCHOR id="guestfs-session-btrfs-scrub-start" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-scrub-start">
+<ANCHOR id="guestfs-session-btrfs-scrub-status" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-scrub-status">
 <ANCHOR id="guestfs-session-btrfs-set-seeding" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-set-seeding">
 <ANCHOR id="guestfs-session-btrfs-subvolume-create" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-subvolume-create">
 <ANCHOR id="guestfs-session-btrfs-subvolume-delete" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-subvolume-delete">
@@ -623,6 +625,14 @@
 <ANCHOR id="GuestfsApplication2.functions_details" href="guestfs/GuestfsApplication2.html#GuestfsApplication2.functions_details">
 <ANCHOR id="GuestfsApplication2.other_details" href="guestfs/GuestfsApplication2.html#GuestfsApplication2.other_details">
 <ANCHOR id="GuestfsApplication2-struct" href="guestfs/GuestfsApplication2.html#GuestfsApplication2-struct">
+<ANCHOR id="GuestfsBTRFSBalance" href="guestfs/GuestfsBTRFSBalance.html">
+<ANCHOR id="GuestfsBTRFSBalance.other" href="guestfs/GuestfsBTRFSBalance.html#GuestfsBTRFSBalance.other">
+<ANCHOR id="GuestfsBTRFSBalance.object-hierarchy" href="guestfs/GuestfsBTRFSBalance.html#GuestfsBTRFSBalance.object-hierarchy">
+<ANCHOR id="GuestfsBTRFSBalance.includes" href="guestfs/GuestfsBTRFSBalance.html#GuestfsBTRFSBalance.includes">
+<ANCHOR id="GuestfsBTRFSBalance.description" href="guestfs/GuestfsBTRFSBalance.html#GuestfsBTRFSBalance.description">
+<ANCHOR id="GuestfsBTRFSBalance.functions_details" href="guestfs/GuestfsBTRFSBalance.html#GuestfsBTRFSBalance.functions_details">
+<ANCHOR id="GuestfsBTRFSBalance.other_details" href="guestfs/GuestfsBTRFSBalance.html#GuestfsBTRFSBalance.other_details">
+<ANCHOR id="GuestfsBTRFSBalance-struct" href="guestfs/GuestfsBTRFSBalance.html#GuestfsBTRFSBalance-struct">
 <ANCHOR id="GuestfsBTRFSQgroup" href="guestfs/GuestfsBTRFSQgroup.html">
 <ANCHOR id="GuestfsBTRFSQgroup.other" href="guestfs/GuestfsBTRFSQgroup.html#GuestfsBTRFSQgroup.other">
 <ANCHOR id="GuestfsBTRFSQgroup.object-hierarchy" href="guestfs/GuestfsBTRFSQgroup.html#GuestfsBTRFSQgroup.object-hierarchy">
@@ -631,6 +641,14 @@
 <ANCHOR id="GuestfsBTRFSQgroup.functions_details" href="guestfs/GuestfsBTRFSQgroup.html#GuestfsBTRFSQgroup.functions_details">
 <ANCHOR id="GuestfsBTRFSQgroup.other_details" href="guestfs/GuestfsBTRFSQgroup.html#GuestfsBTRFSQgroup.other_details">
 <ANCHOR id="GuestfsBTRFSQgroup-struct" href="guestfs/GuestfsBTRFSQgroup.html#GuestfsBTRFSQgroup-struct">
+<ANCHOR id="GuestfsBTRFSScrub" href="guestfs/GuestfsBTRFSScrub.html">
+<ANCHOR id="GuestfsBTRFSScrub.other" href="guestfs/GuestfsBTRFSScrub.html#GuestfsBTRFSScrub.other">
+<ANCHOR id="GuestfsBTRFSScrub.object-hierarchy" href="guestfs/GuestfsBTRFSScrub.html#GuestfsBTRFSScrub.object-hierarchy">
+<ANCHOR id="GuestfsBTRFSScrub.includes" href="guestfs/GuestfsBTRFSScrub.html#GuestfsBTRFSScrub.includes">
+<ANCHOR id="GuestfsBTRFSScrub.description" href="guestfs/GuestfsBTRFSScrub.html#GuestfsBTRFSScrub.description">
+<ANCHOR id="GuestfsBTRFSScrub.functions_details" href="guestfs/GuestfsBTRFSScrub.html#GuestfsBTRFSScrub.functions_details">
+<ANCHOR id="GuestfsBTRFSScrub.other_details" href="guestfs/GuestfsBTRFSScrub.html#GuestfsBTRFSScrub.other_details">
+<ANCHOR id="GuestfsBTRFSScrub-struct" href="guestfs/GuestfsBTRFSScrub.html#GuestfsBTRFSScrub-struct">
 <ANCHOR id="GuestfsBTRFSSubvolume" href="guestfs/GuestfsBTRFSSubvolume.html">
 <ANCHOR id="GuestfsBTRFSSubvolume.other" href="guestfs/GuestfsBTRFSSubvolume.html#GuestfsBTRFSSubvolume.other">
 <ANCHOR id="GuestfsBTRFSSubvolume.object-hierarchy" href="guestfs/GuestfsBTRFSSubvolume.html#GuestfsBTRFSSubvolume.object-hierarchy">
