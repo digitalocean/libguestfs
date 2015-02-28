@@ -1,0 +1,39 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Sat, 14 Feb 2015 14:17:09 +0100
+Subject: Generate tarballs for supermin appliance using reproducible timestamp
+
+---
+ appliance/Makefile.am | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/appliance/Makefile.am b/appliance/Makefile.am
+index 3135219..95450ad 100644
+--- a/appliance/Makefile.am
++++ b/appliance/Makefile.am
+@@ -84,7 +84,7 @@ supermin.d/daemon.tar.gz: ../daemon/guestfsd guestfsd.suppressions guestfs_lvm_c
+ 	ln $(srcdir)/guestfsd.suppressions tmp-d/etc/guestfsd.suppressions
+ 	ln $(srcdir)/guestfs_lvm_conf.aug tmp-d/usr/share/guestfs/guestfs_lvm_conf.aug
+ 	ln $(srcdir)/guestfs_shadow.aug tmp-d/usr/share/guestfs/guestfs_shadow.aug
+-	( cd tmp-d && tar zcf - * ) > $@-t
++	( cd tmp-d && tar --mtime=$(abs_top_srcdir)/ChangeLog -zcf - * ) > $@-t
+ 	rm -r tmp-d
+ 	mv $@-t $@
+ 
+@@ -105,7 +105,7 @@ supermin.d/hostfiles: hostfiles.in Makefile
+ 
+ supermin.d/init.tar.gz: init
+ 	rm -f $@ $@-t
+-	( cd $(srcdir) && tar zcf - init ) > $@-t
++	( cd $(srcdir) && tar --mtime=$(abs_top_srcdir)/ChangeLog -zcf - init ) > $@-t
+ 	mv $@-t $@
+ 
+ # We should put this file in /lib/udev/rules.d, but put it in /etc so
+@@ -115,7 +115,7 @@ supermin.d/udev-rules.tar.gz: 99-guestfs-serial.rules
+ 	rm -rf tmp-u
+ 	mkdir -p tmp-u/etc/udev/rules.d
+ 	for f in $^; do ln $$f tmp-u/etc/udev/rules.d/$$(basename $$f); done
+-	( cd tmp-u && tar zcf - etc ) > $@-t
++	( cd tmp-u && tar --mtime=$(abs_top_srcdir)/ChangeLog -zcf - etc ) > $@-t
+ 	rm -r tmp-u
+ 	mv $@-t $@
+ 
