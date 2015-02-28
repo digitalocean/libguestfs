@@ -61,6 +61,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_btrfs_balance_cancel@Base 1:1.29.22
  guestfs_btrfs_balance_pause@Base 1:1.29.22
  guestfs_btrfs_balance_resume@Base 1:1.29.22
+ guestfs_btrfs_balance_status@Base 1:1.29.26
  guestfs_btrfs_device_add@Base 1:1.18
  guestfs_btrfs_device_delete@Base 1:1.18
  guestfs_btrfs_filesystem_balance@Base 1:1.18
@@ -84,9 +85,10 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_btrfs_quota_rescan@Base 1:1.29.16
  guestfs_btrfs_rescue_chunk_recover@Base 1:1.29.22
  guestfs_btrfs_rescue_super_recover@Base 1:1.29.22
- guestfs_btrfs_scrub_start@Base 1:1.29.22
  guestfs_btrfs_scrub_cancel@Base 1:1.29.22
  guestfs_btrfs_scrub_resume@Base 1:1.29.22
+ guestfs_btrfs_scrub_start@Base 1:1.29.22
+ guestfs_btrfs_scrub_status@Base 1:1.29.26
  guestfs_btrfs_set_seeding@Base 1:1.18
  guestfs_btrfs_subvolume_create@Base 1:1.18
  guestfs_btrfs_subvolume_create_opts@Base 1:1.29.11
@@ -120,8 +122,12 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_compare_application2_list@Base 1:1.25.16
  guestfs_compare_application@Base 1:1.25.16
  guestfs_compare_application_list@Base 1:1.25.16
+ guestfs_compare_btrfsbalance@Base 1:1.29.26
+ guestfs_compare_btrfsbalance_list@Base 1:1.29.26
  guestfs_compare_btrfsqgroup@Base 1:1.29.17
  guestfs_compare_btrfsqgroup_list@Base 1:1.29.17
+ guestfs_compare_btrfsscrub@Base 1:1.29.26
+ guestfs_compare_btrfsscrub_list@Base 1:1.29.26
  guestfs_compare_btrfssubvolume@Base 1:1.25.16
  guestfs_compare_btrfssubvolume_list@Base 1:1.25.16
  guestfs_compare_dirent@Base 1:1.25.16
@@ -176,8 +182,12 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_copy_attributes@Base 1:1.25.21
  guestfs_copy_attributes_argv@Base 1:1.25.21
  guestfs_copy_attributes_va@Base 1:1.25.21
+ guestfs_copy_btrfsbalance@Base 1:1.29.26
+ guestfs_copy_btrfsbalance_list@Base 1:1.29.26
  guestfs_copy_btrfsqgroup@Base 1:1.29.17
  guestfs_copy_btrfsqgroup_list@Base 1:1.29.17
+ guestfs_copy_btrfsscrub@Base 1:1.29.26
+ guestfs_copy_btrfsscrub_list@Base 1:1.29.26
  guestfs_copy_btrfssubvolume@Base 1:1.25.16
  guestfs_copy_btrfssubvolume_list@Base 1:1.25.16
  guestfs_copy_device_to_device@Base 1.14
@@ -292,8 +302,12 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_free_application2_list@Base 1:1.20
  guestfs_free_application@Base 1.10
  guestfs_free_application_list@Base 1.10
+ guestfs_free_btrfsbalance@Base 1:1.29.26
+ guestfs_free_btrfsbalance_list@Base 1:1.29.26
  guestfs_free_btrfsqgroup@Base 1:1.29.17
  guestfs_free_btrfsqgroup_list@Base 1:1.29.17
+ guestfs_free_btrfsscrub@Base 1:1.29.26
+ guestfs_free_btrfsscrub_list@Base 1:1.29.26
  guestfs_free_btrfssubvolume@Base 1:1.18
  guestfs_free_btrfssubvolume_list@Base 1:1.18
  guestfs_free_dirent@Base 1.10
@@ -439,6 +453,10 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_inspect_list_applications2@Base 1:1.20
  guestfs_inspect_list_applications@Base 1.10
  guestfs_inspect_os@Base 1.10
+ guestfs_int_safe_calloc@Base 1:1.29.26
+ guestfs_int_safe_malloc@Base 1:1.29.26
+ guestfs_int_safe_memdup@Base 1:1.29.26
+ guestfs_int_safe_strdup@Base 1:1.29.26
  (optional)guestfs_internal_autosync@Base 1.10
  (optional)guestfs_internal_exit@Base 1:1.23.30
  (optional)guestfs_internal_hot_add_drive@Base 1:1.20
