@@ -1487,6 +1487,29 @@ class GuestFS(object):
 
     btrfs_subvolume_snapshot_opts = btrfs_subvolume_snapshot
 
+    def btrfstune_enable_extended_inode_refs (self, device):
+        """This will Enable extended inode refs.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfstune_enable_extended_inode_refs (self._o, device)
+        return r
+
+    def btrfstune_enable_skinny_metadata_extent_refs (self, device):
+        """This enable skinny metadata extent refs.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfstune_enable_skinny_metadata_extent_refs (self._o, device)
+        return r
+
+    def btrfstune_seeding (self, device, seeding):
+        """Enable seeding of a btrfs device, this will force a fs
+        readonly so that you can use it to build other
+        filesystems.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfstune_seeding (self._o, device, seeding)
+        return r
+
     def c_pointer (self):
         """In non-C language bindings, this allows you to retrieve
         the underlying C pointer to the handle (ie. "g.h *").

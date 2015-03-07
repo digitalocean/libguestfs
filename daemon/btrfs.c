@@ -1929,3 +1929,79 @@ error:
   free (ret);
   return NULL;
 }
+
+int
+do_btrfstune_seeding (const char *device, int svalue)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+  const char *s_value = svalue ? "1" : "0";
+
+  ADD_ARG (argv, i, str_btrfstune);
+  ADD_ARG (argv, i, "-S");
+  ADD_ARG (argv, i, s_value);
+  if (svalue == 0)
+    ADD_ARG (argv, i, "-f");
+  ADD_ARG (argv, i, device);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", device, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfstune_enable_extended_inode_refs (const char *device)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  ADD_ARG (argv, i, str_btrfstune);
+  ADD_ARG (argv, i, "-r");
+  ADD_ARG (argv, i, device);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", device, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfstune_enable_skinny_metadata_extent_refs (const char *device)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  int r;
+
+  ADD_ARG (argv, i, str_btrfstune);
+  ADD_ARG (argv, i, "-x");
+  ADD_ARG (argv, i, device);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", device, err);
+    return -1;
+  }
+
+  return 0;
+}

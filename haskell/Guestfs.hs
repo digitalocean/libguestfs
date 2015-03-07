@@ -88,6 +88,9 @@ module Guestfs (
   btrfs_subvolume_get_default,
   btrfs_subvolume_set_default,
   btrfs_subvolume_show,
+  btrfstune_enable_extended_inode_refs,
+  btrfstune_enable_skinny_metadata_extent_refs,
+  btrfstune_seeding,
   c_pointer,
   canonical_device_name,
   cap_get_file,
@@ -1321,6 +1324,42 @@ btrfs_subvolume_show h subvolume = do
       arr <- peekArray0 nullPtr r
       arr <- mapM peekCString arr
       return (assocListOfHashtable arr)
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfstune_enable_extended_inode_refs" c_btrfstune_enable_extended_inode_refs
+  :: GuestfsP -> CString -> IO CInt
+
+btrfstune_enable_extended_inode_refs :: GuestfsH -> String -> IO ()
+btrfstune_enable_extended_inode_refs h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_btrfstune_enable_extended_inode_refs p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfstune_enable_skinny_metadata_extent_refs" c_btrfstune_enable_skinny_metadata_extent_refs
+  :: GuestfsP -> CString -> IO CInt
+
+btrfstune_enable_skinny_metadata_extent_refs :: GuestfsH -> String -> IO ()
+btrfstune_enable_skinny_metadata_extent_refs h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_btrfstune_enable_skinny_metadata_extent_refs p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfstune_seeding" c_btrfstune_seeding
+  :: GuestfsP -> CString -> CInt -> IO CInt
+
+btrfstune_seeding :: GuestfsH -> String -> Bool -> IO ()
+btrfstune_seeding h device seeding = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_btrfstune_seeding p device (fromBool seeding))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
 
 foreign import ccall unsafe "guestfs.h guestfs_c_pointer" c_c_pointer
   :: GuestfsP -> IO Int64

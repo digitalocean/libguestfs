@@ -4286,15 +4286,15 @@ C<src/api-support/update-from-tarballs.sh> を実行します。
 
 =item *
 
-Transifex からのプッシュおよびプル。
+Push and pull from Zanata.
 
 次を実行します:
 
- tx push -s
+ zanata push
 
-最新の POT ファイルを Transifex にプッシュします。そして、次を実行します:
+to push the latest POT files to Zanata.  Then run:
 
- ./tx-pull.sh
+ ./zanata-pull.sh
 
 これは最新の翻訳された C<*.po> ファイルを取り出すためのラッパーです。
 

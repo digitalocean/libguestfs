@@ -2381,6 +2381,71 @@ guestfs_lua_btrfs_subvolume_snapshot (lua_State *L)
 }
 
 static int
+guestfs_lua_btrfstune_enable_extended_inode_refs (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfstune_enable_extended_inode_refs");
+
+  device = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfstune_enable_extended_inode_refs (g, device);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_btrfstune_enable_skinny_metadata_extent_refs (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfstune_enable_skinny_metadata_extent_refs");
+
+  device = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfstune_enable_skinny_metadata_extent_refs (g, device);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_btrfstune_seeding (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  int seeding;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfstune_seeding");
+
+  device = luaL_checkstring (L, 2);
+  seeding = lua_toboolean (L, 3);
+
+  r = guestfs_btrfstune_seeding (g, device, seeding);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_c_pointer (lua_State *L)
 {
   int64_t r;
@@ -16164,6 +16229,9 @@ static luaL_Reg methods[] = {
   { "btrfs_subvolume_set_default", guestfs_lua_btrfs_subvolume_set_default },
   { "btrfs_subvolume_show", guestfs_lua_btrfs_subvolume_show },
   { "btrfs_subvolume_snapshot", guestfs_lua_btrfs_subvolume_snapshot },
+  { "btrfstune_enable_extended_inode_refs", guestfs_lua_btrfstune_enable_extended_inode_refs },
+  { "btrfstune_enable_skinny_metadata_extent_refs", guestfs_lua_btrfstune_enable_skinny_metadata_extent_refs },
+  { "btrfstune_seeding", guestfs_lua_btrfstune_seeding },
   { "c_pointer", guestfs_lua_c_pointer },
   { "canonical_device_name", guestfs_lua_canonical_device_name },
   { "cap_get_file", guestfs_lua_cap_get_file },

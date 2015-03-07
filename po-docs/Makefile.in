@@ -1077,6 +1077,7 @@ LTLIBMULTITHREAD = @LTLIBMULTITHREAD@
 LTLIBOBJS = @LTLIBOBJS@
 LTLIBPTH = @LTLIBPTH@
 LTLIBTHREAD = @LTLIBTHREAD@
+LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 LUA = @LUA@
 LUA_CFLAGS = @LUA_CFLAGS@
 LUA_LIBS = @LUA_LIBS@
@@ -1485,12 +1486,17 @@ top_srcdir = @top_srcdir@
 # into the po/ directory and the translations into the usual
 # libguestfs.pot file.
 
-# Languages.
+# Languages that we translate.
 # Don't use LINGUAS (uppercase) as Gentoo defines it (RHBZ#804464).
 linguas = ja uk
+
+# Languages that we have PO files for, but we don't translate
+# because there is insufficient coverage.
+linguas_not_translated = de en_GB es eu fr nl tg zh_CN
 EXTRA_DIST = \
 	libguestfs-docs.pot \
 	$(linguas:%=%.po) \
+	$(linguas_not_translated:%=%.po) \
 	podfiles
 
 CLEANFILES = po4a.conf

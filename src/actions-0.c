@@ -7341,3 +7341,98 @@ guestfs_btrfs_rescue_super_recover (guestfs_h *g,
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_btrfstune_enable_extended_inode_refs (guestfs_h *g,
+                                              const char *device)
+{
+  struct guestfs_btrfstune_enable_extended_inode_refs_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "btrfstune_enable_extended_inode_refs", 36);
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfstune_enable_extended_inode_refs", "device");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "btrfstune_enable_extended_inode_refs");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs_int_check_appliance_up (g, "btrfstune_enable_extended_inode_refs") == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfstune_enable_extended_inode_refs", "-1");
+    return -1;
+  }
+
+  args.device = (char *) device;
+  serial = guestfs_int_send (g, GUESTFS_PROC_BTRFSTUNE_ENABLE_EXTENDED_INODE_REFS,
+                             progress_hint, 0,
+                             (xdrproc_t) xdr_guestfs_btrfstune_enable_extended_inode_refs_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfstune_enable_extended_inode_refs", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs_int_recv (g, "btrfstune_enable_extended_inode_refs", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfstune_enable_extended_inode_refs", "-1");
+    return -1;
+  }
+
+  if (guestfs_int_check_reply_header (g, &hdr, GUESTFS_PROC_BTRFSTUNE_ENABLE_EXTENDED_INODE_REFS, serial) == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfstune_enable_extended_inode_refs", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfstune_enable_extended_inode_refs", "-1");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs_int_string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "btrfstune_enable_extended_inode_refs", err.error_message);
+    else
+      guestfs_int_error_errno (g, errnum, "%s: %s", "btrfstune_enable_extended_inode_refs",
+                               err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "btrfstune_enable_extended_inode_refs");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+

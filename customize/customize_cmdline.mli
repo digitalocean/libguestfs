@@ -64,6 +64,8 @@ and op = [
       (* --scrub FILE *)
   | `SSHInject of string * Ssh_key.ssh_key_selector
       (* --ssh-inject USER[:SELECTOR] *)
+  | `Truncate of string
+      (* --truncate FILE *)
   | `Timezone of string
       (* --timezone TIMEZONE *)
   | `Update

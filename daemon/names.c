@@ -463,4 +463,7 @@ const char *function_names[] = {
   [447] = "part_get_gpt_guid",
   [448] = "btrfs_balance_status",
   [449] = "btrfs_scrub_status",
+  [450] = "btrfstune_seeding",
+  [451] = "btrfstune_enable_extended_inode_refs",
+  [452] = "btrfstune_enable_skinny_metadata_extent_refs",
 };

@@ -205,6 +205,9 @@ GuestfsBTRFSSubvolume **guestfs_session_btrfs_subvolume_list (GuestfsSession *se
 gboolean guestfs_session_btrfs_subvolume_set_default (GuestfsSession *session, gint64 id, const gchar *fs, GError **err);
 GHashTable *guestfs_session_btrfs_subvolume_show (GuestfsSession *session, const gchar *subvolume, GError **err);
 gboolean guestfs_session_btrfs_subvolume_snapshot (GuestfsSession *session, const gchar *source, const gchar *dest, GuestfsBTRFSSubvolumeSnapshot *optargs, GError **err);
+gboolean guestfs_session_btrfstune_enable_extended_inode_refs (GuestfsSession *session, const gchar *device, GError **err);
+gboolean guestfs_session_btrfstune_enable_skinny_metadata_extent_refs (GuestfsSession *session, const gchar *device, GError **err);
+gboolean guestfs_session_btrfstune_seeding (GuestfsSession *session, const gchar *device, gboolean seeding, GError **err);
 gint64 guestfs_session_c_pointer (GuestfsSession *session, GError **err);
 gchar *guestfs_session_canonical_device_name (GuestfsSession *session, const gchar *device, GError **err);
 gchar *guestfs_session_cap_get_file (GuestfsSession *session, const gchar *path, GError **err);

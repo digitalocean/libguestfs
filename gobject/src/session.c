@@ -4036,6 +4036,104 @@ guestfs_session_btrfs_subvolume_snapshot (GuestfsSession *session, const gchar *
 }
 
 /**
+ * guestfs_session_btrfstune_enable_extended_inode_refs:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * enable extended inode refs
+ *
+ * This will Enable extended inode refs.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfstune_enable_extended_inode_refs (GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfstune_enable_extended_inode_refs");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfstune_enable_extended_inode_refs (g, device);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_btrfstune_enable_skinny_metadata_extent_refs:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * enable skinny metadata extent refs
+ *
+ * This enable skinny metadata extent refs.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfstune_enable_skinny_metadata_extent_refs (GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfstune_enable_skinny_metadata_extent_refs");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfstune_enable_skinny_metadata_extent_refs (g, device);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_btrfstune_seeding:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @seeding: (type gboolean):
+ * @err: A GError object to receive any generated errors
+ *
+ * enable or disable seeding of a btrfs device
+ *
+ * Enable seeding of a btrfs device, this will force a fs readonly so that
+ * you can use it to build other filesystems.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfstune_seeding (GuestfsSession *session, const gchar *device, gboolean seeding, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfstune_seeding");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfstune_seeding (g, device, seeding);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_c_pointer:
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors

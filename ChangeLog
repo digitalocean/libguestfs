@@ -1,3 +1,321 @@
+commit 4ee6e4ddc8dd039a7670220ba0fe4079f302016a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 5 13:42:20 2015 +0000
+
+    Version 1.29.29.
+
+commit 025f1d2bc76ebb6205393cc234004c1dcd1b0a67
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 5 13:41:21 2015 +0000
+
+    bugs: Ignore bugs in RELEASE_PENDING state.
+    
+    It's effectively the same as CLOSED.
+
+commit 4592caedd42546c6c153b18fa5b764f29d97c7ad
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 5 13:39:21 2015 +0000
+
+    builder: Add fedora-ppc64.sh script to EXTRA_DIST.
+    
+    This updates commit 7867abc5c2f3d25c4bd681b85ac8216de7a9121d.
+
+commit 1d93cb9e4b29ad60056eb684b0744c242bfdcab4
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Mar 3 15:39:13 2015 +0100
+
+    actions: improve man page links
+    
+    Switch from C<> to L<> for links to man pages, where wasn't done before.
+
+commit 7867abc5c2f3d25c4bd681b85ac8216de7a9121d
+Author: Maros Zatko <mzatko@redhat.com>
+Date:   Thu Mar 5 01:20:07 2015 +0100
+
+    builder: add build script for PPC64 Fedora
+
+commit a084758e83eddb0c5b57ce904856218240011419
+Author: Maros Zatko <mzatko@redhat.com>
+Date:   Thu Mar 5 01:03:54 2015 +0100
+
+    customize: add --truncate option (RHBZ#119673)
+
+commit e51420c61f1374cecc0bd2bb651525d45fd55749
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 5 12:18:23 2015 +0000
+
+    arm: Ignore -Wpointer-to-int-cast in c-pointer API.
+    
+    This API converts the C guestfs_h pointer to a 64 bit integer,
+    which should always be possible on reasonable architectures.
+    Therefore silence a GCC warning (which only occurs on 32 bit ARM).
+
+commit af762e43424382d895d3a10aa6632adc601fdbad
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 5 10:25:46 2015 +0000
+
+    arm: Use -M virt on 32 bit ARM, don't pass -dtb parameter.
+    
+    Note this means all the dtb code in libguestfs & supermin is
+    obsolete/unused, and may be deleted at some point in future.
+
+commit 7fb85dcde393059b75a757cf6b6f39c5d76f5e10
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Tue Mar 3 02:31:55 2015 -0500
+
+    actions.ml: fix a typo
+    
+    s/tto/to
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit e6445e982a5fdd886f71208a734f053a59122d3e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 2 17:41:37 2015 +0000
+
+    ocaml: Don't run check-valgrind on run-bindtests (bash script).
+    
+    Fix the 'make check-valgrind' rule in the ocaml subdirectory so it
+    doesn't run '$VG run-bindtests', effectively running valgrind on bash.
+    
+    Bash in Fedora Rawhide has added a new memory leak, resulting in a
+    failure, but we don't want to test bash anyway.
+
+commit 1cdb5a103ab33623077940633d93e575f69c8918
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 2 13:54:13 2015 +0000
+
+    Version 1.29.28.
+
+commit 064628632bbb7b2d263c0da42bde677e691a8b80
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 2 13:53:12 2015 +0000
+
+    build: Fix 'maintainer-check-extra-dist' to only list relevant files.
+
+commit 250db12c24e85e04db2e36a024470647f7148801
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Sun Mar 1 02:20:49 2015 -0500
+
+    New API: btrfstune_enable_skinny_metadata_extent_refs
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit aa702095586e1101772516a5e6dd3c7bcb962df3
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Sun Mar 1 02:20:48 2015 -0500
+
+    New API: btrfstune_enable_extended_inode_refs
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit fa14c3d6bc81bcdd4b70659dd4a946ea1b96c1d1
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Sun Mar 1 02:20:47 2015 -0500
+
+    New API: btrfstune_seeding
+    
+    Use btrfstune_seeding to enable or disable seeding.
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 78e1a1472c3b15b9530cecf3fe65fe0fde9665a8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 2 09:11:47 2015 +0000
+
+    builder: Fix 'os-version' in man page examples.
+
+commit e4944043fb1b9ea3e74ef716595c71828e91ca2f
+Author: Michael Scherer <misc@zarb.org>
+Date:   Sun Mar 1 01:12:49 2015 +0100
+
+    Use a debian distribution for the apt example
+
+commit 4e9bda459844c8be1448ea6d33de1fb02cf0b021
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Feb 28 11:10:31 2015 +0000
+
+    appliance: Create /etc/mtab in init script to work around util-linux nuttiness.
+
+commit 41d4d606e53d1574352aec6452aafddbdfd21116
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 27 14:38:07 2015 +0000
+
+    Version 1.29.27.
+
+commit ecbbfc9ddd6dc1df2efd3e84d8d2a025bb464794
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 27 14:37:07 2015 +0000
+
+    po-docs: Ship some untranslated PO files.
+    
+    Add untranslated PO files to EXTRA_DIST.
+
+commit 6c7823b9a9da72a9443fdb01caef65c4efed1a1d
+Author: Roman Kagan <rkagan@parallels.com>
+Date:   Fri Feb 27 15:20:18 2015 +0300
+
+    convert_windows: split firstboot into steps
+    
+    Instead of doing all firstboot actions in a single script, take the
+    advantage of the firstboot infrastructure and store and run unrelated
+    actions as individual steps.
+    
+    This facilitates troubleshooting and fault recovery; besides it makes
+    adding more actions easier.
+    
+    Signed-off-by: Roman Kagan <rkagan@parallels.com>
+
+commit 58eb977c0d5bf25c03e701f39fa570e83a82d573
+Author: Roman Kagan <rkagan@parallels.com>
+Date:   Fri Feb 27 15:20:17 2015 +0300
+
+    firstboot: make script naming descriptive
+    
+    The firstboot infrastructure used to give the firstboot scripts some
+    cryptic names which were impossible to relate to the actions they were
+    supposed to take.
+    
+    This patch reworks the scheme such that the caller registering a
+    firstboot script has to provide a descriptive name for the action.  That
+    name, with non-alphanumeric characters replaced with dashes, prefixed by
+    the serial number, is then used as the name of the script, e.g.
+    
+      0004-install-gcc
+    
+    or
+    
+      0002-msiexec--i-foo-msi.bat
+    
+    OTOH the numbering becomes internal to the API, i.e. the scripts are
+    numbered and executed in the order they are registered.
+    
+    This greatly facilitates debugging and troubleshooting in case when
+    there are multiple firstboot scripts.
+    
+    Signed-off-by: Roman Kagan <rkagan@parallels.com>
+
+commit 7aa9d6367478402556e5185a7b2f241c38de9c39
+Author: Roman Kagan <rkagan@parallels.com>
+Date:   Fri Feb 27 15:20:16 2015 +0300
+
+    firstboot: enhance firstboot driver script for Windows
+    
+    This patch is an attempt to enhance the firstboot driver script for
+    Windows, and make it somewhat closer in functionality to what is done
+    for Linux guests.
+    
+    Specifically, for every firstboot script it now will log its exit
+    status, and, if the script reported success, move it to -done directory.
+    
+    Signed-off-by: Roman Kagan <rkagan@parallels.com>
+
+commit 3edd770b09bf3f58cf22bf00acba58e7ba656038
+Author: Roman Kagan <rkagan@parallels.com>
+Date:   Fri Feb 27 15:20:15 2015 +0300
+
+    firstboot: consolidate line ending conversion
+    
+    This patch moves line ending conversion for windows scripts into a
+    separate helper function.
+    
+    This simplifies code a bit, and fixes the problem that actual firstboot
+    scripts used to remain with unix-style line endings.
+    
+    Signed-off-by: Roman Kagan <rkagan@parallels.com>
+
+commit be79bdfd3acb25018feb2a808aa1343c2cc8b95c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 26 10:01:14 2015 +0100
+
+    builder: handle -v and -x flags like in other tools (RHBZ#1196100)
+    
+    Make sure that -x enables tracing and -v enables verbose mode, just like
+    other tools do.
+    
+    Kind of followup of commit b6b9b90dd74c7b9204bdf218aa9360e117308e78.
+
+commit 652af7a33ac769b063cadddc41786dc69bbe2792
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 23 14:08:02 2015 +0100
+
+    builder: use mkdir_p to create the cachedir (RHBZ#1195204)
+
+commit d54132f94d92e09b4cf936db23803ac26ef37648
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 23 14:04:00 2015 +0100
+
+    mllib: add helper mkdir_p
+    
+    Small function to create in OCaml-based code a directory and its
+    parents, much like `mkdir -p`.
+
+commit ef992c2b071513c98a3561ced3320f336876457d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 23 10:58:58 2015 +0100
+
+    build: fix distfiles for zanata
+    
+    Followup of commit c328ac9e0473197dd563cfc123c417a5261fb39e.
+
+commit 2acf98c7841d900aa667d4c790482a2c7f597e68
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Feb 22 14:33:14 2015 +0000
+
+    Update translations from Zanata.
+    
+    I added the new linguas for the po/ directory.  But not for the
+    po-docs/ directory, since the new po files hardly contain any
+    translations there.
+
+commit c328ac9e0473197dd563cfc123c417a5261fb39e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 18 14:42:54 2015 +0000
+
+    Move upstream translations from Tranifex to Zanata.
+    
+    This is at the request of the Fedora localization team.
+    For further information see:
+    
+    https://www.redhat.com/archives/libguestfs/2015-February/msg00168.html
+
+commit 6200abf92efe4db03c87a4cc284470a28531570d
+Author: Nikos Skalkotos <skalkoto@grnet.gr>
+Date:   Wed Feb 18 15:59:48 2015 +0200
+
+    Fix a bug in e2fsck execution code
+    
+    Use commandrvf() instead of commandvf() to execute e2fsck. A non-zero
+    exit status does not always indicate a failure.
+    
+    Signed-off-by: Nikos Skalkotos <skalkoto@grnet.gr>
+
+commit 869b9fcf97d1084e06c16ec25df60d3bc58bfb0f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 17 16:24:12 2015 +0100
+
+    builder: when not checking sigs, ignore --fingerprint args (RHBZ#1193237)
+    
+    When the user chooses to not verify the signatures on the indexes
+    (using --no-check-signature), there is no point in requiring as many
+    --fingerprint as --source (or even just one), as they will not be used
+    anyway.
+    
+    In this case just ignore all the values of the specified --fingerprint
+    arguments.
+
+commit 17dabd57c78c021f17169fe69643a35c6c3b7ef9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 17 15:48:22 2015 +0100
+
+    builder: process --source sources before
+    
+    Process the sources specified via the --source command line arguments
+    before sources read from repositories, so the former have a chance to
+    "override" the latter.
+    
+    Related to RHBZ#1193238.
+
 commit fa36b70b20e9f3bcf5cd3a553e73274e4999e0d5
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Feb 17 12:11:41 2015 +0000

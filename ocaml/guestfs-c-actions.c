@@ -3795,6 +3795,100 @@ ocaml_guestfs_btrfs_subvolume_snapshot (value gv, value rov, value qgroupidv, va
 }
 
 /* Automatically generated wrapper for function
+ * val btrfstune_enable_extended_inode_refs : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfstune_enable_extended_inode_refs (value gv, value devicev);
+
+value
+ocaml_guestfs_btrfstune_enable_extended_inode_refs (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfstune_enable_extended_inode_refs");
+
+  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfstune_enable_extended_inode_refs (g, device);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfstune_enable_extended_inode_refs");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfstune_enable_skinny_metadata_extent_refs : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfstune_enable_skinny_metadata_extent_refs (value gv, value devicev);
+
+value
+ocaml_guestfs_btrfstune_enable_skinny_metadata_extent_refs (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfstune_enable_skinny_metadata_extent_refs");
+
+  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfstune_enable_skinny_metadata_extent_refs (g, device);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfstune_enable_skinny_metadata_extent_refs");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val btrfstune_seeding : t -> string -> bool -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfstune_seeding (value gv, value devicev, value seedingv);
+
+value
+ocaml_guestfs_btrfstune_seeding (value gv, value devicev, value seedingv)
+{
+  CAMLparam3 (gv, devicev, seedingv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfstune_seeding");
+
+  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  int seeding = Bool_val (seedingv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfstune_seeding (g, device, seeding);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfstune_seeding");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val c_pointer : t -> int64
  */
 

@@ -8643,6 +8643,38 @@ xdr_guestfs_btrfs_scrub_status_ret (XDR *xdrs, guestfs_btrfs_scrub_status_ret *o
 }
 
 bool_t
+xdr_guestfs_btrfstune_seeding_args (XDR *xdrs, guestfs_btrfstune_seeding_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->seeding))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_btrfstune_enable_extended_inode_refs_args (XDR *xdrs, guestfs_btrfstune_enable_extended_inode_refs_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_btrfstune_enable_skinny_metadata_extent_refs_args (XDR *xdrs, guestfs_btrfstune_enable_skinny_metadata_extent_refs_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

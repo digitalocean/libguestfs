@@ -3995,6 +3995,22 @@ struct guestfs_btrfs_scrub_status_ret {
 };
 typedef struct guestfs_btrfs_scrub_status_ret guestfs_btrfs_scrub_status_ret;
 
+struct guestfs_btrfstune_seeding_args {
+	char *device;
+	bool_t seeding;
+};
+typedef struct guestfs_btrfstune_seeding_args guestfs_btrfstune_seeding_args;
+
+struct guestfs_btrfstune_enable_extended_inode_refs_args {
+	char *device;
+};
+typedef struct guestfs_btrfstune_enable_extended_inode_refs_args guestfs_btrfstune_enable_extended_inode_refs_args;
+
+struct guestfs_btrfstune_enable_skinny_metadata_extent_refs_args {
+	char *device;
+};
+typedef struct guestfs_btrfstune_enable_skinny_metadata_extent_refs_args guestfs_btrfstune_enable_skinny_metadata_extent_refs_args;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -4433,9 +4449,12 @@ enum guestfs_procedure {
 	GUESTFS_PROC_PART_GET_GPT_GUID = 447,
 	GUESTFS_PROC_BTRFS_BALANCE_STATUS = 448,
 	GUESTFS_PROC_BTRFS_SCRUB_STATUS = 449,
+	GUESTFS_PROC_BTRFSTUNE_SEEDING = 450,
+	GUESTFS_PROC_BTRFSTUNE_ENABLE_EXTENDED_INODE_REFS = 451,
+	GUESTFS_PROC_BTRFSTUNE_ENABLE_SKINNY_METADATA_EXTENT_REFS = 452,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 449
+#define GUESTFS_MAX_PROC_NR 452
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -5120,6 +5139,9 @@ extern  bool_t xdr_guestfs_btrfs_balance_status_args (XDR *, guestfs_btrfs_balan
 extern  bool_t xdr_guestfs_btrfs_balance_status_ret (XDR *, guestfs_btrfs_balance_status_ret*);
 extern  bool_t xdr_guestfs_btrfs_scrub_status_args (XDR *, guestfs_btrfs_scrub_status_args*);
 extern  bool_t xdr_guestfs_btrfs_scrub_status_ret (XDR *, guestfs_btrfs_scrub_status_ret*);
+extern  bool_t xdr_guestfs_btrfstune_seeding_args (XDR *, guestfs_btrfstune_seeding_args*);
+extern  bool_t xdr_guestfs_btrfstune_enable_extended_inode_refs_args (XDR *, guestfs_btrfstune_enable_extended_inode_refs_args*);
+extern  bool_t xdr_guestfs_btrfstune_enable_skinny_metadata_extent_refs_args (XDR *, guestfs_btrfstune_enable_skinny_metadata_extent_refs_args*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5754,6 +5776,9 @@ extern bool_t xdr_guestfs_btrfs_balance_status_args ();
 extern bool_t xdr_guestfs_btrfs_balance_status_ret ();
 extern bool_t xdr_guestfs_btrfs_scrub_status_args ();
 extern bool_t xdr_guestfs_btrfs_scrub_status_ret ();
+extern bool_t xdr_guestfs_btrfstune_seeding_args ();
+extern bool_t xdr_guestfs_btrfstune_enable_extended_inode_refs_args ();
+extern bool_t xdr_guestfs_btrfstune_enable_skinny_metadata_extent_refs_args ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

@@ -668,6 +668,15 @@ val btrfs_subvolume_snapshot : t -> ?ro:bool -> ?qgroupid:string -> string -> st
 
 val btrfs_subvolume_snapshot_opts : t -> ?ro:bool -> ?qgroupid:string -> string -> string -> unit
 
+val btrfstune_enable_extended_inode_refs : t -> string -> unit
+(** enable extended inode refs *)
+
+val btrfstune_enable_skinny_metadata_extent_refs : t -> string -> unit
+(** enable skinny metadata extent refs *)
+
+val btrfstune_seeding : t -> string -> bool -> unit
+(** enable or disable seeding of a btrfs device *)
+
 val c_pointer : t -> int64
 (** return the C pointer to the guestfs_h handle *)
 
@@ -2477,6 +2486,9 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method btrfs_subvolume_show : string -> (string * string) list
   method btrfs_subvolume_snapshot : ?ro:bool -> ?qgroupid:string -> string -> string -> unit
   method btrfs_subvolume_snapshot_opts : ?ro:bool -> ?qgroupid:string -> string -> string -> unit
+  method btrfstune_enable_extended_inode_refs : string -> unit
+  method btrfstune_enable_skinny_metadata_extent_refs : string -> unit
+  method btrfstune_seeding : string -> bool -> unit
   method c_pointer : unit -> int64
   method canonical_device_name : string -> string
   method cap_get_file : string -> string

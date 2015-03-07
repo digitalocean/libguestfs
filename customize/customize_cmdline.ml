@@ -72,6 +72,8 @@ and op = [
       (* --scrub FILE *)
   | `SSHInject of string * Ssh_key.ssh_key_selector
       (* --ssh-inject USER[:SELECTOR] *)
+  | `Truncate of string
+      (* --truncate FILE *)
   | `Timezone of string
       (* --timezone TIMEZONE *)
   | `Update
@@ -280,6 +282,12 @@ let rec argspec () =
       s_"USER[:SELECTOR]" ^ " " ^ s_"Inject a public key into the guest"
     ),
     Some "USER[:SELECTOR]", "Inject an ssh key so the given C<USER> will be able to log in over\nssh without supplying a password.  The C<USER> must exist already\nin the guest.\n\nSee L<virt-builder(1)/SSH KEYS> for the format of\nthe C<SELECTOR> field.\n\nYou can have multiple I<--ssh-inject> options, for different users\nand also for more keys for each user.";
+    (
+      "--truncate",
+      Arg.String (fun s -> ops := `Truncate s :: !ops),
+      s_"FILE" ^ " " ^ s_"Truncate a file to zero size"
+    ),
+    Some "FILE", "This command truncates \"path\" to a zero-length file. The file must exist\nalready.";
     (
       "--timezone",
       Arg.String (fun s -> ops := `Timezone s :: !ops),
