@@ -630,5 +630,8 @@ extern int do_part_set_gpt_guid (const char *device, int partnum, const char *gu
 extern char *do_part_get_gpt_guid (const char *device, int partnum);
 extern guestfs_int_btrfsbalance *do_btrfs_balance_status (const char *path);
 extern guestfs_int_btrfsscrub *do_btrfs_scrub_status (const char *path);
+extern int do_btrfstune_seeding (const char *device, int seeding);
+extern int do_btrfstune_enable_extended_inode_refs (const char *device);
+extern int do_btrfstune_enable_skinny_metadata_extent_refs (const char *device);
 
 #endif /* GUESTFSD_ACTIONS_H */

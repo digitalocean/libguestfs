@@ -78,6 +78,9 @@ L</guestfs_btrfs_subvolume_list>
 L</guestfs_btrfs_subvolume_set_default>
 L</guestfs_btrfs_subvolume_show>
 L</guestfs_btrfs_subvolume_snapshot>
+L</guestfs_btrfstune_enable_extended_inode_refs>
+L</guestfs_btrfstune_enable_skinny_metadata_extent_refs>
+L</guestfs_btrfstune_seeding>
 L</guestfs_mkfs_btrfs>
 
 =item B<extlinux>

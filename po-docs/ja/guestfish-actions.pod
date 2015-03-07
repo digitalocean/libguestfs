@@ -1185,6 +1185,25 @@ newly created snapshot will be added to.
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
+=head2 btrfstune-enable-extended-inode-refs
+
+ btrfstune-enable-extended-inode-refs device
+
+This will Enable extended inode refs.
+
+=head2 btrfstune-enable-skinny-metadata-extent-refs
+
+ btrfstune-enable-skinny-metadata-extent-refs device
+
+This enable skinny metadata extent refs.
+
+=head2 btrfstune-seeding
+
+ btrfstune-seeding device true|false
+
+Enable seeding of a btrfs device, this will force a fs readonly so that you
+can use it to build other filesystems.
+
 =head2 c-pointer
 
  c-pointer
@@ -4538,7 +4557,7 @@ sets an extended attribute of the link itself.
 This is the same as L</stat> except that if C<path> is a symbolic link, then
 the link is stat-ed, not the file it refers to.
 
-これは C<lstat(2)> と同じです。
+This is the same as the L<lstat(2)> system call.
 
 I<This function is deprecated.> In new code, use the L</lstatns> call
 instead.
@@ -4579,7 +4598,7 @@ these functions.
 This is the same as L</statns> except that if C<path> is a symbolic link,
 then the link is stat-ed, not the file it refers to.
 
-これは C<lstat(2)> と同じです。
+This is the same as the L<lstat(2)> system call.
 
 =head2 lstatnslist
 
@@ -6179,9 +6198,9 @@ this directory.
 On return you get a list of strings, with a one-to-one correspondence to the
 C<names> list.  Each string is the value of the symbolic link.
 
-If the C<readlink(2)> operation fails on any name, then the corresponding
+If the L<readlink(2)> operation fails on any name, then the corresponding
 result string is the empty string C<"">.  However the whole operation is
-completed even if there were C<readlink(2)> errors, and so you can call this
+completed even if there were L<readlink(2)> errors, and so you can call this
 function with names where you don't know if they are symbolic links already
 (albeit slightly less efficient).
 
@@ -6874,7 +6893,7 @@ If the command trace flag is set to 1, then libguestfs calls, parameters and
 return values are traced.
 
 If you want to trace C API calls into libguestfs (and other libraries) then
-possibly a better way is to use the external ltrace(1) command.
+possibly a better way is to use the external L<ltrace(1)> command.
 
 Command traces are disabled unless the environment variable
 C<LIBGUESTFS_TRACE> is defined and set to C<1>.
@@ -7082,7 +7101,7 @@ C<secs> 秒間スリープします。
 
 与えられた C<path> のファイル情報を返します。
 
-これは C<stat(2)> システムコールと同じです。
+This is the same as the L<stat(2)> system call.
 
 I<This function is deprecated.> In new code, use the L</statns> call
 instead.
@@ -7097,7 +7116,7 @@ these functions.
 
 与えられた C<path> のファイル情報を返します。
 
-これは C<stat(2)> システムコールと同じです。
+This is the same as the L<stat(2)> system call.
 
 =head2 statvfs
 
@@ -7107,7 +7126,7 @@ Returns file system statistics for any mounted file system.  C<path> should
 be a file or directory in the mounted file system (typically it is the mount
 point itself, but it doesn't need to be).
 
-これは C<statvfs(2)> システムコールと同じです。
+This is the same as the L<statvfs(2)> system call.
 
 =head2 strings
 

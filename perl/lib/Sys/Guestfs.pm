@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.449';
+$VERSION = '0.452';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -1384,6 +1384,19 @@ sub btrfs_subvolume_snapshot_opts {
 }
 
 =pod
+
+=item $g->btrfstune_enable_extended_inode_refs ($device);
+
+This will Enable extended inode refs.
+
+=item $g->btrfstune_enable_skinny_metadata_extent_refs ($device);
+
+This enable skinny metadata extent refs.
+
+=item $g->btrfstune_seeding ($device, $seeding);
+
+Enable seeding of a btrfs device, this will force a fs readonly
+so that you can use it to build other filesystems.
 
 =item $ptr = $g->c_pointer ();
 
@@ -4595,7 +4608,7 @@ This is the same as C<$g-E<gt>stat> except that if C<path>
 is a symbolic link, then the link is stat-ed, not the file it
 refers to.
 
-This is the same as the C<lstat(2)> system call.
+This is the same as the L<lstat(2)> system call.
 
 I<This function is deprecated.>
 In new code, use the L</lstatns> call instead.
@@ -4635,7 +4648,7 @@ This is the same as C<$g-E<gt>statns> except that if C<path>
 is a symbolic link, then the link is stat-ed, not the file it
 refers to.
 
-This is the same as the C<lstat(2)> system call.
+This is the same as the L<lstat(2)> system call.
 
 =item @statbufs = $g->lstatnslist ($path, \@names);
 
@@ -6105,10 +6118,10 @@ On return you get a list of strings, with a one-to-one
 correspondence to the C<names> list.  Each string is the
 value of the symbolic link.
 
-If the C<readlink(2)> operation fails on any name, then
+If the L<readlink(2)> operation fails on any name, then
 the corresponding result string is the empty string C<"">.
 However the whole operation is completed even if there
-were C<readlink(2)> errors, and so you can call this
+were L<readlink(2)> errors, and so you can call this
 function with names where you don't know if they are
 symbolic links already (albeit slightly less efficient).
 
@@ -6704,7 +6717,7 @@ calls, parameters and return values are traced.
 
 If you want to trace C API calls into libguestfs (and
 other libraries) then possibly a better way is to use
-the external ltrace(1) command.
+the external L<ltrace(1)> command.
 
 Command traces are disabled unless the environment variable
 C<LIBGUESTFS_TRACE> is defined and set to C<1>.
@@ -6894,7 +6907,7 @@ Sleep for C<secs> seconds.
 
 Returns file information for the given C<path>.
 
-This is the same as the C<stat(2)> system call.
+This is the same as the L<stat(2)> system call.
 
 I<This function is deprecated.>
 In new code, use the L</statns> call instead.
@@ -6907,7 +6920,7 @@ with correct use of these functions.
 
 Returns file information for the given C<path>.
 
-This is the same as the C<stat(2)> system call.
+This is the same as the L<stat(2)> system call.
 
 =item %statbuf = $g->statvfs ($path);
 
@@ -6915,7 +6928,7 @@ Returns file system statistics for any mounted file system.
 C<path> should be a file or directory in the mounted file system
 (typically it is the mount point itself, but it doesn't need to be).
 
-This is the same as the C<statvfs(2)> system call.
+This is the same as the L<statvfs(2)> system call.
 
 =item @stringsout = $g->strings ($path);
 
@@ -8588,6 +8601,31 @@ use vars qw(%guestfs_introspection);
     },
     name => "btrfs_subvolume_snapshot",
     description => "create a btrfs snapshot",
+  },
+  "btrfstune_enable_extended_inode_refs" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "btrfstune_enable_extended_inode_refs",
+    description => "enable extended inode refs",
+  },
+  "btrfstune_enable_skinny_metadata_extent_refs" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "btrfstune_enable_skinny_metadata_extent_refs",
+    description => "enable skinny metadata extent refs",
+  },
+  "btrfstune_seeding" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'seeding', 'bool', 1 ],
+    ],
+    name => "btrfstune_seeding",
+    description => "enable or disable seeding of a btrfs device",
   },
   "c_pointer" => {
     ret => 'int64',

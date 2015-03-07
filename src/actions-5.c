@@ -8690,3 +8690,101 @@ guestfs_btrfs_balance_pause (guestfs_h *g,
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_btrfstune_seeding (guestfs_h *g,
+                           const char *device,
+                           int seeding)
+{
+  struct guestfs_btrfstune_seeding_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "btrfstune_seeding", 17);
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfstune_seeding", "device");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "btrfstune_seeding");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fputs (seeding ? " true" : " false", trace_buffer.fp);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs_int_check_appliance_up (g, "btrfstune_seeding") == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfstune_seeding", "-1");
+    return -1;
+  }
+
+  args.device = (char *) device;
+  args.seeding = seeding;
+  serial = guestfs_int_send (g, GUESTFS_PROC_BTRFSTUNE_SEEDING,
+                             progress_hint, 0,
+                             (xdrproc_t) xdr_guestfs_btrfstune_seeding_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfstune_seeding", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs_int_recv (g, "btrfstune_seeding", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfstune_seeding", "-1");
+    return -1;
+  }
+
+  if (guestfs_int_check_reply_header (g, &hdr, GUESTFS_PROC_BTRFSTUNE_SEEDING, serial) == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfstune_seeding", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfstune_seeding", "-1");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs_int_string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "btrfstune_seeding", err.error_message);
+    else
+      guestfs_int_error_errno (g, errnum, "%s: %s", "btrfstune_seeding",
+                               err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "btrfstune_seeding");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+

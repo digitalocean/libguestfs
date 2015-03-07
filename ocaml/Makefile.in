@@ -1120,6 +1120,7 @@ LTLIBMULTITHREAD = @LTLIBMULTITHREAD@
 LTLIBOBJS = @LTLIBOBJS@
 LTLIBPTH = @LTLIBPTH@
 LTLIBTHREAD = @LTLIBTHREAD@
+LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 LUA = @LUA@
 LUA_CFLAGS = @LUA_CFLAGS@
 LUA_LIBS = @LUA_LIBS@
@@ -2076,7 +2077,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
 @HAVE_OCAML_TRUE@check-valgrind:
-@HAVE_OCAML_TRUE@	$(MAKE) VG="$(top_builddir)/run @VG@" check
+@HAVE_OCAML_TRUE@	$(MAKE) VG="$(top_builddir)/run @VG@" TESTS="$(test_progs_all)" check
 
 # Dependencies.
 @HAVE_OCAML_TRUE@%.cmi: %.mli

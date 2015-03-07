@@ -181,6 +181,9 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_btrfs_subvolume_set_default, NULL)
   PHP_FE (guestfs_btrfs_subvolume_show, NULL)
   PHP_FE (guestfs_btrfs_subvolume_snapshot, NULL)
+  PHP_FE (guestfs_btrfstune_enable_extended_inode_refs, NULL)
+  PHP_FE (guestfs_btrfstune_enable_skinny_metadata_extent_refs, NULL)
+  PHP_FE (guestfs_btrfstune_seeding, NULL)
   PHP_FE (guestfs_c_pointer, NULL)
   PHP_FE (guestfs_canonical_device_name, NULL)
   PHP_FE (guestfs_cap_get_file, NULL)
@@ -3771,6 +3774,106 @@ PHP_FUNCTION (guestfs_btrfs_subvolume_snapshot)
 
   int r;
   r = guestfs_btrfs_subvolume_snapshot_opts_argv (g, source, dest, optargs);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_btrfstune_enable_extended_inode_refs)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  int device_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &device, &device_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: btrfstune_enable_extended_inode_refs: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_btrfstune_enable_extended_inode_refs (g, device);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_btrfstune_enable_skinny_metadata_extent_refs)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  int device_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &device, &device_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: btrfstune_enable_skinny_metadata_extent_refs: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_btrfstune_enable_skinny_metadata_extent_refs (g, device);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_btrfstune_seeding)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  int device_size;
+  zend_bool seeding;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rsb",
+        &z_g, &device, &device_size, &seeding) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: btrfstune_seeding: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_btrfstune_seeding (g, device, seeding);
 
   if (r == -1) {
     RETURN_FALSE;

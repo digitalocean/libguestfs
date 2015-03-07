@@ -3107,6 +3107,71 @@ public class GuestFS {
 
   /**
    * <p>
+   * enable extended inode refs
+   * </p><p>
+   * This will Enable extended inode refs.
+   * </p><p>
+   * </p>
+   * @throws LibGuestFSException
+   */
+  public void btrfstune_enable_extended_inode_refs (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfstune_enable_extended_inode_refs: handle is closed");
+
+    _btrfstune_enable_extended_inode_refs (g, device);
+  }
+
+  private native void _btrfstune_enable_extended_inode_refs (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * enable skinny metadata extent refs
+   * </p><p>
+   * This enable skinny metadata extent refs.
+   * </p><p>
+   * </p>
+   * @throws LibGuestFSException
+   */
+  public void btrfstune_enable_skinny_metadata_extent_refs (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfstune_enable_skinny_metadata_extent_refs: handle is closed");
+
+    _btrfstune_enable_skinny_metadata_extent_refs (g, device);
+  }
+
+  private native void _btrfstune_enable_skinny_metadata_extent_refs (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * enable or disable seeding of a btrfs device
+   * </p><p>
+   * Enable seeding of a btrfs device, this will force a fs
+   * readonly so that you can use it to build other
+   * filesystems.
+   * </p><p>
+   * </p>
+   * @throws LibGuestFSException
+   */
+  public void btrfstune_seeding (String device, boolean seeding)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfstune_seeding: handle is closed");
+
+    _btrfstune_seeding (g, device, seeding);
+  }
+
+  private native void _btrfstune_seeding (long g, String device, boolean seeding)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * return the C pointer to the guestfs_h handle
    * </p><p>
    * In non-C language bindings, this allows you to retrieve

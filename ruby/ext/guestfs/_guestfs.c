@@ -4087,6 +4087,102 @@ ruby_guestfs_btrfs_subvolume_snapshot (int argc, VALUE *argv, VALUE gv)
 
 /*
  * call-seq:
+ *   g.btrfstune_enable_extended_inode_refs(device) -> nil
+ *
+ * enable extended inode refs
+ *
+ * This will Enable extended inode refs.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfstune_enable_extended_inode_refs+[http://libguestfs.org/guestfs.3.html#guestfs_btrfstune_enable_extended_inode_refs]).
+ */
+static VALUE
+ruby_guestfs_btrfstune_enable_extended_inode_refs (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfstune_enable_extended_inode_refs");
+
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_btrfstune_enable_extended_inode_refs (g, device);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfstune_enable_skinny_metadata_extent_refs(device) -> nil
+ *
+ * enable skinny metadata extent refs
+ *
+ * This enable skinny metadata extent refs.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfstune_enable_skinny_metadata_extent_refs+[http://libguestfs.org/guestfs.3.html#guestfs_btrfstune_enable_skinny_metadata_extent_refs]).
+ */
+static VALUE
+ruby_guestfs_btrfstune_enable_skinny_metadata_extent_refs (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfstune_enable_skinny_metadata_extent_refs");
+
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_btrfstune_enable_skinny_metadata_extent_refs (g, device);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfstune_seeding(device, seeding) -> nil
+ *
+ * enable or disable seeding of a btrfs device
+ *
+ * Enable seeding of a btrfs device, this will force a fs
+ * readonly so that you can use it to build other
+ * filesystems.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfstune_seeding+[http://libguestfs.org/guestfs.3.html#guestfs_btrfstune_seeding]).
+ */
+static VALUE
+ruby_guestfs_btrfstune_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfstune_seeding");
+
+  const char *device = StringValueCStr (devicev);
+  int seeding = RTEST (seedingv);
+
+  int r;
+
+  r = guestfs_btrfstune_seeding (g, device, seeding);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
  *   g.c_pointer() -> fixnum
  *
  * return the C pointer to the guestfs_h handle
@@ -27577,6 +27673,12 @@ Init__guestfs (void)
         ruby_guestfs_btrfs_subvolume_snapshot, -1);
   rb_define_method (c_guestfs, "btrfs_subvolume_snapshot_opts",
         ruby_guestfs_btrfs_subvolume_snapshot, -1);
+  rb_define_method (c_guestfs, "btrfstune_enable_extended_inode_refs",
+        ruby_guestfs_btrfstune_enable_extended_inode_refs, 1);
+  rb_define_method (c_guestfs, "btrfstune_enable_skinny_metadata_extent_refs",
+        ruby_guestfs_btrfstune_enable_skinny_metadata_extent_refs, 1);
+  rb_define_method (c_guestfs, "btrfstune_seeding",
+        ruby_guestfs_btrfstune_seeding, 2);
   rb_define_method (c_guestfs, "c_pointer",
         ruby_guestfs_c_pointer, 0);
   rb_define_method (c_guestfs, "canonical_device_name",

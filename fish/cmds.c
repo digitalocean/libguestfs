@@ -128,6 +128,9 @@ static int run_btrfs_subvolume_list (const char *cmd, size_t argc, char *argv[])
 static int run_btrfs_subvolume_set_default (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_subvolume_show (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_subvolume_snapshot (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfstune_enable_extended_inode_refs (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfstune_enable_skinny_metadata_extent_refs (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfstune_seeding (const char *cmd, size_t argc, char *argv[]);
 static int run_c_pointer (const char *cmd, size_t argc, char *argv[]);
 static int run_canonical_device_name (const char *cmd, size_t argc, char *argv[]);
 static int run_cap_get_file (const char *cmd, size_t argc, char *argv[]);
@@ -1271,6 +1274,27 @@ struct command_entry btrfs_subvolume_snapshot_cmd_entry = {
   .help = "NAME\n    btrfs-subvolume-snapshot - create a btrfs snapshot\n\nSYNOPSIS\n     btrfs-subvolume-snapshot source dest [ro:true|false] [qgroupid:..]\n\nDESCRIPTION\n    Create a snapshot of the btrfs subvolume \"source\". The \"dest\" argument\n    is the destination directory and the name of the snapshot, in the form\n    \"/path/to/dest/name\". By default the newly created snapshot is writable,\n    if the value of optional parameter \"ro\" is true, then a readonly\n    snapshot is created. The optional parameter \"qgroupid\" represents the\n    qgroup which the newly created snapshot will be added to.\n\n    You can use 'btrfs-subvolume-snapshot-opts' as an alias for this\n    command.\n\n",
   .synopsis = "btrfs-subvolume-snapshot source dest [ro:true|false] [qgroupid:..]",
   .run = run_btrfs_subvolume_snapshot
+};
+
+struct command_entry btrfstune_enable_extended_inode_refs_cmd_entry = {
+  .name = "btrfstune-enable-extended-inode-refs",
+  .help = "NAME\n    btrfstune-enable-extended-inode-refs - enable extended inode refs\n\nSYNOPSIS\n     btrfstune-enable-extended-inode-refs device\n\nDESCRIPTION\n    This will Enable extended inode refs.\n\n",
+  .synopsis = "btrfstune-enable-extended-inode-refs device",
+  .run = run_btrfstune_enable_extended_inode_refs
+};
+
+struct command_entry btrfstune_enable_skinny_metadata_extent_refs_cmd_entry = {
+  .name = "btrfstune-enable-skinny-metadata-extent-refs",
+  .help = "NAME\n    btrfstune-enable-skinny-metadata-extent-refs - enable skinny metadata\n    extent refs\n\nSYNOPSIS\n     btrfstune-enable-skinny-metadata-extent-refs device\n\nDESCRIPTION\n    This enable skinny metadata extent refs.\n\n",
+  .synopsis = "btrfstune-enable-skinny-metadata-extent-refs device",
+  .run = run_btrfstune_enable_skinny_metadata_extent_refs
+};
+
+struct command_entry btrfstune_seeding_cmd_entry = {
+  .name = "btrfstune-seeding",
+  .help = "NAME\n    btrfstune-seeding - enable or disable seeding of a btrfs device\n\nSYNOPSIS\n     btrfstune-seeding device seeding\n\nDESCRIPTION\n    Enable seeding of a btrfs device, this will force a fs readonly so that\n    you can use it to build other filesystems.\n\n",
+  .synopsis = "btrfstune-seeding device seeding",
+  .run = run_btrfstune_seeding
 };
 
 struct command_entry c_pointer_cmd_entry = {
@@ -4635,6 +4659,9 @@ list_commands (void)
   printf ("%-20s %s\n", "btrfs-subvolume-set-default", _("set default btrfs subvolume"));
   printf ("%-20s %s\n", "btrfs-subvolume-show", _("return detailed information of the subvolume"));
   printf ("%-20s %s\n", "btrfs-subvolume-snapshot", _("create a btrfs snapshot"));
+  printf ("%-20s %s\n", "btrfstune-enable-extended-inode-refs", _("enable extended inode refs"));
+  printf ("%-20s %s\n", "btrfstune-enable-skinny-metadata-extent-refs", _("enable skinny metadata extent refs"));
+  printf ("%-20s %s\n", "btrfstune-seeding", _("enable or disable seeding of a btrfs device"));
   printf ("%-20s %s\n", "c-pointer", _("return the C pointer to the guestfs_h handle"));
   printf ("%-20s ", "cachedir");
   printf (_("alias for '%s'"), "set-cachedir");
@@ -8208,6 +8235,80 @@ run_btrfs_subvolume_snapshot (const char *cmd, size_t argc, char *argv[])
  out_dest:
   free (source);
  out_source:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfstune_enable_extended_inode_refs (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_btrfstune_enable_extended_inode_refs (g, device);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfstune_enable_skinny_metadata_extent_refs (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_btrfstune_enable_skinny_metadata_extent_refs (g, device);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfstune_seeding (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *device;
+  int seeding;
+  size_t i = 0;
+
+  if (argc != 2) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  switch (guestfs_int_is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               guestfs_int_program_name, argv[i-1]);
+      goto out_seeding;
+    case 0:  seeding = 0; break;
+    default: seeding = 1;
+  }
+  r = guestfs_btrfstune_seeding (g, device, seeding);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_seeding:
  out_noargs:
   return ret;
 }

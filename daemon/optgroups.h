@@ -110,6 +110,9 @@ extern int optgroup_zerofree_available (void);
   int __attribute__((noreturn)) do_btrfs_subvolume_set_default (int64_t id, const char *fs) { abort (); } \
   char **__attribute__((noreturn)) do_btrfs_subvolume_show (const char *subvolume) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_subvolume_snapshot (const char *source, const char *dest, int ro, const char *qgroupid) { abort (); } \
+  int __attribute__((noreturn)) do_btrfstune_enable_extended_inode_refs (const char *device) { abort (); } \
+  int __attribute__((noreturn)) do_btrfstune_enable_skinny_metadata_extent_refs (const char *device) { abort (); } \
+  int __attribute__((noreturn)) do_btrfstune_seeding (const char *device, int seeding) { abort (); } \
   int __attribute__((noreturn)) do_mkfs_btrfs (char *const *devices, int64_t allocstart, int64_t bytecount, const char *datatype, int leafsize, const char *label, const char *metadata, int nodesize, int sectorsize) { abort (); } \
   int optgroup_btrfs_available (void) { return 0; }
 

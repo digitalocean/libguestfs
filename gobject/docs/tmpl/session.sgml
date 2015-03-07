@@ -1053,6 +1053,40 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_btrfstune_enable_extended_inode_refs ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfstune_enable_skinny_metadata_extent_refs ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_btrfstune_seeding ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@seeding: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_c_pointer ##### -->
 <para>
 

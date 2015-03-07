@@ -695,6 +695,30 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1subvolume_
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _btrfstune_enable_extended_inode_refs
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfstune_1enable_1extended_1inode_1refs
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _btrfstune_enable_skinny_metadata_extent_refs
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfstune_1enable_1skinny_1metadata_1extent_1refs
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _btrfstune_seeding
+ * Signature: (JLjava/lang/String;Z)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfstune_1seeding
+  (JNIEnv *, jobject, jlong, jstring, jboolean);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _c_pointer
  * Signature: (J)J
  */

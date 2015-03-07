@@ -87,6 +87,9 @@
 <ANCHOR id="guestfs-session-btrfs-subvolume-set-default" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-subvolume-set-default">
 <ANCHOR id="guestfs-session-btrfs-subvolume-show" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-subvolume-show">
 <ANCHOR id="guestfs-session-btrfs-subvolume-snapshot" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-subvolume-snapshot">
+<ANCHOR id="guestfs-session-btrfstune-enable-extended-inode-refs" href="guestfs/GuestfsSession.html#guestfs-session-btrfstune-enable-extended-inode-refs">
+<ANCHOR id="guestfs-session-btrfstune-enable-skinny-metadata-extent-refs" href="guestfs/GuestfsSession.html#guestfs-session-btrfstune-enable-skinny-metadata-extent-refs">
+<ANCHOR id="guestfs-session-btrfstune-seeding" href="guestfs/GuestfsSession.html#guestfs-session-btrfstune-seeding">
 <ANCHOR id="guestfs-session-c-pointer" href="guestfs/GuestfsSession.html#guestfs-session-c-pointer">
 <ANCHOR id="guestfs-session-canonical-device-name" href="guestfs/GuestfsSession.html#guestfs-session-canonical-device-name">
 <ANCHOR id="guestfs-session-cap-get-file" href="guestfs/GuestfsSession.html#guestfs-session-cap-get-file">

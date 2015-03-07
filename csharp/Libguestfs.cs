@@ -1546,6 +1546,48 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfstune_enable_extended_inode_refs (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// enable extended inode refs
+    /// </summary>
+    public void btrfstune_enable_extended_inode_refs (string device)
+    {
+      int r;
+      r = guestfs_btrfstune_enable_extended_inode_refs (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfstune_enable_skinny_metadata_extent_refs (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// enable skinny metadata extent refs
+    /// </summary>
+    public void btrfstune_enable_skinny_metadata_extent_refs (string device)
+    {
+      int r;
+      r = guestfs_btrfstune_enable_skinny_metadata_extent_refs (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfstune_seeding (IntPtr h, [In] string device, bool seeding);
+
+    /// <summary>
+    /// enable or disable seeding of a btrfs device
+    /// </summary>
+    public void btrfstune_seeding (string device, bool seeding)
+    {
+      int r;
+      r = guestfs_btrfstune_seeding (_handle, device, seeding);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern long guestfs_c_pointer (IntPtr h);
 
     /// <summary>

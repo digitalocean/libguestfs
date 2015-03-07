@@ -16603,6 +16603,122 @@ done_no_free:
   return;
 }
 
+static void
+btrfstune_seeding_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfstune_seeding_args args;
+  CLEANUP_FREE char *device = NULL;
+  int seeding;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfstune_seeding_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.device, device, , goto done);
+  seeding = args.seeding;
+
+  r = do_btrfstune_seeding (device, seeding);
+  if (r == -1)
+    /* do_btrfstune_seeding has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfstune_seeding_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfstune_enable_extended_inode_refs_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfstune_enable_extended_inode_refs_args args;
+  CLEANUP_FREE char *device = NULL;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfstune_enable_extended_inode_refs_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.device, device, , goto done);
+
+  r = do_btrfstune_enable_extended_inode_refs (device);
+  if (r == -1)
+    /* do_btrfstune_enable_extended_inode_refs has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfstune_enable_extended_inode_refs_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfstune_enable_skinny_metadata_extent_refs_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfstune_enable_skinny_metadata_extent_refs_args args;
+  CLEANUP_FREE char *device = NULL;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfstune_enable_skinny_metadata_extent_refs_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.device, device, , goto done);
+
+  r = do_btrfstune_enable_skinny_metadata_extent_refs (device);
+  if (r == -1)
+    /* do_btrfstune_enable_skinny_metadata_extent_refs has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfstune_enable_skinny_metadata_extent_refs_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -17916,6 +18032,15 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_BTRFS_SCRUB_STATUS:
       btrfs_scrub_status_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFSTUNE_SEEDING:
+      btrfstune_seeding_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFSTUNE_ENABLE_EXTENDED_INODE_REFS:
+      btrfstune_enable_extended_inode_refs_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFSTUNE_ENABLE_SKINNY_METADATA_EXTENT_REFS:
+      btrfstune_enable_skinny_metadata_extent_refs_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

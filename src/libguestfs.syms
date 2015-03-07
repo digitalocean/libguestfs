@@ -120,6 +120,9 @@
         guestfs_btrfs_subvolume_snapshot_opts;
         guestfs_btrfs_subvolume_snapshot_opts_argv;
         guestfs_btrfs_subvolume_snapshot_opts_va;
+        guestfs_btrfstune_enable_extended_inode_refs;
+        guestfs_btrfstune_enable_skinny_metadata_extent_refs;
+        guestfs_btrfstune_seeding;
         guestfs_c_pointer;
         guestfs_canonical_device_name;
         guestfs_cap_get_file;

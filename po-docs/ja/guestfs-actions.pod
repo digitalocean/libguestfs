@@ -1985,6 +1985,38 @@ This is the "argv variant" of L</guestfs_btrfs_subvolume_snapshot_opts>.
 
 L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
 
+=head2 guestfs_btrfstune_enable_extended_inode_refs
+
+ int
+ guestfs_btrfstune_enable_extended_inode_refs (guestfs_h *g,
+                                               const char *device);
+
+This will Enable extended inode refs.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_btrfstune_enable_skinny_metadata_extent_refs
+
+ int
+ guestfs_btrfstune_enable_skinny_metadata_extent_refs (guestfs_h *g,
+                                                       const char *device);
+
+This enable skinny metadata extent refs.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_btrfstune_seeding
+
+ int
+ guestfs_btrfstune_seeding (guestfs_h *g,
+                            const char *device,
+                            int seeding);
+
+Enable seeding of a btrfs device, this will force a fs readonly so that you
+can use it to build other filesystems.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
 =head2 guestfs_c_pointer
 
  int64_t
@@ -7563,7 +7595,7 @@ these functions.
 これは、C<path> がシンボリックリンクであることを除き、C<guestfs_stat>
 と同じです。そしてリンクは、参照しているファイルではなく、stat-ed です。
 
-これは C<lstat(2)> と同じです。
+This is the same as the L<lstat(2)> system call.
 
 この関数は C<struct guestfs_stat *> を返します。エラーがあれば NULL です。 I<呼び出し元は使用後に
 C<guestfs_free_stat> を呼び出す必要があります>。
@@ -7612,7 +7644,7 @@ an error.  I<The caller must call C<guestfs_free_stat_list> after use>.
 This is the same as C<guestfs_statns> except that if C<path> is a symbolic
 link, then the link is stat-ed, not the file it refers to.
 
-これは C<lstat(2)> と同じです。
+This is the same as the L<lstat(2)> system call.
 
 This function returns a C<struct guestfs_statns *>, or NULL if there was an
 error.  I<The caller must call C<guestfs_free_statns> after use>.
@@ -10400,9 +10432,9 @@ this directory.
 On return you get a list of strings, with a one-to-one correspondence to the
 C<names> list.  Each string is the value of the symbolic link.
 
-If the C<readlink(2)> operation fails on any name, then the corresponding
+If the L<readlink(2)> operation fails on any name, then the corresponding
 result string is the empty string C<"">.  However the whole operation is
-completed even if there were C<readlink(2)> errors, and so you can call this
+completed even if there were L<readlink(2)> errors, and so you can call this
 function with names where you don't know if they are symbolic links already
 (albeit slightly less efficient).
 
@@ -11496,7 +11528,7 @@ If the command trace flag is set to 1, then libguestfs calls, parameters and
 return values are traced.
 
 If you want to trace C API calls into libguestfs (and other libraries) then
-possibly a better way is to use the external ltrace(1) command.
+possibly a better way is to use the external L<ltrace(1)> command.
 
 Command traces are disabled unless the environment variable
 C<LIBGUESTFS_TRACE> is defined and set to C<1>.
@@ -11812,7 +11844,7 @@ these functions.
 
 与えられた C<path> のファイル情報を返します。
 
-これは C<stat(2)> システムコールと同じです。
+This is the same as the L<stat(2)> system call.
 
 この関数は C<struct guestfs_stat *> を返します。エラーがあれば NULL です。 I<呼び出し元は使用後に
 C<guestfs_free_stat> を呼び出す必要があります>。
@@ -11827,7 +11859,7 @@ C<guestfs_free_stat> を呼び出す必要があります>。
 
 与えられた C<path> のファイル情報を返します。
 
-これは C<stat(2)> システムコールと同じです。
+This is the same as the L<stat(2)> system call.
 
 This function returns a C<struct guestfs_statns *>, or NULL if there was an
 error.  I<The caller must call C<guestfs_free_statns> after use>.
@@ -11844,7 +11876,7 @@ Returns file system statistics for any mounted file system.  C<path> should
 be a file or directory in the mounted file system (typically it is the mount
 point itself, but it doesn't need to be).
 
-これは C<statvfs(2)> システムコールと同じです。
+This is the same as the L<statvfs(2)> system call.
 
 This function returns a C<struct guestfs_statvfs *>, or NULL if there was an
 error.  I<The caller must call C<guestfs_free_statvfs> after use>.

@@ -2843,6 +2843,60 @@ func (g *Guestfs) Btrfs_subvolume_snapshot (source string, dest string, optargs 
     return nil
 }
 
+/* btrfstune_enable_extended_inode_refs : enable extended inode refs */
+func (g *Guestfs) Btrfstune_enable_extended_inode_refs (device string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfstune_enable_extended_inode_refs")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_btrfstune_enable_extended_inode_refs (g.g, c_device)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfstune_enable_extended_inode_refs")
+    }
+    return nil
+}
+
+/* btrfstune_enable_skinny_metadata_extent_refs : enable skinny metadata extent refs */
+func (g *Guestfs) Btrfstune_enable_skinny_metadata_extent_refs (device string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfstune_enable_skinny_metadata_extent_refs")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_btrfstune_enable_skinny_metadata_extent_refs (g.g, c_device)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfstune_enable_skinny_metadata_extent_refs")
+    }
+    return nil
+}
+
+/* btrfstune_seeding : enable or disable seeding of a btrfs device */
+func (g *Guestfs) Btrfstune_seeding (device string, seeding bool) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfstune_seeding")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    var c_seeding C.int
+    if seeding { c_seeding = 1 } else { c_seeding = 0 }
+
+    r := C.guestfs_btrfstune_seeding (g.g, c_device, c_seeding)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfstune_seeding")
+    }
+    return nil
+}
+
 /* c_pointer : return the C pointer to the guestfs_h handle */
 func (g *Guestfs) C_pointer () (int64, *GuestfsError) {
     if g.g == nil {

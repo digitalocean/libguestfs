@@ -4475,6 +4475,115 @@ py_guestfs_btrfs_subvolume_snapshot (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_btrfstune_enable_extended_inode_refs (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *device;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfstune_enable_extended_inode_refs",
+                         &py_g, &device))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfstune_enable_extended_inode_refs (g, device);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfstune_enable_skinny_metadata_extent_refs (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *device;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfstune_enable_skinny_metadata_extent_refs",
+                         &py_g, &device))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfstune_enable_skinny_metadata_extent_refs (g, device);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfstune_seeding (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *device;
+  int seeding;
+
+  if (!PyArg_ParseTuple (args, (char *) "Osi:guestfs_btrfstune_seeding",
+                         &py_g, &device, &seeding))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfstune_seeding (g, device, seeding);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_c_pointer (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -24361,6 +24470,9 @@ static PyMethodDef methods[] = {
   { (char *) "btrfs_subvolume_set_default", py_guestfs_btrfs_subvolume_set_default, METH_VARARGS, NULL },
   { (char *) "btrfs_subvolume_show", py_guestfs_btrfs_subvolume_show, METH_VARARGS, NULL },
   { (char *) "btrfs_subvolume_snapshot", py_guestfs_btrfs_subvolume_snapshot, METH_VARARGS, NULL },
+  { (char *) "btrfstune_enable_extended_inode_refs", py_guestfs_btrfstune_enable_extended_inode_refs, METH_VARARGS, NULL },
+  { (char *) "btrfstune_enable_skinny_metadata_extent_refs", py_guestfs_btrfstune_enable_skinny_metadata_extent_refs, METH_VARARGS, NULL },
+  { (char *) "btrfstune_seeding", py_guestfs_btrfstune_seeding, METH_VARARGS, NULL },
   { (char *) "c_pointer", py_guestfs_c_pointer, METH_VARARGS, NULL },
   { (char *) "canonical_device_name", py_guestfs_canonical_device_name, METH_VARARGS, NULL },
   { (char *) "cap_get_file", py_guestfs_cap_get_file, METH_VARARGS, NULL },

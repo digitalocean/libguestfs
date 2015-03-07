@@ -113,6 +113,9 @@ extern struct command_entry btrfs_subvolume_list_cmd_entry;
 extern struct command_entry btrfs_subvolume_set_default_cmd_entry;
 extern struct command_entry btrfs_subvolume_show_cmd_entry;
 extern struct command_entry btrfs_subvolume_snapshot_cmd_entry;
+extern struct command_entry btrfstune_enable_extended_inode_refs_cmd_entry;
+extern struct command_entry btrfstune_enable_skinny_metadata_extent_refs_cmd_entry;
+extern struct command_entry btrfstune_seeding_cmd_entry;
 extern struct command_entry c_pointer_cmd_entry;
 extern struct command_entry canonical_device_name_cmd_entry;
 extern struct command_entry cap_get_file_cmd_entry;
@@ -762,6 +765,12 @@ btrfs-subvolume-show, &btrfs_subvolume_show_cmd_entry
 btrfs_subvolume_snapshot, &btrfs_subvolume_snapshot_cmd_entry
 btrfs-subvolume-snapshot, &btrfs_subvolume_snapshot_cmd_entry
 btrfs-subvolume-snapshot-opts, &btrfs_subvolume_snapshot_cmd_entry
+btrfstune_enable_extended_inode_refs, &btrfstune_enable_extended_inode_refs_cmd_entry
+btrfstune-enable-extended-inode-refs, &btrfstune_enable_extended_inode_refs_cmd_entry
+btrfstune_enable_skinny_metadata_extent_refs, &btrfstune_enable_skinny_metadata_extent_refs_cmd_entry
+btrfstune-enable-skinny-metadata-extent-refs, &btrfstune_enable_skinny_metadata_extent_refs_cmd_entry
+btrfstune_seeding, &btrfstune_seeding_cmd_entry
+btrfstune-seeding, &btrfstune_seeding_cmd_entry
 c_pointer, &c_pointer_cmd_entry
 c-pointer, &c_pointer_cmd_entry
 canonical_device_name, &canonical_device_name_cmd_entry

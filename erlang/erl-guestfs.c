@@ -2123,6 +2123,46 @@ run_btrfs_subvolume_snapshot (ETERM *message)
 }
 
 static ETERM *
+run_btrfstune_enable_extended_inode_refs (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_btrfstune_enable_extended_inode_refs (g, device);
+  if (r == -1)
+    return make_error ("btrfstune_enable_extended_inode_refs");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_btrfstune_enable_skinny_metadata_extent_refs (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_btrfstune_enable_skinny_metadata_extent_refs (g, device);
+  if (r == -1)
+    return make_error ("btrfstune_enable_skinny_metadata_extent_refs");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_btrfstune_seeding (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int seeding = get_bool (ARG (1));
+  int r;
+
+  r = guestfs_btrfstune_seeding (g, device, seeding);
+  if (r == -1)
+    return make_error ("btrfstune_seeding");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_c_pointer (ETERM *message)
 {
   int64_t r;
@@ -11284,6 +11324,12 @@ dispatch (ETERM *message)
     return run_btrfs_subvolume_show (message);
   else if (atom_equals (fun, "btrfs_subvolume_snapshot"))
     return run_btrfs_subvolume_snapshot (message);
+  else if (atom_equals (fun, "btrfstune_enable_extended_inode_refs"))
+    return run_btrfstune_enable_extended_inode_refs (message);
+  else if (atom_equals (fun, "btrfstune_enable_skinny_metadata_extent_refs"))
+    return run_btrfstune_enable_skinny_metadata_extent_refs (message);
+  else if (atom_equals (fun, "btrfstune_seeding"))
+    return run_btrfstune_seeding (message);
   else if (atom_equals (fun, "c_pointer"))
     return run_c_pointer (message);
   else if (atom_equals (fun, "canonical_device_name"))

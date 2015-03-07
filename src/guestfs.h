@@ -1242,6 +1242,15 @@ struct guestfs_btrfs_subvolume_snapshot_opts_argv {
 
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_subvolume_snapshot_opts_argv (guestfs_h *g, const char *source, const char *dest, const struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs);
 
+#define GUESTFS_HAVE_BTRFSTUNE_ENABLE_EXTENDED_INODE_REFS 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfstune_enable_extended_inode_refs (guestfs_h *g, const char *device);
+
+#define GUESTFS_HAVE_BTRFSTUNE_ENABLE_SKINNY_METADATA_EXTENT_REFS 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfstune_enable_skinny_metadata_extent_refs (guestfs_h *g, const char *device);
+
+#define GUESTFS_HAVE_BTRFSTUNE_SEEDING 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfstune_seeding (guestfs_h *g, const char *device, int seeding);
+
 #define GUESTFS_HAVE_C_POINTER 1
 extern GUESTFS_DLL_PUBLIC int64_t guestfs_c_pointer (guestfs_h *g);
 
@@ -3972,6 +3981,9 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_BTRFS_SUBVOLUME_SET_DEFAULT 1
 #define LIBGUESTFS_HAVE_BTRFS_SUBVOLUME_SHOW 1
 #define LIBGUESTFS_HAVE_BTRFS_SUBVOLUME_SNAPSHOT 1
+#define LIBGUESTFS_HAVE_BTRFSTUNE_ENABLE_EXTENDED_INODE_REFS 1
+#define LIBGUESTFS_HAVE_BTRFSTUNE_ENABLE_SKINNY_METADATA_EXTENT_REFS 1
+#define LIBGUESTFS_HAVE_BTRFSTUNE_SEEDING 1
 #define LIBGUESTFS_HAVE_C_POINTER 1
 #define LIBGUESTFS_HAVE_CANONICAL_DEVICE_NAME 1
 #define LIBGUESTFS_HAVE_CAP_GET_FILE 1

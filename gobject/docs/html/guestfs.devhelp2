@@ -173,6 +173,9 @@
     <keyword type="function" name="guestfs_session_btrfs_subvolume_set_default ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-set-default"/>
     <keyword type="function" name="guestfs_session_btrfs_subvolume_show ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-show"/>
     <keyword type="function" name="guestfs_session_btrfs_subvolume_snapshot ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-snapshot"/>
+    <keyword type="function" name="guestfs_session_btrfstune_enable_extended_inode_refs ()" link="GuestfsSession.html#guestfs-session-btrfstune-enable-extended-inode-refs"/>
+    <keyword type="function" name="guestfs_session_btrfstune_enable_skinny_metadata_extent_refs ()" link="GuestfsSession.html#guestfs-session-btrfstune-enable-skinny-metadata-extent-refs"/>
+    <keyword type="function" name="guestfs_session_btrfstune_seeding ()" link="GuestfsSession.html#guestfs-session-btrfstune-seeding"/>
     <keyword type="function" name="guestfs_session_c_pointer ()" link="GuestfsSession.html#guestfs-session-c-pointer"/>
     <keyword type="function" name="guestfs_session_canonical_device_name ()" link="GuestfsSession.html#guestfs-session-canonical-device-name"/>
     <keyword type="function" name="guestfs_session_cap_get_file ()" link="GuestfsSession.html#guestfs-session-cap-get-file"/>

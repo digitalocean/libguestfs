@@ -3097,6 +3097,19 @@ struct guestfs_btrfs_scrub_status_ret {
   guestfs_int_btrfsscrub status;
 };
 
+struct guestfs_btrfstune_seeding_args {
+  string device<>;
+  bool seeding;
+};
+
+struct guestfs_btrfstune_enable_extended_inode_refs_args {
+  string device<>;
+};
+
+struct guestfs_btrfstune_enable_skinny_metadata_extent_refs_args {
+  string device<>;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3535,10 +3548,13 @@ enum guestfs_procedure {
   GUESTFS_PROC_PART_SET_GPT_GUID = 446,
   GUESTFS_PROC_PART_GET_GPT_GUID = 447,
   GUESTFS_PROC_BTRFS_BALANCE_STATUS = 448,
-  GUESTFS_PROC_BTRFS_SCRUB_STATUS = 449
+  GUESTFS_PROC_BTRFS_SCRUB_STATUS = 449,
+  GUESTFS_PROC_BTRFSTUNE_SEEDING = 450,
+  GUESTFS_PROC_BTRFSTUNE_ENABLE_EXTENDED_INODE_REFS = 451,
+  GUESTFS_PROC_BTRFSTUNE_ENABLE_SKINNY_METADATA_EXTENT_REFS = 452
 };
 
-const GUESTFS_MAX_PROC_NR = 449;
+const GUESTFS_MAX_PROC_NR = 452;
 
 /* The remote procedure call protocol. */
 

@@ -2207,6 +2207,65 @@ Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1subvolume_1snapshot  (JNIEnv *env
   }
 }
 
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1btrfstune_1enable_1extended_1inode_1refs  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *device;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
+  r = guestfs_btrfstune_enable_extended_inode_refs (g, device);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1btrfstune_1enable_1skinny_1metadata_1extent_1refs  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *device;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
+  r = guestfs_btrfstune_enable_skinny_metadata_extent_refs (g, device);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1btrfstune_1seeding  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jboolean jseeding)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *device;
+  int seeding;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  seeding = jseeding;
+
+  r = guestfs_btrfstune_seeding (g, device, seeding);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
 JNIEXPORT jlong JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1c_1pointer  (JNIEnv *env, jobject obj, jlong jg)
 {

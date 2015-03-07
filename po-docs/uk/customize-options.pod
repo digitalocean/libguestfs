@@ -263,6 +263,11 @@ for more keys for each user.
 Set the default timezone of the guest to C<TIMEZONE>.  Use a location string
 like C<Europe/London>
 
+=item B<--truncate> FILE
+
+This command truncates "path" to a zero-length file. The file must exist
+already.
+
 =item B<--update>
 
 Do the equivalent of C<yum update>, C<apt-get upgrade>, or whatever command

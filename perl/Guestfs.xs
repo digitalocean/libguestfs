@@ -1680,6 +1680,40 @@ PREINIT:
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
+void
+btrfstune_enable_extended_inode_refs (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfstune_enable_extended_inode_refs (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfstune_enable_skinny_metadata_extent_refs (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfstune_enable_skinny_metadata_extent_refs (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfstune_seeding (g, device, seeding)
+      guestfs_h *g;
+      char *device;
+      int seeding;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfstune_seeding (g, device, seeding);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
 SV *
 c_pointer (g)
       guestfs_h *g;

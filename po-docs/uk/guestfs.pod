@@ -4380,15 +4380,15 @@ Run C<src/api-support/update-from-tarballs.sh>.
 
 =item *
 
-Передавання даних на Transifex та отримання даних з Transifex.
+Push and pull from Zanata.
 
 Віддайте команду:
 
- tx push -s
+ zanata push
 
-щоб надіслати найсвіжіші файли POT на Transifex. Потім віддайте команду:
+to push the latest POT files to Zanata.  Then run:
 
- ./tx-pull.sh
+ ./zanata-pull.sh
 
 which is a wrapper to pull the latest translated C<*.po> files.
 

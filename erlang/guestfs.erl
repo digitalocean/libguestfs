@@ -104,6 +104,9 @@
 -export([btrfs_subvolume_show/2]).
 -export([btrfs_subvolume_snapshot/3, btrfs_subvolume_snapshot/4]).
 -export([btrfs_subvolume_snapshot_opts/3, btrfs_subvolume_snapshot_opts/4]).
+-export([btrfstune_enable_extended_inode_refs/2]).
+-export([btrfstune_enable_skinny_metadata_extent_refs/2]).
+-export([btrfstune_seeding/3]).
 -export([c_pointer/1]).
 -export([canonical_device_name/2]).
 -export([cap_get_file/2]).
@@ -918,6 +921,15 @@ btrfs_subvolume_snapshot_opts(G, Source, Dest, Optargs) ->
   btrfs_subvolume_snapshot(G, Source, Dest, Optargs).
 btrfs_subvolume_snapshot_opts(G, Source, Dest) ->
   btrfs_subvolume_snapshot(G, Source, Dest).
+
+btrfstune_enable_extended_inode_refs(G, Device) ->
+  call_port(G, {btrfstune_enable_extended_inode_refs, Device}).
+
+btrfstune_enable_skinny_metadata_extent_refs(G, Device) ->
+  call_port(G, {btrfstune_enable_skinny_metadata_extent_refs, Device}).
+
+btrfstune_seeding(G, Device, Seeding) ->
+  call_port(G, {btrfstune_seeding, Device, Seeding}).
 
 c_pointer(G) ->
   call_port(G, {c_pointer}).
