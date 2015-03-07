@@ -58,6 +58,9 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_blockdev_setra@Base 1:1.29.10
  guestfs_blockdev_setro@Base 1.10
  guestfs_blockdev_setrw@Base 1.10
+ guestfs_btrfstune_seeding@Base 1:1.29.28
+ guestfs_btrfstune_enable_extended_inode_refs@Base 1:1.29.28
+ guestfs_btrfstune_enable_skinny_metadata_extent_refs@Base 1:1.29.28
  guestfs_btrfs_balance_cancel@Base 1:1.29.22
  guestfs_btrfs_balance_pause@Base 1:1.29.22
  guestfs_btrfs_balance_resume@Base 1:1.29.22
