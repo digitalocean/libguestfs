@@ -1454,7 +1454,8 @@ VARIABLES>.
 
 L<virt-p2v(1)>, L<virt-customize(1)>, L<virt-df(1)>, L<virt-filesystems(1)>,
 L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<guestfs(3)>, L<guestfish(1)>,
-L<qemu-img(1)>, L<fstrim(8)>, L<http://libguestfs.org/>.
+L<qemu-img(1)>, L<fstrim(8)>, L<virt-v2v-test-harness(1)>,
+L<http://libguestfs.org/>.
 
 =head1 АВТОРИ
 
