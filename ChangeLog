@@ -1,3 +1,83 @@
+commit f052270039d8954c89457cab3f8af079853bc98e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 10 21:47:15 2015 +0000
+
+    Version 1.29.30.
+
+commit ccb3894915eea83c110038549de93aa2cedc6b03
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 10 14:58:08 2015 +0000
+
+    v2v: Add the test-harness used by external tests.
+    
+    See the new man page virt-v2v-test-harness(1) added in this commit for
+    details of this library/harness, and also how to get the external
+    tests.
+
+commit 35916e700b8818516be5dfefa2eadc6a5f8d84e5
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Tue Mar 10 06:05:43 2015 -0400
+
+    gui: fix a syntax-check issue of bindtextdomain
+    
+    Signed-off-by: Hu Tao <hutao@cn.fujitsu.com>
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 8873c51475b46bfb7cb78367432e5dde1667bd9b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 10 16:50:32 2015 +0000
+
+    po-docs: Update list of manual pages to be translated.
+    
+    There should be an automatic way to keep this list updated, but while
+    there isn't, keep it updated by hand ...
+
+commit 1fba1d1edc8e91d602975fe48821fab66148a9d2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 10 10:15:42 2015 +0000
+
+    builder: Fix path to RHEL source RPMs in internal repo.
+    
+    Thanks: Jan Scotka
+
+commit ce56c7d30e4d95d83fa85b1eca73aeddbebccbec
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 9 17:49:21 2015 +0000
+
+    FAQ: Don't refer to RHEL 7 in future tense.
+    
+    Thanks: orc_emacs on IRC.
+
+commit 3053785db82c3aaf935c582146fd863d3618910f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 9 13:13:16 2015 +0000
+
+    builder: Fix comparison between signed/unsigned in parallel xzcat.
+    
+    block.header_size is uint32_t so cannot be compared directly with n (ssize_t).
+    
+    pxzcat-c.c: In function 'worker_thread':
+    pxzcat-c.c:602:21: error: comparison between signed and unsigned integer expressions [-Werror=sign-compare]
+         if (n >= 0 && n != block.header_size-1) {
+                         ^
+
+commit c807546619cee0faeedc5ae491f7d6623509b75a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 6 17:05:50 2015 +0000
+
+    v2v: xml: Add some more bindings to libxml2.
+    
+    These are not used by libguestfs, but are used by the external
+    virt-v2v tests.
+
+commit ce5a51a34c2667ed89d0e184d770f96d0283c001
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 6 17:02:58 2015 +0000
+
+    v2v: xml: Remove dependency on libguestfs internals.
+    
+    This is just so I can share the code with the virt-v2v external tests.
+
 commit 4ee6e4ddc8dd039a7670220ba0fe4079f302016a
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Mar 5 13:42:20 2015 +0000

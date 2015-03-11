@@ -276,15 +276,11 @@ libguestfs 1.20 з EPEL 5: L<https://fedoraproject.org/wiki/EPEL>
 
 =item RHEL 6
 
+=item RHEL 7
+
 Є частиною типового набору для встановлення. У RHEL 6 і 7 (і лише тут) вам
 слід встановити C<libguestfs-winsupport>, щоб мати змогу працювати з
 гостьовими системами Windows.
-
-=item RHEL 7
-
-It will be part of the default install, and based on S<libguestfs 1.22>.
-You will need to install C<libguestfs-winsupport> separately to get Windows
-guest support.
 
 =back
 

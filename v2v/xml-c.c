@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include <caml/alloc.h>
@@ -33,9 +34,6 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 #include <libxml/uri.h>
-
-#include "guestfs.h"
-#include "guestfs-internal-frontend.h"
 
 #pragma GCC diagnostic ignored "-Wmissing-prototypes"
 
@@ -121,6 +119,43 @@ v2v_xml_parse_memory (value xmlv)
   Doc_val (docv) = doc;
 
   CAMLreturn (docv);
+}
+
+value
+v2v_xml_copy_doc (value docv, value recursivev)
+{
+  CAMLparam2 (docv, recursivev);
+  CAMLlocal1 (copyv);
+  xmlDocPtr doc, copy;
+
+  doc = Doc_val (docv);
+  copy = xmlCopyDoc (doc, Bool_val (recursivev));
+  if (copy == NULL)
+    caml_invalid_argument ("copy_doc: failed to copy");
+
+  copyv = caml_alloc_custom (&doc_custom_operations, sizeof (xmlDocPtr), 0, 1);
+  Doc_val (copyv) = copy;
+
+  CAMLreturn (copyv);
+}
+
+value
+v2v_xml_to_string (value docv, value formatv)
+{
+  CAMLparam2 (docv, formatv);
+  CAMLlocal1 (strv);
+  xmlDocPtr doc;
+  xmlChar *mem;
+  int size;
+
+  doc = Doc_val (docv);
+  xmlDocDumpFormatMemory (doc, &mem, &size, Bool_val (formatv));
+
+  strv = caml_alloc_string (size);
+  memcpy (String_val (strv), mem, size);
+  free (mem);
+
+  CAMLreturn (strv);
 }
 
 value
@@ -243,9 +278,10 @@ value
 v2v_xml_node_ptr_as_string (value docv, value nodev)
 {
   CAMLparam2 (docv, nodev);
+  CAMLlocal1 (strv);
   xmlDocPtr doc = Doc_val (docv);
   xmlNodePtr node = (xmlNodePtr) nodev;
-  CLEANUP_FREE char *str = NULL;
+  char *str;
 
   switch (node->type) {
   case XML_TEXT_NODE:
@@ -261,11 +297,49 @@ v2v_xml_node_ptr_as_string (value docv, value nodev)
     if (str == NULL)
       caml_invalid_argument ("node_as_string: xmlNodeListGetString cannot convert node to string");
 
-    CAMLreturn (caml_copy_string (str));
+    strv = caml_copy_string (str);
+    free (str);
+    CAMLreturn (strv);
 
   default:
     caml_invalid_argument ("node_as_string: don't know how to convert this node to a string");
   }
+}
+
+value
+v2v_xml_node_ptr_set_content (value nodev, value contentv)
+{
+  CAMLparam2 (nodev, contentv);
+  xmlNodePtr node = (xmlNodePtr) nodev;
+
+  xmlNodeSetContent (node, BAD_CAST String_val (contentv));
+
+  CAMLreturn (Val_unit);
+}
+
+value
+v2v_xml_node_ptr_set_prop (value nodev, value namev, value valv)
+{
+  CAMLparam3 (nodev, namev, valv);
+  xmlNodePtr node = (xmlNodePtr) nodev;
+
+  if (xmlSetProp (node, BAD_CAST String_val (namev), BAD_CAST String_val (valv))
+      == NULL)
+    caml_invalid_argument ("node_ptr_set_prop: failed to set property");
+
+  CAMLreturn (Val_unit);
+}
+
+value
+v2v_xml_node_ptr_unlink_node (value nodev)
+{
+  CAMLparam1 (nodev);
+  xmlNodePtr node = (xmlNodePtr) nodev;
+
+  xmlUnlinkNode (node);
+  xmlFreeNode (node);
+
+  CAMLreturn (Val_unit);
 }
 
 value
