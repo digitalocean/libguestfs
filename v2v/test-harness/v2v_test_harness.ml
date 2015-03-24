@@ -62,10 +62,6 @@ let run ~test ?input_disk ?input_xml ?(test_plan = default_plan) () =
     match input_disk with
     | None -> test ^ ".img.xz"
     | Some input_disk -> input_disk in
-  let input_xml =
-    match input_xml with
-    | None -> test ^ ".xml"
-    | Some input_xml -> input_xml in
 
   let inspect_and_mount_disk filename =
     let g = new G.guestfs () in
@@ -196,13 +192,29 @@ let run ~test ?input_disk ?input_xml ?(test_plan = default_plan) () =
 
     let display_matches_screenshot screenshot1 screenshot2 =
       let cmd =
-        sprintf "compare -metric MAE %s %s null:"
+        (* Grrr compare sends its normal output to stderr. *)
+        sprintf "compare -metric MAE %s %s null: 2>&1"
           (quote screenshot1) (quote screenshot2) in
       printf "%s\n%!" cmd;
-      let r = Sys.command cmd in
-      if r < 0 || r > 1 then
-        failwith "compare command failed";
-      r = 0
+      let chan = Unix.open_process_in cmd in
+      let lines = ref [] in
+      (try while true do lines := input_line chan :: !lines done
+       with End_of_file -> ());
+      let lines = List.rev !lines in
+      let stat = Unix.close_process_in chan in
+      let similarity =
+        match stat with
+        | Unix.WEXITED 0 -> 0.0 (* exact match *)
+        | Unix.WEXITED 1 ->
+          Scanf.sscanf (List.hd lines) "%f" (fun f -> f)
+        | Unix.WEXITED i ->
+          failwithf "external command '%s' exited with error %d" cmd i
+        | Unix.WSIGNALED i ->
+          failwithf "external command '%s' killed by signal %d" cmd i
+        | Unix.WSTOPPED i ->
+          failwithf "external command '%s' stopped by signal %d" cmd i in
+      printf "%s %s have similarity %f\n" screenshot1 screenshot2 similarity;
+      similarity <= 60.0
     in
 
     let dom_is_alive () =
@@ -264,30 +276,34 @@ let run ~test ?input_disk ?input_xml ?(test_plan = default_plan) () =
       if active then (
         printf "%s: disk activity detected\n" (timestamp t);
         loop start t stats
-      ) else if t -. last_activity <= float test_plan.boot_idle_time then (
-        let screenshot = take_screenshot t in
-        (* Reached the final screenshot? *)
-        let done_ =
-          match test_plan.boot_plan with
-          | Boot_to_screenshot final_screenshot ->
-            if display_matches_screenshot screenshot final_screenshot then (
-              printf "%s: guest reached final screenshot\n" (timestamp t);
-              true
-            ) else false
-          | _ -> false in
-        if not done_ then (
-          (* A screenshot matching one of the screenshots in the set
-           * resets the timeout.
-           *)
-          let waiting_in_known_good_state =
-            List.exists (display_matches_screenshot screenshot)
-              test_plan.boot_known_good_screenshots in
-          if waiting_in_known_good_state then (
-            printf "%s: guest at known-good screenshot\n" (timestamp t);
-            loop t last_activity stats
-          ) else
-            loop start last_activity stats
+      ) else (
+        if t -. last_activity <= float test_plan.boot_idle_time then (
+          let screenshot = take_screenshot t in
+          (* Reached the final screenshot? *)
+          let done_ =
+            match test_plan.boot_plan with
+            | Boot_to_screenshot final_screenshot ->
+              if display_matches_screenshot screenshot final_screenshot then (
+                printf "%s: guest reached final screenshot\n" (timestamp t);
+                true
+              ) else false
+            | _ -> false in
+          if not done_ then (
+            (* A screenshot matching one of the screenshots in the set
+             * resets the timeouts.
+             *)
+            let waiting_in_known_good_state =
+              List.exists (display_matches_screenshot screenshot)
+                test_plan.boot_known_good_screenshots in
+            if waiting_in_known_good_state then (
+              printf "%s: guest at known-good screenshot\n" (timestamp t);
+              loop t t stats
+            ) else
+              loop start last_activity stats
+          )
         )
+        else
+          bootfail t "guest timed out with no disk activity before reaching final state"
       )
     in
     loop start last_activity stats;
@@ -312,31 +328,49 @@ let run ~test ?input_disk ?input_xml ?(test_plan = default_plan) () =
 
   printf "v2v_test_harness: starting test: %s\n%!" test;
 
-  (* Check we are started in the correct directory, ie. the input_disk
-   * and input_xml files should exist, and they should be local files.
+  (* Check we are started in the correct directory.
    *)
-  if not (Sys.file_exists input_disk) || not (Sys.file_exists input_xml) then
-    failwithf "cannot find input files: %s, %s: you are probably running the test script from the wrong directory" input_disk input_xml;
+  if not (Sys.file_exists input_disk) then
+    failwith "cannot find input files: you are probably running the test script from the wrong directory";
 
-  (* Uncompress the input, if it doesn't exist already. *)
-  let input_disk =
-    if Filename.check_suffix input_disk ".xz" then (
-      let input_disk_uncomp = Filename.chop_suffix input_disk ".xz" in
-      if not (Sys.file_exists input_disk_uncomp) then (
-        let cmd = sprintf "unxz --keep %s" (quote input_disk) in
-        printf "%s\n%!" cmd;
-        if Sys.command cmd <> 0 then
-          failwith "unxz command failed"
-      );
-      input_disk_uncomp
+  (* How we run virt-v2v depends on the extension of the input_disk. *)
+  let v2v_method =
+    (* Uncompress the input, if the uncompressed file doesn't exist already. *)
+    let input_disk =
+      if Filename.check_suffix input_disk ".xz" then (
+        let input_disk_uncomp = Filename.chop_suffix input_disk ".xz" in
+        if not (Sys.file_exists input_disk_uncomp) then (
+          let cmd = sprintf "unxz --keep %s" (quote input_disk) in
+          printf "%s\n%!" cmd;
+          if Sys.command cmd <> 0 then
+            failwith "unxz command failed"
+        );
+        input_disk_uncomp
+      )
+      else input_disk in
+
+    if Filename.check_suffix input_disk ".img" then (
+      let input_xml =
+        match input_xml with
+        | None -> test ^ ".xml"
+        | Some input_xml -> input_xml in
+      `V2v_method_libvirtxml input_xml
     )
-    else input_disk in
-  ignore input_disk;
+    else if Filename.check_suffix input_disk ".ova" then
+      `V2v_method_ova input_disk
+    else
+      failwithf "don't know what to do with input disk '%s'" input_disk in
 
   (* Run virt-v2v. *)
-  let cmd = sprintf
-    "virt-v2v -i libvirtxml %s -o local -of qcow2 -os . -on %s"
-    (quote input_xml) (quote (test ^ "-converted")) in
+  let cmd_input =
+    match v2v_method with
+    | `V2v_method_libvirtxml input_xml ->
+      sprintf "-i libvirtxml %s" (quote input_xml)
+    | `V2v_method_ova input_disk ->
+      sprintf "-i ova %s" (quote input_disk) in
+  let cmd =
+    sprintf "virt-v2v %s -o local -of qcow2 -os . -on %s"
+      cmd_input (quote (test ^ "-converted")) in
   printf "%s\n%!" cmd;
   if Sys.command cmd <> 0 then
     failwith "virt-v2v command failed";

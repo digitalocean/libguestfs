@@ -2314,7 +2314,7 @@ three situations:
 
 =back
 
-Libguestfs tries to convert the errno from inside the applicance into a
+Libguestfs tries to convert the errno from inside the appliance into a
 corresponding errno for the caller (not entirely trivial: the appliance
 might be running a completely different operating system from the library
 and error numbers are not standardized across Un*xen).  If this could not be
@@ -3927,10 +3927,6 @@ If you use Emacs, add the following to one of one of your start-up files
 This is implemented using the regular automake C<TESTS> target.  See the
 automake documentation for details.
 
-=item C<make syntax-check -j1 -k>
-
-さまざまなコードにおける構文および形式の問題を確認します。
-
 =item C<make check-valgrind>
 
 valgrind にあるテスト群のサブセットを実行します。
@@ -4438,13 +4434,6 @@ See the source code for more information.
 
 =over 4
 
-=item FEBOOTSTRAP_KERNEL
-
-=item FEBOOTSTRAP_MODULES
-
-When using supermin E<ge> 4.1.0, these have been renamed L</SUPERMIN_KERNEL>
-and L</SUPERMIN_MODULES>.
-
 =item LIBGUESTFS_APPEND
 
 仮想マシンのカーネルに追加のオプションを渡します。
@@ -4527,13 +4516,14 @@ everything.
 
 =item SUPERMIN_KERNEL
 
+=item SUPERMIN_KERNEL_VERSION
+
 =item SUPERMIN_MODULES
 
-These two environment variables allow the kernel that libguestfs uses in the
-appliance to be selected.  If C<$SUPERMIN_KERNEL> is not set, then the most
-recent host kernel is chosen.  For more information about kernel selection,
-see L<supermin(1)>.  This feature is only available in supermin /
-febootstrap E<ge> 3.8.
+These three environment variables allow the kernel that libguestfs uses in
+the appliance to be selected.  If C<$SUPERMIN_KERNEL> is not set, then the
+most recent host kernel is chosen.  For more information about kernel
+selection, see L<supermin(1)>.
 
 =item TMPDIR
 

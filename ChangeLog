@@ -1,3 +1,171 @@
+commit c227cbcc14b903a86d37369596e365d93293734e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 23 14:03:14 2015 +0000
+
+    Version 1.29.31.
+
+commit d48615577c18d57c5b0d7fc812ba7e193119e854
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 23 13:59:00 2015 +0000
+
+    builder: Add test-virt-index-validate-good-3 to EXTRA_DIST
+    
+    Fixes commit fc6c16af0b765e39793554db0f55bd75f53fce9f.
+
+commit 039ba9cf19b69f9c16efc831d4a4180cc04172a4
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Mon Mar 16 05:44:19 2015 -0400
+
+    btrfs-qgroup-show: add check for "--raw"
+    
+    btrfs-prog commit:
+    58a39524619f38d193b8adc3d57888ec07b612aa
+    change the default output to binary prefix,
+    and introduced a new option '--raw'
+    to keep the traditional behaviour.
+    
+    This patch will add a check function to determine
+    whether to add '--raw' option to 'btrfs show qgroup'.
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit fc6c16af0b765e39793554db0f55bd75f53fce9f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 13 15:02:58 2015 +0100
+
+    builder: handle empty lines in indexes before first section (RHBZ#1201526)
+    
+    Properly skip empty lines before the first section, otherwise they will
+    trigger a syntax error in parsing.
+    
+    Add a simple test for it, so it doesn't regress.
+
+commit 09e239a726228922366107c5fcfd0542ee25503b
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Fri Mar 13 05:59:38 2015 -0400
+
+    tests: add test case of set-label and vfs-label for btrfs
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 017f1c67296ee6fa9a566f853ea896e39d2e9bf0
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Fri Mar 13 01:32:59 2015 -0400
+
+    guestfs.pod: don't encourage 'make syntax-check'
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 7e8ed7cb218c4104753fa5aae9d945d5a84054e9
+Author: Maros Zatko <mzatko@redhat.com>
+Date:   Thu Mar 5 16:42:45 2015 +0100
+
+    customize: add --truncate-recursive option
+    
+    Allows user to recursively truncate files in PATH. e.g.:
+    virt-builder --truncate-recursive /var/log
+    
+    Relates to RHBZ#119673
+
+commit ce144c4d7af5bcae1646a84e70362655e0572081
+Author: Maros Zatko <mzatko@redhat.com>
+Date:   Fri Feb 6 14:11:13 2015 +0100
+
+    virt-copy, virt-tar: show help for --help
+
+commit 5a445c2e407c7364ceb81b47c99e56810b9dcc39
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 23 12:14:59 2015 +0000
+
+    docs: You normally need to set SUPERMIN_KERNEL_VERSION as well.
+
+commit 762c0bdab914964515b0e11605e28c690c664b0a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 23 12:12:23 2015 +0000
+
+    docs: Remove some rogue references to 'febootstrap'.
+
+commit 5ac87b975fef867663402743d79e1b693d485bb8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 20 12:14:42 2015 +0000
+
+    v2v: test-harness: Add support for OVA.
+    
+    This makes VMware testing easier, since it means you don't need to
+    test against a live server.
+
+commit 04f1f1b741ace41f8c36ae3059690084c7a2dc9c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Mar 12 17:31:57 2015 +0100
+
+    generator: small optimization of pod2text cache memoization
+    
+    Instead of save every time there's a new element in the cache, batch the
+    saving to disk every 100 changes, saving the unsaved remainder at the
+    exit.
+    
+    While not a big optimization, this reduces a bit the disk usage during
+    generator run.
+
+commit 078bd8ad065046b7fe8c133ce12b97c12949cccf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 12 15:02:59 2015 +0000
+
+    v2v: test harness: Add list of FILES to the manual page.
+
+commit c3fa537aebfb86202b2fa4848cd0438246c6a694
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Thu Mar 12 03:00:47 2015 -0400
+
+    guestfs.pod: fix a typo
+    
+    s/applicance/appliance
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 32e5056f4a758f4a5553fe023d603c4708fa2efb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 11 17:24:59 2015 +0000
+
+    Revert "launch: libvirt: In debug messages use ls --lcontext instead of ls -Z."
+    
+    The --lcontext option was removed from coreutils ls (in 2007, cough).
+    
+    Fedora carried a patch re-adding these options [I believe
+    unintentionally], but that patch was dropped in Fedora 23, so the
+    --lcontext option is gone for good.
+    
+    This reverts commit f9c5b4aa2a6e8890eb20e15165bbe6820e6011b5.
+
+commit ffa858469957a0cdfcedb27701c909c1765d06d3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 11 15:08:30 2015 +0000
+
+    tests: mount-local: Print some more debugging along error paths.
+    
+    Trying to track down a memory leak somewhere.
+
+commit 0827b006e4943a670dbe193dd8b522d7cc3b4bf5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 11 15:05:13 2015 +0000
+
+    v2v: test-harness: Fix boot loop so it detects disk inactivity properly.
+
+commit a3beda8b77363e13f652104b06efaee33ecfe67c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 11 15:02:58 2015 +0000
+
+    v2v: test-harness: Measure similarity between images when comparing screenshots.
+    
+    Since wallclock time differs between boots, we cannot just compare two
+    screenshots by checking if they are identical -- if the screenshot
+    contains any time information, then that will be different, and it
+    turns out that VMs print the current time at boot.
+    
+    Therefore parse out and use the "similarity" metric printed by the
+    ImageMagick "compare" command when it compares the screenshots, and
+    allow a small epsilon for the case where a few oixels are different.
+
 commit f052270039d8954c89457cab3f8af079853bc98e
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Mar 10 21:47:15 2015 +0000

@@ -66,6 +66,8 @@ and op = [
       (* --ssh-inject USER[:SELECTOR] *)
   | `Truncate of string
       (* --truncate FILE *)
+  | `TruncateRecursive of string
+      (* --truncate-recursive PATH *)
   | `Timezone of string
       (* --timezone TIMEZONE *)
   | `Update

@@ -151,6 +151,25 @@ cases which examine the disk image (using libguestfs) to verify that files
 have been created, modified or deleted as expected within the disk image.
 See C<V2v_test_harness.mli> for more information on how to do that.
 
+=head1 ФАЙЛИ
+
+Note: To find the value of C<$ocamllibdir>, run:
+
+ ocamlc -where
+
+=over 4
+
+=item C<$ocamllibdir/v2v_test_harness/v2v_test_harness.mli>
+
+The test library interface.  Read this for detailed programming
+documentation.
+
+=item C<$ocamllibdir/v2v_test_harness/META>
+
+The findlib META file allowing you to use the library from L<ocamlfind(1)>.
+
+=back
+
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<virt-v2v(1)>, L<virt-p2v(1)>, L<guestfs(3)>, L<http://libguestfs.org/>.

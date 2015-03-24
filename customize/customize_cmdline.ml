@@ -74,6 +74,8 @@ and op = [
       (* --ssh-inject USER[:SELECTOR] *)
   | `Truncate of string
       (* --truncate FILE *)
+  | `TruncateRecursive of string
+      (* --truncate-recursive PATH *)
   | `Timezone of string
       (* --timezone TIMEZONE *)
   | `Update
@@ -288,6 +290,12 @@ let rec argspec () =
       s_"FILE" ^ " " ^ s_"Truncate a file to zero size"
     ),
     Some "FILE", "This command truncates \"path\" to a zero-length file. The file must exist\nalready.";
+    (
+      "--truncate-recursive",
+      Arg.String (fun s -> ops := `TruncateRecursive s :: !ops),
+      s_"PATH" ^ " " ^ s_"Recursively truncate all files in directory"
+    ),
+    Some "PATH", "This command recursively truncates all files under \"path\" to zero-length.";
     (
       "--timezone",
       Arg.String (fun s -> ops := `Timezone s :: !ops),
