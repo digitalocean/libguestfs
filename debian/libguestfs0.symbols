@@ -78,6 +78,9 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_btrfs_fsck@Base 1:1.18
  guestfs_btrfs_fsck_argv@Base 1:1.18
  guestfs_btrfs_fsck_va@Base 1:1.18
+ guestfs_btrfs_image@Base 1:1.29.32
+ guestfs_btrfs_image_argv@Base 1:1.29.32
+ guestfs_btrfs_image_va@Base 1:1.29.32
  guestfs_btrfs_qgroup_assign@Base 1:1.29.16
  guestfs_btrfs_qgroup_create@Base 1:1.29.16
  guestfs_btrfs_qgroup_destroy@Base 1:1.29.16
@@ -696,6 +699,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_part_get_gpt_guid@Base 1:1.29.25
  guestfs_part_get_gpt_type@Base 1:1.22
  guestfs_part_get_mbr_id@Base 1.10
+ guestfs_part_get_mbr_part_type@Base 1:1.29.32
  guestfs_part_get_name@Base 1:1.25.33
  guestfs_part_get_parttype@Base 1.10
  guestfs_part_init@Base 1.10
