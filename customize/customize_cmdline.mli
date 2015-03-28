@@ -32,6 +32,8 @@ and op = [
       (* --chmod PERMISSIONS:FILE *)
   | `CommandsFromFile of string
       (* --commands-from-file FILENAME *)
+  | `Copy of string * string
+      (* --copy SOURCE:DEST *)
   | `CopyIn of string * string
       (* --copy-in LOCALPATH:REMOTEDIR *)
   | `Delete of string
@@ -52,6 +54,8 @@ and op = [
       (* --link TARGET:LINK[:LINK..] *)
   | `Mkdir of string
       (* --mkdir DIR *)
+  | `Move of string * string
+      (* --move SOURCE:DEST *)
   | `Password of string * Password.password_selector
       (* --password USER:SELECTOR *)
   | `RootPassword of Password.password_selector

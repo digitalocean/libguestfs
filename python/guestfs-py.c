@@ -3635,6 +3635,58 @@ py_guestfs_btrfs_fsck (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_btrfs_image (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_btrfs_image_argv optargs_s;
+  struct guestfs_btrfs_image_argv *optargs = &optargs_s;
+  int r;
+  PyObject *py_source;
+  char **source = NULL;
+  const char *image;
+  PyObject *py_compresslevel;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OOsO:guestfs_btrfs_image",
+                         &py_g, &py_source, &image, &py_compresslevel))
+    goto out;
+  g = get_handle (py_g);
+  source = get_string_list (py_source);
+  if (!source) goto out;
+
+  if (py_compresslevel != Py_None) {
+    optargs_s.bitmask |= GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK;
+    optargs_s.compresslevel = PyLong_AsLong (py_compresslevel);
+    if (PyErr_Occurred ()) goto out;
+  }
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_image_argv (g, source, image, optargs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+  PyErr_Clear ();
+ out:
+  free (source);
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_btrfs_qgroup_assign (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -17915,6 +17967,48 @@ py_guestfs_part_get_mbr_id (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_part_get_mbr_part_type (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  char *r;
+  const char *device;
+  int partnum;
+
+  if (!PyArg_ParseTuple (args, (char *) "Osi:guestfs_part_get_mbr_part_type",
+                         &py_g, &device, &partnum))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_part_get_mbr_part_type (g, device, partnum);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
+  free (r);
+  if (py_r == NULL) goto out;
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_part_get_name (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -24448,6 +24542,7 @@ static PyMethodDef methods[] = {
   { (char *) "btrfs_filesystem_resize", py_guestfs_btrfs_filesystem_resize, METH_VARARGS, NULL },
   { (char *) "btrfs_filesystem_sync", py_guestfs_btrfs_filesystem_sync, METH_VARARGS, NULL },
   { (char *) "btrfs_fsck", py_guestfs_btrfs_fsck, METH_VARARGS, NULL },
+  { (char *) "btrfs_image", py_guestfs_btrfs_image, METH_VARARGS, NULL },
   { (char *) "btrfs_qgroup_assign", py_guestfs_btrfs_qgroup_assign, METH_VARARGS, NULL },
   { (char *) "btrfs_qgroup_create", py_guestfs_btrfs_qgroup_create, METH_VARARGS, NULL },
   { (char *) "btrfs_qgroup_destroy", py_guestfs_btrfs_qgroup_destroy, METH_VARARGS, NULL },
@@ -24804,6 +24899,7 @@ static PyMethodDef methods[] = {
   { (char *) "part_get_gpt_guid", py_guestfs_part_get_gpt_guid, METH_VARARGS, NULL },
   { (char *) "part_get_gpt_type", py_guestfs_part_get_gpt_type, METH_VARARGS, NULL },
   { (char *) "part_get_mbr_id", py_guestfs_part_get_mbr_id, METH_VARARGS, NULL },
+  { (char *) "part_get_mbr_part_type", py_guestfs_part_get_mbr_part_type, METH_VARARGS, NULL },
   { (char *) "part_get_name", py_guestfs_part_get_name, METH_VARARGS, NULL },
   { (char *) "part_get_parttype", py_guestfs_part_get_parttype, METH_VARARGS, NULL },
   { (char *) "part_init", py_guestfs_part_init, METH_VARARGS, NULL },

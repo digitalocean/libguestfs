@@ -1697,6 +1697,50 @@ This is the "argv variant" of L</guestfs_btrfs_fsck>.
 
 See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
+=head2 guestfs_btrfs_image
+
+ int
+ guestfs_btrfs_image (guestfs_h *g,
+                      char *const *source,
+                      const char *image,
+                      ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL, int compresslevel,
+
+This is used to create an image of a btrfs filesystem.
+All data will be zeroed, but metadata and the like is preserved.
+
+This function returns 0 on success or -1 on error.
+
+=head2 guestfs_btrfs_image_va
+
+ int
+ guestfs_btrfs_image_va (guestfs_h *g,
+                         char *const *source,
+                         const char *image,
+                         va_list args);
+
+This is the "va_list variant" of L</guestfs_btrfs_image>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_btrfs_image_argv
+
+ int
+ guestfs_btrfs_image_argv (guestfs_h *g,
+                           char *const *source,
+                           const char *image,
+                           const struct guestfs_btrfs_image_argv *optargs);
+
+This is the "argv variant" of L</guestfs_btrfs_image>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
 =head2 guestfs_btrfs_qgroup_assign
 
  int
@@ -10240,6 +10284,21 @@ types (see C<guestfs_part_get_parttype>).
 On error this function returns -1.
 
 (Added in 1.3.2)
+
+=head2 guestfs_part_get_mbr_part_type
+
+ char *
+ guestfs_part_get_mbr_part_type (guestfs_h *g,
+                                 const char *device,
+                                 int partnum);
+
+This returns the partition type of an MBR partition
+numbered C<partnum> on device C<device>.
+
+It returns C<primary>, C<logical>, or C<extended>.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
 
 =head2 guestfs_part_get_name
 

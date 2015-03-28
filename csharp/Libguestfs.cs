@@ -1220,6 +1220,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_image_argv (IntPtr h, [In] string[] source, [In] string image, void *);
+
+    /// <summary>
+    /// create an image of a btrfs filesystem
+    /// </summary>
+    public void btrfs_image (string[] source, string image)
+    {
+      int r;
+      r = guestfs_btrfs_image_argv (_handle, source, image, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_btrfs_qgroup_assign (IntPtr h, [In] string src, [In] string dst, [In] string path);
 
     /// <summary>
@@ -6497,6 +6511,21 @@ namespace Guestfs
       int r;
       r = guestfs_part_get_mbr_id (_handle, device, partnum);
       if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_part_get_mbr_part_type (IntPtr h, [In] string device, int partnum);
+
+    /// <summary>
+    /// get the MBR partition type
+    /// </summary>
+    public string part_get_mbr_part_type (string device, int partnum)
+    {
+      string r;
+      r = guestfs_part_get_mbr_part_type (_handle, device, partnum);
+      if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
     }

@@ -1317,6 +1317,40 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
+btrfs_image (g, source, image, ...)
+      guestfs_h *g;
+      char **source;
+      char *image;
+PREINIT:
+      int r;
+      struct guestfs_btrfs_image_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_btrfs_image_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "compresslevel")) {
+          optargs_s.compresslevel = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_btrfs_image_argv (g, source, image, optargs);
+      free (source);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
 btrfs_qgroup_assign (g, src, dst, path)
       guestfs_h *g;
       char *src;
@@ -8103,6 +8137,22 @@ PREINIT:
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+part_get_mbr_part_type (g, device, partnum)
+      guestfs_h *g;
+      char *device;
+      int partnum;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_part_get_mbr_part_type (g, device, partnum);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 

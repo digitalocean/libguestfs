@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.452';
+$VERSION = '0.454';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -1254,6 +1254,11 @@ Force sync on the btrfs filesystem mounted at C<fs>.
 
 Used to check a btrfs filesystem, C<device> is the device file where the
 filesystem is stored.
+
+=item $g->btrfs_image (\@source, $image [, compresslevel => $compresslevel]);
+
+This is used to create an image of a btrfs filesystem.
+All data will be zeroed, but metadata and the like is preserved.
 
 =item $g->btrfs_qgroup_assign ($src, $dst, $path);
 
@@ -5723,6 +5728,13 @@ Note that only MBR (old DOS-style) partitions have type bytes.
 You will get undefined results for other partition table
 types (see C<$g-E<gt>part_get_parttype>).
 
+=item $partitiontype = $g->part_get_mbr_part_type ($device, $partnum);
+
+This returns the partition type of an MBR partition
+numbered C<partnum> on device C<device>.
+
+It returns C<primary>, C<logical>, or C<extended>.
+
 =item $name = $g->part_get_name ($device, $partnum);
 
 This gets the partition name on partition numbered C<partnum> on
@@ -8407,6 +8419,18 @@ use vars qw(%guestfs_introspection);
     },
     name => "btrfs_fsck",
     description => "check a btrfs filesystem",
+  },
+  "btrfs_image" => {
+    ret => 'void',
+    args => [
+      [ 'source', 'string(device) list', 0 ],
+      [ 'image', 'string(path)', 1 ],
+    ],
+    optargs => {
+      compresslevel => [ 'compresslevel', 'int', 0 ],
+    },
+    name => "btrfs_image",
+    description => "create an image of a btrfs filesystem",
   },
   "btrfs_qgroup_assign" => {
     ret => 'void',
@@ -11611,6 +11635,15 @@ use vars qw(%guestfs_introspection);
     ],
     name => "part_get_mbr_id",
     description => "get the MBR type byte (ID byte) from a partition",
+  },
+  "part_get_mbr_part_type" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'partnum', 'int', 1 ],
+    ],
+    name => "part_get_mbr_part_type",
+    description => "get the MBR partition type",
   },
   "part_get_name" => {
     ret => 'string',

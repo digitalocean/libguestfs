@@ -483,6 +483,59 @@ guestfs_btrfs_fsck_va (guestfs_h *g,
 }
 
 int
+guestfs_btrfs_image (guestfs_h *g,
+                     char *const *source,
+                     const char *image,
+                     ...)
+{
+  va_list optargs;
+
+  int r;
+
+  va_start (optargs, image);
+  r = guestfs_btrfs_image_va (g, source, image, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_btrfs_image_va (guestfs_h *g,
+                        char *const *source,
+                        const char *image,
+                        va_list args)
+{
+  struct guestfs_btrfs_image_argv optargs_s;
+  struct guestfs_btrfs_image_argv *optargs = &optargs_s;
+  int i;
+  uint64_t i_mask;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL:
+      optargs_s.compresslevel = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "btrfs_image", i);
+      return -1;
+    }
+
+    i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "btrfs_image");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_btrfs_image_argv (g, source, image, optargs);
+}
+
+int
 guestfs_btrfs_subvolume_create_opts (guestfs_h *g,
                                      const char *dest,
                                      ...)

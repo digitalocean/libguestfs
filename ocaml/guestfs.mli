@@ -121,6 +121,7 @@ val last_errno : t -> int
 
 module Errno : sig
   val errno_ENOTSUP : int
+  val errno_EPERM : int
   val errno_ESRCH : int
 end
 
@@ -597,6 +598,9 @@ val btrfs_filesystem_sync : t -> string -> unit
 
 val btrfs_fsck : t -> ?superblock:int64 -> ?repair:bool -> string -> unit
 (** check a btrfs filesystem *)
+
+val btrfs_image : t -> ?compresslevel:int -> string array -> string -> unit
+(** create an image of a btrfs filesystem *)
 
 val btrfs_qgroup_assign : t -> string -> string -> string -> unit
 (** add a qgroup to a parent qgroup *)
@@ -1801,6 +1805,9 @@ val part_get_gpt_type : t -> string -> int -> string
 val part_get_mbr_id : t -> string -> int -> int
 (** get the MBR type byte (ID byte) from a partition *)
 
+val part_get_mbr_part_type : t -> string -> int -> string
+(** get the MBR partition type *)
+
 val part_get_name : t -> string -> int -> string
 (** get partition name *)
 
@@ -2462,6 +2469,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method btrfs_filesystem_resize : ?size:int64 -> string -> unit
   method btrfs_filesystem_sync : string -> unit
   method btrfs_fsck : ?superblock:int64 -> ?repair:bool -> string -> unit
+  method btrfs_image : ?compresslevel:int -> string array -> string -> unit
   method btrfs_qgroup_assign : string -> string -> string -> unit
   method btrfs_qgroup_create : string -> string -> unit
   method btrfs_qgroup_destroy : string -> string -> unit
@@ -2830,6 +2838,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method part_get_gpt_guid : string -> int -> string
   method part_get_gpt_type : string -> int -> string
   method part_get_mbr_id : string -> int -> int
+  method part_get_mbr_part_type : string -> int -> string
   method part_get_name : string -> int -> string
   method part_get_parttype : string -> string
   method part_init : string -> string -> unit

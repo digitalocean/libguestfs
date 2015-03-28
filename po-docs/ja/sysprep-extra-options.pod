@@ -28,6 +28,12 @@ example
 The commands are handled in the same order as they are in the file, as if
 they were specified as I<--delete /some/file> on the command line.
 
+=item B<--copy> SOURCE:DEST (see C<customize> below)
+
+Copy files or directories recursively inside the guest.
+
+Wildcards cannot be used.
+
 =item B<--copy-in> LOCALPATH:REMOTEDIR (see C<customize> below)
 
 Copy local files or directories recursively into the disk image, placing
@@ -125,6 +131,12 @@ Create a directory in the guest.
 
 This uses S<C<mkdir -p>> so any intermediate directories are created, and it
 also works if the directory already exists.
+
+=item B<--move> SOURCE:DEST (see C<customize> below)
+
+Move files or directories inside the guest.
+
+Wildcards cannot be used.
 
 =item B<--no-logfile> (see C<customize> below)
 

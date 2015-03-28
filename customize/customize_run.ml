@@ -171,6 +171,10 @@ exec >>%s 2>&1
        * read when their arguments are met. *)
       ()
 
+    | `Copy (src, dest) ->
+      msg (f_"Copying (in image): %s to %s") src dest;
+      g#cp_a src dest
+
     | `CopyIn (localpath, remotedir) ->
       msg (f_"Copying: %s to %s") localpath remotedir;
       g#copy_in localpath remotedir
@@ -223,6 +227,10 @@ exec >>%s 2>&1
     | `Mkdir dir ->
       msg (f_"Making directory: %s") dir;
       g#mkdir_p dir
+
+    | `Move (src, dest) ->
+      msg (f_"Moving: %s -> %s") src dest;
+      g#mv src dest
 
     | `Password (user, pw) ->
       set_password user pw
@@ -282,7 +290,13 @@ exec >>%s 2>&1
       let perms = statbuf.st_perm land 0o7777 (* sticky & set*id *) in
       g#chmod perms dest;
       let uid, gid = statbuf.st_uid, statbuf.st_gid in
-      g#chown uid gid dest
+      let chown () =
+        try g#chown uid gid dest
+        with Guestfs.Error m as e ->
+          if g#last_errno () = Guestfs.Errno.errno_EPERM
+          then warning "%s" m
+          else raise e in
+      chown ()
 
     | `Write (path, content) ->
       msg (f_"Writing: %s") path;

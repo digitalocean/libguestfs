@@ -519,6 +519,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1fsck
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _btrfs_image
+ * Signature: (J[Ljava/lang/String;Ljava/lang/String;JI)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1image
+  (JNIEnv *, jobject, jlong, jobjectArray, jstring, jlong, jint);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _btrfs_qgroup_assign
  * Signature: (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
@@ -3363,6 +3371,14 @@ JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1gpt
  * Signature: (JLjava/lang/String;I)I
  */
 JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1mbr_1id
+  (JNIEnv *, jobject, jlong, jstring, jint);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _part_get_mbr_part_type
+ * Signature: (JLjava/lang/String;I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1mbr_1part_1type
   (JNIEnv *, jobject, jlong, jstring, jint);
 
 /*

@@ -91,6 +91,7 @@ extern struct command_entry btrfs_filesystem_defragment_cmd_entry;
 extern struct command_entry btrfs_filesystem_resize_cmd_entry;
 extern struct command_entry btrfs_filesystem_sync_cmd_entry;
 extern struct command_entry btrfs_fsck_cmd_entry;
+extern struct command_entry btrfs_image_cmd_entry;
 extern struct command_entry btrfs_qgroup_assign_cmd_entry;
 extern struct command_entry btrfs_qgroup_create_cmd_entry;
 extern struct command_entry btrfs_qgroup_destroy_cmd_entry;
@@ -427,6 +428,7 @@ extern struct command_entry part_get_bootable_cmd_entry;
 extern struct command_entry part_get_gpt_guid_cmd_entry;
 extern struct command_entry part_get_gpt_type_cmd_entry;
 extern struct command_entry part_get_mbr_id_cmd_entry;
+extern struct command_entry part_get_mbr_part_type_cmd_entry;
 extern struct command_entry part_get_name_cmd_entry;
 extern struct command_entry part_get_parttype_cmd_entry;
 extern struct command_entry part_init_cmd_entry;
@@ -719,6 +721,8 @@ btrfs_filesystem_sync, &btrfs_filesystem_sync_cmd_entry
 btrfs-filesystem-sync, &btrfs_filesystem_sync_cmd_entry
 btrfs_fsck, &btrfs_fsck_cmd_entry
 btrfs-fsck, &btrfs_fsck_cmd_entry
+btrfs_image, &btrfs_image_cmd_entry
+btrfs-image, &btrfs_image_cmd_entry
 btrfs_qgroup_assign, &btrfs_qgroup_assign_cmd_entry
 btrfs-qgroup-assign, &btrfs_qgroup_assign_cmd_entry
 btrfs_qgroup_create, &btrfs_qgroup_create_cmd_entry
@@ -1323,6 +1327,8 @@ part_get_gpt_type, &part_get_gpt_type_cmd_entry
 part-get-gpt-type, &part_get_gpt_type_cmd_entry
 part_get_mbr_id, &part_get_mbr_id_cmd_entry
 part-get-mbr-id, &part_get_mbr_id_cmd_entry
+part_get_mbr_part_type, &part_get_mbr_part_type_cmd_entry
+part-get-mbr-part-type, &part_get_mbr_part_type_cmd_entry
 part_get_name, &part_get_name_cmd_entry
 part-get-name, &part_get_name_cmd_entry
 part_get_parttype, &part_get_parttype_cmd_entry

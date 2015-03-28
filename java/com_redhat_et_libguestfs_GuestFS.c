@@ -1640,6 +1640,45 @@ Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1fsck  (JNIEnv *env, jobject obj, 
 }
 
 JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1image  (JNIEnv *env, jobject obj, jlong jg, jobjectArray jsource, jstring jimage, jlong joptargs_bitmask, jint jcompresslevel)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  size_t source_len;
+  char **source;
+  const char *image;
+  struct guestfs_btrfs_image_argv optargs_s;
+  const struct guestfs_btrfs_image_argv *optargs = &optargs_s;
+  size_t i;
+
+  source_len = (*env)->GetArrayLength (env, jsource);
+  source = guestfs_int_safe_malloc (g, sizeof (char *) * (source_len+1));
+  for (i = 0; i < source_len; ++i) {
+    jobject o = (*env)->GetObjectArrayElement (env, jsource, i);
+    source[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
+  }
+  source[source_len] = NULL;
+  image = (*env)->GetStringUTFChars (env, jimage, NULL);
+
+  optargs_s.compresslevel = jcompresslevel;
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_btrfs_image_argv (g, source, image, optargs);
+
+  for (i = 0; i < source_len; ++i) {
+    jobject o = (*env)->GetObjectArrayElement (env, jsource, i);
+    (*env)->ReleaseStringUTFChars (env, o, source[i]);
+  }
+  free (source);
+  (*env)->ReleaseStringUTFChars (env, jimage, image);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1qgroup_1assign  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdst, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
@@ -11253,6 +11292,31 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1mbr_1id  (JNIEnv *env, jobjec
     return -1;
   }
   return (jint) r;
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1mbr_1part_1type  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jstring jr;
+  char *r;
+  const char *device;
+  int partnum;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  partnum = jpartnum;
+
+  r = guestfs_part_get_mbr_part_type (g, device, partnum);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    return NULL;
+  }
+  jr = (*env)->NewStringUTF (env, r);
+  free (r);
+  return jr;
 }
 
 JNIEXPORT jstring JNICALL

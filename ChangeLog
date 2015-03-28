@@ -1,3 +1,121 @@
+commit a1a42d00024043a959766cb047b18542d3837b3a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 27 11:02:18 2015 +0000
+
+    Version 1.29.32.
+
+commit 403e32df23cf44d82bb92bd3cfd55d16d32acafd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 27 10:59:57 2015 +0000
+
+    fuse: Add a note about preserving inode numbers using -o use_ino.
+    
+    Thanks: David Juran
+
+commit e6dadd6aca139792863cd3d274270095ec49a34e
+Author: Maros Zatko <mzatko@redhat.com>
+Date:   Thu Mar 26 16:47:58 2015 +0100
+
+    customize: fix --upload to FAT partition (RHBZ#1196101)
+    
+    Some filesystems, such as FAT doesn't support file
+    ownership, so show warning instead of error on EPERM.
+
+commit d308d0f70346a5140de3f1320825573d92279c7d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 26 11:19:47 2015 +0000
+
+    builder: Fix rhel 5 repository location.
+    
+    RHEL 5 was unusual in having separate sub-repositories (Server, VT,
+    Cluster etc) within the main RHEL-5-Server directory.  Thankfully no
+    other version of RHEL does this.  Previously we set up the repository
+    baseurl incorrectly so it didn't include .../Server in the path.
+    
+    In commit 1a1cb1ec3cdc24262db4de2f8bf12d3479096882, I tried to fix the
+    RHEL 5 repo location to include .../Server.  However that broke the
+    virt-install --location parameter.
+    
+    Use a separate baseurl path, which should fix both problems.
+    
+    This fixes commit 1a1cb1ec3cdc24262db4de2f8bf12d3479096882 and
+    commit 3bc9ba6c8447cde07db057aea76d0d72f5d833df.
+
+commit 6f7c1663c1c180b9f25b25490307f52dfe32afc2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 26 11:18:16 2015 +0000
+
+    Revert "builder: Fix RHEL 5 download location."
+    
+    This reverts commit 1a1cb1ec3cdc24262db4de2f8bf12d3479096882.
+
+commit 6c5451b34fb3026950711e275befabd530804aee
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 26 09:42:52 2015 +0000
+
+    v2v: test-harness: Rebuild v2v_test_harness.cmi if OCaml API changes.
+    
+    The error you would have seen before was:
+    
+    File "v2v_test_harness.ml", line 1:
+    Error: The files ../../ocaml/guestfs.cmi and v2v_test_harness.cmi
+           make inconsistent assumptions over interface Guestfs
+
+commit 6297534091666ccb7a5192763b53a4350cb550e3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 26 09:16:44 2015 +0000
+
+    ocaml: Add Guestfs.Errno.errno_EPERM.
+
+commit 0c396a4bce578486dfc4a38e1f8c47fd5c2836ea
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Tue Mar 24 07:20:17 2015 -0400
+
+    New API: part_get_mbr_part_type for showing partition type
+    
+    This patch will add support for getting partition type
+    of a partiton numbered device.
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit af9aa2eb0582bfced4e16ade73c19c321b91ceb9
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Tue Mar 24 07:20:16 2015 -0400
+
+    parted: introduce enum for whether parted has option -m
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+    
+    RWMJ: Use enum consistently, don't assign the result to int.
+
+commit 52d1b0c593e87cb5d696dcc9d96ad6489c9bed00
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Mon Mar 23 22:51:48 2015 -0400
+
+    New API: btrfs-image
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit ea6d4e553598d7df5c54a0ebe8c7416286fa4ecb
+Author: Maros Zatko <hacxman@gmail.com>
+Date:   Mon Mar 23 19:47:25 2015 +0100
+
+    customize: add --move (RHBZ#1203817).
+    
+    This adds --move SOURCE:DEST, equivalent of calling g#mv src dst.
+    
+    RFE: RHBZ#1203817
+
+commit 943fec0399ca2fc6c06fcc3d45ab74efae3188db
+Author: Maros Zatko <hacxman@gmail.com>
+Date:   Mon Mar 23 19:46:33 2015 +0100
+
+    customize: add --copy (RHBZ#1203817).
+    
+    This adds --copy SOURCE:DEST, equivalent of calling g#cp_a src dst.
+    
+    RFE: RHBZ#1203817
+
 commit c227cbcc14b903a86d37369596e365d93293734e
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon Mar 23 14:03:14 2015 +0000

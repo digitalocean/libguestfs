@@ -53,6 +53,7 @@
 #include <guestfs-gobject/optargs-btrfs_filesystem_defragment.h>
 #include <guestfs-gobject/optargs-btrfs_filesystem_resize.h>
 #include <guestfs-gobject/optargs-btrfs_fsck.h>
+#include <guestfs-gobject/optargs-btrfs_image.h>
 #include <guestfs-gobject/optargs-btrfs_subvolume_create.h>
 #include <guestfs-gobject/optargs-btrfs_subvolume_snapshot.h>
 #include <guestfs-gobject/optargs-compress_device_out.h>

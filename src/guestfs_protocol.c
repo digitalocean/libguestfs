@@ -8675,6 +8675,43 @@ xdr_guestfs_btrfstune_enable_skinny_metadata_extent_refs_args (XDR *xdrs, guestf
 }
 
 bool_t
+xdr_guestfs_btrfs_image_args (XDR *xdrs, guestfs_btrfs_image_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->source.source_val, (u_int *) &objp->source.source_len, ~0,
+		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->image, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->compresslevel))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_part_get_mbr_part_type_args (XDR *xdrs, guestfs_part_get_mbr_part_type_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->partnum))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_part_get_mbr_part_type_ret (XDR *xdrs, guestfs_part_get_mbr_part_type_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->partitiontype, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

@@ -65,6 +65,7 @@
 <ANCHOR id="guestfs-session-btrfs-filesystem-resize" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-filesystem-resize">
 <ANCHOR id="guestfs-session-btrfs-filesystem-sync" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-filesystem-sync">
 <ANCHOR id="guestfs-session-btrfs-fsck" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-fsck">
+<ANCHOR id="guestfs-session-btrfs-image" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-image">
 <ANCHOR id="guestfs-session-btrfs-qgroup-assign" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-qgroup-assign">
 <ANCHOR id="guestfs-session-btrfs-qgroup-create" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-qgroup-create">
 <ANCHOR id="guestfs-session-btrfs-qgroup-destroy" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-qgroup-destroy">
@@ -420,6 +421,7 @@
 <ANCHOR id="guestfs-session-part-get-gpt-guid" href="guestfs/GuestfsSession.html#guestfs-session-part-get-gpt-guid">
 <ANCHOR id="guestfs-session-part-get-gpt-type" href="guestfs/GuestfsSession.html#guestfs-session-part-get-gpt-type">
 <ANCHOR id="guestfs-session-part-get-mbr-id" href="guestfs/GuestfsSession.html#guestfs-session-part-get-mbr-id">
+<ANCHOR id="guestfs-session-part-get-mbr-part-type" href="guestfs/GuestfsSession.html#guestfs-session-part-get-mbr-part-type">
 <ANCHOR id="guestfs-session-part-get-name" href="guestfs/GuestfsSession.html#guestfs-session-part-get-name">
 <ANCHOR id="guestfs-session-part-get-parttype" href="guestfs/GuestfsSession.html#guestfs-session-part-get-parttype">
 <ANCHOR id="guestfs-session-part-init" href="guestfs/GuestfsSession.html#guestfs-session-part-init">
@@ -929,6 +931,20 @@
 <ANCHOR id="GuestfsBtrfsFsck.property-details" href="guestfs/GuestfsBtrfsFsck.html#GuestfsBtrfsFsck.property-details">
 <ANCHOR id="GuestfsBtrfsFsck--repair" href="guestfs/GuestfsBtrfsFsck.html#GuestfsBtrfsFsck--repair">
 <ANCHOR id="GuestfsBtrfsFsck--superblock" href="guestfs/GuestfsBtrfsFsck.html#GuestfsBtrfsFsck--superblock">
+<ANCHOR id="GuestfsBTRFSImage" href="guestfs/GuestfsBTRFSImage.html">
+<ANCHOR id="GuestfsBTRFSImage.functions" href="guestfs/GuestfsBTRFSImage.html#GuestfsBTRFSImage.functions">
+<ANCHOR id="GuestfsBTRFSImage.properties" href="guestfs/GuestfsBTRFSImage.html#GuestfsBTRFSImage.properties">
+<ANCHOR id="GuestfsBTRFSImage.other" href="guestfs/GuestfsBTRFSImage.html#GuestfsBTRFSImage.other">
+<ANCHOR id="GuestfsBTRFSImage.object-hierarchy" href="guestfs/GuestfsBTRFSImage.html#GuestfsBTRFSImage.object-hierarchy">
+<ANCHOR id="GuestfsBTRFSImage.includes" href="guestfs/GuestfsBTRFSImage.html#GuestfsBTRFSImage.includes">
+<ANCHOR id="GuestfsBTRFSImage.description" href="guestfs/GuestfsBTRFSImage.html#GuestfsBTRFSImage.description">
+<ANCHOR id="GuestfsBTRFSImage.functions_details" href="guestfs/GuestfsBTRFSImage.html#GuestfsBTRFSImage.functions_details">
+<ANCHOR id="guestfs-btrfs-image-new" href="guestfs/GuestfsBTRFSImage.html#guestfs-btrfs-image-new">
+<ANCHOR id="GuestfsBTRFSImage.other_details" href="guestfs/GuestfsBTRFSImage.html#GuestfsBTRFSImage.other_details">
+<ANCHOR id="GuestfsBTRFSImage-struct" href="guestfs/GuestfsBTRFSImage.html#GuestfsBTRFSImage-struct">
+<ANCHOR id="GuestfsBTRFSImageClass" href="guestfs/GuestfsBTRFSImage.html#GuestfsBTRFSImageClass">
+<ANCHOR id="GuestfsBTRFSImage.property-details" href="guestfs/GuestfsBTRFSImage.html#GuestfsBTRFSImage.property-details">
+<ANCHOR id="GuestfsBTRFSImage--compresslevel" href="guestfs/GuestfsBTRFSImage.html#GuestfsBTRFSImage--compresslevel">
 <ANCHOR id="GuestfsBTRFSSubvolumeCreate" href="guestfs/GuestfsBTRFSSubvolumeCreate.html">
 <ANCHOR id="GuestfsBTRFSSubvolumeCreate.functions" href="guestfs/GuestfsBTRFSSubvolumeCreate.html#GuestfsBTRFSSubvolumeCreate.functions">
 <ANCHOR id="GuestfsBTRFSSubvolumeCreate.properties" href="guestfs/GuestfsBTRFSSubvolumeCreate.html#GuestfsBTRFSSubvolumeCreate.properties">
