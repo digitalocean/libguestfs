@@ -88,6 +88,7 @@ extern int optgroup_zerofree_available (void);
   int __attribute__((noreturn)) do_btrfs_filesystem_resize (const char *mountpoint, int64_t size) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_filesystem_sync (const char *fs) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_fsck (const char *device, int64_t superblock, int repair) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_image (char *const *source, const char *image, int compresslevel) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_qgroup_assign (const char *src, const char *dst, const char *path) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_qgroup_create (const char *qgroupid, const char *subvolume) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_qgroup_destroy (const char *qgroupid, const char *subvolume) { abort (); } \

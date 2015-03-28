@@ -106,6 +106,7 @@ static int run_btrfs_filesystem_defragment (const char *cmd, size_t argc, char *
 static int run_btrfs_filesystem_resize (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_filesystem_sync (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_fsck (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_image (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_qgroup_assign (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_qgroup_create (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_qgroup_destroy (const char *cmd, size_t argc, char *argv[]);
@@ -429,6 +430,7 @@ static int run_part_get_bootable (const char *cmd, size_t argc, char *argv[]);
 static int run_part_get_gpt_guid (const char *cmd, size_t argc, char *argv[]);
 static int run_part_get_gpt_type (const char *cmd, size_t argc, char *argv[]);
 static int run_part_get_mbr_id (const char *cmd, size_t argc, char *argv[]);
+static int run_part_get_mbr_part_type (const char *cmd, size_t argc, char *argv[]);
 static int run_part_get_name (const char *cmd, size_t argc, char *argv[]);
 static int run_part_get_parttype (const char *cmd, size_t argc, char *argv[]);
 static int run_part_init (const char *cmd, size_t argc, char *argv[]);
@@ -1120,6 +1122,13 @@ struct command_entry btrfs_fsck_cmd_entry = {
   .help = "NAME\n    btrfs-fsck - check a btrfs filesystem\n\nSYNOPSIS\n     btrfs-fsck device [superblock:N] [repair:true|false]\n\nDESCRIPTION\n    Used to check a btrfs filesystem, \"device\" is the device file where the\n    filesystem is stored.\n\n",
   .synopsis = "btrfs-fsck device [superblock:N] [repair:true|false]",
   .run = run_btrfs_fsck
+};
+
+struct command_entry btrfs_image_cmd_entry = {
+  .name = "btrfs-image",
+  .help = "NAME\n    btrfs-image - create an image of a btrfs filesystem\n\nSYNOPSIS\n     btrfs-image source image [compresslevel:N]\n\nDESCRIPTION\n    This is used to create an image of a btrfs filesystem. All data will be\n    zeroed, but metadata and the like is preserved.\n\n",
+  .synopsis = "btrfs-image source image [compresslevel:N]",
+  .run = run_btrfs_image
 };
 
 struct command_entry btrfs_qgroup_assign_cmd_entry = {
@@ -3383,6 +3392,13 @@ struct command_entry part_get_mbr_id_cmd_entry = {
   .run = run_part_get_mbr_id
 };
 
+struct command_entry part_get_mbr_part_type_cmd_entry = {
+  .name = "part-get-mbr-part-type",
+  .help = "NAME\n    part-get-mbr-part-type - get the MBR partition type\n\nSYNOPSIS\n     part-get-mbr-part-type device partnum\n\nDESCRIPTION\n    This returns the partition type of an MBR partition numbered \"partnum\"\n    on device \"device\".\n\n    It returns \"primary\", \"logical\", or \"extended\".\n\n",
+  .synopsis = "part-get-mbr-part-type device partnum",
+  .run = run_part_get_mbr_part_type
+};
+
 struct command_entry part_get_name_cmd_entry = {
   .name = "part-get-name",
   .help = "NAME\n    part-get-name - get partition name\n\nSYNOPSIS\n     part-get-name device partnum\n\nDESCRIPTION\n    This gets the partition name on partition numbered \"partnum\" on device\n    \"device\". Note that partitions are numbered from 1.\n\n    The partition name can only be read on certain types of partition table.\n    This works on \"gpt\" but not on \"mbr\" partitions.\n\n",
@@ -4637,6 +4653,7 @@ list_commands (void)
   printf ("%-20s %s\n", "btrfs-filesystem-resize", _("resize a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-filesystem-sync", _("sync a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-fsck", _("check a btrfs filesystem"));
+  printf ("%-20s %s\n", "btrfs-image", _("create an image of a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-qgroup-assign", _("add a qgroup to a parent qgroup"));
   printf ("%-20s %s\n", "btrfs-qgroup-create", _("create a subvolume quota group"));
   printf ("%-20s %s\n", "btrfs-qgroup-destroy", _("destroy a subvolume quota group"));
@@ -5003,6 +5020,7 @@ list_commands (void)
   printf ("%-20s %s\n", "part-get-gpt-guid", _("get the GUID of a GPT partition"));
   printf ("%-20s %s\n", "part-get-gpt-type", _("get the type GUID of a GPT partition"));
   printf ("%-20s %s\n", "part-get-mbr-id", _("get the MBR type byte (ID byte) from a partition"));
+  printf ("%-20s %s\n", "part-get-mbr-part-type", _("get the MBR partition type"));
   printf ("%-20s %s\n", "part-get-name", _("get partition name"));
   printf ("%-20s %s\n", "part-get-parttype", _("get the partition table type"));
   printf ("%-20s %s\n", "part-init", _("create an empty partition table"));
@@ -7573,6 +7591,79 @@ run_btrfs_fsck (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_image (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  char **source;
+  char *image;
+  struct guestfs_btrfs_image_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_image_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 3) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  source = parse_string_list (argv[i++]);
+  if (source == NULL) goto out_source;
+  image = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (image == NULL) goto out_image;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "compresslevel:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][14], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.compresslevel", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.compresslevel");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.compresslevel = r;
+      }
+      this_mask = GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK;
+      this_arg = "compresslevel";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_btrfs_image_argv (g, source, image, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (image);
+ out_image:
+  guestfs_int_free_string_list (source);
+ out_source:
  out_noargs:
   return ret;
 }
@@ -19008,6 +19099,50 @@ run_part_get_mbr_id (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
   printf ("%s%x\n", r != 0 ? "0x" : "", r);
+ out:
+ out_partnum:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_part_get_mbr_part_type (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  char *r;
+  const char *device;
+  int partnum;
+  size_t i = 0;
+
+  if (argc != 2) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "partnum", "xstrtoll", xerr);
+      goto out_partnum;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
+      goto out_partnum;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    partnum = r;
+  }
+  r = guestfs_part_get_mbr_part_type (g, device, partnum);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
  out:
  out_partnum:
  out_noargs:

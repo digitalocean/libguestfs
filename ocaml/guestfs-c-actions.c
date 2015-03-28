@@ -3069,6 +3069,45 @@ ocaml_guestfs_btrfs_fsck (value gv, value superblockv, value repairv, value devi
 }
 
 /* Automatically generated wrapper for function
+ * val btrfs_image : t -> ?compresslevel:int -> string array -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_btrfs_image (value gv, value compresslevelv, value sourcev, value imagev);
+
+value
+ocaml_guestfs_btrfs_image (value gv, value compresslevelv, value sourcev, value imagev)
+{
+  CAMLparam4 (gv, compresslevelv, sourcev, imagev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("btrfs_image");
+
+  char **source = ocaml_guestfs_strings_val (g, sourcev);
+  char *image = guestfs_int_safe_strdup (g, String_val (imagev));
+  struct guestfs_btrfs_image_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_image_argv *optargs = &optargs_s;
+  if (compresslevelv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK;
+    optargs_s.compresslevel = Int_val (Field (compresslevelv, 0));
+  }
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_image_argv (g, source, image, optargs);
+  caml_leave_blocking_section ();
+  guestfs_int_free_string_list (source);
+  free (image);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "btrfs_image");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val btrfs_qgroup_assign : t -> string -> string -> string -> unit
  */
 
@@ -15391,6 +15430,39 @@ ocaml_guestfs_part_get_mbr_id (value gv, value devicev, value partnumv)
     ocaml_guestfs_raise_error (g, "part_get_mbr_id");
 
   rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val part_get_mbr_part_type : t -> string -> int -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_part_get_mbr_part_type (value gv, value devicev, value partnumv);
+
+value
+ocaml_guestfs_part_get_mbr_part_type (value gv, value devicev, value partnumv)
+{
+  CAMLparam3 (gv, devicev, partnumv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("part_get_mbr_part_type");
+
+  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  int partnum = Int_val (partnumv);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_get_mbr_part_type (g, device, partnum);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "part_get_mbr_part_type");
+
+  rv = caml_copy_string (r);
+  free (r);
   CAMLreturn (rv);
 }
 

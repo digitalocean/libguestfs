@@ -183,6 +183,7 @@ gboolean guestfs_session_btrfs_filesystem_defragment (GuestfsSession *session, c
 gboolean guestfs_session_btrfs_filesystem_resize (GuestfsSession *session, const gchar *mountpoint, GuestfsBTRFSFilesystemResize *optargs, GError **err);
 gboolean guestfs_session_btrfs_filesystem_sync (GuestfsSession *session, const gchar *fs, GError **err);
 gboolean guestfs_session_btrfs_fsck (GuestfsSession *session, const gchar *device, GuestfsBtrfsFsck *optargs, GError **err);
+gboolean guestfs_session_btrfs_image (GuestfsSession *session, gchar *const *source, const gchar *image, GuestfsBTRFSImage *optargs, GError **err);
 gboolean guestfs_session_btrfs_qgroup_assign (GuestfsSession *session, const gchar *src, const gchar *dst, const gchar *path, GError **err);
 gboolean guestfs_session_btrfs_qgroup_create (GuestfsSession *session, const gchar *qgroupid, const gchar *subvolume, GError **err);
 gboolean guestfs_session_btrfs_qgroup_destroy (GuestfsSession *session, const gchar *qgroupid, const gchar *subvolume, GError **err);
@@ -539,6 +540,7 @@ gint8 guestfs_session_part_get_bootable (GuestfsSession *session, const gchar *d
 gchar *guestfs_session_part_get_gpt_guid (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
 gchar *guestfs_session_part_get_gpt_type (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
 gint32 guestfs_session_part_get_mbr_id (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
+gchar *guestfs_session_part_get_mbr_part_type (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
 gchar *guestfs_session_part_get_name (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
 gchar *guestfs_session_part_get_parttype (GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_part_init (GuestfsSession *session, const gchar *device, const gchar *parttype, GError **err);

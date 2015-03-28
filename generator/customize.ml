@@ -85,6 +85,16 @@ as if they were specified as I<--delete /some/file> on the command
 line.";
   };
 
+  { op_name = "copy";
+    op_type = StringPair "SOURCE:DEST";
+    op_discrim = "`Copy";
+    op_shortdesc = "Copy files in disk image";
+    op_pod_longdesc = "\
+Copy files or directories recursively inside the guest.
+
+Wildcards cannot be used.";
+  };
+
   { op_name = "copy-in";
     op_type = StringPair "LOCALPATH:REMOTEDIR";
     op_discrim = "`CopyIn";
@@ -212,6 +222,16 @@ This uses S<C<mkdir -p>> so any intermediate directories are created,
 and it also works if the directory already exists.";
   };
 
+  { op_name = "move";
+    op_type = StringPair "SOURCE:DEST";
+    op_discrim = "`Move";
+    op_shortdesc = "Move files in disk image";
+    op_pod_longdesc = "\
+Move files or directories inside the guest.
+
+Wildcards cannot be used.";
+  };
+
   { op_name = "password";
     op_type = UserPasswordSelector "USER:SELECTOR";
     op_discrim = "`Password";
@@ -324,6 +344,14 @@ and also for more keys for each user."
     op_pod_longdesc = "\
 This command truncates \"path\" to a zero-length file. The file must exist
 already.";
+  };
+
+  { op_name = "truncate-recursive";
+    op_type = String "PATH";
+    op_discrim = "`TruncateRecursive";
+    op_shortdesc = "Recursively truncate all files in directory";
+    op_pod_longdesc = "\
+This command recursively truncates all files under \"path\" to zero-length.";
   };
 
   { op_name = "timezone";

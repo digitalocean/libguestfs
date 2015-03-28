@@ -37,6 +37,7 @@ GUESTFSD_EXT_CMD(str_btrfstune, btrfstune);
 GUESTFSD_EXT_CMD(str_btrfsck, btrfsck);
 GUESTFSD_EXT_CMD(str_mkfs_btrfs, mkfs.btrfs);
 GUESTFSD_EXT_CMD(str_umount, umount);
+GUESTFSD_EXT_CMD(str_btrfsimage, btrfs-image);
 
 int
 optgroup_btrfs_available (void)
@@ -1210,12 +1211,45 @@ do_btrfs_qgroup_destroy (const char *qgroupid, const char *subvolume)
   return 0;
 }
 
+/* btrfs qgroup show command change default output to
+ * binary prefix since v3.18.2, such as KiB;
+ * also introduced '--raw' to keep traditional behaviour.
+ * We could check wheter 'btrfs qgroup show' support '--raw'
+ * option by checking the output of
+ * 'btrfs qgroup show' support --help' command.
+ */
+static int
+test_btrfs_qgroup_show_raw_opt (void)
+{
+  static int result = -1;
+  if (result != -1)
+    return result;
+
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+
+  int r = commandr (&out, &err, str_btrfs, "qgroup", "show", "--help", NULL);
+
+  if (r == -1) {
+    reply_with_error ("btrfs qgroup show --help: %s", err);
+    return -1;
+  }
+
+  if (strstr (out, "--raw") == NULL)
+    result = 0;
+  else
+    result = 1;
+
+  return result;
+}
+
 guestfs_int_btrfsqgroup_list *
 do_btrfs_qgroup_show (const char *path)
 {
   const size_t MAX_ARGS = 64;
   const char *argv[MAX_ARGS];
   size_t i = 0;
+  int has_raw_opt = test_btrfs_qgroup_show_raw_opt ();
   CLEANUP_FREE char *path_buf = NULL;
   CLEANUP_FREE char *err = NULL;
   CLEANUP_FREE char *out = NULL;
@@ -1231,6 +1265,8 @@ do_btrfs_qgroup_show (const char *path)
   ADD_ARG (argv, i, str_btrfs);
   ADD_ARG (argv, i, "qgroup");
   ADD_ARG (argv, i, "show");
+  if (has_raw_opt > 0)
+    ADD_ARG (argv, i, "--raw");
   ADD_ARG (argv, i, path_buf);
   ADD_ARG (argv, i, NULL);
 
@@ -2000,6 +2036,48 @@ do_btrfstune_enable_skinny_metadata_extent_refs (const char *device)
   r = commandv (&out, &err, argv);
   if (r == -1) {
     reply_with_error ("%s: %s", device, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_image (char *const *sources, const char *image,
+	int compresslevel)
+{
+  size_t nr_sources =  count_strings (sources);
+  const size_t MAX_ARGS = 64 + nr_sources;
+  const char *argv[MAX_ARGS];
+  size_t i = 0, j;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
+  char compresslevel_s[64];
+  int r;
+
+  if (nr_sources == 0) {
+      reply_with_error ("list of sources must be non-empty");
+      return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfsimage);
+
+  if ((optargs_bitmask & GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK)
+    && compresslevel >= 0) {
+    snprintf (compresslevel_s, sizeof compresslevel_s, "%d", compresslevel);
+    ADD_ARG (argv, i, "-c");
+    ADD_ARG (argv, i, compresslevel_s);
+  }
+
+  for (j = 0; j < nr_sources; ++j)
+    ADD_ARG (argv, i, sources[j]);
+
+  ADD_ARG (argv, i, image);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s %s: %s", sources[0], image, err);
     return -1;
   }
 

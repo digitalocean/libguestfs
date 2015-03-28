@@ -1285,6 +1285,16 @@ class GuestFS(object):
         r = libguestfsmod.btrfs_fsck (self._o, device, superblock, repair)
         return r
 
+    def btrfs_image (self, source, image, compresslevel=None):
+        """This is used to create an image of a btrfs filesystem.
+        All data will be zeroed, but metadata and the like is
+        preserved.
+        """
+        source = list (source)
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_image (self._o, source, image, compresslevel)
+        return r
+
     def btrfs_qgroup_assign (self, src, dst, path):
         """Add qgroup "src" to parent qgroup "dst". This command
         can group several qgroups into a parent qgroup to share
@@ -6907,6 +6917,16 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.part_get_mbr_id (self._o, device, partnum)
+        return r
+
+    def part_get_mbr_part_type (self, device, partnum):
+        """This returns the partition type of an MBR partition
+        numbered "partnum" on device "device".
+        
+        It returns "primary", "logical", or "extended".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.part_get_mbr_part_type (self._o, device, partnum)
         return r
 
     def part_get_name (self, device, partnum):

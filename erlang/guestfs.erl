@@ -80,6 +80,7 @@
 -export([btrfs_filesystem_resize/2, btrfs_filesystem_resize/3]).
 -export([btrfs_filesystem_sync/2]).
 -export([btrfs_fsck/2, btrfs_fsck/3]).
+-export([btrfs_image/3, btrfs_image/4]).
 -export([btrfs_qgroup_assign/4]).
 -export([btrfs_qgroup_create/3]).
 -export([btrfs_qgroup_destroy/3]).
@@ -448,6 +449,7 @@
 -export([part_get_gpt_guid/3]).
 -export([part_get_gpt_type/3]).
 -export([part_get_mbr_id/3]).
+-export([part_get_mbr_part_type/3]).
 -export([part_get_name/3]).
 -export([part_get_parttype/2]).
 -export([part_init/3]).
@@ -843,6 +845,11 @@ btrfs_fsck(G, Device, Optargs) ->
   call_port(G, {btrfs_fsck, Device, Optargs}).
 btrfs_fsck(G, Device) ->
   btrfs_fsck(G, Device, []).
+
+btrfs_image(G, Source, Image, Optargs) ->
+  call_port(G, {btrfs_image, Source, Image, Optargs}).
+btrfs_image(G, Source, Image) ->
+  btrfs_image(G, Source, Image, []).
 
 btrfs_qgroup_assign(G, Src, Dst, Path) ->
   call_port(G, {btrfs_qgroup_assign, Src, Dst, Path}).
@@ -2031,6 +2038,9 @@ part_get_gpt_type(G, Device, Partnum) ->
 
 part_get_mbr_id(G, Device, Partnum) ->
   call_port(G, {part_get_mbr_id, Device, Partnum}).
+
+part_get_mbr_part_type(G, Device, Partnum) ->
+  call_port(G, {part_get_mbr_part_type, Device, Partnum}).
 
 part_get_name(G, Device, Partnum) ->
   call_port(G, {part_get_name, Device, Partnum}).

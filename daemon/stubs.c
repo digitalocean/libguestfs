@@ -16719,6 +16719,97 @@ done_no_free:
   return;
 }
 
+static void
+btrfs_image_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_image_args args;
+  CLEANUP_FREE_STRING_LIST char **source = NULL;
+  const char *image;
+  int compresslevel;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_image_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  /* Copy the string list and apply device name translation
+   * to each one.
+   */
+  source = calloc (args.source.source_len+1, sizeof (char *));
+  {
+    size_t i;
+    for (i = 0; i < args.source.source_len; ++i)
+      RESOLVE_DEVICE (args.source.source_val[i], source[i],
+                      , goto done);
+    source[i] = NULL;
+  }
+  image = args.image;
+  ABS_PATH (image, , goto done);
+  compresslevel = args.compresslevel;
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_image (source, image, compresslevel);
+  if (r == -1)
+    /* do_btrfs_image has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_image_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+part_get_mbr_part_type_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_part_get_mbr_part_type_args args;
+  CLEANUP_FREE char *device = NULL;
+  int partnum;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_part_get_mbr_part_type_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.device, device, , goto done);
+  partnum = args.partnum;
+
+  r = do_part_get_mbr_part_type (device, partnum);
+  if (r == NULL)
+    /* do_part_get_mbr_part_type has already called reply_with_error */
+    goto done;
+
+  struct guestfs_part_get_mbr_part_type_ret ret;
+  ret.partitiontype = r;
+  reply ((xdrproc_t) &xdr_guestfs_part_get_mbr_part_type_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_part_get_mbr_part_type_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -18041,6 +18132,12 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_BTRFSTUNE_ENABLE_SKINNY_METADATA_EXTENT_REFS:
       btrfstune_enable_skinny_metadata_extent_refs_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_IMAGE:
+      btrfs_image_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PART_GET_MBR_PART_TYPE:
+      part_get_mbr_part_type_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

@@ -3275,6 +3275,73 @@ ruby_guestfs_btrfs_fsck (int argc, VALUE *argv, VALUE gv)
 
 /*
  * call-seq:
+ *   g.btrfs_image(source, image, {optargs...}) -> nil
+ *
+ * create an image of a btrfs filesystem
+ *
+ * This is used to create an image of a btrfs filesystem.
+ * All data will be zeroed, but metadata and the like is
+ * preserved.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_image+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_image]).
+ */
+static VALUE
+ruby_guestfs_btrfs_image (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_image");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE sourcev = argv[0];
+  volatile VALUE imagev = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
+
+  char **source;
+  Check_Type (sourcev, T_ARRAY);
+  {
+    size_t i, len;
+    len = RARRAY_LEN (sourcev);
+    source = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE v = rb_ary_entry (sourcev, i);
+      source[i] = StringValueCStr (v);
+    }
+    source[len] = NULL;
+  }
+  const char *image = StringValueCStr (imagev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_btrfs_image_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_image_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("compresslevel")));
+  if (v != Qnil) {
+    optargs_s.compresslevel = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_btrfs_image_argv (g, source, image, optargs);
+  free (source);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
  *   g.btrfs_qgroup_assign(src, dst, path) -> nil
  *
  * add a qgroup to a parent qgroup
@@ -19779,6 +19846,43 @@ ruby_guestfs_part_get_mbr_id (VALUE gv, VALUE devicev, VALUE partnumv)
 
 /*
  * call-seq:
+ *   g.part_get_mbr_part_type(device, partnum) -> string
+ *
+ * get the MBR partition type
+ *
+ * This returns the partition type of an MBR partition
+ * numbered "partnum" on device "device".
+ * 
+ * It returns "primary", "logical", or "extended".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_part_get_mbr_part_type+[http://libguestfs.org/guestfs.3.html#guestfs_part_get_mbr_part_type]).
+ */
+static VALUE
+ruby_guestfs_part_get_mbr_part_type (VALUE gv, VALUE devicev, VALUE partnumv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_get_mbr_part_type");
+
+  const char *device = StringValueCStr (devicev);
+  int partnum = NUM2INT (partnumv);
+
+  char *r;
+
+  r = guestfs_part_get_mbr_part_type (g, device, partnum);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
  *   g.part_get_name(device, partnum) -> string
  *
  * get partition name
@@ -27625,6 +27729,8 @@ Init__guestfs (void)
         ruby_guestfs_btrfs_filesystem_sync, 1);
   rb_define_method (c_guestfs, "btrfs_fsck",
         ruby_guestfs_btrfs_fsck, -1);
+  rb_define_method (c_guestfs, "btrfs_image",
+        ruby_guestfs_btrfs_image, -1);
   rb_define_method (c_guestfs, "btrfs_qgroup_assign",
         ruby_guestfs_btrfs_qgroup_assign, 3);
   rb_define_method (c_guestfs, "btrfs_qgroup_create",
@@ -28361,6 +28467,8 @@ Init__guestfs (void)
         ruby_guestfs_part_get_gpt_type, 2);
   rb_define_method (c_guestfs, "part_get_mbr_id",
         ruby_guestfs_part_get_mbr_id, 2);
+  rb_define_method (c_guestfs, "part_get_mbr_part_type",
+        ruby_guestfs_part_get_mbr_part_type, 2);
   rb_define_method (c_guestfs, "part_get_name",
         ruby_guestfs_part_get_name, 2);
   rb_define_method (c_guestfs, "part_get_parttype",

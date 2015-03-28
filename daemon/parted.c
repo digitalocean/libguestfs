@@ -33,6 +33,13 @@ GUESTFSD_EXT_CMD(str_parted, parted);
 GUESTFSD_EXT_CMD(str_sfdisk, sfdisk);
 GUESTFSD_EXT_CMD(str_sgdisk, sgdisk);
 
+enum parted_has_m_opt {
+  PARTED_INVALID = -1,
+  /* parted do not support -m option */
+  PARTED_OPT_NO_M = 0,
+  PARTED_OPT_HAS_M = 1,
+};
+
 /* Notes:
  *
  * Parted 1.9 sends error messages to stdout, hence use of the
@@ -317,10 +324,10 @@ get_table_field (const char *line, int n)
  * print_partition_table below.  Test for this option the first time
  * this function is called.
  */
-static int
+static enum parted_has_m_opt
 test_parted_m_opt (void)
 {
-  static int result = -1;
+  static enum parted_has_m_opt result = PARTED_INVALID;
 
   if (result >= 0)
     return result;
@@ -334,20 +341,21 @@ test_parted_m_opt (void)
   }
 
   if (err && strstr (err, "invalid option -- m"))
-    result = 0;
+    result = PARTED_OPT_NO_M;
   else
-    result = 1;
+    result = PARTED_OPT_HAS_M;
   return result;
 }
 
 static char *
-print_partition_table (const char *device, int parted_has_m_opt)
+print_partition_table (const char *device,
+                       enum parted_has_m_opt parted_has_m_opt)
 {
   char *out;
   CLEANUP_FREE char *err = NULL;
   int r;
 
-  if (parted_has_m_opt)
+  if (PARTED_OPT_HAS_M == parted_has_m_opt)
     r = command (&out, &err, str_parted, "-m", "--", device,
                  "unit", "b",
                  "print", NULL);
@@ -369,15 +377,15 @@ print_partition_table (const char *device, int parted_has_m_opt)
 char *
 do_part_get_parttype (const char *device)
 {
-  int parted_has_m_opt = test_parted_m_opt ();
-  if (parted_has_m_opt == -1)
+  enum parted_has_m_opt parted_has_m_opt = test_parted_m_opt ();
+  if (parted_has_m_opt == PARTED_INVALID)
     return NULL;
 
   CLEANUP_FREE char *out = print_partition_table (device, parted_has_m_opt);
   if (!out)
     return NULL;
 
-  if (parted_has_m_opt) {
+  if (PARTED_OPT_HAS_M == parted_has_m_opt) {
     /* New-style parsing using the "machine-readable" format from
      * 'parted -m'.
      */
@@ -451,8 +459,8 @@ do_part_get_parttype (const char *device)
 guestfs_int_partition_list *
 do_part_list (const char *device)
 {
-  int parted_has_m_opt = test_parted_m_opt ();
-  if (parted_has_m_opt == -1)
+  enum parted_has_m_opt parted_has_m_opt = test_parted_m_opt ();
+  if (parted_has_m_opt == PARTED_INVALID)
     return NULL;
 
   CLEANUP_FREE char *out = print_partition_table (device, parted_has_m_opt);
@@ -466,7 +474,7 @@ do_part_list (const char *device)
 
   guestfs_int_partition_list *r;
 
-  if (parted_has_m_opt) {
+  if (PARTED_OPT_HAS_M == parted_has_m_opt) {
     /* New-style parsing using the "machine-readable" format from
      * 'parted -m'.
      *
@@ -577,8 +585,8 @@ do_part_get_bootable (const char *device, int partnum)
     return -1;
   }
 
-  int parted_has_m_opt = test_parted_m_opt ();
-  if (parted_has_m_opt == -1)
+  enum parted_has_m_opt parted_has_m_opt = test_parted_m_opt ();
+  if (parted_has_m_opt == PARTED_INVALID)
     return -1;
 
   CLEANUP_FREE char *out = print_partition_table (device, parted_has_m_opt);
@@ -590,7 +598,7 @@ do_part_get_bootable (const char *device, int partnum)
   if (!lines)
     return -1;
 
-  if (parted_has_m_opt) {
+  if (PARTED_OPT_HAS_M == parted_has_m_opt) {
     /* New-style parsing using the "machine-readable" format from
      * 'parted -m'.
      *
@@ -964,15 +972,15 @@ do_part_get_name (const char *device, int partnum)
     return NULL;
 
   if (STREQ (parttype, "gpt")) {
-    int parted_has_m_opt = test_parted_m_opt ();
-    if (parted_has_m_opt == -1)
+    enum parted_has_m_opt parted_has_m_opt = test_parted_m_opt ();
+    if (parted_has_m_opt == PARTED_INVALID)
       return NULL;
 
     CLEANUP_FREE char *out = print_partition_table (device, parted_has_m_opt);
     if (!out)
       return NULL;
 
-    if (parted_has_m_opt) {
+    if (PARTED_OPT_HAS_M == parted_has_m_opt) {
       /* New-style parsing using the "machine-readable" format from
        * 'parted -m'.
        */
@@ -1021,4 +1029,110 @@ do_part_get_name (const char *device, int partnum)
 
   reply_with_error ("cannot get the partition name from '%s' layouts", parttype);
   return NULL;
+}
+
+char *
+do_part_get_mbr_part_type (const char *device, int partnum)
+{
+  CLEANUP_FREE char *parttype;
+  char *part_type;
+
+  parttype = do_part_get_parttype (device);
+  if (parttype == NULL)
+    return NULL;
+
+  /* machine parseable output by 'parted -m' did not provide
+   * partition type info.
+   * Use traditional style.
+   */
+  CLEANUP_FREE char *out = print_partition_table (device, PARTED_OPT_NO_M);
+  if (!out)
+    return NULL;
+
+  CLEANUP_FREE_STRING_LIST char **lines = split_lines (out);
+
+  if (!lines)
+    return NULL;
+
+  size_t start = 0, end = 0, row;
+
+  for (row = 0; lines[row] != NULL; ++row)
+    if (STRPREFIX (lines[row], "Number")) {
+      start = row + 1;
+      break;
+    }
+
+  if (start == 0) {
+    reply_with_error ("parted output has no \"Number\" line");
+    return NULL;
+  }
+
+  for (row = start; lines[row] != NULL; ++row)
+    if (STREQ (lines[row], "")) {
+      end = row;
+      break;
+    }
+
+  if (end == 0) {
+    reply_with_error ("parted output has no blank after end of table");
+    return NULL;
+  }
+
+  /* Now parse the lines. */
+  size_t i;
+  int64_t temp_int64;
+  int part_num;
+  char temp_type[16] = {'\0'};
+  for (i = 0, row = start;  row < end; ++i, ++row) {
+    if (STREQ (parttype, "gpt")) {
+      memcpy (temp_type, "primary", strlen("primary"));
+      if (sscanf (lines[row], "%d%" SCNi64 "B%" SCNi64 "B%" SCNi64 "B",
+               &part_num,
+               &temp_int64,
+               &temp_int64,
+               &temp_int64) != 4) {
+        reply_with_error ("could not parse row from output of parted print command: %s", lines[row]);
+        return NULL;
+      }
+    } else {
+      if (sscanf (lines[row], "%d%" SCNi64 "B%" SCNi64 "B%" SCNi64 "B" "%15s",
+               &part_num,
+               &temp_int64,
+               &temp_int64,
+               &temp_int64,
+               temp_type) != 5) {
+        reply_with_error ("could not parse row from output of parted print command: %s", lines[row]);
+        return NULL;
+      }
+    }
+
+    if (part_num != partnum)
+        continue;
+
+    if (STRPREFIX (temp_type, "primary")) {
+      part_type = strdup("primary");
+      if (part_type == NULL)
+          goto error;
+    } else if (STRPREFIX (temp_type, "logical")) {
+      part_type = strdup("logical");
+      if (part_type == NULL)
+          goto error;
+    } else if (STRPREFIX (temp_type, "extended")) {
+      part_type = strdup("extended");
+      if (part_type == NULL)
+          goto error;
+    } else
+        goto error;
+
+    return part_type;
+  }
+
+  if (row == end) {
+    reply_with_error ("could not find partnum: %d", partnum);
+    return NULL;
+  }
+
+  error:
+    reply_with_error ("strdup failed");
+    return NULL;
 }

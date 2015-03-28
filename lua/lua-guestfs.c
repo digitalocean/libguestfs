@@ -1864,6 +1864,40 @@ guestfs_lua_btrfs_fsck (lua_State *L)
 }
 
 static int
+guestfs_lua_btrfs_image (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  char **source;
+  const char *image;
+  struct guestfs_btrfs_image_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_image_argv *optargs = &optargs_s;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_image");
+
+  source = get_string_list (L, 2);
+  image = luaL_checkstring (L, 3);
+
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 4) == LUA_TTABLE) {
+    OPTARG_IF_SET (4, "compresslevel",
+      optargs_s.bitmask |= GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK;
+      optargs_s.compresslevel = luaL_checkint (L, -1);
+    );
+  }
+
+  r = guestfs_btrfs_image_argv (g, source, image, optargs);
+  free (source);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_btrfs_qgroup_assign (lua_State *L)
 {
   int r;
@@ -10868,6 +10902,31 @@ guestfs_lua_part_get_mbr_id (lua_State *L)
 }
 
 static int
+guestfs_lua_part_get_mbr_part_type (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  int partnum;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_get_mbr_part_type");
+
+  device = luaL_checkstring (L, 2);
+  partnum = luaL_checkint (L, 3);
+
+  r = guestfs_part_get_mbr_part_type (g, device, partnum);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
+  return 1;
+}
+
+static int
 guestfs_lua_part_get_name (lua_State *L)
 {
   char *r;
@@ -16207,6 +16266,7 @@ static luaL_Reg methods[] = {
   { "btrfs_filesystem_resize", guestfs_lua_btrfs_filesystem_resize },
   { "btrfs_filesystem_sync", guestfs_lua_btrfs_filesystem_sync },
   { "btrfs_fsck", guestfs_lua_btrfs_fsck },
+  { "btrfs_image", guestfs_lua_btrfs_image },
   { "btrfs_qgroup_assign", guestfs_lua_btrfs_qgroup_assign },
   { "btrfs_qgroup_create", guestfs_lua_btrfs_qgroup_create },
   { "btrfs_qgroup_destroy", guestfs_lua_btrfs_qgroup_destroy },
@@ -16563,6 +16623,7 @@ static luaL_Reg methods[] = {
   { "part_get_gpt_guid", guestfs_lua_part_get_gpt_guid },
   { "part_get_gpt_type", guestfs_lua_part_get_gpt_type },
   { "part_get_mbr_id", guestfs_lua_part_get_mbr_id },
+  { "part_get_mbr_part_type", guestfs_lua_part_get_mbr_part_type },
   { "part_get_name", guestfs_lua_part_get_name },
   { "part_get_parttype", guestfs_lua_part_get_parttype },
   { "part_init", guestfs_lua_part_init },

@@ -379,6 +379,7 @@ am__objects_1 = libguestfs_gobject_1_0_la-session.lo \
 	libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_defragment.lo \
 	libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.lo \
 	libguestfs_gobject_1_0_la-optargs-btrfs_fsck.lo \
+	libguestfs_gobject_1_0_la-optargs-btrfs_image.lo \
 	libguestfs_gobject_1_0_la-optargs-btrfs_subvolume_create.lo \
 	libguestfs_gobject_1_0_la-optargs-btrfs_subvolume_snapshot.lo \
 	libguestfs_gobject_1_0_la-optargs-compress_device_out.lo \
@@ -1723,6 +1724,7 @@ guestfs_gobject_headers = \
   include/guestfs-gobject/optargs-btrfs_filesystem_defragment.h \
   include/guestfs-gobject/optargs-btrfs_filesystem_resize.h \
   include/guestfs-gobject/optargs-btrfs_fsck.h \
+  include/guestfs-gobject/optargs-btrfs_image.h \
   include/guestfs-gobject/optargs-btrfs_subvolume_create.h \
   include/guestfs-gobject/optargs-btrfs_subvolume_snapshot.h \
   include/guestfs-gobject/optargs-compress_device_out.h \
@@ -1808,6 +1810,7 @@ guestfs_gobject_sources = \
   src/optargs-btrfs_filesystem_defragment.c \
   src/optargs-btrfs_filesystem_resize.c \
   src/optargs-btrfs_fsck.c \
+  src/optargs-btrfs_image.c \
   src/optargs-btrfs_subvolume_create.c \
   src/optargs-btrfs_subvolume_snapshot.c \
   src/optargs-compress_device_out.c \
@@ -1998,6 +2001,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_defragment.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_fsck.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_image.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_subvolume_create.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_subvolume_snapshot.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-compress_device_out.Plo@am__quote@
@@ -2326,6 +2330,13 @@ libguestfs_gobject_1_0_la-optargs-btrfs_fsck.lo: src/optargs-btrfs_fsck.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-btrfs_fsck.c' object='libguestfs_gobject_1_0_la-optargs-btrfs_fsck.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-btrfs_fsck.lo `test -f 'src/optargs-btrfs_fsck.c' || echo '$(srcdir)/'`src/optargs-btrfs_fsck.c
+
+libguestfs_gobject_1_0_la-optargs-btrfs_image.lo: src/optargs-btrfs_image.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-btrfs_image.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_image.Tpo -c -o libguestfs_gobject_1_0_la-optargs-btrfs_image.lo `test -f 'src/optargs-btrfs_image.c' || echo '$(srcdir)/'`src/optargs-btrfs_image.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_image.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_image.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-btrfs_image.c' object='libguestfs_gobject_1_0_la-optargs-btrfs_image.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-btrfs_image.lo `test -f 'src/optargs-btrfs_image.c' || echo '$(srcdir)/'`src/optargs-btrfs_image.c
 
 libguestfs_gobject_1_0_la-optargs-btrfs_subvolume_create.lo: src/optargs-btrfs_subvolume_create.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-btrfs_subvolume_create.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_subvolume_create.Tpo -c -o libguestfs_gobject_1_0_la-optargs-btrfs_subvolume_create.lo `test -f 'src/optargs-btrfs_subvolume_create.c' || echo '$(srcdir)/'`src/optargs-btrfs_subvolume_create.c

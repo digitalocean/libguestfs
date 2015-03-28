@@ -358,6 +358,7 @@ module Guestfs (
   part_get_gpt_guid,
   part_get_gpt_type,
   part_get_mbr_id,
+  part_get_mbr_part_type,
   part_get_name,
   part_get_parttype,
   part_init,
@@ -4588,6 +4589,18 @@ part_get_mbr_id h device partnum = do
       err <- last_error h
       fail err
     else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs.h guestfs_part_get_mbr_part_type" c_part_get_mbr_part_type
+  :: GuestfsP -> CString -> CInt -> IO CString
+
+part_get_mbr_part_type :: GuestfsH -> String -> Int -> IO String
+part_get_mbr_part_type h device partnum = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_get_mbr_part_type p device (fromIntegral partnum))
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
 
 foreign import ccall unsafe "guestfs.h guestfs_part_get_name" c_part_get_name
   :: GuestfsP -> CString -> CInt -> IO CString

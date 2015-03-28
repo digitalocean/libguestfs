@@ -193,6 +193,7 @@
 #define GUESTFS_CPIO_OUT_FORMAT_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK (UINT64_C(1)<<0)
 extern int do_mount (const mountable_t *mountable, const char *mountpoint);
 extern int do_sync (void);
 extern int do_touch (const char *path);
@@ -633,5 +634,7 @@ extern guestfs_int_btrfsscrub *do_btrfs_scrub_status (const char *path);
 extern int do_btrfstune_seeding (const char *device, int seeding);
 extern int do_btrfstune_enable_extended_inode_refs (const char *device);
 extern int do_btrfstune_enable_skinny_metadata_extent_refs (const char *device);
+extern int do_btrfs_image (char *const *source, const char *image, int compresslevel);
+extern char *do_part_get_mbr_part_type (const char *device, int partnum);
 
 #endif /* GUESTFSD_ACTIONS_H */

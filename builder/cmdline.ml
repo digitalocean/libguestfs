@@ -313,8 +313,9 @@ read the man page virt-builder(1).
           | `Delete _ | `Edit _ | `FirstbootCommand _ | `FirstbootPackages _
           | `FirstbootScript _ | `Hostname _ | `Link _ | `Mkdir _
           | `Password _ | `RootPassword _ | `Scrub _ | `SSHInject _
-          | `Truncate _ | `Timezone _ | `Upload _ | `Write _ | `Chmod _
-          | `CommandsFromFile _ | `CopyIn _ -> false
+          | `Timezone _ | `Truncate _ | `TruncateRecursive _
+          | `Upload _ | `Write _ | `Chmod _
+          | `CommandsFromFile _ | `CopyIn _ | `Copy _ | `Move _ -> false
         ) ops.ops in
         if requires_execute_on_guest then
           error (f_"sorry, cannot run commands on a guest with a different architecture");

@@ -56,6 +56,7 @@ L</guestfs_btrfs_filesystem_defragment>
 L</guestfs_btrfs_filesystem_resize>
 L</guestfs_btrfs_filesystem_sync>
 L</guestfs_btrfs_fsck>
+L</guestfs_btrfs_image>
 L</guestfs_btrfs_qgroup_assign>
 L</guestfs_btrfs_qgroup_create>
 L</guestfs_btrfs_qgroup_destroy>

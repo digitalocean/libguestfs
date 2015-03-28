@@ -159,6 +159,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_btrfs_filesystem_resize, NULL)
   PHP_FE (guestfs_btrfs_filesystem_sync, NULL)
   PHP_FE (guestfs_btrfs_fsck, NULL)
+  PHP_FE (guestfs_btrfs_image, NULL)
   PHP_FE (guestfs_btrfs_qgroup_assign, NULL)
   PHP_FE (guestfs_btrfs_qgroup_create, NULL)
   PHP_FE (guestfs_btrfs_qgroup_destroy, NULL)
@@ -515,6 +516,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_part_get_gpt_guid, NULL)
   PHP_FE (guestfs_part_get_gpt_type, NULL)
   PHP_FE (guestfs_part_get_mbr_id, NULL)
+  PHP_FE (guestfs_part_get_mbr_part_type, NULL)
   PHP_FE (guestfs_part_get_name, NULL)
   PHP_FE (guestfs_part_get_parttype, NULL)
   PHP_FE (guestfs_part_init, NULL)
@@ -2927,6 +2929,53 @@ PHP_FUNCTION (guestfs_btrfs_fsck)
 
   int r;
   r = guestfs_btrfs_fsck_argv (g, device, optargs);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_btrfs_image)
+{
+  zval *z_g;
+  guestfs_h *g;
+  zval *z_source;
+  char **source;
+  char *image;
+  int image_size;
+  struct guestfs_btrfs_image_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_image_argv *optargs = &optargs_s;
+  long optargs_t_compresslevel = -1;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "ras|l",
+        &z_g, &z_source, &image, &image_size, &optargs_t_compresslevel) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  source = get_stringlist (z_source);
+
+  if (strlen (image) != image_size) {
+    fprintf (stderr, "libguestfs: btrfs_image: parameter 'image' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (optargs_t_compresslevel != -1) {
+    optargs_s.compresslevel = optargs_t_compresslevel;
+    optargs_s.bitmask |= GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK;
+  }
+
+  int r;
+  r = guestfs_btrfs_image_argv (g, source, image, optargs);
+
+  guestfs_efree_stringlist (source);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -16693,6 +16742,42 @@ PHP_FUNCTION (guestfs_part_get_mbr_id)
   }
 
   RETURN_LONG (r);
+}
+
+PHP_FUNCTION (guestfs_part_get_mbr_part_type)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  int device_size;
+  long partnum;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rsl",
+        &z_g, &device, &device_size, &partnum) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: part_get_mbr_part_type: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  char *r;
+  r = guestfs_part_get_mbr_part_type (g, device, partnum);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  char *r_copy = estrdup (r);
+  free (r);
+  RETURN_STRING (r_copy, 0);
 }
 
 PHP_FUNCTION (guestfs_part_get_name)

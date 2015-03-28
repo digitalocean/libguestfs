@@ -9561,3 +9561,136 @@ guestfs_btrfstune_enable_skinny_metadata_extent_refs (guestfs_h *g,
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_btrfs_image_argv (guestfs_h *g,
+                          char *const *source,
+                          const char *image,
+                          const struct guestfs_btrfs_image_argv *optargs)
+{
+  struct guestfs_btrfs_image_argv optargs_null;
+  if (!optargs) {
+    optargs_null.bitmask = 0;
+    optargs = &optargs_null;
+  }
+
+  struct guestfs_btrfs_image_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "btrfs_image", 11);
+  if (source == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfs_image", "source");
+    return -1;
+  }
+  if (image == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfs_image", "image");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffffe)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "btrfs_image", "btrfs_image");
+    return -1;
+  }
+
+  if (trace_flag) {
+    size_t i;
+
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "btrfs_image");
+    fputc (' ', trace_buffer.fp);
+    fputc ('"', trace_buffer.fp);
+    for (i = 0; source[i]; ++i) {
+      if (i > 0) fputc (' ', trace_buffer.fp);
+      fputs (source[i], trace_buffer.fp);
+    }
+    fputc ('"', trace_buffer.fp);
+    fprintf (trace_buffer.fp, " \"%s\"", image);
+    if (optargs->bitmask & GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%d\"", "compresslevel", optargs->compresslevel);
+    }
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs_int_check_appliance_up (g, "btrfs_image") == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfs_image", "-1");
+    return -1;
+  }
+
+  args.source.source_val = (char **) source;
+  for (args.source.source_len = 0; source[args.source.source_len]; args.source.source_len++) ;
+  args.image = (char *) image;
+  if (optargs->bitmask & GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK) {
+    args.compresslevel = optargs->compresslevel;
+  } else {
+    args.compresslevel = 0;
+  }
+  serial = guestfs_int_send (g, GUESTFS_PROC_BTRFS_IMAGE,
+                             progress_hint, optargs->bitmask,
+                             (xdrproc_t) xdr_guestfs_btrfs_image_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfs_image", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs_int_recv (g, "btrfs_image", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfs_image", "-1");
+    return -1;
+  }
+
+  if (guestfs_int_check_reply_header (g, &hdr, GUESTFS_PROC_BTRFS_IMAGE, serial) == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfs_image", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfs_image", "-1");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs_int_string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "btrfs_image", err.error_message);
+    else
+      guestfs_int_error_errno (g, errnum, "%s: %s", "btrfs_image",
+                               err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "btrfs_image");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+

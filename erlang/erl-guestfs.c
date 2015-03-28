@@ -1773,6 +1773,38 @@ run_btrfs_fsck (ETERM *message)
 }
 
 static ETERM *
+run_btrfs_image (ETERM *message)
+{
+  CLEANUP_FREE_STRING_LIST char **source = get_string_list (ARG (0));
+  CLEANUP_FREE char *image = erl_iolist_to_string (ARG (1));
+
+  struct guestfs_btrfs_image_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_image_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (2);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "compresslevel")) {
+      optargs_s.bitmask |= GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK;
+      optargs_s.compresslevel = get_int (hd_value);
+    }
+    else
+      return unknown_optarg ("btrfs_image", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_btrfs_image_argv (g, source, image, optargs);
+  if (r == -1)
+    return make_error ("btrfs_image");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_btrfs_qgroup_assign (ETERM *message)
 {
   CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
@@ -8311,6 +8343,22 @@ run_part_get_mbr_id (ETERM *message)
 }
 
 static ETERM *
+run_part_get_mbr_part_type (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int partnum = get_int (ARG (1));
+  char *r;
+
+  r = guestfs_part_get_mbr_part_type (g, device, partnum);
+  if (r == NULL)
+    return make_error ("part_get_mbr_part_type");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
 run_part_get_name (ETERM *message)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
@@ -11280,6 +11328,8 @@ dispatch (ETERM *message)
     return run_btrfs_filesystem_sync (message);
   else if (atom_equals (fun, "btrfs_fsck"))
     return run_btrfs_fsck (message);
+  else if (atom_equals (fun, "btrfs_image"))
+    return run_btrfs_image (message);
   else if (atom_equals (fun, "btrfs_qgroup_assign"))
     return run_btrfs_qgroup_assign (message);
   else if (atom_equals (fun, "btrfs_qgroup_create"))
@@ -11992,6 +12042,8 @@ dispatch (ETERM *message)
     return run_part_get_gpt_type (message);
   else if (atom_equals (fun, "part_get_mbr_id"))
     return run_part_get_mbr_id (message);
+  else if (atom_equals (fun, "part_get_mbr_part_type"))
+    return run_part_get_mbr_part_type (message);
   else if (atom_equals (fun, "part_get_name"))
     return run_part_get_name (message);
   else if (atom_equals (fun, "part_get_parttype"))

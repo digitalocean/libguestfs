@@ -2534,6 +2534,52 @@ public class GuestFS {
 
   /**
    * <p>
+   * create an image of a btrfs filesystem
+   * </p><p>
+   * This is used to create an image of a btrfs filesystem.
+   * All data will be zeroed, but metadata and the like is
+   * preserved.
+   * </p><p>
+   * Optional arguments are supplied in the final
+   * Map&lt;String,Object&gt; parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * </p><p>
+   * </p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_image (String[] source, String image, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_image: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    int compresslevel = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("compresslevel");
+    if (_optobj != null) {
+      compresslevel = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 1L;
+    }
+
+    _btrfs_image (g, source, image, _optargs_bitmask, compresslevel);
+  }
+
+  public void btrfs_image (String[] source, String image)
+    throws LibGuestFSException
+  {
+    btrfs_image (source, image, null);
+  }
+
+  private native void _btrfs_image (long g, String[] source, String image, long _optargs_bitmask, int compresslevel)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * add a qgroup to a parent qgroup
    * </p><p>
    * Add qgroup "src" to parent qgroup "dst". This command
@@ -14801,6 +14847,30 @@ public class GuestFS {
   }
 
   private native int _part_get_mbr_id (long g, String device, int partnum)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * get the MBR partition type
+   * </p><p>
+   * This returns the partition type of an MBR partition
+   * numbered "partnum" on device "device".
+   * </p><p>
+   * It returns "primary", "logical", or "extended".
+   * </p><p>
+   * </p>
+   * @throws LibGuestFSException
+   */
+  public String part_get_mbr_part_type (String device, int partnum)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_get_mbr_part_type: handle is closed");
+
+    return _part_get_mbr_part_type (g, device, partnum);
+  }
+
+  private native String _part_get_mbr_part_type (long g, String device, int partnum)
     throws LibGuestFSException;
 
   /**

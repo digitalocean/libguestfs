@@ -2401,6 +2401,40 @@ func (g *Guestfs) Btrfs_fsck (device string, optargs *OptargsBtrfs_fsck) *Guestf
     return nil
 }
 
+/* Struct carrying optional arguments for Btrfs_image */
+type OptargsBtrfs_image struct {
+    /* Compresslevel field is ignored unless Compresslevel_is_set == true */
+    Compresslevel_is_set bool
+    Compresslevel int
+}
+
+/* btrfs_image : create an image of a btrfs filesystem */
+func (g *Guestfs) Btrfs_image (source []string, image string, optargs *OptargsBtrfs_image) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_image")
+    }
+
+    c_source := arg_string_list (source)
+    defer free_string_list (c_source)
+
+    c_image := C.CString (image)
+    defer C.free (unsafe.Pointer (c_image))
+    c_optargs := C.struct_guestfs_btrfs_image_argv{}
+    if optargs != nil {
+        if optargs.Compresslevel_is_set {
+            c_optargs.bitmask |= C.GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK
+            c_optargs.compresslevel = C.int (optargs.Compresslevel)
+        }
+    }
+
+    r := C.guestfs_btrfs_image_argv (g.g, c_source, c_image, &c_optargs)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_image")
+    }
+    return nil
+}
+
 /* btrfs_qgroup_assign : add a qgroup to a parent qgroup */
 func (g *Guestfs) Btrfs_qgroup_assign (src string, dst string, path string) *GuestfsError {
     if g.g == nil {
@@ -10283,6 +10317,24 @@ func (g *Guestfs) Part_get_mbr_id (device string, partnum int) (int, *GuestfsErr
         return 0, get_error_from_handle (g, "part_get_mbr_id")
     }
     return int (r), nil
+}
+
+/* part_get_mbr_part_type : get the MBR partition type */
+func (g *Guestfs) Part_get_mbr_part_type (device string, partnum int) (string, *GuestfsError) {
+    if g.g == nil {
+        return "", closed_handle_error ("part_get_mbr_part_type")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_part_get_mbr_part_type (g.g, c_device, C.int (partnum))
+
+    if r == nil {
+        return "", get_error_from_handle (g, "part_get_mbr_part_type")
+    }
+    defer C.free (unsafe.Pointer (r))
+    return C.GoString (r), nil
 }
 
 /* part_get_name : get partition name */

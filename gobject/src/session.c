@@ -3213,6 +3213,57 @@ guestfs_session_btrfs_fsck (GuestfsSession *session, const gchar *device, Guestf
 }
 
 /**
+ * guestfs_session_btrfs_image:
+ * @session: (transfer none): A GuestfsSession object
+ * @source: (transfer none) (array zero-terminated=1) (element-type filename): an array of strings
+ * @image: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsBTRFSImage containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * create an image of a btrfs filesystem
+ *
+ * This is used to create an image of a btrfs filesystem. All data will be
+ * zeroed, but metadata and the like is preserved.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_btrfs_image (GuestfsSession *session, gchar *const *source, const gchar *image, GuestfsBTRFSImage *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_image");
+    return FALSE;
+  }
+
+  struct guestfs_btrfs_image_argv argv;
+  struct guestfs_btrfs_image_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue compresslevel_v = {0, };
+    g_value_init (&compresslevel_v, G_TYPE_INT);
+    g_object_get_property (G_OBJECT (optargs), "compresslevel", &compresslevel_v);
+    gint32 compresslevel = g_value_get_int (&compresslevel_v);
+    if (compresslevel != -1) {
+      argv.bitmask |= GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK;
+      argv.compresslevel = compresslevel;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_btrfs_image_argv (g, source, image, argvp);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_btrfs_qgroup_assign:
  * @session: (transfer none): A GuestfsSession object
  * @src: (transfer none) (type utf8):
@@ -19763,6 +19814,42 @@ guestfs_session_part_get_mbr_id (GuestfsSession *session, const gchar *device, g
   if (ret == -1) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_part_get_mbr_part_type:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @partnum: (type gint32):
+ * @err: A GError object to receive any generated errors
+ *
+ * get the MBR partition type
+ *
+ * This returns the partition type of an MBR partition numbered @partnum on
+ * device @device.
+ * 
+ * It returns @primary, @logical, or @extended.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_part_get_mbr_part_type (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_get_mbr_part_type");
+    return NULL;
+  }
+
+  char *ret = guestfs_part_get_mbr_part_type (g, device, partnum);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
   }
 
   return ret;

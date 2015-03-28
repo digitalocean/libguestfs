@@ -798,6 +798,19 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_btrfs_image ##### -->
+<para>
+
+</para>
+
+@session: 
+@source: 
+@image: 
+@optargs: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_btrfs_qgroup_assign ##### -->
 <para>
 
@@ -4843,6 +4856,18 @@ GuestfsSession
 
 
 <!-- ##### FUNCTION guestfs_session_part_get_mbr_id ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@partnum: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_part_get_mbr_part_type ##### -->
 <para>
 
 </para>

@@ -1147,6 +1147,19 @@ struct guestfs_btrfs_fsck_argv {
 
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_fsck_argv (guestfs_h *g, const char *device, const struct guestfs_btrfs_fsck_argv *optargs);
 
+#define GUESTFS_HAVE_BTRFS_IMAGE 1
+#define GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL 0
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_image (guestfs_h *g, char *const *source, const char *image, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_image_va (guestfs_h *g, char *const *source, const char *image, va_list args);
+
+struct guestfs_btrfs_image_argv {
+  uint64_t bitmask;
+# define GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK (UINT64_C(1)<<0)
+  int compresslevel;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_image_argv (guestfs_h *g, char *const *source, const char *image, const struct guestfs_btrfs_image_argv *optargs);
+
 #define GUESTFS_HAVE_BTRFS_QGROUP_ASSIGN 1
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_qgroup_assign (guestfs_h *g, const char *src, const char *dst, const char *path);
 
@@ -2767,6 +2780,9 @@ extern GUESTFS_DLL_PUBLIC char *guestfs_part_get_gpt_type (guestfs_h *g, const c
 #define GUESTFS_HAVE_PART_GET_MBR_ID 1
 extern GUESTFS_DLL_PUBLIC int guestfs_part_get_mbr_id (guestfs_h *g, const char *device, int partnum);
 
+#define GUESTFS_HAVE_PART_GET_MBR_PART_TYPE 1
+extern GUESTFS_DLL_PUBLIC char *guestfs_part_get_mbr_part_type (guestfs_h *g, const char *device, int partnum);
+
 #define GUESTFS_HAVE_PART_GET_NAME 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_part_get_name (guestfs_h *g, const char *device, int partnum);
 
@@ -3959,6 +3975,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_BTRFS_FILESYSTEM_RESIZE 1
 #define LIBGUESTFS_HAVE_BTRFS_FILESYSTEM_SYNC 1
 #define LIBGUESTFS_HAVE_BTRFS_FSCK 1
+#define LIBGUESTFS_HAVE_BTRFS_IMAGE 1
 #define LIBGUESTFS_HAVE_BTRFS_QGROUP_ASSIGN 1
 #define LIBGUESTFS_HAVE_BTRFS_QGROUP_CREATE 1
 #define LIBGUESTFS_HAVE_BTRFS_QGROUP_DESTROY 1
@@ -4288,6 +4305,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_PART_GET_GPT_GUID 1
 #define LIBGUESTFS_HAVE_PART_GET_GPT_TYPE 1
 #define LIBGUESTFS_HAVE_PART_GET_MBR_ID 1
+#define LIBGUESTFS_HAVE_PART_GET_MBR_PART_TYPE 1
 #define LIBGUESTFS_HAVE_PART_GET_NAME 1
 #define LIBGUESTFS_HAVE_PART_GET_PARTTYPE 1
 #define LIBGUESTFS_HAVE_PART_INIT 1

@@ -1027,6 +1027,15 @@ btrfs ファイルシステムをチェックするために使用されると�
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
+=head2 btrfs-image
+
+ btrfs-image 'source ...' image [compresslevel:N]
+
+This is used to create an image of a btrfs filesystem.  All data will be
+zeroed, but metadata and the like is preserved.
+
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
+
 =head2 btrfs-qgroup-assign
 
  btrfs-qgroup-assign src dst path
@@ -5751,6 +5760,15 @@ partition C<partnum>.
 Note that only MBR (old DOS-style) partitions have type bytes.  You will get
 undefined results for other partition table types (see
 L</part-get-parttype>).
+
+=head2 part-get-mbr-part-type
+
+ part-get-mbr-part-type device partnum
+
+This returns the partition type of an MBR partition numbered C<partnum> on
+device C<device>.
+
+It returns C<primary>, C<logical>, or C<extended>.
 
 =head2 part-get-name
 

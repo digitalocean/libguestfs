@@ -92,6 +92,9 @@
         guestfs_btrfs_fsck;
         guestfs_btrfs_fsck_argv;
         guestfs_btrfs_fsck_va;
+        guestfs_btrfs_image;
+        guestfs_btrfs_image_argv;
+        guestfs_btrfs_image_va;
         guestfs_btrfs_qgroup_assign;
         guestfs_btrfs_qgroup_create;
         guestfs_btrfs_qgroup_destroy;
@@ -712,6 +715,7 @@
         guestfs_part_get_gpt_guid;
         guestfs_part_get_gpt_type;
         guestfs_part_get_mbr_id;
+        guestfs_part_get_mbr_part_type;
         guestfs_part_get_name;
         guestfs_part_get_parttype;
         guestfs_part_init;

@@ -36,6 +36,7 @@
       <sub name="GuestfsBTRFSFilesystemDefragment" link="GuestfsBTRFSFilesystemDefragment.html"/>
       <sub name="GuestfsBTRFSFilesystemResize" link="GuestfsBTRFSFilesystemResize.html"/>
       <sub name="GuestfsBtrfsFsck" link="GuestfsBtrfsFsck.html"/>
+      <sub name="GuestfsBTRFSImage" link="GuestfsBTRFSImage.html"/>
       <sub name="GuestfsBTRFSSubvolumeCreate" link="GuestfsBTRFSSubvolumeCreate.html"/>
       <sub name="GuestfsBTRFSSubvolumeSnapshot" link="GuestfsBTRFSSubvolumeSnapshot.html"/>
       <sub name="GuestfsCompressDeviceOut" link="GuestfsCompressDeviceOut.html"/>
@@ -151,6 +152,7 @@
     <keyword type="function" name="guestfs_session_btrfs_filesystem_resize ()" link="GuestfsSession.html#guestfs-session-btrfs-filesystem-resize"/>
     <keyword type="function" name="guestfs_session_btrfs_filesystem_sync ()" link="GuestfsSession.html#guestfs-session-btrfs-filesystem-sync"/>
     <keyword type="function" name="guestfs_session_btrfs_fsck ()" link="GuestfsSession.html#guestfs-session-btrfs-fsck"/>
+    <keyword type="function" name="guestfs_session_btrfs_image ()" link="GuestfsSession.html#guestfs-session-btrfs-image"/>
     <keyword type="function" name="guestfs_session_btrfs_qgroup_assign ()" link="GuestfsSession.html#guestfs-session-btrfs-qgroup-assign"/>
     <keyword type="function" name="guestfs_session_btrfs_qgroup_create ()" link="GuestfsSession.html#guestfs-session-btrfs-qgroup-create"/>
     <keyword type="function" name="guestfs_session_btrfs_qgroup_destroy ()" link="GuestfsSession.html#guestfs-session-btrfs-qgroup-destroy"/>
@@ -506,6 +508,7 @@
     <keyword type="function" name="guestfs_session_part_get_gpt_guid ()" link="GuestfsSession.html#guestfs-session-part-get-gpt-guid"/>
     <keyword type="function" name="guestfs_session_part_get_gpt_type ()" link="GuestfsSession.html#guestfs-session-part-get-gpt-type"/>
     <keyword type="function" name="guestfs_session_part_get_mbr_id ()" link="GuestfsSession.html#guestfs-session-part-get-mbr-id"/>
+    <keyword type="function" name="guestfs_session_part_get_mbr_part_type ()" link="GuestfsSession.html#guestfs-session-part-get-mbr-part-type"/>
     <keyword type="function" name="guestfs_session_part_get_name ()" link="GuestfsSession.html#guestfs-session-part-get-name"/>
     <keyword type="function" name="guestfs_session_part_get_parttype ()" link="GuestfsSession.html#guestfs-session-part-get-parttype"/>
     <keyword type="function" name="guestfs_session_part_init ()" link="GuestfsSession.html#guestfs-session-part-init"/>
@@ -768,6 +771,10 @@
     <keyword type="struct" name="struct GuestfsBtrfsFsckClass" link="GuestfsBtrfsFsck.html#GuestfsBtrfsFsckClass"/>
     <keyword type="property" name="The “repair” property" link="GuestfsBtrfsFsck.html#GuestfsBtrfsFsck--repair"/>
     <keyword type="property" name="The “superblock” property" link="GuestfsBtrfsFsck.html#GuestfsBtrfsFsck--superblock"/>
+    <keyword type="function" name="guestfs_btrfs_image_new ()" link="GuestfsBTRFSImage.html#guestfs-btrfs-image-new"/>
+    <keyword type="struct" name="struct GuestfsBTRFSImage" link="GuestfsBTRFSImage.html#GuestfsBTRFSImage-struct"/>
+    <keyword type="struct" name="struct GuestfsBTRFSImageClass" link="GuestfsBTRFSImage.html#GuestfsBTRFSImageClass"/>
+    <keyword type="property" name="The “compresslevel” property" link="GuestfsBTRFSImage.html#GuestfsBTRFSImage--compresslevel"/>
     <keyword type="function" name="guestfs_btrfs_subvolume_create_new ()" link="GuestfsBTRFSSubvolumeCreate.html#guestfs-btrfs-subvolume-create-new"/>
     <keyword type="struct" name="struct GuestfsBTRFSSubvolumeCreate" link="GuestfsBTRFSSubvolumeCreate.html#GuestfsBTRFSSubvolumeCreate-struct"/>
     <keyword type="struct" name="struct GuestfsBTRFSSubvolumeCreateClass" link="GuestfsBTRFSSubvolumeCreate.html#GuestfsBTRFSSubvolumeCreateClass"/>

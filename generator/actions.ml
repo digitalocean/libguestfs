@@ -8591,6 +8591,11 @@ a file in the host and attach it as a device." };
         [["part_disk"; "/dev/sda"; "mbr"];
          ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""; "test-label"];
          ["vfs_label"; "/dev/sda1"]], "test-label"), [];
+      InitEmpty, IfAvailable "btrfs", TestResultString (
+        [["part_disk"; "/dev/sda"; "mbr"];
+         ["mkfs"; "btrfs"; "/dev/sda1"; ""; "NOARG"; ""; ""; ""];
+         ["set_label"; "/dev/sda1"; "test-label-btrfs"];
+         ["vfs_label"; "/dev/sda1"]], "test-label-btrfs"), [];
     ];
     shortdesc = "get the filesystem label";
     longdesc = "\
@@ -12521,6 +12526,54 @@ This will Enable extended inode refs." };
     shortdesc = "enable skinny metadata extent refs";
     longdesc = "\
 This enable skinny metadata extent refs." };
+
+  { defaults with
+    name = "btrfs_image";
+    style = RErr, [DeviceList "source"; Pathname "image"], [OInt "compresslevel"];
+    proc_nr = Some 453;
+    optional = Some "btrfs"; camel_name = "BTRFSImage";
+    tests = [
+      InitPartition, Always, TestRun (
+        [["part_init"; "/dev/sda"; "mbr"];
+         ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
+         ["part_add"; "/dev/sda"; "p"; "204800"; "409599"];
+         ["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mkfs_btrfs"; "/dev/sda2"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["mount"; "/dev/sda1"; "/"];
+         ["btrfs_image"; "/dev/sda2"; "/1.img"; ""];
+         ["btrfs_image"; "/dev/sda2"; "/2.img"; "2"]]), []
+    ];
+
+    shortdesc = "create an image of a btrfs filesystem";
+    longdesc = "\
+This is used to create an image of a btrfs filesystem.
+All data will be zeroed, but metadata and the like is preserved." };
+
+  { defaults with
+    name = "part_get_mbr_part_type";
+    style = RString "partitiontype", [Device "device"; Int "partnum"], [];
+    proc_nr = Some 454;
+    tests = [
+      InitEmpty, Always, TestResultString (
+        [["part_init"; "/dev/sda"; "mbr"];
+         ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
+         ["part_add"; "/dev/sda"; "e"; "204800"; "614400"];
+         ["part_add"; "/dev/sda"; "l"; "204864"; "205988"];
+         ["part_get_mbr_part_type"; "/dev/sda"; "5"]], "logical"), [];
+      InitEmpty, Always, TestResultString (
+        [["part_init"; "/dev/sda"; "mbr"];
+         ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
+         ["part_add"; "/dev/sda"; "e"; "204800"; "614400"];
+         ["part_add"; "/dev/sda"; "l"; "204864"; "205988"];
+         ["part_get_mbr_part_type"; "/dev/sda"; "2"]], "extended"), []
+    ];
+
+    shortdesc = "get the MBR partition type";
+    longdesc = "\
+This returns the partition type of an MBR partition
+numbered C<partnum> on device C<device>.
+
+It returns C<primary>, C<logical>, or C<extended>." };
 
 ]
 
