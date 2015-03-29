@@ -99,8 +99,8 @@ Build-Depends: debhelper (>= 9),
   zfs-fuse [i386 amd64 armel powerpc sparc],
 Homepage: http://libguestfs.org
 Standards-Version: 3.9.6
-Vcs-Git: git://git.debian.org/git/pkg-libvirt/libguestfs.git
-Vcs-Browser: http://git.debian.org/?p=pkg-libvirt/libguestfs.git
+Vcs-Git: git://anonscm.debian.org/pkg-libvirt/libguestfs.git
+Vcs-Browser: http://anonscm.debian.org/?p=pkg-libvirt/libguestfs.git
 XS-Ruby-Versions: all
 
 Package: guestfsd
