@@ -1739,7 +1739,7 @@ Remove qgroup C<src> from the parent qgroup C<dst>.
  guestfs_btrfs_qgroup_show (guestfs_h *g,
                             const char *path);
 
-Show all subvolume quota groups in a btrfs filesystem, inclding their
+Show all subvolume quota groups in a btrfs filesystem, including their
 usages.
 
 This function returns a C<struct guestfs_btrfsqgroup_list *>, or NULL if

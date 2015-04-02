@@ -1801,9 +1801,16 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-@HAVE_RUBY_TRUE@all: $(generator_built)
+@HAVE_RUBY_TRUE@all: $(generator_built) doc/site/index.html
 @HAVE_RUBY_TRUE@	$(RAKE) build
+
+# Rebuilding the documentation takes forever, so be careful to only do
+# it when the ruby bindings change.
+@HAVE_RUBY_TRUE@doc/site/index.html doc/site/api/table_of_contents.html: stamp-rdoc
+
+@HAVE_RUBY_TRUE@stamp-rdoc: ext/guestfs/_guestfs.c
 @HAVE_RUBY_TRUE@	$(RAKE) rdoc
+@HAVE_RUBY_TRUE@	touch $@
 
 @HAVE_RUBY_TRUE@install:
 @HAVE_RUBY_TRUE@	$(MKDIR_P) $(DESTDIR)$(RUBY_LIBDIR)

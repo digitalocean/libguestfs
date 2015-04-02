@@ -1336,7 +1336,7 @@ class GuestFS(object):
 
     def btrfs_qgroup_show (self, path):
         """Show all subvolume quota groups in a btrfs filesystem,
-        inclding their usages.
+        including their usages.
         
         This function returns a list of btrfsqgroups. Each
         btrfsqgroup is represented as a dictionary.

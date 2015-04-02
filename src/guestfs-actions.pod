@@ -1806,7 +1806,7 @@ This function returns 0 on success or -1 on error.
  guestfs_btrfs_qgroup_show (guestfs_h *g,
                             const char *path);
 
-Show all subvolume quota groups in a btrfs filesystem, inclding their
+Show all subvolume quota groups in a btrfs filesystem, including their
 usages.
 
 This function returns a C<struct guestfs_btrfsqgroup_list *>,
