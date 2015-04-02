@@ -1284,7 +1284,7 @@ Remove qgroup C<src> from the parent qgroup C<dst>.
 
 =item @qgroups = $g->btrfs_qgroup_show ($path);
 
-Show all subvolume quota groups in a btrfs filesystem, inclding their
+Show all subvolume quota groups in a btrfs filesystem, including their
 usages.
 
 =item $g->btrfs_quota_enable ($fs, $enable);

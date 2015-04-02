@@ -3513,7 +3513,7 @@ ruby_guestfs_btrfs_qgroup_remove (VALUE gv, VALUE srcv, VALUE dstv, VALUE pathv)
  * show subvolume quota groups
  *
  * Show all subvolume quota groups in a btrfs filesystem,
- * inclding their usages.
+ * including their usages.
  *
  *
  * (For the C API documentation for this function, see

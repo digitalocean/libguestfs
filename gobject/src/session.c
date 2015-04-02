@@ -3440,7 +3440,7 @@ guestfs_session_btrfs_qgroup_remove (GuestfsSession *session, const gchar *src, 
  *
  * show subvolume quota groups
  *
- * Show all subvolume quota groups in a btrfs filesystem, inclding their
+ * Show all subvolume quota groups in a btrfs filesystem, including their
  * usages.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsBTRFSQgroup): an array of BTRFSQgroup objects, or NULL on error

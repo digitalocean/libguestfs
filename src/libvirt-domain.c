@@ -178,7 +178,7 @@ struct add_disk_data {
   struct guestfs_add_drive_opts_argv optargs;
 };
 
-GUESTFS_DLL_PUBLIC int
+int
 guestfs_impl_add_libvirt_dom (guestfs_h *g, void *domvp,
                           const struct guestfs_add_libvirt_dom_argv *optargs)
 {
@@ -789,6 +789,13 @@ get_domain_xml (guestfs_h *g, virDomainPtr dom)
 int
 guestfs_impl_add_domain (guestfs_h *g, const char *dom,
                      const struct guestfs_add_domain_argv *optargs)
+{
+  NOT_IMPL(-1);
+}
+
+int
+guestfs_impl_add_libvirt_dom (guestfs_h *g, void *domvp,
+                          const struct guestfs_add_libvirt_dom_argv *optargs)
 {
   NOT_IMPL(-1);
 }

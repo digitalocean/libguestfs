@@ -1168,7 +1168,7 @@ struct command_entry btrfs_qgroup_remove_cmd_entry = {
 
 struct command_entry btrfs_qgroup_show_cmd_entry = {
   .name = "btrfs-qgroup-show",
-  .help = "NAME\n    btrfs-qgroup-show - show subvolume quota groups\n\nSYNOPSIS\n     btrfs-qgroup-show path\n\nDESCRIPTION\n    Show all subvolume quota groups in a btrfs filesystem, inclding their\n    usages.\n\n",
+  .help = "NAME\n    btrfs-qgroup-show - show subvolume quota groups\n\nSYNOPSIS\n     btrfs-qgroup-show path\n\nDESCRIPTION\n    Show all subvolume quota groups in a btrfs filesystem, including their\n    usages.\n\n",
   .synopsis = "btrfs-qgroup-show path",
   .run = run_btrfs_qgroup_show
 };

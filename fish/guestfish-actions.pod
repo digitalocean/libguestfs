@@ -1126,7 +1126,7 @@ Remove qgroup C<src> from the parent qgroup C<dst>.
 
  btrfs-qgroup-show path
 
-Show all subvolume quota groups in a btrfs filesystem, inclding their
+Show all subvolume quota groups in a btrfs filesystem, including their
 usages.
 
 =head2 btrfs-quota-enable

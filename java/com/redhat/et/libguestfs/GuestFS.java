@@ -2692,7 +2692,7 @@ public class GuestFS {
    * show subvolume quota groups
    * </p><p>
    * Show all subvolume quota groups in a btrfs filesystem,
-   * inclding their usages.
+   * including their usages.
    * </p><p>
    * </p>
    * @throws LibGuestFSException

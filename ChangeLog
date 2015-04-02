@@ -1,3 +1,146 @@
+commit 3cb2b9da250be9fc891f8b10d96eaee87cec2e3a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 1 10:06:46 2015 +0100
+
+    Version 1.29.33.
+
+commit b8cb5c0d69e7ab8cd8598c0c49f0d65a1366cd62
+Author: Roman Kagan <rkagan@parallels.com>
+Date:   Tue Mar 31 16:26:38 2015 +0300
+
+    v2v: allow configurable location for virtio drivers
+    
+    Make the location of the Windows virtio drivers overridable with the
+    environment variable VIRTIO_WIN_DIR, in the same vein as is done for
+    virt-tools.
+    
+    Signed-off-by: Roman Kagan <rkagan@parallels.com>
+
+commit 26b913445022c3c1067e104c1871e7fbe0edb2f0
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Mon Mar 30 22:15:20 2015 -0400
+
+    actions.ml: fix a typo
+    
+    s/inclding/including
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 6e989fd709fea37430398cbb7c01c52cd44bd1ac
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Mon Mar 30 05:39:39 2015 -0400
+
+    resize: add p_mbr_p_type as member of type partition
+    
+    Add p_mbr_p_type as member of type partition
+    to describe mbr partition type.
+    
+    Currently we use:
+    List.filter (fun p -> parttype <> MBR || p.G.part_num <= 4_l)
+    to filter out logical partitions.
+    
+    Commit 0c396a4bce578486dfc4a38e1f8c47fd5c2836ea
+    introduce API part_get_mbr_part_type,
+    we could use this to know the part_type.
+    Furthermore, we could also use p_mbr_p_type for resizing
+    logical partitions.
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 309f7062e8adbc9ec7240e21d00a384d789c69bf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 30 13:25:37 2015 +0100
+
+    v2v: test-harness: Don't need to use Unix. prefix, since module is opened.
+
+commit 6f53c6c026deaf7d65d411854bd129892ba53801
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 30 13:25:01 2015 +0100
+
+    v2v: test-harness: Send shift key to wake up screen from blank before taking screenshots.
+
+commit 453db7e210673cbd361a4d380e07e607ea833b9c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 30 13:23:10 2015 +0100
+
+    v2v: RHEL 4: You have to update lvm2, device-mapper to get virtio support.
+    
+    Also include the updated selinux policy that goes with RHEL 4.8.
+    
+    Also mention that policycoreutils should be updated - see previous
+    commit.
+
+commit d4ab702dad39fe1f609ee17661f6bfa3a11dee31
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 30 13:22:58 2015 +0100
+
+    v2v: Add note about RHEL 4 conversions hanging during SELinux relabelling.
+
+commit f3c17ab0d8d19dcde036e1bec499de8503be4169
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 30 09:43:34 2015 +0100
+
+    builder: Fix arch= field in previous commit.
+    
+    Fixes commit 8ddc56473025ef2f294562b5317c5f3f8684864f.
+
+commit 8ddc56473025ef2f294562b5317c5f3f8684864f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 30 09:09:22 2015 +0100
+
+    builder: Update index for new armv7 Fedora guest.
+
+commit 2cb691e46eb36f1a31a43a943d31182ea33b56b5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 28 23:20:13 2015 +0000
+
+    builder: Add script for building Fedora armv7l (32 bit ARM) guests.
+
+commit 5c65b9108d2eabee9d885dcc61df5862bd3115fe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 28 18:08:21 2015 +0000
+
+    ruby: Only rebuild rdoc when absolutely necessary.
+    
+    Rebuilding the ruby documentation takes 51 seconds on my laptop, and
+    that's a significant fraction of the entire build.  Make sure we only
+    rebuild the documentation when necessary.
+
+commit e86df90e52120258baf56cf0155a5f6e3fae1577
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 28 17:53:35 2015 +0000
+
+    guestfs-performance: Suggest using 'ts' instead of annotate.
+    
+    'ts' allows incremental timings which is a lot more useful.
+
+commit f1007fc26d58a62b3692f64a6d8219ad9221510f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 28 10:15:57 2015 +0000
+
+    lib: Fix static linking by forcing launch-*.o objects to be always linked.
+    
+    Because the launch-*.o objects only contain statically scoped
+    declarations, the linker doesn't need to link them in.  This causes a
+    problem when static linking as they will be left out of the final
+    binary, and so no backends will be available.
+    
+    This is essentially the same problem as described here:
+    
+    https://stackoverflow.com/questions/1202494/why-doesnt-attribute-constructor-work-in-a-static-library
+
+commit 7906c34a0f24ecd15f9d4d42ebf120a325db5395
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 27 22:42:03 2015 +0000
+
+    build: Fix ./configure --without-libvirt option.
+
+commit c370ca75c8affa6e0ab7c6e0a9b4172454e01c85
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 27 22:44:07 2015 +0000
+
+    lib: Remove bogus visibility declaration (GUESTFS_DLL_PUBLIC) from internal function.
+
 commit a1a42d00024043a959766cb047b18542d3837b3a
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Mar 27 11:02:18 2015 +0000
