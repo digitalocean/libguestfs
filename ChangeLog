@@ -1,3 +1,136 @@
+commit 2e6b14e0466bd63423fbd2c729e1ba0bf6764e8d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Apr 10 13:48:02 2015 +0100
+
+    Version 1.29.34.
+
+commit 3f98018b4392e87593e19fb0aa69c31bd4aef354
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Apr 10 13:10:13 2015 +0100
+
+    v2v: test-harness: Describe how to get the test harness.
+    
+    I don't think it's worth building the test harness as a separate
+    Fedora package.  It just means the harness gets out of date
+    quickly and is hard to install.  Instead the test cases can now
+    be configured to use the libguestfs source directory to get the
+    test harness.
+
+commit 2817824bd34e30fe6a2eeb65105067bd058f1fac
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 7 17:01:18 2015 +0100
+
+    v2v: Support conversion of Windows >= 8 (RHBZ#1190669).
+    
+    Tested on:
+    
+    - Windows 8.1 Pro 64 bit
+    - Windows Server 2012 R2 64 bit
+
+commit 7260b0fc089c4fc61ac6ad0a816ca0f025aa5107
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Apr 10 09:43:41 2015 +0100
+
+    v2v: test-harness: Don't send key to wake up guest from blank unless the display is black.
+    
+    Grub2 in RHEL 6 responds to any key including shift keys by entering
+    the grub menu (and thus waiting for the 'user' to press Enter).  This
+    means our previous strategy of always hitting the shift key before
+    taking a screenshot didn't work well.
+    
+    Instead, take a screenshot, if it's all (or mostly) black, hit a shift
+    key and take another screenshot.
+
+commit 12be9f831e0135eb94be2c87b3f0b35d51e14285
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 9 19:17:59 2015 +0100
+
+    v2v: test-harness: Match on subimages instead of screenshots.
+    
+    Previously we fuzzy-matched on screenshots of the entire display.
+    
+    There were several problems:
+    
+     - dates/times in images required fuzzy matching, but it's not clear
+       how much fuzz to use (Windows 8.1/2012R2 timestamp is huge,
+       requiring an enormous amount of fuzz)
+    
+    - cannot cope with Windows 7 irregular placement of windows on
+      the desktop
+    
+    It's better to match on subimages.
+    
+    This requires some changes to the test data, using gimp to clip the
+    images and remove any changing elements (dates/times/etc) but in the
+    long run it's more flexible than fuzzy matching on the whole display.
+    
+    Note that because of peculiarities in 'compare' we still need to have
+    a little bit of fuzz in the matching.  Seemingly bit-for-bit identical
+    images still have a similarity > 0.
+
+commit ddeec8b5045125a4134fadc8b3975f985672e9d8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 9 17:40:16 2015 +0100
+
+    v2v: test-harness: Improve boot loop.
+    
+    Take screenshots each time around the loop (every 10 seconds).  These
+    are very useful for debugging.
+    
+    Check for the final screenshot on every iteration.  If the final
+    screenshot is encountered then the guest is terminated immediately.
+    
+    Reverse a few loop tests to try to make the code more readable.
+
+commit 1fabb99f11976034fffe01e67e1f49f375aa2d37
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 9 17:39:20 2015 +0100
+
+    v2v: test-harness: Rearrange 'in' in function definition.
+    
+    Just a whitespace change.
+
+commit 6c27ce649b9d4a25625b0c934856da9085d11cb4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 9 13:34:46 2015 +0100
+
+    v2v: test-harness: Use xzcat instead of unxz --keep.
+    
+    unxz --keep fails on the symlinks used by git-annex with this
+    rather unnecessary error:
+    
+      unxz --keep 'rhel_511_x86_64_pv.img.xz'
+      unxz: rhel_511_x86_64_pv.img.xz: Is a symbolic link, skipping
+    
+    Use xzcat instead.
+
+commit a23f82a5acf11d1b345f96d770ec74dae73602c7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 9 13:34:21 2015 +0100
+
+    v2v: test-harness: New repository URLs, and details of using git-annex.
+
+commit 4fd70eab4ff7d9a8e49db2938a80dcef45db150c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 7 16:58:40 2015 +0100
+
+    v2v: Add support for REG_MULTI_SZ (multiple strings) to registry editor.
+
+commit e264317b048987f725e6e63f4dd1bc1c21fca35f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 1 13:04:32 2015 +0100
+
+    v2v: test-harness: Update the man page.
+
+commit 3034f9a658a39783cf7c99d0b00b3c7b39b061f8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 1 13:24:42 2015 +0100
+
+    v2v: test-harness: Send different shift keys to wake up guests from screen blank.
+    
+    See:
+    https://rwmj.wordpress.com/2015/03/30/tip-wake-up-a-guest-from-screen-blank/
+
 commit 3cb2b9da250be9fc891f8b10d96eaee87cec2e3a
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Apr 1 10:06:46 2015 +0100
