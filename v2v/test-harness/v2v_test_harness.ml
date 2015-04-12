@@ -176,31 +176,9 @@ let run ~test ?input_disk ?input_xml ?(test_plan = default_plan) () =
       sprintf "%04d%02d%02d-%02d%02d%02d" y mo d h m s
     in
 
-    let take_screenshot t =
-      (* Send a left shift key to wake up the screen from blanking. *)
-      let cmd = sprintf "virsh send-key %s KEY_LEFTSHIFT" (quote domname) in
-      printf "%s\n%!" cmd;
-      ignore (Sys.command cmd);
-      sleep 2;
-
-      (* Use 'virsh screenshot' command because our libvirt bindings
-       * don't include virDomainScreenshot, and in any case that API
-       * is complicated to use.  Returns the filename.
-       *)
-      let filename = sprintf "%s-%s.scrn" test (timestamp t) in
+    let display_is_black display =
       let cmd =
-        sprintf "virsh screenshot %s %s" (quote domname) (quote filename) in
-      printf "%s\n%!" cmd;
-      if Sys.command cmd <> 0 then
-        failwith "virsh screenshot command failed";
-      filename
-    in
-
-    let display_matches_screenshot screenshot1 screenshot2 =
-      let cmd =
-        (* Grrr compare sends its normal output to stderr. *)
-        sprintf "compare -metric MAE %s %s null: 2>&1"
-          (quote screenshot1) (quote screenshot2) in
+        sprintf "convert %s -format '%%[mean]' info:" (quote display) in
       printf "%s\n%!" cmd;
       let chan = open_process_in cmd in
       let lines = ref [] in
@@ -208,19 +186,104 @@ let run ~test ?input_disk ?input_xml ?(test_plan = default_plan) () =
        with End_of_file -> ());
       let lines = List.rev !lines in
       let stat = close_process_in chan in
-      let similarity =
-        match stat with
-        | WEXITED 0 -> 0.0              (* exact match *)
-        | WEXITED 1 ->
-          Scanf.sscanf (List.hd lines) "%f" (fun f -> f)
-        | WEXITED i ->
-          failwithf "external command '%s' exited with error %d" cmd i
-        | WSIGNALED i ->
-          failwithf "external command '%s' killed by signal %d" cmd i
-        | WSTOPPED i ->
-          failwithf "external command '%s' stopped by signal %d" cmd i in
-      printf "%s %s have similarity %f\n" screenshot1 screenshot2 similarity;
-      similarity <= 60.0
+      match stat with
+      | WEXITED 0 ->
+         let mean = Scanf.sscanf (List.hd lines) "%f" (fun f -> f) in
+         mean < 60.0            (* mostly or completely black *)
+      | WEXITED i ->
+         failwithf "external command '%s' exited with error %d" cmd 2;
+      | WSIGNALED i ->
+         failwithf "external command '%s' killed by signal %d" cmd i
+      | WSTOPPED i ->
+         failwithf "external command '%s' stopped by signal %d" cmd i
+    in
+
+    let keys = [| "KEY_LEFTSHIFT"; "KEY_LEFTALT"; "KEY_LEFTCTRL" |] in
+    let next_key = ref 0 in
+
+    let take_screenshot t =
+      let filename = sprintf "%s-%s.scrn" test (timestamp t) in
+      let cmd =
+        sprintf "virsh screenshot %s %s" (quote domname) (quote filename) in
+      printf "%s\n%!" cmd;
+
+      let do_virsh_screenshot () =
+        (* Use 'virsh screenshot' command because our libvirt bindings
+         * don't include virDomainScreenshot, and in any case that API
+         * is complicated to use.
+         *)
+      if Sys.command cmd <> 0 then
+        failwith "virsh screenshot command failed";
+      in
+
+      (* Take a screenshot. *)
+      do_virsh_screenshot ();
+
+      (* If the screenshot is completely black, send a key to wake up
+       * the screen from blanking.  But don't keep on hitting the shift
+       * key as that causes Windows to get in a muddle.  And don't send
+       * a key unnecessarily since grub responds to shift keys by going
+       * into a menu(!)
+       * https://rwmj.wordpress.com/2015/03/30/tip-wake-up-a-guest-from-screen-blank/
+       *)
+      if display_is_black filename then (
+        let key = keys.(!next_key) in
+        next_key := !next_key+1;
+        if !next_key >= Array.length keys then next_key := 0;
+
+        let cmd = sprintf "virsh send-key %s %s" (quote domname) key in
+        printf "%s\n%!" cmd;
+        ignore (Sys.command cmd);
+        sleep 2;
+
+        do_virsh_screenshot ()
+      );
+
+      (* Return the screenshot filename. *)
+      filename
+    in
+
+    (* Find subimage within display.  There must be a near-exact
+     * match.  By editing images (eg. removing dates/times) you can
+      ensure this.
+     *)
+    let display_matches_subimage display subimage =
+      (* Grrr compare sends its normal output to stderr. *)
+      let cmd =
+        sprintf "compare -subimage-search -metric MAE %s %s null: 2>&1"
+                (quote display) (quote subimage) in
+      printf "%s\n%!" cmd;
+      let chan = open_process_in cmd in
+      let lines = ref [] in
+      (try while true do lines := input_line chan :: !lines done
+       with End_of_file -> ());
+      let lines = List.rev !lines in
+      let stat = close_process_in chan in
+      match stat with
+      | WEXITED 0 -> true       (* exact match *)
+      | WEXITED 1 ->            (* not exact match *)
+         let similarity = Scanf.sscanf (List.hd lines) "%f" (fun f -> f) in
+         similarity <= 60.0
+      | WEXITED 2 ->            (* error *)
+         (* We need to ignore the annoying 'compare: images too dissimilar'
+          * message.  Why?
+          *)
+         let rec loop = function
+           | [] ->              (* error *)
+              failwithf "external command '%s' exited with error %d" cmd 2;
+           | line::lines ->
+              if string_prefix line "compare: images too dissimilar" then
+                false           (* no match *)
+              else
+                loop lines
+         in
+         loop lines
+      | WEXITED i ->
+         failwithf "external command '%s' exited with error %d" cmd i
+      | WSIGNALED i ->
+         failwithf "external command '%s' killed by signal %d" cmd i
+      | WSTOPPED i ->
+         failwithf "external command '%s' stopped by signal %d" cmd i
     in
 
     let dom_is_alive () =
@@ -243,7 +306,8 @@ let run ~test ?input_disk ?input_xml ?(test_plan = default_plan) () =
     let bootfail t fs =
       let screenshot = take_screenshot t in
       eprintf "boot failed: see screenshot in %s\n%!" screenshot;
-      ksprintf failwith fs in
+      ksprintf failwith fs
+    in
 
     (* The guest is booting.  We expect it to write to the disk within
      * the first boot_wait_to_write seconds.
@@ -278,29 +342,43 @@ let run ~test ?input_disk ?input_xml ?(test_plan = default_plan) () =
       let t = time () in
       if t -. start > float test_plan.boot_max_time then
         bootfail t "guest timed out before reaching final state";
-      let active, stats = get_disk_activity stats in
-      if active then (
-        printf "%s: disk activity detected\n" (timestamp t);
-        loop start t stats
-      ) else (
-        if t -. last_activity <= float test_plan.boot_idle_time then (
-          let screenshot = take_screenshot t in
-          (* Reached the final screenshot? *)
-          let done_ =
-            match test_plan.boot_plan with
-            | Boot_to_screenshot final_screenshot ->
-              if display_matches_screenshot screenshot final_screenshot then (
-                printf "%s: guest reached final screenshot\n" (timestamp t);
-                true
-              ) else false
-            | _ -> false in
-          if not done_ then (
+
+      (* Make sure we take a screenshot on every iteration, as they
+       * are incredibly useful for debugging.
+       *)
+      let display = take_screenshot t in
+
+      (* Reached the final screenshot?  Reaching this state
+       * terminates the boot immediately.
+       *)
+      let reached_final_screenshot =
+        match test_plan.boot_plan with
+        | Boot_to_screenshot final_screenshot ->
+           if display_matches_subimage display final_screenshot then (
+             printf "%s: guest reached final screenshot\n" (timestamp t);
+             true
+           ) else false
+        | _ -> false in
+      if not reached_final_screenshot then (
+        (* Is the disk active? *)
+        let is_active, stats = get_disk_activity stats in
+        let is_idle = t -. last_activity > float test_plan.boot_idle_time in
+
+        if is_active then (
+          printf "%s: disk activity detected\n" (timestamp t);
+          loop start t stats
+        ) else (
+          if is_idle then (
+            if test_plan.boot_plan <> Boot_to_idle then
+              bootfail t "guest timed out with no disk activity before reaching final state"
+          (* else Boot_to_idle, so we exit the loop here *)
+          ) else (
             (* A screenshot matching one of the screenshots in the set
              * resets the timeouts.
              *)
             let waiting_in_known_good_state =
-              List.exists (display_matches_screenshot screenshot)
-                test_plan.boot_known_good_screenshots in
+              List.exists (display_matches_subimage display)
+                          test_plan.boot_known_good_screenshots in
             if waiting_in_known_good_state then (
               printf "%s: guest at known-good screenshot\n" (timestamp t);
               loop t t stats
@@ -308,8 +386,6 @@ let run ~test ?input_disk ?input_xml ?(test_plan = default_plan) () =
               loop start last_activity stats
           )
         )
-        else
-          bootfail t "guest timed out with no disk activity before reaching final state"
       )
     in
     loop start last_activity stats;
@@ -346,10 +422,12 @@ let run ~test ?input_disk ?input_xml ?(test_plan = default_plan) () =
       if Filename.check_suffix input_disk ".xz" then (
         let input_disk_uncomp = Filename.chop_suffix input_disk ".xz" in
         if not (Sys.file_exists input_disk_uncomp) then (
-          let cmd = sprintf "unxz --keep %s" (quote input_disk) in
+          let cmd =
+            sprintf "xzcat %s > %s"
+                    (quote input_disk) (quote input_disk_uncomp) in
           printf "%s\n%!" cmd;
           if Sys.command cmd <> 0 then
-            failwith "unxz command failed"
+            failwith "xzcat command failed"
         );
         input_disk_uncomp
       )
