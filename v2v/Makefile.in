@@ -1568,12 +1568,12 @@ EXTRA_DIST = \
 	HACKING README.RHEV-M \
 	test-v2v-i-ova.ovf \
 	test-v2v-i-ova.xml \
+	test-v2v-i-ova-formats.expected \
+	test-v2v-i-ova-formats.ovf \
 	test-v2v-i-ova-gz.expected \
 	test-v2v-i-ova-gz.ovf \
 	test-v2v-i-ova-two-disks.expected \
 	test-v2v-i-ova-two-disks.ovf \
-	test-v2v-i-ova-zip.expected \
-	test-v2v-i-ova-zip.ovf \
 	test-v2v-networks-and-bridges-expected.xml \
 	test-v2v-networks-and-bridges.xml.in \
 	virt-v2v.pod
@@ -1731,9 +1731,9 @@ SOURCES_C = \
 #   phony guests (but we don't go out of our way here)
 # - that up to date guests don't crash virt-v2v
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
-@HAVE_OCAML_TRUE@TESTS = test-v2v-i-ova-gz.sh \
-@HAVE_OCAML_TRUE@	test-v2v-i-ova-two-disks.sh \
-@HAVE_OCAML_TRUE@	test-v2v-i-ova-zip.sh $(am__append_3)
+@HAVE_OCAML_TRUE@TESTS = test-v2v-i-ova-formats.sh \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-gz.sh \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-two-disks.sh $(am__append_3)
 
 # This forces the file to be updated before running the tests, in case
 # the .xml.in file has been changed.  Be nice if automake just did the

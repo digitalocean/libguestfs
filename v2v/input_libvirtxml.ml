@@ -33,7 +33,7 @@ and parsed_source =
 | P_source_file of string
 | P_dont_rewrite
 
-let parse_libvirt_xml ~verbose xml =
+let parse_libvirt_xml ?conn ~verbose xml =
   if verbose then
     printf "libvirt xml is:\n%s\n" xml;
 
@@ -95,14 +95,45 @@ let parse_libvirt_xml ~verbose xml =
         match xpath_to_string "@keymap" "" with "" -> None | k -> Some k in
       let password =
         match xpath_to_string "@passwd" "" with "" -> None | pw -> Some pw in
+      let listen =
+        let obj = Xml.xpath_eval_expression xpathctx "listen" in
+        let nr_nodes = Xml.xpathobj_nr_nodes obj in
+        if nr_nodes < 1 then LNone
+        else (
+          (* Use only the first <listen> configuration. *)
+          match xpath_to_string "listen[1]/@type" "" with
+          | "" -> LNone
+          | "address" ->
+            (match xpath_to_string "listen[1]/@address" "" with
+            | "" -> LNone
+            | a -> LAddress a
+            )
+          | "network" ->
+            (match xpath_to_string "listen[1]/@network" "" with
+            | "" -> LNone
+            | n -> LNetwork n
+            )
+          | t ->
+            warning (f_"<listen type='%s'> in the input libvirt XML was ignored") t;
+            LNone
+        ) in
+      let port =
+        match xpath_to_string "@autoport" "yes" with
+        | "no" ->
+          let port = xpath_to_int "@port" (-1) in
+          if port >= 0 then Some port
+          else None
+        | _ -> None in
       match xpath_to_string "@type" "" with
       | "" -> None
       | "vnc" ->
         Some { s_display_type = VNC;
-               s_keymap = keymap; s_password = password }
+               s_keymap = keymap; s_password = password; s_listen = listen;
+               s_port = port }
       | "spice" ->
         Some { s_display_type = Spice;
-               s_keymap = keymap; s_password = password }
+               s_keymap = keymap; s_password = password; s_listen = listen;
+               s_port = port }
       | "sdl"|"desktop" as t ->
         warning (f_"virt-v2v does not support local displays, so <graphics type='%s'> in the input libvirt XML was ignored") t;
         None
@@ -151,8 +182,8 @@ let parse_libvirt_xml ~verbose xml =
         | "" -> None
         | format -> Some format in
 
-      (* The <disk type='...'> attribute may be 'block', 'file' or
-       * 'network'.  We ignore any other types.
+      (* The <disk type='...'> attribute may be 'block', 'file',
+       * 'network' or 'volume'.  We ignore any other types.
        *)
       match xpath_to_string "@type" "" with
       | "block" ->
@@ -179,6 +210,36 @@ let parse_libvirt_xml ~verbose xml =
         | protocol, _, _ ->
           warning (f_"<disk type='network'> with <source protocol='%s'> was ignored")
             protocol
+        )
+      | "volume" ->
+        let pool = xpath_to_string "source/@pool" "" in
+        let vol = xpath_to_string "source/@volume" "" in
+        if pool <> "" && vol <> "" then (
+          let xml = Domainxml.vol_dumpxml ?conn pool vol in
+          let doc = Xml.parse_memory xml in
+          let xpathctx = Xml.xpath_new_context doc in
+
+          let xpath_to_string expr default =
+            let obj = Xml.xpath_eval_expression xpathctx expr in
+            if Xml.xpathobj_nr_nodes obj < 1 then default
+            else (
+              let node = Xml.xpathobj_node doc obj 0 in
+              Xml.node_as_string node
+            ) in
+
+          (* Use the format specified in the volume itself. *)
+          let format =
+            match xpath_to_string "/volume/target/format/@type" "" with
+            | "" -> None
+            | format -> Some format in
+
+          match xpath_to_string "/volume/@type" "" with
+          | "" | "file" ->
+            let path = xpath_to_string "/volume/target/path/text()" "" in
+            if path <> "" then
+              add_disk path format controller (P_source_file path)
+          | vol_type ->
+            warning (f_"<disk type='volume'> with <volume type='%s'> was ignored") vol_type
         )
       | disk_type ->
         warning (f_"<disk type='%s'> was ignored") disk_type

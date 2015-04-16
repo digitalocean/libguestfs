@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# Build Fedora images for armv7l.
+# Build Fedora images for ppc64le (secondary arch).
 
 unset CDPATH
 export LANG=C
@@ -29,8 +29,8 @@ if [ $# -ne 1 ]; then
 fi
 
 version=$1
-tree=http://mirror.ox.ac.uk/sites/download.fedora.redhat.com/pub/fedora/linux/releases/21/Server/armhfp/os/
-output=fedora-$version-armv7l
+tree=https://download.fedoraproject.org/pub/fedora-secondary/releases/21/Server/ppc64le/os/
+output=fedora-$version-ppc64le
 tmpname=tmp-$(tr -cd 'a-f0-9' < /dev/urandom | head -c 8)
 
 rm -f $output $output.old $output.xz
@@ -48,10 +48,10 @@ rootpw builder
 firewall --enabled --ssh
 selinux --enforcing
 timezone --utc America/New_York
-bootloader --location=mbr --append="console=tty0 console=ttyAMA0,115200 rd_NO_PLYMOUTH"
+bootloader --location=mbr --append="console=tty0 console=hvc0 rd_NO_PLYMOUTH"
 zerombr
 clearpart --all --initlabel
-autopart --type=plain
+autopart --type=lvm
 
 # Halt the system once configuration has finished.
 poweroff
@@ -77,11 +77,12 @@ trap cleanup INT QUIT TERM EXIT ERR
 
 virt-install \
     --name=$tmpname \
-    --ram=1024 \
-    --cpu=host --vcpus=2 \
+    --ram=4096 \
+    --vcpus=2 \
     --os-type=linux --os-variant=fedora21 \
+    --arch ppc64le --machine pseries \
     --initrd-inject=$ks \
-    --extra-args="ks=file:/`basename $ks` console=tty0 console=ttyAMA0,115200 proxy=$http_proxy" \
+    --extra-args="ks=file:/`basename $ks` console=tty0 console=hvc0 proxy=$http_proxy" \
     --disk $(pwd)/$output,size=6,format=raw \
     --serial pty \
     --location=$tree \
