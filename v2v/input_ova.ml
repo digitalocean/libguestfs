@@ -43,13 +43,32 @@ object
        *)
       if is_directory ova then ova
       else (
+        let uncompress_head zcat file =
+          let cmd = sprintf "%s %s" zcat (quote file) in
+          let chan_out, chan_in, chan_err = Unix.open_process_full cmd [||] in
+          let buf = String.create 512 in
+          let len = input chan_out buf 0 (String.length buf) in
+          (* We're expecting the subprocess to fail because we close
+           * the pipe early, so:
+           *)
+          ignore (Unix.close_process_full (chan_out, chan_in, chan_err));
+
+          let tmpfile, chan = Filename.open_temp_file ~temp_dir:tmpdir "ova.file." "" in
+          output chan buf 0 len;
+          close_out chan;
+
+          tmpfile in
+
+        let untar ?(format = "") file outdir =
+          let cmd = sprintf "tar -x%sf %s -C %s" format (quote file) (quote outdir) in
+          if verbose then printf "%s\n%!" cmd;
+          if Sys.command cmd <> 0 then
+            error (f_"error unpacking %s, see earlier error messages") ova in
+
         match detect_file_type ova with
         | `Tar ->
           (* Normal ovas are tar file (not compressed). *)
-          let cmd = sprintf "tar -xf %s -C %s" (quote ova) (quote tmpdir) in
-          if verbose then printf "%s\n%!" cmd;
-          if Sys.command cmd <> 0 then
-            error (f_"error unpacking %s, see earlier error messages") ova;
+          untar ova tmpdir;
           tmpdir
         | `Zip ->
           (* However, although not permitted by the spec, people ship
@@ -62,8 +81,25 @@ object
           if Sys.command cmd <> 0 then
             error (f_"error unpacking %s, see earlier error messages") ova;
           tmpdir
-        | `GZip | `XZ | `Unknown ->
-          error (f_"%s: unsupported file format\n\nFormats which we currently understand for '-i ova' are: uncompressed tar, zip") ova
+        | (`GZip|`XZ) as format ->
+          let zcat, tar_fmt =
+            match format with
+            | `GZip -> "zcat", "z"
+            | `XZ -> "xzcat", "J"
+            | _ -> assert false in
+          let tmpfile = uncompress_head zcat ova in
+          let tmpfiletype = detect_file_type tmpfile in
+          (* Remove tmpfile from tmpdir, to leave it empty. *)
+          Sys.remove tmpfile;
+          (match tmpfiletype with
+          | `Tar ->
+            untar ~format:tar_fmt ova tmpdir;
+            tmpdir
+          | `Zip | `GZip | `XZ | `Unknown ->
+            error (f_"%s: unsupported file format\n\nFormats which we currently understand for '-i ova' are: tar (uncompressed, compress with gzip or xz), zip") ova
+          )
+        | `Unknown ->
+          error (f_"%s: unsupported file format\n\nFormats which we currently understand for '-i ova' are: tar (uncompressed, compress with gzip or xz), zip") ova
       ) in
 
     (* Exploded path must be absolute (RHBZ#1155121). *)
@@ -71,51 +107,66 @@ object
       if not (Filename.is_relative exploded) then exploded
       else Sys.getcwd () // exploded in
 
-    let files = Sys.readdir exploded in
-    let ovf = ref "" in
+    (* Find files in [dir] ending with [ext]. *)
+    let find_files dir ext =
+      let rec loop = function
+        | [] -> []
+        | dir :: rest ->
+          let files = Array.to_list (Sys.readdir dir) in
+          let files = List.map (Filename.concat dir) files in
+          let dirs, files = List.partition Sys.is_directory files in
+          let files = List.filter (
+            fun x ->
+              Filename.check_suffix x ext
+          ) files in
+          files @ loop (rest @ dirs)
+      in
+      loop [dir]
+    in
+
     (* Search for the ovf file. *)
-    Array.iter (
-      fun file ->
-        if Filename.check_suffix file ".ovf" then ovf := file
-    ) files;
-    let ovf = !ovf in
-    if ovf = "" then
-      error (f_"no .ovf file was found in %s") ova;
+    let ovf = find_files exploded ".ovf" in
+    let ovf =
+      match ovf with
+      | [] ->
+        error (f_"no .ovf file was found in %s") ova
+      | [x] -> x
+      | _ :: _ ->
+        error (f_"more than one .ovf file was found in %s") ova in
 
     (* Read any .mf (manifest) files and verify sha1. *)
+    let mf = find_files exploded ".mf" in
     let rex = Str.regexp "SHA1(\\(.*\\))=\\([0-9a-fA-F]+\\)\r?" in
-    Array.iter (
+    List.iter (
       fun mf ->
-        if Filename.check_suffix mf ".mf" then (
-          let chan = open_in (exploded // mf) in
-          let rec loop () =
-            let line = input_line chan in
-            if Str.string_match rex line 0 then (
-              let disk = Str.matched_group 1 line in
-              let expected = Str.matched_group 2 line in
-              let cmd = sprintf "sha1sum %s" (quote (exploded // disk)) in
-              let out = external_command ~prog cmd in
-              match out with
-              | [] ->
-                error (f_"no output from sha1sum command, see previous errors")
-              | [line] ->
-                let actual, _ = string_split " " line in
-                if actual <> expected then
-                  error (f_"checksum of disk %s does not match manifest %s (actual sha1(%s) = %s, expected sha1 (%s) = %s)")
-                    disk mf disk actual disk expected;
-                if verbose then
-                  printf "sha1 of %s matches expected checksum %s\n%!"
-                    disk expected
-              | _::_ -> error (f_"cannot parse output of sha1sum command")
-            )
-          in
-          (try loop () with End_of_file -> ());
-          close_in chan
-        )
-    ) files;
+        let chan = open_in mf in
+        let rec loop () =
+          let line = input_line chan in
+          if Str.string_match rex line 0 then (
+            let disk = Str.matched_group 1 line in
+            let expected = Str.matched_group 2 line in
+            let cmd = sprintf "sha1sum %s" (quote (exploded // disk)) in
+            let out = external_command ~prog cmd in
+            match out with
+            | [] ->
+              error (f_"no output from sha1sum command, see previous errors")
+            | [line] ->
+              let actual, _ = string_split " " line in
+              if actual <> expected then
+                error (f_"checksum of disk %s does not match manifest %s (actual sha1(%s) = %s, expected sha1 (%s) = %s)")
+                  disk mf disk actual disk expected;
+              if verbose then
+                printf "sha1 of %s matches expected checksum %s\n%!"
+                  disk expected
+            | _::_ -> error (f_"cannot parse output of sha1sum command")
+          )
+        in
+        (try loop () with End_of_file -> ());
+        close_in chan
+    ) mf;
 
     (* Parse the ovf file. *)
-    let xml = read_whole_file (exploded // ovf) in
+    let xml = read_whole_file ovf in
     let doc = Xml.parse_memory xml in
 
     (* Handle namespaces. *)

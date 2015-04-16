@@ -3092,7 +3092,7 @@ test_set_uuid_0_perform (guestfs_h *g)
 {
   /* TestResultString for set_uuid (0) */
   const char *arg515 = "/dev/sda1";
-  const char *arg516 = "b0396301-03ad-e917-d6ae-3fabdef92502";
+  const char *arg516 = "df3a3628-d330-08f6-d98f-d74ac3b021c4";
   int ret514;
   ret514 = guestfs_set_uuid (g, arg515, arg516);
   if (ret514 == -1)
@@ -3102,9 +3102,9 @@ test_set_uuid_0_perform (guestfs_h *g)
   ret = guestfs_vfs_uuid (g, arg518);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "b0396301-03ad-e917-d6ae-3fabdef92502")) {
+  if (! STREQ (ret, "df3a3628-d330-08f6-d98f-d74ac3b021c4")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_set_uuid_0", "vfs_uuid", "b0396301-03ad-e917-d6ae-3fabdef92502", ret);
+             "test_set_uuid_0", "vfs_uuid", "df3a3628-d330-08f6-d98f-d74ac3b021c4", ret);
     return -1;
   }
   return 0;
@@ -4636,7 +4636,7 @@ test_mke2fs_2_perform (guestfs_h *g)
   const char *arg775 = "/dev/sda1";
   struct guestfs_mke2fs_argv optargs776;
   optargs776.blocksize = 4096;
-  optargs776.uuid = "b0396301-03ad-e917-d6ae-3fabdef92502";
+  optargs776.uuid = "df3a3628-d330-08f6-d98f-d74ac3b021c4";
   optargs776.journaldev = 1;
   optargs776.bitmask = UINT64_C(0x100100002);
   int ret774;
@@ -4646,7 +4646,7 @@ test_mke2fs_2_perform (guestfs_h *g)
   const char *arg778 = "/dev/sda2";
   struct guestfs_mke2fs_argv optargs779;
   optargs779.blocksize = 4096;
-  optargs779.journaldevice = "UUID=b0396301-03ad-e917-d6ae-3fabdef92502";
+  optargs779.journaldevice = "UUID=df3a3628-d330-08f6-d98f-d74ac3b021c4";
   optargs779.label = "JOURNAL";
   optargs779.fstype = "ext2";
   optargs779.forcecreate = 1;
@@ -9326,7 +9326,7 @@ test_vfs_uuid_0_perform (guestfs_h *g)
 {
   /* TestResultString for vfs_uuid (0) */
   const char *arg1422 = "/dev/sda1";
-  const char *arg1423 = "b0396301-03ad-e917-d6ae-3fabdef92502";
+  const char *arg1423 = "df3a3628-d330-08f6-d98f-d74ac3b021c4";
   int ret1421;
   ret1421 = guestfs_set_e2uuid (g, arg1422, arg1423);
   if (ret1421 == -1)
@@ -9336,9 +9336,9 @@ test_vfs_uuid_0_perform (guestfs_h *g)
   ret = guestfs_vfs_uuid (g, arg1425);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "b0396301-03ad-e917-d6ae-3fabdef92502")) {
+  if (! STREQ (ret, "df3a3628-d330-08f6-d98f-d74ac3b021c4")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_vfs_uuid_0", "vfs_uuid", "b0396301-03ad-e917-d6ae-3fabdef92502", ret);
+             "test_vfs_uuid_0", "vfs_uuid", "df3a3628-d330-08f6-d98f-d74ac3b021c4", ret);
     return -1;
   }
   return 0;
@@ -13122,7 +13122,7 @@ test_mke2journal_U_0_perform (guestfs_h *g)
   ret1944 = guestfs_part_add (g, arg1945, arg1946, 204800, -64);
   if (ret1944 == -1)
     return -1;
-  const char *arg1952 = "b0396301-03ad-e917-d6ae-3fabdef92502";
+  const char *arg1952 = "df3a3628-d330-08f6-d98f-d74ac3b021c4";
   const char *arg1953 = "/dev/sda1";
   int ret1950;
   ret1950 = guestfs_mke2journal_U (g, 4096, arg1952, arg1953);
@@ -13130,7 +13130,7 @@ test_mke2journal_U_0_perform (guestfs_h *g)
     return -1;
   const char *arg1956 = "ext2";
   const char *arg1958 = "/dev/sda2";
-  const char *arg1959 = "b0396301-03ad-e917-d6ae-3fabdef92502";
+  const char *arg1959 = "df3a3628-d330-08f6-d98f-d74ac3b021c4";
   int ret1955;
   ret1955 = guestfs_mke2fs_JU (g, arg1956, 4096, arg1958, arg1959);
   if (ret1955 == -1)
@@ -13865,18 +13865,18 @@ test_swapon_uuid_0_perform (guestfs_h *g)
   /* TestRun for swapon_uuid (0) */
   const char *arg2129 = "/dev/sdc";
   struct guestfs_mkswap_opts_argv optargs2130;
-  optargs2130.uuid = "b0396301-03ad-e917-d6ae-3fabdef92502";
+  optargs2130.uuid = "df3a3628-d330-08f6-d98f-d74ac3b021c4";
   optargs2130.bitmask = UINT64_C(0x2);
   int ret2128;
   ret2128 = guestfs_mkswap_opts_argv (g, arg2129, &optargs2130);
   if (ret2128 == -1)
     return -1;
-  const char *arg2132 = "b0396301-03ad-e917-d6ae-3fabdef92502";
+  const char *arg2132 = "df3a3628-d330-08f6-d98f-d74ac3b021c4";
   int ret2131;
   ret2131 = guestfs_swapon_uuid (g, arg2132);
   if (ret2131 == -1)
     return -1;
-  const char *arg2135 = "b0396301-03ad-e917-d6ae-3fabdef92502";
+  const char *arg2135 = "df3a3628-d330-08f6-d98f-d74ac3b021c4";
   int ret2134;
   ret2134 = guestfs_swapoff_uuid (g, arg2135);
   if (ret2134 == -1)
@@ -16374,7 +16374,7 @@ test_mkswap_U_0_perform (guestfs_h *g)
   ret2364 = guestfs_part_disk (g, arg2365, arg2366);
   if (ret2364 == -1)
     return -1;
-  const char *arg2369 = "b0396301-03ad-e917-d6ae-3fabdef92502";
+  const char *arg2369 = "df3a3628-d330-08f6-d98f-d74ac3b021c4";
   const char *arg2370 = "/dev/sda1";
   int ret2368;
   ret2368 = guestfs_mkswap_U (g, arg2369, arg2370);
@@ -16590,7 +16590,7 @@ test_mkswap_2_perform (guestfs_h *g)
     return -1;
   const char *arg2400 = "/dev/sda1";
   struct guestfs_mkswap_opts_argv optargs2401;
-  optargs2401.uuid = "b0396301-03ad-e917-d6ae-3fabdef92502";
+  optargs2401.uuid = "df3a3628-d330-08f6-d98f-d74ac3b021c4";
   optargs2401.bitmask = UINT64_C(0x2);
   int ret2399;
   ret2399 = guestfs_mkswap_opts_argv (g, arg2400, &optargs2401);
@@ -16651,7 +16651,7 @@ test_mkswap_3_perform (guestfs_h *g)
   const char *arg2408 = "/dev/sda1";
   struct guestfs_mkswap_opts_argv optargs2409;
   optargs2409.label = "hello";
-  optargs2409.uuid = "b0396301-03ad-e917-d6ae-3fabdef92502";
+  optargs2409.uuid = "df3a3628-d330-08f6-d98f-d74ac3b021c4";
   optargs2409.bitmask = UINT64_C(0x3);
   int ret2407;
   ret2407 = guestfs_mkswap_opts_argv (g, arg2408, &optargs2409);
@@ -19916,7 +19916,7 @@ test_get_e2uuid_0_perform (guestfs_h *g)
   if (ret2829 == -1)
     return -1;
   const char *arg2834 = "/dev/sdc";
-  const char *arg2835 = "b0396301-03ad-e917-d6ae-3fabdef92502";
+  const char *arg2835 = "df3a3628-d330-08f6-d98f-d74ac3b021c4";
   int ret2833;
   ret2833 = guestfs_set_e2uuid (g, arg2834, arg2835);
   if (ret2833 == -1)
@@ -19926,9 +19926,9 @@ test_get_e2uuid_0_perform (guestfs_h *g)
   ret = guestfs_get_e2uuid (g, arg2837);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "b0396301-03ad-e917-d6ae-3fabdef92502")) {
+  if (! STREQ (ret, "df3a3628-d330-08f6-d98f-d74ac3b021c4")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_get_e2uuid_0", "get_e2uuid", "b0396301-03ad-e917-d6ae-3fabdef92502", ret);
+             "test_get_e2uuid_0", "get_e2uuid", "df3a3628-d330-08f6-d98f-d74ac3b021c4", ret);
     return -1;
   }
   return 0;
@@ -19971,7 +19971,7 @@ test_set_e2uuid_0_perform (guestfs_h *g)
 {
   /* TestResultString for set_e2uuid (0) */
   const char *arg2840 = "/dev/sda1";
-  const char *arg2841 = "b0396301-03ad-e917-d6ae-3fabdef92502";
+  const char *arg2841 = "df3a3628-d330-08f6-d98f-d74ac3b021c4";
   int ret2839;
   ret2839 = guestfs_set_e2uuid (g, arg2840, arg2841);
   if (ret2839 == -1)
@@ -19981,9 +19981,9 @@ test_set_e2uuid_0_perform (guestfs_h *g)
   ret = guestfs_get_e2uuid (g, arg2843);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "b0396301-03ad-e917-d6ae-3fabdef92502")) {
+  if (! STREQ (ret, "df3a3628-d330-08f6-d98f-d74ac3b021c4")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_set_e2uuid_0", "get_e2uuid", "b0396301-03ad-e917-d6ae-3fabdef92502", ret);
+             "test_set_e2uuid_0", "get_e2uuid", "df3a3628-d330-08f6-d98f-d74ac3b021c4", ret);
     return -1;
   }
   return 0;
@@ -31222,6 +31222,104 @@ test_file_architecture_15_perform (guestfs_h *g)
   return 0;
 }
 
+static int test_file_architecture_16_skip (void);
+static int test_file_architecture_16_perform (guestfs_h *);
+
+static int
+test_file_architecture_16 (guestfs_h *g)
+{
+  if (test_file_architecture_16_skip ()) {
+    skipped ("test_file_architecture_16", "environment variable set");
+    return 0;
+  }
+
+  if (init_iso_fs (g) == -1)
+    return -1;
+
+  return test_file_architecture_16_perform (g);
+}
+
+static int
+test_file_architecture_16_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file_architecture") == NULL;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE_16");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int
+test_file_architecture_16_perform (guestfs_h *g)
+{
+  /* TestResultString for file_architecture (16) */
+  const char *arg4241 = "/bin-x86_64-dynamic.gz";
+  CLEANUP_FREE char *ret;
+  ret = guestfs_file_architecture (g, arg4241);
+  if (ret == NULL)
+      return -1;
+  if (! STREQ (ret, "x86_64")) {
+    fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
+             "test_file_architecture_16", "file_architecture", "x86_64", ret);
+    return -1;
+  }
+  return 0;
+}
+
+static int test_file_architecture_17_skip (void);
+static int test_file_architecture_17_perform (guestfs_h *);
+
+static int
+test_file_architecture_17 (guestfs_h *g)
+{
+  if (test_file_architecture_17_skip ()) {
+    skipped ("test_file_architecture_17", "environment variable set");
+    return 0;
+  }
+
+  if (init_iso_fs (g) == -1)
+    return -1;
+
+  return test_file_architecture_17_perform (g);
+}
+
+static int
+test_file_architecture_17_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file_architecture") == NULL;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE_17");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int
+test_file_architecture_17_perform (guestfs_h *g)
+{
+  /* TestResultString for file_architecture (17) */
+  const char *arg4243 = "/lib-i586.so.xz";
+  CLEANUP_FREE char *ret;
+  ret = guestfs_file_architecture (g, arg4243);
+  if (ret == NULL)
+      return -1;
+  if (! STREQ (ret, "i386")) {
+    fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
+             "test_file_architecture_17", "file_architecture", "i386", ret);
+    return -1;
+  }
+  return 0;
+}
+
 static int test_set_trace_0_skip (void);
 static int test_set_trace_0_perform (guestfs_h *);
 
@@ -31258,9 +31356,9 @@ static int
 test_set_trace_0_perform (guestfs_h *g)
 {
   /* TestResultFalse for set_trace (0) */
-  int ret4241;
-  ret4241 = guestfs_set_trace (g, 0);
-  if (ret4241 == -1)
+  int ret4245;
+  ret4245 = guestfs_set_trace (g, 0);
+  if (ret4245 == -1)
     return -1;
   int ret;
   ret = guestfs_get_trace (g);
@@ -31650,9 +31748,9 @@ static int
 test_get_path_0_perform (guestfs_h *g)
 {
   /* TestRun for get_path (0) */
-  const char *ret4252;
-  ret4252 = guestfs_get_path (g);
-  if (ret4252 == NULL)
+  const char *ret4256;
+  ret4256 = guestfs_get_path (g);
+  if (ret4256 == NULL)
       return -1;
   return 0;
 }
@@ -31693,9 +31791,9 @@ static int
 test_get_hv_0_perform (guestfs_h *g)
 {
   /* TestRun for get_hv (0) */
-  CLEANUP_FREE char *ret4254;
-  ret4254 = guestfs_get_hv (g);
-  if (ret4254 == NULL)
+  CLEANUP_FREE char *ret4258;
+  ret4258 = guestfs_get_hv (g);
+  if (ret4258 == NULL)
       return -1;
   return 0;
 }
@@ -31736,16 +31834,16 @@ static int
 test_get_qemu_0_perform (guestfs_h *g)
 {
   /* TestRun for get_qemu (0) */
-  const char *ret4256;
-  ret4256 = guestfs_get_qemu (g);
-  if (ret4256 == NULL)
+  const char *ret4260;
+  ret4260 = guestfs_get_qemu (g);
+  if (ret4260 == NULL)
       return -1;
   return 0;
 }
 
-size_t nr_tests = 513;
+size_t nr_tests = 515;
 
-struct test tests[513] = {
+struct test tests[515] = {
   { .name = "test_part_get_mbr_part_type_0", .test_fn = test_part_get_mbr_part_type_0 },
   { .name = "test_part_get_mbr_part_type_1", .test_fn = test_part_get_mbr_part_type_1 },
   { .name = "test_btrfs_image_0", .test_fn = test_btrfs_image_0 },
@@ -32248,6 +32346,8 @@ struct test tests[513] = {
   { .name = "test_file_architecture_13", .test_fn = test_file_architecture_13 },
   { .name = "test_file_architecture_14", .test_fn = test_file_architecture_14 },
   { .name = "test_file_architecture_15", .test_fn = test_file_architecture_15 },
+  { .name = "test_file_architecture_16", .test_fn = test_file_architecture_16 },
+  { .name = "test_file_architecture_17", .test_fn = test_file_architecture_17 },
   { .name = "test_set_trace_0", .test_fn = test_set_trace_0 },
   { .name = "test_version_0", .test_fn = test_version_0 },
   { .name = "test_get_memsize_0", .test_fn = test_get_memsize_0 },

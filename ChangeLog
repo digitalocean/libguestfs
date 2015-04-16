@@ -1,3 +1,252 @@
+commit 8670c784db56350fdb16c4be68a501877662f4ea
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 16 14:04:04 2015 +0100
+
+    Version 1.29.36.
+
+commit 49867a22babfed9d274294aabb1f93941793a7de
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 16 09:09:03 2015 +0100
+
+    filearch: Fix memory leak.
+    
+    Found by 'make check-valgrind'.
+    
+    This fixes commit 20acc1f124a3f3af365c27b7654bead5beb1ef4c.
+
+commit 0f4ad9cd84df3f176b48c819440f0a758eaa5f63
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 15 17:53:43 2015 +0100
+
+    builder: Use console=hvc0 for serial console in ppc64 guests, and change partitioning type to LVM.
+
+commit b4be660ed623fa7f64a54a9c7d60718ce1d077f8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 15 22:30:52 2015 +0100
+
+    Version 1.29.35.
+
+commit cc44a5b511475e2fe905cad4946d667c4403ca1e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 15 22:30:25 2015 +0100
+
+    builder: Add fedora-ppc64le.sh script to EXTRA_DIST.
+
+commit 8f5503096598ac38bb5da8efab517d5cf36cb760
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 15 15:27:11 2015 +0200
+
+    v2v: test-v2v-i-ova-formats.sh: test ova as tar.gz and tar.xz
+    
+    Extend test-v2v-i-ova-formats.sh to test for tarballs compressed as gzip
+    or xz; followup of commit 3c582cfb8d62013a935953e919c79009452254f9.
+
+commit 454220ab43403ad97f02edcb2b5f71c5d21c0c25
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 15 15:24:12 2015 +0200
+
+    v2v: generalize test-v2v-i-ova-zip.sh
+    
+    Rename test-v2v-i-ova-zip.sh (and associated data) to
+    test-v2v-i-ova-formats, and generalize it a bit so it can test different
+    compression types for the ova "envelope".
+
+commit eab054a574fc83546c04607bcd75bf6f3796a193
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 15 13:32:45 2015 +0100
+
+    builder: website: Set format=qcow2 for Fedora 21 ppc64 images.
+    
+    Since I created these with virt-builder without specifying the format,
+    they have format=qcow2 (not raw).  Instead of tediously recreating or
+    reuploading these images, just change the metadata.
+
+commit f358d3d1edd38b5196fd04758a721520550bb1d1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 15 13:31:23 2015 +0100
+
+    builder: In new virt-install, you must specify the format when creating disk images.
+    
+    New virt-install defaults to qcow2 format unless specified.
+    Previously it defaulted to raw.  Specify the format explicitly.
+
+commit 11450a2d36fd05bd0dc9baff97c2afd08b4c9b07
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 15 14:28:05 2015 +0200
+
+    v2v: tests: add port='-1' to test-v2v-i-ova.xml reference
+    
+    Followup of commit 1db249a0cc21c65e0d3192567b6016745cea7e58, as it
+    outputs a new port attribute.
+
+commit 8049474636d1a56cb259af6e527fb6b0a42e43e1
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 15 13:22:13 2015 +0200
+
+    v2v: use .ovf and .mf files anywhere within ova files
+    
+    Do not rely on .ovf and .mf files being in the top-level of the ova
+    archive, but search them anywhere within the content of the ova.
+    
+    This also changes the result of the search of the .ovf file: previously,
+    one (random) file was picked in case there were more than one, while now
+    this situation triggers an error.
+    
+    Related to RHBZ#1186800.
+
+commit 3c582cfb8d62013a935953e919c79009452254f9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 15 11:21:57 2015 +0200
+
+    v2v: support tar.gz and tar.xz ova files
+    
+    When dealing with a ova detected as gzip of xz, uncompress few bytes of
+    it to check whether it is a compressed tarball, and if so untar it.
+    
+    Related to RHBZ#1186800.
+
+commit 05f5d069bafc0845593f188f01e9739ec46770de
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 15 12:43:56 2015 +0100
+
+    builder: Upload second revision of ppc64/ppc64le templates.
+    
+    The serial console should be fixes in these versions.
+
+commit 08b1ba35cfaa526982911fe9f355ed9c168d942d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 14 16:59:57 2015 +0200
+
+    v2v: start importing "volume" disk types (RHBZ#1146832)
+    
+    Import disks stored as "file"-type volumes.
+    
+    Side effect: a guest converted to libvirt using virt-v2v can be
+    converted again using virt-v2v.
+
+commit f7529522ab74d824c550d62953f0b8ecf1e61466
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 14 16:37:55 2015 +0200
+
+    v2v: pass libvirt connection URI to parse_libvirt_xml
+    
+    This makes it possible to connect to the right libvirt.
+
+commit 5da2ed95c11af6be6bee27f5b3dce8a6f3a29d74
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 14 16:35:51 2015 +0200
+
+    v2v: domainxml: add vol_dumpxml
+    
+    Add a new vol_dumpxml to get the XML dump of a pool's volume.
+
+commit 9001f61a402dc1820fd4c441e5cc78197c39b73b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 14 15:16:01 2015 +0200
+
+    v2v: domainxml: factor out connect and pool loading
+    
+    Factor out the connection and pool loading out of v2v_pool_dumpxml, so
+    it can be used in later implementations requiring a pool.
+    
+    Should be just code motion.
+
+commit eee28390ffd89344edd0d822012a5e4df398b2af
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 14 18:16:53 2015 +0100
+
+    builder: Add Fedora 21 ppc64 & ppc64le images.
+    
+    This also corrects the size= field on all Fedora images.  It should
+    be 6GB but was 4GB.
+
+commit c65bba313d848d5d6a700df2c803bd89caadd2c6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 14 18:09:29 2015 +0100
+
+    builder: Add fedora-ppc64le script and build ppc64le template.
+
+commit c5b5442315f8c34b0988a1e0acfa4891e843be47
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 14 18:06:11 2015 +0100
+
+    builder: Update fedora-ppc64 script and build ppc64 big endian template.
+
+commit 1db249a0cc21c65e0d3192567b6016745cea7e58
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 14 13:22:10 2015 +0200
+
+    v2v: convert libvirt display port configuration
+    
+    Read the port configuration from the XML of libvirt domains, restoring
+    it when writing new libvirt XMLs instead of always setting the
+    "autoport" option.
+
+commit 7291b226d1b08c762ae2f2715a2ac9ed7b8d5d14
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 14 11:07:57 2015 +0200
+
+    filearch: support gzip/xz-compressed files
+    
+    Extract them to find out the architecture of the data they hold.
+    Useful to detect the architecture of e.g. compressed Linux modules.
+    
+    Provide in the test.iso two samples (compressing existing test data) of
+    binaries compressed with gzip and xz.
+
+commit 9360675dc244a8762e07a8a4289e7a30ca3e1eef
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 14 10:38:54 2015 +0200
+
+    v2v: convert libvirt display listen configuration (RHBZ#1174073)
+    
+    Read the listen configuration from the XML of libvirt domains, restoring
+    it when writing new libvirt XMLs.
+
+commit 20acc1f124a3f3af365c27b7654bead5beb1ef4c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Apr 13 11:18:46 2015 +0200
+
+    filearch: move libmagic code in an own function
+    
+    Also use a cleanup attribue to ease the close of the magic_t handle.
+    
+    This is mostly code motion, hopefully with no actual behaviour changes.
+
+commit e062093881d66b56c4935054ad409ecf2531880b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 13 12:01:22 2015 +0100
+
+    v2v: Add a man page section on importing from OVA files.
+
+commit abf23ece49972111e19147087664e7442d84fdfd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 13 11:46:29 2015 +0100
+
+    v2v: Document that vCenter >= 5.0 is required (RHBZ#1174200).
+    
+    vCenter 5.0 was released in 2011.  We have not tested against any
+    earlier versions, but it was reported that it does not work with
+    vCenter 4.
+    
+    Thanks: Sokratis
+
+commit 80fcbe6eee209c8c94dc99f137e965432da99dd5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Apr 11 16:38:59 2015 +0100
+
+    v2v: Document that Windows up to 8.1 / 2012R2 now supported.
+    
+    Commit 2817824bd34e30fe6a2eeb65105067bd058f1fac added support for
+    converting more recent versions of Windows, but neglected to document
+    it.
+
+commit d23134c5b83caad8f2484ded26c72adef47b2725
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Apr 10 13:55:07 2015 +0100
+
+    php: Clean up more intermediate files.
+
 commit 2e6b14e0466bd63423fbd2c729e1ba0bf6764e8d
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Apr 10 13:48:02 2015 +0100

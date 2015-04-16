@@ -42,6 +42,22 @@
 
 #if defined(HAVE_LIBMAGIC)
 
+# ifdef HAVE_ATTRIBUTE_CLEANUP
+# define CLEANUP_MAGIC_T_FREE __attribute__((cleanup(cleanup_magic_t_free)))
+
+static void
+cleanup_magic_t_free (void *ptr)
+{
+  magic_t m = *(magic_t *) ptr;
+
+  if (m)
+    magic_close (m);
+}
+
+# else
+# define CLEANUP_MAGIC_T_FREE
+# endif
+
 COMPILE_REGEXP (re_file_elf,
                 "ELF.*(?:executable|shared object|relocatable), (.+?),", 0)
 COMPILE_REGEXP (re_elf_ppc64, "64.*PowerPC", 0)
@@ -90,6 +106,55 @@ is_regular_file (const char *filename)
   struct stat statbuf;
 
   return lstat (filename, &statbuf) == 0 && S_ISREG (statbuf.st_mode);
+}
+
+static char *
+magic_for_file (guestfs_h *g, const char *filename, bool *loading_ok,
+                bool *matched)
+{
+  int flags;
+  CLEANUP_MAGIC_T_FREE magic_t m = NULL;
+  const char *line;
+  CLEANUP_FREE char *elf_arch = NULL;
+
+  flags = g->verbose ? MAGIC_DEBUG : 0;
+  flags |= MAGIC_ERROR | MAGIC_RAW;
+
+  if (loading_ok)
+    *loading_ok = false;
+  if (matched)
+    *matched = false;
+
+  m = magic_open (flags);
+  if (m == NULL) {
+    perrorf (g, "magic_open");
+    return NULL;
+  }
+
+  if (magic_load (m, NULL) == -1) {
+    perrorf (g, "magic_load: default magic database file");
+    return NULL;
+  }
+
+  line = magic_file (m, filename);
+  if (line == NULL) {
+    perrorf (g, "magic_file: %s", filename);
+    return NULL;
+  }
+
+  if (loading_ok)
+    *loading_ok = true;
+
+  elf_arch = match1 (g, line, re_file_elf);
+  if (elf_arch == NULL) {
+    error (g, "no re_file_elf match in '%s'", line);
+    return NULL;
+  }
+
+  if (matched)
+    *matched = true;
+
+  return canonical_elf_arch (g, elf_arch);
 }
 
 /* Download and uncompress the cpio file to find binaries within. */
@@ -170,43 +235,74 @@ cpio_arch (guestfs_h *g, const char *file, const char *path)
       safe_asprintf (g, "%s/%s", dir, initrd_binaries[i]);
 
     if (is_regular_file (bin)) {
-      int flags;
-      magic_t m;
-      const char *line;
-      CLEANUP_FREE char *elf_arch = NULL;
+      bool loading_ok, matched;
 
-      flags = g->verbose ? MAGIC_DEBUG : 0;
-      flags |= MAGIC_ERROR | MAGIC_RAW;
-
-      m = magic_open (flags);
-      if (m == NULL) {
-        perrorf (g, "magic_open");
+      ret = magic_for_file (g, bin, &loading_ok, &matched);
+      if (!loading_ok || matched)
         goto out;
-      }
-
-      if (magic_load (m, NULL) == -1) {
-        perrorf (g, "magic_load: default magic database file");
-        magic_close (m);
-        goto out;
-      }
-
-      line = magic_file (m, bin);
-      if (line == NULL) {
-        perrorf (g, "magic_file: %s", bin);
-        magic_close (m);
-        goto out;
-      }
-
-      elf_arch = match1 (g, line, re_file_elf);
-      if (elf_arch != NULL) {
-        ret = canonical_elf_arch (g, elf_arch);
-        magic_close (m);
-        goto out;
-      }
-      magic_close (m);
     }
   }
   error (g, "file_architecture: could not determine architecture of cpio archive");
+
+ out:
+  guestfs_int_recursive_remove_dir (g, dir);
+
+  return ret;
+}
+
+static char *
+compressed_file_arch (guestfs_h *g, const char *path, const char *method)
+{
+  CLEANUP_FREE char *tmpdir = guestfs_get_tmpdir (g), *dir = NULL;
+  CLEANUP_FREE char *tempfile = NULL, *tempfile_extracted = NULL;
+  CLEANUP_CMD_CLOSE struct command *cmd = guestfs_int_new_command (g);
+  char *ret = NULL;
+  int64_t size;
+  int r;
+  bool matched;
+
+  if (asprintf (&dir, "%s/libguestfsXXXXXX", tmpdir) == -1) {
+    perrorf (g, "asprintf");
+    return NULL;
+  }
+
+  /* Security: Refuse to download file if it is huge. */
+  size = guestfs_filesize (g, path);
+  if (size == -1 || size > 10000000) {
+    error (g, _("size of %s unreasonable (%" PRIi64 " bytes)"),
+           path, size);
+    goto out;
+  }
+
+  if (mkdtemp (dir) == NULL) {
+    perrorf (g, "mkdtemp");
+    goto out;
+  }
+
+  tempfile = safe_asprintf (g, "%s/file", dir);
+  if (guestfs_download (g, path, tempfile) == -1)
+    goto out;
+
+  tempfile_extracted = safe_asprintf (g, "%s/file_extracted", dir);
+
+  /* Construct a command to extract named binaries from the initrd file. */
+  guestfs_int_cmd_add_string_unquoted (cmd, method);
+  guestfs_int_cmd_add_string_unquoted (cmd, " ");
+  guestfs_int_cmd_add_string_quoted (cmd, tempfile);
+  guestfs_int_cmd_add_string_unquoted (cmd, " > ");
+  guestfs_int_cmd_add_string_quoted (cmd, tempfile_extracted);
+
+  r = guestfs_int_cmd_run (cmd);
+  if (r == -1)
+    goto out;
+  if (!WIFEXITED (r) || WEXITSTATUS (r) != 0) {
+    guestfs_int_external_command_failed (g, r, method, path);
+    goto out;
+  }
+
+  ret = magic_for_file (g, tempfile_extracted, NULL, &matched);
+  if (!matched)
+    error (g, "file_architecture: could not determine architecture of compressed file");
 
  out:
   guestfs_int_recursive_remove_dir (g, dir);
@@ -236,6 +332,10 @@ guestfs_impl_file_architecture (guestfs_h *g, const char *path)
     ret = safe_strdup (g, "x86_64");
   else if (strstr (file, "cpio archive"))
     ret = cpio_arch (g, file, path);
+  else if (strstr (file, "gzip compressed data"))
+    ret = compressed_file_arch (g, path, "zcat");
+  else if (strstr (file, "XZ compressed data"))
+    ret = compressed_file_arch (g, path, "xzcat");
   else
     error (g, "file_architecture: unknown architecture: %s", path);
 

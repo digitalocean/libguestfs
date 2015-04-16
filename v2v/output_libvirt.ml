@@ -222,13 +222,30 @@ let create_libvirt_xml ?pool source targets guestcaps target_features =
 
     append_attr ("heads", "1") video;
 
-    append_attr ("autoport", "yes") graphics;
     (match source.s_display with
     | Some { s_keymap = Some km } -> append_attr ("keymap", km) graphics
     | _ -> ());
     (match source.s_display with
     | Some { s_password = Some pw } -> append_attr ("passwd", pw) graphics
     | _ -> ());
+    (match source.s_display with
+    | Some { s_listen = listen } ->
+      (match listen with
+      | LAddress a ->
+        let sub = e "listen" [ "type", "address"; "address", a ] [] in
+        append_child sub graphics
+      | LNetwork n ->
+        let sub = e "listen" [ "type", "network"; "network", n ] [] in
+        append_child sub graphics
+      | LNone -> ())
+    | _ -> ());
+    (match source.s_display with
+    | Some { s_port = Some p } ->
+      append_attr ("autoport", "no") graphics;
+      append_attr ("port", string_of_int p) graphics
+    | _ ->
+      append_attr ("autoport", "yes") graphics;
+      append_attr ("port", "-1") graphics);
 
     video, graphics in
 

@@ -1868,6 +1868,11 @@ $(top_builddir)/generator/generator:
 # rule.  Therefore, don't die if this fails.
 @HAVE_PHP_TRUE@clean-local:
 @HAVE_PHP_TRUE@	-$(MAKE) -C extension clean
+@HAVE_PHP_TRUE@	rm -f extension/tests/*.exp
+@HAVE_PHP_TRUE@	rm -f extension/tests/*.log
+@HAVE_PHP_TRUE@	rm -f extension/tests/*.out
+@HAVE_PHP_TRUE@	rm -f extension/tests/*.php
+@HAVE_PHP_TRUE@	rm -f extension/tests/*.sh
 
 @HAVE_PHP_TRUE@install-data-hook:
 @HAVE_PHP_TRUE@	$(MAKE) -C extension INSTALL_ROOT=$(DESTDIR) install
