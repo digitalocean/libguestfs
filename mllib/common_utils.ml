@@ -340,6 +340,13 @@ let run_main_and_handle_errors ~prog main =
   | exn ->                              (* something not matched above *)
     error ~prog (f_"exception: %s") (Printexc.to_string exn)
 
+(* Print the version number and exit.  Used to implement --version in
+ * the OCaml tools.
+ *)
+let print_version_and_exit ~prog () =
+  printf "%s %s\n%!" prog Config.package_version_full;
+  exit 0
+
 let read_whole_file path =
   let buf = Buffer.create 16384 in
   let chan = open_in path in

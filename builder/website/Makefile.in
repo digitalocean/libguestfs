@@ -1146,6 +1146,7 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
+PACKAGE_VERSION_FULL = @PACKAGE_VERSION_FULL@
 PAMCUT = @PAMCUT@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PBMTEXT = @PBMTEXT@
@@ -1461,6 +1462,8 @@ EXTRA_DIST = \
 	fedora-ppc64.sh \
 	fedora-ppc64le.sh \
 	rhel.sh \
+	rhel-ppc64.sh \
+	rhel-ppc64le.sh \
 	scientificlinux.sh \
 	ubuntu.preseed \
 	ubuntu.sh

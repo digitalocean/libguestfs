@@ -59,6 +59,7 @@ hypervisor type: test
        nr vCPUs: 1
    CPU features: 
         display: 
+          sound: 
 disks:
 	/windows.img (raw) [virtio]
 removable media:

@@ -1206,6 +1206,7 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
+PACKAGE_VERSION_FULL = @PACKAGE_VERSION_FULL@
 PAMCUT = @PAMCUT@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PBMTEXT = @PBMTEXT@
@@ -2114,7 +2115,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	mv $@-t $@
 
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@common_utils_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmx common_utils.cmx common_utils_tests.cmx
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@common_utils_tests: config.cmx common_gettext.cmx common_utils.cmx common_utils_tests.cmx
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) \
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib '$(LIBTINFO_LIBS)' -o $@
 
@@ -2123,7 +2124,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) \
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib '$(LIBTINFO_LIBS)' -o $@
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@common_utils_tests.cmo: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmo common_utils.cmo common_utils_tests.cmo
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@common_utils_tests: config.cmo common_gettext.cmo common_utils.cmo common_utils_tests.cmo
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) \
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  mlguestfs.cma -linkpkg $^ -cclib '$(LIBTINFO_LIBS)' -custom -o $@
 

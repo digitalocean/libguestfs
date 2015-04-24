@@ -1,3 +1,224 @@
+commit e9910b488777fcd06d2d7c3eb05aed874797c7e0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 23 19:57:56 2015 +0100
+
+    Version 1.29.37.
+
+commit 578c7c086833cb44a1398ba91a5c997b6278b694
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 23 19:57:06 2015 +0100
+
+    builder: Add rhel-ppc64.sh & rhel-ppc64le.sh to EXTRA_DIST.
+    
+    This fixes commit c5f0d39c64a379cc71fc0508bdcfdaec13d0c9d9.
+
+commit b02980d5af264a436e0efed4f8c7296b9368de4a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 23 19:03:36 2015 +0100
+
+    fuse: tests: Add some debugging to test-fuse-umount-race.sh.
+    
+    This test fails on recent kernels, sometimes.
+    
+    Apparently calling 'fusermount -u mp' can exit with an EBUSY error,
+    but still unmount the filesystem.  Or possibly guestmount crashes
+    coincidentally.  It's impossible to debug because debugging tools like
+    strace prevent fuse from working at all.
+
+commit 6dee5a4152a1e8a1b82f18c1f393dfc4ec89739e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 23 19:02:41 2015 +0100
+
+    fuse: guestunmount: Make the -v (verbose) option do something useful.
+    
+    guestunmount had a -v / --verbose option, but it didn't change the
+    behaviour of the program in any way.
+    
+    Make it print the invocations of the underlying fusermount program.
+
+commit 0e4c351bb44d700faf10c3a035925c7bf13dd1cb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 23 17:56:03 2015 +0100
+
+    mllib: Link config.ml to the test program.
+    
+    This fixes commit a1646fa65c6cd544e287f25051a88c4a572ebb3e.
+
+commit 4f021006e9e85b0cc284d8c1cd3dcee416d75d51
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 23 10:52:08 2015 +0100
+
+    v2v: When debugging, dump OVF to stderr.
+    
+    Useful for debugging problems like RHBZ#1213701.
+
+commit c5f0d39c64a379cc71fc0508bdcfdaec13d0c9d9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 22 16:37:01 2015 +0100
+
+    builder: Add scripts for generating RHEL 7 ppc64 & ppc64le images.
+
+commit 2b0c6e8565977c3a53e3a834f3518cce2128aaec
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 20 17:35:44 2015 +0100
+
+    v2v: Pass sound card information from the source to the target (RHBZ#1176493).
+    
+    Collect sound card information from the source, and where possible,
+    create a compatible sound card on the target.
+    
+    Notes:
+    
+    * VMware's libvirt driver, and also OVF files, do not appear to
+      contain any sound card information, so it cannot be collected from
+      VMware sources.
+    
+    * Xen does emulate sound cards and makes that information available
+      through libvirt XML.
+    
+    * There are no paravirt drivers for sound that I'm aware of.
+      Therefore we can just copy the same sound model to the target (so
+      the sound device does not appear to change).  If the target, KVM,
+      does not support the device, it is dropped.  But ...
+    
+    * ... Unfortunately we cannot easily tell which sound cards are
+      supported by KVM on the target.  This is especially a problem for
+      RHEL, where many sound drivers have been removed.  There is a
+      convenience function, `Utils.qemu_supports_sound_card', which can be
+      modified by packagers to hard code the list of supported sound
+      cards.
+    
+    * If a sound card is dubious / not supported by the target / has any
+      other problem, then we drop it, since it is more important that the
+      guest boots on the target than that sound works.
+
+commit 3834a1064f866eef4c34440e6dd5023cc47ff7e1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 20 21:06:15 2015 +0100
+
+    v2v: tests: Don't need to generate test-v2v-networks-and-bridges.xml.
+    
+    virt-v2v understands relative paths in libvirt XML (even though they
+    are not legal and libvirt itself wouldn't generate it).  We don't need
+    to generate this file.
+
+commit a1646fa65c6cd544e287f25051a88c4a572ebb3e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Apr 20 14:15:51 2015 +0200
+
+    build: create and use a full version string
+    
+    Create a version string that includes the "extra" string as well, and
+    make use of it in print_version_and_exit (which can avoid creating a new
+    Guestfs handle).
+    
+    Folloup of commit 478a552ab431762dd2a724ade0c3fd84a21b7cab.
+
+commit 4268865a78500fd654c0df91197918e924531a1c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Apr 20 14:14:00 2015 +0200
+
+    build: require Config before Common_utils
+    
+    Build the Config mllib module before Common_utils, as the latter will
+    soon make use of the former.
+
+commit 0576fdd0b6bafaeaa3d69bf6fc6fef0d0a1254d1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 20 13:12:08 2015 +0100
+
+    v2v: Only emit fstrim warning when debugging (RHBZ#1168144).
+    
+    fstrim is an optimization.  If it fails, it's not fatal (although
+    virt-v2v will run a lot more slowly).
+    
+    We also expect that it will fail for non-aligned NTFS partitions found
+    on old versions of Windows, and in that case there's nothing that can
+    be done about it.
+    
+    Therefore only emit the warning when we are debugging.
+
+commit 3c51302d691cc204e4d43f4ab9837095d424bf3b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 20 12:05:29 2015 +0100
+
+    v2v: OVF: Add more Windows operating system variants (RHBZ#1213324).
+    
+    When generating OVF (eg. for -o rhev, -o vdsm) we have to put the
+    operating system type into a particular field of the output, in a
+    format that oVirt/RHEV will understand.  Add further Windows OS
+    variants to this list.  The variants are derived by examining
+    ovirt-engine sources.
+    
+    Thanks: Tingting Zheng for testing Windows conversions to RHEV and
+    finding this bug.
+
+commit 86a91d6c65d6fe5da45bd827287cd9800ece721e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 20 08:55:03 2015 +0100
+
+    p2v: Make --version output consistent with other tools (RHBZ#1213247).
+
+commit 3b3f06d2247562cbdb7ed70868ffb3f9c18e8a32
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 20 08:51:13 2015 +0100
+
+    virt-win-reg: Make output of --version flag consistent (RHBZ#1213247).
+
+commit 478a552ab431762dd2a724ade0c3fd84a21b7cab
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 20 08:48:08 2015 +0100
+
+    Common function to implement --version flag in all OCaml tools (RHBZ#1213247).
+    
+    Add a common function print_version_and_exit ~prog () and use this
+    function to display the version in all OCaml tools, to ensure
+    consistent output.
+
+commit 921a3b8be2ecefc422d74b566a1bc46064a213dc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 20 08:47:45 2015 +0100
+
+    fish: Whitespace changes.
+
+commit 1d78b312bf1e74066e496538a48ca1bb373333ee
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Apr 18 11:26:03 2015 +0100
+
+    builder: Add CentOS 7.1 image.
+
+commit 58bbb93a2514d4c40ea969aaad6b2ecf9a505b34
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Apr 17 20:46:13 2015 +0100
+
+    tests/data: Add ppc64 & ppc64le test binaries.
+
+commit b2fbd88d9f5301ba32dc175de9d8fca6866f34d6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Apr 17 16:11:18 2015 +0100
+
+    builder: As TCG is single threaded, use 1 vCPU for Fedora ppc64 guests.
+
+commit 0debc0b3a7189a6853652f9df4a06fd1c53d2487
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Apr 17 11:28:43 2015 +0100
+
+    builder: Set expand=/dev/sda3 for Fedora 21 ppc64 images.
+
+commit 0e73a97ef42dc3f612f5a84993ba1aa18d2bd9e2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Apr 17 11:17:01 2015 +0100
+
+    builder: Fedora 21 ppc64 images are now raw not qcow2.
+    
+    Fixes commit f2109068e5161a178a4413e223e7ccfe61ed07c3.
+
+commit f2109068e5161a178a4413e223e7ccfe61ed07c3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Apr 17 09:56:10 2015 +0100
+
+    builder: Upload new ppc64/ppc64le images which try to resolve console and partitioning problems.
+
 commit 8670c784db56350fdb16c4be68a501877662f4ea
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Apr 16 14:04:04 2015 +0100
