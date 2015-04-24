@@ -2260,6 +2260,9 @@
 /* Extra version string. */
 #undef PACKAGE_VERSION_EXTRA
 
+/* Full version string. */
+#undef PACKAGE_VERSION_FULL
+
 /* Major version number. */
 #undef PACKAGE_VERSION_MAJOR
 

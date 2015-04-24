@@ -1240,6 +1240,7 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
+PACKAGE_VERSION_FULL = @PACKAGE_VERSION_FULL@
 PAMCUT = @PAMCUT@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PBMTEXT = @PBMTEXT@
@@ -1573,9 +1574,9 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/fsync.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/progress.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmo \
 @HAVE_OCAML_TRUE@	$(SOURCES_ML:.ml=.cmo)
 
 @HAVE_OCAML_TRUE@XOBJECTS = $(BOBJECTS:.cmo=.cmx)

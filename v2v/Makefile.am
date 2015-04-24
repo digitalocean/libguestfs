@@ -30,7 +30,8 @@ EXTRA_DIST = \
 	test-v2v-i-ova-two-disks.expected \
 	test-v2v-i-ova-two-disks.ovf \
 	test-v2v-networks-and-bridges-expected.xml \
-	test-v2v-networks-and-bridges.xml.in \
+	test-v2v-networks-and-bridges.xml \
+	test-v2v-sound.xml \
 	virt-v2v.pod
 
 CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o virt-v2v
@@ -121,11 +122,11 @@ virt_v2v_CFLAGS = \
 	$(LIBVIRT_CFLAGS)
 
 BOBJECTS = \
+	$(top_builddir)/mllib/config.cmo \
 	$(top_builddir)/mllib/common_gettext.cmo \
 	$(top_builddir)/mllib/common_utils.cmo \
 	$(top_builddir)/mllib/regedit.cmo \
 	$(top_builddir)/mllib/progress.cmo \
-	$(top_builddir)/mllib/config.cmo \
 	$(top_builddir)/mllib/mkdtemp.cmo \
 	$(top_builddir)/mllib/JSON.cmo \
 	$(top_builddir)/customize/customize_utils.cmo \
@@ -244,13 +245,9 @@ TESTS += \
 	test-v2v-of-option.sh \
 	test-v2v-on-option.sh \
 	test-v2v-print-source.sh \
+	test-v2v-sound.sh \
 	test-v2v-windows-conversion.sh
 endif ENABLE_APPLIANCE
-
-# This forces the file to be updated before running the tests, in case
-# the .xml.in file has been changed.  Be nice if automake just did the
-# right thing here.
-check_DATA = test-v2v-networks-and-bridges.xml
 
 check-valgrind:
 	$(MAKE) VG="$(top_builddir)/run @VG@" check

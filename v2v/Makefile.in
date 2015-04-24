@@ -163,6 +163,7 @@ host_triplet = @host@
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-of-option.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-on-option.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-print-source.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-sound.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-windows-conversion.sh
 
 subdir = v2v
@@ -304,7 +305,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = link.sh test-v2v-networks-and-bridges.xml
+CONFIG_CLEAN_FILES = link.sh
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
@@ -442,7 +443,6 @@ am__tty_colors = { \
   fi; \
 }
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/link.sh.in \
-	$(srcdir)/test-v2v-networks-and-bridges.xml.in \
 	$(top_srcdir)/build-aux/depcomp $(top_srcdir)/common-rules.mk \
 	$(top_srcdir)/subdir-rules.mk TODO
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -1264,6 +1264,7 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
+PACKAGE_VERSION_FULL = @PACKAGE_VERSION_FULL@
 PAMCUT = @PAMCUT@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PBMTEXT = @PBMTEXT@
@@ -1575,7 +1576,8 @@ EXTRA_DIST = \
 	test-v2v-i-ova-two-disks.expected \
 	test-v2v-i-ova-two-disks.ovf \
 	test-v2v-networks-and-bridges-expected.xml \
-	test-v2v-networks-and-bridges.xml.in \
+	test-v2v-networks-and-bridges.xml \
+	test-v2v-sound.xml \
 	virt-v2v.pod
 
 CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o virt-v2v \
@@ -1663,11 +1665,11 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	$(LIBVIRT_CFLAGS)
 
 @HAVE_OCAML_TRUE@BOBJECTS = \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/regedit.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/progress.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/JSON.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_utils.cmo \
@@ -1734,11 +1736,6 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@TESTS = test-v2v-i-ova-formats.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-gz.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-two-disks.sh $(am__append_3)
-
-# This forces the file to be updated before running the tests, in case
-# the .xml.in file has been changed.  Be nice if automake just did the
-# right thing here.
-@HAVE_OCAML_TRUE@check_DATA = test-v2v-networks-and-bridges.xml
 @HAVE_OCAML_TRUE@SLOW_TESTS = \
 @HAVE_OCAML_TRUE@	test-v2v-real-conversions.sh
 
@@ -1789,8 +1786,6 @@ $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 link.sh: $(top_builddir)/config.status $(srcdir)/link.sh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-test-v2v-networks-and-bridges.xml: $(top_builddir)/config.status $(srcdir)/test-v2v-networks-and-bridges.xml.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
@@ -2249,7 +2244,6 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) $(check_DATA)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile $(PROGRAMS) $(MANS) $(DATA)

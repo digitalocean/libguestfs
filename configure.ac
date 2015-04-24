@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [29])
-m4_define([libguestfs_release], [36])
+m4_define([libguestfs_release], [37])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -90,6 +90,9 @@ AC_DEFINE([PACKAGE_VERSION_MAJOR],[libguestfs_major],[Major version number.])
 AC_DEFINE([PACKAGE_VERSION_MINOR],[libguestfs_minor],[Minor version number.])
 AC_DEFINE([PACKAGE_VERSION_RELEASE],[libguestfs_release],[Release number.])
 AC_DEFINE_UNQUOTED([PACKAGE_VERSION_EXTRA],["$libguestfs_extra"],[Extra version string.])
+PACKAGE_VERSION_FULL="libguestfs_major.libguestfs_minor.libguestfs_release${libguestfs_extra}"
+AC_DEFINE_UNQUOTED([PACKAGE_VERSION_FULL],["$PACKAGE_VERSION_FULL"],[Full version string.])
+AC_SUBST([PACKAGE_VERSION_FULL])
 
 # Define $(SED).
 m4_ifdef([AC_PROG_SED],[
@@ -1833,7 +1836,6 @@ AC_CONFIG_FILES([Makefile
                  tests/xml/Makefile
                  tools/Makefile
                  v2v/Makefile
-                 v2v/test-v2v-networks-and-bridges.xml
                  v2v/test-harness/Makefile
                  v2v/test-harness/META])
 AC_OUTPUT
