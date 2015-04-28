@@ -27,8 +27,12 @@ open Regedit
 let unix2dos s =
   String.concat "\r\n" (Str.split_delim (Str.regexp_string "\n") s)
 
-let sanitize_name n =
-  Str.global_replace (Str.regexp "[^A-Za-z0-9_]") "-" n
+let sanitize_name =
+  let rex = Str.regexp "[^A-Za-z0-9_]" in
+  fun n ->
+    let n = Str.global_replace rex "-" n in
+    let len = String.length n and max = 60 in
+    if len >= max then String.sub n 0 max else n
 
 (* For Linux guests. *)
 module Linux = struct
