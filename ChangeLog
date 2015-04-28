@@ -1,3 +1,78 @@
+commit 21764ec7c292d333fec8c8dabba3890351dbbd31
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 27 20:29:37 2015 +0100
+
+    Version 1.29.38.
+
+commit b70aec11c649b3c5ff22bc0f6a64e794ca3e7515
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 27 20:28:26 2015 +0100
+
+    random_seed: Don't try to create random seed if no parent directory.
+    
+    Partial fix for https://bugzilla.redhat.com/show_bug.cgi?id=1215803
+
+commit 2841400721a577dffc8940fd7ef17a536f4fb0f6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 27 15:05:15 2015 +0100
+
+    firstboot: Don't create very long filenames for --firstboot-command (RHBZ#1212152).
+
+commit aa8d66e7559bb8b0d7112c863ed85f02319e92e5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 27 15:02:30 2015 +0100
+
+    firstboot: Factor out regular expression constant.
+    
+    Don't need to evaluate this every time we call the function.
+
+commit 8c26ef91f95a9de68cea4c2341e00c938586f950
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Apr 27 10:16:40 2015 +0200
+
+    v2v: convert old-style libvirt listen configuration (RHBZ#1174073)
+    
+    Use the listen configuration from the "listen" attribute of <graphics>,
+    in case <listen> is missing.
+    
+    Followup of commit 9360675dc244a8762e07a8a4289e7a30ca3e1eef.
+
+commit 2dd01c5d2de2a2abdd2c8ac82a8758aef301e3bb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Apr 25 22:27:50 2015 +0100
+
+    v2v: Remove warning when compiling --without-libvirt.
+
+commit e3443a7549ce2643e50109de14148eeb0cfd0ce3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Apr 25 22:03:54 2015 +0100
+
+    v2v: -o libvirt: Minor refactoring of arch sanity check.
+
+commit 4546d3f21dc6c6ab73dc8acdab778e26a5fde30a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Apr 25 21:45:14 2015 +0100
+
+    v2v: Replace polymorphic variant source_hypervisor with ordinary variant.
+    
+    See commit 3a080c3fbffa5846f71528c6fd978be7853b33b8.
+
+commit 946d49cbbcfb47b5bb344ee24957e1c8e39f78e3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Apr 25 21:40:49 2015 +0100
+
+    v2v: Remove further uses of polymorphic variants.
+    
+    See commit 3a080c3fbffa5846f71528c6fd978be7853b33b8.
+
+commit ce630dfc33cc1f44c8d38eb712624b3b79365176
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Apr 24 09:04:38 2015 +0100
+
+    valgrind: Add suppression for libvirt memory leak.
+    
+    Related to RHBZ#1215042.
+
 commit e9910b488777fcd06d2d7c3eb05aed874797c7e0
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Apr 23 19:57:56 2015 +0100
