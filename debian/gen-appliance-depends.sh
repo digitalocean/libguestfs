@@ -11,6 +11,7 @@ pkglist_to_deps() {
         -e 's,^\(libsystemd-[a-z1-9-]*0\),libsystemd0 | \1,' \
         -e '/^\(bash\|coreutils\|e2fsprogs\|findutils\|grep\|gzip\|libc-bin\|sed\|tar\|util\-linux\)$/d' \
         | tr '\n' ','
+    echo
 }
 
 for p in gfs2 hfsplus jfs nilfs reiserfs rescue rsync xfs zfs
