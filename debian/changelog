@@ -1,3 +1,10 @@
+libguestfs (1:1.29.39-1) experimental; urgency=medium
+
+  * New upstream development version
+  * Fixed substvars generation script to insert extra newline
+
+ -- Hilko Bengen <bengen@debian.org>  Sun, 03 May 2015 22:40:25 +0200
+
 libguestfs (1:1.29.38-1) experimental; urgency=medium
 
   * New upstream development version
