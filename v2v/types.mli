@@ -27,6 +27,7 @@ type source = {
   s_memory : int64;                     (** Memory size (bytes). *)
   s_vcpu : int;                         (** Number of CPUs. *)
   s_features : string list;             (** Machine features. *)
+  s_firmware : source_firmware;         (** Firmware (BIOS or EFI). *)
   s_display : source_display option;    (** Guest display. *)
   s_sound : source_sound option;        (** Sound card. *)
   s_disks : source_disk list;           (** Disk images. *)
@@ -45,6 +46,15 @@ and source_hypervisor =
 (** Possible source hypervisors.  See
     [libvirt.git/docs/schemas/domaincommon.rng] for the list supported
     by libvirt. *)
+
+and source_firmware =
+  | BIOS                                (** PC BIOS or default firmware *)
+  | UEFI                                (** UEFI *)
+  | UnknownFirmware                     (** Unknown: try to autodetect. *)
+(** The firmware from the source metadata.  Note that
+    [UnknownFirmware] state corresponds to disks (where we have no
+    metadata) and temporarily also to libvirt because of
+    RHBZ#1217444. *)
 
 and source_disk = {
   s_disk_id : int;                      (** A unique ID for each source disk. *)
@@ -137,6 +147,10 @@ type target = {
 
 val string_of_target : target -> string
 
+type target_firmware = TargetBIOS | TargetUEFI
+
+val string_of_target_firmware : target_firmware -> string
+
 type inspect = {
   i_root : string;                      (** Root device. *)
   i_type : string;                      (** Usual inspection fields. *)
@@ -154,8 +168,11 @@ type inspect = {
     (** This is a map from the app name to the application object.
         Since RPM allows multiple packages with the same name to be
         installed, the value is a list. *)
+  i_uefi : bool;        (** True if the guest could boot with UEFI. *)
 }
 (** Inspection information. *)
+
+val string_of_inspect : inspect -> string
 
 type guestcaps = {
   gcaps_block_bus : guestcaps_block_type;
@@ -176,6 +193,8 @@ and guestcaps_block_type = Virtio_blk | IDE
 and guestcaps_net_type = Virtio_net | E1000 | RTL8139
 and guestcaps_video_type = QXL | Cirrus
 
+val string_of_guestcaps : guestcaps -> string
+
 class virtual input : bool -> object
   method virtual as_options : string
   (** Converts the input object back to the equivalent command line options.
@@ -194,10 +213,13 @@ class virtual output : bool -> object
       This is just used for pretty-printing log messages. *)
   method virtual prepare_targets : source -> target list -> target list
   (** Called before conversion to prepare the output. *)
+  method virtual supported_firmware : target_firmware list
+  (** Does this output method support UEFI?  Allows us to abort early if
+      conversion is impossible. *)
   method check_target_free_space : source -> target list -> unit
   (** Called before conversion.  Can be used to check there is enough space
       on the target, using the [target.target_estimated_size] field. *)
-  method virtual create_metadata : source -> target list -> guestcaps -> inspect -> unit
+  method virtual create_metadata : source -> target list -> guestcaps -> inspect -> target_firmware -> unit
   (** Called after conversion to finish off and create metadata. *)
   method disk_create : ?backingfile:string -> ?backingformat:string -> ?preallocation:string -> ?compat:string -> ?clustersize:int -> string -> string -> int64 -> unit
   (** Called in order to create disks on the target.  The method has the

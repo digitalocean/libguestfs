@@ -1,3 +1,146 @@
+commit f1b7e1b58b74829bdd5dfff88636d6823e4b17ec
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 2 09:21:47 2015 +0100
+
+    Version 1.29.39.
+
+commit 4f414c72993fd806725ccb16ec2ab2346ad2ed26
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 1 22:19:58 2015 +0100
+
+    v2v: docs: General updates to the manual.
+
+commit 9246d75eeba6a7979715a730eef7bca53b01d022
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 1 21:55:15 2015 +0100
+
+    v2v: docs: Replace "VMware ESX" with more accurate VMware vCenter/ESXi.
+    
+    "VMware ESX" is no longer a VMware product.  The hypervisor is
+    called VMware ESXi and the management software is VMware vCenter.
+
+commit 1b74e90de813f8d8f952ee3272f6c717094d5863
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 1 14:30:46 2015 +0100
+
+    tests/data: Add ppc64/ppc64le binaries to the test ISO.
+    
+    This fixes commit 58bbb93a2514d4c40ea969aaad6b2ecf9a505b34.
+
+commit ac049393093a8f2cbd1830467e3544f4bfaf0757
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 1 14:29:23 2015 +0100
+
+    tests/data: Add mipsel (32 bit MIPS little endian) test binaries.
+
+commit 40558450dd87190c9dc2649cadbf284ae0a21606
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 30 15:24:15 2015 +0100
+
+    v2v: efi: Support output of UEFI guests, for some output drivers (RHBZ#1184690).
+    
+    Add the Types.target_firmware type, which stores our final decision
+    for whether the guest requires BIOS or UEFI on the target.
+    
+    Not all output modes support UEFI.  In order to fail as early as
+    possible if conversion isn't going to be possible, there is an
+    output#supported_firmware method which returns the list of supported
+    target_firmware.
+    
+    Add the target_firmware parameter to output#create_metadata so it can
+    select the correct firmware in the final metadata.
+
+commit 086f71c7d86b0321ebbf36e1fb77644e783a7491
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 30 14:26:30 2015 +0100
+
+    v2v: Dump inspect and guestcaps structs when running in verbose mode.
+    
+    This helps with debugging.
+
+commit 6a76d6d780a8a833c9762195a79515bbc65704a0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 30 14:09:46 2015 +0100
+
+    v2v: efi: Detect if the guest could boot with UEFI.
+    
+    Use a heuristic to detect if the guest could boot with UEFI.
+    
+    This is only used where we have missing metadata (in the
+    source.s_firmware == UnknownFirmware case).  Currently that only
+    applies for `-i disk' and `-i libvirt/libvirtxml'.
+    
+    Eventually we'll be able to get this information from the libvirt
+    metadata (RHBZ#1217444), so it'll only be used for `-i disk'.
+
+commit ef77725081331b0a1b84ca32f6cb38a91873989f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 30 13:44:35 2015 +0100
+
+    v2v: efi: Model firmware in source metadata.
+    
+    Also modify the input_* drivers so they pull out the firmware from the
+    metadata.  Currently this is only possible for `-i ova', since libvirt
+    does not expose it (RHBZ#1217444).
+
+commit 9a45508f23451761fb3df825b17f2e32beb258d7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 30 16:23:26 2015 +0100
+
+    v2v: efi: linux: Add support for grub2-efi.
+
+commit 051f1f1a3fadcc18786c83066fba611ffe2a7995
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 30 13:24:40 2015 +0100
+
+    v2v: efi: linux: Remove EFI hacks.
+    
+    Old virt-v2v had a bunch of code for removing EFI configuration from a
+    Linux guest, and replacing it with grub.  I copied this code to new
+    virt-v2v but it was never tested.
+    
+    Now that OVMF exists, we can simply boot EFI guests directly on KVM.
+    
+    Thus these hacks can finally be removed.
+
+commit 06e93bf3ea7e7f8e717463c75e44ea0eda543db2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 30 11:19:53 2015 +0100
+
+    mips: Ignore missing prototypes in flex-generated code.
+
+commit 1f514f3466138b317028d5225ee53fe9cabfb9d7
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 29 14:57:22 2015 +0200
+
+    inspector: fix formatting of xpath result (RHBZ#1212680)
+    
+    Discard blank nodes when reading the XML from stdin, while enabling
+    formatting in output nodes.
+
+commit 22686d2cfd1793a4f2baa477650445fe2b5b4524
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 28 15:22:45 2015 +0200
+
+    customize: add a "touch" operation (RHBZ#1212808)
+
+commit 63e0045926d336ad07feb40f7d5af8ab5b234e5d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 28 10:01:42 2015 +0100
+
+    builder: Fix release notes for Debian 8.
+    
+    Editing inittab is not required for this version since it
+    uses systemd.
+    
+    This fixes commit be81fbb3238abe0454f2d72e57dba5f22dbc3c8f.
+
+commit be81fbb3238abe0454f2d72e57dba5f22dbc3c8f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 28 08:59:00 2015 +0100
+
+    builder: Add Jessie (Debian 8).
+
 commit 21764ec7c292d333fec8c8dabba3890351dbbd31
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon Apr 27 20:29:37 2015 +0100
