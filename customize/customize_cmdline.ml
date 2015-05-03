@@ -82,6 +82,8 @@ and op = [
       (* --truncate-recursive PATH *)
   | `Timezone of string
       (* --timezone TIMEZONE *)
+  | `Touch of string
+      (* --touch FILE *)
   | `Update
       (* --update *)
   | `Upload of string * string
@@ -326,6 +328,12 @@ let rec argspec () =
       s_"TIMEZONE" ^ " " ^ s_"Set the default timezone"
     ),
     Some "TIMEZONE", "Set the default timezone of the guest to C<TIMEZONE>.  Use a location\nstring like C<Europe/London>";
+    (
+      "--touch",
+      Arg.String (fun s -> ops := `Touch s :: !ops),
+      s_"FILE" ^ " " ^ s_"Run touch on a file"
+    ),
+    Some "FILE", "This command performs a L<touch(1)>-like operation on C<FILE>.";
     (
       "--update",
       Arg.Unit (fun () -> ops := `Update :: !ops),

@@ -27,6 +27,7 @@ type source = {
   s_memory : int64;
   s_vcpu : int;
   s_features : string list;
+  s_firmware : source_firmware;
   s_display : source_display option;
   s_sound : source_sound option;
   s_disks : source_disk list;
@@ -40,6 +41,10 @@ and source_hypervisor =
   | Physical (* used by virt-p2v *)
   | UnknownHV (* used by -i disk *)
   | OtherHV of string
+and source_firmware =
+  | BIOS
+  | UEFI
+  | UnknownFirmware
 and source_disk = {
   s_disk_id : int;
   s_qemu_uri : string;
@@ -84,6 +89,7 @@ hypervisor type: %s
          memory: %Ld (bytes)
        nr vCPUs: %d
    CPU features: %s
+       firmware: %s
         display: %s
           sound: %s
 disks:
@@ -98,6 +104,7 @@ NICs:
     s.s_memory
     s.s_vcpu
     (String.concat "," s.s_features)
+    (string_of_source_firmware s.s_firmware)
     (match s.s_display with
     | None -> ""
     | Some display -> string_of_source_display display)
@@ -145,6 +152,11 @@ and source_hypervisor_of_string = function
   | "physical" -> Physical
   | "unknown" -> OtherHV "unknown" (* because `UnknownHV is for internal use *)
   | s -> OtherHV s
+
+and string_of_source_firmware = function
+  | BIOS -> "bios"
+  | UEFI -> "uefi"
+  | UnknownFirmware -> "unknown"
 
 and string_of_source_disk { s_qemu_uri = qemu_uri; s_format = format;
                             s_controller = controller } =
@@ -249,6 +261,12 @@ target_overlay.ov_source = %s
     t.target_overlay.ov_overlay_file
     t.target_overlay.ov_source.s_qemu_uri
 
+type target_firmware = TargetBIOS | TargetUEFI
+
+let string_of_target_firmware = function
+  | TargetBIOS -> "bios"
+  | TargetUEFI -> "uefi"
+
 type inspect = {
   i_root : string;
   i_type : string;
@@ -263,7 +281,33 @@ type inspect = {
   i_mountpoints : (string * string) list;
   i_apps : Guestfs.application2 list;
   i_apps_map : Guestfs.application2 list StringMap.t;
+  i_uefi : bool;
 }
+
+let string_of_inspect inspect =
+  sprintf "\
+i_root = %s
+i_type = %s
+i_distro = %s
+i_arch = %s
+i_major_version = %d
+i_minor_version = %d
+i_package_format = %s
+i_package_management = %s
+i_product_name = %s
+i_product_variant = %s
+i_uefi = %b
+" inspect.i_root
+  inspect.i_type
+  inspect.i_distro
+  inspect.i_arch
+  inspect.i_major_version
+  inspect.i_minor_version
+  inspect.i_package_format
+  inspect.i_package_management
+  inspect.i_product_name
+  inspect.i_product_variant
+  inspect.i_uefi
 
 type mpstat = {
   mp_dev : string;
@@ -283,6 +327,26 @@ and guestcaps_block_type = Virtio_blk | IDE
 and guestcaps_net_type = Virtio_net | E1000 | RTL8139
 and guestcaps_video_type = QXL | Cirrus
 
+let string_of_guestcaps gcaps =
+  sprintf "\
+gcaps_block_bus = %s
+gcaps_net_bus = %s
+gcaps_video = %s
+gcaps_arch = %s
+gcaps_acpi = %b
+" (match gcaps.gcaps_block_bus with
+   | Virtio_blk -> "virtio"
+   | IDE -> "ide")
+  (match gcaps.gcaps_net_bus with
+   | Virtio_net -> "virtio-net"
+   | E1000 -> "e1000"
+   | RTL8139 -> "rtl8139")
+  (match gcaps.gcaps_video with
+   | QXL -> "qxl"
+   | Cirrus -> "cirrus")
+  gcaps.gcaps_arch
+  gcaps.gcaps_acpi
+
 class virtual input verbose = object
   method virtual as_options : string
   method virtual source : unit -> source
@@ -292,9 +356,10 @@ end
 class virtual output verbose = object
   method virtual as_options : string
   method virtual prepare_targets : source -> target list -> target list
+  method virtual supported_firmware : target_firmware list
   method check_target_free_space (_ : source) (_ : target list) = ()
   method disk_create = (new Guestfs.guestfs ())#disk_create
-  method virtual create_metadata : source -> target list -> guestcaps -> inspect -> unit
+  method virtual create_metadata : source -> target list -> guestcaps -> inspect -> target_firmware -> unit
   method keep_serial_console = true
 end
 

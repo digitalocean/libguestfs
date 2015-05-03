@@ -222,7 +222,24 @@ let rec main () =
 
   (* Inspection - this also mounts up the filesystems. *)
   msg (f_"Inspecting the overlay");
-  let inspect = inspect_source g root_choice in
+  let inspect = inspect_source ~verbose g root_choice in
+
+  (* Does the guest require UEFI on the target? *)
+  let target_firmware =
+    match source.s_firmware with
+    | BIOS -> TargetBIOS
+    | UEFI -> TargetUEFI
+    | UnknownFirmware ->
+       if inspect.i_uefi then TargetUEFI else TargetBIOS in
+  let supported_firmware = output#supported_firmware in
+  if not (List.mem target_firmware supported_firmware) then
+    error (f_"this guest cannot run on the target, because the target does not support %s firmware (supported firmware on target: %s)")
+          (string_of_target_firmware target_firmware)
+          (String.concat " "
+            (List.map string_of_target_firmware supported_firmware));
+  (match target_firmware with
+   | TargetBIOS -> ()
+   | TargetUEFI -> info (f_"This guest requires UEFI on the target to boot."));
 
   (* The guest free disk space check and the target free space
    * estimation both require statvfs information from mountpoints, so
@@ -269,7 +286,9 @@ let rec main () =
         error (f_"virt-v2v is unable to convert this guest type (%s/%s)")
           inspect.i_type inspect.i_distro in
     if verbose then printf "picked conversion module %s\n%!" conversion_name;
-    convert ~verbose ~keep_serial_console g inspect source in
+    let guestcaps = convert ~verbose ~keep_serial_console g inspect source in
+    if verbose then printf "%s%!" (string_of_guestcaps guestcaps);
+    guestcaps in
 
   (* Did we manage to install virtio drivers? *)
   if not quiet then (
@@ -415,7 +434,7 @@ let rec main () =
 
   (* Create output metadata. *)
   msg (f_"Creating output metadata");
-  output#create_metadata source targets guestcaps inspect;
+  output#create_metadata source targets guestcaps inspect target_firmware;
 
   (* Save overlays if --debug-overlays option was used. *)
   if debug_overlays then (
@@ -434,7 +453,7 @@ let rec main () =
   if debug_gc then
     Gc.compact ()
 
-and inspect_source g root_choice =
+and inspect_source ~verbose g root_choice =
   let roots = g#inspect_os () in
   let roots = Array.to_list roots in
 
@@ -530,7 +549,24 @@ and inspect_source g root_choice =
       StringMap.add name (app :: vs) map
   ) StringMap.empty apps in
 
-  { i_root = root;
+  (* See if this guest could use UEFI to boot.  It should use GPT and
+   * it should have an EFI System Partition (ESP).
+   *)
+  let uefi =
+    let rec uefi_ESP_guid = "C12A7328-F81F-11D2-BA4B-00A0C93EC93B"
+    and is_uefi_ESP dev { G.part_num = partnum } =
+      g#part_get_gpt_type dev (Int32.to_int partnum) = uefi_ESP_guid
+    and is_uefi_bootable_device dev =
+      g#part_get_parttype dev = "gpt" && (
+        let partitions = Array.to_list (g#part_list dev) in
+        List.exists (is_uefi_ESP dev) partitions
+      )
+    in
+    let devices = Array.to_list (g#list_devices ()) in
+    List.exists is_uefi_bootable_device devices in
+
+  let inspect = {
+    i_root = root;
     i_type = g#inspect_get_type root;
     i_distro = g#inspect_get_distro root;
     i_arch = g#inspect_get_arch root;
@@ -542,7 +578,11 @@ and inspect_source g root_choice =
     i_product_variant = g#inspect_get_product_variant root;
     i_mountpoints = mps;
     i_apps = apps;
-    i_apps_map = apps_map; }
+    i_apps_map = apps_map;
+    i_uefi = uefi
+  } in
+  if verbose then printf "%s%!" (string_of_inspect inspect);
+  inspect
 
 (* Conversion can fail if there is no space on the guest filesystems
  * (RHBZ#1139543).  To avoid this situation, check there is some

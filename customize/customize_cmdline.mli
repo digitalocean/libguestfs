@@ -74,6 +74,8 @@ and op = [
       (* --truncate-recursive PATH *)
   | `Timezone of string
       (* --timezone TIMEZONE *)
+  | `Touch of string
+      (* --touch FILE *)
   | `Update
       (* --update *)
   | `Upload of string * string
