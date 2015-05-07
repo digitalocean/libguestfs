@@ -6523,7 +6523,7 @@ func_mode_link ()
     old_convenience=
     deplibs=
     old_deplibs=
-    compiler_flags="-specs=/usr/lib/rpm/redhat/redhat-hardened-ld"
+    compiler_flags=
     linker_flags=
     dllsearchpath=
     lib_search_path=`pwd`

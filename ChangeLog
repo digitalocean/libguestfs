@@ -1,3 +1,95 @@
+commit dcd382d9d4ad8b063c73fd35c9ffd8d609ee98b8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed May 6 17:10:07 2015 +0100
+
+    Version 1.29.40.
+
+commit e464774a79ff9eeedcdb3fd53efd5a7898ca036e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed May 6 10:50:21 2015 +0100
+
+    p2v: Add Configure Network button (RHBZ#1167921).
+    
+    The old version of virt-p2v had a whole custom-written dialog which
+    interacted with NetworkManager over dbus.  After trying that approach,
+    it's really complex to get right.
+    
+    Instead this button simply opens NetworkManager's connection editor.
+    
+    This also adds nm-applet to the disk and starts it.  However nm-applet
+    does not display any visible indication -- probably because we are
+    lacking a system tray.
+
+commit 9b2ca08ab543e2779a3a0da5f05b7ba4a5bc7b7d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed May 6 15:11:34 2015 +0100
+
+    p2v: Switch from matchbox-window-manager to metacity.
+    
+    Matchbox only supports a single window on screen.  This worked fine
+    until we added the NetworkManager connection dialog -- which tries to
+    open in a new top level window, and of course fails.
+    
+    Metacity supports multiple top-level windows so doesn't suffer this
+    problem.
+    
+    Apart from that it's hard to tell the difference between the two.
+
+commit d5305c9672054d03d0c2ccdbc532643027c63775
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 5 20:56:38 2015 +0100
+
+    p2v: Use "About virt-p2v [VERSION]" on the about button.
+    
+    This makes it clearer what the button does.
+    
+    This updates commit a743f57cb8e74adaccae3a6f3b3da0c6961dc5ba.
+
+commit badfc2e9b2a56fd5bac849a6edca4fec823abeea
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 5 16:11:46 2015 +0100
+
+    v2v: -o libvirt: Check if the domain exists on the target (RHBZ#889082).
+
+commit e7833a5eea350ca3579d1f9e6702e116b45572fc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 5 15:55:53 2015 +0100
+
+    v2v: Add a C function to fetch libvirt hypervisor capabilities.
+    
+    Instead of having to run external 'virsh capabilities' command and
+    parsing the output.
+
+commit 1189d5919e4b3edceaa6a58b914ae29123754074
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 5 15:10:27 2015 +0100
+
+    p2v: Warn if vcpus or memory would be larger than supported by RHEL (RHBZ#823758).
+    
+    Display a warning if the number of vCPUs or memory selected in the GUI
+    would be larger than the limits currently supported on RHEL 6 and RHEL 7.
+    
+    This is just a warning -- the user is free to ignore it and continue
+    anyway.
+    
+    This warning does not apply if the selections were made through the
+    kernel command line, because there is no place to display the warning
+    for automated conversions.
+
+commit b1336f26e6a4a643eefd7422e8cd2d4520b1a565
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 5 15:09:13 2015 +0100
+
+    p2v: Factor out code for parsing vcpus & memory from conversion dialog.
+    
+    No functional change, just code refactoring.
+
+commit ed19af781fdd59c0dc4e6166ad12d2fc36222262
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun May 3 14:58:59 2015 +0100
+
+    tests/data: Add IA64 (Intel Itanium II) test binaries.
+
 commit f1b7e1b58b74829bdd5dfff88636d6823e4b17ec
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sat May 2 09:21:47 2015 +0100

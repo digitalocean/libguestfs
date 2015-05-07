@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 #include <inttypes.h>
 #include <unistd.h>
@@ -58,6 +59,7 @@ static GtkWidget *conn_dlg,
 /* The conversion dialog. */
 static GtkWidget *conv_dlg,
   *guestname_entry, *vcpus_entry, *memory_entry,
+  *vcpus_warning, *memory_warning, *target_warning_label,
   *o_combo, *oc_entry, *os_entry, *of_entry, *oa_combo,
   *info_label,
   *debug_button,
@@ -92,6 +94,7 @@ gui_application (struct config *config)
 
 static void test_connection_clicked (GtkWidget *w, gpointer data);
 static void *test_connection_thread (void *data);
+static void configure_network_button_clicked (GtkWidget *w, gpointer data);
 static void about_button_clicked (GtkWidget *w, gpointer data);
 static void connection_next_clicked (GtkWidget *w, gpointer data);
 static void repopulate_output_combo (struct config *config);
@@ -106,6 +109,7 @@ create_connection_dialog (struct config *config)
   GtkWidget *password_label;
   GtkWidget *test_hbox, *test;
   GtkWidget *about;
+  GtkWidget *configure_network;
   char port_str[64];
 
   conn_dlg = gtk_dialog_new ();
@@ -196,14 +200,16 @@ create_connection_dialog (struct config *config)
 
   /* Buttons. */
   gtk_dialog_add_buttons (GTK_DIALOG (conn_dlg),
-                          /* _("Configure network ..."), 1, */
-                          _("virt-p2v " PACKAGE_VERSION " ..."), 2,
+                          _("Configure network ..."), 1,
+                          _("About virt-p2v " PACKAGE_VERSION " ..."), 2,
                           _("Next"), 3,
                           NULL);
 
   next_button = gtk_dialog_get_widget_for_response (GTK_DIALOG (conn_dlg), 3);
   gtk_widget_set_sensitive (next_button, FALSE);
 
+  configure_network =
+    gtk_dialog_get_widget_for_response (GTK_DIALOG (conn_dlg), 1);
   about = gtk_dialog_get_widget_for_response (GTK_DIALOG (conn_dlg), 2);
 
   /* Signals. */
@@ -211,6 +217,8 @@ create_connection_dialog (struct config *config)
                             G_CALLBACK (gtk_main_quit), NULL);
   g_signal_connect (G_OBJECT (test), "clicked",
                     G_CALLBACK (test_connection_clicked), config);
+  g_signal_connect (G_OBJECT (configure_network), "clicked",
+                    G_CALLBACK (configure_network_button_clicked), NULL);
   g_signal_connect (G_OBJECT (about), "clicked",
                     G_CALLBACK (about_button_clicked), NULL);
   g_signal_connect (G_OBJECT (next_button), "clicked",
@@ -340,6 +348,12 @@ test_connection_thread (void *data)
 }
 
 static void
+configure_network_button_clicked (GtkWidget *w, gpointer data)
+{
+  ignore_value (system ("nm-connection-editor &"));
+}
+
+static void
 about_button_clicked (GtkWidget *w, gpointer data)
 {
   gtk_show_about_dialog (GTK_WINDOW (conn_dlg),
@@ -374,7 +388,10 @@ static void set_removable_from_ui (struct config *);
 static void set_interfaces_from_ui (struct config *);
 static void conversion_back_clicked (GtkWidget *w, gpointer data);
 static void start_conversion_clicked (GtkWidget *w, gpointer data);
+static void vcpus_or_memory_check_callback (GtkWidget *w, gpointer data);
 static void notify_ui_callback (int type, const char *data);
+static int get_vcpus_from_conv_dlg (void);
+static uint64_t get_memory_from_conv_dlg (void);
 
 enum {
   DISKS_COL_CONVERT = 0,
@@ -419,7 +436,7 @@ create_conversion_dialog (struct config *config)
   /* XXX It would be nice not to have to set this explicitly, but
    * if we don't then Gtk chooses a very small window.
    */
-  gtk_widget_set_size_request (conv_dlg, 800, 500);
+  gtk_widget_set_size_request (conv_dlg, 800, 560);
 
   /* The main dialog area. */
   hbox = gtk_hbox_new (TRUE, 1);
@@ -432,7 +449,7 @@ create_conversion_dialog (struct config *config)
 
   target_vbox = gtk_vbox_new (FALSE, 1);
 
-  target_tbl = gtk_table_new (3, 2, FALSE);
+  target_tbl = gtk_table_new (3, 3, FALSE);
   guestname_label = gtk_label_new (_("Name:"));
   gtk_misc_set_alignment (GTK_MISC (guestname_label), 1., 0.5);
   gtk_table_attach (GTK_TABLE (target_tbl), guestname_label,
@@ -452,6 +469,10 @@ create_conversion_dialog (struct config *config)
   gtk_entry_set_text (GTK_ENTRY (vcpus_entry), vcpus_str);
   gtk_table_attach (GTK_TABLE (target_tbl), vcpus_entry,
                     1, 2, 1, 2, GTK_FILL, GTK_FILL, 1, 1);
+  vcpus_warning = gtk_image_new_from_stock (GTK_STOCK_DIALOG_WARNING,
+                                            GTK_ICON_SIZE_BUTTON);
+  gtk_table_attach (GTK_TABLE (target_tbl), vcpus_warning,
+                    2, 3, 1, 2, 0, 0, 1, 1);
 
   memory_label = gtk_label_new (_("Memory (MB):"));
   gtk_misc_set_alignment (GTK_MISC (memory_label), 1., 0.5);
@@ -463,8 +484,20 @@ create_conversion_dialog (struct config *config)
   gtk_entry_set_text (GTK_ENTRY (memory_entry), memory_str);
   gtk_table_attach (GTK_TABLE (target_tbl), memory_entry,
                     1, 2, 2, 3, GTK_FILL, GTK_FILL, 1, 1);
+  memory_warning = gtk_image_new_from_stock (GTK_STOCK_DIALOG_WARNING,
+                                             GTK_ICON_SIZE_BUTTON);
+  gtk_table_attach (GTK_TABLE (target_tbl), memory_warning,
+                    2, 3, 2, 3, 0, 0, 1, 1);
 
   gtk_box_pack_start (GTK_BOX (target_vbox), target_tbl, TRUE, TRUE, 0);
+
+  target_warning_label = gtk_label_new ("");
+  gtk_label_set_line_wrap (GTK_LABEL (target_warning_label), TRUE);
+  gtk_label_set_line_wrap_mode (GTK_LABEL (target_warning_label),
+                                GTK_WRAP_WORD);
+  gtk_widget_set_size_request (target_warning_label, -1, 7 * 16);
+  gtk_box_pack_end (GTK_BOX (target_vbox), target_warning_label, TRUE, TRUE, 0);
+
   gtk_container_add (GTK_CONTAINER (target_frame), target_vbox);
 
   output_frame = gtk_frame_new (_("Virt-v2v output options"));
@@ -617,6 +650,10 @@ create_conversion_dialog (struct config *config)
                     G_CALLBACK (conversion_back_clicked), NULL);
   g_signal_connect (G_OBJECT (start_button), "clicked",
                     G_CALLBACK (start_conversion_clicked), config);
+  g_signal_connect (G_OBJECT (vcpus_entry), "changed",
+                    G_CALLBACK (vcpus_or_memory_check_callback), NULL);
+  g_signal_connect (G_OBJECT (memory_entry), "changed",
+                    G_CALLBACK (vcpus_or_memory_check_callback), NULL);
 }
 
 static void
@@ -628,6 +665,8 @@ show_conversion_dialog (void)
 
   /* Show the conversion dialog. */
   gtk_widget_show_all (conv_dlg);
+  gtk_widget_hide (vcpus_warning);
+  gtk_widget_hide (memory_warning);
 
   /* output_drivers may have been updated, so repopulate o_combo. */
   repopulate_output_combo (NULL);
@@ -1051,6 +1090,118 @@ conversion_back_clicked (GtkWidget *w, gpointer data)
   gtk_widget_set_sensitive (next_button, FALSE);
 }
 
+/* Display a warning if the vCPUs or memory is outside the supported
+ * range.  (RHBZ#823758).  See also:
+ * https://access.redhat.com/articles/rhel-kvm-limits
+ */
+#define MAX_SUPPORTED_VCPUS 160
+#define MAX_SUPPORTED_MEMORY_MB (UINT64_C (4000 * 1024))
+
+static char *concat_warning (char *warning, const char *fs, ...)
+  __attribute__((format (printf,2,3)));
+
+static char *
+concat_warning (char *warning, const char *fs, ...)
+{
+  va_list args;
+  char *msg;
+  size_t len, len2;
+  int r;
+
+  if (warning == NULL) {
+    warning = strdup ("");
+    if (warning == NULL) {
+    malloc_fail:
+      perror ("malloc");
+      exit (EXIT_FAILURE);
+    }
+  }
+
+  len = strlen (warning);
+  if (len > 0 && warning[len-1] != '\n' && fs[0] != '\n') {
+    warning = concat_warning (warning, "\n");
+    len = strlen (warning);
+  }
+
+  va_start (args, fs);
+  r = vasprintf (&msg, fs, args);
+  va_end (args);
+  if (r == -1) goto malloc_fail;
+
+  len2 = strlen (msg);
+  warning = realloc (warning, len + len2 + 1);
+  if (warning == NULL) goto malloc_fail;
+  memcpy (&warning[len], msg, len2 + 1);
+  free (msg);
+
+  return warning;
+}
+
+static void
+vcpus_or_memory_check_callback (GtkWidget *w, gpointer data)
+{
+  int vcpus;
+  uint64_t memory;
+  CLEANUP_FREE char *warning = NULL;
+
+  vcpus = get_vcpus_from_conv_dlg ();
+  memory = get_memory_from_conv_dlg ();
+
+  if (vcpus > MAX_SUPPORTED_VCPUS) {
+    gtk_widget_show (vcpus_warning);
+
+    warning = concat_warning (warning,
+                              _("Number of virtual CPUs is larger than what is supported for KVM (max: %d)."),
+                              MAX_SUPPORTED_VCPUS);
+  }
+  else
+    gtk_widget_hide (vcpus_warning);
+
+  if (memory > MAX_SUPPORTED_MEMORY_MB * 1024 * 1024) {
+    gtk_widget_show (memory_warning);
+
+    warning = concat_warning (warning,
+                              _("Memory size is larger than what is supported for KVM (max: %" PRIu64 ")."),
+                              MAX_SUPPORTED_MEMORY_MB);
+  }
+  else
+    gtk_widget_hide (memory_warning);
+
+  if (warning != NULL) {
+    warning = concat_warning (warning,
+                              _("If you ignore this warning, conversion can still succeed, but the guest may not work or may not be supported on the target."));
+    gtk_label_set_text (GTK_LABEL (target_warning_label), warning);
+  }
+  else
+    gtk_label_set_text (GTK_LABEL (target_warning_label), "");
+}
+
+static int
+get_vcpus_from_conv_dlg (void)
+{
+  const char *str;
+  int i;
+
+  str = gtk_entry_get_text (GTK_ENTRY (vcpus_entry));
+  if (sscanf (str, "%d", &i) == 1 && i > 0)
+    return i;
+  else
+    return 1;
+}
+
+static uint64_t
+get_memory_from_conv_dlg (void)
+{
+  const char *str;
+  uint64_t i;
+
+  str = gtk_entry_get_text (GTK_ENTRY (memory_entry));
+  if (sscanf (str, "%" SCNu64, &i) == 1 && i >= 256)
+    return i * 1024 * 1024;
+  else
+    return UINT64_C (1024) * 1024 * 1024;
+}
+
 /*----------------------------------------------------------------------*/
 /* Running dialog. */
 
@@ -1174,7 +1325,6 @@ static void
 start_conversion_clicked (GtkWidget *w, gpointer data)
 {
   struct config *config = data;
-  int i;
   const char *str;
   char *str2;
   GtkWidget *dlg;
@@ -1200,17 +1350,8 @@ start_conversion_clicked (GtkWidget *w, gpointer data)
     return;
   }
 
-  str = gtk_entry_get_text (GTK_ENTRY (vcpus_entry));
-  if (sscanf (str, "%d", &i) == 1 && i > 0)
-    config->vcpus = i;
-  else
-    config->vcpus = 1;
-
-  str = gtk_entry_get_text (GTK_ENTRY (memory_entry));
-  if (sscanf (str, "%d", &i) == 1 && i >= 256)
-    config->memory = (uint64_t) i * 1024 * 1024;
-  else
-    config->memory = 1024 * 1024 * 1024;
+  config->vcpus = get_vcpus_from_conv_dlg ();
+  config->memory = get_memory_from_conv_dlg ();
 
   config->verbose =
     gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (debug_button));

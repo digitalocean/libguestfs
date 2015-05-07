@@ -319,14 +319,7 @@ class output_libvirt verbose oc output_pool = object
 
   method prepare_targets source targets =
     (* Get the capabilities from libvirt. *)
-    let cmd =
-      match oc with
-      | None -> "virsh capabilities"
-      | Some uri -> sprintf "virsh -c %s capabilities" (quote uri) in
-    if verbose then printf "%s\n%!" cmd;
-    let xml = external_command ~prog cmd in
-    let xml = String.concat "\n" xml in
-
+    let xml = Domainxml.capabilities ?conn:oc () in
     if verbose then printf "libvirt capabilities XML:\n%s\n%!" xml;
 
     (* This just checks that the capabilities XML is well-formed,
@@ -339,6 +332,16 @@ class output_libvirt verbose oc output_pool = object
      * after conversion.
      *)
     capabilities_doc <- Some doc;
+
+    (* Does the domain already exist on the target?  (RHBZ#889082) *)
+    if Domainxml.domain_exists ?conn:oc source.s_name then (
+      if source.s_hypervisor = Physical then (* virt-p2v user *)
+        error (f_"a libvirt domain called '%s' already exists on the target.\n\nIf using virt-p2v, select a different 'Name' in the 'Target properties'. Or delete the existing domain on the target using the 'virsh undefine' command.")
+              source.s_name
+      else                      (* !virt-p2v *)
+        error (f_"a libvirt domain called '%s' already exists on the target.\n\nIf using virt-v2v directly, use the '-on' option to select a different name. Or delete the existing domain on the target using the 'virsh undefine' command.")
+              source.s_name
+    );
 
     (* Connect to output libvirt instance and check that the pool exists
      * and dump out its XML.
