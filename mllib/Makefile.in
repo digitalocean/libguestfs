@@ -147,6 +147,7 @@ host_triplet = @host@
 @HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_2 = -package oUnit
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_3 = common_utils_tests JSON_tests
+@HAVE_OCAML_TRUE@am__append_4 = oUnit-*
 subdir = mllib
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1512,7 +1513,7 @@ EXTRA_DIST = \
 	common_utils_tests.ml \
 	JSON_tests.ml
 
-CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o
+CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o $(am__append_4)
 SOURCES_MLI = \
 	common_utils.mli \
 	fsync.mli \

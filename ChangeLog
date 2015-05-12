@@ -1,3 +1,106 @@
+commit e9ea21b27d8c10c285a421d3559ff7995c7f02bb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon May 11 13:22:24 2015 +0100
+
+    Version 1.29.41.
+
+commit 43e3a4e37fc2fcab50f089722b31a8f3b4b874ba
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon May 11 13:21:56 2015 +0100
+
+    v2v: Add v2v_unit_tests.ml to EXTRA_DIST.
+    
+    This fixes commit e12c0dfe1f0cbbc01f8f913ac2a402b37b086029.
+
+commit e12c0dfe1f0cbbc01f8f913ac2a402b37b086029
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon May 11 10:34:57 2015 +0100
+
+    v2v: OVF: Add unit tests for modified OVF.get_ostype function.
+    
+    This adds unit tests for commit 6f9d5dce47f8502bee5d7285faf7695b22b5300b.
+
+commit 936ddfbb381eff58bc3a5f487e5292f55fd8a600
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon May 11 10:26:53 2015 +0100
+
+    mllib: Require OUnit2 for tests.
+    
+    OUnit2 has an OUnit (v1) compatibility module.  Unfortunately it
+    is rather gravely broken:
+    https://forge.ocamlcore.org/tracker/?func=detail&aid=1392&group_id=162&atid=730
+    
+    Since there is no new release fixing this, it's easier to switch to
+    using OUnit2 for unit tests.
+
+commit 6f9d5dce47f8502bee5d7285faf7695b22b5300b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun May 10 16:12:33 2015 +0100
+
+    v2v: OVF: Fix list of operating system variants for RHEV >= 3.3 (RHBZ#1219857).
+    
+    Since RHEV 3.3, OS variant names like "RHEL6x64" were deprecated and
+    replaced by names like "rhel_6x64".  "RHEL7x64" was never valid, and
+    we should have used "rhel_7x64".  "Windows2012R2x64" was also never
+    valid and should have been "windows_2012R2x64".
+    
+    For backwards compatibility, RHEV still understands the old names, and
+    we still pass them for compatiblity with old RHEV.
+    
+    However for the new OS variants supported by virt-v2v in RHEL 7.2, use
+    the new names.
+    
+    This commit also adds support for SLES and ppc64.
+    
+    This updates commit 3c51302d691cc204e4d43f4ab9837095d424bf3b
+    and also RHBZ#1213324.
+
+commit 61a021713e8a93faeadc093e5c2d5064ba86059c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 9 17:59:26 2015 +0100
+
+    p2v: Update documentation for Configure network button.
+    
+    This updates commit e464774a79ff9eeedcdb3fd53efd5a7898ca036e.
+
+commit 35efaf820870e7498aacc5d4aaa8c952c635b0e0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 9 17:53:57 2015 +0100
+
+    p2v: Add tip about the root password of the virt-v2v conversion server appliance.
+
+commit a3edef9295e628d1ed69f06ffed5523438f97df1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 9 17:41:57 2015 +0100
+
+    v2v: Remove obsolete README.RHEV-M file.
+
+commit 4c7fb62f4a301cf26a7cf1ca3a5ed0d47406fa55
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat May 9 17:40:42 2015 +0100
+
+    v2v: Rename virt-v2v appliance to "conversion server".
+    
+    This is for consistency with the rest of the documentation.
+    
+    This commit also adds the files to EXTRA_DIST so they are shipped in
+    the tarball.
+    
+    This updates commit 4e4ece53647fba810eeb45086b46d02f54e02fe2.
+
+commit 4e4ece53647fba810eeb45086b46d02f54e02fe2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 8 15:46:11 2015 +0100
+
+    v2v: Add scripts for building RHEL 7 virt-v2v appliance.
+
+commit 4f489b28fec699dd80615bd702d94f804a02efdd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu May 7 22:19:13 2015 +0100
+
+    Try to discourage people from using 'make install' because it causes
+    endless support troubles.
+
 commit dcd382d9d4ad8b063c73fd35c9ffd8d609ee98b8
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed May 6 17:10:07 2015 +0100

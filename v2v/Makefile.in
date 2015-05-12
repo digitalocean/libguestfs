@@ -147,8 +147,13 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@bin_PROGRAMS = virt-v2v$(EXEEXT)
 @HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
 @HAVE_OCAML_TRUE@am__append_2 = stamp-virt-v2v.pod \
-@HAVE_OCAML_TRUE@	$(real_guests:%=%.img)
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_3 = \
+@HAVE_OCAML_TRUE@	$(real_guests:%=%.img) oUnit-*
+@HAVE_OCAML_TRUE@TESTS = test-v2v-i-ova-formats.sh \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-gz.sh \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-two-disks.sh $(am__EXEEXT_1) \
+@HAVE_OCAML_TRUE@	$(am__append_4)
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_3 = v2v_unit_tests
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_4 = \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-i-ova.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-i-disk.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-machine-readable.sh \
@@ -166,6 +171,8 @@ host_triplet = @host@
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-sound.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-windows-conversion.sh
 
+@HAVE_OCAML_TRUE@check_PROGRAMS = $(am__EXEEXT_1)
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_5 = v2v_unit_tests
 subdir = v2v
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -308,7 +315,29 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES = link.sh
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__EXEEXT_1 = v2v_unit_tests$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
+am__v2v_unit_tests_SOURCES_DIST = $(top_srcdir)/fish/progress.c \
+	$(top_srcdir)/fish/file-edit.c \
+	$(top_srcdir)/mllib/progress-c.c \
+	$(top_srcdir)/mllib/mkdtemp-c.c \
+	$(top_srcdir)/customize/crypt-c.c \
+	$(top_srcdir)/customize/perl_edit-c.c domainxml-c.c kvmuid-c.c \
+	utils-c.c xml-c.c
+am__objects_1 = v2v_unit_tests-progress.$(OBJEXT) \
+	v2v_unit_tests-file-edit.$(OBJEXT) \
+	v2v_unit_tests-progress-c.$(OBJEXT) \
+	v2v_unit_tests-mkdtemp-c.$(OBJEXT) \
+	v2v_unit_tests-crypt-c.$(OBJEXT) \
+	v2v_unit_tests-perl_edit-c.$(OBJEXT) \
+	v2v_unit_tests-domainxml-c.$(OBJEXT) \
+	v2v_unit_tests-kvmuid-c.$(OBJEXT) \
+	v2v_unit_tests-utils-c.$(OBJEXT) \
+	v2v_unit_tests-xml-c.$(OBJEXT)
+@HAVE_OCAML_TRUE@am__objects_2 = $(am__objects_1)
+@HAVE_OCAML_TRUE@am_v2v_unit_tests_OBJECTS = $(am__objects_2)
+v2v_unit_tests_OBJECTS = $(am_v2v_unit_tests_OBJECTS)
+v2v_unit_tests_LDADD = $(LDADD)
 am__virt_v2v_SOURCES_DIST = $(top_srcdir)/fish/progress.c \
 	$(top_srcdir)/fish/file-edit.c \
 	$(top_srcdir)/mllib/progress-c.c \
@@ -316,13 +345,13 @@ am__virt_v2v_SOURCES_DIST = $(top_srcdir)/fish/progress.c \
 	$(top_srcdir)/customize/crypt-c.c \
 	$(top_srcdir)/customize/perl_edit-c.c domainxml-c.c kvmuid-c.c \
 	utils-c.c xml-c.c
-am__objects_1 = virt_v2v-progress.$(OBJEXT) \
+am__objects_3 = virt_v2v-progress.$(OBJEXT) \
 	virt_v2v-file-edit.$(OBJEXT) virt_v2v-progress-c.$(OBJEXT) \
 	virt_v2v-mkdtemp-c.$(OBJEXT) virt_v2v-crypt-c.$(OBJEXT) \
 	virt_v2v-perl_edit-c.$(OBJEXT) virt_v2v-domainxml-c.$(OBJEXT) \
 	virt_v2v-kvmuid-c.$(OBJEXT) virt_v2v-utils-c.$(OBJEXT) \
 	virt_v2v-xml-c.$(OBJEXT)
-@HAVE_OCAML_TRUE@am_virt_v2v_OBJECTS = $(am__objects_1)
+@HAVE_OCAML_TRUE@am_virt_v2v_OBJECTS = $(am__objects_3)
 virt_v2v_OBJECTS = $(am_virt_v2v_OBJECTS)
 virt_v2v_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -363,8 +392,9 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(virt_v2v_SOURCES)
-DIST_SOURCES = $(am__virt_v2v_SOURCES_DIST)
+SOURCES = $(v2v_unit_tests_SOURCES) $(virt_v2v_SOURCES)
+DIST_SOURCES = $(am__v2v_unit_tests_SOURCES_DIST) \
+	$(am__virt_v2v_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1565,8 +1595,11 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
+	v2v_unit_tests.ml \
 	$(TESTS) $(SLOW_TESTS) \
-	HACKING README.RHEV-M \
+	HACKING \
+	rhel-7-virt-v2v-conversion-server.config \
+	rhel-7-virt-v2v-conversion-server.ks \
 	test-v2v-i-ova.ovf \
 	test-v2v-i-ova.xml \
 	test-v2v-i-ova-formats.expected \
@@ -1733,9 +1766,6 @@ SOURCES_C = \
 #   phony guests (but we don't go out of our way here)
 # - that up to date guests don't crash virt-v2v
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
-@HAVE_OCAML_TRUE@TESTS = test-v2v-i-ova-formats.sh \
-@HAVE_OCAML_TRUE@	test-v2v-i-ova-gz.sh \
-@HAVE_OCAML_TRUE@	test-v2v-i-ova-two-disks.sh $(am__append_3)
 @HAVE_OCAML_TRUE@SLOW_TESTS = \
 @HAVE_OCAML_TRUE@	test-v2v-real-conversions.sh
 
@@ -1749,6 +1779,33 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	rhel-5.10 \
 @HAVE_OCAML_TRUE@	rhel-6.5 \
 @HAVE_OCAML_TRUE@	rhel-7.0
+
+@HAVE_OCAML_TRUE@v2v_unit_tests_BOBJECTS = \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
+@HAVE_OCAML_TRUE@	stringMap.cmo \
+@HAVE_OCAML_TRUE@	types.cmo \
+@HAVE_OCAML_TRUE@	utils.cmo \
+@HAVE_OCAML_TRUE@	DOM.cmo \
+@HAVE_OCAML_TRUE@	OVF.cmo \
+@HAVE_OCAML_TRUE@	v2v_unit_tests.cmo
+
+@HAVE_OCAML_TRUE@v2v_unit_tests_XOBJECTS = $(v2v_unit_tests_BOBJECTS:.cmo=.cmx)
+@HAVE_OCAML_TRUE@v2v_unit_tests_SOURCES = $(virt_v2v_SOURCES)
+@HAVE_OCAML_TRUE@v2v_unit_tests_CPPFLAGS = $(virt_v2v_CPPFLAGS)
+@HAVE_OCAML_TRUE@v2v_unit_tests_CFLAGS = $(virt_v2v_CFLAGS)
+
+# Can't call this v2v_unit_tests_OBJECTS because automake gets confused.
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@v2v_unit_tests_THEOBJECTS = $(v2v_unit_tests_BOBJECTS)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@v2v_unit_tests_THEOBJECTS = $(v2v_unit_tests_XOBJECTS)
+@HAVE_OCAML_TRUE@v2v_unit_tests_DEPENDENCIES = $(v2v_unit_tests_THEOBJECTS)
+@HAVE_OCAML_TRUE@v2v_unit_tests_LINK = \
+@HAVE_OCAML_TRUE@	./link.sh \
+@HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) \
+@HAVE_OCAML_TRUE@	  $(OCAMLPACKAGES) -package oUnit \
+@HAVE_OCAML_TRUE@	  $(OCAMLLINKFLAGS) \
+@HAVE_OCAML_TRUE@	  $(v2v_unit_tests_THEOBJECTS) -o $@
 
 DISTCLEANFILES = .depend
 all: all-am
@@ -1837,6 +1894,19 @@ clean-binPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
+clean-checkPROGRAMS:
+	@list='$(check_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
+
+v2v_unit_tests$(EXEEXT): $(v2v_unit_tests_OBJECTS) $(v2v_unit_tests_DEPENDENCIES) $(EXTRA_v2v_unit_tests_DEPENDENCIES) 
+	@rm -f v2v_unit_tests$(EXEEXT)
+	$(AM_V_GEN)$(v2v_unit_tests_LINK) $(v2v_unit_tests_OBJECTS) $(v2v_unit_tests_LDADD) $(LIBS)
+
 virt-v2v$(EXEEXT): $(virt_v2v_OBJECTS) $(virt_v2v_DEPENDENCIES) $(EXTRA_virt_v2v_DEPENDENCIES) 
 	@rm -f virt-v2v$(EXEEXT)
 	$(AM_V_GEN)$(virt_v2v_LINK) $(virt_v2v_OBJECTS) $(virt_v2v_LDADD) $(LIBS)
@@ -1847,6 +1917,16 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-crypt-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-domainxml-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-file-edit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-kvmuid-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-mkdtemp-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-perl_edit-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-progress-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-progress.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-utils-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-xml-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-crypt-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-domainxml-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-file-edit.Po@am__quote@
@@ -1878,6 +1958,146 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+v2v_unit_tests-progress.o: $(top_srcdir)/fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-progress.o -MD -MP -MF $(DEPDIR)/v2v_unit_tests-progress.Tpo -c -o v2v_unit_tests-progress.o `test -f '$(top_srcdir)/fish/progress.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-progress.Tpo $(DEPDIR)/v2v_unit_tests-progress.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/progress.c' object='v2v_unit_tests-progress.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-progress.o `test -f '$(top_srcdir)/fish/progress.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/progress.c
+
+v2v_unit_tests-progress.obj: $(top_srcdir)/fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-progress.obj -MD -MP -MF $(DEPDIR)/v2v_unit_tests-progress.Tpo -c -o v2v_unit_tests-progress.obj `if test -f '$(top_srcdir)/fish/progress.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/progress.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-progress.Tpo $(DEPDIR)/v2v_unit_tests-progress.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/progress.c' object='v2v_unit_tests-progress.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-progress.obj `if test -f '$(top_srcdir)/fish/progress.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/progress.c'; fi`
+
+v2v_unit_tests-file-edit.o: $(top_srcdir)/fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-file-edit.o -MD -MP -MF $(DEPDIR)/v2v_unit_tests-file-edit.Tpo -c -o v2v_unit_tests-file-edit.o `test -f '$(top_srcdir)/fish/file-edit.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-file-edit.Tpo $(DEPDIR)/v2v_unit_tests-file-edit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/file-edit.c' object='v2v_unit_tests-file-edit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-file-edit.o `test -f '$(top_srcdir)/fish/file-edit.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/file-edit.c
+
+v2v_unit_tests-file-edit.obj: $(top_srcdir)/fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-file-edit.obj -MD -MP -MF $(DEPDIR)/v2v_unit_tests-file-edit.Tpo -c -o v2v_unit_tests-file-edit.obj `if test -f '$(top_srcdir)/fish/file-edit.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/file-edit.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-file-edit.Tpo $(DEPDIR)/v2v_unit_tests-file-edit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/file-edit.c' object='v2v_unit_tests-file-edit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-file-edit.obj `if test -f '$(top_srcdir)/fish/file-edit.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/file-edit.c'; fi`
+
+v2v_unit_tests-progress-c.o: $(top_srcdir)/mllib/progress-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-progress-c.o -MD -MP -MF $(DEPDIR)/v2v_unit_tests-progress-c.Tpo -c -o v2v_unit_tests-progress-c.o `test -f '$(top_srcdir)/mllib/progress-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/progress-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-progress-c.Tpo $(DEPDIR)/v2v_unit_tests-progress-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/progress-c.c' object='v2v_unit_tests-progress-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-progress-c.o `test -f '$(top_srcdir)/mllib/progress-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/progress-c.c
+
+v2v_unit_tests-progress-c.obj: $(top_srcdir)/mllib/progress-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-progress-c.obj -MD -MP -MF $(DEPDIR)/v2v_unit_tests-progress-c.Tpo -c -o v2v_unit_tests-progress-c.obj `if test -f '$(top_srcdir)/mllib/progress-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/progress-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/progress-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-progress-c.Tpo $(DEPDIR)/v2v_unit_tests-progress-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/progress-c.c' object='v2v_unit_tests-progress-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-progress-c.obj `if test -f '$(top_srcdir)/mllib/progress-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/progress-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/progress-c.c'; fi`
+
+v2v_unit_tests-mkdtemp-c.o: $(top_srcdir)/mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-mkdtemp-c.o -MD -MP -MF $(DEPDIR)/v2v_unit_tests-mkdtemp-c.Tpo -c -o v2v_unit_tests-mkdtemp-c.o `test -f '$(top_srcdir)/mllib/mkdtemp-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-mkdtemp-c.Tpo $(DEPDIR)/v2v_unit_tests-mkdtemp-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/mkdtemp-c.c' object='v2v_unit_tests-mkdtemp-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-mkdtemp-c.o `test -f '$(top_srcdir)/mllib/mkdtemp-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/mkdtemp-c.c
+
+v2v_unit_tests-mkdtemp-c.obj: $(top_srcdir)/mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-mkdtemp-c.obj -MD -MP -MF $(DEPDIR)/v2v_unit_tests-mkdtemp-c.Tpo -c -o v2v_unit_tests-mkdtemp-c.obj `if test -f '$(top_srcdir)/mllib/mkdtemp-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/mkdtemp-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-mkdtemp-c.Tpo $(DEPDIR)/v2v_unit_tests-mkdtemp-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/mkdtemp-c.c' object='v2v_unit_tests-mkdtemp-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-mkdtemp-c.obj `if test -f '$(top_srcdir)/mllib/mkdtemp-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/mkdtemp-c.c'; fi`
+
+v2v_unit_tests-crypt-c.o: $(top_srcdir)/customize/crypt-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-crypt-c.o -MD -MP -MF $(DEPDIR)/v2v_unit_tests-crypt-c.Tpo -c -o v2v_unit_tests-crypt-c.o `test -f '$(top_srcdir)/customize/crypt-c.c' || echo '$(srcdir)/'`$(top_srcdir)/customize/crypt-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-crypt-c.Tpo $(DEPDIR)/v2v_unit_tests-crypt-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/customize/crypt-c.c' object='v2v_unit_tests-crypt-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-crypt-c.o `test -f '$(top_srcdir)/customize/crypt-c.c' || echo '$(srcdir)/'`$(top_srcdir)/customize/crypt-c.c
+
+v2v_unit_tests-crypt-c.obj: $(top_srcdir)/customize/crypt-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-crypt-c.obj -MD -MP -MF $(DEPDIR)/v2v_unit_tests-crypt-c.Tpo -c -o v2v_unit_tests-crypt-c.obj `if test -f '$(top_srcdir)/customize/crypt-c.c'; then $(CYGPATH_W) '$(top_srcdir)/customize/crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/customize/crypt-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-crypt-c.Tpo $(DEPDIR)/v2v_unit_tests-crypt-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/customize/crypt-c.c' object='v2v_unit_tests-crypt-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-crypt-c.obj `if test -f '$(top_srcdir)/customize/crypt-c.c'; then $(CYGPATH_W) '$(top_srcdir)/customize/crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/customize/crypt-c.c'; fi`
+
+v2v_unit_tests-perl_edit-c.o: $(top_srcdir)/customize/perl_edit-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-perl_edit-c.o -MD -MP -MF $(DEPDIR)/v2v_unit_tests-perl_edit-c.Tpo -c -o v2v_unit_tests-perl_edit-c.o `test -f '$(top_srcdir)/customize/perl_edit-c.c' || echo '$(srcdir)/'`$(top_srcdir)/customize/perl_edit-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-perl_edit-c.Tpo $(DEPDIR)/v2v_unit_tests-perl_edit-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/customize/perl_edit-c.c' object='v2v_unit_tests-perl_edit-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-perl_edit-c.o `test -f '$(top_srcdir)/customize/perl_edit-c.c' || echo '$(srcdir)/'`$(top_srcdir)/customize/perl_edit-c.c
+
+v2v_unit_tests-perl_edit-c.obj: $(top_srcdir)/customize/perl_edit-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-perl_edit-c.obj -MD -MP -MF $(DEPDIR)/v2v_unit_tests-perl_edit-c.Tpo -c -o v2v_unit_tests-perl_edit-c.obj `if test -f '$(top_srcdir)/customize/perl_edit-c.c'; then $(CYGPATH_W) '$(top_srcdir)/customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/customize/perl_edit-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-perl_edit-c.Tpo $(DEPDIR)/v2v_unit_tests-perl_edit-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/customize/perl_edit-c.c' object='v2v_unit_tests-perl_edit-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-perl_edit-c.obj `if test -f '$(top_srcdir)/customize/perl_edit-c.c'; then $(CYGPATH_W) '$(top_srcdir)/customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/customize/perl_edit-c.c'; fi`
+
+v2v_unit_tests-domainxml-c.o: domainxml-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-domainxml-c.o -MD -MP -MF $(DEPDIR)/v2v_unit_tests-domainxml-c.Tpo -c -o v2v_unit_tests-domainxml-c.o `test -f 'domainxml-c.c' || echo '$(srcdir)/'`domainxml-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-domainxml-c.Tpo $(DEPDIR)/v2v_unit_tests-domainxml-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domainxml-c.c' object='v2v_unit_tests-domainxml-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-domainxml-c.o `test -f 'domainxml-c.c' || echo '$(srcdir)/'`domainxml-c.c
+
+v2v_unit_tests-domainxml-c.obj: domainxml-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-domainxml-c.obj -MD -MP -MF $(DEPDIR)/v2v_unit_tests-domainxml-c.Tpo -c -o v2v_unit_tests-domainxml-c.obj `if test -f 'domainxml-c.c'; then $(CYGPATH_W) 'domainxml-c.c'; else $(CYGPATH_W) '$(srcdir)/domainxml-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-domainxml-c.Tpo $(DEPDIR)/v2v_unit_tests-domainxml-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domainxml-c.c' object='v2v_unit_tests-domainxml-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-domainxml-c.obj `if test -f 'domainxml-c.c'; then $(CYGPATH_W) 'domainxml-c.c'; else $(CYGPATH_W) '$(srcdir)/domainxml-c.c'; fi`
+
+v2v_unit_tests-kvmuid-c.o: kvmuid-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-kvmuid-c.o -MD -MP -MF $(DEPDIR)/v2v_unit_tests-kvmuid-c.Tpo -c -o v2v_unit_tests-kvmuid-c.o `test -f 'kvmuid-c.c' || echo '$(srcdir)/'`kvmuid-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-kvmuid-c.Tpo $(DEPDIR)/v2v_unit_tests-kvmuid-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kvmuid-c.c' object='v2v_unit_tests-kvmuid-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-kvmuid-c.o `test -f 'kvmuid-c.c' || echo '$(srcdir)/'`kvmuid-c.c
+
+v2v_unit_tests-kvmuid-c.obj: kvmuid-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-kvmuid-c.obj -MD -MP -MF $(DEPDIR)/v2v_unit_tests-kvmuid-c.Tpo -c -o v2v_unit_tests-kvmuid-c.obj `if test -f 'kvmuid-c.c'; then $(CYGPATH_W) 'kvmuid-c.c'; else $(CYGPATH_W) '$(srcdir)/kvmuid-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-kvmuid-c.Tpo $(DEPDIR)/v2v_unit_tests-kvmuid-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kvmuid-c.c' object='v2v_unit_tests-kvmuid-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-kvmuid-c.obj `if test -f 'kvmuid-c.c'; then $(CYGPATH_W) 'kvmuid-c.c'; else $(CYGPATH_W) '$(srcdir)/kvmuid-c.c'; fi`
+
+v2v_unit_tests-utils-c.o: utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-utils-c.o -MD -MP -MF $(DEPDIR)/v2v_unit_tests-utils-c.Tpo -c -o v2v_unit_tests-utils-c.o `test -f 'utils-c.c' || echo '$(srcdir)/'`utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-utils-c.Tpo $(DEPDIR)/v2v_unit_tests-utils-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils-c.c' object='v2v_unit_tests-utils-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-utils-c.o `test -f 'utils-c.c' || echo '$(srcdir)/'`utils-c.c
+
+v2v_unit_tests-utils-c.obj: utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-utils-c.obj -MD -MP -MF $(DEPDIR)/v2v_unit_tests-utils-c.Tpo -c -o v2v_unit_tests-utils-c.obj `if test -f 'utils-c.c'; then $(CYGPATH_W) 'utils-c.c'; else $(CYGPATH_W) '$(srcdir)/utils-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-utils-c.Tpo $(DEPDIR)/v2v_unit_tests-utils-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils-c.c' object='v2v_unit_tests-utils-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-utils-c.obj `if test -f 'utils-c.c'; then $(CYGPATH_W) 'utils-c.c'; else $(CYGPATH_W) '$(srcdir)/utils-c.c'; fi`
+
+v2v_unit_tests-xml-c.o: xml-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-xml-c.o -MD -MP -MF $(DEPDIR)/v2v_unit_tests-xml-c.Tpo -c -o v2v_unit_tests-xml-c.o `test -f 'xml-c.c' || echo '$(srcdir)/'`xml-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-xml-c.Tpo $(DEPDIR)/v2v_unit_tests-xml-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xml-c.c' object='v2v_unit_tests-xml-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-xml-c.o `test -f 'xml-c.c' || echo '$(srcdir)/'`xml-c.c
+
+v2v_unit_tests-xml-c.obj: xml-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-xml-c.obj -MD -MP -MF $(DEPDIR)/v2v_unit_tests-xml-c.Tpo -c -o v2v_unit_tests-xml-c.obj `if test -f 'xml-c.c'; then $(CYGPATH_W) 'xml-c.c'; else $(CYGPATH_W) '$(srcdir)/xml-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-xml-c.Tpo $(DEPDIR)/v2v_unit_tests-xml-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xml-c.c' object='v2v_unit_tests-xml-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-xml-c.obj `if test -f 'xml-c.c'; then $(CYGPATH_W) 'xml-c.c'; else $(CYGPATH_W) '$(srcdir)/xml-c.c'; fi`
 
 virt_v2v-progress.o: $(top_srcdir)/fish/progress.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-progress.o -MD -MP -MF $(DEPDIR)/virt_v2v-progress.Tpo -c -o virt_v2v-progress.o `test -f '$(top_srcdir)/fish/progress.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/progress.c
@@ -2244,6 +2464,7 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile $(PROGRAMS) $(MANS) $(DATA)
@@ -2285,7 +2506,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
+clean-am: clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
+	clean-libtool mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -2358,19 +2580,20 @@ uninstall-man: uninstall-man1
 .MAKE: check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
-	clean-binPROGRAMS clean-generic clean-libtool cscopelist-am \
-	ctags ctags-am distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-binPROGRAMS \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-man1 \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags tags-am uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-man uninstall-man1
+	clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
+	clean-libtool cscopelist-am ctags ctags-am distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-binPROGRAMS install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-man1 install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-man uninstall-man1
 
 .PRECIOUS: Makefile
 
@@ -2439,6 +2662,8 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	else                                                             \
 @HAVE_OCAML_TRUE@	  touch $$n.img;                                                 \
 @HAVE_OCAML_TRUE@	fi
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@v2v_unit_tests.cmo: OCAMLPACKAGES += -package oUnit
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@v2v_unit_tests.cmx: OCAMLPACKAGES += -package oUnit
 
 # Dependencies.
 @HAVE_OCAML_TRUE@depend: .depend
