@@ -1586,6 +1586,7 @@ localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+ounit_is_v2 = @ounit_is_v2@
 pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@

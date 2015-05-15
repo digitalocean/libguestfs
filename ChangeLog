@@ -1,3 +1,121 @@
+commit 6574134feb23b6261ea2bf05effe5664307e6bd1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu May 14 10:49:53 2015 +0100
+
+    Version 1.29.42.
+
+commit 82cc8a8f8f7e291904b80465cfa8b6805d540c93
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu May 14 10:49:24 2015 +0100
+
+    build: Add ocaml-link.sh to EXTRA_DIST.
+    
+    This fixes commit 13dd6323015c44a6b98a72661363d53118962ccd.
+
+commit fd85a2a22bd9bb4e65cefe9347de7fd4d670ea02
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed May 13 16:45:41 2015 +0200
+
+    mllib: link tests with automake
+    
+    Add a dummy C source, otherwise automake tries to look for e.g.
+    common_utils_tests.c.
+    
+    Also, set check_PROGRAMS properly with them.
+
+commit 13dd6323015c44a6b98a72661363d53118962ccd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed May 13 15:30:39 2015 +0200
+
+    build: factor out the OCaml link.sh scripts
+    
+    Create a single ocaml-link.sh script, which supports a -cclib parameter
+    so it can be used instead of the per-project link.sh scripts.
+    As result, the libraries for each OCaml application can be moved back to
+    each Makefile.am.
+
+commit 0e5ccabd839087ced4c57258ea8c898ec8f08426
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue May 12 15:17:24 2015 +0200
+
+    configure: simplify check for oUnit v2
+    
+    Instead of parsing the version, try to look for the OUnit2 module within
+    the oUnit package.
+    
+    Followup of commit 46bc79109bb51cfb656863da3635f1c8da5f6412.
+
+commit 85347e32e02a412b8b17100b7eb5d39d1e83b66d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 12 22:19:08 2015 +0100
+
+    v2v: Close libvirt connection after fetching libvirt capabilities.
+    
+    Memory leak found by valgrind.
+    
+    This fixes commit e7833a5eea350ca3579d1f9e6702e116b45572fc.
+
+commit 96a02f08648f81a741269a34de0352ff3fcb140a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 12 11:48:44 2015 +0100
+
+    fuse: Add more consistent SKIP_* environment variables.
+    
+    The new behaviour is as follows:
+    
+    Skip all of the fuse tests:
+    
+      SKIP_TEST_FUSE_SH=1
+    
+    Individual tests can be skipped by setting:
+    
+      SKIP_TEST_FUSE_UMOUNT_RACE_SH=1
+      SKIP_TEST_GUESTMOUNT_FD=1
+      SKIP_TEST_GUESTUNMOUNT_FD=1
+      SKIP_TEST_GUESTUNMOUNT_NOT_MOUNTED_SH=1
+
+commit 41df8a2c4605de019a01a004a83fbad3521f5423
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon May 11 19:12:43 2015 +0200
+
+    builder: enable batch mode when validating non-verbose (RHBZ#1180170)
+    
+    When running gpg to validate a signature, use also --batch in
+    non-verbose mode to avoid the extra "Good signature" messages that are
+    printed by gpg2 even in quiet mode.
+    We are parsing the status output anyway to check the validation result,
+    so this should be harmless (and the full gpg output is printed in
+    verbose mode anyway).
+
+commit 6442bcb7eb13f0a91d9933ef5f3468ac950b7a7a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon May 11 19:06:03 2015 +0200
+
+    builder: trust the imported keys
+    
+    In every SigChecker, trust by default the keys imported.
+    This should make gpg happier when using the keys later, used only when
+    validating the signatures of index files.
+
+commit a1a165e3c43d7743aa48ca18a97540b726cb0bf3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon May 11 18:42:29 2015 +0200
+
+    builder: move gpg status parsing within import_keyfile
+    
+    Parse the gpg status output directly within import_keyfile, returning
+    just the key fingerprint.
+    
+    Just code motion, no actual behaviour changes.
+
+commit 46bc79109bb51cfb656863da3635f1c8da5f6412
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon May 11 20:44:22 2015 +0100
+
+    configure: Ensure oUnit version >= 2 before using it.
+    
+    This fixes commit e12c0dfe1f0cbbc01f8f913ac2a402b37b086029.
+
 commit e9ea21b27d8c10c285a421d3559ff7995c7f02bb
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon May 11 13:22:24 2015 +0100
