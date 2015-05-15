@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [29])
-m4_define([libguestfs_release], [40])
+m4_define([libguestfs_release], [42])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1135,6 +1135,7 @@ AS_IF([test "x$OCAMLC" != "xno"],[
 OCAML_PKG_gettext=no
 OCAML_PKG_libvirt=no
 OCAML_PKG_oUnit=no
+ounit_is_v2=no
 AS_IF([test "x$OCAMLC" != "xno"],[
     # Create mllib/common_gettext.ml, gettext functions or stubs.
 
@@ -1146,13 +1147,18 @@ AS_IF([test "x$OCAMLC" != "xno"],[
 
     AC_CHECK_OCAML_PKG(libvirt)
     AC_CHECK_OCAML_PKG(oUnit)
+
+    # oUnit >= 2 is required, so check that it has OUnit2.
+    if test "x$OCAML_PKG_oUnit" != "xno"; then
+        AC_CHECK_OCAML_MODULE(ounit_is_v2,[OUnit.OUnit2],OUnit2,[+oUnit])
+    fi
 ])
 AM_CONDITIONAL([HAVE_OCAML_PKG_GETTEXT],
     [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && test "x$OCAML_PKG_gettext" != "xno"])
 AM_CONDITIONAL([HAVE_OCAML_PKG_LIBVIRT],
     [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && test "x$OCAML_PKG_libvirt" != "xno"])
 AM_CONDITIONAL([HAVE_OCAML_PKG_OUNIT],
-    [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && test "x$OCAML_PKG_oUnit" != "xno"])
+    [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && test "x$OCAML_PKG_oUnit" != "xno" && test "x$ounit_is_v2" != "xno"])
 
 AC_CHECK_PROG([OCAML_GETTEXT],[ocaml-gettext],[ocaml-gettext],[no])
 AM_CONDITIONAL([HAVE_OCAML_GETTEXT],
@@ -1702,14 +1708,8 @@ mkdir -p \
 dnl http://www.mail-archive.com/automake@gnu.org/msg10204.html
 AC_CONFIG_FILES([appliance/libguestfs-make-fixed-appliance],
                 [chmod +x,-w appliance/libguestfs-make-fixed-appliance])
-AC_CONFIG_FILES([builder/link.sh],
-                [chmod +x,-w builder/link.sh])
-AC_CONFIG_FILES([customize/link.sh],
-                [chmod +x,-w customize/link.sh])
 AC_CONFIG_FILES([inspector/test-xmllint.sh],
                 [chmod +x,-w inspector/test-xmllint.sh])
-AC_CONFIG_FILES([mllib/link.sh],
-                [chmod +x,-w mllib/link.sh])
 AC_CONFIG_FILES([p2v/virt-p2v-make-disk],
                 [chmod +x,-w p2v/virt-p2v-make-disk])
 AC_CONFIG_FILES([p2v/virt-p2v-make-kickstart],
@@ -1720,16 +1720,8 @@ AC_CONFIG_FILES([pick-guests.pl],
                 [chmod +x,-w pick-guests.pl])
 AC_CONFIG_FILES([podwrapper.pl],
                 [chmod +x,-w podwrapper.pl])
-AC_CONFIG_FILES([resize/link.sh],
-                [chmod +x,-w resize/link.sh])
 AC_CONFIG_FILES([run],
                 [chmod +x,-w run])
-AC_CONFIG_FILES([sparsify/link.sh],
-                [chmod +x,-w sparsify/link.sh])
-AC_CONFIG_FILES([sysprep/link.sh],
-                [chmod +x,-w sysprep/link.sh])
-AC_CONFIG_FILES([v2v/link.sh],
-                [chmod +x,-w v2v/link.sh])
 
 AC_CONFIG_FILES([Makefile
                  align/Makefile

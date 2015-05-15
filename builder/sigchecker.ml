@@ -33,7 +33,7 @@ type t = {
 }
 
 (* Import the specified key file. *)
-let import_keyfile ~gpg ~gpghome ~verbose keyfile =
+let import_keyfile ~gpg ~gpghome ~verbose ?(trust = true) keyfile =
   let status_file = Filename.temp_file "vbstat" ".txt" in
   unlink_on_exit status_file;
   let cmd = sprintf "%s --homedir %s --status-file %s --import %s%s"
@@ -43,7 +43,28 @@ let import_keyfile ~gpg ~gpghome ~verbose keyfile =
   let r = Sys.command cmd in
   if r <> 0 then
     error (f_"could not import public key\nUse the '-v' option and look for earlier error messages.");
-  status_file
+  let status = read_whole_file status_file in
+  let status = string_nsplit "\n" status in
+  let key_id = ref "" in
+  let fingerprint = ref "" in
+  List.iter (
+    fun line ->
+      let line = string_nsplit " " line in
+      match line with
+      | "[GNUPG:]" :: "IMPORT_OK" :: _ :: fp :: _ -> fingerprint := fp
+      | "[GNUPG:]" :: "IMPORTED" :: key :: _ -> key_id := key
+      | _ -> ()
+  ) status;
+  if trust then (
+    let cmd = sprintf "%s --homedir %s --trusted-key %s --list-keys%s"
+      gpg gpghome (quote !key_id)
+      (if verbose then "" else " >/dev/null 2>&1") in
+    if verbose then printf "%s\n%!" cmd;
+    let r = Sys.command cmd in
+    if r <> 0 then
+      error (f_"GPG failure: could not trust the imported key\nUse the '-v' option and look for earlier error messages.");
+  );
+  !fingerprint
 
 let rec create ~verbose ~gpg ~gpgkey ~check_signature =
   (* Create a temporary directory for gnupg. *)
@@ -69,18 +90,7 @@ let rec create ~verbose ~gpg ~gpgkey ~check_signature =
       | No_Key ->
         assert false
       | KeyFile kf ->
-        let status_file = import_keyfile gpg tmpdir verbose kf in
-        let status = read_whole_file status_file in
-        let status = string_nsplit "\n" status in
-        let fingerprint = ref "" in
-        List.iter (
-          fun line ->
-            let line = string_nsplit " " line in
-            match line with
-            | "[GNUPG:]" :: "IMPORT_OK" :: _ :: fp :: _ -> fingerprint := fp
-            | _ -> ()
-        ) status;
-        !fingerprint
+        import_keyfile gpg tmpdir verbose kf
       | Fingerprint fp ->
         let filename = Filename.temp_file "vbpubkey" ".asc" in
         unlink_on_exit filename;
@@ -149,7 +159,7 @@ and do_verify t args =
   let cmd =
     sprintf "%s --homedir %s --verify%s --status-file %s %s"
         t.gpg t.gpghome
-        (if t.verbose then "" else " -q --logger-file /dev/null")
+        (if t.verbose then "" else " --batch -q --logger-file /dev/null")
         (quote status_file) args in
   if t.verbose then printf "%s\n%!" cmd;
   let r = Sys.command cmd in

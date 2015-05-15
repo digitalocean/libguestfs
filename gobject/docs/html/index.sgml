@@ -592,6 +592,16 @@
 <ANCHOR id="guestfs-session-zgrepi" href="guestfs/GuestfsSession.html#guestfs-session-zgrepi">
 <ANCHOR id="GuestfsSession.other_details" href="guestfs/GuestfsSession.html#GuestfsSession.other_details">
 <ANCHOR id="GuestfsSessionEvent" href="guestfs/GuestfsSession.html#GuestfsSessionEvent">
+<ANCHOR id="GUESTFS-SESSION-EVENT-CLOSE:CAPS" href="guestfs/GuestfsSession.html#GUESTFS-SESSION-EVENT-CLOSE:CAPS">
+<ANCHOR id="GUESTFS-SESSION-EVENT-SUBPROCESS-QUIT:CAPS" href="guestfs/GuestfsSession.html#GUESTFS-SESSION-EVENT-SUBPROCESS-QUIT:CAPS">
+<ANCHOR id="GUESTFS-SESSION-EVENT-LAUNCH-DONE:CAPS" href="guestfs/GuestfsSession.html#GUESTFS-SESSION-EVENT-LAUNCH-DONE:CAPS">
+<ANCHOR id="GUESTFS-SESSION-EVENT-PROGRESS:CAPS" href="guestfs/GuestfsSession.html#GUESTFS-SESSION-EVENT-PROGRESS:CAPS">
+<ANCHOR id="GUESTFS-SESSION-EVENT-APPLIANCE:CAPS" href="guestfs/GuestfsSession.html#GUESTFS-SESSION-EVENT-APPLIANCE:CAPS">
+<ANCHOR id="GUESTFS-SESSION-EVENT-LIBRARY:CAPS" href="guestfs/GuestfsSession.html#GUESTFS-SESSION-EVENT-LIBRARY:CAPS">
+<ANCHOR id="GUESTFS-SESSION-EVENT-TRACE:CAPS" href="guestfs/GuestfsSession.html#GUESTFS-SESSION-EVENT-TRACE:CAPS">
+<ANCHOR id="GUESTFS-SESSION-EVENT-ENTER:CAPS" href="guestfs/GuestfsSession.html#GUESTFS-SESSION-EVENT-ENTER:CAPS">
+<ANCHOR id="GUESTFS-SESSION-EVENT-LIBVIRT-AUTH:CAPS" href="guestfs/GuestfsSession.html#GUESTFS-SESSION-EVENT-LIBVIRT-AUTH:CAPS">
+<ANCHOR id="GUESTFS-SESSION-EVENT-WARNING:CAPS" href="guestfs/GuestfsSession.html#GUESTFS-SESSION-EVENT-WARNING:CAPS">
 <ANCHOR id="GuestfsSessionEventParams-struct" href="guestfs/GuestfsSession.html#GuestfsSessionEventParams-struct">
 <ANCHOR id="GuestfsSession-struct" href="guestfs/GuestfsSession.html#GuestfsSession-struct">
 <ANCHOR id="GuestfsSessionClass" href="guestfs/GuestfsSession.html#GuestfsSessionClass">
@@ -614,6 +624,9 @@
 <ANCHOR id="guestfs-GuestfsTristate.functions_details" href="guestfs/guestfs-GuestfsTristate.html#guestfs-GuestfsTristate.functions_details">
 <ANCHOR id="guestfs-GuestfsTristate.other_details" href="guestfs/guestfs-GuestfsTristate.html#guestfs-GuestfsTristate.other_details">
 <ANCHOR id="GuestfsTristate" href="guestfs/guestfs-GuestfsTristate.html#GuestfsTristate">
+<ANCHOR id="GUESTFS-TRISTATE-FALSE:CAPS" href="guestfs/guestfs-GuestfsTristate.html#GUESTFS-TRISTATE-FALSE:CAPS">
+<ANCHOR id="GUESTFS-TRISTATE-TRUE:CAPS" href="guestfs/guestfs-GuestfsTristate.html#GUESTFS-TRISTATE-TRUE:CAPS">
+<ANCHOR id="GUESTFS-TRISTATE-NONE:CAPS" href="guestfs/guestfs-GuestfsTristate.html#GUESTFS-TRISTATE-NONE:CAPS">
 <ANCHOR id="GuestfsApplication" href="guestfs/GuestfsApplication.html">
 <ANCHOR id="GuestfsApplication.other" href="guestfs/GuestfsApplication.html#GuestfsApplication.other">
 <ANCHOR id="GuestfsApplication.object-hierarchy" href="guestfs/GuestfsApplication.html#GuestfsApplication.object-hierarchy">

@@ -1173,5 +1173,18 @@
     <keyword type="property" name="The “nomodify” property" link="GuestfsXfsRepair.html#GuestfsXfsRepair--nomodify"/>
     <keyword type="property" name="The “noprefetch” property" link="GuestfsXfsRepair.html#GuestfsXfsRepair--noprefetch"/>
     <keyword type="property" name="The “rtdev” property" link="GuestfsXfsRepair.html#GuestfsXfsRepair--rtdev"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_CLOSE" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-CLOSE:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_SUBPROCESS_QUIT" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-SUBPROCESS-QUIT:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_LAUNCH_DONE" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-LAUNCH-DONE:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_PROGRESS" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-PROGRESS:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_APPLIANCE" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-APPLIANCE:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_LIBRARY" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-LIBRARY:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_TRACE" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-TRACE:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_ENTER" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-ENTER:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_LIBVIRT_AUTH" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-LIBVIRT-AUTH:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_WARNING" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-WARNING:CAPS"/>
+    <keyword type="constant" name="GUESTFS_TRISTATE_FALSE" link="guestfs-GuestfsTristate.html#GUESTFS-TRISTATE-FALSE:CAPS"/>
+    <keyword type="constant" name="GUESTFS_TRISTATE_TRUE" link="guestfs-GuestfsTristate.html#GUESTFS-TRISTATE-TRUE:CAPS"/>
+    <keyword type="constant" name="GUESTFS_TRISTATE_NONE" link="guestfs-GuestfsTristate.html#GUESTFS-TRISTATE-NONE:CAPS"/>
   </functions>
 </book>

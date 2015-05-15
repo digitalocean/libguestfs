@@ -1612,6 +1612,7 @@ localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+ounit_is_v2 = @ounit_is_v2@
 pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
@@ -1695,6 +1696,7 @@ EXTRA_DIST = \
 	logo/fish-5yrs.svg logo/fish-5yrs.png \
 	logo/virt-builder.svg \
 	m4/.gitignore \
+	ocaml-link.sh \
 	tests/run-xml-to-junit.sh \
 	tests/run-xml-to-junit.xsl \
 	tmp/.gitignore \
@@ -2213,7 +2215,6 @@ installdirs-am:
 	for dir in "$(DESTDIR)$(man1dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: install-recursive
 install-exec: install-exec-recursive
 install-data: install-data-recursive
 uninstall: uninstall-recursive
@@ -2395,6 +2396,21 @@ all-local:
 	cd $(srcdir); \
 	find builder customize mllib resize sparsify sysprep v2v -name '*.ml' | \
 	LC_ALL=C sort > po/POTFILES-ml
+
+# Try to stop people using 'make install' without 'DESTDIR'.
+install:
+	@if test "x$(DESTDIR)" != "x" || test "x$(REALLY_INSTALL)" = "xyes"; \
+	then \
+	    $(MAKE) install-recursive; \
+	else \
+	    echo "***"; \
+	    echo "*** Using 'make install' is usually a very bad idea."; \
+	    echo "*** Use the './run' script instead - see the README."; \
+	    echo "***"; \
+	    echo "*** You can override this by setting REALLY_INSTALL=yes, but don't do that."; \
+	    echo "***"; \
+	    exit 1; \
+	fi
 
 guestfs-release-notes.1 guestfs-release-notes.txt $(top_builddir)/html/guestfs-release-notes.1.html: stamp-guestfs-release-notes.pod
 

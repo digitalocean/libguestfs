@@ -292,7 +292,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = link.sh libguestfs.conf
+CONFIG_CLEAN_FILES = libguestfs.conf
 CONFIG_CLEAN_VPATH_FILES =
 @HAVE_OCAML_TRUE@am__EXEEXT_1 = virt-builder$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" \
@@ -469,10 +469,9 @@ am__tty_colors = { \
   fi; \
 }
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/libguestfs.conf.in \
-	$(srcdir)/link.sh.in $(top_srcdir)/build-aux/depcomp \
-	$(top_srcdir)/build-aux/ylwrap $(top_srcdir)/common-rules.mk \
-	$(top_srcdir)/subdir-rules.mk index-parse.c index-parse.h \
-	index-scan.c
+	$(top_srcdir)/build-aux/depcomp $(top_srcdir)/build-aux/ylwrap \
+	$(top_srcdir)/common-rules.mk $(top_srcdir)/subdir-rules.mk \
+	index-parse.c index-parse.h index-scan.c
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 pkglibexecdir = @pkglibexecdir@
 ACLOCAL = @ACLOCAL@
@@ -1578,6 +1577,7 @@ localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+ounit_is_v2 = @ounit_is_v2@
 pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
@@ -1716,6 +1716,16 @@ noinst_DATA = $(am__append_4) \
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize $(am__append_2)
+@HAVE_OCAML_TRUE@OCAMLCLIBS = \
+@HAVE_OCAML_TRUE@	-pthread -lpthread \
+@HAVE_OCAML_TRUE@	-lutils \
+@HAVE_OCAML_TRUE@	$(LIBTINFO_LIBS) \
+@HAVE_OCAML_TRUE@	$(LIBCRYPT_LIBS) \
+@HAVE_OCAML_TRUE@	$(LIBLZMA_LIBS) \
+@HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) \
+@HAVE_OCAML_TRUE@	$(LIBINTL) \
+@HAVE_OCAML_TRUE@	-lgnu
+
 @HAVE_OCAML_TRUE@OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OBJECTS = $(BOBJECTS)
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OBJECTS = $(XOBJECTS)
@@ -1723,9 +1733,9 @@ noinst_DATA = $(am__append_4) \
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@BEST = opt
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OCAMLLINKFLAGS = mlguestfs.cma -custom
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OCAMLLINKFLAGS = mlguestfs.cmxa
-@HAVE_OCAML_TRUE@virt_builder_DEPENDENCIES = $(OBJECTS)
+@HAVE_OCAML_TRUE@virt_builder_DEPENDENCIES = $(OBJECTS) $(top_srcdir)/ocaml-link.sh
 @HAVE_OCAML_TRUE@virt_builder_LINK = \
-@HAVE_OCAML_TRUE@	./link.sh \
+@HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 @HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
 @HAVE_OCAML_TRUE@	  $(OBJECTS) -o $@
 
@@ -1800,8 +1810,6 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-link.sh: $(top_builddir)/config.status $(srcdir)/link.sh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 libguestfs.conf: $(top_builddir)/config.status $(srcdir)/libguestfs.conf.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-binPROGRAMS: $(bin_PROGRAMS)

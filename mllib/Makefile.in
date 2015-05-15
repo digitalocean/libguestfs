@@ -146,7 +146,11 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@noinst_PROGRAMS = dummy$(EXEEXT)
 @HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_2 = -package oUnit
+@HAVE_OCAML_TRUE@TESTS = $(am__EXEEXT_1)
+@HAVE_OCAML_TRUE@check_PROGRAMS = $(am__EXEEXT_1)
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_3 = common_utils_tests JSON_tests
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_4 = common_utils_tests JSON_tests
+@HAVE_OCAML_TRUE@am__append_5 = oUnit-*
 subdir = mllib
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -286,9 +290,19 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = link.sh config.ml
+CONFIG_CLEAN_FILES = config.ml
 CONFIG_CLEAN_VPATH_FILES =
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__EXEEXT_1 = common_utils_tests$(EXEEXT) \
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@	JSON_tests$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
+am__JSON_tests_SOURCES_DIST = dummy.c
+@HAVE_OCAML_TRUE@am_JSON_tests_OBJECTS = dummy.$(OBJEXT)
+JSON_tests_OBJECTS = $(am_JSON_tests_OBJECTS)
+JSON_tests_LDADD = $(LDADD)
+am__common_utils_tests_SOURCES_DIST = dummy.c
+@HAVE_OCAML_TRUE@am_common_utils_tests_OBJECTS = dummy.$(OBJEXT)
+common_utils_tests_OBJECTS = $(am_common_utils_tests_OBJECTS)
+common_utils_tests_LDADD = $(LDADD)
 am__dummy_SOURCES_DIST = $(top_srcdir)/fish/progress.c \
 	$(top_srcdir)/fish/uri.c fsync-c.c mkdtemp-c.c progress-c.c \
 	uri-c.c
@@ -336,8 +350,11 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(dummy_SOURCES)
-DIST_SOURCES = $(am__dummy_SOURCES_DIST)
+SOURCES = $(JSON_tests_SOURCES) $(common_utils_tests_SOURCES) \
+	$(dummy_SOURCES)
+DIST_SOURCES = $(am__JSON_tests_SOURCES_DIST) \
+	$(am__common_utils_tests_SOURCES_DIST) \
+	$(am__dummy_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -385,8 +402,8 @@ am__tty_colors = { \
   fi; \
 }
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.ml.in \
-	$(srcdir)/link.sh.in $(top_srcdir)/build-aux/depcomp \
-	$(top_srcdir)/common-rules.mk $(top_srcdir)/subdir-rules.mk
+	$(top_srcdir)/build-aux/depcomp $(top_srcdir)/common-rules.mk \
+	$(top_srcdir)/subdir-rules.mk
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 pkglibexecdir = @pkglibexecdir@
 ACLOCAL = @ACLOCAL@
@@ -1492,6 +1509,7 @@ localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+ounit_is_v2 = @ounit_is_v2@
 pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
@@ -1512,7 +1530,7 @@ EXTRA_DIST = \
 	common_utils_tests.ml \
 	JSON_tests.ml
 
-CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o
+CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o $(am__append_5)
 SOURCES_MLI = \
 	common_utils.mli \
 	fsync.mli \
@@ -1568,6 +1586,15 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/gnulib/lib/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml $(am__append_1)
 @HAVE_OCAML_TRUE@OCAMLPACKAGES_TESTS = $(am__append_2)
+@HAVE_OCAML_TRUE@OCAMLCLIBS = \
+@HAVE_OCAML_TRUE@	-lutils \
+@HAVE_OCAML_TRUE@	$(LIBTINFO_LIBS) \
+@HAVE_OCAML_TRUE@	$(LIBCRYPT_LIBS) \
+@HAVE_OCAML_TRUE@	$(LIBVIRT_LIBS) \
+@HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) \
+@HAVE_OCAML_TRUE@	$(LIBINTL) \
+@HAVE_OCAML_TRUE@	-lgnu
+
 @HAVE_OCAML_TRUE@OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OBJECTS = $(BOBJECTS)
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OBJECTS = $(XOBJECTS)
@@ -1575,19 +1602,47 @@ SOURCES_C = \
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@BEST = opt
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OCAMLLINKFLAGS = mlguestfs.cma -custom
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OCAMLLINKFLAGS = mlguestfs.cmxa
-@HAVE_OCAML_TRUE@dummy_DEPENDENCIES = $(OBJECTS)
+@HAVE_OCAML_TRUE@dummy_DEPENDENCIES = $(OBJECTS) $(top_srcdir)/ocaml-link.sh
 @HAVE_OCAML_TRUE@dummy_LINK = \
-@HAVE_OCAML_TRUE@	./link.sh \
+@HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 @HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
 @HAVE_OCAML_TRUE@	  $(OBJECTS) -o $@
 
 
 # Tests.
-@HAVE_OCAML_TRUE@check_SCRIPTS = \
-@HAVE_OCAML_TRUE@	common_utils_tests
+@HAVE_OCAML_TRUE@common_utils_tests_SOURCES = dummy.c
+@HAVE_OCAML_TRUE@common_utils_tests_BOBJECTS = \
+@HAVE_OCAML_TRUE@	config.cmo \
+@HAVE_OCAML_TRUE@	common_gettext.cmo \
+@HAVE_OCAML_TRUE@	common_utils.cmo \
+@HAVE_OCAML_TRUE@	common_utils_tests.cmo
+
+@HAVE_OCAML_TRUE@common_utils_tests_XOBJECTS = $(common_utils_tests_BOBJECTS:.cmo=.cmx)
+@HAVE_OCAML_TRUE@JSON_tests_SOURCES = dummy.c
+@HAVE_OCAML_TRUE@JSON_tests_BOBJECTS = \
+@HAVE_OCAML_TRUE@	JSON.cmo \
+@HAVE_OCAML_TRUE@	JSON_tests.cmo
+
+@HAVE_OCAML_TRUE@JSON_tests_XOBJECTS = $(JSON_tests_BOBJECTS:.cmo=.cmx)
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@common_utils_tests_THEOBJECTS = $(common_utils_tests_BOBJECTS)
+
+# Can't call the following as <test>_OBJECTS because automake gets confused.
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@common_utils_tests_THEOBJECTS = $(common_utils_tests_XOBJECTS)
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@JSON_tests_THEOBJECTS = $(JSON_tests_BOBJECTS)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@JSON_tests_THEOBJECTS = $(JSON_tests_XOBJECTS)
+@HAVE_OCAML_TRUE@common_utils_tests_DEPENDENCIES = $(common_utils_tests_THEOBJECTS) $(top_srcdir)/ocaml-link.sh
+@HAVE_OCAML_TRUE@common_utils_tests_LINK = \
+@HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh -- \
+@HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) $(OCAMLLINKFLAGS) \
+@HAVE_OCAML_TRUE@	  $(common_utils_tests_THEOBJECTS) -o $@
+
+@HAVE_OCAML_TRUE@JSON_tests_DEPENDENCIES = $(JSON_tests_THEOBJECTS) $(top_srcdir)/ocaml-link.sh
+@HAVE_OCAML_TRUE@JSON_tests_LINK = \
+@HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh -- \
+@HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) $(OCAMLLINKFLAGS) \
+@HAVE_OCAML_TRUE@	  $(JSON_tests_THEOBJECTS) -o $@
 
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
-@HAVE_OCAML_TRUE@TESTS = $(am__append_3)
 DISTCLEANFILES = .depend
 all: all-am
 
@@ -1623,10 +1678,17 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-link.sh: $(top_builddir)/config.status $(srcdir)/link.sh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 config.ml: $(top_builddir)/config.status $(srcdir)/config.ml.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+
+clean-checkPROGRAMS:
+	@list='$(check_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
 
 clean-noinstPROGRAMS:
 	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
@@ -1636,6 +1698,14 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+
+JSON_tests$(EXEEXT): $(JSON_tests_OBJECTS) $(JSON_tests_DEPENDENCIES) $(EXTRA_JSON_tests_DEPENDENCIES) 
+	@rm -f JSON_tests$(EXEEXT)
+	$(AM_V_GEN)$(JSON_tests_LINK) $(JSON_tests_OBJECTS) $(JSON_tests_LDADD) $(LIBS)
+
+common_utils_tests$(EXEEXT): $(common_utils_tests_OBJECTS) $(common_utils_tests_DEPENDENCIES) $(EXTRA_common_utils_tests_DEPENDENCIES) 
+	@rm -f common_utils_tests$(EXEEXT)
+	$(AM_V_GEN)$(common_utils_tests_LINK) $(common_utils_tests_OBJECTS) $(common_utils_tests_LDADD) $(LIBS)
 
 dummy$(EXEEXT): $(dummy_OBJECTS) $(dummy_DEPENDENCIES) $(EXTRA_dummy_DEPENDENCIES) 
 	@rm -f dummy$(EXEEXT)
@@ -1653,6 +1723,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy-progress.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy-uri-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy-uri.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1941,7 +2012,7 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) $(check_SCRIPTS)
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile $(PROGRAMS)
@@ -1980,8 +2051,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
-	mostlyclean-am
+clean-am: clean-checkPROGRAMS clean-generic clean-libtool \
+	clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -2052,18 +2123,18 @@ uninstall-am:
 .MAKE: check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
-	clean-generic clean-libtool clean-noinstPROGRAMS cscopelist-am \
-	ctags ctags-am distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am
+	clean-checkPROGRAMS clean-generic clean-libtool \
+	clean-noinstPROGRAMS cscopelist-am ctags ctags-am distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags tags-am uninstall uninstall-am
 
 .PRECIOUS: Makefile
 
@@ -2113,25 +2184,10 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@libdir.ml: Makefile
 @HAVE_OCAML_TRUE@	echo 'let libdir = "$(libdir)"' > $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
-
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@common_utils_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@common_utils_tests: config.cmx common_gettext.cmx common_utils.cmx common_utils_tests.cmx
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) \
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib '$(LIBTINFO_LIBS)' -o $@
-
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@JSON_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@JSON_tests: JSON.cmx JSON_tests.cmx
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) \
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib '$(LIBTINFO_LIBS)' -o $@
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@common_utils_tests.cmo: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@common_utils_tests: config.cmo common_gettext.cmo common_utils.cmo common_utils_tests.cmo
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  mlguestfs.cma -linkpkg $^ -cclib '$(LIBTINFO_LIBS)' -custom -o $@
-
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@JSON_tests.cmo: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@JSON_tests: JSON.cmo JSON_tests.cmo
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) \
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@	  mlguestfs.cma -linkpkg $^ -cclib '$(LIBTINFO_LIBS)' -custom -o $@
 
 @HAVE_OCAML_TRUE@check-valgrind:
 @HAVE_OCAML_TRUE@	$(MAKE) VG="$(top_builddir)/run @VG@" check

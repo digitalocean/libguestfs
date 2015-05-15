@@ -19,8 +19,11 @@ include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
+	v2v_unit_tests.ml \
 	$(TESTS) $(SLOW_TESTS) \
-	HACKING README.RHEV-M \
+	HACKING \
+	rhel-7-virt-v2v-conversion-server.config \
+	rhel-7-virt-v2v-conversion-server.ks \
 	test-v2v-i-ova.ovf \
 	test-v2v-i-ova.xml \
 	test-v2v-i-ova-formats.expected \
@@ -157,6 +160,15 @@ if HAVE_OCAML_PKG_GETTEXT
 OCAMLPACKAGES += -package gettext-stub
 endif
 
+OCAMLCLIBS = \
+	-lutils \
+	$(LIBTINFO_LIBS) \
+	$(LIBCRYPT_LIBS) \
+	$(LIBVIRT_LIBS) \
+	$(LIBXML2_LIBS) \
+	$(LIBINTL) \
+	-lgnu
+
 OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 
 if !HAVE_OCAMLOPT
@@ -169,9 +181,9 @@ BEST    = opt
 OCAMLLINKFLAGS = mlguestfs.cmxa
 endif
 
-virt_v2v_DEPENDENCIES = $(OBJECTS)
+virt_v2v_DEPENDENCIES = $(OBJECTS) $(top_srcdir)/ocaml-link.sh
 virt_v2v_LINK = \
-	./link.sh \
+	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
 	  $(OBJECTS) -o $@
 
@@ -229,6 +241,10 @@ TESTS = \
 	test-v2v-i-ova-gz.sh \
 	test-v2v-i-ova-two-disks.sh
 
+if HAVE_OCAML_PKG_OUNIT
+TESTS += v2v_unit_tests
+endif
+
 if ENABLE_APPLIANCE
 TESTS += \
 	test-v2v-i-ova.sh \
@@ -280,6 +296,47 @@ $(real_guests:%=%.img):
 	fi
 
 CLEANFILES += $(real_guests:%=%.img)
+
+# Unit tests.
+check_PROGRAMS =
+if HAVE_OCAML_PKG_OUNIT
+check_PROGRAMS += v2v_unit_tests
+endif
+
+v2v_unit_tests_BOBJECTS = \
+	$(top_builddir)/mllib/config.cmo \
+	$(top_builddir)/mllib/common_gettext.cmo \
+	$(top_builddir)/mllib/common_utils.cmo \
+	stringMap.cmo \
+	types.cmo \
+	utils.cmo \
+	DOM.cmo \
+	OVF.cmo \
+	v2v_unit_tests.cmo
+v2v_unit_tests_XOBJECTS = $(v2v_unit_tests_BOBJECTS:.cmo=.cmx)
+
+v2v_unit_tests_SOURCES = $(virt_v2v_SOURCES)
+v2v_unit_tests_CPPFLAGS = $(virt_v2v_CPPFLAGS)
+v2v_unit_tests_CFLAGS = $(virt_v2v_CFLAGS)
+
+if !HAVE_OCAMLOPT
+# Can't call this v2v_unit_tests_OBJECTS because automake gets confused.
+v2v_unit_tests_THEOBJECTS = $(v2v_unit_tests_BOBJECTS)
+v2v_unit_tests.cmo: OCAMLPACKAGES += -package oUnit
+else
+v2v_unit_tests_THEOBJECTS = $(v2v_unit_tests_XOBJECTS)
+v2v_unit_tests.cmx: OCAMLPACKAGES += -package oUnit
+endif
+
+v2v_unit_tests_DEPENDENCIES = $(v2v_unit_tests_THEOBJECTS) $(top_srcdir)/ocaml-link.sh
+v2v_unit_tests_LINK = \
+	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
+	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) \
+	  $(OCAMLPACKAGES) -package oUnit \
+	  $(OCAMLLINKFLAGS) \
+	  $(v2v_unit_tests_THEOBJECTS) -o $@
+
+CLEANFILES += oUnit-*
 
 # Dependencies.
 depend: .depend
