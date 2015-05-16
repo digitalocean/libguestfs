@@ -28,7 +28,6 @@ type uri = string
 type filename = string
 
 type t = {
-  verbose : bool;
   curl : string;
   cache : Cache.t option;               (* cache for templates *)
 }
@@ -38,25 +37,24 @@ type proxy_mode =
   | SystemProxy
   | ForcedProxy of string
 
-let create ~verbose ~curl ~cache = {
-  verbose = verbose;
+let create ~curl ~cache = {
   curl = curl;
   cache = cache;
 }
 
-let rec download ~prog t ?template ?progress_bar ?(proxy = SystemProxy) uri =
+let rec download t ?template ?progress_bar ?(proxy = SystemProxy) uri =
   match template with
   | None ->                       (* no cache, simple download *)
     (* Create a temporary name. *)
     let tmpfile = Filename.temp_file "vbcache" ".txt" in
-    download_to ~prog t ?progress_bar ~proxy uri tmpfile;
+    download_to t ?progress_bar ~proxy uri tmpfile;
     (tmpfile, true)
 
   | Some (name, arch, revision) ->
     match t.cache with
     | None ->
       (* Not using the cache at all? *)
-      download t ~prog ?progress_bar ~proxy uri
+      download t ?progress_bar ~proxy uri
 
     | Some cache ->
       let filename = Cache.cache_of_name cache name arch revision in
@@ -65,11 +63,11 @@ let rec download ~prog t ?template ?progress_bar ?(proxy = SystemProxy) uri =
        * If not, download it.
        *)
       if not (Sys.file_exists filename) then
-        download_to ~prog t ?progress_bar ~proxy uri filename;
+        download_to t ?progress_bar ~proxy uri filename;
 
       (filename, false)
 
-and download_to ~prog t ?(progress_bar = false) ~proxy uri filename =
+and download_to t ?(progress_bar = false) ~proxy uri filename =
   let parseduri =
     try URI.parse_uri uri
     with Invalid_argument "URI.parse_uri" ->
@@ -88,7 +86,7 @@ and download_to ~prog t ?(progress_bar = false) ~proxy uri filename =
   | "file" ->
     let path = parseduri.URI.path in
     let cmd = sprintf "cp%s %s %s"
-      (if t.verbose then " -v" else "")
+      (if verbose () then " -v" else "")
       (quote path) (quote filename_new) in
     let r = Sys.command cmd in
     if r <> 0 then
@@ -99,10 +97,10 @@ and download_to ~prog t ?(progress_bar = false) ~proxy uri filename =
     let cmd = sprintf "%s%s%s -g -o /dev/null -I -w '%%{http_code}' %s"
       outenv
       t.curl
-      (if t.verbose then "" else " -s -S")
+      (if verbose () then "" else " -s -S")
       (quote uri) in
-    if t.verbose then printf "%s\n%!" cmd;
-    let lines = external_command ~prog cmd in
+    if verbose () then printf "%s\n%!" cmd;
+    let lines = external_command cmd in
     if List.length lines < 1 then
       error (f_"unexpected output from curl command, enable debug and look at previous messages");
     let status_code = List.hd lines in
@@ -119,9 +117,9 @@ and download_to ~prog t ?(progress_bar = false) ~proxy uri filename =
     let cmd = sprintf "%s%s%s -g -o %s %s"
       outenv
       t.curl
-      (if t.verbose then "" else if progress_bar then " -#" else " -s -S")
+      (if verbose () then "" else if progress_bar then " -#" else " -s -S")
       (quote filename_new) (quote uri) in
-    if t.verbose then printf "%s\n%!" cmd;
+    if verbose () then printf "%s\n%!" cmd;
     let r = Sys.command cmd in
     if r <> 0 then
       error (f_"curl (download) command failed downloading '%s'") uri;

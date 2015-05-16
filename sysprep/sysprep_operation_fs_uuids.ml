@@ -25,12 +25,12 @@ open Sysprep_operation
 
 module G = Guestfs
 
-let rec fs_uuids_perform ~verbose ~quiet g root side_effects =
+let rec fs_uuids_perform g root side_effects =
   let fses = g#list_filesystems () in
   List.iter (function
   | _, "unknown" -> ()
   | dev, typ ->
-    let new_uuid = Common_utils.uuidgen ~prog () in
+    let new_uuid = Common_utils.uuidgen () in
     try
       g#set_uuid dev new_uuid
     with

@@ -26,9 +26,12 @@ open Customize_utils
 open Customize_cmdline
 open Password
 
-let run ~verbose ~quiet (g : Guestfs.guestfs) root (ops : ops) =
-  (* Timestamped messages in ordinary, non-debug non-quiet mode. *)
-  let msg fs = make_message_function ~quiet fs in
+let run (g : Guestfs.guestfs) root (ops : ops) =
+  (* Is the host_cpu compatible with the guest arch?  ie. Can we
+   * run commands in this guest?
+   *)
+  let guest_arch = g#inspect_get_arch root in
+  let guest_arch_compatible = guest_arch_compatible guest_arch in
 
   (* Based on the guest type, choose a log file location. *)
   let logfile =
@@ -53,6 +56,10 @@ let run ~verbose ~quiet (g : Guestfs.guestfs) root (ops : ops) =
 
   (* Useful wrapper for scripts. *)
   let do_run ~display cmd =
+    if not guest_arch_compatible then
+      error (f_"host cpu (%s) and guest arch (%s) are not compatible, so you cannot use command line options that involve running commands in the guest.  Use --firstboot scripts instead.")
+            Config.host_cpu guest_arch;
+
     (* Add a prologue to the scripts:
      * - Pass environment variables through from the host.
      * - Send stdout and stderr to a log file so we capture all output
@@ -73,7 +80,7 @@ exec >>%s 2>&1
 %s
 " (quote logfile) env_vars cmd in
 
-    if verbose then printf "running command:\n%s\n%!" cmd;
+    if verbose () then printf "running command:\n%s\n%!" cmd;
     try ignore (g#sh cmd)
     with
       Guestfs.Error msg ->
@@ -139,7 +146,7 @@ exec >>%s 2>&1
   in
 
   (* Set the random seed. *)
-  msg (f_"Setting a random seed");
+  message (f_"Setting a random seed");
   if not (Random_seed.set_random_seed g root) then
     warning (f_"random seed could not be set for this type of guest");
 
@@ -155,7 +162,7 @@ exec >>%s 2>&1
   List.iter (
     function
     | `Chmod (mode, path) ->
-      msg (f_"Changing permissions of %s to %s") path mode;
+      message (f_"Changing permissions of %s to %s") path mode;
       (* If the mode string is octal, add the OCaml prefix for octal values
        * so it is properly converted as octal integer.
        *)
@@ -163,7 +170,7 @@ exec >>%s 2>&1
       g#chmod (int_of_string mode) path
 
     | `Command cmd ->
-      msg (f_"Running: %s") cmd;
+      message (f_"Running: %s") cmd;
       do_run ~display:cmd cmd
 
     | `CommandsFromFile _ ->
@@ -172,64 +179,64 @@ exec >>%s 2>&1
       ()
 
     | `Copy (src, dest) ->
-      msg (f_"Copying (in image): %s to %s") src dest;
+      message (f_"Copying (in image): %s to %s") src dest;
       g#cp_a src dest
 
     | `CopyIn (localpath, remotedir) ->
-      msg (f_"Copying: %s to %s") localpath remotedir;
+      message (f_"Copying: %s to %s") localpath remotedir;
       g#copy_in localpath remotedir
 
     | `Delete path ->
-      msg (f_"Deleting: %s") path;
+      message (f_"Deleting: %s") path;
       g#rm_rf path
 
     | `Edit (path, expr) ->
-      msg (f_"Editing: %s") path;
+      message (f_"Editing: %s") path;
 
       if not (g#is_file path) then
         error (f_"%s is not a regular file in the guest") path;
 
-      Perl_edit.edit_file ~verbose g#ocaml_handle path expr
+      Perl_edit.edit_file g#ocaml_handle path expr
 
     | `FirstbootCommand cmd ->
-      msg (f_"Installing firstboot command: %s") cmd;
+      message (f_"Installing firstboot command: %s") cmd;
       Firstboot.add_firstboot_script g root cmd cmd
 
     | `FirstbootPackages pkgs ->
-      msg (f_"Installing firstboot packages: %s")
+      message (f_"Installing firstboot packages: %s")
         (String.concat " " pkgs);
       let cmd = guest_install_command pkgs in
       let name = String.concat " " ("install" :: pkgs) in
       Firstboot.add_firstboot_script g root name cmd
 
     | `FirstbootScript script ->
-      msg (f_"Installing firstboot script: %s") script;
+      message (f_"Installing firstboot script: %s") script;
       let cmd = read_whole_file script in
       Firstboot.add_firstboot_script g root script cmd
 
     | `Hostname hostname ->
-      msg (f_"Setting the hostname: %s") hostname;
+      message (f_"Setting the hostname: %s") hostname;
       if not (Hostname.set_hostname g root hostname) then
         warning (f_"hostname could not be set for this type of guest")
 
     | `InstallPackages pkgs ->
-      msg (f_"Installing packages: %s") (String.concat " " pkgs);
+      message (f_"Installing packages: %s") (String.concat " " pkgs);
       let cmd = guest_install_command pkgs in
       do_run ~display:cmd cmd
 
     | `Link (target, links) ->
       List.iter (
         fun link ->
-          msg (f_"Linking: %s -> %s") link target;
+          message (f_"Linking: %s -> %s") link target;
           g#ln_sf target link
       ) links
 
     | `Mkdir dir ->
-      msg (f_"Making directory: %s") dir;
+      message (f_"Making directory: %s") dir;
       g#mkdir_p dir
 
     | `Move (src, dest) ->
-      msg (f_"Moving: %s -> %s") src dest;
+      message (f_"Moving: %s -> %s") src dest;
       g#mv src dest
 
     | `Password (user, pw) ->
@@ -239,46 +246,46 @@ exec >>%s 2>&1
       set_password "root" pw
 
     | `Script script ->
-      msg (f_"Running: %s") script;
+      message (f_"Running: %s") script;
       let cmd = read_whole_file script in
       do_run ~display:script cmd
 
     | `Scrub path ->
-      msg (f_"Scrubbing: %s") path;
+      message (f_"Scrubbing: %s") path;
       g#scrub_file path
 
     | `SSHInject (user, selector) ->
       (match g#inspect_get_type root with
       | "linux" | "freebsd" | "netbsd" | "openbsd" | "hurd" ->
-        msg (f_"SSH key inject: %s") user;
+        message (f_"SSH key inject: %s") user;
         Ssh_key.do_ssh_inject_unix g user selector
       | _ ->
         warning (f_"SSH key could be injected for this type of guest"))
 
     | `Truncate path ->
-      msg (f_"Truncating: %s") path;
+      message (f_"Truncating: %s") path;
       g#truncate path
 
     | `TruncateRecursive path ->
-      msg (f_"Recursively truncating: %s") path;
+      message (f_"Recursively truncating: %s") path;
       truncate_recursive g path
 
     | `Timezone tz ->
-      msg (f_"Setting the timezone: %s") tz;
+      message (f_"Setting the timezone: %s") tz;
       if not (Timezone.set_timezone g root tz) then
         warning (f_"timezone could not be set for this type of guest")
 
     | `Touch path ->
-      msg (f_"Running touch: %s") path;
+      message (f_"Running touch: %s") path;
       g#touch path
 
     | `Update ->
-      msg (f_"Updating core packages");
+      message (f_"Updating core packages");
       let cmd = guest_update_command () in
       do_run ~display:cmd cmd
 
     | `Upload (path, dest) ->
-      msg (f_"Uploading: %s to %s") path dest;
+      message (f_"Uploading: %s to %s") path dest;
       let dest =
         if g#is_dir ~followsymlinks:true dest then
           dest ^ "/" ^ Filename.basename path
@@ -303,7 +310,7 @@ exec >>%s 2>&1
       chown ()
 
     | `Write (path, content) ->
-      msg (f_"Writing: %s") path;
+      message (f_"Writing: %s") path;
       g#write path content
   ) ops.ops;
 
@@ -311,7 +318,7 @@ exec >>%s 2>&1
   if Hashtbl.length passwords > 0 then (
     match g#inspect_get_type root with
     | "linux" ->
-      msg (f_"Setting passwords");
+      message (f_"Setting passwords");
       let password_crypto = ops.flags.password_crypto in
       set_linux_passwords ?password_crypto g root passwords
 
@@ -320,16 +327,20 @@ exec >>%s 2>&1
   );
 
   if ops.flags.selinux_relabel then (
-    msg (f_"SELinux relabelling");
-    let cmd = sprintf "
-      if load_policy && fixfiles restore; then
-        rm -f /.autorelabel
-      else
-        touch /.autorelabel
-        echo '%s: SELinux relabelling failed, will relabel at boot instead.'
-      fi
-    " prog in
-    do_run ~display:"load_policy && fixfiles restore" cmd
+    message (f_"SELinux relabelling");
+    if guest_arch_compatible then (
+      let cmd = sprintf "
+        if load_policy && fixfiles restore; then
+          rm -f /.autorelabel
+        else
+          touch /.autorelabel
+          echo '%s: SELinux relabelling failed, will relabel at boot instead.'
+        fi
+      " prog in
+      do_run ~display:"load_policy && fixfiles restore" cmd
+    ) else (
+      g#touch "/.autorelabel"
+    )
   );
 
   (* Clean up the log file:
@@ -337,9 +348,9 @@ exec >>%s 2>&1
    * If debugging, dump out the log file.
    * Then if asked, scrub the log file.
    *)
-  if verbose then debug_logfile ();
+  if verbose () then debug_logfile ();
   if ops.flags.scrub_logfile && g#exists logfile then (
-    msg (f_"Scrubbing the log file");
+    message (f_"Scrubbing the log file");
 
     (* Try various methods with decreasing complexity. *)
     try g#scrub_file logfile
@@ -354,7 +365,7 @@ exec >>%s 2>&1
    *)
   (try ignore (g#debug "sh" [| "fuser"; "-k"; "/sysroot" |])
    with exn ->
-     if verbose then
+     if verbose () then
        printf (f_"%s: %s (ignored)\n") prog (Printexc.to_string exn)
   );
   g#ping_daemon () (* tiny delay after kill *)
