@@ -261,13 +261,31 @@ let ansi_magenta ?(chan = stdout) () =
 let ansi_restore ?(chan = stdout) () =
   if istty chan then output_string chan "\x1b[0m"
 
+(* Program name. *)
+let prog = Filename.basename Sys.executable_name
+
+(* Stores the quiet (--quiet), trace (-x) and verbose (-v) flags in a
+ * global variable.
+ *)
+let quiet = ref false
+let set_quiet () = quiet := true
+let quiet () = !quiet
+
+let trace = ref false
+let set_trace () = trace := true
+let trace () = !trace
+
+let verbose = ref false
+let set_verbose () = verbose := true
+let verbose () = !verbose
+
 (* Timestamped progress messages, used for ordinary messages when not
  * --quiet.
  *)
 let start_t = Unix.time ()
-let make_message_function ~quiet fs =
-  let p str =
-    if not quiet then (
+let message fs =
+  let display str =
+    if not (quiet ()) then (
       let t = sprintf "%.1f" (Unix.time () -. start_t) in
       printf "[%6s] " t;
       ansi_green ();
@@ -276,25 +294,28 @@ let make_message_function ~quiet fs =
       print_newline ()
     )
   in
-  ksprintf p fs
+  ksprintf display fs
 
-let error ~prog ?(exit_code = 1) fs =
+(* Error messages etc. *)
+let error ?(exit_code = 1) fs =
   let display str =
     let chan = stderr in
     ansi_red ~chan ();
     wrap ~chan (sprintf (f_"%s: error: %s") prog str);
-    prerr_newline ();
-    prerr_newline ();
-    wrap ~chan
-      (sprintf (f_"If reporting bugs, run %s with debugging enabled and include the complete output:\n\n  %s -v -x [...]")
-         prog prog);
+    if not (verbose () && trace ()) then (
+      prerr_newline ();
+      prerr_newline ();
+      wrap ~chan
+           (sprintf (f_"If reporting bugs, run %s with debugging enabled and include the complete output:\n\n  %s -v -x [...]")
+                    prog prog);
+    );
     ansi_restore ~chan ();
     prerr_newline ();
     exit exit_code
   in
   ksprintf display fs
 
-let warning ~prog fs =
+let warning fs =
   let display str =
     let chan = stderr in
     ansi_blue ~chan ();
@@ -304,7 +325,7 @@ let warning ~prog fs =
   in
   ksprintf display fs
 
-let info ~prog fs =
+let info fs =
   let display str =
     let chan = stdout in
     ansi_magenta ~chan ();
@@ -317,33 +338,33 @@ let info ~prog fs =
 (* All the OCaml virt-* programs use this wrapper to catch exceptions
  * and print them nicely.
  *)
-let run_main_and_handle_errors ~prog main =
+let run_main_and_handle_errors main =
   try main ()
   with
   | Unix.Unix_error (code, fname, "") -> (* from a syscall *)
-    error ~prog (f_"%s: %s") fname (Unix.error_message code)
+    error (f_"%s: %s") fname (Unix.error_message code)
   | Unix.Unix_error (code, fname, param) -> (* from a syscall *)
-    error ~prog (f_"%s: %s: %s") fname (Unix.error_message code) param
+    error (f_"%s: %s: %s") fname (Unix.error_message code) param
   | Sys_error msg ->                    (* from a syscall *)
-    error ~prog (f_"%s") msg
+    error (f_"%s") msg
   | G.Error msg ->                      (* from libguestfs *)
-    error ~prog (f_"libguestfs error: %s") msg
+    error (f_"libguestfs error: %s") msg
   | Failure msg ->                      (* from failwith/failwithf *)
-    error ~prog (f_"failure: %s") msg
+    error (f_"failure: %s") msg
   | Invalid_argument msg ->             (* probably should never happen *)
-    error ~prog (f_"internal error: invalid argument: %s") msg
+    error (f_"internal error: invalid argument: %s") msg
   | Assert_failure (file, line, char) -> (* should never happen *)
-    error ~prog (f_"internal error: assertion failed at %s, line %d, char %d")
+    error (f_"internal error: assertion failed at %s, line %d, char %d")
       file line char
   | Not_found ->                        (* should never happen *)
-    error ~prog (f_"internal error: Not_found exception was thrown")
+    error (f_"internal error: Not_found exception was thrown")
   | exn ->                              (* something not matched above *)
-    error ~prog (f_"exception: %s") (Printexc.to_string exn)
+    error (f_"exception: %s") (Printexc.to_string exn)
 
 (* Print the version number and exit.  Used to implement --version in
  * the OCaml tools.
  *)
-let print_version_and_exit ~prog () =
+let print_version_and_exit () =
   printf "%s %s\n%!" prog Config.package_version_full;
   exit 0
 
@@ -366,7 +387,7 @@ let read_whole_file path =
 (* Parse a size field, eg. "10G". *)
 let parse_size =
   let const_re = Str.regexp "^\\([.0-9]+\\)\\([bKMG]\\)$" in
-  fun ~prog field ->
+  fun field ->
     let matches rex = Str.string_match rex field 0 in
     let sub i = Str.matched_group i field in
     let size_scaled f = function
@@ -381,7 +402,7 @@ let parse_size =
       size_scaled (float_of_string (sub 1)) (sub 2)
     )
     else
-      error ~prog "%s: cannot parse size field" field
+      error "%s: cannot parse size field" field
 
 (* Parse a size field, eg. "10G", "+20%" etc.  Used particularly by
  * virt-resize --resize and --resize-force options.
@@ -394,7 +415,7 @@ let parse_resize =
   and plus_percent_re = Str.regexp "^\\+\\([.0-9]+\\)%$"
   and minus_percent_re = Str.regexp "^-\\([.0-9]+\\)%$"
   in
-  fun ~prog oldsize field ->
+  fun oldsize field ->
     let matches rex = Str.string_match rex field 0 in
     let sub i = Str.matched_group i field in
     let size_scaled f = function
@@ -429,7 +450,7 @@ let parse_resize =
       oldsize -^ oldsize *^ percent /^ 1000L
     )
     else
-      error ~prog "%s: cannot parse resize field" field
+      error "%s: cannot parse resize field" field
 
 let human_size i =
   let sign, i = if i < 0L then "-", Int64.neg i else "", i in
@@ -535,7 +556,7 @@ let compare_lvm2_uuids uuid1 uuid2 =
   loop 0 0
 
 (* Run an external command, slurp up the output as a list of lines. *)
-let external_command ~prog cmd =
+let external_command cmd =
   let chan = Unix.open_process_in cmd in
   let lines = ref [] in
   (try while true do lines := input_line chan :: !lines done
@@ -545,17 +566,17 @@ let external_command ~prog cmd =
   (match stat with
   | Unix.WEXITED 0 -> ()
   | Unix.WEXITED i ->
-    error ~prog (f_"external command '%s' exited with error %d") cmd i
+    error (f_"external command '%s' exited with error %d") cmd i
   | Unix.WSIGNALED i ->
-    error ~prog (f_"external command '%s' killed by signal %d") cmd i
+    error (f_"external command '%s' killed by signal %d") cmd i
   | Unix.WSTOPPED i ->
-    error ~prog (f_"external command '%s' stopped by signal %d") cmd i
+    error (f_"external command '%s' stopped by signal %d") cmd i
   );
   lines
 
 (* Run uuidgen to return a random UUID. *)
-let uuidgen ~prog () =
-  let lines = external_command ~prog "uuidgen -r" in
+let uuidgen () =
+  let lines = external_command "uuidgen -r" in
   assert (List.length lines >= 1);
   let uuid = List.hd lines in
   let len = String.length uuid in
@@ -699,3 +720,12 @@ let rec mkdir_p path permissions =
      * directory. *)
     mkdir_p (Filename.dirname path) permissions;
     Unix.mkdir path permissions
+
+(* Are guest arch and host_cpu compatible, in terms of being able
+ * to run commands in the libguestfs appliance?
+ *)
+let guest_arch_compatible guest_arch =
+  match Config.host_cpu, guest_arch with
+  | x, y when x = y -> true
+  | "x86_64", ("i386"|"i486"|"i586"|"i686") -> true
+  | _ -> false

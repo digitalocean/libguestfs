@@ -31,8 +31,6 @@ open Customize_cmdline
 open Unix
 open Printf
 
-let prog = Filename.basename Sys.executable_name
-
 let () = Random.self_init ()
 
 let remove_duplicates index =
@@ -75,15 +73,11 @@ let main () =
   let mode, arg,
     arch, attach, cache, check_signature, curl,
     delete_on_failure, format, gpg, list_format, memsize,
-    network, ops, output, quiet, size, smp, sources, sync,
-    trace, verbose =
+    network, ops, output, size, smp, sources, sync =
     parse_cmdline () in
 
-  (* Timestamped messages in ordinary, non-debug non-quiet mode. *)
-  let msg fs = make_message_function ~quiet fs in
-
   (* If debugging, echo the command line arguments and the sources. *)
-  if verbose then (
+  if verbose () then (
     printf "command line:";
     List.iter (printf " %s") (Array.to_list Sys.argv);
     print_newline ();
@@ -97,13 +91,13 @@ let main () =
   let mode =
     match mode with
     | `Get_kernel -> (* --get-kernel is really a different program ... *)
-      Get_kernel.get_kernel ~trace ~verbose ?format ?output arg;
+      Get_kernel.get_kernel ?format ?output arg;
       exit 0
 
     | `Delete_cache ->                  (* --delete-cache *)
       (match cache with
       | Some cachedir ->
-        msg "Deleting: %s" cachedir;
+        message (f_"Deleting: %s") cachedir;
         Cache.clean_cachedir cachedir;
         exit 0
       | None ->
@@ -121,7 +115,7 @@ let main () =
   if Sys.command cmd <> 0 then (
     if check_signature then
       error (f_"gpg is not installed (or does not work)\nYou should install gpg, or use --gpg option, or use --no-check-signature.")
-    else if verbose then
+    else if verbose () then
       warning (f_"gpg program is not available")
   );
 
@@ -140,7 +134,7 @@ let main () =
     match cache with
     | None -> None
     | Some dir ->
-      try Some (Cache.create ~verbose ~directory:dir)
+      try Some (Cache.create ~directory:dir)
       with exn ->
         warning (f_"cache %s: %s") dir (Printexc.to_string exn);
         warning (f_"disabling the cache");
@@ -148,8 +142,8 @@ let main () =
   in
 
   (* Download the sources. *)
-  let downloader = Downloader.create ~verbose ~curl ~cache in
-  let repos = Sources.read_sources ~prog ~verbose in
+  let downloader = Downloader.create ~curl ~cache in
+  let repos = Sources.read_sources () in
   let sources = List.map (
     fun (source, fingerprint) ->
       {
@@ -164,9 +158,9 @@ let main () =
       List.map (
         fun source ->
           let sigchecker =
-            Sigchecker.create ~verbose ~gpg ~check_signature
+            Sigchecker.create ~gpg ~check_signature
               ~gpgkey:source.Sources.gpgkey in
-          Index_parser.get_index ~prog ~verbose ~downloader ~sigchecker source
+          Index_parser.get_index ~downloader ~sigchecker source
       ) sources
     ) in
   let index = remove_duplicates index in
@@ -204,9 +198,9 @@ let main () =
                { Index_parser.revision = revision; file_uri = file_uri;
                  proxy = proxy }) ->
             let template = name, arch, revision in
-            msg (f_"Downloading: %s") file_uri;
-            let progress_bar = not quiet in
-            ignore (Downloader.download ~prog downloader ~template ~progress_bar
+            message (f_"Downloading: %s") file_uri;
+            let progress_bar = not (quiet ()) in
+            ignore (Downloader.download downloader ~template ~progress_bar
                       ~proxy file_uri)
         ) index;
         exit 0
@@ -230,7 +224,7 @@ let main () =
   let item =
     try List.find (
       fun (name, { Index_parser.arch = a }) ->
-        name = arg && arch = Architecture.filter_arch a
+        name = arg && arch = a
     ) index
     with Not_found ->
       error (f_"cannot find os-version '%s' with architecture '%s'.\nUse --list to list available guest types.")
@@ -262,9 +256,9 @@ let main () =
       let { Index_parser.revision = revision; file_uri = file_uri;
             proxy = proxy } = entry in
       let template = arg, arch, revision in
-      msg (f_"Downloading: %s") file_uri;
-      let progress_bar = not quiet in
-      Downloader.download ~prog downloader ~template ~progress_bar ~proxy
+      message (f_"Downloading: %s") file_uri;
+      let progress_bar = not (quiet ()) in
+      Downloader.download downloader ~template ~progress_bar ~proxy
         file_uri in
     if delete_on_exit then unlink_on_exit template;
     template in
@@ -283,7 +277,7 @@ let main () =
         | { Index_parser.signature_uri = None } -> None
         | { Index_parser.signature_uri = Some signature_uri } ->
           let sigfile, delete_on_exit =
-            Downloader.download ~prog downloader signature_uri in
+            Downloader.download downloader signature_uri in
           if delete_on_exit then unlink_on_exit sigfile;
           Some sigfile in
 
@@ -323,7 +317,7 @@ let main () =
 
   let blockdev_getsize64 dev =
     let cmd = sprintf "blockdev --getsize64 %s" (quote dev) in
-    let lines = external_command ~prog cmd in
+    let lines = external_command cmd in
     assert (List.length lines >= 1);
     Int64.of_string (List.hd lines)
   in
@@ -460,7 +454,7 @@ let main () =
   in
 
   (* Plan how to create the disk image. *)
-  msg (f_"Planning how to build this image");
+  message (f_"Planning how to build this image");
   let plan =
     try plan ~max_depth:5 transitions itags goal
     with
@@ -469,7 +463,7 @@ let main () =
   in
 
   (* Print out the plan. *)
-  if verbose then (
+  if verbose () then (
     let print_tags tags =
       (try
          let v = List.assoc `Filename tags in printf " +filename=%s" v
@@ -523,22 +517,22 @@ let main () =
     | itags, `Copy, otags ->
       let ifile = List.assoc `Filename itags in
       let ofile = List.assoc `Filename otags in
-      msg (f_"Copying");
+      message (f_"Copying");
       let cmd = sprintf "cp %s %s" (quote ifile) (quote ofile) in
-      if verbose then printf "%s\n%!" cmd;
+      if verbose () then printf "%s\n%!" cmd;
       if Sys.command cmd <> 0 then exit 1
 
     | itags, `Rename, otags ->
       let ifile = List.assoc `Filename itags in
       let ofile = List.assoc `Filename otags in
       let cmd = sprintf "mv %s %s" (quote ifile) (quote ofile) in
-      if verbose then printf "%s\n%!" cmd;
+      if verbose () then printf "%s\n%!" cmd;
       if Sys.command cmd <> 0 then exit 1
 
     | itags, `Pxzcat, otags ->
       let ifile = List.assoc `Filename itags in
       let ofile = List.assoc `Filename otags in
-      msg (f_"Uncompressing");
+      message (f_"Uncompressing");
       Pxzcat.pxzcat ifile ofile
 
     | itags, `Virt_resize, otags ->
@@ -550,17 +544,17 @@ let main () =
       let osize = roundup64 osize 512L in
       let oformat = List.assoc `Format otags in
       let { Index_parser.expand = expand; lvexpand = lvexpand } = entry in
-      msg (f_"Resizing (using virt-resize) to expand the disk to %s")
+      message (f_"Resizing (using virt-resize) to expand the disk to %s")
         (human_size osize);
       let preallocation = if oformat = "qcow2" then Some "metadata" else None in
       let () =
         let g = new G.guestfs () in
-        if trace then g#set_trace true;
-        if verbose then g#set_verbose true;
+        if trace () then g#set_trace true;
+        if verbose () then g#set_verbose true;
         g#disk_create ?preallocation ofile oformat osize in
       let cmd =
         sprintf "virt-resize%s%s%s --output-format %s%s%s %s %s"
-          (if verbose then " --verbose" else " --quiet")
+          (if verbose () then " --verbose" else " --quiet")
           (if is_block_device ofile then " --no-sparse" else "")
           (match iformat with
           | None -> ""
@@ -573,18 +567,18 @@ let main () =
           | None -> ""
           | Some lvexpand -> sprintf " --lv-expand %s" (quote lvexpand))
           (quote ifile) (quote ofile) in
-      if verbose then printf "%s\n%!" cmd;
+      if verbose () then printf "%s\n%!" cmd;
       if Sys.command cmd <> 0 then exit 1
 
     | itags, `Disk_resize, otags ->
       let ofile = List.assoc `Filename otags in
       let osize = Int64.of_string (List.assoc `Size otags) in
       let osize = roundup64 osize 512L in
-      msg (f_"Resizing container (but not filesystems) to expand the disk to %s")
+      message (f_"Resizing container (but not filesystems) to expand the disk to %s")
         (human_size osize);
       let cmd = sprintf "qemu-img resize %s %Ld%s"
-        (quote ofile) osize (if verbose then "" else " >/dev/null") in
-      if verbose then printf "%s\n%!" cmd;
+        (quote ofile) osize (if verbose () then "" else " >/dev/null") in
+      if verbose () then printf "%s\n%!" cmd;
       if Sys.command cmd <> 0 then exit 1
 
     | itags, `Convert, otags ->
@@ -593,24 +587,24 @@ let main () =
         try Some (List.assoc `Format itags) with Not_found -> None in
       let ofile = List.assoc `Filename otags in
       let oformat = List.assoc `Format otags in
-      msg (f_"Converting %s to %s")
+      message (f_"Converting %s to %s")
         (match iformat with None -> "auto" | Some f -> f) oformat;
       let cmd = sprintf "qemu-img convert%s %s -O %s %s%s"
         (match iformat with
         | None -> ""
         | Some iformat -> sprintf " -f %s" (quote iformat))
         (quote ifile) (quote oformat) (quote ofile)
-        (if verbose then "" else " >/dev/null 2>&1") in
-      if verbose then printf "%s\n%!" cmd;
+        (if verbose () then "" else " >/dev/null 2>&1") in
+      if verbose () then printf "%s\n%!" cmd;
       if Sys.command cmd <> 0 then exit 1
   ) plan;
 
   (* Now mount the output disk so we can make changes. *)
-  msg (f_"Opening the new disk");
+  message (f_"Opening the new disk");
   let g =
     let g = new G.guestfs () in
-    if trace then g#set_trace true;
-    if verbose then g#set_verbose true;
+    if trace () then g#set_trace true;
+    if verbose () then g#set_verbose true;
 
     (match memsize with None -> () | Some memsize -> g#set_memsize memsize);
     (match smp with None -> () | Some smp -> g#set_smp smp);
@@ -653,7 +647,7 @@ let main () =
       error (f_"no guest operating systems or multiboot OS found in this disk image\nThis is a failure of the source repository.  Use -v for more information.")
   in
 
-  Customize_run.run ~verbose ~quiet g root ops;
+  Customize_run.run g root ops;
 
   (* Collect some stats about the final output file.
    * Notes:
@@ -661,7 +655,7 @@ let main () =
    * - Never fail here.
    *)
   let stats =
-    if not quiet then (
+    if not (quiet ()) then (
       try
       (* Calculate the free space (in bytes) across all mounted
        * filesystems in the guest.
@@ -695,7 +689,7 @@ let main () =
     else None in
 
   (* Unmount everything and we're done! *)
-  msg (f_"Finishing off");
+  message (f_"Finishing off");
 
   g#umount_all ();
   g#shutdown ();
@@ -723,4 +717,4 @@ let main () =
   | None -> ()
   | Some stats -> print_string stats
 
-let () = run_main_and_handle_errors ~prog main
+let () = run_main_and_handle_errors main

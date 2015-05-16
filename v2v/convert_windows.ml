@@ -41,7 +41,7 @@ module G = Guestfs
 
 type ('a, 'b) maybe = Either of 'a | Or of 'b
 
-let convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
+let convert ~keep_serial_console (g : G.guestfs) inspect source =
   (* Get the data directory. *)
   let virt_tools_data_dir =
     try Sys.getenv "VIRT_TOOLS_DATA_DIR"
@@ -74,6 +74,7 @@ let convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
   let rec with_hive name ~write f =
     let filename = sprintf "%s/system32/config/%s" systemroot name in
     let filename = g#case_sensitive_path filename in
+    let verbose = verbose () in
     g#hivex_open ~write ~verbose (* ~debug:verbose *) filename;
     let r =
       try
@@ -114,7 +115,7 @@ let convert ~verbose ~keep_serial_console (g : G.guestfs) inspect source =
         raise Not_found
       );
       let data = g#hivex_value_value valueh in
-      let data = decode_utf16le ~prog data in
+      let data = decode_utf16le data in
 
       (* The uninstall program will be uninst.exe.  This is a wrapper
        * around _uninst.exe which prompts the user.  As we don't want
@@ -191,7 +192,7 @@ echo uninstalling Xen PV driver
       let value = int_of_le32 (g#hivex_value_value valueh) in
       sprintf "ControlSet%03Ld" value in
 
-    if verbose then printf "current ControlSet is %s\n%!" current_cs;
+    if verbose () then printf "current ControlSet is %s\n%!" current_cs;
 
     disable_services root current_cs;
     disable_autoreboot root current_cs;

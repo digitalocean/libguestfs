@@ -294,7 +294,8 @@ am_virt_p2v_OBJECTS = virt_p2v-about-authors.$(OBJEXT) \
 	virt_p2v-about-license.$(OBJEXT) virt_p2v-config.$(OBJEXT) \
 	virt_p2v-conversion.$(OBJEXT) virt_p2v-gui.$(OBJEXT) \
 	virt_p2v-kernel.$(OBJEXT) virt_p2v-main.$(OBJEXT) \
-	virt_p2v-miniexpect.$(OBJEXT) virt_p2v-ssh.$(OBJEXT)
+	virt_p2v-miniexpect.$(OBJEXT) virt_p2v-ssh.$(OBJEXT) \
+	virt_p2v-utils.$(OBJEXT)
 virt_p2v_OBJECTS = $(am_virt_p2v_OBJECTS)
 am__DEPENDENCIES_1 =
 virt_p2v_DEPENDENCIES = $(top_builddir)/src/libutils.la \
@@ -1568,7 +1569,8 @@ virt_p2v_SOURCES = \
 	miniexpect.c \
 	miniexpect.h \
 	p2v.h \
-	ssh.c
+	ssh.c \
+	utils.c
 
 virt_p2v_CPPFLAGS = \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
@@ -1761,6 +1763,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-miniexpect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-ssh.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-utils.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1908,6 +1911,20 @@ virt_p2v-ssh.obj: ssh.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ssh.c' object='virt_p2v-ssh.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-ssh.obj `if test -f 'ssh.c'; then $(CYGPATH_W) 'ssh.c'; else $(CYGPATH_W) '$(srcdir)/ssh.c'; fi`
+
+virt_p2v-utils.o: utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-utils.o -MD -MP -MF $(DEPDIR)/virt_p2v-utils.Tpo -c -o virt_p2v-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-utils.Tpo $(DEPDIR)/virt_p2v-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='virt_p2v-utils.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+
+virt_p2v-utils.obj: utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-utils.obj -MD -MP -MF $(DEPDIR)/virt_p2v-utils.Tpo -c -o virt_p2v-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-utils.Tpo $(DEPDIR)/virt_p2v-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='virt_p2v-utils.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

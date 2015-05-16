@@ -303,8 +303,7 @@ am__virt_builder_SOURCES_DIST = $(top_srcdir)/mllib/fsync-c.c \
 	$(top_srcdir)/customize/perl_edit-c.c \
 	$(top_srcdir)/customize/crypt-c.c $(top_srcdir)/fish/uri.c \
 	$(top_srcdir)/fish/file-edit.c index-scan.c index-struct.c \
-	index-parse.c index-parser-c.c pxzcat-c.c setlocale-c.c \
-	uname-c.c
+	index-parse.c index-parser-c.c pxzcat-c.c setlocale-c.c
 am__objects_1 = virt_builder-fsync-c.$(OBJEXT) \
 	virt_builder-uri-c.$(OBJEXT) virt_builder-mkdtemp-c.$(OBJEXT) \
 	virt_builder-perl_edit-c.$(OBJEXT) \
@@ -315,8 +314,7 @@ am__objects_1 = virt_builder-fsync-c.$(OBJEXT) \
 	virt_builder-index-parse.$(OBJEXT) \
 	virt_builder-index-parser-c.$(OBJEXT) \
 	virt_builder-pxzcat-c.$(OBJEXT) \
-	virt_builder-setlocale-c.$(OBJEXT) \
-	virt_builder-uname-c.$(OBJEXT)
+	virt_builder-setlocale-c.$(OBJEXT)
 @HAVE_OCAML_TRUE@am_virt_builder_OBJECTS = $(am__objects_1)
 virt_builder_OBJECTS = $(am_virt_builder_OBJECTS)
 virt_builder_LDADD = $(LDADD)
@@ -1621,15 +1619,12 @@ SOURCES_MLI = \
 	pxzcat.mli \
 	setlocale.mli \
 	sigchecker.mli \
-	sources.mli \
-	uname.mli
+	sources.mli
 
 SOURCES_ML = \
 	utils.ml \
 	pxzcat.ml \
 	setlocale.ml \
-	uname.ml \
-	architecture.ml \
 	ini_reader.ml \
 	paths.ml \
 	languages.ml \
@@ -1656,8 +1651,7 @@ SOURCES_C = \
 	index-parse.c \
 	index-parser-c.c \
 	pxzcat-c.c \
-	setlocale-c.c \
-	uname-c.c
+	setlocale-c.c
 
 man_MANS = $(am__append_3) virt-index-validate.1
 noinst_DATA = $(am__append_4) \
@@ -1890,7 +1884,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-perl_edit-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-pxzcat-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-setlocale-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-uname-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-uri-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_index_validate-index-parse.Po@am__quote@
@@ -2100,20 +2093,6 @@ virt_builder-setlocale-c.obj: setlocale-c.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='setlocale-c.c' object='virt_builder-setlocale-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-setlocale-c.obj `if test -f 'setlocale-c.c'; then $(CYGPATH_W) 'setlocale-c.c'; else $(CYGPATH_W) '$(srcdir)/setlocale-c.c'; fi`
-
-virt_builder-uname-c.o: uname-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-uname-c.o -MD -MP -MF $(DEPDIR)/virt_builder-uname-c.Tpo -c -o virt_builder-uname-c.o `test -f 'uname-c.c' || echo '$(srcdir)/'`uname-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder-uname-c.Tpo $(DEPDIR)/virt_builder-uname-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='uname-c.c' object='virt_builder-uname-c.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-uname-c.o `test -f 'uname-c.c' || echo '$(srcdir)/'`uname-c.c
-
-virt_builder-uname-c.obj: uname-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-uname-c.obj -MD -MP -MF $(DEPDIR)/virt_builder-uname-c.Tpo -c -o virt_builder-uname-c.obj `if test -f 'uname-c.c'; then $(CYGPATH_W) 'uname-c.c'; else $(CYGPATH_W) '$(srcdir)/uname-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder-uname-c.Tpo $(DEPDIR)/virt_builder-uname-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='uname-c.c' object='virt_builder-uname-c.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-uname-c.obj `if test -f 'uname-c.c'; then $(CYGPATH_W) 'uname-c.c'; else $(CYGPATH_W) '$(srcdir)/uname-c.c'; fi`
 
 virt_index_validate-index-parse.o: index-parse.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(virt_index_validate_CFLAGS) $(CFLAGS) -MT virt_index_validate-index-parse.o -MD -MP -MF $(DEPDIR)/virt_index_validate-index-parse.Tpo -c -o virt_index_validate-index-parse.o `test -f 'index-parse.c' || echo '$(srcdir)/'`index-parse.c

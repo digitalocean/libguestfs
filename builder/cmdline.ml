@@ -82,10 +82,8 @@ let parse_cmdline () =
   let network = ref true in
   let output = ref "" in
 
-  let quiet = ref false in
-
   let size = ref None in
-  let set_size arg = size := Some (parse_size ~prog arg) in
+  let set_size arg = size := Some (parse_size arg) in
 
   let smp = ref None in
   let set_smp arg = smp := Some arg in
@@ -94,8 +92,6 @@ let parse_cmdline () =
   let add_source arg = sources := arg :: !sources in
 
   let sync = ref true in
-  let trace = ref false in
-  let verbose = ref false in
 
   let argspec = [
     "--arch",    Arg.Set_string arch,       "arch" ^ " " ^ s_"Set the output architecture";
@@ -142,18 +138,18 @@ let parse_cmdline () =
     "--output",  Arg.Set_string output,     "file" ^ " " ^ s_"Set output filename";
     "--print-cache", Arg.Unit print_cache_mode,
                                             " " ^ s_"Print info about template cache";
-    "--quiet",   Arg.Set quiet,             " " ^ s_"No progress messages";
+    "--quiet",   Arg.Unit set_quiet,        " " ^ s_"No progress messages";
     "--size",    Arg.String set_size,       "size" ^ " " ^ s_"Set output disk size";
     "--smp",     Arg.Int set_smp,           "vcpus" ^ " " ^ s_"Set number of vCPUs";
     "--source",  Arg.String add_source,     "URL" ^ " " ^ s_"Set source URL";
     "--no-sync", Arg.Clear sync,            " " ^ s_"Do not fsync output file on exit";
-    "-v",        Arg.Set verbose,           " " ^ s_"Enable debugging messages";
-    "--verbose", Arg.Set verbose,           " " ^ s_"Enable debugging messages";
-    "-V",        Arg.Unit (print_version_and_exit ~prog),
+    "-v",        Arg.Unit set_verbose,      " " ^ s_"Enable debugging messages";
+    "--verbose", Arg.Unit set_verbose,      " " ^ s_"Enable debugging messages";
+    "-V",        Arg.Unit print_version_and_exit,
                                             " " ^ s_"Display version and exit";
-    "--version", Arg.Unit (print_version_and_exit ~prog),
+    "--version", Arg.Unit print_version_and_exit,
                                             " " ^ s_"Display version and exit";
-    "-x",        Arg.Set trace,             " " ^ s_"Enable tracing of libguestfs calls";
+    "-x",        Arg.Unit set_trace,        " " ^ s_"Enable tracing of libguestfs calls";
   ] in
   let customize_argspec, get_customize_ops = Customize_cmdline.argspec () in
   let customize_argspec =
@@ -206,13 +202,10 @@ read the man page virt-builder(1).
   let network = !network in
   let ops = get_customize_ops () in
   let output = match !output with "" -> None | s -> Some s in
-  let quiet = !quiet in
   let size = !size in
   let smp = !smp in
   let sources = List.rev !sources in
   let sync = !sync in
-  let trace = !trace in
-  let verbose = !verbose in
 
   (* No arguments and machine-readable mode?  Print some facts. *)
   if args = [] && machine_readable then (
@@ -238,11 +231,11 @@ read the man page virt-builder(1).
       )
     | `List ->
       if format <> None then
-        error (f_"virt-builder --list: use '--list-format', not '--format'");
+        error (f_"--list: use '--list-format', not '--format'");
       (match args with
       | [] -> ""
       | _ ->
-        error (f_"virt-builder --list does not need any extra arguments")
+        error (f_"--list option does not need any extra arguments")
       )
     | `Notes ->
       (match args with
@@ -250,7 +243,7 @@ read the man page virt-builder(1).
       | [] ->
         error (f_"virt-builder --notes os-version\nMissing 'os-version'. Use '--list' to list available template names.")
       | _ ->
-        error (f_"virt-builder: too many parameters, expecting 'os-version'");
+        error (f_"--notes: too many parameters, expecting 'os-version'");
       )
     | `Cache_all
     | `Print_cache
@@ -258,7 +251,7 @@ read the man page virt-builder(1).
       (match args with
       | [] -> ""
       | _ ->
-        error (f_"virt-builder --cache-all-templates/--print-cache/--delete-cache does not need any extra arguments")
+        error (f_"--cache-all-templates/--print-cache/--delete-cache does not need any extra arguments")
       )
     | `Get_kernel ->
       (match args with
@@ -266,7 +259,7 @@ read the man page virt-builder(1).
       | [] ->
         error (f_"virt-builder --get-kernel image\nMissing 'image' (disk image file) argument")
       | _ ->
-        error (f_"virt-builder --get-kernel: too many parameters")
+        error (f_"--get-kernel: too many parameters")
       ) in
 
   (* Check source(s) and fingerprint(s). *)
@@ -300,25 +293,8 @@ read the man page virt-builder(1).
   (* Check the architecture. *)
   let arch =
     match arch with
-    | "" -> Architecture.current_arch
-    | arch ->
-      let target_arch = Architecture.filter_arch arch in
-      if Architecture.arch_is_compatible Architecture.current_arch target_arch <> true then (
-        let requires_execute_on_guest = List.exists (
-          function
-          | `Command _ | `InstallPackages _ | `Script _ | `Update -> true
-          | `Delete _ | `Edit _ | `FirstbootCommand _ | `FirstbootPackages _
-          | `FirstbootScript _ | `Hostname _ | `Link _ | `Mkdir _
-          | `Password _ | `RootPassword _ | `Scrub _ | `SSHInject _
-          | `Timezone _ | `Truncate _ | `TruncateRecursive _
-          | `Upload _ | `Write _ | `Chmod _
-          | `CommandsFromFile _ | `CopyIn _ | `Copy _ | `Move _
-          | `Touch _ -> false
-        ) ops.ops in
-        if requires_execute_on_guest then
-          error (f_"sorry, cannot run commands on a guest with a different architecture");
-      );
-      target_arch in
+    | "" -> Config.host_cpu
+    | arch -> arch in
 
   (* If user didn't elect any root password, that means we set a random
    * root password.
@@ -336,5 +312,4 @@ read the man page virt-builder(1).
   mode, arg,
   arch, attach, cache, check_signature, curl,
   delete_on_failure, format, gpg, list_format, memsize,
-  network, ops, output, quiet, size, smp, sources, sync,
-  trace, verbose
+  network, ops, output, size, smp, sources, sync

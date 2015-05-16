@@ -29,14 +29,14 @@ open Cmdline
 
 module G = Guestfs
 
-let rec run disk format ignores machine_readable quiet verbose trace zeroes =
+let rec run disk format ignores machine_readable zeroes =
   (* Connect to libguestfs. *)
   let g = new G.guestfs () in
-  if trace then g#set_trace true;
-  if verbose then g#set_verbose true;
+  if trace () then g#set_trace true;
+  if verbose () then g#set_verbose true;
 
   try
-    perform g disk format ignores machine_readable quiet zeroes
+    perform g disk format ignores machine_readable zeroes
   with
     G.Error msg as exn ->
       if g#last_errno () = G.Errno.errno_ENOTSUP then (
@@ -45,7 +45,7 @@ let rec run disk format ignores machine_readable quiet verbose trace zeroes =
       )
       else raise exn
 
-and perform g disk format ignores machine_readable quiet zeroes =
+and perform g disk format ignores machine_readable zeroes =
   (* XXX Current limitation of the API.  Can remove this hunk in future. *)
   let format =
     match format with
@@ -54,7 +54,7 @@ and perform g disk format ignores machine_readable quiet zeroes =
 
   g#add_drive ?format ~discard:"enable" disk;
 
-  if not quiet then Progress.set_up_progress_bar ~machine_readable g;
+  if not (quiet ()) then Progress.set_up_progress_bar ~machine_readable g;
   g#launch ();
 
   (* Discard non-ignored filesystems that we are able to mount, and
@@ -75,8 +75,7 @@ and perform g disk format ignores machine_readable quiet zeroes =
     fun fs ->
       if not (is_ignored fs) && not (is_read_only_lv fs) then (
         if List.mem fs zeroes then (
-          if not quiet then
-            printf (f_"Zeroing %s ...\n%!") fs;
+          message (f_"Zeroing %s") fs;
 
           if not (g#blkdiscardzeroes fs) then
             g#zero_device fs;
@@ -87,8 +86,7 @@ and perform g disk format ignores machine_readable quiet zeroes =
             with _ -> false in
 
           if mounted then (
-            if not quiet then
-              printf (f_"Trimming %s ...\n%!") fs;
+            message (f_"Trimming %s") fs;
 
             g#fstrim "/"
           ) else (
@@ -103,8 +101,7 @@ and perform g disk format ignores machine_readable quiet zeroes =
               with _ -> false in
 
             if is_linux_x86_swap then (
-              if not quiet then
-                printf (f_"Clearing Linux swap on %s ...\n%!") fs;
+              message (f_"Clearing Linux swap on %s") fs;
 
               (* Don't use mkswap.  Just preserve the header containing
                * the label, UUID and swap format version (libguestfs
@@ -137,8 +134,7 @@ and perform g disk format ignores machine_readable quiet zeroes =
           with _ -> false in
 
         if created then (
-          if not quiet then
-            printf (f_"Discard space in volgroup %s ...\n%!") vg;
+          message (f_"Discard space in volgroup %s") vg;
 
           g#blkdiscard lvdev;
           g#sync ();
@@ -151,7 +147,4 @@ and perform g disk format ignores machine_readable quiet zeroes =
   g#close ();
 
   (* Finished. *)
-  if not quiet then (
-    print_newline ();
-    wrap (s_"Sparsify in-place operation completed with no errors.\n");
-  )
+  message (f_"Sparsify in-place operation completed with no errors")

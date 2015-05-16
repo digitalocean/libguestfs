@@ -1,3 +1,181 @@
+commit ce9f059dce2d6d04b3a5b4219a152f82e4f37c54
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 15 21:16:38 2015 +0100
+
+    Version 1.29.43.
+
+commit 58c24a6bf841ea993ef7f5f7b8738bdde48e66e6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 15 20:34:06 2015 +0100
+
+    builder: sigchecker: Fix error message.
+    
+    Error messages are automatically wrapped, and don't require a newline
+    at the end.
+
+commit ef4f0fc8f9f835179c25e9ae9762e9c9ebc6a958
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 15 20:22:05 2015 +0100
+
+    sparsify: Use message function instead of printf.
+
+commit f2aa9261a877da151815bff1268641f5cc1b6c5e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 15 19:10:28 2015 +0100
+
+    ocaml tools: Translate a few messages which were not internationalized.
+
+commit 59228c39b1a4a6cf89fc767075415a5b6ed1ec86
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 15 10:31:26 2015 +0100
+
+    ocaml tools: Use global variable to store quiet (--quiet) flag.
+    
+    Don't pass this flag to dozens of functions.
+    
+    This change is analogous to the change made in
+    commit 79fc6074a7e60b4b59efca7d5d58bb2a6768e4bb for the -v & -x flags.
+
+commit 71854a56c17191d6087f444ebe69457b9b265e66
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 15 15:26:11 2015 +0100
+
+    builder: Remove a few unnecessary 'virt-builder' strings from error messages.
+
+commit a43e8405ef83786f72f507f1aea31977b2f4de91
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 15 10:03:42 2015 +0100
+
+    customize: Allow --selinux-relabel flag to work on cross-architecture builds (RHBZ#1212807).
+
+commit 8864c47b94cf44ac2d0d8d4b5019073ad1da121b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 15 10:02:28 2015 +0100
+
+    customize: Give a clear error message if host_cpu not compatible with guest arch.
+    
+    In cases where we are asked to run commands in the guest (eg.  options
+    such as --run-command or --install), give a clear error in the cases
+    where the guest arch is not compatible with the host arch.
+    
+    Similar code existed in virt-builder, but I have removed that.  Users
+    will still get an error message, it will just happen a bit later on.
+    
+    There is a slight change in semantics here, in that architectures are
+    no longer normalized when matching, but that's probably fine since
+    `virt-builder -l' prints the exact arch string that people should use.
+
+commit ab7197476de1cb3c8727caf4da429f6293ca4227
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 15 11:01:03 2015 +0100
+
+    ocaml tools: Only tell people to use -v -x if they're not already set (RHBZ#1167623).
+    
+    When you get an error in tools, it will print a message like:
+    
+      If reporting bugs, run virt-v2v with debugging enabled and include the
+      complete output:
+    
+        virt-v2v -v -x [...]
+    
+    Only print this message if -v or -x were not already specified on the
+    command line.
+
+commit 79fc6074a7e60b4b59efca7d5d58bb2a6768e4bb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 15 10:31:26 2015 +0100
+
+    ocaml tools: Use global variables to store trace (-x) and verbose (-v) flags.
+    
+    Don't pass these flags to dozens of functions.
+
+commit e35605ad8d0ce921d5a9db76c9bd21275c73101c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu May 14 17:35:24 2015 +0100
+
+    ocaml tools: Define Common_utils.prog and don't pass it to every function.
+    
+    This large commit is just code refactoring.  Instead of having
+    every OCaml tool define 'prog' the same way, always as:
+    
+      let prog = Filename.basename Sys.executable_name
+    
+    move that into a single place, Common_utils.prog.  Then we can use
+    that global value everywhere else, instead of having to pass it as a
+    parameter into a dozen different functions.
+
+commit a255e283d02505f572f6ee32a66cab78c248ff12
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu May 14 17:37:46 2015 +0100
+
+    resize: Remove unnecessary 'prog' from error message.
+    
+    The common error function already prints the program name, so
+    we don't need to print it twice.
+    
+    Before:
+    
+      $ virt-resize --expand ""
+      virt-resize: error: virt-resize: empty --expand option
+    
+    After:
+    
+      $ virt-resize --expand ""
+      virt-resize: error: empty --expand option
+
+commit 7800fbda1939d869338e5005ff7215a2826a845c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 15 09:51:27 2015 +0100
+
+    builder: Fix expand partition for fedora-21 armv7l image.
+    
+    Thanks: d.marlin
+
+commit 0833c192b68e87bb10fecf8352a355474c3915bf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu May 14 13:57:41 2015 +0100
+
+    p2v: Display network card MAC address and vendor in conversion dialog (RHBZ#855059).
+    
+    This displays the MAC address and vendor next to each network
+    interface, aiding users in determining which network cards they want
+    to transfer to the virtualized machine.
+
+commit 5bf7f770b6829c9454e6ae0d778154a4711c601c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu May 14 13:22:00 2015 +0100
+
+    When calling getline first time, initialize length to zero.
+    
+    The man page for getline says:
+    
+       ssize_t getline(char **lineptr, size_t *n, FILE *stream);
+     [...]
+       If  *lineptr  is set to NULL and *n is set 0 before the call, then get‐
+       line() will allocate a buffer for storing the line.  This buffer should
+       be freed by the user program even if getline() failed.
+    
+    which seems to indicate that we must initialize both line and len to 0
+    before the first call to getline.
+    
+    In several places we were not initializing len.  The program still
+    worked fine, but it seems better to initialize the length anyway.
+
+commit 7eb1ed8cb4c686f24809dd7904227b5e33d02f9d
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Thu May 14 01:19:36 2015 -0400
+
+    resize: show sector infor in debug_partition
+    
+    Show partition sector data and target partition sector data
+    in debug_partition.
+    Also, if --verbose, call debug_partition again before
+    parted partitions.
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+    
+    RWMJ: Changed ~sectsize:sectsize => ~sectsize
+
 commit 6574134feb23b6261ea2bf05effe5664307e6bd1
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu May 14 10:49:53 2015 +0100
