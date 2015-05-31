@@ -313,7 +313,9 @@ Architecture: linux-any
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
  libsys-virt-perl, libguestfs-perl (= ${binary:Version}),
  libwin-hivex-perl,
- libintl-perl, libstring-shellquote-perl
+ libintl-perl, libstring-shellquote-perl,
+ curl,
+Recommends: gnupg,
 Replaces: guestfish (<< 1:1.22.6-1~),
  guestmount (<< 1.24.2-1~),
  libguestfs0 (<< 1:1.18.2-1~),
