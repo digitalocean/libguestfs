@@ -26,11 +26,12 @@ rootpw --plaintext p2v
 selinux --enforcing
 firewall --enabled
 
-# Need to specify --device, else:
-# Error creating Live CD : No --device specified with network kickstart command
+# Make sure that systemd doesn't rename the network device.  We have
+# to tell Anaconda we're using eth0, *and* we have to pass
+# net.ifnames=0 on the kernel command line.
 network --bootproto=dhcp --device=eth0
+bootloader --location=mbr --append="console=tty0 console=ttyS0,115200 rd_NO_PLYMOUTH net.ifnames=0"
 
-bootloader --location=mbr --append="console=tty0 console=ttyS0,115200 rd_NO_PLYMOUTH"
 zerombr
 clearpart --all --initlabel
 part / --size 3000 --fstype ext4
@@ -77,6 +78,7 @@ metacity
 pcre
 libxml2
 gtk2
+nm-connection-editor
 network-manager-applet
 dbus-x11
 hwdata
@@ -110,8 +112,6 @@ base64 -d > /etc/systemd/system/p2v.service <<EOF
 __BASE64_P2V_SERVICE__
 EOF
 
-systemctl enable p2v.service
-
 # Base64-decoding of virt-p2v binary
 # md5(virt-p2v) = __MD5SUM_VIRT_P2V__
 
@@ -128,6 +128,12 @@ sed -i 's/^ExecStart=\(.*\)/ExecStart=\1 -a root/' \
 
 # Reserve tty1 as a getty so we can document it clearly
 echo ReserveVT=1 >> /etc/systemd/logind.conf
+
+# Force text mode
+systemctl set-default multi-user.target
+
+# Start p2v service
+systemctl enable p2v.service
 
 %end
 

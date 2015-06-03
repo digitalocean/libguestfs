@@ -4278,10 +4278,6 @@ C<guestfs-release-notes.pod> をファイナライズします。
 
 =item *
 
-C<src/api-support/update-from-tarballs.sh> を実行します。
-
-=item *
-
 Push and pull from Zanata.
 
 次を実行します:

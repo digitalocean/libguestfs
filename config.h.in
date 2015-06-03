@@ -1821,6 +1821,9 @@
 /* Define to 1 if you have the `setlocale' function. */
 #undef HAVE_SETLOCALE
 
+/* Define to 1 if you have the `setrlimit' function. */
+#undef HAVE_SETRLIMIT
+
 /* Define to 1 if you have the `setxattr' function. */
 #undef HAVE_SETXATTR
 
@@ -2025,6 +2028,9 @@
 
 /* Define to 1 if you have the <sys/param.h> header file. */
 #undef HAVE_SYS_PARAM_H
+
+/* Define to 1 if you have the <sys/resource.h> header file. */
+#undef HAVE_SYS_RESOURCE_H
 
 /* Define to 1 if you have the <sys/sdt.h> header file. */
 #undef HAVE_SYS_SDT_H

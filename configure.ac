@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [29])
-m4_define([libguestfs_release], [43])
+m4_define([libguestfs_release], [44])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -305,8 +305,10 @@ AC_CHECK_HEADERS([\
     linux/raid/md_u.h \
     printf.h \
     sys/inotify.h \
+    sys/resource.h \
     sys/socket.h \
     sys/statvfs.h \
+    sys/time.h \
     sys/types.h \
     sys/un.h \
     sys/wait.h \
@@ -335,6 +337,7 @@ AC_CHECK_FUNCS([\
     posix_fadvise \
     removexattr \
     setitimer \
+    setrlimit \
     setxattr \
     sigaction \
     statvfs \
