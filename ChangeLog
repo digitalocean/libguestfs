@@ -1,3 +1,189 @@
+commit 54f54697b98c98e295d53be257c2022c1dd0c52c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 26 21:13:32 2015 +0100
+
+    Version 1.29.44.
+
+commit 41ce78f02eb9f2a8c54e5d6cbed93b6a93d3e797
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 26 21:05:55 2015 +0100
+
+    builder: Add Fedora 22 aarch64 image.
+
+commit 9db0f807a917ec00d24297d5bf63c19065f930cf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 26 13:21:19 2015 +0100
+
+    lib: Limit space and time used by 'qemu-img info' subprocess.
+    
+    After fuzzing 'qemu-img info' I found that certain files can cause the
+    command to use lots of memory and time.  Modify the command
+    mini-library to allow us to place resource limits on subprocesses, and
+    use these to limit the amount of space and time used by 'qemu-img info'.
+
+commit 9c773962c5e52ed4775fe8f12ce4183442a68ec5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 26 11:32:08 2015 +0100
+
+    Remove src/api-support and generate this information from actions added field.
+
+commit b59c81d9e8deb70c9925a2dc0eaf8f30c89276da
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 26 09:10:32 2015 +0100
+
+    generator: Check 'added' field is set for each API.
+
+commit 8816f06cdca32d1b58ed58b7980ad7d832bfaa4c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 26 11:20:54 2015 +0100
+
+    generator: Move version first added to generator.
+    
+    This change was generated automatically using the following Perl
+    script, with a few hand corrections afterwards.
+    
+    use strict;
+    my %map;
+    open ADDED, "src/api-support/added" or die "added: $!";
+    while (<ADDED>) {
+        chomp;
+        if (/^guestfs_(.*)_(argv|va|opts) /) {
+            # ignore _argv, _va, _opts entries.
+        }
+        elsif (/^guestfs_(compare|copy)_/) {
+            # ignore guestfs_compare_*, guestfs_copy_* struct functions.
+        }
+        elsif (/^guestfs_(.*) [01]\.(\d+)\.(\d+)$/) {
+            $map{$1} = [1, $2, $3];
+        }
+        elsif (/^guestfs_(.*) 0\.(\d+)$/) {
+            $map{$1} = [0, 0, $2];
+        }
+        else {
+            die "cannot parse line: `$_'\n"
+        }
+    }
+    close ADDED;
+    open ACTIONS, "generator/actions.ml" or die "actions.ml: $!";
+    open ACTIONS_OUT, ">generator/actions.ml.out" or die "actions.ml.out: $!";
+    while (<ACTIONS>) {
+        chomp;
+        if (/name = "(.*)";$/ && exists $map{$1}) {
+            my @v = @{$map{$1}};
+            $_ .= sprintf (" added = (%d, %d, %d);", $v[0], $v[1], $v[2]) ;
+            delete $map{$1};
+        }
+        print ACTIONS_OUT "$_\n";
+    }
+    close ACTIONS_OUT;
+    close ACTIONS;
+
+commit d0d492def23229f1a802f8f799e0cab782ca7de7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 26 09:10:16 2015 +0100
+
+    generator: Add 'added' (version when added) field.
+
+commit 41cf78f36b1b8ce3a5542b43f9e9ffe320adaf15
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 26 08:55:49 2015 +0100
+
+    Update API support.
+
+commit a59fc8ee325dde64c753791106756048ca684f8a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 26 09:09:25 2015 +0100
+
+    api-support: Ignore guestfs_impl_* symbols.
+
+commit c919f6f75c8eb44098e6329d57cbecb3e697cf1c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 26 08:33:15 2015 +0100
+
+    api: Don't truncate /dev/stdout or /dev/stderr when used as FileOut.
+    
+    In APIs such as guestfs_download, when the FileOut parameter exactly
+    matches "/dev/stdout" or "/dev/stderr", don't reopen the possibly
+    redirected output file with O_TRUNC (truncate).  Instead dup the file
+    descriptor.
+    
+    This magic behaviour doesn't happen for /dev/fd/* (or any other output
+    file) allowing callers the choice of using /dev/stderr or /dev/fd/2
+    depending on whether or not they want truncation.
+    
+    This works around an annoying virt-builder bug.  If you do:
+    
+      $ virt-builder fedora-21 --install no_such_package -v -x >& /tmp/log
+    
+    then when the `--install' command fails, virt-builder will download
+    the log file using `guestfs_download (g, log, "/dev/stderr")'.  Since
+    this truncates the redirected /dev/stderr, the final log file is
+    truncated and corrupted.
+    
+    With this patch the log file is no longer corrupted.
+
+commit c4a54e00a333479ee31f492726a08767a8b61e46
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 26 20:20:54 2015 +0100
+
+    builder: aarch64: Fix build script for Fedora 22 release.
+
+commit aa4dee7b7cf2e54020f5c65ba9cec66bd4b69db0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 26 15:50:37 2015 +0100
+
+    builder: Add Fedora 22 image.
+
+commit aa7fa1cf00608215edf4309512f7863957bd23c9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu May 21 21:52:16 2015 +0100
+
+    v2v: RHEL 7 virt-v2v conversion server requires virtio-win.
+
+commit 3a63ee2aafe8099fdf2b4e228a62d86c83739d3e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed May 20 07:40:22 2015 -0400
+
+    v2v: Fix confusion over rhel-7 virt-v2v conversion server / appliance.
+    
+    This fixes commit 4c7fb62f4a301cf26a7cf1ca3a5ed0d47406fa55
+    and updates commit 4e4ece53647fba810eeb45086b46d02f54e02fe2.
+
+commit 10cb9b9545424d98687a46c23abdc0e3ff77de76
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 19 16:36:42 2015 +0100
+
+    p2v: Force systemd default target to be multi-user (text mode).
+
+commit f6dd8a3221cfa7b5aa6434cddcd0d636dd64e02b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 19 16:37:22 2015 +0100
+
+    p2v: Explicitly depend on nm-connection-editor.
+    
+    Previously it was only being pulled in implicitly.  However virt-p2v
+    runs this binary from the "Configure Network" button.
+    
+    This fixes commit e464774a79ff9eeedcdb3fd53efd5a7898ca036e.
+
+commit 63cd28974e363e9f4b1ea56b39661ad3218a8f13
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 19 14:44:32 2015 +0100
+
+    p2v: kickstart: Try harder to stop systemd from renaming network devices.
+
+commit 0fbe8fb3e0e2adb0ee56a8af13e98c3c98fd4d20
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Mon May 18 06:30:07 2015 -0400
+
+    resize: add sector size in debug_partition
+    
+    This patch will add fields of sector size for:
+      - partition sector data size
+      - target partition sector data size
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
 commit ce9f059dce2d6d04b3a5b4219a152f82e4f37c54
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri May 15 21:16:38 2015 +0100

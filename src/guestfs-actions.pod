@@ -562,7 +562,7 @@ The default is false.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.5.23)
+(Added in 0.3)
 
 =head2 guestfs_add_drive_opts_va
 
@@ -746,6 +746,8 @@ The other optional parameters are passed directly through to
 C<guestfs_add_drive_opts>.
 
 On error this function returns -1.
+
+(Added in 1.29.14)
 
 =head2 guestfs_add_libvirt_dom_va
 
@@ -1289,7 +1291,7 @@ This uses the L<blockdev(8)> command.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.9.3)
+(Added in 1.9.3)
 
 =head2 guestfs_blockdev_getbsz
 
@@ -1309,7 +1311,7 @@ This uses the L<blockdev(8)> command.
 
 On error this function returns -1.
 
-(Added in 0.9.3)
+(Added in 1.9.3)
 
 =head2 guestfs_blockdev_getro
 
@@ -1324,7 +1326,7 @@ This uses the L<blockdev(8)> command.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 0.9.3)
+(Added in 1.9.3)
 
 =head2 guestfs_blockdev_getsize64
 
@@ -1340,7 +1342,7 @@ This uses the L<blockdev(8)> command.
 
 On error this function returns -1.
 
-(Added in 0.9.3)
+(Added in 1.9.3)
 
 =head2 guestfs_blockdev_getss
 
@@ -1358,7 +1360,7 @@ This uses the L<blockdev(8)> command.
 
 On error this function returns -1.
 
-(Added in 0.9.3)
+(Added in 1.9.3)
 
 =head2 guestfs_blockdev_getsz
 
@@ -1377,7 +1379,7 @@ This uses the L<blockdev(8)> command.
 
 On error this function returns -1.
 
-(Added in 0.9.3)
+(Added in 1.9.3)
 
 =head2 guestfs_blockdev_rereadpt
 
@@ -1391,7 +1393,7 @@ This uses the L<blockdev(8)> command.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.9.3)
+(Added in 1.9.3)
 
 =head2 guestfs_blockdev_setbsz
 
@@ -1415,7 +1417,7 @@ C<blocksize> option of C<guestfs_mkfs>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.9.3)
+(Added in 1.9.3)
 
 =head2 guestfs_blockdev_setra
 
@@ -1430,6 +1432,8 @@ This uses the L<blockdev(8)> command.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.29.10)
+
 =head2 guestfs_blockdev_setro
 
  int
@@ -1442,7 +1446,7 @@ This uses the L<blockdev(8)> command.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.9.3)
+(Added in 1.9.3)
 
 =head2 guestfs_blockdev_setrw
 
@@ -1456,7 +1460,7 @@ This uses the L<blockdev(8)> command.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.9.3)
+(Added in 1.9.3)
 
 =head2 guestfs_btrfs_balance_cancel
 
@@ -1468,6 +1472,8 @@ Cancel a running balance on a btrfs filesystem.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.29.22)
+
 =head2 guestfs_btrfs_balance_pause
 
  int
@@ -1478,6 +1484,8 @@ Pause a running balance on a btrfs filesystem.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.29.22)
+
 =head2 guestfs_btrfs_balance_resume
 
  int
@@ -1487,6 +1495,8 @@ This function returns 0 on success or -1 on error.
 Resume a paused balance on a btrfs filesystem.
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.29.22)
 
 =head2 guestfs_btrfs_balance_status
 
@@ -1499,6 +1509,8 @@ Show the status of a running or paused balance on a btrfs filesystem.
 This function returns a C<struct guestfs_btrfsbalance *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_btrfsbalance> after use>.
+
+(Added in 1.29.26)
 
 =head2 guestfs_btrfs_device_add
 
@@ -1559,6 +1571,8 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
 Defragment a file or directory on a btrfs filesystem. compress is one of zlib or lzo.
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.29.22)
 
 =head2 guestfs_btrfs_filesystem_defragment_va
 
@@ -1717,6 +1731,8 @@ All data will be zeroed, but metadata and the like is preserved.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.29.32)
+
 =head2 guestfs_btrfs_image_va
 
  int
@@ -1754,6 +1770,8 @@ several qgroups into a parent qgroup to share common limit.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.29.17)
+
 =head2 guestfs_btrfs_qgroup_create
 
  int
@@ -1765,6 +1783,8 @@ Create a quota group (qgroup) for subvolume at C<subvolume>.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.29.17)
+
 =head2 guestfs_btrfs_qgroup_destroy
 
  int
@@ -1775,6 +1795,8 @@ This function returns 0 on success or -1 on error.
 Destroy a quota group.
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.29.17)
 
 =head2 guestfs_btrfs_qgroup_limit
 
@@ -1788,6 +1810,8 @@ can have suffix of G, M, or K.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.29.17)
+
 =head2 guestfs_btrfs_qgroup_remove
 
  int
@@ -1799,6 +1823,8 @@ This function returns 0 on success or -1 on error.
 Remove qgroup C<src> from the parent qgroup C<dst>.
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.29.17)
 
 =head2 guestfs_btrfs_qgroup_show
 
@@ -1813,6 +1839,8 @@ This function returns a C<struct guestfs_btrfsqgroup_list *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_btrfsqgroup_list> after use>.
 
+(Added in 1.29.17)
+
 =head2 guestfs_btrfs_quota_enable
 
  int
@@ -1824,6 +1852,8 @@ Enable or disable subvolume quota support for filesystem which contains C<path>.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.29.17)
+
 =head2 guestfs_btrfs_quota_rescan
 
  int
@@ -1833,6 +1863,8 @@ This function returns 0 on success or -1 on error.
 Trash all qgroup numbers and scan the metadata again with the current config.
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.29.17)
 
 =head2 guestfs_btrfs_rescue_chunk_recover
 
@@ -1844,6 +1876,8 @@ Recover the chunk tree of btrfs filesystem by scanning the devices one by one.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.29.22)
+
 =head2 guestfs_btrfs_rescue_super_recover
 
  int
@@ -1853,6 +1887,8 @@ This function returns 0 on success or -1 on error.
 Recover bad superblocks from good copies.
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.29.22)
 
 =head2 guestfs_btrfs_scrub_cancel
 
@@ -1864,6 +1900,8 @@ Cancel a running scrub on a btrfs filesystem.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.29.22)
+
 =head2 guestfs_btrfs_scrub_resume
 
  int
@@ -1873,6 +1911,8 @@ This function returns 0 on success or -1 on error.
 Resume a previously canceled or interrupted scrub on a btrfs filesystem.
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.29.22)
 
 =head2 guestfs_btrfs_scrub_start
 
@@ -1886,6 +1926,8 @@ corrupt data.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.29.22)
+
 =head2 guestfs_btrfs_scrub_status
 
  struct guestfs_btrfsscrub *
@@ -1897,6 +1939,8 @@ Show status of running or finished scrub on a btrfs filesystem.
 This function returns a C<struct guestfs_btrfsscrub *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_btrfsscrub> after use>.
+
+(Added in 1.29.26)
 
 =head2 guestfs_btrfs_set_seeding
 
@@ -1946,6 +1990,8 @@ created subvolume will be added to.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.17.35)
+
 =head2 guestfs_btrfs_subvolume_create_opts_va
 
  int
@@ -1989,6 +2035,8 @@ This function returns 0 on success or -1 on error.
 Get the default subvolume or snapshot of a filesystem mounted at C<mountpoint>.
 
 On error this function returns -1.
+
+(Added in 1.29.17)
 
 =head2 guestfs_btrfs_subvolume_list
 
@@ -2034,6 +2082,8 @@ The array of strings will always have length C<2n+1>, where
 C<n> keys and values alternate, followed by the trailing NULL entry.
 I<The caller must free the strings and the array after use>.
 
+(Added in 1.29.17)
+
 =head2 guestfs_btrfs_subvolume_snapshot
 
  int
@@ -2074,6 +2124,8 @@ newly created snapshot will be added to.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.17.35)
+
 =head2 guestfs_btrfs_subvolume_snapshot_opts_va
 
  int
@@ -2108,6 +2160,8 @@ This will Enable extended inode refs.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.29.29)
+
 =head2 guestfs_btrfstune_enable_skinny_metadata_extent_refs
 
  int
@@ -2117,6 +2171,8 @@ This function returns 0 on success or -1 on error.
 This enable skinny metadata extent refs.
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.29.29)
 
 =head2 guestfs_btrfstune_seeding
 
@@ -2130,6 +2186,8 @@ so that you can use it to build other filesystems.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.29.29)
+
 =head2 guestfs_c_pointer
 
  int64_t
@@ -2140,6 +2198,8 @@ C pointer to the handle (ie. C<guestfs_h *>).  The purpose of this is
 to allow other libraries to interwork with libguestfs.
 
 On error this function returns -1.
+
+(Added in 1.29.17)
 
 =head2 guestfs_canonical_device_name
 
@@ -2483,7 +2543,7 @@ I<The caller must free the returned string after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 0.9.1)
+(Added in 1.9.1)
 
 =head2 guestfs_command_lines
 
@@ -2503,7 +2563,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 0.9.1)
+(Added in 1.9.1)
 
 =head2 guestfs_compress_device_out
 
@@ -2972,6 +3032,8 @@ Wildcards cannot be used.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.29.24)
+
 =head2 guestfs_copy_out
 
  int
@@ -2990,6 +3052,8 @@ To download to the current directory, use C<.> as in:
 Wildcards cannot be used.
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.29.24)
 
 =head2 guestfs_copy_size
 
@@ -3839,7 +3903,7 @@ C<guestfs_is_file>, C<guestfs_is_blockdev> (etc), C<guestfs_is_zero>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 0.9.1)
+(Added in 1.9.1)
 
 =head2 guestfs_file_architecture
 
@@ -5026,7 +5090,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.19.28)
+(Added in 1.0.66)
 
 =head2 guestfs_grep_opts_va
 
@@ -6721,7 +6785,7 @@ See also C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.23.4)
+(Added in 1.5.10)
 
 =head2 guestfs_is_blockdev_opts_va
 
@@ -6797,7 +6861,7 @@ See also C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.23.4)
+(Added in 1.5.10)
 
 =head2 guestfs_is_chardev_opts_va
 
@@ -6874,7 +6938,7 @@ See also C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.23.4)
+(Added in 0.8)
 
 =head2 guestfs_is_dir_opts_va
 
@@ -6936,7 +7000,7 @@ See also C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.23.4)
+(Added in 1.5.10)
 
 =head2 guestfs_is_fifo_opts_va
 
@@ -6999,7 +7063,7 @@ See also C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.23.4)
+(Added in 0.8)
 
 =head2 guestfs_is_file_opts_va
 
@@ -7102,7 +7166,7 @@ See also C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.23.4)
+(Added in 1.5.10)
 
 =head2 guestfs_is_socket_opts_va
 
@@ -7998,7 +8062,7 @@ This function returns a C<struct guestfs_stat *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_stat> after use>.
 
-(Added in 0.9.2)
+(Added in 1.9.2)
 
 =head2 guestfs_lstatlist
 
@@ -9119,7 +9183,7 @@ which sets sector size for ufs filesystem.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.7.19)
+(Added in 0.8)
 
 =head2 guestfs_mkfs_opts_va
 
@@ -9400,7 +9464,7 @@ label and/or UUID of the new swap partition.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.19.34)
+(Added in 1.0.55)
 
 =head2 guestfs_mkswap_opts_va
 
@@ -10075,7 +10139,7 @@ See also L<ntfsresize(8)>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.11.15)
+(Added in 1.3.2)
 
 =head2 guestfs_ntfsresize_opts_va
 
@@ -10251,6 +10315,8 @@ Return the GUID of numbered GPT partition C<partnum>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
+(Added in 1.29.25)
+
 =head2 guestfs_part_get_gpt_type
 
  char *
@@ -10299,6 +10365,8 @@ It returns C<primary>, C<logical>, or C<extended>.
 
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
+
+(Added in 1.29.32)
 
 =head2 guestfs_part_get_name
 
@@ -10491,6 +10559,8 @@ error if the partition table of C<device> isn't GPT, or if C<guid> is not a
 valid GUID.
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.29.25)
 
 =head2 guestfs_part_set_gpt_type
 
@@ -12460,7 +12530,7 @@ This function returns a C<struct guestfs_stat *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_stat> after use>.
 
-(Added in 0.9.2)
+(Added in 1.9.2)
 
 =head2 guestfs_statns
 
@@ -12494,7 +12564,7 @@ This function returns a C<struct guestfs_statvfs *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_statvfs> after use>.
 
-(Added in 0.9.2)
+(Added in 1.9.2)
 
 =head2 guestfs_strings
 
@@ -12857,7 +12927,7 @@ compression types).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.19.30)
+(Added in 1.0.3)
 
 =head2 guestfs_tar_in_opts_va
 
@@ -12942,7 +13012,7 @@ instead of user/group names.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.19.30)
+(Added in 1.0.3)
 
 =head2 guestfs_tar_out_opts_va
 
@@ -13202,7 +13272,7 @@ The array of strings will always have length C<2n+1>, where
 C<n> keys and values alternate, followed by the trailing NULL entry.
 I<The caller must free the strings and the array after use>.
 
-(Added in 0.9.2)
+(Added in 1.9.2)
 
 =head2 guestfs_txz_in
 
@@ -13307,7 +13377,7 @@ contains the filesystem.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.19.25)
+(Added in 0.8)
 
 =head2 guestfs_umount_opts_va
 

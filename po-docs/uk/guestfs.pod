@@ -4372,10 +4372,6 @@ Finalize C<guestfs-release-notes.pod>
 
 =item *
 
-Run C<src/api-support/update-from-tarballs.sh>.
-
-=item *
-
 Push and pull from Zanata.
 
 Віддайте команду:
