@@ -1,3 +1,9 @@
+libguestfs (1:1.29.46-1) experimental; urgency=medium
+
+  * New upstream development version
+
+ -- Hilko Bengen <bengen@debian.org>  Mon, 08 Jun 2015 07:25:02 +0200
+
 libguestfs (1:1.29.44-1) experimental; urgency=medium
 
   * New upstream development version
