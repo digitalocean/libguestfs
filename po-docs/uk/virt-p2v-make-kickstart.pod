@@ -5,7 +5,7 @@ virt-p2v-make-kickstart - Build the virt-p2v kickstart
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-p2v-make-kickstart [-o p2v.ks] [--proxy=http://...] repo [repo...]
+ virt-p2v-make-kickstart [-o p2v.ks] [--proxy=http://...] сховище [сховище...]
 
 =head1 ОПИС
 
@@ -201,5 +201,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2015 Red Hat Inc.
+© Red Hat Inc., 2009–2015
 

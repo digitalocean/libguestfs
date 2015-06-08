@@ -47,7 +47,7 @@ COMPILE_REGEXP (re_major_minor, "(\\d+)\\.(\\d+)", 0)
 static int check_filesystem (guestfs_h *g, const char *mountable,
                              const struct guestfs_internal_mountable *m,
                              int whole_device);
-static int extend_fses (guestfs_h *g);
+static void extend_fses (guestfs_h *g);
 static int get_partition_context (guestfs_h *g, const char *partition, int *partnum_ret, int *nr_partitions_ret);
 
 /* Find out if 'device' contains a filesystem.  If it does, add
@@ -75,8 +75,7 @@ guestfs_int_check_for_filesystem_on (guestfs_h *g, const char *mountable)
          mountable, vfs_type ? vfs_type : "failed to get vfs type");
 
   if (is_swap) {
-    if (extend_fses (g) == -1)
-      return -1;
+    extend_fses (g);
     fs = &g->fses[g->nr_fses-1];
     fs->mountable = safe_strdup (g, mountable);
     return 0;
@@ -95,8 +94,7 @@ guestfs_int_check_for_filesystem_on (guestfs_h *g, const char *mountable)
   }
 
   if (whole_device) {
-    if (extend_fses (g) == -1)
-      return -1;
+    extend_fses (g);
     fs = &g->fses[g->nr_fses-1];
 
     r = guestfs_int_check_installer_iso (g, fs, m->im_device);
@@ -145,8 +143,7 @@ check_filesystem (guestfs_h *g, const char *mountable,
   /* Not CLEANUP_FREE, as it will be cleaned up with inspection info */
   char *windows_systemroot = NULL;
 
-  if (extend_fses (g) == -1)
-    return -1;
+  extend_fses (g);
 
   if (!whole_device && m->im_type == MOUNTABLE_DEVICE &&
       guestfs_int_is_partition (g, m->im_device)) {
@@ -232,6 +229,17 @@ check_filesystem (guestfs_h *g, const char *mountable,
     if (guestfs_int_check_linux_root (g, fs) == -1)
       return -1;
   }
+  /* CoreOS root? */
+  else if (is_dir_etc &&
+           guestfs_is_dir (g, "/root") > 0 &&
+           guestfs_is_dir (g, "/home") > 0 &&
+           guestfs_is_dir (g, "/usr") > 0 &&
+           guestfs_is_file (g, "/etc/coreos/update.conf") > 0) {
+    fs->is_root = 1;
+    fs->format = OS_FORMAT_INSTALLED;
+    if (guestfs_int_check_coreos_root (g, fs) == -1)
+      return -1;
+  }
   /* Linux /usr/local? */
   else if (is_dir_etc &&
            is_dir_bin &&
@@ -246,6 +254,14 @@ check_filesystem (guestfs_h *g, const char *mountable,
            guestfs_is_dir (g, "/local") > 0 &&
            guestfs_is_file (g, "/etc/fstab") == 0)
     ;
+  /* CoreOS /usr? */
+  else if (is_dir_bin &&
+           is_dir_share &&
+           guestfs_is_dir (g, "/local") > 0 &&
+           guestfs_is_dir (g, "/share/coreos") > 0) {
+    if (guestfs_int_check_coreos_usr (g, fs) == -1)
+      return -1;
+  }
   /* Linux /var? */
   else if (guestfs_is_dir (g, "/log") > 0 &&
            guestfs_is_dir (g, "/run") > 0 &&
@@ -312,24 +328,18 @@ check_filesystem (guestfs_h *g, const char *mountable,
   return 0;
 }
 
-static int
+static void
 extend_fses (guestfs_h *g)
 {
   size_t n = g->nr_fses + 1;
   struct inspect_fs *p;
 
-  p = realloc (g->fses, n * sizeof (struct inspect_fs));
-  if (p == NULL) {
-    perrorf (g, "realloc");
-    return -1;
-  }
+  p = safe_realloc (g, g->fses, n * sizeof (struct inspect_fs));
 
   g->fses = p;
   g->nr_fses = n;
 
   memset (&g->fses[n-1], 0, sizeof (struct inspect_fs));
-
-  return 0;
 }
 
 /* Given a partition (eg. /dev/sda2) then return the partition number
@@ -476,6 +486,7 @@ guestfs_int_check_package_format (guestfs_h *g, struct inspect_fs *fs)
 
   case OS_DISTRO_SLACKWARE:
   case OS_DISTRO_TTYLINUX:
+  case OS_DISTRO_COREOS:
   case OS_DISTRO_WINDOWS:
   case OS_DISTRO_BUILDROOT:
   case OS_DISTRO_CIRROS:
@@ -546,6 +557,7 @@ guestfs_int_check_package_management (guestfs_h *g, struct inspect_fs *fs)
 
   case OS_DISTRO_SLACKWARE:
   case OS_DISTRO_TTYLINUX:
+  case OS_DISTRO_COREOS:
   case OS_DISTRO_WINDOWS:
   case OS_DISTRO_BUILDROOT:
   case OS_DISTRO_CIRROS:
@@ -654,4 +666,106 @@ guestfs_int_first_egrep_of_file (guestfs_h *g, const char *filename,
   free (lines);
 
   return 1;
+}
+
+/* Merge the missing OS inspection information found on the src inspect_fs into
+ * the ones of the dst inspect_fs. This function is useful if the inspection
+ * information for an OS are gathered by inspecting multiple filesystems.
+ */
+void
+guestfs_int_merge_fs_inspections (guestfs_h *g, struct inspect_fs *dst, struct inspect_fs *src)
+{
+  size_t n, i, old;
+  struct inspect_fstab_entry *fstab = NULL;
+  char ** mappings = NULL;
+
+  if (dst->type == 0)
+    dst->type = src->type;
+
+  if (dst->distro == 0)
+    dst->distro = src->distro;
+
+  if (dst->package_format == 0)
+    dst->package_format = src->package_format;
+
+  if (dst->package_management == 0)
+    dst->package_management = src->package_management;
+
+  if (dst->product_name == NULL) {
+    dst->product_name = src->product_name;
+    src->product_name = NULL;
+  }
+
+  if (dst->product_variant == NULL) {
+    dst->product_variant= src->product_variant;
+    src->product_variant = NULL;
+  }
+
+  if (dst->major_version == 0 && dst->minor_version == 0) {
+    dst->major_version = src->major_version;
+    dst->minor_version = src->minor_version;
+  }
+
+  if (dst->arch == NULL) {
+    dst->arch = src->arch;
+    src->arch = NULL;
+  }
+
+  if (dst->hostname == NULL) {
+    dst->hostname = src->hostname;
+    src->hostname = NULL;
+  }
+
+  if (dst->windows_systemroot == NULL) {
+    dst->windows_systemroot = src->windows_systemroot;
+    src->windows_systemroot = NULL;
+  }
+
+  if (dst->windows_current_control_set == NULL) {
+    dst->windows_current_control_set = src->windows_current_control_set;
+    src->windows_current_control_set = NULL;
+  }
+
+  if (src->drive_mappings != NULL) {
+    if (dst->drive_mappings == NULL) {
+      /* Adopt the drive mappings of src */
+      dst->drive_mappings = src->drive_mappings;
+      src->drive_mappings = NULL;
+    } else {
+      n = 0;
+      for (; dst->drive_mappings[n] != NULL; n++)
+        ;
+      old = n;
+      for (; src->drive_mappings[n] != NULL; n++)
+        ;
+
+      /* Merge the src mappings to dst */
+      mappings = safe_realloc (g, dst->drive_mappings,(n + 1) * sizeof (char *));
+
+      for (i = old; i < n; i++)
+        mappings[i] = src->drive_mappings[i - old];
+
+      mappings[n] = NULL;
+      dst->drive_mappings = mappings;
+
+      free(src->drive_mappings);
+      src->drive_mappings = NULL;
+    }
+  }
+
+  if (src->nr_fstab > 0) {
+    n = dst->nr_fstab + src->nr_fstab;
+    fstab = safe_realloc (g, dst->fstab, n * sizeof (struct inspect_fstab_entry));
+
+    for (i = 0; i < src->nr_fstab; i++) {
+      fstab[dst->nr_fstab + i].mountable = src->fstab[i].mountable;
+      fstab[dst->nr_fstab + i].mountpoint = src->fstab[i].mountpoint;
+    }
+    free(src->fstab);
+    src->fstab = NULL;
+    src->nr_fstab = 0;
+
+    dst->fstab = fstab;
+    dst->nr_fstab = n;
+  }
 }

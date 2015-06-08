@@ -106,7 +106,7 @@ It is also possible to run virt-v2v on the conversion server entirely as
 non-root, but output modes may be limited.  Consult the L<virt-v2v(1)>
 manual page for details.
 
-At the bottom of the dialog are these buttons:
+У нижній частині діалогового вікна розташовано такі кнопки:
 
  │                                                        │
  │                [ Test connection ]                     │
@@ -597,5 +597,5 @@ Tingting Zheng
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2015 Red Hat Inc.
+© Red Hat Inc., 2009–2015
 

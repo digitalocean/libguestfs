@@ -733,7 +733,7 @@ C<guestfs_add_drive_opts>.
                              void * /* really virDomainPtr */ dom,
                              va_list args);
 
-This is the "va_list variant" of L</guestfs_add_libvirt_dom>.
+Це «варіант з va_list» L</guestfs_add_libvirt_dom>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -744,7 +744,7 @@ This is the "va_list variant" of L</guestfs_add_libvirt_dom>.
                                void * /* really virDomainPtr */ dom,
                                const struct guestfs_add_libvirt_dom_argv *optargs);
 
-This is the "argv variant" of L</guestfs_add_libvirt_dom>.
+Це «варіант з argv» L</guestfs_add_libvirt_dom>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1435,7 +1435,7 @@ Cancel a running balance on a btrfs filesystem.
  guestfs_btrfs_balance_pause (guestfs_h *g,
                               const char *path);
 
-Pause a running balance on a btrfs filesystem.
+Призупинити запущений баланс у файловій системі btrfs
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -1447,7 +1447,7 @@ Pause a running balance on a btrfs filesystem.
  guestfs_btrfs_balance_resume (guestfs_h *g,
                                const char *path);
 
-Resume a paused balance on a btrfs filesystem.
+Поновити призупинений баланс на файловій системі btrfs.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -1459,7 +1459,8 @@ Resume a paused balance on a btrfs filesystem.
  guestfs_btrfs_balance_status (guestfs_h *g,
                                const char *path);
 
-Show the status of a running or paused balance on a btrfs filesystem.
+Показати стан використовуваного або призупиненого балансу на файловій
+системі btrfs.
 
 This function returns a C<struct guestfs_btrfsbalance *>, or NULL if there
 was an error.  I<The caller must call C<guestfs_free_btrfsbalance> after
@@ -1536,7 +1537,7 @@ zlib or lzo.
                                          const char *path,
                                          va_list args);
 
-This is the "va_list variant" of L</guestfs_btrfs_filesystem_defragment>.
+Це «варіант з va_list» L</guestfs_btrfs_filesystem_defragment>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1547,7 +1548,7 @@ This is the "va_list variant" of L</guestfs_btrfs_filesystem_defragment>.
                                            const char *path,
                                            const struct guestfs_btrfs_filesystem_defragment_argv *optargs);
 
-This is the "argv variant" of L</guestfs_btrfs_filesystem_defragment>.
+Це «варіант з argv» L</guestfs_btrfs_filesystem_defragment>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1813,8 +1814,8 @@ C<path>.
  guestfs_btrfs_quota_rescan (guestfs_h *g,
                              const char *fs);
 
-Trash all qgroup numbers and scan the metadata again with the current
-config.
+Викинути усі числові дані qgroup і виконати повторне сканування з поточними
+налаштуваннями.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -1839,7 +1840,7 @@ one.
  guestfs_btrfs_rescue_super_recover (guestfs_h *g,
                                      const char *device);
 
-Recover bad superblocks from good copies.
+Відновити пошкоджені суперблоки із якісних копій.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -1851,7 +1852,7 @@ Recover bad superblocks from good copies.
  guestfs_btrfs_scrub_cancel (guestfs_h *g,
                              const char *path);
 
-Cancel a running scrub on a btrfs filesystem.
+Скасувати витирання, що виконується у файловій системі btrfs.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -1889,7 +1890,8 @@ data.
  guestfs_btrfs_scrub_status (guestfs_h *g,
                              const char *path);
 
-Show status of running or finished scrub on a btrfs filesystem.
+Показати дані щодо стану витирання, яке виконується або завершено на
+файловій системі btrfs.
 
 This function returns a C<struct guestfs_btrfsscrub *>, or NULL if there was
 an error.  I<The caller must call C<guestfs_free_btrfsscrub> after use>.
@@ -1953,7 +1955,7 @@ subvolume will be added to.
                                          const char *dest,
                                          va_list args);
 
-This is the "va_list variant" of L</guestfs_btrfs_subvolume_create_opts>.
+Це «варіант з va_list» L</guestfs_btrfs_subvolume_create_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1964,7 +1966,7 @@ This is the "va_list variant" of L</guestfs_btrfs_subvolume_create_opts>.
                                            const char *dest,
                                            const struct guestfs_btrfs_subvolume_create_opts_argv *optargs);
 
-This is the "argv variant" of L</guestfs_btrfs_subvolume_create_opts>.
+Це «варіант з argv» L</guestfs_btrfs_subvolume_create_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1974,7 +1976,7 @@ This is the "argv variant" of L</guestfs_btrfs_subvolume_create_opts>.
  guestfs_btrfs_subvolume_delete (guestfs_h *g,
                                  const char *subvolume);
 
-Delete the named btrfs subvolume or snapshot.
+Вилучити вказаний за назвою підтом або знімок btrfs.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -2028,7 +2030,7 @@ default.  See C<guestfs_btrfs_subvolume_list> to get a list of subvolumes.
  guestfs_btrfs_subvolume_show (guestfs_h *g,
                                const char *subvolume);
 
-Return detailed information of the subvolume.
+Повернути докладні дані щодо підтому.
 
 This function returns a NULL-terminated array of strings, or NULL if there
 was an error.  The array of strings will always have length C<2n+1>, where
@@ -2086,7 +2088,7 @@ newly created snapshot will be added to.
                                            const char *dest,
                                            va_list args);
 
-This is the "va_list variant" of L</guestfs_btrfs_subvolume_snapshot_opts>.
+Це «варіант з va_list» L</guestfs_btrfs_subvolume_snapshot_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -2098,7 +2100,7 @@ This is the "va_list variant" of L</guestfs_btrfs_subvolume_snapshot_opts>.
                                              const char *dest,
                                              const struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs);
 
-This is the "argv variant" of L</guestfs_btrfs_subvolume_snapshot_opts>.
+Це «варіант з argv» L</guestfs_btrfs_subvolume_snapshot_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -2177,7 +2179,8 @@ described in L<guestfs(3)/BLOCK DEVICE NAMING>.
 
 =item C</dev/dm-N>
 
-Converted to C</dev/VG/LV> form using C<guestfs_lvm_canonical_lv_name>.
+Перетворено у форму C</dev/VG/LV> за допомогою
+C<guestfs_lvm_canonical_lv_name>.
 
 =back
 
@@ -2342,9 +2345,11 @@ Compute the SHA512 hash (using the C<sha512sum> program).
 
 The checksum is returned as a printable string.
 
-To get the checksum for a device, use C<guestfs_checksum_device>.
+Щоб отримати контрольну суму пристрою, скористайтеся
+C<guestfs_checksum_device>.
 
-To get the checksums for many files, use C<guestfs_checksums_out>.
+Щоб отримати контрольні суми декількох файлів одразу, скористайтеся
+C<guestfs_checksums_out>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
@@ -2442,7 +2447,7 @@ This call returns the number of strings which were removed (which may be 0,
 
 У разі помилки цією функцією буде повернуто -1.
 
-(Added in 1.27.2)
+(Додано у 1.27.2)
 
 =head2 guestfs_command
 
@@ -3089,7 +3094,7 @@ New (SVR4) portable format with a checksum.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.27.9)
+(Додано у 1.27.9)
 
 =head2 guestfs_cpio_out_va
 
@@ -3941,7 +3946,7 @@ devices, use C<guestfs_blockdev_getsize64>.
 Check whether libguestfs supports the named filesystem.  The argument
 C<filesystem> is a filesystem name, such as C<ext3>.
 
-You must call C<guestfs_launch> before using this command.
+Перед використанням цієї команди вам слід викликати C<guestfs_launch>.
 
 This is mainly useful as a negative test.  If this returns true, it doesn't
 mean that a particular filesystem can be created or mounted, since
@@ -3949,7 +3954,7 @@ filesystems can fail for other reasons such as it being a later version of
 the filesystem, or having incompatible features, or lacking the right
 mkfs.E<lt>I<fs>E<gt> tool.
 
-See also C<guestfs_available>, C<guestfs_feature_available>,
+Див. також C<guestfs_available>, C<guestfs_feature_available>,
 L<guestfs(3)/AVAILABILITY>.
 
 This function returns a C truth value on success or -1 on error.
@@ -4298,7 +4303,7 @@ C<guestfs_last_errno>) will be C<ESRCH> in this case.
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
-(Added in 1.27.2)
+(Додано у 1.27.2)
 
 =head2 guestfs_get_backend_settings
 
@@ -5622,6 +5627,10 @@ CentOS.
 =item "cirros"
 
 Cirros.
+
+=item "coreos"
+
+CoreOS.
 
 =item "debian"
 
@@ -7140,7 +7149,7 @@ Get the realtime (wallclock) timestamp of the current journal entry.
 
 У разі помилки цією функцією буде повернуто -1.
 
-(Added in 1.27.18)
+(Додано у 1.27.18)
 
 =head2 guestfs_journal_next
 
@@ -7883,7 +7892,7 @@ This is the same as the L<lstat(2)> system call.
 This function returns a C<struct guestfs_statns *>, or NULL if there was an
 error.  I<The caller must call C<guestfs_free_statns> after use>.
 
-(Added in 1.27.53)
+(Додано у 1.27.53)
 
 =head2 guestfs_lstatnslist
 
@@ -7908,7 +7917,7 @@ This function returns a C<struct guestfs_statns_list *>, or NULL if there
 was an error.  I<The caller must call C<guestfs_free_statns_list> after
 use>.
 
-(Added in 1.27.53)
+(Додано у 1.27.53)
 
 =head2 guestfs_luks_add_key
 
@@ -11317,7 +11326,7 @@ that setting is replaced.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.27.2)
+(Додано у 1.27.2)
 
 =head2 guestfs_set_backend_settings
 
@@ -12190,7 +12199,7 @@ This is the same as the L<stat(2)> system call.
 This function returns a C<struct guestfs_statns *>, or NULL if there was an
 error.  I<The caller must call C<guestfs_free_statns> after use>.
 
-(Added in 1.27.53)
+(Додано у 1.27.53)
 
 =head2 guestfs_statvfs
 
@@ -13268,8 +13277,8 @@ the returned string after use>.
  guestfs_vfs_type (guestfs_h *g,
                    const char *mountable);
 
-This command gets the filesystem type corresponding to the filesystem on
-C<mountable>.
+Ця команда отримує тип файлової системи, відповідний до файлової системи у
+C<монтуванні>.
 
 For most filesystems, the result is the name of the Linux VFS module which
 would be used to mount this filesystem if you mounted it without specifying

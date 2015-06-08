@@ -551,6 +551,7 @@ enum inspect_os_distro {
   OS_DISTRO_ORACLE_LINUX,
   OS_DISTRO_FREEBSD,
   OS_DISTRO_NETBSD,
+  OS_DISTRO_COREOS,
 };
 
 enum inspect_os_package_format {
@@ -788,6 +789,7 @@ extern char *guestfs_int_first_line_of_file (guestfs_h *g, const char *filename)
 extern int guestfs_int_first_egrep_of_file (guestfs_h *g, const char *filename, const char *eregex, int iflag, char **ret);
 extern void guestfs_int_check_package_format (guestfs_h *g, struct inspect_fs *fs);
 extern void guestfs_int_check_package_management (guestfs_h *g, struct inspect_fs *fs);
+extern void guestfs_int_merge_fs_inspections (guestfs_h *g, struct inspect_fs *dst, struct inspect_fs *src);
 
 /* inspect-fs-unix.c */
 extern int guestfs_int_check_linux_root (guestfs_h *g, struct inspect_fs *fs);
@@ -796,6 +798,8 @@ extern int guestfs_int_check_netbsd_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs_int_check_openbsd_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs_int_check_hurd_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs_int_check_minix_root (guestfs_h *g, struct inspect_fs *fs);
+extern int guestfs_int_check_coreos_root (guestfs_h *g, struct inspect_fs *fs);
+extern int guestfs_int_check_coreos_usr (guestfs_h *g, struct inspect_fs *fs);
 
 /* inspect-fs-windows.c */
 extern char *guestfs_int_case_sensitive_path_silently (guestfs_h *g, const char *);

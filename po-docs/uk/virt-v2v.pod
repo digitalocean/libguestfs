@@ -143,7 +143,7 @@ To convert a local disk image and immediately boot it in local qemu, do:
 
 =head1 SUPPORT MATRIX
 
-=head2 Hypervisors (Input)
+=head2 Гіпервізори (вхід)
 
 =over 4
 
@@ -167,14 +167,14 @@ Citrix Xen has not been recently tested.
 Not recently tested.  Requires that you export the disk or use
 L<virt-p2v(1)> on Hyper-V.
 
-=item Direct from disk images
+=item Безпосередньо з образів дисків
 
 Only disk images exported from supported hypervisors, and using container
 formats supported by qemu.
 
 =item Physical machines
 
-Using the L<virt-p2v(1)> tool.
+За допомогою інструмента L<virt-p2v(1)>.
 
 =back
 
@@ -190,15 +190,15 @@ QEMU and KVM only.
 
 =item Red Hat Enterprise Virtualization (RHEV) 2.2 and up
 
-=item Local libvirt
+=item Локальна libvirt
 
 And hence L<virsh(1)>, L<virt-manager(1)>, and similar tools.
 
-=item Local disk
+=item Локальний диск
 
 =back
 
-=head2 Guests
+=head2 Гості
 
 =over 4
 
@@ -283,11 +283,11 @@ XML FOR -i libvirtxml OPTION> below.
 
 =item B<-i local>
 
-This is the same as I<-i disk>.
+Те саме, що і I<-i disk>.
 
 =item B<-i ova>
 
-Set the input method to I<ova>.
+Встановити метод введення I<ova>.
 
 In this mode you can read a VMware ova file.  Virt-v2v will read the ova
 manifest file and check the vmdk volumes for validity (checksums)  as well
@@ -316,17 +316,17 @@ other input methods you should specify the input format in the metadata.
 This option is used to make the output more machine friendly when being
 parsed by other programs.  See L</MACHINE READABLE OUTPUT> below.
 
-=item B<-n> in:out
+=item B<-n> введення:виведення
 
-=item B<-n> out
+=item B<-n> виведення
 
 =item B<--network> введення:виведення
 
 =item B<--network> виведення
 
-=item B<-b> in:out
+=item B<-b> введення:виведення
 
-=item B<-b> out
+=item B<-b> виведення
 
 =item B<--bridge> введення:виведення
 
@@ -505,7 +505,7 @@ directory, so virt-v2v will still need to run as C<root>.
 You will get an error if virt-v2v is unable to mount/write to the Export
 Storage Domain.
 
-=item B<--password-file> file
+=item B<--password-file> файл
 
 Instead of asking for password(s) interactively, pass the password through a
 file.  Note the file should contain the whole password, B<without any
@@ -1207,7 +1207,7 @@ through the UI.
 
 =head1 RESOURCE REQUIREMENTS
 
-=head2 Network
+=head2 Мережа
 
 The most important resource for virt-v2v appears to be network bandwidth.
 Virt-v2v should be able to copy guest data at gigabit ethernet speeds or
@@ -1216,7 +1216,7 @@ greater.
 Ensure that the network connections between servers (conversion server, NFS
 server, vCenter, Xen) are as fast and as low latency as possible.
 
-=head2 Disk space
+=head2 Місце на диску
 
 Virt-v2v places potentially large temporary files in C<$TMPDIR> (which is
 C</var/tmp> if you don't set it).  Using tmpfs is a bad idea.
@@ -1251,7 +1251,7 @@ This temporarily places a full copy of the output disks in C<$TMPDIR>.
 
 =back
 
-=head2 VMware vCenter resources
+=head2 Ресурси vCenter VMware
 
 Copying from VMware vCenter is currently quite slow, but we believe this to
 be an issue with VMware.  Ensuring the VMware ESXi hypervisor and vCenter
@@ -1263,18 +1263,18 @@ Virt-v2v is not especially compute or RAM intensive.  If you are running
 many parallel conversions, then you may consider allocating one CPU core and
 between 512 MB and 1 GB of RAM per running instance.
 
-Virt-v2v can be run in a virtual machine.
+Virt-v2v можна запускати у віртуальній машині.
 
-=head1 POST-CONVERSION TASKS
+=head1 ЗАВДАННЯ ПІСЛЯ ПЕРЕТВОРЕННЯ
 
-=head2 Guest network configuration
+=head2 Налаштовування гостьової мережі
 
 Virt-v2v cannot currently reconfigure a guest's network configuration.  If
 the converted guest is not connected to the same subnet as the source, its
 network configuration may have to be updated.  See also
 L<virt-customize(1)>.
 
-=head2 Converting a Windows guest
+=head2 Перетворення гостьової системи Windows
 
 When converting a Windows guests, the conversion process is split into two
 stages:
@@ -1308,18 +1308,18 @@ perform the conversion.  Currently it checks:
 
 =item Linux root filesystem or Windows C<C:> drive
 
-Minimum free space: 20 MB
+Мінімальний вільний простір: 20 МБ
 
 =item Linux C</boot>
 
-Minimum free space: 50 MB
+Мінімальний вільний простір: 50 МБ
 
 This is because we need to build a new initramfs for some Enterprise Linux
 conversions.
 
-=item Any other mountable filesystem
+=item Будь-яка інша придатна до монтування файлова система
 
-Minimum free space: 10 MB
+Мінімальний вільний простір: 10 МБ
 
 =back
 
@@ -1387,7 +1387,7 @@ tab "Spm Status" column.  Once you have located the SPM, log into it and
 grab the file C</var/log/vdsm/vdsm.log> which will contain detailed error
 messages from low-level commands.
 
-=head1 MINIMAL XML FOR -i libvirtxml OPTION
+=head1 МІНІМАЛЬНИЙ XML ДЛЯ ПАРАМЕТРА -i libvirtxml
 
 When using the I<-i libvirtxml> option, you have to supply some libvirt
 XML.  Writing this from scratch is hard, so the template below is helpful.
@@ -1575,5 +1575,5 @@ Tingting Zheng
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2015 Red Hat Inc.
+© Red Hat Inc., 2009–2015
 

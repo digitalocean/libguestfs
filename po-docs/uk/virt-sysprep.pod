@@ -329,7 +329,7 @@ Windows unique security ID (SID)
 
 =item *
 
-Puppet registration
+Реєстрація маріонетки
 
 =back
 
@@ -564,7 +564,7 @@ Wanlong Gao, Fujitsu Ltd.
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011-2015 Red Hat Inc.
+© Red Hat Inc., 2011–2015
 
 Авторські права належать Fujitsu Ltd., 2012
 

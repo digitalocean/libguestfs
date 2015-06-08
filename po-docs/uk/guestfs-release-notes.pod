@@ -223,8 +223,8 @@ on.
 
 =item L<https://bugzilla.redhat.com/1153515>
 
-empty (but set) LIBGUESTFS_BACKEND prints libguestfs: error: invalid
-backend:
+порожнє (але встановлене) LIBGUESTFS_BACKEND виводить libguestfs: помилка:
+некоректний модуль:
 
 =item L<https://bugzilla.redhat.com/1151766>
 
@@ -234,7 +234,7 @@ in that file
 
 =item L<https://bugzilla.redhat.com/1151738>
 
-typo error in man page of virt-edit
+друкарська помилка у сторінці man virt-edit
 
 =item L<https://bugzilla.redhat.com/1151033>
 
@@ -996,7 +996,7 @@ been backported to 1.20 and 1.22 branches.
 C<is-file>, C<is-dir>, C<is-blockdev>, C<is-chardev>, C<is-fifo>,
 C<is-socket> APIs now have an extra C<followsymlinks> flag.
 
-C<add-drive> has a new C<cachemode> parameter.
+У C<add-drive> передбачено новий параметр C<cachemode>.
 
 =head2 Зміни у збиранні
 
@@ -3536,5 +3536,5 @@ Richard W.M. Jones
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2015 Red Hat Inc.
+© Red Hat Inc., 2009–2015
 

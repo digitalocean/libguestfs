@@ -290,6 +290,7 @@ public class GuestFS {
    * List (ACL) attached to directory "dir".
    * </p><p>
    * </p>
+   * @since 1.19.63
    * @throws LibGuestFSException
    */
   public void acl_delete_def_file (String dir)
@@ -323,6 +324,7 @@ public class GuestFS {
    * sense if "path" is a directory.
    * </p><p>
    * </p>
+   * @since 1.19.63
    * @throws LibGuestFSException
    */
   public String acl_get_file (String path, String acltype)
@@ -374,6 +376,7 @@ public class GuestFS {
    * "g.aug_init").
    * </p><p>
    * </p>
+   * @since 1.19.63
    * @throws LibGuestFSException
    */
   public void acl_set_file (String path, String acltype, String acl)
@@ -399,6 +402,7 @@ public class GuestFS {
    * is equivalent of "g.add_drive_ro".
    * </p><p>
    * </p>
+   * @since 0.3
    * @deprecated In new code, use {@link #add_drive_ro} instead
    * @throws LibGuestFSException
    */
@@ -506,6 +510,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.7.4
    * @throws LibGuestFSException
    */
   public int add_domain (String dom, Map<String, Object> optargs)
@@ -847,6 +852,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 0.3
    * @throws LibGuestFSException
    */
   public void add_drive (String filename, Map<String, Object> optargs)
@@ -990,6 +996,7 @@ public class GuestFS {
    * automatically.
    * </p><p>
    * </p>
+   * @since 1.0.38
    * @throws LibGuestFSException
    */
   public void add_drive_ro (String filename)
@@ -1013,6 +1020,7 @@ public class GuestFS {
    * time.
    * </p><p>
    * </p>
+   * @since 1.0.84
    * @deprecated In new code, use {@link #add_drive} instead
    * @throws LibGuestFSException
    */
@@ -1047,6 +1055,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.23.10
    * @throws LibGuestFSException
    */
   public void add_drive_scratch (long size, Map<String, Object> optargs)
@@ -1095,6 +1104,7 @@ public class GuestFS {
    * specify the QEMU interface emulation to use at run time.
    * </p><p>
    * </p>
+   * @since 1.0.84
    * @deprecated In new code, use {@link #add_drive} instead
    * @throws LibGuestFSException
    */
@@ -1158,6 +1168,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.29.14
    * @throws LibGuestFSException
    */
   public int add_libvirt_dom (long dom, Map<String, Object> optargs)
@@ -1246,6 +1257,7 @@ public class GuestFS {
    * the same as the augtool(1) "clear" command.
    * </p><p>
    * </p>
+   * @since 1.3.4
    * @throws LibGuestFSException
    */
   public void aug_clear (String augpath)
@@ -1270,6 +1282,7 @@ public class GuestFS {
    * Augeas functions.
    * </p><p>
    * </p>
+   * @since 0.7
    * @throws LibGuestFSException
    */
   public void aug_close ()
@@ -1301,6 +1314,7 @@ public class GuestFS {
    * created.
    * </p><p>
    * </p>
+   * @since 0.7
    * @throws LibGuestFSException
    */
   public IntBool aug_defnode (String name, String expr, String val)
@@ -1328,6 +1342,7 @@ public class GuestFS {
    * nodeset.
    * </p><p>
    * </p>
+   * @since 0.7
    * @throws LibGuestFSException
    */
   public int aug_defvar (String name, String expr)
@@ -1350,6 +1365,7 @@ public class GuestFS {
    * matches exactly one node, the "value" is returned.
    * </p><p>
    * </p>
+   * @since 0.7
    * @throws LibGuestFSException
    */
   public String aug_get (String augpath)
@@ -1413,6 +1429,7 @@ public class GuestFS {
    * To find out more about Augeas, see &lt;http://augeas.net/&gt;.
    * </p><p>
    * </p>
+   * @since 0.7
    * @throws LibGuestFSException
    */
   public void aug_init (String root, int flags)
@@ -1440,6 +1457,7 @@ public class GuestFS {
    * end with a bracketed index "[N]".
    * </p><p>
    * </p>
+   * @since 0.7
    * @throws LibGuestFSException
    */
   public void aug_insert (String augpath, String label, boolean before)
@@ -1463,6 +1481,7 @@ public class GuestFS {
    * exactly one node, else this function returns an error.
    * </p><p>
    * </p>
+   * @since 1.23.14
    * @throws LibGuestFSException
    */
   public String aug_label (String augpath)
@@ -1487,6 +1506,7 @@ public class GuestFS {
    * gory details.
    * </p><p>
    * </p>
+   * @since 0.7
    * @throws LibGuestFSException
    */
   public void aug_load ()
@@ -1510,6 +1530,7 @@ public class GuestFS {
    * alphabetical order.
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public String[] aug_ls (String augpath)
@@ -1533,6 +1554,7 @@ public class GuestFS {
    * that they match exactly one node in the current tree.
    * </p><p>
    * </p>
+   * @since 0.7
    * @throws LibGuestFSException
    */
   public String[] aug_match (String augpath)
@@ -1555,6 +1577,7 @@ public class GuestFS {
    * one node. "dest" is overwritten if it exists.
    * </p><p>
    * </p>
+   * @since 0.7
    * @throws LibGuestFSException
    */
   public void aug_mv (String src, String dest)
@@ -1579,6 +1602,7 @@ public class GuestFS {
    * removed.
    * </p><p>
    * </p>
+   * @since 0.7
    * @throws LibGuestFSException
    */
   public int aug_rm (String augpath)
@@ -1603,6 +1627,7 @@ public class GuestFS {
    * exactly how files are saved.
    * </p><p>
    * </p>
+   * @since 0.7
    * @throws LibGuestFSException
    */
   public void aug_save ()
@@ -1629,6 +1654,7 @@ public class GuestFS {
    * Instead you must use the "g.aug_clear" call.
    * </p><p>
    * </p>
+   * @since 0.7
    * @throws LibGuestFSException
    */
   public void aug_set (String augpath, String val)
@@ -1657,6 +1683,7 @@ public class GuestFS {
    * This returns the number of nodes modified.
    * </p><p>
    * </p>
+   * @since 1.23.14
    * @throws LibGuestFSException
    */
   public int aug_setm (String base, String sub, String val)
@@ -1732,6 +1759,7 @@ public class GuestFS {
    * See also "g.filesystem_available".
    * </p><p>
    * </p>
+   * @since 1.0.80
    * @throws LibGuestFSException
    */
   public void available (String[] groups)
@@ -1761,6 +1789,7 @@ public class GuestFS {
    * "AVAILABILITY" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.3.15
    * @throws LibGuestFSException
    */
   public String[] available_all_groups ()
@@ -1783,6 +1812,7 @@ public class GuestFS {
    * "base64file" to "filename".
    * </p><p>
    * </p>
+   * @since 1.3.5
    * @throws LibGuestFSException
    */
   public void base64_in (String base64file, String filename)
@@ -1806,6 +1836,7 @@ public class GuestFS {
    * base64.
    * </p><p>
    * </p>
+   * @since 1.3.5
    * @throws LibGuestFSException
    */
   public void base64_out (String filename, String base64file)
@@ -1835,6 +1866,7 @@ public class GuestFS {
    * "g.add_drive_opts").
    * </p><p>
    * </p>
+   * @since 1.25.44
    * @throws LibGuestFSException
    */
   public void blkdiscard (String device)
@@ -1861,6 +1893,7 @@ public class GuestFS {
    * blocks are read as stale or random data.
    * </p><p>
    * </p>
+   * @since 1.25.44
    * @throws LibGuestFSException
    */
   public boolean blkdiscardzeroes (String device)
@@ -1900,6 +1933,7 @@ public class GuestFS {
    * or "raid".
    * </p><p>
    * </p>
+   * @since 1.15.9
    * @throws LibGuestFSException
    */
   public Map<String,String> blkid (String device)
@@ -1929,6 +1963,7 @@ public class GuestFS {
    * This uses the blockdev(8) command.
    * </p><p>
    * </p>
+   * @since 1.9.3
    * @throws LibGuestFSException
    */
   public void blockdev_flushbufs (String device)
@@ -1958,6 +1993,7 @@ public class GuestFS {
    * This uses the blockdev(8) command.
    * </p><p>
    * </p>
+   * @since 1.9.3
    * @throws LibGuestFSException
    */
   public int blockdev_getbsz (String device)
@@ -1982,6 +2018,7 @@ public class GuestFS {
    * This uses the blockdev(8) command.
    * </p><p>
    * </p>
+   * @since 1.9.3
    * @throws LibGuestFSException
    */
   public boolean blockdev_getro (String device)
@@ -2007,6 +2044,7 @@ public class GuestFS {
    * This uses the blockdev(8) command.
    * </p><p>
    * </p>
+   * @since 1.9.3
    * @throws LibGuestFSException
    */
   public long blockdev_getsize64 (String device)
@@ -2034,6 +2072,7 @@ public class GuestFS {
    * This uses the blockdev(8) command.
    * </p><p>
    * </p>
+   * @since 1.9.3
    * @throws LibGuestFSException
    */
   public int blockdev_getss (String device)
@@ -2063,6 +2102,7 @@ public class GuestFS {
    * This uses the blockdev(8) command.
    * </p><p>
    * </p>
+   * @since 1.9.3
    * @throws LibGuestFSException
    */
   public long blockdev_getsz (String device)
@@ -2086,6 +2126,7 @@ public class GuestFS {
    * This uses the blockdev(8) command.
    * </p><p>
    * </p>
+   * @since 1.9.3
    * @throws LibGuestFSException
    */
   public void blockdev_rereadpt (String device)
@@ -2111,6 +2152,7 @@ public class GuestFS {
    * "blocksize" option of "g.mkfs".
    * </p><p>
    * </p>
+   * @since 1.9.3
    * @deprecated In new code, use {@link #mkfs} instead
    * @throws LibGuestFSException
    */
@@ -2135,6 +2177,7 @@ public class GuestFS {
    * This uses the blockdev(8) command.
    * </p><p>
    * </p>
+   * @since 1.29.10
    * @throws LibGuestFSException
    */
   public void blockdev_setra (String device, int sectors)
@@ -2158,6 +2201,7 @@ public class GuestFS {
    * This uses the blockdev(8) command.
    * </p><p>
    * </p>
+   * @since 1.9.3
    * @throws LibGuestFSException
    */
   public void blockdev_setro (String device)
@@ -2181,6 +2225,7 @@ public class GuestFS {
    * This uses the blockdev(8) command.
    * </p><p>
    * </p>
+   * @since 1.9.3
    * @throws LibGuestFSException
    */
   public void blockdev_setrw (String device)
@@ -2202,6 +2247,7 @@ public class GuestFS {
    * Cancel a running balance on a btrfs filesystem.
    * </p><p>
    * </p>
+   * @since 1.29.22
    * @throws LibGuestFSException
    */
   public void btrfs_balance_cancel (String path)
@@ -2223,6 +2269,7 @@ public class GuestFS {
    * Pause a running balance on a btrfs filesystem.
    * </p><p>
    * </p>
+   * @since 1.29.22
    * @throws LibGuestFSException
    */
   public void btrfs_balance_pause (String path)
@@ -2244,6 +2291,7 @@ public class GuestFS {
    * Resume a paused balance on a btrfs filesystem.
    * </p><p>
    * </p>
+   * @since 1.29.22
    * @throws LibGuestFSException
    */
   public void btrfs_balance_resume (String path)
@@ -2266,6 +2314,7 @@ public class GuestFS {
    * btrfs filesystem.
    * </p><p>
    * </p>
+   * @since 1.29.26
    * @throws LibGuestFSException
    */
   public BTRFSBalance btrfs_balance_status (String path)
@@ -2289,6 +2338,7 @@ public class GuestFS {
    * list, this does nothing.
    * </p><p>
    * </p>
+   * @since 1.17.35
    * @throws LibGuestFSException
    */
   public void btrfs_device_add (String[] devices, String fs)
@@ -2312,6 +2362,7 @@ public class GuestFS {
    * nothing.
    * </p><p>
    * </p>
+   * @since 1.17.35
    * @throws LibGuestFSException
    */
   public void btrfs_device_delete (String[] devices, String fs)
@@ -2334,6 +2385,7 @@ public class GuestFS {
    * "fs" across the underlying devices.
    * </p><p>
    * </p>
+   * @since 1.17.35
    * @throws LibGuestFSException
    */
   public void btrfs_filesystem_balance (String fs)
@@ -2361,6 +2413,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.29.22
    * @throws LibGuestFSException
    */
   public void btrfs_filesystem_defragment (String path, Map<String, Object> optargs)
@@ -2426,6 +2479,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.11.17
    * @throws LibGuestFSException
    */
   public void btrfs_filesystem_resize (String mountpoint, Map<String, Object> optargs)
@@ -2465,6 +2519,7 @@ public class GuestFS {
    * Force sync on the btrfs filesystem mounted at "fs".
    * </p><p>
    * </p>
+   * @since 1.17.35
    * @throws LibGuestFSException
    */
   public void btrfs_filesystem_sync (String fs)
@@ -2492,6 +2547,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.17.43
    * @throws LibGuestFSException
    */
   public void btrfs_fsck (String device, Map<String, Object> optargs)
@@ -2546,6 +2602,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.29.32
    * @throws LibGuestFSException
    */
   public void btrfs_image (String[] source, String image, Map<String, Object> optargs)
@@ -2587,6 +2644,7 @@ public class GuestFS {
    * common limit.
    * </p><p>
    * </p>
+   * @since 1.29.17
    * @throws LibGuestFSException
    */
   public void btrfs_qgroup_assign (String src, String dst, String path)
@@ -2609,6 +2667,7 @@ public class GuestFS {
    * "subvolume".
    * </p><p>
    * </p>
+   * @since 1.29.17
    * @throws LibGuestFSException
    */
   public void btrfs_qgroup_create (String qgroupid, String subvolume)
@@ -2630,6 +2689,7 @@ public class GuestFS {
    * Destroy a quota group.
    * </p><p>
    * </p>
+   * @since 1.29.17
    * @throws LibGuestFSException
    */
   public void btrfs_qgroup_destroy (String qgroupid, String subvolume)
@@ -2652,6 +2712,7 @@ public class GuestFS {
    * "subvolume". "size" can have suffix of G, M, or K.
    * </p><p>
    * </p>
+   * @since 1.29.17
    * @throws LibGuestFSException
    */
   public void btrfs_qgroup_limit (String subvolume, long size)
@@ -2673,6 +2734,7 @@ public class GuestFS {
    * Remove qgroup "src" from the parent qgroup "dst".
    * </p><p>
    * </p>
+   * @since 1.29.17
    * @throws LibGuestFSException
    */
   public void btrfs_qgroup_remove (String src, String dst, String path)
@@ -2695,6 +2757,7 @@ public class GuestFS {
    * including their usages.
    * </p><p>
    * </p>
+   * @since 1.29.17
    * @throws LibGuestFSException
    */
   public BTRFSQgroup[] btrfs_qgroup_show (String path)
@@ -2717,6 +2780,7 @@ public class GuestFS {
    * which contains "path".
    * </p><p>
    * </p>
+   * @since 1.29.17
    * @throws LibGuestFSException
    */
   public void btrfs_quota_enable (String fs, boolean enable)
@@ -2739,6 +2803,7 @@ public class GuestFS {
    * with the current config.
    * </p><p>
    * </p>
+   * @since 1.29.17
    * @throws LibGuestFSException
    */
   public void btrfs_quota_rescan (String fs)
@@ -2761,6 +2826,7 @@ public class GuestFS {
    * the devices one by one.
    * </p><p>
    * </p>
+   * @since 1.29.22
    * @throws LibGuestFSException
    */
   public void btrfs_rescue_chunk_recover (String device)
@@ -2782,6 +2848,7 @@ public class GuestFS {
    * Recover bad superblocks from good copies.
    * </p><p>
    * </p>
+   * @since 1.29.22
    * @throws LibGuestFSException
    */
   public void btrfs_rescue_super_recover (String device)
@@ -2803,6 +2870,7 @@ public class GuestFS {
    * Cancel a running scrub on a btrfs filesystem.
    * </p><p>
    * </p>
+   * @since 1.29.22
    * @throws LibGuestFSException
    */
   public void btrfs_scrub_cancel (String path)
@@ -2825,6 +2893,7 @@ public class GuestFS {
    * btrfs filesystem.
    * </p><p>
    * </p>
+   * @since 1.29.22
    * @throws LibGuestFSException
    */
   public void btrfs_scrub_resume (String path)
@@ -2848,6 +2917,7 @@ public class GuestFS {
    * storage to identify and repair any corrupt data.
    * </p><p>
    * </p>
+   * @since 1.29.22
    * @throws LibGuestFSException
    */
   public void btrfs_scrub_start (String path)
@@ -2870,6 +2940,7 @@ public class GuestFS {
    * filesystem.
    * </p><p>
    * </p>
+   * @since 1.29.26
    * @throws LibGuestFSException
    */
   public BTRFSScrub btrfs_scrub_status (String path)
@@ -2892,6 +2963,7 @@ public class GuestFS {
    * contains a btrfs filesystem.
    * </p><p>
    * </p>
+   * @since 1.17.43
    * @throws LibGuestFSException
    */
   public void btrfs_set_seeding (String device, boolean seeding)
@@ -2922,6 +2994,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.17.35
    * @throws LibGuestFSException
    */
   public void btrfs_subvolume_create (String dest, Map<String, Object> optargs)
@@ -2973,6 +3046,7 @@ public class GuestFS {
    * Delete the named btrfs subvolume or snapshot.
    * </p><p>
    * </p>
+   * @since 1.17.35
    * @throws LibGuestFSException
    */
   public void btrfs_subvolume_delete (String subvolume)
@@ -2995,6 +3069,7 @@ public class GuestFS {
    * mounted at "mountpoint".
    * </p><p>
    * </p>
+   * @since 1.29.17
    * @throws LibGuestFSException
    */
   public long btrfs_subvolume_get_default (String fs)
@@ -3017,6 +3092,7 @@ public class GuestFS {
    * filesystem which is mounted at "fs".
    * </p><p>
    * </p>
+   * @since 1.17.35
    * @throws LibGuestFSException
    */
   public BTRFSSubvolume[] btrfs_subvolume_list (String fs)
@@ -3040,6 +3116,7 @@ public class GuestFS {
    * to get a list of subvolumes.
    * </p><p>
    * </p>
+   * @since 1.17.35
    * @throws LibGuestFSException
    */
   public void btrfs_subvolume_set_default (long id, String fs)
@@ -3061,6 +3138,7 @@ public class GuestFS {
    * Return detailed information of the subvolume.
    * </p><p>
    * </p>
+   * @since 1.29.17
    * @throws LibGuestFSException
    */
   public Map<String,String> btrfs_subvolume_show (String subvolume)
@@ -3099,6 +3177,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.17.35
    * @throws LibGuestFSException
    */
   public void btrfs_subvolume_snapshot (String source, String dest, Map<String, Object> optargs)
@@ -3158,6 +3237,7 @@ public class GuestFS {
    * This will Enable extended inode refs.
    * </p><p>
    * </p>
+   * @since 1.29.29
    * @throws LibGuestFSException
    */
   public void btrfstune_enable_extended_inode_refs (String device)
@@ -3179,6 +3259,7 @@ public class GuestFS {
    * This enable skinny metadata extent refs.
    * </p><p>
    * </p>
+   * @since 1.29.29
    * @throws LibGuestFSException
    */
   public void btrfstune_enable_skinny_metadata_extent_refs (String device)
@@ -3202,6 +3283,7 @@ public class GuestFS {
    * filesystems.
    * </p><p>
    * </p>
+   * @since 1.29.29
    * @throws LibGuestFSException
    */
   public void btrfstune_seeding (String device, boolean seeding)
@@ -3226,6 +3308,7 @@ public class GuestFS {
    * interwork with libguestfs.
    * </p><p>
    * </p>
+   * @since 1.29.17
    * @throws LibGuestFSException
    */
   public long c_pointer ()
@@ -3263,6 +3346,7 @@ public class GuestFS {
    * Other strings are returned unmodified.
    * </p><p>
    * </p>
+   * @since 1.19.7
    * @throws LibGuestFSException
    */
   public String canonical_device_name (String device)
@@ -3289,6 +3373,7 @@ public class GuestFS {
    * string is returned.
    * </p><p>
    * </p>
+   * @since 1.19.63
    * @throws LibGuestFSException
    */
   public String cap_get_file (String path)
@@ -3312,6 +3397,7 @@ public class GuestFS {
    * text form (see cap_from_text(3)).
    * </p><p>
    * </p>
+   * @since 1.19.63
    * @throws LibGuestFSException
    */
   public void cap_set_file (String path, String cap)
@@ -3380,6 +3466,7 @@ public class GuestFS {
    * See also "g.realpath".
    * </p><p>
    * </p>
+   * @since 1.0.75
    * @throws LibGuestFSException
    */
   public String case_sensitive_path (String path)
@@ -3406,6 +3493,7 @@ public class GuestFS {
    * "g.read_file" or "g.download" functions.
    * </p><p>
    * </p>
+   * @since 0.4
    * @throws LibGuestFSException
    */
   public String cat (String path)
@@ -3466,6 +3554,7 @@ public class GuestFS {
    * "g.checksums_out".
    * </p><p>
    * </p>
+   * @since 1.0.2
    * @throws LibGuestFSException
    */
   public String checksum (String csumtype, String path)
@@ -3489,6 +3578,7 @@ public class GuestFS {
    * checksums supported see the "g.checksum" command.
    * </p><p>
    * </p>
+   * @since 1.3.2
    * @throws LibGuestFSException
    */
   public String checksum_device (String csumtype, String device)
@@ -3520,6 +3610,7 @@ public class GuestFS {
    * see the GNU coreutils info file.
    * </p><p>
    * </p>
+   * @since 1.3.7
    * @throws LibGuestFSException
    */
   public void checksums_out (String csumtype, String directory, String sumsfile)
@@ -3548,6 +3639,7 @@ public class GuestFS {
    * The mode actually set is affected by the umask.
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public void chmod (int mode, String path)
@@ -3574,6 +3666,7 @@ public class GuestFS {
    * relatively easy).
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public void chown (int owner, int group, String path)
@@ -3603,6 +3696,7 @@ public class GuestFS {
    * guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.27.2
    * @throws LibGuestFSException
    */
   public int clear_backend_setting (String name)
@@ -3656,6 +3750,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.9.1
    * @throws LibGuestFSException
    */
   public String command (String[] arguments)
@@ -3684,6 +3779,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.9.1
    * @throws LibGuestFSException
    */
   public String[] command_lines (String[] arguments)
@@ -3714,6 +3810,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.13.15
    * @throws LibGuestFSException
    */
   public void compress_device_out (String ctype, String device, String zdevice, Map<String, Object> optargs)
@@ -3770,6 +3867,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.13.15
    * @throws LibGuestFSException
    */
   public void compress_out (String ctype, String file, String zfile, Map<String, Object> optargs)
@@ -3817,6 +3915,7 @@ public class GuestFS {
    * "hvvalue" can be NULL.
    * </p><p>
    * </p>
+   * @since 0.3
    * @throws LibGuestFSException
    */
   public void config (String hvparam, String hvvalue)
@@ -3870,6 +3969,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.25.21
    * @throws LibGuestFSException
    */
   public void copy_attributes (String src, String dest, Map<String, Object> optargs)
@@ -3962,6 +4062,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.13.25
    * @throws LibGuestFSException
    */
   public void copy_device_to_device (String src, String dest, Map<String, Object> optargs)
@@ -4031,6 +4132,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.13.25
    * @throws LibGuestFSException
    */
   public void copy_device_to_file (String src, String dest, Map<String, Object> optargs)
@@ -4100,6 +4202,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.13.25
    * @throws LibGuestFSException
    */
   public void copy_file_to_device (String src, String dest, Map<String, Object> optargs)
@@ -4174,6 +4277,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.13.25
    * @throws LibGuestFSException
    */
   public void copy_file_to_file (String src, String dest, Map<String, Object> optargs)
@@ -4241,6 +4345,7 @@ public class GuestFS {
    * Wildcards cannot be used.
    * </p><p>
    * </p>
+   * @since 1.29.24
    * @throws LibGuestFSException
    */
   public void copy_in (String localpath, String remotedir)
@@ -4271,6 +4376,7 @@ public class GuestFS {
    * Wildcards cannot be used.
    * </p><p>
    * </p>
+   * @since 1.29.24
    * @throws LibGuestFSException
    */
   public void copy_out (String remotepath, String localdir)
@@ -4297,6 +4403,7 @@ public class GuestFS {
    * destination is not large enough.
    * </p><p>
    * </p>
+   * @since 1.0.87
    * @deprecated In new code, use {@link #copy_device_to_device} instead
    * @throws LibGuestFSException
    */
@@ -4320,6 +4427,7 @@ public class GuestFS {
    * either a destination filename or destination directory.
    * </p><p>
    * </p>
+   * @since 1.0.18
    * @throws LibGuestFSException
    */
   public void cp (String src, String dest)
@@ -4342,6 +4450,7 @@ public class GuestFS {
    * recursively using the "cp -a" command.
    * </p><p>
    * </p>
+   * @since 1.0.18
    * @throws LibGuestFSException
    */
   public void cp_a (String src, String dest)
@@ -4369,6 +4478,7 @@ public class GuestFS {
    * (primarily when writing to DOS FAT filesystems).
    * </p><p>
    * </p>
+   * @since 1.21.38
    * @throws LibGuestFSException
    */
   public void cp_r (String src, String dest)
@@ -4410,6 +4520,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.27.9
    * @throws LibGuestFSException
    */
   public void cpio_out (String directory, String cpiofile, Map<String, Object> optargs)
@@ -4457,6 +4568,7 @@ public class GuestFS {
    * (see "g.copy_device_to_device").
    * </p><p>
    * </p>
+   * @since 1.0.80
    * @deprecated In new code, use {@link #copy_device_to_device} instead
    * @throws LibGuestFSException
    */
@@ -4521,6 +4633,7 @@ public class GuestFS {
    * See also "g.list_devices", "g.part_to_dev".
    * </p><p>
    * </p>
+   * @since 1.19.7
    * @throws LibGuestFSException
    */
   public int device_index (String device)
@@ -4547,6 +4660,7 @@ public class GuestFS {
    * string. Use "g.statvfs" from programs.
    * </p><p>
    * </p>
+   * @since 1.0.54
    * @throws LibGuestFSException
    */
   public String df ()
@@ -4573,6 +4687,7 @@ public class GuestFS {
    * string. Use "g.statvfs" from programs.
    * </p><p>
    * </p>
+   * @since 1.0.54
    * @throws LibGuestFSException
    */
   public String df_h ()
@@ -4638,6 +4753,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.25.31
    * @throws LibGuestFSException
    */
   public void disk_create (String filename, String format, long size, Map<String, Object> optargs)
@@ -4718,6 +4834,7 @@ public class GuestFS {
    * See also: "DISK IMAGE FORMATS" in guestfs(3)
    * </p><p>
    * </p>
+   * @since 1.19.38
    * @throws LibGuestFSException
    */
   public String disk_format (String filename)
@@ -4743,6 +4860,7 @@ public class GuestFS {
    * some circumstances. See "CVE-2010-3851" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.19.39
    * @throws LibGuestFSException
    */
   public boolean disk_has_backing_file (String filename)
@@ -4768,6 +4886,7 @@ public class GuestFS {
    * some circumstances. See "CVE-2010-3851" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.19.39
    * @throws LibGuestFSException
    */
   public long disk_virtual_size (String filename)
@@ -4796,6 +4915,7 @@ public class GuestFS {
    * the program.
    * </p><p>
    * </p>
+   * @since 1.0.18
    * @throws LibGuestFSException
    */
   public String dmesg ()
@@ -4822,6 +4942,7 @@ public class GuestFS {
    * See also "g.upload", "g.cat".
    * </p><p>
    * </p>
+   * @since 1.0.2
    * @throws LibGuestFSException
    */
   public void download (String remotefilename, String filename)
@@ -4855,6 +4976,7 @@ public class GuestFS {
    * See also "g.download", "g.pread".
    * </p><p>
    * </p>
+   * @since 1.5.17
    * @throws LibGuestFSException
    */
   public void download_offset (String remotefilename, String filename, long offset, long size)
@@ -4884,6 +5006,7 @@ public class GuestFS {
    * so that the maximum guest memory is freed.
    * </p><p>
    * </p>
+   * @since 1.0.18
    * @throws LibGuestFSException
    */
   public void drop_caches (int whattodrop)
@@ -4913,6 +5036,7 @@ public class GuestFS {
    * units of 1024 bytes).
    * </p><p>
    * </p>
+   * @since 1.0.54
    * @throws LibGuestFSException
    */
   public long du (String path)
@@ -4956,6 +5080,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.15.17
    * @throws LibGuestFSException
    */
   public void e2fsck (String device, Map<String, Object> optargs)
@@ -5005,6 +5130,7 @@ public class GuestFS {
    * even if the filesystem appears to be clean (*-f*).
    * </p><p>
    * </p>
+   * @since 1.0.29
    * @deprecated In new code, use {@link #e2fsck} instead
    * @throws LibGuestFSException
    */
@@ -5034,6 +5160,7 @@ public class GuestFS {
    * See also "g.ping_daemon".
    * </p><p>
    * </p>
+   * @since 1.0.69
    * @throws LibGuestFSException
    */
   public String echo_daemon (String[] words)
@@ -5060,6 +5187,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
    * @throws LibGuestFSException
    */
@@ -5087,6 +5215,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
    * @throws LibGuestFSException
    */
@@ -5113,6 +5242,7 @@ public class GuestFS {
    * The external cmp(1) program is used for the comparison.
    * </p><p>
    * </p>
+   * @since 1.0.18
    * @throws LibGuestFSException
    */
   public boolean equal (String file1, String file2)
@@ -5137,6 +5267,7 @@ public class GuestFS {
    * See also "g.is_file", "g.is_dir", "g.stat".
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public boolean exists (String path)
@@ -5178,6 +5309,7 @@ public class GuestFS {
    * See also "g.syslinux".
    * </p><p>
    * </p>
+   * @since 1.21.27
    * @throws LibGuestFSException
    */
   public void extlinux (String directory)
@@ -5205,6 +5337,7 @@ public class GuestFS {
    * it as a device.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @deprecated In new code, use {@link #fallocate64} instead
    * @throws LibGuestFSException
    */
@@ -5241,6 +5374,7 @@ public class GuestFS {
    * and attach it as a device.
    * </p><p>
    * </p>
+   * @since 1.3.17
    * @throws LibGuestFSException
    */
   public void fallocate64 (String path, long len)
@@ -5265,6 +5399,7 @@ public class GuestFS {
    * other documentation see "g.available".
    * </p><p>
    * </p>
+   * @since 1.21.26
    * @throws LibGuestFSException
    */
   public boolean feature_available (String[] groups)
@@ -5291,6 +5426,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
    * @throws LibGuestFSException
    */
@@ -5318,6 +5454,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
    * @throws LibGuestFSException
    */
@@ -5356,6 +5493,7 @@ public class GuestFS {
    * "g.is_blockdev" (etc), "g.is_zero".
    * </p><p>
    * </p>
+   * @since 1.9.1
    * @throws LibGuestFSException
    */
   public String file (String path)
@@ -5448,6 +5586,7 @@ public class GuestFS {
    * initrd or kernel module(s) instead.
    * </p><p>
    * </p>
+   * @since 1.5.3
    * @throws LibGuestFSException
    */
   public String file_architecture (String filename)
@@ -5473,6 +5612,7 @@ public class GuestFS {
    * of block devices, use "g.blockdev_getsize64".
    * </p><p>
    * </p>
+   * @since 1.0.82
    * @throws LibGuestFSException
    */
   public long filesize (String file)
@@ -5508,6 +5648,7 @@ public class GuestFS {
    * "AVAILABILITY" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.19.5
    * @throws LibGuestFSException
    */
   public boolean filesystem_available (String filesystem)
@@ -5536,6 +5677,7 @@ public class GuestFS {
    * "g.fill_pattern".
    * </p><p>
    * </p>
+   * @since 1.0.79
    * @throws LibGuestFSException
    */
   public void fill (int c, int len, String path)
@@ -5560,6 +5702,7 @@ public class GuestFS {
    * long padded with zeroes).
    * </p><p>
    * </p>
+   * @since 1.19.32
    * @throws LibGuestFSException
    */
   public void fill_dir (String dir, int nr)
@@ -5585,6 +5728,7 @@ public class GuestFS {
    * "len" bytes.
    * </p><p>
    * </p>
+   * @since 1.3.12
    * @throws LibGuestFSException
    */
   public void fill_pattern (String pattern, int len, String path)
@@ -5630,6 +5774,7 @@ public class GuestFS {
    * The returned list is sorted.
    * </p><p>
    * </p>
+   * @since 1.0.27
    * @throws LibGuestFSException
    */
   public String[] find (String directory)
@@ -5663,6 +5808,7 @@ public class GuestFS {
    * *   The result list is not sorted.
    * </p><p>
    * </p>
+   * @since 1.0.74
    * @throws LibGuestFSException
    */
   public void find0 (String directory, String files)
@@ -5688,6 +5834,7 @@ public class GuestFS {
    * To find the label of a filesystem, use "g.vfs_label".
    * </p><p>
    * </p>
+   * @since 1.5.3
    * @throws LibGuestFSException
    */
   public String findfs_label (String label)
@@ -5713,6 +5860,7 @@ public class GuestFS {
    * To find the UUID of a filesystem, use "g.vfs_uuid".
    * </p><p>
    * </p>
+   * @since 1.5.3
    * @throws LibGuestFSException
    */
   public String findfs_uuid (String uuid)
@@ -5752,6 +5900,7 @@ public class GuestFS {
    * -t fstype device".
    * </p><p>
    * </p>
+   * @since 1.0.16
    * @throws LibGuestFSException
    */
   public int fsck (String fstype, String device)
@@ -5795,6 +5944,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.19.6
    * @throws LibGuestFSException
    */
   public void fstrim (String mountpoint, Map<String, Object> optargs)
@@ -5853,6 +6003,7 @@ public class GuestFS {
    * If "NULL" then no options are added.
    * </p><p>
    * </p>
+   * @since 1.0.26
    * @throws LibGuestFSException
    */
   public String get_append ()
@@ -5876,6 +6027,7 @@ public class GuestFS {
    * See "g.set_backend" and "BACKEND" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.9.8
    * @deprecated In new code, use {@link #get_backend} instead
    * @throws LibGuestFSException
    */
@@ -5898,6 +6050,7 @@ public class GuestFS {
    * Get the autosync flag.
    * </p><p>
    * </p>
+   * @since 0.3
    * @throws LibGuestFSException
    */
   public boolean get_autosync ()
@@ -5924,6 +6077,7 @@ public class GuestFS {
    * See "g.set_backend" and "BACKEND" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.21.26
    * @throws LibGuestFSException
    */
   public String get_backend ()
@@ -5955,6 +6109,7 @@ public class GuestFS {
    * guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.27.2
    * @throws LibGuestFSException
    */
   public String get_backend_setting (String name)
@@ -5983,6 +6138,7 @@ public class GuestFS {
    * guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.25.24
    * @throws LibGuestFSException
    */
   public String[] get_backend_settings ()
@@ -6005,6 +6161,7 @@ public class GuestFS {
    * appliance cache.
    * </p><p>
    * </p>
+   * @since 1.19.58
    * @throws LibGuestFSException
    */
   public String get_cachedir ()
@@ -6026,6 +6183,7 @@ public class GuestFS {
    * Return the direct appliance mode flag.
    * </p><p>
    * </p>
+   * @since 1.0.72
    * @throws LibGuestFSException
    */
   public boolean get_direct ()
@@ -6122,6 +6280,7 @@ public class GuestFS {
    * (see "g.getxattr").
    * </p><p>
    * </p>
+   * @since 1.17.31
    * @throws LibGuestFSException
    */
   public String get_e2attrs (String file)
@@ -6152,6 +6311,7 @@ public class GuestFS {
    * See "g.set_e2generation".
    * </p><p>
    * </p>
+   * @since 1.17.31
    * @throws LibGuestFSException
    */
   public long get_e2generation (String file)
@@ -6174,6 +6334,7 @@ public class GuestFS {
    * filesystem on "device".
    * </p><p>
    * </p>
+   * @since 1.0.15
    * @deprecated In new code, use {@link #vfs_label} instead
    * @throws LibGuestFSException
    */
@@ -6197,6 +6358,7 @@ public class GuestFS {
    * filesystem on "device".
    * </p><p>
    * </p>
+   * @since 1.0.15
    * @deprecated In new code, use {@link #vfs_uuid} instead
    * @throws LibGuestFSException
    */
@@ -6222,6 +6384,7 @@ public class GuestFS {
    * this will return the default qemu binary name.
    * </p><p>
    * </p>
+   * @since 1.23.17
    * @throws LibGuestFSException
    */
   public String get_hv ()
@@ -6248,6 +6411,7 @@ public class GuestFS {
    * documentation and example code.
    * </p><p>
    * </p>
+   * @since 1.19.52
    * @throws LibGuestFSException
    */
   public String get_libvirt_requested_credential_challenge (int index)
@@ -6275,6 +6439,7 @@ public class GuestFS {
    * documentation and example code.
    * </p><p>
    * </p>
+   * @since 1.19.52
    * @throws LibGuestFSException
    */
   public String get_libvirt_requested_credential_defresult (int index)
@@ -6301,6 +6466,7 @@ public class GuestFS {
    * documentation and example code.
    * </p><p>
    * </p>
+   * @since 1.19.52
    * @throws LibGuestFSException
    */
   public String get_libvirt_requested_credential_prompt (int index)
@@ -6330,6 +6496,7 @@ public class GuestFS {
    * documentation and example code.
    * </p><p>
    * </p>
+   * @since 1.19.52
    * @throws LibGuestFSException
    */
   public String[] get_libvirt_requested_credentials ()
@@ -6359,6 +6526,7 @@ public class GuestFS {
    * see guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.55
    * @throws LibGuestFSException
    */
   public int get_memsize ()
@@ -6380,6 +6548,7 @@ public class GuestFS {
    * This returns the enable network flag.
    * </p><p>
    * </p>
+   * @since 1.5.4
    * @throws LibGuestFSException
    */
   public boolean get_network ()
@@ -6404,6 +6573,7 @@ public class GuestFS {
    * this will return the default path.
    * </p><p>
    * </p>
+   * @since 0.3
    * @throws LibGuestFSException
    */
   public String get_path ()
@@ -6425,6 +6595,7 @@ public class GuestFS {
    * This returns the process group flag.
    * </p><p>
    * </p>
+   * @since 1.11.18
    * @throws LibGuestFSException
    */
   public boolean get_pgroup ()
@@ -6449,6 +6620,7 @@ public class GuestFS {
    * This is an internal call used for debugging and testing.
    * </p><p>
    * </p>
+   * @since 1.0.56
    * @throws LibGuestFSException
    */
   public int get_pid ()
@@ -6470,6 +6642,7 @@ public class GuestFS {
    * Get the program name. See "g.set_program".
    * </p><p>
    * </p>
+   * @since 1.21.29
    * @throws LibGuestFSException
    */
   public String get_program ()
@@ -6494,6 +6667,7 @@ public class GuestFS {
    * this will return the default qemu binary name.
    * </p><p>
    * </p>
+   * @since 1.0.6
    * @deprecated In new code, use {@link #get_hv} instead
    * @throws LibGuestFSException
    */
@@ -6516,6 +6690,7 @@ public class GuestFS {
    * Return the recovery process enabled flag.
    * </p><p>
    * </p>
+   * @since 1.0.77
    * @throws LibGuestFSException
    */
   public boolean get_recovery_proc ()
@@ -6542,6 +6717,7 @@ public class GuestFS {
    * see guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.67
    * @throws LibGuestFSException
    */
   public boolean get_selinux ()
@@ -6564,6 +6740,7 @@ public class GuestFS {
    * appliance.
    * </p><p>
    * </p>
+   * @since 1.13.15
    * @throws LibGuestFSException
    */
   public int get_smp ()
@@ -6589,6 +6766,7 @@ public class GuestFS {
    * For more information on states, see guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.2
    * @throws LibGuestFSException
    */
   public int get_state ()
@@ -6611,6 +6789,7 @@ public class GuestFS {
    * files.
    * </p><p>
    * </p>
+   * @since 1.19.58
    * @throws LibGuestFSException
    */
   public String get_tmpdir ()
@@ -6632,6 +6811,7 @@ public class GuestFS {
    * Return the command trace flag.
    * </p><p>
    * </p>
+   * @since 1.0.69
    * @throws LibGuestFSException
    */
   public boolean get_trace ()
@@ -6654,6 +6834,7 @@ public class GuestFS {
    * unless it has been set by calling "g.umask".
    * </p><p>
    * </p>
+   * @since 1.3.4
    * @throws LibGuestFSException
    */
   public int get_umask ()
@@ -6675,6 +6856,7 @@ public class GuestFS {
    * This returns the verbose messages flag.
    * </p><p>
    * </p>
+   * @since 0.3
    * @throws LibGuestFSException
    */
   public boolean get_verbose ()
@@ -6699,6 +6881,7 @@ public class GuestFS {
    * "g.setcon"
    * </p><p>
    * </p>
+   * @since 1.0.67
    * @throws LibGuestFSException
    */
   public String getcon ()
@@ -6737,6 +6920,7 @@ public class GuestFS {
    * See also: "g.getxattrs", "g.lgetxattr", attr(5).
    * </p><p>
    * </p>
+   * @since 1.7.24
    * @throws LibGuestFSException
    */
   public String getxattr (String path, String name)
@@ -6764,6 +6948,7 @@ public class GuestFS {
    * See also: "g.lgetxattrs", attr(5).
    * </p><p>
    * </p>
+   * @since 1.0.59
    * @throws LibGuestFSException
    */
   public XAttr[] getxattrs (String path)
@@ -6798,6 +6983,7 @@ public class GuestFS {
    * "g.list_partitions" etc functions instead.
    * </p><p>
    * </p>
+   * @since 1.0.50
    * @throws LibGuestFSException
    */
   public String[] glob_expand (String pattern)
@@ -6847,6 +7033,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public String[] grep (String regex, String path, Map<String, Object> optargs)
@@ -6927,6 +7114,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
    * @throws LibGuestFSException
    */
@@ -6977,6 +7165,7 @@ public class GuestFS {
    * installation device.
    * </p><p>
    * </p>
+   * @since 1.0.17
    * @throws LibGuestFSException
    */
   public void grub_install (String root, String device)
@@ -7003,6 +7192,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.54
    * @throws LibGuestFSException
    */
   public String[] head (String path)
@@ -7036,6 +7226,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.54
    * @throws LibGuestFSException
    */
   public String[] head_n (int nrlines, String path)
@@ -7062,6 +7253,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.22
    * @throws LibGuestFSException
    */
   public String hexdump (String path)
@@ -7086,6 +7278,7 @@ public class GuestFS {
    * name.
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public void hivex_close ()
@@ -7116,6 +7309,7 @@ public class GuestFS {
    * name.
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public void hivex_commit (String filename)
@@ -7140,6 +7334,7 @@ public class GuestFS {
    * name.
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public long hivex_node_add_child (long parent, String name)
@@ -7164,6 +7359,7 @@ public class GuestFS {
    * name.
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public HivexNode[] hivex_node_children (long nodeh)
@@ -7188,6 +7384,7 @@ public class GuestFS {
    * name.
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public void hivex_node_delete_child (long nodeh)
@@ -7214,6 +7411,7 @@ public class GuestFS {
    * name.
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public long hivex_node_get_child (long nodeh, String name)
@@ -7240,6 +7438,7 @@ public class GuestFS {
    * name.
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public long hivex_node_get_value (long nodeh, String key)
@@ -7264,6 +7463,7 @@ public class GuestFS {
    * name.
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public String hivex_node_name (long nodeh)
@@ -7288,6 +7488,7 @@ public class GuestFS {
    * name.
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public long hivex_node_parent (long nodeh)
@@ -7314,6 +7515,7 @@ public class GuestFS {
    * name.
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public void hivex_node_set_value (long nodeh, String key, long t, byte[] val)
@@ -7339,6 +7541,7 @@ public class GuestFS {
    * name.
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public HivexValue[] hivex_node_values (long nodeh)
@@ -7370,6 +7573,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public void hivex_open (String filename, Map<String, Object> optargs)
@@ -7428,6 +7632,7 @@ public class GuestFS {
    * name.
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public long hivex_root ()
@@ -7453,6 +7658,7 @@ public class GuestFS {
    * name.
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public String hivex_value_key (long valueh)
@@ -7478,6 +7684,7 @@ public class GuestFS {
    * name.
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public long hivex_value_type (long valueh)
@@ -7508,6 +7715,7 @@ public class GuestFS {
    * arbitrary or unexpected data.
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public String hivex_value_utf8 (long valueh)
@@ -7534,6 +7742,7 @@ public class GuestFS {
    * See also: "g.hivex_value_utf8".
    * </p><p>
    * </p>
+   * @since 1.19.35
    * @throws LibGuestFSException
    */
   public String hivex_value_value (long valueh)
@@ -7569,6 +7778,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.84
    * @throws LibGuestFSException
    */
   public String initrd_cat (String initrdpath, String filename)
@@ -7599,6 +7809,7 @@ public class GuestFS {
    * initramfs format (compressed cpio files).
    * </p><p>
    * </p>
+   * @since 1.0.54
    * @throws LibGuestFSException
    */
   public String[] initrd_list (String path)
@@ -7628,6 +7839,7 @@ public class GuestFS {
    * "/usr/include/sys/inotify.h".
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public long inotify_add_watch (String path, int mask)
@@ -7651,6 +7863,7 @@ public class GuestFS {
    * away any pending events, and deallocates all resources.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public void inotify_close ()
@@ -7675,6 +7888,7 @@ public class GuestFS {
    * sorted and deduplicated.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public String[] inotify_files ()
@@ -7726,6 +7940,7 @@ public class GuestFS {
    * is one global inotify handle per libguestfs instance.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public void inotify_init (int maxevents)
@@ -7756,6 +7971,7 @@ public class GuestFS {
    * size and leave remaining events in the queue.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public INotifyEvent[] inotify_read ()
@@ -7778,6 +7994,7 @@ public class GuestFS {
    * "g.inotify_add_watch".
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public void inotify_rm_watch (int wd)
@@ -7806,6 +8023,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.5.3
    * @throws LibGuestFSException
    */
   public String inspect_get_arch (String root)
@@ -7841,6 +8059,9 @@ public class GuestFS {
    * </p><p>
    * "cirros"
    * Cirros.
+   * </p><p>
+   * "coreos"
+   * CoreOS.
    * </p><p>
    * "debian"
    * Debian.
@@ -7922,6 +8143,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.5.3
    * @throws LibGuestFSException
    */
   public String inspect_get_distro (String root)
@@ -7974,6 +8196,7 @@ public class GuestFS {
    * "g.inspect_get_filesystems".
    * </p><p>
    * </p>
+   * @since 1.9.17
    * @throws LibGuestFSException
    */
   public Map<String,String> inspect_get_drive_mappings (String root)
@@ -8010,6 +8233,7 @@ public class GuestFS {
    * See also "g.inspect_get_mountpoints".
    * </p><p>
    * </p>
+   * @since 1.5.3
    * @throws LibGuestFSException
    */
   public String[] inspect_get_filesystems (String root)
@@ -8052,6 +8276,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.9.4
    * @throws LibGuestFSException
    */
   public String inspect_get_format (String root)
@@ -8080,6 +8305,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.7.9
    * @throws LibGuestFSException
    */
   public String inspect_get_hostname (String root)
@@ -8156,6 +8382,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.11.12
    * @throws LibGuestFSException
    */
   public String inspect_get_icon (String root, Map<String, Object> optargs)
@@ -8216,6 +8443,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.5.3
    * @throws LibGuestFSException
    */
   public int inspect_get_major_version (String root)
@@ -8244,6 +8472,7 @@ public class GuestFS {
    * See also "g.inspect_get_major_version".
    * </p><p>
    * </p>
+   * @since 1.5.3
    * @throws LibGuestFSException
    */
   public int inspect_get_minor_version (String root)
@@ -8289,6 +8518,7 @@ public class GuestFS {
    * See also "g.inspect_get_filesystems".
    * </p><p>
    * </p>
+   * @since 1.5.3
    * @throws LibGuestFSException
    */
   public Map<String,String> inspect_get_mountpoints (String root)
@@ -8330,6 +8560,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.7.5
    * @throws LibGuestFSException
    */
   public String inspect_get_package_format (String root)
@@ -8367,6 +8598,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.7.5
    * @throws LibGuestFSException
    */
   public String inspect_get_package_management (String root)
@@ -8396,6 +8628,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.5.3
    * @throws LibGuestFSException
    */
   public String inspect_get_product_name (String root)
@@ -8439,6 +8672,7 @@ public class GuestFS {
    * "g.inspect_get_major_version".
    * </p><p>
    * </p>
+   * @since 1.9.13
    * @throws LibGuestFSException
    */
   public String inspect_get_product_variant (String root)
@@ -8468,6 +8702,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.7.3
    * @throws LibGuestFSException
    */
   public String[] inspect_get_roots ()
@@ -8523,6 +8758,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.5.3
    * @throws LibGuestFSException
    */
   public String inspect_get_type (String root)
@@ -8552,6 +8788,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.9.17
    * @throws LibGuestFSException
    */
   public String inspect_get_windows_current_control_set (String root)
@@ -8581,6 +8818,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.5.25
    * @throws LibGuestFSException
    */
   public String inspect_get_windows_systemroot (String root)
@@ -8606,6 +8844,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.9.4
    * @throws LibGuestFSException
    */
   public boolean inspect_is_live (String root)
@@ -8631,6 +8870,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.9.4
    * @throws LibGuestFSException
    */
   public boolean inspect_is_multipart (String root)
@@ -8658,6 +8898,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.9.4
    * @throws LibGuestFSException
    */
   public boolean inspect_is_netinst (String root)
@@ -8764,6 +9005,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.7.8
    * @deprecated In new code, use {@link #inspect_list_applications2} instead
    * @throws LibGuestFSException
    */
@@ -8876,6 +9118,7 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * </p>
+   * @since 1.19.56
    * @throws LibGuestFSException
    */
   public Application2[] inspect_list_applications2 (String root)
@@ -8931,6 +9174,7 @@ public class GuestFS {
    * See also "g.list_filesystems".
    * </p><p>
    * </p>
+   * @since 1.5.3
    * @throws LibGuestFSException
    */
   public String[] inspect_os ()
@@ -9885,6 +10129,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.5.10
    * @throws LibGuestFSException
    */
   public boolean is_blockdev (String path, Map<String, Object> optargs)
@@ -9939,6 +10184,7 @@ public class GuestFS {
    * For more information on states, see guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.2
    * @throws LibGuestFSException
    */
   public boolean is_busy ()
@@ -9972,6 +10218,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.5.10
    * @throws LibGuestFSException
    */
   public boolean is_chardev (String path, Map<String, Object> optargs)
@@ -10026,6 +10273,7 @@ public class GuestFS {
    * For more information on states, see guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.2
    * @throws LibGuestFSException
    */
   public boolean is_config ()
@@ -10060,6 +10308,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public boolean is_dir (String path, Map<String, Object> optargs)
@@ -10123,6 +10372,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.5.10
    * @throws LibGuestFSException
    */
   public boolean is_fifo (String path, Map<String, Object> optargs)
@@ -10187,6 +10437,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public boolean is_file (String path, Map<String, Object> optargs)
@@ -10241,6 +10492,7 @@ public class GuestFS {
    * For more information on states, see guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.2
    * @throws LibGuestFSException
    */
   public boolean is_launching ()
@@ -10263,6 +10515,7 @@ public class GuestFS {
    * and returns true iff this is the case.
    * </p><p>
    * </p>
+   * @since 1.5.3
    * @throws LibGuestFSException
    */
   public boolean is_lv (String device)
@@ -10287,6 +10540,7 @@ public class GuestFS {
    * For more information on states, see guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.2
    * @throws LibGuestFSException
    */
   public boolean is_ready ()
@@ -10320,6 +10574,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.5.10
    * @throws LibGuestFSException
    */
   public boolean is_socket (String path, Map<String, Object> optargs)
@@ -10374,6 +10629,7 @@ public class GuestFS {
    * See also "g.stat".
    * </p><p>
    * </p>
+   * @since 1.5.10
    * @throws LibGuestFSException
    */
   public boolean is_symlink (String path)
@@ -10397,6 +10653,7 @@ public class GuestFS {
    * logical device.
    * </p><p>
    * </p>
+   * @since 1.21.9
    * @throws LibGuestFSException
    */
   public boolean is_whole_device (String device)
@@ -10419,6 +10676,7 @@ public class GuestFS {
    * empty or it contains all zero bytes.
    * </p><p>
    * </p>
+   * @since 1.11.8
    * @throws LibGuestFSException
    */
   public boolean is_zero (String path)
@@ -10444,6 +10702,7 @@ public class GuestFS {
    * run.
    * </p><p>
    * </p>
+   * @since 1.11.8
    * @throws LibGuestFSException
    */
   public boolean is_zero_device (String device)
@@ -10470,6 +10729,7 @@ public class GuestFS {
    * "g.isoinfo_device".
    * </p><p>
    * </p>
+   * @since 1.17.19
    * @throws LibGuestFSException
    */
   public ISOInfo isoinfo (String isofile)
@@ -10502,6 +10762,7 @@ public class GuestFS {
    * iptor&gt;
    * </p><p>
    * </p>
+   * @since 1.17.19
    * @throws LibGuestFSException
    */
   public ISOInfo isoinfo_device (String device)
@@ -10523,6 +10784,7 @@ public class GuestFS {
    * Close the journal handle.
    * </p><p>
    * </p>
+   * @since 1.23.11
    * @throws LibGuestFSException
    */
   public void journal_close ()
@@ -10558,6 +10820,7 @@ public class GuestFS {
    * limited by the libguestfs protocol.
    * </p><p>
    * </p>
+   * @since 1.23.11
    * @throws LibGuestFSException
    */
   public XAttr[] journal_get ()
@@ -10585,6 +10848,7 @@ public class GuestFS {
    * See also "g.journal_set_data_threshold".
    * </p><p>
    * </p>
+   * @since 1.23.11
    * @throws LibGuestFSException
    */
   public long journal_get_data_threshold ()
@@ -10607,6 +10871,7 @@ public class GuestFS {
    * journal entry.
    * </p><p>
    * </p>
+   * @since 1.27.18
    * @throws LibGuestFSException
    */
   public long journal_get_realtime_usec ()
@@ -10635,6 +10900,7 @@ public class GuestFS {
    * means you have reached the end of the journal.
    * </p><p>
    * </p>
+   * @since 1.23.11
    * @throws LibGuestFSException
    */
   public boolean journal_next ()
@@ -10663,6 +10929,7 @@ public class GuestFS {
    * close the handle by calling "g.journal_close".
    * </p><p>
    * </p>
+   * @since 1.23.11
    * @throws LibGuestFSException
    */
   public void journal_open (String directory)
@@ -10690,6 +10957,7 @@ public class GuestFS {
    * See also "g.journal_get_data_threshold".
    * </p><p>
    * </p>
+   * @since 1.23.11
    * @throws LibGuestFSException
    */
   public void journal_set_data_threshold (long threshold)
@@ -10718,6 +10986,7 @@ public class GuestFS {
    * the journal.
    * </p><p>
    * </p>
+   * @since 1.23.11
    * @throws LibGuestFSException
    */
   public long journal_skip (long skip)
@@ -10741,6 +11010,7 @@ public class GuestFS {
    * Do not call this. See: "g.shutdown" instead.
    * </p><p>
    * </p>
+   * @since 0.3
    * @deprecated In new code, use {@link #shutdown} instead
    * @throws LibGuestFSException
    */
@@ -10770,6 +11040,7 @@ public class GuestFS {
    * create a new one for each launch.
    * </p><p>
    * </p>
+   * @since 0.3
    * @throws LibGuestFSException
    */
   public void launch ()
@@ -10798,6 +11069,7 @@ public class GuestFS {
    * relatively easy).
    * </p><p>
    * </p>
+   * @since 1.0.77
    * @throws LibGuestFSException
    */
   public void lchown (int owner, int group, String path)
@@ -10830,6 +11102,7 @@ public class GuestFS {
    * dynamic disk.
    * </p><p>
    * </p>
+   * @since 1.20.0
    * @throws LibGuestFSException
    */
   public void ldmtool_create_all ()
@@ -10854,6 +11127,7 @@ public class GuestFS {
    * "g.ldmtool_scan".
    * </p><p>
    * </p>
+   * @since 1.20.0
    * @throws LibGuestFSException
    */
   public String[] ldmtool_diskgroup_disks (String diskgroup)
@@ -10878,6 +11152,7 @@ public class GuestFS {
    * "g.ldmtool_scan".
    * </p><p>
    * </p>
+   * @since 1.20.0
    * @throws LibGuestFSException
    */
   public String ldmtool_diskgroup_name (String diskgroup)
@@ -10902,6 +11177,7 @@ public class GuestFS {
    * "g.ldmtool_scan".
    * </p><p>
    * </p>
+   * @since 1.20.0
    * @throws LibGuestFSException
    */
   public String[] ldmtool_diskgroup_volumes (String diskgroup)
@@ -10925,6 +11201,7 @@ public class GuestFS {
    * mappings for all Windows dynamic disk volumes
    * </p><p>
    * </p>
+   * @since 1.20.0
    * @throws LibGuestFSException
    */
   public void ldmtool_remove_all ()
@@ -10952,6 +11229,7 @@ public class GuestFS {
    * of block devices, call "g.ldmtool_scan_devices" instead.
    * </p><p>
    * </p>
+   * @since 1.20.0
    * @throws LibGuestFSException
    */
   public String[] ldmtool_scan ()
@@ -10980,6 +11258,7 @@ public class GuestFS {
    * are scanned.
    * </p><p>
    * </p>
+   * @since 1.20.0
    * @throws LibGuestFSException
    */
   public String[] ldmtool_scan_devices (String[] devices)
@@ -11005,6 +11284,7 @@ public class GuestFS {
    * Windows drive, eg. "E:".
    * </p><p>
    * </p>
+   * @since 1.20.0
    * @throws LibGuestFSException
    */
   public String ldmtool_volume_hint (String diskgroup, String volume)
@@ -11027,6 +11307,7 @@ public class GuestFS {
    * "volume" in the disk group with GUID "diskgroup".
    * </p><p>
    * </p>
+   * @since 1.20.0
    * @throws LibGuestFSException
    */
   public String[] ldmtool_volume_partitions (String diskgroup, String volume)
@@ -11053,6 +11334,7 @@ public class GuestFS {
    * Other types may also be returned.
    * </p><p>
    * </p>
+   * @since 1.20.0
    * @throws LibGuestFSException
    */
   public String ldmtool_volume_type (String diskgroup, String volume)
@@ -11090,6 +11372,7 @@ public class GuestFS {
    * See also: "g.lgetxattrs", "g.getxattr", attr(5).
    * </p><p>
    * </p>
+   * @since 1.7.24
    * @throws LibGuestFSException
    */
   public String lgetxattr (String path, String name)
@@ -11113,6 +11396,7 @@ public class GuestFS {
    * of the link itself.
    * </p><p>
    * </p>
+   * @since 1.0.59
    * @throws LibGuestFSException
    */
   public XAttr[] lgetxattrs (String path)
@@ -11135,6 +11419,7 @@ public class GuestFS {
    * mount tags is returned.
    * </p><p>
    * </p>
+   * @since 1.11.12
    * @throws LibGuestFSException
    */
   public String[] list_9p ()
@@ -11161,6 +11446,7 @@ public class GuestFS {
    * See also "g.list_filesystems".
    * </p><p>
    * </p>
+   * @since 0.4
    * @throws LibGuestFSException
    */
   public String[] list_devices ()
@@ -11190,6 +11476,7 @@ public class GuestFS {
    * (eg. "/dev/sda" and "/dev/sda1").
    * </p><p>
    * </p>
+   * @since 1.19.49
    * @throws LibGuestFSException
    */
   public Map<String,String> list_disk_labels ()
@@ -11223,6 +11510,7 @@ public class GuestFS {
    * you want to list logical volumes.
    * </p><p>
    * </p>
+   * @since 1.11.15
    * @throws LibGuestFSException
    */
   public String[] list_dm_devices ()
@@ -11277,6 +11565,7 @@ public class GuestFS {
    * (use "g.inspect_os" to look for OSes).
    * </p><p>
    * </p>
+   * @since 1.5.15
    * @throws LibGuestFSException
    */
   public Map<String,String> list_filesystems ()
@@ -11305,6 +11594,7 @@ public class GuestFS {
    * list of device names.
    * </p><p>
    * </p>
+   * @since 1.20.0
    * @throws LibGuestFSException
    */
   public String[] list_ldm_partitions ()
@@ -11328,6 +11618,7 @@ public class GuestFS {
    * device names.
    * </p><p>
    * </p>
+   * @since 1.20.0
    * @throws LibGuestFSException
    */
   public String[] list_ldm_volumes ()
@@ -11349,6 +11640,7 @@ public class GuestFS {
    * List all Linux md devices.
    * </p><p>
    * </p>
+   * @since 1.15.4
    * @throws LibGuestFSException
    */
   public String[] list_md_devices ()
@@ -11378,6 +11670,7 @@ public class GuestFS {
    * See also "g.list_filesystems".
    * </p><p>
    * </p>
+   * @since 0.4
    * @throws LibGuestFSException
    */
   public String[] list_partitions ()
@@ -11404,6 +11697,7 @@ public class GuestFS {
    * string.
    * </p><p>
    * </p>
+   * @since 0.4
    * @throws LibGuestFSException
    */
   public String ll (String directory)
@@ -11430,6 +11724,7 @@ public class GuestFS {
    * string.
    * </p><p>
    * </p>
+   * @since 1.17.6
    * @throws LibGuestFSException
    */
   public String llz (String directory)
@@ -11451,6 +11746,7 @@ public class GuestFS {
    * This command creates a hard link using the "ln" command.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public void ln (String target, String linkname)
@@ -11474,6 +11770,7 @@ public class GuestFS {
    * if it exists already.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public void ln_f (String target, String linkname)
@@ -11496,6 +11793,7 @@ public class GuestFS {
    * command.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public void ln_s (String target, String linkname)
@@ -11519,6 +11817,7 @@ public class GuestFS {
    * if it exists already.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public void ln_sf (String target, String linkname)
@@ -11542,6 +11841,7 @@ public class GuestFS {
    * the link itself.
    * </p><p>
    * </p>
+   * @since 1.0.59
    * @throws LibGuestFSException
    */
   public void lremovexattr (String xattr, String path)
@@ -11565,6 +11865,7 @@ public class GuestFS {
    * are not returned, but hidden files are shown.
    * </p><p>
    * </p>
+   * @since 0.4
    * @throws LibGuestFSException
    */
   public String[] ls (String directory)
@@ -11594,6 +11895,7 @@ public class GuestFS {
    * sorted.
    * </p><p>
    * </p>
+   * @since 1.19.32
    * @throws LibGuestFSException
    */
   public void ls0 (String dir, String filenames)
@@ -11617,6 +11919,7 @@ public class GuestFS {
    * link itself.
    * </p><p>
    * </p>
+   * @since 1.0.59
    * @throws LibGuestFSException
    */
   public void lsetxattr (String xattr, String val, int vallen, String path)
@@ -11644,6 +11947,7 @@ public class GuestFS {
    * This is the same as the lstat(2) system call.
    * </p><p>
    * </p>
+   * @since 1.9.2
    * @deprecated In new code, use {@link #lstatns} instead
    * @throws LibGuestFSException
    */
@@ -11680,6 +11984,7 @@ public class GuestFS {
    * attributes.
    * </p><p>
    * </p>
+   * @since 1.0.77
    * @deprecated In new code, use {@link #lstatnslist} instead
    * @throws LibGuestFSException
    */
@@ -11708,6 +12013,7 @@ public class GuestFS {
    * This is the same as the lstat(2) system call.
    * </p><p>
    * </p>
+   * @since 1.27.53
    * @throws LibGuestFSException
    */
   public StatNS lstatns (String path)
@@ -11743,6 +12049,7 @@ public class GuestFS {
    * attributes.
    * </p><p>
    * </p>
+   * @since 1.27.53
    * @throws LibGuestFSException
    */
   public StatNS[] lstatnslist (String path, String[] names)
@@ -11771,6 +12078,7 @@ public class GuestFS {
    * first to remove that key.
    * </p><p>
    * </p>
+   * @since 1.5.2
    * @throws LibGuestFSException
    */
   public void luks_add_key (String device, String key, String newkey, int keyslot)
@@ -11796,6 +12104,7 @@ public class GuestFS {
    * underlying block device.
    * </p><p>
    * </p>
+   * @since 1.5.1
    * @throws LibGuestFSException
    */
   public void luks_close (String device)
@@ -11820,6 +12129,7 @@ public class GuestFS {
    * (LUKS supports 8 key slots, numbered 0-7).
    * </p><p>
    * </p>
+   * @since 1.5.2
    * @throws LibGuestFSException
    */
   public void luks_format (String device, String key, int keyslot)
@@ -11842,6 +12152,7 @@ public class GuestFS {
    * allows you to set the "cipher" used.
    * </p><p>
    * </p>
+   * @since 1.5.2
    * @throws LibGuestFSException
    */
   public void luks_format_cipher (String device, String key, int keyslot, String cipher)
@@ -11865,6 +12176,7 @@ public class GuestFS {
    * the *other* keys.
    * </p><p>
    * </p>
+   * @since 1.5.2
    * @throws LibGuestFSException
    */
   public void luks_kill_slot (String device, String key, int keyslot)
@@ -11905,6 +12217,7 @@ public class GuestFS {
    * devices.
    * </p><p>
    * </p>
+   * @since 1.5.1
    * @throws LibGuestFSException
    */
   public void luks_open (String device, String key, String mapname)
@@ -11927,6 +12240,7 @@ public class GuestFS {
    * read-only mapping is created.
    * </p><p>
    * </p>
+   * @since 1.5.1
    * @throws LibGuestFSException
    */
   public void luks_open_ro (String device, String key, String mapname)
@@ -11949,6 +12263,7 @@ public class GuestFS {
    * the volume group "volgroup", with "size" megabytes.
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public void lvcreate (String logvol, String volgroup, int mbytes)
@@ -11974,6 +12289,7 @@ public class GuestFS {
    * largest possible LV.
    * </p><p>
    * </p>
+   * @since 1.17.18
    * @throws LibGuestFSException
    */
   public void lvcreate_free (String logvol, String volgroup, int percent)
@@ -12002,6 +12318,7 @@ public class GuestFS {
    * See also "g.is_lv", "g.canonical_device_name".
    * </p><p>
    * </p>
+   * @since 1.5.24
    * @throws LibGuestFSException
    */
   public String lvm_canonical_lv_name (String lvname)
@@ -12027,6 +12344,7 @@ public class GuestFS {
    * volume group scan.
    * </p><p>
    * </p>
+   * @since 1.5.1
    * @throws LibGuestFSException
    */
   public void lvm_clear_filter ()
@@ -12049,6 +12367,7 @@ public class GuestFS {
    * groups and physical volumes.
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public void lvm_remove_all ()
@@ -12092,6 +12411,7 @@ public class GuestFS {
    * filtering out that VG.
    * </p><p>
    * </p>
+   * @since 1.5.1
    * @throws LibGuestFSException
    */
   public void lvm_set_filter (String[] devices)
@@ -12117,6 +12437,7 @@ public class GuestFS {
    * specifying the VG name, "/dev/VG".
    * </p><p>
    * </p>
+   * @since 1.0.13
    * @throws LibGuestFSException
    */
   public void lvremove (String device)
@@ -12139,6 +12460,7 @@ public class GuestFS {
    * "newlogvol".
    * </p><p>
    * </p>
+   * @since 1.0.83
    * @throws LibGuestFSException
    */
   public void lvrename (String logvol, String newlogvol)
@@ -12162,6 +12484,7 @@ public class GuestFS {
    * reduced part is lost.
    * </p><p>
    * </p>
+   * @since 1.0.27
    * @throws LibGuestFSException
    */
   public void lvresize (String device, int mbytes)
@@ -12187,6 +12510,7 @@ public class GuestFS {
    * all remaining free space in the volume group.
    * </p><p>
    * </p>
+   * @since 1.3.3
    * @throws LibGuestFSException
    */
   public void lvresize_free (String lv, int percent)
@@ -12214,6 +12538,7 @@ public class GuestFS {
    * See also "g.lvs_full", "g.list_filesystems".
    * </p><p>
    * </p>
+   * @since 0.4
    * @throws LibGuestFSException
    */
   public String[] lvs ()
@@ -12237,6 +12562,7 @@ public class GuestFS {
    * includes all fields.
    * </p><p>
    * </p>
+   * @since 0.4
    * @throws LibGuestFSException
    */
   public LV[] lvs_full ()
@@ -12258,6 +12584,7 @@ public class GuestFS {
    * This command returns the UUID of the LVM LV "device".
    * </p><p>
    * </p>
+   * @since 1.0.87
    * @throws LibGuestFSException
    */
   public String lvuuid (String device)
@@ -12298,6 +12625,7 @@ public class GuestFS {
    * efficient call for getting standard stats.
    * </p><p>
    * </p>
+   * @since 1.0.77
    * @throws LibGuestFSException
    */
   public XAttr[] lxattrlist (String path, String[] names)
@@ -12326,6 +12654,7 @@ public class GuestFS {
    * additional information on this topic.
    * </p><p>
    * </p>
+   * @since 1.19.7
    * @throws LibGuestFSException
    */
   public int max_disks ()
@@ -12399,6 +12728,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.15.6
    * @throws LibGuestFSException
    */
   public void md_create (String name, String[] devices, Map<String, Object> optargs)
@@ -12487,6 +12817,7 @@ public class GuestFS {
    * The name of the MD device.
    * </p><p>
    * </p>
+   * @since 1.15.6
    * @throws LibGuestFSException
    */
   public Map<String,String> md_detail (String md)
@@ -12539,6 +12870,7 @@ public class GuestFS {
    * "R" replacement
    * </p><p>
    * </p>
+   * @since 1.17.21
    * @throws LibGuestFSException
    */
   public MDStat[] md_stat (String md)
@@ -12561,6 +12893,7 @@ public class GuestFS {
    * device is stopped, but it is not destroyed or zeroed.
    * </p><p>
    * </p>
+   * @since 1.15.6
    * @throws LibGuestFSException
    */
   public void md_stop (String md)
@@ -12582,6 +12915,7 @@ public class GuestFS {
    * Create a directory named "path".
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public void mkdir (String path)
@@ -12610,6 +12944,7 @@ public class GuestFS {
    * See also "g.mkdir", "g.umask"
    * </p><p>
    * </p>
+   * @since 1.0.77
    * @throws LibGuestFSException
    */
   public void mkdir_mode (String path, int mode)
@@ -12633,6 +12968,7 @@ public class GuestFS {
    * shell command.
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public void mkdir_p (String path)
@@ -12672,6 +13008,7 @@ public class GuestFS {
    * See also: mkdtemp(3)
    * </p><p>
    * </p>
+   * @since 1.0.54
    * @throws LibGuestFSException
    */
   public String mkdtemp (String tmpl)
@@ -12705,6 +13042,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.19.44
    * @throws LibGuestFSException
    */
   public void mke2fs (String device, Map<String, Object> optargs)
@@ -13046,6 +13384,7 @@ public class GuestFS {
    * See also "g.mke2journal".
    * </p><p>
    * </p>
+   * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
    * @throws LibGuestFSException
    */
@@ -13071,6 +13410,7 @@ public class GuestFS {
    * See also "g.mke2journal_L".
    * </p><p>
    * </p>
+   * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
    * @throws LibGuestFSException
    */
@@ -13096,6 +13436,7 @@ public class GuestFS {
    * See also "g.mke2journal_U".
    * </p><p>
    * </p>
+   * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
    * @throws LibGuestFSException
    */
@@ -13121,6 +13462,7 @@ public class GuestFS {
    * mke2fs -O journal_dev -b blocksize device
    * </p><p>
    * </p>
+   * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
    * @throws LibGuestFSException
    */
@@ -13144,6 +13486,7 @@ public class GuestFS {
    * label "label".
    * </p><p>
    * </p>
+   * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
    * @throws LibGuestFSException
    */
@@ -13167,6 +13510,7 @@ public class GuestFS {
    * UUID "uuid".
    * </p><p>
    * </p>
+   * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
    * @throws LibGuestFSException
    */
@@ -13196,6 +13540,7 @@ public class GuestFS {
    * The mode actually set is affected by the umask.
    * </p><p>
    * </p>
+   * @since 1.0.55
    * @throws LibGuestFSException
    */
   public void mkfifo (int mode, String path)
@@ -13256,6 +13601,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public void mkfs (String fstype, String device, Map<String, Object> optargs)
@@ -13345,6 +13691,7 @@ public class GuestFS {
    * as the requested cluster size.
    * </p><p>
    * </p>
+   * @since 1.0.68
    * @deprecated In new code, use {@link #mkfs} instead
    * @throws LibGuestFSException
    */
@@ -13379,6 +13726,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.17.25
    * @throws LibGuestFSException
    */
   public void mkfs_btrfs (String[] devices, Map<String, Object> optargs)
@@ -13477,6 +13825,7 @@ public class GuestFS {
    * directory.
    * </p><p>
    * </p>
+   * @since 1.19.56
    * @throws LibGuestFSException
    */
   public void mklost_and_found (String mountpoint)
@@ -13540,6 +13889,7 @@ public class GuestFS {
    * issues.
    * </p><p>
    * </p>
+   * @since 1.0.62
    * @throws LibGuestFSException
    */
   public void mkmountpoint (String exemptpath)
@@ -13577,6 +13927,7 @@ public class GuestFS {
    * The mode actually set is affected by the umask.
    * </p><p>
    * </p>
+   * @since 1.0.55
    * @throws LibGuestFSException
    */
   public void mknod (int mode, int devmajor, int devminor, String path)
@@ -13606,6 +13957,7 @@ public class GuestFS {
    * The mode actually set is affected by the umask.
    * </p><p>
    * </p>
+   * @since 1.0.55
    * @throws LibGuestFSException
    */
   public void mknod_b (int mode, int devmajor, int devminor, String path)
@@ -13635,6 +13987,7 @@ public class GuestFS {
    * The mode actually set is affected by the umask.
    * </p><p>
    * </p>
+   * @since 1.0.55
    * @throws LibGuestFSException
    */
   public void mknod_c (int mode, int devmajor, int devminor, String path)
@@ -13664,6 +14017,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.0.55
    * @throws LibGuestFSException
    */
   public void mkswap (String device, Map<String, Object> optargs)
@@ -13727,6 +14081,7 @@ public class GuestFS {
    * appears to be a limitation of the kernel or swap tools.
    * </p><p>
    * </p>
+   * @since 1.0.55
    * @deprecated In new code, use {@link #mkswap} instead
    * @throws LibGuestFSException
    */
@@ -13749,6 +14104,7 @@ public class GuestFS {
    * Create a swap partition on "device" with UUID "uuid".
    * </p><p>
    * </p>
+   * @since 1.0.55
    * @deprecated In new code, use {@link #mkswap} instead
    * @throws LibGuestFSException
    */
@@ -13775,6 +14131,7 @@ public class GuestFS {
    * like "g.fallocate".
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public void mkswap_file (String path)
@@ -13822,6 +14179,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.19.53
    * @throws LibGuestFSException
    */
   public String mktemp (String tmpl, Map<String, Object> optargs)
@@ -13861,6 +14219,7 @@ public class GuestFS {
    * This loads a kernel module in the appliance.
    * </p><p>
    * </p>
+   * @since 1.0.68
    * @throws LibGuestFSException
    */
   public void modprobe (String modulename)
@@ -13904,6 +14263,7 @@ public class GuestFS {
    * don't want any options).
    * </p><p>
    * </p>
+   * @since 0.3
    * @throws LibGuestFSException
    */
   public void mount (String mountable, String mountpoint)
@@ -13935,6 +14295,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.11.12
    * @throws LibGuestFSException
    */
   public void mount_9p (String mounttag, String mountpoint, Map<String, Object> optargs)
@@ -14003,6 +14364,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.17.22
    * @throws LibGuestFSException
    */
   public void mount_local (String localmountpoint, Map<String, Object> optargs)
@@ -14081,6 +14443,7 @@ public class GuestFS {
    * See "MOUNT LOCAL" in guestfs(3) for full documentation.
    * </p><p>
    * </p>
+   * @since 1.17.22
    * @throws LibGuestFSException
    */
   public void mount_local_run ()
@@ -14104,6 +14467,7 @@ public class GuestFS {
    * to the command "mount -o loop file mountpoint".
    * </p><p>
    * </p>
+   * @since 1.0.54
    * @throws LibGuestFSException
    */
   public void mount_loop (String file, String mountpoint)
@@ -14131,6 +14495,7 @@ public class GuestFS {
    * filesystem uses).
    * </p><p>
    * </p>
+   * @since 1.0.10
    * @throws LibGuestFSException
    */
   public void mount_options (String options, String mountable, String mountpoint)
@@ -14153,6 +14518,7 @@ public class GuestFS {
    * the filesystem with the read-only (*-o ro*) flag.
    * </p><p>
    * </p>
+   * @since 1.0.10
    * @throws LibGuestFSException
    */
   public void mount_ro (String mountable, String mountpoint)
@@ -14176,6 +14542,7 @@ public class GuestFS {
    * the mount(8) *-o* and *-t* flags.
    * </p><p>
    * </p>
+   * @since 1.0.10
    * @throws LibGuestFSException
    */
   public void mount_vfs (String options, String vfstype, String mountable, String mountpoint)
@@ -14199,6 +14566,7 @@ public class GuestFS {
    * device name to directory where the device is mounted.
    * </p><p>
    * </p>
+   * @since 1.0.62
    * @throws LibGuestFSException
    */
   public Map<String,String> mountpoints ()
@@ -14231,6 +14599,7 @@ public class GuestFS {
    * See also: "g.mountpoints"
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public String[] mounts ()
@@ -14255,6 +14624,7 @@ public class GuestFS {
    * See also: "g.rename".
    * </p><p>
    * </p>
+   * @since 1.0.18
    * @throws LibGuestFSException
    */
   public void mv (String src, String dest)
@@ -14281,6 +14651,7 @@ public class GuestFS {
    * added, call "g.max_disks".
    * </p><p>
    * </p>
+   * @since 1.19.15
    * @throws LibGuestFSException
    */
   public int nr_devices ()
@@ -14314,6 +14685,7 @@ public class GuestFS {
    * ntfs-3g.probe(8) manual page.
    * </p><p>
    * </p>
+   * @since 1.0.43
    * @throws LibGuestFSException
    */
   public int ntfs_3g_probe (boolean rw, String device)
@@ -14337,6 +14709,7 @@ public class GuestFS {
    * contents of this device.
    * </p><p>
    * </p>
+   * @since 1.17.9
    * @throws LibGuestFSException
    */
   public void ntfsclone_in (String backupfile, String device)
@@ -14376,6 +14749,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.17.9
    * @throws LibGuestFSException
    */
   public void ntfsclone_out (String device, String backupfile, Map<String, Object> optargs)
@@ -14462,6 +14836,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.17.9
    * @throws LibGuestFSException
    */
   public void ntfsfix (String device, Map<String, Object> optargs)
@@ -14530,6 +14905,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.3.2
    * @throws LibGuestFSException
    */
   public void ntfsresize (String device, Map<String, Object> optargs)
@@ -14591,6 +14967,7 @@ public class GuestFS {
    * explicitly.
    * </p><p>
    * </p>
+   * @since 1.3.14
    * @deprecated In new code, use {@link #ntfsresize} instead
    * @throws LibGuestFSException
    */
@@ -14623,6 +15000,7 @@ public class GuestFS {
    * and "g.parse_environment_list".
    * </p><p>
    * </p>
+   * @since 1.19.53
    * @throws LibGuestFSException
    */
   public void parse_environment ()
@@ -14651,6 +15029,7 @@ public class GuestFS {
    * program's environment.
    * </p><p>
    * </p>
+   * @since 1.19.53
    * @throws LibGuestFSException
    */
   public void parse_environment_list (String[] environment)
@@ -14687,6 +15066,7 @@ public class GuestFS {
    * so easy. Use "g.part_disk" to do that.
    * </p><p>
    * </p>
+   * @since 1.0.78
    * @throws LibGuestFSException
    */
   public void part_add (String device, String prlogex, long startsect, long endsect)
@@ -14713,6 +15093,7 @@ public class GuestFS {
    * it contains.
    * </p><p>
    * </p>
+   * @since 1.3.2
    * @throws LibGuestFSException
    */
   public void part_del (String device, int partnum)
@@ -14740,6 +15121,7 @@ public class GuestFS {
    * "g.part_init".
    * </p><p>
    * </p>
+   * @since 1.0.78
    * @throws LibGuestFSException
    */
   public void part_disk (String device, String parttype)
@@ -14764,6 +15146,7 @@ public class GuestFS {
    * See also "g.part_set_bootable".
    * </p><p>
    * </p>
+   * @since 1.3.2
    * @throws LibGuestFSException
    */
   public boolean part_get_bootable (String device, int partnum)
@@ -14785,6 +15168,7 @@ public class GuestFS {
    * Return the GUID of numbered GPT partition "partnum".
    * </p><p>
    * </p>
+   * @since 1.29.25
    * @throws LibGuestFSException
    */
   public String part_get_gpt_guid (String device, int partnum)
@@ -14809,6 +15193,7 @@ public class GuestFS {
    * undefined for other partition types.
    * </p><p>
    * </p>
+   * @since 1.21.1
    * @throws LibGuestFSException
    */
   public String part_get_gpt_type (String device, int partnum)
@@ -14835,6 +15220,7 @@ public class GuestFS {
    * partition table types (see "g.part_get_parttype").
    * </p><p>
    * </p>
+   * @since 1.3.2
    * @throws LibGuestFSException
    */
   public int part_get_mbr_id (String device, int partnum)
@@ -14859,6 +15245,7 @@ public class GuestFS {
    * It returns "primary", "logical", or "extended".
    * </p><p>
    * </p>
+   * @since 1.29.32
    * @throws LibGuestFSException
    */
   public String part_get_mbr_part_type (String device, int partnum)
@@ -14886,6 +15273,7 @@ public class GuestFS {
    * partitions.
    * </p><p>
    * </p>
+   * @since 1.25.33
    * @throws LibGuestFSException
    */
   public String part_get_name (String device, int partnum)
@@ -14914,6 +15302,7 @@ public class GuestFS {
    * unusual. See "g.part_init" for a full list.
    * </p><p>
    * </p>
+   * @since 1.0.78
    * @throws LibGuestFSException
    */
   public String part_get_parttype (String device)
@@ -14979,6 +15368,7 @@ public class GuestFS {
    * sun Sun disk labels.
    * </p><p>
    * </p>
+   * @since 1.0.78
    * @throws LibGuestFSException
    */
   public void part_init (String device, String parttype)
@@ -15017,6 +15407,7 @@ public class GuestFS {
    * Size of the partition in bytes.
    * </p><p>
    * </p>
+   * @since 1.0.78
    * @throws LibGuestFSException
    */
   public Partition[] part_list (String device)
@@ -15044,6 +15435,7 @@ public class GuestFS {
    * from. It is by no means universally recognized.
    * </p><p>
    * </p>
+   * @since 1.0.78
    * @throws LibGuestFSException
    */
   public void part_set_bootable (String device, int partnum, boolean bootable)
@@ -15067,6 +15459,7 @@ public class GuestFS {
    * "device" isn't GPT, or if "guid" is not a valid GUID.
    * </p><p>
    * </p>
+   * @since 1.29.25
    * @throws LibGuestFSException
    */
   public void part_set_gpt_guid (String device, int partnum, String guid)
@@ -15094,6 +15487,7 @@ public class GuestFS {
    * tion_type_GUIDs&gt; for a useful list of type GUIDs.
    * </p><p>
    * </p>
+   * @since 1.21.1
    * @throws LibGuestFSException
    */
   public void part_set_gpt_type (String device, int partnum, String guid)
@@ -15123,6 +15517,7 @@ public class GuestFS {
    * partition table types (see "g.part_get_parttype").
    * </p><p>
    * </p>
+   * @since 1.3.2
    * @throws LibGuestFSException
    */
   public void part_set_mbr_id (String device, int partnum, int idbyte)
@@ -15150,6 +15545,7 @@ public class GuestFS {
    * partitions.
    * </p><p>
    * </p>
+   * @since 1.0.78
    * @throws LibGuestFSException
    */
   public void part_set_name (String device, int partnum, String name)
@@ -15178,6 +15574,7 @@ public class GuestFS {
    * See also "g.part_to_partnum", "g.device_index".
    * </p><p>
    * </p>
+   * @since 1.5.15
    * @throws LibGuestFSException
    */
   public String part_to_dev (String partition)
@@ -15205,6 +15602,7 @@ public class GuestFS {
    * See also "g.part_to_dev".
    * </p><p>
    * </p>
+   * @since 1.13.25
    * @throws LibGuestFSException
    */
   public int part_to_partnum (String partition)
@@ -15230,6 +15628,7 @@ public class GuestFS {
    * in any other way.
    * </p><p>
    * </p>
+   * @since 1.0.18
    * @throws LibGuestFSException
    */
   public void ping_daemon ()
@@ -15262,6 +15661,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.77
    * @throws LibGuestFSException
    */
   public String pread (String path, int count, long offset)
@@ -15293,6 +15693,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.5.21
    * @throws LibGuestFSException
    */
   public String pread_device (String device, int count, long offset)
@@ -15315,6 +15716,7 @@ public class GuestFS {
    * "device".
    * </p><p>
    * </p>
+   * @since 1.19.26
    * @throws LibGuestFSException
    */
   public void pvchange_uuid (String device)
@@ -15336,6 +15738,7 @@ public class GuestFS {
    * Generate new random UUIDs for all physical volumes.
    * </p><p>
    * </p>
+   * @since 1.19.26
    * @throws LibGuestFSException
    */
   public void pvchange_uuid_all ()
@@ -15359,6 +15762,7 @@ public class GuestFS {
    * name such as "/dev/sda1".
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public void pvcreate (String device)
@@ -15385,6 +15789,7 @@ public class GuestFS {
    * groups, so you have to remove those first.
    * </p><p>
    * </p>
+   * @since 1.0.13
    * @throws LibGuestFSException
    */
   public void pvremove (String device)
@@ -15408,6 +15813,7 @@ public class GuestFS {
    * device.
    * </p><p>
    * </p>
+   * @since 1.0.26
    * @throws LibGuestFSException
    */
   public void pvresize (String device)
@@ -15431,6 +15837,7 @@ public class GuestFS {
    * explicitly.
    * </p><p>
    * </p>
+   * @since 1.3.14
    * @throws LibGuestFSException
    */
   public void pvresize_size (String device, long size)
@@ -15458,6 +15865,7 @@ public class GuestFS {
    * See also "g.pvs_full".
    * </p><p>
    * </p>
+   * @since 0.4
    * @throws LibGuestFSException
    */
   public String[] pvs ()
@@ -15481,6 +15889,7 @@ public class GuestFS {
    * includes all fields.
    * </p><p>
    * </p>
+   * @since 0.4
    * @throws LibGuestFSException
    */
   public PV[] pvs_full ()
@@ -15502,6 +15911,7 @@ public class GuestFS {
    * This command returns the UUID of the LVM PV "device".
    * </p><p>
    * </p>
+   * @since 1.0.87
    * @throws LibGuestFSException
    */
   public String pvuuid (String device)
@@ -15538,6 +15948,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.3.14
    * @throws LibGuestFSException
    */
   public int pwrite (String path, byte[] content, long offset)
@@ -15573,6 +15984,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.5.20
    * @throws LibGuestFSException
    */
   public int pwrite_device (String device, byte[] content, long offset)
@@ -15598,6 +16010,7 @@ public class GuestFS {
    * that contain embedded ASCII NUL characters.
    * </p><p>
    * </p>
+   * @since 1.0.63
    * @throws LibGuestFSException
    */
   public String read_file (String path)
@@ -15629,6 +16042,7 @@ public class GuestFS {
    * into lines yourself.
    * </p><p>
    * </p>
+   * @since 0.7
    * @throws LibGuestFSException
    */
   public String[] read_lines (String path)
@@ -15686,6 +16100,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.55
    * @throws LibGuestFSException
    */
   public Dirent[] readdir (String dir)
@@ -15707,6 +16122,7 @@ public class GuestFS {
    * This command reads the target of a symbolic link.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public String readlink (String path)
@@ -15746,6 +16162,7 @@ public class GuestFS {
    * many round-trips.
    * </p><p>
    * </p>
+   * @since 1.0.77
    * @throws LibGuestFSException
    */
   public String[] readlinklist (String path, String[] names)
@@ -15769,6 +16186,7 @@ public class GuestFS {
    * elements.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public String realpath (String path)
@@ -15802,6 +16220,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.23.2
    * @throws LibGuestFSException
    */
   public void remount (String mountpoint, Map<String, Object> optargs)
@@ -15855,6 +16274,7 @@ public class GuestFS {
    * and stop you from doing this.
    * </p><p>
    * </p>
+   * @since 1.19.49
    * @throws LibGuestFSException
    */
   public void remove_drive (String label)
@@ -15879,6 +16299,7 @@ public class GuestFS {
    * See also: "g.lremovexattr", attr(5).
    * </p><p>
    * </p>
+   * @since 1.0.59
    * @throws LibGuestFSException
    */
   public void removexattr (String xattr, String path)
@@ -15902,6 +16323,7 @@ public class GuestFS {
    * most cases you are better to use "g.mv" instead.
    * </p><p>
    * </p>
+   * @since 1.21.5
    * @throws LibGuestFSException
    */
   public void rename (String oldpath, String newpath)
@@ -15926,6 +16348,7 @@ public class GuestFS {
    * See also "RESIZE2FS ERRORS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.27
    * @throws LibGuestFSException
    */
   public void resize2fs (String device)
@@ -15957,6 +16380,7 @@ public class GuestFS {
    * See also "RESIZE2FS ERRORS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.9.4
    * @throws LibGuestFSException
    */
   public void resize2fs_M (String device)
@@ -15982,6 +16406,7 @@ public class GuestFS {
    * See also "RESIZE2FS ERRORS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.3.14
    * @throws LibGuestFSException
    */
   public void resize2fs_size (String device, long size)
@@ -16003,6 +16428,7 @@ public class GuestFS {
    * Remove the single file "path".
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public void rm (String path)
@@ -16031,6 +16457,7 @@ public class GuestFS {
    * directories recursively.
    * </p><p>
    * </p>
+   * @since 1.19.42
    * @throws LibGuestFSException
    */
   public void rm_f (String path)
@@ -16054,6 +16481,7 @@ public class GuestFS {
    * the "rm -rf" shell command.
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public void rm_rf (String path)
@@ -16075,6 +16503,7 @@ public class GuestFS {
    * Remove the single directory "path".
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public void rmdir (String path)
@@ -16098,6 +16527,7 @@ public class GuestFS {
    * full details.
    * </p><p>
    * </p>
+   * @since 1.0.62
    * @throws LibGuestFSException
    */
   public void rmmountpoint (String exemptpath)
@@ -16140,6 +16570,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.19.29
    * @throws LibGuestFSException
    */
   public void rsync (String src, String dest, Map<String, Object> optargs)
@@ -16212,6 +16643,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.19.29
    * @throws LibGuestFSException
    */
   public void rsync_in (String remote, String dest, Map<String, Object> optargs)
@@ -16291,6 +16723,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.19.29
    * @throws LibGuestFSException
    */
   public void rsync_out (String src, String remote, Map<String, Object> optargs)
@@ -16342,6 +16775,7 @@ public class GuestFS {
    * manual page for more details.
    * </p><p>
    * </p>
+   * @since 1.0.52
    * @throws LibGuestFSException
    */
   public void scrub_device (String device)
@@ -16369,6 +16803,7 @@ public class GuestFS {
    * manual page for more details.
    * </p><p>
    * </p>
+   * @since 1.0.52
    * @throws LibGuestFSException
    */
   public void scrub_file (String file)
@@ -16397,6 +16832,7 @@ public class GuestFS {
    * manual page for more details.
    * </p><p>
    * </p>
+   * @since 1.0.52
    * @throws LibGuestFSException
    */
   public void scrub_freespace (String dir)
@@ -16425,6 +16861,7 @@ public class GuestFS {
    * are passed (libguestfs always adds a few of its own).
    * </p><p>
    * </p>
+   * @since 1.0.26
    * @throws LibGuestFSException
    */
   public void set_append (String append)
@@ -16449,6 +16886,7 @@ public class GuestFS {
    * See "BACKEND" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.9.8
    * @deprecated In new code, use {@link #set_backend} instead
    * @throws LibGuestFSException
    */
@@ -16477,6 +16915,7 @@ public class GuestFS {
    * previously it was disabled by default).
    * </p><p>
    * </p>
+   * @since 0.3
    * @throws LibGuestFSException
    */
   public void set_autosync (boolean autosync)
@@ -16504,6 +16943,7 @@ public class GuestFS {
    * See "BACKEND" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.21.26
    * @throws LibGuestFSException
    */
   public void set_backend (String backend)
@@ -16530,6 +16970,7 @@ public class GuestFS {
    * guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.27.2
    * @throws LibGuestFSException
    */
   public void set_backend_setting (String name, String val)
@@ -16567,6 +17008,7 @@ public class GuestFS {
    * guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.25.24
    * @throws LibGuestFSException
    */
   public void set_backend_settings (String[] settings)
@@ -16597,6 +17039,7 @@ public class GuestFS {
    * "/var/tmp" is the default.
    * </p><p>
    * </p>
+   * @since 1.19.58
    * @throws LibGuestFSException
    */
   public void set_cachedir (String cachedir)
@@ -16629,6 +17072,7 @@ public class GuestFS {
    * The default is disabled.
    * </p><p>
    * </p>
+   * @since 1.0.72
    * @throws LibGuestFSException
    */
   public void set_direct (boolean direct)
@@ -16673,6 +17117,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.17.31
    * @throws LibGuestFSException
    */
   public void set_e2attrs (String file, String attrs, Map<String, Object> optargs)
@@ -16714,6 +17159,7 @@ public class GuestFS {
    * See "g.get_e2generation".
    * </p><p>
    * </p>
+   * @since 1.17.31
    * @throws LibGuestFSException
    */
   public void set_e2generation (String file, long generation)
@@ -16740,6 +17186,7 @@ public class GuestFS {
    * return the existing label on a filesystem.
    * </p><p>
    * </p>
+   * @since 1.0.15
    * @deprecated In new code, use {@link #set_label} instead
    * @throws LibGuestFSException
    */
@@ -16768,6 +17215,7 @@ public class GuestFS {
    * a filesystem.
    * </p><p>
    * </p>
+   * @since 1.0.15
    * @deprecated In new code, use {@link #set_uuid} instead
    * @throws LibGuestFSException
    */
@@ -16809,6 +17257,7 @@ public class GuestFS {
    * qemu binary at the same time as the handle is created.
    * </p><p>
    * </p>
+   * @since 1.23.17
    * @throws LibGuestFSException
    */
   public void set_hv (String hv)
@@ -16852,6 +17301,7 @@ public class GuestFS {
    * To read the label on a filesystem, call "g.vfs_label".
    * </p><p>
    * </p>
+   * @since 1.17.9
    * @throws LibGuestFSException
    */
   public void set_label (String mountable, String label)
@@ -16878,6 +17328,7 @@ public class GuestFS {
    * documentation and example code.
    * </p><p>
    * </p>
+   * @since 1.19.52
    * @throws LibGuestFSException
    */
   public void set_libvirt_requested_credential (int index, byte[] cred)
@@ -16920,6 +17371,7 @@ public class GuestFS {
    * documentation and example code.
    * </p><p>
    * </p>
+   * @since 1.19.52
    * @throws LibGuestFSException
    */
   public void set_libvirt_supported_credentials (String[] creds)
@@ -16950,6 +17402,7 @@ public class GuestFS {
    * see guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.55
    * @throws LibGuestFSException
    */
   public void set_memsize (int memsize)
@@ -16978,6 +17431,7 @@ public class GuestFS {
    * it has no effect.
    * </p><p>
    * </p>
+   * @since 1.5.4
    * @throws LibGuestFSException
    */
   public void set_network (boolean network)
@@ -17005,6 +17459,7 @@ public class GuestFS {
    * Setting "path" to "NULL" restores the default path.
    * </p><p>
    * </p>
+   * @since 0.3
    * @throws LibGuestFSException
    */
   public void set_path (String searchpath)
@@ -17037,6 +17492,7 @@ public class GuestFS {
    * "g.user_cancel").
    * </p><p>
    * </p>
+   * @since 1.11.18
    * @throws LibGuestFSException
    */
   public void set_pgroup (boolean pgroup)
@@ -17064,6 +17520,7 @@ public class GuestFS {
    * never "NULL").
    * </p><p>
    * </p>
+   * @since 1.21.29
    * @throws LibGuestFSException
    */
   public void set_program (String program)
@@ -17103,6 +17560,7 @@ public class GuestFS {
    * qemu binary at the same time as the handle is created.
    * </p><p>
    * </p>
+   * @since 1.0.6
    * @deprecated In new code, use {@link #set_hv} instead
    * @throws LibGuestFSException
    */
@@ -17139,6 +17597,7 @@ public class GuestFS {
    * very helpful.
    * </p><p>
    * </p>
+   * @since 1.0.77
    * @throws LibGuestFSException
    */
   public void set_recovery_proc (boolean recoveryproc)
@@ -17168,6 +17627,7 @@ public class GuestFS {
    * see guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.67
    * @throws LibGuestFSException
    */
   public void set_selinux (boolean selinux)
@@ -17193,6 +17653,7 @@ public class GuestFS {
    * This function must be called before "g.launch".
    * </p><p>
    * </p>
+   * @since 1.13.15
    * @throws LibGuestFSException
    */
   public void set_smp (int smp)
@@ -17221,6 +17682,7 @@ public class GuestFS {
    * "/tmp" is the default.
    * </p><p>
    * </p>
+   * @since 1.19.58
    * @throws LibGuestFSException
    */
   public void set_tmpdir (String tmpdir)
@@ -17254,6 +17716,7 @@ public class GuestFS {
    * "g.set_event_callback").
    * </p><p>
    * </p>
+   * @since 1.0.69
    * @throws LibGuestFSException
    */
   public void set_trace (boolean trace)
@@ -17279,6 +17742,7 @@ public class GuestFS {
    * To read the UUID on a filesystem, call "g.vfs_uuid".
    * </p><p>
    * </p>
+   * @since 1.23.10
    * @throws LibGuestFSException
    */
   public void set_uuid (String device, String uuid)
@@ -17307,6 +17771,7 @@ public class GuestFS {
    * "g.set_event_callback").
    * </p><p>
    * </p>
+   * @since 0.3
    * @throws LibGuestFSException
    */
   public void set_verbose (boolean verbose)
@@ -17331,6 +17796,7 @@ public class GuestFS {
    * See the documentation about SELINUX in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.67
    * @throws LibGuestFSException
    */
   public void setcon (String context)
@@ -17356,6 +17822,7 @@ public class GuestFS {
    * See also: "g.lsetxattr", attr(5).
    * </p><p>
    * </p>
+   * @since 1.0.59
    * @throws LibGuestFSException
    */
   public void setxattr (String xattr, String val, int vallen, String path)
@@ -17400,6 +17867,7 @@ public class GuestFS {
    * See also: "g.sfdisk_l", "g.sfdisk_N", "g.part_init"
    * </p><p>
    * </p>
+   * @since 0.8
    * @deprecated In new code, use {@link #part_add} instead
    * @throws LibGuestFSException
    */
@@ -17429,6 +17897,7 @@ public class GuestFS {
    * "g.part_disk"
    * </p><p>
    * </p>
+   * @since 1.0.55
    * @deprecated In new code, use {@link #part_add} instead
    * @throws LibGuestFSException
    */
@@ -17457,6 +17926,7 @@ public class GuestFS {
    * See also: "g.part_add"
    * </p><p>
    * </p>
+   * @since 1.0.26
    * @deprecated In new code, use {@link #part_add} instead
    * @throws LibGuestFSException
    */
@@ -17486,6 +17956,7 @@ public class GuestFS {
    * to be parsed.
    * </p><p>
    * </p>
+   * @since 1.0.26
    * @throws LibGuestFSException
    */
   public String sfdisk_disk_geometry (String device)
@@ -17511,6 +17982,7 @@ public class GuestFS {
    * to be parsed.
    * </p><p>
    * </p>
+   * @since 1.0.26
    * @throws LibGuestFSException
    */
   public String sfdisk_kernel_geometry (String device)
@@ -17536,6 +18008,7 @@ public class GuestFS {
    * See also: "g.part_list"
    * </p><p>
    * </p>
+   * @since 1.0.26
    * @deprecated In new code, use {@link #part_list} instead
    * @throws LibGuestFSException
    */
@@ -17569,6 +18042,7 @@ public class GuestFS {
    * All the provisos about "g.command" apply to this call.
    * </p><p>
    * </p>
+   * @since 1.0.50
    * @throws LibGuestFSException
    */
   public String sh (String command)
@@ -17593,6 +18067,7 @@ public class GuestFS {
    * See also: "g.command_lines"
    * </p><p>
    * </p>
+   * @since 1.0.50
    * @throws LibGuestFSException
    */
   public String[] sh_lines (String command)
@@ -17631,6 +18106,7 @@ public class GuestFS {
    * but note that any errors are ignored in that case.
    * </p><p>
    * </p>
+   * @since 1.19.16
    * @throws LibGuestFSException
    */
   public void shutdown ()
@@ -17652,6 +18128,7 @@ public class GuestFS {
    * Sleep for "secs" seconds.
    * </p><p>
    * </p>
+   * @since 1.0.41
    * @throws LibGuestFSException
    */
   public void sleep (int secs)
@@ -17675,6 +18152,7 @@ public class GuestFS {
    * This is the same as the stat(2) system call.
    * </p><p>
    * </p>
+   * @since 1.9.2
    * @deprecated In new code, use {@link #statns} instead
    * @throws LibGuestFSException
    */
@@ -17699,6 +18177,7 @@ public class GuestFS {
    * This is the same as the stat(2) system call.
    * </p><p>
    * </p>
+   * @since 1.27.53
    * @throws LibGuestFSException
    */
   public StatNS statns (String path)
@@ -17725,6 +18204,7 @@ public class GuestFS {
    * This is the same as the statvfs(2) system call.
    * </p><p>
    * </p>
+   * @since 1.9.2
    * @throws LibGuestFSException
    */
   public StatVFS statvfs (String path)
@@ -17756,6 +18236,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.22
    * @throws LibGuestFSException
    */
   public String[] strings (String path)
@@ -17810,6 +18291,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.22
    * @throws LibGuestFSException
    */
   public String[] strings_e (String encoding, String path)
@@ -17833,6 +18315,7 @@ public class GuestFS {
    * "g.swapon_device".
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public void swapoff_device (String device)
@@ -17855,6 +18338,7 @@ public class GuestFS {
    * file.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public void swapoff_file (String file)
@@ -17877,6 +18361,7 @@ public class GuestFS {
    * labeled swap partition.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public void swapoff_label (String label)
@@ -17899,6 +18384,7 @@ public class GuestFS {
    * partition with the given UUID.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public void swapoff_uuid (String uuid)
@@ -17931,6 +18417,7 @@ public class GuestFS {
    * swap on that.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public void swapon_device (String device)
@@ -17953,6 +18440,7 @@ public class GuestFS {
    * "g.swapon_device" for other notes.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public void swapon_file (String file)
@@ -17975,6 +18463,7 @@ public class GuestFS {
    * See "g.swapon_device" for other notes.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public void swapon_label (String label)
@@ -17997,6 +18486,7 @@ public class GuestFS {
    * given UUID. See "g.swapon_device" for other notes.
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @throws LibGuestFSException
    */
   public void swapon_uuid (String uuid)
@@ -18022,6 +18512,7 @@ public class GuestFS {
    * image, before closing the handle.
    * </p><p>
    * </p>
+   * @since 0.3
    * @throws LibGuestFSException
    */
   public void sync ()
@@ -18073,6 +18564,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.21.27
    * @throws LibGuestFSException
    */
   public void syslinux (String device, Map<String, Object> optargs)
@@ -18117,6 +18609,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.54
    * @throws LibGuestFSException
    */
   public String[] tail (String path)
@@ -18150,6 +18643,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.54
    * @throws LibGuestFSException
    */
   public String[] tail_n (int nrlines, String path)
@@ -18185,6 +18679,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.0.3
    * @throws LibGuestFSException
    */
   public void tar_in (String tarfile, String directory, Map<String, Object> optargs)
@@ -18260,6 +18755,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.0.3
    * @throws LibGuestFSException
    */
   public void tar_out (String directory, String tarfile, Map<String, Object> optargs)
@@ -18328,6 +18824,7 @@ public class GuestFS {
    * *gzip compressed* tar file) into "directory".
    * </p><p>
    * </p>
+   * @since 1.0.3
    * @deprecated In new code, use {@link #tar_in} instead
    * @throws LibGuestFSException
    */
@@ -18351,6 +18848,7 @@ public class GuestFS {
    * downloads it to local file "tarball".
    * </p><p>
    * </p>
+   * @since 1.0.3
    * @deprecated In new code, use {@link #tar_out} instead
    * @throws LibGuestFSException
    */
@@ -18379,6 +18877,7 @@ public class GuestFS {
    * block special etc.
    * </p><p>
    * </p>
+   * @since 0.3
    * @throws LibGuestFSException
    */
   public void touch (String path)
@@ -18401,6 +18900,7 @@ public class GuestFS {
    * file must exist already.
    * </p><p>
    * </p>
+   * @since 1.0.77
    * @throws LibGuestFSException
    */
   public void truncate (String path)
@@ -18430,6 +18930,7 @@ public class GuestFS {
    * instead.
    * </p><p>
    * </p>
+   * @since 1.0.77
    * @throws LibGuestFSException
    */
   public void truncate_size (String path, long size)
@@ -18518,6 +19019,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.15.4
    * @throws LibGuestFSException
    */
   public void tune2fs (String device, Map<String, Object> optargs)
@@ -18636,6 +19138,7 @@ public class GuestFS {
    * and the filesystem itself.
    * </p><p>
    * </p>
+   * @since 1.9.2
    * @throws LibGuestFSException
    */
   public Map<String,String> tune2fs_l (String device)
@@ -18663,6 +19166,7 @@ public class GuestFS {
    * (an *xz compressed* tar file) into "directory".
    * </p><p>
    * </p>
+   * @since 1.3.2
    * @deprecated In new code, use {@link #tar_in} instead
    * @throws LibGuestFSException
    */
@@ -18687,6 +19191,7 @@ public class GuestFS {
    * compressed tar archive).
    * </p><p>
    * </p>
+   * @since 1.3.2
    * @deprecated In new code, use {@link #tar_out} instead
    * @throws LibGuestFSException
    */
@@ -18723,6 +19228,7 @@ public class GuestFS {
    * This call returns the previous umask.
    * </p><p>
    * </p>
+   * @since 1.0.55
    * @throws LibGuestFSException
    */
   public int umask (int mask)
@@ -18751,6 +19257,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public void umount (String pathordevice, Map<String, Object> optargs)
@@ -18812,6 +19319,7 @@ public class GuestFS {
    * Some internal mounts are not unmounted by this call.
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public void umount_all ()
@@ -18841,6 +19349,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.17.22
    * @throws LibGuestFSException
    */
   public void umount_local (Map<String, Object> optargs)
@@ -18885,6 +19394,7 @@ public class GuestFS {
    * See also "g.download".
    * </p><p>
    * </p>
+   * @since 1.0.2
    * @throws LibGuestFSException
    */
   public void upload (String filename, String remotefilename)
@@ -18921,6 +19431,7 @@ public class GuestFS {
    * See also "g.upload", "g.pwrite".
    * </p><p>
    * </p>
+   * @since 1.5.17
    * @throws LibGuestFSException
    */
   public void upload_offset (String filename, String remotefilename, long offset)
@@ -18972,6 +19483,7 @@ public class GuestFS {
    * the cancel button to call this function.
    * </p><p>
    * </p>
+   * @since 1.11.18
    * @throws LibGuestFSException
    */
   public void user_cancel ()
@@ -19008,6 +19520,7 @@ public class GuestFS {
    * *secs field is ignored in this case).
    * </p><p>
    * </p>
+   * @since 1.0.77
    * @throws LibGuestFSException
    */
   public void utimens (String path, long atsecs, long atnsecs, long mtsecs, long mtnsecs)
@@ -19032,6 +19545,7 @@ public class GuestFS {
    * by the API.
    * </p><p>
    * </p>
+   * @since 1.19.27
    * @throws LibGuestFSException
    */
   public UTSName utsname ()
@@ -19083,6 +19597,7 @@ public class GuestFS {
    * "g.available" or "g.feature_available" instead.
    * </p><p>
    * </p>
+   * @since 1.0.58
    * @throws LibGuestFSException
    */
   public Version version ()
@@ -19110,6 +19625,7 @@ public class GuestFS {
    * "g.findfs_label".
    * </p><p>
    * </p>
+   * @since 1.3.18
    * @throws LibGuestFSException
    */
   public String vfs_label (String mountable)
@@ -19138,6 +19654,7 @@ public class GuestFS {
    * "ntfs".
    * </p><p>
    * </p>
+   * @since 1.0.75
    * @throws LibGuestFSException
    */
   public String vfs_type (String mountable)
@@ -19165,6 +19682,7 @@ public class GuestFS {
    * To find a filesystem from the UUID, use "g.findfs_uuid".
    * </p><p>
    * </p>
+   * @since 1.3.18
    * @throws LibGuestFSException
    */
   public String vfs_uuid (String mountable)
@@ -19194,6 +19712,7 @@ public class GuestFS {
    * volume groups are activated or deactivated.
    * </p><p>
    * </p>
+   * @since 1.0.26
    * @throws LibGuestFSException
    */
   public void vg_activate (boolean activate, String[] volgroups)
@@ -19218,6 +19737,7 @@ public class GuestFS {
    * This command is the same as running "vgchange -a y|n"
    * </p><p>
    * </p>
+   * @since 1.0.26
    * @throws LibGuestFSException
    */
   public void vg_activate_all (boolean activate)
@@ -19239,6 +19759,7 @@ public class GuestFS {
    * Generate a new random UUID for the volume group "vg".
    * </p><p>
    * </p>
+   * @since 1.19.26
    * @throws LibGuestFSException
    */
   public void vgchange_uuid (String vg)
@@ -19260,6 +19781,7 @@ public class GuestFS {
    * Generate new random UUIDs for all volume groups.
    * </p><p>
    * </p>
+   * @since 1.19.26
    * @throws LibGuestFSException
    */
   public void vgchange_uuid_all ()
@@ -19282,6 +19804,7 @@ public class GuestFS {
    * the non-empty list of physical volumes "physvols".
    * </p><p>
    * </p>
+   * @since 0.8
    * @throws LibGuestFSException
    */
   public void vgcreate (String volgroup, String[] physvols)
@@ -19309,6 +19832,7 @@ public class GuestFS {
    * See also "g.vgpvuuids".
    * </p><p>
    * </p>
+   * @since 1.0.87
    * @throws LibGuestFSException
    */
   public String[] vglvuuids (String vgname)
@@ -19335,6 +19859,7 @@ public class GuestFS {
    * information only.
    * </p><p>
    * </p>
+   * @since 1.17.20
    * @throws LibGuestFSException
    */
   public String vgmeta (String vgname)
@@ -19363,6 +19888,7 @@ public class GuestFS {
    * See also "g.vglvuuids".
    * </p><p>
    * </p>
+   * @since 1.0.87
    * @throws LibGuestFSException
    */
   public String[] vgpvuuids (String vgname)
@@ -19387,6 +19913,7 @@ public class GuestFS {
    * volume group (if any).
    * </p><p>
    * </p>
+   * @since 1.0.13
    * @throws LibGuestFSException
    */
   public void vgremove (String vgname)
@@ -19409,6 +19936,7 @@ public class GuestFS {
    * "newvolgroup".
    * </p><p>
    * </p>
+   * @since 1.0.83
    * @throws LibGuestFSException
    */
   public void vgrename (String volgroup, String newvolgroup)
@@ -19436,6 +19964,7 @@ public class GuestFS {
    * See also "g.vgs_full".
    * </p><p>
    * </p>
+   * @since 0.4
    * @throws LibGuestFSException
    */
   public String[] vgs ()
@@ -19459,6 +19988,7 @@ public class GuestFS {
    * includes all fields.
    * </p><p>
    * </p>
+   * @since 0.4
    * @throws LibGuestFSException
    */
   public VG[] vgs_full ()
@@ -19481,6 +20011,7 @@ public class GuestFS {
    * LVM physical volumes, volume groups and logical volumes.
    * </p><p>
    * </p>
+   * @since 1.3.2
    * @throws LibGuestFSException
    */
   public void vgscan ()
@@ -19503,6 +20034,7 @@ public class GuestFS {
    * "vgname".
    * </p><p>
    * </p>
+   * @since 1.0.87
    * @throws LibGuestFSException
    */
   public String vguuid (String vgname)
@@ -19533,6 +20065,7 @@ public class GuestFS {
    * compatibility with older versions of the API.
    * </p><p>
    * </p>
+   * @since 0.3
    * @deprecated In new code, use {@link #launch} instead
    * @throws LibGuestFSException
    */
@@ -19556,6 +20089,7 @@ public class GuestFS {
    * "wc -c" external command.
    * </p><p>
    * </p>
+   * @since 1.0.54
    * @throws LibGuestFSException
    */
   public int wc_c (String path)
@@ -19578,6 +20112,7 @@ public class GuestFS {
    * -l" external command.
    * </p><p>
    * </p>
+   * @since 1.0.54
    * @throws LibGuestFSException
    */
   public int wc_l (String path)
@@ -19600,6 +20135,7 @@ public class GuestFS {
    * -w" external command.
    * </p><p>
    * </p>
+   * @since 1.0.54
    * @throws LibGuestFSException
    */
   public int wc_w (String path)
@@ -19629,6 +20165,7 @@ public class GuestFS {
    * of a device.
    * </p><p>
    * </p>
+   * @since 1.17.6
    * @throws LibGuestFSException
    */
   public void wipefs (String device)
@@ -19654,6 +20191,7 @@ public class GuestFS {
    * See also "g.write_append".
    * </p><p>
    * </p>
+   * @since 1.3.14
    * @throws LibGuestFSException
    */
   public void write (String path, byte[] content)
@@ -19678,6 +20216,7 @@ public class GuestFS {
    * See also "g.write".
    * </p><p>
    * </p>
+   * @since 1.11.18
    * @throws LibGuestFSException
    */
   public void write_append (String path, byte[] content)
@@ -19713,6 +20252,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 0.8
    * @deprecated In new code, use {@link #write} instead
    * @throws LibGuestFSException
    */
@@ -19748,6 +20288,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.19.33
    * @throws LibGuestFSException
    */
   public void xfs_admin (String device, Map<String, Object> optargs)
@@ -19844,6 +20385,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.19.28
    * @throws LibGuestFSException
    */
   public void xfs_growfs (String path, Map<String, Object> optargs)
@@ -19945,6 +20487,7 @@ public class GuestFS {
    * or empty string.
    * </p><p>
    * </p>
+   * @since 1.19.21
    * @throws LibGuestFSException
    */
   public XFSInfo xfs_info (String pathordevice)
@@ -19986,6 +20529,7 @@ public class GuestFS {
    * empty Map or null for no optional arguments.
    * </p><p>
    * </p>
+   * @since 1.19.36
    * @throws LibGuestFSException
    */
   public int xfs_repair (String device, Map<String, Object> optargs)
@@ -20102,6 +20646,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
    * @throws LibGuestFSException
    */
@@ -20129,6 +20674,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
    * @throws LibGuestFSException
    */
@@ -20164,6 +20710,7 @@ public class GuestFS {
    * "g.is_zero_device"
    * </p><p>
    * </p>
+   * @since 1.0.16
    * @throws LibGuestFSException
    */
   public void zero (String device)
@@ -20191,6 +20738,7 @@ public class GuestFS {
    * becoming non-sparse or growing unnecessarily.
    * </p><p>
    * </p>
+   * @since 1.3.1
    * @throws LibGuestFSException
    */
   public void zero_device (String device)
@@ -20220,6 +20768,7 @@ public class GuestFS {
    * calling this, depending on your requirements.
    * </p><p>
    * </p>
+   * @since 1.17.18
    * @throws LibGuestFSException
    */
   public void zero_free_space (String directory)
@@ -20250,6 +20799,7 @@ public class GuestFS {
    * filesystem or data on the filesystem.
    * </p><p>
    * </p>
+   * @since 1.0.26
    * @throws LibGuestFSException
    */
   public void zerofree (String device)
@@ -20276,6 +20826,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
    * @throws LibGuestFSException
    */
@@ -20303,6 +20854,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
    * @throws LibGuestFSException
    */
@@ -20331,6 +20883,7 @@ public class GuestFS {
    * compressed files.
    * </p><p>
    * </p>
+   * @since 1.0.59
    * @deprecated In new code, use {@link #file} instead
    * @throws LibGuestFSException
    */
@@ -20358,6 +20911,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
    * @throws LibGuestFSException
    */
@@ -20385,6 +20939,7 @@ public class GuestFS {
    * LIMITS" in guestfs(3).
    * </p><p>
    * </p>
+   * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
    * @throws LibGuestFSException
    */

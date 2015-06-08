@@ -200,7 +200,7 @@ the format is always specified.
 
 =item B<--ignore> група_томів
 
-Ignore the named filesystem.
+Ігнорувати вказану файлову систему.
 
 When not using I<--in-place>: Free space on the filesystem will not be
 zeroed, but existing blocks of zeroes will still be sparsified.
@@ -440,5 +440,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011-2015 Red Hat Inc.
+© Red Hat Inc., 2011–2015
 

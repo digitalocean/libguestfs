@@ -3818,6 +3818,9 @@ class GuestFS(object):
         "cirros"
         Cirros.
         
+        "coreos"
+        CoreOS.
+        
         "debian"
         Debian.
         
