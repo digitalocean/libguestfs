@@ -562,7 +562,7 @@ Form feed character.
 
 =item C<\n>
 
-Newline character.
+Символ нового рядка.
 
 =item C<\r>
 
@@ -1580,5 +1580,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2015 Red Hat Inc.
+© Red Hat Inc., 2009–2015
 

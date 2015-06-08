@@ -10571,6 +10571,9 @@ ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
  * "cirros"
  * Cirros.
  * 
+ * "coreos"
+ * CoreOS.
+ * 
  * "debian"
  * Debian.
  * 

@@ -90,8 +90,8 @@ static int check_hostname_unix (guestfs_h *g, struct inspect_fs *fs);
 static int check_hostname_redhat (guestfs_h *g, struct inspect_fs *fs);
 static int check_hostname_freebsd (guestfs_h *g, struct inspect_fs *fs);
 static int check_fstab (guestfs_h *g, struct inspect_fs *fs);
-static int add_fstab_entry (guestfs_h *g, struct inspect_fs *fs,
-                            const char *mountable, const char *mp);
+static void add_fstab_entry (guestfs_h *g, struct inspect_fs *fs,
+                             const char *mountable, const char *mp);
 static char *resolve_fstab_device (guestfs_h *g, const char *spec,
                                    Hash_table *md_map,
                                    enum inspect_os_type os_type);
@@ -160,11 +160,16 @@ parse_release_file (guestfs_h *g, struct inspect_fs *fs,
  *   DISTRIB_CODENAME=Henry_Farman
  *   DISTRIB_DESCRIPTION="Mandriva Linux 2010.1"
  * Mandriva also has a normal release file called /etc/mandriva-release.
+ *
+ * CoreOS has a /etc/lsb-release link to /usr/share/coreos/lsb-release containing:
+ *   DISTRIB_ID=CoreOS
+ *   DISTRIB_RELEASE=647.0.0
+ *   DISTRIB_CODENAME="Red Dog"
+ *   DISTRIB_DESCRIPTION="CoreOS 647.0.0"
  */
 static int
-parse_lsb_release (guestfs_h *g, struct inspect_fs *fs)
+parse_lsb_release (guestfs_h *g, struct inspect_fs *fs, const char *filename)
 {
-  const char *filename = "/etc/lsb-release";
   int64_t size;
   CLEANUP_FREE_STRING_LIST char **lines = NULL;
   size_t i;
@@ -206,6 +211,11 @@ parse_lsb_release (guestfs_h *g, struct inspect_fs *fs)
     else if (fs->distro == 0 &&
              STREQ (lines[i], "DISTRIB_ID=\"Mageia\"")) {
       fs->distro = OS_DISTRO_MAGEIA;
+      r = 1;
+    }
+    else if (fs->distro == 0 &&
+             STREQ (lines[i], "DISTRIB_ID=CoreOS")) {
+      fs->distro = OS_DISTRO_COREOS;
       r = 1;
     }
     else if (STRPREFIX (lines[i], "DISTRIB_RELEASE=")) {
@@ -338,15 +348,15 @@ guestfs_int_check_linux_root (guestfs_h *g, struct inspect_fs *fs)
 
   if (guestfs_is_file_opts (g, "/etc/lsb-release",
                             GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, 1, -1) > 0) {
-    r = parse_lsb_release (g, fs);
+    r = parse_lsb_release (g, fs, "/etc/lsb-release");
     if (r == -1)        /* error */
       return -1;
     if (r == 1)         /* ok - detected the release from this file */
       goto skip_release_checks;
   }
 
-  /* Oracle Linux includes a "/etc/redhat-release" file, hence the Oracle check
-   * needs to be performed before the Red-Hat one.
+  /* RHEL-based distros include a "/etc/redhat-release" file, hence their
+   * checks need to be performed before the Red-Hat one.
    */
   if (guestfs_is_file_opts (g, "/etc/oracle-release",
                             GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, 1, -1) > 0) {
@@ -369,6 +379,34 @@ guestfs_int_check_linux_root (guestfs_h *g, struct inspect_fs *fs)
       if (fs->minor_version == -1)
         return -1;
     } else if ((major = match1 (g, fs->product_name, re_oracle_linux_no_minor)) != NULL) {
+      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
+      free (major);
+      if (fs->major_version == -1)
+        return -1;
+      fs->minor_version = 0;
+    }
+  }
+  else if (guestfs_is_file_opts (g, "/etc/centos-release",
+                                 GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, 1, -1) > 0) {
+    fs->distro = OS_DISTRO_CENTOS;
+
+    if (parse_release_file (g, fs, "/etc/centos-release") == -1)
+      return -1;
+
+    if (match2 (g, fs->product_name, re_centos_old, &major, &minor) ||
+             match2 (g, fs->product_name, re_centos, &major, &minor)) {
+      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
+      free (major);
+      if (fs->major_version == -1) {
+        free (minor);
+        return -1;
+      }
+      fs->minor_version = guestfs_int_parse_unsigned_int (g, minor);
+      free (minor);
+      if (fs->minor_version == -1)
+        return -1;
+    }
+    else if ((major = match1 (g, fs->product_name, re_centos_no_minor)) != NULL) {
       fs->major_version = guestfs_int_parse_unsigned_int (g, major);
       free (major);
       if (fs->major_version == -1)
@@ -795,6 +833,57 @@ guestfs_int_check_minix_root (guestfs_h *g, struct inspect_fs *fs)
   return 0;
 }
 
+/* The currently mounted device is a CoreOS root. From this partition we can
+ * only determine the hostname. All immutable OS files are under a separate
+ * read-only /usr partition.
+ */
+int
+guestfs_int_check_coreos_root (guestfs_h *g, struct inspect_fs *fs)
+{
+  fs->type = OS_TYPE_LINUX;
+  fs->distro = OS_DISTRO_COREOS;
+
+  /* Determine hostname. */
+  if (check_hostname_unix (g, fs) == -1)
+    return -1;
+
+  /* CoreOS does not contain /etc/fstab to determine the mount points.
+   * Associate this filesystem with the "/" mount point.
+   */
+  add_fstab_entry (g, fs, fs->mountable, "/");
+
+  return 0;
+}
+
+/* The currently mounted device looks like a CoreOS /usr. In CoreOS
+ * the read-only /usr contains the OS version. The /etc/os-release is a
+ * link to /usr/share/coreos/os-release.
+ */
+int
+guestfs_int_check_coreos_usr (guestfs_h *g, struct inspect_fs *fs)
+{
+  int r;
+
+  fs->type = OS_TYPE_LINUX;
+  fs->distro = OS_DISTRO_COREOS;
+  if (guestfs_is_file_opts (g, "/share/coreos/lsb-release",
+                            GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, 1, -1) > 0) {
+    r = parse_lsb_release (g, fs, "/share/coreos/lsb-release");
+    if (r == -1)        /* error */
+      return -1;
+  }
+
+  /* Determine the architecture. */
+  check_architecture (g, fs);
+
+  /* CoreOS does not contain /etc/fstab to determine the mount points.
+   * Associate this filesystem with the "/usr" mount point.
+   */
+  add_fstab_entry (g, fs, fs->mountable, "/usr");
+
+  return 0;
+}
+
 static void
 check_architecture (guestfs_h *g, struct inspect_fs *fs)
 {
@@ -1106,7 +1195,7 @@ check_fstab (guestfs_h *g, struct inspect_fs *fs)
       }
     }
 
-    if  (add_fstab_entry (g, fs, mountable, mp) == -1) return -1;
+    add_fstab_entry (g, fs, mountable, mp);
   }
 
   return 0;
@@ -1120,7 +1209,7 @@ check_fstab (guestfs_h *g, struct inspect_fs *fs)
  *
  * 'mp' is the mount point, which could also be 'swap' or 'none'.
  */
-static int
+static void
 add_fstab_entry (guestfs_h *g, struct inspect_fs *fs,
                  const char *mountable, const char *mountpoint)
 {
@@ -1131,11 +1220,7 @@ add_fstab_entry (guestfs_h *g, struct inspect_fs *fs,
   size_t n = fs->nr_fstab + 1;
   struct inspect_fstab_entry *p;
 
-  p = realloc (fs->fstab, n * sizeof (struct inspect_fstab_entry));
-  if (p == NULL) {
-    perrorf (g, "realloc");
-    return -1;
-  }
+  p = safe_realloc (g, fs->fstab, n * sizeof (struct inspect_fstab_entry));
 
   fs->fstab = p;
   fs->nr_fstab = n;
@@ -1145,8 +1230,6 @@ add_fstab_entry (guestfs_h *g, struct inspect_fs *fs,
   fs->fstab[n-1].mountpoint = safe_strdup (g, mountpoint);
 
   debug (g, "fstab: mountable=%s mountpoint=%s", mountable, mountpoint);
-
-  return 0;
 }
 
 /* Compute a uuid hash as a simple xor of of its 4 32bit components */

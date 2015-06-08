@@ -2935,7 +2935,7 @@ arbitrary 8 bit data, including NUL bytes.
 C<array> and C<array_len> is an array of 64 bit unsigned integers.  At the
 moment this is only used for progress messages.
 
-=head2 EXAMPLE: CAPTURING LOG MESSAGES
+=head2 ПРИКЛАД: ЗАХОПЛЮЄМО ПОВІДОМЛЕННЯ ЖУРНАЛУ
 
 A working program demonstrating this can be found in
 C<examples/debug-logging.c> in the source of libguestfs.
@@ -4654,5 +4654,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2015 Red Hat Inc.
+© Red Hat Inc., 2009–2015
 

@@ -427,6 +427,7 @@ guestfs_session_close (GuestfsSession *session, GError **err)
  * attached to directory @dir.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.63
  */
 gboolean
 guestfs_session_acl_delete_def_file (GuestfsSession *session, const gchar *dir, GError **err)
@@ -471,6 +472,7 @@ guestfs_session_acl_delete_def_file (GuestfsSession *session, const gchar *dir, 
  * directory.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.19.63
  */
 gchar *
 guestfs_session_acl_get_file (GuestfsSession *session, const gchar *path, const gchar *acltype, GError **err)
@@ -533,6 +535,7 @@ guestfs_session_acl_get_file (GuestfsSession *session, const gchar *path, const 
  * functions (see guestfs_session_aug_init()).
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.63
  */
 gboolean
 guestfs_session_acl_set_file (GuestfsSession *session, const gchar *path, const gchar *acltype, const gchar *acl, GError **err)
@@ -569,6 +572,7 @@ guestfs_session_acl_set_file (GuestfsSession *session, const gchar *path, const 
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_add_drive_ro() instead
+ * Since: 0.3
  */
 gboolean
 guestfs_session_add_cdrom (GuestfsSession *session, const gchar *filename, GError **err)
@@ -675,6 +679,7 @@ guestfs_session_add_cdrom (GuestfsSession *session, const gchar *filename, GErro
  * guestfs_session_add_drive_opts().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.7.4
  */
 gint32
 guestfs_session_add_domain (GuestfsSession *session, const gchar *dom, GuestfsAddDomain *optargs, GError **err)
@@ -1012,6 +1017,7 @@ guestfs_session_add_domain (GuestfsSession *session, const gchar *dom, GuestfsAd
  * The default is false.
  * 
  * Returns: true on success, false on error
+ * Since: 0.3
  */
 gboolean
 guestfs_session_add_drive (GuestfsSession *session, const gchar *filename, GuestfsAddDrive *optargs, GError **err)
@@ -1143,6 +1149,7 @@ guestfs_session_add_drive (GuestfsSession *session, const gchar *filename, Guest
  * read-only, with the format being detected automatically.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.38
  */
 gboolean
 guestfs_session_add_drive_ro (GuestfsSession *session, const gchar *filename, GError **err)
@@ -1178,6 +1185,7 @@ guestfs_session_add_drive_ro (GuestfsSession *session, const gchar *filename, GE
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_add_drive() instead
+ * Since: 1.0.84
  */
 gboolean
 guestfs_session_add_drive_ro_with_if (GuestfsSession *session, const gchar *filename, const gchar *iface, GError **err)
@@ -1217,6 +1225,7 @@ guestfs_session_add_drive_ro_with_if (GuestfsSession *session, const gchar *file
  * guestfs_session_add_drive().
  * 
  * Returns: true on success, false on error
+ * Since: 1.23.10
  */
 gboolean
 guestfs_session_add_drive_scratch (GuestfsSession *session, gint64 size, GuestfsAddDriveScratch *optargs, GError **err)
@@ -1276,6 +1285,7 @@ guestfs_session_add_drive_scratch (GuestfsSession *session, gint64 size, Guestfs
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_add_drive() instead
+ * Since: 1.0.84
  */
 gboolean
 guestfs_session_add_drive_with_if (GuestfsSession *session, const gchar *filename, const gchar *iface, GError **err)
@@ -1340,6 +1350,7 @@ guestfs_session_add_drive_with_if (GuestfsSession *session, const gchar *filenam
  * guestfs_session_add_drive_opts().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.29.14
  */
 gint32
 guestfs_session_add_libvirt_dom (GuestfsSession *session, void * /* virDomainPtr */ dom, GuestfsAddLibvirtDom *optargs, GError **err)
@@ -1437,6 +1448,7 @@ guestfs_session_add_libvirt_dom (GuestfsSession *session, void * /* virDomainPtr
  * augtool(1) @clear command.
  * 
  * Returns: true on success, false on error
+ * Since: 1.3.4
  */
 gboolean
 guestfs_session_aug_clear (GuestfsSession *session, const gchar *augpath, GError **err)
@@ -1470,6 +1482,7 @@ guestfs_session_aug_clear (GuestfsSession *session, const gchar *augpath, GError
  * before you can use any other Augeas functions.
  * 
  * Returns: true on success, false on error
+ * Since: 0.7
  */
 gboolean
 guestfs_session_aug_close (GuestfsSession *session, GError **err)
@@ -1511,6 +1524,7 @@ guestfs_session_aug_close (GuestfsSession *session, GError **err)
  * nodeset, and a boolean flag if a node was created.
  * 
  * Returns: (transfer full): a IntBool object, or NULL on error
+ * Since: 0.7
  */
 GuestfsIntBool *
 guestfs_session_aug_defnode (GuestfsSession *session, const gchar *name, const gchar *expr, const gchar *val, GError **err)
@@ -1552,6 +1566,7 @@ guestfs_session_aug_defnode (GuestfsSession *session, const gchar *name, const g
  * evaluates to something which is not a nodeset.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 0.7
  */
 gint32
 guestfs_session_aug_defvar (GuestfsSession *session, const gchar *name, const gchar *expr, GError **err)
@@ -1585,6 +1600,7 @@ guestfs_session_aug_defvar (GuestfsSession *session, const gchar *name, const gc
  * node, the @value is returned.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 0.7
  */
 gchar *
 guestfs_session_aug_get (GuestfsSession *session, const gchar *augpath, GError **err)
@@ -1656,6 +1672,7 @@ guestfs_session_aug_get (GuestfsSession *session, const gchar *augpath, GError *
  * http://augeas.net/ </ulink>.
  * 
  * Returns: true on success, false on error
+ * Since: 0.7
  */
 gboolean
 guestfs_session_aug_init (GuestfsSession *session, const gchar *root, gint32 flags, GError **err)
@@ -1695,6 +1712,7 @@ guestfs_session_aug_init (GuestfsSession *session, const gchar *root, gint32 fla
  * "[N]".
  * 
  * Returns: true on success, false on error
+ * Since: 0.7
  */
 gboolean
 guestfs_session_aug_insert (GuestfsSession *session, const gchar *augpath, const gchar *label, gboolean before, GError **err)
@@ -1729,6 +1747,7 @@ guestfs_session_aug_insert (GuestfsSession *session, const gchar *augpath, const
  * function returns an error.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.23.14
  */
 gchar *
 guestfs_session_aug_label (GuestfsSession *session, const gchar *augpath, GError **err)
@@ -1762,6 +1781,7 @@ guestfs_session_aug_label (GuestfsSession *session, const gchar *augpath, GError
  * See @aug_load in the Augeas documentation for the full gory details.
  * 
  * Returns: true on success, false on error
+ * Since: 0.7
  */
 gboolean
 guestfs_session_aug_load (GuestfsSession *session, GError **err)
@@ -1795,6 +1815,7 @@ guestfs_session_aug_load (GuestfsSession *session, GError **err)
  * and sorting the resulting nodes into alphabetical order.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 0.8
  */
 gchar **
 guestfs_session_aug_ls (GuestfsSession *session, const gchar *augpath, GError **err)
@@ -1829,6 +1850,7 @@ guestfs_session_aug_ls (GuestfsSession *session, const gchar *augpath, GError **
  * node in the current tree.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 0.7
  */
 gchar **
 guestfs_session_aug_match (GuestfsSession *session, const gchar *augpath, GError **err)
@@ -1863,6 +1885,7 @@ guestfs_session_aug_match (GuestfsSession *session, const gchar *augpath, GError
  * overwritten if it exists.
  * 
  * Returns: true on success, false on error
+ * Since: 0.7
  */
 gboolean
 guestfs_session_aug_mv (GuestfsSession *session, const gchar *src, const gchar *dest, GError **err)
@@ -1897,6 +1920,7 @@ guestfs_session_aug_mv (GuestfsSession *session, const gchar *src, const gchar *
  * On success this returns the number of entries which were removed.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 0.7
  */
 gint32
 guestfs_session_aug_rm (GuestfsSession *session, const gchar *augpath, GError **err)
@@ -1931,6 +1955,7 @@ guestfs_session_aug_rm (GuestfsSession *session, const gchar *augpath, GError **
  * how files are saved.
  * 
  * Returns: true on success, false on error
+ * Since: 0.7
  */
 gboolean
 guestfs_session_aug_save (GuestfsSession *session, GError **err)
@@ -1969,6 +1994,7 @@ guestfs_session_aug_save (GuestfsSession *session, GError **err)
  * call.
  * 
  * Returns: true on success, false on error
+ * Since: 0.7
  */
 gboolean
 guestfs_session_aug_set (GuestfsSession *session, const gchar *augpath, const gchar *val, GError **err)
@@ -2009,6 +2035,7 @@ guestfs_session_aug_set (GuestfsSession *session, const gchar *augpath, const gc
  * This returns the number of nodes modified.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.23.14
  */
 gint32
 guestfs_session_aug_setm (GuestfsSession *session, const gchar *base, const gchar *sub, const gchar *val, GError **err)
@@ -2086,6 +2113,7 @@ guestfs_session_aug_setm (GuestfsSession *session, const gchar *base, const gcha
  * See also guestfs_session_filesystem_available().
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.80
  */
 gboolean
 guestfs_session_available (GuestfsSession *session, gchar *const *groups, GError **err)
@@ -2124,6 +2152,7 @@ guestfs_session_available (GuestfsSession *session, gchar *const *groups, GError
  * guestfs_session_feature_available() and "AVAILABILITY" in guestfs(3).
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.3.15
  */
 gchar **
 guestfs_session_available_all_groups (GuestfsSession *session, GError **err)
@@ -2158,6 +2187,7 @@ guestfs_session_available_all_groups (GuestfsSession *session, GError **err)
  * This command uploads base64-encoded data from @base64file to @filename.
  * 
  * Returns: true on success, false on error
+ * Since: 1.3.5
  */
 gboolean
 guestfs_session_base64_in (GuestfsSession *session, const gchar *base64file, const gchar *filename, GCancellable *cancellable, GError **err)
@@ -2205,6 +2235,7 @@ guestfs_session_base64_in (GuestfsSession *session, const gchar *base64file, con
  * local file @base64file encoded as base64.
  * 
  * Returns: true on success, false on error
+ * Since: 1.3.5
  */
 gboolean
 guestfs_session_base64_out (GuestfsSession *session, const gchar *filename, const gchar *base64file, GCancellable *cancellable, GError **err)
@@ -2256,6 +2287,7 @@ guestfs_session_base64_out (GuestfsSession *session, const gchar *filename, cons
  * guestfs_session_add_drive_opts()).
  * 
  * Returns: true on success, false on error
+ * Since: 1.25.44
  */
 gboolean
 guestfs_session_blkdiscard (GuestfsSession *session, const gchar *device, GError **err)
@@ -2293,6 +2325,7 @@ guestfs_session_blkdiscard (GuestfsSession *session, const gchar *device, GError
  * stale or random data.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.25.44
  */
 gint8
 guestfs_session_blkdiscardzeroes (GuestfsSession *session, const gchar *device, GError **err)
@@ -2342,6 +2375,7 @@ guestfs_session_blkdiscardzeroes (GuestfsSession *session, const gchar *device, 
  * The usage of this device, for example @filesystem or @raid.
  * 
  * Returns: (transfer full) (element-type utf8 utf8): a GHashTable of results, or NULL on error
+ * Since: 1.15.9
  */
 GHashTable *
 guestfs_session_blkid (GuestfsSession *session, const gchar *device, GError **err)
@@ -2384,6 +2418,7 @@ guestfs_session_blkid (GuestfsSession *session, const gchar *device, GError **er
  * This uses the blockdev(8) command.
  * 
  * Returns: true on success, false on error
+ * Since: 1.9.3
  */
 gboolean
 guestfs_session_blockdev_flushbufs (GuestfsSession *session, const gchar *device, GError **err)
@@ -2423,6 +2458,7 @@ guestfs_session_blockdev_flushbufs (GuestfsSession *session, const gchar *device
  * This uses the blockdev(8) command.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.9.3
  */
 gint32
 guestfs_session_blockdev_getbsz (GuestfsSession *session, const gchar *device, GError **err)
@@ -2458,6 +2494,7 @@ guestfs_session_blockdev_getbsz (GuestfsSession *session, const gchar *device, G
  * This uses the blockdev(8) command.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.9.3
  */
 gint8
 guestfs_session_blockdev_getro (GuestfsSession *session, const gchar *device, GError **err)
@@ -2494,6 +2531,7 @@ guestfs_session_blockdev_getro (GuestfsSession *session, const gchar *device, GE
  * This uses the blockdev(8) command.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.9.3
  */
 gint64
 guestfs_session_blockdev_getsize64 (GuestfsSession *session, const gchar *device, GError **err)
@@ -2532,6 +2570,7 @@ guestfs_session_blockdev_getsize64 (GuestfsSession *session, const gchar *device
  * This uses the blockdev(8) command.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.9.3
  */
 gint32
 guestfs_session_blockdev_getss (GuestfsSession *session, const gchar *device, GError **err)
@@ -2571,6 +2610,7 @@ guestfs_session_blockdev_getss (GuestfsSession *session, const gchar *device, GE
  * This uses the blockdev(8) command.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.9.3
  */
 gint64
 guestfs_session_blockdev_getsz (GuestfsSession *session, const gchar *device, GError **err)
@@ -2605,6 +2645,7 @@ guestfs_session_blockdev_getsz (GuestfsSession *session, const gchar *device, GE
  * This uses the blockdev(8) command.
  * 
  * Returns: true on success, false on error
+ * Since: 1.9.3
  */
 gboolean
 guestfs_session_blockdev_rereadpt (GuestfsSession *session, const gchar *device, GError **err)
@@ -2643,6 +2684,7 @@ guestfs_session_blockdev_rereadpt (GuestfsSession *session, const gchar *device,
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_mkfs() instead
+ * Since: 1.9.3
  */
 gboolean
 guestfs_session_blockdev_setbsz (GuestfsSession *session, const gchar *device, gint32 blocksize, GError **err)
@@ -2678,6 +2720,7 @@ guestfs_session_blockdev_setbsz (GuestfsSession *session, const gchar *device, g
  * This uses the blockdev(8) command.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.10
  */
 gboolean
 guestfs_session_blockdev_setra (GuestfsSession *session, const gchar *device, gint32 sectors, GError **err)
@@ -2712,6 +2755,7 @@ guestfs_session_blockdev_setra (GuestfsSession *session, const gchar *device, gi
  * This uses the blockdev(8) command.
  * 
  * Returns: true on success, false on error
+ * Since: 1.9.3
  */
 gboolean
 guestfs_session_blockdev_setro (GuestfsSession *session, const gchar *device, GError **err)
@@ -2746,6 +2790,7 @@ guestfs_session_blockdev_setro (GuestfsSession *session, const gchar *device, GE
  * This uses the blockdev(8) command.
  * 
  * Returns: true on success, false on error
+ * Since: 1.9.3
  */
 gboolean
 guestfs_session_blockdev_setrw (GuestfsSession *session, const gchar *device, GError **err)
@@ -2778,6 +2823,7 @@ guestfs_session_blockdev_setrw (GuestfsSession *session, const gchar *device, GE
  * Cancel a running balance on a btrfs filesystem.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.22
  */
 gboolean
 guestfs_session_btrfs_balance_cancel (GuestfsSession *session, const gchar *path, GError **err)
@@ -2810,6 +2856,7 @@ guestfs_session_btrfs_balance_cancel (GuestfsSession *session, const gchar *path
  * Pause a running balance on a btrfs filesystem.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.22
  */
 gboolean
 guestfs_session_btrfs_balance_pause (GuestfsSession *session, const gchar *path, GError **err)
@@ -2842,6 +2889,7 @@ guestfs_session_btrfs_balance_pause (GuestfsSession *session, const gchar *path,
  * Resume a paused balance on a btrfs filesystem.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.22
  */
 gboolean
 guestfs_session_btrfs_balance_resume (GuestfsSession *session, const gchar *path, GError **err)
@@ -2874,6 +2922,7 @@ guestfs_session_btrfs_balance_resume (GuestfsSession *session, const gchar *path
  * Show the status of a running or paused balance on a btrfs filesystem.
  * 
  * Returns: (transfer full): a BTRFSBalance object, or NULL on error
+ * Since: 1.29.26
  */
 GuestfsBTRFSBalance *
 guestfs_session_btrfs_balance_status (GuestfsSession *session, const gchar *path, GError **err)
@@ -2915,6 +2964,7 @@ guestfs_session_btrfs_balance_status (GuestfsSession *session, const gchar *path
  * @fs. If @devices is an empty list, this does nothing.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.35
  */
 gboolean
 guestfs_session_btrfs_device_add (GuestfsSession *session, gchar *const *devices, const gchar *fs, GError **err)
@@ -2949,6 +2999,7 @@ guestfs_session_btrfs_device_add (GuestfsSession *session, gchar *const *devices
  * @devices is an empty list, this does nothing.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.35
  */
 gboolean
 guestfs_session_btrfs_device_delete (GuestfsSession *session, gchar *const *devices, const gchar *fs, GError **err)
@@ -2982,6 +3033,7 @@ guestfs_session_btrfs_device_delete (GuestfsSession *session, gchar *const *devi
  * underlying devices.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.35
  */
 gboolean
 guestfs_session_btrfs_filesystem_balance (GuestfsSession *session, const gchar *fs, GError **err)
@@ -3016,6 +3068,7 @@ guestfs_session_btrfs_filesystem_balance (GuestfsSession *session, const gchar *
  * zlib or lzo.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.22
  */
 gboolean
 guestfs_session_btrfs_filesystem_defragment (GuestfsSession *session, const gchar *path, GuestfsBTRFSFilesystemDefragment *optargs, GError **err)
@@ -3085,6 +3138,7 @@ guestfs_session_btrfs_filesystem_defragment (GuestfsSession *session, const gcha
  * See also btrfs(8).
  * 
  * Returns: true on success, false on error
+ * Since: 1.11.17
  */
 gboolean
 guestfs_session_btrfs_filesystem_resize (GuestfsSession *session, const gchar *mountpoint, GuestfsBTRFSFilesystemResize *optargs, GError **err)
@@ -3133,6 +3187,7 @@ guestfs_session_btrfs_filesystem_resize (GuestfsSession *session, const gchar *m
  * Force sync on the btrfs filesystem mounted at @fs.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.35
  */
 gboolean
 guestfs_session_btrfs_filesystem_sync (GuestfsSession *session, const gchar *fs, GError **err)
@@ -3167,6 +3222,7 @@ guestfs_session_btrfs_filesystem_sync (GuestfsSession *session, const gchar *fs,
  * filesystem is stored.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.43
  */
 gboolean
 guestfs_session_btrfs_fsck (GuestfsSession *session, const gchar *device, GuestfsBtrfsFsck *optargs, GError **err)
@@ -3226,6 +3282,7 @@ guestfs_session_btrfs_fsck (GuestfsSession *session, const gchar *device, Guestf
  * zeroed, but metadata and the like is preserved.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.32
  */
 gboolean
 guestfs_session_btrfs_image (GuestfsSession *session, gchar *const *source, const gchar *image, GuestfsBTRFSImage *optargs, GError **err)
@@ -3277,6 +3334,7 @@ guestfs_session_btrfs_image (GuestfsSession *session, gchar *const *source, cons
  * qgroups into a parent qgroup to share common limit.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.17
  */
 gboolean
 guestfs_session_btrfs_qgroup_assign (GuestfsSession *session, const gchar *src, const gchar *dst, const gchar *path, GError **err)
@@ -3310,6 +3368,7 @@ guestfs_session_btrfs_qgroup_assign (GuestfsSession *session, const gchar *src, 
  * Create a quota group (qgroup) for subvolume at @subvolume.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.17
  */
 gboolean
 guestfs_session_btrfs_qgroup_create (GuestfsSession *session, const gchar *qgroupid, const gchar *subvolume, GError **err)
@@ -3343,6 +3402,7 @@ guestfs_session_btrfs_qgroup_create (GuestfsSession *session, const gchar *qgrou
  * Destroy a quota group.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.17
  */
 gboolean
 guestfs_session_btrfs_qgroup_destroy (GuestfsSession *session, const gchar *qgroupid, const gchar *subvolume, GError **err)
@@ -3377,6 +3437,7 @@ guestfs_session_btrfs_qgroup_destroy (GuestfsSession *session, const gchar *qgro
  * suffix of G, M, or K.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.17
  */
 gboolean
 guestfs_session_btrfs_qgroup_limit (GuestfsSession *session, const gchar *subvolume, gint64 size, GError **err)
@@ -3411,6 +3472,7 @@ guestfs_session_btrfs_qgroup_limit (GuestfsSession *session, const gchar *subvol
  * Remove qgroup @src from the parent qgroup @dst.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.17
  */
 gboolean
 guestfs_session_btrfs_qgroup_remove (GuestfsSession *session, const gchar *src, const gchar *dst, const gchar *path, GError **err)
@@ -3444,6 +3506,7 @@ guestfs_session_btrfs_qgroup_remove (GuestfsSession *session, const gchar *src, 
  * usages.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsBTRFSQgroup): an array of BTRFSQgroup objects, or NULL on error
+ * Since: 1.29.17
  */
 GuestfsBTRFSQgroup **
 guestfs_session_btrfs_qgroup_show (GuestfsSession *session, const gchar *path, GError **err)
@@ -3488,6 +3551,7 @@ guestfs_session_btrfs_qgroup_show (GuestfsSession *session, const gchar *path, G
  * @path.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.17
  */
 gboolean
 guestfs_session_btrfs_quota_enable (GuestfsSession *session, const gchar *fs, gboolean enable, GError **err)
@@ -3521,6 +3585,7 @@ guestfs_session_btrfs_quota_enable (GuestfsSession *session, const gchar *fs, gb
  * config.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.17
  */
 gboolean
 guestfs_session_btrfs_quota_rescan (GuestfsSession *session, const gchar *fs, GError **err)
@@ -3554,6 +3619,7 @@ guestfs_session_btrfs_quota_rescan (GuestfsSession *session, const gchar *fs, GE
  * by one.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.22
  */
 gboolean
 guestfs_session_btrfs_rescue_chunk_recover (GuestfsSession *session, const gchar *device, GError **err)
@@ -3586,6 +3652,7 @@ guestfs_session_btrfs_rescue_chunk_recover (GuestfsSession *session, const gchar
  * Recover bad superblocks from good copies.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.22
  */
 gboolean
 guestfs_session_btrfs_rescue_super_recover (GuestfsSession *session, const gchar *device, GError **err)
@@ -3618,6 +3685,7 @@ guestfs_session_btrfs_rescue_super_recover (GuestfsSession *session, const gchar
  * Cancel a running scrub on a btrfs filesystem.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.22
  */
 gboolean
 guestfs_session_btrfs_scrub_cancel (GuestfsSession *session, const gchar *path, GError **err)
@@ -3650,6 +3718,7 @@ guestfs_session_btrfs_scrub_cancel (GuestfsSession *session, const gchar *path, 
  * Resume a previously canceled or interrupted scrub on a btrfs filesystem.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.22
  */
 gboolean
 guestfs_session_btrfs_scrub_resume (GuestfsSession *session, const gchar *path, GError **err)
@@ -3684,6 +3753,7 @@ guestfs_session_btrfs_scrub_resume (GuestfsSession *session, const gchar *path, 
  * corrupt data.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.22
  */
 gboolean
 guestfs_session_btrfs_scrub_start (GuestfsSession *session, const gchar *path, GError **err)
@@ -3716,6 +3786,7 @@ guestfs_session_btrfs_scrub_start (GuestfsSession *session, const gchar *path, G
  * Show status of running or finished scrub on a btrfs filesystem.
  * 
  * Returns: (transfer full): a BTRFSScrub object, or NULL on error
+ * Since: 1.29.26
  */
 GuestfsBTRFSScrub *
 guestfs_session_btrfs_scrub_status (GuestfsSession *session, const gchar *path, GError **err)
@@ -3767,6 +3838,7 @@ guestfs_session_btrfs_scrub_status (GuestfsSession *session, const gchar *path, 
  * filesystem.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.43
  */
 gboolean
 guestfs_session_btrfs_set_seeding (GuestfsSession *session, const gchar *device, gboolean seeding, GError **err)
@@ -3803,6 +3875,7 @@ guestfs_session_btrfs_set_seeding (GuestfsSession *session, const gchar *device,
  * qgroup which the newly created subvolume will be added to.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.35
  */
 gboolean
 guestfs_session_btrfs_subvolume_create (GuestfsSession *session, const gchar *dest, GuestfsBTRFSSubvolumeCreate *optargs, GError **err)
@@ -3851,6 +3924,7 @@ guestfs_session_btrfs_subvolume_create (GuestfsSession *session, const gchar *de
  * Delete the named btrfs subvolume or snapshot.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.35
  */
 gboolean
 guestfs_session_btrfs_subvolume_delete (GuestfsSession *session, const gchar *subvolume, GError **err)
@@ -3884,6 +3958,7 @@ guestfs_session_btrfs_subvolume_delete (GuestfsSession *session, const gchar *su
  * @mountpoint.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.29.17
  */
 gint64
 guestfs_session_btrfs_subvolume_get_default (GuestfsSession *session, const gchar *fs, GError **err)
@@ -3917,6 +3992,7 @@ guestfs_session_btrfs_subvolume_get_default (GuestfsSession *session, const gcha
  * mounted at @fs.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsBTRFSSubvolume): an array of BTRFSSubvolume objects, or NULL on error
+ * Since: 1.17.35
  */
 GuestfsBTRFSSubvolume **
 guestfs_session_btrfs_subvolume_list (GuestfsSession *session, const gchar *fs, GError **err)
@@ -3962,6 +4038,7 @@ guestfs_session_btrfs_subvolume_list (GuestfsSession *session, const gchar *fs, 
  * subvolumes.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.35
  */
 gboolean
 guestfs_session_btrfs_subvolume_set_default (GuestfsSession *session, gint64 id, const gchar *fs, GError **err)
@@ -3994,6 +4071,7 @@ guestfs_session_btrfs_subvolume_set_default (GuestfsSession *session, gint64 id,
  * Return detailed information of the subvolume.
  * 
  * Returns: (transfer full) (element-type utf8 utf8): a GHashTable of results, or NULL on error
+ * Since: 1.29.17
  */
 GHashTable *
 guestfs_session_btrfs_subvolume_show (GuestfsSession *session, const gchar *subvolume, GError **err)
@@ -4041,6 +4119,7 @@ guestfs_session_btrfs_subvolume_show (GuestfsSession *session, const gchar *subv
  * the newly created snapshot will be added to.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.35
  */
 gboolean
 guestfs_session_btrfs_subvolume_snapshot (GuestfsSession *session, const gchar *source, const gchar *dest, GuestfsBTRFSSubvolumeSnapshot *optargs, GError **err)
@@ -4097,6 +4176,7 @@ guestfs_session_btrfs_subvolume_snapshot (GuestfsSession *session, const gchar *
  * This will Enable extended inode refs.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.29
  */
 gboolean
 guestfs_session_btrfstune_enable_extended_inode_refs (GuestfsSession *session, const gchar *device, GError **err)
@@ -4129,6 +4209,7 @@ guestfs_session_btrfstune_enable_extended_inode_refs (GuestfsSession *session, c
  * This enable skinny metadata extent refs.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.29
  */
 gboolean
 guestfs_session_btrfstune_enable_skinny_metadata_extent_refs (GuestfsSession *session, const gchar *device, GError **err)
@@ -4163,6 +4244,7 @@ guestfs_session_btrfstune_enable_skinny_metadata_extent_refs (GuestfsSession *se
  * you can use it to build other filesystems.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.29
  */
 gboolean
 guestfs_session_btrfstune_seeding (GuestfsSession *session, const gchar *device, gboolean seeding, GError **err)
@@ -4196,6 +4278,7 @@ guestfs_session_btrfstune_seeding (GuestfsSession *session, const gchar *device,
  * allow other libraries to interwork with libguestfs.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.29.17
  */
 gint64
 guestfs_session_c_pointer (GuestfsSession *session, GError **err)
@@ -4243,6 +4326,7 @@ guestfs_session_c_pointer (GuestfsSession *session, GError **err)
  * Other strings are returned unmodified.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.19.7
  */
 gchar *
 guestfs_session_canonical_device_name (GuestfsSession *session, const gchar *device, GError **err)
@@ -4278,6 +4362,7 @@ guestfs_session_canonical_device_name (GuestfsSession *session, const gchar *dev
  * If no capabilities are attached to a file, an empty string is returned.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.19.63
  */
 gchar *
 guestfs_session_cap_get_file (GuestfsSession *session, const gchar *path, GError **err)
@@ -4313,6 +4398,7 @@ guestfs_session_cap_get_file (GuestfsSession *session, const gchar *path, GError
  * cap_from_text(3)).
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.63
  */
 gboolean
 guestfs_session_cap_set_file (GuestfsSession *session, const gchar *path, const gchar *cap, GError **err)
@@ -4386,6 +4472,7 @@ guestfs_session_cap_set_file (GuestfsSession *session, const gchar *path, const 
  * See also guestfs_session_realpath().
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.75
  */
 gchar *
 guestfs_session_case_sensitive_path (GuestfsSession *session, const gchar *path, GError **err)
@@ -4423,6 +4510,7 @@ guestfs_session_case_sensitive_path (GuestfsSession *session, const gchar *path,
  * guestfs_session_download() functions.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 0.4
  */
 gchar *
 guestfs_session_cat (GuestfsSession *session, const gchar *path, GError **err)
@@ -4489,6 +4577,7 @@ guestfs_session_cat (GuestfsSession *session, const gchar *path, GError **err)
  * guestfs_session_checksums_out().
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.2
  */
 gchar *
 guestfs_session_checksum (GuestfsSession *session, const gchar *csumtype, const gchar *path, GError **err)
@@ -4524,6 +4613,7 @@ guestfs_session_checksum (GuestfsSession *session, const gchar *csumtype, const 
  * guestfs_session_checksum() command.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.3.2
  */
 gchar *
 guestfs_session_checksum_device (GuestfsSession *session, const gchar *csumtype, const gchar *device, GError **err)
@@ -4567,6 +4657,7 @@ guestfs_session_checksum_device (GuestfsSession *session, const gchar *csumtype,
  * backslash syntax. For more information, see the GNU coreutils info file.
  * 
  * Returns: true on success, false on error
+ * Since: 1.3.7
  */
 gboolean
 guestfs_session_checksums_out (GuestfsSession *session, const gchar *csumtype, const gchar *directory, const gchar *sumsfile, GCancellable *cancellable, GError **err)
@@ -4619,6 +4710,7 @@ guestfs_session_checksums_out (GuestfsSession *session, const gchar *csumtype, c
  * The mode actually set is affected by the umask.
  * 
  * Returns: true on success, false on error
+ * Since: 0.8
  */
 gboolean
 guestfs_session_chmod (GuestfsSession *session, gint32 mode, const gchar *path, GError **err)
@@ -4657,6 +4749,7 @@ guestfs_session_chmod (GuestfsSession *session, gint32 mode, const gchar *path, 
  * makes this relatively easy).
  * 
  * Returns: true on success, false on error
+ * Since: 0.8
  */
 gboolean
 guestfs_session_chown (GuestfsSession *session, gint32 owner, gint32 group, const gchar *path, GError **err)
@@ -4695,6 +4788,7 @@ guestfs_session_chown (GuestfsSession *session, gint32 owner, gint32 group, cons
  * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.27.2
  */
 gint32
 guestfs_session_clear_backend_setting (GuestfsSession *session, const gchar *name, GError **err)
@@ -4750,6 +4844,7 @@ guestfs_session_clear_backend_setting (GuestfsSession *session, const gchar *nam
  * are mounted at the right locations.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.9.1
  */
 gchar *
 guestfs_session_command (GuestfsSession *session, gchar *const *arguments, GError **err)
@@ -4785,6 +4880,7 @@ guestfs_session_command (GuestfsSession *session, gchar *const *arguments, GErro
  * See also: guestfs_session_sh_lines()
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.9.1
  */
 gchar **
 guestfs_session_command_lines (GuestfsSession *session, gchar *const *arguments, GError **err)
@@ -4825,6 +4921,7 @@ guestfs_session_command_lines (GuestfsSession *session, gchar *const *arguments,
  * guestfs_session_compress_out().
  * 
  * Returns: true on success, false on error
+ * Since: 1.13.15
  */
 gboolean
 guestfs_session_compress_device_out (GuestfsSession *session, const gchar *ctype, const gchar *device, const gchar *zdevice, GuestfsCompressDeviceOut *optargs, GCancellable *cancellable, GError **err)
@@ -4900,6 +4997,7 @@ guestfs_session_compress_device_out (GuestfsSession *session, const gchar *ctype
  * used.
  * 
  * Returns: true on success, false on error
+ * Since: 1.13.15
  */
 gboolean
 guestfs_session_compress_out (GuestfsSession *session, const gchar *ctype, const gchar *file, const gchar *zfile, GuestfsCompressOut *optargs, GCancellable *cancellable, GError **err)
@@ -4968,6 +5066,7 @@ guestfs_session_compress_out (GuestfsSession *session, const gchar *ctype, const
  * @hvvalue can be NULL.
  * 
  * Returns: true on success, false on error
+ * Since: 0.3
  */
 gboolean
 guestfs_session_config (GuestfsSession *session, const gchar *hvparam, const gchar *hvvalue, GError **err)
@@ -5024,6 +5123,7 @@ guestfs_session_config (GuestfsSession *session, const gchar *hvparam, const gch
  * enables all the other flags, if they are not specified already.
  * 
  * Returns: true on success, false on error
+ * Since: 1.25.21
  */
 gboolean
 guestfs_session_copy_attributes (GuestfsSession *session, const gchar *src, const gchar *dest, GuestfsCopyAttributes *optargs, GError **err)
@@ -5119,6 +5219,7 @@ guestfs_session_copy_attributes (GuestfsSession *session, const gchar *src, cons
  * using this option will result in incorrect copying.
  * 
  * Returns: true on success, false on error
+ * Since: 1.13.25
  */
 gboolean
 guestfs_session_copy_device_to_device (GuestfsSession *session, const gchar *src, const gchar *dest, GuestfsCopyDeviceToDevice *optargs, GError **err)
@@ -5194,6 +5295,7 @@ guestfs_session_copy_device_to_device (GuestfsSession *session, const gchar *src
  * this call.
  * 
  * Returns: true on success, false on error
+ * Since: 1.13.25
  */
 gboolean
 guestfs_session_copy_device_to_file (GuestfsSession *session, const gchar *src, const gchar *dest, GuestfsCopyDeviceToFile *optargs, GError **err)
@@ -5269,6 +5371,7 @@ guestfs_session_copy_device_to_file (GuestfsSession *session, const gchar *src, 
  * this call.
  * 
  * Returns: true on success, false on error
+ * Since: 1.13.25
  */
 gboolean
 guestfs_session_copy_file_to_device (GuestfsSession *session, const gchar *src, const gchar *dest, GuestfsCopyFileToDevice *optargs, GError **err)
@@ -5349,6 +5452,7 @@ guestfs_session_copy_file_to_device (GuestfsSession *session, const gchar *src, 
  * and moving functions.
  * 
  * Returns: true on success, false on error
+ * Since: 1.13.25
  */
 gboolean
 guestfs_session_copy_file_to_file (GuestfsSession *session, const gchar *src, const gchar *dest, GuestfsCopyFileToFile *optargs, GError **err)
@@ -5426,6 +5530,7 @@ guestfs_session_copy_file_to_file (GuestfsSession *session, const gchar *src, co
  * Wildcards cannot be used.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.24
  */
 gboolean
 guestfs_session_copy_in (GuestfsSession *session, const gchar *localpath, const gchar *remotedir, GError **err)
@@ -5467,6 +5572,7 @@ guestfs_session_copy_in (GuestfsSession *session, const gchar *localpath, const 
  * Wildcards cannot be used.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.24
  */
 gboolean
 guestfs_session_copy_out (GuestfsSession *session, const gchar *remotepath, const gchar *localdir, GError **err)
@@ -5506,6 +5612,7 @@ guestfs_session_copy_out (GuestfsSession *session, const gchar *remotepath, cons
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_copy_device_to_device() instead
+ * Since: 1.0.87
  */
 gboolean
 guestfs_session_copy_size (GuestfsSession *session, const gchar *src, const gchar *dest, gint64 size, GError **err)
@@ -5540,6 +5647,7 @@ guestfs_session_copy_size (GuestfsSession *session, const gchar *src, const gcha
  * destination filename or destination directory.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.18
  */
 gboolean
 guestfs_session_cp (GuestfsSession *session, const gchar *src, const gchar *dest, GError **err)
@@ -5574,6 +5682,7 @@ guestfs_session_cp (GuestfsSession *session, const gchar *src, const gchar *dest
  * "cp -a" command.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.18
  */
 gboolean
 guestfs_session_cp_a (GuestfsSession *session, const gchar *src, const gchar *dest, GError **err)
@@ -5613,6 +5722,7 @@ guestfs_session_cp_a (GuestfsSession *session, const gchar *src, const gchar *de
  * filesystems).
  * 
  * Returns: true on success, false on error
+ * Since: 1.21.38
  */
 gboolean
 guestfs_session_cp_r (GuestfsSession *session, const gchar *src, const gchar *dest, GError **err)
@@ -5661,6 +5771,7 @@ guestfs_session_cp_r (GuestfsSession *session, const gchar *src, const gchar *de
  * New (SVR4) portable format with a checksum.
  * 
  * Returns: true on success, false on error
+ * Since: 1.27.9
  */
 gboolean
 guestfs_session_cpio_out (GuestfsSession *session, const gchar *directory, const gchar *cpiofile, GuestfsCpioOut *optargs, GCancellable *cancellable, GError **err)
@@ -5729,6 +5840,7 @@ guestfs_session_cpio_out (GuestfsSession *session, const gchar *directory, const
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_copy_device_to_device() instead
+ * Since: 1.0.80
  */
 gboolean
 guestfs_session_dd (GuestfsSession *session, const gchar *src, const gchar *dest, GError **err)
@@ -5767,6 +5879,7 @@ guestfs_session_dd (GuestfsSession *session, const gchar *src, const gchar *dest
  * do.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.11
  */
 gchar *
 guestfs_session_debug (GuestfsSession *session, const gchar *subcmd, gchar *const *extraargs, GError **err)
@@ -5799,6 +5912,7 @@ guestfs_session_debug (GuestfsSession *session, const gchar *subcmd, gchar *cons
  * of the formal API and can be removed or changed at any time.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.13.22
  */
 gchar **
 guestfs_session_debug_drives (GuestfsSession *session, GError **err)
@@ -5839,6 +5953,7 @@ guestfs_session_debug_drives (GuestfsSession *session, GError **err)
  * for.
  * 
  * Returns: true on success, false on error
+ * Since: 1.3.5
  */
 gboolean
 guestfs_session_debug_upload (GuestfsSession *session, const gchar *filename, const gchar *tmpname, gint32 mode, GCancellable *cancellable, GError **err)
@@ -5889,6 +6004,7 @@ guestfs_session_debug_upload (GuestfsSession *session, const gchar *filename, co
  * See also guestfs_session_list_devices(), guestfs_session_part_to_dev().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.19.7
  */
 gint32
 guestfs_session_device_index (GuestfsSession *session, const gchar *device, GError **err)
@@ -5924,6 +6040,7 @@ guestfs_session_device_index (GuestfsSession *session, const gchar *device, GErr
  * guestfs_session_statvfs() from programs.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.54
  */
 gchar *
 guestfs_session_df (GuestfsSession *session, GError **err)
@@ -5960,6 +6077,7 @@ guestfs_session_df (GuestfsSession *session, GError **err)
  * guestfs_session_statvfs() from programs.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.54
  */
 gchar *
 guestfs_session_df_h (GuestfsSession *session, GError **err)
@@ -6028,6 +6146,7 @@ guestfs_session_df_h (GuestfsSession *session, GError **err)
  * need to call guestfs_session_add_drive_opts() separately.
  * 
  * Returns: true on success, false on error
+ * Since: 1.25.31
  */
 gboolean
 guestfs_session_disk_create (GuestfsSession *session, const gchar *filename, const gchar *format, gint64 size, GuestfsDiskCreate *optargs, GError **err)
@@ -6115,6 +6234,7 @@ guestfs_session_disk_create (GuestfsSession *session, const gchar *filename, con
  * See also: "DISK IMAGE FORMATS" in guestfs(3)
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.19.38
  */
 gchar *
 guestfs_session_disk_format (GuestfsSession *session, const gchar *filename, GError **err)
@@ -6150,6 +6270,7 @@ guestfs_session_disk_format (GuestfsSession *session, const gchar *filename, GEr
  * circumstances. See "CVE-2010-3851" in guestfs(3).
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.19.39
  */
 gint8
 guestfs_session_disk_has_backing_file (GuestfsSession *session, const gchar *filename, GError **err)
@@ -6186,6 +6307,7 @@ guestfs_session_disk_has_backing_file (GuestfsSession *session, const gchar *fil
  * circumstances. See "CVE-2010-3851" in guestfs(3).
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.19.39
  */
 gint64
 guestfs_session_disk_virtual_size (GuestfsSession *session, const gchar *filename, GError **err)
@@ -6222,6 +6344,7 @@ guestfs_session_disk_virtual_size (GuestfsSession *session, const gchar *filenam
  * variable "LIBGUESTFS_DEBUG=1" before running the program.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.18
  */
 gchar *
 guestfs_session_dmesg (GuestfsSession *session, GError **err)
@@ -6261,6 +6384,7 @@ guestfs_session_dmesg (GuestfsSession *session, GError **err)
  * See also guestfs_session_upload(), guestfs_session_cat().
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.2
  */
 gboolean
 guestfs_session_download (GuestfsSession *session, const gchar *remotefilename, const gchar *filename, GCancellable *cancellable, GError **err)
@@ -6319,6 +6443,7 @@ guestfs_session_download (GuestfsSession *session, const gchar *remotefilename, 
  * See also guestfs_session_download(), guestfs_session_pread().
  * 
  * Returns: true on success, false on error
+ * Since: 1.5.17
  */
 gboolean
 guestfs_session_download_offset (GuestfsSession *session, const gchar *remotefilename, const gchar *filename, gint64 offset, gint64 size, GCancellable *cancellable, GError **err)
@@ -6371,6 +6496,7 @@ guestfs_session_download_offset (GuestfsSession *session, const gchar *remotefil
  * maximum guest memory is freed.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.18
  */
 gboolean
 guestfs_session_drop_caches (GuestfsSession *session, gint32 whattodrop, GError **err)
@@ -6411,6 +6537,7 @@ guestfs_session_drop_caches (GuestfsSession *session, gint32 whattodrop, GError 
  * bytes).
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.54
  */
 gint64
 guestfs_session_du (GuestfsSession *session, const gchar *path, GError **err)
@@ -6460,6 +6587,7 @@ guestfs_session_du (GuestfsSession *session, const gchar *path, GError **err)
  * option.
  * 
  * Returns: true on success, false on error
+ * Since: 1.15.17
  */
 gboolean
 guestfs_session_e2fsck (GuestfsSession *session, const gchar *device, GuestfsE2fsck *optargs, GError **err)
@@ -6519,6 +6647,7 @@ guestfs_session_e2fsck (GuestfsSession *session, const gchar *device, GuestfsE2f
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_e2fsck() instead
+ * Since: 1.0.29
  */
 gboolean
 guestfs_session_e2fsck_f (GuestfsSession *session, const gchar *device, GError **err)
@@ -6556,6 +6685,7 @@ guestfs_session_e2fsck_f (GuestfsSession *session, const gchar *device, GError *
  * See also guestfs_session_ping_daemon().
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.69
  */
 gchar *
 guestfs_session_echo_daemon (GuestfsSession *session, gchar *const *words, GError **err)
@@ -6590,6 +6720,7 @@ guestfs_session_echo_daemon (GuestfsSession *session, gchar *const *words, GErro
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Deprecated: In new code, use guestfs_session_grep() instead
+ * Since: 1.0.66
  */
 gchar **
 guestfs_session_egrep (GuestfsSession *session, const gchar *regex, const gchar *path, GError **err)
@@ -6625,6 +6756,7 @@ guestfs_session_egrep (GuestfsSession *session, const gchar *regex, const gchar 
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Deprecated: In new code, use guestfs_session_grep() instead
+ * Since: 1.0.66
  */
 gchar **
 guestfs_session_egrepi (GuestfsSession *session, const gchar *regex, const gchar *path, GError **err)
@@ -6661,6 +6793,7 @@ guestfs_session_egrepi (GuestfsSession *session, const gchar *regex, const gchar
  * The external cmp(1) program is used for the comparison.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.18
  */
 gint8
 guestfs_session_equal (GuestfsSession *session, const gchar *file1, const gchar *file2, GError **err)
@@ -6697,6 +6830,7 @@ guestfs_session_equal (GuestfsSession *session, const gchar *file1, const gchar 
  * guestfs_session_stat().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 0.8
  */
 gint8
 guestfs_session_exists (GuestfsSession *session, const gchar *path, GError **err)
@@ -6747,6 +6881,7 @@ guestfs_session_exists (GuestfsSession *session, const gchar *path, GError **err
  * See also guestfs_session_syslinux().
  * 
  * Returns: true on success, false on error
+ * Since: 1.21.27
  */
 gboolean
 guestfs_session_extlinux (GuestfsSession *session, const gchar *directory, GError **err)
@@ -6785,6 +6920,7 @@ guestfs_session_extlinux (GuestfsSession *session, const gchar *directory, GErro
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_fallocate64() instead
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_fallocate (GuestfsSession *session, const gchar *path, gint32 len, GError **err)
@@ -6830,6 +6966,7 @@ guestfs_session_fallocate (GuestfsSession *session, const gchar *path, gint32 le
  * commands which create a file in the host and attach it as a device.
  * 
  * Returns: true on success, false on error
+ * Since: 1.3.17
  */
 gboolean
 guestfs_session_fallocate64 (GuestfsSession *session, const gchar *path, gint64 len, GError **err)
@@ -6865,6 +7002,7 @@ guestfs_session_fallocate64 (GuestfsSession *session, const gchar *path, gint64 
  * guestfs_session_available().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.21.26
  */
 gint8
 guestfs_session_feature_available (GuestfsSession *session, gchar *const *groups, GError **err)
@@ -6899,6 +7037,7 @@ guestfs_session_feature_available (GuestfsSession *session, gchar *const *groups
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Deprecated: In new code, use guestfs_session_grep() instead
+ * Since: 1.0.66
  */
 gchar **
 guestfs_session_fgrep (GuestfsSession *session, const gchar *pattern, const gchar *path, GError **err)
@@ -6934,6 +7073,7 @@ guestfs_session_fgrep (GuestfsSession *session, const gchar *pattern, const gcha
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Deprecated: In new code, use guestfs_session_grep() instead
+ * Since: 1.0.66
  */
 gchar **
 guestfs_session_fgrepi (GuestfsSession *session, const gchar *pattern, const gchar *path, GError **err)
@@ -6981,6 +7121,7 @@ guestfs_session_fgrepi (GuestfsSession *session, const gchar *pattern, const gch
  * guestfs_session_is_zero().
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.9.1
  */
 gchar *
 guestfs_session_file (GuestfsSession *session, const gchar *path, GError **err)
@@ -7080,6 +7221,7 @@ guestfs_session_file (GuestfsSession *session, const gchar *path, GError **err)
  * associated initrd or kernel module(s) instead.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.5.3
  */
 gchar *
 guestfs_session_file_architecture (GuestfsSession *session, const gchar *filename, GError **err)
@@ -7117,6 +7259,7 @@ guestfs_session_file_architecture (GuestfsSession *session, const gchar *filenam
  * guestfs_session_blockdev_getsize64().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.82
  */
 gint64
 guestfs_session_filesize (GuestfsSession *session, const gchar *file, GError **err)
@@ -7161,6 +7304,7 @@ guestfs_session_filesize (GuestfsSession *session, const gchar *file, GError **e
  * guestfs_session_feature_available(), "AVAILABILITY" in guestfs(3).
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.19.5
  */
 gint8
 guestfs_session_filesystem_available (GuestfsSession *session, const gchar *filesystem, GError **err)
@@ -7201,6 +7345,7 @@ guestfs_session_filesystem_available (GuestfsSession *session, const gchar *file
  * repeating bytes use guestfs_session_fill_pattern().
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.79
  */
 gboolean
 guestfs_session_fill (GuestfsSession *session, gint32 c, gint32 len, const gchar *path, GError **err)
@@ -7236,6 +7381,7 @@ guestfs_session_fill (GuestfsSession *session, gint32 c, gint32 len, const gchar
  * name is 8 digits long padded with zeroes).
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.32
  */
 gboolean
 guestfs_session_fill_dir (GuestfsSession *session, const gchar *dir, gint32 nr, GError **err)
@@ -7273,6 +7419,7 @@ guestfs_session_fill_dir (GuestfsSession *session, const gchar *dir, gint32 nr, 
  * the file is exactly @len bytes.
  * 
  * Returns: true on success, false on error
+ * Since: 1.3.12
  */
 gboolean
 guestfs_session_fill_pattern (GuestfsSession *session, const gchar *pattern, gint32 len, const gchar *path, GError **err)
@@ -7332,6 +7479,7 @@ guestfs_session_fill_pattern (GuestfsSession *session, const gchar *pattern, gin
  * The returned list is sorted.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.0.27
  */
 gchar **
 guestfs_session_find (GuestfsSession *session, const gchar *directory, GError **err)
@@ -7378,6 +7526,7 @@ guestfs_session_find (GuestfsSession *session, const gchar *directory, GError **
  * *   The result list is not sorted.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.74
  */
 gboolean
 guestfs_session_find0 (GuestfsSession *session, const gchar *directory, const gchar *files, GCancellable *cancellable, GError **err)
@@ -7425,6 +7574,7 @@ guestfs_session_find0 (GuestfsSession *session, const gchar *directory, const gc
  * To find the label of a filesystem, use guestfs_session_vfs_label().
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.5.3
  */
 gchar *
 guestfs_session_findfs_label (GuestfsSession *session, const gchar *label, GError **err)
@@ -7460,6 +7610,7 @@ guestfs_session_findfs_label (GuestfsSession *session, const gchar *label, GErro
  * To find the UUID of a filesystem, use guestfs_session_vfs_uuid().
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.5.3
  */
 gchar *
 guestfs_session_findfs_uuid (GuestfsSession *session, const gchar *uuid, GError **err)
@@ -7509,6 +7660,7 @@ guestfs_session_findfs_uuid (GuestfsSession *session, const gchar *uuid, GError 
  * device".
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.16
  */
 gint32
 guestfs_session_fsck (GuestfsSession *session, const gchar *fstype, const gchar *device, GError **err)
@@ -7557,6 +7709,7 @@ guestfs_session_fsck (GuestfsSession *session, const gchar *fstype, const gchar 
  * calling guestfs_session_zero_free_space().
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.6
  */
 gboolean
 guestfs_session_fstrim (GuestfsSession *session, const gchar *mountpoint, GuestfsFstrim *optargs, GError **err)
@@ -7623,6 +7776,7 @@ guestfs_session_fstrim (GuestfsSession *session, const gchar *mountpoint, Guestf
  * If @NULL then no options are added.
  * 
  * Returns: (transfer none): the returned string. Note that NULL does not indicate error
+ * Since: 1.0.26
  */
 const gchar *
 guestfs_session_get_append (GuestfsSession *session, GError **err)
@@ -7653,6 +7807,7 @@ guestfs_session_get_append (GuestfsSession *session, GError **err)
  * 
  * Returns: (transfer full): the returned string, or NULL on error
  * Deprecated: In new code, use guestfs_session_get_backend() instead
+ * Since: 1.9.8
  */
 gchar *
 guestfs_session_get_attach_method (GuestfsSession *session, GError **err)
@@ -7684,6 +7839,7 @@ guestfs_session_get_attach_method (GuestfsSession *session, GError **err)
  * Get the autosync flag.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 0.3
  */
 gint8
 guestfs_session_get_autosync (GuestfsSession *session, GError **err)
@@ -7719,6 +7875,7 @@ guestfs_session_get_autosync (GuestfsSession *session, GError **err)
  * See guestfs_session_set_backend() and "BACKEND" in guestfs(3).
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.21.26
  */
 gchar *
 guestfs_session_get_backend (GuestfsSession *session, GError **err)
@@ -7758,6 +7915,7 @@ guestfs_session_get_backend (GuestfsSession *session, GError **err)
  * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.27.2
  */
 gchar *
 guestfs_session_get_backend_setting (GuestfsSession *session, const gchar *name, GError **err)
@@ -7794,6 +7952,7 @@ guestfs_session_get_backend_setting (GuestfsSession *session, const gchar *name,
  * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.25.24
  */
 gchar **
 guestfs_session_get_backend_settings (GuestfsSession *session, GError **err)
@@ -7825,6 +7984,7 @@ guestfs_session_get_backend_settings (GuestfsSession *session, GError **err)
  * Get the directory used by the handle to store the appliance cache.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.19.58
  */
 gchar *
 guestfs_session_get_cachedir (GuestfsSession *session, GError **err)
@@ -7856,6 +8016,7 @@ guestfs_session_get_cachedir (GuestfsSession *session, GError **err)
  * Return the direct appliance mode flag.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.72
  */
 gint8
 guestfs_session_get_direct (GuestfsSession *session, GError **err)
@@ -7952,6 +8113,7 @@ guestfs_session_get_direct (GuestfsSession *session, GError **err)
  * guestfs_session_getxattr()).
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.17.31
  */
 gchar *
 guestfs_session_get_e2attrs (GuestfsSession *session, const gchar *file, GError **err)
@@ -7992,6 +8154,7 @@ guestfs_session_get_e2attrs (GuestfsSession *session, const gchar *file, GError 
  * See guestfs_session_set_e2generation().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.17.31
  */
 gint64
 guestfs_session_get_e2generation (GuestfsSession *session, const gchar *file, GError **err)
@@ -8025,6 +8188,7 @@ guestfs_session_get_e2generation (GuestfsSession *session, const gchar *file, GE
  * 
  * Returns: (transfer full): the returned string, or NULL on error
  * Deprecated: In new code, use guestfs_session_vfs_label() instead
+ * Since: 1.0.15
  */
 gchar *
 guestfs_session_get_e2label (GuestfsSession *session, const gchar *device, GError **err)
@@ -8058,6 +8222,7 @@ guestfs_session_get_e2label (GuestfsSession *session, const gchar *device, GErro
  * 
  * Returns: (transfer full): the returned string, or NULL on error
  * Deprecated: In new code, use guestfs_session_vfs_uuid() instead
+ * Since: 1.0.15
  */
 gchar *
 guestfs_session_get_e2uuid (GuestfsSession *session, const gchar *device, GError **err)
@@ -8092,6 +8257,7 @@ guestfs_session_get_e2uuid (GuestfsSession *session, const gchar *device, GError
  * the default qemu binary name.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.23.17
  */
 gchar *
 guestfs_session_get_hv (GuestfsSession *session, GError **err)
@@ -8129,6 +8295,7 @@ guestfs_session_get_hv (GuestfsSession *session, GError **err)
  * code.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.19.52
  */
 gchar *
 guestfs_session_get_libvirt_requested_credential_challenge (GuestfsSession *session, gint32 index, GError **err)
@@ -8166,6 +8333,7 @@ guestfs_session_get_libvirt_requested_credential_challenge (GuestfsSession *sess
  * code.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.19.52
  */
 gchar *
 guestfs_session_get_libvirt_requested_credential_defresult (GuestfsSession *session, gint32 index, GError **err)
@@ -8203,6 +8371,7 @@ guestfs_session_get_libvirt_requested_credential_defresult (GuestfsSession *sess
  * code.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.19.52
  */
 gchar *
 guestfs_session_get_libvirt_requested_credential_prompt (GuestfsSession *session, gint32 index, GError **err)
@@ -8242,6 +8411,7 @@ guestfs_session_get_libvirt_requested_credential_prompt (GuestfsSession *session
  * code.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.19.52
  */
 gchar **
 guestfs_session_get_libvirt_requested_credentials (GuestfsSession *session, GError **err)
@@ -8279,6 +8449,7 @@ guestfs_session_get_libvirt_requested_credentials (GuestfsSession *session, GErr
  * For more information on the architecture of libguestfs, see guestfs(3).
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.55
  */
 gint32
 guestfs_session_get_memsize (GuestfsSession *session, GError **err)
@@ -8310,6 +8481,7 @@ guestfs_session_get_memsize (GuestfsSession *session, GError **err)
  * This returns the enable network flag.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.5.4
  */
 gint8
 guestfs_session_get_network (GuestfsSession *session, GError **err)
@@ -8344,6 +8516,7 @@ guestfs_session_get_network (GuestfsSession *session, GError **err)
  * the default path.
  * 
  * Returns: (transfer none): the returned string, or NULL on error
+ * Since: 0.3
  */
 const gchar *
 guestfs_session_get_path (GuestfsSession *session, GError **err)
@@ -8375,6 +8548,7 @@ guestfs_session_get_path (GuestfsSession *session, GError **err)
  * This returns the process group flag.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.11.18
  */
 gint8
 guestfs_session_get_pgroup (GuestfsSession *session, GError **err)
@@ -8409,6 +8583,7 @@ guestfs_session_get_pgroup (GuestfsSession *session, GError **err)
  * This is an internal call used for debugging and testing.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.56
  */
 gint32
 guestfs_session_get_pid (GuestfsSession *session, GError **err)
@@ -8440,6 +8615,7 @@ guestfs_session_get_pid (GuestfsSession *session, GError **err)
  * Get the program name. See guestfs_session_set_program().
  * 
  * Returns: (transfer none): the returned string, or NULL on error
+ * Since: 1.21.29
  */
 const gchar *
 guestfs_session_get_program (GuestfsSession *session, GError **err)
@@ -8475,6 +8651,7 @@ guestfs_session_get_program (GuestfsSession *session, GError **err)
  * 
  * Returns: (transfer none): the returned string, or NULL on error
  * Deprecated: In new code, use guestfs_session_get_hv() instead
+ * Since: 1.0.6
  */
 const gchar *
 guestfs_session_get_qemu (GuestfsSession *session, GError **err)
@@ -8506,6 +8683,7 @@ guestfs_session_get_qemu (GuestfsSession *session, GError **err)
  * Return the recovery process enabled flag.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.77
  */
 gint8
 guestfs_session_get_recovery_proc (GuestfsSession *session, GError **err)
@@ -8540,6 +8718,7 @@ guestfs_session_get_recovery_proc (GuestfsSession *session, GError **err)
  * For more information on the architecture of libguestfs, see guestfs(3).
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.67
  */
 gint8
 guestfs_session_get_selinux (GuestfsSession *session, GError **err)
@@ -8571,6 +8750,7 @@ guestfs_session_get_selinux (GuestfsSession *session, GError **err)
  * This returns the number of virtual CPUs assigned to the appliance.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.13.15
  */
 gint32
 guestfs_session_get_smp (GuestfsSession *session, GError **err)
@@ -8605,6 +8785,7 @@ guestfs_session_get_smp (GuestfsSession *session, GError **err)
  * For more information on states, see guestfs(3).
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.2
  */
 gint32
 guestfs_session_get_state (GuestfsSession *session, GError **err)
@@ -8636,6 +8817,7 @@ guestfs_session_get_state (GuestfsSession *session, GError **err)
  * Get the directory used by the handle to store temporary files.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.19.58
  */
 gchar *
 guestfs_session_get_tmpdir (GuestfsSession *session, GError **err)
@@ -8667,6 +8849,7 @@ guestfs_session_get_tmpdir (GuestfsSession *session, GError **err)
  * Return the command trace flag.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.69
  */
 gint8
 guestfs_session_get_trace (GuestfsSession *session, GError **err)
@@ -8699,6 +8882,7 @@ guestfs_session_get_trace (GuestfsSession *session, GError **err)
  * been set by calling guestfs_session_umask().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.3.4
  */
 gint32
 guestfs_session_get_umask (GuestfsSession *session, GError **err)
@@ -8730,6 +8914,7 @@ guestfs_session_get_umask (GuestfsSession *session, GError **err)
  * This returns the verbose messages flag.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 0.3
  */
 gint8
 guestfs_session_get_verbose (GuestfsSession *session, GError **err)
@@ -8764,6 +8949,7 @@ guestfs_session_get_verbose (GuestfsSession *session, GError **err)
  * guestfs_session_setcon()
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.67
  */
 gchar *
 guestfs_session_getcon (GuestfsSession *session, GError **err)
@@ -8813,6 +8999,7 @@ guestfs_session_getcon (GuestfsSession *session, GError **err)
  * attr(5).
  * 
  * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
+ * Since: 1.7.24
  */
 guint8 *
 guestfs_session_getxattr (GuestfsSession *session, const gchar *path, const gchar *name, gsize *size_r, GError **err)
@@ -8850,6 +9037,7 @@ guestfs_session_getxattr (GuestfsSession *session, const gchar *path, const gcha
  * See also: guestfs_session_lgetxattrs(), attr(5).
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsXAttr): an array of XAttr objects, or NULL on error
+ * Since: 1.0.59
  */
 GuestfsXAttr **
 guestfs_session_getxattrs (GuestfsSession *session, const gchar *path, GError **err)
@@ -8904,6 +9092,7 @@ guestfs_session_getxattrs (GuestfsSession *session, const gchar *path, GError **
  * guestfs_session_list_partitions() etc functions instead.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.0.50
  */
 gchar **
 guestfs_session_glob_expand (GuestfsSession *session, const gchar *pattern, GError **err)
@@ -8955,6 +9144,7 @@ guestfs_session_glob_expand (GuestfsSession *session, const gchar *pattern, GErr
  * or gzip-compressed.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.0.66
  */
 gchar **
 guestfs_session_grep (GuestfsSession *session, const gchar *regex, const gchar *path, GuestfsGrep *optargs, GError **err)
@@ -9030,6 +9220,7 @@ guestfs_session_grep (GuestfsSession *session, const gchar *regex, const gchar *
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Deprecated: In new code, use guestfs_session_grep() instead
+ * Since: 1.0.66
  */
 gchar **
 guestfs_session_grepi (GuestfsSession *session, const gchar *regex, const gchar *path, GError **err)
@@ -9085,6 +9276,7 @@ guestfs_session_grepi (GuestfsSession *session, const gchar *regex, const gchar 
  * replacing "/dev/vda" with the name of the installation device.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.17
  */
 gboolean
 guestfs_session_grub_install (GuestfsSession *session, const gchar *root, const gchar *device, GError **err)
@@ -9118,6 +9310,7 @@ guestfs_session_grub_install (GuestfsSession *session, const gchar *root, const 
  * strings.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.0.54
  */
 gchar **
 guestfs_session_head (GuestfsSession *session, const gchar *path, GError **err)
@@ -9157,6 +9350,7 @@ guestfs_session_head (GuestfsSession *session, const gchar *path, GError **err)
  * If the parameter @nrlines is zero, this returns an empty list.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.0.54
  */
 gchar **
 guestfs_session_head_n (GuestfsSession *session, gint32 nrlines, const gchar *path, GError **err)
@@ -9190,6 +9384,7 @@ guestfs_session_head_n (GuestfsSession *session, gint32 nrlines, const gchar *pa
  * human-readable, canonical hex dump of the file.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.22
  */
 gchar *
 guestfs_session_hexdump (GuestfsSession *session, const gchar *path, GError **err)
@@ -9223,6 +9418,7 @@ guestfs_session_hexdump (GuestfsSession *session, const gchar *path, GError **er
  * This is a wrapper around the hivex(3) call of the same name.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.35
  */
 gboolean
 guestfs_session_hivex_close (GuestfsSession *session, GError **err)
@@ -9262,6 +9458,7 @@ guestfs_session_hivex_close (GuestfsSession *session, GError **err)
  * This is a wrapper around the hivex(3) call of the same name.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.35
  */
 gboolean
 guestfs_session_hivex_commit (GuestfsSession *session, const gchar *filename, GError **err)
@@ -9297,6 +9494,7 @@ guestfs_session_hivex_commit (GuestfsSession *session, const gchar *filename, GE
  * This is a wrapper around the hivex(3) call of the same name.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.19.35
  */
 gint64
 guestfs_session_hivex_node_add_child (GuestfsSession *session, gint64 parent, const gchar *name, GError **err)
@@ -9331,6 +9529,7 @@ guestfs_session_hivex_node_add_child (GuestfsSession *session, gint64 parent, co
  * This is a wrapper around the hivex(3) call of the same name.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsHivexNode): an array of HivexNode objects, or NULL on error
+ * Since: 1.19.35
  */
 GuestfsHivexNode **
 guestfs_session_hivex_node_children (GuestfsSession *session, gint64 nodeh, GError **err)
@@ -9373,6 +9572,7 @@ guestfs_session_hivex_node_children (GuestfsSession *session, gint64 nodeh, GErr
  * This is a wrapper around the hivex(3) call of the same name.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.35
  */
 gboolean
 guestfs_session_hivex_node_delete_child (GuestfsSession *session, gint64 nodeh, GError **err)
@@ -9409,6 +9609,7 @@ guestfs_session_hivex_node_delete_child (GuestfsSession *session, gint64 nodeh, 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.19.35
  */
 gint64
 guestfs_session_hivex_node_get_child (GuestfsSession *session, gint64 nodeh, const gchar *name, GError **err)
@@ -9445,6 +9646,7 @@ guestfs_session_hivex_node_get_child (GuestfsSession *session, gint64 nodeh, con
  * This is a wrapper around the hivex(3) call of the same name.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.19.35
  */
 gint64
 guestfs_session_hivex_node_get_value (GuestfsSession *session, gint64 nodeh, const gchar *key, GError **err)
@@ -9479,6 +9681,7 @@ guestfs_session_hivex_node_get_value (GuestfsSession *session, gint64 nodeh, con
  * This is a wrapper around the hivex(3) call of the same name.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.19.35
  */
 gchar *
 guestfs_session_hivex_node_name (GuestfsSession *session, gint64 nodeh, GError **err)
@@ -9513,6 +9716,7 @@ guestfs_session_hivex_node_name (GuestfsSession *session, gint64 nodeh, GError *
  * This is a wrapper around the hivex(3) call of the same name.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.19.35
  */
 gint64
 guestfs_session_hivex_node_parent (GuestfsSession *session, gint64 nodeh, GError **err)
@@ -9552,6 +9756,7 @@ guestfs_session_hivex_node_parent (GuestfsSession *session, gint64 nodeh, GError
  * This is a wrapper around the hivex(3) call of the same name.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.35
  */
 gboolean
 guestfs_session_hivex_node_set_value (GuestfsSession *session, gint64 nodeh, const gchar *key, gint64 t, const guint8 *val, gsize val_size, GError **err)
@@ -9586,6 +9791,7 @@ guestfs_session_hivex_node_set_value (GuestfsSession *session, gint64 nodeh, con
  * This is a wrapper around the hivex(3) call of the same name.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsHivexValue): an array of HivexValue objects, or NULL on error
+ * Since: 1.19.35
  */
 GuestfsHivexValue **
 guestfs_session_hivex_node_values (GuestfsSession *session, gint64 nodeh, GError **err)
@@ -9631,6 +9837,7 @@ guestfs_session_hivex_node_values (GuestfsSession *session, gint64 nodeh, GError
  * This is a wrapper around the hivex(3) call of the same name.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.35
  */
 gboolean
 guestfs_session_hivex_open (GuestfsSession *session, const gchar *filename, GuestfsHivexOpen *optargs, GError **err)
@@ -9696,6 +9903,7 @@ guestfs_session_hivex_open (GuestfsSession *session, const gchar *filename, Gues
  * This is a wrapper around the hivex(3) call of the same name.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.19.35
  */
 gint64
 guestfs_session_hivex_root (GuestfsSession *session, GError **err)
@@ -9730,6 +9938,7 @@ guestfs_session_hivex_root (GuestfsSession *session, GError **err)
  * This is a wrapper around the hivex(3) call of the same name.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.19.35
  */
 gchar *
 guestfs_session_hivex_value_key (GuestfsSession *session, gint64 valueh, GError **err)
@@ -9764,6 +9973,7 @@ guestfs_session_hivex_value_key (GuestfsSession *session, gint64 valueh, GError 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.19.35
  */
 gint64
 guestfs_session_hivex_value_type (GuestfsSession *session, gint64 valueh, GError **err)
@@ -9803,6 +10013,7 @@ guestfs_session_hivex_value_type (GuestfsSession *session, gint64 valueh, GError
  * fields can contain arbitrary or unexpected data.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.19.35
  */
 gchar *
 guestfs_session_hivex_value_utf8 (GuestfsSession *session, gint64 valueh, GError **err)
@@ -9840,6 +10051,7 @@ guestfs_session_hivex_value_utf8 (GuestfsSession *session, gint64 valueh, GError
  * See also: guestfs_session_hivex_value_utf8().
  * 
  * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
+ * Since: 1.19.35
  */
 guint8 *
 guestfs_session_hivex_value_value (GuestfsSession *session, gint64 valueh, gsize *size_r, GError **err)
@@ -9884,6 +10096,7 @@ guestfs_session_hivex_value_value (GuestfsSession *session, gint64 valueh, gsize
  * See also guestfs_session_initrd_list().
  * 
  * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
+ * Since: 1.0.84
  */
 guint8 *
 guestfs_session_initrd_cat (GuestfsSession *session, const gchar *initrdpath, const gchar *filename, gsize *size_r, GError **err)
@@ -9924,6 +10137,7 @@ guestfs_session_initrd_cat (GuestfsSession *session, const gchar *initrdpath, co
  * files).
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.0.54
  */
 gchar **
 guestfs_session_initrd_list (GuestfsSession *session, const gchar *path, GError **err)
@@ -9963,6 +10177,7 @@ guestfs_session_initrd_list (GuestfsSession *session, const gchar *path, GError 
  * the Linux kernel ABI and are listed in "/usr/include/sys/inotify.h".
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.66
  */
 gint64
 guestfs_session_inotify_add_watch (GuestfsSession *session, const gchar *path, gint32 mask, GError **err)
@@ -9996,6 +10211,7 @@ guestfs_session_inotify_add_watch (GuestfsSession *session, const gchar *path, g
  * and deallocates all resources.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_inotify_close (GuestfsSession *session, GError **err)
@@ -10029,6 +10245,7 @@ guestfs_session_inotify_close (GuestfsSession *session, GError **err)
  * returned pathnames are sorted and deduplicated.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.0.66
  */
 gchar **
 guestfs_session_inotify_files (GuestfsSession *session, GError **err)
@@ -10089,6 +10306,7 @@ guestfs_session_inotify_files (GuestfsSession *session, GError **err)
  * Note that there is one global inotify handle per libguestfs instance.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_inotify_init (GuestfsSession *session, gint32 maxevents, GError **err)
@@ -10128,6 +10346,7 @@ guestfs_session_inotify_init (GuestfsSession *session, gint32 maxevents, GError 
  * message size and leave remaining events in the queue.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsINotifyEvent): an array of INotifyEvent objects, or NULL on error
+ * Since: 1.0.66
  */
 GuestfsINotifyEvent **
 guestfs_session_inotify_read (GuestfsSession *session, GError **err)
@@ -10172,6 +10391,7 @@ guestfs_session_inotify_read (GuestfsSession *session, GError **err)
  * guestfs_session_inotify_add_watch().
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_inotify_rm_watch (GuestfsSession *session, gint32 wd, GError **err)
@@ -10211,6 +10431,7 @@ guestfs_session_inotify_rm_watch (GuestfsSession *session, gint32 wd, GError **e
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.5.3
  */
 gchar *
 guestfs_session_inspect_get_arch (GuestfsSession *session, const gchar *root, GError **err)
@@ -10256,6 +10477,9 @@ guestfs_session_inspect_get_arch (GuestfsSession *session, const gchar *root, GE
  * 
  * "cirros"
  * Cirros.
+ * 
+ * "coreos"
+ * CoreOS.
  * 
  * "debian"
  * Debian.
@@ -10336,6 +10560,7 @@ guestfs_session_inspect_get_arch (GuestfsSession *session, const gchar *root, GE
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.5.3
  */
 gchar *
 guestfs_session_inspect_get_distro (GuestfsSession *session, const gchar *root, GError **err)
@@ -10397,6 +10622,7 @@ guestfs_session_inspect_get_distro (GuestfsSession *session, const gchar *root, 
  * guestfs_session_inspect_get_filesystems().
  * 
  * Returns: (transfer full) (element-type utf8 utf8): a GHashTable of results, or NULL on error
+ * Since: 1.9.17
  */
 GHashTable *
 guestfs_session_inspect_get_drive_mappings (GuestfsSession *session, const gchar *root, GError **err)
@@ -10445,6 +10671,7 @@ guestfs_session_inspect_get_drive_mappings (GuestfsSession *session, const gchar
  * guestfs_session_inspect_get_mountpoints().
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.5.3
  */
 gchar **
 guestfs_session_inspect_get_filesystems (GuestfsSession *session, const gchar *root, GError **err)
@@ -10495,6 +10722,7 @@ guestfs_session_inspect_get_filesystems (GuestfsSession *session, const gchar *r
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.9.4
  */
 gchar *
 guestfs_session_inspect_get_format (GuestfsSession *session, const gchar *root, GError **err)
@@ -10533,6 +10761,7 @@ guestfs_session_inspect_get_format (GuestfsSession *session, const gchar *root, 
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.7.9
  */
 gchar *
 guestfs_session_inspect_get_hostname (GuestfsSession *session, const gchar *root, GError **err)
@@ -10608,6 +10837,7 @@ guestfs_session_inspect_get_hostname (GuestfsSession *session, const gchar *root
  * before using trademarks in applications.
  * 
  * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
+ * Since: 1.11.12
  */
 guint8 *
 guestfs_session_inspect_get_icon (GuestfsSession *session, const gchar *root, GuestfsInspectGetIcon *optargs, gsize *size_r, GError **err)
@@ -10674,6 +10904,7 @@ guestfs_session_inspect_get_icon (GuestfsSession *session, const gchar *root, Gu
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.5.3
  */
 gint32
 guestfs_session_inspect_get_major_version (GuestfsSession *session, const gchar *root, GError **err)
@@ -10711,6 +10942,7 @@ guestfs_session_inspect_get_major_version (GuestfsSession *session, const gchar 
  * guestfs_session_inspect_get_major_version().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.5.3
  */
 gint32
 guestfs_session_inspect_get_minor_version (GuestfsSession *session, const gchar *root, GError **err)
@@ -10763,6 +10995,7 @@ guestfs_session_inspect_get_minor_version (GuestfsSession *session, const gchar 
  * guestfs_session_inspect_get_filesystems().
  * 
  * Returns: (transfer full) (element-type utf8 utf8): a GHashTable of results, or NULL on error
+ * Since: 1.5.3
  */
 GHashTable *
 guestfs_session_inspect_get_mountpoints (GuestfsSession *session, const gchar *root, GError **err)
@@ -10815,6 +11048,7 @@ guestfs_session_inspect_get_mountpoints (GuestfsSession *session, const gchar *r
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.7.5
  */
 gchar *
 guestfs_session_inspect_get_package_format (GuestfsSession *session, const gchar *root, GError **err)
@@ -10860,6 +11094,7 @@ guestfs_session_inspect_get_package_format (GuestfsSession *session, const gchar
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.7.5
  */
 gchar *
 guestfs_session_inspect_get_package_management (GuestfsSession *session, const gchar *root, GError **err)
@@ -10899,6 +11134,7 @@ guestfs_session_inspect_get_package_management (GuestfsSession *session, const g
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.5.3
  */
 gchar *
 guestfs_session_inspect_get_product_name (GuestfsSession *session, const gchar *root, GError **err)
@@ -10950,6 +11186,7 @@ guestfs_session_inspect_get_product_name (GuestfsSession *session, const gchar *
  * guestfs_session_inspect_get_major_version().
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.9.13
  */
 gchar *
 guestfs_session_inspect_get_product_variant (GuestfsSession *session, const gchar *root, GError **err)
@@ -10988,6 +11225,7 @@ guestfs_session_inspect_get_product_variant (GuestfsSession *session, const gcha
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.7.3
  */
 gchar **
 guestfs_session_inspect_get_roots (GuestfsSession *session, GError **err)
@@ -11053,6 +11291,7 @@ guestfs_session_inspect_get_roots (GuestfsSession *session, GError **err)
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.5.3
  */
 gchar *
 guestfs_session_inspect_get_type (GuestfsSession *session, const gchar *root, GError **err)
@@ -11092,6 +11331,7 @@ guestfs_session_inspect_get_type (GuestfsSession *session, const gchar *root, GE
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.9.17
  */
 gchar *
 guestfs_session_inspect_get_windows_current_control_set (GuestfsSession *session, const gchar *root, GError **err)
@@ -11131,6 +11371,7 @@ guestfs_session_inspect_get_windows_current_control_set (GuestfsSession *session
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.5.25
  */
 gchar *
 guestfs_session_inspect_get_windows_systemroot (GuestfsSession *session, const gchar *root, GError **err)
@@ -11167,6 +11408,7 @@ guestfs_session_inspect_get_windows_systemroot (GuestfsSession *session, const g
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.9.4
  */
 gint8
 guestfs_session_inspect_is_live (GuestfsSession *session, const gchar *root, GError **err)
@@ -11202,6 +11444,7 @@ guestfs_session_inspect_is_live (GuestfsSession *session, const gchar *root, GEr
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.9.4
  */
 gint8
 guestfs_session_inspect_is_multipart (GuestfsSession *session, const gchar *root, GError **err)
@@ -11239,6 +11482,7 @@ guestfs_session_inspect_is_multipart (GuestfsSession *session, const gchar *root
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.9.4
  */
 gint8
 guestfs_session_inspect_is_netinst (GuestfsSession *session, const gchar *root, GError **err)
@@ -11344,6 +11588,7 @@ guestfs_session_inspect_is_netinst (GuestfsSession *session, const gchar *root, 
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsApplication): an array of Application objects, or NULL on error
  * Deprecated: In new code, use guestfs_session_inspect_list_applications2() instead
+ * Since: 1.7.8
  */
 GuestfsApplication **
 guestfs_session_inspect_list_applications (GuestfsSession *session, const gchar *root, GError **err)
@@ -11472,6 +11717,7 @@ guestfs_session_inspect_list_applications (GuestfsSession *session, const gchar 
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsApplication2): an array of Application2 objects, or NULL on error
+ * Since: 1.19.56
  */
 GuestfsApplication2 **
 guestfs_session_inspect_list_applications2 (GuestfsSession *session, const gchar *root, GError **err)
@@ -11555,6 +11801,7 @@ guestfs_session_inspect_list_applications2 (GuestfsSession *session, const gchar
  * See also guestfs_session_list_filesystems().
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.5.3
  */
 gchar **
 guestfs_session_inspect_os (GuestfsSession *session, GError **err)
@@ -13319,6 +13566,7 @@ guestfs_session_internal_test_set_output (GuestfsSession *session, const gchar *
  * See also guestfs_session_stat().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.5.10
  */
 gint8
 guestfs_session_is_blockdev (GuestfsSession *session, const gchar *path, GuestfsIsBlockdev *optargs, GError **err)
@@ -13369,6 +13617,7 @@ guestfs_session_is_blockdev (GuestfsSession *session, const gchar *path, Guestfs
  * For more information on states, see guestfs(3).
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.2
  */
 gint8
 guestfs_session_is_busy (GuestfsSession *session, GError **err)
@@ -13409,6 +13658,7 @@ guestfs_session_is_busy (GuestfsSession *session, GError **err)
  * See also guestfs_session_stat().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.5.10
  */
 gint8
 guestfs_session_is_chardev (GuestfsSession *session, const gchar *path, GuestfsIsChardev *optargs, GError **err)
@@ -13459,6 +13709,7 @@ guestfs_session_is_chardev (GuestfsSession *session, const gchar *path, GuestfsI
  * For more information on states, see guestfs(3).
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.2
  */
 gint8
 guestfs_session_is_config (GuestfsSession *session, GError **err)
@@ -13499,6 +13750,7 @@ guestfs_session_is_config (GuestfsSession *session, GError **err)
  * See also guestfs_session_stat().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 0.8
  */
 gint8
 guestfs_session_is_dir (GuestfsSession *session, const gchar *path, GuestfsIsDir *optargs, GError **err)
@@ -13555,6 +13807,7 @@ guestfs_session_is_dir (GuestfsSession *session, const gchar *path, GuestfsIsDir
  * See also guestfs_session_stat().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.5.10
  */
 gint8
 guestfs_session_is_fifo (GuestfsSession *session, const gchar *path, GuestfsIsFifo *optargs, GError **err)
@@ -13612,6 +13865,7 @@ guestfs_session_is_fifo (GuestfsSession *session, const gchar *path, GuestfsIsFi
  * See also guestfs_session_stat().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 0.8
  */
 gint8
 guestfs_session_is_file (GuestfsSession *session, const gchar *path, GuestfsIsFile *optargs, GError **err)
@@ -13662,6 +13916,7 @@ guestfs_session_is_file (GuestfsSession *session, const gchar *path, GuestfsIsFi
  * For more information on states, see guestfs(3).
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.2
  */
 gint8
 guestfs_session_is_launching (GuestfsSession *session, GError **err)
@@ -13695,6 +13950,7 @@ guestfs_session_is_launching (GuestfsSession *session, GError **err)
  * iff this is the case.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.5.3
  */
 gint8
 guestfs_session_is_lv (GuestfsSession *session, const gchar *device, GError **err)
@@ -13729,6 +13985,7 @@ guestfs_session_is_lv (GuestfsSession *session, const gchar *device, GError **er
  * For more information on states, see guestfs(3).
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.2
  */
 gint8
 guestfs_session_is_ready (GuestfsSession *session, GError **err)
@@ -13769,6 +14026,7 @@ guestfs_session_is_ready (GuestfsSession *session, GError **err)
  * See also guestfs_session_stat().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.5.10
  */
 gint8
 guestfs_session_is_socket (GuestfsSession *session, const gchar *path, GuestfsIsSocket *optargs, GError **err)
@@ -13820,6 +14078,7 @@ guestfs_session_is_socket (GuestfsSession *session, const gchar *path, GuestfsIs
  * See also guestfs_session_stat().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.5.10
  */
 gint8
 guestfs_session_is_symlink (GuestfsSession *session, const gchar *path, GError **err)
@@ -13853,6 +14112,7 @@ guestfs_session_is_symlink (GuestfsSession *session, const gchar *path, GError *
  * device. That is, not a partition or a logical device.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.21.9
  */
 gint8
 guestfs_session_is_whole_device (GuestfsSession *session, const gchar *device, GError **err)
@@ -13886,6 +14146,7 @@ guestfs_session_is_whole_device (GuestfsSession *session, const gchar *device, G
  * contains all zero bytes.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.11.8
  */
 gint8
 guestfs_session_is_zero (GuestfsSession *session, const gchar *path, GError **err)
@@ -13920,6 +14181,7 @@ guestfs_session_is_zero (GuestfsSession *session, const gchar *path, GError **er
  * Note that for large devices this can take a long time to run.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.11.8
  */
 gint8
 guestfs_session_is_zero_device (GuestfsSession *session, const gchar *device, GError **err)
@@ -13956,6 +14218,7 @@ guestfs_session_is_zero_device (GuestfsSession *session, const gchar *device, GE
  * guestfs_session_isoinfo_device().
  * 
  * Returns: (transfer full): a ISOInfo object, or NULL on error
+ * Since: 1.17.19
  */
 GuestfsISOInfo *
 guestfs_session_isoinfo (GuestfsSession *session, const gchar *isofile, GError **err)
@@ -14017,6 +14280,7 @@ guestfs_session_isoinfo (GuestfsSession *session, const gchar *isofile, GError *
  * http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor </ulink>
  * 
  * Returns: (transfer full): a ISOInfo object, or NULL on error
+ * Since: 1.17.19
  */
 GuestfsISOInfo *
 guestfs_session_isoinfo_device (GuestfsSession *session, const gchar *device, GError **err)
@@ -14067,6 +14331,7 @@ guestfs_session_isoinfo_device (GuestfsSession *session, const gchar *device, GE
  * Close the journal handle.
  * 
  * Returns: true on success, false on error
+ * Since: 1.23.11
  */
 gboolean
 guestfs_session_journal_close (GuestfsSession *session, GError **err)
@@ -14112,6 +14377,7 @@ guestfs_session_journal_close (GuestfsSession *session, GError **err)
  * protocol.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsXAttr): an array of XAttr objects, or NULL on error
+ * Since: 1.23.11
  */
 GuestfsXAttr **
 guestfs_session_journal_get (GuestfsSession *session, GError **err)
@@ -14160,6 +14426,7 @@ guestfs_session_journal_get (GuestfsSession *session, GError **err)
  * See also guestfs_session_journal_set_data_threshold().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.23.11
  */
 gint64
 guestfs_session_journal_get_data_threshold (GuestfsSession *session, GError **err)
@@ -14191,6 +14458,7 @@ guestfs_session_journal_get_data_threshold (GuestfsSession *session, GError **er
  * Get the realtime (wallclock) timestamp of the current journal entry.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.27.18
  */
 gint64
 guestfs_session_journal_get_realtime_usec (GuestfsSession *session, GError **err)
@@ -14228,6 +14496,7 @@ guestfs_session_journal_get_realtime_usec (GuestfsSession *session, GError **err
  * end of the journal.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.23.11
  */
 gint8
 guestfs_session_journal_next (GuestfsSession *session, GError **err)
@@ -14267,6 +14536,7 @@ guestfs_session_journal_next (GuestfsSession *session, GError **err)
  * by calling guestfs_session_journal_close().
  * 
  * Returns: true on success, false on error
+ * Since: 1.23.11
  */
 gboolean
 guestfs_session_journal_open (GuestfsSession *session, const gchar *directory, GError **err)
@@ -14304,6 +14574,7 @@ guestfs_session_journal_open (GuestfsSession *session, const gchar *directory, G
  * See also guestfs_session_journal_get_data_threshold().
  * 
  * Returns: true on success, false on error
+ * Since: 1.23.11
  */
 gboolean
 guestfs_session_journal_set_data_threshold (GuestfsSession *session, gint64 threshold, GError **err)
@@ -14342,6 +14613,7 @@ guestfs_session_journal_set_data_threshold (GuestfsSession *session, gint64 thre
  * start of the journal.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.23.11
  */
 gint64
 guestfs_session_journal_skip (GuestfsSession *session, gint64 skip, GError **err)
@@ -14376,6 +14648,7 @@ guestfs_session_journal_skip (GuestfsSession *session, gint64 skip, GError **err
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_shutdown() instead
+ * Since: 0.3
  */
 gboolean
 guestfs_session_kill_subprocess (GuestfsSession *session, GError **err)
@@ -14413,6 +14686,7 @@ guestfs_session_kill_subprocess (GuestfsSession *session, GError **err)
  * to create, so create a new one for each launch.
  * 
  * Returns: true on success, false on error
+ * Since: 0.3
  */
 gboolean
 guestfs_session_launch (GuestfsSession *session, GError **err)
@@ -14453,6 +14727,7 @@ guestfs_session_launch (GuestfsSession *session, GError **err)
  * makes this relatively easy).
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.77
  */
 gboolean
 guestfs_session_lchown (GuestfsSession *session, gint32 owner, gint32 group, const gchar *path, GError **err)
@@ -14493,6 +14768,7 @@ guestfs_session_lchown (GuestfsSession *session, gint32 owner, gint32 group, con
  * created a Windows dynamic disk.
  * 
  * Returns: true on success, false on error
+ * Since: 1.20.0
  */
 gboolean
 guestfs_session_ldmtool_create_all (GuestfsSession *session, GError **err)
@@ -14527,6 +14803,7 @@ guestfs_session_ldmtool_create_all (GuestfsSession *session, GError **err)
  * returned by guestfs_session_ldmtool_scan().
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.20.0
  */
 gchar **
 guestfs_session_ldmtool_diskgroup_disks (GuestfsSession *session, const gchar *diskgroup, GError **err)
@@ -14561,6 +14838,7 @@ guestfs_session_ldmtool_diskgroup_disks (GuestfsSession *session, const gchar *d
  * returned by guestfs_session_ldmtool_scan().
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.20.0
  */
 gchar *
 guestfs_session_ldmtool_diskgroup_name (GuestfsSession *session, const gchar *diskgroup, GError **err)
@@ -14595,6 +14873,7 @@ guestfs_session_ldmtool_diskgroup_name (GuestfsSession *session, const gchar *di
  * returned by guestfs_session_ldmtool_scan().
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.20.0
  */
 gchar **
 guestfs_session_ldmtool_diskgroup_volumes (GuestfsSession *session, const gchar *diskgroup, GError **err)
@@ -14628,6 +14907,7 @@ guestfs_session_ldmtool_diskgroup_volumes (GuestfsSession *session, const gchar 
  * mappings for all Windows dynamic disk volumes
  * 
  * Returns: true on success, false on error
+ * Since: 1.20.0
  */
 gboolean
 guestfs_session_ldmtool_remove_all (GuestfsSession *session, GError **err)
@@ -14664,6 +14944,7 @@ guestfs_session_ldmtool_remove_all (GuestfsSession *session, GError **err)
  * devices, call guestfs_session_ldmtool_scan_devices() instead.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.20.0
  */
 gchar **
 guestfs_session_ldmtool_scan (GuestfsSession *session, GError **err)
@@ -14701,6 +14982,7 @@ guestfs_session_ldmtool_scan (GuestfsSession *session, GError **err)
  * this list is empty, all block devices are scanned.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.20.0
  */
 gchar **
 guestfs_session_ldmtool_scan_devices (GuestfsSession *session, gchar *const *devices, GError **err)
@@ -14737,6 +15019,7 @@ guestfs_session_ldmtool_scan_devices (GuestfsSession *session, gchar *const *dev
  * Windows drive, eg. "E:".
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.20.0
  */
 gchar *
 guestfs_session_ldmtool_volume_hint (GuestfsSession *session, const gchar *diskgroup, const gchar *volume, GError **err)
@@ -14771,6 +15054,7 @@ guestfs_session_ldmtool_volume_hint (GuestfsSession *session, const gchar *diskg
  * group with GUID @diskgroup.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.20.0
  */
 gchar **
 guestfs_session_ldmtool_volume_partitions (GuestfsSession *session, const gchar *diskgroup, const gchar *volume, GError **err)
@@ -14808,6 +15092,7 @@ guestfs_session_ldmtool_volume_partitions (GuestfsSession *session, const gchar 
  * @spanned, @striped, @mirrored, @raid5. Other types may also be returned.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.20.0
  */
 gchar *
 guestfs_session_ldmtool_volume_type (GuestfsSession *session, const gchar *diskgroup, const gchar *volume, GError **err)
@@ -14857,6 +15142,7 @@ guestfs_session_ldmtool_volume_type (GuestfsSession *session, const gchar *diskg
  * attr(5).
  * 
  * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
+ * Since: 1.7.24
  */
 guint8 *
 guestfs_session_lgetxattr (GuestfsSession *session, const gchar *path, const gchar *name, gsize *size_r, GError **err)
@@ -14891,6 +15177,7 @@ guestfs_session_lgetxattr (GuestfsSession *session, const gchar *path, const gch
  * itself.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsXAttr): an array of XAttr objects, or NULL on error
+ * Since: 1.0.59
  */
 GuestfsXAttr **
 guestfs_session_lgetxattrs (GuestfsSession *session, const gchar *path, GError **err)
@@ -14935,6 +15222,7 @@ guestfs_session_lgetxattrs (GuestfsSession *session, const gchar *path, GError *
  * returned.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.11.12
  */
 gchar **
 guestfs_session_list_9p (GuestfsSession *session, GError **err)
@@ -14970,6 +15258,7 @@ guestfs_session_list_9p (GuestfsSession *session, GError **err)
  * See also guestfs_session_list_filesystems().
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 0.4
  */
 gchar **
 guestfs_session_list_devices (GuestfsSession *session, GError **err)
@@ -15008,6 +15297,7 @@ guestfs_session_list_devices (GuestfsSession *session, GError **err)
  * device and partition names (eg. "/dev/sda" and "/dev/sda1").
  * 
  * Returns: (transfer full) (element-type utf8 utf8): a GHashTable of results, or NULL on error
+ * Since: 1.19.49
  */
 GHashTable *
 guestfs_session_list_disk_labels (GuestfsSession *session, GError **err)
@@ -15054,6 +15344,7 @@ guestfs_session_list_disk_labels (GuestfsSession *session, GError **err)
  * logical volumes.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.11.15
  */
 gchar **
 guestfs_session_list_dm_devices (GuestfsSession *session, GError **err)
@@ -15116,6 +15407,7 @@ guestfs_session_list_dm_devices (GuestfsSession *session, GError **err)
  * guestfs_session_inspect_os() to look for OSes).
  * 
  * Returns: (transfer full) (element-type utf8 utf8): a GHashTable of results, or NULL on error
+ * Since: 1.5.15
  */
 GHashTable *
 guestfs_session_list_filesystems (GuestfsSession *session, GError **err)
@@ -15156,6 +15448,7 @@ guestfs_session_list_filesystems (GuestfsSession *session, GError **err)
  * found at launch time. It returns a list of device names.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.20.0
  */
 gchar **
 guestfs_session_list_ldm_partitions (GuestfsSession *session, GError **err)
@@ -15188,6 +15481,7 @@ guestfs_session_list_ldm_partitions (GuestfsSession *session, GError **err)
  * at launch time. It returns a list of device names.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.20.0
  */
 gchar **
 guestfs_session_list_ldm_volumes (GuestfsSession *session, GError **err)
@@ -15219,6 +15513,7 @@ guestfs_session_list_ldm_volumes (GuestfsSession *session, GError **err)
  * List all Linux md devices.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.15.4
  */
 gchar **
 guestfs_session_list_md_devices (GuestfsSession *session, GError **err)
@@ -15257,6 +15552,7 @@ guestfs_session_list_md_devices (GuestfsSession *session, GError **err)
  * See also guestfs_session_list_filesystems().
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 0.4
  */
 gchar **
 guestfs_session_list_partitions (GuestfsSession *session, GError **err)
@@ -15293,6 +15589,7 @@ guestfs_session_list_partitions (GuestfsSession *session, GError **err)
  * intended that you try to parse the output string.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 0.4
  */
 gchar *
 guestfs_session_ll (GuestfsSession *session, const gchar *directory, GError **err)
@@ -15328,6 +15625,7 @@ guestfs_session_ll (GuestfsSession *session, const gchar *directory, GError **er
  * intended that you try to parse the output string.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.17.6
  */
 gchar *
 guestfs_session_llz (GuestfsSession *session, const gchar *directory, GError **err)
@@ -15361,6 +15659,7 @@ guestfs_session_llz (GuestfsSession *session, const gchar *directory, GError **e
  * This command creates a hard link using the @ln command.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_ln (GuestfsSession *session, const gchar *target, const gchar *linkname, GError **err)
@@ -15395,6 +15694,7 @@ guestfs_session_ln (GuestfsSession *session, const gchar *target, const gchar *l
  * option removes the link (@linkname) if it exists already.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_ln_f (GuestfsSession *session, const gchar *target, const gchar *linkname, GError **err)
@@ -15428,6 +15728,7 @@ guestfs_session_ln_f (GuestfsSession *session, const gchar *target, const gchar 
  * This command creates a symbolic link using the "ln -s" command.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_ln_s (GuestfsSession *session, const gchar *target, const gchar *linkname, GError **err)
@@ -15462,6 +15763,7 @@ guestfs_session_ln_s (GuestfsSession *session, const gchar *target, const gchar 
  * *-f* option removes the link (@linkname) if it exists already.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_ln_sf (GuestfsSession *session, const gchar *target, const gchar *linkname, GError **err)
@@ -15496,6 +15798,7 @@ guestfs_session_ln_sf (GuestfsSession *session, const gchar *target, const gchar
  * symbolic link, then it removes an extended attribute of the link itself.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.59
  */
 gboolean
 guestfs_session_lremovexattr (GuestfsSession *session, const gchar *xattr, const gchar *path, GError **err)
@@ -15530,6 +15833,7 @@ guestfs_session_lremovexattr (GuestfsSession *session, const gchar *xattr, const
  * shown.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 0.4
  */
 gchar **
 guestfs_session_ls (GuestfsSession *session, const gchar *directory, GError **err)
@@ -15569,6 +15873,7 @@ guestfs_session_ls (GuestfsSession *session, const gchar *directory, GError **er
  * "." and ".." are not returned. The filenames are not sorted.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.32
  */
 gboolean
 guestfs_session_ls0 (GuestfsSession *session, const gchar *dir, const gchar *filenames, GError **err)
@@ -15605,6 +15910,7 @@ guestfs_session_ls0 (GuestfsSession *session, const gchar *dir, const gchar *fil
  * symbolic link, then it sets an extended attribute of the link itself.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.59
  */
 gboolean
 guestfs_session_lsetxattr (GuestfsSession *session, const gchar *xattr, const gchar *val, gint32 vallen, const gchar *path, GError **err)
@@ -15643,6 +15949,7 @@ guestfs_session_lsetxattr (GuestfsSession *session, const gchar *xattr, const gc
  * 
  * Returns: (transfer full): a Stat object, or NULL on error
  * Deprecated: In new code, use guestfs_session_lstatns() instead
+ * Since: 1.9.2
  */
 GuestfsStat *
 guestfs_session_lstat (GuestfsSession *session, const gchar *path, GError **err)
@@ -15703,6 +16010,7 @@ guestfs_session_lstat (GuestfsSession *session, const gchar *path, GError **err)
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsStat): an array of Stat objects, or NULL on error
  * Deprecated: In new code, use guestfs_session_lstatnslist() instead
+ * Since: 1.0.77
  */
 GuestfsStat **
 guestfs_session_lstatlist (GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
@@ -15760,6 +16068,7 @@ guestfs_session_lstatlist (GuestfsSession *session, const gchar *path, gchar *co
  * This is the same as the lstat(2) system call.
  * 
  * Returns: (transfer full): a StatNS object, or NULL on error
+ * Since: 1.27.53
  */
 GuestfsStatNS *
 guestfs_session_lstatns (GuestfsSession *session, const gchar *path, GError **err)
@@ -15828,6 +16137,7 @@ guestfs_session_lstatns (GuestfsSession *session, const gchar *path, GError **er
  * extended attributes.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsStatNS): an array of StatNS objects, or NULL on error
+ * Since: 1.27.53
  */
 GuestfsStatNS **
 guestfs_session_lstatnslist (GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
@@ -15898,6 +16208,7 @@ guestfs_session_lstatnslist (GuestfsSession *session, const gchar *path, gchar *
  * that key.
  * 
  * Returns: true on success, false on error
+ * Since: 1.5.2
  */
 gboolean
 guestfs_session_luks_add_key (GuestfsSession *session, const gchar *device, const gchar *key, const gchar *newkey, gint32 keyslot, GError **err)
@@ -15934,6 +16245,7 @@ guestfs_session_luks_add_key (GuestfsSession *session, const gchar *device, cons
  * device.
  * 
  * Returns: true on success, false on error
+ * Since: 1.5.1
  */
 gboolean
 guestfs_session_luks_close (GuestfsSession *session, const gchar *device, GError **err)
@@ -15970,6 +16282,7 @@ guestfs_session_luks_close (GuestfsSession *session, const gchar *device, GError
  * slot @slot. (LUKS supports 8 key slots, numbered 0-7).
  * 
  * Returns: true on success, false on error
+ * Since: 1.5.2
  */
 gboolean
 guestfs_session_luks_format (GuestfsSession *session, const gchar *device, const gchar *key, gint32 keyslot, GError **err)
@@ -16006,6 +16319,7 @@ guestfs_session_luks_format (GuestfsSession *session, const gchar *device, const
  * allows you to set the @cipher used.
  * 
  * Returns: true on success, false on error
+ * Since: 1.5.2
  */
 gboolean
 guestfs_session_luks_format_cipher (GuestfsSession *session, const gchar *device, const gchar *key, gint32 keyslot, const gchar *cipher, GError **err)
@@ -16041,6 +16355,7 @@ guestfs_session_luks_format_cipher (GuestfsSession *session, const gchar *device
  * LUKS device @device. @key must be one of the *other* keys.
  * 
  * Returns: true on success, false on error
+ * Since: 1.5.2
  */
 gboolean
 guestfs_session_luks_kill_slot (GuestfsSession *session, const gchar *device, const gchar *key, gint32 keyslot, GError **err)
@@ -16091,6 +16406,7 @@ guestfs_session_luks_kill_slot (GuestfsSession *session, const gchar *device, co
  * Use guestfs_session_list_dm_devices() to list all device mapper devices.
  * 
  * Returns: true on success, false on error
+ * Since: 1.5.1
  */
 gboolean
 guestfs_session_luks_open (GuestfsSession *session, const gchar *device, const gchar *key, const gchar *mapname, GError **err)
@@ -16126,6 +16442,7 @@ guestfs_session_luks_open (GuestfsSession *session, const gchar *device, const g
  * mapping is created.
  * 
  * Returns: true on success, false on error
+ * Since: 1.5.1
  */
 gboolean
 guestfs_session_luks_open_ro (GuestfsSession *session, const gchar *device, const gchar *key, const gchar *mapname, GError **err)
@@ -16161,6 +16478,7 @@ guestfs_session_luks_open_ro (GuestfsSession *session, const gchar *device, cons
  * @volgroup, with @size megabytes.
  * 
  * Returns: true on success, false on error
+ * Since: 0.8
  */
 gboolean
 guestfs_session_lvcreate (GuestfsSession *session, const gchar *logvol, const gchar *volgroup, gint32 mbytes, GError **err)
@@ -16198,6 +16516,7 @@ guestfs_session_lvcreate (GuestfsSession *session, const gchar *logvol, const gc
  * possible LV.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.18
  */
 gboolean
 guestfs_session_lvcreate_free (GuestfsSession *session, const gchar *logvol, const gchar *volgroup, gint32 percent, GError **err)
@@ -16238,6 +16557,7 @@ guestfs_session_lvcreate_free (GuestfsSession *session, const gchar *logvol, con
  * guestfs_session_canonical_device_name().
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.5.24
  */
 gchar *
 guestfs_session_lvm_canonical_lv_name (GuestfsSession *session, const gchar *lvname, GError **err)
@@ -16272,6 +16592,7 @@ guestfs_session_lvm_canonical_lv_name (GuestfsSession *session, const gchar *lvn
  * This command also clears the LVM cache and performs a volume group scan.
  * 
  * Returns: true on success, false on error
+ * Since: 1.5.1
  */
 gboolean
 guestfs_session_lvm_clear_filter (GuestfsSession *session, GError **err)
@@ -16304,6 +16625,7 @@ guestfs_session_lvm_clear_filter (GuestfsSession *session, GError **err)
  * volumes.
  * 
  * Returns: true on success, false on error
+ * Since: 0.8
  */
 gboolean
 guestfs_session_lvm_remove_all (GuestfsSession *session, GError **err)
@@ -16353,6 +16675,7 @@ guestfs_session_lvm_remove_all (GuestfsSession *session, GError **err)
  * mounted filesystem), even if you are not filtering out that VG.
  * 
  * Returns: true on success, false on error
+ * Since: 1.5.1
  */
 gboolean
 guestfs_session_lvm_set_filter (GuestfsSession *session, gchar *const *devices, GError **err)
@@ -16389,6 +16712,7 @@ guestfs_session_lvm_set_filter (GuestfsSession *session, gchar *const *devices, 
  * "/dev/VG".
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.13
  */
 gboolean
 guestfs_session_lvremove (GuestfsSession *session, const gchar *device, GError **err)
@@ -16422,6 +16746,7 @@ guestfs_session_lvremove (GuestfsSession *session, const gchar *device, GError *
  * Rename a logical volume @logvol with the new name @newlogvol.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.83
  */
 gboolean
 guestfs_session_lvrename (GuestfsSession *session, const gchar *logvol, const gchar *newlogvol, GError **err)
@@ -16456,6 +16781,7 @@ guestfs_session_lvrename (GuestfsSession *session, const gchar *logvol, const gc
  * @mbytes. When reducing, data in the reduced part is lost.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.27
  */
 gboolean
 guestfs_session_lvresize (GuestfsSession *session, const gchar *device, gint32 mbytes, GError **err)
@@ -16492,6 +16818,7 @@ guestfs_session_lvresize (GuestfsSession *session, const gchar *device, gint32 m
  * using all remaining free space in the volume group.
  * 
  * Returns: true on success, false on error
+ * Since: 1.3.3
  */
 gboolean
 guestfs_session_lvresize_free (GuestfsSession *session, const gchar *lv, gint32 percent, GError **err)
@@ -16529,6 +16856,7 @@ guestfs_session_lvresize_free (GuestfsSession *session, const gchar *lv, gint32 
  * See also guestfs_session_lvs_full(), guestfs_session_list_filesystems().
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 0.4
  */
 gchar **
 guestfs_session_lvs (GuestfsSession *session, GError **err)
@@ -16561,6 +16889,7 @@ guestfs_session_lvs (GuestfsSession *session, GError **err)
  * lvs(8) command. The "full" version includes all fields.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsLV): an array of LV objects, or NULL on error
+ * Since: 0.4
  */
 GuestfsLV **
 guestfs_session_lvs_full (GuestfsSession *session, GError **err)
@@ -16616,6 +16945,7 @@ guestfs_session_lvs_full (GuestfsSession *session, GError **err)
  * This command returns the UUID of the LVM LV @device.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.87
  */
 gchar *
 guestfs_session_lvuuid (GuestfsSession *session, const gchar *device, GError **err)
@@ -16665,6 +16995,7 @@ guestfs_session_lvuuid (GuestfsSession *session, const gchar *device, GError **e
  * standard stats.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsXAttr): an array of XAttr objects, or NULL on error
+ * Since: 1.0.77
  */
 GuestfsXAttr **
 guestfs_session_lxattrlist (GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
@@ -16715,6 +17046,7 @@ guestfs_session_lxattrlist (GuestfsSession *session, const gchar *path, gchar *c
  * on this topic.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.19.7
  */
 gint32
 guestfs_session_max_disks (GuestfsSession *session, GError **err)
@@ -16792,6 +17124,7 @@ guestfs_session_max_disks (GuestfsSession *session, GError **err)
  * If not set, this defaults to @raid1.
  * 
  * Returns: true on success, false on error
+ * Since: 1.15.6
  */
 gboolean
 guestfs_session_md_create (GuestfsSession *session, const gchar *name, gchar *const *devices, GuestfsMDCreate *optargs, GError **err)
@@ -16889,6 +17222,7 @@ guestfs_session_md_create (GuestfsSession *session, const gchar *name, gchar *co
  * The name of the MD device.
  * 
  * Returns: (transfer full) (element-type utf8 utf8): a GHashTable of results, or NULL on error
+ * Since: 1.15.6
  */
 GHashTable *
 guestfs_session_md_detail (GuestfsSession *session, const gchar *md, GError **err)
@@ -16954,6 +17288,7 @@ guestfs_session_md_detail (GuestfsSession *session, const gchar *md, GError **er
  * @R  replacement
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsMDStat): an array of MDStat objects, or NULL on error
+ * Since: 1.17.21
  */
 GuestfsMDStat **
 guestfs_session_md_stat (GuestfsSession *session, const gchar *md, GError **err)
@@ -16997,6 +17332,7 @@ guestfs_session_md_stat (GuestfsSession *session, const gchar *md, GError **err)
  * but it is not destroyed or zeroed.
  * 
  * Returns: true on success, false on error
+ * Since: 1.15.6
  */
 gboolean
 guestfs_session_md_stop (GuestfsSession *session, const gchar *md, GError **err)
@@ -17029,6 +17365,7 @@ guestfs_session_md_stop (GuestfsSession *session, const gchar *md, GError **err)
  * Create a directory named @path.
  * 
  * Returns: true on success, false on error
+ * Since: 0.8
  */
 gboolean
 guestfs_session_mkdir (GuestfsSession *session, const gchar *path, GError **err)
@@ -17069,6 +17406,7 @@ guestfs_session_mkdir (GuestfsSession *session, const gchar *path, GError **err)
  * See also guestfs_session_mkdir(), guestfs_session_umask()
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.77
  */
 gboolean
 guestfs_session_mkdir_mode (GuestfsSession *session, const gchar *path, gint32 mode, GError **err)
@@ -17102,6 +17440,7 @@ guestfs_session_mkdir_mode (GuestfsSession *session, const gchar *path, gint32 m
  * necessary. This is like the "mkdir -p" shell command.
  * 
  * Returns: true on success, false on error
+ * Since: 0.8
  */
 gboolean
 guestfs_session_mkdir_p (GuestfsSession *session, const gchar *path, GError **err)
@@ -17148,6 +17487,7 @@ guestfs_session_mkdir_p (GuestfsSession *session, const gchar *path, GError **er
  * See also: mkdtemp(3)
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.54
  */
 gchar *
 guestfs_session_mkdtemp (GuestfsSession *session, const gchar *tmpl, GError **err)
@@ -17186,6 +17526,7 @@ guestfs_session_mkdtemp (GuestfsSession *session, const gchar *tmpl, GError **er
  * filesystem instead.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.44
  */
 gboolean
 guestfs_session_mke2fs (GuestfsSession *session, const gchar *device, GuestfsMke2fs *optargs, GError **err)
@@ -17539,6 +17880,7 @@ guestfs_session_mke2fs (GuestfsSession *session, const gchar *device, GuestfsMke
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_mke2fs() instead
+ * Since: 1.0.68
  */
 gboolean
 guestfs_session_mke2fs_J (GuestfsSession *session, const gchar *fstype, gint32 blocksize, const gchar *device, const gchar *journal, GError **err)
@@ -17578,6 +17920,7 @@ guestfs_session_mke2fs_J (GuestfsSession *session, const gchar *fstype, gint32 b
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_mke2fs() instead
+ * Since: 1.0.68
  */
 gboolean
 guestfs_session_mke2fs_JL (GuestfsSession *session, const gchar *fstype, gint32 blocksize, const gchar *device, const gchar *label, GError **err)
@@ -17617,6 +17960,7 @@ guestfs_session_mke2fs_JL (GuestfsSession *session, const gchar *fstype, gint32 
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_mke2fs() instead
+ * Since: 1.0.68
  */
 gboolean
 guestfs_session_mke2fs_JU (GuestfsSession *session, const gchar *fstype, gint32 blocksize, const gchar *device, const gchar *uuid, GError **err)
@@ -17654,6 +17998,7 @@ guestfs_session_mke2fs_JU (GuestfsSession *session, const gchar *fstype, gint32 
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_mke2fs() instead
+ * Since: 1.0.68
  */
 gboolean
 guestfs_session_mke2journal (GuestfsSession *session, gint32 blocksize, const gchar *device, GError **err)
@@ -17689,6 +18034,7 @@ guestfs_session_mke2journal (GuestfsSession *session, gint32 blocksize, const gc
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_mke2fs() instead
+ * Since: 1.0.68
  */
 gboolean
 guestfs_session_mke2journal_L (GuestfsSession *session, gint32 blocksize, const gchar *label, const gchar *device, GError **err)
@@ -17724,6 +18070,7 @@ guestfs_session_mke2journal_L (GuestfsSession *session, gint32 blocksize, const 
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_mke2fs() instead
+ * Since: 1.0.68
  */
 gboolean
 guestfs_session_mke2journal_U (GuestfsSession *session, gint32 blocksize, const gchar *uuid, const gchar *device, GError **err)
@@ -17763,6 +18110,7 @@ guestfs_session_mke2journal_U (GuestfsSession *session, gint32 blocksize, const 
  * The mode actually set is affected by the umask.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.55
  */
 gboolean
 guestfs_session_mkfifo (GuestfsSession *session, gint32 mode, const gchar *path, GError **err)
@@ -17828,6 +18176,7 @@ guestfs_session_mkfifo (GuestfsSession *session, gint32 mode, const gchar *path,
  * which sets sector size for ufs filesystem.
  * 
  * Returns: true on success, false on error
+ * Since: 0.8
  */
 gboolean
 guestfs_session_mkfs (GuestfsSession *session, const gchar *fstype, const gchar *device, GuestfsMkfs *optargs, GError **err)
@@ -17917,6 +18266,7 @@ guestfs_session_mkfs (GuestfsSession *session, const gchar *fstype, const gchar 
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_mkfs() instead
+ * Since: 1.0.68
  */
 gboolean
 guestfs_session_mkfs_b (GuestfsSession *session, const gchar *fstype, gint32 blocksize, const gchar *device, GError **err)
@@ -17956,6 +18306,7 @@ guestfs_session_mkfs_b (GuestfsSession *session, const gchar *fstype, gint32 blo
  * To create general filesystems, use guestfs_session_mkfs().
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.25
  */
 gboolean
 guestfs_session_mkfs_btrfs (GuestfsSession *session, gchar *const *devices, GuestfsMkfsBtrfs *optargs, GError **err)
@@ -18062,6 +18413,7 @@ guestfs_session_mkfs_btrfs (GuestfsSession *session, gchar *const *devices, Gues
  * create the "lost+found" directory.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.56
  */
 gboolean
 guestfs_session_mklost_and_found (GuestfsSession *session, const gchar *mountpoint, GError **err)
@@ -18140,6 +18492,7 @@ guestfs_session_mklost_and_found (GuestfsSession *session, const gchar *mountpoi
  * handle is closed which can also trigger these issues.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.62
  */
 gboolean
 guestfs_session_mkmountpoint (GuestfsSession *session, const gchar *exemptpath, GError **err)
@@ -18190,6 +18543,7 @@ guestfs_session_mkmountpoint (GuestfsSession *session, const gchar *exemptpath, 
  * The mode actually set is affected by the umask.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.55
  */
 gboolean
 guestfs_session_mknod (GuestfsSession *session, gint32 mode, gint32 devmajor, gint32 devminor, const gchar *path, GError **err)
@@ -18232,6 +18586,7 @@ guestfs_session_mknod (GuestfsSession *session, gint32 mode, gint32 devmajor, gi
  * The mode actually set is affected by the umask.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.55
  */
 gboolean
 guestfs_session_mknod_b (GuestfsSession *session, gint32 mode, gint32 devmajor, gint32 devminor, const gchar *path, GError **err)
@@ -18274,6 +18629,7 @@ guestfs_session_mknod_b (GuestfsSession *session, gint32 mode, gint32 devmajor, 
  * The mode actually set is affected by the umask.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.55
  */
 gboolean
 guestfs_session_mknod_c (GuestfsSession *session, gint32 mode, gint32 devmajor, gint32 devminor, const gchar *path, GError **err)
@@ -18310,6 +18666,7 @@ guestfs_session_mknod_c (GuestfsSession *session, gint32 mode, gint32 devmajor, 
  * UUID of the new swap partition.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.55
  */
 gboolean
 guestfs_session_mkswap (GuestfsSession *session, const gchar *device, GuestfsMkswap *optargs, GError **err)
@@ -18372,6 +18729,7 @@ guestfs_session_mkswap (GuestfsSession *session, const gchar *device, GuestfsMks
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_mkswap() instead
+ * Since: 1.0.55
  */
 gboolean
 guestfs_session_mkswap_L (GuestfsSession *session, const gchar *label, const gchar *device, GError **err)
@@ -18406,6 +18764,7 @@ guestfs_session_mkswap_L (GuestfsSession *session, const gchar *label, const gch
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_mkswap() instead
+ * Since: 1.0.55
  */
 gboolean
 guestfs_session_mkswap_U (GuestfsSession *session, const gchar *uuid, const gchar *device, GError **err)
@@ -18441,6 +18800,7 @@ guestfs_session_mkswap_U (GuestfsSession *session, const gchar *uuid, const gcha
  * create the file itself, use something like guestfs_session_fallocate().
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_mkswap_file (GuestfsSession *session, const gchar *path, GError **err)
@@ -18490,6 +18850,7 @@ guestfs_session_mkswap_file (GuestfsSession *session, const gchar *path, GError 
  * See also: guestfs_session_mkdtemp().
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.19.53
  */
 gchar *
 guestfs_session_mktemp (GuestfsSession *session, const gchar *tmpl, GuestfsMktemp *optargs, GError **err)
@@ -18538,6 +18899,7 @@ guestfs_session_mktemp (GuestfsSession *session, const gchar *tmpl, GuestfsMktem
  * This loads a kernel module in the appliance.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.68
  */
 gboolean
 guestfs_session_modprobe (GuestfsSession *session, const gchar *modulename, GError **err)
@@ -18590,6 +18952,7 @@ guestfs_session_modprobe (GuestfsSession *session, const gchar *modulename, GErr
  * options).
  * 
  * Returns: true on success, false on error
+ * Since: 0.3
  */
 gboolean
 guestfs_session_mount (GuestfsSession *session, const gchar *mountable, const gchar *mountpoint, GError **err)
@@ -18629,6 +18992,7 @@ guestfs_session_mount (GuestfsSession *session, const gchar *mountable, const gc
  * parameter.
  * 
  * Returns: true on success, false on error
+ * Since: 1.11.12
  */
 gboolean
 guestfs_session_mount_9p (GuestfsSession *session, const gchar *mounttag, const gchar *mountpoint, GuestfsMount9P *optargs, GError **err)
@@ -18700,6 +19064,7 @@ guestfs_session_mount_9p (GuestfsSession *session, const gchar *mounttag, const 
  * See "MOUNT LOCAL" in guestfs(3) for full documentation.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.22
  */
 gboolean
 guestfs_session_mount_local (GuestfsSession *session, const gchar *localmountpoint, GuestfsMountLocal *optargs, GError **err)
@@ -18786,6 +19151,7 @@ guestfs_session_mount_local (GuestfsSession *session, const gchar *localmountpoi
  * See "MOUNT LOCAL" in guestfs(3) for full documentation.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.22
  */
 gboolean
 guestfs_session_mount_local_run (GuestfsSession *session, GCancellable *cancellable, GError **err)
@@ -18833,6 +19199,7 @@ guestfs_session_mount_local_run (GuestfsSession *session, GCancellable *cancella
  * file mountpoint".
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.54
  */
 gboolean
 guestfs_session_mount_loop (GuestfsSession *session, const gchar *file, const gchar *mountpoint, GError **err)
@@ -18871,6 +19238,7 @@ guestfs_session_mount_loop (GuestfsSession *session, const gchar *file, const gc
  * (all options default to whatever the filesystem uses).
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.10
  */
 gboolean
 guestfs_session_mount_options (GuestfsSession *session, const gchar *options, const gchar *mountable, const gchar *mountpoint, GError **err)
@@ -18905,6 +19273,7 @@ guestfs_session_mount_options (GuestfsSession *session, const gchar *options, co
  * the filesystem with the read-only (*-o ro*) flag.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.10
  */
 gboolean
 guestfs_session_mount_ro (GuestfsSession *session, const gchar *mountable, const gchar *mountpoint, GError **err)
@@ -18942,6 +19311,7 @@ guestfs_session_mount_ro (GuestfsSession *session, const gchar *mountable, const
  * *-o* and *-t* flags.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.10
  */
 gboolean
 guestfs_session_mount_vfs (GuestfsSession *session, const gchar *options, const gchar *vfstype, const gchar *mountable, const gchar *mountpoint, GError **err)
@@ -18975,6 +19345,7 @@ guestfs_session_mount_vfs (GuestfsSession *session, const gchar *options, const 
  * directory where the device is mounted.
  * 
  * Returns: (transfer full) (element-type utf8 utf8): a GHashTable of results, or NULL on error
+ * Since: 1.0.62
  */
 GHashTable *
 guestfs_session_mountpoints (GuestfsSession *session, GError **err)
@@ -19019,6 +19390,7 @@ guestfs_session_mountpoints (GuestfsSession *session, GError **err)
  * See also: guestfs_session_mountpoints()
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 0.8
  */
 gchar **
 guestfs_session_mounts (GuestfsSession *session, GError **err)
@@ -19055,6 +19427,7 @@ guestfs_session_mounts (GuestfsSession *session, GError **err)
  * See also: guestfs_session_rename().
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.18
  */
 gboolean
 guestfs_session_mv (GuestfsSession *session, const gchar *src, const gchar *dest, GError **err)
@@ -19091,6 +19464,7 @@ guestfs_session_mv (GuestfsSession *session, const gchar *src, const gchar *dest
  * guestfs_session_max_disks().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.19.15
  */
 gint32
 guestfs_session_nr_devices (GuestfsSession *session, GError **err)
@@ -19133,6 +19507,7 @@ guestfs_session_nr_devices (GuestfsSession *session, GError **err)
  * or some non-zero value documented in the ntfs-3g.probe(8) manual page.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.43
  */
 gint32
 guestfs_session_ntfs_3g_probe (GuestfsSession *session, gboolean rw, const gchar *device, GError **err)
@@ -19169,6 +19544,7 @@ guestfs_session_ntfs_3g_probe (GuestfsSession *session, gboolean rw, const gchar
  * contents of this device.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.9
  */
 gboolean
 guestfs_session_ntfsclone_in (GuestfsSession *session, const gchar *backupfile, const gchar *device, GCancellable *cancellable, GError **err)
@@ -19228,6 +19604,7 @@ guestfs_session_ntfsclone_in (GuestfsSession *session, const gchar *backupfile, 
  * libguestfs device.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.9
  */
 gboolean
 guestfs_session_ntfsclone_out (GuestfsSession *session, const gchar *device, const gchar *backupfile, GuestfsNtfscloneOut *optargs, GCancellable *cancellable, GError **err)
@@ -19329,6 +19706,7 @@ guestfs_session_ntfsclone_out (GuestfsSession *session, const gchar *device, con
  * is useful after cloning a disk with bad sectors to a new disk.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.9
  */
 gboolean
 guestfs_session_ntfsfix (GuestfsSession *session, const gchar *device, GuestfsNtfsfix *optargs, GError **err)
@@ -19398,6 +19776,7 @@ guestfs_session_ntfsfix (GuestfsSession *session, const gchar *device, GuestfsNt
  * See also ntfsresize(8).
  * 
  * Returns: true on success, false on error
+ * Since: 1.3.2
  */
 gboolean
 guestfs_session_ntfsresize (GuestfsSession *session, const gchar *device, GuestfsNTFSResizeOpts *optargs, GError **err)
@@ -19457,6 +19836,7 @@ guestfs_session_ntfsresize (GuestfsSession *session, const gchar *device, Guestf
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_ntfsresize() instead
+ * Since: 1.3.14
  */
 gboolean
 guestfs_session_ntfsresize_size (GuestfsSession *session, const gchar *device, gint64 size, GError **err)
@@ -19498,6 +19878,7 @@ guestfs_session_ntfsresize_size (GuestfsSession *session, const gchar *device, g
  * guestfs_session_parse_environment_list().
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.53
  */
 gboolean
 guestfs_session_parse_environment (GuestfsSession *session, GError **err)
@@ -19535,6 +19916,7 @@ guestfs_session_parse_environment (GuestfsSession *session, GError **err)
  * parses an explicit list of strings instead of the program's environment.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.53
  */
 gboolean
 guestfs_session_parse_environment_list (GuestfsSession *session, gchar *const *environment, GError **err)
@@ -19582,6 +19964,7 @@ guestfs_session_parse_environment_list (GuestfsSession *session, gchar *const *e
  * guestfs_session_part_disk() to do that.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.78
  */
 gboolean
 guestfs_session_part_add (GuestfsSession *session, const gchar *device, const gchar *prlogex, gint64 startsect, gint64 endsect, GError **err)
@@ -19618,6 +20001,7 @@ guestfs_session_part_add (GuestfsSession *session, const gchar *device, const gc
  * partition also deletes any logical partitions it contains.
  * 
  * Returns: true on success, false on error
+ * Since: 1.3.2
  */
 gboolean
 guestfs_session_part_del (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err)
@@ -19656,6 +20040,7 @@ guestfs_session_part_del (GuestfsSession *session, const gchar *device, gint32 p
  * possible values are described in guestfs_session_part_init().
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.78
  */
 gboolean
 guestfs_session_part_disk (GuestfsSession *session, const gchar *device, const gchar *parttype, GError **err)
@@ -19692,6 +20077,7 @@ guestfs_session_part_disk (GuestfsSession *session, const gchar *device, const g
  * See also guestfs_session_part_set_bootable().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.3.2
  */
 gint8
 guestfs_session_part_get_bootable (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err)
@@ -19725,6 +20111,7 @@ guestfs_session_part_get_bootable (GuestfsSession *session, const gchar *device,
  * Return the GUID of numbered GPT partition @partnum.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.29.25
  */
 gchar *
 guestfs_session_part_get_gpt_guid (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err)
@@ -19760,6 +20147,7 @@ guestfs_session_part_get_gpt_guid (GuestfsSession *session, const gchar *device,
  * Behaviour is undefined for other partition types.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.21.1
  */
 gchar *
 guestfs_session_part_get_gpt_type (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err)
@@ -19798,6 +20186,7 @@ guestfs_session_part_get_gpt_type (GuestfsSession *session, const gchar *device,
  * guestfs_session_part_get_parttype()).
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.3.2
  */
 gint32
 guestfs_session_part_get_mbr_id (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err)
@@ -19834,6 +20223,7 @@ guestfs_session_part_get_mbr_id (GuestfsSession *session, const gchar *device, g
  * It returns @primary, @logical, or @extended.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.29.32
  */
 gchar *
 guestfs_session_part_get_mbr_part_type (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err)
@@ -19871,6 +20261,7 @@ guestfs_session_part_get_mbr_part_type (GuestfsSession *session, const gchar *de
  * This works on @gpt but not on @mbr partitions.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.25.33
  */
 gchar *
 guestfs_session_part_get_name (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err)
@@ -19909,6 +20300,7 @@ guestfs_session_part_get_name (GuestfsSession *session, const gchar *device, gin
  * list.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.78
  */
 gchar *
 guestfs_session_part_get_parttype (GuestfsSession *session, const gchar *device, GError **err)
@@ -19983,6 +20375,7 @@ guestfs_session_part_get_parttype (GuestfsSession *session, const gchar *device,
  * sun Sun disk labels.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.78
  */
 gboolean
 guestfs_session_part_init (GuestfsSession *session, const gchar *device, const gchar *parttype, GError **err)
@@ -20031,6 +20424,7 @@ guestfs_session_part_init (GuestfsSession *session, const gchar *device, const g
  * Size of the partition in bytes.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsPartition): an array of Partition objects, or NULL on error
+ * Since: 1.0.78
  */
 GuestfsPartition **
 guestfs_session_part_list (GuestfsSession *session, const gchar *device, GError **err)
@@ -20081,6 +20475,7 @@ guestfs_session_part_list (GuestfsSession *session, const gchar *device, GError 
  * recognized.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.78
  */
 gboolean
 guestfs_session_part_set_bootable (GuestfsSession *session, const gchar *device, gint32 partnum, gboolean bootable, GError **err)
@@ -20117,6 +20512,7 @@ guestfs_session_part_set_bootable (GuestfsSession *session, const gchar *device,
  * valid GUID.
  * 
  * Returns: true on success, false on error
+ * Since: 1.29.25
  */
 gboolean
 guestfs_session_part_set_gpt_guid (GuestfsSession *session, const gchar *device, gint32 partnum, const gchar *guid, GError **err)
@@ -20159,6 +20555,7 @@ guestfs_session_part_set_gpt_guid (GuestfsSession *session, const gchar *device,
  * </ulink> for a useful list of type GUIDs.
  * 
  * Returns: true on success, false on error
+ * Since: 1.21.1
  */
 gboolean
 guestfs_session_part_set_gpt_type (GuestfsSession *session, const gchar *device, gint32 partnum, const gchar *guid, GError **err)
@@ -20200,6 +20597,7 @@ guestfs_session_part_set_gpt_type (GuestfsSession *session, const gchar *device,
  * guestfs_session_part_get_parttype()).
  * 
  * Returns: true on success, false on error
+ * Since: 1.3.2
  */
 gboolean
 guestfs_session_part_set_mbr_id (GuestfsSession *session, const gchar *device, gint32 partnum, gint32 idbyte, GError **err)
@@ -20238,6 +20636,7 @@ guestfs_session_part_set_mbr_id (GuestfsSession *session, const gchar *device, g
  * This works on @gpt but not on @mbr partitions.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.78
  */
 gboolean
 guestfs_session_part_set_name (GuestfsSession *session, const gchar *device, gint32 partnum, const gchar *name, GError **err)
@@ -20277,6 +20676,7 @@ guestfs_session_part_set_name (GuestfsSession *session, const gchar *device, gin
  * guestfs_session_device_index().
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.5.15
  */
 gchar *
 guestfs_session_part_to_dev (GuestfsSession *session, const gchar *partition, GError **err)
@@ -20315,6 +20715,7 @@ guestfs_session_part_to_dev (GuestfsSession *session, const gchar *partition, GE
  * See also guestfs_session_part_to_dev().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.13.25
  */
 gint32
 guestfs_session_part_to_partnum (GuestfsSession *session, const gchar *partition, GError **err)
@@ -20349,6 +20750,7 @@ guestfs_session_part_to_partnum (GuestfsSession *session, const gchar *partition
  * block device(s) in any other way.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.18
  */
 gboolean
 guestfs_session_ping_daemon (GuestfsSession *session, GError **err)
@@ -20390,6 +20792,7 @@ guestfs_session_ping_daemon (GuestfsSession *session, GError **err)
  * See also guestfs_session_pwrite(), guestfs_session_pread_device().
  * 
  * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
+ * Since: 1.0.77
  */
 guint8 *
 guestfs_session_pread (GuestfsSession *session, const gchar *path, gint32 count, gint64 offset, gsize *size_r, GError **err)
@@ -20431,6 +20834,7 @@ guestfs_session_pread (GuestfsSession *session, const gchar *path, gint32 count,
  * See also guestfs_session_pread().
  * 
  * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
+ * Since: 1.5.21
  */
 guint8 *
 guestfs_session_pread_device (GuestfsSession *session, const gchar *device, gint32 count, gint64 offset, gsize *size_r, GError **err)
@@ -20463,6 +20867,7 @@ guestfs_session_pread_device (GuestfsSession *session, const gchar *device, gint
  * Generate a new random UUID for the physical volume @device.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.26
  */
 gboolean
 guestfs_session_pvchange_uuid (GuestfsSession *session, const gchar *device, GError **err)
@@ -20494,6 +20899,7 @@ guestfs_session_pvchange_uuid (GuestfsSession *session, const gchar *device, GEr
  * Generate new random UUIDs for all physical volumes.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.26
  */
 gboolean
 guestfs_session_pvchange_uuid_all (GuestfsSession *session, GError **err)
@@ -20527,6 +20933,7 @@ guestfs_session_pvchange_uuid_all (GuestfsSession *session, GError **err)
  * should usually be a partition name such as "/dev/sda1".
  * 
  * Returns: true on success, false on error
+ * Since: 0.8
  */
 gboolean
 guestfs_session_pvcreate (GuestfsSession *session, const gchar *device, GError **err)
@@ -20564,6 +20971,7 @@ guestfs_session_pvcreate (GuestfsSession *session, const gchar *device, GError *
  * those first.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.13
  */
 gboolean
 guestfs_session_pvremove (GuestfsSession *session, const gchar *device, GError **err)
@@ -20597,6 +21005,7 @@ guestfs_session_pvremove (GuestfsSession *session, const gchar *device, GError *
  * match the new size of the underlying device.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.26
  */
 gboolean
 guestfs_session_pvresize (GuestfsSession *session, const gchar *device, GError **err)
@@ -20631,6 +21040,7 @@ guestfs_session_pvresize (GuestfsSession *session, const gchar *device, GError *
  * allows you to specify the new size (in bytes) explicitly.
  * 
  * Returns: true on success, false on error
+ * Since: 1.3.14
  */
 gboolean
 guestfs_session_pvresize_size (GuestfsSession *session, const gchar *device, gint64 size, GError **err)
@@ -20668,6 +21078,7 @@ guestfs_session_pvresize_size (GuestfsSession *session, const gchar *device, gin
  * See also guestfs_session_pvs_full().
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 0.4
  */
 gchar **
 guestfs_session_pvs (GuestfsSession *session, GError **err)
@@ -20700,6 +21111,7 @@ guestfs_session_pvs (GuestfsSession *session, GError **err)
  * pvs(8) command. The "full" version includes all fields.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsPV): an array of PV objects, or NULL on error
+ * Since: 0.4
  */
 GuestfsPV **
 guestfs_session_pvs_full (GuestfsSession *session, GError **err)
@@ -20753,6 +21165,7 @@ guestfs_session_pvs_full (GuestfsSession *session, GError **err)
  * This command returns the UUID of the LVM PV @device.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.87
  */
 gchar *
 guestfs_session_pvuuid (GuestfsSession *session, const gchar *device, GError **err)
@@ -20797,6 +21210,7 @@ guestfs_session_pvuuid (GuestfsSession *session, const gchar *device, GError **e
  * See also guestfs_session_pread(), guestfs_session_pwrite_device().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.3.14
  */
 gint32
 guestfs_session_pwrite (GuestfsSession *session, const gchar *path, const guint8 *content, gsize content_size, gint64 offset, GError **err)
@@ -20840,6 +21254,7 @@ guestfs_session_pwrite (GuestfsSession *session, const gchar *path, const guint8
  * See also guestfs_session_pwrite().
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.5.20
  */
 gint32
 guestfs_session_pwrite_device (GuestfsSession *session, const gchar *device, const guint8 *content, gsize content_size, gint64 offset, GError **err)
@@ -20876,6 +21291,7 @@ guestfs_session_pwrite_device (GuestfsSession *session, const gchar *device, con
  * that contain embedded ASCII NUL characters.
  * 
  * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
+ * Since: 1.0.63
  */
 guint8 *
 guestfs_session_read_file (GuestfsSession *session, const gchar *path, gsize *size_r, GError **err)
@@ -20916,6 +21332,7 @@ guestfs_session_read_file (GuestfsSession *session, const gchar *path, gsize *si
  * function and split the buffer into lines yourself.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 0.7
  */
 gchar **
 guestfs_session_read_lines (GuestfsSession *session, const gchar *path, GError **err)
@@ -20978,6 +21395,7 @@ guestfs_session_read_lines (GuestfsSession *session, const gchar *path, GError *
  * for human consumption, use guestfs_session_ll().
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsDirent): an array of Dirent objects, or NULL on error
+ * Since: 1.0.55
  */
 GuestfsDirent **
 guestfs_session_readdir (GuestfsSession *session, const gchar *dir, GError **err)
@@ -21020,6 +21438,7 @@ guestfs_session_readdir (GuestfsSession *session, const gchar *dir, GError **err
  * This command reads the target of a symbolic link.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.66
  */
 gchar *
 guestfs_session_readlink (GuestfsSession *session, const gchar *path, GError **err)
@@ -21067,6 +21486,7 @@ guestfs_session_readlink (GuestfsSession *session, const gchar *path, GError **e
  * directory contents without making many round-trips.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.0.77
  */
 gchar **
 guestfs_session_readlinklist (GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
@@ -21100,6 +21520,7 @@ guestfs_session_readlinklist (GuestfsSession *session, const gchar *path, gchar 
  * has no ".", ".." or symbolic link path elements.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.66
  */
 gchar *
 guestfs_session_realpath (GuestfsSession *session, const gchar *path, GError **err)
@@ -21138,6 +21559,7 @@ guestfs_session_realpath (GuestfsSession *session, const gchar *path, GError **e
  * future we may allow other flags to be adjusted.
  * 
  * Returns: true on success, false on error
+ * Since: 1.23.2
  */
 gboolean
 guestfs_session_remount (GuestfsSession *session, const gchar *mountpoint, GuestfsRemount *optargs, GError **err)
@@ -21198,6 +21620,7 @@ guestfs_session_remount (GuestfsSession *session, const gchar *mountpoint, Guest
  * and stop you from doing this.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.49
  */
 gboolean
 guestfs_session_remove_drive (GuestfsSession *session, const gchar *label, GError **err)
@@ -21233,6 +21656,7 @@ guestfs_session_remove_drive (GuestfsSession *session, const gchar *label, GErro
  * See also: guestfs_session_lremovexattr(), attr(5).
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.59
  */
 gboolean
 guestfs_session_removexattr (GuestfsSession *session, const gchar *xattr, const gchar *path, GError **err)
@@ -21268,6 +21692,7 @@ guestfs_session_removexattr (GuestfsSession *session, const gchar *xattr, const 
  * guestfs_session_mv() instead.
  * 
  * Returns: true on success, false on error
+ * Since: 1.21.5
  */
 gboolean
 guestfs_session_rename (GuestfsSession *session, const gchar *oldpath, const gchar *newpath, GError **err)
@@ -21303,6 +21728,7 @@ guestfs_session_rename (GuestfsSession *session, const gchar *oldpath, const gch
  * See also "RESIZE2FS ERRORS" in guestfs(3).
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.27
  */
 gboolean
 guestfs_session_resize2fs (GuestfsSession *session, const gchar *device, GError **err)
@@ -21344,6 +21770,7 @@ guestfs_session_resize2fs (GuestfsSession *session, const gchar *device, GError 
  * See also "RESIZE2FS ERRORS" in guestfs(3).
  * 
  * Returns: true on success, false on error
+ * Since: 1.9.4
  */
 gboolean
 guestfs_session_resize2fs_M (GuestfsSession *session, const gchar *device, GError **err)
@@ -21380,6 +21807,7 @@ guestfs_session_resize2fs_M (GuestfsSession *session, const gchar *device, GErro
  * See also "RESIZE2FS ERRORS" in guestfs(3).
  * 
  * Returns: true on success, false on error
+ * Since: 1.3.14
  */
 gboolean
 guestfs_session_resize2fs_size (GuestfsSession *session, const gchar *device, gint64 size, GError **err)
@@ -21412,6 +21840,7 @@ guestfs_session_resize2fs_size (GuestfsSession *session, const gchar *device, gi
  * Remove the single file @path.
  * 
  * Returns: true on success, false on error
+ * Since: 0.8
  */
 gboolean
 guestfs_session_rm (GuestfsSession *session, const gchar *path, GError **err)
@@ -21451,6 +21880,7 @@ guestfs_session_rm (GuestfsSession *session, const gchar *path, GError **err)
  * directories recursively.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.42
  */
 gboolean
 guestfs_session_rm_f (GuestfsSession *session, const gchar *path, GError **err)
@@ -21484,6 +21914,7 @@ guestfs_session_rm_f (GuestfsSession *session, const gchar *path, GError **err)
  * its a directory. This is like the "rm -rf" shell command.
  * 
  * Returns: true on success, false on error
+ * Since: 0.8
  */
 gboolean
 guestfs_session_rm_rf (GuestfsSession *session, const gchar *path, GError **err)
@@ -21516,6 +21947,7 @@ guestfs_session_rm_rf (GuestfsSession *session, const gchar *path, GError **err)
  * Remove the single directory @path.
  * 
  * Returns: true on success, false on error
+ * Since: 0.8
  */
 gboolean
 guestfs_session_rmdir (GuestfsSession *session, const gchar *path, GError **err)
@@ -21550,6 +21982,7 @@ guestfs_session_rmdir (GuestfsSession *session, const gchar *path, GError **err)
  * full details.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.62
  */
 gboolean
 guestfs_session_rmmountpoint (GuestfsSession *session, const gchar *exemptpath, GError **err)
@@ -21598,6 +22031,7 @@ guestfs_session_rmmountpoint (GuestfsSession *session, const gchar *exemptpath, 
  * Delete files at the destination that do not exist at the source.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.29
  */
 gboolean
 guestfs_session_rsync (GuestfsSession *session, const gchar *src, const gchar *dest, GuestfsRsync *optargs, GError **err)
@@ -21672,6 +22106,7 @@ guestfs_session_rsync (GuestfsSession *session, const gchar *src, const gchar *d
  * The optional arguments are the same as those of guestfs_session_rsync().
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.29
  */
 gboolean
 guestfs_session_rsync_in (GuestfsSession *session, const gchar *remote, const gchar *dest, GuestfsRsyncIn *optargs, GError **err)
@@ -21753,6 +22188,7 @@ guestfs_session_rsync_in (GuestfsSession *session, const gchar *remote, const gc
  * <![CDATA[><fs> glob rsync-out /* rsync://remote/]]>
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.29
  */
 gboolean
 guestfs_session_rsync_out (GuestfsSession *session, const gchar *src, const gchar *remote, GuestfsRsyncOut *optargs, GError **err)
@@ -21813,6 +22249,7 @@ guestfs_session_rsync_out (GuestfsSession *session, const gchar *src, const gcha
  * more details.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.52
  */
 gboolean
 guestfs_session_scrub_device (GuestfsSession *session, const gchar *device, GError **err)
@@ -21851,6 +22288,7 @@ guestfs_session_scrub_device (GuestfsSession *session, const gchar *device, GErr
  * more details.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.52
  */
 gboolean
 guestfs_session_scrub_file (GuestfsSession *session, const gchar *file, GError **err)
@@ -21889,6 +22327,7 @@ guestfs_session_scrub_file (GuestfsSession *session, const gchar *file, GError *
  * more details.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.52
  */
 gboolean
 guestfs_session_scrub_freespace (GuestfsSession *session, const gchar *dir, GError **err)
@@ -21928,6 +22367,7 @@ guestfs_session_scrub_freespace (GuestfsSession *session, const gchar *dir, GErr
  * (libguestfs always adds a few of its own).
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.26
  */
 gboolean
 guestfs_session_set_append (GuestfsSession *session, const gchar *append, GError **err)
@@ -21964,6 +22404,7 @@ guestfs_session_set_append (GuestfsSession *session, const gchar *append, GError
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_set_backend() instead
+ * Since: 1.9.8
  */
 gboolean
 guestfs_session_set_attach_method (GuestfsSession *session, const gchar *backend, GError **err)
@@ -22001,6 +22442,7 @@ guestfs_session_set_attach_method (GuestfsSession *session, const gchar *backend
  * disabled by default).
  * 
  * Returns: true on success, false on error
+ * Since: 0.3
  */
 gboolean
 guestfs_session_set_autosync (GuestfsSession *session, gboolean autosync, GError **err)
@@ -22038,6 +22480,7 @@ guestfs_session_set_autosync (GuestfsSession *session, gboolean autosync, GError
  * See "BACKEND" in guestfs(3).
  * 
  * Returns: true on success, false on error
+ * Since: 1.21.26
  */
 gboolean
 guestfs_session_set_backend (GuestfsSession *session, const gchar *backend, GError **err)
@@ -22075,6 +22518,7 @@ guestfs_session_set_backend (GuestfsSession *session, const gchar *backend, GErr
  * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
  * 
  * Returns: true on success, false on error
+ * Since: 1.27.2
  */
 gboolean
 guestfs_session_set_backend_setting (GuestfsSession *session, const gchar *name, const gchar *val, GError **err)
@@ -22120,6 +22564,7 @@ guestfs_session_set_backend_setting (GuestfsSession *session, const gchar *name,
  * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in guestfs(3).
  * 
  * Returns: true on success, false on error
+ * Since: 1.25.24
  */
 gboolean
 guestfs_session_set_backend_settings (GuestfsSession *session, gchar *const *settings, GError **err)
@@ -22159,6 +22604,7 @@ guestfs_session_set_backend_settings (GuestfsSession *session, gchar *const *set
  * default.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.58
  */
 gboolean
 guestfs_session_set_cachedir (GuestfsSession *session, const gchar *cachedir, GError **err)
@@ -22200,6 +22646,7 @@ guestfs_session_set_cachedir (GuestfsSession *session, const gchar *cachedir, GE
  * The default is disabled.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.72
  */
 gboolean
 guestfs_session_set_direct (GuestfsSession *session, gboolean direct, GError **err)
@@ -22251,6 +22698,7 @@ guestfs_session_set_direct (GuestfsSession *session, gboolean direct, GError **e
  * result in an error.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.31
  */
 gboolean
 guestfs_session_set_e2attrs (GuestfsSession *session, const gchar *file, const gchar *attrs, GuestfsSetE2attrs *optargs, GError **err)
@@ -22302,6 +22750,7 @@ guestfs_session_set_e2attrs (GuestfsSession *session, const gchar *file, const g
  * See guestfs_session_get_e2generation().
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.31
  */
 gboolean
 guestfs_session_set_e2generation (GuestfsSession *session, const gchar *file, gint64 generation, GError **err)
@@ -22341,6 +22790,7 @@ guestfs_session_set_e2generation (GuestfsSession *session, const gchar *file, gi
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_set_label() instead
+ * Since: 1.0.15
  */
 gboolean
 guestfs_session_set_e2label (GuestfsSession *session, const gchar *device, const gchar *label, GError **err)
@@ -22380,6 +22830,7 @@ guestfs_session_set_e2label (GuestfsSession *session, const gchar *device, const
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_set_uuid() instead
+ * Since: 1.0.15
  */
 gboolean
 guestfs_session_set_e2uuid (GuestfsSession *session, const gchar *device, const gchar *uuid, GError **err)
@@ -22428,6 +22879,7 @@ guestfs_session_set_e2uuid (GuestfsSession *session, const gchar *device, const 
  * created.
  * 
  * Returns: true on success, false on error
+ * Since: 1.23.17
  */
 gboolean
 guestfs_session_set_hv (GuestfsSession *session, const gchar *hv, GError **err)
@@ -22481,6 +22933,7 @@ guestfs_session_set_hv (GuestfsSession *session, const gchar *hv, GError **err)
  * To read the label on a filesystem, call guestfs_session_vfs_label().
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.9
  */
 gboolean
 guestfs_session_set_label (GuestfsSession *session, const gchar *mountable, const gchar *label, GError **err)
@@ -22519,6 +22972,7 @@ guestfs_session_set_label (GuestfsSession *session, const gchar *mountable, cons
  * code.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.52
  */
 gboolean
 guestfs_session_set_libvirt_requested_credential (GuestfsSession *session, gint32 index, const guint8 *cred, gsize cred_size, GError **err)
@@ -22571,6 +23025,7 @@ guestfs_session_set_libvirt_requested_credential (GuestfsSession *session, gint3
  * code.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.52
  */
 gboolean
 guestfs_session_set_libvirt_supported_credentials (GuestfsSession *session, gchar *const *creds, GError **err)
@@ -22609,6 +23064,7 @@ guestfs_session_set_libvirt_supported_credentials (GuestfsSession *session, gcha
  * For more information on the architecture of libguestfs, see guestfs(3).
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.55
  */
 gboolean
 guestfs_session_set_memsize (GuestfsSession *session, gint32 memsize, GError **err)
@@ -22648,6 +23104,7 @@ guestfs_session_set_memsize (GuestfsSession *session, gint32 memsize, GError **e
  * has no effect.
  * 
  * Returns: true on success, false on error
+ * Since: 1.5.4
  */
 gboolean
 guestfs_session_set_network (GuestfsSession *session, gboolean network, GError **err)
@@ -22685,6 +23142,7 @@ guestfs_session_set_network (GuestfsSession *session, gboolean network, GError *
  * Setting @path to @NULL restores the default path.
  * 
  * Returns: true on success, false on error
+ * Since: 0.3
  */
 gboolean
 guestfs_session_set_path (GuestfsSession *session, const gchar *searchpath, GError **err)
@@ -22726,6 +23184,7 @@ guestfs_session_set_path (GuestfsSession *session, const gchar *searchpath, GErr
  * (see guestfs_session_user_cancel()).
  * 
  * Returns: true on success, false on error
+ * Since: 1.11.18
  */
 gboolean
 guestfs_session_set_pgroup (GuestfsSession *session, gboolean pgroup, GError **err)
@@ -22763,6 +23222,7 @@ guestfs_session_set_pgroup (GuestfsSession *session, gboolean pgroup, GError **e
  * empty string (but never @NULL).
  * 
  * Returns: true on success, false on error
+ * Since: 1.21.29
  */
 gboolean
 guestfs_session_set_program (GuestfsSession *session, const gchar *program, GError **err)
@@ -22812,6 +23272,7 @@ guestfs_session_set_program (GuestfsSession *session, const gchar *program, GErr
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_set_hv() instead
+ * Since: 1.0.6
  */
 gboolean
 guestfs_session_set_qemu (GuestfsSession *session, const gchar *hv, GError **err)
@@ -22855,6 +23316,7 @@ guestfs_session_set_qemu (GuestfsSession *session, const gchar *hv, GError **err
  * disappeared and so kills the hypervisor, which is not very helpful.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.77
  */
 gboolean
 guestfs_session_set_recovery_proc (GuestfsSession *session, gboolean recoveryproc, GError **err)
@@ -22893,6 +23355,7 @@ guestfs_session_set_recovery_proc (GuestfsSession *session, gboolean recoverypro
  * For more information on the architecture of libguestfs, see guestfs(3).
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.67
  */
 gboolean
 guestfs_session_set_selinux (GuestfsSession *session, gboolean selinux, GError **err)
@@ -22929,6 +23392,7 @@ guestfs_session_set_selinux (GuestfsSession *session, gboolean selinux, GError *
  * This function must be called before guestfs_session_launch().
  * 
  * Returns: true on success, false on error
+ * Since: 1.13.15
  */
 gboolean
 guestfs_session_set_smp (GuestfsSession *session, gint32 smp, GError **err)
@@ -22966,6 +23430,7 @@ guestfs_session_set_smp (GuestfsSession *session, gint32 smp, GError **err)
  * default.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.58
  */
 gboolean
 guestfs_session_set_tmpdir (GuestfsSession *session, const gchar *tmpdir, GError **err)
@@ -23009,6 +23474,7 @@ guestfs_session_set_tmpdir (GuestfsSession *session, const gchar *tmpdir, GError
  * guestfs_session_set_event_callback()).
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.69
  */
 gboolean
 guestfs_session_set_trace (GuestfsSession *session, gboolean trace, GError **err)
@@ -23046,6 +23512,7 @@ guestfs_session_set_trace (GuestfsSession *session, gboolean trace, GError **err
  * To read the UUID on a filesystem, call guestfs_session_vfs_uuid().
  * 
  * Returns: true on success, false on error
+ * Since: 1.23.10
  */
 gboolean
 guestfs_session_set_uuid (GuestfsSession *session, const gchar *device, const gchar *uuid, GError **err)
@@ -23085,6 +23552,7 @@ guestfs_session_set_uuid (GuestfsSession *session, const gchar *device, const gc
  * guestfs_session_set_event_callback()).
  * 
  * Returns: true on success, false on error
+ * Since: 0.3
  */
 gboolean
 guestfs_session_set_verbose (GuestfsSession *session, gboolean verbose, GError **err)
@@ -23120,6 +23588,7 @@ guestfs_session_set_verbose (GuestfsSession *session, gboolean verbose, GError *
  * See the documentation about SELINUX in guestfs(3).
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.67
  */
 gboolean
 guestfs_session_setcon (GuestfsSession *session, const gchar *context, GError **err)
@@ -23158,6 +23627,7 @@ guestfs_session_setcon (GuestfsSession *session, const gchar *context, GError **
  * See also: guestfs_session_lsetxattr(), attr(5).
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.59
  */
 gboolean
 guestfs_session_setxattr (GuestfsSession *session, const gchar *xattr, const gchar *val, gint32 vallen, const gchar *path, GError **err)
@@ -23216,6 +23686,7 @@ guestfs_session_setxattr (GuestfsSession *session, const gchar *xattr, const gch
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_part_add() instead
+ * Since: 0.8
  */
 gboolean
 guestfs_session_sfdisk (GuestfsSession *session, const gchar *device, gint32 cyls, gint32 heads, gint32 sectors, gchar *const *lines, GError **err)
@@ -23256,6 +23727,7 @@ guestfs_session_sfdisk (GuestfsSession *session, const gchar *device, gint32 cyl
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_part_add() instead
+ * Since: 1.0.55
  */
 gboolean
 guestfs_session_sfdiskM (GuestfsSession *session, const gchar *device, gchar *const *lines, GError **err)
@@ -23300,6 +23772,7 @@ guestfs_session_sfdiskM (GuestfsSession *session, const gchar *device, gchar *co
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_part_add() instead
+ * Since: 1.0.26
  */
 gboolean
 guestfs_session_sfdisk_N (GuestfsSession *session, const gchar *device, gint32 partnum, gint32 cyls, gint32 heads, gint32 sectors, const gchar *line, GError **err)
@@ -23337,6 +23810,7 @@ guestfs_session_sfdisk_N (GuestfsSession *session, const gchar *device, gint32 p
  * The result is in human-readable format, and not designed to be parsed.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.26
  */
 gchar *
 guestfs_session_sfdisk_disk_geometry (GuestfsSession *session, const gchar *device, GError **err)
@@ -23371,6 +23845,7 @@ guestfs_session_sfdisk_disk_geometry (GuestfsSession *session, const gchar *devi
  * The result is in human-readable format, and not designed to be parsed.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.26
  */
 gchar *
 guestfs_session_sfdisk_kernel_geometry (GuestfsSession *session, const gchar *device, GError **err)
@@ -23407,6 +23882,7 @@ guestfs_session_sfdisk_kernel_geometry (GuestfsSession *session, const gchar *de
  * 
  * Returns: (transfer full): the returned string, or NULL on error
  * Deprecated: In new code, use guestfs_session_part_list() instead
+ * Since: 1.0.26
  */
 gchar *
 guestfs_session_sfdisk_l (GuestfsSession *session, const gchar *device, GError **err)
@@ -23449,6 +23925,7 @@ guestfs_session_sfdisk_l (GuestfsSession *session, const gchar *device, GError *
  * All the provisos about guestfs_session_command() apply to this call.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.50
  */
 gchar *
 guestfs_session_sh (GuestfsSession *session, const gchar *command, GError **err)
@@ -23484,6 +23961,7 @@ guestfs_session_sh (GuestfsSession *session, const gchar *command, GError **err)
  * See also: guestfs_session_command_lines()
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.0.50
  */
 gchar **
 guestfs_session_sh_lines (GuestfsSession *session, const gchar *command, GError **err)
@@ -23529,6 +24007,7 @@ guestfs_session_sh_lines (GuestfsSession *session, const gchar *command, GError 
  * but note that any errors are ignored in that case.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.16
  */
 gboolean
 guestfs_session_shutdown (GuestfsSession *session, GError **err)
@@ -23561,6 +24040,7 @@ guestfs_session_shutdown (GuestfsSession *session, GError **err)
  * Sleep for @secs seconds.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.41
  */
 gboolean
 guestfs_session_sleep (GuestfsSession *session, gint32 secs, GError **err)
@@ -23596,6 +24076,7 @@ guestfs_session_sleep (GuestfsSession *session, gint32 secs, GError **err)
  * 
  * Returns: (transfer full): a Stat object, or NULL on error
  * Deprecated: In new code, use guestfs_session_statns() instead
+ * Since: 1.9.2
  */
 GuestfsStat *
 guestfs_session_stat (GuestfsSession *session, const gchar *path, GError **err)
@@ -23645,6 +24126,7 @@ guestfs_session_stat (GuestfsSession *session, const gchar *path, GError **err)
  * This is the same as the stat(2) system call.
  * 
  * Returns: (transfer full): a StatNS object, or NULL on error
+ * Since: 1.27.53
  */
 GuestfsStatNS *
 guestfs_session_statns (GuestfsSession *session, const gchar *path, GError **err)
@@ -23705,6 +24187,7 @@ guestfs_session_statns (GuestfsSession *session, const gchar *path, GError **err
  * This is the same as the statvfs(2) system call.
  * 
  * Returns: (transfer full): a StatVFS object, or NULL on error
+ * Since: 1.9.2
  */
 GuestfsStatVFS *
 guestfs_session_statvfs (GuestfsSession *session, const gchar *path, GError **err)
@@ -23755,6 +24238,7 @@ guestfs_session_statvfs (GuestfsSession *session, const gchar *path, GError **er
  * libguestfs, but see "CVE-2014-8484" in guestfs(3).
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.0.22
  */
 gchar **
 guestfs_session_strings (GuestfsSession *session, const gchar *path, GError **err)
@@ -23814,6 +24298,7 @@ guestfs_session_strings (GuestfsSession *session, const gchar *path, GError **er
  * libguestfs, but see "CVE-2014-8484" in guestfs(3).
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.0.22
  */
 gchar **
 guestfs_session_strings_e (GuestfsSession *session, const gchar *encoding, const gchar *path, GError **err)
@@ -23847,6 +24332,7 @@ guestfs_session_strings_e (GuestfsSession *session, const gchar *encoding, const
  * named @device. See guestfs_session_swapon_device().
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_swapoff_device (GuestfsSession *session, const gchar *device, GError **err)
@@ -23879,6 +24365,7 @@ guestfs_session_swapoff_device (GuestfsSession *session, const gchar *device, GE
  * This command disables the libguestfs appliance swap on file.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_swapoff_file (GuestfsSession *session, const gchar *file, GError **err)
@@ -23912,6 +24399,7 @@ guestfs_session_swapoff_file (GuestfsSession *session, const gchar *file, GError
  * partition.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_swapoff_label (GuestfsSession *session, const gchar *label, GError **err)
@@ -23945,6 +24433,7 @@ guestfs_session_swapoff_label (GuestfsSession *session, const gchar *label, GErr
  * given UUID.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_swapoff_uuid (GuestfsSession *session, const gchar *uuid, GError **err)
@@ -23986,6 +24475,7 @@ guestfs_session_swapoff_uuid (GuestfsSession *session, const gchar *uuid, GError
  * attach a new host device to the guest and swap on that.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_swapon_device (GuestfsSession *session, const gchar *device, GError **err)
@@ -24019,6 +24509,7 @@ guestfs_session_swapon_device (GuestfsSession *session, const gchar *device, GEr
  * for other notes.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_swapon_file (GuestfsSession *session, const gchar *file, GError **err)
@@ -24052,6 +24543,7 @@ guestfs_session_swapon_file (GuestfsSession *session, const gchar *file, GError 
  * guestfs_session_swapon_device() for other notes.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_swapon_label (GuestfsSession *session, const gchar *label, GError **err)
@@ -24085,6 +24577,7 @@ guestfs_session_swapon_label (GuestfsSession *session, const gchar *label, GErro
  * guestfs_session_swapon_device() for other notes.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.66
  */
 gboolean
 guestfs_session_swapon_uuid (GuestfsSession *session, const gchar *uuid, GError **err)
@@ -24120,6 +24613,7 @@ guestfs_session_swapon_uuid (GuestfsSession *session, const gchar *uuid, GError 
  * closing the handle.
  * 
  * Returns: true on success, false on error
+ * Since: 0.3
  */
 gboolean
 guestfs_session_sync (GuestfsSession *session, GError **err)
@@ -24176,6 +24670,7 @@ guestfs_session_sync (GuestfsSession *session, GError **err)
  * See also guestfs_session_extlinux().
  * 
  * Returns: true on success, false on error
+ * Since: 1.21.27
  */
 gboolean
 guestfs_session_syslinux (GuestfsSession *session, const gchar *device, GuestfsSyslinux *optargs, GError **err)
@@ -24225,6 +24720,7 @@ guestfs_session_syslinux (GuestfsSession *session, const gchar *device, GuestfsS
  * strings.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.0.54
  */
 gchar **
 guestfs_session_tail (GuestfsSession *session, const gchar *path, GError **err)
@@ -24264,6 +24760,7 @@ guestfs_session_tail (GuestfsSession *session, const gchar *path, GError **err)
  * If the parameter @nrlines is zero, this returns an empty list.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.0.54
  */
 gchar **
 guestfs_session_tail_n (GuestfsSession *session, gint32 nrlines, const gchar *path, GError **err)
@@ -24305,6 +24802,7 @@ guestfs_session_tail_n (GuestfsSession *session, gint32 nrlines, const gchar *pa
  * libguestfs will support all of these compression types).
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.3
  */
 gboolean
 guestfs_session_tar_in (GuestfsSession *session, const gchar *tarfile, const gchar *directory, GuestfsTarIn *optargs, GCancellable *cancellable, GError **err)
@@ -24385,6 +24883,7 @@ guestfs_session_tar_in (GuestfsSession *session, const gchar *tarfile, const gch
  * instead of user/group names.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.3
  */
 gboolean
 guestfs_session_tar_out (GuestfsSession *session, const gchar *directory, const gchar *tarfile, GuestfsTarOut *optargs, GCancellable *cancellable, GError **err)
@@ -24457,6 +24956,7 @@ guestfs_session_tar_out (GuestfsSession *session, const gchar *directory, const 
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_tar_in() instead
+ * Since: 1.0.3
  */
 gboolean
 guestfs_session_tgz_in (GuestfsSession *session, const gchar *tarball, const gchar *directory, GCancellable *cancellable, GError **err)
@@ -24505,6 +25005,7 @@ guestfs_session_tgz_in (GuestfsSession *session, const gchar *tarball, const gch
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_tar_out() instead
+ * Since: 1.0.3
  */
 gboolean
 guestfs_session_tgz_out (GuestfsSession *session, const gchar *directory, const gchar *tarball, GCancellable *cancellable, GError **err)
@@ -24554,6 +25055,7 @@ guestfs_session_tgz_out (GuestfsSession *session, const gchar *directory, const 
  * types such as directories, symbolic links, block special etc.
  * 
  * Returns: true on success, false on error
+ * Since: 0.3
  */
 gboolean
 guestfs_session_touch (GuestfsSession *session, const gchar *path, GError **err)
@@ -24587,6 +25089,7 @@ guestfs_session_touch (GuestfsSession *session, const gchar *path, GError **err)
  * already.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.77
  */
 gboolean
 guestfs_session_truncate (GuestfsSession *session, const gchar *path, GError **err)
@@ -24626,6 +25129,7 @@ guestfs_session_truncate (GuestfsSession *session, const gchar *path, GError **e
  * a non-sparse file of zeroes, use guestfs_session_fallocate64() instead.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.77
  */
 gboolean
 guestfs_session_truncate_size (GuestfsSession *session, const gchar *path, gint64 size, GError **err)
@@ -24714,6 +25218,7 @@ guestfs_session_truncate_size (GuestfsSession *session, const gchar *path, gint6
  * see the tune2fs(8) man page.
  * 
  * Returns: true on success, false on error
+ * Since: 1.15.4
  */
 gboolean
 guestfs_session_tune2fs (GuestfsSession *session, const gchar *device, GuestfsTune2FS *optargs, GError **err)
@@ -24840,6 +25345,7 @@ guestfs_session_tune2fs (GuestfsSession *session, const gchar *device, GuestfsTu
  * against, and the filesystem itself.
  * 
  * Returns: (transfer full) (element-type utf8 utf8): a GHashTable of results, or NULL on error
+ * Since: 1.9.2
  */
 GHashTable *
 guestfs_session_tune2fs_l (GuestfsSession *session, const gchar *device, GError **err)
@@ -24884,6 +25390,7 @@ guestfs_session_tune2fs_l (GuestfsSession *session, const gchar *device, GError 
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_tar_in() instead
+ * Since: 1.3.2
  */
 gboolean
 guestfs_session_txz_in (GuestfsSession *session, const gchar *tarball, const gchar *directory, GCancellable *cancellable, GError **err)
@@ -24932,6 +25439,7 @@ guestfs_session_txz_in (GuestfsSession *session, const gchar *tarball, const gch
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_tar_out() instead
+ * Since: 1.3.2
  */
 gboolean
 guestfs_session_txz_out (GuestfsSession *session, const gchar *directory, const gchar *tarball, GCancellable *cancellable, GError **err)
@@ -24990,6 +25498,7 @@ guestfs_session_txz_out (GuestfsSession *session, const gchar *directory, const 
  * This call returns the previous umask.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.55
  */
 gint32
 guestfs_session_umask (GuestfsSession *session, gint32 mask, GError **err)
@@ -25025,6 +25534,7 @@ guestfs_session_umask (GuestfsSession *session, gint32 mask, GError **err)
  * filesystem.
  * 
  * Returns: true on success, false on error
+ * Since: 0.8
  */
 gboolean
 guestfs_session_umount (GuestfsSession *session, const gchar *pathordevice, GuestfsUmount *optargs, GError **err)
@@ -25082,6 +25592,7 @@ guestfs_session_umount (GuestfsSession *session, const gchar *pathordevice, Gues
  * Some internal mounts are not unmounted by this call.
  * 
  * Returns: true on success, false on error
+ * Since: 0.8
  */
 gboolean
 guestfs_session_umount_all (GuestfsSession *session, GError **err)
@@ -25117,6 +25628,7 @@ guestfs_session_umount_all (GuestfsSession *session, GError **err)
  * See "MOUNT LOCAL" in guestfs(3) for full documentation.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.22
  */
 gboolean
 guestfs_session_umount_local (GuestfsSession *session, GuestfsUmountLocal *optargs, GError **err)
@@ -25171,6 +25683,7 @@ guestfs_session_umount_local (GuestfsSession *session, GuestfsUmountLocal *optar
  * See also guestfs_session_download().
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.2
  */
 gboolean
 guestfs_session_upload (GuestfsSession *session, const gchar *filename, const gchar *remotefilename, GCancellable *cancellable, GError **err)
@@ -25230,6 +25743,7 @@ guestfs_session_upload (GuestfsSession *session, const gchar *filename, const gc
  * See also guestfs_session_upload(), guestfs_session_pwrite().
  * 
  * Returns: true on success, false on error
+ * Since: 1.5.17
  */
 gboolean
 guestfs_session_upload_offset (GuestfsSession *session, const gchar *filename, const gchar *remotefilename, gint64 offset, GCancellable *cancellable, GError **err)
@@ -25298,6 +25812,7 @@ guestfs_session_upload_offset (GuestfsSession *session, const gchar *filename, c
  * function.
  * 
  * Returns: true on success, false on error
+ * Since: 1.11.18
  */
 gboolean
 guestfs_session_user_cancel (GuestfsSession *session, GError **err)
@@ -25348,6 +25863,7 @@ guestfs_session_user_cancel (GuestfsSession *session, GError **err)
  * in this case).
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.77
  */
 gboolean
 guestfs_session_utimens (GuestfsSession *session, const gchar *path, gint64 atsecs, gint64 atnsecs, gint64 mtsecs, gint64 mtnsecs, GError **err)
@@ -25381,6 +25897,7 @@ guestfs_session_utimens (GuestfsSession *session, const gchar *path, gint64 atse
  * returned structure is defined by the API.
  * 
  * Returns: (transfer full): a UTSName object, or NULL on error
+ * Since: 1.19.27
  */
 GuestfsUTSName *
 guestfs_session_utsname (GuestfsSession *session, GError **err)
@@ -25443,6 +25960,7 @@ guestfs_session_utsname (GuestfsSession *session, GError **err)
  * instead.
  * 
  * Returns: (transfer full): a Version object, or NULL on error
+ * Since: 1.0.58
  */
 GuestfsVersion *
 guestfs_session_version (GuestfsSession *session, GError **err)
@@ -25485,6 +26003,7 @@ guestfs_session_version (GuestfsSession *session, GError **err)
  * To find a filesystem from the label, use guestfs_session_findfs_label().
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.3.18
  */
 gchar *
 guestfs_session_vfs_label (GuestfsSession *session, const gchar *mountable, GError **err)
@@ -25523,6 +26042,7 @@ guestfs_session_vfs_label (GuestfsSession *session, const gchar *mountable, GErr
  * @ntfs.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.75
  */
 gchar *
 guestfs_session_vfs_type (GuestfsSession *session, const gchar *mountable, GError **err)
@@ -25559,6 +26079,7 @@ guestfs_session_vfs_type (GuestfsSession *session, const gchar *mountable, GErro
  * To find a filesystem from the UUID, use guestfs_session_findfs_uuid().
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.3.18
  */
 gchar *
 guestfs_session_vfs_uuid (GuestfsSession *session, const gchar *mountable, GError **err)
@@ -25598,6 +26119,7 @@ guestfs_session_vfs_uuid (GuestfsSession *session, const gchar *mountable, GErro
  * activated or deactivated.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.26
  */
 gboolean
 guestfs_session_vg_activate (GuestfsSession *session, gboolean activate, gchar *const *volgroups, GError **err)
@@ -25633,6 +26155,7 @@ guestfs_session_vg_activate (GuestfsSession *session, gboolean activate, gchar *
  * This command is the same as running "vgchange -a y|n"
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.26
  */
 gboolean
 guestfs_session_vg_activate_all (GuestfsSession *session, gboolean activate, GError **err)
@@ -25665,6 +26188,7 @@ guestfs_session_vg_activate_all (GuestfsSession *session, gboolean activate, GEr
  * Generate a new random UUID for the volume group @vg.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.26
  */
 gboolean
 guestfs_session_vgchange_uuid (GuestfsSession *session, const gchar *vg, GError **err)
@@ -25696,6 +26220,7 @@ guestfs_session_vgchange_uuid (GuestfsSession *session, const gchar *vg, GError 
  * Generate new random UUIDs for all volume groups.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.26
  */
 gboolean
 guestfs_session_vgchange_uuid_all (GuestfsSession *session, GError **err)
@@ -25730,6 +26255,7 @@ guestfs_session_vgchange_uuid_all (GuestfsSession *session, GError **err)
  * list of physical volumes @physvols.
  * 
  * Returns: true on success, false on error
+ * Since: 0.8
  */
 gboolean
 guestfs_session_vgcreate (GuestfsSession *session, const gchar *volgroup, gchar *const *physvols, GError **err)
@@ -25769,6 +26295,7 @@ guestfs_session_vgcreate (GuestfsSession *session, const gchar *volgroup, gchar 
  * See also guestfs_session_vgpvuuids().
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.0.87
  */
 gchar **
 guestfs_session_vglvuuids (GuestfsSession *session, const gchar *vgname, GError **err)
@@ -25806,6 +26333,7 @@ guestfs_session_vglvuuids (GuestfsSession *session, const gchar *vgname, GError 
  * change at any time, and is provided for information only.
  * 
  * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
+ * Since: 1.17.20
  */
 guint8 *
 guestfs_session_vgmeta (GuestfsSession *session, const gchar *vgname, gsize *size_r, GError **err)
@@ -25845,6 +26373,7 @@ guestfs_session_vgmeta (GuestfsSession *session, const gchar *vgname, gsize *siz
  * See also guestfs_session_vglvuuids().
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.0.87
  */
 gchar **
 guestfs_session_vgpvuuids (GuestfsSession *session, const gchar *vgname, GError **err)
@@ -25880,6 +26409,7 @@ guestfs_session_vgpvuuids (GuestfsSession *session, const gchar *vgname, GError 
  * any).
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.13
  */
 gboolean
 guestfs_session_vgremove (GuestfsSession *session, const gchar *vgname, GError **err)
@@ -25913,6 +26443,7 @@ guestfs_session_vgremove (GuestfsSession *session, const gchar *vgname, GError *
  * Rename a volume group @volgroup with the new name @newvolgroup.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.83
  */
 gboolean
 guestfs_session_vgrename (GuestfsSession *session, const gchar *volgroup, const gchar *newvolgroup, GError **err)
@@ -25950,6 +26481,7 @@ guestfs_session_vgrename (GuestfsSession *session, const gchar *volgroup, const 
  * See also guestfs_session_vgs_full().
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 0.4
  */
 gchar **
 guestfs_session_vgs (GuestfsSession *session, GError **err)
@@ -25982,6 +26514,7 @@ guestfs_session_vgs (GuestfsSession *session, GError **err)
  * vgs(8) command. The "full" version includes all fields.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsVG): an array of VG objects, or NULL on error
+ * Since: 0.4
  */
 GuestfsVG **
 guestfs_session_vgs_full (GuestfsSession *session, GError **err)
@@ -26040,6 +26573,7 @@ guestfs_session_vgs_full (GuestfsSession *session, GError **err)
  * volumes, volume groups and logical volumes.
  * 
  * Returns: true on success, false on error
+ * Since: 1.3.2
  */
 gboolean
 guestfs_session_vgscan (GuestfsSession *session, GError **err)
@@ -26072,6 +26606,7 @@ guestfs_session_vgscan (GuestfsSession *session, GError **err)
  * This command returns the UUID of the LVM VG named @vgname.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.0.87
  */
 gchar *
 guestfs_session_vguuid (GuestfsSession *session, const gchar *vgname, GError **err)
@@ -26113,6 +26648,7 @@ guestfs_session_vguuid (GuestfsSession *session, const gchar *vgname, GError **e
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_launch() instead
+ * Since: 0.3
  */
 gboolean
 guestfs_session_wait_ready (GuestfsSession *session, GError **err)
@@ -26146,6 +26682,7 @@ guestfs_session_wait_ready (GuestfsSession *session, GError **err)
  * command.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.54
  */
 gint32
 guestfs_session_wc_c (GuestfsSession *session, const gchar *path, GError **err)
@@ -26179,6 +26716,7 @@ guestfs_session_wc_c (GuestfsSession *session, const gchar *path, GError **err)
  * command.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.54
  */
 gint32
 guestfs_session_wc_l (GuestfsSession *session, const gchar *path, GError **err)
@@ -26212,6 +26750,7 @@ guestfs_session_wc_l (GuestfsSession *session, const gchar *path, GError **err)
  * command.
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.0.54
  */
 gint32
 guestfs_session_wc_w (GuestfsSession *session, const gchar *path, GError **err)
@@ -26251,6 +26790,7 @@ guestfs_session_wc_w (GuestfsSession *session, const gchar *path, GError **err)
  * a device.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.6
  */
 gboolean
 guestfs_session_wipefs (GuestfsSession *session, const gchar *device, GError **err)
@@ -26288,6 +26828,7 @@ guestfs_session_wipefs (GuestfsSession *session, const gchar *device, GError **e
  * See also guestfs_session_write_append().
  * 
  * Returns: true on success, false on error
+ * Since: 1.3.14
  */
 gboolean
 guestfs_session_write (GuestfsSession *session, const gchar *path, const guint8 *content, gsize content_size, GError **err)
@@ -26325,6 +26866,7 @@ guestfs_session_write (GuestfsSession *session, const gchar *path, const guint8 
  * See also guestfs_session_write().
  * 
  * Returns: true on success, false on error
+ * Since: 1.11.18
  */
 gboolean
 guestfs_session_write_append (GuestfsSession *session, const gchar *path, const guint8 *content, gsize content_size, GError **err)
@@ -26368,6 +26910,7 @@ guestfs_session_write_append (GuestfsSession *session, const gchar *path, const 
  * 
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_write() instead
+ * Since: 0.8
  */
 gboolean
 guestfs_session_write_file (GuestfsSession *session, const gchar *path, const gchar *content, gint32 size, GError **err)
@@ -26408,6 +26951,7 @@ guestfs_session_write_file (GuestfsSession *session, const gchar *path, const gc
  * guestfs_session_xfs_growfs() calls.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.33
  */
 gboolean
 guestfs_session_xfs_admin (GuestfsSession *session, const gchar *device, GuestfsXfsAdmin *optargs, GError **err)
@@ -26508,6 +27052,7 @@ guestfs_session_xfs_admin (GuestfsSession *session, const gchar *device, Guestfs
  * returned as @-1 (for numeric fields) or empty string.
  * 
  * Returns: true on success, false on error
+ * Since: 1.19.28
  */
 gboolean
 guestfs_session_xfs_growfs (GuestfsSession *session, const gchar *path, GuestfsXfsGrowfs *optargs, GError **err)
@@ -26616,6 +27161,7 @@ guestfs_session_xfs_growfs (GuestfsSession *session, const gchar *path, GuestfsX
  * returned as @-1 (for numeric fields) or empty string.
  * 
  * Returns: (transfer full): a XFSInfo object, or NULL on error
+ * Since: 1.19.21
  */
 GuestfsXFSInfo *
 guestfs_session_xfs_info (GuestfsSession *session, const gchar *pathordevice, GError **err)
@@ -26688,6 +27234,7 @@ guestfs_session_xfs_info (GuestfsSession *session, const gchar *pathordevice, GE
  * (returns @1) or was not detected (returns @0).
  * 
  * Returns: the returned value, or -1 on error
+ * Since: 1.19.36
  */
 gint32
 guestfs_session_xfs_repair (GuestfsSession *session, const gchar *device, GuestfsXfsRepair *optargs, GError **err)
@@ -26810,6 +27357,7 @@ guestfs_session_xfs_repair (GuestfsSession *session, const gchar *device, Guestf
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Deprecated: In new code, use guestfs_session_grep() instead
+ * Since: 1.0.66
  */
 gchar **
 guestfs_session_zegrep (GuestfsSession *session, const gchar *regex, const gchar *path, GError **err)
@@ -26845,6 +27393,7 @@ guestfs_session_zegrep (GuestfsSession *session, const gchar *regex, const gchar
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Deprecated: In new code, use guestfs_session_grep() instead
+ * Since: 1.0.66
  */
 gchar **
 guestfs_session_zegrepi (GuestfsSession *session, const gchar *regex, const gchar *path, GError **err)
@@ -26888,6 +27437,7 @@ guestfs_session_zegrepi (GuestfsSession *session, const gchar *regex, const gcha
  * guestfs_session_is_zero_device()
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.16
  */
 gboolean
 guestfs_session_zero (GuestfsSession *session, const gchar *device, GError **err)
@@ -26926,6 +27476,7 @@ guestfs_session_zero (GuestfsSession *session, const gchar *device, GError **err
  * unnecessarily.
  * 
  * Returns: true on success, false on error
+ * Since: 1.3.1
  */
 gboolean
 guestfs_session_zero_device (GuestfsSession *session, const gchar *device, GError **err)
@@ -26966,6 +27517,7 @@ guestfs_session_zero_device (GuestfsSession *session, const gchar *device, GErro
  * calling this, depending on your requirements.
  * 
  * Returns: true on success, false on error
+ * Since: 1.17.18
  */
 gboolean
 guestfs_session_zero_free_space (GuestfsSession *session, const gchar *directory, GError **err)
@@ -27005,6 +27557,7 @@ guestfs_session_zero_free_space (GuestfsSession *session, const gchar *directory
  * on the filesystem.
  * 
  * Returns: true on success, false on error
+ * Since: 1.0.26
  */
 gboolean
 guestfs_session_zerofree (GuestfsSession *session, const gchar *device, GError **err)
@@ -27039,6 +27592,7 @@ guestfs_session_zerofree (GuestfsSession *session, const gchar *device, GError *
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Deprecated: In new code, use guestfs_session_grep() instead
+ * Since: 1.0.66
  */
 gchar **
 guestfs_session_zfgrep (GuestfsSession *session, const gchar *pattern, const gchar *path, GError **err)
@@ -27074,6 +27628,7 @@ guestfs_session_zfgrep (GuestfsSession *session, const gchar *pattern, const gch
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Deprecated: In new code, use guestfs_session_grep() instead
+ * Since: 1.0.66
  */
 gchar **
 guestfs_session_zfgrepi (GuestfsSession *session, const gchar *pattern, const gchar *path, GError **err)
@@ -27113,6 +27668,7 @@ guestfs_session_zfgrepi (GuestfsSession *session, const gchar *pattern, const gc
  * 
  * Returns: (transfer full): the returned string, or NULL on error
  * Deprecated: In new code, use guestfs_session_file() instead
+ * Since: 1.0.59
  */
 gchar *
 guestfs_session_zfile (GuestfsSession *session, const gchar *meth, const gchar *path, GError **err)
@@ -27147,6 +27703,7 @@ guestfs_session_zfile (GuestfsSession *session, const gchar *meth, const gchar *
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Deprecated: In new code, use guestfs_session_grep() instead
+ * Since: 1.0.66
  */
 gchar **
 guestfs_session_zgrep (GuestfsSession *session, const gchar *regex, const gchar *path, GError **err)
@@ -27182,6 +27739,7 @@ guestfs_session_zgrep (GuestfsSession *session, const gchar *regex, const gchar 
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Deprecated: In new code, use guestfs_session_grep() instead
+ * Since: 1.0.66
  */
 gchar **
 guestfs_session_zgrepi (GuestfsSession *session, const gchar *regex, const gchar *path, GError **err)

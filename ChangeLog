@@ -1,3 +1,255 @@
+commit 9b9be6d1c6495abb159fe0fd76535f7e6ab6fc09
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 6 18:34:15 2015 +0100
+
+    Version 1.29.46.
+
+commit 61ac4233b51c6867eb9381550ca6057d5d1e2069
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 6 18:32:38 2015 +0100
+
+    Update translations from Zanata.
+
+commit 4f020682ee185d510c3994dcac25be3cceba7aa8
+Author: Nikos Skalkotos <skalkoto@grnet.gr>
+Date:   Thu Jun 4 11:56:02 2015 +0300
+
+    Use safe_realloc() in favor of realloc overall.
+
+commit 7429b6b261496c4aafe5ce9015ddc8f5c28f8cc2
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Fri Jun 5 06:02:20 2015 -0400
+
+    sysprep_operation: fix a typo
+    
+    s/rathern/rather
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 47a15da2e7046e287de003715b858f47233885c1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 5 14:27:58 2015 +0100
+
+    lib: command: Fix leak in the per-child-process rlimit structures.
+    
+    This fixes commit 9db0f807a917ec00d24297d5bf63c19065f930cf.
+    
+    Bug found by valgrind.
+
+commit 8b1b3a10b3a365fceb04038ddafced0071f9cf9d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 5 11:15:35 2015 +0100
+
+    fuse: Use SKIP_TEST_FUSE_SH consistently.
+    
+    This fixes commit 96a02f08648f81a741269a34de0352ff3fcb140a.
+
+commit 4ce94cede6a70379c787eb5c149b5d88c4a11045
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 4 18:02:33 2015 +0100
+
+    proto: Don't set g->last_errnum directly.
+    
+    I'm trying to think if there was any reason why we would have set
+    g->last_errnum directly instead of using the proper function
+    (guestfs_int_error_errno), but I cannot think of one.
+    
+    Since error (g, ...) is just a macro that calls
+    guestfs_int_error_errno (g, 0, ...), this code is equivalent.
+
+commit 34439a04f1921c4e5ece1077570b0f036a64c7ee
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 3 18:56:31 2015 +0100
+
+    appliance: Make sure /tmp and /var/tmp are real directories.
+    
+    Currently if /tmp (on the host) is a symlink, then the symlink is
+    copied into the appliance, probably pointing to a non-existent
+    directory, and everything goes downhill from there.
+    
+    Avoid this by making sure that /tmp and /var/tmp are real directories.
+
+commit ee87fdaf8f1472efa34819db8ff06f952e1ac798
+Author: Nikos Skalkotos <skalkoto@grnet.gr>
+Date:   Wed Jun 3 15:22:38 2015 +0300
+
+    inspector: tests: Enable the Arch Linux test
+
+commit fa80f88c9cfe83c1c46c36fbda00c568c5a06363
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jun 3 16:13:43 2015 +0200
+
+    mllib: use Unix.gettimeofday instead of Unix.time
+    
+    Unix.gettimeofday returns a finer resolution than seconds, which is what
+    we need since deciseconds of timestamps are printed.
+
+commit 14a8461a5c3deac5f29b354c5e02201173a39879
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 2 17:38:46 2015 +0100
+
+    Version 1.29.45.
+
+commit 1ff463e8692aae4313bd5b42bb6f09932bb63392
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 29 16:01:26 2015 +0200
+
+    inspection: fix CentOS 7 detection
+    
+    In newer CentOS 7 versions /etc/redhat-release says that the distro is
+    derived from RHEL, so we need to look at /etc/centos-release for
+    actually identifying it as CentOS.
+    
+    The old code is needed as sub-case of /etc/redhat-release, as on
+    CentOS < 7 that file is a symlink to /etc/centos-release.
+
+commit a50af9e14875a6e8d447c4e7f75447c31f00bd0c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 29 16:01:25 2015 +0200
+
+    inspection: lift size limit for RHEL icons
+    
+    In RHEL-based distros, the provided icons have (obviously) different
+    sizes than the RHEL ones, used in icon_rhel as reference.
+    
+    Since 100K should be a reasonable threshold for avoid keeping a
+    per-distro list of limits, just use it as only size limit.
+
+commit 25ca08f490190bc26ada00047c2d84759a8be018
+Author: Nikos Skalkotos <skalkoto@grnet.gr>
+Date:   Tue Jun 2 19:25:17 2015 +0300
+
+    Add tests for CoreOS
+    
+    Signed-off-by: Nikos Skalkotos <skalkoto@grnet.gr>
+
+commit 8cc36215f971fab3b768e028af882b30bdab5b84
+Author: Nikos Skalkotos <skalkoto@grnet.gr>
+Date:   Tue Jun 2 19:24:59 2015 +0300
+
+    inspection: Add support for CoreOS
+    
+    * Implement coreos distro
+    * Detect CoreOS images
+    
+    Signed-off-by: Nikos Skalkotos <skalkoto@grnet.gr>
+
+commit 721cd0d66e3918bbb81bfff6b163babe58d04755
+Author: Nikos Skalkotos <skalkoto@grnet.gr>
+Date:   Tue Jun 2 19:24:27 2015 +0300
+
+    inspection: Add func for merging fs inspections
+    
+    Add a new guestfs_int_merge_fs_inspections() function that merges the OS
+    inspection information of two inspect_fs instances into one. This
+    function is useful if the inspection information for an OS are gathered
+    by inspecting multiple filesystems.
+    
+    Signed-off-by: Nikos Skalkotos <skalkoto@grnet.gr>
+
+commit 467cd4b76014ef3e21c14a2a04c2c0e735425096
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 2 16:27:13 2015 +0100
+
+    p2v: Introduce a common file to store virt-p2v ISO dependencies.
+    
+    Instead of having virt-p2v-make-disk and virt-p2v-make-kickstart
+    separately contain a list of the virt-p2v ISO dependencies, combine
+    the dependencies into a single file ('p2v/dependencies.m4') and use
+    that to generate the respective dependencies in each script.
+
+commit 3e9a0fac148f7ce48db2bac2ba6f99e81fd603c7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 2 13:51:47 2015 +0100
+
+    p2v: Set status to "Conversion cancelled by user" when user cancels (RHBZ#1226794).
+    
+    Thanks: Tingting Zheng.
+
+commit 2dc88ba8cb5c772ef071cf94855018d912fbed88
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 1 11:58:22 2015 +0100
+
+    FAQ: Document using libguestfs to access live guest disk images.
+    
+    Gets asked on the mailing list several times a year.
+
+commit 0bf4be64ee2174b286de0d266a75892b9890f8b2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun May 31 22:30:18 2015 +0100
+
+    v2v: -o libvirt: Remove unnecessary comment.
+
+commit 2e2f016ce9a808cc116e80c6125e52f38f19b4b0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun May 31 22:16:44 2015 +0100
+
+    v2v: Add a <!-- generated by .. --> comment in output XML files.
+
+commit 284d2200911b469dccff7db6e6e704e0592871ac
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun May 31 21:49:49 2015 +0100
+
+    v2v: OVF: Add comment that 'IsInitilized' is not a typo.
+
+commit 98e40a0cc8637febac738d39c68465b4cb31bb66
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 29 15:05:02 2015 +0100
+
+    perl: XML::XPath and XML::XPath::XMLParser are not required.
+
+commit c31c077aa53d4b894cb9abe061fb290e906ca918
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu May 28 16:39:48 2015 +0200
+
+    java: doc: add the version (if available) of APIs
+
+commit db1b0bc5085cde09032e8783d28f22b7e502c233
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu May 28 15:41:41 2015 +0200
+
+    ocaml: doc: add the version (if available) of APIs
+    
+    Make sure to not add more newline's than needed.
+
+commit 0a18465c2351056d40548c9f9d882096359465c4
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu May 28 15:05:34 2015 +0200
+
+    gobject: doc: add the version (if available) of APIs
+
+commit fc1f6deab119bbef5879d840412f9911f1f4718a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu May 28 13:30:37 2015 +0200
+
+    generator: move api_version to a common version_added
+    
+    This way the version string of each API can be used also in other
+    generator modules.
+    
+    Mostly code motion, no actual behaviour changes.
+
+commit 33d2b4a7341830efeddb1f258ac77f67a8004d30
+Author: Maros Zatko <mzatko@redhat.com>
+Date:   Fri May 22 17:10:14 2015 +0200
+
+    inspector: recognize ppc64 and ppc64le archs (RHBZ#1211996)
+
+commit 0645cd365567a6552d6414bc0bc131970133a313
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed May 27 21:26:01 2015 +0100
+
+    builder: Add Fedora 22 (armv7l) image.
+
+commit c0e7bb5ef29153059555b0ecdf1e32b69c7d79f2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 26 20:20:54 2015 +0100
+
+    builder: armv7l: Fix build script for Fedora 22 release.
+    
+    (The same change as was made in
+    commit c4a54e00a333479ee31f492726a08767a8b61e46).
+
 commit 54f54697b98c98e295d53be257c2022c1dd0c52c
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue May 26 21:13:32 2015 +0100

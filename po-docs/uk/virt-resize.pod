@@ -71,7 +71,7 @@ raw disk:
 
 =over 4
 
-=item 1. Shut down the virtual machine
+=item 1. Припиніть роботу віртуальної машини
 
 =item 2. Locate input disk image
 

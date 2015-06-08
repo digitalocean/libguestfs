@@ -3295,6 +3295,10 @@ CentOS.
 
 Cirros.
 
+=item "coreos"
+
+CoreOS.
+
 =item "debian"
 
 Debian.

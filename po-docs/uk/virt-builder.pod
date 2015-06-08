@@ -770,7 +770,7 @@ If specified, the C<SELECTOR> can be in one of the following formats:
 
 =over 4
 
-=item B<--ssh-inject> USER:file:FILENAME
+=item B<--ssh-inject> КОРИСТУВАЧ:file:НАЗВА_ФАЙЛА
 
 Read the ssh key from C<FILENAME>.  C<FILENAME> is usually a I<.pub> file.
 

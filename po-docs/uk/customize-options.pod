@@ -33,7 +33,7 @@ Change the permissions of C<FILE> to C<PERMISSIONS>.
 I<Note>: C<PERMISSIONS> by default would be decimal, unless you prefix it
 with C<0> to get octal, ie. use C<0700> not C<700>.
 
-=item B<--commands-from-file> FILENAME
+=item B<--commands-from-file> НАЗВА_ФАЙЛА
 
 Read the customize commands from a file, one (and its arguments)  each line.
 
@@ -260,7 +260,7 @@ Relabel files in the guest so that they have the correct SELinux label.
 
 You should only use this option for guests which support SELinux.
 
-=item B<--ssh-inject> USER[:SELECTOR]
+=item B<--ssh-inject> КОРИСТУВАЧ[:ВАРІАНТ]
 
 Inject an ssh key so the given C<USER> will be able to log in over ssh
 without supplying a password.  The C<USER> must exist already in the guest.

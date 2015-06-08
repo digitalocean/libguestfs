@@ -418,363 +418,693 @@ type xfsinfo = {
 }
 
 val acl_delete_def_file : t -> string -> unit
-(** delete the default POSIX ACL of a directory *)
+(** delete the default POSIX ACL of a directory
+
+    @since 1.19.63
+ *)
 
 val acl_get_file : t -> string -> string -> string
-(** get the POSIX ACL attached to a file *)
+(** get the POSIX ACL attached to a file
+
+    @since 1.19.63
+ *)
 
 val acl_set_file : t -> string -> string -> string -> unit
-(** set the POSIX ACL attached to a file *)
+(** set the POSIX ACL attached to a file
+
+    @since 1.19.63
+ *)
 
 val add_cdrom : t -> string -> unit
 (** add a CD-ROM disk image to examine
 
     @deprecated Use {!add_drive_ro} instead
+
+    @since 0.3
  *)
 
 val add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> ?cachemode:string -> ?discard:string -> ?copyonread:bool -> string -> int
-(** add the disk(s) from a named libvirt domain *)
+(** add the disk(s) from a named libvirt domain
+
+    @since 1.7.4
+ *)
 
 val add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> ?discard:string -> ?copyonread:bool -> string -> unit
-(** add an image to examine or modify *)
+(** add an image to examine or modify
+
+    @since 0.3
+ *)
 
 val add_drive_opts : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> ?cachemode:string -> ?discard:string -> ?copyonread:bool -> string -> unit
 
 val add_drive_ro : t -> string -> unit
-(** add a drive in snapshot mode (read-only) *)
+(** add a drive in snapshot mode (read-only)
+
+    @since 1.0.38
+ *)
 
 val add_drive_ro_with_if : t -> string -> string -> unit
 (** add a drive read-only specifying the QEMU block emulation to use
 
     @deprecated Use {!add_drive} instead
+
+    @since 1.0.84
  *)
 
 val add_drive_scratch : t -> ?name:string -> ?label:string -> int64 -> unit
-(** add a temporary scratch drive *)
+(** add a temporary scratch drive
+
+    @since 1.23.10
+ *)
 
 val add_drive_with_if : t -> string -> string -> unit
 (** add a drive specifying the QEMU block emulation to use
 
     @deprecated Use {!add_drive} instead
+
+    @since 1.0.84
  *)
 
 val add_libvirt_dom : t -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?readonlydisk:string -> ?cachemode:string -> ?discard:string -> ?copyonread:bool -> int64 -> int
-(** add the disk(s) from a libvirt domain *)
+(** add the disk(s) from a libvirt domain
+
+    @since 1.29.14
+ *)
 
 val aug_clear : t -> string -> unit
-(** clear Augeas path *)
+(** clear Augeas path
+
+    @since 1.3.4
+ *)
 
 val aug_close : t -> unit
-(** close the current Augeas handle *)
+(** close the current Augeas handle
+
+    @since 0.7
+ *)
 
 val aug_defnode : t -> string -> string -> string -> int_bool
-(** define an Augeas node *)
+(** define an Augeas node
+
+    @since 0.7
+ *)
 
 val aug_defvar : t -> string -> string option -> int
-(** define an Augeas variable *)
+(** define an Augeas variable
+
+    @since 0.7
+ *)
 
 val aug_get : t -> string -> string
-(** look up the value of an Augeas path *)
+(** look up the value of an Augeas path
+
+    @since 0.7
+ *)
 
 val aug_init : t -> string -> int -> unit
-(** create a new Augeas handle *)
+(** create a new Augeas handle
+
+    @since 0.7
+ *)
 
 val aug_insert : t -> string -> string -> bool -> unit
-(** insert a sibling Augeas node *)
+(** insert a sibling Augeas node
+
+    @since 0.7
+ *)
 
 val aug_label : t -> string -> string
-(** return the label from an Augeas path expression *)
+(** return the label from an Augeas path expression
+
+    @since 1.23.14
+ *)
 
 val aug_load : t -> unit
-(** load files into the tree *)
+(** load files into the tree
+
+    @since 0.7
+ *)
 
 val aug_ls : t -> string -> string array
-(** list Augeas nodes under augpath *)
+(** list Augeas nodes under augpath
+
+    @since 0.8
+ *)
 
 val aug_match : t -> string -> string array
-(** return Augeas nodes which match augpath *)
+(** return Augeas nodes which match augpath
+
+    @since 0.7
+ *)
 
 val aug_mv : t -> string -> string -> unit
-(** move Augeas node *)
+(** move Augeas node
+
+    @since 0.7
+ *)
 
 val aug_rm : t -> string -> int
-(** remove an Augeas path *)
+(** remove an Augeas path
+
+    @since 0.7
+ *)
 
 val aug_save : t -> unit
-(** write all pending Augeas changes to disk *)
+(** write all pending Augeas changes to disk
+
+    @since 0.7
+ *)
 
 val aug_set : t -> string -> string -> unit
-(** set Augeas path to value *)
+(** set Augeas path to value
+
+    @since 0.7
+ *)
 
 val aug_setm : t -> string -> string option -> string -> int
-(** set multiple Augeas nodes *)
+(** set multiple Augeas nodes
+
+    @since 1.23.14
+ *)
 
 val available : t -> string array -> unit
-(** test availability of some parts of the API *)
+(** test availability of some parts of the API
+
+    @since 1.0.80
+ *)
 
 val available_all_groups : t -> string array
-(** return a list of all optional groups *)
+(** return a list of all optional groups
+
+    @since 1.3.15
+ *)
 
 val base64_in : t -> string -> string -> unit
-(** upload base64-encoded data to file *)
+(** upload base64-encoded data to file
+
+    @since 1.3.5
+ *)
 
 val base64_out : t -> string -> string -> unit
-(** download file and encode as base64 *)
+(** download file and encode as base64
+
+    @since 1.3.5
+ *)
 
 val blkdiscard : t -> string -> unit
-(** discard all blocks on a device *)
+(** discard all blocks on a device
+
+    @since 1.25.44
+ *)
 
 val blkdiscardzeroes : t -> string -> bool
-(** return true if discarded blocks are read as zeroes *)
+(** return true if discarded blocks are read as zeroes
+
+    @since 1.25.44
+ *)
 
 val blkid : t -> string -> (string * string) list
-(** print block device attributes *)
+(** print block device attributes
+
+    @since 1.15.9
+ *)
 
 val blockdev_flushbufs : t -> string -> unit
-(** flush device buffers *)
+(** flush device buffers
+
+    @since 1.9.3
+ *)
 
 val blockdev_getbsz : t -> string -> int
-(** get blocksize of block device *)
+(** get blocksize of block device
+
+    @since 1.9.3
+ *)
 
 val blockdev_getro : t -> string -> bool
-(** is block device set to read-only *)
+(** is block device set to read-only
+
+    @since 1.9.3
+ *)
 
 val blockdev_getsize64 : t -> string -> int64
-(** get total size of device in bytes *)
+(** get total size of device in bytes
+
+    @since 1.9.3
+ *)
 
 val blockdev_getss : t -> string -> int
-(** get sectorsize of block device *)
+(** get sectorsize of block device
+
+    @since 1.9.3
+ *)
 
 val blockdev_getsz : t -> string -> int64
-(** get total size of device in 512-byte sectors *)
+(** get total size of device in 512-byte sectors
+
+    @since 1.9.3
+ *)
 
 val blockdev_rereadpt : t -> string -> unit
-(** reread partition table *)
+(** reread partition table
+
+    @since 1.9.3
+ *)
 
 val blockdev_setbsz : t -> string -> int -> unit
 (** set blocksize of block device
 
     @deprecated Use {!mkfs} instead
+
+    @since 1.9.3
  *)
 
 val blockdev_setra : t -> string -> int -> unit
-(** set readahead *)
+(** set readahead
+
+    @since 1.29.10
+ *)
 
 val blockdev_setro : t -> string -> unit
-(** set block device to read-only *)
+(** set block device to read-only
+
+    @since 1.9.3
+ *)
 
 val blockdev_setrw : t -> string -> unit
-(** set block device to read-write *)
+(** set block device to read-write
+
+    @since 1.9.3
+ *)
 
 val btrfs_balance_cancel : t -> string -> unit
-(** cancel a running or paused balance *)
+(** cancel a running or paused balance
+
+    @since 1.29.22
+ *)
 
 val btrfs_balance_pause : t -> string -> unit
-(** pause a running balance *)
+(** pause a running balance
+
+    @since 1.29.22
+ *)
 
 val btrfs_balance_resume : t -> string -> unit
-(** resume a paused balance *)
+(** resume a paused balance
+
+    @since 1.29.22
+ *)
 
 val btrfs_balance_status : t -> string -> btrfsbalance
-(** show the status of a running or paused balance *)
+(** show the status of a running or paused balance
+
+    @since 1.29.26
+ *)
 
 val btrfs_device_add : t -> string array -> string -> unit
-(** add devices to a btrfs filesystem *)
+(** add devices to a btrfs filesystem
+
+    @since 1.17.35
+ *)
 
 val btrfs_device_delete : t -> string array -> string -> unit
-(** remove devices from a btrfs filesystem *)
+(** remove devices from a btrfs filesystem
+
+    @since 1.17.35
+ *)
 
 val btrfs_filesystem_balance : t -> string -> unit
-(** balance a btrfs filesystem *)
+(** balance a btrfs filesystem
+
+    @since 1.17.35
+ *)
 
 val btrfs_filesystem_defragment : t -> ?flush:bool -> ?compress:string -> string -> unit
-(** defragment a file or directory *)
+(** defragment a file or directory
+
+    @since 1.29.22
+ *)
 
 val btrfs_filesystem_resize : t -> ?size:int64 -> string -> unit
-(** resize a btrfs filesystem *)
+(** resize a btrfs filesystem
+
+    @since 1.11.17
+ *)
 
 val btrfs_filesystem_sync : t -> string -> unit
-(** sync a btrfs filesystem *)
+(** sync a btrfs filesystem
+
+    @since 1.17.35
+ *)
 
 val btrfs_fsck : t -> ?superblock:int64 -> ?repair:bool -> string -> unit
-(** check a btrfs filesystem *)
+(** check a btrfs filesystem
+
+    @since 1.17.43
+ *)
 
 val btrfs_image : t -> ?compresslevel:int -> string array -> string -> unit
-(** create an image of a btrfs filesystem *)
+(** create an image of a btrfs filesystem
+
+    @since 1.29.32
+ *)
 
 val btrfs_qgroup_assign : t -> string -> string -> string -> unit
-(** add a qgroup to a parent qgroup *)
+(** add a qgroup to a parent qgroup
+
+    @since 1.29.17
+ *)
 
 val btrfs_qgroup_create : t -> string -> string -> unit
-(** create a subvolume quota group *)
+(** create a subvolume quota group
+
+    @since 1.29.17
+ *)
 
 val btrfs_qgroup_destroy : t -> string -> string -> unit
-(** destroy a subvolume quota group *)
+(** destroy a subvolume quota group
+
+    @since 1.29.17
+ *)
 
 val btrfs_qgroup_limit : t -> string -> int64 -> unit
-(** limit the size of a subvolume *)
+(** limit the size of a subvolume
+
+    @since 1.29.17
+ *)
 
 val btrfs_qgroup_remove : t -> string -> string -> string -> unit
-(** remove a qgroup from its parent qgroup *)
+(** remove a qgroup from its parent qgroup
+
+    @since 1.29.17
+ *)
 
 val btrfs_qgroup_show : t -> string -> btrfsqgroup array
-(** show subvolume quota groups *)
+(** show subvolume quota groups
+
+    @since 1.29.17
+ *)
 
 val btrfs_quota_enable : t -> string -> bool -> unit
-(** enable or disable subvolume quota support *)
+(** enable or disable subvolume quota support
+
+    @since 1.29.17
+ *)
 
 val btrfs_quota_rescan : t -> string -> unit
-(** trash all qgroup numbers and scan the metadata again with the current config *)
+(** trash all qgroup numbers and scan the metadata again with the current config
+
+    @since 1.29.17
+ *)
 
 val btrfs_rescue_chunk_recover : t -> string -> unit
-(** recover the chunk tree of btrfs filesystem *)
+(** recover the chunk tree of btrfs filesystem
+
+    @since 1.29.22
+ *)
 
 val btrfs_rescue_super_recover : t -> string -> unit
-(** recover bad superblocks from good copies *)
+(** recover bad superblocks from good copies
+
+    @since 1.29.22
+ *)
 
 val btrfs_scrub_cancel : t -> string -> unit
-(** cancel a running scrub *)
+(** cancel a running scrub
+
+    @since 1.29.22
+ *)
 
 val btrfs_scrub_resume : t -> string -> unit
-(** resume a previously canceled or interrupted scrub *)
+(** resume a previously canceled or interrupted scrub
+
+    @since 1.29.22
+ *)
 
 val btrfs_scrub_start : t -> string -> unit
-(** read all data from all disks and verify checksums *)
+(** read all data from all disks and verify checksums
+
+    @since 1.29.22
+ *)
 
 val btrfs_scrub_status : t -> string -> btrfsscrub
-(** show status of running or finished scrub *)
+(** show status of running or finished scrub
+
+    @since 1.29.26
+ *)
 
 val btrfs_set_seeding : t -> string -> bool -> unit
-(** enable or disable the seeding feature of device *)
+(** enable or disable the seeding feature of device
+
+    @since 1.17.43
+ *)
 
 val btrfs_subvolume_create : t -> ?qgroupid:string -> string -> unit
-(** create a btrfs subvolume *)
+(** create a btrfs subvolume
+
+    @since 1.17.35
+ *)
 
 val btrfs_subvolume_create_opts : t -> ?qgroupid:string -> string -> unit
 
 val btrfs_subvolume_delete : t -> string -> unit
-(** delete a btrfs subvolume or snapshot *)
+(** delete a btrfs subvolume or snapshot
+
+    @since 1.17.35
+ *)
 
 val btrfs_subvolume_get_default : t -> string -> int64
-(** get the default subvolume or snapshot of a filesystem *)
+(** get the default subvolume or snapshot of a filesystem
+
+    @since 1.29.17
+ *)
 
 val btrfs_subvolume_list : t -> string -> btrfssubvolume array
-(** list btrfs snapshots and subvolumes *)
+(** list btrfs snapshots and subvolumes
+
+    @since 1.17.35
+ *)
 
 val btrfs_subvolume_set_default : t -> int64 -> string -> unit
-(** set default btrfs subvolume *)
+(** set default btrfs subvolume
+
+    @since 1.17.35
+ *)
 
 val btrfs_subvolume_show : t -> string -> (string * string) list
-(** return detailed information of the subvolume *)
+(** return detailed information of the subvolume
+
+    @since 1.29.17
+ *)
 
 val btrfs_subvolume_snapshot : t -> ?ro:bool -> ?qgroupid:string -> string -> string -> unit
-(** create a btrfs snapshot *)
+(** create a btrfs snapshot
+
+    @since 1.17.35
+ *)
 
 val btrfs_subvolume_snapshot_opts : t -> ?ro:bool -> ?qgroupid:string -> string -> string -> unit
 
 val btrfstune_enable_extended_inode_refs : t -> string -> unit
-(** enable extended inode refs *)
+(** enable extended inode refs
+
+    @since 1.29.29
+ *)
 
 val btrfstune_enable_skinny_metadata_extent_refs : t -> string -> unit
-(** enable skinny metadata extent refs *)
+(** enable skinny metadata extent refs
+
+    @since 1.29.29
+ *)
 
 val btrfstune_seeding : t -> string -> bool -> unit
-(** enable or disable seeding of a btrfs device *)
+(** enable or disable seeding of a btrfs device
+
+    @since 1.29.29
+ *)
 
 val c_pointer : t -> int64
-(** return the C pointer to the guestfs_h handle *)
+(** return the C pointer to the guestfs_h handle
+
+    @since 1.29.17
+ *)
 
 val canonical_device_name : t -> string -> string
-(** return canonical device name *)
+(** return canonical device name
+
+    @since 1.19.7
+ *)
 
 val cap_get_file : t -> string -> string
-(** get the Linux capabilities attached to a file *)
+(** get the Linux capabilities attached to a file
+
+    @since 1.19.63
+ *)
 
 val cap_set_file : t -> string -> string -> unit
-(** set the Linux capabilities attached to a file *)
+(** set the Linux capabilities attached to a file
+
+    @since 1.19.63
+ *)
 
 val case_sensitive_path : t -> string -> string
-(** return true path on case-insensitive filesystem *)
+(** return true path on case-insensitive filesystem
+
+    @since 1.0.75
+ *)
 
 val cat : t -> string -> string
-(** list the contents of a file *)
+(** list the contents of a file
+
+    @since 0.4
+ *)
 
 val checksum : t -> string -> string -> string
-(** compute MD5, SHAx or CRC checksum of file *)
+(** compute MD5, SHAx or CRC checksum of file
+
+    @since 1.0.2
+ *)
 
 val checksum_device : t -> string -> string -> string
-(** compute MD5, SHAx or CRC checksum of the contents of a device *)
+(** compute MD5, SHAx or CRC checksum of the contents of a device
+
+    @since 1.3.2
+ *)
 
 val checksums_out : t -> string -> string -> string -> unit
-(** compute MD5, SHAx or CRC checksum of files in a directory *)
+(** compute MD5, SHAx or CRC checksum of files in a directory
+
+    @since 1.3.7
+ *)
 
 val chmod : t -> int -> string -> unit
-(** change file mode *)
+(** change file mode
+
+    @since 0.8
+ *)
 
 val chown : t -> int -> int -> string -> unit
-(** change file owner and group *)
+(** change file owner and group
+
+    @since 0.8
+ *)
 
 val clear_backend_setting : t -> string -> int
-(** remove a single per-backend settings string *)
+(** remove a single per-backend settings string
+
+    @since 1.27.2
+ *)
 
 val command : t -> string array -> string
-(** run a command from the guest filesystem *)
+(** run a command from the guest filesystem
+
+    @since 1.9.1
+ *)
 
 val command_lines : t -> string array -> string array
-(** run a command, returning lines *)
+(** run a command, returning lines
+
+    @since 1.9.1
+ *)
 
 val compress_device_out : t -> ?level:int -> string -> string -> string -> unit
-(** output compressed device *)
+(** output compressed device
+
+    @since 1.13.15
+ *)
 
 val compress_out : t -> ?level:int -> string -> string -> string -> unit
-(** output compressed file *)
+(** output compressed file
+
+    @since 1.13.15
+ *)
 
 val config : t -> string -> string option -> unit
-(** add hypervisor parameters *)
+(** add hypervisor parameters
+
+    @since 0.3
+ *)
 
 val copy_attributes : t -> ?all:bool -> ?mode:bool -> ?xattributes:bool -> ?ownership:bool -> string -> string -> unit
-(** copy the attributes of a path (file/directory) to another *)
+(** copy the attributes of a path (file/directory) to another
+
+    @since 1.25.21
+ *)
 
 val copy_device_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
-(** copy from source device to destination device *)
+(** copy from source device to destination device
+
+    @since 1.13.25
+ *)
 
 val copy_device_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
-(** copy from source device to destination file *)
+(** copy from source device to destination file
+
+    @since 1.13.25
+ *)
 
 val copy_file_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
-(** copy from source file to destination device *)
+(** copy from source file to destination device
+
+    @since 1.13.25
+ *)
 
 val copy_file_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
-(** copy from source file to destination file *)
+(** copy from source file to destination file
+
+    @since 1.13.25
+ *)
 
 val copy_in : t -> string -> string -> unit
-(** copy local files or directories into an image *)
+(** copy local files or directories into an image
+
+    @since 1.29.24
+ *)
 
 val copy_out : t -> string -> string -> unit
-(** copy remote files or directories out of an image *)
+(** copy remote files or directories out of an image
+
+    @since 1.29.24
+ *)
 
 val copy_size : t -> string -> string -> int64 -> unit
 (** copy size bytes from source to destination using dd
 
     @deprecated Use {!copy_device_to_device} instead
+
+    @since 1.0.87
  *)
 
 val cp : t -> string -> string -> unit
-(** copy a file *)
+(** copy a file
+
+    @since 1.0.18
+ *)
 
 val cp_a : t -> string -> string -> unit
-(** copy a file or directory recursively *)
+(** copy a file or directory recursively
+
+    @since 1.0.18
+ *)
 
 val cp_r : t -> string -> string -> unit
-(** copy a file or directory recursively *)
+(** copy a file or directory recursively
+
+    @since 1.21.38
+ *)
 
 val cpio_out : t -> ?format:string -> string -> string -> unit
-(** pack directory into cpio file *)
+(** pack directory into cpio file
+
+    @since 1.27.9
+ *)
 
 val dd : t -> string -> string -> unit
 (** copy from source to destination using dd
 
     @deprecated Use {!copy_device_to_device} instead
+
+    @since 1.0.80
  *)
 
 (**/**)
@@ -790,259 +1120,474 @@ val debug_upload : t -> string -> string -> int -> unit
 (**/**)
 
 val device_index : t -> string -> int
-(** convert device to index *)
+(** convert device to index
+
+    @since 1.19.7
+ *)
 
 val df : t -> string
-(** report file system disk space usage *)
+(** report file system disk space usage
+
+    @since 1.0.54
+ *)
 
 val df_h : t -> string
-(** report file system disk space usage (human readable) *)
+(** report file system disk space usage (human readable)
+
+    @since 1.0.54
+ *)
 
 val disk_create : t -> ?backingfile:string -> ?backingformat:string -> ?preallocation:string -> ?compat:string -> ?clustersize:int -> string -> string -> int64 -> unit
-(** create a blank disk image *)
+(** create a blank disk image
+
+    @since 1.25.31
+ *)
 
 val disk_format : t -> string -> string
-(** detect the disk format of a disk image *)
+(** detect the disk format of a disk image
+
+    @since 1.19.38
+ *)
 
 val disk_has_backing_file : t -> string -> bool
-(** return whether disk has a backing file *)
+(** return whether disk has a backing file
+
+    @since 1.19.39
+ *)
 
 val disk_virtual_size : t -> string -> int64
-(** return virtual size of a disk *)
+(** return virtual size of a disk
+
+    @since 1.19.39
+ *)
 
 val dmesg : t -> string
-(** return kernel messages *)
+(** return kernel messages
+
+    @since 1.0.18
+ *)
 
 val download : t -> string -> string -> unit
-(** download a file to the local machine *)
+(** download a file to the local machine
+
+    @since 1.0.2
+ *)
 
 val download_offset : t -> string -> string -> int64 -> int64 -> unit
-(** download a file to the local machine with offset and size *)
+(** download a file to the local machine with offset and size
+
+    @since 1.5.17
+ *)
 
 val drop_caches : t -> int -> unit
-(** drop kernel page cache, dentries and inodes *)
+(** drop kernel page cache, dentries and inodes
+
+    @since 1.0.18
+ *)
 
 val du : t -> string -> int64
-(** estimate file space usage *)
+(** estimate file space usage
+
+    @since 1.0.54
+ *)
 
 val e2fsck : t -> ?correct:bool -> ?forceall:bool -> string -> unit
-(** check an ext2/ext3 filesystem *)
+(** check an ext2/ext3 filesystem
+
+    @since 1.15.17
+ *)
 
 val e2fsck_f : t -> string -> unit
 (** check an ext2/ext3 filesystem
 
     @deprecated Use {!e2fsck} instead
+
+    @since 1.0.29
  *)
 
 val echo_daemon : t -> string array -> string
-(** echo arguments back to the client *)
+(** echo arguments back to the client
+
+    @since 1.0.69
+ *)
 
 val egrep : t -> string -> string -> string array
 (** return lines matching a pattern
 
     @deprecated Use {!grep} instead
+
+    @since 1.0.66
  *)
 
 val egrepi : t -> string -> string -> string array
 (** return lines matching a pattern
 
     @deprecated Use {!grep} instead
+
+    @since 1.0.66
  *)
 
 val equal : t -> string -> string -> bool
-(** test if two files have equal contents *)
+(** test if two files have equal contents
+
+    @since 1.0.18
+ *)
 
 val exists : t -> string -> bool
-(** test if file or directory exists *)
+(** test if file or directory exists
+
+    @since 0.8
+ *)
 
 val extlinux : t -> string -> unit
-(** install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem *)
+(** install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem
+
+    @since 1.21.27
+ *)
 
 val fallocate : t -> string -> int -> unit
 (** preallocate a file in the guest filesystem
 
     @deprecated Use {!fallocate64} instead
+
+    @since 1.0.66
  *)
 
 val fallocate64 : t -> string -> int64 -> unit
-(** preallocate a file in the guest filesystem *)
+(** preallocate a file in the guest filesystem
+
+    @since 1.3.17
+ *)
 
 val feature_available : t -> string array -> bool
-(** test availability of some parts of the API *)
+(** test availability of some parts of the API
+
+    @since 1.21.26
+ *)
 
 val fgrep : t -> string -> string -> string array
 (** return lines matching a pattern
 
     @deprecated Use {!grep} instead
+
+    @since 1.0.66
  *)
 
 val fgrepi : t -> string -> string -> string array
 (** return lines matching a pattern
 
     @deprecated Use {!grep} instead
+
+    @since 1.0.66
  *)
 
 val file : t -> string -> string
-(** determine file type *)
+(** determine file type
+
+    @since 1.9.1
+ *)
 
 val file_architecture : t -> string -> string
-(** detect the architecture of a binary file *)
+(** detect the architecture of a binary file
+
+    @since 1.5.3
+ *)
 
 val filesize : t -> string -> int64
-(** return the size of the file in bytes *)
+(** return the size of the file in bytes
+
+    @since 1.0.82
+ *)
 
 val filesystem_available : t -> string -> bool
-(** check if filesystem is available *)
+(** check if filesystem is available
+
+    @since 1.19.5
+ *)
 
 val fill : t -> int -> int -> string -> unit
-(** fill a file with octets *)
+(** fill a file with octets
+
+    @since 1.0.79
+ *)
 
 val fill_dir : t -> string -> int -> unit
-(** fill a directory with empty files *)
+(** fill a directory with empty files
+
+    @since 1.19.32
+ *)
 
 val fill_pattern : t -> string -> int -> string -> unit
-(** fill a file with a repeating pattern of bytes *)
+(** fill a file with a repeating pattern of bytes
+
+    @since 1.3.12
+ *)
 
 val find : t -> string -> string array
-(** find all files and directories *)
+(** find all files and directories
+
+    @since 1.0.27
+ *)
 
 val find0 : t -> string -> string -> unit
-(** find all files and directories, returning NUL-separated list *)
+(** find all files and directories, returning NUL-separated list
+
+    @since 1.0.74
+ *)
 
 val findfs_label : t -> string -> string
-(** find a filesystem by label *)
+(** find a filesystem by label
+
+    @since 1.5.3
+ *)
 
 val findfs_uuid : t -> string -> string
-(** find a filesystem by UUID *)
+(** find a filesystem by UUID
+
+    @since 1.5.3
+ *)
 
 val fsck : t -> string -> string -> int
-(** run the filesystem checker *)
+(** run the filesystem checker
+
+    @since 1.0.16
+ *)
 
 val fstrim : t -> ?offset:int64 -> ?length:int64 -> ?minimumfreeextent:int64 -> string -> unit
-(** trim free space in a filesystem *)
+(** trim free space in a filesystem
+
+    @since 1.19.6
+ *)
 
 val get_append : t -> string option
-(** get the additional kernel options *)
+(** get the additional kernel options
+
+    @since 1.0.26
+ *)
 
 val get_attach_method : t -> string
 (** get the backend
 
     @deprecated Use {!get_backend} instead
+
+    @since 1.9.8
  *)
 
 val get_autosync : t -> bool
-(** get autosync mode *)
+(** get autosync mode
+
+    @since 0.3
+ *)
 
 val get_backend : t -> string
-(** get the backend *)
+(** get the backend
+
+    @since 1.21.26
+ *)
 
 val get_backend_setting : t -> string -> string
-(** get a single per-backend settings string *)
+(** get a single per-backend settings string
+
+    @since 1.27.2
+ *)
 
 val get_backend_settings : t -> string array
-(** get per-backend settings *)
+(** get per-backend settings
+
+    @since 1.25.24
+ *)
 
 val get_cachedir : t -> string
-(** get the appliance cache directory *)
+(** get the appliance cache directory
+
+    @since 1.19.58
+ *)
 
 val get_direct : t -> bool
-(** get direct appliance mode flag *)
+(** get direct appliance mode flag
+
+    @since 1.0.72
+ *)
 
 val get_e2attrs : t -> string -> string
-(** get ext2 file attributes of a file *)
+(** get ext2 file attributes of a file
+
+    @since 1.17.31
+ *)
 
 val get_e2generation : t -> string -> int64
-(** get ext2 file generation of a file *)
+(** get ext2 file generation of a file
+
+    @since 1.17.31
+ *)
 
 val get_e2label : t -> string -> string
 (** get the ext2/3/4 filesystem label
 
     @deprecated Use {!vfs_label} instead
+
+    @since 1.0.15
  *)
 
 val get_e2uuid : t -> string -> string
 (** get the ext2/3/4 filesystem UUID
 
     @deprecated Use {!vfs_uuid} instead
+
+    @since 1.0.15
  *)
 
 val get_hv : t -> string
-(** get the hypervisor binary *)
+(** get the hypervisor binary
+
+    @since 1.23.17
+ *)
 
 val get_libvirt_requested_credential_challenge : t -> int -> string
-(** challenge of i'th requested credential *)
+(** challenge of i'th requested credential
+
+    @since 1.19.52
+ *)
 
 val get_libvirt_requested_credential_defresult : t -> int -> string
-(** default result of i'th requested credential *)
+(** default result of i'th requested credential
+
+    @since 1.19.52
+ *)
 
 val get_libvirt_requested_credential_prompt : t -> int -> string
-(** prompt of i'th requested credential *)
+(** prompt of i'th requested credential
+
+    @since 1.19.52
+ *)
 
 val get_libvirt_requested_credentials : t -> string array
-(** get list of credentials requested by libvirt *)
+(** get list of credentials requested by libvirt
+
+    @since 1.19.52
+ *)
 
 val get_memsize : t -> int
-(** get memory allocated to the hypervisor *)
+(** get memory allocated to the hypervisor
+
+    @since 1.0.55
+ *)
 
 val get_network : t -> bool
-(** get enable network flag *)
+(** get enable network flag
+
+    @since 1.5.4
+ *)
 
 val get_path : t -> string
-(** get the search path *)
+(** get the search path
+
+    @since 0.3
+ *)
 
 val get_pgroup : t -> bool
-(** get process group flag *)
+(** get process group flag
+
+    @since 1.11.18
+ *)
 
 val get_pid : t -> int
-(** get PID of hypervisor *)
+(** get PID of hypervisor
+
+    @since 1.0.56
+ *)
 
 val get_program : t -> string
-(** get the program name *)
+(** get the program name
+
+    @since 1.21.29
+ *)
 
 val get_qemu : t -> string
 (** get the hypervisor binary (usually qemu)
 
     @deprecated Use {!get_hv} instead
+
+    @since 1.0.6
  *)
 
 val get_recovery_proc : t -> bool
-(** get recovery process enabled flag *)
+(** get recovery process enabled flag
+
+    @since 1.0.77
+ *)
 
 val get_selinux : t -> bool
-(** get SELinux enabled flag *)
+(** get SELinux enabled flag
+
+    @since 1.0.67
+ *)
 
 val get_smp : t -> int
-(** get number of virtual CPUs in appliance *)
+(** get number of virtual CPUs in appliance
+
+    @since 1.13.15
+ *)
 
 val get_state : t -> int
-(** get the current state *)
+(** get the current state
+
+    @since 1.0.2
+ *)
 
 val get_tmpdir : t -> string
-(** get the temporary directory *)
+(** get the temporary directory
+
+    @since 1.19.58
+ *)
 
 val get_trace : t -> bool
-(** get command trace enabled flag *)
+(** get command trace enabled flag
+
+    @since 1.0.69
+ *)
 
 val get_umask : t -> int
-(** get the current umask *)
+(** get the current umask
+
+    @since 1.3.4
+ *)
 
 val get_verbose : t -> bool
-(** get verbose mode *)
+(** get verbose mode
+
+    @since 0.3
+ *)
 
 val getcon : t -> string
-(** get SELinux security context *)
+(** get SELinux security context
+
+    @since 1.0.67
+ *)
 
 val getxattr : t -> string -> string -> string
-(** get a single extended attribute *)
+(** get a single extended attribute
+
+    @since 1.7.24
+ *)
 
 val getxattrs : t -> string -> xattr array
-(** list extended attributes of a file or directory *)
+(** list extended attributes of a file or directory
+
+    @since 1.0.59
+ *)
 
 val glob_expand : t -> string -> string array
-(** expand a wildcard path *)
+(** expand a wildcard path
+
+    @since 1.0.50
+ *)
 
 val grep : t -> ?extended:bool -> ?fixed:bool -> ?insensitive:bool -> ?compressed:bool -> string -> string -> string array
-(** return lines matching a pattern *)
+(** return lines matching a pattern
+
+    @since 1.0.66
+ *)
 
 val grep_opts : t -> ?extended:bool -> ?fixed:bool -> ?insensitive:bool -> ?compressed:bool -> string -> string -> string array
 
@@ -1050,169 +1595,329 @@ val grepi : t -> string -> string -> string array
 (** return lines matching a pattern
 
     @deprecated Use {!grep} instead
+
+    @since 1.0.66
  *)
 
 val grub_install : t -> string -> string -> unit
-(** install GRUB 1 *)
+(** install GRUB 1
+
+    @since 1.0.17
+ *)
 
 val head : t -> string -> string array
-(** return first 10 lines of a file *)
+(** return first 10 lines of a file
+
+    @since 1.0.54
+ *)
 
 val head_n : t -> int -> string -> string array
-(** return first N lines of a file *)
+(** return first N lines of a file
+
+    @since 1.0.54
+ *)
 
 val hexdump : t -> string -> string
-(** dump a file in hexadecimal *)
+(** dump a file in hexadecimal
+
+    @since 1.0.22
+ *)
 
 val hivex_close : t -> unit
-(** close the current hivex handle *)
+(** close the current hivex handle
+
+    @since 1.19.35
+ *)
 
 val hivex_commit : t -> string option -> unit
-(** commit (write) changes back to the hive *)
+(** commit (write) changes back to the hive
+
+    @since 1.19.35
+ *)
 
 val hivex_node_add_child : t -> int64 -> string -> int64
-(** add a child node *)
+(** add a child node
+
+    @since 1.19.35
+ *)
 
 val hivex_node_children : t -> int64 -> hivex_node array
-(** return list of nodes which are subkeys of node *)
+(** return list of nodes which are subkeys of node
+
+    @since 1.19.35
+ *)
 
 val hivex_node_delete_child : t -> int64 -> unit
-(** delete a node (recursively) *)
+(** delete a node (recursively)
+
+    @since 1.19.35
+ *)
 
 val hivex_node_get_child : t -> int64 -> string -> int64
-(** return the named child of node *)
+(** return the named child of node
+
+    @since 1.19.35
+ *)
 
 val hivex_node_get_value : t -> int64 -> string -> int64
-(** return the named value *)
+(** return the named value
+
+    @since 1.19.35
+ *)
 
 val hivex_node_name : t -> int64 -> string
-(** return the name of the node *)
+(** return the name of the node
+
+    @since 1.19.35
+ *)
 
 val hivex_node_parent : t -> int64 -> int64
-(** return the parent of node *)
+(** return the parent of node
+
+    @since 1.19.35
+ *)
 
 val hivex_node_set_value : t -> int64 -> string -> int64 -> string -> unit
-(** set or replace a single value in a node *)
+(** set or replace a single value in a node
+
+    @since 1.19.35
+ *)
 
 val hivex_node_values : t -> int64 -> hivex_value array
-(** return list of values attached to node *)
+(** return list of values attached to node
+
+    @since 1.19.35
+ *)
 
 val hivex_open : t -> ?verbose:bool -> ?debug:bool -> ?write:bool -> string -> unit
-(** open a Windows Registry hive file *)
+(** open a Windows Registry hive file
+
+    @since 1.19.35
+ *)
 
 val hivex_root : t -> int64
-(** return the root node of the hive *)
+(** return the root node of the hive
+
+    @since 1.19.35
+ *)
 
 val hivex_value_key : t -> int64 -> string
-(** return the key field from the (key, datatype, data) tuple *)
+(** return the key field from the (key, datatype, data) tuple
+
+    @since 1.19.35
+ *)
 
 val hivex_value_type : t -> int64 -> int64
-(** return the data type from the (key, datatype, data) tuple *)
+(** return the data type from the (key, datatype, data) tuple
+
+    @since 1.19.35
+ *)
 
 val hivex_value_utf8 : t -> int64 -> string
-(** return the data field from the (key, datatype, data) tuple *)
+(** return the data field from the (key, datatype, data) tuple
+
+    @since 1.19.35
+ *)
 
 val hivex_value_value : t -> int64 -> string
-(** return the data field from the (key, datatype, data) tuple *)
+(** return the data field from the (key, datatype, data) tuple
+
+    @since 1.19.35
+ *)
 
 val initrd_cat : t -> string -> string -> string
-(** list the contents of a single file in an initrd *)
+(** list the contents of a single file in an initrd
+
+    @since 1.0.84
+ *)
 
 val initrd_list : t -> string -> string array
-(** list files in an initrd *)
+(** list files in an initrd
+
+    @since 1.0.54
+ *)
 
 val inotify_add_watch : t -> string -> int -> int64
-(** add an inotify watch *)
+(** add an inotify watch
+
+    @since 1.0.66
+ *)
 
 val inotify_close : t -> unit
-(** close the inotify handle *)
+(** close the inotify handle
+
+    @since 1.0.66
+ *)
 
 val inotify_files : t -> string array
-(** return list of watched files that had events *)
+(** return list of watched files that had events
+
+    @since 1.0.66
+ *)
 
 val inotify_init : t -> int -> unit
-(** create an inotify handle *)
+(** create an inotify handle
+
+    @since 1.0.66
+ *)
 
 val inotify_read : t -> inotify_event array
-(** return list of inotify events *)
+(** return list of inotify events
+
+    @since 1.0.66
+ *)
 
 val inotify_rm_watch : t -> int -> unit
-(** remove an inotify watch *)
+(** remove an inotify watch
+
+    @since 1.0.66
+ *)
 
 val inspect_get_arch : t -> string -> string
-(** get architecture of inspected operating system *)
+(** get architecture of inspected operating system
+
+    @since 1.5.3
+ *)
 
 val inspect_get_distro : t -> string -> string
-(** get distro of inspected operating system *)
+(** get distro of inspected operating system
+
+    @since 1.5.3
+ *)
 
 val inspect_get_drive_mappings : t -> string -> (string * string) list
-(** get drive letter mappings *)
+(** get drive letter mappings
+
+    @since 1.9.17
+ *)
 
 val inspect_get_filesystems : t -> string -> string array
-(** get filesystems associated with inspected operating system *)
+(** get filesystems associated with inspected operating system
+
+    @since 1.5.3
+ *)
 
 val inspect_get_format : t -> string -> string
-(** get format of inspected operating system *)
+(** get format of inspected operating system
+
+    @since 1.9.4
+ *)
 
 val inspect_get_hostname : t -> string -> string
-(** get hostname of the operating system *)
+(** get hostname of the operating system
+
+    @since 1.7.9
+ *)
 
 val inspect_get_icon : t -> ?favicon:bool -> ?highquality:bool -> string -> string
-(** get the icon corresponding to this operating system *)
+(** get the icon corresponding to this operating system
+
+    @since 1.11.12
+ *)
 
 val inspect_get_major_version : t -> string -> int
-(** get major version of inspected operating system *)
+(** get major version of inspected operating system
+
+    @since 1.5.3
+ *)
 
 val inspect_get_minor_version : t -> string -> int
-(** get minor version of inspected operating system *)
+(** get minor version of inspected operating system
+
+    @since 1.5.3
+ *)
 
 val inspect_get_mountpoints : t -> string -> (string * string) list
-(** get mountpoints of inspected operating system *)
+(** get mountpoints of inspected operating system
+
+    @since 1.5.3
+ *)
 
 val inspect_get_package_format : t -> string -> string
-(** get package format used by the operating system *)
+(** get package format used by the operating system
+
+    @since 1.7.5
+ *)
 
 val inspect_get_package_management : t -> string -> string
-(** get package management tool used by the operating system *)
+(** get package management tool used by the operating system
+
+    @since 1.7.5
+ *)
 
 val inspect_get_product_name : t -> string -> string
-(** get product name of inspected operating system *)
+(** get product name of inspected operating system
+
+    @since 1.5.3
+ *)
 
 val inspect_get_product_variant : t -> string -> string
-(** get product variant of inspected operating system *)
+(** get product variant of inspected operating system
+
+    @since 1.9.13
+ *)
 
 val inspect_get_roots : t -> string array
-(** return list of operating systems found by last inspection *)
+(** return list of operating systems found by last inspection
+
+    @since 1.7.3
+ *)
 
 val inspect_get_type : t -> string -> string
-(** get type of inspected operating system *)
+(** get type of inspected operating system
+
+    @since 1.5.3
+ *)
 
 val inspect_get_windows_current_control_set : t -> string -> string
-(** get Windows CurrentControlSet of inspected operating system *)
+(** get Windows CurrentControlSet of inspected operating system
+
+    @since 1.9.17
+ *)
 
 val inspect_get_windows_systemroot : t -> string -> string
-(** get Windows systemroot of inspected operating system *)
+(** get Windows systemroot of inspected operating system
+
+    @since 1.5.25
+ *)
 
 val inspect_is_live : t -> string -> bool
-(** get live flag for install disk *)
+(** get live flag for install disk
+
+    @since 1.9.4
+ *)
 
 val inspect_is_multipart : t -> string -> bool
-(** get multipart flag for install disk *)
+(** get multipart flag for install disk
+
+    @since 1.9.4
+ *)
 
 val inspect_is_netinst : t -> string -> bool
-(** get netinst (network installer) flag for install disk *)
+(** get netinst (network installer) flag for install disk
+
+    @since 1.9.4
+ *)
 
 val inspect_list_applications : t -> string -> application array
 (** get list of applications installed in the operating system
 
     @deprecated Use {!inspect_list_applications2} instead
+
+    @since 1.7.8
  *)
 
 val inspect_list_applications2 : t -> string -> application2 array
-(** get list of applications installed in the operating system *)
+(** get list of applications installed in the operating system
+
+    @since 1.19.56
+ *)
 
 val inspect_os : t -> string array
-(** inspect disk and return list of operating systems found *)
+(** inspect disk and return list of operating systems found
+
+    @since 1.5.3
+ *)
 
 (**/**)
 val internal_test : t -> ?obool:bool -> ?oint:int -> ?oint64:int64 -> ?ostring:string -> ?ostringlist:string array -> string -> string option -> string array -> bool -> int -> int64 -> string -> string -> string -> unit
@@ -1323,349 +2028,646 @@ val internal_test_set_output : t -> string -> unit
 (**/**)
 
 val is_blockdev : t -> ?followsymlinks:bool -> string -> bool
-(** test if block device *)
+(** test if block device
+
+    @since 1.5.10
+ *)
 
 val is_blockdev_opts : t -> ?followsymlinks:bool -> string -> bool
 
 val is_busy : t -> bool
-(** is busy processing a command *)
+(** is busy processing a command
+
+    @since 1.0.2
+ *)
 
 val is_chardev : t -> ?followsymlinks:bool -> string -> bool
-(** test if character device *)
+(** test if character device
+
+    @since 1.5.10
+ *)
 
 val is_chardev_opts : t -> ?followsymlinks:bool -> string -> bool
 
 val is_config : t -> bool
-(** is in configuration state *)
+(** is in configuration state
+
+    @since 1.0.2
+ *)
 
 val is_dir : t -> ?followsymlinks:bool -> string -> bool
-(** test if a directory *)
+(** test if a directory
+
+    @since 0.8
+ *)
 
 val is_dir_opts : t -> ?followsymlinks:bool -> string -> bool
 
 val is_fifo : t -> ?followsymlinks:bool -> string -> bool
-(** test if FIFO (named pipe) *)
+(** test if FIFO (named pipe)
+
+    @since 1.5.10
+ *)
 
 val is_fifo_opts : t -> ?followsymlinks:bool -> string -> bool
 
 val is_file : t -> ?followsymlinks:bool -> string -> bool
-(** test if a regular file *)
+(** test if a regular file
+
+    @since 0.8
+ *)
 
 val is_file_opts : t -> ?followsymlinks:bool -> string -> bool
 
 val is_launching : t -> bool
-(** is launching subprocess *)
+(** is launching subprocess
+
+    @since 1.0.2
+ *)
 
 val is_lv : t -> string -> bool
-(** test if device is a logical volume *)
+(** test if device is a logical volume
+
+    @since 1.5.3
+ *)
 
 val is_ready : t -> bool
-(** is ready to accept commands *)
+(** is ready to accept commands
+
+    @since 1.0.2
+ *)
 
 val is_socket : t -> ?followsymlinks:bool -> string -> bool
-(** test if socket *)
+(** test if socket
+
+    @since 1.5.10
+ *)
 
 val is_socket_opts : t -> ?followsymlinks:bool -> string -> bool
 
 val is_symlink : t -> string -> bool
-(** test if symbolic link *)
+(** test if symbolic link
+
+    @since 1.5.10
+ *)
 
 val is_whole_device : t -> string -> bool
-(** test if a device is a whole device *)
+(** test if a device is a whole device
+
+    @since 1.21.9
+ *)
 
 val is_zero : t -> string -> bool
-(** test if a file contains all zero bytes *)
+(** test if a file contains all zero bytes
+
+    @since 1.11.8
+ *)
 
 val is_zero_device : t -> string -> bool
-(** test if a device contains all zero bytes *)
+(** test if a device contains all zero bytes
+
+    @since 1.11.8
+ *)
 
 val isoinfo : t -> string -> isoinfo
-(** get ISO information from primary volume descriptor of ISO file *)
+(** get ISO information from primary volume descriptor of ISO file
+
+    @since 1.17.19
+ *)
 
 val isoinfo_device : t -> string -> isoinfo
-(** get ISO information from primary volume descriptor of device *)
+(** get ISO information from primary volume descriptor of device
+
+    @since 1.17.19
+ *)
 
 val journal_close : t -> unit
-(** close the systemd journal *)
+(** close the systemd journal
+
+    @since 1.23.11
+ *)
 
 val journal_get : t -> xattr array
-(** read the current journal entry *)
+(** read the current journal entry
+
+    @since 1.23.11
+ *)
 
 val journal_get_data_threshold : t -> int64
-(** get the data threshold for reading journal entries *)
+(** get the data threshold for reading journal entries
+
+    @since 1.23.11
+ *)
 
 val journal_get_realtime_usec : t -> int64
-(** get the timestamp of the current journal entry *)
+(** get the timestamp of the current journal entry
+
+    @since 1.27.18
+ *)
 
 val journal_next : t -> bool
-(** move to the next journal entry *)
+(** move to the next journal entry
+
+    @since 1.23.11
+ *)
 
 val journal_open : t -> string -> unit
-(** open the systemd journal *)
+(** open the systemd journal
+
+    @since 1.23.11
+ *)
 
 val journal_set_data_threshold : t -> int64 -> unit
-(** set the data threshold for reading journal entries *)
+(** set the data threshold for reading journal entries
+
+    @since 1.23.11
+ *)
 
 val journal_skip : t -> int64 -> int64
-(** skip forwards or backwards in the journal *)
+(** skip forwards or backwards in the journal
+
+    @since 1.23.11
+ *)
 
 val kill_subprocess : t -> unit
 (** kill the hypervisor
 
     @deprecated Use {!shutdown} instead
+
+    @since 0.3
  *)
 
 val launch : t -> unit
-(** launch the backend *)
+(** launch the backend
+
+    @since 0.3
+ *)
 
 val lchown : t -> int -> int -> string -> unit
-(** change file owner and group *)
+(** change file owner and group
+
+    @since 1.0.77
+ *)
 
 val ldmtool_create_all : t -> unit
-(** scan and create Windows dynamic disk volumes *)
+(** scan and create Windows dynamic disk volumes
+
+    @since 1.20.0
+ *)
 
 val ldmtool_diskgroup_disks : t -> string -> string array
-(** return the disks in a Windows dynamic disk group *)
+(** return the disks in a Windows dynamic disk group
+
+    @since 1.20.0
+ *)
 
 val ldmtool_diskgroup_name : t -> string -> string
-(** return the name of a Windows dynamic disk group *)
+(** return the name of a Windows dynamic disk group
+
+    @since 1.20.0
+ *)
 
 val ldmtool_diskgroup_volumes : t -> string -> string array
-(** return the volumes in a Windows dynamic disk group *)
+(** return the volumes in a Windows dynamic disk group
+
+    @since 1.20.0
+ *)
 
 val ldmtool_remove_all : t -> unit
-(** remove all Windows dynamic disk volumes *)
+(** remove all Windows dynamic disk volumes
+
+    @since 1.20.0
+ *)
 
 val ldmtool_scan : t -> string array
-(** scan for Windows dynamic disks *)
+(** scan for Windows dynamic disks
+
+    @since 1.20.0
+ *)
 
 val ldmtool_scan_devices : t -> string array -> string array
-(** scan for Windows dynamic disks *)
+(** scan for Windows dynamic disks
+
+    @since 1.20.0
+ *)
 
 val ldmtool_volume_hint : t -> string -> string -> string
-(** return the hint field of a Windows dynamic disk volume *)
+(** return the hint field of a Windows dynamic disk volume
+
+    @since 1.20.0
+ *)
 
 val ldmtool_volume_partitions : t -> string -> string -> string array
-(** return the partitions in a Windows dynamic disk volume *)
+(** return the partitions in a Windows dynamic disk volume
+
+    @since 1.20.0
+ *)
 
 val ldmtool_volume_type : t -> string -> string -> string
-(** return the type of a Windows dynamic disk volume *)
+(** return the type of a Windows dynamic disk volume
+
+    @since 1.20.0
+ *)
 
 val lgetxattr : t -> string -> string -> string
-(** get a single extended attribute *)
+(** get a single extended attribute
+
+    @since 1.7.24
+ *)
 
 val lgetxattrs : t -> string -> xattr array
-(** list extended attributes of a file or directory *)
+(** list extended attributes of a file or directory
+
+    @since 1.0.59
+ *)
 
 val list_9p : t -> string array
-(** list 9p filesystems *)
+(** list 9p filesystems
+
+    @since 1.11.12
+ *)
 
 val list_devices : t -> string array
-(** list the block devices *)
+(** list the block devices
+
+    @since 0.4
+ *)
 
 val list_disk_labels : t -> (string * string) list
-(** mapping of disk labels to devices *)
+(** mapping of disk labels to devices
+
+    @since 1.19.49
+ *)
 
 val list_dm_devices : t -> string array
-(** list device mapper devices *)
+(** list device mapper devices
+
+    @since 1.11.15
+ *)
 
 val list_filesystems : t -> (string * string) list
-(** list filesystems *)
+(** list filesystems
+
+    @since 1.5.15
+ *)
 
 val list_ldm_partitions : t -> string array
-(** list all Windows dynamic disk partitions *)
+(** list all Windows dynamic disk partitions
+
+    @since 1.20.0
+ *)
 
 val list_ldm_volumes : t -> string array
-(** list all Windows dynamic disk volumes *)
+(** list all Windows dynamic disk volumes
+
+    @since 1.20.0
+ *)
 
 val list_md_devices : t -> string array
-(** list Linux md (RAID) devices *)
+(** list Linux md (RAID) devices
+
+    @since 1.15.4
+ *)
 
 val list_partitions : t -> string array
-(** list the partitions *)
+(** list the partitions
+
+    @since 0.4
+ *)
 
 val ll : t -> string -> string
-(** list the files in a directory (long format) *)
+(** list the files in a directory (long format)
+
+    @since 0.4
+ *)
 
 val llz : t -> string -> string
-(** list the files in a directory (long format with SELinux contexts) *)
+(** list the files in a directory (long format with SELinux contexts)
+
+    @since 1.17.6
+ *)
 
 val ln : t -> string -> string -> unit
-(** create a hard link *)
+(** create a hard link
+
+    @since 1.0.66
+ *)
 
 val ln_f : t -> string -> string -> unit
-(** create a hard link *)
+(** create a hard link
+
+    @since 1.0.66
+ *)
 
 val ln_s : t -> string -> string -> unit
-(** create a symbolic link *)
+(** create a symbolic link
+
+    @since 1.0.66
+ *)
 
 val ln_sf : t -> string -> string -> unit
-(** create a symbolic link *)
+(** create a symbolic link
+
+    @since 1.0.66
+ *)
 
 val lremovexattr : t -> string -> string -> unit
-(** remove extended attribute of a file or directory *)
+(** remove extended attribute of a file or directory
+
+    @since 1.0.59
+ *)
 
 val ls : t -> string -> string array
-(** list the files in a directory *)
+(** list the files in a directory
+
+    @since 0.4
+ *)
 
 val ls0 : t -> string -> string -> unit
-(** get list of files in a directory *)
+(** get list of files in a directory
+
+    @since 1.19.32
+ *)
 
 val lsetxattr : t -> string -> string -> int -> string -> unit
-(** set extended attribute of a file or directory *)
+(** set extended attribute of a file or directory
+
+    @since 1.0.59
+ *)
 
 val lstat : t -> string -> stat
 (** get file information for a symbolic link
 
     @deprecated Use {!lstatns} instead
+
+    @since 1.9.2
  *)
 
 val lstatlist : t -> string -> string array -> stat array
 (** lstat on multiple files
 
     @deprecated Use {!lstatnslist} instead
+
+    @since 1.0.77
  *)
 
 val lstatns : t -> string -> statns
-(** get file information for a symbolic link *)
+(** get file information for a symbolic link
+
+    @since 1.27.53
+ *)
 
 val lstatnslist : t -> string -> string array -> statns array
-(** lstat on multiple files *)
+(** lstat on multiple files
+
+    @since 1.27.53
+ *)
 
 val luks_add_key : t -> string -> string -> string -> int -> unit
-(** add a key on a LUKS encrypted device *)
+(** add a key on a LUKS encrypted device
+
+    @since 1.5.2
+ *)
 
 val luks_close : t -> string -> unit
-(** close a LUKS device *)
+(** close a LUKS device
+
+    @since 1.5.1
+ *)
 
 val luks_format : t -> string -> string -> int -> unit
-(** format a block device as a LUKS encrypted device *)
+(** format a block device as a LUKS encrypted device
+
+    @since 1.5.2
+ *)
 
 val luks_format_cipher : t -> string -> string -> int -> string -> unit
-(** format a block device as a LUKS encrypted device *)
+(** format a block device as a LUKS encrypted device
+
+    @since 1.5.2
+ *)
 
 val luks_kill_slot : t -> string -> string -> int -> unit
-(** remove a key from a LUKS encrypted device *)
+(** remove a key from a LUKS encrypted device
+
+    @since 1.5.2
+ *)
 
 val luks_open : t -> string -> string -> string -> unit
-(** open a LUKS-encrypted block device *)
+(** open a LUKS-encrypted block device
+
+    @since 1.5.1
+ *)
 
 val luks_open_ro : t -> string -> string -> string -> unit
-(** open a LUKS-encrypted block device read-only *)
+(** open a LUKS-encrypted block device read-only
+
+    @since 1.5.1
+ *)
 
 val lvcreate : t -> string -> string -> int -> unit
-(** create an LVM logical volume *)
+(** create an LVM logical volume
+
+    @since 0.8
+ *)
 
 val lvcreate_free : t -> string -> string -> int -> unit
-(** create an LVM logical volume in % remaining free space *)
+(** create an LVM logical volume in % remaining free space
+
+    @since 1.17.18
+ *)
 
 val lvm_canonical_lv_name : t -> string -> string
-(** get canonical name of an LV *)
+(** get canonical name of an LV
+
+    @since 1.5.24
+ *)
 
 val lvm_clear_filter : t -> unit
-(** clear LVM device filter *)
+(** clear LVM device filter
+
+    @since 1.5.1
+ *)
 
 val lvm_remove_all : t -> unit
-(** remove all LVM LVs, VGs and PVs *)
+(** remove all LVM LVs, VGs and PVs
+
+    @since 0.8
+ *)
 
 val lvm_set_filter : t -> string array -> unit
-(** set LVM device filter *)
+(** set LVM device filter
+
+    @since 1.5.1
+ *)
 
 val lvremove : t -> string -> unit
-(** remove an LVM logical volume *)
+(** remove an LVM logical volume
+
+    @since 1.0.13
+ *)
 
 val lvrename : t -> string -> string -> unit
-(** rename an LVM logical volume *)
+(** rename an LVM logical volume
+
+    @since 1.0.83
+ *)
 
 val lvresize : t -> string -> int -> unit
-(** resize an LVM logical volume *)
+(** resize an LVM logical volume
+
+    @since 1.0.27
+ *)
 
 val lvresize_free : t -> string -> int -> unit
-(** expand an LV to fill free space *)
+(** expand an LV to fill free space
+
+    @since 1.3.3
+ *)
 
 val lvs : t -> string array
-(** list the LVM logical volumes (LVs) *)
+(** list the LVM logical volumes (LVs)
+
+    @since 0.4
+ *)
 
 val lvs_full : t -> lvm_lv array
-(** list the LVM logical volumes (LVs) *)
+(** list the LVM logical volumes (LVs)
+
+    @since 0.4
+ *)
 
 val lvuuid : t -> string -> string
-(** get the UUID of a logical volume *)
+(** get the UUID of a logical volume
+
+    @since 1.0.87
+ *)
 
 val lxattrlist : t -> string -> string array -> xattr array
-(** lgetxattr on multiple files *)
+(** lgetxattr on multiple files
+
+    @since 1.0.77
+ *)
 
 val max_disks : t -> int
-(** maximum number of disks that may be added *)
+(** maximum number of disks that may be added
+
+    @since 1.19.7
+ *)
 
 val md_create : t -> ?missingbitmap:int64 -> ?nrdevices:int -> ?spare:int -> ?chunk:int64 -> ?level:string -> string -> string array -> unit
-(** create a Linux md (RAID) device *)
+(** create a Linux md (RAID) device
+
+    @since 1.15.6
+ *)
 
 val md_detail : t -> string -> (string * string) list
-(** obtain metadata for an MD device *)
+(** obtain metadata for an MD device
+
+    @since 1.15.6
+ *)
 
 val md_stat : t -> string -> mdstat array
-(** get underlying devices from an MD device *)
+(** get underlying devices from an MD device
+
+    @since 1.17.21
+ *)
 
 val md_stop : t -> string -> unit
-(** stop a Linux md (RAID) device *)
+(** stop a Linux md (RAID) device
+
+    @since 1.15.6
+ *)
 
 val mkdir : t -> string -> unit
-(** create a directory *)
+(** create a directory
+
+    @since 0.8
+ *)
 
 val mkdir_mode : t -> string -> int -> unit
-(** create a directory with a particular mode *)
+(** create a directory with a particular mode
+
+    @since 1.0.77
+ *)
 
 val mkdir_p : t -> string -> unit
-(** create a directory and parents *)
+(** create a directory and parents
+
+    @since 0.8
+ *)
 
 val mkdtemp : t -> string -> string
-(** create a temporary directory *)
+(** create a temporary directory
+
+    @since 1.0.54
+ *)
 
 val mke2fs : t -> ?blockscount:int64 -> ?blocksize:int64 -> ?fragsize:int64 -> ?blockspergroup:int64 -> ?numberofgroups:int64 -> ?bytesperinode:int64 -> ?inodesize:int64 -> ?journalsize:int64 -> ?numberofinodes:int64 -> ?stridesize:int64 -> ?stripewidth:int64 -> ?maxonlineresize:int64 -> ?reservedblockspercentage:int -> ?mmpupdateinterval:int -> ?journaldevice:string -> ?label:string -> ?lastmounteddir:string -> ?creatoros:string -> ?fstype:string -> ?usagetype:string -> ?uuid:string -> ?forcecreate:bool -> ?writesbandgrouponly:bool -> ?lazyitableinit:bool -> ?lazyjournalinit:bool -> ?testfs:bool -> ?discard:bool -> ?quotatype:bool -> ?extent:bool -> ?filetype:bool -> ?flexbg:bool -> ?hasjournal:bool -> ?journaldev:bool -> ?largefile:bool -> ?quota:bool -> ?resizeinode:bool -> ?sparsesuper:bool -> ?uninitbg:bool -> string -> unit
-(** create an ext2/ext3/ext4 filesystem on device *)
+(** create an ext2/ext3/ext4 filesystem on device
+
+    @since 1.19.44
+ *)
 
 val mke2fs_J : t -> string -> int -> string -> string -> unit
 (** make ext2/3/4 filesystem with external journal
 
     @deprecated Use {!mke2fs} instead
+
+    @since 1.0.68
  *)
 
 val mke2fs_JL : t -> string -> int -> string -> string -> unit
 (** make ext2/3/4 filesystem with external journal
 
     @deprecated Use {!mke2fs} instead
+
+    @since 1.0.68
  *)
 
 val mke2fs_JU : t -> string -> int -> string -> string -> unit
 (** make ext2/3/4 filesystem with external journal
 
     @deprecated Use {!mke2fs} instead
+
+    @since 1.0.68
  *)
 
 val mke2journal : t -> int -> string -> unit
 (** make ext2/3/4 external journal
 
     @deprecated Use {!mke2fs} instead
+
+    @since 1.0.68
  *)
 
 val mke2journal_L : t -> int -> string -> string -> unit
 (** make ext2/3/4 external journal with label
 
     @deprecated Use {!mke2fs} instead
+
+    @since 1.0.68
  *)
 
 val mke2journal_U : t -> int -> string -> string -> unit
 (** make ext2/3/4 external journal with UUID
 
     @deprecated Use {!mke2fs} instead
+
+    @since 1.0.68
  *)
 
 val mkfifo : t -> int -> string -> unit
-(** make FIFO (named pipe) *)
+(** make FIFO (named pipe)
+
+    @since 1.0.55
+ *)
 
 val mkfs : t -> ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> ?label:string -> string -> string -> unit
-(** make a filesystem *)
+(** make a filesystem
+
+    @since 0.8
+ *)
 
 val mkfs_opts : t -> ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> ?label:string -> string -> string -> unit
 
@@ -1673,28 +2675,51 @@ val mkfs_b : t -> string -> int -> string -> unit
 (** make a filesystem with block size
 
     @deprecated Use {!mkfs} instead
+
+    @since 1.0.68
  *)
 
 val mkfs_btrfs : t -> ?allocstart:int64 -> ?bytecount:int64 -> ?datatype:string -> ?leafsize:int -> ?label:string -> ?metadata:string -> ?nodesize:int -> ?sectorsize:int -> string array -> unit
-(** create a btrfs filesystem *)
+(** create a btrfs filesystem
+
+    @since 1.17.25
+ *)
 
 val mklost_and_found : t -> string -> unit
-(** make lost+found directory on an ext2/3/4 filesystem *)
+(** make lost+found directory on an ext2/3/4 filesystem
+
+    @since 1.19.56
+ *)
 
 val mkmountpoint : t -> string -> unit
-(** create a mountpoint *)
+(** create a mountpoint
+
+    @since 1.0.62
+ *)
 
 val mknod : t -> int -> int -> int -> string -> unit
-(** make block, character or FIFO devices *)
+(** make block, character or FIFO devices
+
+    @since 1.0.55
+ *)
 
 val mknod_b : t -> int -> int -> int -> string -> unit
-(** make block device node *)
+(** make block device node
+
+    @since 1.0.55
+ *)
 
 val mknod_c : t -> int -> int -> int -> string -> unit
-(** make char device node *)
+(** make char device node
+
+    @since 1.0.55
+ *)
 
 val mkswap : t -> ?label:string -> ?uuid:string -> string -> unit
-(** create a swap partition *)
+(** create a swap partition
+
+    @since 1.0.55
+ *)
 
 val mkswap_opts : t -> ?label:string -> ?uuid:string -> string -> unit
 
@@ -1702,73 +2727,137 @@ val mkswap_L : t -> string -> string -> unit
 (** create a swap partition with a label
 
     @deprecated Use {!mkswap} instead
+
+    @since 1.0.55
  *)
 
 val mkswap_U : t -> string -> string -> unit
 (** create a swap partition with an explicit UUID
 
     @deprecated Use {!mkswap} instead
+
+    @since 1.0.55
  *)
 
 val mkswap_file : t -> string -> unit
-(** create a swap file *)
+(** create a swap file
+
+    @since 1.0.66
+ *)
 
 val mktemp : t -> ?suffix:string -> string -> string
-(** create a temporary file *)
+(** create a temporary file
+
+    @since 1.19.53
+ *)
 
 val modprobe : t -> string -> unit
-(** load a kernel module *)
+(** load a kernel module
+
+    @since 1.0.68
+ *)
 
 val mount : t -> string -> string -> unit
-(** mount a guest disk at a position in the filesystem *)
+(** mount a guest disk at a position in the filesystem
+
+    @since 0.3
+ *)
 
 val mount_9p : t -> ?options:string -> string -> string -> unit
-(** mount 9p filesystem *)
+(** mount 9p filesystem
+
+    @since 1.11.12
+ *)
 
 val mount_local : t -> ?readonly:bool -> ?options:string -> ?cachetimeout:int -> ?debugcalls:bool -> string -> unit
-(** mount on the local filesystem *)
+(** mount on the local filesystem
+
+    @since 1.17.22
+ *)
 
 val mount_local_run : t -> unit
-(** run main loop of mount on the local filesystem *)
+(** run main loop of mount on the local filesystem
+
+    @since 1.17.22
+ *)
 
 val mount_loop : t -> string -> string -> unit
-(** mount a file using the loop device *)
+(** mount a file using the loop device
+
+    @since 1.0.54
+ *)
 
 val mount_options : t -> string -> string -> string -> unit
-(** mount a guest disk with mount options *)
+(** mount a guest disk with mount options
+
+    @since 1.0.10
+ *)
 
 val mount_ro : t -> string -> string -> unit
-(** mount a guest disk, read-only *)
+(** mount a guest disk, read-only
+
+    @since 1.0.10
+ *)
 
 val mount_vfs : t -> string -> string -> string -> string -> unit
-(** mount a guest disk with mount options and vfstype *)
+(** mount a guest disk with mount options and vfstype
+
+    @since 1.0.10
+ *)
 
 val mountpoints : t -> (string * string) list
-(** show mountpoints *)
+(** show mountpoints
+
+    @since 1.0.62
+ *)
 
 val mounts : t -> string array
-(** show mounted filesystems *)
+(** show mounted filesystems
+
+    @since 0.8
+ *)
 
 val mv : t -> string -> string -> unit
-(** move a file *)
+(** move a file
+
+    @since 1.0.18
+ *)
 
 val nr_devices : t -> int
-(** return number of whole block devices (disks) added *)
+(** return number of whole block devices (disks) added
+
+    @since 1.19.15
+ *)
 
 val ntfs_3g_probe : t -> bool -> string -> int
-(** probe NTFS volume *)
+(** probe NTFS volume
+
+    @since 1.0.43
+ *)
 
 val ntfsclone_in : t -> string -> string -> unit
-(** restore NTFS from backup file *)
+(** restore NTFS from backup file
+
+    @since 1.17.9
+ *)
 
 val ntfsclone_out : t -> ?metadataonly:bool -> ?rescue:bool -> ?ignorefscheck:bool -> ?preservetimestamps:bool -> ?force:bool -> string -> string -> unit
-(** save NTFS to backup file *)
+(** save NTFS to backup file
+
+    @since 1.17.9
+ *)
 
 val ntfsfix : t -> ?clearbadsectors:bool -> string -> unit
-(** fix common errors and force Windows to check NTFS *)
+(** fix common errors and force Windows to check NTFS
+
+    @since 1.17.9
+ *)
 
 val ntfsresize : t -> ?size:int64 -> ?force:bool -> string -> unit
-(** resize an NTFS filesystem *)
+(** resize an NTFS filesystem
+
+    @since 1.3.2
+ *)
 
 val ntfsresize_opts : t -> ?size:int64 -> ?force:bool -> string -> unit
 
@@ -1776,393 +2865,743 @@ val ntfsresize_size : t -> string -> int64 -> unit
 (** resize an NTFS filesystem (with size)
 
     @deprecated Use {!ntfsresize} instead
+
+    @since 1.3.14
  *)
 
 val parse_environment : t -> unit
-(** parse the environment and set handle flags accordingly *)
+(** parse the environment and set handle flags accordingly
+
+    @since 1.19.53
+ *)
 
 val parse_environment_list : t -> string array -> unit
-(** parse the environment and set handle flags accordingly *)
+(** parse the environment and set handle flags accordingly
+
+    @since 1.19.53
+ *)
 
 val part_add : t -> string -> string -> int64 -> int64 -> unit
-(** add a partition to the device *)
+(** add a partition to the device
+
+    @since 1.0.78
+ *)
 
 val part_del : t -> string -> int -> unit
-(** delete a partition *)
+(** delete a partition
+
+    @since 1.3.2
+ *)
 
 val part_disk : t -> string -> string -> unit
-(** partition whole disk with a single primary partition *)
+(** partition whole disk with a single primary partition
+
+    @since 1.0.78
+ *)
 
 val part_get_bootable : t -> string -> int -> bool
-(** return true if a partition is bootable *)
+(** return true if a partition is bootable
+
+    @since 1.3.2
+ *)
 
 val part_get_gpt_guid : t -> string -> int -> string
-(** get the GUID of a GPT partition *)
+(** get the GUID of a GPT partition
+
+    @since 1.29.25
+ *)
 
 val part_get_gpt_type : t -> string -> int -> string
-(** get the type GUID of a GPT partition *)
+(** get the type GUID of a GPT partition
+
+    @since 1.21.1
+ *)
 
 val part_get_mbr_id : t -> string -> int -> int
-(** get the MBR type byte (ID byte) from a partition *)
+(** get the MBR type byte (ID byte) from a partition
+
+    @since 1.3.2
+ *)
 
 val part_get_mbr_part_type : t -> string -> int -> string
-(** get the MBR partition type *)
+(** get the MBR partition type
+
+    @since 1.29.32
+ *)
 
 val part_get_name : t -> string -> int -> string
-(** get partition name *)
+(** get partition name
+
+    @since 1.25.33
+ *)
 
 val part_get_parttype : t -> string -> string
-(** get the partition table type *)
+(** get the partition table type
+
+    @since 1.0.78
+ *)
 
 val part_init : t -> string -> string -> unit
-(** create an empty partition table *)
+(** create an empty partition table
+
+    @since 1.0.78
+ *)
 
 val part_list : t -> string -> partition array
-(** list partitions on a device *)
+(** list partitions on a device
+
+    @since 1.0.78
+ *)
 
 val part_set_bootable : t -> string -> int -> bool -> unit
-(** make a partition bootable *)
+(** make a partition bootable
+
+    @since 1.0.78
+ *)
 
 val part_set_gpt_guid : t -> string -> int -> string -> unit
-(** set the GUID of a GPT partition *)
+(** set the GUID of a GPT partition
+
+    @since 1.29.25
+ *)
 
 val part_set_gpt_type : t -> string -> int -> string -> unit
-(** set the type GUID of a GPT partition *)
+(** set the type GUID of a GPT partition
+
+    @since 1.21.1
+ *)
 
 val part_set_mbr_id : t -> string -> int -> int -> unit
-(** set the MBR type byte (ID byte) of a partition *)
+(** set the MBR type byte (ID byte) of a partition
+
+    @since 1.3.2
+ *)
 
 val part_set_name : t -> string -> int -> string -> unit
-(** set partition name *)
+(** set partition name
+
+    @since 1.0.78
+ *)
 
 val part_to_dev : t -> string -> string
-(** convert partition name to device name *)
+(** convert partition name to device name
+
+    @since 1.5.15
+ *)
 
 val part_to_partnum : t -> string -> int
-(** convert partition name to partition number *)
+(** convert partition name to partition number
+
+    @since 1.13.25
+ *)
 
 val ping_daemon : t -> unit
-(** ping the guest daemon *)
+(** ping the guest daemon
+
+    @since 1.0.18
+ *)
 
 val pread : t -> string -> int -> int64 -> string
-(** read part of a file *)
+(** read part of a file
+
+    @since 1.0.77
+ *)
 
 val pread_device : t -> string -> int -> int64 -> string
-(** read part of a device *)
+(** read part of a device
+
+    @since 1.5.21
+ *)
 
 val pvchange_uuid : t -> string -> unit
-(** generate a new random UUID for a physical volume *)
+(** generate a new random UUID for a physical volume
+
+    @since 1.19.26
+ *)
 
 val pvchange_uuid_all : t -> unit
-(** generate new random UUIDs for all physical volumes *)
+(** generate new random UUIDs for all physical volumes
+
+    @since 1.19.26
+ *)
 
 val pvcreate : t -> string -> unit
-(** create an LVM physical volume *)
+(** create an LVM physical volume
+
+    @since 0.8
+ *)
 
 val pvremove : t -> string -> unit
-(** remove an LVM physical volume *)
+(** remove an LVM physical volume
+
+    @since 1.0.13
+ *)
 
 val pvresize : t -> string -> unit
-(** resize an LVM physical volume *)
+(** resize an LVM physical volume
+
+    @since 1.0.26
+ *)
 
 val pvresize_size : t -> string -> int64 -> unit
-(** resize an LVM physical volume (with size) *)
+(** resize an LVM physical volume (with size)
+
+    @since 1.3.14
+ *)
 
 val pvs : t -> string array
-(** list the LVM physical volumes (PVs) *)
+(** list the LVM physical volumes (PVs)
+
+    @since 0.4
+ *)
 
 val pvs_full : t -> lvm_pv array
-(** list the LVM physical volumes (PVs) *)
+(** list the LVM physical volumes (PVs)
+
+    @since 0.4
+ *)
 
 val pvuuid : t -> string -> string
-(** get the UUID of a physical volume *)
+(** get the UUID of a physical volume
+
+    @since 1.0.87
+ *)
 
 val pwrite : t -> string -> string -> int64 -> int
-(** write to part of a file *)
+(** write to part of a file
+
+    @since 1.3.14
+ *)
 
 val pwrite_device : t -> string -> string -> int64 -> int
-(** write to part of a device *)
+(** write to part of a device
+
+    @since 1.5.20
+ *)
 
 val read_file : t -> string -> string
-(** read a file *)
+(** read a file
+
+    @since 1.0.63
+ *)
 
 val read_lines : t -> string -> string array
-(** read file as lines *)
+(** read file as lines
+
+    @since 0.7
+ *)
 
 val readdir : t -> string -> dirent array
-(** read directories entries *)
+(** read directories entries
+
+    @since 1.0.55
+ *)
 
 val readlink : t -> string -> string
-(** read the target of a symbolic link *)
+(** read the target of a symbolic link
+
+    @since 1.0.66
+ *)
 
 val readlinklist : t -> string -> string array -> string array
-(** readlink on multiple files *)
+(** readlink on multiple files
+
+    @since 1.0.77
+ *)
 
 val realpath : t -> string -> string
-(** canonicalized absolute pathname *)
+(** canonicalized absolute pathname
+
+    @since 1.0.66
+ *)
 
 val remount : t -> ?rw:bool -> string -> unit
-(** remount a filesystem with different options *)
+(** remount a filesystem with different options
+
+    @since 1.23.2
+ *)
 
 val remove_drive : t -> string -> unit
-(** remove a disk image *)
+(** remove a disk image
+
+    @since 1.19.49
+ *)
 
 val removexattr : t -> string -> string -> unit
-(** remove extended attribute of a file or directory *)
+(** remove extended attribute of a file or directory
+
+    @since 1.0.59
+ *)
 
 val rename : t -> string -> string -> unit
-(** rename a file on the same filesystem *)
+(** rename a file on the same filesystem
+
+    @since 1.21.5
+ *)
 
 val resize2fs : t -> string -> unit
-(** resize an ext2, ext3 or ext4 filesystem *)
+(** resize an ext2, ext3 or ext4 filesystem
+
+    @since 1.0.27
+ *)
 
 val resize2fs_M : t -> string -> unit
-(** resize an ext2, ext3 or ext4 filesystem to the minimum size *)
+(** resize an ext2, ext3 or ext4 filesystem to the minimum size
+
+    @since 1.9.4
+ *)
 
 val resize2fs_size : t -> string -> int64 -> unit
-(** resize an ext2, ext3 or ext4 filesystem (with size) *)
+(** resize an ext2, ext3 or ext4 filesystem (with size)
+
+    @since 1.3.14
+ *)
 
 val rm : t -> string -> unit
-(** remove a file *)
+(** remove a file
+
+    @since 0.8
+ *)
 
 val rm_f : t -> string -> unit
-(** remove a file ignoring errors *)
+(** remove a file ignoring errors
+
+    @since 1.19.42
+ *)
 
 val rm_rf : t -> string -> unit
-(** remove a file or directory recursively *)
+(** remove a file or directory recursively
+
+    @since 0.8
+ *)
 
 val rmdir : t -> string -> unit
-(** remove a directory *)
+(** remove a directory
+
+    @since 0.8
+ *)
 
 val rmmountpoint : t -> string -> unit
-(** remove a mountpoint *)
+(** remove a mountpoint
+
+    @since 1.0.62
+ *)
 
 val rsync : t -> ?archive:bool -> ?deletedest:bool -> string -> string -> unit
-(** synchronize the contents of two directories *)
+(** synchronize the contents of two directories
+
+    @since 1.19.29
+ *)
 
 val rsync_in : t -> ?archive:bool -> ?deletedest:bool -> string -> string -> unit
-(** synchronize host or remote filesystem with filesystem *)
+(** synchronize host or remote filesystem with filesystem
+
+    @since 1.19.29
+ *)
 
 val rsync_out : t -> ?archive:bool -> ?deletedest:bool -> string -> string -> unit
-(** synchronize filesystem with host or remote filesystem *)
+(** synchronize filesystem with host or remote filesystem
+
+    @since 1.19.29
+ *)
 
 val scrub_device : t -> string -> unit
-(** scrub (securely wipe) a device *)
+(** scrub (securely wipe) a device
+
+    @since 1.0.52
+ *)
 
 val scrub_file : t -> string -> unit
-(** scrub (securely wipe) a file *)
+(** scrub (securely wipe) a file
+
+    @since 1.0.52
+ *)
 
 val scrub_freespace : t -> string -> unit
-(** scrub (securely wipe) free space *)
+(** scrub (securely wipe) free space
+
+    @since 1.0.52
+ *)
 
 val set_append : t -> string option -> unit
-(** add options to kernel command line *)
+(** add options to kernel command line
+
+    @since 1.0.26
+ *)
 
 val set_attach_method : t -> string -> unit
 (** set the backend
 
     @deprecated Use {!set_backend} instead
+
+    @since 1.9.8
  *)
 
 val set_autosync : t -> bool -> unit
-(** set autosync mode *)
+(** set autosync mode
+
+    @since 0.3
+ *)
 
 val set_backend : t -> string -> unit
-(** set the backend *)
+(** set the backend
+
+    @since 1.21.26
+ *)
 
 val set_backend_setting : t -> string -> string -> unit
-(** set a single per-backend settings string *)
+(** set a single per-backend settings string
+
+    @since 1.27.2
+ *)
 
 val set_backend_settings : t -> string array -> unit
-(** replace per-backend settings strings *)
+(** replace per-backend settings strings
+
+    @since 1.25.24
+ *)
 
 val set_cachedir : t -> string option -> unit
-(** set the appliance cache directory *)
+(** set the appliance cache directory
+
+    @since 1.19.58
+ *)
 
 val set_direct : t -> bool -> unit
-(** enable or disable direct appliance mode *)
+(** enable or disable direct appliance mode
+
+    @since 1.0.72
+ *)
 
 val set_e2attrs : t -> ?clear:bool -> string -> string -> unit
-(** set ext2 file attributes of a file *)
+(** set ext2 file attributes of a file
+
+    @since 1.17.31
+ *)
 
 val set_e2generation : t -> string -> int64 -> unit
-(** set ext2 file generation of a file *)
+(** set ext2 file generation of a file
+
+    @since 1.17.31
+ *)
 
 val set_e2label : t -> string -> string -> unit
 (** set the ext2/3/4 filesystem label
 
     @deprecated Use {!set_label} instead
+
+    @since 1.0.15
  *)
 
 val set_e2uuid : t -> string -> string -> unit
 (** set the ext2/3/4 filesystem UUID
 
     @deprecated Use {!set_uuid} instead
+
+    @since 1.0.15
  *)
 
 val set_hv : t -> string -> unit
-(** set the hypervisor binary *)
+(** set the hypervisor binary
+
+    @since 1.23.17
+ *)
 
 val set_label : t -> string -> string -> unit
-(** set filesystem label *)
+(** set filesystem label
+
+    @since 1.17.9
+ *)
 
 val set_libvirt_requested_credential : t -> int -> string -> unit
-(** pass requested credential back to libvirt *)
+(** pass requested credential back to libvirt
+
+    @since 1.19.52
+ *)
 
 val set_libvirt_supported_credentials : t -> string array -> unit
-(** set libvirt credentials supported by calling program *)
+(** set libvirt credentials supported by calling program
+
+    @since 1.19.52
+ *)
 
 val set_memsize : t -> int -> unit
-(** set memory allocated to the hypervisor *)
+(** set memory allocated to the hypervisor
+
+    @since 1.0.55
+ *)
 
 val set_network : t -> bool -> unit
-(** set enable network flag *)
+(** set enable network flag
+
+    @since 1.5.4
+ *)
 
 val set_path : t -> string option -> unit
-(** set the search path *)
+(** set the search path
+
+    @since 0.3
+ *)
 
 val set_pgroup : t -> bool -> unit
-(** set process group flag *)
+(** set process group flag
+
+    @since 1.11.18
+ *)
 
 val set_program : t -> string -> unit
-(** set the program name *)
+(** set the program name
+
+    @since 1.21.29
+ *)
 
 val set_qemu : t -> string option -> unit
 (** set the hypervisor binary (usually qemu)
 
     @deprecated Use {!set_hv} instead
+
+    @since 1.0.6
  *)
 
 val set_recovery_proc : t -> bool -> unit
-(** enable or disable the recovery process *)
+(** enable or disable the recovery process
+
+    @since 1.0.77
+ *)
 
 val set_selinux : t -> bool -> unit
-(** set SELinux enabled or disabled at appliance boot *)
+(** set SELinux enabled or disabled at appliance boot
+
+    @since 1.0.67
+ *)
 
 val set_smp : t -> int -> unit
-(** set number of virtual CPUs in appliance *)
+(** set number of virtual CPUs in appliance
+
+    @since 1.13.15
+ *)
 
 val set_tmpdir : t -> string option -> unit
-(** set the temporary directory *)
+(** set the temporary directory
+
+    @since 1.19.58
+ *)
 
 val set_trace : t -> bool -> unit
-(** enable or disable command traces *)
+(** enable or disable command traces
+
+    @since 1.0.69
+ *)
 
 val set_uuid : t -> string -> string -> unit
-(** set the filesystem UUID *)
+(** set the filesystem UUID
+
+    @since 1.23.10
+ *)
 
 val set_verbose : t -> bool -> unit
-(** set verbose mode *)
+(** set verbose mode
+
+    @since 0.3
+ *)
 
 val setcon : t -> string -> unit
-(** set SELinux security context *)
+(** set SELinux security context
+
+    @since 1.0.67
+ *)
 
 val setxattr : t -> string -> string -> int -> string -> unit
-(** set extended attribute of a file or directory *)
+(** set extended attribute of a file or directory
+
+    @since 1.0.59
+ *)
 
 val sfdisk : t -> string -> int -> int -> int -> string array -> unit
 (** create partitions on a block device
 
     @deprecated Use {!part_add} instead
+
+    @since 0.8
  *)
 
 val sfdiskM : t -> string -> string array -> unit
 (** create partitions on a block device
 
     @deprecated Use {!part_add} instead
+
+    @since 1.0.55
  *)
 
 val sfdisk_N : t -> string -> int -> int -> int -> int -> string -> unit
 (** modify a single partition on a block device
 
     @deprecated Use {!part_add} instead
+
+    @since 1.0.26
  *)
 
 val sfdisk_disk_geometry : t -> string -> string
-(** display the disk geometry from the partition table *)
+(** display the disk geometry from the partition table
+
+    @since 1.0.26
+ *)
 
 val sfdisk_kernel_geometry : t -> string -> string
-(** display the kernel geometry *)
+(** display the kernel geometry
+
+    @since 1.0.26
+ *)
 
 val sfdisk_l : t -> string -> string
 (** display the partition table
 
     @deprecated Use {!part_list} instead
+
+    @since 1.0.26
  *)
 
 val sh : t -> string -> string
-(** run a command via the shell *)
+(** run a command via the shell
+
+    @since 1.0.50
+ *)
 
 val sh_lines : t -> string -> string array
-(** run a command via the shell returning lines *)
+(** run a command via the shell returning lines
+
+    @since 1.0.50
+ *)
 
 val shutdown : t -> unit
-(** shutdown the hypervisor *)
+(** shutdown the hypervisor
+
+    @since 1.19.16
+ *)
 
 val sleep : t -> int -> unit
-(** sleep for some seconds *)
+(** sleep for some seconds
+
+    @since 1.0.41
+ *)
 
 val stat : t -> string -> stat
 (** get file information
 
     @deprecated Use {!statns} instead
+
+    @since 1.9.2
  *)
 
 val statns : t -> string -> statns
-(** get file information *)
+(** get file information
+
+    @since 1.27.53
+ *)
 
 val statvfs : t -> string -> statvfs
-(** get file system statistics *)
+(** get file system statistics
+
+    @since 1.9.2
+ *)
 
 val strings : t -> string -> string array
-(** print the printable strings in a file *)
+(** print the printable strings in a file
+
+    @since 1.0.22
+ *)
 
 val strings_e : t -> string -> string -> string array
-(** print the printable strings in a file *)
+(** print the printable strings in a file
+
+    @since 1.0.22
+ *)
 
 val swapoff_device : t -> string -> unit
-(** disable swap on device *)
+(** disable swap on device
+
+    @since 1.0.66
+ *)
 
 val swapoff_file : t -> string -> unit
-(** disable swap on file *)
+(** disable swap on file
+
+    @since 1.0.66
+ *)
 
 val swapoff_label : t -> string -> unit
-(** disable swap on labeled swap partition *)
+(** disable swap on labeled swap partition
+
+    @since 1.0.66
+ *)
 
 val swapoff_uuid : t -> string -> unit
-(** disable swap on swap partition by UUID *)
+(** disable swap on swap partition by UUID
+
+    @since 1.0.66
+ *)
 
 val swapon_device : t -> string -> unit
-(** enable swap on device *)
+(** enable swap on device
+
+    @since 1.0.66
+ *)
 
 val swapon_file : t -> string -> unit
-(** enable swap on file *)
+(** enable swap on file
+
+    @since 1.0.66
+ *)
 
 val swapon_label : t -> string -> unit
-(** enable swap on labeled swap partition *)
+(** enable swap on labeled swap partition
+
+    @since 1.0.66
+ *)
 
 val swapon_uuid : t -> string -> unit
-(** enable swap on swap partition by UUID *)
+(** enable swap on swap partition by UUID
+
+    @since 1.0.66
+ *)
 
 val sync : t -> unit
-(** sync disks, writes are flushed through to the disk image *)
+(** sync disks, writes are flushed through to the disk image
+
+    @since 0.3
+ *)
 
 val syslinux : t -> ?directory:string -> string -> unit
-(** install the SYSLINUX bootloader *)
+(** install the SYSLINUX bootloader
+
+    @since 1.21.27
+ *)
 
 val tail : t -> string -> string array
-(** return last 10 lines of a file *)
+(** return last 10 lines of a file
+
+    @since 1.0.54
+ *)
 
 val tail_n : t -> int -> string -> string array
-(** return last N lines of a file *)
+(** return last N lines of a file
+
+    @since 1.0.54
+ *)
 
 val tar_in : t -> ?compress:string -> string -> string -> unit
-(** unpack tarfile to directory *)
+(** unpack tarfile to directory
+
+    @since 1.0.3
+ *)
 
 val tar_in_opts : t -> ?compress:string -> string -> string -> unit
 
 val tar_out : t -> ?compress:string -> ?numericowner:bool -> ?excludes:string array -> string -> string -> unit
-(** pack directory into tarfile *)
+(** pack directory into tarfile
+
+    @since 1.0.3
+ *)
 
 val tar_out_opts : t -> ?compress:string -> ?numericowner:bool -> ?excludes:string array -> string -> string -> unit
 
@@ -2170,218 +3609,382 @@ val tgz_in : t -> string -> string -> unit
 (** unpack compressed tarball to directory
 
     @deprecated Use {!tar_in} instead
+
+    @since 1.0.3
  *)
 
 val tgz_out : t -> string -> string -> unit
 (** pack directory into compressed tarball
 
     @deprecated Use {!tar_out} instead
+
+    @since 1.0.3
  *)
 
 val touch : t -> string -> unit
-(** update file timestamps or create a new file *)
+(** update file timestamps or create a new file
+
+    @since 0.3
+ *)
 
 val truncate : t -> string -> unit
-(** truncate a file to zero size *)
+(** truncate a file to zero size
+
+    @since 1.0.77
+ *)
 
 val truncate_size : t -> string -> int64 -> unit
-(** truncate a file to a particular size *)
+(** truncate a file to a particular size
+
+    @since 1.0.77
+ *)
 
 val tune2fs : t -> ?force:bool -> ?maxmountcount:int -> ?mountcount:int -> ?errorbehavior:string -> ?group:int64 -> ?intervalbetweenchecks:int -> ?reservedblockspercentage:int -> ?lastmounteddirectory:string -> ?reservedblockscount:int64 -> ?user:int64 -> string -> unit
-(** adjust ext2/ext3/ext4 filesystem parameters *)
+(** adjust ext2/ext3/ext4 filesystem parameters
+
+    @since 1.15.4
+ *)
 
 val tune2fs_l : t -> string -> (string * string) list
-(** get ext2/ext3/ext4 superblock details *)
+(** get ext2/ext3/ext4 superblock details
+
+    @since 1.9.2
+ *)
 
 val txz_in : t -> string -> string -> unit
 (** unpack compressed tarball to directory
 
     @deprecated Use {!tar_in} instead
+
+    @since 1.3.2
  *)
 
 val txz_out : t -> string -> string -> unit
 (** pack directory into compressed tarball
 
     @deprecated Use {!tar_out} instead
+
+    @since 1.3.2
  *)
 
 val umask : t -> int -> int
-(** set file mode creation mask (umask) *)
+(** set file mode creation mask (umask)
+
+    @since 1.0.55
+ *)
 
 val umount : t -> ?force:bool -> ?lazyunmount:bool -> string -> unit
-(** unmount a filesystem *)
+(** unmount a filesystem
+
+    @since 0.8
+ *)
 
 val umount_opts : t -> ?force:bool -> ?lazyunmount:bool -> string -> unit
 
 val umount_all : t -> unit
-(** unmount all filesystems *)
+(** unmount all filesystems
+
+    @since 0.8
+ *)
 
 val umount_local : t -> ?retry:bool -> unit
-(** unmount a locally mounted filesystem *)
+(** unmount a locally mounted filesystem
+
+    @since 1.17.22
+ *)
 
 val upload : t -> string -> string -> unit
-(** upload a file from the local machine *)
+(** upload a file from the local machine
+
+    @since 1.0.2
+ *)
 
 val upload_offset : t -> string -> string -> int64 -> unit
-(** upload a file from the local machine with offset *)
+(** upload a file from the local machine with offset
+
+    @since 1.5.17
+ *)
 
 val user_cancel : t -> unit
-(** cancel the current upload or download operation *)
+(** cancel the current upload or download operation
+
+    @since 1.11.18
+ *)
 
 val utimens : t -> string -> int64 -> int64 -> int64 -> int64 -> unit
-(** set timestamp of a file with nanosecond precision *)
+(** set timestamp of a file with nanosecond precision
+
+    @since 1.0.77
+ *)
 
 val utsname : t -> utsname
-(** appliance kernel version *)
+(** appliance kernel version
+
+    @since 1.19.27
+ *)
 
 val version : t -> version
-(** get the library version number *)
+(** get the library version number
+
+    @since 1.0.58
+ *)
 
 val vfs_label : t -> string -> string
-(** get the filesystem label *)
+(** get the filesystem label
+
+    @since 1.3.18
+ *)
 
 val vfs_type : t -> string -> string
-(** get the Linux VFS type corresponding to a mounted device *)
+(** get the Linux VFS type corresponding to a mounted device
+
+    @since 1.0.75
+ *)
 
 val vfs_uuid : t -> string -> string
-(** get the filesystem UUID *)
+(** get the filesystem UUID
+
+    @since 1.3.18
+ *)
 
 val vg_activate : t -> bool -> string array -> unit
-(** activate or deactivate some volume groups *)
+(** activate or deactivate some volume groups
+
+    @since 1.0.26
+ *)
 
 val vg_activate_all : t -> bool -> unit
-(** activate or deactivate all volume groups *)
+(** activate or deactivate all volume groups
+
+    @since 1.0.26
+ *)
 
 val vgchange_uuid : t -> string -> unit
-(** generate a new random UUID for a volume group *)
+(** generate a new random UUID for a volume group
+
+    @since 1.19.26
+ *)
 
 val vgchange_uuid_all : t -> unit
-(** generate new random UUIDs for all volume groups *)
+(** generate new random UUIDs for all volume groups
+
+    @since 1.19.26
+ *)
 
 val vgcreate : t -> string -> string array -> unit
-(** create an LVM volume group *)
+(** create an LVM volume group
+
+    @since 0.8
+ *)
 
 val vglvuuids : t -> string -> string array
-(** get the LV UUIDs of all LVs in the volume group *)
+(** get the LV UUIDs of all LVs in the volume group
+
+    @since 1.0.87
+ *)
 
 val vgmeta : t -> string -> string
-(** get volume group metadata *)
+(** get volume group metadata
+
+    @since 1.17.20
+ *)
 
 val vgpvuuids : t -> string -> string array
-(** get the PV UUIDs containing the volume group *)
+(** get the PV UUIDs containing the volume group
+
+    @since 1.0.87
+ *)
 
 val vgremove : t -> string -> unit
-(** remove an LVM volume group *)
+(** remove an LVM volume group
+
+    @since 1.0.13
+ *)
 
 val vgrename : t -> string -> string -> unit
-(** rename an LVM volume group *)
+(** rename an LVM volume group
+
+    @since 1.0.83
+ *)
 
 val vgs : t -> string array
-(** list the LVM volume groups (VGs) *)
+(** list the LVM volume groups (VGs)
+
+    @since 0.4
+ *)
 
 val vgs_full : t -> lvm_vg array
-(** list the LVM volume groups (VGs) *)
+(** list the LVM volume groups (VGs)
+
+    @since 0.4
+ *)
 
 val vgscan : t -> unit
-(** rescan for LVM physical volumes, volume groups and logical volumes *)
+(** rescan for LVM physical volumes, volume groups and logical volumes
+
+    @since 1.3.2
+ *)
 
 val vguuid : t -> string -> string
-(** get the UUID of a volume group *)
+(** get the UUID of a volume group
+
+    @since 1.0.87
+ *)
 
 val wait_ready : t -> unit
 (** wait until the hypervisor launches (no op)
 
     @deprecated Use {!launch} instead
+
+    @since 0.3
  *)
 
 val wc_c : t -> string -> int
-(** count characters in a file *)
+(** count characters in a file
+
+    @since 1.0.54
+ *)
 
 val wc_l : t -> string -> int
-(** count lines in a file *)
+(** count lines in a file
+
+    @since 1.0.54
+ *)
 
 val wc_w : t -> string -> int
-(** count words in a file *)
+(** count words in a file
+
+    @since 1.0.54
+ *)
 
 val wipefs : t -> string -> unit
-(** wipe a filesystem signature from a device *)
+(** wipe a filesystem signature from a device
+
+    @since 1.17.6
+ *)
 
 val write : t -> string -> string -> unit
-(** create a new file *)
+(** create a new file
+
+    @since 1.3.14
+ *)
 
 val write_append : t -> string -> string -> unit
-(** append content to end of file *)
+(** append content to end of file
+
+    @since 1.11.18
+ *)
 
 val write_file : t -> string -> string -> int -> unit
 (** create a file
 
     @deprecated Use {!write} instead
+
+    @since 0.8
  *)
 
 val xfs_admin : t -> ?extunwritten:bool -> ?imgfile:bool -> ?v2log:bool -> ?projid32bit:bool -> ?lazycounter:bool -> ?label:string -> ?uuid:string -> string -> unit
-(** change parameters of an XFS filesystem *)
+(** change parameters of an XFS filesystem
+
+    @since 1.19.33
+ *)
 
 val xfs_growfs : t -> ?datasec:bool -> ?logsec:bool -> ?rtsec:bool -> ?datasize:int64 -> ?logsize:int64 -> ?rtsize:int64 -> ?rtextsize:int64 -> ?maxpct:int -> string -> unit
-(** expand an existing XFS filesystem *)
+(** expand an existing XFS filesystem
+
+    @since 1.19.28
+ *)
 
 val xfs_info : t -> string -> xfsinfo
-(** get geometry of XFS filesystem *)
+(** get geometry of XFS filesystem
+
+    @since 1.19.21
+ *)
 
 val xfs_repair : t -> ?forcelogzero:bool -> ?nomodify:bool -> ?noprefetch:bool -> ?forcegeometry:bool -> ?maxmem:int64 -> ?ihashsize:int64 -> ?bhashsize:int64 -> ?agstride:int64 -> ?logdev:string -> ?rtdev:string -> string -> int
-(** repair an XFS filesystem *)
+(** repair an XFS filesystem
+
+    @since 1.19.36
+ *)
 
 val zegrep : t -> string -> string -> string array
 (** return lines matching a pattern
 
     @deprecated Use {!grep} instead
+
+    @since 1.0.66
  *)
 
 val zegrepi : t -> string -> string -> string array
 (** return lines matching a pattern
 
     @deprecated Use {!grep} instead
+
+    @since 1.0.66
  *)
 
 val zero : t -> string -> unit
-(** write zeroes to the device *)
+(** write zeroes to the device
+
+    @since 1.0.16
+ *)
 
 val zero_device : t -> string -> unit
-(** write zeroes to an entire device *)
+(** write zeroes to an entire device
+
+    @since 1.3.1
+ *)
 
 val zero_free_space : t -> string -> unit
-(** zero free space in a filesystem *)
+(** zero free space in a filesystem
+
+    @since 1.17.18
+ *)
 
 val zerofree : t -> string -> unit
-(** zero unused inodes and disk blocks on ext2/3 filesystem *)
+(** zero unused inodes and disk blocks on ext2/3 filesystem
+
+    @since 1.0.26
+ *)
 
 val zfgrep : t -> string -> string -> string array
 (** return lines matching a pattern
 
     @deprecated Use {!grep} instead
+
+    @since 1.0.66
  *)
 
 val zfgrepi : t -> string -> string -> string array
 (** return lines matching a pattern
 
     @deprecated Use {!grep} instead
+
+    @since 1.0.66
  *)
 
 val zfile : t -> string -> string -> string
 (** determine file type inside a compressed file
 
     @deprecated Use {!file} instead
+
+    @since 1.0.59
  *)
 
 val zgrep : t -> string -> string -> string array
 (** return lines matching a pattern
 
     @deprecated Use {!grep} instead
+
+    @since 1.0.66
  *)
 
 val zgrepi : t -> string -> string -> string array
 (** return lines matching a pattern
 
     @deprecated Use {!grep} instead
+
+    @since 1.0.66
  *)
 
 (** {2 Object-oriented API}

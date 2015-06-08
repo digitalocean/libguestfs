@@ -956,30 +956,31 @@ Cancel a running balance on a btrfs filesystem.
 
  btrfs-balance-pause path
 
-Pause a running balance on a btrfs filesystem.
+Призупинити запущений баланс у файловій системі btrfs
 
 =head2 btrfs-balance-resume
 
  btrfs-balance-resume path
 
-Resume a paused balance on a btrfs filesystem.
+Поновити призупинений баланс на файловій системі btrfs.
 
 =head2 btrfs-balance-status
 
  btrfs-balance-status path
 
-Show the status of a running or paused balance on a btrfs filesystem.
+Показати стан використовуваного або призупиненого балансу на файловій
+системі btrfs.
 
 =head2 btrfs-device-add
 
- btrfs-device-add 'devices ...' fs
+ btrfs-device-add 'пристрої ...' файлова система
 
 Add the list of device(s) in C<devices> to the btrfs filesystem mounted at
 C<fs>.  If C<devices> is an empty list, this does nothing.
 
 =head2 btrfs-device-delete
 
- btrfs-device-delete 'devices ...' fs
+ btrfs-device-delete 'пристрої ...' файлова система
 
 Remove the C<devices> from the btrfs filesystem mounted at C<fs>.  If
 C<devices> is an empty list, this does nothing.
@@ -1083,7 +1084,7 @@ suffix of G, M, or K.
 
 =head2 btrfs-qgroup-remove
 
- btrfs-qgroup-remove src dst path
+ btrfs-qgroup-remove джерело призначення шлях
 
 Remove qgroup C<src> from the parent qgroup C<dst>.
 
@@ -1105,8 +1106,8 @@ C<path>.
 
  btrfs-quota-rescan fs
 
-Trash all qgroup numbers and scan the metadata again with the current
-config.
+Викинути усі числові дані qgroup і виконати повторне сканування з поточними
+налаштуваннями.
 
 =head2 btrfs-rescue-chunk-recover
 
@@ -1119,13 +1120,13 @@ one.
 
  btrfs-rescue-super-recover device
 
-Recover bad superblocks from good copies.
+Відновити пошкоджені суперблоки із якісних копій.
 
 =head2 btrfs-scrub-cancel
 
  btrfs-scrub-cancel path
 
-Cancel a running scrub on a btrfs filesystem.
+Скасувати витирання, що виконується у файловій системі btrfs.
 
 =head2 btrfs-scrub-resume
 
@@ -1145,11 +1146,12 @@ data.
 
  btrfs-scrub-status path
 
-Show status of running or finished scrub on a btrfs filesystem.
+Показати дані щодо стану витирання, яке виконується або завершено на
+файловій системі btrfs.
 
 =head2 btrfs-set-seeding
 
- btrfs-set-seeding device true|false
+ btrfs-set-seeding пристрій true|false
 
 Enable or disable the seeding feature of a device that contains a btrfs
 filesystem.
@@ -1170,9 +1172,9 @@ ARGUMENTS>.
 
 =head2 btrfs-subvolume-delete
 
- btrfs-subvolume-delete subvolume
+ btrfs-subvolume-delete підтом
 
-Delete the named btrfs subvolume or snapshot.
+Вилучити вказаний за назвою підтом або знімок btrfs.
 
 =head2 btrfs-subvolume-get-default
 
@@ -1190,7 +1192,7 @@ mounted at C<fs>.
 
 =head2 btrfs-subvolume-set-default
 
- btrfs-subvolume-set-default id fs
+ btrfs-subvolume-set-default ідентифікатор файлова_система
 
 Set the subvolume of the btrfs filesystem C<fs> which will be mounted by
 default.  See L</btrfs-subvolume-list> to get a list of subvolumes.
@@ -1199,7 +1201,7 @@ default.  See L</btrfs-subvolume-list> to get a list of subvolumes.
 
  btrfs-subvolume-show subvolume
 
-Return detailed information of the subvolume.
+Повернути докладні дані щодо підтому.
 
 =head2 btrfs-subvolume-snapshot
 
@@ -1266,7 +1268,7 @@ described in L<guestfs(3)/BLOCK DEVICE NAMING>.
 
 =item C</dev/dm-N>
 
-Converted to C</dev/VG/LV> form using L</lvm-canonical-lv-name>.
+Перетворено у форму C</dev/VG/LV> за допомогою C</lvm-canonical-lv-name>.
 
 =back
 
@@ -3301,6 +3303,10 @@ CentOS.
 =item "cirros"
 
 Cirros.
+
+=item "coreos"
+
+CoreOS.
 
 =item "debian"
 
@@ -5785,7 +5791,7 @@ ARGUMENTS>.
 
 =head2 ntfsresize-size
 
- ntfsresize-size device size
+ ntfsresize-size пристрій розмір
 
 This command is the same as L</ntfsresize> except that it allows you to
 specify the new size (in bytes) explicitly.
@@ -5843,7 +5849,7 @@ L</part-disk> to do that.
 
 =head2 part-del
 
- part-del device partnum
+ part-del пристрій номер_розділу
 
 This command deletes the partition numbered C<partnum> on C<device>.
 
@@ -6031,7 +6037,7 @@ the device's sector size, see L</blockdev-getss>.
 
 =head2 part-set-bootable
 
- part-set-bootable device partnum true|false
+ part-set-bootable пристрій номер_розділу true|false
 
 This sets the bootable flag on partition numbered C<partnum> on device
 C<device>.  Note that partitions are numbered from 1.
@@ -7908,10 +7914,10 @@ To find a filesystem from the label, use L</findfs-label>.
 
 =head2 vfs-type
 
- vfs-type mountable
+ vfs-type монтування
 
-This command gets the filesystem type corresponding to the filesystem on
-C<mountable>.
+Ця команда отримує тип файлової системи, відповідний до файлової системи у
+C<монтуванні>.
 
 For most filesystems, the result is the name of the Linux VFS module which
 would be used to mount this filesystem if you mounted it without specifying

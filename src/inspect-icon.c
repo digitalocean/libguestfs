@@ -169,6 +169,7 @@ guestfs_impl_inspect_get_icon (guestfs_h *g, const char *root, size_t *size_r,
       /* These are just to keep gcc warnings happy. */
     case OS_DISTRO_ARCHLINUX:
     case OS_DISTRO_BUILDROOT:
+    case OS_DISTRO_COREOS:
     case OS_DISTRO_FREEDOS:
     case OS_DISTRO_GENTOO:
     case OS_DISTRO_LINUX_MINT:
@@ -318,24 +319,21 @@ icon_fedora (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
  *
  * Conveniently the RHEL clones also have the same file with the
  * same name, but containing their own logos.  Sense prevails!
+ *
+ * Use a generic 100K limit for all the images, as logos in the
+ * RHEL clones have different sizes.
  */
 static char *
 icon_rhel (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
 {
-  size_t max_size = 0;
   const char *shadowman;
-
-  if (fs->major_version >= 5 && fs->major_version <= 6)
-    max_size = 17000;
-  else
-    max_size = 66000;
 
   if (fs->major_version <= 6)
     shadowman = "/usr/share/pixmaps/redhat/shadowman-transparent.png";
   else
     shadowman = "/usr/share/pixmaps/fedora-logo-sprite.png";
 
-  return get_png (g, fs, shadowman, size_r, max_size);
+  return get_png (g, fs, shadowman, size_r, 102400);
 }
 
 #define DEBIAN_ICON "/usr/share/pixmaps/debian-logo.png"
