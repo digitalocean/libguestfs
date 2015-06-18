@@ -1,3 +1,11 @@
+libguestfs (1:1.29.47-1) experimental; urgency=medium
+
+  * New upstream development version
+  * Added linux-image-586 to Build-Dependencies as linux-image-486 has
+    been removed from unstable
+
+ -- Hilko Bengen <bengen@debian.org>  Thu, 18 Jun 2015 23:07:32 +0200
+
 libguestfs (1:1.29.46-1) experimental; urgency=medium
 
   * New upstream development version
