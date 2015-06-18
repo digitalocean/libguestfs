@@ -204,12 +204,12 @@ ARGUMENTS>.
 
  add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..] [secret:..] [cachemode:..] [discard:..] [copyonread:true|false]
 
-This function adds a disk image called C<filename> to the handle.
-C<filename> may be a regular host file or a host device.
+This function adds a disk image called F<filename> to the handle.
+F<filename> may be a regular host file or a host device.
 
 When this function is called before L</launch> (the usual case) then the
 first time you call this function, the disk appears in the API as
-C</dev/sda>, the second time as C</dev/sdb>, and so on.
+F</dev/sda>, the second time as F</dev/sdb>, and so on.
 
 In libguestfs E<ge> 1.20 you can also call this function after launch (with
 some restrictions).  This is called "hotplugging".  When hotplugging, you
@@ -221,9 +221,9 @@ obviously do need sufficient permissions to access the filename for whatever
 operations you want to perform (ie. read access if you just want to read the
 image or write access if you want to modify the image).
 
-This call checks that C<filename> exists.
+This call checks that F<filename> exists.
 
-C<filename> may be the special string C<"/dev/null">.  See L<guestfs(3)/NULL
+F<filename> may be the special string C<"/dev/null">.  See L<guestfs(3)/NULL
 DISKS>.
 
 Додатковими аргументами є:
@@ -253,15 +253,15 @@ L</add-drive-with-if> call (q.v.)
 
 =item C<name>
 
-The name the drive had in the original guest, e.g. C</dev/sdb>.  This is
+The name the drive had in the original guest, e.g. F</dev/sdb>.  This is
 used as a hint to the guest inspection process if it is available.
 
 =item C<label>
 
 Give the disk a label.  The label should be a unique, short string using
 I<only> ASCII characters C<[a-zA-Z]>.  As well as its usual name in the API
-(such as C</dev/sda>), the drive will also be named
-C</dev/disk/guestfs/I<label>>.
+(such as F</dev/sda>), the drive will also be named
+F</dev/disk/guestfs/I<label>>.
 
 Див. L<guestfs(3)/МІТКИ ДИСКІВ>.
 
@@ -276,7 +276,7 @@ protocol.
 
 =item C<protocol = "file">
 
-C<filename> is interpreted as a local file or device.  This is the default
+F<filename> is interpreted as a local file or device.  This is the default
 if the optional protocol parameter is omitted.
 
 =item C<protocol = "ftp"|"ftps"|"http"|"https"|"tftp">
@@ -359,7 +359,7 @@ one of the following formats:
  unix:/path/to/socket
 
 If the port number is omitted, then the standard port number for the
-protocol is used (see C</etc/services>).
+protocol is used (see F</etc/services>).
 
 =item C<username>
 
@@ -558,7 +558,7 @@ closed.
 
 You must call this before using any other L</aug-*> commands.
 
-C<root> is the filesystem root.  C<root> must not be NULL, use C</> instead.
+C<root> is the filesystem root.  C<root> must not be NULL, use F</> instead.
 
 The flags are the same as the flags defined in E<lt>augeas.hE<gt>, the
 logical I<or> of the following integers:
@@ -608,7 +608,7 @@ Create a new sibling C<label> for C<path>, inserting it into the tree before
 or after C<path> (depending on the boolean flag C<before>).
 
 C<path> must match exactly one existing node in the tree, and C<label> must
-be a label, ie. not contain C</>, C<*> or end with a bracketed index C<[N]>.
+be a label, ie. not contain F</>, C<*> or end with a bracketed index C<[N]>.
 
 =head2 aug-label
 
@@ -766,8 +766,7 @@ L<guestfs(3)/AVAILABILITY>.
 
  base64-in (файл_base64|-) назва_файла
 
-Ця команда вивантажує дані у кодуванні base64 з C<файл_base64> до файла з
-назвою C<назва_файла>.
+This command uploads base64-encoded data from C<base64file> to F<filename>.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
 
@@ -775,7 +774,7 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 
  base64-out назва_файла (файл_base64|-)
 
-This command downloads the contents of C<filename>, writing it out to local
+This command downloads the contents of F<filename>, writing it out to local
 file C<base64file> encoded as base64.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
@@ -1163,7 +1162,7 @@ filesystem.
  btrfs-subvolume-create dest [qgroupid:..]
 
 Create a btrfs subvolume.  The C<dest> argument is the destination directory
-and the name of the subvolume, in the form C</path/to/dest/name>.  The
+and the name of the subvolume, in the form F</path/to/dest/name>.  The
 optional parameter C<qgroupid> represents the qgroup which the newly created
 subvolume will be added to.
 
@@ -1211,7 +1210,7 @@ default.  See L</btrfs-subvolume-list> to get a list of subvolumes.
 
 Create a snapshot of the btrfs subvolume C<source>.  The C<dest> argument is
 the destination directory and the name of the snapshot, in the form
-C</path/to/dest/name>. By default the newly created snapshot is writable, if
+F</path/to/dest/name>. By default the newly created snapshot is writable, if
 the value of optional parameter C<ro> is true, then a readonly snapshot is
 created. The optional parameter C<qgroupid> represents the qgroup which the
 newly created snapshot will be added to.
@@ -1256,19 +1255,19 @@ format:
 
 =over 4
 
-=item C</dev/hdX>
+=item F</dev/hdX>
 
-=item C</dev/vdX>
+=item F</dev/vdX>
 
-These are returned as C</dev/sdX>.  Note this works for device names and
+These are returned as F</dev/sdX>.  Note this works for device names and
 partition names.  This is approximately the reverse of the algorithm
 described in L<guestfs(3)/BLOCK DEVICE NAMING>.
 
-=item C</dev/mapper/VG-LV>
+=item F</dev/mapper/VG-LV>
 
-=item C</dev/dm-N>
+=item F</dev/dm-N>
 
-Перетворено у форму C</dev/VG/LV> за допомогою C</lvm-canonical-lv-name>.
+Converted to F</dev/VG/LV> form using L</lvm-canonical-lv-name>.
 
 =back
 
@@ -1304,8 +1303,8 @@ The command handles a peculiarity of the Linux ntfs-3g filesystem driver
 case-insensitive, the driver exports the filesystem to Linux as
 case-sensitive.
 
-One consequence of this is that special directories such as C<c:\windows>
-may appear as C</WINDOWS> or C</windows> (or other things) depending on the
+One consequence of this is that special directories such as F<C:\windows>
+may appear as F</WINDOWS> or F</windows> (or other things) depending on the
 precise details of how they were created.  In Windows itself this would not
 be a problem.
 
@@ -1412,7 +1411,7 @@ L</checksum> command.
 
  checksums-out csumtype directory (sumsfile|-)
 
-This command computes the checksums of all regular files in C<directory> and
+This command computes the checksums of all regular files in F<directory> and
 then emits a list of those checksums to the local output file C<sumsfile>.
 
 This can be used for verifying the integrity of a virtual machine.  However
@@ -1477,8 +1476,8 @@ If the command returns a non-zero exit status, then this function returns an
 error message.  The error message string is the content of I<stderr> from
 the command.
 
-The C<$PATH> environment variable will contain at least C</usr/bin> and
-C</bin>.  If you require a program from another location, you should provide
+The C<$PATH> environment variable will contain at least F</usr/bin> and
+F</bin>.  If you require a program from another location, you should provide
 the full path in the first parameter.
 
 Shared libraries and data files required by the program must be available on
@@ -1519,8 +1518,8 @@ ARGUMENTS>.
 
  compress-out ctype file (zfile|-) [level:N]
 
-This command compresses C<file> and writes it out to the local file
-C<zfile>.
+This command compresses F<file> and writes it out to the local file
+F<zfile>.
 
 The compression program used is controlled by the C<ctype> parameter.
 Currently this includes: C<compress>, C<gzip>, C<bzip2>, C<xz> or C<lzop>.
@@ -1691,7 +1690,7 @@ support it (primarily when writing to DOS FAT filesystems).
 
  cpio-out каталог (файл cpio|-) [формат:..]
 
-This command packs the contents of C<directory> and downloads it to local
+This command packs the contents of F<directory> and downloads it to local
 file C<cpiofile>.
 
 The optional C<format> parameter can be used to select the format.  Only the
@@ -1773,7 +1772,7 @@ programs.
 
  disk-create filename format size [backingfile:..] [backingformat:..] [preallocation:..] [compat:..] [clustersize:N]
 
-Create a blank disk image called C<filename> (a host file)  with format
+Create a blank disk image called F<filename> (a host file)  with format
 C<format> (usually C<raw> or C<qcow2>).  The size is C<size> bytes.
 
 If used with the optional C<backingfile> parameter, then a snapshot is
@@ -1782,7 +1781,7 @@ C<-1>.  The size of the snapshot is the same as the size of the backing
 file, which is discovered automatically.  You are encouraged to also pass
 C<backingformat> to describe the format of C<backingfile>.
 
-If C<filename> refers to a block device, then the device is formatted.  The
+If F<filename> refers to a block device, then the device is formatted.  The
 C<size> is ignored since block devices have an intrinsic size.
 
 The other optional parameters are:
@@ -1820,8 +1819,8 @@ ARGUMENTS>.
 
  disk-format назва файла
 
-Detect and return the format of the disk image called C<filename>.
-C<filename> can also be a host device, etc.  If the format of the image
+Detect and return the format of the disk image called F<filename>.
+F<filename> can also be a host device, etc.  If the format of the image
 could not be detected, then C<"unknown"> is returned.
 
 Note that detecting the disk format can be insecure under some
@@ -1833,7 +1832,7 @@ circumstances.  See L<guestfs(3)/CVE-2010-3851>.
 
  disk-has-backing-file filename
 
-Detect and return whether the disk image C<filename> has a backing file.
+Detect and return whether the disk image F<filename> has a backing file.
 
 Note that detecting disk features can be insecure under some circumstances.
 See L<guestfs(3)/CVE-2010-3851>.
@@ -1843,7 +1842,7 @@ See L<guestfs(3)/CVE-2010-3851>.
  disk-virtual-size назва файла
 
 Detect and return the virtual size in bytes of the disk image called
-C<filename>.
+F<filename>.
 
 Note that detecting disk features can be insecure under some circumstances.
 See L<guestfs(3)/CVE-2010-3851>.
@@ -1863,10 +1862,10 @@ before running the program.
 
  download remotefilename (filename|-)
 
-Download file C<remotefilename> and save it as C<filename> on the local
+Download file F<remotefilename> and save it as F<filename> on the local
 machine.
 
-C<filename> can also be a named pipe.
+F<filename> can also be a named pipe.
 
 Див. також L</upload>, L</cat>.
 
@@ -1876,10 +1875,10 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 
  download-offset remotefilename (filename|-) offset size
 
-Download file C<remotefilename> and save it as C<filename> on the local
+Download file F<remotefilename> and save it as F<filename> on the local
 machine.
 
-C<remotefilename> is read for C<size> bytes starting at C<offset> (this
+F<remotefilename> is read for C<size> bytes starting at C<offset> (this
 region must be within the file or device).
 
 Note that there is no limit on the amount of data that can be downloaded
@@ -2005,7 +2004,7 @@ these functions.
 
  equal файл1 файл2
 
-This compares the two files C<file1> and C<file2> and returns true if their
+This compares the two files F<file1> and F<file2> and returns true if their
 content is exactly equal, or false otherwise.
 
 The external L<cmp(1)> program is used for the comparison.
@@ -2023,11 +2022,11 @@ with the given C<path> name.
 
  extlinux каталог
 
-Install the SYSLINUX bootloader on the device mounted at C<directory>.
+Install the SYSLINUX bootloader on the device mounted at F<directory>.
 Unlike L</syslinux> which requires a FAT filesystem, this can be used on an
 ext2/3/4 or btrfs filesystem.
 
-The C<directory> parameter can be either a mountpoint, or a directory within
+The F<directory> parameter can be either a mountpoint, or a directory within
 the mountpoint.
 
 You also have to mark the partition as "active" (L</part-set-bootable>) and
@@ -2037,7 +2036,7 @@ suitable Master Boot Records.  See the L<extlinux(1)> man page for further
 information.
 
 Additional configuration can be supplied to SYSLINUX by placing a file
-called C<extlinux.conf> on the filesystem under C<directory>.  For further
+called F<extlinux.conf> on the filesystem under F<directory>.  For further
 information about the contents of this file, see L<extlinux(1)>.
 
 Див. також L</syslinux>.
@@ -2138,8 +2137,8 @@ is not guaranteed by the ABI.
 
  file-architecture назва_файла
 
-Визначає архітектуру виконуваного файла C<назва_файла> і повертає її
-значення, якщо воно визначене у програмі.
+This detects the architecture of the binary F<filename>, and returns it if
+known.
 
 Архітектурами, визначеними у поточній версії є:
 
@@ -2252,7 +2251,7 @@ kernel module(s) instead.
 
  filesize файл
 
-This command returns the size of C<file> in bytes.
+This command returns the size of F<file> in bytes.
 
 To get other stats about a file, use L</stat>, L</lstat>, L</is-dir>,
 L</is-file> etc.  To get the size of block devices, use
@@ -2309,7 +2308,7 @@ bytes.
  find каталог
 
 This command lists out all files and directories, recursively, starting at
-C<directory>.  It is essentially equivalent to running the shell command
+F<directory>.  It is essentially equivalent to running the shell command
 C<find directory -print> but some post-processing happens on the output,
 described below.
 
@@ -2320,14 +2319,14 @@ structure was:
  /tmp/b
  /tmp/c/d
 
-then the returned list from L</find> C</tmp> would be 4 elements:
+then the returned list from L</find> F</tmp> would be 4 elements:
 
  a
  b
  c
  c/d
 
-If C<directory> is not a directory, then this command returns an error.
+If F<directory> is not a directory, then this command returns an error.
 
 Список результатів буде впорядковано.
 
@@ -2336,8 +2335,8 @@ If C<directory> is not a directory, then this command returns an error.
  find0 каталог (файли|-)
 
 This command lists out all files and directories, recursively, starting at
-C<directory>, placing the resulting list in the external file called
-C<files>.
+F<directory>, placing the resulting list in the external file called
+F<files>.
 
 This command works the same way as L</find> with the following exceptions:
 
@@ -2512,7 +2511,7 @@ Return the direct appliance mode flag.
 
  get-e2attrs файл
 
-This returns the file attributes associated with C<file>.
+This returns the file attributes associated with F<file>.
 
 The attributes are a set of bits associated with each inode which affect the
 behaviour of the file.  The attributes are returned as a string of letters
@@ -2872,7 +2871,7 @@ It is just a wrapper around the C L<glob(3)> function with flags
 C<GLOB_MARK|GLOB_BRACE>.  See that manual page for more details.
 
 Notice that there is no equivalent command for expanding a device name
-(eg. C</dev/sd*>).  Use L</list-devices>, L</list-partitions> etc functions
+(eg. F</dev/sd*>).  Use L</list-devices>, L</list-partitions> etc functions
 instead.
 
 =head2 grep
@@ -2955,13 +2954,13 @@ Careful testing with each guest version is advisable.
 
 If grub-install reports the error "No suitable drive was found in the
 generated device map." it may be that you need to create a
-C</boot/grub/device.map> file first that contains the mapping between grub
+F</boot/grub/device.map> file first that contains the mapping between grub
 device names and Linux device names.  It is usually sufficient to create a
 file containing:
 
  (hd0) /dev/vda
 
-replacing C</dev/vda> with the name of the installation device.
+replacing F</dev/vda> with the name of the installation device.
 
 =back
 
@@ -3014,7 +3013,7 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 
 Commit (write) changes to the hive.
 
-If the optional C<filename> parameter is null, then the changes are written
+If the optional F<filename> parameter is null, then the changes are written
 back to the same hive that was opened.  If this is not null then they are
 written to the alternate filename given and the original hive is left
 untouched.
@@ -3100,7 +3099,7 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 
  hivex-open filename [verbose:true|false] [debug:true|false] [write:true|false]
 
-Open the Windows Registry hive file named C<filename>.  If there was any
+Open the Windows Registry hive file named F<filename>.  If there was any
 previous hivex handle associated with this guestfs session, then it is
 closed.
 
@@ -3160,12 +3159,12 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 
  initrd-cat шлях_initrd назва_файла
 
-This command unpacks the file C<filename> from the initrd file called
-C<initrdpath>.  The filename must be given I<without> the initial C</>
+This command unpacks the file F<filename> from the initrd file called
+F<initrdpath>.  The filename must be given I<without> the initial F</>
 character.
 
 For example, in guestfish you could use the following command to examine the
-boot script (usually called C</init>)  contained in a Linux initrd or
+boot script (usually called F</init>)  contained in a Linux initrd or
 initramfs image:
 
  initrd-cat /boot/initrd-<версія>.img init
@@ -3181,7 +3180,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 This command lists out files contained in an initrd.
 
-The files are listed without any initial C</> character.  The files are
+The files are listed without any initial F</> character.  The files are
 listed in the order they appear (not necessarily alphabetical).  Directory
 names are listed as separate items.
 
@@ -3199,7 +3198,7 @@ Note that if C<path> is a directory then events within that directory are
 watched, but this does I<not> happen recursively (in subdirectories).
 
 Note for non-C or non-Linux callers: the inotify events are defined by the
-Linux kernel ABI and are listed in C</usr/include/sys/inotify.h>.
+Linux kernel ABI and are listed in F</usr/include/sys/inotify.h>.
 
 =head2 inotify-close
 
@@ -3417,7 +3416,7 @@ should be prepared to handle any string.
  inspect-get-drive-mappings root
 
 This call is useful for Windows which uses a primitive system of assigning
-drive letters (like "C:") to partitions.  This inspection API examines the
+drive letters (like F<C:\>) to partitions.  This inspection API examines the
 Windows Registry to find out how disks/partitions are mapped to drive
 letters, and returns a hash table as in the example below:
 
@@ -3511,8 +3510,8 @@ to PNG if necessary).
 If it was not possible to get an icon this function returns a zero-length
 (non-NULL) buffer.  I<Callers must check for this case>.
 
-Libguestfs will start by looking for a file called C</etc/favicon.png> or
-C<C:\etc\favicon.png> and if it has the correct format, the contents of this
+Libguestfs will start by looking for a file called F</etc/favicon.png> or
+F<C:\etc\favicon.png> and if it has the correct format, the contents of this
 file will be returned.  You can disable favicons by passing the optional
 C<favicon> boolean as false (default is true).
 
@@ -3598,18 +3597,18 @@ L</inspect-get-major-version>.
 This returns a hash of where we think the filesystems associated with this
 operating system should be mounted.  Callers should note that this is at
 best an educated guess made by reading configuration files such as
-C</etc/fstab>.  I<In particular note> that this may return filesystems which
+F</etc/fstab>.  I<In particular note> that this may return filesystems which
 are non-existent or not mountable and callers should be prepared to handle
 or ignore failures if they try to mount them.
 
 Each element in the returned hashtable has a key which is the path of the
-mountpoint (eg. C</boot>) and a value which is the filesystem that would be
-mounted there (eg. C</dev/sda1>).
+mountpoint (eg. F</boot>) and a value which is the filesystem that would be
+mounted there (eg. F</dev/sda1>).
 
 Non-mounted devices such as swap devices are I<not> returned in this list.
 
 For operating systems like Windows which still use drive letters, this call
-will only return an entry for the first drive "mounted on" C</>.  For
+will only return an entry for the first drive "mounted on" F</>.  For
 information about the mapping of drive letters to partitions, see
 L</inspect-get-drive-mappings>.
 
@@ -3772,7 +3771,7 @@ examined by inspection.  If this is not the case then an error is returned.
  inspect-get-windows-systemroot корінь
 
 This returns the Windows systemroot of the inspected guest.  The systemroot
-is a directory path such as C</WINDOWS>.
+is a directory path such as F</WINDOWS>.
 
 This call assumes that the guest is Windows and that the systemroot could be
 determined by inspection.  If this is not the case then an error is
@@ -4049,7 +4048,7 @@ symlinks) that ends with a block device also causes the function to return
 true.
 
 This call only looks at files within the guest filesystem.  Libguestfs
-partitions and block devices (eg. C</dev/sda>) cannot be used as the C<path>
+partitions and block devices (eg. F</dev/sda>) cannot be used as the C<path>
 parameter of this call.
 
 Див. також L</stat>.
@@ -4272,7 +4271,7 @@ journal.
 
  journal-open каталог
 
-Open the systemd journal located in C<directory>.  Any previously opened
+Open the systemd journal located in F<directory>.  Any previously opened
 journal handle is closed.
 
 The contents of the journal can be read using L</journal-next> and
@@ -4477,7 +4476,7 @@ returned.
 
 List all the block devices.
 
-The full block device names are returned, eg. C</dev/sda>.
+The full block device names are returned, eg. F</dev/sda>.
 
 Див. також L</list-filesystems>.
 
@@ -4487,11 +4486,11 @@ The full block device names are returned, eg. C</dev/sda>.
 
 If you add drives using the optional C<label> parameter of
 L</add-drive-opts>, you can use this call to map between disk labels, and
-raw block device and partition names (like C</dev/sda> and C</dev/sda1>).
+raw block device and partition names (like F</dev/sda> and F</dev/sda1>).
 
 This returns a hashtable, where keys are the disk labels (I<without> the
-C</dev/disk/guestfs> prefix), and the values are the full raw block device
-and partition names (eg. C</dev/sda> and C</dev/sda1>).
+F</dev/disk/guestfs> prefix), and the values are the full raw block device
+and partition names (eg. F</dev/sda> and F</dev/sda1>).
 
 =head2 list-dm-devices
 
@@ -4499,7 +4498,7 @@ and partition names (eg. C</dev/sda> and C</dev/sda1>).
 
 List all device mapper devices.
 
-The returned list contains C</dev/mapper/*> devices, eg. ones created by a
+The returned list contains F</dev/mapper/*> devices, eg. ones created by a
 previous call to L</luks-open>.
 
 Device mapper devices which correspond to logical volumes are I<not>
@@ -4563,7 +4562,7 @@ List all Linux md devices.
 
 List all the partitions detected on all block devices.
 
-The full partition device names are returned, eg. C</dev/sda1>
+The full partition device names are returned, eg. F</dev/sda1>
 
 This does not return logical volumes.  For that you will need to call
 L</lvs>.
@@ -4574,7 +4573,7 @@ L</lvs>.
 
  ll каталог
 
-List the files in C<directory> (relative to the root directory, there is no
+List the files in F<directory> (relative to the root directory, there is no
 cwd) in the format of 'ls -la'.
 
 This command is mostly useful for interactive sessions.  It is I<not>
@@ -4584,7 +4583,7 @@ intended that you try to parse the output string.
 
  llz каталог
 
-List the files in C<directory> in the format of 'ls -laZ'.
+List the files in F<directory> in the format of 'ls -laZ'.
 
 This command is mostly useful for interactive sessions.  It is I<not>
 intended that you try to parse the output string.
@@ -4626,7 +4625,7 @@ it removes an extended attribute of the link itself.
 
  ls каталог
 
-List the files in C<directory> (relative to the root directory, there is no
+List the files in F<directory> (relative to the root directory, there is no
 cwd).  The '.' and '..' entries are not returned, but hidden files are
 shown.
 
@@ -4636,7 +4635,7 @@ shown.
 
 This specialized command is used to get a listing of the filenames in the
 directory C<dir>.  The list of filenames is written to the local file
-C<filenames> (on the host).
+F<filenames> (on the host).
 
 In the output file, the filenames are separated by C<\0> characters.
 
@@ -4739,7 +4738,7 @@ prompt for these separately.
 
 This closes a LUKS device that was created earlier by L</luks-open> or
 L</luks-open-ro>.  The C<device> parameter must be the name of the LUKS
-mapping device (ie. C</dev/mapper/mapname>) and I<not> the name of the
+mapping device (ie. F</dev/mapper/mapname>) and I<not> the name of the
 underlying block device.
 
 =head2 luks-format
@@ -4785,7 +4784,7 @@ C<device> is the encrypted block device or partition.
 The caller must supply one of the keys associated with the LUKS block
 device, in the C<key> parameter.
 
-This creates a new block device called C</dev/mapper/mapname>.  Reads and
+This creates a new block device called F</dev/mapper/mapname>.  Reads and
 writes to this block device are decrypted from and encrypted to the
 underlying C<device> respectively.
 
@@ -4818,7 +4817,7 @@ C<volgroup>, with C<size> megabytes.
 
  lvcreate-free logvol volgroup percent
 
-Create an LVM logical volume called C</dev/volgroup/logvol>, using
+Create an LVM logical volume called F</dev/volgroup/logvol>, using
 approximately C<percent> % of the free space remaining in the volume group.
 Most usefully, when C<percent> is C<100> this will create the largest
 possible LV.
@@ -4828,8 +4827,8 @@ possible LV.
  lvm-canonical-lv-name lvname
 
 This converts alternative naming schemes for LVs that you might find to the
-canonical name.  For example, C</dev/mapper/VG-LV> is converted to
-C</dev/VG/LV>.
+canonical name.  For example, F</dev/mapper/VG-LV> is converted to
+F</dev/VG/LV>.
 
 This command returns an error if the C<lvname> parameter does not refer to a
 logical volume.
@@ -4880,10 +4879,10 @@ filesystem), even if you are not filtering out that VG.
  lvremove пристрій
 
 Remove an LVM logical volume C<device>, where C<device> is the path to the
-LV, such as C</dev/VG/LV>.
+LV, such as F</dev/VG/LV>.
 
 You can also remove all LVs in a volume group by specifying the VG name,
-C</dev/VG>.
+F</dev/VG>.
 
 =head2 lvrename
 
@@ -4915,7 +4914,7 @@ List all the logical volumes detected.  This is the equivalent of the
 L<lvs(8)> command.
 
 This returns a list of the logical volume device names
-(eg. C</dev/VolGroup00/LogVol00>).
+(eg. F</dev/VolGroup00/LogVol00>).
 
 Див. також L</lvs-full>, L</list-filesystems>.
 
@@ -5471,7 +5470,7 @@ ARGUMENTS>.
 Create a swap partition on C<device> with label C<label>.
 
 Note that you cannot attach a swap label to a block device
-(eg. C</dev/sda>), just to a partition.  This appears to be a limitation of
+(eg. F</dev/sda>), just to a partition.  This appears to be a limitation of
 the kernel or swap tools.
 
 I<This function is deprecated.> In new code, use the L</mkswap> call
@@ -5539,14 +5538,14 @@ This loads a kernel module in the appliance.
  mount mountable mountpoint
 
 Mount a guest disk at a position in the filesystem.  Block devices are named
-C</dev/sda>, C</dev/sdb> and so on, as they were added to the guest.  If
+F</dev/sda>, F</dev/sdb> and so on, as they were added to the guest.  If
 those block devices contain partitions, they will have the usual names
-(eg. C</dev/sda1>).  Also LVM C</dev/VG/LV>-style names can be used, or
+(eg. F</dev/sda1>).  Also LVM F</dev/VG/LV>-style names can be used, or
 'mountable' strings returned by L</list-filesystems> or
 L</inspect-get-mountpoints>.
 
 The rules are the same as for L<mount(2)>: A filesystem must first be
-mounted on C</> before others can be mounted.  Other filesystems can only be
+mounted on F</> before others can be mounted.  Other filesystems can only be
 mounted on directories which already exist.
 
 The mounted filesystem is writable, if we have sufficient permissions on the
@@ -5623,7 +5622,7 @@ See L<guestfs(3)/MOUNT LOCAL> for full documentation.
 
  mount-loop file mountpoint
 
-This command lets you mount C<file> (a filesystem image in a file) on a
+This command lets you mount F<file> (a filesystem image in a file) on a
 mount point.  It is entirely equivalent to the command C<mount -o loop file
 mountpoint>.
 
@@ -5664,7 +5663,7 @@ device is mounted.
  mounts
 
 This returns the list of currently mounted filesystems.  It returns the list
-of devices (eg. C</dev/sda1>, C</dev/VG/LV>).
+of devices (eg. F</dev/sda1>, F</dev/VG/LV>).
 
 Some internal mounts are not shown.
 
@@ -6169,7 +6168,7 @@ Generate a new random UUID for the physical volume C<device>.
  pvcreate пристрій
 
 This creates an LVM physical volume on the named C<device>, where C<device>
-should usually be a partition name such as C</dev/sda1>.
+should usually be a partition name such as F</dev/sda1>.
 
 =head2 pvremove
 
@@ -6204,7 +6203,7 @@ List all the physical volumes detected.  This is the equivalent of the
 L<pvs(8)> command.
 
 This returns a list of just the device names that contain PVs
-(eg. C</dev/sda2>).
+(eg. F</dev/sda2>).
 
 Див. також L</pvs-full>.
 
@@ -6706,7 +6705,7 @@ handles which have the same effective user ID.
 
 The environment variables C<LIBGUESTFS_CACHEDIR> and C<TMPDIR> control the
 default value: If C<LIBGUESTFS_CACHEDIR> is set, then that is the default.
-Else if C<TMPDIR> is set, then that is the default.  Else C</var/tmp> is the
+Else if C<TMPDIR> is set, then that is the default.  Else F</var/tmp> is the
 default.
 
 =head2 set-direct
@@ -6730,7 +6729,7 @@ You probably don't want to use this unless you know what you are doing.
  set-e2attrs file attrs [clear:true|false]
 
 This sets or clears the file attributes C<attrs> associated with the inode
-C<file>.
+F<file>.
 
 C<attrs> is a string of characters representing file attributes.  See
 L</get-e2attrs> for a list of possible attributes.  Not all attributes can
@@ -7051,7 +7050,7 @@ Set the directory used by the handle to store temporary files.
 
 The environment variables C<LIBGUESTFS_TMPDIR> and C<TMPDIR> control the
 default value: If C<LIBGUESTFS_TMPDIR> is set, then that is the default.
-Else if C<TMPDIR> is set, then that is the default.  Else C</tmp> is the
+Else if C<TMPDIR> is set, then that is the default.  Else F</tmp> is the
 default.
 
 =head2 set-trace
@@ -7121,7 +7120,7 @@ the value C<val> (of length C<vallen>).  The value is arbitrary 8 bit data.
 This is a direct interface to the L<sfdisk(8)> program for creating
 partitions on block devices.
 
-C<device> should be a block device, for example C</dev/sda>.
+C<device> should be a block device, for example F</dev/sda>.
 
 C<cyls>, C<heads> and C<sectors> are the number of cylinders, heads and
 sectors on the device, which are passed directly to sfdisk as the I<-C>,
@@ -7223,7 +7222,7 @@ these functions.
  sh команда
 
 This call runs a command from the guest filesystem via the guest's
-C</bin/sh>.
+F</bin/sh>.
 
 This is like L</command>, but passes the command to:
 
@@ -7452,7 +7451,7 @@ information.
 
 =over 4
 
-=item C<directory>
+=item F<directory>
 
 Install SYSLINUX in the named subdirectory, instead of in the root directory
 of the FAT filesystem.
@@ -7460,8 +7459,8 @@ of the FAT filesystem.
 =back
 
 Additional configuration can be supplied to SYSLINUX by placing a file
-called C<syslinux.cfg> on the FAT filesystem, either in the root directory,
-or under C<directory> if that optional argument is being used.  For further
+called F<syslinux.cfg> on the FAT filesystem, either in the root directory,
+or under F<directory> if that optional argument is being used.  For further
 information about the contents of this file, see L<syslinux(1)>.
 
 Див. також L</extlinux>.
@@ -7499,7 +7498,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
  tar-in (tarfile|-) directory [compress:..]
 
-This command uploads and unpacks local file C<tarfile> into C<directory>.
+This command uploads and unpacks local file C<tarfile> into F<directory>.
 
 The optional C<compress> flag controls compression.  If not given, then the
 input should be an uncompressed tar file.  Otherwise one of the following
@@ -7518,7 +7517,7 @@ ARGUMENTS>.
 
  tar-out directory (tarfile|-) [compress:..] [numericowner:true|false] [excludes:..]
 
-This command packs the contents of C<directory> and downloads it to local
+This command packs the contents of F<directory> and downloads it to local
 file C<tarfile>.
 
 The optional C<compress> flag controls compression.  If not given, then the
@@ -7552,7 +7551,7 @@ ARGUMENTS>.
  tgz-in (архів tar|-) каталог
 
 This command uploads and unpacks local file C<tarball> (a I<gzip compressed>
-tar file) into C<directory>.
+tar file) into F<directory>.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
 
@@ -7567,7 +7566,7 @@ these functions.
 
  tgz-out каталог (архів tar|-)
 
-This command packs the contents of C<directory> and downloads it to local
+This command packs the contents of F<directory> and downloads it to local
 file C<tarball>.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
@@ -7701,7 +7700,7 @@ and the filesystem itself.
  txz-in (архів tar|-) каталог
 
 This command uploads and unpacks local file C<tarball> (an I<xz compressed>
-tar file) into C<directory>.
+tar file) into F<directory>.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
 
@@ -7716,7 +7715,7 @@ these functions.
 
  txz-out каталог (архів tar|-)
 
-This command packs the contents of C<directory> and downloads it to local
+This command packs the contents of F<directory> and downloads it to local
 file C<tarball> (as an xz compressed tar archive).
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
@@ -7787,9 +7786,9 @@ ARGUMENTS>.
 
  upload (назва_файла|-) назва_віддаленого_файла
 
-Upload local file C<filename> to C<remotefilename> on the filesystem.
+Upload local file F<filename> to F<remotefilename> on the filesystem.
 
-C<filename> can also be a named pipe.
+F<filename> can also be a named pipe.
 
 Див. також L</download>.
 
@@ -7799,13 +7798,13 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 
  upload-offset (назва_файла|-) назва_віддаленого_файла відступ
 
-Upload local file C<filename> to C<remotefilename> on the filesystem.
+Upload local file F<filename> to F<remotefilename> on the filesystem.
 
-C<remotefilename> is overwritten starting at the byte C<offset> specified.
+F<remotefilename> is overwritten starting at the byte C<offset> specified.
 The intention is to overwrite parts of existing files or devices, although
 if a non-existent file is specified then it is created with a "hole" before
 C<offset>.  The size of the data written is implicit in the size of the
-source C<filename>.
+source F<filename>.
 
 Note that there is no limit on the amount of data that can be uploaded with
 this call, unlike with L</pwrite>, and this call always writes the full
@@ -7880,7 +7879,7 @@ Return the libguestfs version number that the program is linked against.
 
 Note that because of dynamic linking this is not necessarily the version of
 libguestfs that you compiled against.  You can compile the program, and then
-at runtime dynamically link against a completely different C<libguestfs.so>
+at runtime dynamically link against a completely different F<libguestfs.so>
 library.
 
 This call was added in version C<1.0.58>.  In previous versions of
@@ -8247,7 +8246,7 @@ unnecessarily.
 
  zero-free-space каталог
 
-Zero the free space in the filesystem mounted on C<directory>.  The
+Zero the free space in the filesystem mounted on F<directory>.  The
 filesystem must be mounted read-write.
 
 The filesystem contents are not affected, but any free space in the
@@ -8303,7 +8302,7 @@ these functions.
 
  zfile метод шлях
 
-This command runs C<file> after first decompressing C<path> using C<method>.
+This command runs F<file> after first decompressing C<path> using C<method>.
 
 C<method> must be one of C<gzip>, C<compress> or C<bzip2>.
 

@@ -239,11 +239,11 @@ if=/dev/zero of=outdisk bs=1M count=..>)
 
 =head2 ЛОГІЧНІ РОЗДІЛИ
 
-Logical partitions (a.k.a. C</dev/sda5+> on disks using DOS partition
+Logical partitions (a.k.a. F</dev/sda5+> on disks using DOS partition
 tables) cannot be resized.
 
 To understand what is going on, firstly one of the four partitions
-C</dev/sda1-4> will have MBR partition type C<05> or C<0f>.  This is called
+F</dev/sda1-4> will have MBR partition type C<05> or C<0f>.  This is called
 the B<extended partition>.  Use L<virt-filesystems(1)> to see the MBR
 partition type.
 
@@ -255,7 +255,7 @@ the logical partitions contained inside are copied over implicitly.
 Virt-resize does not look inside the extended partition, so it copies the
 logical partitions blindly.
 
-You cannot specify a logical partition (C</dev/sda5+>) at all on the command
+You cannot specify a logical partition (F</dev/sda5+>) at all on the command
 line.  Doing so will give an error.
 
 =head1 ПАРАМЕТРИ
@@ -414,8 +414,8 @@ bytes).
 
 This takes the logical volume and, as a final step, expands it to fill all
 the space available in its volume group.  A typical usage, assuming a Linux
-guest with a single PV C</dev/sda2> and a root device called
-C</dev/vg_guest/lv_root> would be:
+guest with a single PV F</dev/sda2> and a root device called
+F</dev/vg_guest/lv_root> would be:
 
  virt-resize indisk outdisk \
    --expand /dev/sda2 --LV-expand /dev/vg_guest/lv_root
@@ -662,8 +662,8 @@ other parameters to grub-install, use L<virt-rescue(1)>.
 =head2 RESIZING WINDOWS BOOT PARTITIONS
 
 In Windows Vista and later versions, Microsoft switched to using a separate
-boot partition.  In these VMs, typically C</dev/sda1> is the boot partition
-and C</dev/sda2> is the main (C:) drive.  Resizing the first (boot)
+boot partition.  In these VMs, typically F</dev/sda1> is the boot partition
+and F</dev/sda2> is the main (C:) drive.  Resizing the first (boot)
 partition causes the bootloader to fail with C<0xC0000225> error.  Resizing
 the second partition (ie. C: drive)  should work.
 
@@ -707,6 +707,44 @@ tools tend to leave whatever data happened to be on the disk before.
 
 If you have to reuse a target which contains data already, you should use
 the I<--no-sparse> option.  Note this can be much slower.
+
+=head2 "unknown/unavailable method for expanding the TYPE filesystem on DEVICE/LV"
+
+Virt-resize was asked to expand a partition or a logical volume containing a
+filesystem with the type C<TYPE>, but there is no available nor known
+expanding method for that filesystem.
+
+This may be due to either of the following:
+
+=over 4
+
+=item 1.
+
+There corresponding filesystem is not available in libguestfs, because there
+is no proper package in the host with utilities for it.  This is usually the
+case for C<btrfs>, C<ntfs>, and C<xfs> filesystems.
+
+Check the results of:
+
+ virt-resize --machine-readable
+ guestfish -a /dev/null run : available
+ guestfish -a /dev/null run : filesystem_available TYPE
+
+In this case, it is enough to install the proper packages adding support for
+them.  For example, C<libguestfs-xfs> on Red Hat Enterprise Linux, CentOS,
+Debian, Ubuntu, and distributions derived from them, for supporting the
+C<xfs> filesystem.
+
+=item 2.
+
+Virt-resize has no support for expanding that type of filesystem.
+
+In this case, there's nothing that can be done to let virt-resize expand
+that type of filesystem.
+
+=back
+
+In both cases, virt-resize will not expand the mentioned filesystem.
 
 =head1 АЛЬТЕРНАТИВНІ ІНСТРУМЕНТИ
 

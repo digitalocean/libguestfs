@@ -1,3 +1,371 @@
+commit d8ab90cdd628eacee7cdd9583499918022bcb870
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 18 12:59:53 2015 +0100
+
+    Version 1.29.47.
+
+commit c4f8d1d1a31f9b7e04886079174af507799f0ad2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 18 09:52:54 2015 +0100
+
+    v2v: Improve handling when one of the input disks is blank (RHBZ#1232192).
+    
+    In commit 4c73d1d4f142c6f6211c963beea68773e11fd3ef, I changed the
+    behaviour of virt-v2v so it ignores all errors from the
+    g#part_get_parttype method.  However that would ignore I/O errors and
+    similar.
+    
+    Only ignore the "unrecognised disk label" error from parted, by
+    testing if the return code is EINVAL.
+    
+    This fixes commit 4c73d1d4f142c6f6211c963beea68773e11fd3ef.
+
+commit 94ea635fb1334b92c4c137ae042e972db416ee19
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 18 09:52:16 2015 +0100
+
+    ocaml: Add handling for errno EINVAL.
+
+commit b467afb621b054e4c1e9a2f1e8814e91a395ffb7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 17 10:51:40 2015 +0100
+
+    daemon: parted: Always use -s option even with -m.
+    
+    See: https://bugzilla.redhat.com/show_bug.cgi?id=1232241#c3
+    
+    However adding the -s parameter changes the error code returned by
+    parted when it processes a blank disk (or other unrecognized partition
+    table).  Without -s it prints an error but returns a non-error exit
+    code (0).  With -s it prints an error and returns an error exit code.
+    
+    Because it's useful to be able to catch this case in user code, turn
+    "unrecognised disk label" into EINVAL.
+    
+    Change virt-alignment-scan to catch this error and ignore it.
+
+commit 3ae5f72743c548820d7bf16234830bfbe6269868
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Thu Jun 18 16:35:56 2015 +0800
+
+    error log: keep more calloc and its error messages match
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 6118e2239c8cd255e2b9aa76c6929b05a7eace98
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jun 17 13:04:59 2015 +0200
+
+    daemon: add split_lines_sb
+    
+    Mold split_lines_sb from split_lines, so it returns the strings buffer
+    with the result of the split. This way, we can have the number of lines
+    in the array, with no need to count them again later.
+    
+    split_lines is rewritten to take the ownership of the result of
+    split_lines_sb.
+
+commit 23ac997d06e5d2a852d1ae0789d726778104def7
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jun 17 12:52:54 2015 +0200
+
+    daemon: add take_stringsbuf
+
+commit fd6a66fde485f4445a947c218fdd00bc3bd68034
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jun 17 12:25:32 2015 +0200
+
+    daemon: add CLEANUP_FREE_STRINGSBUF
+
+commit 26a0ccdb4ea7cb9239f8ce1ffeefc925ed49f341
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jun 17 12:23:06 2015 +0200
+
+    daemon: introduce free_stringsbuf
+    
+    Simple shortcut to easily cleanup a stringsbuf.
+
+commit 596b8f85a909be13409fff3193e84d1f38a29456
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Wed Jun 17 16:19:33 2015 +0800
+
+    btrfs: use CLEANUP_FREE_STRING_LIST for list free
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 9c24314f6f874e0ecb2d0c3f31bf9fdfbb9f555f
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Wed Jun 17 10:44:09 2015 +0800
+
+    btrfs: keep calloc and its error message match
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 3f4ba2e98d21746723d291939ccc2e1f1526aa6d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jun 16 17:31:43 2015 +0200
+
+    btrfs: use calloc instead of malloc+memset
+    
+    Small optimization, and eases the code.
+
+commit 9574e793e2c141892da07794a433d45a1706614a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jun 16 17:07:47 2015 +0200
+
+    btrfs: remove unused 'out' variables
+    
+    If we are not interested in output of a command being run, then there's
+    no need to still capture it in a (automatically freed, but still)
+    variable.
+    
+    If any of those outputs is needed, a variable for it can be easily added
+    back.
+
+commit 993140219c951e9e2dbfd820f0e6227836d6ed5d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jun 16 09:31:25 2015 +0200
+
+    Improve fixed appliance documentation
+    
+    Move the "FIXED APPLIANCE" section from
+    libguestfs-make-fixed-appliance(1) to the "INTERNALS" section of
+    guestfs(3), so it's more visible and less hidden in the documentation
+    of a rarely-used tool.  Also slightly improve it.
+    
+    Expand the FAQ question about libguestfs without supermin, mentioning
+    the build options needed and pointing to the aforementioned new section.
+
+commit d11857aa87b926331a1daf49548c918402e2f451
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Tue Jun 16 18:24:49 2015 +0800
+
+    guestfs.pod: fix a typo
+    
+    s/caling/calling
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 4c73d1d4f142c6f6211c963beea68773e11fd3ef
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 16 12:15:29 2015 +0100
+
+    v2v: Don't fail if one of the input disks is blank (RHBZ#1232192).
+    
+    This also adds a regression test since it is probably easy to break
+    this in future.
+    
+    Thanks: Junqin Zhou
+
+commit 99dc53bba773d083b52d3f4005b16b8edaf615cb
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jun 15 15:53:14 2015 +0200
+
+    resize: make available expand method warnings more prominent
+    
+    When hitting a filesystem which we cannot or don't know how to expand,
+    instead of print a warning in verbose mode only, print it always when
+    showing the summary of the changes.
+    
+    In the virt-resize documentation, add a paragraph about this warning.
+    
+    Thanks to: Luigi Toscano.
+
+commit 54c7d3f61e469422c8b23847a924474803e8dc7b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jun 12 10:59:58 2015 +0200
+
+    get-kernel: add --prefix
+    
+    New --prefix option to specify a prefix for the extracted file names.
+
+commit cdb1e6eecae2f7836b9ff6e15e7414fa1647ab75
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jun 12 10:28:16 2015 +0200
+
+    get-kernel: add --unversioned-names
+    
+    New --unversioned-names option to save extracted files just with their
+    base name (i.e. "vmlinux", "initrd.img").
+
+commit 1183809f4d9e3177752970074ec1dbbed551a3e9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jun 11 18:07:32 2015 +0200
+
+    (Almost) new tool: virt-get-kernel
+    
+    Extract the guest kernel/ramdisk extraction from virt-builder into a
+    separate utility, so it can be used and improved without cluttering
+    virt-builder.
+    
+    Currently it does what virt-builder --get-kernel did, adding also the
+    options for remote disks and libvirt access, much like other libguestfs
+    tools.
+    
+    virt-builder --get-kernel now just spawns virt-get-kernel.
+
+commit 533901409e09797c5baab9d02f02e89e9970e5f1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jun 14 12:37:49 2015 +0100
+
+    pod: Use F<> for filenames instead of C<>.
+    
+    Done using a sequence of regular expressions like this:
+    
+      perl -pi.bak -e 's{C</}{F</}g' `git ls-files \*.pod` generator/actions.ml
+      perl -pi.bak -e 's{C<C:\\}{F<C:\\}g' `git ls-files \*.pod` generator/actions.ml
+      [etc]
+    
+    and then tediously checking every change by hand.
+
+commit 47e9a3d739f072b3c1db87ffad5b937e6c3f3356
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jun 14 16:35:21 2015 +0100
+
+    FAQ: Add sections about libguestfs NTFS & XFS support.
+    
+    Both popular questions.
+
+commit dafb4bf28378707c1f1f224d2a895e3e80bbe382
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 13 22:21:28 2015 +0100
+
+    v2v: Document 7B boot problems with Windows Group Policy.
+
+commit 54fe6d369d18680e53d3f60be3dbdb42356bd94f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 10 14:06:03 2015 +0100
+
+    p2v: Add proper test for command line parsing.
+    
+    This also adds a couple of deliberately undocumented (and unsupported)
+    command line parameters to make testing simpler:
+    
+    p2v.skip_test_connection  - don't try to test the connection
+    p2v.dump_config_and_exit  - after parsing command line, print it and exit
+    
+    This updates commit 716244c33718c866edce9e7ee8f21ee612f53337.
+
+commit a716adac3589a339a3064bcf5e5cf33390309a14
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 10 14:04:49 2015 +0100
+
+    p2v: Make sure command is printed before running it.
+    
+    This updates commit b45f6a04359b4b64256b7b21a04416fa772c9423.
+
+commit 4c8bbc45bedce9d9eab1b95c1ec4c3b3082fddd9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 10 14:03:43 2015 +0100
+
+    p2v: Refactor code that dumps the configuration for debugging.
+    
+    This is just code motion.
+
+commit bb5b23c1519a3901909a5ed51ce2f88e0904cb85
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 10 13:38:11 2015 +0100
+
+    p2v: Fix parsing of p2v.memory parameter (RHBZ#1229262).
+    
+    The sscanf call always failed because we checked for the wrong return
+    code.
+    
+    We don't need to allocate two characters for the mem_code field since
+    sscanf doesn't append a nul byte.
+    
+    This commit also allows you to use lowercase 'm' or 'g' as a memory
+    unit.
+    
+    Also clarify the documentation: the memory unit must be given.
+
+commit b45f6a04359b4b64256b7b21a04416fa772c9423
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 9 17:06:33 2015 +0100
+
+    p2v: Add p2v.pre, p2v.post, p2v.fail commands (RHBZ#1229385).
+    
+    The default p2v.post command, when run from the ISO, is to poweroff
+    the machine after successful conversion.
+
+commit 716244c33718c866edce9e7ee8f21ee612f53337
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 9 17:53:05 2015 +0100
+
+    p2v: Correct parsing of /proc/cmdline, including quoting.
+    
+    Fix the parsing of /proc/cmdline, including allowing double quoting of
+    parameters.
+    
+    This allows you to pass parameters to p2v on the command line which
+    include spaces.
+
+commit 154251b3f0312864c460533ae28a09483fb70051
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 9 15:27:25 2015 +0100
+
+    p2v: Modify /etc/issue with clearer instructions.
+
+commit cca4343203f18367033a56139231ff2518ad6655
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 8 14:41:46 2015 +0100
+
+    p2v: Update documentation.
+    
+    - How to configure virt-p2v for PXE boot.
+    
+    - How to test PXE boot using qemu.
+
+commit fc554d422a95f0cef21073a3a8ba0b2d8ddbab45
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 9 14:09:55 2015 +0100
+
+    p2v: Chomp kernel command line (fix) (RHBZ#1229340).
+    
+    Calculate the length of the string, not the length of the buffer.
+    
+    This fixes commit 6114c10df05cdb1662ac22930010fd45714f9c40.
+
+commit aa50d02f36015f1367974dfe4ed0a239cf5a374b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jun 9 11:57:13 2015 +0200
+
+    builder: add a doc snippet about firstboot scripts
+    
+    Document basic information about them for Linux and Windows guests.
+
+commit d8f1962bd20068abef0f23c48f90e2f36e628af7
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jun 9 10:54:13 2015 +0200
+
+    podwrapper: simplify external references pointing to self
+    
+    When convering a POD documentation, possibily combining various
+    sub-documents together, simplify the L<> links that explicitly point to
+    the very same documentation being generated.
+    
+    For example, when generating the virt-builder documentation, links like
+      L<virt-builder(1)/SECTION>
+    will be turned into
+      L</SECTION>
+    thus not making Pod::Simple parse them as external reference.
+    
+    While it is a slightly crude hack, it seems there's no easy way to
+    process the link parsing with Pod::Simple subclasses.
+
+commit 6114c10df05cdb1662ac22930010fd45714f9c40
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 8 14:40:20 2015 +0100
+
+    p2v: Chomp kernel command line (RHBZ#1229340).
+    
+    When using the kernel command line to configure virt-p2v, if any p2v.*
+    parameter appeared right at the end of the kernel command line, then a
+    bogus \n would be appended.  Remove this.
+    
+    This is essentially the same fix as:
+    https://github.com/libguestfs/supermin/commit/4819655b3c96e836e46d0d679f84b10f8e9abcf5
+
 commit 9b9be6d1c6495abb159fe0fd76535f7e6ab6fc09
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sat Jun 6 18:34:15 2015 +0100

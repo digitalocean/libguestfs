@@ -1,0 +1,169 @@
+
+=head1 НАЗВА
+
+virt-get-kernel - Extract kernel and ramdisk from guests
+
+=head1 КОРОТКИЙ ОПИС
+
+ virt-get-kernel [--options] -d domname
+
+ virt-get-kernel [--options] -a disk.img
+
+=head1 ОПИС
+
+This option extracts the kernel and initramfs from a guest.
+
+The format of the disk image is automatically detected unless you specify it
+by using the I<--format> option.
+
+In the case where the guest contains multiple kernels, the one with the
+highest version number is chosen.  To extract arbitrary kernels from the
+disk image, see L<guestfish(1)>.  To extract the entire C</boot> directory
+of a guest, see L<virt-copy-out(1)>.
+
+=head1 ПАРАМЕТРИ
+
+=over 4
+
+=item B<--help>
+
+Показати довідкове повідомлення.
+
+=item B<-a> файл
+
+=item B<--add> файл
+
+Додати I<файл>, який має бути образом диска з віртуальної машини.
+
+Формат образу диска визначається автоматично. Щоб перевизначити його і
+примусово використати певний формат, скористайтеся параметром I<--format>.
+
+=item B<-a> адреса
+
+=item B<--add> адреса
+
+Add a remote disk.  The URI format is compatible with guestfish.  See
+L<guestfish(1)/ADDING REMOTE STORAGE>.
+
+=item B<-c> адреса
+
+=item B<--connect> адреса
+
+Якщо використовується libvirt, встановити з’єднання з вказаним I<URI>. Якщо
+пропущено, з’єднання буде встановлено з типовим гіпервізором libvirt.
+
+Якщо вказати блокові пристрої гостьових систем безпосередньо (I<-a>),
+libvirt не буде використовуватися взагалі.
+
+=item B<-d> гість
+
+=item B<--domain> гість
+
+Додати всі диски з вказаної гостьової системи libvirt. UUID доменів можна
+використовувати замість назв.
+
+=item B<--format> raw|qcow2|..
+
+=item B<--format> auto
+
+The default for the I<-a> option is to auto-detect the format of the disk
+image.  Using this forces the disk format for the I<-a> option on the
+command line.
+
+Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
+форматі, вам слід скористатися цим параметром для визначення формату
+диска. Таким чином можна уникнути можливих проблем з захистом для
+сформованих зловмисниками гостьових систем (CVE-2010-3851).
+
+=item B<--machine-readable>
+
+This option is used to make the output more machine friendly when being
+parsed by other programs.  See L</MACHINE READABLE OUTPUT> below.
+
+=item B<-o> directory
+
+=item B<--output> directory
+
+This option specifies the output directory where kernel and initramfs from
+the guest are written.
+
+If not specified, the default output is the current directory.
+
+=item B<--prefix> prefix
+
+This option specifies a prefix for the extracted files.
+
+If a prefix is specified, then there will be a dash (C<->) after the prefix
+and before the rest of the file name; for example, a kernel in the guest
+like C<vmlinuz-3.19.0-20-generic> is saved as
+C<mydistro-vmlinuz-3.19.0-20-generic> when the prefix is C<mydistro>.
+
+See also I<--unversioned-names>.
+
+=item B<--unversioned-names>
+
+This option affects the destination file name of extracted files.
+
+If enabled, files will be saved locally just with the base name; for
+example, kernel and ramdisk in the guest like C<vmlinuz-3.19.0-20-generic>
+and C<initrd.img-3.19.0-20-generic> are saved respectively as C<vmlinuz> and
+C<initrd.img>.
+
+See also I<--prefix>.
+
+=item B<-v>
+
+=item B<--verbose>
+
+Увімкнути докладний показ повідомлень з метою діагностики.
+
+=item B<-V>
+
+=item B<--version>
+
+Показати дані щодо версії і завершити роботу.
+
+=item B<-x>
+
+Увімкнути трасування викликів програмного інтерфейсу libguestfs.
+
+=back
+
+=head1 MACHINE READABLE OUTPUT
+
+The I<--machine-readable> option can be used to make the output more machine
+friendly, which is useful when calling virt-get-kernel from other programs,
+GUIs etc.
+
+Use the option on its own to query the capabilities of the virt-get-kernel
+binary.  Typical output looks like this:
+
+ $ virt-get-kernel --machine-readable
+ virt-get-kernel
+
+A list of features is printed, one per line, and the program exits with
+status 0.
+
+=head1 ЗМІННІ СЕРЕДОВИЩА
+
+For other environment variables which affect all libguestfs programs, see
+L<guestfs(3)/ENVIRONMENT VARIABLES>.
+
+=head1 СТАН ВИХОДУ
+
+Ця програма повертає значення 0 у разі успішного завершення і ненульове
+значення, якщо сталася помилка.
+
+=head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
+
+L<guestfs(3)>, L<guestfish(1)>, L<guestmount(1)>, L<virt-copy-out(1)>,
+L<http://libguestfs.org/>.
+
+=head1 АВТОР
+
+Richard W.M. Jones L<http://people.redhat.com/~rjones/>
+
+=head1 АВТОРСЬКІ ПРАВА
+
+Copyright (C) 2013-2015 Red Hat Inc.
+

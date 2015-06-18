@@ -31,7 +31,7 @@ looking at the examples below.
 
 FUSE lets you mount filesystems as non-root.  The mountpoint must be owned
 by you, and the filesystem will not be visible to any other users unless you
-make certain global configuration changes to C</etc/fuse.conf>.  To unmount
+make certain global configuration changes to F</etc/fuse.conf>.  To unmount
 the filesystem, use the L<guestunmount(1)> command.
 
 =head1 例
@@ -240,7 +240,8 @@ L<virt-inspector(1)> コードを使用すると、 オペレーティングシ�
 
 =item B<--keys-from-stdin>
 
-標準入力からキーまたはパスフレーズのパラメーターを読み込みます。 標準で C</dev/tty> を開いているユーザーから読み込もうとします。
+Read key or passphrase parameters from stdin.  The default is to try to read
+passphrases from the user by opening F</dev/tty>.
 
 =item B<--live>
 
@@ -253,8 +254,8 @@ L<virt-inspector(1)> コードを使用すると、 オペレーティングシ�
 Mount the named partition or logical volume on the given mountpoint B<in the
 guest> (this has nothing to do with mountpoints in the host).
 
-If the mountpoint is omitted, it defaults to C</>.  You have to mount
-something on C</>.
+If the mountpoint is omitted, it defaults to F</>.  You have to mount
+something on F</>.
 
 マウントパラメーターの三番目の (ほとんど使用されない) 項目は、 バックエンドのファイルシステムをマウントするために使用される
 マウントオプションの一覧です。 これが指定されていない場合、 マウントオプションは空文字列または C<ro> (I<--ro>

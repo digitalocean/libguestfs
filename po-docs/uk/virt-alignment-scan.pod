@@ -70,8 +70,8 @@ virt-alignment-scan без параметрів I<-a> та I<-d>.
 
 =item стовпчик 1
 
-Назва пристрою і розділу (наприклад, C</dev/sda1> означає перший розділ на
-першому блоковому пристрої).
+The device and partition name (eg. F</dev/sda1> meaning the first partition
+on the first block device).
 
 У пунктах списків всіх доменів libvirt (без вказаного параметра I<-a> або
 I<-d>) записи у цьому стовпчику матимуть префікс назви libvirt або UUID
@@ -157,13 +157,12 @@ libvirt не буде використовуватися взагалі.
 
  virt-alignment-scan --format=raw -a disk.img
 
-примусове встановлення формату без обробки (без автоматичного визначення)
-для C<disk.img>.
+forces raw format (no auto-detection) for F<disk.img>.
 
  virt-cat --format=raw -a disk.img --format -a another.img file
 
-примусове встановлення формату без обробки (без автоматичного визначення)
-для C<disk.img> і повернення до автоматичного визначення для C<another.img>.
+forces raw format (no auto-detection) for F<disk.img> and reverts to
+auto-detection for F<another.img>.
 
 Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
 форматі, вам слід скористатися цим параметром для визначення формату

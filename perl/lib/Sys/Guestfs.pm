@@ -454,13 +454,13 @@ C<$g-E<gt>add_drive_opts>.
 
 =item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret] [, cachemode => $cachemode] [, discard => $discard] [, copyonread => $copyonread]);
 
-This function adds a disk image called C<filename> to the handle.
-C<filename> may be a regular host file or a host device.
+This function adds a disk image called F<filename> to the handle.
+F<filename> may be a regular host file or a host device.
 
 When this function is called before C<$g-E<gt>launch> (the
 usual case) then the first time you call this function,
-the disk appears in the API as C</dev/sda>, the second time
-as C</dev/sdb>, and so on.
+the disk appears in the API as F</dev/sda>, the second time
+as F</dev/sdb>, and so on.
 
 In libguestfs E<ge> 1.20 you can also call this function
 after launch (with some restrictions).  This is called
@@ -474,9 +474,9 @@ for whatever operations you want to perform (ie. read access if you
 just want to read the image or write access if you want to modify the
 image).
 
-This call checks that C<filename> exists.
+This call checks that F<filename> exists.
 
-C<filename> may be the special string C<"/dev/null">.
+F<filename> may be the special string C<"/dev/null">.
 See L<guestfs(3)/NULL DISKS>.
 
 The optional arguments are:
@@ -507,7 +507,7 @@ deprecated C<$g-E<gt>add_drive_with_if> call (q.v.)
 
 =item C<name>
 
-The name the drive had in the original guest, e.g. C</dev/sdb>.
+The name the drive had in the original guest, e.g. F</dev/sdb>.
 This is used as a hint to the guest inspection process if
 it is available.
 
@@ -515,8 +515,8 @@ it is available.
 
 Give the disk a label.  The label should be a unique, short
 string using I<only> ASCII characters C<[a-zA-Z]>.
-As well as its usual name in the API (such as C</dev/sda>),
-the drive will also be named C</dev/disk/guestfs/I<label>>.
+As well as its usual name in the API (such as F</dev/sda>),
+the drive will also be named F</dev/disk/guestfs/I<label>>.
 
 See L<guestfs(3)/DISK LABELS>.
 
@@ -531,7 +531,7 @@ See also: L<guestfs(3)/REMOTE STORAGE>.
 
 =item C<protocol = "file">
 
-C<filename> is interpreted as a local file or device.
+F<filename> is interpreted as a local file or device.
 This is the default if the optional protocol parameter
 is omitted.
 
@@ -616,7 +616,7 @@ in one of the following formats:
  unix:/path/to/socket
 
 If the port number is omitted, then the standard port number
-for the protocol is used (see C</etc/services>).
+for the protocol is used (see F</etc/services>).
 
 =item C<username>
 
@@ -844,7 +844,7 @@ You must call this before using any other C<$g-E<gt>aug_*>
 commands.
 
 C<root> is the filesystem root.  C<root> must not be NULL,
-use C</> instead.
+use F</> instead.
 
 The flags are the same as the flags defined in
 E<lt>augeas.hE<gt>, the logical I<or> of the following
@@ -895,7 +895,7 @@ the tree before or after C<path> (depending on the boolean
 flag C<before>).
 
 C<path> must match exactly one existing node in the tree, and
-C<label> must be a label, ie. not contain C</>, C<*> or end
+C<label> must be a label, ie. not contain F</>, C<*> or end
 with a bracketed index C<[N]>.
 
 =item $label = $g->aug_label ($augpath);
@@ -1040,11 +1040,11 @@ and L<guestfs(3)/AVAILABILITY>.
 =item $g->base64_in ($base64file, $filename);
 
 This command uploads base64-encoded data from C<base64file>
-to C<filename>.
+to F<filename>.
 
 =item $g->base64_out ($filename, $base64file);
 
-This command downloads the contents of C<filename>, writing
+This command downloads the contents of F<filename>, writing
 it out to local file C<base64file> encoded as base64.
 
 =item $g->blkdiscard ($device);
@@ -1329,7 +1329,7 @@ a btrfs filesystem.
 =item $g->btrfs_subvolume_create ($dest [, qgroupid => $qgroupid]);
 
 Create a btrfs subvolume.  The C<dest> argument is the destination
-directory and the name of the subvolume, in the form C</path/to/dest/name>.
+directory and the name of the subvolume, in the form F</path/to/dest/name>.
 The optional parameter C<qgroupid> represents the qgroup which the newly
 created subvolume will be added to.
 
@@ -1372,7 +1372,7 @@ Return detailed information of the subvolume.
 
 Create a snapshot of the btrfs subvolume C<source>.
 The C<dest> argument is the destination directory and the name
-of the snapshot, in the form C</path/to/dest/name>. By default
+of the snapshot, in the form F</path/to/dest/name>. By default
 the newly created snapshot is writable, if the value of optional
 parameter C<ro> is true, then a readonly snapshot is created. The
 optional parameter C<qgroupid> represents the qgroup which the
@@ -1417,19 +1417,19 @@ returns them in a consistent format:
 
 =over 4
 
-=item C</dev/hdX>
+=item F</dev/hdX>
 
-=item C</dev/vdX>
+=item F</dev/vdX>
 
-These are returned as C</dev/sdX>.  Note this works for device
+These are returned as F</dev/sdX>.  Note this works for device
 names and partition names.  This is approximately the reverse of
 the algorithm described in L<guestfs(3)/BLOCK DEVICE NAMING>.
 
-=item C</dev/mapper/VG-LV>
+=item F</dev/mapper/VG-LV>
 
-=item C</dev/dm-N>
+=item F</dev/dm-N>
 
-Converted to C</dev/VG/LV> form using C<$g-E<gt>lvm_canonical_lv_name>.
+Converted to F</dev/VG/LV> form using C<$g-E<gt>lvm_canonical_lv_name>.
 
 =back
 
@@ -1461,7 +1461,7 @@ the underlying filesystem is case-insensitive, the driver
 exports the filesystem to Linux as case-sensitive.
 
 One consequence of this is that special directories such
-as C<c:\windows> may appear as C</WINDOWS> or C</windows>
+as F<C:\windows> may appear as F</WINDOWS> or F</windows>
 (or other things) depending on the precise details of how
 they were created.  In Windows itself this would not be
 a problem.
@@ -1566,7 +1566,7 @@ checksums supported see the C<$g-E<gt>checksum> command.
 =item $g->checksums_out ($csumtype, $directory, $sumsfile);
 
 This command computes the checksums of all regular files in
-C<directory> and then emits a list of those checksums to
+F<directory> and then emits a list of those checksums to
 the local output file C<sumsfile>.
 
 This can be used for verifying the integrity of a virtual
@@ -1629,7 +1629,7 @@ this function returns an error message.  The error message
 string is the content of I<stderr> from the command.
 
 The C<$PATH> environment variable will contain at least
-C</usr/bin> and C</bin>.  If you require a program from
+F</usr/bin> and F</bin>.  If you require a program from
 another location, you should provide the full path in the
 first parameter.
 
@@ -1662,8 +1662,8 @@ as in C<$g-E<gt>compress_out>.
 
 =item $g->compress_out ($ctype, $file, $zfile [, level => $level]);
 
-This command compresses C<file> and writes it out to the local
-file C<zfile>.
+This command compresses F<file> and writes it out to the local
+file F<zfile>.
 
 The compression program used is controlled by the C<ctype> parameter.
 Currently this includes: C<compress>, C<gzip>, C<bzip2>, C<xz> or C<lzop>.
@@ -1824,7 +1824,7 @@ writing to DOS FAT filesystems).
 
 =item $g->cpio_out ($directory, $cpiofile [, format => $format]);
 
-This command packs the contents of C<directory> and downloads
+This command packs the contents of F<directory> and downloads
 it to local file C<cpiofile>.
 
 The optional C<format> parameter can be used to select the format.
@@ -1893,7 +1893,7 @@ Use C<$g-E<gt>statvfs> from programs.
 
 =item $g->disk_create ($filename, $format, $size [, backingfile => $backingfile] [, backingformat => $backingformat] [, preallocation => $preallocation] [, compat => $compat] [, clustersize => $clustersize]);
 
-Create a blank disk image called C<filename> (a host file)
+Create a blank disk image called F<filename> (a host file)
 with format C<format> (usually C<raw> or C<qcow2>).
 The size is C<size> bytes.
 
@@ -1904,7 +1904,7 @@ size of the backing file, which is discovered automatically.  You
 are encouraged to also pass C<backingformat> to describe the format
 of C<backingfile>.
 
-If C<filename> refers to a block device, then the device is
+If F<filename> refers to a block device, then the device is
 formatted.  The C<size> is ignored since block devices have an
 intrinsic size.
 
@@ -1941,8 +1941,8 @@ may need to call C<$g-E<gt>add_drive_opts> separately.
 
 =item $format = $g->disk_format ($filename);
 
-Detect and return the format of the disk image called C<filename>.
-C<filename> can also be a host device, etc.  If the format of the
+Detect and return the format of the disk image called F<filename>.
+F<filename> can also be a host device, etc.  If the format of the
 image could not be detected, then C<"unknown"> is returned.
 
 Note that detecting the disk format can be insecure under some
@@ -1952,7 +1952,7 @@ See also: L<guestfs(3)/DISK IMAGE FORMATS>
 
 =item $backingfile = $g->disk_has_backing_file ($filename);
 
-Detect and return whether the disk image C<filename> has a
+Detect and return whether the disk image F<filename> has a
 backing file.
 
 Note that detecting disk features can be insecure under some
@@ -1961,7 +1961,7 @@ circumstances.  See L<guestfs(3)/CVE-2010-3851>.
 =item $size = $g->disk_virtual_size ($filename);
 
 Detect and return the virtual size in bytes of the disk image
-called C<filename>.
+called F<filename>.
 
 Note that detecting disk features can be insecure under some
 circumstances.  See L<guestfs(3)/CVE-2010-3851>.
@@ -1979,19 +1979,19 @@ running the program.
 
 =item $g->download ($remotefilename, $filename);
 
-Download file C<remotefilename> and save it as C<filename>
+Download file F<remotefilename> and save it as F<filename>
 on the local machine.
 
-C<filename> can also be a named pipe.
+F<filename> can also be a named pipe.
 
 See also C<$g-E<gt>upload>, C<$g-E<gt>cat>.
 
 =item $g->download_offset ($remotefilename, $filename, $offset, $size);
 
-Download file C<remotefilename> and save it as C<filename>
+Download file F<remotefilename> and save it as F<filename>
 on the local machine.
 
-C<remotefilename> is read for C<size> bytes starting at C<offset>
+F<remotefilename> is read for C<size> bytes starting at C<offset>
 (this region must be within the file or device).
 
 Note that there is no limit on the amount of data that
@@ -2103,7 +2103,7 @@ with correct use of these functions.
 
 =item $equality = $g->equal ($file1, $file2);
 
-This compares the two files C<file1> and C<file2> and returns
+This compares the two files F<file1> and F<file2> and returns
 true if their content is exactly equal, or false otherwise.
 
 The external L<cmp(1)> program is used for the comparison.
@@ -2117,11 +2117,11 @@ See also C<$g-E<gt>is_file>, C<$g-E<gt>is_dir>, C<$g-E<gt>stat>.
 
 =item $g->extlinux ($directory);
 
-Install the SYSLINUX bootloader on the device mounted at C<directory>.
+Install the SYSLINUX bootloader on the device mounted at F<directory>.
 Unlike C<$g-E<gt>syslinux> which requires a FAT filesystem, this can
 be used on an ext2/3/4 or btrfs filesystem.
 
-The C<directory> parameter can be either a mountpoint, or a
+The F<directory> parameter can be either a mountpoint, or a
 directory within the mountpoint.
 
 You also have to mark the partition as "active"
@@ -2132,8 +2132,8 @@ The SYSLINUX package comes with some suitable Master Boot Records.
 See the L<extlinux(1)> man page for further information.
 
 Additional configuration can be supplied to SYSLINUX by
-placing a file called C<extlinux.conf> on the filesystem
-under C<directory>.  For further information
+placing a file called F<extlinux.conf> on the filesystem
+under F<directory>.  For further information
 about the contents of this file, see L<extlinux(1)>.
 
 See also C<$g-E<gt>syslinux>.
@@ -2231,7 +2231,7 @@ C<$g-E<gt>is_file>, C<$g-E<gt>is_blockdev> (etc), C<$g-E<gt>is_zero>.
 
 =item $arch = $g->file_architecture ($filename);
 
-This detects the architecture of the binary C<filename>,
+This detects the architecture of the binary F<filename>,
 and returns it if known.
 
 Currently defined architectures are:
@@ -2342,7 +2342,7 @@ initrd or kernel module(s) instead.
 
 =item $size = $g->filesize ($file);
 
-This command returns the size of C<file> in bytes.
+This command returns the size of F<file> in bytes.
 
 To get other stats about a file, use C<$g-E<gt>stat>, C<$g-E<gt>lstat>,
 C<$g-E<gt>is_dir>, C<$g-E<gt>is_file> etc.
@@ -2394,7 +2394,7 @@ to ensure the length of the file is exactly C<len> bytes.
 =item @names = $g->find ($directory);
 
 This command lists out all files and directories, recursively,
-starting at C<directory>.  It is essentially equivalent to
+starting at F<directory>.  It is essentially equivalent to
 running the shell command C<find directory -print> but some
 post-processing happens on the output, described below.
 
@@ -2405,7 +2405,7 @@ if the directory structure was:
  /tmp/b
  /tmp/c/d
 
-then the returned list from C<$g-E<gt>find> C</tmp> would be
+then the returned list from C<$g-E<gt>find> F</tmp> would be
 4 elements:
 
  a
@@ -2413,7 +2413,7 @@ then the returned list from C<$g-E<gt>find> C</tmp> would be
  c
  c/d
 
-If C<directory> is not a directory, then this command returns
+If F<directory> is not a directory, then this command returns
 an error.
 
 The returned list is sorted.
@@ -2421,8 +2421,8 @@ The returned list is sorted.
 =item $g->find0 ($directory, $files);
 
 This command lists out all files and directories, recursively,
-starting at C<directory>, placing the resulting list in the
-external file called C<files>.
+starting at F<directory>, placing the resulting list in the
+external file called F<files>.
 
 This command works the same way as C<$g-E<gt>find> with the
 following exceptions:
@@ -2574,7 +2574,7 @@ Return the direct appliance mode flag.
 
 =item $attrs = $g->get_e2attrs ($file);
 
-This returns the file attributes associated with C<file>.
+This returns the file attributes associated with F<file>.
 
 The attributes are a set of bits associated with each
 inode which affect the behaviour of the file.  The attributes
@@ -2901,7 +2901,7 @@ with flags C<GLOB_MARK|GLOB_BRACE>.
 See that manual page for more details.
 
 Notice that there is no equivalent command for expanding a device
-name (eg. C</dev/sd*>).  Use C<$g-E<gt>list_devices>,
+name (eg. F</dev/sd*>).  Use C<$g-E<gt>list_devices>,
 C<$g-E<gt>list_partitions> etc functions instead.
 
 =item @lines = $g->grep ($regex, $path [, extended => $extended] [, fixed => $fixed] [, insensitive => $insensitive] [, compressed => $compressed]);
@@ -2991,14 +2991,14 @@ is advisable.
 
 If grub-install reports the error
 "No suitable drive was found in the generated device map."
-it may be that you need to create a C</boot/grub/device.map>
+it may be that you need to create a F</boot/grub/device.map>
 file first that contains the mapping between grub device names
 and Linux device names.  It is usually sufficient to create
 a file containing:
 
  (hd0) /dev/vda
 
-replacing C</dev/vda> with the name of the installation device.
+replacing F</dev/vda> with the name of the installation device.
 
 =back
 
@@ -3041,7 +3041,7 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 
 Commit (write) changes to the hive.
 
-If the optional C<filename> parameter is null, then the changes
+If the optional F<filename> parameter is null, then the changes
 are written back to the same hive that was opened.  If this is
 not null then they are written to the alternate filename given
 and the original hive is left untouched.
@@ -3108,7 +3108,7 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 
 =item $g->hivex_open ($filename [, verbose => $verbose] [, debug => $debug] [, write => $write]);
 
-Open the Windows Registry hive file named C<filename>.
+Open the Windows Registry hive file named F<filename>.
 If there was any previous hivex handle associated with this
 guestfs session, then it is closed.
 
@@ -3154,12 +3154,12 @@ See also: C<$g-E<gt>hivex_value_utf8>.
 
 =item $content = $g->initrd_cat ($initrdpath, $filename);
 
-This command unpacks the file C<filename> from the initrd file
-called C<initrdpath>.  The filename must be given I<without> the
-initial C</> character.
+This command unpacks the file F<filename> from the initrd file
+called F<initrdpath>.  The filename must be given I<without> the
+initial F</> character.
 
 For example, in guestfish you could use the following command
-to examine the boot script (usually called C</init>)
+to examine the boot script (usually called F</init>)
 contained in a Linux initrd or initramfs image:
 
  initrd-cat /boot/initrd-<version>.img init
@@ -3173,7 +3173,7 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 This command lists out files contained in an initrd.
 
-The files are listed without any initial C</> character.  The
+The files are listed without any initial F</> character.  The
 files are listed in the order they appear (not necessarily
 alphabetical).  Directory names are listed as separate items.
 
@@ -3191,7 +3191,7 @@ directory are watched, but this does I<not> happen recursively
 
 Note for non-C or non-Linux callers: the inotify events are
 defined by the Linux kernel ABI and are listed in
-C</usr/include/sys/inotify.h>.
+F</usr/include/sys/inotify.h>.
 
 =item $g->inotify_close ();
 
@@ -3406,7 +3406,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 =item %drives = $g->inspect_get_drive_mappings ($root);
 
 This call is useful for Windows which uses a primitive system
-of assigning drive letters (like "C:") to partitions.
+of assigning drive letters (like F<C:\>) to partitions.
 This inspection API examines the Windows Registry to find out
 how disks/partitions are mapped to drive letters, and returns
 a hash table as in the example below:
@@ -3496,7 +3496,7 @@ If it was not possible to get an icon this function returns a
 zero-length (non-NULL) buffer.  I<Callers must check for this case>.
 
 Libguestfs will start by looking for a file called
-C</etc/favicon.png> or C<C:\etc\favicon.png>
+F</etc/favicon.png> or F<C:\etc\favicon.png>
 and if it has the correct format, the contents of this file will
 be returned.  You can disable favicons by passing the
 optional C<favicon> boolean as false (default is true).
@@ -3579,23 +3579,23 @@ See also C<$g-E<gt>inspect_get_major_version>.
 This returns a hash of where we think the filesystems
 associated with this operating system should be mounted.
 Callers should note that this is at best an educated guess
-made by reading configuration files such as C</etc/fstab>.
+made by reading configuration files such as F</etc/fstab>.
 I<In particular note> that this may return filesystems
 which are non-existent or not mountable and callers should
 be prepared to handle or ignore failures if they try to
 mount them.
 
 Each element in the returned hashtable has a key which
-is the path of the mountpoint (eg. C</boot>) and a value
+is the path of the mountpoint (eg. F</boot>) and a value
 which is the filesystem that would be mounted there
-(eg. C</dev/sda1>).
+(eg. F</dev/sda1>).
 
 Non-mounted devices such as swap devices are I<not>
 returned in this list.
 
 For operating systems like Windows which still use drive
 letters, this call will only return an entry for the first
-drive "mounted on" C</>.  For information about the
+drive "mounted on" F</>.  For information about the
 mapping of drive letters to partitions, see
 C<$g-E<gt>inspect_get_drive_mappings>.
 
@@ -3751,7 +3751,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 =item $systemroot = $g->inspect_get_windows_systemroot ($root);
 
 This returns the Windows systemroot of the inspected guest.
-The systemroot is a directory path such as C</WINDOWS>.
+The systemroot is a directory path such as F</WINDOWS>.
 
 This call assumes that the guest is Windows and that the
 systemroot could be determined by inspection.  If this is not
@@ -4030,7 +4030,7 @@ If the optional flag C<followsymlinks> is true, then a symlink
 function to return true.
 
 This call only looks at files within the guest filesystem.  Libguestfs
-partitions and block devices (eg. C</dev/sda>) cannot be used as the
+partitions and block devices (eg. F</dev/sda>) cannot be used as the
 C<path> parameter of this call.
 
 See also C<$g-E<gt>stat>.
@@ -4289,7 +4289,7 @@ have reached the end of the journal.
 
 =item $g->journal_open ($directory);
 
-Open the systemd journal located in C<directory>.  Any previously
+Open the systemd journal located in F<directory>.  Any previously
 opened journal handle is closed.
 
 The contents of the journal can be read using C<$g-E<gt>journal_next>
@@ -4460,7 +4460,7 @@ mount tags is returned.
 
 List all the block devices.
 
-The full block device names are returned, eg. C</dev/sda>.
+The full block device names are returned, eg. F</dev/sda>.
 
 See also C<$g-E<gt>list_filesystems>.
 
@@ -4469,18 +4469,18 @@ See also C<$g-E<gt>list_filesystems>.
 If you add drives using the optional C<label> parameter
 of C<$g-E<gt>add_drive_opts>, you can use this call to
 map between disk labels, and raw block device and partition
-names (like C</dev/sda> and C</dev/sda1>).
+names (like F</dev/sda> and F</dev/sda1>).
 
 This returns a hashtable, where keys are the disk labels
-(I<without> the C</dev/disk/guestfs> prefix), and the values
+(I<without> the F</dev/disk/guestfs> prefix), and the values
 are the full raw block device and partition names
-(eg. C</dev/sda> and C</dev/sda1>).
+(eg. F</dev/sda> and F</dev/sda1>).
 
 =item @devices = $g->list_dm_devices ();
 
 List all device mapper devices.
 
-The returned list contains C</dev/mapper/*> devices, eg. ones created
+The returned list contains F</dev/mapper/*> devices, eg. ones created
 by a previous call to C<$g-E<gt>luks_open>.
 
 Device mapper devices which correspond to logical volumes are I<not>
@@ -4541,7 +4541,7 @@ List all Linux md devices.
 
 List all the partitions detected on all block devices.
 
-The full partition device names are returned, eg. C</dev/sda1>
+The full partition device names are returned, eg. F</dev/sda1>
 
 This does not return logical volumes.  For that you will need to
 call C<$g-E<gt>lvs>.
@@ -4550,7 +4550,7 @@ See also C<$g-E<gt>list_filesystems>.
 
 =item $listing = $g->ll ($directory);
 
-List the files in C<directory> (relative to the root directory,
+List the files in F<directory> (relative to the root directory,
 there is no cwd) in the format of 'ls -la'.
 
 This command is mostly useful for interactive sessions.  It
@@ -4558,7 +4558,7 @@ is I<not> intended that you try to parse the output string.
 
 =item $listing = $g->llz ($directory);
 
-List the files in C<directory> in the format of 'ls -laZ'.
+List the files in F<directory> in the format of 'ls -laZ'.
 
 This command is mostly useful for interactive sessions.  It
 is I<not> intended that you try to parse the output string.
@@ -4589,7 +4589,7 @@ of the link itself.
 
 =item @listing = $g->ls ($directory);
 
-List the files in C<directory> (relative to the root directory,
+List the files in F<directory> (relative to the root directory,
 there is no cwd).  The '.' and '..' entries are not returned, but
 hidden files are shown.
 
@@ -4597,7 +4597,7 @@ hidden files are shown.
 
 This specialized command is used to get a listing of
 the filenames in the directory C<dir>.  The list of filenames
-is written to the local file C<filenames> (on the host).
+is written to the local file F<filenames> (on the host).
 
 In the output file, the filenames are separated by C<\0> characters.
 
@@ -4691,7 +4691,7 @@ first to remove that key.
 This closes a LUKS device that was created earlier by
 C<$g-E<gt>luks_open> or C<$g-E<gt>luks_open_ro>.  The
 C<device> parameter must be the name of the LUKS mapping
-device (ie. C</dev/mapper/mapname>) and I<not> the name
+device (ie. F</dev/mapper/mapname>) and I<not> the name
 of the underlying block device.
 
 =item $g->luks_format ($device, $key, $keyslot);
@@ -4722,7 +4722,7 @@ C<device> is the encrypted block device or partition.
 The caller must supply one of the keys associated with the
 LUKS block device, in the C<key> parameter.
 
-This creates a new block device called C</dev/mapper/mapname>.
+This creates a new block device called F</dev/mapper/mapname>.
 Reads and writes to this block device are decrypted from and
 encrypted to the underlying C<device> respectively.
 
@@ -4745,7 +4745,7 @@ on the volume group C<volgroup>, with C<size> megabytes.
 
 =item $g->lvcreate_free ($logvol, $volgroup, $percent);
 
-Create an LVM logical volume called C</dev/volgroup/logvol>,
+Create an LVM logical volume called F</dev/volgroup/logvol>,
 using approximately C<percent> % of the free space remaining
 in the volume group.  Most usefully, when C<percent> is C<100>
 this will create the largest possible LV.
@@ -4753,8 +4753,8 @@ this will create the largest possible LV.
 =item $lv = $g->lvm_canonical_lv_name ($lvname);
 
 This converts alternative naming schemes for LVs that you
-might find to the canonical name.  For example, C</dev/mapper/VG-LV>
-is converted to C</dev/VG/LV>.
+might find to the canonical name.  For example, F</dev/mapper/VG-LV>
+is converted to F</dev/VG/LV>.
 
 This command returns an error if the C<lvname> parameter does
 not refer to a logical volume.
@@ -4802,10 +4802,10 @@ filtering out that VG.
 =item $g->lvremove ($device);
 
 Remove an LVM logical volume C<device>, where C<device> is
-the path to the LV, such as C</dev/VG/LV>.
+the path to the LV, such as F</dev/VG/LV>.
 
 You can also remove all LVs in a volume group by specifying
-the VG name, C</dev/VG>.
+the VG name, F</dev/VG>.
 
 =item $g->lvrename ($logvol, $newlogvol);
 
@@ -4831,7 +4831,7 @@ List all the logical volumes detected.  This is the equivalent
 of the L<lvs(8)> command.
 
 This returns a list of the logical volume device names
-(eg. C</dev/VolGroup00/LogVol00>).
+(eg. F</dev/VolGroup00/LogVol00>).
 
 See also C<$g-E<gt>lvs_full>, C<$g-E<gt>list_filesystems>.
 
@@ -5352,7 +5352,7 @@ sub mkswap_opts {
 Create a swap partition on C<device> with label C<label>.
 
 Note that you cannot attach a swap label to a block device
-(eg. C</dev/sda>), just to a partition.  This appears to be
+(eg. F</dev/sda>), just to a partition.  This appears to be
 a limitation of the kernel or swap tools.
 
 I<This function is deprecated.>
@@ -5411,14 +5411,14 @@ This loads a kernel module in the appliance.
 =item $g->mount ($mountable, $mountpoint);
 
 Mount a guest disk at a position in the filesystem.  Block devices
-are named C</dev/sda>, C</dev/sdb> and so on, as they were added to
+are named F</dev/sda>, F</dev/sdb> and so on, as they were added to
 the guest.  If those block devices contain partitions, they will have
-the usual names (eg. C</dev/sda1>).  Also LVM C</dev/VG/LV>-style
+the usual names (eg. F</dev/sda1>).  Also LVM F</dev/VG/LV>-style
 names can be used, or 'mountable' strings returned by
 C<$g-E<gt>list_filesystems> or C<$g-E<gt>inspect_get_mountpoints>.
 
 The rules are the same as for L<mount(2)>:  A filesystem must
-first be mounted on C</> before others can be mounted.  Other
+first be mounted on F</> before others can be mounted.  Other
 filesystems can only be mounted on directories which already
 exist.
 
@@ -5488,7 +5488,7 @@ See L<guestfs(3)/MOUNT LOCAL> for full documentation.
 
 =item $g->mount_loop ($file, $mountpoint);
 
-This command lets you mount C<file> (a filesystem image
+This command lets you mount F<file> (a filesystem image
 in a file) on a mount point.  It is entirely equivalent to
 the command C<mount -o loop file mountpoint>.
 
@@ -5522,7 +5522,7 @@ device name to directory where the device is mounted.
 =item @devices = $g->mounts ();
 
 This returns the list of currently mounted filesystems.  It returns
-the list of devices (eg. C</dev/sda1>, C</dev/VG/LV>).
+the list of devices (eg. F</dev/sda1>, F</dev/VG/LV>).
 
 Some internal mounts are not shown.
 
@@ -5970,7 +5970,7 @@ Generate new random UUIDs for all physical volumes.
 
 This creates an LVM physical volume on the named C<device>,
 where C<device> should usually be a partition name such
-as C</dev/sda1>.
+as F</dev/sda1>.
 
 =item $g->pvremove ($device);
 
@@ -5997,7 +5997,7 @@ List all the physical volumes detected.  This is the equivalent
 of the L<pvs(8)> command.
 
 This returns a list of just the device names that contain
-PVs (eg. C</dev/sda2>).
+PVs (eg. F</dev/sda2>).
 
 See also C<$g-E<gt>pvs_full>.
 
@@ -6426,7 +6426,7 @@ effective user ID.
 The environment variables C<LIBGUESTFS_CACHEDIR> and C<TMPDIR>
 control the default value: If C<LIBGUESTFS_CACHEDIR> is set, then
 that is the default.  Else if C<TMPDIR> is set, then that is
-the default.  Else C</var/tmp> is the default.
+the default.  Else F</var/tmp> is the default.
 
 =item $g->set_direct ($direct);
 
@@ -6446,7 +6446,7 @@ The default is disabled.
 =item $g->set_e2attrs ($file, $attrs [, clear => $clear]);
 
 This sets or clears the file attributes C<attrs>
-associated with the inode C<file>.
+associated with the inode F<file>.
 
 C<attrs> is a string of characters representing
 file attributes.  See C<$g-E<gt>get_e2attrs> for a list of
@@ -6724,7 +6724,7 @@ Set the directory used by the handle to store temporary files.
 The environment variables C<LIBGUESTFS_TMPDIR> and C<TMPDIR>
 control the default value: If C<LIBGUESTFS_TMPDIR> is set, then
 that is the default.  Else if C<TMPDIR> is set, then that is
-the default.  Else C</tmp> is the default.
+the default.  Else F</tmp> is the default.
 
 =item $g->set_trace ($trace);
 
@@ -6781,7 +6781,7 @@ See also: C<$g-E<gt>lsetxattr>, L<attr(5)>.
 This is a direct interface to the L<sfdisk(8)> program for creating
 partitions on block devices.
 
-C<device> should be a block device, for example C</dev/sda>.
+C<device> should be a block device, for example F</dev/sda>.
 
 C<cyls>, C<heads> and C<sectors> are the number of cylinders, heads
 and sectors on the device, which are passed directly to sfdisk as
@@ -6878,7 +6878,7 @@ with correct use of these functions.
 =item $output = $g->sh ($command);
 
 This call runs a command from the guest filesystem via the
-guest's C</bin/sh>.
+guest's F</bin/sh>.
 
 This is like C<$g-E<gt>command>, but passes the command to:
 
@@ -7080,7 +7080,7 @@ The optional arguments are:
 
 =over 4
 
-=item C<directory>
+=item F<directory>
 
 Install SYSLINUX in the named subdirectory, instead of in the
 root directory of the FAT filesystem.
@@ -7088,8 +7088,8 @@ root directory of the FAT filesystem.
 =back
 
 Additional configuration can be supplied to SYSLINUX by
-placing a file called C<syslinux.cfg> on the FAT filesystem,
-either in the root directory, or under C<directory> if that
+placing a file called F<syslinux.cfg> on the FAT filesystem,
+either in the root directory, or under F<directory> if that
 optional argument is being used.  For further information
 about the contents of this file, see L<syslinux(1)>.
 
@@ -7118,7 +7118,7 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =item $g->tar_in ($tarfile, $directory [, compress => $compress]);
 
-This command uploads and unpacks local file C<tarfile> into C<directory>.
+This command uploads and unpacks local file C<tarfile> into F<directory>.
 
 The optional C<compress> flag controls compression.  If not given,
 then the input should be an uncompressed tar file.  Otherwise one
@@ -7141,7 +7141,7 @@ sub tar_in_opts {
 
 =item $g->tar_out ($directory, $tarfile [, compress => $compress] [, numericowner => $numericowner] [, excludes => $excludes]);
 
-This command packs the contents of C<directory> and downloads
+This command packs the contents of F<directory> and downloads
 it to local file C<tarfile>.
 
 The optional C<compress> flag controls compression.  If not given,
@@ -7182,7 +7182,7 @@ sub tar_out_opts {
 =item $g->tgz_in ($tarball, $directory);
 
 This command uploads and unpacks local file C<tarball> (a
-I<gzip compressed> tar file) into C<directory>.
+I<gzip compressed> tar file) into F<directory>.
 
 I<This function is deprecated.>
 In new code, use the L</tar_in> call instead.
@@ -7193,7 +7193,7 @@ with correct use of these functions.
 
 =item $g->tgz_out ($directory, $tarball);
 
-This command packs the contents of C<directory> and downloads
+This command packs the contents of F<directory> and downloads
 it to local file C<tarball>.
 
 I<This function is deprecated.>
@@ -7316,7 +7316,7 @@ that libguestfs was built against, and the filesystem itself.
 =item $g->txz_in ($tarball, $directory);
 
 This command uploads and unpacks local file C<tarball> (an
-I<xz compressed> tar file) into C<directory>.
+I<xz compressed> tar file) into F<directory>.
 
 I<This function is deprecated.>
 In new code, use the L</tar_in> call instead.
@@ -7327,7 +7327,7 @@ with correct use of these functions.
 
 =item $g->txz_out ($directory, $tarball);
 
-This command packs the contents of C<directory> and downloads
+This command packs the contents of F<directory> and downloads
 it to local file C<tarball> (as an xz compressed tar archive).
 
 I<This function is deprecated.>
@@ -7389,24 +7389,24 @@ See L<guestfs(3)/MOUNT LOCAL> for full documentation.
 
 =item $g->upload ($filename, $remotefilename);
 
-Upload local file C<filename> to C<remotefilename> on the
+Upload local file F<filename> to F<remotefilename> on the
 filesystem.
 
-C<filename> can also be a named pipe.
+F<filename> can also be a named pipe.
 
 See also C<$g-E<gt>download>.
 
 =item $g->upload_offset ($filename, $remotefilename, $offset);
 
-Upload local file C<filename> to C<remotefilename> on the
+Upload local file F<filename> to F<remotefilename> on the
 filesystem.
 
-C<remotefilename> is overwritten starting at the byte C<offset>
+F<remotefilename> is overwritten starting at the byte C<offset>
 specified.  The intention is to overwrite parts of existing
 files or devices, although if a non-existent file is specified
 then it is created with a "hole" before C<offset>.  The
 size of the data written is implicit in the size of the
-source C<filename>.
+source F<filename>.
 
 Note that there is no limit on the amount of data that
 can be uploaded with this call, unlike with C<$g-E<gt>pwrite>,
@@ -7477,7 +7477,7 @@ against.
 Note that because of dynamic linking this is not necessarily
 the version of libguestfs that you compiled against.  You can
 compile the program, and then at runtime dynamically link
-against a completely different C<libguestfs.so> library.
+against a completely different F<libguestfs.so> library.
 
 This call was added in version C<1.0.58>.  In previous
 versions of libguestfs there was no way to get the version
@@ -7806,7 +7806,7 @@ or growing unnecessarily.
 
 =item $g->zero_free_space ($directory);
 
-Zero the free space in the filesystem mounted on C<directory>.
+Zero the free space in the filesystem mounted on F<directory>.
 The filesystem must be mounted read-write.
 
 The filesystem contents are not affected, but any free space
@@ -7861,7 +7861,7 @@ with correct use of these functions.
 
 =item $description = $g->zfile ($meth, $path);
 
-This command runs C<file> after first decompressing C<path>
+This command runs F<file> after first decompressing C<path>
 using C<method>.
 
 C<method> must be one of C<gzip>, C<compress> or C<bzip2>.

@@ -17,13 +17,13 @@ C<guestfsd> は libguestfs
 
 libguestfs アプライアンスのアーキテクチャーは L<guestfs(3)/アーキテクチャー> を参照してください。
 
-After the appliance boots, the C</init> script in the appliance starts
+After the appliance boots, the F</init> script in the appliance starts
 C<guestfsd> with no arguments.  C<guestfsd> opens the virtio-serial port on
 a known path (see L</FILES>).  It initiates the protocol (see
 L<guestfs(3)/COMMUNICATION PROTOCOL>) and processes requests one at a time
 from the library until the appliance is destroyed.
 
-Filesystems are mounted under C</sysroot> and all filesystem operations
+Filesystems are mounted under F</sysroot> and all filesystem operations
 happen relative to this directory.
 
 =head2 LIBGUESTFS LIVE
@@ -32,7 +32,7 @@ In the libguestfs live case, C<guestfsd -r> is started from the rc-scripts,
 systemd, etc.
 
 The C<-r> option causes the daemon to operate on the root filesystem instead
-of C</sysroot>.
+of F</sysroot>.
 
 Currently (because of limitations in virtio-serial) only one client can
 connect at a time, and C<guestfsd> must be restarted after each client
@@ -51,8 +51,8 @@ such as TCP/IP then this limitation could be removed.
 
 =item B<-r>
 
-Set the root filesystem to be C</> (instead of the default which is
-C</sysroot>).  Also do not unmount filesystems when the daemon exits.
+Set the root filesystem to be F</> (instead of the default which is
+F</sysroot>).  Also do not unmount filesystems when the daemon exits.
 
 This option is used to enable libguestfs live.
 
@@ -75,11 +75,11 @@ substring C<guestfs_verbose=1>.
 
 =over 4
 
-=item C</dev/virtio-ports/org.libguestfs.channel.0>
+=item F</dev/virtio-ports/org.libguestfs.channel.0>
 
 C<guestfsd> が接続する virtio シリアルポート。
 
-=item C</proc/cmdline>
+=item F</proc/cmdline>
 
 The Linux command line is parsed to discover C<guestfs_*> flags.  The
 following flags are understood:
@@ -96,7 +96,7 @@ init script to print out a lot more debugging information.
 =item B<guestfs_channel=PATH>
 
 Set the path to the virtio-serial channel to something other than the
-default (which is C</dev/virtio-ports/org.libguestfs.channel.0>).  This is
+default (which is F</dev/virtio-ports/org.libguestfs.channel.0>).  This is
 used by the User-Mode Linux backend to use a regular emulated serial port
 instead of virtio-serial.
 

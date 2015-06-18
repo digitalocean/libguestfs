@@ -102,11 +102,12 @@ for subsequent I<-a> options.
 
  virt-customize --format raw -a disk.img
 
-強制的に C<disk.img> を raw 形式にします (自動検出しません)。
+forces raw format (no auto-detection) for F<disk.img>.
 
  virt-customize --format raw -a disk.img --format auto -a another.img
 
-強制的に C<disk.img> を raw 形式にし (自動検知なし)、 C<another.img> に対して自動検知に戻します。
+forces raw format (no auto-detection) for F<disk.img> and reverts to
+auto-detection for F<another.img>.
 
 仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
 これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。
@@ -223,13 +224,13 @@ This can point to the directory containing data files used for Windows
 firstboot installation.
 
 Normally you do not need to set this.  If not set, a compiled-in default
-will be used (something like C</usr/share/virt-tools>).
+will be used (something like F</usr/share/virt-tools>).
 
 This directory may contain the following files:
 
 =over 4
 
-=item C<rhsrvany.exe>
+=item F<rhsrvany.exe>
 
 This is the RHSrvAny Windows binary, used to install a "firstboot" script in
 Windows guests.  It is required if you intend to use the I<--firstboot> or

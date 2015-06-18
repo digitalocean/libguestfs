@@ -92,6 +92,8 @@ extern int add_string (struct stringsbuf *sb, const char *str);
 extern int add_sprintf (struct stringsbuf *sb, const char *fs, ...)
   __attribute__((format (printf,2,3)));
 extern int end_stringsbuf (struct stringsbuf *sb);
+extern char **take_stringsbuf (struct stringsbuf *sb);
+extern void free_stringsbuf (struct stringsbuf *sb);
 
 extern size_t count_strings (char *const *argv);
 extern void sort_strings (char **argv, size_t len);
@@ -108,6 +110,7 @@ extern int compare_device_names (const char *a, const char *b);
 extern char *concat_strings (char *const *argv);
 extern char *join_strings (const char *separator, char *const *argv);
 
+extern struct stringsbuf split_lines_sb (char *str);
 extern char **split_lines (char *str);
 
 extern char **empty_list (void);
@@ -177,6 +180,7 @@ extern void cleanup_free_string_list (void *ptr);
 extern void cleanup_unlink_free (void *ptr);
 extern void cleanup_close (void *ptr);
 extern void cleanup_aug_close (void *ptr);
+extern void cleanup_free_stringsbuf (void *ptr);
 
 /*-- in names.c (auto-generated) --*/
 extern const char *function_names[];
@@ -457,12 +461,14 @@ is_zero (const char *buffer, size_t size)
 #define CLEANUP_UNLINK_FREE __attribute__((cleanup(cleanup_unlink_free)))
 #define CLEANUP_CLOSE __attribute__((cleanup(cleanup_close)))
 #define CLEANUP_AUG_CLOSE __attribute__((cleanup(cleanup_aug_close)))
+#define CLEANUP_FREE_STRINGSBUF __attribute__((cleanup(cleanup_free_stringsbuf)))
 #else
 #define CLEANUP_FREE
 #define CLEANUP_FREE_STRING_LIST
 #define CLEANUP_UNLINK_FREE
 #define CLEANUP_CLOSE
 #define CLEANUP_AUG_CLOSE
+#define CLEANUP_FREE_STRINGSBUF
 #endif
 
 #endif /* GUESTFSD_DAEMON_H */

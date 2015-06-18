@@ -150,13 +150,12 @@ Note that this option is only available when Perl 5 is installed.
 
  virt-edit --format=raw -a диск.img файл
 
-примусове встановлення формату без обробки (без автоматичного визначення)
-для C<disk.img>.
+forces raw format (no auto-detection) for F<disk.img>.
 
  virt-edit --format=raw -a disk.img --format -a another.img file
 
-примусове встановлення формату без обробки (без автоматичного визначення)
-для C<disk.img> і повернення до автоматичного визначення для C<another.img>.
+forces raw format (no auto-detection) for F<disk.img> and reverts to
+auto-detection for F<another.img>.
 
 Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
 форматі, вам слід скористатися цим параметром для визначення формату
@@ -166,7 +165,7 @@ Note that this option is only available when Perl 5 is installed.
 =item B<--keys-from-stdin>
 
 Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening C</dev/tty>.
+passphrases from the user by opening F</dev/tty>.
 
 =item B<-m пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]>
 
@@ -174,7 +173,7 @@ passphrases from the user by opening C</dev/tty>.
 
 Змонтувати названий розділ або логічний том до вказаної точки монтування.
 
-Якщо точку монтування пропущено, використовуватиметься типове значення C</>.
+If the mountpoint is omitted, it defaults to F</>.
 
 Specifying any mountpoint disables the inspection of the guest and the mount
 of its root and all of its mountpoints, so make sure to mount all the
@@ -297,7 +296,7 @@ C<$_> itself (since that would remove all newlines from the file):
 =head1 ШЛЯХИ У WINDOWS
 
 C<virt-edit> has a limited ability to understand Windows drive letters and
-paths (eg. C<E:\foo\bar.txt>).
+paths (eg. F<E:\foo\bar.txt>).
 
 Тоді і лише тоді, коли у гостьовій системі працює Windows:
 
@@ -344,7 +343,7 @@ Using C<virt-edit> is approximately equivalent to doing:
 
  guestfish --rw -i -d назва_домену edit /файл
 
-where C<domname> is the name of the libvirt guest, and C</file> is the full
+where C<domname> is the name of the libvirt guest, and F</file> is the full
 path to the file.
 
 The command above uses libguestfs's guest inspection feature and so does not
@@ -354,8 +353,8 @@ directly, use:
 
  guestfish --rw -a диск.img -m /dev/sda1 edit /файл
 
-where C<disk.img> is the disk image, C</dev/sda1> is the filesystem within
-the disk image to edit, and C</file> is the full path to the file.
+where F<disk.img> is the disk image, F</dev/sda1> is the filesystem within
+the disk image to edit, and F</file> is the full path to the file.
 
 C<virt-edit> cannot create new files.  Use the guestfish commands C<touch>,
 C<write> or C<upload> instead:

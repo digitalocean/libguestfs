@@ -51,6 +51,7 @@ virt_p2v_SOURCES = \
 	conversion.c \
 	gui.c \
 	kernel.c \
+	kernel-cmdline.c \
 	main.c \
 	miniexpect.c \
 	miniexpect.h \
@@ -154,8 +155,11 @@ stamp-virt-p2v-make-kickstart.pod: virt-p2v-make-kickstart.pod
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
-if ENABLE_APPLIANCE
 TESTS = \
+	test-virt-p2v-cmdline.sh
+
+if ENABLE_APPLIANCE
+TESTS += \
 	test-virt-p2v.sh
 endif ENABLE_APPLIANCE
 

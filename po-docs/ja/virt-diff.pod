@@ -146,11 +146,12 @@ back to auto-detection for subsequent I<-a>/I<-A> options.
 
  virt-diff --format=raw -a disk.img [...]
 
-強制的に C<disk.img> を raw 形式にします (自動検出しません)。
+forces raw format (no auto-detection) for F<disk.img>.
 
  virt-diff --format=raw -a disk.img --format -a another.img [...]
 
-強制的に C<disk.img> を raw 形式にし (自動検知なし)、 C<another.img> に対して自動検知に戻します。
+forces raw format (no auto-detection) for F<disk.img> and reverts to
+auto-detection for F<another.img>.
 
 仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
 これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。
@@ -163,7 +164,8 @@ back to auto-detection for subsequent I<-a>/I<-A> options.
 
 =item B<--keys-from-stdin>
 
-標準入力からキーまたはパスフレーズのパラメーターを読み込みます。 標準で C</dev/tty> を開いているユーザーから読み込もうとします。
+Read key or passphrase parameters from stdin.  The default is to try to read
+passphrases from the user by opening F</dev/tty>.
 
 =item B<--times>
 
