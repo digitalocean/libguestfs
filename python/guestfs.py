@@ -341,14 +341,14 @@ class GuestFS(object):
         return r
 
     def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None, username=None, secret=None, cachemode=None, discard=None, copyonread=None):
-        """This function adds a disk image called "filename" to the
-        handle. "filename" may be a regular host file or a host
+        """This function adds a disk image called filename to the
+        handle. filename may be a regular host file or a host
         device.
         
         When this function is called before "g.launch" (the
         usual case) then the first time you call this function,
-        the disk appears in the API as "/dev/sda", the second
-        time as "/dev/sdb", and so on.
+        the disk appears in the API as /dev/sda, the second time
+        as /dev/sdb, and so on.
         
         In libguestfs ≥ 1.20 you can also call this function
         after launch (with some restrictions). This is called
@@ -363,9 +363,9 @@ class GuestFS(object):
         just want to read the image or write access if you want
         to modify the image).
         
-        This call checks that "filename" exists.
+        This call checks that filename exists.
         
-        "filename" may be the special string "/dev/null". See
+        filename may be the special string "/dev/null". See
         "NULL DISKS" in guestfs(3).
         
         The optional arguments are:
@@ -395,15 +395,15 @@ class GuestFS(object):
         
         "name"
         The name the drive had in the original guest, e.g.
-        "/dev/sdb". This is used as a hint to the guest
+        /dev/sdb. This is used as a hint to the guest
         inspection process if it is available.
         
         "label"
         Give the disk a label. The label should be a unique,
         short string using *only* ASCII characters
         "[a-zA-Z]". As well as its usual name in the API
-        (such as "/dev/sda"), the drive will also be named
-        "/dev/disk/guestfs/*label*".
+        (such as /dev/sda), the drive will also be named
+        /dev/disk/guestfs/*label*.
         
         See "DISK LABELS" in guestfs(3).
         
@@ -414,7 +414,7 @@ class GuestFS(object):
         See also: "REMOTE STORAGE" in guestfs(3).
         
         "protocol = "file""
-        "filename" is interpreted as a local file or
+        filename is interpreted as a local file or
         device. This is the default if the optional
         protocol parameter is omitted.
         
@@ -493,7 +493,7 @@ class GuestFS(object):
         
         If the port number is omitted, then the standard
         port number for the protocol is used (see
-        "/etc/services").
+        /etc/services).
         
         "username"
         For the "ftp", "ftps", "http", "https", "iscsi",
@@ -750,7 +750,7 @@ class GuestFS(object):
         commands.
         
         "root" is the filesystem root. "root" must not be NULL,
-        use "/" instead.
+        use / instead.
         
         The flags are the same as the flags defined in
         <augeas.h>, the logical *or* of the following integers:
@@ -796,7 +796,7 @@ class GuestFS(object):
         boolean flag "before").
         
         "path" must match exactly one existing node in the tree,
-        and "label" must be a label, ie. not contain "/", "*" or
+        and "label" must be a label, ie. not contain /, "*" or
         end with a bracketed index "[N]".
         """
         self._check_not_closed ()
@@ -979,16 +979,15 @@ class GuestFS(object):
 
     def base64_in (self, base64file, filename):
         """This command uploads base64-encoded data from
-        "base64file" to "filename".
+        "base64file" to filename.
         """
         self._check_not_closed ()
         r = libguestfsmod.base64_in (self._o, base64file, filename)
         return r
 
     def base64_out (self, filename, base64file):
-        """This command downloads the contents of "filename",
-        writing it out to local file "base64file" encoded as
-        base64.
+        """This command downloads the contents of filename, writing
+        it out to local file "base64file" encoded as base64.
         """
         self._check_not_closed ()
         r = libguestfsmod.base64_out (self._o, filename, base64file)
@@ -1422,7 +1421,7 @@ class GuestFS(object):
     def btrfs_subvolume_create (self, dest, qgroupid=None):
         """Create a btrfs subvolume. The "dest" argument is the
         destination directory and the name of the subvolume, in
-        the form "/path/to/dest/name". The optional parameter
+        the form /path/to/dest/name. The optional parameter
         "qgroupid" represents the qgroup which the newly created
         subvolume will be added to.
         """
@@ -1484,9 +1483,9 @@ class GuestFS(object):
     def btrfs_subvolume_snapshot (self, source, dest, ro=None, qgroupid=None):
         """Create a snapshot of the btrfs subvolume "source". The
         "dest" argument is the destination directory and the
-        name of the snapshot, in the form "/path/to/dest/name".
-        By default the newly created snapshot is writable, if
-        the value of optional parameter "ro" is true, then a
+        name of the snapshot, in the form /path/to/dest/name. By
+        default the newly created snapshot is writable, if the
+        value of optional parameter "ro" is true, then a
         readonly snapshot is created. The optional parameter
         "qgroupid" represents the qgroup which the newly created
         snapshot will be added to.
@@ -1535,16 +1534,16 @@ class GuestFS(object):
         names to the user. It takes a number of irregular device
         names and returns them in a consistent format:
         
-        "/dev/hdX"
-        "/dev/vdX"
-        These are returned as "/dev/sdX". Note this works
-        for device names and partition names. This is
+        /dev/hdX
+        /dev/vdX
+        These are returned as /dev/sdX. Note this works for
+        device names and partition names. This is
         approximately the reverse of the algorithm described
         in "BLOCK DEVICE NAMING" in guestfs(3).
         
-        "/dev/mapper/VG-LV"
-        "/dev/dm-N"
-        Converted to "/dev/VG/LV" form using
+        /dev/mapper/VG-LV
+        /dev/dm-N
+        Converted to /dev/VG/LV form using
         "g.lvm_canonical_lv_name".
         
         Other strings are returned unmodified.
@@ -1588,10 +1587,10 @@ class GuestFS(object):
         case-sensitive.
         
         One consequence of this is that special directories such
-        as "c:\\windows" may appear as "/WINDOWS" or "/windows"
-        (or other things) depending on the precise details of
-        how they were created. In Windows itself this would not
-        be a problem.
+        as C:\\windows may appear as /WINDOWS or /windows (or
+        other things) depending on the precise details of how
+        they were created. In Windows itself this would not be a
+        problem.
         
         Bug or feature? You decide:
         <http://www.tuxera.com/community/ntfs-3g-faq/#posixfilen
@@ -1697,8 +1696,8 @@ class GuestFS(object):
 
     def checksums_out (self, csumtype, directory, sumsfile):
         """This command computes the checksums of all regular files
-        in "directory" and then emits a list of those checksums
-        to the local output file "sumsfile".
+        in directory and then emits a list of those checksums to
+        the local output file "sumsfile".
         
         This can be used for verifying the integrity of a
         virtual machine. However to be properly secure you
@@ -1774,9 +1773,9 @@ class GuestFS(object):
         string is the content of *stderr* from the command.
         
         The $PATH environment variable will contain at least
-        "/usr/bin" and "/bin". If you require a program from
-        another location, you should provide the full path in
-        the first parameter.
+        /usr/bin and /bin. If you require a program from another
+        location, you should provide the full path in the first
+        parameter.
         
         Shared libraries and data files required by the program
         must be available on filesystems which are mounted in
@@ -1822,8 +1821,8 @@ class GuestFS(object):
         return r
 
     def compress_out (self, ctype, file, zfile, level=None):
-        """This command compresses "file" and writes it out to the
-        local file "zfile".
+        """This command compresses file and writes it out to the
+        local file zfile.
         
         The compression program used is controlled by the
         "ctype" parameter. Currently this includes: "compress",
@@ -2025,7 +2024,7 @@ class GuestFS(object):
         return r
 
     def cpio_out (self, directory, cpiofile, format=None):
-        """This command packs the contents of "directory" and
+        """This command packs the contents of directory and
         downloads it to local file "cpiofile".
         
         The optional "format" parameter can be used to select
@@ -2122,9 +2121,9 @@ class GuestFS(object):
         return r
 
     def disk_create (self, filename, format, size, backingfile=None, backingformat=None, preallocation=None, compat=None, clustersize=None):
-        """Create a blank disk image called "filename" (a host
-        file) with format "format" (usually "raw" or "qcow2").
-        The size is "size" bytes.
+        """Create a blank disk image called filename (a host file)
+        with format "format" (usually "raw" or "qcow2"). The
+        size is "size" bytes.
         
         If used with the optional "backingfile" parameter, then
         a snapshot is created on top of the backing file. In
@@ -2134,8 +2133,8 @@ class GuestFS(object):
         also pass "backingformat" to describe the format of
         "backingfile".
         
-        If "filename" refers to a block device, then the device
-        is formatted. The "size" is ignored since block devices
+        If filename refers to a block device, then the device is
+        formatted. The "size" is ignored since block devices
         have an intrinsic size.
         
         The other optional parameters are:
@@ -2169,8 +2168,8 @@ class GuestFS(object):
 
     def disk_format (self, filename):
         """Detect and return the format of the disk image called
-        "filename". "filename" can also be a host device, etc.
-        If the format of the image could not be detected, then
+        filename. filename can also be a host device, etc. If
+        the format of the image could not be detected, then
         "unknown" is returned.
         
         Note that detecting the disk format can be insecure
@@ -2184,8 +2183,8 @@ class GuestFS(object):
         return r
 
     def disk_has_backing_file (self, filename):
-        """Detect and return whether the disk image "filename" has
-        a backing file.
+        """Detect and return whether the disk image filename has a
+        backing file.
         
         Note that detecting disk features can be insecure under
         some circumstances. See "CVE-2010-3851" in guestfs(3).
@@ -2196,7 +2195,7 @@ class GuestFS(object):
 
     def disk_virtual_size (self, filename):
         """Detect and return the virtual size in bytes of the disk
-        image called "filename".
+        image called filename.
         
         Note that detecting disk features can be insecure under
         some circumstances. See "CVE-2010-3851" in guestfs(3).
@@ -2220,10 +2219,10 @@ class GuestFS(object):
         return r
 
     def download (self, remotefilename, filename):
-        """Download file "remotefilename" and save it as "filename"
-        on the local machine.
+        """Download file remotefilename and save it as filename on
+        the local machine.
         
-        "filename" can also be a named pipe.
+        filename can also be a named pipe.
         
         See also "g.upload", "g.cat".
         """
@@ -2232,10 +2231,10 @@ class GuestFS(object):
         return r
 
     def download_offset (self, remotefilename, filename, offset, size):
-        """Download file "remotefilename" and save it as "filename"
-        on the local machine.
+        """Download file remotefilename and save it as filename on
+        the local machine.
         
-        "remotefilename" is read for "size" bytes starting at
+        remotefilename is read for "size" bytes starting at
         "offset" (this region must be within the file or
         device).
         
@@ -2378,8 +2377,8 @@ class GuestFS(object):
         return r
 
     def equal (self, file1, file2):
-        """This compares the two files "file1" and "file2" and
-        returns true if their content is exactly equal, or false
+        """This compares the two files file1 and file2 and returns
+        true if their content is exactly equal, or false
         otherwise.
         
         The external cmp(1) program is used for the comparison.
@@ -2400,12 +2399,12 @@ class GuestFS(object):
 
     def extlinux (self, directory):
         """Install the SYSLINUX bootloader on the device mounted at
-        "directory". Unlike "g.syslinux" which requires a FAT
+        directory. Unlike "g.syslinux" which requires a FAT
         filesystem, this can be used on an ext2/3/4 or btrfs
         filesystem.
         
-        The "directory" parameter can be either a mountpoint, or
-        a directory within the mountpoint.
+        The directory parameter can be either a mountpoint, or a
+        directory within the mountpoint.
         
         You also have to mark the partition as "active"
         ("g.part_set_bootable") and a Master Boot Record must be
@@ -2415,8 +2414,8 @@ class GuestFS(object):
         extlinux(1) man page for further information.
         
         Additional configuration can be supplied to SYSLINUX by
-        placing a file called "extlinux.conf" on the filesystem
-        under "directory". For further information about the
+        placing a file called extlinux.conf on the filesystem
+        under directory. For further information about the
         contents of this file, see extlinux(1).
         
         See also "g.syslinux".
@@ -2543,7 +2542,7 @@ class GuestFS(object):
         return r
 
     def file_architecture (self, filename):
-        """This detects the architecture of the binary "filename",
+        """This detects the architecture of the binary filename,
         and returns it if known.
         
         Currently defined architectures are:
@@ -2621,7 +2620,7 @@ class GuestFS(object):
         return r
 
     def filesize (self, file):
-        """This command returns the size of "file" in bytes.
+        """This command returns the size of file in bytes.
         
         To get other stats about a file, use "g.stat",
         "g.lstat", "g.is_dir", "g.is_file" etc. To get the size
@@ -2689,7 +2688,7 @@ class GuestFS(object):
 
     def find (self, directory):
         """This command lists out all files and directories,
-        recursively, starting at "directory". It is essentially
+        recursively, starting at directory. It is essentially
         equivalent to running the shell command "find directory
         -print" but some post-processing happens on the output,
         described below.
@@ -2701,7 +2700,7 @@ class GuestFS(object):
         /tmp/b
         /tmp/c/d
         
-        then the returned list from "g.find" "/tmp" would be 4
+        then the returned list from "g.find" /tmp would be 4
         elements:
         
         a
@@ -2709,7 +2708,7 @@ class GuestFS(object):
         c
         c/d
         
-        If "directory" is not a directory, then this command
+        If directory is not a directory, then this command
         returns an error.
         
         The returned list is sorted.
@@ -2722,8 +2721,8 @@ class GuestFS(object):
 
     def find0 (self, directory, files):
         """This command lists out all files and directories,
-        recursively, starting at "directory", placing the
-        resulting list in the external file called "files".
+        recursively, starting at directory, placing the
+        resulting list in the external file called files.
         
         This command works the same way as "g.find" with the
         following exceptions:
@@ -2904,7 +2903,7 @@ class GuestFS(object):
         return r
 
     def get_e2attrs (self, file):
-        """This returns the file attributes associated with "file".
+        """This returns the file attributes associated with file.
         
         The attributes are a set of bits associated with each
         inode which affect the behaviour of the file. The
@@ -3299,7 +3298,7 @@ class GuestFS(object):
         more details.
         
         Notice that there is no equivalent command for expanding
-        a device name (eg. "/dev/sd*"). Use "g.list_devices",
+        a device name (eg. /dev/sd*). Use "g.list_devices",
         "g.list_partitions" etc functions instead.
         
         This function returns a list of strings.
@@ -3384,15 +3383,15 @@ class GuestFS(object):
         
         *   If grub-install reports the error "No suitable drive
         was found in the generated device map." it may be
-        that you need to create a "/boot/grub/device.map"
-        file first that contains the mapping between grub
-        device names and Linux device names. It is usually
+        that you need to create a /boot/grub/device.map file
+        first that contains the mapping between grub device
+        names and Linux device names. It is usually
         sufficient to create a file containing:
         
         (hd0) /dev/vda
         
-        replacing "/dev/vda" with the name of the
-        installation device.
+        replacing /dev/vda with the name of the installation
+        device.
         """
         self._check_not_closed ()
         r = libguestfsmod.grub_install (self._o, root, device)
@@ -3458,7 +3457,7 @@ class GuestFS(object):
     def hivex_commit (self, filename):
         """Commit (write) changes to the hive.
         
-        If the optional "filename" parameter is null, then the
+        If the optional filename parameter is null, then the
         changes are written back to the same hive that was
         opened. If this is not null then they are written to the
         alternate filename given and the original hive is left
@@ -3575,7 +3574,7 @@ class GuestFS(object):
         return r
 
     def hivex_open (self, filename, verbose=None, debug=None, write=None):
-        """Open the Windows Registry hive file named "filename". If
+        """Open the Windows Registry hive file named filename. If
         there was any previous hivex handle associated with this
         guestfs session, then it is closed.
         
@@ -3647,13 +3646,13 @@ class GuestFS(object):
         return r
 
     def initrd_cat (self, initrdpath, filename):
-        """This command unpacks the file "filename" from the initrd
-        file called "initrdpath". The filename must be given
-        *without* the initial "/" character.
+        """This command unpacks the file filename from the initrd
+        file called initrdpath. The filename must be given
+        *without* the initial / character.
         
         For example, in guestfish you could use the following
         command to examine the boot script (usually called
-        "/init") contained in a Linux initrd or initramfs image:
+        /init) contained in a Linux initrd or initramfs image:
         
         initrd-cat /boot/initrd-<version>.img init
         
@@ -3670,7 +3669,7 @@ class GuestFS(object):
     def initrd_list (self, path):
         """This command lists out files contained in an initrd.
         
-        The files are listed without any initial "/" character.
+        The files are listed without any initial / character.
         The files are listed in the order they appear (not
         necessarily alphabetical). Directory names are listed as
         separate items.
@@ -3694,7 +3693,7 @@ class GuestFS(object):
         
         Note for non-C or non-Linux callers: the inotify events
         are defined by the Linux kernel ABI and are listed in
-        "/usr/include/sys/inotify.h".
+        /usr/include/sys/inotify.h.
         """
         self._check_not_closed ()
         r = libguestfsmod.inotify_add_watch (self._o, path, mask)
@@ -3906,7 +3905,7 @@ class GuestFS(object):
 
     def inspect_get_drive_mappings (self, root):
         """This call is useful for Windows which uses a primitive
-        system of assigning drive letters (like "C:") to
+        system of assigning drive letters (like C:\\) to
         partitions. This inspection API examines the Windows
         Registry to find out how disks/partitions are mapped to
         drive letters, and returns a hash table as in the
@@ -4021,8 +4020,8 @@ class GuestFS(object):
         check for this case*.
         
         Libguestfs will start by looking for a file called
-        "/etc/favicon.png" or "C:\\etc\\favicon.png" and if it has
-        the correct format, the contents of this file will be
+        /etc/favicon.png or C:\\etc\\favicon.png and if it has the
+        correct format, the contents of this file will be
         returned. You can disable favicons by passing the
         optional "favicon" boolean as false (default is true).
         
@@ -4106,22 +4105,22 @@ class GuestFS(object):
         associated with this operating system should be mounted.
         Callers should note that this is at best an educated
         guess made by reading configuration files such as
-        "/etc/fstab". *In particular note* that this may return
+        /etc/fstab. *In particular note* that this may return
         filesystems which are non-existent or not mountable and
         callers should be prepared to handle or ignore failures
         if they try to mount them.
         
         Each element in the returned hashtable has a key which
-        is the path of the mountpoint (eg. "/boot") and a value
+        is the path of the mountpoint (eg. /boot) and a value
         which is the filesystem that would be mounted there (eg.
-        "/dev/sda1").
+        /dev/sda1).
         
         Non-mounted devices such as swap devices are *not*
         returned in this list.
         
         For operating systems like Windows which still use drive
         letters, this call will only return an entry for the
-        first drive "mounted on" "/". For information about the
+        first drive "mounted on" /. For information about the
         mapping of drive letters to partitions, see
         "g.inspect_get_drive_mappings".
         
@@ -4304,7 +4303,7 @@ class GuestFS(object):
     def inspect_get_windows_systemroot (self, root):
         """This returns the Windows systemroot of the inspected
         guest. The systemroot is a directory path such as
-        "/WINDOWS".
+        /WINDOWS.
         
         This call assumes that the guest is Windows and that the
         systemroot could be determined by inspection. If this is
@@ -4744,8 +4743,8 @@ class GuestFS(object):
         
         This call only looks at files within the guest
         filesystem. Libguestfs partitions and block devices (eg.
-        "/dev/sda") cannot be used as the "path" parameter of
-        this call.
+        /dev/sda) cannot be used as the "path" parameter of this
+        call.
         
         See also "g.stat".
         """
@@ -5026,7 +5025,7 @@ class GuestFS(object):
         return r
 
     def journal_open (self, directory):
-        """Open the systemd journal located in "directory". Any
+        """Open the systemd journal located in directory. Any
         previously opened journal handle is closed.
         
         The contents of the journal can be read using
@@ -5284,8 +5283,7 @@ class GuestFS(object):
     def list_devices (self):
         """List all the block devices.
         
-        The full block device names are returned, eg.
-        "/dev/sda".
+        The full block device names are returned, eg. /dev/sda.
         
         See also "g.list_filesystems".
         
@@ -5299,12 +5297,12 @@ class GuestFS(object):
         """If you add drives using the optional "label" parameter
         of "g.add_drive_opts", you can use this call to map
         between disk labels, and raw block device and partition
-        names (like "/dev/sda" and "/dev/sda1").
+        names (like /dev/sda and /dev/sda1).
         
         This returns a hashtable, where keys are the disk labels
-        (*without* the "/dev/disk/guestfs" prefix), and the
-        values are the full raw block device and partition names
-        (eg. "/dev/sda" and "/dev/sda1").
+        (*without* the /dev/disk/guestfs prefix), and the values
+        are the full raw block device and partition names (eg.
+        /dev/sda and /dev/sda1).
         
         This function returns a hash. If the GuestFS constructor
         was called with python_return_dict=True (recommended)
@@ -5320,7 +5318,7 @@ class GuestFS(object):
     def list_dm_devices (self):
         """List all device mapper devices.
         
-        The returned list contains "/dev/mapper/*" devices, eg.
+        The returned list contains /dev/mapper/* devices, eg.
         ones created by a previous call to "g.luks_open".
         
         Device mapper devices which correspond to logical
@@ -5415,7 +5413,7 @@ class GuestFS(object):
         """List all the partitions detected on all block devices.
         
         The full partition device names are returned, eg.
-        "/dev/sda1"
+        /dev/sda1
         
         This does not return logical volumes. For that you will
         need to call "g.lvs".
@@ -5429,7 +5427,7 @@ class GuestFS(object):
         return r
 
     def ll (self, directory):
-        """List the files in "directory" (relative to the root
+        """List the files in directory (relative to the root
         directory, there is no cwd) in the format of 'ls -la'.
         
         This command is mostly useful for interactive sessions.
@@ -5441,8 +5439,7 @@ class GuestFS(object):
         return r
 
     def llz (self, directory):
-        """List the files in "directory" in the format of 'ls
-        -laZ'.
+        """List the files in directory in the format of 'ls -laZ'.
         
         This command is mostly useful for interactive sessions.
         It is *not* intended that you try to parse the output
@@ -5495,7 +5492,7 @@ class GuestFS(object):
         return r
 
     def ls (self, directory):
-        """List the files in "directory" (relative to the root
+        """List the files in directory (relative to the root
         directory, there is no cwd). The '.' and '..' entries
         are not returned, but hidden files are shown.
         
@@ -5508,7 +5505,7 @@ class GuestFS(object):
     def ls0 (self, dir, filenames):
         """This specialized command is used to get a listing of the
         filenames in the directory "dir". The list of filenames
-        is written to the local file "filenames" (on the host).
+        is written to the local file filenames (on the host).
         
         In the output file, the filenames are separated by "\\0"
         characters.
@@ -5643,7 +5640,7 @@ class GuestFS(object):
         """This closes a LUKS device that was created earlier by
         "g.luks_open" or "g.luks_open_ro". The "device"
         parameter must be the name of the LUKS mapping device
-        (ie. "/dev/mapper/mapname") and *not* the name of the
+        (ie. /dev/mapper/mapname) and *not* the name of the
         underlying block device.
         """
         self._check_not_closed ()
@@ -5688,7 +5685,7 @@ class GuestFS(object):
         the LUKS block device, in the "key" parameter.
         
         This creates a new block device called
-        "/dev/mapper/mapname". Reads and writes to this block
+        /dev/mapper/mapname. Reads and writes to this block
         device are decrypted from and encrypted to the
         underlying "device" respectively.
         
@@ -5721,8 +5718,8 @@ class GuestFS(object):
 
     def lvcreate_free (self, logvol, volgroup, percent):
         """Create an LVM logical volume called
-        "/dev/volgroup/logvol", using approximately "percent" %
-        of the free space remaining in the volume group. Most
+        /dev/volgroup/logvol, using approximately "percent" % of
+        the free space remaining in the volume group. Most
         usefully, when "percent" is 100 this will create the
         largest possible LV.
         """
@@ -5733,7 +5730,7 @@ class GuestFS(object):
     def lvm_canonical_lv_name (self, lvname):
         """This converts alternative naming schemes for LVs that
         you might find to the canonical name. For example,
-        "/dev/mapper/VG-LV" is converted to "/dev/VG/LV".
+        /dev/mapper/VG-LV is converted to /dev/VG/LV.
         
         This command returns an error if the "lvname" parameter
         does not refer to a logical volume.
@@ -5795,10 +5792,10 @@ class GuestFS(object):
 
     def lvremove (self, device):
         """Remove an LVM logical volume "device", where "device" is
-        the path to the LV, such as "/dev/VG/LV".
+        the path to the LV, such as /dev/VG/LV.
         
         You can also remove all LVs in a volume group by
-        specifying the VG name, "/dev/VG".
+        specifying the VG name, /dev/VG.
         """
         self._check_not_closed ()
         r = libguestfsmod.lvremove (self._o, device)
@@ -5837,7 +5834,7 @@ class GuestFS(object):
         equivalent of the lvs(8) command.
         
         This returns a list of the logical volume device names
-        (eg. "/dev/VolGroup00/LogVol00").
+        (eg. /dev/VolGroup00/LogVol00).
         
         See also "g.lvs_full", "g.list_filesystems".
         
@@ -6430,8 +6427,8 @@ class GuestFS(object):
         """Create a swap partition on "device" with label "label".
         
         Note that you cannot attach a swap label to a block
-        device (eg. "/dev/sda"), just to a partition. This
-        appears to be a limitation of the kernel or swap tools.
+        device (eg. /dev/sda), just to a partition. This appears
+        to be a limitation of the kernel or swap tools.
         
         *This function is deprecated.* In new code, use the
         "mkswap" call instead.
@@ -6506,17 +6503,17 @@ class GuestFS(object):
 
     def mount (self, mountable, mountpoint):
         """Mount a guest disk at a position in the filesystem.
-        Block devices are named "/dev/sda", "/dev/sdb" and so
-        on, as they were added to the guest. If those block
-        devices contain partitions, they will have the usual
-        names (eg. "/dev/sda1"). Also LVM "/dev/VG/LV"-style
-        names can be used, or 'mountable' strings returned by
-        "g.list_filesystems" or "g.inspect_get_mountpoints".
+        Block devices are named /dev/sda, /dev/sdb and so on, as
+        they were added to the guest. If those block devices
+        contain partitions, they will have the usual names (eg.
+        /dev/sda1). Also LVM /dev/VG/LV-style names can be used,
+        or 'mountable' strings returned by "g.list_filesystems"
+        or "g.inspect_get_mountpoints".
         
         The rules are the same as for mount(2): A filesystem
-        must first be mounted on "/" before others can be
-        mounted. Other filesystems can only be mounted on
-        directories which already exist.
+        must first be mounted on / before others can be mounted.
+        Other filesystems can only be mounted on directories
+        which already exist.
         
         The mounted filesystem is writable, if we have
         sufficient permissions on the underlying device.
@@ -6599,9 +6596,9 @@ class GuestFS(object):
         return r
 
     def mount_loop (self, file, mountpoint):
-        """This command lets you mount "file" (a filesystem image
-        in a file) on a mount point. It is entirely equivalent
-        to the command "mount -o loop file mountpoint".
+        """This command lets you mount file (a filesystem image in
+        a file) on a mount point. It is entirely equivalent to
+        the command "mount -o loop file mountpoint".
         """
         self._check_not_closed ()
         r = libguestfsmod.mount_loop (self._o, file, mountpoint)
@@ -6655,8 +6652,8 @@ class GuestFS(object):
 
     def mounts (self):
         """This returns the list of currently mounted filesystems.
-        It returns the list of devices (eg. "/dev/sda1",
-        "/dev/VG/LV").
+        It returns the list of devices (eg. /dev/sda1,
+        /dev/VG/LV).
         
         Some internal mounts are not shown.
         
@@ -7191,7 +7188,7 @@ class GuestFS(object):
     def pvcreate (self, device):
         """This creates an LVM physical volume on the named
         "device", where "device" should usually be a partition
-        name such as "/dev/sda1".
+        name such as /dev/sda1.
         """
         self._check_not_closed ()
         r = libguestfsmod.pvcreate (self._o, device)
@@ -7232,7 +7229,7 @@ class GuestFS(object):
         equivalent of the pvs(8) command.
         
         This returns a list of just the device names that
-        contain PVs (eg. "/dev/sda2").
+        contain PVs (eg. /dev/sda2).
         
         See also "g.pvs_full".
         
@@ -7787,7 +7784,7 @@ class GuestFS(object):
         "TMPDIR" control the default value: If
         "LIBGUESTFS_CACHEDIR" is set, then that is the default.
         Else if "TMPDIR" is set, then that is the default. Else
-        "/var/tmp" is the default.
+        /var/tmp is the default.
         """
         self._check_not_closed ()
         r = libguestfsmod.set_cachedir (self._o, cachedir)
@@ -7813,7 +7810,7 @@ class GuestFS(object):
 
     def set_e2attrs (self, file, attrs, clear=None):
         """This sets or clears the file attributes "attrs"
-        associated with the inode "file".
+        associated with the inode file.
         
         "attrs" is a string of characters representing file
         attributes. See "g.get_e2attrs" for a list of possible
@@ -8141,7 +8138,7 @@ class GuestFS(object):
         "TMPDIR" control the default value: If
         "LIBGUESTFS_TMPDIR" is set, then that is the default.
         Else if "TMPDIR" is set, then that is the default. Else
-        "/tmp" is the default.
+        /tmp is the default.
         """
         self._check_not_closed ()
         r = libguestfsmod.set_tmpdir (self._o, tmpdir)
@@ -8216,8 +8213,7 @@ class GuestFS(object):
         """This is a direct interface to the sfdisk(8) program for
         creating partitions on block devices.
         
-        "device" should be a block device, for example
-        "/dev/sda".
+        "device" should be a block device, for example /dev/sda.
         
         "cyls", "heads" and "sectors" are the number of
         cylinders, heads and sectors on the device, which are
@@ -8337,7 +8333,7 @@ class GuestFS(object):
 
     def sh (self, command):
         """This call runs a command from the guest filesystem via
-        the guest's "/bin/sh".
+        the guest's /bin/sh.
         
         This is like "g.command", but passes the command to:
         
@@ -8604,14 +8600,14 @@ class GuestFS(object):
         
         The optional arguments are:
         
-        "directory"
+        directory
         Install SYSLINUX in the named subdirectory, instead
         of in the root directory of the FAT filesystem.
         
         Additional configuration can be supplied to SYSLINUX by
-        placing a file called "syslinux.cfg" on the FAT
+        placing a file called syslinux.cfg on the FAT
         filesystem, either in the root directory, or under
-        "directory" if that optional argument is being used. For
+        directory if that optional argument is being used. For
         further information about the contents of this file, see
         syslinux(1).
         
@@ -8658,7 +8654,7 @@ class GuestFS(object):
 
     def tar_in (self, tarfile, directory, compress=None):
         """This command uploads and unpacks local file "tarfile"
-        into "directory".
+        into directory.
         
         The optional "compress" flag controls compression. If
         not given, then the input should be an uncompressed tar
@@ -8675,7 +8671,7 @@ class GuestFS(object):
     tar_in_opts = tar_in
 
     def tar_out (self, directory, tarfile, compress=None, numericowner=None, excludes=None):
-        """This command packs the contents of "directory" and
+        """This command packs the contents of directory and
         downloads it to local file "tarfile".
         
         The optional "compress" flag controls compression. If
@@ -8704,7 +8700,7 @@ class GuestFS(object):
 
     def tgz_in (self, tarball, directory):
         """This command uploads and unpacks local file "tarball" (a
-        *gzip compressed* tar file) into "directory".
+        *gzip compressed* tar file) into directory.
         
         *This function is deprecated.* In new code, use the
         "tar_in" call instead.
@@ -8718,7 +8714,7 @@ class GuestFS(object):
         return r
 
     def tgz_out (self, directory, tarball):
-        """This command packs the contents of "directory" and
+        """This command packs the contents of directory and
         downloads it to local file "tarball".
         
         *This function is deprecated.* In new code, use the
@@ -8860,7 +8856,7 @@ class GuestFS(object):
 
     def txz_in (self, tarball, directory):
         """This command uploads and unpacks local file "tarball"
-        (an *xz compressed* tar file) into "directory".
+        (an *xz compressed* tar file) into directory.
         
         *This function is deprecated.* In new code, use the
         "tar_in" call instead.
@@ -8874,7 +8870,7 @@ class GuestFS(object):
         return r
 
     def txz_out (self, directory, tarball):
-        """This command packs the contents of "directory" and
+        """This command packs the contents of directory and
         downloads it to local file "tarball" (as an xz
         compressed tar archive).
         
@@ -8941,10 +8937,10 @@ class GuestFS(object):
         return r
 
     def upload (self, filename, remotefilename):
-        """Upload local file "filename" to "remotefilename" on the
+        """Upload local file filename to remotefilename on the
         filesystem.
         
-        "filename" can also be a named pipe.
+        filename can also be a named pipe.
         
         See also "g.download".
         """
@@ -8953,15 +8949,15 @@ class GuestFS(object):
         return r
 
     def upload_offset (self, filename, remotefilename, offset):
-        """Upload local file "filename" to "remotefilename" on the
+        """Upload local file filename to remotefilename on the
         filesystem.
         
-        "remotefilename" is overwritten starting at the byte
+        remotefilename is overwritten starting at the byte
         "offset" specified. The intention is to overwrite parts
         of existing files or devices, although if a non-existent
         file is specified then it is created with a "hole"
         before "offset". The size of the data written is
-        implicit in the size of the source "filename".
+        implicit in the size of the source filename.
         
         Note that there is no limit on the amount of data that
         can be uploaded with this call, unlike with "g.pwrite",
@@ -9054,7 +9050,7 @@ class GuestFS(object):
         necessarily the version of libguestfs that you compiled
         against. You can compile the program, and then at
         runtime dynamically link against a completely different
-        "libguestfs.so" library.
+        libguestfs.so library.
         
         This call was added in version 1.0.58. In previous
         versions of libguestfs there was no way to get the
@@ -9531,7 +9527,7 @@ class GuestFS(object):
 
     def zero_free_space (self, directory):
         """Zero the free space in the filesystem mounted on
-        "directory". The filesystem must be mounted read-write.
+        directory. The filesystem must be mounted read-write.
         
         The filesystem contents are not affected, but any free
         space in the filesystem is freed.
@@ -9603,8 +9599,8 @@ class GuestFS(object):
         return r
 
     def zfile (self, meth, path):
-        """This command runs "file" after first decompressing
-        "path" using "method".
+        """This command runs file after first decompressing "path"
+        using "method".
         
         "method" must be one of "gzip", "compress" or "bzip2".
         

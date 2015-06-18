@@ -52,7 +52,7 @@ output human-readable:
  F14x64:/dev/sda1                 484M      66M       393M   14%
  F14x64:/dev/vg_f13x64/lv_root    7.4G     3.4G       4.0G   46%
 
-C<test.img> というディスクイメージファイルのディスク使用量を表示します:
+Show disk usage for a disk image file called F<test.img>:
 
  $ virt-df -a test1.img
  Filesystem                  1K-blocks     Used  Available  Use%
@@ -124,11 +124,12 @@ I<-a> オプションは標準状態でディスクイメージの形式を自�
 
  virt-df --format=raw -a disk.img
 
-強制的に C<disk.img> を raw 形式にします (自動検出しません)。
+forces raw format (no auto-detection) for F<disk.img>.
 
  virt-df --format=raw -a disk.img --format -a another.img
 
-強制的に C<disk.img> を raw 形式にし (自動検知なし)、 C<another.img> に対して自動検知に戻します。
+forces raw format (no auto-detection) for F<disk.img> and reverts to
+auto-detection for F<another.img>.
 
 仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
 これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。
@@ -203,7 +204,7 @@ call.  You can get the same information directly, either from the host
 
  guestfish --ro -d GuestName -i statvfs /
 
-(他のファイルシステムの統計情報を参照するには C</> に変更します)。
+(change F</> to see stats for other filesystems).
 
 =item 仮想マシンの中から
 
@@ -211,7 +212,7 @@ call.  You can get the same information directly, either from the host
 
  python -c 'import os; s = os.statvfs ("/"); print s'
 
-(他のファイルシステムの統計情報を参照するには C</> に変更します)。
+(change F</> to see stats for other filesystems).
 
 =back
 

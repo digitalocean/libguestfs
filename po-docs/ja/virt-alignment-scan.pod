@@ -61,7 +61,8 @@ libvirt が把握している仮想マシンにおいてツールを実行する
 
 =item 1 列目
 
-デバイス名およびパーティション名 (例: C</dev/sda1> は最初のブロックデバイスにある最初のパーティションを意味します)。
+The device and partition name (eg. F</dev/sda1> meaning the first partition
+on the first block device).
 
 すべての libvirt 仮想マシンを一覧表示するとき (I<-a> や I<-d> オプションなし)、この列は libvirt 名または UUID
 が先頭につきます (I<--uuid> が指定されていると)。例: C<WinXP:/dev/sda1>
@@ -137,11 +138,12 @@ I<-a> オプションは標準状態でディスクイメージの形式を自�
 
  virt-alignment-scan --format=raw -a disk.img
 
-強制的に C<disk.img> を raw 形式にします (自動検出しません)。
+forces raw format (no auto-detection) for F<disk.img>.
 
  virt-alignment-scan --format=raw -a disk.img --format -a another.img
 
-強制的に C<disk.img> を raw 形式にし (自動検知なし)、 C<another.img> に対して自動検知に戻します。
+forces raw format (no auto-detection) for F<disk.img> and reverts to
+auto-detection for F<another.img>.
 
 仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
 これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。

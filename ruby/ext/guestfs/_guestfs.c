@@ -805,14 +805,14 @@ ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
  *
  * add an image to examine or modify
  *
- * This function adds a disk image called "filename" to the
- * handle. "filename" may be a regular host file or a host
+ * This function adds a disk image called filename to the
+ * handle. filename may be a regular host file or a host
  * device.
  * 
  * When this function is called before "g.launch" (the
  * usual case) then the first time you call this function,
- * the disk appears in the API as "/dev/sda", the second
- * time as "/dev/sdb", and so on.
+ * the disk appears in the API as /dev/sda, the second time
+ * as /dev/sdb, and so on.
  * 
  * In libguestfs ≥ 1.20 you can also call this function
  * after launch (with some restrictions). This is called
@@ -827,9 +827,9 @@ ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
  * just want to read the image or write access if you want
  * to modify the image).
  * 
- * This call checks that "filename" exists.
+ * This call checks that filename exists.
  * 
- * "filename" may be the special string "/dev/null". See
+ * filename may be the special string "/dev/null". See
  * "NULL DISKS" in guestfs(3).
  * 
  * The optional arguments are:
@@ -859,15 +859,15 @@ ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
  * 
  * "name"
  * The name the drive had in the original guest, e.g.
- * "/dev/sdb". This is used as a hint to the guest
+ * /dev/sdb. This is used as a hint to the guest
  * inspection process if it is available.
  * 
  * "label"
  * Give the disk a label. The label should be a unique,
  * short string using *only* ASCII characters
  * "[a-zA-Z]". As well as its usual name in the API
- * (such as "/dev/sda"), the drive will also be named
- * "/dev/disk/guestfs/ *label*".
+ * (such as /dev/sda), the drive will also be named
+ * /dev/disk/guestfs/ *label*.
  * 
  * See "DISK LABELS" in guestfs(3).
  * 
@@ -878,7 +878,7 @@ ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
  * See also: "REMOTE STORAGE" in guestfs(3).
  * 
  * "protocol = "file""
- * "filename" is interpreted as a local file or
+ * filename is interpreted as a local file or
  * device. This is the default if the optional
  * protocol parameter is omitted.
  * 
@@ -957,7 +957,7 @@ ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
  * 
  * If the port number is omitted, then the standard
  * port number for the protocol is used (see
- * "/etc/services").
+ * /etc/services).
  * 
  * "username"
  * For the "ftp", "ftps", "http", "https", "iscsi",
@@ -1646,7 +1646,7 @@ ruby_guestfs_aug_get (VALUE gv, VALUE augpathv)
  * commands.
  * 
  * "root" is the filesystem root. "root" must not be NULL,
- * use "/" instead.
+ * use / instead.
  * 
  * The flags are the same as the flags defined in
  * <augeas.h>, the logical *or* of the following integers:
@@ -1717,7 +1717,7 @@ ruby_guestfs_aug_init (VALUE gv, VALUE rootv, VALUE flagsv)
  * boolean flag "before").
  * 
  * "path" must match exactly one existing node in the tree,
- * and "label" must be a label, ie. not contain "/", "*" or
+ * and "label" must be a label, ie. not contain /, "*" or
  * end with a bracketed index "[N]".
  *
  *
@@ -2222,7 +2222,7 @@ ruby_guestfs_available_all_groups (VALUE gv)
  * upload base64-encoded data to file
  *
  * This command uploads base64-encoded data from
- * "base64file" to "filename".
+ * "base64file" to filename.
  *
  *
  * (For the C API documentation for this function, see
@@ -2254,9 +2254,8 @@ ruby_guestfs_base64_in (VALUE gv, VALUE base64filev, VALUE filenamev)
  *
  * download file and encode as base64
  *
- * This command downloads the contents of "filename",
- * writing it out to local file "base64file" encoded as
- * base64.
+ * This command downloads the contents of filename, writing
+ * it out to local file "base64file" encoded as base64.
  *
  *
  * (For the C API documentation for this function, see
@@ -3862,7 +3861,7 @@ ruby_guestfs_btrfs_set_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
  *
  * Create a btrfs subvolume. The "dest" argument is the
  * destination directory and the name of the subvolume, in
- * the form "/path/to/dest/name". The optional parameter
+ * the form /path/to/dest/name. The optional parameter
  * "qgroupid" represents the qgroup which the newly created
  * subvolume will be added to.
  * 
@@ -4095,9 +4094,9 @@ ruby_guestfs_btrfs_subvolume_show (VALUE gv, VALUE subvolumev)
  *
  * Create a snapshot of the btrfs subvolume "source". The
  * "dest" argument is the destination directory and the
- * name of the snapshot, in the form "/path/to/dest/name".
- * By default the newly created snapshot is writable, if
- * the value of optional parameter "ro" is true, then a
+ * name of the snapshot, in the form /path/to/dest/name. By
+ * default the newly created snapshot is writable, if the
+ * value of optional parameter "ro" is true, then a
  * readonly snapshot is created. The optional parameter
  * "qgroupid" represents the qgroup which the newly created
  * snapshot will be added to.
@@ -4291,16 +4290,16 @@ ruby_guestfs_c_pointer (VALUE gv)
  * names to the user. It takes a number of irregular device
  * names and returns them in a consistent format:
  * 
- * "/dev/hdX"
- * "/dev/vdX"
- * These are returned as "/dev/sdX". Note this works
- * for device names and partition names. This is
+ * /dev/hdX
+ * /dev/vdX
+ * These are returned as /dev/sdX. Note this works for
+ * device names and partition names. This is
  * approximately the reverse of the algorithm described
  * in "BLOCK DEVICE NAMING" in guestfs(3).
  * 
- * "/dev/mapper/VG-LV"
- * "/dev/dm-N"
- * Converted to "/dev/VG/LV" form using
+ * /dev/mapper/VG-LV
+ * /dev/dm-N
+ * Converted to /dev/VG/LV form using
  * "g.lvm_canonical_lv_name".
  * 
  * Other strings are returned unmodified.
@@ -4421,10 +4420,10 @@ ruby_guestfs_cap_set_file (VALUE gv, VALUE pathv, VALUE capv)
  * case-sensitive.
  * 
  * One consequence of this is that special directories such
- * as "c:\windows" may appear as "/WINDOWS" or "/windows"
- * (or other things) depending on the precise details of
- * how they were created. In Windows itself this would not
- * be a problem.
+ * as C:\windows may appear as /WINDOWS or /windows (or
+ * other things) depending on the precise details of how
+ * they were created. In Windows itself this would not be a
+ * problem.
  * 
  * Bug or feature? You decide:
  * <http://www.tuxera.com/community/ntfs-3g-faq/#posixfilen
@@ -4636,8 +4635,8 @@ ruby_guestfs_checksum_device (VALUE gv, VALUE csumtypev, VALUE devicev)
  * compute MD5, SHAx or CRC checksum of files in a directory
  *
  * This command computes the checksums of all regular files
- * in "directory" and then emits a list of those checksums
- * to the local output file "sumsfile".
+ * in directory and then emits a list of those checksums to
+ * the local output file "sumsfile".
  * 
  * This can be used for verifying the integrity of a
  * virtual machine. However to be properly secure you
@@ -4814,9 +4813,9 @@ ruby_guestfs_clear_backend_setting (VALUE gv, VALUE namev)
  * string is the content of *stderr* from the command.
  * 
  * The $PATH environment variable will contain at least
- * "/usr/bin" and "/bin". If you require a program from
- * another location, you should provide the full path in
- * the first parameter.
+ * /usr/bin and /bin. If you require a program from another
+ * location, you should provide the full path in the first
+ * parameter.
  * 
  * Shared libraries and data files required by the program
  * must be available on filesystems which are mounted in
@@ -4988,8 +4987,8 @@ ruby_guestfs_compress_device_out (int argc, VALUE *argv, VALUE gv)
  *
  * output compressed file
  *
- * This command compresses "file" and writes it out to the
- * local file "zfile".
+ * This command compresses file and writes it out to the
+ * local file zfile.
  * 
  * The compression program used is controlled by the
  * "ctype" parameter. Currently this includes: "compress",
@@ -5720,7 +5719,7 @@ ruby_guestfs_cp_r (VALUE gv, VALUE srcv, VALUE destv)
  *
  * pack directory into cpio file
  *
- * This command packs the contents of "directory" and
+ * This command packs the contents of directory and
  * downloads it to local file "cpiofile".
  * 
  * The optional "format" parameter can be used to select
@@ -6045,9 +6044,9 @@ ruby_guestfs_df_h (VALUE gv)
  *
  * create a blank disk image
  *
- * Create a blank disk image called "filename" (a host
- * file) with format "format" (usually "raw" or "qcow2").
- * The size is "size" bytes.
+ * Create a blank disk image called filename (a host file)
+ * with format "format" (usually "raw" or "qcow2"). The
+ * size is "size" bytes.
  * 
  * If used with the optional "backingfile" parameter, then
  * a snapshot is created on top of the backing file. In
@@ -6057,8 +6056,8 @@ ruby_guestfs_df_h (VALUE gv)
  * also pass "backingformat" to describe the format of
  * "backingfile".
  * 
- * If "filename" refers to a block device, then the device
- * is formatted. The "size" is ignored since block devices
+ * If filename refers to a block device, then the device is
+ * formatted. The "size" is ignored since block devices
  * have an intrinsic size.
  * 
  * The other optional parameters are:
@@ -6160,8 +6159,8 @@ ruby_guestfs_disk_create (int argc, VALUE *argv, VALUE gv)
  * detect the disk format of a disk image
  *
  * Detect and return the format of the disk image called
- * "filename". "filename" can also be a host device, etc.
- * If the format of the image could not be detected, then
+ * filename. filename can also be a host device, etc. If
+ * the format of the image could not be detected, then
  * "unknown" is returned.
  * 
  * Note that detecting the disk format can be insecure
@@ -6201,8 +6200,8 @@ ruby_guestfs_disk_format (VALUE gv, VALUE filenamev)
  *
  * return whether disk has a backing file
  *
- * Detect and return whether the disk image "filename" has
- * a backing file.
+ * Detect and return whether the disk image filename has a
+ * backing file.
  * 
  * Note that detecting disk features can be insecure under
  * some circumstances. See "CVE-2010-3851" in guestfs(3).
@@ -6237,7 +6236,7 @@ ruby_guestfs_disk_has_backing_file (VALUE gv, VALUE filenamev)
  * return virtual size of a disk
  *
  * Detect and return the virtual size in bytes of the disk
- * image called "filename".
+ * image called filename.
  * 
  * Note that detecting disk features can be insecure under
  * some circumstances. See "CVE-2010-3851" in guestfs(3).
@@ -6310,10 +6309,10 @@ ruby_guestfs_dmesg (VALUE gv)
  *
  * download a file to the local machine
  *
- * Download file "remotefilename" and save it as "filename"
- * on the local machine.
+ * Download file remotefilename and save it as filename on
+ * the local machine.
  * 
- * "filename" can also be a named pipe.
+ * filename can also be a named pipe.
  * 
  * See also "g.upload", "g.cat".
  *
@@ -6347,10 +6346,10 @@ ruby_guestfs_download (VALUE gv, VALUE remotefilenamev, VALUE filenamev)
  *
  * download a file to the local machine with offset and size
  *
- * Download file "remotefilename" and save it as "filename"
- * on the local machine.
+ * Download file remotefilename and save it as filename on
+ * the local machine.
  * 
- * "remotefilename" is read for "size" bytes starting at
+ * remotefilename is read for "size" bytes starting at
  * "offset" (this region must be within the file or
  * device).
  * 
@@ -6740,8 +6739,8 @@ ruby_guestfs_egrepi (VALUE gv, VALUE regexv, VALUE pathv)
  *
  * test if two files have equal contents
  *
- * This compares the two files "file1" and "file2" and
- * returns true if their content is exactly equal, or false
+ * This compares the two files file1 and file2 and returns
+ * true if their content is exactly equal, or false
  * otherwise.
  * 
  * The external cmp(1) program is used for the comparison.
@@ -6811,12 +6810,12 @@ ruby_guestfs_exists (VALUE gv, VALUE pathv)
  * install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem
  *
  * Install the SYSLINUX bootloader on the device mounted at
- * "directory". Unlike "g.syslinux" which requires a FAT
+ * directory. Unlike "g.syslinux" which requires a FAT
  * filesystem, this can be used on an ext2/3/4 or btrfs
  * filesystem.
  * 
- * The "directory" parameter can be either a mountpoint, or
- * a directory within the mountpoint.
+ * The directory parameter can be either a mountpoint, or a
+ * directory within the mountpoint.
  * 
  * You also have to mark the partition as "active"
  * ("g.part_set_bootable") and a Master Boot Record must be
@@ -6826,8 +6825,8 @@ ruby_guestfs_exists (VALUE gv, VALUE pathv)
  * extlinux(1) man page for further information.
  * 
  * Additional configuration can be supplied to SYSLINUX by
- * placing a file called "extlinux.conf" on the filesystem
- * under "directory". For further information about the
+ * placing a file called extlinux.conf on the filesystem
+ * under directory. For further information about the
  * contents of this file, see extlinux(1).
  * 
  * See also "g.syslinux".
@@ -7151,7 +7150,7 @@ ruby_guestfs_file (VALUE gv, VALUE pathv)
  *
  * detect the architecture of a binary file
  *
- * This detects the architecture of the binary "filename",
+ * This detects the architecture of the binary filename,
  * and returns it if known.
  * 
  * Currently defined architectures are:
@@ -7255,7 +7254,7 @@ ruby_guestfs_file_architecture (VALUE gv, VALUE filenamev)
  *
  * return the size of the file in bytes
  *
- * This command returns the size of "file" in bytes.
+ * This command returns the size of file in bytes.
  * 
  * To get other stats about a file, use "g.stat",
  * "g.lstat", "g.is_dir", "g.is_file" etc. To get the size
@@ -7448,7 +7447,7 @@ ruby_guestfs_fill_pattern (VALUE gv, VALUE patternv, VALUE lenv, VALUE pathv)
  * find all files and directories
  *
  * This command lists out all files and directories,
- * recursively, starting at "directory". It is essentially
+ * recursively, starting at directory. It is essentially
  * equivalent to running the shell command "find directory
  * -print" but some post-processing happens on the output,
  * described below.
@@ -7460,7 +7459,7 @@ ruby_guestfs_fill_pattern (VALUE gv, VALUE patternv, VALUE lenv, VALUE pathv)
  * /tmp/b
  * /tmp/c/d
  * 
- * then the returned list from "g.find" "/tmp" would be 4
+ * then the returned list from "g.find" /tmp would be 4
  * elements:
  * 
  * a
@@ -7468,7 +7467,7 @@ ruby_guestfs_fill_pattern (VALUE gv, VALUE patternv, VALUE lenv, VALUE pathv)
  * c
  * c/d
  * 
- * If "directory" is not a directory, then this command
+ * If directory is not a directory, then this command
  * returns an error.
  * 
  * The returned list is sorted.
@@ -7511,8 +7510,8 @@ ruby_guestfs_find (VALUE gv, VALUE directoryv)
  * find all files and directories, returning NUL-separated list
  *
  * This command lists out all files and directories,
- * recursively, starting at "directory", placing the
- * resulting list in the external file called "files".
+ * recursively, starting at directory, placing the
+ * resulting list in the external file called files.
  * 
  * This command works the same way as "g.find" with the
  * following exceptions:
@@ -8049,7 +8048,7 @@ ruby_guestfs_get_direct (VALUE gv)
  *
  * get ext2 file attributes of a file
  *
- * This returns the file attributes associated with "file".
+ * This returns the file attributes associated with file.
  * 
  * The attributes are a set of bits associated with each
  * inode which affect the behaviour of the file. The
@@ -9108,7 +9107,7 @@ ruby_guestfs_getxattrs (VALUE gv, VALUE pathv)
  * more details.
  * 
  * Notice that there is no equivalent command for expanding
- * a device name (eg. "/dev/sd*"). Use "g.list_devices",
+ * a device name (eg. /dev/sd*). Use "g.list_devices",
  * "g.list_partitions" etc functions instead.
  *
  *
@@ -9319,15 +9318,15 @@ ruby_guestfs_grepi (VALUE gv, VALUE regexv, VALUE pathv)
  * 
  * *   If grub-install reports the error "No suitable drive
  * was found in the generated device map." it may be
- * that you need to create a "/boot/grub/device.map"
- * file first that contains the mapping between grub
- * device names and Linux device names. It is usually
+ * that you need to create a /boot/grub/device.map file
+ * first that contains the mapping between grub device
+ * names and Linux device names. It is usually
  * sufficient to create a file containing:
  * 
  * (hd0) /dev/vda
  * 
- * replacing "/dev/vda" with the name of the
- * installation device.
+ * replacing /dev/vda with the name of the installation
+ * device.
  *
  *
  * (For the C API documentation for this function, see
@@ -9528,7 +9527,7 @@ ruby_guestfs_hivex_close (VALUE gv)
  *
  * Commit (write) changes to the hive.
  * 
- * If the optional "filename" parameter is null, then the
+ * If the optional filename parameter is null, then the
  * changes are written back to the same hive that was
  * opened. If this is not null then they are written to the
  * alternate filename given and the original hive is left
@@ -9908,7 +9907,7 @@ ruby_guestfs_hivex_node_values (VALUE gv, VALUE nodehv)
  *
  * open a Windows Registry hive file
  *
- * Open the Windows Registry hive file named "filename". If
+ * Open the Windows Registry hive file named filename. If
  * there was any previous hivex handle associated with this
  * guestfs session, then it is closed.
  * 
@@ -10160,13 +10159,13 @@ ruby_guestfs_hivex_value_value (VALUE gv, VALUE valuehv)
  *
  * list the contents of a single file in an initrd
  *
- * This command unpacks the file "filename" from the initrd
- * file called "initrdpath". The filename must be given
- * *without* the initial "/" character.
+ * This command unpacks the file filename from the initrd
+ * file called initrdpath. The filename must be given
+ * *without* the initial / character.
  * 
  * For example, in guestfish you could use the following
  * command to examine the boot script (usually called
- * "/init") contained in a Linux initrd or initramfs image:
+ * /init) contained in a Linux initrd or initramfs image:
  * 
  * initrd-cat /boot/initrd-<version>.img init
  * 
@@ -10211,7 +10210,7 @@ ruby_guestfs_initrd_cat (VALUE gv, VALUE initrdpathv, VALUE filenamev)
  *
  * This command lists out files contained in an initrd.
  * 
- * The files are listed without any initial "/" character.
+ * The files are listed without any initial / character.
  * The files are listed in the order they appear (not
  * necessarily alphabetical). Directory names are listed as
  * separate items.
@@ -10265,7 +10264,7 @@ ruby_guestfs_initrd_list (VALUE gv, VALUE pathv)
  * 
  * Note for non-C or non-Linux callers: the inotify events
  * are defined by the Linux kernel ABI and are listed in
- * "/usr/include/sys/inotify.h".
+ * /usr/include/sys/inotify.h.
  *
  *
  * (For the C API documentation for this function, see
@@ -10685,7 +10684,7 @@ ruby_guestfs_inspect_get_distro (VALUE gv, VALUE rootv)
  * get drive letter mappings
  *
  * This call is useful for Windows which uses a primitive
- * system of assigning drive letters (like "C:") to
+ * system of assigning drive letters (like C:\) to
  * partitions. This inspection API examines the Windows
  * Registry to find out how disks/partitions are mapped to
  * drive letters, and returns a hash table as in the
@@ -10907,8 +10906,8 @@ ruby_guestfs_inspect_get_hostname (VALUE gv, VALUE rootv)
  * check for this case*.
  * 
  * Libguestfs will start by looking for a file called
- * "/etc/favicon.png" or "C:\etc\favicon.png" and if it has
- * the correct format, the contents of this file will be
+ * /etc/favicon.png or C:\etc\favicon.png and if it has the
+ * correct format, the contents of this file will be
  * returned. You can disable favicons by passing the
  * optional "favicon" boolean as false (default is true).
  * 
@@ -11092,22 +11091,22 @@ ruby_guestfs_inspect_get_minor_version (VALUE gv, VALUE rootv)
  * associated with this operating system should be mounted.
  * Callers should note that this is at best an educated
  * guess made by reading configuration files such as
- * "/etc/fstab". *In particular note* that this may return
+ * /etc/fstab. *In particular note* that this may return
  * filesystems which are non-existent or not mountable and
  * callers should be prepared to handle or ignore failures
  * if they try to mount them.
  * 
  * Each element in the returned hashtable has a key which
- * is the path of the mountpoint (eg. "/boot") and a value
+ * is the path of the mountpoint (eg. /boot) and a value
  * which is the filesystem that would be mounted there (eg.
- * "/dev/sda1").
+ * /dev/sda1).
  * 
  * Non-mounted devices such as swap devices are *not*
  * returned in this list.
  * 
  * For operating systems like Windows which still use drive
  * letters, this call will only return an entry for the
- * first drive "mounted on" "/". For information about the
+ * first drive "mounted on" /. For information about the
  * mapping of drive letters to partitions, see
  * "g.inspect_get_drive_mappings".
  * 
@@ -11500,7 +11499,7 @@ ruby_guestfs_inspect_get_windows_current_control_set (VALUE gv, VALUE rootv)
  *
  * This returns the Windows systemroot of the inspected
  * guest. The systemroot is a directory path such as
- * "/WINDOWS".
+ * /WINDOWS.
  * 
  * This call assumes that the guest is Windows and that the
  * systemroot could be determined by inspection. If this is
@@ -13215,8 +13214,8 @@ ruby_guestfs_internal_test_set_output (VALUE gv, VALUE filenamev)
  * 
  * This call only looks at files within the guest
  * filesystem. Libguestfs partitions and block devices (eg.
- * "/dev/sda") cannot be used as the "path" parameter of
- * this call.
+ * /dev/sda) cannot be used as the "path" parameter of this
+ * call.
  * 
  * See also "g.stat".
  * 
@@ -14162,7 +14161,7 @@ ruby_guestfs_journal_next (VALUE gv)
  *
  * open the systemd journal
  *
- * Open the systemd journal located in "directory". Any
+ * Open the systemd journal located in directory. Any
  * previously opened journal handle is closed.
  * 
  * The contents of the journal can be read using
@@ -14938,8 +14937,7 @@ ruby_guestfs_list_9p (VALUE gv)
  *
  * List all the block devices.
  * 
- * The full block device names are returned, eg.
- * "/dev/sda".
+ * The full block device names are returned, eg. /dev/sda.
  * 
  * See also "g.list_filesystems".
  *
@@ -14982,12 +14980,12 @@ ruby_guestfs_list_devices (VALUE gv)
  * If you add drives using the optional "label" parameter
  * of "g.add_drive_opts", you can use this call to map
  * between disk labels, and raw block device and partition
- * names (like "/dev/sda" and "/dev/sda1").
+ * names (like /dev/sda and /dev/sda1).
  * 
  * This returns a hashtable, where keys are the disk labels
- * (*without* the "/dev/disk/guestfs" prefix), and the
- * values are the full raw block device and partition names
- * (eg. "/dev/sda" and "/dev/sda1").
+ * (*without* the /dev/disk/guestfs prefix), and the values
+ * are the full raw block device and partition names (eg.
+ * /dev/sda and /dev/sda1).
  *
  *
  * (For the C API documentation for this function, see
@@ -15027,7 +15025,7 @@ ruby_guestfs_list_disk_labels (VALUE gv)
  *
  * List all device mapper devices.
  * 
- * The returned list contains "/dev/mapper/ *" devices, eg.
+ * The returned list contains /dev/mapper/ * devices, eg.
  * ones created by a previous call to "g.luks_open".
  * 
  * Device mapper devices which correspond to logical
@@ -15262,7 +15260,7 @@ ruby_guestfs_list_md_devices (VALUE gv)
  * List all the partitions detected on all block devices.
  * 
  * The full partition device names are returned, eg.
- * "/dev/sda1"
+ * /dev/sda1
  * 
  * This does not return logical volumes. For that you will
  * need to call "g.lvs".
@@ -15305,7 +15303,7 @@ ruby_guestfs_list_partitions (VALUE gv)
  *
  * list the files in a directory (long format)
  *
- * List the files in "directory" (relative to the root
+ * List the files in directory (relative to the root
  * directory, there is no cwd) in the format of 'ls -la'.
  * 
  * This command is mostly useful for interactive sessions.
@@ -15343,8 +15341,7 @@ ruby_guestfs_ll (VALUE gv, VALUE directoryv)
  *
  * list the files in a directory (long format with SELinux contexts)
  *
- * List the files in "directory" in the format of 'ls
- * -laZ'.
+ * List the files in directory in the format of 'ls -laZ'.
  * 
  * This command is mostly useful for interactive sessions.
  * It is *not* intended that you try to parse the output
@@ -15548,7 +15545,7 @@ ruby_guestfs_lremovexattr (VALUE gv, VALUE xattrv, VALUE pathv)
  *
  * list the files in a directory
  *
- * List the files in "directory" (relative to the root
+ * List the files in directory (relative to the root
  * directory, there is no cwd). The '.' and '..' entries
  * are not returned, but hidden files are shown.
  *
@@ -15591,7 +15588,7 @@ ruby_guestfs_ls (VALUE gv, VALUE directoryv)
  *
  * This specialized command is used to get a listing of the
  * filenames in the directory "dir". The list of filenames
- * is written to the local file "filenames" (on the host).
+ * is written to the local file filenames (on the host).
  * 
  * In the output file, the filenames are separated by "\0"
  * characters.
@@ -16001,7 +15998,7 @@ ruby_guestfs_luks_add_key (VALUE gv, VALUE devicev, VALUE keyv, VALUE newkeyv, V
  * This closes a LUKS device that was created earlier by
  * "g.luks_open" or "g.luks_open_ro". The "device"
  * parameter must be the name of the LUKS mapping device
- * (ie. "/dev/mapper/mapname") and *not* the name of the
+ * (ie. /dev/mapper/mapname) and *not* the name of the
  * underlying block device.
  *
  *
@@ -16149,7 +16146,7 @@ ruby_guestfs_luks_kill_slot (VALUE gv, VALUE devicev, VALUE keyv, VALUE keyslotv
  * the LUKS block device, in the "key" parameter.
  * 
  * This creates a new block device called
- * "/dev/mapper/mapname". Reads and writes to this block
+ * /dev/mapper/mapname. Reads and writes to this block
  * device are decrypted from and encrypted to the
  * underlying "device" respectively.
  * 
@@ -16260,8 +16257,8 @@ ruby_guestfs_lvcreate (VALUE gv, VALUE logvolv, VALUE volgroupv, VALUE mbytesv)
  * create an LVM logical volume in % remaining free space
  *
  * Create an LVM logical volume called
- * "/dev/volgroup/logvol", using approximately "percent" %
- * of the free space remaining in the volume group. Most
+ * /dev/volgroup/logvol, using approximately "percent" % of
+ * the free space remaining in the volume group. Most
  * usefully, when "percent" is 100 this will create the
  * largest possible LV.
  *
@@ -16298,7 +16295,7 @@ ruby_guestfs_lvcreate_free (VALUE gv, VALUE logvolv, VALUE volgroupv, VALUE perc
  *
  * This converts alternative naming schemes for LVs that
  * you might find to the canonical name. For example,
- * "/dev/mapper/VG-LV" is converted to "/dev/VG/LV".
+ * /dev/mapper/VG-LV is converted to /dev/VG/LV.
  * 
  * This command returns an error if the "lvname" parameter
  * does not refer to a logical volume.
@@ -16467,10 +16464,10 @@ ruby_guestfs_lvm_set_filter (VALUE gv, VALUE devicesv)
  * remove an LVM logical volume
  *
  * Remove an LVM logical volume "device", where "device" is
- * the path to the LV, such as "/dev/VG/LV".
+ * the path to the LV, such as /dev/VG/LV.
  * 
  * You can also remove all LVs in a volume group by
- * specifying the VG name, "/dev/VG".
+ * specifying the VG name, /dev/VG.
  *
  *
  * (For the C API documentation for this function, see
@@ -16608,7 +16605,7 @@ ruby_guestfs_lvresize_free (VALUE gv, VALUE lvv, VALUE percentv)
  * equivalent of the lvs(8) command.
  * 
  * This returns a list of the logical volume device names
- * (eg. "/dev/VolGroup00/LogVol00").
+ * (eg. /dev/VolGroup00/LogVol00).
  * 
  * See also "g.lvs_full", "g.list_filesystems".
  *
@@ -18388,8 +18385,8 @@ ruby_guestfs_mkswap (int argc, VALUE *argv, VALUE gv)
  * Create a swap partition on "device" with label "label".
  * 
  * Note that you cannot attach a swap label to a block
- * device (eg. "/dev/sda"), just to a partition. This
- * appears to be a limitation of the kernel or swap tools.
+ * device (eg. /dev/sda), just to a partition. This appears
+ * to be a limitation of the kernel or swap tools.
  * 
  * *This function is deprecated.* In new code, use the
  * "mkswap" call instead.
@@ -18608,17 +18605,17 @@ ruby_guestfs_modprobe (VALUE gv, VALUE modulenamev)
  * mount a guest disk at a position in the filesystem
  *
  * Mount a guest disk at a position in the filesystem.
- * Block devices are named "/dev/sda", "/dev/sdb" and so
- * on, as they were added to the guest. If those block
- * devices contain partitions, they will have the usual
- * names (eg. "/dev/sda1"). Also LVM "/dev/VG/LV"-style
- * names can be used, or 'mountable' strings returned by
- * "g.list_filesystems" or "g.inspect_get_mountpoints".
+ * Block devices are named /dev/sda, /dev/sdb and so on, as
+ * they were added to the guest. If those block devices
+ * contain partitions, they will have the usual names (eg.
+ * /dev/sda1). Also LVM /dev/VG/LV-style names can be used,
+ * or 'mountable' strings returned by "g.list_filesystems"
+ * or "g.inspect_get_mountpoints".
  * 
  * The rules are the same as for mount(2): A filesystem
- * must first be mounted on "/" before others can be
- * mounted. Other filesystems can only be mounted on
- * directories which already exist.
+ * must first be mounted on / before others can be mounted.
+ * Other filesystems can only be mounted on directories
+ * which already exist.
  * 
  * The mounted filesystem is writable, if we have
  * sufficient permissions on the underlying device.
@@ -18854,9 +18851,9 @@ ruby_guestfs_mount_local_run (VALUE gv)
  *
  * mount a file using the loop device
  *
- * This command lets you mount "file" (a filesystem image
- * in a file) on a mount point. It is entirely equivalent
- * to the command "mount -o loop file mountpoint".
+ * This command lets you mount file (a filesystem image in
+ * a file) on a mount point. It is entirely equivalent to
+ * the command "mount -o loop file mountpoint".
  *
  *
  * (For the C API documentation for this function, see
@@ -19037,8 +19034,8 @@ ruby_guestfs_mountpoints (VALUE gv)
  * show mounted filesystems
  *
  * This returns the list of currently mounted filesystems.
- * It returns the list of devices (eg. "/dev/sda1",
- * "/dev/VG/LV").
+ * It returns the list of devices (eg. /dev/sda1,
+ * /dev/VG/LV).
  * 
  * Some internal mounts are not shown.
  * 
@@ -20566,7 +20563,7 @@ ruby_guestfs_pvchange_uuid_all (VALUE gv)
  *
  * This creates an LVM physical volume on the named
  * "device", where "device" should usually be a partition
- * name such as "/dev/sda1".
+ * name such as /dev/sda1.
  *
  *
  * (For the C API documentation for this function, see
@@ -20704,7 +20701,7 @@ ruby_guestfs_pvresize_size (VALUE gv, VALUE devicev, VALUE sizev)
  * equivalent of the pvs(8) command.
  * 
  * This returns a list of just the device names that
- * contain PVs (eg. "/dev/sda2").
+ * contain PVs (eg. /dev/sda2).
  * 
  * See also "g.pvs_full".
  *
@@ -22291,7 +22288,7 @@ ruby_guestfs_set_backend_settings (VALUE gv, VALUE settingsv)
  * "TMPDIR" control the default value: If
  * "LIBGUESTFS_CACHEDIR" is set, then that is the default.
  * Else if "TMPDIR" is set, then that is the default. Else
- * "/var/tmp" is the default.
+ * /var/tmp is the default.
  *
  *
  * (For the C API documentation for this function, see
@@ -22365,7 +22362,7 @@ ruby_guestfs_set_direct (VALUE gv, VALUE directv)
  * set ext2 file attributes of a file
  *
  * This sets or clears the file attributes "attrs"
- * associated with the inode "file".
+ * associated with the inode file.
  * 
  * "attrs" is a string of characters representing file
  * attributes. See "g.get_e2attrs" for a list of possible
@@ -23144,7 +23141,7 @@ ruby_guestfs_set_smp (VALUE gv, VALUE smpv)
  * "TMPDIR" control the default value: If
  * "LIBGUESTFS_TMPDIR" is set, then that is the default.
  * Else if "TMPDIR" is set, then that is the default. Else
- * "/tmp" is the default.
+ * /tmp is the default.
  *
  *
  * (For the C API documentation for this function, see
@@ -23367,8 +23364,7 @@ ruby_guestfs_setxattr (VALUE gv, VALUE xattrv, VALUE valv, VALUE vallenv, VALUE 
  * This is a direct interface to the sfdisk(8) program for
  * creating partitions on block devices.
  * 
- * "device" should be a block device, for example
- * "/dev/sda".
+ * "device" should be a block device, for example /dev/sda.
  * 
  * "cyls", "heads" and "sectors" are the number of
  * cylinders, heads and sectors on the device, which are
@@ -23670,7 +23666,7 @@ ruby_guestfs_sfdisk_l (VALUE gv, VALUE devicev)
  * run a command via the shell
  *
  * This call runs a command from the guest filesystem via
- * the guest's "/bin/sh".
+ * the guest's /bin/sh.
  * 
  * This is like "g.command", but passes the command to:
  * 
@@ -24431,14 +24427,14 @@ ruby_guestfs_sync (VALUE gv)
  * 
  * The optional arguments are:
  * 
- * "directory"
+ * directory
  * Install SYSLINUX in the named subdirectory, instead
  * of in the root directory of the FAT filesystem.
  * 
  * Additional configuration can be supplied to SYSLINUX by
- * placing a file called "syslinux.cfg" on the FAT
+ * placing a file called syslinux.cfg on the FAT
  * filesystem, either in the root directory, or under
- * "directory" if that optional argument is being used. For
+ * directory if that optional argument is being used. For
  * further information about the contents of this file, see
  * syslinux(1).
  * 
@@ -24590,7 +24586,7 @@ ruby_guestfs_tail_n (VALUE gv, VALUE nrlinesv, VALUE pathv)
  * unpack tarfile to directory
  *
  * This command uploads and unpacks local file "tarfile"
- * into "directory".
+ * into directory.
  * 
  * The optional "compress" flag controls compression. If
  * not given, then the input should be an uncompressed tar
@@ -24651,7 +24647,7 @@ ruby_guestfs_tar_in (int argc, VALUE *argv, VALUE gv)
  *
  * pack directory into tarfile
  *
- * This command packs the contents of "directory" and
+ * This command packs the contents of directory and
  * downloads it to local file "tarfile".
  * 
  * The optional "compress" flag controls compression. If
@@ -24747,7 +24743,7 @@ ruby_guestfs_tar_out (int argc, VALUE *argv, VALUE gv)
  * unpack compressed tarball to directory
  *
  * This command uploads and unpacks local file "tarball" (a
- * *gzip compressed* tar file) into "directory".
+ * *gzip compressed* tar file) into directory.
  * 
  * *This function is deprecated.* In new code, use the
  * "tar_in" call instead.
@@ -24786,7 +24782,7 @@ ruby_guestfs_tgz_in (VALUE gv, VALUE tarballv, VALUE directoryv)
  *
  * pack directory into compressed tarball
  *
- * This command packs the contents of "directory" and
+ * This command packs the contents of directory and
  * downloads it to local file "tarball".
  * 
  * *This function is deprecated.* In new code, use the
@@ -25140,7 +25136,7 @@ ruby_guestfs_tune2fs_l (VALUE gv, VALUE devicev)
  * unpack compressed tarball to directory
  *
  * This command uploads and unpacks local file "tarball"
- * (an *xz compressed* tar file) into "directory".
+ * (an *xz compressed* tar file) into directory.
  * 
  * *This function is deprecated.* In new code, use the
  * "tar_in" call instead.
@@ -25179,7 +25175,7 @@ ruby_guestfs_txz_in (VALUE gv, VALUE tarballv, VALUE directoryv)
  *
  * pack directory into compressed tarball
  *
- * This command packs the contents of "directory" and
+ * This command packs the contents of directory and
  * downloads it to local file "tarball" (as an xz
  * compressed tar archive).
  * 
@@ -25407,10 +25403,10 @@ ruby_guestfs_umount_local (int argc, VALUE *argv, VALUE gv)
  *
  * upload a file from the local machine
  *
- * Upload local file "filename" to "remotefilename" on the
+ * Upload local file filename to remotefilename on the
  * filesystem.
  * 
- * "filename" can also be a named pipe.
+ * filename can also be a named pipe.
  * 
  * See also "g.download".
  *
@@ -25444,15 +25440,15 @@ ruby_guestfs_upload (VALUE gv, VALUE filenamev, VALUE remotefilenamev)
  *
  * upload a file from the local machine with offset
  *
- * Upload local file "filename" to "remotefilename" on the
+ * Upload local file filename to remotefilename on the
  * filesystem.
  * 
- * "remotefilename" is overwritten starting at the byte
+ * remotefilename is overwritten starting at the byte
  * "offset" specified. The intention is to overwrite parts
  * of existing files or devices, although if a non-existent
  * file is specified then it is created with a "hole"
  * before "offset". The size of the data written is
- * implicit in the size of the source "filename".
+ * implicit in the size of the source filename.
  * 
  * Note that there is no limit on the amount of data that
  * can be uploaded with this call, unlike with "g.pwrite",
@@ -25648,7 +25644,7 @@ ruby_guestfs_utsname (VALUE gv)
  * necessarily the version of libguestfs that you compiled
  * against. You can compile the program, and then at
  * runtime dynamically link against a completely different
- * "libguestfs.so" library.
+ * libguestfs.so library.
  * 
  * This call was added in version 1.0.58. In previous
  * versions of libguestfs there was no way to get the
@@ -27237,7 +27233,7 @@ ruby_guestfs_zero_device (VALUE gv, VALUE devicev)
  * zero free space in a filesystem
  *
  * Zero the free space in the filesystem mounted on
- * "directory". The filesystem must be mounted read-write.
+ * directory. The filesystem must be mounted read-write.
  * 
  * The filesystem contents are not affected, but any free
  * space in the filesystem is freed.
@@ -27419,8 +27415,8 @@ ruby_guestfs_zfgrepi (VALUE gv, VALUE patternv, VALUE pathv)
  *
  * determine file type inside a compressed file
  *
- * This command runs "file" after first decompressing
- * "path" using "method".
+ * This command runs file after first decompressing "path"
+ * using "method".
  * 
  * "method" must be one of "gzip", "compress" or "bzip2".
  * 

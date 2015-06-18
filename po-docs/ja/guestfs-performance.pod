@@ -32,7 +32,7 @@ that you are measuring a typical "hot cache" case.
 
 This command starts up the libguestfs appliance on a null disk, and then
 immediately shuts it down.  The first time you run the command, it will
-create an appliance and cache it (usually under C</var/tmp/.guestfs-*>).
+create an appliance and cache it (usually under F</var/tmp/.guestfs-*>).
 Subsequent runs should reuse the cached appliance.
 
 =head3 期待される結果
@@ -68,7 +68,7 @@ L<guestfs(3)/INSPECTION>), mounts the guest's disks, then discards all these
 results and shuts down.
 
 The first time you run the command, it will create an appliance and cache it
-(usually under C</var/tmp/.guestfs-*>).  Subsequent runs should reuse the
+(usually under F</var/tmp/.guestfs-*>).  Subsequent runs should reuse the
 cached appliance.
 
 =head3 期待される結果
@@ -80,7 +80,7 @@ in 5 seconds, then this test should run in E<le> 10 seconds).
 =head1 UNDERSTANDING THE APPLIANCE AND WHEN IT IS BUILT/CACHED
 
 The first time you use libguestfs, it will build and cache an appliance.
-This is usually in C</var/tmp/.guestfs-*>, unless you have set C<$TMPDIR> or
+This is usually in F</var/tmp/.guestfs-*>, unless you have set C<$TMPDIR> or
 C<$LIBGUESTFS_CACHEDIR> in which case it will be under that temporary
 directory.
 
@@ -111,7 +111,7 @@ will cause a one time rebuild of the appliance.
 
 =item *
 
-C</var/tmp> (or C<$TMPDIR>, C<$LIBGUESTFS_CACHEDIR>) should be on a fast
+F</var/tmp> (or C<$TMPDIR>, C<$LIBGUESTFS_CACHEDIR>) should be on a fast
 disk, and have plenty of space for the appliance.
 
 =back
@@ -127,7 +127,7 @@ appliance.  This appliance should be stored on a fast local disk.
 
 replacing C<E<lt>directoryE<gt>> with the name of a directory where the
 appliance will be stored (normally you would name a subdirectory, for
-example: C</usr/local/lib/guestfs/appliance> or C</dev/shm/appliance>).
+example: F</usr/local/lib/guestfs/appliance> or F</dev/shm/appliance>).
 
 Then set C<$LIBGUESTFS_PATH> (and ensure this environment variable is set in
 your libguestfs program), or modify your program so it calls
@@ -145,7 +145,7 @@ rebuild, or cache their own appliance.
 
 In our testing we did not find that using a fixed appliance gave any
 measurable performance benefit, even when the appliance was located in
-memory (ie. on C</dev/shm>).  However there are two points to consider:
+memory (ie. on F</dev/shm>).  However there are two points to consider:
 
 =over 4
 
@@ -384,7 +384,7 @@ L<http://rwmj.wordpress.com/2013/08/14/performance-of-user-mode-linux-as-a-libgu
 
 =head2 ハードウェア仮想化機能の利用可能性の確認
 
-C</proc/cpuinfo> およびこのページを使用します:
+Use F</proc/cpuinfo> and this page:
 
 http://virt-tools.org/learning/check-hardware-virt/
 
@@ -396,8 +396,9 @@ http://virt-tools.org/learning/check-hardware-virt/
 
 =head2 KVM の利用可能性の確認
 
-KVM が有効化され、libguestfs を実行するユーザーが利用可能であることを確実にします。C</dev/kvm> において 0666
-パーミッションを設定して安全にするべきですが、多くのディストリビューションにおいて、現在こうしています。
+Ensure that KVM is enabled and available to the user that will run
+libguestfs.  It should be safe to set 0666 permissions on F</dev/kvm> and
+most distributions now do this.
 
 =head2 避けるべきプロセッサー
 
@@ -427,7 +428,7 @@ The timestamps are seconds (incrementally since the previous line).
 
 libguestfs プログラムから詳細なタイミングを取得するために SystemTap (L<stap(1)>) を使用できます。
 
-以下のスクリプトを C<time.stap> として保存します:
+Save the following script as F<time.stap>:
 
  global last;
  

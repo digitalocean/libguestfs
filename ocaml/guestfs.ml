@@ -69,6 +69,8 @@ external event_to_string : event list -> string
 external last_errno : t -> int = "ocaml_guestfs_last_errno"
 
 module Errno = struct
+  external einval : unit -> int = "ocaml_guestfs_get_EINVAL" "noalloc"
+  let errno_EINVAL = einval ()
   external enotsup : unit -> int = "ocaml_guestfs_get_ENOTSUP" "noalloc"
   let errno_ENOTSUP = enotsup ()
   external eperm : unit -> int = "ocaml_guestfs_get_EPERM" "noalloc"

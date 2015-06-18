@@ -60,7 +60,7 @@ I<--physical-volumes>, I<--block-devices> を使用できます。
 
 You can use these options in combination as well (if you want a combination
 including filesystems, you have to add I<--filesystems>).  Notice that some
-items fall into several categories (eg. C</dev/sda1> might be both a
+items fall into several categories (eg. F</dev/sda1> might be both a
 partition and a filesystem).  These items are listed several times.  To get
 a list which includes absolutely everything that virt-filesystems knows
 about, use the I<--all> option.
@@ -170,11 +170,12 @@ I<-a> オプションは標準状態でディスクイメージの形式を自�
 
  virt-filesystems --format=raw -a disk.img
 
-強制的に C<disk.img> を raw 形式にします (自動検出しません)。
+forces raw format (no auto-detection) for F<disk.img>.
 
  virt-filesystems --format=raw -a disk.img --format -a another.img
 
-強制的に C<disk.img> を raw 形式にし (自動検知なし)、 C<another.img> に対して自動検知に戻します。
+forces raw format (no auto-detection) for F<disk.img> and reverts to
+auto-detection for F<another.img>.
 
 仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
 これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。
@@ -187,7 +188,8 @@ I<--long> モードでは、読みやすい形式で容量を表示します。
 
 =item B<--keys-from-stdin>
 
-標準入力からキーまたはパスフレーズのパラメーターを読み込みます。 標準で C</dev/tty> を開いているユーザーから読み込もうとします。
+Read key or passphrase parameters from stdin.  The default is to try to read
+passphrases from the user by opening F</dev/tty>.
 
 =item B<-l>
 
@@ -279,8 +281,9 @@ libguestfs API 呼び出しのトレースを有効にします。
 
 ファイルシステム、パーティション、ブロックデバイスまたは LVM の名前。
 
-これらは、デバイスとパーティションに対して、正規化された libguestfs 名として表示されます。そのため、たとえば、 C</dev/sda2>
-は最初のデバイスにある 2 番目のパーティションです。
+For device and partition names these are displayed as canonical libguestfs
+names, so that for example F</dev/sda2> is the second partition on the first
+device.
 
 I<--long> オプションが指定されてB<いない>と、名前の列のみが出力に表示されます。
 

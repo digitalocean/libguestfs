@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<book xmlns="" title="Libguestfs GObject Bindings Reference Manual" link="index.html" author="" name="guestfs" version="2" language="c">
+<book xmlns="http://www.devhelp.net/book" title="Libguestfs GObject Bindings Reference Manual" link="index.html" author="" name="guestfs" version="2" language="c">
   <chapters>
     <sub name="Libguestfs GObject Bindings" link="ch01.html">
       <sub name="GuestfsSession" link="GuestfsSession.html"/>

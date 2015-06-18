@@ -30,7 +30,7 @@ Using virt-p2v-make-kickstart is very simple:
  virt-p2v-make-kickstart fedora
 
 will build a kickstart file for Fedora.  The kickstart file will be called
-C<p2v.ks> and located in the current directory.
+F<p2v.ks> and located in the current directory.
 
 The parameters are a list of one or more repositories.  Some built-in
 repositories are available: C<fedora>, C<rawhide> or C<koji>.  You can also
@@ -121,7 +121,9 @@ containing the files required to PXE boot virt-p2v:
  tftpboot/pxelinux.cfg:
  default
 
-=head1 TESTING THE P2V ISO USING QEMU
+=head1 TESTING VIRT-P2V USING QEMU
+
+=head2 TESTING THE P2V ISO USING QEMU
 
 You can use qemu to test-boot the P2V ISO:
 
@@ -130,6 +132,44 @@ You can use qemu to test-boot the P2V ISO:
 Note that C<-hda> is the (virtual) system that you want to convert (for test
 purposes).  It could be any guest type supported by L<virt-v2v(1)>,
 including Windows or Red Hat Enterprise Linux.
+
+=head2 TESTING PXE SUPPORT USING QEMU
+
+=over 4
+
+=item *
+
+Unpack the tftpboot directory into F</tmp> (so it appears as
+F</tmp/tftpboot>).
+
+=item *
+
+Copy F<pxelinux.0> and F<ldlinux.c32> from syslinux (usually from
+F</usr/share/syslinux>) into F</tmp/tftpboot>.
+
+=item *
+
+Adjust the C<APPEND> line in F</tmp/tftpboot/pxelinux.cfg/default> if
+required.  See L<virt-p2v(1)/KERNEL COMMAND LINE CONFIGURATION>.
+
+=item *
+
+Run qemu like this so that it acts as a TFTP and BOOTP server, emulating a
+netboot:
+
+ qemu-kvm \
+     -m 4096 -hda /tmp/guest.img \
+     -boot n \
+     -netdev user,id=unet,tftp=/tmp/tftpboot,bootfile=/pxelinux.0 \
+     -device virtio-net-pci,netdev=unet \
+     -serial stdio
+
+Note that this requires considerably more memory because the PXE image is
+loaded into memory.  Also that qemu's TFTP server is very slow and the
+virt-p2v PXE image is very large, so it can appear to "hang" after pxelinux
+starts up.
+
+=back
 
 =head1 ПАРАМЕТРИ
 
@@ -143,7 +183,7 @@ including Windows or Red Hat Enterprise Linux.
 
 =item B<--output> ВИВЕДЕННЯ
 
-Write kickstart to C<OUTPUT>.  If not specified, the default is C<p2v.ks> in
+Write kickstart to C<OUTPUT>.  If not specified, the default is F<p2v.ks> in
 the current directory.
 
 =item B<--proxy> АДРЕСА
@@ -162,17 +202,17 @@ Tell the kickstart to use a proxy server or web cache for downloads.
 
 =over 4
 
-=item C<$libexecdir/virt-p2v>
+=item F<$libexecdir/virt-p2v>
 
 The L<virt-p2v(1)> binary which is copied into the kickstart file.
 
-=item C<$datadir/issue>
+=item F<$datadir/issue>
 
-=item C<$datadir/launch-virt-p2v.in>
+=item F<$datadir/launch-virt-p2v.in>
 
-=item C<$datadir/p2v.ks.in>
+=item F<$datadir/p2v.ks.in>
 
-=item C<$datadir/p2v.service>
+=item F<$datadir/p2v.service>
 
 Various data files that are used to make the kickstart.
 

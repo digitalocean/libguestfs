@@ -45,7 +45,7 @@ L</準備済みディスクイメージ> を参照してください。
  copy-in local [local ...] /remotedir
 
 C<copy-in> copies local files or directories recursively into the disk
-image, placing them in the directory called C</remotedir> (which must
+image, placing them in the directory called F</remotedir> (which must
 exist).  This guestfish meta-command turns into a sequence of L</tar-in> and
 other commands as necessary.
 
@@ -134,7 +134,7 @@ events.
 
 The third and final parameter is the shell script fragment (or any external
 command) that is executed when any of the events in the eventset occurs.  It
-is executed using C<$SHELL -c>, or if C<$SHELL> is not set then C</bin/sh
+is executed using C<$SHELL -c>, or if C<$SHELL> is not set then F</bin/sh
 -c>.
 
 The shell script fragment receives callback parameters as arguments C<$1>,
@@ -179,7 +179,7 @@ For example to edit the first few sectors of a disk you might do:
 which would allow you to edit anywhere within the first megabyte of the
 disk.
 
-C</dev/sda1> にある ext2 ファイルシステムのスーパーブロックを編集するには、次のようにします:
+To edit the superblock of an ext2 filesystem on F</dev/sda1>, do:
 
  hexedit /dev/sda1 0x400 0x400
 

@@ -146,6 +146,9 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 libexec_PROGRAMS = virt-p2v$(EXEEXT)
+@ENABLE_APPLIANCE_TRUE@am__append_1 = \
+@ENABLE_APPLIANCE_TRUE@	test-virt-p2v.sh
+
 subdir = p2v
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -293,9 +296,9 @@ PROGRAMS = $(libexec_PROGRAMS)
 am_virt_p2v_OBJECTS = virt_p2v-about-authors.$(OBJEXT) \
 	virt_p2v-about-license.$(OBJEXT) virt_p2v-config.$(OBJEXT) \
 	virt_p2v-conversion.$(OBJEXT) virt_p2v-gui.$(OBJEXT) \
-	virt_p2v-kernel.$(OBJEXT) virt_p2v-main.$(OBJEXT) \
-	virt_p2v-miniexpect.$(OBJEXT) virt_p2v-ssh.$(OBJEXT) \
-	virt_p2v-utils.$(OBJEXT)
+	virt_p2v-kernel.$(OBJEXT) virt_p2v-kernel-cmdline.$(OBJEXT) \
+	virt_p2v-main.$(OBJEXT) virt_p2v-miniexpect.$(OBJEXT) \
+	virt_p2v-ssh.$(OBJEXT) virt_p2v-utils.$(OBJEXT)
 virt_p2v_OBJECTS = $(am_virt_p2v_OBJECTS)
 am__DEPENDENCIES_1 =
 virt_p2v_DEPENDENCIES = $(top_builddir)/src/libutils.la \
@@ -1562,6 +1565,7 @@ virt_p2v_SOURCES = \
 	conversion.c \
 	gui.c \
 	kernel.c \
+	kernel-cmdline.c \
 	main.c \
 	miniexpect.c \
 	miniexpect.h \
@@ -1622,9 +1626,7 @@ noinst_DATA = \
 
 # Tests.
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
-@ENABLE_APPLIANCE_TRUE@TESTS = \
-@ENABLE_APPLIANCE_TRUE@	test-virt-p2v.sh
-
+TESTS = test-virt-p2v-cmdline.sh $(am__append_1)
 all: all-am
 
 .SUFFIXES:
@@ -1763,6 +1765,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-conversion.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-gui.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-kernel-cmdline.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-kernel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-miniexpect.Po@am__quote@
@@ -1873,6 +1876,20 @@ virt_p2v-kernel.obj: kernel.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kernel.c' object='virt_p2v-kernel.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-kernel.obj `if test -f 'kernel.c'; then $(CYGPATH_W) 'kernel.c'; else $(CYGPATH_W) '$(srcdir)/kernel.c'; fi`
+
+virt_p2v-kernel-cmdline.o: kernel-cmdline.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-kernel-cmdline.o -MD -MP -MF $(DEPDIR)/virt_p2v-kernel-cmdline.Tpo -c -o virt_p2v-kernel-cmdline.o `test -f 'kernel-cmdline.c' || echo '$(srcdir)/'`kernel-cmdline.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-kernel-cmdline.Tpo $(DEPDIR)/virt_p2v-kernel-cmdline.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kernel-cmdline.c' object='virt_p2v-kernel-cmdline.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-kernel-cmdline.o `test -f 'kernel-cmdline.c' || echo '$(srcdir)/'`kernel-cmdline.c
+
+virt_p2v-kernel-cmdline.obj: kernel-cmdline.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-kernel-cmdline.obj -MD -MP -MF $(DEPDIR)/virt_p2v-kernel-cmdline.Tpo -c -o virt_p2v-kernel-cmdline.obj `if test -f 'kernel-cmdline.c'; then $(CYGPATH_W) 'kernel-cmdline.c'; else $(CYGPATH_W) '$(srcdir)/kernel-cmdline.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-kernel-cmdline.Tpo $(DEPDIR)/virt_p2v-kernel-cmdline.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kernel-cmdline.c' object='virt_p2v-kernel-cmdline.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-kernel-cmdline.obj `if test -f 'kernel-cmdline.c'; then $(CYGPATH_W) 'kernel-cmdline.c'; else $(CYGPATH_W) '$(srcdir)/kernel-cmdline.c'; fi`
 
 virt_p2v-main.o: main.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-main.o -MD -MP -MF $(DEPDIR)/virt_p2v-main.Tpo -c -o virt_p2v-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c

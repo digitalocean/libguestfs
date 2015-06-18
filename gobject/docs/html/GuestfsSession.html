@@ -8,7 +8,7 @@
 <link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
 <link rel="prev" href="ch01.html" title="Libguestfs GObject Bindings">
 <link rel="next" href="guestfs-GuestfsTristate.html" title="GuestfsTristate">
-<meta name="generator" content="GTK-Doc V1.23 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.24 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -5210,13 +5210,11 @@ guestfs_session_add_drive (<em class="parameter"><code><a class="link" href="Gue
                            <em class="parameter"><code><a class="link" href="GuestfsAddDrive.html" title="GuestfsAddDrive"><span class="type">GuestfsAddDrive</span></a> *optargs</code></em>,
                            <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>add an image to examine or modify</p>
-<p>This function adds a disk image called <em class="parameter"><code>filename</code></em>
- to the handle.
-<em class="parameter"><code>filename</code></em>
- may be a regular host file or a host device.</p>
+<p>This function adds a disk image called filename to the handle. filename
+may be a regular host file or a host device.</p>
 <p>When this function is called before <a class="link" href="GuestfsSession.html#guestfs-session-launch" title="guestfs_session_launch ()"><code class="function">guestfs_session_launch()</code></a> (the usual
 case) then the first time you call this function, the disk appears in
-the API as "/dev/sda", the second time as "/dev/sdb", and so on.</p>
+the API as /dev/sda, the second time as /dev/sdb, and so on.</p>
 <p>In libguestfs ≥ 1.20 you can also call this function after launch
 (with some restrictions). This is called "hotplugging". When
 hotplugging, you must specify a <em class="parameter"><code>label</code></em>
@@ -5226,10 +5224,8 @@ predictable name. For more information see "HOTPLUGGING" in guestfs(3).</p>
 obviously do need sufficient permissions to access the filename for
 whatever operations you want to perform (ie. read access if you just
 want to read the image or write access if you want to modify the image).</p>
-<p>This call checks that <em class="parameter"><code>filename</code></em>
- exists.</p>
-<p><em class="parameter"><code>filename</code></em>
- may be the special string "/dev/null". See "NULL DISKS" in
+<p>This call checks that filename exists.</p>
+<p>filename may be the special string "/dev/null". See "NULL DISKS" in
 guestfs(3).</p>
 <p>The optional arguments are:</p>
 <p><em class="parameter"><code>readonly</code></em>
@@ -5256,15 +5252,14 @@ This rarely-used option lets you emulate the behaviour of the
 deprecated <a class="link" href="GuestfsSession.html#guestfs-session-add-drive-with-if" title="guestfs_session_add_drive_with_if ()"><code class="function">guestfs_session_add_drive_with_if()</code></a> call (q.v.)</p>
 <p><em class="parameter"><code>name</code></em>
 
-The name the drive had in the original guest, e.g. "/dev/sdb". This
-is used as a hint to the guest inspection process if it is
-available.</p>
+The name the drive had in the original guest, e.g. /dev/sdb. This is
+used as a hint to the guest inspection process if it is available.</p>
 <p><em class="parameter"><code>label</code></em>
 
 Give the disk a label. The label should be a unique, short string
 using *only* ASCII characters "[a-zA-Z]". As well as its usual name
-in the API (such as "/dev/sda"), the drive will also be named
-"/dev/disk/guestfs/*label*".</p>
+in the API (such as /dev/sda), the drive will also be named
+/dev/disk/guestfs/*label*.</p>
 <p>See "DISK LABELS" in guestfs(3).</p>
 <p><em class="parameter"><code>protocol</code></em>
 
@@ -5272,8 +5267,7 @@ The optional protocol argument can be used to select an alternate
 source protocol.</p>
 <p>See also: "REMOTE STORAGE" in guestfs(3).</p>
 <p>"protocol = "file""
-<em class="parameter"><code>filename</code></em>
- is interpreted as a local file or device. This is the
+filename is interpreted as a local file or device. This is the
 default if the optional protocol parameter is omitted.</p>
 <p>"protocol = "ftp"|"ftps"|"http"|"https"|"tftp""
 Connect to a remote FTP, HTTP or TFTP server. The <em class="parameter"><code>server</code></em>
@@ -5338,7 +5332,7 @@ be in one of the following formats:</p>
 <p>tcp:hostname:port</p>
 <p>unix:/path/to/socket</p>
 <p>If the port number is omitted, then the standard port number for the
-protocol is used (see "/etc/services").</p>
+protocol is used (see /etc/services).</p>
 <p><em class="parameter"><code>username</code></em>
 
 For the <em class="parameter"><code>ftp</code></em>
@@ -6001,7 +5995,7 @@ is closed.</p>
 <p>You must call this before using any other "guestfs_aug_*" commands.</p>
 <p><em class="parameter"><code>root</code></em>
  is the filesystem root. <em class="parameter"><code>root</code></em>
- must not be NULL, use "/" instead.</p>
+ must not be NULL, use / instead.</p>
 <p>The flags are the same as the flags defined in &lt;augeas.h&gt;, the
 logical *or* of the following integers:</p>
 <p><em class="parameter"><code>AUG_SAVE_BACKUP</code></em>
@@ -6089,8 +6083,7 @@ or after <em class="parameter"><code>path</code></em>
 <p><em class="parameter"><code>path</code></em>
  must match exactly one existing node in the tree, and <em class="parameter"><code>label</code></em>
  must
-be a label, ie. not contain "/", "*" or end with a bracketed index
-"[N]".</p>
+be a label, ie. not contain /, "*" or end with a bracketed index "[N]".</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.21.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -6699,8 +6692,7 @@ guestfs_session_base64_in (<em class="parameter"><code><a class="link" href="Gue
                            <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>upload base64-encoded data to file</p>
 <p>This command uploads base64-encoded data from <em class="parameter"><code>base64file</code></em>
- to <em class="parameter"><code>filename</code></em>
-.</p>
+ to filename.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.33.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -6754,9 +6746,8 @@ guestfs_session_base64_out (<em class="parameter"><code><a class="link" href="Gu
                             <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
                             <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>download file and encode as base64</p>
-<p>This command downloads the contents of <em class="parameter"><code>filename</code></em>
-, writing it out to
-local file <em class="parameter"><code>base64file</code></em>
+<p>This command downloads the contents of filename, writing it out to local
+file <em class="parameter"><code>base64file</code></em>
  encoded as base64.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.34.6"></a><h4>Parameters</h4>
@@ -8761,10 +8752,10 @@ guestfs_session_btrfs_subvolume_create
 <p>create a btrfs subvolume</p>
 <p>Create a btrfs subvolume. The <em class="parameter"><code>dest</code></em>
  argument is the destination
-directory and the name of the subvolume, in the form
-"/path/to/dest/name". The optional parameter <em class="parameter"><code>qgroupid</code></em>
- represents the
-qgroup which the newly created subvolume will be added to.</p>
+directory and the name of the subvolume, in the form /path/to/dest/name.
+The optional parameter <em class="parameter"><code>qgroupid</code></em>
+ represents the qgroup which the newly
+created subvolume will be added to.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.76.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -9046,7 +9037,7 @@ guestfs_session_btrfs_subvolume_snapshot
 . The <em class="parameter"><code>dest</code></em>
  argument is
 the destination directory and the name of the snapshot, in the form
-"/path/to/dest/name". By default the newly created snapshot is writable,
+/path/to/dest/name. By default the newly created snapshot is writable,
 if the value of optional parameter <em class="parameter"><code>ro</code></em>
  is true, then a readonly snapshot
 is created. The optional parameter <em class="parameter"><code>qgroupid</code></em>
@@ -9279,14 +9270,14 @@ guestfs_session_canonical_device_name (<em class="parameter"><code><a class="lin
 <p>This utility function is useful when displaying device names to the
 user. It takes a number of irregular device names and returns them in a
 consistent format:</p>
-<p>"/dev/hdX"
-"/dev/vdX"
-These are returned as "/dev/sdX". Note this works for device names
-and partition names. This is approximately the reverse of the
-algorithm described in "BLOCK DEVICE NAMING" in guestfs(3).</p>
-<p>"/dev/mapper/VG-LV"
-"/dev/dm-N"
-Converted to "/dev/VG/LV" form using
+<p>/dev/hdX
+/dev/vdX
+These are returned as /dev/sdX. Note this works for device names and
+partition names. This is approximately the reverse of the algorithm
+described in "BLOCK DEVICE NAMING" in guestfs(3).</p>
+<p>/dev/mapper/VG-LV
+/dev/dm-N
+Converted to /dev/VG/LV form using
 <a class="link" href="GuestfsSession.html#guestfs-session-lvm-canonical-lv-name" title="guestfs_session_lvm_canonical_lv_name ()"><code class="function">guestfs_session_lvm_canonical_lv_name()</code></a>.</p>
 <p>Other strings are returned unmodified.</p>
 <div class="refsect3">
@@ -9437,10 +9428,10 @@ path.</p>
 (and probably others), which is that although the underlying filesystem
 is case-insensitive, the driver exports the filesystem to Linux as
 case-sensitive.</p>
-<p>One consequence of this is that special directories such as "c:\windows"
-may appear as "/WINDOWS" or "/windows" (or other things) depending on
-the precise details of how they were created. In Windows itself this
-would not be a problem.</p>
+<p>One consequence of this is that special directories such as C:\windows
+may appear as /WINDOWS or /windows (or other things) depending on the
+precise details of how they were created. In Windows itself this would
+not be a problem.</p>
 <p>Bug or feature? You decide: <a class="ulink" href="http://www.tuxera.com/community/ntfs-3g-faq/#posixfilenames1" target="_top">
 http://www.tuxera.com/community/ntfs-3g-faq/<span class="type">posixfilenames1</span> </a></p>
 <p>guestfs_session_case_sensitive_path() attempts to resolve the true case
@@ -9692,8 +9683,7 @@ guestfs_session_checksums_out (<em class="parameter"><code><a class="link" href=
                                <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
                                <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>compute MD5, SHAx or CRC checksum of files in a directory</p>
-<p>This command computes the checksums of all regular files in <em class="parameter"><code>directory</code></em>
-
+<p>This command computes the checksums of all regular files in directory
 and then emits a list of those checksums to the local output file
 <em class="parameter"><code>sumsfile</code></em>
 .</p>
@@ -9934,9 +9924,9 @@ shell (see <a class="link" href="GuestfsSession.html#guestfs-session-sh" title="
 <p>If the command returns a non-zero exit status, then this function
 returns an error message. The error message string is the content of
 *stderr* from the command.</p>
-<p>The $PATH environment variable will contain at least "/usr/bin" and
-"/bin". If you require a program from another location, you should
-provide the full path in the first parameter.</p>
+<p>The $PATH environment variable will contain at least /usr/bin and /bin.
+If you require a program from another location, you should provide the
+full path in the first parameter.</p>
 <p>Shared libraries and data files required by the program must be
 available on filesystems which are mounted in the correct places. It is
 the caller's responsibility to ensure all filesystems that are needed
@@ -10105,10 +10095,7 @@ guestfs_session_compress_out (<em class="parameter"><code><a class="link" href="
                               <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
                               <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>output compressed file</p>
-<p>This command compresses <em class="parameter"><code>file</code></em>
- and writes it out to the local file
-<em class="parameter"><code>zfile</code></em>
-.</p>
+<p>This command compresses file and writes it out to the local file zfile.</p>
 <p>The compression program used is controlled by the <em class="parameter"><code>ctype</code></em>
  parameter.
 Currently this includes: <em class="parameter"><code>compress</code></em>
@@ -10896,8 +10883,7 @@ guestfs_session_cpio_out (<em class="parameter"><code><a class="link" href="Gues
                           <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
                           <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>pack directory into cpio file</p>
-<p>This command packs the contents of <em class="parameter"><code>directory</code></em>
- and downloads it to local
+<p>This command packs the contents of directory and downloads it to local
 file <em class="parameter"><code>cpiofile</code></em>
 .</p>
 <p>The optional <em class="parameter"><code>format</code></em>
@@ -11031,7 +11017,7 @@ guestfs_session_debug (<em class="parameter"><code><a class="link" href="Guestfs
 
 (the guestfs daemon) that runs inside the hypervisor.</p>
 <p>There is no comprehensive help for this command. You have to look at the
-file "daemon/debug.c" in the libguestfs source to find out what you can
+file daemon/debug.c in the libguestfs source to find out what you can
 do.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.116.7"></a><h4>Parameters</h4>
@@ -11124,8 +11110,7 @@ guestfs_session_debug_upload (<em class="parameter"><code><a class="link" href="
 <p>The <a class="link" href="GuestfsSession.html#guestfs-session-debug-upload" title="guestfs_session_debug_upload ()"><code class="function">guestfs_session_debug_upload()</code></a> command uploads a file to the
 libguestfs appliance.</p>
 <p>There is no comprehensive help for this command. You have to look at the
-file "daemon/debug.c" in the libguestfs source to find out what it is
-for.</p>
+file daemon/debug.c in the libguestfs source to find out what it is for.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.118.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -11313,8 +11298,7 @@ guestfs_session_disk_create (<em class="parameter"><code><a class="link" href="G
                              <em class="parameter"><code><a class="link" href="GuestfsDiskCreate.html" title="GuestfsDiskCreate"><span class="type">GuestfsDiskCreate</span></a> *optargs</code></em>,
                              <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>create a blank disk image</p>
-<p>Create a blank disk image called <em class="parameter"><code>filename</code></em>
- (a host file) with format
+<p>Create a blank disk image called filename (a host file) with format
 <em class="parameter"><code>format</code></em>
  (usually <em class="parameter"><code>raw</code></em>
  or <em class="parameter"><code>qcow2</code></em>
@@ -11329,8 +11313,7 @@ file, which is discovered automatically. You are encouraged to also pass
 <em class="parameter"><code>backingformat</code></em>
  to describe the format of <em class="parameter"><code>backingfile</code></em>
 .</p>
-<p>If <em class="parameter"><code>filename</code></em>
- refers to a block device, then the device is formatted. The
+<p>If filename refers to a block device, then the device is formatted. The
 <em class="parameter"><code>size</code></em>
  is ignored since block devices have an intrinsic size.</p>
 <p>The other optional parameters are:</p>
@@ -11419,11 +11402,9 @@ guestfs_session_disk_format (<em class="parameter"><code><a class="link" href="G
                              <em class="parameter"><code>const <span class="type">gchar</span> *filename</code></em>,
                              <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>detect the disk format of a disk image</p>
-<p>Detect and return the format of the disk image called <em class="parameter"><code>filename</code></em>
-.
-<em class="parameter"><code>filename</code></em>
- can also be a host device, etc. If the format of the image
-could not be detected, then "unknown" is returned.</p>
+<p>Detect and return the format of the disk image called filename. filename
+can also be a host device, etc. If the format of the image could not be
+detected, then "unknown" is returned.</p>
 <p>Note that detecting the disk format can be insecure under some
 circumstances. See "CVE-2010-3851" in guestfs(3).</p>
 <p>See also: "DISK IMAGE FORMATS" in guestfs(3)</p>
@@ -11469,8 +11450,7 @@ guestfs_session_disk_has_backing_file (<em class="parameter"><code><a class="lin
                                        <em class="parameter"><code>const <span class="type">gchar</span> *filename</code></em>,
                                        <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>return whether disk has a backing file</p>
-<p>Detect and return whether the disk image <em class="parameter"><code>filename</code></em>
- has a backing file.</p>
+<p>Detect and return whether the disk image filename has a backing file.</p>
 <p>Note that detecting disk features can be insecure under some
 circumstances. See "CVE-2010-3851" in guestfs(3).</p>
 <div class="refsect3">
@@ -11515,8 +11495,7 @@ guestfs_session_disk_virtual_size (<em class="parameter"><code><a class="link" h
                                    <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>return virtual size of a disk</p>
 <p>Detect and return the virtual size in bytes of the disk image called
-<em class="parameter"><code>filename</code></em>
-.</p>
+filename.</p>
 <p>Note that detecting disk features can be insecure under some
 circumstances. See "CVE-2010-3851" in guestfs(3).</p>
 <div class="refsect3">
@@ -11604,12 +11583,9 @@ guestfs_session_download (<em class="parameter"><code><a class="link" href="Gues
                           <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
                           <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>download a file to the local machine</p>
-<p>Download file <em class="parameter"><code>remotefilename</code></em>
- and save it as <em class="parameter"><code>filename</code></em>
- on the local
+<p>Download file remotefilename and save it as filename on the local
 machine.</p>
-<p><em class="parameter"><code>filename</code></em>
- can also be a named pipe.</p>
+<p>filename can also be a named pipe.</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-upload" title="guestfs_session_upload ()"><code class="function">guestfs_session_upload()</code></a>, <a class="link" href="GuestfsSession.html#guestfs-session-cat" title="guestfs_session_cat ()"><code class="function">guestfs_session_cat()</code></a>.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.127.8"></a><h4>Parameters</h4>
@@ -11666,12 +11642,9 @@ guestfs_session_download_offset (<em class="parameter"><code><a class="link" hre
                                  <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
                                  <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>download a file to the local machine with offset and size</p>
-<p>Download file <em class="parameter"><code>remotefilename</code></em>
- and save it as <em class="parameter"><code>filename</code></em>
- on the local
+<p>Download file remotefilename and save it as filename on the local
 machine.</p>
-<p><em class="parameter"><code>remotefilename</code></em>
- is read for <em class="parameter"><code>size</code></em>
+<p>remotefilename is read for <em class="parameter"><code>size</code></em>
  bytes starting at <em class="parameter"><code>offset</code></em>
  (this region
 must be within the file or device).</p>
@@ -12111,9 +12084,7 @@ guestfs_session_equal (<em class="parameter"><code><a class="link" href="Guestfs
                        <em class="parameter"><code>const <span class="type">gchar</span> *file2</code></em>,
                        <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>test if two files have equal contents</p>
-<p>This compares the two files <em class="parameter"><code>file1</code></em>
- and <em class="parameter"><code>file2</code></em>
- and returns true if their
+<p>This compares the two files file1 and file2 and returns true if their
 content is exactly equal, or false otherwise.</p>
 <p>The external cmp(1) program is used for the comparison.</p>
 <div class="refsect3">
@@ -12209,12 +12180,10 @@ guestfs_session_extlinux (<em class="parameter"><code><a class="link" href="Gues
                           <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>,
                           <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem</p>
-<p>Install the SYSLINUX bootloader on the device mounted at <em class="parameter"><code>directory</code></em>
-.
+<p>Install the SYSLINUX bootloader on the device mounted at directory.
 Unlike <a class="link" href="GuestfsSession.html#guestfs-session-syslinux" title="guestfs_session_syslinux ()"><code class="function">guestfs_session_syslinux()</code></a> which requires a FAT filesystem, this
 can be used on an ext2/3/4 or btrfs filesystem.</p>
-<p>The <em class="parameter"><code>directory</code></em>
- parameter can be either a mountpoint, or a directory
+<p>The directory parameter can be either a mountpoint, or a directory
 within the mountpoint.</p>
 <p>You also have to mark the partition as "active"
 (<a class="link" href="GuestfsSession.html#guestfs-session-part-set-bootable" title="guestfs_session_part_set_bootable ()"><code class="function">guestfs_session_part_set_bootable()</code></a>) and a Master Boot Record must be
@@ -12223,8 +12192,7 @@ sector of the whole disk. The SYSLINUX package comes with some suitable
 Master Boot Records. See the extlinux(1) man page for further
 information.</p>
 <p>Additional configuration can be supplied to SYSLINUX by placing a file
-called "extlinux.conf" on the filesystem under <em class="parameter"><code>directory</code></em>
-. For further
+called extlinux.conf on the filesystem under directory. For further
 information about the contents of this file, see extlinux(1).</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-syslinux" title="guestfs_session_syslinux ()"><code class="function">guestfs_session_syslinux()</code></a>.</p>
 <div class="refsect3">
@@ -12594,8 +12562,7 @@ guestfs_session_file_architecture (<em class="parameter"><code><a class="link" h
                                    <em class="parameter"><code>const <span class="type">gchar</span> *filename</code></em>,
                                    <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>detect the architecture of a binary file</p>
-<p>This detects the architecture of the binary <em class="parameter"><code>filename</code></em>
-, and returns it if
+<p>This detects the architecture of the binary filename, and returns it if
 known.</p>
 <p>Currently defined architectures are:</p>
 <p>"i386"
@@ -12687,8 +12654,7 @@ guestfs_session_filesize (<em class="parameter"><code><a class="link" href="Gues
                           <em class="parameter"><code>const <span class="type">gchar</span> *file</code></em>,
                           <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>return the size of the file in bytes</p>
-<p>This command returns the size of <em class="parameter"><code>file</code></em>
- in bytes.</p>
+<p>This command returns the size of file in bytes.</p>
 <p>To get other stats about a file, use <a class="link" href="GuestfsSession.html#guestfs-session-stat" title="guestfs_session_stat ()"><code class="function">guestfs_session_stat()</code></a>,
 <a class="link" href="GuestfsSession.html#guestfs-session-lstat" title="guestfs_session_lstat ()"><code class="function">guestfs_session_lstat()</code></a>, <a class="link" href="GuestfsSession.html#guestfs-session-is-dir" title="guestfs_session_is_dir ()"><code class="function">guestfs_session_is_dir()</code></a>,
 <a class="link" href="GuestfsSession.html#guestfs-session-is-file" title="guestfs_session_is_file ()"><code class="function">guestfs_session_is_file()</code></a> etc. To get the size of block devices, use
@@ -12965,8 +12931,7 @@ guestfs_session_find (<em class="parameter"><code><a class="link" href="GuestfsS
                       <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>find all files and directories</p>
 <p>This command lists out all files and directories, recursively, starting
-at <em class="parameter"><code>directory</code></em>
-. It is essentially equivalent to running the shell command
+at directory. It is essentially equivalent to running the shell command
 "find directory -print" but some post-processing happens on the output,
 described below.</p>
 <p>This returns a list of strings *without any prefix*. Thus if the
@@ -12974,14 +12939,13 @@ directory structure was:</p>
 <p>/tmp/a</p>
 <p>/tmp/b</p>
 <p>/tmp/c/d</p>
-<p>then the returned list from <a class="link" href="GuestfsSession.html#guestfs-session-find" title="guestfs_session_find ()"><code class="function">guestfs_session_find()</code></a> "/tmp" would be 4
+<p>then the returned list from <a class="link" href="GuestfsSession.html#guestfs-session-find" title="guestfs_session_find ()"><code class="function">guestfs_session_find()</code></a> /tmp would be 4
 elements:</p>
 <p>a</p>
 <p>b</p>
 <p>c</p>
 <p>c/d</p>
-<p>If <em class="parameter"><code>directory</code></em>
- is not a directory, then this command returns an error.</p>
+<p>If directory is not a directory, then this command returns an error.</p>
 <p>The returned list is sorted.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.151.17"></a><h4>Parameters</h4>
@@ -13028,10 +12992,8 @@ guestfs_session_find0 (<em class="parameter"><code><a class="link" href="Guestfs
                        <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>find all files and directories, returning NUL-separated list</p>
 <p>This command lists out all files and directories, recursively, starting
-at <em class="parameter"><code>directory</code></em>
-, placing the resulting list in the external file called
-<em class="parameter"><code>files</code></em>
-.</p>
+at directory, placing the resulting list in the external file called
+files.</p>
 <p>This command works the same way as <a class="link" href="GuestfsSession.html#guestfs-session-find" title="guestfs_session_find ()"><code class="function">guestfs_session_find()</code></a> with the
 following exceptions:</p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
@@ -13624,8 +13586,7 @@ guestfs_session_get_e2attrs (<em class="parameter"><code><a class="link" href="G
                              <em class="parameter"><code>const <span class="type">gchar</span> *file</code></em>,
                              <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>get ext2 file attributes of a file</p>
-<p>This returns the file attributes associated with <em class="parameter"><code>file</code></em>
-.</p>
+<p>This returns the file attributes associated with file.</p>
 <p>The attributes are a set of bits associated with each inode which affect
 the behaviour of the file. The attributes are returned as a string of
 letters (described below). The string may be empty, indicating that no
@@ -14811,7 +14772,7 @@ to the wildcard expansion rules used by the shell.</p>
 <p>It is just a wrapper around the C glob(3) function with flags
 "GLOB_MARK|GLOB_BRACE". See that manual page for more details.</p>
 <p>Notice that there is no equivalent command for expanding a device name
-(eg. "/dev/sd*"). Use <a class="link" href="GuestfsSession.html#guestfs-session-list-devices" title="guestfs_session_list_devices ()"><code class="function">guestfs_session_list_devices()</code></a>,
+(eg. /dev/sd*). Use <a class="link" href="GuestfsSession.html#guestfs-session-list-devices" title="guestfs_session_list_devices ()"><code class="function">guestfs_session_list_devices()</code></a>,
 <a class="link" href="GuestfsSession.html#guestfs-session-list-partitions" title="guestfs_session_list_partitions ()"><code class="function">guestfs_session_list_partitions()</code></a> etc functions instead.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.192.9"></a><h4>Parameters</h4>
@@ -15000,12 +14961,12 @@ always compatible with itself, so this only works in rather narrow
 circumstances. Careful testing with each guest version is advisable.</p></li>
 <li class="listitem"><p>If grub-install reports the error "No suitable drive was found in
 the generated device map." it may be that you need to create a
-"/boot/grub/device.map" file first that contains the mapping between
+/boot/grub/device.map file first that contains the mapping between
 grub device names and Linux device names. It is usually sufficient
 to create a file containing:</p></li>
 </ul></div>
 <p>(hd0) /dev/vda</p>
-<p>replacing "/dev/vda" with the name of the installation device.</p>
+<p>replacing /dev/vda with the name of the installation device.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.195.10"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -15239,11 +15200,10 @@ guestfs_session_hivex_commit (<em class="parameter"><code><a class="link" href="
                               <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>commit (write) changes back to the hive</p>
 <p>Commit (write) changes to the hive.</p>
-<p>If the optional <em class="parameter"><code>filename</code></em>
- parameter is null, then the changes are
-written back to the same hive that was opened. If this is not null then
-they are written to the alternate filename given and the original hive
-is left untouched.</p>
+<p>If the optional filename parameter is null, then the changes are written
+back to the same hive that was opened. If this is not null then they are
+written to the alternate filename given and the original hive is left
+untouched.</p>
 <p>This is a wrapper around the hivex(3) call of the same name.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.200.8"></a><h4>Parameters</h4>
@@ -15740,8 +15700,7 @@ guestfs_session_hivex_open (<em class="parameter"><code><a class="link" href="Gu
                             <em class="parameter"><code><a class="link" href="GuestfsHivexOpen.html" title="GuestfsHivexOpen"><span class="type">GuestfsHivexOpen</span></a> *optargs</code></em>,
                             <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>open a Windows Registry hive file</p>
-<p>Open the Windows Registry hive file named <em class="parameter"><code>filename</code></em>
-. If there was any
+<p>Open the Windows Registry hive file named filename. If there was any
 previous hivex handle associated with this guestfs session, then it is
 closed.</p>
 <p>This is a wrapper around the hivex(3) call of the same name.</p>
@@ -16017,13 +15976,11 @@ guestfs_session_initrd_cat (<em class="parameter"><code><a class="link" href="Gu
                             <em class="parameter"><code><span class="type">gsize</span> *size_r</code></em>,
                             <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>list the contents of a single file in an initrd</p>
-<p>This command unpacks the file <em class="parameter"><code>filename</code></em>
- from the initrd file called
-<em class="parameter"><code>initrdpath</code></em>
-. The filename must be given *without* the initial "/"
+<p>This command unpacks the file filename from the initrd file called
+initrdpath. The filename must be given *without* the initial /
 character.</p>
 <p>For example, in guestfish you could use the following command to examine
-the boot script (usually called "/init") contained in a Linux initrd or
+the boot script (usually called /init) contained in a Linux initrd or
 initramfs image:</p>
 <p>initrd-cat /boot/initrd-&lt;version&gt;.img init</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-initrd-list" title="guestfs_session_initrd_list ()"><code class="function">guestfs_session_initrd_list()</code></a>.</p>
@@ -16080,7 +16037,7 @@ guestfs_session_initrd_list (<em class="parameter"><code><a class="link" href="G
                              <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>list files in an initrd</p>
 <p>This command lists out files contained in an initrd.</p>
-<p>The files are listed without any initial "/" character. The files are
+<p>The files are listed without any initial / character. The files are
 listed in the order they appear (not necessarily alphabetical).
 Directory names are listed as separate items.</p>
 <p>Old Linux kernels (2.4 and earlier) used a compressed ext2 filesystem as
@@ -16136,7 +16093,7 @@ guestfs_session_inotify_add_watch (<em class="parameter"><code><a class="link" h
  is a directory then events within that directory are
 watched, but this does *not* happen recursively (in subdirectories).</p>
 <p>Note for non-C or non-Linux callers: the inotify events are defined by
-the Linux kernel ABI and are listed in "/usr/include/sys/inotify.h".</p>
+the Linux kernel ABI and are listed in /usr/include/sys/inotify.h.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.218.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -16572,7 +16529,7 @@ guestfs_session_inspect_get_drive_mappings
                                 <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>get drive letter mappings</p>
 <p>This call is useful for Windows which uses a primitive system of
-assigning drive letters (like "C:") to partitions. This inspection API
+assigning drive letters (like C:) to partitions. This inspection API
 examines the Windows Registry to find out how disks/partitions are
 mapped to drive letters, and returns a hash table as in the example
 below:</p>
@@ -16797,8 +16754,8 @@ system. The icon is returned as a buffer containing a PNG image
 (re-encoded to PNG if necessary).</p>
 <p>If it was not possible to get an icon this function returns a
 zero-length (non-NULL) buffer. *Callers must check for this case*.</p>
-<p>Libguestfs will start by looking for a file called "/etc/favicon.png" or
-"C:\etc\favicon.png" and if it has the correct format, the contents of
+<p>Libguestfs will start by looking for a file called /etc/favicon.png or
+C:\etc\favicon.png and if it has the correct format, the contents of
 this file will be returned. You can disable favicons by passing the
 optional <em class="parameter"><code>favicon</code></em>
  boolean as false (default is true).</p>
@@ -16988,16 +16945,16 @@ guestfs_session_inspect_get_mountpoints
 <p>This returns a hash of where we think the filesystems associated with
 this operating system should be mounted. Callers should note that this
 is at best an educated guess made by reading configuration files such as
-"/etc/fstab". *In particular note* that this may return filesystems
-which are non-existent or not mountable and callers should be prepared
-to handle or ignore failures if they try to mount them.</p>
+/etc/fstab. *In particular note* that this may return filesystems which
+are non-existent or not mountable and callers should be prepared to
+handle or ignore failures if they try to mount them.</p>
 <p>Each element in the returned hashtable has a key which is the path of
-the mountpoint (eg. "/boot") and a value which is the filesystem that
-would be mounted there (eg. "/dev/sda1").</p>
+the mountpoint (eg. /boot) and a value which is the filesystem that
+would be mounted there (eg. /dev/sda1).</p>
 <p>Non-mounted devices such as swap devices are *not* returned in this
 list.</p>
 <p>For operating systems like Windows which still use drive letters, this
-call will only return an entry for the first drive "mounted on" "/". For
+call will only return an entry for the first drive "mounted on" /. For
 information about the mapping of drive letters to partitions, see
 <a class="link" href="GuestfsSession.html#guestfs-session-inspect-get-drive-mappings" title="guestfs_session_inspect_get_drive_mappings ()"><code class="function">guestfs_session_inspect_get_drive_mappings()</code></a>.</p>
 <p>Please read "INSPECTION" in guestfs(3) for more details. See also
@@ -17385,7 +17342,7 @@ guestfs_session_inspect_get_windows_systemroot
                                 <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>get Windows systemroot of inspected operating system</p>
 <p>This returns the Windows systemroot of the inspected guest. The
-systemroot is a directory path such as "/WINDOWS".</p>
+systemroot is a directory path such as /WINDOWS.</p>
 <p>This call assumes that the guest is Windows and that the systemroot
 could be determined by inspection. If this is not the case then an error
 is returned.</p>
@@ -19156,9 +19113,9 @@ guestfs_session_is_blockdev (<em class="parameter"><code><a class="link" href="G
 of symlinks) that ends with a block device also causes the function to
 return true.</p>
 <p>This call only looks at files within the guest filesystem. Libguestfs
-partitions and block devices (eg. "/dev/sda") cannot be used as the
-<em class="parameter"><code>path</code></em>
- parameter of this call.</p>
+partitions and block devices (eg. /dev/sda) cannot be used as the <em class="parameter"><code>path</code></em>
+
+parameter of this call.</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-stat" title="guestfs_session_stat ()"><code class="function">guestfs_session_stat()</code></a>.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.274.9"></a><h4>Parameters</h4>
@@ -20171,8 +20128,7 @@ guestfs_session_journal_open (<em class="parameter"><code><a class="link" href="
                               <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>,
                               <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>open the systemd journal</p>
-<p>Open the systemd journal located in <em class="parameter"><code>directory</code></em>
-. Any previously opened
+<p>Open the systemd journal located in directory. Any previously opened
 journal handle is closed.</p>
 <p>The contents of the journal can be read using
 <a class="link" href="GuestfsSession.html#guestfs-session-journal-next" title="guestfs_session_journal_next ()"><code class="function">guestfs_session_journal_next()</code></a> and <a class="link" href="GuestfsSession.html#guestfs-session-journal-get" title="guestfs_session_journal_get ()"><code class="function">guestfs_session_journal_get()</code></a>.</p>
@@ -21090,7 +21046,7 @@ guestfs_session_list_devices (<em class="parameter"><code><a class="link" href="
                               <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>list the block devices</p>
 <p>List all the block devices.</p>
-<p>The full block device names are returned, eg. "/dev/sda".</p>
+<p>The full block device names are returned, eg. /dev/sda.</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-list-filesystems" title="guestfs_session_list_filesystems ()"><code class="function">guestfs_session_list_filesystems()</code></a>.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.315.8"></a><h4>Parameters</h4>
@@ -21131,11 +21087,11 @@ guestfs_session_list_disk_labels (<em class="parameter"><code><a class="link" hr
 <p>If you add drives using the optional <em class="parameter"><code>label</code></em>
  parameter of
 <code class="function">guestfs_session_add_drive_opts()</code>, you can use this call to map between
-disk labels, and raw block device and partition names (like "/dev/sda"
-and "/dev/sda1").</p>
+disk labels, and raw block device and partition names (like /dev/sda and
+/dev/sda1).</p>
 <p>This returns a hashtable, where keys are the disk labels (*without* the
-"/dev/disk/guestfs" prefix), and the values are the full raw block
-device and partition names (eg. "/dev/sda" and "/dev/sda1").</p>
+/dev/disk/guestfs prefix), and the values are the full raw block device
+and partition names (eg. /dev/sda and /dev/sda1).</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.316.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -21173,8 +21129,8 @@ guestfs_session_list_dm_devices (<em class="parameter"><code><a class="link" hre
                                  <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>list device mapper devices</p>
 <p>List all device mapper devices.</p>
-<p>The returned list contains "/dev/mapper/*" devices, eg. ones created by
-a previous call to <a class="link" href="GuestfsSession.html#guestfs-session-luks-open" title="guestfs_session_luks_open ()"><code class="function">guestfs_session_luks_open()</code></a>.</p>
+<p>The returned list contains /dev/mapper/* devices, eg. ones created by a
+previous call to <a class="link" href="GuestfsSession.html#guestfs-session-luks-open" title="guestfs_session_luks_open ()"><code class="function">guestfs_session_luks_open()</code></a>.</p>
 <p>Device mapper devices which correspond to logical volumes are *not*
 returned in this list. Call <a class="link" href="GuestfsSession.html#guestfs-session-lvs" title="guestfs_session_lvs ()"><code class="function">guestfs_session_lvs()</code></a> if you want to list
 logical volumes.</p>
@@ -21388,7 +21344,7 @@ guestfs_session_list_partitions (<em class="parameter"><code><a class="link" hre
                                  <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>list the partitions</p>
 <p>List all the partitions detected on all block devices.</p>
-<p>The full partition device names are returned, eg. "/dev/sda1"</p>
+<p>The full partition device names are returned, eg. /dev/sda1</p>
 <p>This does not return logical volumes. For that you will need to call
 <a class="link" href="GuestfsSession.html#guestfs-session-lvs" title="guestfs_session_lvs ()"><code class="function">guestfs_session_lvs()</code></a>.</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-list-filesystems" title="guestfs_session_list_filesystems ()"><code class="function">guestfs_session_list_filesystems()</code></a>.</p>
@@ -21429,9 +21385,8 @@ guestfs_session_ll (<em class="parameter"><code><a class="link" href="GuestfsSes
                     <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>,
                     <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>list the files in a directory (long format)</p>
-<p>List the files in <em class="parameter"><code>directory</code></em>
- (relative to the root directory, there is
-no cwd) in the format of 'ls -la'.</p>
+<p>List the files in directory (relative to the root directory, there is no
+cwd) in the format of 'ls -la'.</p>
 <p>This command is mostly useful for interactive sessions. It is *not*
 intended that you try to parse the output string.</p>
 <div class="refsect3">
@@ -21476,8 +21431,7 @@ guestfs_session_llz (<em class="parameter"><code><a class="link" href="GuestfsSe
                      <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>,
                      <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>list the files in a directory (long format with SELinux contexts)</p>
-<p>List the files in <em class="parameter"><code>directory</code></em>
- in the format of 'ls -laZ'.</p>
+<p>List the files in directory in the format of 'ls -laZ'.</p>
 <p>This command is mostly useful for interactive sessions. It is *not*
 intended that you try to parse the output string.</p>
 <div class="refsect3">
@@ -21769,9 +21723,8 @@ guestfs_session_ls (<em class="parameter"><code><a class="link" href="GuestfsSes
                     <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>,
                     <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>list the files in a directory</p>
-<p>List the files in <em class="parameter"><code>directory</code></em>
- (relative to the root directory, there is
-no cwd). The '.' and '..' entries are not returned, but hidden files are
+<p>List the files in directory (relative to the root directory, there is no
+cwd). The '.' and '..' entries are not returned, but hidden files are
 shown.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.330.6"></a><h4>Parameters</h4>
@@ -21819,8 +21772,7 @@ guestfs_session_ls0 (<em class="parameter"><code><a class="link" href="GuestfsSe
 <p>This specialized command is used to get a listing of the filenames in
 the directory <em class="parameter"><code>dir</code></em>
 . The list of filenames is written to the local file
-<em class="parameter"><code>filenames</code></em>
- (on the host).</p>
+filenames (on the host).</p>
 <p>In the output file, the filenames are separated by "\0" characters.</p>
 <p>"." and ".." are not returned. The filenames are not sorted.</p>
 <div class="refsect3">
@@ -22233,8 +22185,7 @@ guestfs_session_luks_close (<em class="parameter"><code><a class="link" href="Gu
 <a class="link" href="GuestfsSession.html#guestfs-session-luks-open" title="guestfs_session_luks_open ()"><code class="function">guestfs_session_luks_open()</code></a> or <a class="link" href="GuestfsSession.html#guestfs-session-luks-open-ro" title="guestfs_session_luks_open_ro ()"><code class="function">guestfs_session_luks_open_ro()</code></a>. The
 <em class="parameter"><code>device</code></em>
  parameter must be the name of the LUKS mapping device (ie.
-"/dev/mapper/mapname") and *not* the name of the underlying block
-device.</p>
+/dev/mapper/mapname) and *not* the name of the underlying block device.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.338.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -22464,7 +22415,7 @@ the Linux Unified Key Setup (LUKS) standard.</p>
 <p>The caller must supply one of the keys associated with the LUKS block
 device, in the <em class="parameter"><code>key</code></em>
  parameter.</p>
-<p>This creates a new block device called "/dev/mapper/mapname". Reads and
+<p>This creates a new block device called /dev/mapper/mapname. Reads and
 writes to this block device are decrypted from and encrypted to the
 underlying <em class="parameter"><code>device</code></em>
  respectively.</p>
@@ -22638,7 +22589,7 @@ guestfs_session_lvcreate_free (<em class="parameter"><code><a class="link" href=
                                <em class="parameter"><code><span class="type">gint32</span> percent</code></em>,
                                <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>create an LVM logical volume in % remaining free space</p>
-<p>Create an LVM logical volume called "/dev/volgroup/logvol", using
+<p>Create an LVM logical volume called /dev/volgroup/logvol, using
 approximately <em class="parameter"><code>percent</code></em>
  % of the free space remaining in the volume
 group. Most usefully, when <em class="parameter"><code>percent</code></em>
@@ -22697,8 +22648,8 @@ guestfs_session_lvm_canonical_lv_name (<em class="parameter"><code><a class="lin
                                        <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>get canonical name of an LV</p>
 <p>This converts alternative naming schemes for LVs that you might find to
-the canonical name. For example, "/dev/mapper/VG-LV" is converted to
-"/dev/VG/LV".</p>
+the canonical name. For example, /dev/mapper/VG-LV is converted to
+/dev/VG/LV.</p>
 <p>This command returns an error if the <em class="parameter"><code>lvname</code></em>
  parameter does not refer to
 a logical volume.</p>
@@ -22880,9 +22831,9 @@ guestfs_session_lvremove (<em class="parameter"><code><a class="link" href="Gues
 <p>Remove an LVM logical volume <em class="parameter"><code>device</code></em>
 , where <em class="parameter"><code>device</code></em>
  is the path to the
-LV, such as "/dev/VG/LV".</p>
+LV, such as /dev/VG/LV.</p>
 <p>You can also remove all LVs in a volume group by specifying the VG name,
-"/dev/VG".</p>
+/dev/VG.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.350.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -23079,7 +23030,7 @@ guestfs_session_lvs (<em class="parameter"><code><a class="link" href="GuestfsSe
 <p>List all the logical volumes detected. This is the equivalent of the
 lvs(8) command.</p>
 <p>This returns a list of the logical volume device names (eg.
-"/dev/VolGroup00/LogVol00").</p>
+/dev/VolGroup00/LogVol00).</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-lvs-full" title="guestfs_session_lvs_full ()"><code class="function">guestfs_session_lvs_full()</code></a>, <a class="link" href="GuestfsSession.html#guestfs-session-list-filesystems" title="guestfs_session_list_filesystems ()"><code class="function">guestfs_session_list_filesystems()</code></a>.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.354.8"></a><h4>Parameters</h4>
@@ -24867,7 +24818,7 @@ guestfs_session_mkswap_L (<em class="parameter"><code><a class="link" href="Gues
  with label <em class="parameter"><code>label</code></em>
 .</p>
 <p>Note that you cannot attach a swap label to a block device (eg.
-"/dev/sda"), just to a partition. This appears to be a limitation of the
+/dev/sda), just to a partition. This appears to be a limitation of the
 kernel or swap tools.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.384.9"></a><h4>Parameters</h4>
@@ -25118,14 +25069,14 @@ guestfs_session_mount (<em class="parameter"><code><a class="link" href="Guestfs
                        <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>mount a guest disk at a position in the filesystem</p>
 <p>Mount a guest disk at a position in the filesystem. Block devices are
-named "/dev/sda", "/dev/sdb" and so on, as they were added to the guest.
-If those block devices contain partitions, they will have the usual
-names (eg. "/dev/sda1"). Also LVM "/dev/VG/LV"-style names can be used,
-or 'mountable' strings returned by <a class="link" href="GuestfsSession.html#guestfs-session-list-filesystems" title="guestfs_session_list_filesystems ()"><code class="function">guestfs_session_list_filesystems()</code></a> or
+named /dev/sda, /dev/sdb and so on, as they were added to the guest. If
+those block devices contain partitions, they will have the usual names
+(eg. /dev/sda1). Also LVM /dev/VG/LV-style names can be used, or
+'mountable' strings returned by <a class="link" href="GuestfsSession.html#guestfs-session-list-filesystems" title="guestfs_session_list_filesystems ()"><code class="function">guestfs_session_list_filesystems()</code></a> or
 <a class="link" href="GuestfsSession.html#guestfs-session-inspect-get-mountpoints" title="guestfs_session_inspect_get_mountpoints ()"><code class="function">guestfs_session_inspect_get_mountpoints()</code></a>.</p>
 <p>The rules are the same as for mount(2): A filesystem must first be
-mounted on "/" before others can be mounted. Other filesystems can only
-be mounted on directories which already exist.</p>
+mounted on / before others can be mounted. Other filesystems can only be
+mounted on directories which already exist.</p>
 <p>The mounted filesystem is writable, if we have sufficient permissions on
 the underlying device.</p>
 <p>Before libguestfs 1.13.16, this call implicitly added the options <em class="parameter"><code>sync</code></em>
@@ -25368,8 +25319,7 @@ guestfs_session_mount_loop (<em class="parameter"><code><a class="link" href="Gu
                             <em class="parameter"><code>const <span class="type">gchar</span> *mountpoint</code></em>,
                             <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>mount a file using the loop device</p>
-<p>This command lets you mount <em class="parameter"><code>file</code></em>
- (a filesystem image in a file) on a
+<p>This command lets you mount file (a filesystem image in a file) on a
 mount point. It is entirely equivalent to the command "mount -o loop
 file mountpoint".</p>
 <div class="refsect3">
@@ -25626,7 +25576,7 @@ guestfs_session_mounts (<em class="parameter"><code><a class="link" href="Guestf
                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>show mounted filesystems</p>
 <p>This returns the list of currently mounted filesystems. It returns the
-list of devices (eg. "/dev/sda1", "/dev/VG/LV").</p>
+list of devices (eg. /dev/sda1, /dev/VG/LV).</p>
 <p>Some internal mounts are not shown.</p>
 <p>See also: <a class="link" href="GuestfsSession.html#guestfs-session-mountpoints" title="guestfs_session_mountpoints ()"><code class="function">guestfs_session_mountpoints()</code></a></p>
 <div class="refsect3">
@@ -27572,7 +27522,7 @@ guestfs_session_pvcreate (<em class="parameter"><code><a class="link" href="Gues
 <p>This creates an LVM physical volume on the named <em class="parameter"><code>device</code></em>
 , where <em class="parameter"><code>device</code></em>
 
-should usually be a partition name such as "/dev/sda1".</p>
+should usually be a partition name such as /dev/sda1.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.433.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -27756,7 +27706,7 @@ guestfs_session_pvs (<em class="parameter"><code><a class="link" href="GuestfsSe
 <p>List all the physical volumes detected. This is the equivalent of the
 pvs(8) command.</p>
 <p>This returns a list of just the device names that contain PVs (eg.
-"/dev/sda2").</p>
+/dev/sda2).</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-pvs-full" title="guestfs_session_pvs_full ()"><code class="function">guestfs_session_pvs_full()</code></a>.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.437.8"></a><h4>Parameters</h4>
@@ -29571,7 +29521,7 @@ all handles which have the same effective user ID.</p>
 default value: If <em class="parameter"><code>LIBGUESTFS_CACHEDIR</code></em>
  is set, then that is the default.
 Else if <em class="parameter"><code>TMPDIR</code></em>
- is set, then that is the default. Else "/var/tmp" is the
+ is set, then that is the default. Else /var/tmp is the
 default.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.472.7"></a><h4>Parameters</h4>
@@ -29666,8 +29616,7 @@ guestfs_session_set_e2attrs (<em class="parameter"><code><a class="link" href="G
 <p>set ext2 file attributes of a file</p>
 <p>This sets or clears the file attributes <em class="parameter"><code>attrs</code></em>
  associated with the inode
-<em class="parameter"><code>file</code></em>
-.</p>
+file.</p>
 <p><em class="parameter"><code>attrs</code></em>
  is a string of characters representing file attributes. See
 <a class="link" href="GuestfsSession.html#guestfs-session-get-e2attrs" title="guestfs_session_get_e2attrs ()"><code class="function">guestfs_session_get_e2attrs()</code></a> for a list of possible attributes. Not all
@@ -30610,7 +30559,7 @@ guestfs_session_set_tmpdir (<em class="parameter"><code><a class="link" href="Gu
 default value: If <em class="parameter"><code>LIBGUESTFS_TMPDIR</code></em>
  is set, then that is the default.
 Else if <em class="parameter"><code>TMPDIR</code></em>
- is set, then that is the default. Else "/tmp" is the
+ is set, then that is the default. Else /tmp is the
 default.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.491.7"></a><h4>Parameters</h4>
@@ -30931,7 +30880,7 @@ guestfs_session_sfdisk (<em class="parameter"><code><a class="link" href="Guestf
 <p>This is a direct interface to the sfdisk(8) program for creating
 partitions on block devices.</p>
 <p><em class="parameter"><code>device</code></em>
- should be a block device, for example "/dev/sda".</p>
+ should be a block device, for example /dev/sda.</p>
 <p><em class="parameter"><code>cyls</code></em>
 , <em class="parameter"><code>heads</code></em>
  and <em class="parameter"><code>sectors</code></em>
@@ -31300,7 +31249,7 @@ guestfs_session_sh (<em class="parameter"><code><a class="link" href="GuestfsSes
                     <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>run a command via the shell</p>
 <p>This call runs a command from the guest filesystem via the guest's
-"/bin/sh".</p>
+/bin/sh.</p>
 <p>This is like <a class="link" href="GuestfsSession.html#guestfs-session-command" title="guestfs_session_command ()"><code class="function">guestfs_session_command()</code></a>, but passes the command to:</p>
 <p>/bin/sh -c "command"</p>
 <p>Depending on the guest's shell, this usually results in wildcards being
@@ -32142,16 +32091,13 @@ sector of the whole disk. The SYSLINUX package comes with some suitable
 Master Boot Records. See the syslinux(1) man page for further
 information.</p>
 <p>The optional arguments are:</p>
-<p><em class="parameter"><code>directory</code></em>
-
+<p>directory
 Install SYSLINUX in the named subdirectory, instead of in the root
 directory of the FAT filesystem.</p>
 <p>Additional configuration can be supplied to SYSLINUX by placing a file
-called "syslinux.cfg" on the FAT filesystem, either in the root
-directory, or under <em class="parameter"><code>directory</code></em>
- if that optional argument is being used.
-For further information about the contents of this file, see
-syslinux(1).</p>
+called syslinux.cfg on the FAT filesystem, either in the root directory,
+or under directory if that optional argument is being used. For further
+information about the contents of this file, see syslinux(1).</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-extlinux" title="guestfs_session_extlinux ()"><code class="function">guestfs_session_extlinux()</code></a>.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.521.11"></a><h4>Parameters</h4>
@@ -32306,8 +32252,7 @@ guestfs_session_tar_in (<em class="parameter"><code><a class="link" href="Guestf
                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>unpack tarfile to directory</p>
 <p>This command uploads and unpacks local file <em class="parameter"><code>tarfile</code></em>
- into <em class="parameter"><code>directory</code></em>
-.</p>
+ into directory.</p>
 <p>The optional <em class="parameter"><code>compress</code></em>
  flag controls compression. If not given, then the
 input should be an uncompressed tar file. Otherwise one of the following
@@ -32378,8 +32323,7 @@ guestfs_session_tar_out (<em class="parameter"><code><a class="link" href="Guest
                          <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>pack directory into tarfile</p>
-<p>This command packs the contents of <em class="parameter"><code>directory</code></em>
- and downloads it to local
+<p>This command packs the contents of directory and downloads it to local
 file <em class="parameter"><code>tarfile</code></em>
 .</p>
 <p>The optional <em class="parameter"><code>compress</code></em>
@@ -32466,8 +32410,7 @@ guestfs_session_tgz_in (<em class="parameter"><code><a class="link" href="Guestf
 <p>unpack compressed tarball to directory</p>
 <p>This command uploads and unpacks local file <em class="parameter"><code>tarball</code></em>
  (a *gzip
-compressed* tar file) into <em class="parameter"><code>directory</code></em>
-.</p>
+compressed* tar file) into directory.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.526.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -32525,8 +32468,7 @@ guestfs_session_tgz_out (<em class="parameter"><code><a class="link" href="Guest
 <p>In new code, use <a class="link" href="GuestfsSession.html#guestfs-session-tar-out" title="guestfs_session_tar_out ()"><code class="function">guestfs_session_tar_out()</code></a> instead</p>
 </div>
 <p>pack directory into compressed tarball</p>
-<p>This command packs the contents of <em class="parameter"><code>directory</code></em>
- and downloads it to local
+<p>This command packs the contents of directory and downloads it to local
 file <em class="parameter"><code>tarball</code></em>
 .</p>
 <div class="refsect3">
@@ -32890,8 +32832,7 @@ guestfs_session_txz_in (<em class="parameter"><code><a class="link" href="Guestf
 <p>unpack compressed tarball to directory</p>
 <p>This command uploads and unpacks local file <em class="parameter"><code>tarball</code></em>
  (an *xz compressed*
-tar file) into <em class="parameter"><code>directory</code></em>
-.</p>
+tar file) into directory.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.533.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -32949,8 +32890,7 @@ guestfs_session_txz_out (<em class="parameter"><code><a class="link" href="Guest
 <p>In new code, use <a class="link" href="GuestfsSession.html#guestfs-session-tar-out" title="guestfs_session_tar_out ()"><code class="function">guestfs_session_tar_out()</code></a> instead</p>
 </div>
 <p>pack directory into compressed tarball</p>
-<p>This command packs the contents of <em class="parameter"><code>directory</code></em>
- and downloads it to local
+<p>This command packs the contents of directory and downloads it to local
 file <em class="parameter"><code>tarball</code></em>
  (as an xz compressed tar archive).</p>
 <div class="refsect3">
@@ -33195,11 +33135,8 @@ guestfs_session_upload (<em class="parameter"><code><a class="link" href="Guestf
                         <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>upload a file from the local machine</p>
-<p>Upload local file <em class="parameter"><code>filename</code></em>
- to <em class="parameter"><code>remotefilename</code></em>
- on the filesystem.</p>
-<p><em class="parameter"><code>filename</code></em>
- can also be a named pipe.</p>
+<p>Upload local file filename to remotefilename on the filesystem.</p>
+<p>filename can also be a named pipe.</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-download" title="guestfs_session_download ()"><code class="function">guestfs_session_download()</code></a>.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.539.8"></a><h4>Parameters</h4>
@@ -33255,18 +33192,14 @@ guestfs_session_upload_offset (<em class="parameter"><code><a class="link" href=
                                <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
                                <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>upload a file from the local machine with offset</p>
-<p>Upload local file <em class="parameter"><code>filename</code></em>
- to <em class="parameter"><code>remotefilename</code></em>
- on the filesystem.</p>
-<p><em class="parameter"><code>remotefilename</code></em>
- is overwritten starting at the byte <em class="parameter"><code>offset</code></em>
+<p>Upload local file filename to remotefilename on the filesystem.</p>
+<p>remotefilename is overwritten starting at the byte <em class="parameter"><code>offset</code></em>
  specified.
 The intention is to overwrite parts of existing files or devices,
 although if a non-existent file is specified then it is created with a
 "hole" before <em class="parameter"><code>offset</code></em>
 . The size of the data written is implicit in the
-size of the source <em class="parameter"><code>filename</code></em>
-.</p>
+size of the source filename.</p>
 <p>Note that there is no limit on the amount of data that can be uploaded
 with this call, unlike with <a class="link" href="GuestfsSession.html#guestfs-session-pwrite" title="guestfs_session_pwrite ()"><code class="function">guestfs_session_pwrite()</code></a>, and this call
 always writes the full amount unless an error occurs.</p>
@@ -33502,7 +33435,7 @@ guestfs_session_version (<em class="parameter"><code><a class="link" href="Guest
 <p>Note that because of dynamic linking this is not necessarily the version
 of libguestfs that you compiled against. You can compile the program,
 and then at runtime dynamically link against a completely different
-"libguestfs.so" library.</p>
+libguestfs.so library.</p>
 <p>This call was added in version 1.0.58. In previous versions of
 libguestfs there was no way to get the version number. From C code you
 can use dynamic linker functions to find out if this symbol exists (if
@@ -35173,8 +35106,7 @@ guestfs_session_zero_free_space (<em class="parameter"><code><a class="link" hre
                                  <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>,
                                  <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>zero free space in a filesystem</p>
-<p>Zero the free space in the filesystem mounted on <em class="parameter"><code>directory</code></em>
-. The
+<p>Zero the free space in the filesystem mounted on directory. The
 filesystem must be mounted read-write.</p>
 <p>The filesystem contents are not affected, but any free space in the
 filesystem is freed.</p>
@@ -35383,8 +35315,7 @@ guestfs_session_zfile (<em class="parameter"><code><a class="link" href="Guestfs
 <p>In new code, use <a class="link" href="GuestfsSession.html#guestfs-session-file" title="guestfs_session_file ()"><code class="function">guestfs_session_file()</code></a> instead</p>
 </div>
 <p>determine file type inside a compressed file</p>
-<p>This command runs <em class="parameter"><code>file</code></em>
- after first decompressing <em class="parameter"><code>path</code></em>
+<p>This command runs file after first decompressing <em class="parameter"><code>path</code></em>
  using <em class="parameter"><code>method</code></em>
 .</p>
 <p><em class="parameter"><code>method</code></em>
@@ -36087,6 +36018,6 @@ more details about this event.</p>
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.23</div>
+<hr>Generated by GTK-Doc V1.24</div>
 </body>
 </html>

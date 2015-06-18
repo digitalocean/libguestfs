@@ -53,8 +53,7 @@ output human-readable:
  F14x64:/dev/sda1                 484M      66M       393M   14%
  F14x64:/dev/vg_f13x64/lv_root    7.4G     3.4G       4.0G   46%
 
-Показати дані щодо використання диска у файлі образу диска з назвою
-C<test.img>:
+Show disk usage for a disk image file called F<test.img>:
 
  $ virt-df -a test1.img
  Filesystem                  1K-blocks     Used  Available  Use%
@@ -133,13 +132,12 @@ ABOUT CSV FORMAT> below.
 
  virt-df --format=raw -a disk.img
 
-примусове встановлення формату без обробки (без автоматичного визначення)
-для C<disk.img>.
+forces raw format (no auto-detection) for F<disk.img>.
 
  virt-df --format=raw -a disk.img --format -a another.img
 
-примусове встановлення формату без обробки (без автоматичного визначення)
-для C<disk.img> і повернення до автоматичного визначення для C<another.img>.
+forces raw format (no auto-detection) for F<disk.img> and reverts to
+auto-detection for F<another.img>.
 
 Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
 форматі, вам слід скористатися цим параметром для визначення формату
@@ -218,7 +216,7 @@ call.  You can get the same information directly, either from the host
 
  guestfish --ro -d НАЗВА_ГОСТЬОВОЇ_СИСТЕМИ -i statvfs /
 
-(change C</> to see stats for other filesystems).
+(change F</> to see stats for other filesystems).
 
 =item З гостьової системи
 
@@ -226,7 +224,7 @@ call.  You can get the same information directly, either from the host
 
  python -c 'import os; s = os.statvfs ("/"); print s'
 
-(change C</> to see stats for other filesystems).
+(change F</> to see stats for other filesystems).
 
 =back
 

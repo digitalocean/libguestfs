@@ -26,7 +26,7 @@ or this:
 
  virt-format -a /dev/VG/LV
 
-C<disk.qcow> or C</dev/VG/LV> must exist already.  B<Any data on these disks
+F<disk.qcow> or F</dev/VG/LV> must exist already.  B<Any data on these disks
 will be erased by these commands>.  These commands will create a single
 empty partition covering the whole disk, with no filesystem inside it.
 
@@ -102,13 +102,12 @@ Create no filesystem.  This is the default.
 
  virt-format --format=raw -a disk.img
 
-примусове встановлення формату без обробки (без автоматичного визначення)
-для C<disk.img>.
+forces raw format (no auto-detection) for F<disk.img>.
 
  virt-format --format=raw -a disk.img --format -a another.img
 
-примусове встановлення формату без обробки (без автоматичного визначення)
-для C<disk.img> і повернення до автоматичного визначення для C<another.img>.
+forces raw format (no auto-detection) for F<disk.img> and reverts to
+auto-detection for F<another.img>.
 
 Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
 форматі, вам слід скористатися цим параметром для визначення формату
@@ -121,12 +120,12 @@ Set the filesystem label.
 
 =item B<--lvm=/dev/I<VG>/I<LV>>
 
-Create a Linux LVM2 logical volume called C</dev/I<VG>/I<LV>>.  You can
+Create a Linux LVM2 logical volume called F</dev/I<VG>/I<LV>>.  You can
 change the name of the volume group and logical volume.
 
 =item B<--lvm>
 
-Create a Linux LVM2 logical volume with the default name (C</dev/VG/LV>).
+Create a Linux LVM2 logical volume with the default name (F</dev/VG/LV>).
 
 =item B<--lvm=none>
 

@@ -169,7 +169,7 @@ or disk image.
 
  virt-copy-in -d Guest /etc /tmp
 
-This should copy local directory C</etc> to C</tmp/etc> in the guest
+This should copy local directory F</etc> to F</tmp/etc> in the guest
 (recursively).  If you boot the guest, can you see all of the copied files
 and directories?
 
@@ -186,7 +186,7 @@ guest or disk image.
 
 Note the final space and period in the command is not a typo.
 
-This should copy C</home> from the guest into the current directory.
+This should copy F</home> from the guest into the current directory.
 
 =head2 Виконайте virt-df.
 
@@ -350,7 +350,7 @@ Using L<virt-sparsify(1)>, make a disk image more sparse:
 
  virt-sparsify /path/to/olddisk.img newdisk.img
 
-Is C<newdisk.img> still bootable after sparsifying? Is the resulting disk
+Is F<newdisk.img> still bootable after sparsifying? Is the resulting disk
 image smaller (use C<du> to check)?
 
 =head2 B<*> "sysprep" a B<shut off> Linux guest.

@@ -120,6 +120,7 @@ val last_errno : t -> int
     which you can use to test the return value of {!Guestfs.last_errno}. *)
 
 module Errno : sig
+  val errno_EINVAL : int
   val errno_ENOTSUP : int
   val errno_EPERM : int
   val errno_ESRCH : int

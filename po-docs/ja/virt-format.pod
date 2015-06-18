@@ -26,7 +26,7 @@ L<guestfish(1)>, you should instead use the guestfish I<-N> option.
 
  virt-format -a /dev/VG/LV
 
-C<disk.qcow> or C</dev/VG/LV> must exist already.  B<Any data on these disks
+F<disk.qcow> or F</dev/VG/LV> must exist already.  B<Any data on these disks
 will be erased by these commands>.  These commands will create a single
 empty partition covering the whole disk, with no filesystem inside it.
 
@@ -98,11 +98,12 @@ I<-a> オプションは標準状態でディスクイメージの形式を自�
 
  virt-format --format=raw -a disk.img
 
-強制的に C<disk.img> を raw 形式にします (自動検出しません)。
+forces raw format (no auto-detection) for F<disk.img>.
 
  virt-format --format=raw -a disk.img --format -a another.img
 
-強制的に C<disk.img> を raw 形式にし (自動検知なし)、 C<another.img> に対して自動検知に戻します。
+forces raw format (no auto-detection) for F<disk.img> and reverts to
+auto-detection for F<another.img>.
 
 仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
 これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。
@@ -113,12 +114,12 @@ Set the filesystem label.
 
 =item B<--lvm=/dev/I<VG>/I<LV>>
 
-C</dev/I<VG>/I<LV>> という Linux LVM2
-論理ボリュームを作成します。ボリュームグループおよび論理ボリュームの名前を変更できます。
+Create a Linux LVM2 logical volume called F</dev/I<VG>/I<LV>>.  You can
+change the name of the volume group and logical volume.
 
 =item B<--lvm>
 
-初期名 (C</dev/VG/LV>) を用いて Linux LVM2 論理ボリュームを作成します。
+Create a Linux LVM2 logical volume with the default name (F</dev/VG/LV>).
 
 =item B<--lvm=none>
 
