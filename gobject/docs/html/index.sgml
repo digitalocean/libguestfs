@@ -501,6 +501,7 @@
 <ANCHOR id="guestfs-session-set-tmpdir" href="guestfs/GuestfsSession.html#guestfs-session-set-tmpdir">
 <ANCHOR id="guestfs-session-set-trace" href="guestfs/GuestfsSession.html#guestfs-session-set-trace">
 <ANCHOR id="guestfs-session-set-uuid" href="guestfs/GuestfsSession.html#guestfs-session-set-uuid">
+<ANCHOR id="guestfs-session-set-uuid-random" href="guestfs/GuestfsSession.html#guestfs-session-set-uuid-random">
 <ANCHOR id="guestfs-session-set-verbose" href="guestfs/GuestfsSession.html#guestfs-session-set-verbose">
 <ANCHOR id="guestfs-session-setcon" href="guestfs/GuestfsSession.html#guestfs-session-setcon">
 <ANCHOR id="guestfs-session-setxattr" href="guestfs/GuestfsSession.html#guestfs-session-setxattr">

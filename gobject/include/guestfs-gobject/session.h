@@ -620,6 +620,7 @@ gboolean guestfs_session_set_smp (GuestfsSession *session, gint32 smp, GError **
 gboolean guestfs_session_set_tmpdir (GuestfsSession *session, const gchar *tmpdir, GError **err);
 gboolean guestfs_session_set_trace (GuestfsSession *session, gboolean trace, GError **err);
 gboolean guestfs_session_set_uuid (GuestfsSession *session, const gchar *device, const gchar *uuid, GError **err);
+gboolean guestfs_session_set_uuid_random (GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_set_verbose (GuestfsSession *session, gboolean verbose, GError **err);
 gboolean guestfs_session_setcon (GuestfsSession *session, const gchar *context, GError **err);
 gboolean guestfs_session_setxattr (GuestfsSession *session, const gchar *xattr, const gchar *val, gint32 vallen, const gchar *path, GError **err);

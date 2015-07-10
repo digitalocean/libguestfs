@@ -587,6 +587,7 @@
     <keyword type="function" name="guestfs_session_set_tmpdir ()" link="GuestfsSession.html#guestfs-session-set-tmpdir" since="1.19.58"/>
     <keyword type="function" name="guestfs_session_set_trace ()" link="GuestfsSession.html#guestfs-session-set-trace" since="1.0.69"/>
     <keyword type="function" name="guestfs_session_set_uuid ()" link="GuestfsSession.html#guestfs-session-set-uuid" since="1.23.10"/>
+    <keyword type="function" name="guestfs_session_set_uuid_random ()" link="GuestfsSession.html#guestfs-session-set-uuid-random" since="1.29.50"/>
     <keyword type="function" name="guestfs_session_set_verbose ()" link="GuestfsSession.html#guestfs-session-set-verbose" since="0.3"/>
     <keyword type="function" name="guestfs_session_setcon ()" link="GuestfsSession.html#guestfs-session-setcon" since="1.0.67"/>
     <keyword type="function" name="guestfs_session_setxattr ()" link="GuestfsSession.html#guestfs-session-setxattr" since="1.0.59"/>

@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.455';
+$VERSION = '0.456';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -6569,7 +6569,15 @@ not allowed.  Setting the label on a btrfs subvolume will set the
 label on its parent filesystem.  The filesystem must not be mounted
 when trying to set the label.
 
+=item fat
+
+The label is limited to 11 bytes.
+
 =back
+
+If there is no support for changing the label
+for the type of the specified filesystem,
+set_label will fail and set errno as ENOTSUP.
 
 To read the label on a filesystem, call C<$g-E<gt>vfs_label>.
 
@@ -6760,6 +6768,20 @@ C<$g-E<gt>set_event_callback>).
 =item $g->set_uuid ($device, $uuid);
 
 Set the filesystem UUID on C<device> to C<uuid>.
+If this fails and the errno is ENOTSUP,
+means that there is no support for changing the UUID
+for the type of the specified filesystem.
+
+Only some filesystem types support setting UUIDs.
+
+To read the UUID on a filesystem, call C<$g-E<gt>vfs_uuid>.
+
+=item $g->set_uuid_random ($device);
+
+Set the filesystem UUID on C<device> to a random UUID.
+If this fails and the errno is ENOTSUP,
+means that there is no support for changing the UUID
+for the type of the specified filesystem.
 
 Only some filesystem types support setting UUIDs.
 
@@ -12350,6 +12372,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "set_uuid",
     description => "set the filesystem UUID",
+  },
+  "set_uuid_random" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "set_uuid_random",
+    description => "set a random UUID for the filesystem",
   },
   "set_verbose" => {
     ret => 'void',

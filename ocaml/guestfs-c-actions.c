@@ -18007,6 +18007,37 @@ ocaml_guestfs_set_uuid (value gv, value devicev, value uuidv)
 }
 
 /* Automatically generated wrapper for function
+ * val set_uuid_random : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_set_uuid_random (value gv, value devicev);
+
+value
+ocaml_guestfs_set_uuid_random (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_uuid_random");
+
+  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_set_uuid_random (g, device);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_uuid_random");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val set_verbose : t -> bool -> unit
  */
 

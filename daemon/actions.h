@@ -641,5 +641,6 @@ extern int do_btrfstune_enable_skinny_metadata_extent_refs (const char *device);
 extern int do_btrfs_image (char *const *source, const char *image, int compresslevel);
 extern char *do_part_get_mbr_part_type (const char *device, int partnum);
 extern int do_btrfs_replace (const char *srcdev, const char *targetdev, const char *mntpoint);
+extern int do_set_uuid_random (const char *device);
 
 #endif /* GUESTFSD_ACTIONS_H */

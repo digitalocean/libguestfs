@@ -469,4 +469,5 @@ const char *function_names[] = {
   [453] = "btrfs_image",
   [454] = "part_get_mbr_part_type",
   [455] = "btrfs_replace",
+  [456] = "set_uuid_random",
 };

@@ -596,6 +596,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_set_tmpdir, NULL)
   PHP_FE (guestfs_set_trace, NULL)
   PHP_FE (guestfs_set_uuid, NULL)
+  PHP_FE (guestfs_set_uuid_random, NULL)
   PHP_FE (guestfs_set_verbose, NULL)
   PHP_FE (guestfs_setcon, NULL)
   PHP_FE (guestfs_setxattr, NULL)
@@ -19591,6 +19592,39 @@ PHP_FUNCTION (guestfs_set_uuid)
 
   int r;
   r = guestfs_set_uuid (g, device, uuid);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_set_uuid_random)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  int device_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &device, &device_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: set_uuid_random: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_set_uuid_random (g, device);
 
   if (r == -1) {
     RETURN_FALSE;

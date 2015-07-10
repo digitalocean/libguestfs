@@ -553,6 +553,7 @@ static const char *const commands[] = {
   "set-trace",
   "trace",
   "set-uuid",
+  "set-uuid-random",
   "set-verbose",
   "verbose",
   "setcon",

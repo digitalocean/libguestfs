@@ -119,7 +119,7 @@ let create_libvirt_xml ?pool source target_buses guestcaps
           * until that day we have to use a bunch of heuristics. XXX
           *)
          let code, vars_template = find_uefi_firmware guestcaps.gcaps_arch in
-         [ e "loader" ["type", "pflash"] [ PCData code ];
+         [ e "loader" ["readonly", "yes"; "type", "pflash"] [ PCData code ];
            e "nvram" ["template", vars_template] [] ] in
 
     (e "type" ["arch", guestcaps.gcaps_arch] [PCData "hvm"]) :: loader in
@@ -367,6 +367,18 @@ class output_libvirt oc output_pool = object
           target_path // source.s_name ^ "-" ^ t.target_overlay.ov_sd in
         { t with target_file = target_file }
     ) targets
+
+  method check_target_firmware guestcaps target_firmware =
+    match target_firmware with
+    | TargetBIOS -> ()
+    | TargetUEFI ->
+       (* This will fail with an error if the target firmware is
+        * not installed on the host.
+        * XXX Can remove this method when libvirt supports
+        * <loader type="efi"/> since then it will be up to
+        * libvirt to check this.
+        *)
+       ignore (find_uefi_firmware guestcaps.gcaps_arch)
 
   method create_metadata source _ target_buses guestcaps _ target_firmware =
     (* We copied directly into the final pool directory.  However we

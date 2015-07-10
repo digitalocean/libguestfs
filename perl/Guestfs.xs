@@ -9315,6 +9315,17 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
+set_uuid_random (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_uuid_random (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
 set_verbose (g, verbose)
       guestfs_h *g;
       int verbose;

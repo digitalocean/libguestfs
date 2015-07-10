@@ -7956,6 +7956,12 @@ class GuestFS(object):
         filesystem. The filesystem must not be mounted when
         trying to set the label.
         
+        fat The label is limited to 11 bytes.
+        
+        If there is no support for changing the label for the
+        type of the specified filesystem, set_label will fail
+        and set errno as ENOTSUP.
+        
         To read the label on a filesystem, call "g.vfs_label".
         """
         self._check_not_closed ()
@@ -8190,7 +8196,10 @@ class GuestFS(object):
         return r
 
     def set_uuid (self, device, uuid):
-        """Set the filesystem UUID on "device" to "uuid".
+        """Set the filesystem UUID on "device" to "uuid". If this
+        fails and the errno is ENOTSUP, means that there is no
+        support for changing the UUID for the type of the
+        specified filesystem.
         
         Only some filesystem types support setting UUIDs.
         
@@ -8198,6 +8207,20 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.set_uuid (self._o, device, uuid)
+        return r
+
+    def set_uuid_random (self, device):
+        """Set the filesystem UUID on "device" to a random UUID. If
+        this fails and the errno is ENOTSUP, means that there is
+        no support for changing the UUID for the type of the
+        specified filesystem.
+        
+        Only some filesystem types support setting UUIDs.
+        
+        To read the UUID on a filesystem, call "g.vfs_uuid".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.set_uuid_random (self._o, device)
         return r
 
     def set_verbose (self, verbose):

@@ -70,6 +70,22 @@ btrfs_get_label (const char *device)
   return out;
 }
 
+int
+btrfs_set_label (const char *device, const char *label)
+{
+  int r;
+  CLEANUP_FREE char *err = NULL;
+
+  r = command (NULL, &err, str_btrfs, "filesystem", "label",
+               device, label, NULL);
+  if (r == -1) {
+    reply_with_error ("%s", err);
+    return -1;
+  }
+
+  return 0;
+}
+
 /* Takes optional arguments, consult optargs_bitmask. */
 int
 do_btrfs_filesystem_resize (const char *filesystem, int64_t size)
@@ -864,6 +880,25 @@ btrfs_set_uuid (const char *device, const char *uuid)
 
   r = commandr (NULL, &err, str_btrfstune, "-f", "-U", uuid, device, NULL);
 
+  if (r == -1) {
+    reply_with_error ("%s: %s", device, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+btrfs_set_uuid_random (const char *device)
+{
+  CLEANUP_FREE char *err = NULL;
+  int r;
+  int has_uuid_opts = test_btrfstune_uuid_opt();
+
+  if (has_uuid_opts <= 0)
+    NOT_SUPPORTED(-1, "btrfs filesystems' UUID cannot be changed");
+
+  r = commandr (NULL, &err, str_btrfstune, "-f", "-u", device, NULL);
   if (r == -1) {
     reply_with_error ("%s: %s", device, err);
     return -1;

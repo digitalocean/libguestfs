@@ -3135,6 +3135,10 @@ struct guestfs_btrfs_replace_args {
   string mntpoint<>;
 };
 
+struct guestfs_set_uuid_random_args {
+  string device<>;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3579,10 +3583,11 @@ enum guestfs_procedure {
   GUESTFS_PROC_BTRFSTUNE_ENABLE_SKINNY_METADATA_EXTENT_REFS = 452,
   GUESTFS_PROC_BTRFS_IMAGE = 453,
   GUESTFS_PROC_PART_GET_MBR_PART_TYPE = 454,
-  GUESTFS_PROC_BTRFS_REPLACE = 455
+  GUESTFS_PROC_BTRFS_REPLACE = 455,
+  GUESTFS_PROC_SET_UUID_RANDOM = 456
 };
 
-const GUESTFS_MAX_PROC_NR = 455;
+const GUESTFS_MAX_PROC_NR = 456;
 
 /* The remote procedure call protocol. */
 

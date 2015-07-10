@@ -11604,7 +11604,14 @@ Setting the label on a btrfs subvolume will set the label on its parent
 filesystem.  The filesystem must not be mounted when trying to set the
 label.
 
+=item fat
+
+The label is limited to 11 bytes.
+
 =back
+
+If there is no support for changing the label for the type of the specified
+filesystem, set_label will fail and set errno as ENOTSUP.
 
 To read the label on a filesystem, call C<guestfs_vfs_label>.
 
@@ -11900,7 +11907,9 @@ callback to send them somewhere else (see C<guestfs_set_event_callback>).
                    const char *device,
                    const char *uuid);
 
-Set the filesystem UUID on C<device> to C<uuid>.
+Set the filesystem UUID on C<device> to C<uuid>.  If this fails and the
+errno is ENOTSUP, means that there is no support for changing the UUID for
+the type of the specified filesystem.
 
 Only some filesystem types support setting UUIDs.
 
@@ -11909,6 +11918,24 @@ To read the UUID on a filesystem, call C<guestfs_vfs_uuid>.
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
 (Додано у 1.23.10)
+
+=head2 guestfs_set_uuid_random
+
+ int
+ guestfs_set_uuid_random (guestfs_h *g,
+                          const char *device);
+
+Set the filesystem UUID on C<device> to a random UUID.  If this fails and
+the errno is ENOTSUP, means that there is no support for changing the UUID
+for the type of the specified filesystem.
+
+Only some filesystem types support setting UUIDs.
+
+To read the UUID on a filesystem, call C<guestfs_vfs_uuid>.
+
+Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
+(Added in 1.29.50)
 
 =head2 guestfs_set_verbose
 

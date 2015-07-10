@@ -20882,6 +20882,42 @@ py_guestfs_set_uuid (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_set_uuid_random (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *device;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_set_uuid_random",
+                         &py_g, &device))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_set_uuid_random (g, device);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_set_verbose (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
@@ -25076,6 +25112,7 @@ static PyMethodDef methods[] = {
   { (char *) "set_tmpdir", py_guestfs_set_tmpdir, METH_VARARGS, NULL },
   { (char *) "set_trace", py_guestfs_set_trace, METH_VARARGS, NULL },
   { (char *) "set_uuid", py_guestfs_set_uuid, METH_VARARGS, NULL },
+  { (char *) "set_uuid_random", py_guestfs_set_uuid_random, METH_VARARGS, NULL },
   { (char *) "set_verbose", py_guestfs_set_verbose, METH_VARARGS, NULL },
   { (char *) "setcon", py_guestfs_setcon, METH_VARARGS, NULL },
   { (char *) "setxattr", py_guestfs_setxattr, METH_VARARGS, NULL },

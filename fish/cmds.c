@@ -510,6 +510,7 @@ static int run_set_smp (const char *cmd, size_t argc, char *argv[]);
 static int run_set_tmpdir (const char *cmd, size_t argc, char *argv[]);
 static int run_set_trace (const char *cmd, size_t argc, char *argv[]);
 static int run_set_uuid (const char *cmd, size_t argc, char *argv[]);
+static int run_set_uuid_random (const char *cmd, size_t argc, char *argv[]);
 static int run_set_verbose (const char *cmd, size_t argc, char *argv[]);
 static int run_setcon (const char *cmd, size_t argc, char *argv[]);
 static int run_setxattr (const char *cmd, size_t argc, char *argv[]);
@@ -3851,7 +3852,7 @@ struct command_entry set_hv_cmd_entry = {
 
 struct command_entry set_label_cmd_entry = {
   .name = "set-label",
-  .help = "NAME\n    set-label - set filesystem label\n\nSYNOPSIS\n     set-label mountable label\n\nDESCRIPTION\n    Set the filesystem label on \"mountable\" to \"label\".\n\n    Only some filesystem types support labels, and libguestfs supports\n    setting labels on only a subset of these.\n\n    ext2, ext3, ext4\n        Labels are limited to 16 bytes.\n\n    NTFS\n        Labels are limited to 128 unicode characters.\n\n    XFS The label is limited to 12 bytes. The filesystem must not be mounted\n        when trying to set the label.\n\n    btrfs\n        The label is limited to 256 bytes and some characters are not\n        allowed. Setting the label on a btrfs subvolume will set the label\n        on its parent filesystem. The filesystem must not be mounted when\n        trying to set the label.\n\n    To read the label on a filesystem, call \"vfs_label\".\n\n",
+  .help = "NAME\n    set-label - set filesystem label\n\nSYNOPSIS\n     set-label mountable label\n\nDESCRIPTION\n    Set the filesystem label on \"mountable\" to \"label\".\n\n    Only some filesystem types support labels, and libguestfs supports\n    setting labels on only a subset of these.\n\n    ext2, ext3, ext4\n        Labels are limited to 16 bytes.\n\n    NTFS\n        Labels are limited to 128 unicode characters.\n\n    XFS The label is limited to 12 bytes. The filesystem must not be mounted\n        when trying to set the label.\n\n    btrfs\n        The label is limited to 256 bytes and some characters are not\n        allowed. Setting the label on a btrfs subvolume will set the label\n        on its parent filesystem. The filesystem must not be mounted when\n        trying to set the label.\n\n    fat The label is limited to 11 bytes.\n\n    If there is no support for changing the label for the type of the\n    specified filesystem, set_label will fail and set errno as ENOTSUP.\n\n    To read the label on a filesystem, call \"vfs_label\".\n\n",
   .synopsis = "set-label mountable label",
   .run = run_set_label
 };
@@ -3949,9 +3950,16 @@ struct command_entry set_trace_cmd_entry = {
 
 struct command_entry set_uuid_cmd_entry = {
   .name = "set-uuid",
-  .help = "NAME\n    set-uuid - set the filesystem UUID\n\nSYNOPSIS\n     set-uuid device uuid\n\nDESCRIPTION\n    Set the filesystem UUID on \"device\" to \"uuid\".\n\n    Only some filesystem types support setting UUIDs.\n\n    To read the UUID on a filesystem, call \"vfs_uuid\".\n\n",
+  .help = "NAME\n    set-uuid - set the filesystem UUID\n\nSYNOPSIS\n     set-uuid device uuid\n\nDESCRIPTION\n    Set the filesystem UUID on \"device\" to \"uuid\". If this fails and the\n    errno is ENOTSUP, means that there is no support for changing the UUID\n    for the type of the specified filesystem.\n\n    Only some filesystem types support setting UUIDs.\n\n    To read the UUID on a filesystem, call \"vfs_uuid\".\n\n",
   .synopsis = "set-uuid device uuid",
   .run = run_set_uuid
+};
+
+struct command_entry set_uuid_random_cmd_entry = {
+  .name = "set-uuid-random",
+  .help = "NAME\n    set-uuid-random - set a random UUID for the filesystem\n\nSYNOPSIS\n     set-uuid-random device\n\nDESCRIPTION\n    Set the filesystem UUID on \"device\" to a random UUID. If this fails and\n    the errno is ENOTSUP, means that there is no support for changing the\n    UUID for the type of the specified filesystem.\n\n    Only some filesystem types support setting UUIDs.\n\n    To read the UUID on a filesystem, call \"vfs_uuid\".\n\n",
+  .synopsis = "set-uuid-random device",
+  .run = run_set_uuid_random
 };
 
 struct command_entry set_verbose_cmd_entry = {
@@ -5144,6 +5152,7 @@ list_commands (void)
   printf ("%-20s %s\n", "set-tmpdir", _("set the temporary directory"));
   printf ("%-20s %s\n", "set-trace", _("enable or disable command traces"));
   printf ("%-20s %s\n", "set-uuid", _("set the filesystem UUID"));
+  printf ("%-20s %s\n", "set-uuid-random", _("set a random UUID for the filesystem"));
   printf ("%-20s %s\n", "set-verbose", _("set verbose mode"));
   printf ("%-20s %s\n", "setcon", _("set SELinux security context"));
   printf ("%-20s %s\n", "setenv", _("set an environment variable"));
@@ -21678,6 +21687,27 @@ run_set_uuid (const char *cmd, size_t argc, char *argv[])
   device = argv[i++];
   uuid = argv[i++];
   r = guestfs_set_uuid (g, device, uuid);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_uuid_random (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_set_uuid_random (g, device);
   if (r == -1) goto out;
   ret = 0;
  out:

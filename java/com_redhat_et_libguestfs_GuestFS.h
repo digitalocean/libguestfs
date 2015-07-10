@@ -4015,6 +4015,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1uuid
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _set_uuid_random
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1uuid_1random
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _set_verbose
  * Signature: (JZ)V
  */

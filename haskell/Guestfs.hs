@@ -427,6 +427,7 @@ module Guestfs (
   set_tmpdir,
   set_trace,
   set_uuid,
+  set_uuid_random,
   set_verbose,
   setcon,
   setxattr,
@@ -5414,6 +5415,18 @@ foreign import ccall unsafe "guestfs.h guestfs_set_uuid" c_set_uuid
 set_uuid :: GuestfsH -> String -> String -> IO ()
 set_uuid h device uuid = do
   r <- withCString device $ \device -> withCString uuid $ \uuid -> withForeignPtr h (\p -> c_set_uuid p device uuid)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_set_uuid_random" c_set_uuid_random
+  :: GuestfsP -> CString -> IO CInt
+
+set_uuid_random :: GuestfsH -> String -> IO ()
+set_uuid_random h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_set_uuid_random p device)
   if (r == -1)
     then do
       err <- last_error h

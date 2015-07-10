@@ -529,6 +529,7 @@
 -export([set_tmpdir/2]).
 -export([set_trace/2]).
 -export([set_uuid/3]).
+-export([set_uuid_random/2]).
 -export([set_verbose/2]).
 -export([setcon/2]).
 -export([setxattr/5]).
@@ -2290,6 +2291,9 @@ set_trace(G, Trace) ->
 
 set_uuid(G, Device, Uuid) ->
   call_port(G, {set_uuid, Device, Uuid}).
+
+set_uuid_random(G, Device) ->
+  call_port(G, {set_uuid_random, Device}).
 
 set_verbose(G, Verbose) ->
   call_port(G, {set_verbose, Verbose}).

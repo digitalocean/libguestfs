@@ -17375,6 +17375,12 @@ public class GuestFS {
    * filesystem. The filesystem must not be mounted when
    * trying to set the label.
    * </p><p>
+   * fat The label is limited to 11 bytes.
+   * </p><p>
+   * If there is no support for changing the label for the
+   * type of the specified filesystem, set_label will fail
+   * and set errno as ENOTSUP.
+   * </p><p>
    * To read the label on a filesystem, call "g.vfs_label".
    * </p><p>
    * </p>
@@ -17812,7 +17818,10 @@ public class GuestFS {
    * <p>
    * set the filesystem UUID
    * </p><p>
-   * Set the filesystem UUID on "device" to "uuid".
+   * Set the filesystem UUID on "device" to "uuid". If this
+   * fails and the errno is ENOTSUP, means that there is no
+   * support for changing the UUID for the type of the
+   * specified filesystem.
    * </p><p>
    * Only some filesystem types support setting UUIDs.
    * </p><p>
@@ -17832,6 +17841,35 @@ public class GuestFS {
   }
 
   private native void _set_uuid (long g, String device, String uuid)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * set a random UUID for the filesystem
+   * </p><p>
+   * Set the filesystem UUID on "device" to a random UUID. If
+   * this fails and the errno is ENOTSUP, means that there is
+   * no support for changing the UUID for the type of the
+   * specified filesystem.
+   * </p><p>
+   * Only some filesystem types support setting UUIDs.
+   * </p><p>
+   * To read the UUID on a filesystem, call "g.vfs_uuid".
+   * </p><p>
+   * </p>
+   * @since 1.29.50
+   * @throws LibGuestFSException
+   */
+  public void set_uuid_random (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_uuid_random: handle is closed");
+
+    _set_uuid_random (g, device);
+  }
+
+  private native void _set_uuid_random (long g, String device)
     throws LibGuestFSException;
 
   /**

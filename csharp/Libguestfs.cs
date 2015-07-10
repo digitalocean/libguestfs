@@ -7655,6 +7655,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_uuid_random (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// set a random UUID for the filesystem
+    /// </summary>
+    public void set_uuid_random (string device)
+    {
+      int r;
+      r = guestfs_set_uuid_random (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_set_verbose (IntPtr h, bool verbose);
 
     /// <summary>

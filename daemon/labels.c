@@ -27,27 +27,7 @@
 #include "actions.h"
 #include "optgroups.h"
 
-GUESTFSD_EXT_CMD(str_btrfs, btrfs);
 GUESTFSD_EXT_CMD(str_dosfslabel, dosfslabel);
-GUESTFSD_EXT_CMD(str_e2label, e2label);
-GUESTFSD_EXT_CMD(str_ntfslabel, ntfslabel);
-GUESTFSD_EXT_CMD(str_xfs_admin, xfs_admin);
-
-static int
-btrfslabel (const char *device, const char *label)
-{
-  int r;
-  CLEANUP_FREE char *err = NULL;
-
-  r = command (NULL, &err, str_btrfs, "filesystem", "label",
-               device, label, NULL);
-  if (r == -1) {
-    reply_with_error ("%s", err);
-    return -1;
-  }
-
-  return 0;
-}
 
 static int
 dosfslabel (const char *device, const char *label)
@@ -65,51 +45,8 @@ dosfslabel (const char *device, const char *label)
 }
 
 static int
-e2label (const char *device, const char *label)
-{
-  int r;
-  CLEANUP_FREE char *err = NULL;
-
-  if (strlen (label) > EXT2_LABEL_MAX) {
-    reply_with_error ("%s: ext2 labels are limited to %d bytes",
-                      label, EXT2_LABEL_MAX);
-    return -1;
-  }
-
-  r = command (NULL, &err, str_e2label, device, label, NULL);
-  if (r == -1) {
-    reply_with_error ("%s", err);
-    return -1;
-  }
-
-  return 0;
-}
-
-static int
-ntfslabel (const char *device, const char *label)
-{
-  int r;
-  CLEANUP_FREE char *err = NULL;
-
-  /* XXX We should check if the label is longer than 128 unicode
-   * characters and return an error.  This is not so easy since we
-   * don't have the required libraries.
-   */
-  r = command (NULL, &err, str_ntfslabel, device, label, NULL);
-  if (r == -1) {
-    reply_with_error ("%s", err);
-    return -1;
-  }
-
-  return 0;
-}
-
-static int
 xfslabel (const char *device, const char *label)
 {
-  int r;
-  CLEANUP_FREE char *err = NULL;
-
   /* Don't allow the special value "---".  If people want to clear
    * the label we'll have to add another call to do that.
    */
@@ -118,19 +55,7 @@ xfslabel (const char *device, const char *label)
     return -1;
   }
 
-  if (strlen (label) > XFS_LABEL_MAX) {
-    reply_with_error ("%s: xfs labels are limited to %d bytes",
-                      label, XFS_LABEL_MAX);
-    return -1;
-  }
-
-  r = command (NULL, &err, str_xfs_admin, "-L", label, device, NULL);
-  if (r == -1) {
-    reply_with_error ("%s", err);
-    return -1;
-  }
-
-  return 0;
+  return xfs_set_label (device, label);
 }
 
 int
@@ -144,7 +69,7 @@ do_set_label (const mountable_t *mountable, const char *label)
     return -1;
 
   if (STREQ (vfs_type, "btrfs"))
-    r = btrfslabel (mountable->device, label);
+    r = btrfs_set_label (mountable->device, label);
 
   else if (STREQ (vfs_type, "msdos") ||
            STREQ (vfs_type, "fat") ||
@@ -152,19 +77,17 @@ do_set_label (const mountable_t *mountable, const char *label)
     r = dosfslabel (mountable->device, label);
 
   else if (fstype_is_extfs (vfs_type))
-    r = e2label (mountable->device, label);
+    r = do_set_e2label (mountable->device, label);
 
   else if (STREQ (vfs_type, "ntfs"))
-    r = ntfslabel (mountable->device, label);
+    r = ntfs_set_label (mountable->device, label);
 
   else if (STREQ (vfs_type, "xfs"))
     r = xfslabel (mountable->device, label);
 
-  else {
-    reply_with_error ("don't know how to set the label for '%s' filesystems",
+  else
+    NOT_SUPPORTED(-1, "don't know how to set the label for '%s' filesystems",
                       vfs_type);
-    r = -1;
-  }
 
   return r;
 }

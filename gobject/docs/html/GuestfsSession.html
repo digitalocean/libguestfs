@@ -3990,6 +3990,14 @@
 <span class="returnvalue">gboolean</span>
 </td>
 <td class="function_name">
+<a class="link" href="GuestfsSession.html#guestfs-session-set-uuid-random" title="guestfs_session_set_uuid_random ()">guestfs_session_set_uuid_random</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
 <a class="link" href="GuestfsSession.html#guestfs-session-set-verbose" title="guestfs_session_set_verbose ()">guestfs_session_set_verbose</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
@@ -30058,9 +30066,12 @@ The label is limited to 256 bytes and some characters are not
 allowed. Setting the label on a btrfs subvolume will set the label
 on its parent filesystem. The filesystem must not be mounted when
 trying to set the label.</p>
+<p>fat The label is limited to 11 bytes.</p>
+<p>If there is no support for changing the label for the type of the
+specified filesystem, set_label will fail and set errno as ENOTSUP.</p>
 <p>To read the label on a filesystem, call <a class="link" href="GuestfsSession.html#guestfs-session-vfs-label" title="guestfs_session_vfs_label ()"><code class="function">guestfs_session_vfs_label()</code></a>.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.481.12"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.481.14"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -30092,7 +30103,7 @@ trying to set the label.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.481.13"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.481.15"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.17.9</p>
@@ -30787,7 +30798,9 @@ guestfs_session_set_uuid (<em class="parameter"><code><a class="link" href="Gues
 <p>set the filesystem UUID</p>
 <p>Set the filesystem UUID on <em class="parameter"><code>device</code></em>
  to <em class="parameter"><code>uuid</code></em>
-.</p>
+. If this fails and the errno
+is ENOTSUP, means that there is no support for changing the UUID for the
+type of the specified filesystem.</p>
 <p>Only some filesystem types support setting UUIDs.</p>
 <p>To read the UUID on a filesystem, call <a class="link" href="GuestfsSession.html#guestfs-session-vfs-uuid" title="guestfs_session_vfs_uuid ()"><code class="function">guestfs_session_vfs_uuid()</code></a>.</p>
 <div class="refsect3">
@@ -30830,6 +30843,53 @@ guestfs_session_set_uuid (<em class="parameter"><code><a class="link" href="Gues
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-set-uuid-random"></a><h3>guestfs_session_set_uuid_random ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+guestfs_session_set_uuid_random (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                 <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                 <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>set a random UUID for the filesystem</p>
+<p>Set the filesystem UUID on <em class="parameter"><code>device</code></em>
+ to a random UUID. If this fails and
+the errno is ENOTSUP, means that there is no support for changing the
+UUID for the type of the specified filesystem.</p>
+<p>Only some filesystem types support setting UUIDs.</p>
+<p>To read the UUID on a filesystem, call <a class="link" href="GuestfsSession.html#guestfs-session-vfs-uuid" title="guestfs_session_vfs_uuid ()"><code class="function">guestfs_session_vfs_uuid()</code></a>.</p>
+<div class="refsect3">
+<a name="id-1.2.2.10.496.8"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>session</p></td>
+<td class="parameter_description"><p> A GuestfsSession object. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>device</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>err</p></td>
+<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.10.496.9"></a><h4>Returns</h4>
+<p> true on success, false on error</p>
+</div>
+<p class="since">Since: 1.29.50</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-set-verbose"></a><h3>guestfs_session_set_verbose ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>
 guestfs_session_set_verbose (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
@@ -30847,7 +30907,7 @@ guestfs_session_set_verbose (<em class="parameter"><code><a class="link" href="G
 callback to send them somewhere else (see
 <code class="function">guestfs_session_set_event_callback()</code>).</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.496.8"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.497.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -30874,7 +30934,7 @@ callback to send them somewhere else (see
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.496.9"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.497.9"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 0.3</p>
@@ -30892,7 +30952,7 @@ guestfs_session_setcon (<em class="parameter"><code><a class="link" href="Guestf
 .</p>
 <p>See the documentation about SELINUX in guestfs(3).</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.497.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.498.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -30919,7 +30979,7 @@ guestfs_session_setcon (<em class="parameter"><code><a class="link" href="Guestf
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.497.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.498.8"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.67</p>
@@ -30943,7 +31003,7 @@ the value <em class="parameter"><code>val</code></em>
 ). The value is arbitrary 8 bit data.</p>
 <p>See also: <a class="link" href="GuestfsSession.html#guestfs-session-lsetxattr" title="guestfs_session_lsetxattr ()"><code class="function">guestfs_session_lsetxattr()</code></a>, attr(5).</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.498.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.499.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -30985,7 +31045,7 @@ the value <em class="parameter"><code>val</code></em>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.498.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.499.8"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.59</p>
@@ -31033,7 +31093,7 @@ string "," (comma).</p>
 <p>See also: <a class="link" href="GuestfsSession.html#guestfs-session-sfdisk-l" title="guestfs_session_sfdisk_l ()"><code class="function">guestfs_session_sfdisk_l()</code></a>, <a class="link" href="GuestfsSession.html#guestfs-session-sfdisk-N" title="guestfs_session_sfdisk_N ()"><code class="function">guestfs_session_sfdisk_N()</code></a>,
 <a class="link" href="GuestfsSession.html#guestfs-session-part-init" title="guestfs_session_part_init ()"><code class="function">guestfs_session_part_init()</code></a></p>
 <div class="refsect3">
-<a name="id-1.2.2.10.499.13"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.500.13"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -31080,7 +31140,7 @@ string "," (comma).</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.499.14"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.500.14"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 0.8</p>
@@ -31105,7 +31165,7 @@ sectors parameters which were rarely if ever used anyway.</p>
 <p>See also: <a class="link" href="GuestfsSession.html#guestfs-session-sfdisk" title="guestfs_session_sfdisk ()"><code class="function">guestfs_session_sfdisk()</code></a>, the sfdisk(8) manpage and
 <a class="link" href="GuestfsSession.html#guestfs-session-part-disk" title="guestfs_session_part_disk ()"><code class="function">guestfs_session_part_disk()</code></a></p>
 <div class="refsect3">
-<a name="id-1.2.2.10.500.9"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.501.9"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -31137,7 +31197,7 @@ sectors parameters which were rarely if ever used anyway.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.500.10"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.501.10"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.55</p>
@@ -31168,7 +31228,7 @@ pass <em class="parameter"><code>0</code></em>
  for the cyls/heads/sectors parameters.</p>
 <p>See also: <a class="link" href="GuestfsSession.html#guestfs-session-part-add" title="guestfs_session_part_add ()"><code class="function">guestfs_session_part_add()</code></a></p>
 <div class="refsect3">
-<a name="id-1.2.2.10.501.10"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.502.10"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -31220,7 +31280,7 @@ pass <em class="parameter"><code>0</code></em>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.501.11"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.502.11"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.26</p>
@@ -31238,52 +31298,6 @@ guestfs_session_sfdisk_disk_geometry (<em class="parameter"><code><a class="link
 table. Especially in the case where the underlying block device has been
 resized, this can be different from the kernel's idea of the geometry
 (see <a class="link" href="GuestfsSession.html#guestfs-session-sfdisk-kernel-geometry" title="guestfs_session_sfdisk_kernel_geometry ()"><code class="function">guestfs_session_sfdisk_kernel_geometry()</code></a>).</p>
-<p>The result is in human-readable format, and not designed to be parsed.</p>
-<div class="refsect3">
-<a name="id-1.2.2.10.502.7"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>session</p></td>
-<td class="parameter_description"><p> A GuestfsSession object. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>device</p></td>
-<td class="parameter_description"><p>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>err</p></td>
-<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
-<div class="refsect3">
-<a name="id-1.2.2.10.502.8"></a><h4>Returns</h4>
-<p> the returned string, or NULL on error. </p>
-<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
-</div>
-<p class="since">Since: 1.0.26</p>
-</div>
-<hr>
-<div class="refsect2">
-<a name="guestfs-session-sfdisk-kernel-geometry"></a><h3>guestfs_session_sfdisk_kernel_geometry ()</h3>
-<pre class="programlisting"><span class="returnvalue">gchar</span> *
-guestfs_session_sfdisk_kernel_geometry
-                               (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
-                                <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
-<p>display the kernel geometry</p>
-<p>This displays the kernel's idea of the geometry of <em class="parameter"><code>device</code></em>
-.</p>
 <p>The result is in human-readable format, and not designed to be parsed.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.503.7"></a><h4>Parameters</h4>
@@ -31321,22 +31335,18 @@ guestfs_session_sfdisk_kernel_geometry
 </div>
 <hr>
 <div class="refsect2">
-<a name="guestfs-session-sfdisk-l"></a><h3>guestfs_session_sfdisk_l ()</h3>
+<a name="guestfs-session-sfdisk-kernel-geometry"></a><h3>guestfs_session_sfdisk_kernel_geometry ()</h3>
 <pre class="programlisting"><span class="returnvalue">gchar</span> *
-guestfs_session_sfdisk_l (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                          <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
-                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
-<div class="warning">
-<p><code class="literal">guestfs_session_sfdisk_l</code> is deprecated and should not be used in newly-written code.</p>
-<p>In new code, use <a class="link" href="GuestfsSession.html#guestfs-session-part-list" title="guestfs_session_part_list ()"><code class="function">guestfs_session_part_list()</code></a> instead</p>
-</div>
-<p>display the partition table</p>
-<p>This displays the partition table on <em class="parameter"><code>device</code></em>
-, in the human-readable
-output of the sfdisk(8) command. It is not intended to be parsed.</p>
-<p>See also: <a class="link" href="GuestfsSession.html#guestfs-session-part-list" title="guestfs_session_part_list ()"><code class="function">guestfs_session_part_list()</code></a></p>
+guestfs_session_sfdisk_kernel_geometry
+                               (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>display the kernel geometry</p>
+<p>This displays the kernel's idea of the geometry of <em class="parameter"><code>device</code></em>
+.</p>
+<p>The result is in human-readable format, and not designed to be parsed.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.504.9"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.504.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -31363,7 +31373,57 @@ output of the sfdisk(8) command. It is not intended to be parsed.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.504.10"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.504.8"></a><h4>Returns</h4>
+<p> the returned string, or NULL on error. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+<p class="since">Since: 1.0.26</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-sfdisk-l"></a><h3>guestfs_session_sfdisk_l ()</h3>
+<pre class="programlisting"><span class="returnvalue">gchar</span> *
+guestfs_session_sfdisk_l (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                          <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<div class="warning">
+<p><code class="literal">guestfs_session_sfdisk_l</code> is deprecated and should not be used in newly-written code.</p>
+<p>In new code, use <a class="link" href="GuestfsSession.html#guestfs-session-part-list" title="guestfs_session_part_list ()"><code class="function">guestfs_session_part_list()</code></a> instead</p>
+</div>
+<p>display the partition table</p>
+<p>This displays the partition table on <em class="parameter"><code>device</code></em>
+, in the human-readable
+output of the sfdisk(8) command. It is not intended to be parsed.</p>
+<p>See also: <a class="link" href="GuestfsSession.html#guestfs-session-part-list" title="guestfs_session_part_list ()"><code class="function">guestfs_session_part_list()</code></a></p>
+<div class="refsect3">
+<a name="id-1.2.2.10.505.9"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>session</p></td>
+<td class="parameter_description"><p> A GuestfsSession object. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>device</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>err</p></td>
+<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.10.505.10"></a><h4>Returns</h4>
 <p> the returned string, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
 </div>
@@ -31385,7 +31445,7 @@ guestfs_session_sh (<em class="parameter"><code><a class="link" href="GuestfsSes
 expanded, shell expressions being interpolated and so on.</p>
 <p>All the provisos about <a class="link" href="GuestfsSession.html#guestfs-session-command" title="guestfs_session_command ()"><code class="function">guestfs_session_command()</code></a> apply to this call.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.505.10"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.506.10"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -31412,7 +31472,7 @@ expanded, shell expressions being interpolated and so on.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.505.11"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.506.11"></a><h4>Returns</h4>
 <p> the returned string, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
 </div>
@@ -31430,7 +31490,7 @@ guestfs_session_sh_lines (<em class="parameter"><code><a class="link" href="Gues
 list of lines.</p>
 <p>See also: <a class="link" href="GuestfsSession.html#guestfs-session-command-lines" title="guestfs_session_command_lines ()"><code class="function">guestfs_session_command_lines()</code></a></p>
 <div class="refsect3">
-<a name="id-1.2.2.10.506.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.507.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -31457,7 +31517,7 @@ list of lines.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.506.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.507.8"></a><h4>Returns</h4>
 <p> an array of returned strings, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span></p>
 </div>
@@ -31482,7 +31542,7 @@ image could not be written out properly).</p>
 <p>guestfs_session_close() will call this if you don't do it explicitly,
 but note that any errors are ignored in that case.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.507.10"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.508.10"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -31504,7 +31564,7 @@ but note that any errors are ignored in that case.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.507.11"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.508.11"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.19.16</p>
@@ -31520,7 +31580,7 @@ guestfs_session_sleep (<em class="parameter"><code><a class="link" href="Guestfs
 <p>Sleep for <em class="parameter"><code>secs</code></em>
  seconds.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.508.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.509.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -31547,7 +31607,7 @@ guestfs_session_sleep (<em class="parameter"><code><a class="link" href="Guestfs
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.508.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.509.7"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.41</p>
@@ -31568,7 +31628,7 @@ guestfs_session_stat (<em class="parameter"><code><a class="link" href="GuestfsS
 .</p>
 <p>This is the same as the stat(2) system call.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.509.9"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.510.9"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -31595,7 +31655,7 @@ guestfs_session_stat (<em class="parameter"><code><a class="link" href="GuestfsS
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.509.10"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.510.10"></a><h4>Returns</h4>
 <p> a Stat object, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
 </div>
@@ -31612,53 +31672,6 @@ guestfs_session_statns (<em class="parameter"><code><a class="link" href="Guestf
 <p>Returns file information for the given <em class="parameter"><code>path</code></em>
 .</p>
 <p>This is the same as the stat(2) system call.</p>
-<div class="refsect3">
-<a name="id-1.2.2.10.510.7"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>session</p></td>
-<td class="parameter_description"><p> A GuestfsSession object. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>path</p></td>
-<td class="parameter_description"><p>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>err</p></td>
-<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
-<div class="refsect3">
-<a name="id-1.2.2.10.510.8"></a><h4>Returns</h4>
-<p> a StatNS object, or NULL on error. </p>
-<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
-</div>
-<p class="since">Since: 1.27.53</p>
-</div>
-<hr>
-<div class="refsect2">
-<a name="guestfs-session-statvfs"></a><h3>guestfs_session_statvfs ()</h3>
-<pre class="programlisting"><a class="link" href="GuestfsStatVFS.html" title="GuestfsStatVFS"><span class="returnvalue">GuestfsStatVFS</span></a> *
-guestfs_session_statvfs (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                         <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
-                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
-<p>get file system statistics</p>
-<p>Returns file system statistics for any mounted file system. <em class="parameter"><code>path</code></em>
- should
-be a file or directory in the mounted file system (typically it is the
-mount point itself, but it doesn't need to be).</p>
-<p>This is the same as the statvfs(2) system call.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.511.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -31688,25 +31701,24 @@ mount point itself, but it doesn't need to be).</p>
 </div>
 <div class="refsect3">
 <a name="id-1.2.2.10.511.8"></a><h4>Returns</h4>
-<p> a StatVFS object, or NULL on error. </p>
+<p> a StatNS object, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
 </div>
-<p class="since">Since: 1.9.2</p>
+<p class="since">Since: 1.27.53</p>
 </div>
 <hr>
 <div class="refsect2">
-<a name="guestfs-session-strings"></a><h3>guestfs_session_strings ()</h3>
-<pre class="programlisting"><span class="returnvalue">gchar</span> **
-guestfs_session_strings (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+<a name="guestfs-session-statvfs"></a><h3>guestfs_session_statvfs ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsStatVFS.html" title="GuestfsStatVFS"><span class="returnvalue">GuestfsStatVFS</span></a> *
+guestfs_session_statvfs (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
-<p>print the printable strings in a file</p>
-<p>This runs the strings(1) command on a file and returns the list of
-printable strings found.</p>
-<p>The <em class="parameter"><code>strings</code></em>
- command has, in the past, had problems with parsing
-untrusted files. These are mitigated in the current version of
-libguestfs, but see "CVE-2014-8484" in guestfs(3).</p>
+<p>get file system statistics</p>
+<p>Returns file system statistics for any mounted file system. <em class="parameter"><code>path</code></em>
+ should
+be a file or directory in the mounted file system (typically it is the
+mount point itself, but it doesn't need to be).</p>
+<p>This is the same as the statvfs(2) system call.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.512.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -31736,6 +31748,54 @@ libguestfs, but see "CVE-2014-8484" in guestfs(3).</p>
 </div>
 <div class="refsect3">
 <a name="id-1.2.2.10.512.8"></a><h4>Returns</h4>
+<p> a StatVFS object, or NULL on error. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+<p class="since">Since: 1.9.2</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-strings"></a><h3>guestfs_session_strings ()</h3>
+<pre class="programlisting"><span class="returnvalue">gchar</span> **
+guestfs_session_strings (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                         <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
+                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>print the printable strings in a file</p>
+<p>This runs the strings(1) command on a file and returns the list of
+printable strings found.</p>
+<p>The <em class="parameter"><code>strings</code></em>
+ command has, in the past, had problems with parsing
+untrusted files. These are mitigated in the current version of
+libguestfs, but see "CVE-2014-8484" in guestfs(3).</p>
+<div class="refsect3">
+<a name="id-1.2.2.10.513.7"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>session</p></td>
+<td class="parameter_description"><p> A GuestfsSession object. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>path</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>err</p></td>
+<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.10.513.8"></a><h4>Returns</h4>
 <p> an array of returned strings, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span></p>
 </div>
@@ -31771,7 +31831,7 @@ for examining binaries in Windows guests.</p>
 untrusted files. These are mitigated in the current version of
 libguestfs, but see "CVE-2014-8484" in guestfs(3).</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.513.15"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.514.15"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -31803,7 +31863,7 @@ libguestfs, but see "CVE-2014-8484" in guestfs(3).</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.513.16"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.514.16"></a><h4>Returns</h4>
 <p> an array of returned strings, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span></p>
 </div>
@@ -31821,7 +31881,7 @@ guestfs_session_swapoff_device (<em class="parameter"><code><a class="link" href
 named <em class="parameter"><code>device</code></em>
 . See <a class="link" href="GuestfsSession.html#guestfs-session-swapon-device" title="guestfs_session_swapon_device ()"><code class="function">guestfs_session_swapon_device()</code></a>.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.514.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.515.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -31848,7 +31908,7 @@ named <em class="parameter"><code>device</code></em>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.514.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.515.7"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.66</p>
@@ -31863,7 +31923,7 @@ guestfs_session_swapoff_file (<em class="parameter"><code><a class="link" href="
 <p>disable swap on file</p>
 <p>This command disables the libguestfs appliance swap on file.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.515.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.516.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -31890,7 +31950,7 @@ guestfs_session_swapoff_file (<em class="parameter"><code><a class="link" href="
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.515.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.516.7"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.66</p>
@@ -31906,7 +31966,7 @@ guestfs_session_swapoff_label (<em class="parameter"><code><a class="link" href=
 <p>This command disables the libguestfs appliance swap on labeled swap
 partition.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.516.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.517.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -31933,7 +31993,7 @@ partition.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.516.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.517.7"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.66</p>
@@ -31949,7 +32009,7 @@ guestfs_session_swapoff_uuid (<em class="parameter"><code><a class="link" href="
 <p>This command disables the libguestfs appliance swap partition with the
 given UUID.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.517.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.518.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -31976,7 +32036,7 @@ given UUID.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.517.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.518.7"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.66</p>
@@ -32000,7 +32060,7 @@ or other information that the guest doesn't want you to trash. You also
 risk leaking information about the host to the guest this way. Instead,
 attach a new host device to the guest and swap on that.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.518.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.519.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -32027,7 +32087,7 @@ attach a new host device to the guest and swap on that.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.518.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.519.8"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.66</p>
@@ -32043,7 +32103,7 @@ guestfs_session_swapon_file (<em class="parameter"><code><a class="link" href="G
 <p>This command enables swap to a file. See <a class="link" href="GuestfsSession.html#guestfs-session-swapon-device" title="guestfs_session_swapon_device ()"><code class="function">guestfs_session_swapon_device()</code></a>
 for other notes.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.519.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.520.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -32070,7 +32130,7 @@ for other notes.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.519.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.520.7"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.66</p>
@@ -32086,7 +32146,7 @@ guestfs_session_swapon_label (<em class="parameter"><code><a class="link" href="
 <p>This command enables swap to a labeled swap partition. See
 <a class="link" href="GuestfsSession.html#guestfs-session-swapon-device" title="guestfs_session_swapon_device ()"><code class="function">guestfs_session_swapon_device()</code></a> for other notes.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.520.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.521.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -32113,7 +32173,7 @@ guestfs_session_swapon_label (<em class="parameter"><code><a class="link" href="
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.520.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.521.7"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.66</p>
@@ -32129,7 +32189,7 @@ guestfs_session_swapon_uuid (<em class="parameter"><code><a class="link" href="G
 <p>This command enables swap to a swap partition with the given UUID. See
 <a class="link" href="GuestfsSession.html#guestfs-session-swapon-device" title="guestfs_session_swapon_device ()"><code class="function">guestfs_session_swapon_device()</code></a> for other notes.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.521.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.522.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -32156,7 +32216,7 @@ guestfs_session_swapon_uuid (<em class="parameter"><code><a class="link" href="G
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.521.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.522.7"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.66</p>
@@ -32173,7 +32233,7 @@ underlying disk image.</p>
 <p>You should always call this if you have modified a disk image, before
 closing the handle.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.522.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.523.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -32195,7 +32255,7 @@ closing the handle.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.522.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.523.8"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 0.3</p>
@@ -32229,7 +32289,7 @@ or under directory if that optional argument is being used. For further
 information about the contents of this file, see syslinux(1).</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-extlinux" title="guestfs_session_extlinux ()"><code class="function">guestfs_session_extlinux()</code></a>.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.523.11"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.524.11"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -32261,7 +32321,7 @@ information about the contents of this file, see syslinux(1).</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.523.12"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.524.12"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.21.27</p>
@@ -32277,7 +32337,7 @@ guestfs_session_tail (<em class="parameter"><code><a class="link" href="GuestfsS
 <p>This command returns up to the last 10 lines of a file as a list of
 strings.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.524.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.525.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -32304,7 +32364,7 @@ strings.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.524.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.525.7"></a><h4>Returns</h4>
 <p> an array of returned strings, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span></p>
 </div>
@@ -32331,7 +32391,7 @@ the file <em class="parameter"><code>path</code></em>
 <p>If the parameter <em class="parameter"><code>nrlines</code></em>
  is zero, this returns an empty list.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.525.8"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.526.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -32363,7 +32423,7 @@ the file <em class="parameter"><code>path</code></em>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.525.9"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.526.9"></a><h4>Returns</h4>
 <p> an array of returned strings, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span></p>
 </div>
@@ -32394,7 +32454,7 @@ strings may be given to select the compression type of the input file:
 . (Note that not all builds of
 libguestfs will support all of these compression types).</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.526.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.527.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -32436,7 +32496,7 @@ libguestfs will support all of these compression types).</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.526.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.527.8"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.3</p>
@@ -32476,7 +32536,7 @@ wildcards.</p>
 If set to true, the output tar file will contain UID/GID numbers
 instead of user/group names.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.527.10"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.528.10"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -32518,7 +32578,7 @@ instead of user/group names.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.527.11"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.528.11"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.3</p>
@@ -32541,66 +32601,6 @@ guestfs_session_tgz_in (<em class="parameter"><code><a class="link" href="Guestf
  (a *gzip
 compressed* tar file) into directory.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.528.8"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>session</p></td>
-<td class="parameter_description"><p> A GuestfsSession object. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>tarball</p></td>
-<td class="parameter_description"><p>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>directory</p></td>
-<td class="parameter_description"><p>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>cancellable</p></td>
-<td class="parameter_description"><p>A GCancellable object</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-<tr>
-<td class="parameter_name"><p>err</p></td>
-<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
-<div class="refsect3">
-<a name="id-1.2.2.10.528.9"></a><h4>Returns</h4>
-<p> true on success, false on error</p>
-</div>
-<p class="since">Since: 1.0.3</p>
-</div>
-<hr>
-<div class="refsect2">
-<a name="guestfs-session-tgz-out"></a><h3>guestfs_session_tgz_out ()</h3>
-<pre class="programlisting"><span class="returnvalue">gboolean</span>
-guestfs_session_tgz_out (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                         <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>,
-                         <em class="parameter"><code>const <span class="type">gchar</span> *tarball</code></em>,
-                         <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
-                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
-<div class="warning">
-<p><code class="literal">guestfs_session_tgz_out</code> is deprecated and should not be used in newly-written code.</p>
-<p>In new code, use <a class="link" href="GuestfsSession.html#guestfs-session-tar-out" title="guestfs_session_tar_out ()"><code class="function">guestfs_session_tar_out()</code></a> instead</p>
-</div>
-<p>pack directory into compressed tarball</p>
-<p>This command packs the contents of directory and downloads it to local
-file <em class="parameter"><code>tarball</code></em>
-.</p>
-<div class="refsect3">
 <a name="id-1.2.2.10.529.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
@@ -32615,12 +32615,12 @@ file <em class="parameter"><code>tarball</code></em>
 <td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
 </tr>
 <tr>
-<td class="parameter_name"><p>directory</p></td>
+<td class="parameter_name"><p>tarball</p></td>
 <td class="parameter_description"><p>. </p></td>
 <td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
 </tr>
 <tr>
-<td class="parameter_name"><p>tarball</p></td>
+<td class="parameter_name"><p>directory</p></td>
 <td class="parameter_description"><p>. </p></td>
 <td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
 </tr>
@@ -32645,6 +32645,66 @@ file <em class="parameter"><code>tarball</code></em>
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-tgz-out"></a><h3>guestfs_session_tgz_out ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+guestfs_session_tgz_out (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                         <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>,
+                         <em class="parameter"><code>const <span class="type">gchar</span> *tarball</code></em>,
+                         <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
+                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<div class="warning">
+<p><code class="literal">guestfs_session_tgz_out</code> is deprecated and should not be used in newly-written code.</p>
+<p>In new code, use <a class="link" href="GuestfsSession.html#guestfs-session-tar-out" title="guestfs_session_tar_out ()"><code class="function">guestfs_session_tar_out()</code></a> instead</p>
+</div>
+<p>pack directory into compressed tarball</p>
+<p>This command packs the contents of directory and downloads it to local
+file <em class="parameter"><code>tarball</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.2.2.10.530.8"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>session</p></td>
+<td class="parameter_description"><p> A GuestfsSession object. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>directory</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>tarball</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>cancellable</p></td>
+<td class="parameter_description"><p>A GCancellable object</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>err</p></td>
+<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.10.530.9"></a><h4>Returns</h4>
+<p> true on success, false on error</p>
+</div>
+<p class="since">Since: 1.0.3</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-touch"></a><h3>guestfs_session_touch ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>
 guestfs_session_touch (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
@@ -32657,7 +32717,7 @@ zero-length file.</p>
 <p>This command only works on regular files, and will fail on other file
 types such as directories, symbolic links, block special etc.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.530.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.531.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -32684,7 +32744,7 @@ types such as directories, symbolic links, block special etc.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.530.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.531.8"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 0.3</p>
@@ -32701,7 +32761,7 @@ guestfs_session_truncate (<em class="parameter"><code><a class="link" href="Gues
  to a zero-length file. The file must exist
 already.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.531.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.532.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -32728,7 +32788,7 @@ already.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.531.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.532.7"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.77</p>
@@ -32752,7 +32812,7 @@ the required size with zero bytes. This creates a sparse file (ie. disk
 blocks are not allocated for the file until you write to it). To create
 a non-sparse file of zeroes, use <a class="link" href="GuestfsSession.html#guestfs-session-fallocate64" title="guestfs_session_fallocate64 ()"><code class="function">guestfs_session_fallocate64()</code></a> instead.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.532.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.533.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -32784,7 +32844,7 @@ a non-sparse file of zeroes, use <a class="link" href="GuestfsSession.html#guest
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.532.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.533.8"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.77</p>
@@ -32858,7 +32918,7 @@ as a number.</p>
 <a class="link" href="GuestfsSession.html#guestfs-session-tune2fs-l" title="guestfs_session_tune2fs_l ()"><code class="function">guestfs_session_tune2fs_l()</code></a>. For precise details of how tune2fs works,
 see the tune2fs(8) man page.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.533.19"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.534.19"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -32890,7 +32950,7 @@ see the tune2fs(8) man page.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.533.20"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.534.20"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.15.4</p>
@@ -32912,7 +32972,7 @@ depends on both the version of <em class="parameter"><code>tune2fs</code></em>
  that libguestfs was built
 against, and the filesystem itself.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.534.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.535.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -32939,7 +32999,7 @@ against, and the filesystem itself.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.534.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.535.8"></a><h4>Returns</h4>
 <p> a GHashTable of results, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8 utf8]</span></p>
 </div>
@@ -32963,7 +33023,7 @@ guestfs_session_txz_in (<em class="parameter"><code><a class="link" href="Guestf
  (an *xz compressed*
 tar file) into directory.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.535.8"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.536.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33000,7 +33060,7 @@ tar file) into directory.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.535.9"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.536.9"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.3.2</p>
@@ -33023,7 +33083,7 @@ guestfs_session_txz_out (<em class="parameter"><code><a class="link" href="Guest
 file <em class="parameter"><code>tarball</code></em>
  (as an xz compressed tar archive).</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.536.8"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.537.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33060,7 +33120,7 @@ file <em class="parameter"><code>tarball</code></em>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.536.9"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.537.9"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.3.2</p>
@@ -33091,7 +33151,7 @@ even if you specify <em class="parameter"><code>0777</code></em>
 <a class="link" href="GuestfsSession.html#guestfs-session-mkdir" title="guestfs_session_mkdir ()"><code class="function">guestfs_session_mkdir()</code></a>.</p>
 <p>This call returns the previous umask.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.537.10"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.538.10"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33118,7 +33178,7 @@ even if you specify <em class="parameter"><code>0777</code></em>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.537.11"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.538.11"></a><h4>Returns</h4>
 <p> the returned value, or -1 on error</p>
 </div>
 <p class="since">Since: 1.0.55</p>
@@ -33136,7 +33196,7 @@ guestfs_session_umount (<em class="parameter"><code><a class="link" href="Guestf
 either by its mountpoint (path) or the device which contains the
 filesystem.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.538.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.539.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33168,7 +33228,7 @@ filesystem.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.538.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.539.7"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 0.8</p>
@@ -33183,7 +33243,7 @@ guestfs_session_umount_all (<em class="parameter"><code><a class="link" href="Gu
 <p>This unmounts all mounted filesystems.</p>
 <p>Some internal mounts are not unmounted by this call.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.539.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.540.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33205,7 +33265,7 @@ guestfs_session_umount_all (<em class="parameter"><code><a class="link" href="Gu
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.539.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.540.8"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 0.8</p>
@@ -33222,7 +33282,7 @@ guestfs_session_umount_local (<em class="parameter"><code><a class="link" href="
 this unmounts it.</p>
 <p>See "MOUNT LOCAL" in guestfs(3) for full documentation.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.540.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.541.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33249,7 +33309,7 @@ this unmounts it.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.540.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.541.8"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.17.22</p>
@@ -33268,7 +33328,7 @@ guestfs_session_upload (<em class="parameter"><code><a class="link" href="Guestf
 <p>filename can also be a named pipe.</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-download" title="guestfs_session_download ()"><code class="function">guestfs_session_download()</code></a>.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.541.8"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.542.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33305,7 +33365,7 @@ guestfs_session_upload (<em class="parameter"><code><a class="link" href="Guestf
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.541.9"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.542.9"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.2</p>
@@ -33334,7 +33394,7 @@ with this call, unlike with <a class="link" href="GuestfsSession.html#guestfs-se
 always writes the full amount unless an error occurs.</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-upload" title="guestfs_session_upload ()"><code class="function">guestfs_session_upload()</code></a>, <a class="link" href="GuestfsSession.html#guestfs-session-pwrite" title="guestfs_session_pwrite ()"><code class="function">guestfs_session_pwrite()</code></a>.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.542.9"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.543.9"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33376,7 +33436,7 @@ always writes the full amount unless an error occurs.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.542.10"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.543.10"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.5.17</p>
@@ -33411,7 +33471,7 @@ receive the "^C" signal).</p>
 bar with a cancel button, wire up the cancel button to call this
 function.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.543.12"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.544.12"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33433,7 +33493,7 @@ function.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.543.13"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.544.13"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.11.18</p>
@@ -33462,7 +33522,7 @@ ignored in this case).</p>
 corresponding timestamp is left unchanged. (The *secs field is ignored
 in this case).</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.544.10"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.545.10"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33509,7 +33569,7 @@ in this case).</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.544.11"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.545.11"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.77</p>
@@ -33525,7 +33585,7 @@ guestfs_session_utsname (<em class="parameter"><code><a class="link" href="Guest
 available. This information is only useful for debugging. Nothing in the
 returned structure is defined by the API.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.545.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.546.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33547,7 +33607,7 @@ returned structure is defined by the API.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.545.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.546.7"></a><h4>Returns</h4>
 <p> a UTSName object, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
 </div>
@@ -33585,7 +33645,7 @@ earlier versions, making this an unreliable way to test for features.
 Use <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a> or <a class="link" href="GuestfsSession.html#guestfs-session-feature-available" title="guestfs_session_feature_available ()"><code class="function">guestfs_session_feature_available()</code></a>
 instead.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.546.12"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.547.12"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33607,7 +33667,7 @@ instead.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.546.13"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.547.13"></a><h4>Returns</h4>
 <p> a Version object, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
 </div>
@@ -33626,7 +33686,7 @@ guestfs_session_vfs_label (<em class="parameter"><code><a class="link" href="Gue
 <p>If the filesystem is unlabeled, this returns the empty string.</p>
 <p>To find a filesystem from the label, use <a class="link" href="GuestfsSession.html#guestfs-session-findfs-label" title="guestfs_session_findfs_label ()"><code class="function">guestfs_session_findfs_label()</code></a>.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.547.8"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.548.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33653,7 +33713,7 @@ guestfs_session_vfs_label (<em class="parameter"><code><a class="link" href="Gue
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.547.9"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.548.9"></a><h4>Returns</h4>
 <p> the returned string, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
 </div>
@@ -33677,7 +33737,7 @@ specifying the filesystem type. For example a string such as <em class="paramete
 <em class="parameter"><code>ntfs</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.548.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.549.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33704,7 +33764,7 @@ specifying the filesystem type. For example a string such as <em class="paramete
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.548.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.549.8"></a><h4>Returns</h4>
 <p> the returned string, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
 </div>
@@ -33723,7 +33783,7 @@ guestfs_session_vfs_uuid (<em class="parameter"><code><a class="link" href="Gues
 <p>If the filesystem does not have a UUID, this returns the empty string.</p>
 <p>To find a filesystem from the UUID, use <a class="link" href="GuestfsSession.html#guestfs-session-findfs-uuid" title="guestfs_session_findfs_uuid ()"><code class="function">guestfs_session_findfs_uuid()</code></a>.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.549.8"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.550.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33750,7 +33810,7 @@ guestfs_session_vfs_uuid (<em class="parameter"><code><a class="link" href="Gues
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.549.9"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.550.9"></a><h4>Returns</h4>
 <p> the returned string, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
 </div>
@@ -33774,7 +33834,7 @@ logical volumes in the listed volume groups <em class="parameter"><code>volgroup
  is an empty list then all volume groups are
 activated or deactivated.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.550.8"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.551.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33806,7 +33866,7 @@ activated or deactivated.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.550.9"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.551.9"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.26</p>
@@ -33824,7 +33884,7 @@ guestfs_session_vg_activate_all (<em class="parameter"><code><a class="link" hre
 logical volumes in all volume groups.</p>
 <p>This command is the same as running "vgchange -a y|n"</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.551.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.552.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33851,7 +33911,7 @@ logical volumes in all volume groups.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.551.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.552.8"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.26</p>
@@ -33867,7 +33927,7 @@ guestfs_session_vgchange_uuid (<em class="parameter"><code><a class="link" href=
 <p>Generate a new random UUID for the volume group <em class="parameter"><code>vg</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.552.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.553.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33894,7 +33954,7 @@ guestfs_session_vgchange_uuid (<em class="parameter"><code><a class="link" href=
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.552.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.553.7"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.19.26</p>
@@ -33908,7 +33968,7 @@ guestfs_session_vgchange_uuid_all (<em class="parameter"><code><a class="link" h
 <p>generate new random UUIDs for all volume groups</p>
 <p>Generate new random UUIDs for all volume groups.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.553.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.554.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33930,7 +33990,7 @@ guestfs_session_vgchange_uuid_all (<em class="parameter"><code><a class="link" h
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.553.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.554.7"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.19.26</p>
@@ -33949,7 +34009,7 @@ guestfs_session_vgcreate (<em class="parameter"><code><a class="link" href="Gues
 list of physical volumes <em class="parameter"><code>physvols</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.554.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.555.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -33981,7 +34041,7 @@ list of physical volumes <em class="parameter"><code>physvols</code></em>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.554.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.555.7"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 0.8</p>
@@ -34002,7 +34062,7 @@ volumes created in this volume group.</p>
 groups.</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-vgpvuuids" title="guestfs_session_vgpvuuids ()"><code class="function">guestfs_session_vgpvuuids()</code></a>.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.555.8"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.556.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -34029,7 +34089,7 @@ groups.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.555.9"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.556.9"></a><h4>Returns</h4>
 <p> an array of returned strings, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span></p>
 </div>
@@ -34050,7 +34110,7 @@ and returns its metadata.</p>
 <p>Note that the metadata is an internal structure used by LVM, subject to
 change at any time, and is provided for information only.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.556.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.557.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -34082,7 +34142,7 @@ change at any time, and is provided for information only.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.556.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.557.8"></a><h4>Returns</h4>
 <p> an array of binary data, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> length=size_r][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> guint8]</span></p>
 </div>
@@ -34104,7 +34164,7 @@ volumes that this volume group resides on.</p>
 groups.</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-vglvuuids" title="guestfs_session_vglvuuids ()"><code class="function">guestfs_session_vglvuuids()</code></a>.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.557.8"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.558.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -34131,7 +34191,7 @@ groups.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.557.9"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.558.9"></a><h4>Returns</h4>
 <p> an array of returned strings, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span></p>
 </div>
@@ -34151,7 +34211,7 @@ guestfs_session_vgremove (<em class="parameter"><code><a class="link" href="Gues
 <p>This also forcibly removes all logical volumes in the volume group (if
 any).</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.558.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.559.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -34178,7 +34238,7 @@ any).</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.558.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.559.8"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.13</p>
@@ -34196,7 +34256,7 @@ guestfs_session_vgrename (<em class="parameter"><code><a class="link" href="Gues
  with the new name <em class="parameter"><code>newvolgroup</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.559.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.560.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -34228,7 +34288,7 @@ guestfs_session_vgrename (<em class="parameter"><code><a class="link" href="Gues
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.559.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.560.7"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.83</p>
@@ -34247,7 +34307,7 @@ vgs(8) command.</p>
 ).</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-vgs-full" title="guestfs_session_vgs_full ()"><code class="function">guestfs_session_vgs_full()</code></a>.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.560.8"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.561.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -34269,7 +34329,7 @@ vgs(8) command.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.560.9"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.561.9"></a><h4>Returns</h4>
 <p> an array of returned strings, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span></p>
 </div>
@@ -34284,44 +34344,6 @@ guestfs_session_vgs_full (<em class="parameter"><code><a class="link" href="Gues
 <p>list the LVM volume groups (VGs)</p>
 <p>List all the volumes groups detected. This is the equivalent of the
 vgs(8) command. The "full" version includes all fields.</p>
-<div class="refsect3">
-<a name="id-1.2.2.10.561.6"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>session</p></td>
-<td class="parameter_description"><p> A GuestfsSession object. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>err</p></td>
-<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
-<div class="refsect3">
-<a name="id-1.2.2.10.561.7"></a><h4>Returns</h4>
-<p> an array of VG objects, or NULL on error. </p>
-<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> GuestfsVG]</span></p>
-</div>
-<p class="since">Since: 0.4</p>
-</div>
-<hr>
-<div class="refsect2">
-<a name="guestfs-session-vgscan"></a><h3>guestfs_session_vgscan ()</h3>
-<pre class="programlisting"><span class="returnvalue">gboolean</span>
-guestfs_session_vgscan (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                        <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
-<p>rescan for LVM physical volumes, volume groups and logical volumes</p>
-<p>This rescans all block devices and rebuilds the list of LVM physical
-volumes, volume groups and logical volumes.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.562.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -34346,6 +34368,44 @@ volumes, volume groups and logical volumes.</p>
 </div>
 <div class="refsect3">
 <a name="id-1.2.2.10.562.7"></a><h4>Returns</h4>
+<p> an array of VG objects, or NULL on error. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> GuestfsVG]</span></p>
+</div>
+<p class="since">Since: 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-vgscan"></a><h3>guestfs_session_vgscan ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+guestfs_session_vgscan (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                        <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>rescan for LVM physical volumes, volume groups and logical volumes</p>
+<p>This rescans all block devices and rebuilds the list of LVM physical
+volumes, volume groups and logical volumes.</p>
+<div class="refsect3">
+<a name="id-1.2.2.10.563.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>session</p></td>
+<td class="parameter_description"><p> A GuestfsSession object. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>err</p></td>
+<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.10.563.7"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.3.2</p>
@@ -34361,7 +34421,7 @@ guestfs_session_vguuid (<em class="parameter"><code><a class="link" href="Guestf
 <p>This command returns the UUID of the LVM VG named <em class="parameter"><code>vgname</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.563.6"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.564.6"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -34388,7 +34448,7 @@ guestfs_session_vguuid (<em class="parameter"><code><a class="link" href="Guestf
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.563.7"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.564.7"></a><h4>Returns</h4>
 <p> the returned string, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
 </div>
@@ -34414,7 +34474,7 @@ complete. However this is no longer necessary because
 them, unless you want to retain compatibility with older versions of the
 API.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.564.10"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.565.10"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -34436,7 +34496,7 @@ API.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.564.11"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.565.11"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 0.3</p>
@@ -34450,49 +34510,6 @@ guestfs_session_wc_c (<em class="parameter"><code><a class="link" href="GuestfsS
                       <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>count characters in a file</p>
 <p>This command counts the characters in a file, using the "wc -c" external
-command.</p>
-<div class="refsect3">
-<a name="id-1.2.2.10.565.6"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>session</p></td>
-<td class="parameter_description"><p> A GuestfsSession object. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>path</p></td>
-<td class="parameter_description"><p>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>err</p></td>
-<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
-<div class="refsect3">
-<a name="id-1.2.2.10.565.7"></a><h4>Returns</h4>
-<p> the returned value, or -1 on error</p>
-</div>
-<p class="since">Since: 1.0.54</p>
-</div>
-<hr>
-<div class="refsect2">
-<a name="guestfs-session-wc-l"></a><h3>guestfs_session_wc_l ()</h3>
-<pre class="programlisting"><span class="returnvalue">gint32</span>
-guestfs_session_wc_l (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                      <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
-                      <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
-<p>count lines in a file</p>
-<p>This command counts the lines in a file, using the "wc -l" external
 command.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.566.6"></a><h4>Parameters</h4>
@@ -34529,13 +34546,13 @@ command.</p>
 </div>
 <hr>
 <div class="refsect2">
-<a name="guestfs-session-wc-w"></a><h3>guestfs_session_wc_w ()</h3>
+<a name="guestfs-session-wc-l"></a><h3>guestfs_session_wc_l ()</h3>
 <pre class="programlisting"><span class="returnvalue">gint32</span>
-guestfs_session_wc_w (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+guestfs_session_wc_l (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                       <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
                       <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
-<p>count words in a file</p>
-<p>This command counts the words in a file, using the "wc -w" external
+<p>count lines in a file</p>
+<p>This command counts the lines in a file, using the "wc -l" external
 command.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.567.6"></a><h4>Parameters</h4>
@@ -34572,6 +34589,49 @@ command.</p>
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-wc-w"></a><h3>guestfs_session_wc_w ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint32</span>
+guestfs_session_wc_w (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                      <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
+                      <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>count words in a file</p>
+<p>This command counts the words in a file, using the "wc -w" external
+command.</p>
+<div class="refsect3">
+<a name="id-1.2.2.10.568.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>session</p></td>
+<td class="parameter_description"><p> A GuestfsSession object. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>path</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>err</p></td>
+<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.10.568.7"></a><h4>Returns</h4>
+<p> the returned value, or -1 on error</p>
+</div>
+<p class="since">Since: 1.0.54</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-wipefs"></a><h3>guestfs_session_wipefs ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>
 guestfs_session_wipefs (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
@@ -34587,7 +34647,7 @@ guestfs_session_wipefs (<em class="parameter"><code><a class="link" href="Guestf
 <p>Compare with <a class="link" href="GuestfsSession.html#guestfs-session-zero" title="guestfs_session_zero ()"><code class="function">guestfs_session_zero()</code></a> which zeroes the first few blocks of
 a device.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.568.8"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.569.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -34614,7 +34674,7 @@ a device.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.568.9"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.569.9"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.17.6</p>
@@ -34634,65 +34694,6 @@ guestfs_session_write (<em class="parameter"><code><a class="link" href="Guestfs
 string <em class="parameter"><code>content</code></em>
  (which can contain any 8 bit data).</p>
 <p>See also <a class="link" href="GuestfsSession.html#guestfs-session-write-append" title="guestfs_session_write_append ()"><code class="function">guestfs_session_write_append()</code></a>.</p>
-<div class="refsect3">
-<a name="id-1.2.2.10.569.7"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>session</p></td>
-<td class="parameter_description"><p> A GuestfsSession object. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>path</p></td>
-<td class="parameter_description"><p>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>content</p></td>
-<td class="parameter_description"><p> an array of binary data. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> length=content_size][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> guint8]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>content_size</p></td>
-<td class="parameter_description"><p>The size of content, in bytes</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-<tr>
-<td class="parameter_name"><p>err</p></td>
-<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
-<div class="refsect3">
-<a name="id-1.2.2.10.569.8"></a><h4>Returns</h4>
-<p> true on success, false on error</p>
-</div>
-<p class="since">Since: 1.3.14</p>
-</div>
-<hr>
-<div class="refsect2">
-<a name="guestfs-session-write-append"></a><h3>guestfs_session_write_append ()</h3>
-<pre class="programlisting"><span class="returnvalue">gboolean</span>
-guestfs_session_write_append (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                              <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
-                              <em class="parameter"><code>const <span class="type">guint8</span> *content</code></em>,
-                              <em class="parameter"><code><span class="type">gsize</span> content_size</code></em>,
-                              <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
-<p>append content to end of file</p>
-<p>This call appends <em class="parameter"><code>content</code></em>
- to the end of file <em class="parameter"><code>path</code></em>
-. If <em class="parameter"><code>path</code></em>
- does not
-exist, then a new file is created.</p>
-<p>See also <a class="link" href="GuestfsSession.html#guestfs-session-write" title="guestfs_session_write ()"><code class="function">guestfs_session_write()</code></a>.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.570.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -34734,6 +34735,65 @@ exist, then a new file is created.</p>
 <a name="id-1.2.2.10.570.8"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
+<p class="since">Since: 1.3.14</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-write-append"></a><h3>guestfs_session_write_append ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+guestfs_session_write_append (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                              <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
+                              <em class="parameter"><code>const <span class="type">guint8</span> *content</code></em>,
+                              <em class="parameter"><code><span class="type">gsize</span> content_size</code></em>,
+                              <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>append content to end of file</p>
+<p>This call appends <em class="parameter"><code>content</code></em>
+ to the end of file <em class="parameter"><code>path</code></em>
+. If <em class="parameter"><code>path</code></em>
+ does not
+exist, then a new file is created.</p>
+<p>See also <a class="link" href="GuestfsSession.html#guestfs-session-write" title="guestfs_session_write ()"><code class="function">guestfs_session_write()</code></a>.</p>
+<div class="refsect3">
+<a name="id-1.2.2.10.571.7"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>session</p></td>
+<td class="parameter_description"><p> A GuestfsSession object. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>path</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>content</p></td>
+<td class="parameter_description"><p> an array of binary data. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> length=content_size][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> guint8]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>content_size</p></td>
+<td class="parameter_description"><p>The size of content, in bytes</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>err</p></td>
+<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.10.571.8"></a><h4>Returns</h4>
+<p> true on success, false on error</p>
+</div>
 <p class="since">Since: 1.11.18</p>
 </div>
 <hr>
@@ -34764,7 +34824,7 @@ NULs).</p>
 <p>*NB.* Owing to a bug, writing content containing ASCII NUL characters
 does *not* work, even if the length is specified.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.571.10"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.572.10"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -34801,7 +34861,7 @@ does *not* work, even if the length is specified.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.571.11"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.572.11"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 0.8</p>
@@ -34823,7 +34883,7 @@ filesystems before this call can modify parameters.</p>
 modified using the <a class="link" href="GuestfsSession.html#guestfs-session-xfs-info" title="guestfs_session_xfs_info ()"><code class="function">guestfs_session_xfs_info()</code></a> and
 <a class="link" href="GuestfsSession.html#guestfs-session-xfs-growfs" title="guestfs_session_xfs_growfs ()"><code class="function">guestfs_session_xfs_growfs()</code></a> calls.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.572.8"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.573.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -34855,7 +34915,7 @@ modified using the <a class="link" href="GuestfsSession.html#guestfs-session-xfs
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.572.9"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.573.9"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.19.33</p>
@@ -34874,7 +34934,7 @@ guestfs_session_xfs_growfs (<em class="parameter"><code><a class="link" href="Gu
 <p>The returned struct contains geometry information. Missing fields are
 returned as @-1 (for numeric fields) or empty string.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.573.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.574.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -34906,7 +34966,7 @@ returned as @-1 (for numeric fields) or empty string.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.573.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.574.8"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.19.28</p>
@@ -34925,7 +34985,7 @@ filesystem. This command returns the geometry of the filesystem.</p>
 <p>The returned struct contains geometry information. Missing fields are
 returned as @-1 (for numeric fields) or empty string.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.574.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.575.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -34952,7 +35012,7 @@ returned as @-1 (for numeric fields) or empty string.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.574.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.575.8"></a><h4>Returns</h4>
 <p> a XFSInfo object, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
 </div>
@@ -34983,7 +35043,7 @@ the resulting filesystem may be inconsistent or corrupt.</p>
 ) or was not detected (returns <em class="parameter"><code>0</code></em>
 ).</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.575.9"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.576.9"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -35015,7 +35075,7 @@ the resulting filesystem may be inconsistent or corrupt.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.575.10"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.576.10"></a><h4>Returns</h4>
 <p> the returned value, or -1 on error</p>
 </div>
 <p class="since">Since: 1.19.36</p>
@@ -35035,60 +35095,6 @@ guestfs_session_zegrep (<em class="parameter"><code><a class="link" href="Guestf
 <p>return lines matching a pattern</p>
 <p>This calls the external <em class="parameter"><code>zegrep</code></em>
  program and returns the matching lines.</p>
-<div class="refsect3">
-<a name="id-1.2.2.10.576.8"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>session</p></td>
-<td class="parameter_description"><p> A GuestfsSession object. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>regex</p></td>
-<td class="parameter_description"><p>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>path</p></td>
-<td class="parameter_description"><p>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>err</p></td>
-<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
-<div class="refsect3">
-<a name="id-1.2.2.10.576.9"></a><h4>Returns</h4>
-<p> an array of returned strings, or NULL on error. </p>
-<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span></p>
-</div>
-<p class="since">Since: 1.0.66</p>
-</div>
-<hr>
-<div class="refsect2">
-<a name="guestfs-session-zegrepi"></a><h3>guestfs_session_zegrepi ()</h3>
-<pre class="programlisting"><span class="returnvalue">gchar</span> **
-guestfs_session_zegrepi (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                         <em class="parameter"><code>const <span class="type">gchar</span> *regex</code></em>,
-                         <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
-                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
-<div class="warning">
-<p><code class="literal">guestfs_session_zegrepi</code> is deprecated and should not be used in newly-written code.</p>
-<p>In new code, use <a class="link" href="GuestfsSession.html#guestfs-session-grep" title="guestfs_session_grep ()"><code class="function">guestfs_session_grep()</code></a> instead</p>
-</div>
-<p>return lines matching a pattern</p>
-<p>This calls the external "zegrep -i" program and returns the matching
-lines.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.577.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -35130,6 +35136,60 @@ lines.</p>
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-zegrepi"></a><h3>guestfs_session_zegrepi ()</h3>
+<pre class="programlisting"><span class="returnvalue">gchar</span> **
+guestfs_session_zegrepi (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                         <em class="parameter"><code>const <span class="type">gchar</span> *regex</code></em>,
+                         <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
+                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<div class="warning">
+<p><code class="literal">guestfs_session_zegrepi</code> is deprecated and should not be used in newly-written code.</p>
+<p>In new code, use <a class="link" href="GuestfsSession.html#guestfs-session-grep" title="guestfs_session_grep ()"><code class="function">guestfs_session_grep()</code></a> instead</p>
+</div>
+<p>return lines matching a pattern</p>
+<p>This calls the external "zegrep -i" program and returns the matching
+lines.</p>
+<div class="refsect3">
+<a name="id-1.2.2.10.578.8"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>session</p></td>
+<td class="parameter_description"><p> A GuestfsSession object. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>regex</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>path</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>err</p></td>
+<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.10.578.9"></a><h4>Returns</h4>
+<p> an array of returned strings, or NULL on error. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span></p>
+</div>
+<p class="since">Since: 1.0.66</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-zero"></a><h3>guestfs_session_zero ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>
 guestfs_session_zero (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
@@ -35147,7 +35207,7 @@ unnecessarily.</p>
 <p>See also: <a class="link" href="GuestfsSession.html#guestfs-session-zero-device" title="guestfs_session_zero_device ()"><code class="function">guestfs_session_zero_device()</code></a>, <a class="link" href="GuestfsSession.html#guestfs-session-scrub-device" title="guestfs_session_scrub_device ()"><code class="function">guestfs_session_scrub_device()</code></a>,
 <a class="link" href="GuestfsSession.html#guestfs-session-is-zero-device" title="guestfs_session_is_zero_device ()"><code class="function">guestfs_session_is_zero_device()</code></a></p>
 <div class="refsect3">
-<a name="id-1.2.2.10.578.9"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.579.9"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -35174,7 +35234,7 @@ unnecessarily.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.578.10"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.579.10"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.16</p>
@@ -35195,7 +35255,7 @@ device.</p>
 This prevents the underlying device from becoming non-sparse or growing
 unnecessarily.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.579.7"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.580.7"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -35222,7 +35282,7 @@ unnecessarily.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.579.8"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.580.8"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.3.1</p>
@@ -35243,7 +35303,7 @@ filesystem is freed.</p>
 <a class="link" href="GuestfsSession.html#guestfs-session-fstrim" title="guestfs_session_fstrim ()"><code class="function">guestfs_session_fstrim()</code></a> either as an alternative to this, or after
 calling this, depending on your requirements.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.580.8"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.581.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -35270,7 +35330,7 @@ calling this, depending on your requirements.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.580.9"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.581.9"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.17.18</p>
@@ -35291,7 +35351,7 @@ possible to compress the filesystem more effectively.</p>
 <p>It is possible that using this program can damage the filesystem or data
 on the filesystem.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.581.8"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.582.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -35318,7 +35378,7 @@ on the filesystem.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.581.9"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.582.9"></a><h4>Returns</h4>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.26</p>
@@ -35338,60 +35398,6 @@ guestfs_session_zfgrep (<em class="parameter"><code><a class="link" href="Guestf
 <p>return lines matching a pattern</p>
 <p>This calls the external <em class="parameter"><code>zfgrep</code></em>
  program and returns the matching lines.</p>
-<div class="refsect3">
-<a name="id-1.2.2.10.582.8"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>session</p></td>
-<td class="parameter_description"><p> A GuestfsSession object. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>pattern</p></td>
-<td class="parameter_description"><p>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>path</p></td>
-<td class="parameter_description"><p>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>err</p></td>
-<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
-<div class="refsect3">
-<a name="id-1.2.2.10.582.9"></a><h4>Returns</h4>
-<p> an array of returned strings, or NULL on error. </p>
-<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span></p>
-</div>
-<p class="since">Since: 1.0.66</p>
-</div>
-<hr>
-<div class="refsect2">
-<a name="guestfs-session-zfgrepi"></a><h3>guestfs_session_zfgrepi ()</h3>
-<pre class="programlisting"><span class="returnvalue">gchar</span> **
-guestfs_session_zfgrepi (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                         <em class="parameter"><code>const <span class="type">gchar</span> *pattern</code></em>,
-                         <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
-                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
-<div class="warning">
-<p><code class="literal">guestfs_session_zfgrepi</code> is deprecated and should not be used in newly-written code.</p>
-<p>In new code, use <a class="link" href="GuestfsSession.html#guestfs-session-grep" title="guestfs_session_grep ()"><code class="function">guestfs_session_grep()</code></a> instead</p>
-</div>
-<p>return lines matching a pattern</p>
-<p>This calls the external "zfgrep -i" program and returns the matching
-lines.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.583.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -35433,6 +35439,60 @@ lines.</p>
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-zfgrepi"></a><h3>guestfs_session_zfgrepi ()</h3>
+<pre class="programlisting"><span class="returnvalue">gchar</span> **
+guestfs_session_zfgrepi (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                         <em class="parameter"><code>const <span class="type">gchar</span> *pattern</code></em>,
+                         <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
+                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<div class="warning">
+<p><code class="literal">guestfs_session_zfgrepi</code> is deprecated and should not be used in newly-written code.</p>
+<p>In new code, use <a class="link" href="GuestfsSession.html#guestfs-session-grep" title="guestfs_session_grep ()"><code class="function">guestfs_session_grep()</code></a> instead</p>
+</div>
+<p>return lines matching a pattern</p>
+<p>This calls the external "zfgrep -i" program and returns the matching
+lines.</p>
+<div class="refsect3">
+<a name="id-1.2.2.10.584.8"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>session</p></td>
+<td class="parameter_description"><p> A GuestfsSession object. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>pattern</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>path</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>err</p></td>
+<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.10.584.9"></a><h4>Returns</h4>
+<p> an array of returned strings, or NULL on error. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span></p>
+</div>
+<p class="since">Since: 1.0.66</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-zfile"></a><h3>guestfs_session_zfile ()</h3>
 <pre class="programlisting"><span class="returnvalue">gchar</span> *
 guestfs_session_zfile (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
@@ -35455,7 +35515,7 @@ guestfs_session_zfile (<em class="parameter"><code><a class="link" href="Guestfs
 <p>Since 1.0.63, use <a class="link" href="GuestfsSession.html#guestfs-session-file" title="guestfs_session_file ()"><code class="function">guestfs_session_file()</code></a> instead which can now process
 compressed files.</p>
 <div class="refsect3">
-<a name="id-1.2.2.10.584.10"></a><h4>Parameters</h4>
+<a name="id-1.2.2.10.585.10"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -35487,7 +35547,7 @@ compressed files.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.2.10.584.11"></a><h4>Returns</h4>
+<a name="id-1.2.2.10.585.11"></a><h4>Returns</h4>
 <p> the returned string, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
 </div>
@@ -35508,60 +35568,6 @@ guestfs_session_zgrep (<em class="parameter"><code><a class="link" href="Guestfs
 <p>return lines matching a pattern</p>
 <p>This calls the external <em class="parameter"><code>zgrep</code></em>
  program and returns the matching lines.</p>
-<div class="refsect3">
-<a name="id-1.2.2.10.585.8"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>session</p></td>
-<td class="parameter_description"><p> A GuestfsSession object. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>regex</p></td>
-<td class="parameter_description"><p>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>path</p></td>
-<td class="parameter_description"><p>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
-</tr>
-<tr>
-<td class="parameter_name"><p>err</p></td>
-<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
-<div class="refsect3">
-<a name="id-1.2.2.10.585.9"></a><h4>Returns</h4>
-<p> an array of returned strings, or NULL on error. </p>
-<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span></p>
-</div>
-<p class="since">Since: 1.0.66</p>
-</div>
-<hr>
-<div class="refsect2">
-<a name="guestfs-session-zgrepi"></a><h3>guestfs_session_zgrepi ()</h3>
-<pre class="programlisting"><span class="returnvalue">gchar</span> **
-guestfs_session_zgrepi (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                        <em class="parameter"><code>const <span class="type">gchar</span> *regex</code></em>,
-                        <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
-                        <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
-<div class="warning">
-<p><code class="literal">guestfs_session_zgrepi</code> is deprecated and should not be used in newly-written code.</p>
-<p>In new code, use <a class="link" href="GuestfsSession.html#guestfs-session-grep" title="guestfs_session_grep ()"><code class="function">guestfs_session_grep()</code></a> instead</p>
-</div>
-<p>return lines matching a pattern</p>
-<p>This calls the external "zgrep -i" program and returns the matching
-lines.</p>
 <div class="refsect3">
 <a name="id-1.2.2.10.586.8"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
@@ -35596,6 +35602,60 @@ lines.</p>
 </div>
 <div class="refsect3">
 <a name="id-1.2.2.10.586.9"></a><h4>Returns</h4>
+<p> an array of returned strings, or NULL on error. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span></p>
+</div>
+<p class="since">Since: 1.0.66</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-zgrepi"></a><h3>guestfs_session_zgrepi ()</h3>
+<pre class="programlisting"><span class="returnvalue">gchar</span> **
+guestfs_session_zgrepi (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                        <em class="parameter"><code>const <span class="type">gchar</span> *regex</code></em>,
+                        <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
+                        <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<div class="warning">
+<p><code class="literal">guestfs_session_zgrepi</code> is deprecated and should not be used in newly-written code.</p>
+<p>In new code, use <a class="link" href="GuestfsSession.html#guestfs-session-grep" title="guestfs_session_grep ()"><code class="function">guestfs_session_grep()</code></a> instead</p>
+</div>
+<p>return lines matching a pattern</p>
+<p>This calls the external "zgrep -i" program and returns the matching
+lines.</p>
+<div class="refsect3">
+<a name="id-1.2.2.10.587.8"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>session</p></td>
+<td class="parameter_description"><p> A GuestfsSession object. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>regex</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>path</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>err</p></td>
+<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.10.587.9"></a><h4>Returns</h4>
 <p> an array of returned strings, or NULL on error. </p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span></p>
 </div>

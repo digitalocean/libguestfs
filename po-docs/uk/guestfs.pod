@@ -4241,6 +4241,10 @@ actions.
 
 Програма L<virt-df(1)> та документація до неї.
 
+=item F<dib>
+
+L<virt-dib(1)> command and documentation.
+
 =item F<diff>
 
 Програма L<virt-diff(1)> та документація до неї.
@@ -4404,6 +4408,10 @@ branch policy.
 =item *
 
 Check C<make && make check> works on at least Fedora, Debian and Ubuntu.
+
+=item *
+
+Check C<./configure --without-libvirt> works.
 
 =item *
 

@@ -3410,6 +3410,12 @@ val set_uuid : t -> string -> string -> unit
     @since 1.23.10
  *)
 
+val set_uuid_random : t -> string -> unit
+(** set a random UUID for the filesystem
+
+    @since 1.29.50
+ *)
+
 val set_verbose : t -> bool -> unit
 (** set verbose mode
 
@@ -4532,6 +4538,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method set_tmpdir : string option -> unit
   method set_trace : bool -> unit
   method set_uuid : string -> string -> unit
+  method set_uuid_random : string -> unit
   method set_verbose : bool -> unit
   method setcon : string -> unit
   method setxattr : string -> string -> int -> string -> unit

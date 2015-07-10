@@ -5793,6 +5793,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_set_uuid_random ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_set_verbose ##### -->
 <para>
 

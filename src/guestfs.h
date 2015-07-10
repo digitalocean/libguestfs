@@ -3091,6 +3091,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_set_trace (guestfs_h *g, int trace);
 #define GUESTFS_HAVE_SET_UUID 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_uuid (guestfs_h *g, const char *device, const char *uuid);
 
+#define GUESTFS_HAVE_SET_UUID_RANDOM 1
+extern GUESTFS_DLL_PUBLIC int guestfs_set_uuid_random (guestfs_h *g, const char *device);
+
 #define GUESTFS_HAVE_SET_VERBOSE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_verbose (guestfs_h *g, int verbose);
 
@@ -4400,6 +4403,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_SET_TMPDIR 1
 #define LIBGUESTFS_HAVE_SET_TRACE 1
 #define LIBGUESTFS_HAVE_SET_UUID 1
+#define LIBGUESTFS_HAVE_SET_UUID_RANDOM 1
 #define LIBGUESTFS_HAVE_SET_VERBOSE 1
 #define LIBGUESTFS_HAVE_SETCON 1
 #define LIBGUESTFS_HAVE_SETXATTR 1

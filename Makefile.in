@@ -163,6 +163,7 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@	mllib \
 @HAVE_OCAML_TRUE@	customize \
 @HAVE_OCAML_TRUE@	builder builder/website \
+@HAVE_OCAML_TRUE@	dib \
 @HAVE_OCAML_TRUE@	get-kernel \
 @HAVE_OCAML_TRUE@	resize \
 @HAVE_OCAML_TRUE@	sparsify \
@@ -447,8 +448,8 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	ruby/examples java java/examples haskell php erlang \
 	erlang/examples lua lua/examples gobject golang \
 	golang/examples csharp mllib customize builder builder/website \
-	get-kernel resize sparsify sysprep v2v v2v/test-harness tools \
-	fuse po-docs
+	dib get-kernel resize sparsify sysprep v2v v2v/test-harness \
+	tools fuse po-docs
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/pick-guests.pl.in $(srcdir)/podwrapper.pl.in \
 	$(srcdir)/run.in $(top_srcdir)/build-aux/compile \
@@ -2394,7 +2395,7 @@ all-local:
 	grep -v -E '^python/utils.c$$' | \
 	LC_ALL=C sort > po/POTFILES
 	cd $(srcdir); \
-	find builder customize get-kernel mllib resize sparsify sysprep v2v -name '*.ml' | \
+	find builder customize dib get-kernel mllib resize sparsify sysprep v2v -name '*.ml' | \
 	LC_ALL=C sort > po/POTFILES-ml
 
 # Try to stop people using 'make install' without 'DESTDIR'.

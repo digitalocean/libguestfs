@@ -12772,6 +12772,27 @@ guestfs_lua_set_uuid (lua_State *L)
 }
 
 static int
+guestfs_lua_set_uuid_random (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_uuid_random");
+
+  device = luaL_checkstring (L, 2);
+
+  r = guestfs_set_uuid_random (g, device);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_set_verbose (lua_State *L)
 {
   int r;
@@ -16763,6 +16784,7 @@ static luaL_Reg methods[] = {
   { "set_tmpdir", guestfs_lua_set_tmpdir },
   { "set_trace", guestfs_lua_set_trace },
   { "set_uuid", guestfs_lua_set_uuid },
+  { "set_uuid_random", guestfs_lua_set_uuid_random },
   { "set_verbose", guestfs_lua_set_verbose },
   { "setcon", guestfs_lua_setcon },
   { "setxattr", guestfs_lua_setxattr },

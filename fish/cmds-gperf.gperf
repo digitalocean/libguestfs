@@ -509,6 +509,7 @@ extern struct command_entry set_smp_cmd_entry;
 extern struct command_entry set_tmpdir_cmd_entry;
 extern struct command_entry set_trace_cmd_entry;
 extern struct command_entry set_uuid_cmd_entry;
+extern struct command_entry set_uuid_random_cmd_entry;
 extern struct command_entry set_verbose_cmd_entry;
 extern struct command_entry setcon_cmd_entry;
 extern struct command_entry setenv_cmd_entry;
@@ -1489,6 +1490,8 @@ set-trace, &set_trace_cmd_entry
 trace, &set_trace_cmd_entry
 set_uuid, &set_uuid_cmd_entry
 set-uuid, &set_uuid_cmd_entry
+set_uuid_random, &set_uuid_random_cmd_entry
+set-uuid-random, &set_uuid_random_cmd_entry
 set_verbose, &set_verbose_cmd_entry
 set-verbose, &set_verbose_cmd_entry
 verbose, &set_verbose_cmd_entry

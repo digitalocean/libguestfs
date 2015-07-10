@@ -6863,7 +6863,14 @@ Setting the label on a btrfs subvolume will set the label on its parent
 filesystem.  The filesystem must not be mounted when trying to set the
 label.
 
+=item fat
+
+The label is limited to 11 bytes.
+
 =back
+
+If there is no support for changing the label for the type of the specified
+filesystem, set_label will fail and set errno as ENOTSUP.
 
 To read the label on a filesystem, call L</vfs-label>.
 
@@ -7093,7 +7100,21 @@ callback to send them somewhere else (see L</set-event-callback>).
 
  set-uuid пристрій uuid
 
-Set the filesystem UUID on C<device> to C<uuid>.
+Set the filesystem UUID on C<device> to C<uuid>.  If this fails and the
+errno is ENOTSUP, means that there is no support for changing the UUID for
+the type of the specified filesystem.
+
+Only some filesystem types support setting UUIDs.
+
+To read the UUID on a filesystem, call L</vfs-uuid>.
+
+=head2 set-uuid-random
+
+ set-uuid-random device
+
+Set the filesystem UUID on C<device> to a random UUID.  If this fails and
+the errno is ENOTSUP, means that there is no support for changing the UUID
+for the type of the specified filesystem.
 
 Only some filesystem types support setting UUIDs.
 

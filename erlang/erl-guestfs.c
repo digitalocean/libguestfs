@@ -9606,6 +9606,19 @@ run_set_uuid (ETERM *message)
 }
 
 static ETERM *
+run_set_uuid_random (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_set_uuid_random (g, device);
+  if (r == -1)
+    return make_error ("set_uuid_random");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_set_verbose (ETERM *message)
 {
   int verbose = get_bool (ARG (0));
@@ -12249,6 +12262,8 @@ dispatch (ETERM *message)
     return run_set_trace (message);
   else if (atom_equals (fun, "set_uuid"))
     return run_set_uuid (message);
+  else if (atom_equals (fun, "set_uuid_random"))
+    return run_set_uuid_random (message);
   else if (atom_equals (fun, "set_verbose"))
     return run_set_verbose (message);
   else if (atom_equals (fun, "setcon"))

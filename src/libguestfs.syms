@@ -815,6 +815,7 @@
         guestfs_set_tmpdir;
         guestfs_set_trace;
         guestfs_set_uuid;
+        guestfs_set_uuid_random;
         guestfs_set_verbose;
         guestfs_setcon;
         guestfs_setxattr;

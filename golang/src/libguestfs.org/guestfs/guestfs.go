@@ -11892,6 +11892,23 @@ func (g *Guestfs) Set_uuid (device string, uuid string) *GuestfsError {
     return nil
 }
 
+/* set_uuid_random : set a random UUID for the filesystem */
+func (g *Guestfs) Set_uuid_random (device string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("set_uuid_random")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_set_uuid_random (g.g, c_device)
+
+    if r == -1 {
+        return get_error_from_handle (g, "set_uuid_random")
+    }
+    return nil
+}
+
 /* set_verbose : set verbose mode */
 func (g *Guestfs) Set_verbose (verbose bool) *GuestfsError {
     if g.g == nil {

@@ -529,6 +529,7 @@ PHP_FUNCTION (guestfs_set_smp);
 PHP_FUNCTION (guestfs_set_tmpdir);
 PHP_FUNCTION (guestfs_set_trace);
 PHP_FUNCTION (guestfs_set_uuid);
+PHP_FUNCTION (guestfs_set_uuid_random);
 PHP_FUNCTION (guestfs_set_verbose);
 PHP_FUNCTION (guestfs_setcon);
 PHP_FUNCTION (guestfs_setxattr);

@@ -1,3 +1,195 @@
+commit e6404be6eea4ef102fbb9e1a554b5ed1ee108598
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 9 18:31:47 2015 +0100
+
+    Version 1.29.50.
+
+commit 42cee8f8fccf853183040c3bf6ae1839cadaf3ee
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 9 17:55:23 2015 +0100
+
+    docs: When making a stable release, run ./configure --without-libvirt.
+
+commit 6561c96fb7b383cd239c6b1f638510514557c549
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 9 17:53:39 2015 +0100
+
+    v2v: domainxml: Fix missing functions in the !HAVE_LIBVIRT case.
+    
+    This also uses a C macro to simplify the error functions in this case.
+    
+    This fixes commit badfc2e9b2a56fd5bac849a6edca4fec823abeea.
+
+commit ae5844cc54b38666ef51c6d8dc94025592fd9d51
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 9 13:12:33 2015 +0100
+
+    Draft release notes for 1.30 release.
+
+commit 350dfe1fa26015fb0631abc3d3dc01b78dee8ead
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 9 15:35:32 2015 +0100
+
+    v2v: Remove RHEL 7 conversion server.
+    
+    We are no longer planning to ship virt-v2v as an appliance.  In RHEL 7.2
+    it will be included in the base RHEL Server product.
+    
+    This reverts commit 4e4ece53647fba810eeb45086b46d02f54e02fe2.
+
+commit 95bb1916eb1b2f6f9e9575cf4bf92501292bf545
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 9 13:18:47 2015 +0100
+
+    appliance: Exclude more log files (RHBZ#1239154).
+    
+    This removes further possible log files from the appliance, but
+    without removing any subdirectories.
+
+commit 2080f4b0dd307e842dbb0f7e891993f32f30d7f5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 9 13:11:15 2015 +0100
+
+    appliance: Remove typo $@ at beginning of line.
+    
+    This fixes commit 82b486a9086f84447324d68b3c0cae300e0334f7.
+
+commit c238a9caa1b45a87d41daa0b6ecfb31d1488fe4e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 9 13:07:59 2015 +0100
+
+    appliance: Rebuild appliance if excludefiles changes.
+
+commit 85fe0abdd01981e075353b12f8d0f76d087b5f43
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jul 9 14:55:43 2015 +0200
+
+    New tool: virt-dib
+    
+    virt-dib is a new tool to run the elements of diskimage-builder using
+    libguestfs.
+
+commit 46be6934fc86a5117fb0d36ff50123752e4390a1
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Wed Jul 8 17:34:45 2015 +0800
+
+    labels: return ENOTSUP if could not set label for specific fs
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit d9b53a27527f8a91d3f2ef821908a674341eeb52
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Wed Jul 8 17:34:44 2015 +0800
+
+    labels: use existing do_xfs_admin for xfslabel
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 5c6be8846f1627f432882e96e2dcc10a0c9cb787
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Wed Jul 8 17:34:43 2015 +0800
+
+    labels: move ntfslabel to ntfs.c
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit d5a60f21489fd264bbcaa0f17cc7f730d08a0e61
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Wed Jul 8 17:34:42 2015 +0800
+
+    labels: move e2label to ext2.c and call it directly
+    
+    ext2 should not call function in labels
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 16232ffd580fc3d700ce01e5a5e9b33c11956caa
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Wed Jul 8 11:07:47 2015 +0800
+
+    labels: move btrfslabel to btrfs.c
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit de93c690a14b201ed87d3d2a88673d4c530d59e8
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Mon Jul 6 17:13:51 2015 +0800
+
+    doc: add missing ms-dos fs section in set_label
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 105fa8bf31fe1af09bbade1949eb28d622b25b21
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Mon Jul 6 13:34:06 2015 +0800
+
+    uuids: return ENOTSUP if could not set UUID for specific fs
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit b04f39bf10e4f760d880d1077e6ffb68d028c0ae
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 6 12:37:23 2015 +0100
+
+    v2v: Add a check before copying that UEFI is supported (RHBZ#1184690).
+    
+    If UEFI is required by the guest, but not supported by the host, then
+    you wouldn't see an error message until after copying.
+    
+    Add an additional method to the output object so we can check this
+    before copying, to avoid a long wait.
+    
+    Thanks: Junqin Zhou
+    https://bugzilla.redhat.com/show_bug.cgi?id=1184690#c22
+
+commit 74e87a970b39864b8f38c9a8b0ddab61b9d9a76e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 6 12:20:48 2015 +0100
+
+    v2v: -o libvirt: Add readonly=yes to UEFI <loader> attribute (RHBZ#1184690).
+    
+    Thanks: Junqin Zhou for diagnosing the bug and finding the correct
+    solution.  https://bugzilla.redhat.com/show_bug.cgi?id=1184690#c22
+    
+    This fixes commit 40558450dd87190c9dc2649cadbf284ae0a21606.
+
+commit 659d56db3cc4333e7410cac6720c20b3b7fa66ad
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 6 10:47:45 2015 +0100
+
+    v2v: Catch real exception thrown by failing aug_get (RHBZ#1239053).
+    
+    When converting the old Perl virt-v2v code, I made a silly mistake
+    with the exception that aug_get throws when it doesn't find any node.
+    It throws a 'Guestfs.Error' exception, not 'Not_found'.
+    
+    As a result of this, the exception was escaping and the proper error
+    message was not displayed.  With a malformed grub configuration you
+    would see this error:
+    
+      $ virt-v2v -i disk centos-6.img -o null
+      [...]
+      virt-v2v: error: libguestfs error: aug_get: no matching node
+    
+    After applying this patch:
+    
+      $ virt-v2v -i disk centos-6.img -o null
+      [...]
+      virt-v2v: error: no kernels were found in the grub configuration.
+    
+      This probably indicates that virt-v2v was unable to parse the grub
+      configuration of this guest.
+    
+    which is the correct error message.
+
+commit a477e282dbd20b3eb1adfebe28d2c2bcdbfde8ff
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Thu Jul 2 19:52:37 2015 +0800
+
+    New API: set_uuid_random
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
 commit db9bd6158503f65c5f953bfae0fcb5b092b9bbfa
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Jul 2 18:06:15 2015 +0100

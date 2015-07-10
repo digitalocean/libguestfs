@@ -22718,6 +22718,12 @@ ruby_guestfs_set_hv (VALUE gv, VALUE hvv)
  * filesystem. The filesystem must not be mounted when
  * trying to set the label.
  * 
+ * fat The label is limited to 11 bytes.
+ * 
+ * If there is no support for changing the label for the
+ * type of the specified filesystem, set_label will fail
+ * and set errno as ENOTSUP.
+ * 
  * To read the label on a filesystem, call "g.vfs_label".
  *
  *
@@ -23306,7 +23312,10 @@ ruby_guestfs_set_trace (VALUE gv, VALUE tracev)
  *
  * set the filesystem UUID
  *
- * Set the filesystem UUID on "device" to "uuid".
+ * Set the filesystem UUID on "device" to "uuid". If this
+ * fails and the errno is ENOTSUP, means that there is no
+ * support for changing the UUID for the type of the
+ * specified filesystem.
  * 
  * Only some filesystem types support setting UUIDs.
  * 
@@ -23330,6 +23339,44 @@ ruby_guestfs_set_uuid (VALUE gv, VALUE devicev, VALUE uuidv)
   int r;
 
   r = guestfs_set_uuid (g, device, uuid);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.set_uuid_random(device) -> nil
+ *
+ * set a random UUID for the filesystem
+ *
+ * Set the filesystem UUID on "device" to a random UUID. If
+ * this fails and the errno is ENOTSUP, means that there is
+ * no support for changing the UUID for the type of the
+ * specified filesystem.
+ * 
+ * Only some filesystem types support setting UUIDs.
+ * 
+ * To read the UUID on a filesystem, call "g.vfs_uuid".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_uuid_random+[http://libguestfs.org/guestfs.3.html#guestfs_set_uuid_random]).
+ */
+static VALUE
+ruby_guestfs_set_uuid_random (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_uuid_random");
+
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_set_uuid_random (g, device);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -28717,6 +28764,8 @@ Init__guestfs (void)
         ruby_guestfs_set_trace, 1);
   rb_define_method (c_guestfs, "set_uuid",
         ruby_guestfs_set_uuid, 2);
+  rb_define_method (c_guestfs, "set_uuid_random",
+        ruby_guestfs_set_uuid_random, 1);
   rb_define_method (c_guestfs, "set_verbose",
         ruby_guestfs_set_verbose, 1);
   rb_define_method (c_guestfs, "setcon",

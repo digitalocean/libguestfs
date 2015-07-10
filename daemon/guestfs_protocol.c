@@ -8734,6 +8734,16 @@ xdr_guestfs_btrfs_replace_args (XDR *xdrs, guestfs_btrfs_replace_args *objp)
 }
 
 bool_t
+xdr_guestfs_set_uuid_random_args (XDR *xdrs, guestfs_set_uuid_random_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

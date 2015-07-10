@@ -23050,6 +23050,11 @@ guestfs_session_set_hv (GuestfsSession *session, const gchar *hv, GError **err)
  * on its parent filesystem. The filesystem must not be mounted when
  * trying to set the label.
  * 
+ * fat The label is limited to 11 bytes.
+ * 
+ * If there is no support for changing the label for the type of the
+ * specified filesystem, set_label will fail and set errno as ENOTSUP.
+ * 
  * To read the label on a filesystem, call guestfs_session_vfs_label().
  * 
  * Returns: true on success, false on error
@@ -23625,7 +23630,9 @@ guestfs_session_set_trace (GuestfsSession *session, gboolean trace, GError **err
  *
  * set the filesystem UUID
  *
- * Set the filesystem UUID on @device to @uuid.
+ * Set the filesystem UUID on @device to @uuid. If this fails and the errno
+ * is ENOTSUP, means that there is no support for changing the UUID for the
+ * type of the specified filesystem.
  * 
  * Only some filesystem types support setting UUIDs.
  * 
@@ -23646,6 +23653,45 @@ guestfs_session_set_uuid (GuestfsSession *session, const gchar *device, const gc
   }
 
   int ret = guestfs_set_uuid (g, device, uuid);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_set_uuid_random:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * set a random UUID for the filesystem
+ *
+ * Set the filesystem UUID on @device to a random UUID. If this fails and
+ * the errno is ENOTSUP, means that there is no support for changing the
+ * UUID for the type of the specified filesystem.
+ * 
+ * Only some filesystem types support setting UUIDs.
+ * 
+ * To read the UUID on a filesystem, call guestfs_session_vfs_uuid().
+ * 
+ * Returns: true on success, false on error
+ * Since: 1.29.50
+ */
+gboolean
+guestfs_session_set_uuid_random (GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_uuid_random");
+    return FALSE;
+  }
+
+  int ret = guestfs_set_uuid_random (g, device);
   if (ret == -1) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return FALSE;

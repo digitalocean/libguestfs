@@ -1485,6 +1485,7 @@ guestfs_session_set_smp
 guestfs_session_set_tmpdir
 guestfs_session_set_trace
 guestfs_session_set_uuid
+guestfs_session_set_uuid_random
 guestfs_session_set_verbose
 guestfs_session_setcon
 guestfs_session_setxattr

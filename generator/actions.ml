@@ -9941,7 +9941,15 @@ not allowed.  Setting the label on a btrfs subvolume will set the
 label on its parent filesystem.  The filesystem must not be mounted
 when trying to set the label.
 
+=item fat
+
+The label is limited to 11 bytes.
+
 =back
+
+If there is no support for changing the label
+for the type of the specified filesystem,
+set_label will fail and set errno as ENOTSUP.
 
 To read the label on a filesystem, call C<guestfs_vfs_label>." };
 
@@ -11804,6 +11812,9 @@ parameter.  In future we may allow other flags to be adjusted." };
     shortdesc = "set the filesystem UUID";
     longdesc = "\
 Set the filesystem UUID on C<device> to C<uuid>.
+If this fails and the errno is ENOTSUP,
+means that there is no support for changing the UUID
+for the type of the specified filesystem.
 
 Only some filesystem types support setting UUIDs.
 
@@ -12635,6 +12646,25 @@ removed from the filesystem.
 
 The C<targetdev> needs to be same size or larger than the C<srcdev>. Devices
 which are currently mounted are never allowed to be used as the C<targetdev>." };
+
+  { defaults with
+    name = "set_uuid_random"; added = (1, 29, 50);
+    style = RErr, [Device "device"], [];
+    proc_nr = Some 456;
+    tests = [
+        InitBasicFS, Always, TestRun (
+            [["set_uuid_random"; "/dev/sda1"]]), [];
+      ];
+    shortdesc = "set a random UUID for the filesystem";
+    longdesc = "\
+Set the filesystem UUID on C<device> to a random UUID.
+If this fails and the errno is ENOTSUP,
+means that there is no support for changing the UUID
+for the type of the specified filesystem.
+
+Only some filesystem types support setting UUIDs.
+
+To read the UUID on a filesystem, call C<guestfs_vfs_uuid>." };
 
 ]
 
