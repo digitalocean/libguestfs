@@ -6,9 +6,9 @@
 # Geert Warrink <geert.warrink@onsnet.nu>, 2011
 msgid ""
 msgstr ""
-"Project-Id-Version: libguestfs 1.29.46\n"
+"Project-Id-Version: libguestfs 1.29.48\n"
 "Report-Msgid-Bugs-To: libguestfs@redhat.com\n"
-"POT-Creation-Date: 2015-06-29 23:18+0100\n"
+"POT-Creation-Date: 2015-07-02 18:03+0100\n"
 "PO-Revision-Date: 2014-10-18 04:01-0400\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/libguestfs/"

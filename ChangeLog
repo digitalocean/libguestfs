@@ -1,3 +1,298 @@
+commit db9bd6158503f65c5f953bfae0fcb5b092b9bbfa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 2 18:06:15 2015 +0100
+
+    Version 1.29.49.
+
+commit ccdbbc7fe43e313c16a00dd30c57a04134e60b2c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 2 15:36:04 2015 +0100
+
+    Fix various -Wformat problems.
+    
+    Updating gnulib has caused -Wformat-signedness to be enabled.  This
+    has revealed many problems in C format strings.  The fixes here fall
+    into the following main categories:
+    
+     - Using %d with an unsigned parameter.
+    
+     - %x and %o expect an unsigned argument.
+    
+     - uid_t and gid_t are unsigned on Linux.  The safe way to print these
+       is to cast them to uintmax_t and then print them using the %ju
+       modifier (see http://stackoverflow.com/a/1401581).
+    
+     - Using %d to print an enum.  Since enums may be either char or int,
+       I fixed this by casting the enum to int.
+    
+     - strtol_error & lzma_ret are both unsigned types.
+
+commit b263035c1adaffb4d7bf7e6b3f19eec8b8de1e5a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 2 14:52:39 2015 +0100
+
+    Update gnulib to latest.
+
+commit fba82456a990c689ccd38f40509ed86ed882b353
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 2 14:49:37 2015 +0100
+
+    Pull latest translations from Zanata.
+
+commit f5698c3793ade4d97f0232e537abb782457a9c81
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 2 14:14:29 2015 +0100
+
+    v2v: TODO: Add note about -i ova / -o rhev and removable device slots.
+
+commit afd80a27ef761556b53d7a64be5364b5ee231545
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 2 14:14:26 2015 +0100
+
+    v2v: Remove some items from TODO file which we've implemented.
+
+commit b7166e1a9e092b5c2e16ce42a6ee025283d6b520
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 13:53:50 2015 +0100
+
+    v2v: Add a regression test for RHBZ#1238053.
+
+commit 309e14189fa1c470977f3a4bccc5456b390d4cce
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 18:04:46 2015 +0100
+
+    v2v: Pass target_buses to output object (RHBZ#1238053).
+    
+    Pass the target_buses assignment to the output#create_metadata method.
+    
+    Now output modes have a choice: they can either ignore the new
+    parameter and continue to use the flat list of targets.  This is
+    suitable for output modes that cannot model multiple buses (eg.
+    -o glance) or can model it but don't bother (currently -o rhev).
+    
+    Or they can ignore the flat targets parameter and use the new
+    target_buses parameter, translating that into the appropriate list of
+    devices.  This is implemented in this commit for these modes:
+    
+     -o libvirt
+     -o local
+     -o qemu
+
+commit ce83f2751bea272b96107482aeb37af2358214dc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 17:33:28 2015 +0100
+
+    v2v: Introduce the concept of target buses.
+    
+    The target VM will have several buses to which disks can be attached.
+    Commonly it will have an IDE bus, and possibly a virtio-blk "bus" (not
+    really a bus) and/or a SCSI bus.
+    
+    Virt-v2v does not model this at the moment.  Disks are just added to
+    the output XML in the order that we write them, and so they can move
+    around with respect to the target VM.
+    
+    This commit introduces the idea that we should model the target disk
+    buses, and we should try to assign fixed and removable disks to slots
+    on each of those buses.  In this commit, the modelling is not used by
+    any output mode, but that will be fixed in the next commit.
+
+commit 847c303a159d9066cd0d96ae90bb30e88d2ed781
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 15:15:33 2015 +0100
+
+    v2v: -i libvirt and -i ova: Record the slot number of removable drives.
+    
+    When we see libvirt source XML for a removable drive like this:
+    
+       <disk type='file' device='cdrom'>
+         <driver name='qemu' type='raw'/>
+         <target dev='hdc' bus='ide'/>
+       </disk>
+    
+    as well as recording the bus (s_removable_controller) as we do at the
+    moment, also record the slot number (eg. hdc == 2 in the example
+    above).
+    
+    Do the same for OVA input files.
+
+commit 4ef80f28c819605f415a71a2337ae90b9b7888bc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 15:14:58 2015 +0100
+
+    v2v: Add a binding for guestfs_int_drive_index and a unit test.
+
+commit 36e22d1e8ec7a82b12624539d43467de759838e7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 15:14:49 2015 +0100
+
+    v2v: Add unit test of Utils.drive_name function.
+
+commit c8a9e4b92871b8c37ef031778e5de3f4190d5e62
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 15:13:49 2015 +0100
+
+    v2v: Refactor ~printer parameter in unit tests.
+    
+    Simple refactoring, no functional change.
+
+commit a54fef132a66a56c7287b7bc8876438d84c8ed84
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 14:27:53 2015 +0100
+
+    utils: Add guestfs_int_drive_index and unit test.
+    
+    Add guestfs_int_drive_index which does basically the opposite of
+    guestfs_int_drive_name.  This commit also includes a unit test.
+
+commit 625eae504dfe44381e9e1041c9f9846e0f5aeeb7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 14:27:36 2015 +0100
+
+    utils: Add a test of the guestfs_int_drive_name function.
+    
+    This function didn't have a unit test before.
+
+commit d9fc0656b27fd26a6574407c2e620ab729d951cb
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jul 2 11:25:06 2015 +0200
+
+    tests: do not init a partition for btrfs-image tests
+    
+    They create an own partition layout, so don't do that over the
+    testing-created layout.
+    
+    At least for me, this fixes parted issues when creating the new
+    partition layout and the old one is still reported as in use.
+    
+    Followup/fix for commit 52d1b0c593e87cb5d696dcc9d96ad6489c9bed00.
+
+commit 4e8ef1ae37d1517a08409b80af337b511770f38f
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Wed Jul 1 17:21:13 2015 +0800
+
+    uuid: use newly introduced swap_set_uuid
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 80cf46e110d9cff2862f3e98b561bae34d29bf52
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Wed Jul 1 17:21:12 2015 +0800
+
+    uuid: add support to change uuid of btrfs partition
+    
+    btrfs-progs v4.1 add support to change uuid of btrfs fs.
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 261be1f952aa984b460ff8d88d962c490df4ffcf
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jul 1 14:53:31 2015 +0200
+
+    sysprep: rework and fix cron-spool operation (RHBZ#1229305)
+    
+    When cleaning the directories with cron/at jobs, remove only files
+    there, as subdirectories might be used by other systems; for example
+    in Debian under /var/spool/cron/ there is the atjobs subdirectory with
+    the actual at queue.
+    
+    Make sure to not remove .SEQ files anymore, as they represent the at job
+    counter which is needed by the at daemon. Instead, reset these files to
+    0.
+    
+    Furthermore, add also the path to the .SEQ location in Debian-based
+    systems.
+
+commit a614f3451d1e2cc4f29b1bc7f0d88519c432b2c8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jul 1 14:35:31 2015 +0200
+
+    mllib: add and use last_part_of
+    
+    Collect this small snippet to get the part of a string after the last
+    occurrency of a character; replace with it the current snippets doing
+    the same.
+    
+    Should be just code motion.
+
+commit 775e68c4613fabaa3b48ea3dc8d45ac74b93682b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jun 30 20:59:31 2015 +0200
+
+    mllib: add an optional filter for rm_rf_only_files
+    
+    This way it is possible to use rm_rf_only_files, but not removing
+    specific files.
+
+commit 9f0036a0265417bc7fd6e6d2010f185a4a92d225
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 11:14:23 2015 +0100
+
+    v2v: Match any non-"Client" variant, instead of just "Server" (RHBZ#1234351, RHBZ#1237869).
+    
+    When checking if a Windows variant is a server variant, assume it is a
+    server variant unless the i_product_variant field is "Client".
+    
+    Windows 2008 and Windows 2008R2 does not have an InstallationType key
+    in the registry at all, so for these the product variant is returned
+    as "unknown".
+    
+    Windows "Core" would have, according to the reference below,
+    "Server Core".
+    
+    https://msdn.microsoft.com/en-us/library/ee391629%28v=vs.85%29.aspx
+    
+    This fixes commit 47b5f245bec908f803f0a89c3b1e3166cfe33aad.
+
+commit a324ae2ad72f2a2188eb0d4398c9e6548c499c5a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 11:01:43 2015 +0100
+
+    v2v: Fix detection of Win2008R2 drivers (RHBZ#1234351).
+    
+    This fixes commit 47b5f245bec908f803f0a89c3b1e3166cfe33aad.
+
+commit e1e4d8648d5f93c2e153832e175b7af3b5f379af
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jun 30 16:42:52 2015 +0200
+
+    tests: add/expand UUID and label tests for swap and xfs
+
+commit d0c067df8709206b494bb7ea0b2548671d50b0a9
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Tue Jun 30 19:23:12 2015 +0800
+
+    daemon: add get_random_uuid
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 516638891472441710c4df912b28229ffd52918e
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Tue Jun 30 19:23:10 2015 +0800
+
+    uuid: use newly introduced xfs_set_uuid of xfs
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit ad21fb8acf449b251460528a9244cc5567838799
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Tue Jun 30 19:23:09 2015 +0800
+
+    uuid: use existing function of ext2
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 98e1e9bcc2a490d983ba3f54e85ae82ecc70543b
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Tue Jun 30 17:45:14 2015 +0800
+
+    tests: fix two minor warnings
+    
+    "my" variable $output masks earlier declaration in same scope at /home/libguestfs/tests/daemon/test-btrfs.pl line 66.
+    "my" variable @r masks earlier declaration in same scope at /home/libguestfs/tests/daemon/test-btrfs.pl line 72.
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
 commit 2b67342bdae68cb20f593a79b4b6d5af74f4de04
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Mon Jun 29 23:20:54 2015 +0100

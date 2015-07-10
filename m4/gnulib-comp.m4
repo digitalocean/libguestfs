@@ -136,6 +136,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module filenamecat-lgpl:
   # Code from module filevercmp:
   # Code from module filevercmp-tests:
+  # Code from module flexmember:
   # Code from module float:
   # Code from module float-tests:
   # Code from module fnmatch:
@@ -598,6 +599,7 @@ AC_SUBST([LTALLOCA])
   gl_DIRENT_MODULE_INDICATOR([fdopendir])
   gl_MODULE_INDICATOR([fdopendir])
   gl_FILE_NAME_CONCAT_LGPL
+  AC_C_FLEXIBLE_ARRAY_MEMBER
   gl_FLOAT_H
   if test $REPLACE_FLOAT_LDBL = 1; then
     AC_LIBOBJ([float])
@@ -1826,6 +1828,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/fdopen.m4
   m4/fdopendir.m4
   m4/filenamecat.m4
+  m4/flexmember.m4
   m4/float_h.m4
   m4/fnmatch.m4
   m4/fpending.m4

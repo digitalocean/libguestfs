@@ -27,16 +27,10 @@
 #include "actions.h"
 #include "optgroups.h"
 
-GUESTFSD_EXT_CMD(str_tune2fs, tune2fs);
-GUESTFSD_EXT_CMD(str_xfs_admin, xfs_admin);
-GUESTFSD_EXT_CMD(str_swaplabel, swaplabel);
 
 static int
 e2uuid (const char *device, const char *uuid)
 {
-  int r;
-  CLEANUP_FREE char *err = NULL;
-
   /* Don't allow the magic values here.  If callers want to do this
    * we'll add alternate set_uuid_* calls.
    */
@@ -46,49 +40,19 @@ e2uuid (const char *device, const char *uuid)
     return -1;
   }
 
-  r = command (NULL, &err, str_tune2fs, "-U", uuid, device, NULL);
-  if (r == -1) {
-    reply_with_error ("%s", err);
-    return -1;
-  }
-
-  return 0;
+  return do_set_e2uuid (device, uuid);
 }
 
 static int
 xfsuuid (const char *device, const char *uuid)
 {
-  int r;
-  CLEANUP_FREE char *err = NULL;
-
   /* Don't allow special values. */
   if (STREQ (uuid, "nil") || STREQ (uuid, "generate")) {
     reply_with_error ("xfs: invalid new UUID");
     return -1;
   }
 
-  r = command (NULL, &err, str_xfs_admin, "-U", uuid, device, NULL);
-  if (r == -1) {
-    reply_with_error ("%s", err);
-    return -1;
-  }
-
-  return 0;
-}
-
-static int
-swapuuid (const char *device, const char *uuid)
-{
-  int r;
-  CLEANUP_FREE char *err = NULL;
-
-  r = command (NULL, &err, str_swaplabel, "-U", uuid, device, NULL);
-  if (r == -1) {
-    reply_with_error ("%s", err);
-    return -1;
-  }
-
-  return 0;
+  return xfs_set_uuid (device, uuid);
 }
 
 int
@@ -108,12 +72,10 @@ do_set_uuid (const char *device, const char *uuid)
     r = xfsuuid (device, uuid);
 
   else if (STREQ (vfs_type, "swap"))
-    r = swapuuid (device, uuid);
+    r = swap_set_uuid (device, uuid);
 
-  else if (STREQ (vfs_type, "btrfs")) {
-    reply_with_error ("btrfs filesystems' UUID cannot be changed");
-    r = -1;
-  }
+  else if (STREQ (vfs_type, "btrfs"))
+    r = btrfs_set_uuid (device, uuid);
 
   else {
     reply_with_error ("don't know how to set the UUID for '%s' filesystems",

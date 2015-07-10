@@ -74,6 +74,7 @@ and s_controller = Source_IDE | Source_SCSI | Source_virtio_blk
 and source_removable = {
   s_removable_type : s_removable_type;  (** Type.  *)
   s_removable_controller : s_controller option; (** Controller, eg. IDE, SCSI.*)
+  s_removable_slot : int option; (** Slot, eg. hda = 0, hdc = 2 *)
 }
 (** Removable media. *)
 
@@ -195,6 +196,20 @@ and guestcaps_video_type = QXL | Cirrus
 
 val string_of_guestcaps : guestcaps -> string
 
+type target_buses = {
+  target_virtio_blk_bus : target_bus_slot array;
+  target_ide_bus : target_bus_slot array;
+  target_scsi_bus : target_bus_slot array;
+}
+(** Mapping of fixed and removable disks to buses. *)
+
+and target_bus_slot =
+| BusSlotEmpty                  (** This bus slot is empty. *)
+| BusSlotTarget of target       (** Contains a fixed disk. *)
+| BusSlotRemovable of source_removable (** Contains a removable CD/floppy. *)
+
+val string_of_target_buses : target_buses -> string
+
 class virtual input : object
   method virtual as_options : string
   (** Converts the input object back to the equivalent command line options.
@@ -219,7 +234,7 @@ class virtual output : object
   method check_target_free_space : source -> target list -> unit
   (** Called before conversion.  Can be used to check there is enough space
       on the target, using the [target.target_estimated_size] field. *)
-  method virtual create_metadata : source -> target list -> guestcaps -> inspect -> target_firmware -> unit
+  method virtual create_metadata : source -> target list -> target_buses -> guestcaps -> inspect -> target_firmware -> unit
   (** Called after conversion to finish off and create metadata. *)
   method disk_create : ?backingfile:string -> ?backingformat:string -> ?preallocation:string -> ?compat:string -> ?clustersize:int -> string -> string -> int64 -> unit
   (** Called in order to create disks on the target.  The method has the

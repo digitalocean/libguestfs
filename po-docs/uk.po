@@ -9,9 +9,9 @@
 # Yuri Chornoivan <yurchor@ukr.net>, 2013, 2015.
 msgid ""
 msgstr ""
-"Project-Id-Version: libguestfs 1.29.46\n"
+"Project-Id-Version: libguestfs 1.29.48\n"
 "Report-Msgid-Bugs-To: libguestfs@redhat.com\n"
-"POT-Creation-Date: 2015-06-29 23:18+0100\n"
+"POT-Creation-Date: 2015-07-02 18:03+0100\n"
 "PO-Revision-Date: 2015-03-20 01:39-0400\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <kde-i18n-uk@kde.org>\n"
@@ -311,16 +311,10 @@ msgstr "стовпчик 1"
 
 #. type: textblock
 #: ../align/virt-alignment-scan.pod:70
-#, fuzzy
-#| msgid ""
-#| "The device and partition name (eg. C</dev/sda1> meaning the first "
-#| "partition on the first block device)."
 msgid ""
 "The device and partition name (eg. F</dev/sda1> meaning the first partition "
 "on the first block device)."
 msgstr ""
-"Назва пристрою і розділу (наприклад, C</dev/sda1> означає перший розділ на "
-"першому блоковому пристрої)."
 
 #. type: textblock
 #: ../align/virt-alignment-scan.pod:73
@@ -674,12 +668,8 @@ msgstr ""
 #: ../df/virt-df.pod:132 ../diff/virt-diff.pod:152 ../edit/virt-edit.pod:151
 #: ../fish/guestfish.pod:247 ../format/virt-format.pod:104
 #: ../rescue/virt-rescue.pod:172 ../sysprep/virt-sysprep.pod:162
-#, fuzzy
-#| msgid "forces raw format (no auto-detection) for C<disk.img>."
 msgid "forces raw format (no auto-detection) for F<disk.img>."
 msgstr ""
-"примусове встановлення формату без обробки (без автоматичного визначення) "
-"для C<disk.img>."
 
 #. type: verbatim
 #: ../align/virt-alignment-scan.pod:156
@@ -698,16 +688,10 @@ msgstr ""
 #: ../df/virt-df.pod:136 ../diff/virt-diff.pod:156 ../edit/virt-edit.pod:155
 #: ../fish/guestfish.pod:251 ../format/virt-format.pod:108
 #: ../rescue/virt-rescue.pod:176 ../sysprep/virt-sysprep.pod:166
-#, fuzzy
-#| msgid ""
-#| "forces raw format (no auto-detection) for C<disk.img> and reverts to auto-"
-#| "detection for C<another.img>."
 msgid ""
 "forces raw format (no auto-detection) for F<disk.img> and reverts to auto-"
 "detection for F<another.img>."
 msgstr ""
-"примусове встановлення формату без обробки (без автоматичного визначення) "
-"для C<disk.img> і повернення до автоматичного визначення для C<another.img>."
 
 #. type: textblock
 #: ../align/virt-alignment-scan.pod:161 ../cat/virt-cat.pod:120
@@ -3586,11 +3570,8 @@ msgstr ""
 
 #. type: =head3
 #: ../builder/virt-builder.pod:683
-#, fuzzy
-#| msgid "Keyboard layout using C</etc/sysconfig/keyboard>"
 msgid "Keyboard layout using F</etc/sysconfig/keyboard>"
 msgstr ""
-"Визначення розкладки клавіатури за допомогою C</etc/sysconfig/keyboard>"
 
 #. type: textblock
 #: ../builder/virt-builder.pod:685
@@ -3776,10 +3757,8 @@ msgstr ""
 
 #. type: =item
 #: ../builder/virt-builder.pod:760
-#, fuzzy
-#| msgid "C</tmp/builder.log>"
 msgid "F</tmp/builder.log>"
-msgstr "C</tmp/builder.log>"
+msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:762
@@ -3788,10 +3767,8 @@ msgstr ""
 
 #. type: =item
 #: ../builder/virt-builder.pod:764
-#, fuzzy
-#| msgid "C<C:\\Temp\\builder.log>"
 msgid "F<C:\\Temp\\builder.log>"
-msgstr "C<C:\\Temp\\builder.log>"
+msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:766
@@ -3800,10 +3777,8 @@ msgstr ""
 
 #. type: =item
 #: ../builder/virt-builder.pod:768
-#, fuzzy
-#| msgid "C</builder.log>"
 msgid "F</builder.log>"
-msgstr "C</builder.log>"
+msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:770
@@ -3876,10 +3851,8 @@ msgstr ""
 
 #. type: =head2
 #: ../builder/virt-builder.pod:808
-#, fuzzy
-#| msgid "FROM SHELL SCRIPTS"
 msgid "FIRST BOOT SCRIPTS"
-msgstr "ЗІ СКРИПТІВ ОБОЛОНКИ"
+msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:810
@@ -3892,17 +3865,13 @@ msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:815
-#, fuzzy
-#| msgid "Support for the systemd journal."
 msgid "Supported operating systems are:"
-msgstr "Підтримка журналу systemd."
+msgstr ""
 
 #. type: =item
 #: ../builder/virt-builder.pod:819
-#, fuzzy
-#| msgid "ArchLinux"
 msgid "Linux"
-msgstr "ArchLinux"
+msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:821
@@ -3928,10 +3897,8 @@ msgstr ""
 
 #. type: =item
 #: ../builder/virt-builder.pod:831
-#, fuzzy
-#| msgid "\"windows\""
 msgid "Windows"
-msgstr "\"windows\""
+msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:833
@@ -4413,16 +4380,10 @@ msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:1063
-#, fuzzy
-#| msgid ""
-#| "$XDG_CONFIG_HOME/virt-builder/repos.d/ (C<$XDG_CONFIG_HOME> is C<$HOME/."
-#| "config> if not set)."
 msgid ""
 "$XDG_CONFIG_HOME/virt-builder/repos.d/ (C<$XDG_CONFIG_HOME> is F<$HOME/."
 "config> if not set)."
 msgstr ""
-"$XDG_CONFIG_HOME/virt-builder/repos.d/ (C<$XDG_CONFIG_HOME> дорівнює C<"
-"$HOME/.config>, якщо не встановлено)."
 
 #. type: textblock
 #: ../builder/virt-builder.pod:1068
@@ -5814,10 +5775,8 @@ msgstr "Цей каталог може містити такі файли:"
 #. type: =item
 #: ../builder/virt-builder.pod:1736 ../customize/virt-customize.pod:240
 #: ../sysprep/virt-sysprep.pod:545 ../v2v/virt-v2v.pod:1584
-#, fuzzy
-#| msgid "C<rhsrvany.exe>"
 msgid "F<rhsrvany.exe>"
-msgstr "C<rhsrvany.exe>"
+msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:1738 ../customize/virt-customize.pod:242
@@ -6076,13 +6035,9 @@ msgstr ""
 
 #. type: textblock
 #: ../cat/virt-cat.pod:32
-#, fuzzy
-#| msgid ""
-#| "Display C</etc/fstab> file from inside the libvirt VM called C<mydomain>:"
 msgid ""
 "Display F</etc/fstab> file from inside the libvirt VM called C<mydomain>:"
 msgstr ""
-"Показ файла C</etc/fstab> з віртуальної машини libvirt з назвою C<mydomain>:"
 
 #. type: verbatim
 #: ../cat/virt-cat.pod:35
@@ -6232,11 +6187,8 @@ msgstr ""
 #. type: textblock
 #: ../cat/virt-cat.pod:135 ../cat/virt-ls.pod:366 ../edit/virt-edit.pod:173
 #: ../fish/guestfish.pod:311
-#, fuzzy
-#| msgid "If the mountpoint is omitted, it defaults to C</>."
 msgid "If the mountpoint is omitted, it defaults to F</>."
 msgstr ""
-"Якщо точку монтування пропущено, використовуватиметься типове значення C</>."
 
 #. type: textblock
 #: ../cat/virt-cat.pod:137 ../cat/virt-ls.pod:368 ../edit/virt-edit.pod:175
@@ -7005,17 +6957,11 @@ msgstr "Назва файлової системи, розділу, блоков
 
 #. type: textblock
 #: ../cat/virt-filesystems.pod:302
-#, fuzzy
-#| msgid ""
-#| "The device and partition name (eg. C</dev/sda1> meaning the first "
-#| "partition on the first block device)."
 msgid ""
 "For device and partition names these are displayed as canonical libguestfs "
 "names, so that for example F</dev/sda2> is the second partition on the first "
 "device."
 msgstr ""
-"Назва пристрою і розділу (наприклад, C</dev/sda1> означає перший розділ на "
-"першому блоковому пристрої)."
 
 #. type: textblock
 #: ../cat/virt-filesystems.pod:306
@@ -9295,10 +9241,8 @@ msgstr "ФАЙЛИ"
 
 #. type: =item
 #: ../daemon/guestfsd.pod:103
-#, fuzzy
-#| msgid "C</dev/virtio-ports/org.libguestfs.channel.0>"
 msgid "F</dev/virtio-ports/org.libguestfs.channel.0>"
-msgstr "C</dev/virtio-ports/org.libguestfs.channel.0>"
+msgstr ""
 
 #. type: textblock
 #: ../daemon/guestfsd.pod:105
@@ -9307,10 +9251,8 @@ msgstr "Послідовний порт virtio, з яким встановлює
 
 #. type: =item
 #: ../daemon/guestfsd.pod:107
-#, fuzzy
-#| msgid "C</proc/cmdline>"
 msgid "F</proc/cmdline>"
-msgstr "C</proc/cmdline>"
+msgstr ""
 
 #. type: textblock
 #: ../daemon/guestfsd.pod:109
@@ -9485,12 +9427,8 @@ msgstr ""
 
 #. type: textblock
 #: ../df/virt-df.pod:55
-#, fuzzy
-#| msgid "Show disk usage for a disk image file called C<test.img>:"
 msgid "Show disk usage for a disk image file called F<test.img>:"
 msgstr ""
-"Показати дані щодо використання диска у файлі образу диска з назвою C<test."
-"img>:"
 
 #. type: verbatim
 #: ../df/virt-df.pod:57
@@ -19036,15 +18974,9 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:804 ../src/guestfs-actions.pod:1183
-#, fuzzy
-#| msgid ""
-#| "This command uploads base64-encoded data from C<base64file> to "
-#| "C<filename>."
 msgid ""
 "This command uploads base64-encoded data from C<base64file> to F<filename>."
 msgstr ""
-"Ця команда вивантажує дані у кодуванні base64 з C<файл_base64> до файла з "
-"назвою C<назва_файла>."
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:807 ../fish/guestfish-actions.pod:816
@@ -19958,10 +19890,8 @@ msgstr ""
 
 #. type: =head2
 #: ../fish/guestfish-actions.pod:1144
-#, fuzzy
-#| msgid "btrfs-balance"
 msgid "btrfs-replace"
-msgstr "btrfs-balance"
+msgstr ""
 
 #. type: verbatim
 #: ../fish/guestfish-actions.pod:1146
@@ -20407,17 +20337,13 @@ msgstr ""
 
 #. type: =item
 #: ../fish/guestfish-actions.pod:1300 ../src/guestfs-actions.pod:2236
-#, fuzzy
-#| msgid "C</dev/hdX>"
 msgid "F</dev/hdX>"
-msgstr "C</dev/hdX>"
+msgstr ""
 
 #. type: =item
 #: ../fish/guestfish-actions.pod:1302 ../src/guestfs-actions.pod:2238
-#, fuzzy
-#| msgid "C</dev/vdX>"
 msgid "F</dev/vdX>"
-msgstr "C</dev/vdX>"
+msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:1304 ../src/guestfs-actions.pod:2240
@@ -20429,25 +20355,18 @@ msgstr ""
 
 #. type: =item
 #: ../fish/guestfish-actions.pod:1308 ../src/guestfs-actions.pod:2244
-#, fuzzy
-#| msgid "C</dev/mapper/VG-LV>"
 msgid "F</dev/mapper/VG-LV>"
-msgstr "C</dev/mapper/VG-LV>"
+msgstr ""
 
 #. type: =item
 #: ../fish/guestfish-actions.pod:1310 ../src/guestfs-actions.pod:2246
-#, fuzzy
-#| msgid "C</dev/dm-N>"
 msgid "F</dev/dm-N>"
-msgstr "C</dev/dm-N>"
+msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:1312
-#, fuzzy
-#| msgid "Converted to C</dev/VG/LV> form using L</lvm-canonical-lv-name>."
 msgid "Converted to F</dev/VG/LV> form using L</lvm-canonical-lv-name>."
 msgstr ""
-"Перетворено у форму C</dev/VG/LV> за допомогою C</lvm-canonical-lv-name>."
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:1316 ../src/guestfs-actions.pod:2252
@@ -22410,16 +22329,10 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:2237 ../src/guestfs-actions.pod:3943
-#, fuzzy
-#| msgid ""
-#| "This detects the architecture of the binary C<filename>, and returns it "
-#| "if known."
 msgid ""
 "This detects the architecture of the binary F<filename>, and returns it if "
 "known."
 msgstr ""
-"Визначає архітектуру виконуваного файла C<назва_файла> і повертає її "
-"значення, якщо воно визначене у програмі."
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:2240 ../src/guestfs-actions.pod:3946
@@ -22623,10 +22536,8 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:2350 ../src/guestfs-actions.pod:4063
-#, fuzzy
-#| msgid "This returns the size of the device in bytes."
 msgid "This command returns the size of F<file> in bytes."
-msgstr "Повертає розмір пристрою у байтах."
+msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:2352
@@ -34613,10 +34524,8 @@ msgstr ""
 
 #. type: =item
 #: ../fish/guestfish-actions.pod:7770 ../src/guestfs-actions.pod:12840
-#, fuzzy
-#| msgid "C<directory>"
 msgid "F<directory>"
-msgstr "C<directory>"
+msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:7772 ../src/guestfs-actions.pod:12842
@@ -34707,15 +34616,9 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:7818 ../src/guestfs-actions.pod:12952
-#, fuzzy
-#| msgid ""
-#| "This command uploads base64-encoded data from C<base64file> to "
-#| "C<filename>."
 msgid ""
 "This command uploads and unpacks local file C<tarfile> into F<directory>."
 msgstr ""
-"Ця команда вивантажує дані у кодуванні base64 з C<файл_base64> до файла з "
-"назвою C<назва_файла>."
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:7820 ../src/guestfs-actions.pod:12954
@@ -35301,14 +35204,8 @@ msgstr ""
 #. type: textblock
 #: ../fish/guestfish-actions.pod:8113 ../fish/guestfish-actions.pod:8126
 #: ../src/guestfs-actions.pod:13499 ../src/guestfs-actions.pod:13523
-#, fuzzy
-#| msgid ""
-#| " upload-offset (filename|-) remotefilename offset\n"
-#| "\n"
 msgid "Upload local file F<filename> to F<remotefilename> on the filesystem."
 msgstr ""
-" upload-offset (назва_файла|-) назва_віддаленого_файла відступ\n"
-"\n"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:8118
@@ -40028,12 +39925,8 @@ msgstr "B<-a file:///шлях/на/диску.img>"
 
 #. type: textblock
 #: ../fish/guestfish.pod:1141
-#, fuzzy
-#| msgid "Show disk usage for a disk image file called C<test.img>:"
 msgid "Add the local disk image (or device) called F<disk.img>."
 msgstr ""
-"Показати дані щодо використання диска у файлі образу диска з назвою C<test."
-"img>:"
 
 #. type: =head2
 #: ../fish/guestfish.pod:1143
@@ -41174,16 +41067,10 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/libguestfs-tools.conf.pod:62
-#, fuzzy
-#| msgid ""
-#| "$XDG_CONFIG_HOME/virt-builder/repos.d/ (C<$XDG_CONFIG_HOME> is C<$HOME/."
-#| "config> if not set)."
 msgid ""
 "$XDG_CONFIG_HOME/libguestfs/libguestfs-tools.conf (C<$XDG_CONFIG_HOME> is F<"
 "$HOME/.config> if not set)."
 msgstr ""
-"$XDG_CONFIG_HOME/virt-builder/repos.d/ (C<$XDG_CONFIG_HOME> дорівнює C<"
-"$HOME/.config>, якщо не встановлено)."
 
 #. type: textblock
 #: ../fish/libguestfs-tools.conf.pod:71
@@ -42279,13 +42166,10 @@ msgstr ""
 
 #. type: textblock
 #: ../fuse/guestmount.pod:269
-#, fuzzy
-#| msgid "If the mountpoint is omitted, it defaults to C</>."
 msgid ""
 "If the mountpoint is omitted, it defaults to F</>.  You have to mount "
 "something on F</>."
 msgstr ""
-"Якщо точку монтування пропущено, використовуватиметься типове значення C</>."
 
 #. type: =item
 #: ../fuse/guestmount.pod:287
@@ -42757,29 +42641,19 @@ msgstr ""
 
 #. type: verbatim
 #: ../get-kernel/virt-get-kernel.pod:7
-#, fuzzy, no-wrap
-#| msgid ""
-#| " virt-rescue [--options] -d domname\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " virt-get-kernel [--options] -d domname\n"
 "\n"
 msgstr ""
-" virt-rescue [--параметри] -d назва_домену\n"
-"\n"
 
 #. type: verbatim
 #: ../get-kernel/virt-get-kernel.pod:9
-#, fuzzy, no-wrap
-#| msgid ""
-#| " virt-alignment-scan [--options] -a disk.img [-a disk.img ...]\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " virt-get-kernel [--options] -a disk.img\n"
 "\n"
 msgstr ""
-" virt-alignment-scan [--параметри] -a диск.img [-a диск.img ...]\n"
-"\n"
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:13
@@ -42797,36 +42671,21 @@ msgstr ""
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:68
-#, fuzzy
-#| msgid ""
-#| "The default for the I<-a> option is to auto-detect the format of the disk "
-#| "image.  Using this forces the disk format for I<-a> options which follow "
-#| "on the command line.  Using I<--format auto> switches back to auto-"
-#| "detection for subsequent I<-a> options."
 msgid ""
 "The default for the I<-a> option is to auto-detect the format of the disk "
 "image.  Using this forces the disk format for the I<-a> option on the "
 "command line."
 msgstr ""
-"Типовим значенням для параметра I<-a> є автоматичне визначення формату "
-"образу диска. Використання цього параметра примусово визначає значення "
-"параметрів I<-a> формату диска у наступному рядку команди. Використання "
-"параметра I<--format auto> перемикає програму у режим автоматичного "
-"визначення у наступних параметрах I<-a>."
 
 #. type: =item
 #: ../get-kernel/virt-get-kernel.pod:82
-#, fuzzy
-#| msgid "C<directory>"
 msgid "B<-o> directory"
-msgstr "C<directory>"
+msgstr ""
 
 #. type: =item
 #: ../get-kernel/virt-get-kernel.pod:84
-#, fuzzy
-#| msgid "B<--tmp> dir"
 msgid "B<--output> directory"
-msgstr "B<--tmp> каталог"
+msgstr ""
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:86
@@ -42861,17 +42720,13 @@ msgstr ""
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:100
-#, fuzzy
-#| msgid "See also I<--update>."
 msgid "See also I<--unversioned-names>."
-msgstr "Див. також I<--update>."
+msgstr ""
 
 #. type: =item
 #: ../get-kernel/virt-get-kernel.pod:102
-#, fuzzy
-#| msgid "B<--version>"
 msgid "B<--unversioned-names>"
-msgstr "B<--version>"
+msgstr ""
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:104
@@ -42889,10 +42744,8 @@ msgstr ""
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:111
-#, fuzzy
-#| msgid "See also I<--run>."
 msgid "See also I<--prefix>."
-msgstr "Див. також I<--run>."
+msgstr ""
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:133
@@ -42911,43 +42764,24 @@ msgstr ""
 
 #. type: verbatim
 #: ../get-kernel/virt-get-kernel.pod:140
-#, fuzzy, no-wrap
-#| msgid ""
-#| " $ virt-sparsify --machine-readable\n"
-#| " virt-sparsify\n"
-#| " ntfs\n"
-#| " btrfs\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " $ virt-get-kernel --machine-readable\n"
 " virt-get-kernel\n"
 "\n"
 msgstr ""
-" $ virt-sparsify --machine-readable\n"
-" virt-sparsify\n"
-" ntfs\n"
-" btrfs\n"
-"\n"
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:158
-#, fuzzy
-#| msgid ""
-#| "L<guestfs(3)>, L<guestfish(1)>, L<guestfs-examples(3)>, L<http://"
-#| "libguestfs.org/>."
 msgid ""
 "L<guestfs(3)>, L<guestfish(1)>, L<guestmount(1)>, L<virt-copy-out(1)>, "
 "L<http://libguestfs.org/>."
 msgstr ""
-"L<guestfs(3)>, L<guestfish(1)>, L<guestfs-examples(3)>, L<http://libguestfs."
-"org/>."
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:170
-#, fuzzy
-#| msgid "Copyright (C) 2010-2015 Red Hat Inc."
 msgid "Copyright (C) 2013-2015 Red Hat Inc."
-msgstr "© Red Hat Inc., 2010–2015"
+msgstr ""
 
 #. type: textblock
 #: ../golang/examples/guestfs-golang.pod:3
@@ -52197,17 +52031,13 @@ msgstr ""
 
 #. type: =item
 #: ../java/examples/guestfs-java.pod:115
-#, fuzzy
-#| msgid "C<libguestfs.jar>"
 msgid "F<libguestfs.jar>"
-msgstr "C<libguestfs.jar>"
+msgstr ""
 
 #. type: =item
 #: ../java/examples/guestfs-java.pod:117
-#, fuzzy
-#| msgid "C<libguestfs.jar>"
 msgid "F<libguestfs-I<VERSION>.jar>"
-msgstr "C<libguestfs.jar>"
+msgstr ""
 
 #. type: textblock
 #: ../java/examples/guestfs-java.pod:119
@@ -52220,10 +52050,8 @@ msgstr ""
 
 #. type: =item
 #: ../java/examples/guestfs-java.pod:124
-#, fuzzy
-#| msgid "C<libguestfs_jni.so>"
 msgid "F<libguestfs_jni.so>"
-msgstr "C<libguestfs_jni.so>"
+msgstr ""
 
 #. type: textblock
 #: ../java/examples/guestfs-java.pod:126
@@ -52235,10 +52063,8 @@ msgstr ""
 
 #. type: =item
 #: ../java/examples/guestfs-java.pod:130
-#, fuzzy
-#| msgid "C<libguestfs.so>"
 msgid "F<libguestfs.so>"
-msgstr "C<libguestfs.so>"
+msgstr ""
 
 #. type: textblock
 #: ../java/examples/guestfs-java.pod:132
@@ -53308,10 +53134,8 @@ msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v-make-disk.pod:76 ../p2v/virt-p2v-make-kickstart.pod:206
-#, fuzzy
-#| msgid "C<$libexecdir/virt-p2v>"
 msgid "F<$libexecdir/virt-p2v>"
-msgstr "C<$libexecdir/virt-p2v>"
+msgstr ""
 
 #. type: textblock
 #: ../p2v/virt-p2v-make-disk.pod:78
@@ -53323,24 +53147,18 @@ msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v-make-disk.pod:82 ../p2v/virt-p2v-make-kickstart.pod:210
-#, fuzzy
-#| msgid "C<$datadir/issue>"
 msgid "F<$datadir/issue>"
-msgstr "C<$datadir/issue>"
+msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v-make-disk.pod:84 ../p2v/virt-p2v-make-kickstart.pod:212
-#, fuzzy
-#| msgid "C<$datadir/launch-virt-p2v.in>"
 msgid "F<$datadir/launch-virt-p2v.in>"
-msgstr "C<$datadir/launch-virt-p2v.in>"
+msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v-make-disk.pod:86 ../p2v/virt-p2v-make-kickstart.pod:216
-#, fuzzy
-#| msgid "C<$datadir/p2v.service>"
 msgid "F<$datadir/p2v.service>"
-msgstr "C<$datadir/p2v.service>"
+msgstr ""
 
 #. type: textblock
 #: ../p2v/virt-p2v-make-disk.pod:88
@@ -53732,10 +53550,8 @@ msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v-make-kickstart.pod:214
-#, fuzzy
-#| msgid "C<$datadir/p2v.ks.in>"
 msgid "F<$datadir/p2v.ks.in>"
-msgstr "C<$datadir/p2v.ks.in>"
+msgstr ""
 
 #. type: textblock
 #: ../p2v/virt-p2v-make-kickstart.pod:218
@@ -54279,15 +54095,7 @@ msgstr ""
 
 #. type: verbatim
 #: ../p2v/virt-p2v.pod:287
-#, fuzzy, no-wrap
-#| msgid ""
-#| " DEFAULT p2v\n"
-#| " TIMEOUT 20\n"
-#| " PROMPT 0\n"
-#| " LABEL p2v\n"
-#| "   KERNEL virt-p2v-vmlinuz\n"
-#| "   APPEND initrd=virt-p2v-initrd p2v.server=conv.example.com p2v.password=secret p2v.o=libvirt\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " DEFAULT p2v\n"
 " TIMEOUT 20\n"
@@ -54297,13 +54105,6 @@ msgid ""
 "   APPEND initrd=initrd0.img [....] p2v.server=conv.example.com p2v.password=secret p2v.o=libvirt\n"
 "\n"
 msgstr ""
-" DEFAULT p2v\n"
-" TIMEOUT 20\n"
-" PROMPT 0\n"
-" LABEL p2v\n"
-"   KERNEL virt-p2v-vmlinuz\n"
-"   APPEND initrd=virt-p2v-initrd p2v.server=conv.example.com p2v.password=secret p2v.o=libvirt\n"
-"\n"
 
 #. type: textblock
 #: ../p2v/virt-p2v.pod:294
@@ -54625,10 +54426,8 @@ msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v.pod:428
-#, fuzzy
-#| msgid "B<p2v.port=NN>"
 msgid "B<p2v.pre=COMMAND>"
-msgstr "B<p2v.port=NN>"
+msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v.pod:430
@@ -54645,31 +54444,23 @@ msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v.pod:437
-#, fuzzy
-#| msgid "B<p2v.port=NN>"
 msgid "B<p2v.post=poweroff>"
-msgstr "B<p2v.port=NN>"
+msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v.pod:439
-#, fuzzy
-#| msgid "B<p2v.port=NN>"
 msgid "B<p2v.post=reboot>"
-msgstr "B<p2v.port=NN>"
+msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v.pod:441
-#, fuzzy
-#| msgid "B<p2v.port=NN>"
 msgid "B<p2v.post=COMMAND>"
-msgstr "B<p2v.port=NN>"
+msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v.pod:443
-#, fuzzy
-#| msgid "B<p2v.os=...>"
 msgid "B<p2v.post=\"COMMAND ARG ...\">"
-msgstr "B<p2v.os=...>"
+msgstr ""
 
 #. type: textblock
 #: ../p2v/virt-p2v.pod:445
@@ -54817,10 +54608,8 @@ msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v.pod:541
-#, fuzzy
-#| msgid "C<name>"
 msgid "F<name>"
-msgstr "C<name>"
+msgstr ""
 
 #. type: textblock
 #: ../p2v/virt-p2v.pod:543 ../p2v/virt-p2v.pod:549 ../p2v/virt-p2v.pod:568
@@ -54834,10 +54623,8 @@ msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v.pod:547
-#, fuzzy
-#| msgid "C<physical.xml>"
 msgid "F<physical.xml>"
-msgstr "C<physical.xml>"
+msgstr ""
 
 #. type: textblock
 #: ../p2v/virt-p2v.pod:551
@@ -54856,10 +54643,8 @@ msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v.pod:559
-#, fuzzy
-#| msgid "C<status>"
 msgid "F<status>"
-msgstr "C<status>"
+msgstr ""
 
 #. type: textblock
 #: ../p2v/virt-p2v.pod:561
@@ -54875,10 +54660,8 @@ msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v.pod:566
-#, fuzzy
-#| msgid "C<time>"
 msgid "F<time>"
-msgstr "C<time>"
+msgstr ""
 
 #. type: textblock
 #: ../p2v/virt-p2v.pod:570
@@ -54887,10 +54670,8 @@ msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v.pod:572
-#, fuzzy
-#| msgid "C<virt-v2v-conversion-log.txt>"
 msgid "F<virt-v2v-conversion-log.txt>"
-msgstr "C<virt-v2v-conversion-log.txt>"
+msgstr ""
 
 #. type: textblock
 #: ../p2v/virt-p2v.pod:574
@@ -57287,10 +57068,8 @@ msgstr ""
 
 #. type: textblock
 #: ../resize/virt-resize.pod:736
-#, fuzzy
-#| msgid "This directory may contain the following files:"
 msgid "This may be due to either of the following:"
-msgstr "Цей каталог може містити такі файли:"
+msgstr ""
 
 #. type: textblock
 #: ../resize/virt-resize.pod:742
@@ -57302,10 +57081,8 @@ msgstr ""
 
 #. type: textblock
 #: ../resize/virt-resize.pod:747
-#, fuzzy
-#| msgid "Expected results"
 msgid "Check the results of:"
-msgstr "Очікувані результати"
+msgstr ""
 
 #. type: verbatim
 #: ../resize/virt-resize.pod:749
@@ -58050,10 +57827,8 @@ msgstr ""
 
 #. type: textblock
 #: ../sparsify/virt-sparsify.pod:411
-#, fuzzy
-#| msgid "This defaults to C</tmp>."
 msgid "This defaults to F</tmp>."
-msgstr "Типовим значенням є C</tmp>."
+msgstr ""
 
 #. type: textblock
 #: ../sparsify/virt-sparsify.pod:413
@@ -60846,21 +60621,12 @@ msgstr ""
 
 #. type: =head2
 #: ../src/guestfs-actions.pod:1869
-#, fuzzy
-#| msgid "guestfs_btrfsbalance"
 msgid "guestfs_btrfs_replace"
-msgstr "guestfs_btrfsbalance"
+msgstr ""
 
 #. type: verbatim
 #: ../src/guestfs-actions.pod:1871
-#, fuzzy, no-wrap
-#| msgid ""
-#| " int\n"
-#| " guestfs_mount_options (guestfs_h *g,\n"
-#| "                        const char *options,\n"
-#| "                        const char *mountable,\n"
-#| "                        const char *mountpoint);\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " int\n"
 " guestfs_btrfs_replace (guestfs_h *g,\n"
@@ -60869,19 +60635,11 @@ msgid ""
 "                        const char *mntpoint);\n"
 "\n"
 msgstr ""
-" int\n"
-" guestfs_mount_options (guestfs_h *g,\n"
-"                        const char *options,\n"
-"                        const char *mountable,\n"
-"                        const char *mountpoint);\n"
-"\n"
 
 #. type: textblock
 #: ../src/guestfs-actions.pod:1887
-#, fuzzy
-#| msgid "(Added in 1.9.8)"
 msgid "(Added in 1.29.48)"
-msgstr "(Додано у 1.9.8)"
+msgstr ""
 
 #. type: =head2
 #: ../src/guestfs-actions.pod:1889
@@ -61469,13 +61227,8 @@ msgstr ""
 
 #. type: textblock
 #: ../src/guestfs-actions.pod:2248
-#, fuzzy
-#| msgid ""
-#| "Converted to C</dev/VG/LV> form using C<guestfs_lvm_canonical_lv_name>."
 msgid "Converted to F</dev/VG/LV> form using C<guestfs_lvm_canonical_lv_name>."
 msgstr ""
-"Перетворено у форму C</dev/VG/LV> за допомогою "
-"C<guestfs_lvm_canonical_lv_name>."
 
 #. type: textblock
 #: ../src/guestfs-actions.pod:2257 ../src/guestfs-actions.pod:3272
@@ -62224,13 +61977,7 @@ msgstr ""
 
 #. type: verbatim
 #: ../src/guestfs-actions.pod:2810
-#, fuzzy, no-wrap
-#| msgid ""
-#| " GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,\n"
-#| " GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET, int64_t destoffset,\n"
-#| " GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE, int64_t size,\n"
-#| " GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE, int sparse,\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,\n"
 " GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET, int64_t destoffset,\n"
@@ -62239,11 +61986,6 @@ msgid ""
 " GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND, int append,\n"
 "\n"
 msgstr ""
-" GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,\n"
-" GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET, int64_t destoffset,\n"
-" GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE, int64_t size,\n"
-" GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE, int sparse,\n"
-"\n"
 
 #. type: textblock
 #: ../src/guestfs-actions.pod:2816
@@ -62358,13 +62100,7 @@ msgstr ""
 
 #. type: verbatim
 #: ../src/guestfs-actions.pod:2892
-#, fuzzy, no-wrap
-#| msgid ""
-#| " GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET, int64_t srcoffset,\n"
-#| " GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET, int64_t destoffset,\n"
-#| " GUESTFS_COPY_DEVICE_TO_FILE_SIZE, int64_t size,\n"
-#| " GUESTFS_COPY_DEVICE_TO_FILE_SPARSE, int sparse,\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET, int64_t srcoffset,\n"
 " GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET, int64_t destoffset,\n"
@@ -62373,11 +62109,6 @@ msgid ""
 " GUESTFS_COPY_DEVICE_TO_FILE_APPEND, int append,\n"
 "\n"
 msgstr ""
-" GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET, int64_t srcoffset,\n"
-" GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET, int64_t destoffset,\n"
-" GUESTFS_COPY_DEVICE_TO_FILE_SIZE, int64_t size,\n"
-" GUESTFS_COPY_DEVICE_TO_FILE_SPARSE, int sparse,\n"
-"\n"
 
 #. type: textblock
 #: ../src/guestfs-actions.pod:2898 ../src/guestfs-actions.pod:2953
@@ -62467,13 +62198,7 @@ msgstr ""
 
 #. type: verbatim
 #: ../src/guestfs-actions.pod:2947
-#, fuzzy, no-wrap
-#| msgid ""
-#| " GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,\n"
-#| " GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET, int64_t destoffset,\n"
-#| " GUESTFS_COPY_FILE_TO_DEVICE_SIZE, int64_t size,\n"
-#| " GUESTFS_COPY_FILE_TO_DEVICE_SPARSE, int sparse,\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,\n"
 " GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET, int64_t destoffset,\n"
@@ -62482,11 +62207,6 @@ msgid ""
 " GUESTFS_COPY_FILE_TO_DEVICE_APPEND, int append,\n"
 "\n"
 msgstr ""
-" GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,\n"
-" GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET, int64_t destoffset,\n"
-" GUESTFS_COPY_FILE_TO_DEVICE_SIZE, int64_t size,\n"
-" GUESTFS_COPY_FILE_TO_DEVICE_SPARSE, int sparse,\n"
-"\n"
 
 #. type: =head2
 #: ../src/guestfs-actions.pod:2965
@@ -62569,13 +62289,7 @@ msgstr ""
 
 #. type: verbatim
 #: ../src/guestfs-actions.pod:3002
-#, fuzzy, no-wrap
-#| msgid ""
-#| " GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET, int64_t srcoffset,\n"
-#| " GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET, int64_t destoffset,\n"
-#| " GUESTFS_COPY_FILE_TO_FILE_SIZE, int64_t size,\n"
-#| " GUESTFS_COPY_FILE_TO_FILE_SPARSE, int sparse,\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET, int64_t srcoffset,\n"
 " GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET, int64_t destoffset,\n"
@@ -62584,11 +62298,6 @@ msgid ""
 " GUESTFS_COPY_FILE_TO_FILE_APPEND, int append,\n"
 "\n"
 msgstr ""
-" GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET, int64_t srcoffset,\n"
-" GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET, int64_t destoffset,\n"
-" GUESTFS_COPY_FILE_TO_FILE_SIZE, int64_t size,\n"
-" GUESTFS_COPY_FILE_TO_FILE_SPARSE, int sparse,\n"
-"\n"
 
 #. type: textblock
 #: ../src/guestfs-actions.pod:3011
@@ -83568,10 +83277,8 @@ msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:1750
-#, fuzzy
-#| msgid "Does the string begin with C</dev/sd>?"
 msgid "Does the string begin with F</dev/sd>?"
-msgstr "Чи починається рядок з C</dev/sd>?"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:1754
@@ -87725,10 +87432,8 @@ msgstr ""
 
 #. type: =head2
 #: ../src/guestfs.pod:3932
-#, fuzzy
-#| msgid "C<local*> FILES"
 msgid "F<local*> FILES"
-msgstr "C<local*> ФАЙЛИ"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:3934
@@ -87931,10 +87636,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4036
-#, fuzzy
-#| msgid "C</dev/sda> 500MB"
 msgid "F</dev/sda> 500MB"
-msgstr "C</dev/sda> 500 МБ"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4038
@@ -87943,10 +87646,8 @@ msgstr "Блоковий пристрій загального типу для �
 
 #. type: =item
 #: ../src/guestfs.pod:4040
-#, fuzzy
-#| msgid "C</dev/sdb> 500MB"
 msgid "F</dev/sdb> 500MB"
-msgstr "C</dev/sdb> 500MB"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4042
@@ -87957,10 +87658,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4045
-#, fuzzy
-#| msgid "C</dev/sdc> 10MB"
 msgid "F</dev/sdc> 10MB"
-msgstr "C</dev/sdc> 10 МБ"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4047
@@ -87969,10 +87668,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4049
-#, fuzzy
-#| msgid "C</dev/sdd>"
 msgid "F</dev/sdd>"
-msgstr "C</dev/sdd>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4051
@@ -88639,10 +88336,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4351
-#, fuzzy
-#| msgid "C<align>"
 msgid "F<align>"
-msgstr "C<align>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4353
@@ -88651,10 +88346,8 @@ msgstr "Програма L<virt-alignment-scan(1)> та документація
 
 #. type: =item
 #: ../src/guestfs.pod:4355
-#, fuzzy
-#| msgid "C<appliance>"
 msgid "F<appliance>"
-msgstr "C<appliance>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4357
@@ -88663,10 +88356,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4359
-#, fuzzy
-#| msgid "C<bash>"
 msgid "F<bash>"
-msgstr "C<bash>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4361
@@ -88675,10 +88366,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4363
-#, fuzzy
-#| msgid "C<build-aux>"
 msgid "F<build-aux>"
-msgstr "C<build-aux>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4365
@@ -88687,10 +88376,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4367
-#, fuzzy
-#| msgid "C<builder>"
 msgid "F<builder>"
-msgstr "C<builder>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4369
@@ -88699,10 +88386,8 @@ msgstr "Програма L<virt-builder(1)> та документація до �
 
 #. type: =item
 #: ../src/guestfs.pod:4371
-#, fuzzy
-#| msgid "C<cat>"
 msgid "F<cat>"
-msgstr "C<cat>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4373
@@ -88713,10 +88398,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4376
-#, fuzzy
-#| msgid "C<contrib>"
 msgid "F<contrib>"
-msgstr "C<contrib>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4378
@@ -88725,10 +88408,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4380
-#, fuzzy
-#| msgid "C<customize>"
 msgid "F<customize>"
-msgstr "C<customize>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4382
@@ -88737,10 +88418,8 @@ msgstr "Програма L<virt-customize(1)> та документація до
 
 #. type: =item
 #: ../src/guestfs.pod:4384
-#, fuzzy
-#| msgid "C<daemon>"
 msgid "F<daemon>"
-msgstr "C<daemon>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4386
@@ -88750,10 +88429,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4389
-#, fuzzy
-#| msgid "C<df>"
 msgid "F<df>"
-msgstr "C<df>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4391
@@ -88762,10 +88439,8 @@ msgstr "Програма L<virt-df(1)> та документація до неї
 
 #. type: =item
 #: ../src/guestfs.pod:4393
-#, fuzzy
-#| msgid "C<diff>"
 msgid "F<diff>"
-msgstr "C<diff>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4395
@@ -88774,10 +88449,8 @@ msgstr "Програма L<virt-diff(1)> та документація до не
 
 #. type: =item
 #: ../src/guestfs.pod:4397
-#, fuzzy
-#| msgid "C<edit>"
 msgid "F<edit>"
-msgstr "C<edit>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4399
@@ -88786,10 +88459,8 @@ msgstr "Програма L<virt-edit(1)> та документація до не
 
 #. type: =item
 #: ../src/guestfs.pod:4401
-#, fuzzy
-#| msgid "C<examples>"
 msgid "F<examples>"
-msgstr "C<examples>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4403
@@ -88798,10 +88469,8 @@ msgstr "Код прикладів використання програмног�
 
 #. type: =item
 #: ../src/guestfs.pod:4405
-#, fuzzy
-#| msgid "C<fish>"
 msgid "F<fish>"
-msgstr "C<fish>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4407
@@ -88813,10 +88482,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4411
-#, fuzzy
-#| msgid "C<format>"
 msgid "F<format>"
-msgstr "C<format>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4413
@@ -88825,10 +88492,8 @@ msgstr "Програма L<virt-format(1)> та документація до н
 
 #. type: =item
 #: ../src/guestfs.pod:4415
-#, fuzzy
-#| msgid "C<fuse>"
 msgid "F<fuse>"
-msgstr "C<fuse>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4417
@@ -88838,10 +88503,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4419
-#, fuzzy
-#| msgid "C<generator>"
 msgid "F<generator>"
-msgstr "C<generator>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4421
@@ -88857,17 +88520,13 @@ msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4426
-#, fuzzy
-#| msgid "L<virt-edit(1)> command and documentation."
 msgid "L<virt-get-kernel(1)> command and documentation."
-msgstr "Програма L<virt-edit(1)> та документація до неї."
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4428
-#, fuzzy
-#| msgid "C<gnulib>"
 msgid "F<gnulib>"
-msgstr "C<gnulib>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4430
@@ -88878,10 +88537,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4433
-#, fuzzy
-#| msgid "C<html>"
 msgid "F<html>"
-msgstr "C<html>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4435
@@ -88890,10 +88547,8 @@ msgstr "Створені сторінки підручника у форматі
 
 #. type: =item
 #: ../src/guestfs.pod:4437
-#, fuzzy
-#| msgid "C<inspector>"
 msgid "F<inspector>"
-msgstr "C<inspector>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4439
@@ -88902,10 +88557,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4441
-#, fuzzy
-#| msgid "C<logo>"
 msgid "F<logo>"
-msgstr "C<logo>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4443
@@ -88914,10 +88567,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4445
-#, fuzzy
-#| msgid "C<m4>"
 msgid "F<m4>"
-msgstr "C<m4>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4447
@@ -88926,10 +88577,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4449
-#, fuzzy
-#| msgid "C<make-fs>"
 msgid "F<make-fs>"
-msgstr "C<make-fs>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4451
@@ -88938,10 +88587,8 @@ msgstr "Програма L<virt-make-fs(1)> та документація до �
 
 #. type: =item
 #: ../src/guestfs.pod:4453
-#, fuzzy
-#| msgid "C<mllib>"
 msgid "F<mllib>"
-msgstr "C<mllib>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4455
@@ -88952,10 +88599,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4458
-#, fuzzy
-#| msgid "C<p2v>"
 msgid "F<p2v>"
-msgstr "C<p2v>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4460
@@ -88966,10 +88611,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4463
-#, fuzzy
-#| msgid "C<po>"
 msgid "F<po>"
-msgstr "C<po>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4465
@@ -88978,10 +88621,8 @@ msgstr "Переклади простих рядків gettext."
 
 #. type: =item
 #: ../src/guestfs.pod:4467
-#, fuzzy
-#| msgid "C<po-docs>"
 msgid "F<po-docs>"
-msgstr "C<po-docs>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4469
@@ -88993,10 +88634,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4473
-#, fuzzy
-#| msgid "C<rescue>"
 msgid "F<rescue>"
-msgstr "C<rescue>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4475
@@ -89005,10 +88644,8 @@ msgstr "Програма L<virt-rescue(1)> та документація до н
 
 #. type: =item
 #: ../src/guestfs.pod:4477
-#, fuzzy
-#| msgid "C<resize>"
 msgid "F<resize>"
-msgstr "C<resize>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4479
@@ -89017,10 +88654,8 @@ msgstr "Програма L<virt-resize(1)> та документація до н
 
 #. type: =item
 #: ../src/guestfs.pod:4481
-#, fuzzy
-#| msgid "C<sparsify>"
 msgid "F<sparsify>"
-msgstr "C<sparsify>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4483
@@ -89029,10 +88664,8 @@ msgstr "Програма L<virt-sparsify(1)> та документація до 
 
 #. type: =item
 #: ../src/guestfs.pod:4485
-#, fuzzy
-#| msgid "C<src>"
 msgid "F<src>"
-msgstr "C<src>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4487
@@ -89041,10 +88674,8 @@ msgstr "Початковий код бібліотеки мовою C."
 
 #. type: =item
 #: ../src/guestfs.pod:4489
-#, fuzzy
-#| msgid "C<sysprep>"
 msgid "F<sysprep>"
-msgstr "C<sysprep>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4491
@@ -89053,10 +88684,8 @@ msgstr "Програма L<virt-sysprep(1)> та документація до �
 
 #. type: =item
 #: ../src/guestfs.pod:4493
-#, fuzzy
-#| msgid "C<tests>"
 msgid "F<tests>"
-msgstr "C<tests>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4495
@@ -89065,10 +88694,8 @@ msgstr "Тести."
 
 #. type: =item
 #: ../src/guestfs.pod:4497
-#, fuzzy
-#| msgid "C<test-tool>"
 msgid "F<test-tool>"
-msgstr "C<test-tool>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4499
@@ -89079,10 +88706,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4502
-#, fuzzy
-#| msgid "C<tmp>"
 msgid "F<tmp>"
-msgstr "C<tmp>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4504
@@ -89094,10 +88719,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4509
-#, fuzzy
-#| msgid "C<tools>"
 msgid "F<tools>"
-msgstr "C<tools>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4511
@@ -89107,10 +88730,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4513
-#, fuzzy
-#| msgid "C<v2v>"
 msgid "F<v2v>"
-msgstr "C<v2v>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4515
@@ -89119,87 +88740,63 @@ msgstr "Програма L<virt-v2v(1)> та документація до не�
 
 #. type: =item
 #: ../src/guestfs.pod:4517
-#, fuzzy
-#| msgid "C<csharp>"
 msgid "F<csharp>"
-msgstr "C<csharp>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4519
-#, fuzzy
-#| msgid "C<erlang>"
 msgid "F<erlang>"
-msgstr "C<erlang>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4521
-#, fuzzy
-#| msgid "C<gobject>"
 msgid "F<gobject>"
-msgstr "C<gobject>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4523
-#, fuzzy
-#| msgid "C<golang>"
 msgid "F<golang>"
-msgstr "C<golang>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4525
-#, fuzzy
-#| msgid "C<haskell>"
 msgid "F<haskell>"
-msgstr "C<haskell>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4527
-#, fuzzy
-#| msgid "C<java>"
 msgid "F<java>"
-msgstr "C<java>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4529
-#, fuzzy
-#| msgid "C<lua>"
 msgid "F<lua>"
-msgstr "C<lua>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4531
-#, fuzzy
-#| msgid "C<ocaml>"
 msgid "F<ocaml>"
-msgstr "C<ocaml>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4533
-#, fuzzy
-#| msgid "C<php>"
 msgid "F<php>"
-msgstr "C<php>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4535
-#, fuzzy
-#| msgid "C<perl>"
 msgid "F<perl>"
-msgstr "C<perl>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4537
-#, fuzzy
-#| msgid "C<python>"
 msgid "F<python>"
-msgstr "C<python>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4539
-#, fuzzy
-#| msgid "C<ruby>"
 msgid "F<ruby>"
-msgstr "C<ruby>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4541
@@ -96511,10 +96108,8 @@ msgstr ""
 
 #. type: =item
 #: ../v2v/virt-v2v.pod:1551
-#, fuzzy
-#| msgid "C</usr/share/virtio-win>"
 msgid "F</usr/share/virtio-win>"
-msgstr "C</usr/share/virtio-win>"
+msgstr ""
 
 #. type: textblock
 #: ../v2v/virt-v2v.pod:1553 ../v2v/virt-v2v.pod:1595
@@ -96559,10 +96154,8 @@ msgstr ""
 
 #. type: =item
 #: ../v2v/virt-v2v.pod:1593
-#, fuzzy
-#| msgid "C<rhev-apt.exe>"
 msgid "F<rhev-apt.exe>"
-msgstr "C<rhev-apt.exe>"
+msgstr ""
 
 #. type: textblock
 #: ../v2v/virt-v2v.pod:1597
@@ -96596,10 +96189,8 @@ msgstr ""
 
 #. type: textblock
 #: ../v2v/virt-v2v.pod:1614
-#, fuzzy
-#| msgid "ENABLING VIRTIO"
 msgid "See L<ENABLING VIRTIO>."
-msgstr "ВМИКАННЯ VIRTIO"
+msgstr ""
 
 #. type: textblock
 #: ../v2v/virt-v2v.pod:1622

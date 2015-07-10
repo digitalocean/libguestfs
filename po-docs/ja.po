@@ -10,9 +10,9 @@
 # carrotsoft <www.carrotsoft@gmail.com>, 2011
 msgid ""
 msgstr ""
-"Project-Id-Version: libguestfs 1.29.46\n"
+"Project-Id-Version: libguestfs 1.29.48\n"
 "Report-Msgid-Bugs-To: libguestfs@redhat.com\n"
-"POT-Creation-Date: 2015-06-29 23:18+0100\n"
+"POT-Creation-Date: 2015-07-02 18:03+0100\n"
 "PO-Revision-Date: 2014-10-18 04:01-0400\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/libguestfs/"
@@ -309,16 +309,10 @@ msgstr "1 列目"
 
 #. type: textblock
 #: ../align/virt-alignment-scan.pod:70
-#, fuzzy
-#| msgid ""
-#| "The device and partition name (eg. C</dev/sda1> meaning the first "
-#| "partition on the first block device)."
 msgid ""
 "The device and partition name (eg. F</dev/sda1> meaning the first partition "
 "on the first block device)."
 msgstr ""
-"デバイス名およびパーティション名 (例: C</dev/sda1> は最初のブロックデバイスに"
-"ある最初のパーティションを意味します)。"
 
 #. type: textblock
 #: ../align/virt-alignment-scan.pod:73
@@ -671,10 +665,8 @@ msgstr ""
 #: ../df/virt-df.pod:132 ../diff/virt-diff.pod:152 ../edit/virt-edit.pod:151
 #: ../fish/guestfish.pod:247 ../format/virt-format.pod:104
 #: ../rescue/virt-rescue.pod:172 ../sysprep/virt-sysprep.pod:162
-#, fuzzy
-#| msgid "forces raw format (no auto-detection) for C<disk.img>."
 msgid "forces raw format (no auto-detection) for F<disk.img>."
-msgstr "強制的に C<disk.img> を raw 形式にします (自動検出しません)。"
+msgstr ""
 
 #. type: verbatim
 #: ../align/virt-alignment-scan.pod:156
@@ -693,16 +685,10 @@ msgstr ""
 #: ../df/virt-df.pod:136 ../diff/virt-diff.pod:156 ../edit/virt-edit.pod:155
 #: ../fish/guestfish.pod:251 ../format/virt-format.pod:108
 #: ../rescue/virt-rescue.pod:176 ../sysprep/virt-sysprep.pod:166
-#, fuzzy
-#| msgid ""
-#| "forces raw format (no auto-detection) for C<disk.img> and reverts to auto-"
-#| "detection for C<another.img>."
 msgid ""
 "forces raw format (no auto-detection) for F<disk.img> and reverts to auto-"
 "detection for F<another.img>."
 msgstr ""
-"強制的に C<disk.img> を raw 形式にし (自動検知なし)、 C<another.img> に対して"
-"自動検知に戻します。"
 
 #. type: textblock
 #: ../align/virt-alignment-scan.pod:161 ../cat/virt-cat.pod:120
@@ -3685,10 +3671,8 @@ msgstr ""
 
 #. type: =item
 #: ../builder/virt-builder.pod:760
-#, fuzzy
-#| msgid "C<builder>"
 msgid "F</tmp/builder.log>"
-msgstr "C<builder>"
+msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:762
@@ -3707,10 +3691,8 @@ msgstr ""
 
 #. type: =item
 #: ../builder/virt-builder.pod:768
-#, fuzzy
-#| msgid "C<builder>"
 msgid "F</builder.log>"
-msgstr "C<builder>"
+msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:770
@@ -3797,17 +3779,13 @@ msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:815
-#, fuzzy
-#| msgid "Any Linux-based operating system."
 msgid "Supported operating systems are:"
-msgstr "すべての Linux ベースのオペレーティングシステム."
+msgstr ""
 
 #. type: =item
 #: ../builder/virt-builder.pod:819
-#, fuzzy
-#| msgid "ArchLinux"
 msgid "Linux"
-msgstr "ArchLinux"
+msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:821
@@ -3833,10 +3811,8 @@ msgstr ""
 
 #. type: =item
 #: ../builder/virt-builder.pod:831
-#, fuzzy
-#| msgid "\"windows\""
 msgid "Windows"
-msgstr "\"windows\""
+msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:833
@@ -5890,14 +5866,9 @@ msgstr ""
 
 #. type: textblock
 #: ../cat/virt-cat.pod:32
-#, fuzzy
-#| msgid ""
-#| "Display C</etc/fstab> file from inside the libvirt VM called C<mydomain>:"
 msgid ""
 "Display F</etc/fstab> file from inside the libvirt VM called C<mydomain>:"
 msgstr ""
-"C<mydomain> という名前の libvirt 仮想マシンの中にある C</etc/fstab> を表示し"
-"ます:"
 
 #. type: verbatim
 #: ../cat/virt-cat.pod:35
@@ -6022,16 +5993,10 @@ msgstr "B<--keys-from-stdin>"
 #: ../cat/virt-log.pod:109 ../cat/virt-ls.pod:357 ../diff/virt-diff.pod:171
 #: ../edit/virt-edit.pod:164 ../fish/guestfish.pod:292
 #: ../fuse/guestmount.pod:254 ../inspector/virt-inspector.pod:119
-#, fuzzy
-#| msgid ""
-#| "Read key or passphrase parameters from stdin.  The default is to try to "
-#| "read passphrases from the user by opening C</dev/tty>."
 msgid ""
 "Read key or passphrase parameters from stdin.  The default is to try to read "
 "passphrases from the user by opening F</dev/tty>."
 msgstr ""
-"標準入力からキーまたはパスフレーズのパラメーターを読み込みます。 標準で C</"
-"dev/tty> を開いているユーザーから読み込もうとします。"
 
 #. type: =item
 #: ../cat/virt-cat.pod:129 ../cat/virt-ls.pod:360 ../edit/virt-edit.pod:167
@@ -6056,10 +6021,8 @@ msgstr ""
 #. type: textblock
 #: ../cat/virt-cat.pod:135 ../cat/virt-ls.pod:366 ../edit/virt-edit.pod:173
 #: ../fish/guestfish.pod:311
-#, fuzzy
-#| msgid "If the mountpoint is omitted, it defaults to C</>."
 msgid "If the mountpoint is omitted, it defaults to F</>."
-msgstr "マウントポイントが省略された場合、標準で C</> になります。"
+msgstr ""
 
 #. type: textblock
 #: ../cat/virt-cat.pod:137 ../cat/virt-ls.pod:368 ../edit/virt-edit.pod:175
@@ -6203,16 +6166,10 @@ msgstr "Windows のパス"
 
 #. type: textblock
 #: ../cat/virt-cat.pod:207
-#, fuzzy
-#| msgid ""
-#| "C<virt-cat> has a limited ability to understand Windows drive letters and "
-#| "paths (eg. C<E:\\foo\\bar.txt>)."
 msgid ""
 "C<virt-cat> has a limited ability to understand Windows drive letters and "
 "paths (eg. F<E:\\foo\\bar.txt>)."
 msgstr ""
-"C<virt-cat> は Windows のドライブレターとパスの解釈能力に制限があります（例: "
-"C<E:\\foo\\bar.txt>）。"
 
 #. type: textblock
 #: ../cat/virt-cat.pod:210 ../edit/virt-edit.pod:304
@@ -6319,16 +6276,10 @@ msgstr ""
 
 #. type: textblock
 #: ../cat/virt-cat.pod:265
-#, fuzzy
-#| msgid ""
-#| "where C<disk.img> is the disk image, C</dev/sda1> is the filesystem "
-#| "within the disk image, and C<file> is the full path to the file."
 msgid ""
 "where F<disk.img> is the disk image, F</dev/sda1> is the filesystem within "
 "the disk image, and C<file> is the full path to the file."
 msgstr ""
-"ここで、C<disk.img> はディスクイメージ、C</dev/sda1> はディスクイメージにある"
-"ファイルシステム、そして C<file> はファイルの完全パスです。"
 
 #. type: textblock
 #: ../cat/virt-cat.pod:275
@@ -6894,19 +6845,11 @@ msgstr "ファイルシステム、パーティション、ブロックデバイ
 
 #. type: textblock
 #: ../cat/virt-filesystems.pod:302
-#, fuzzy
-#| msgid ""
-#| "For device and partition names these are displayed as canonical "
-#| "libguestfs names, so that for example C</dev/sda2> is the second "
-#| "partition on the first device."
 msgid ""
 "For device and partition names these are displayed as canonical libguestfs "
 "names, so that for example F</dev/sda2> is the second partition on the first "
 "device."
 msgstr ""
-"これらは、デバイスとパーティションに対して、正規化された libguestfs 名として"
-"表示されます。そのため、たとえば、 C</dev/sda2> は最初のデバイスにある 2 番目"
-"のパーティションです。"
 
 #. type: textblock
 #: ../cat/virt-filesystems.pod:306
@@ -9175,10 +9118,8 @@ msgstr ""
 
 #. type: textblock
 #: ../daemon/guestfsd.pod:74
-#, fuzzy
-#| msgid "Enable QEMU user networking in the guest."
 msgid "Enable network features in the daemon."
-msgstr "仮想マシンにおいて QEMU のユーザーモードのネットワークを有効にします。"
+msgstr ""
 
 #. type: =item
 #: ../daemon/guestfsd.pod:76 ../fish/guestfish.pod:398
@@ -9215,10 +9156,8 @@ msgstr "ファイル"
 
 #. type: =item
 #: ../daemon/guestfsd.pod:103
-#, fuzzy
-#| msgid "C</dev/virtio-ports/org.libguestfs.channel.0>"
 msgid "F</dev/virtio-ports/org.libguestfs.channel.0>"
-msgstr "C</dev/virtio-ports/org.libguestfs.channel.0>"
+msgstr ""
 
 #. type: textblock
 #: ../daemon/guestfsd.pod:105
@@ -9227,10 +9166,8 @@ msgstr "C<guestfsd> が接続する virtio シリアルポート。"
 
 #. type: =item
 #: ../daemon/guestfsd.pod:107
-#, fuzzy
-#| msgid "C</proc/cmdline>"
 msgid "F</proc/cmdline>"
-msgstr "C</proc/cmdline>"
+msgstr ""
 
 #. type: textblock
 #: ../daemon/guestfsd.pod:109
@@ -9408,11 +9345,8 @@ msgstr ""
 
 #. type: textblock
 #: ../df/virt-df.pod:55
-#, fuzzy
-#| msgid "Show disk usage for a disk image file called C<test.img>:"
 msgid "Show disk usage for a disk image file called F<test.img>:"
 msgstr ""
-"C<test.img> というディスクイメージファイルのディスク使用量を表示します:"
 
 #. type: verbatim
 #: ../df/virt-df.pod:57
@@ -9563,10 +9497,8 @@ msgstr ""
 
 #. type: textblock
 #: ../df/virt-df.pod:215 ../df/virt-df.pod:223
-#, fuzzy
-#| msgid "(change C</> to see stats for other filesystems)."
 msgid "(change F</> to see stats for other filesystems)."
-msgstr "(他のファイルシステムの統計情報を参照するには C</> に変更します)。"
+msgstr ""
 
 #. type: =item
 #: ../df/virt-df.pod:217
@@ -10285,16 +10217,10 @@ msgstr ""
 
 #. type: textblock
 #: ../edit/virt-edit.pod:301
-#, fuzzy
-#| msgid ""
-#| "C<virt-cat> has a limited ability to understand Windows drive letters and "
-#| "paths (eg. C<E:\\foo\\bar.txt>)."
 msgid ""
 "C<virt-edit> has a limited ability to understand Windows drive letters and "
 "paths (eg. F<E:\\foo\\bar.txt>)."
 msgstr ""
-"C<virt-cat> は Windows のドライブレターとパスの解釈能力に制限があります（例: "
-"C<E:\\foo\\bar.txt>）。"
 
 #. type: textblock
 #: ../edit/virt-edit.pod:320
@@ -10327,16 +10253,10 @@ msgstr ""
 
 #. type: textblock
 #: ../edit/virt-edit.pod:348
-#, fuzzy
-#| msgid ""
-#| "where C<domname> is the name of the libvirt guest, and C</file> is the "
-#| "full path to the file."
 msgid ""
 "where C<domname> is the name of the libvirt guest, and F</file> is the full "
 "path to the file."
 msgstr ""
-"ここで C<domname> は libvirt 仮想マシンの名前で、C</file> はファイルの完全パ"
-"スです。"
 
 #. type: textblock
 #: ../edit/virt-edit.pod:351
@@ -10359,16 +10279,10 @@ msgstr ""
 
 #. type: textblock
 #: ../edit/virt-edit.pod:358
-#, fuzzy
-#| msgid ""
-#| "where C<disk.img> is the disk image, C</dev/sda1> is the filesystem "
-#| "within the disk image to edit, and C</file> is the full path to the file."
 msgid ""
 "where F<disk.img> is the disk image, F</dev/sda1> is the filesystem within "
 "the disk image to edit, and F</file> is the full path to the file."
 msgstr ""
-"ここで、C<disk.img> はディスクイメージ、C</dev/sda1> は編集するディスクイメー"
-"ジにあるファイルシステム、C</file> はファイルの完全パスです。"
 
 #. type: textblock
 #: ../edit/virt-edit.pod:362
@@ -12128,16 +12042,10 @@ msgstr ""
 
 #. type: textblock
 #: ../examples/guestfs-faq.pod:615
-#, fuzzy
-#| msgid ""
-#| "If the environment variable C<TMPDIR> is defined, then C<$TMPDIR/.guestfs-"
-#| "E<lt>UIDE<gt>> is used instead."
 msgid ""
 "If the environment variable C<TMPDIR> is defined, then F<$TMPDIR/.guestfs-"
 "E<lt>UIDE<gt>> is used instead."
 msgstr ""
-"環境変数 C<TMPDIR> が定義されていると、代わりに C<$TMPDIR/.guestfs-"
-"E<lt>UIDE<gt>> が使用されます。"
 
 #. type: textblock
 #: ../examples/guestfs-faq.pod:618
@@ -14313,10 +14221,8 @@ msgstr "ハードウェア仮想化機能の利用可能性の確認"
 
 #. type: textblock
 #: ../examples/guestfs-performance.pod:402
-#, fuzzy
-#| msgid "Use C</proc/cpuinfo> and this page:"
 msgid "Use F</proc/cpuinfo> and this page:"
-msgstr "C</proc/cpuinfo> およびこのページを使用します:"
+msgstr ""
 
 #. type: textblock
 #: ../examples/guestfs-performance.pod:404
@@ -14352,19 +14258,11 @@ msgstr "KVM の利用可能性の確認"
 
 #. type: textblock
 #: ../examples/guestfs-performance.pod:416
-#, fuzzy
-#| msgid ""
-#| "Ensure that KVM is enabled and available to the user that will run "
-#| "libguestfs.  It should be safe to set 0666 permissions on C</dev/kvm> and "
-#| "most distributions now do this."
 msgid ""
 "Ensure that KVM is enabled and available to the user that will run "
 "libguestfs.  It should be safe to set 0666 permissions on F</dev/kvm> and "
 "most distributions now do this."
 msgstr ""
-"KVM が有効化され、libguestfs を実行するユーザーが利用可能であることを確実にし"
-"ます。C</dev/kvm> において 0666 パーミッションを設定して安全にするべきです"
-"が、多くのディストリビューションにおいて、現在こうしています。"
 
 #. type: =head2
 #: ../examples/guestfs-performance.pod:420
@@ -14431,10 +14329,8 @@ msgstr ""
 
 #. type: textblock
 #: ../examples/guestfs-performance.pod:452
-#, fuzzy
-#| msgid "Save the following script as C<time.stap>:"
 msgid "Save the following script as F<time.stap>:"
-msgstr "以下のスクリプトを C<time.stap> として保存します:"
+msgstr ""
 
 #. type: verbatim
 #: ../examples/guestfs-performance.pod:454 ../src/guestfs.pod:3387
@@ -14845,19 +14741,11 @@ msgstr ""
 
 #. type: textblock
 #: ../examples/guestfs-recipes.pod:52
-#, fuzzy
-#| msgid ""
-#| "C</dev/sda1> means \"the first partition\".  You could use C</dev/sda> to "
-#| "checksum the whole disk image, or the name of a logical volume or RAID "
-#| "device."
 msgid ""
 "F</dev/sda1> means \"the first partition\".  You could use F</dev/sda> to "
 "checksum the whole disk image, or the name of a logical volume or RAID "
 "device."
 msgstr ""
-"C</dev/sda1> は \"最初のパーティション\" を意味します。ディスクイメージ全体、"
-"または論理ボリュームや RAID デバイスの名前についてチェックサムを確認するには "
-"C</dev/sda> を使用できます。"
 
 #. type: textblock
 #: ../examples/guestfs-recipes.pod:56
@@ -14919,10 +14807,8 @@ msgstr "CD-ROM / DVD / ISO を tar ファイルに変換します"
 
 #. type: textblock
 #: ../examples/guestfs-recipes.pod:75
-#, fuzzy
-#| msgid "This converts input C<cd.iso> to output C<cd.tar.gz>:"
 msgid "This converts input F<cd.iso> to output F<cd.tar.gz>:"
-msgstr "入力 C<cd.iso> を出力 C<cd.tar.gz> に変換します:"
+msgstr ""
 
 #. type: verbatim
 #: ../examples/guestfs-recipes.pod:77
@@ -14936,10 +14822,8 @@ msgstr ""
 
 #. type: textblock
 #: ../examples/guestfs-recipes.pod:79
-#, fuzzy
-#| msgid "To export just a subdirectory, eg. C</files>, do:"
 msgid "To export just a subdirectory, eg. F</files>, do:"
-msgstr "サブディレクトリ（例: C</files>）をエクスポートするには:"
+msgstr ""
 
 #. type: verbatim
 #: ../examples/guestfs-recipes.pod:81
@@ -15380,15 +15264,9 @@ msgstr "仮想マシンから任意のディレクトリをエクスポートし
 
 #. type: textblock
 #: ../examples/guestfs-recipes.pod:254
-#, fuzzy
-#| msgid ""
-#| "To export C</home> from a VM into a local directory use L<virt-copy-"
-#| "out(1)>:"
 msgid ""
 "To export F</home> from a VM into a local directory use L<virt-copy-out(1)>:"
 msgstr ""
-"仮想マシンから C</home> をローカルディレクトリにエクスポートするには L<virt-"
-"copy-out(1)> を使用します:"
 
 #. type: verbatim
 #: ../examples/guestfs-recipes.pod:257 ../examples/guestfs-testing.pod:186
@@ -15600,16 +15478,10 @@ msgstr ""
 
 #. type: textblock
 #: ../examples/guestfs-recipes.pod:334
-#, fuzzy
-#| msgid ""
-#| "In the libguestfs source examples directory you will find the latest "
-#| "version of the C<virt-dhcp-address.c> program."
 msgid ""
 "In the libguestfs source examples directory you will find the latest version "
 "of the F<virt-dhcp-address.c> program."
 msgstr ""
-"libguestfs のソースのサンプルディレクトリーに、C<virt-dhcp-address.c> プログ"
-"ラムの最新バージョンがあります。"
 
 #. type: =head1
 #: ../examples/guestfs-recipes.pod:337
@@ -15618,10 +15490,8 @@ msgstr "オペレーティングシステムの製品名を取得します"
 
 #. type: textblock
 #: ../examples/guestfs-recipes.pod:339
-#, fuzzy
-#| msgid "Save the following script into a file called C<product-name.sh>:"
 msgid "Save the following script into a file called F<product-name.sh>:"
-msgstr "以下のスクリプトを C<product-name.sh> というファイルの中に保存します:"
+msgstr ""
 
 #. type: verbatim
 #: ../examples/guestfs-recipes.pod:341
@@ -16013,10 +15883,8 @@ msgstr "仮想マシンにインストールされているアプリケーショ
 
 #. type: textblock
 #: ../examples/guestfs-recipes.pod:518
-#, fuzzy
-#| msgid "Save the following to a file C<list-apps.sh>:"
 msgid "Save the following to a file F<list-apps.sh>:"
-msgstr "以下をファイル C<list-apps.sh> に保存します:"
+msgstr ""
 
 #. type: verbatim
 #: ../examples/guestfs-recipes.pod:520
@@ -16851,11 +16719,8 @@ msgstr ""
 
 #. type: textblock
 #: ../examples/guestfs-testing.pod:190
-#, fuzzy
-#| msgid "This creates a directory called C<home> under the current directory."
 msgid "This should copy F</home> from the guest into the current directory."
 msgstr ""
-"これは現在のディレクトリーに C<home> というディレクトリーを作成します。"
 
 #. type: =head2
 #: ../examples/guestfs-testing.pod:192
@@ -17895,10 +17760,8 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:232 ../src/guestfs-actions.pod:330
-#, fuzzy
-#| msgid "This call checks that C<filename> exists."
 msgid "This call checks that F<filename> exists."
-msgstr "この呼び出しは C<filename> が存在するかを確認します。"
+msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:234 ../src/guestfs-actions.pod:332
@@ -18651,15 +18514,9 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:582 ../src/guestfs-actions.pod:872
-#, fuzzy
-#| msgid ""
-#| "C<root> is the filesystem root.  C<root> must not be NULL, use C</> "
-#| "instead."
 msgid ""
 "C<root> is the filesystem root.  C<root> must not be NULL, use F</> instead."
 msgstr ""
-"C<root> はファイルシステムのルートです。 C<root> は NULL にできません、代わり"
-"に C</> を使用します。"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:585 ../src/guestfs-actions.pod:875
@@ -19161,15 +19018,9 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:804 ../src/guestfs-actions.pod:1183
-#, fuzzy
-#| msgid ""
-#| "This command uploads base64-encoded data from C<base64file> to "
-#| "C<filename>."
 msgid ""
 "This command uploads base64-encoded data from C<base64file> to F<filename>."
 msgstr ""
-"このコマンドは Base64 エンコードしたデータを C<base64file> から C<filename> "
-"にアップロードします。"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:807 ../fish/guestfish-actions.pod:816
@@ -20111,9 +19962,8 @@ msgstr ""
 
 #. type: =head2
 #: ../fish/guestfish-actions.pod:1144
-#, fuzzy
 msgid "btrfs-replace"
-msgstr "btrfs-filesystem-balance"
+msgstr ""
 
 #. type: verbatim
 #: ../fish/guestfish-actions.pod:1146
@@ -20318,15 +20168,12 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:1207 ../src/guestfs-actions.pod:2006
-#, fuzzy
 msgid ""
 "Create a btrfs subvolume.  The C<dest> argument is the destination directory "
 "and the name of the subvolume, in the form F</path/to/dest/name>.  The "
 "optional parameter C<qgroupid> represents the qgroup which the newly created "
 "subvolume will be added to."
 msgstr ""
-"btrfs サブツリーを作成します。The C<dest> 引数は、C</path/to/dest/name> 形式"
-"となる、スナップショットの宛先ディレクトリーおよび名前です。"
 
 #. type: =head2
 #: ../fish/guestfish-actions.pod:1214
@@ -20466,7 +20313,6 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:1253 ../src/guestfs-actions.pod:2137
-#, fuzzy
 msgid ""
 "Create a snapshot of the btrfs subvolume C<source>.  The C<dest> argument is "
 "the destination directory and the name of the snapshot, in the form F</path/"
@@ -20475,8 +20321,6 @@ msgid ""
 "created. The optional parameter C<qgroupid> represents the qgroup which the "
 "newly created snapshot will be added to."
 msgstr ""
-"btrfs サブツリーを作成します。The C<dest> 引数は、C</path/to/dest/name> 形式"
-"となる、スナップショットの宛先ディレクトリーおよび名前です。"
 
 #. type: =head2
 #: ../fish/guestfish-actions.pod:1263
@@ -20582,17 +20426,13 @@ msgstr ""
 
 #. type: =item
 #: ../fish/guestfish-actions.pod:1300 ../src/guestfs-actions.pod:2236
-#, fuzzy
-#| msgid "C</dev/hdX>"
 msgid "F</dev/hdX>"
-msgstr "C</dev/hdX>"
+msgstr ""
 
 #. type: =item
 #: ../fish/guestfish-actions.pod:1302 ../src/guestfs-actions.pod:2238
-#, fuzzy
-#| msgid "C</dev/vdX>"
 msgid "F</dev/vdX>"
-msgstr "C</dev/vdX>"
+msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:1304 ../src/guestfs-actions.pod:2240
@@ -20604,23 +20444,18 @@ msgstr ""
 
 #. type: =item
 #: ../fish/guestfish-actions.pod:1308 ../src/guestfs-actions.pod:2244
-#, fuzzy
-#| msgid "C</dev/mapper/VG-LV>"
 msgid "F</dev/mapper/VG-LV>"
-msgstr "C</dev/mapper/VG-LV>"
+msgstr ""
 
 #. type: =item
 #: ../fish/guestfish-actions.pod:1310 ../src/guestfs-actions.pod:2246
-#, fuzzy
-#| msgid "C</dev/dm-N>"
 msgid "F</dev/dm-N>"
-msgstr "C</dev/dm-N>"
+msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:1312
-#, fuzzy
 msgid "Converted to F</dev/VG/LV> form using L</lvm-canonical-lv-name>."
-msgstr "L</lvm-canonical-lvm-name> を使用して C</dev/VG/LV> に変換されます。"
+msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:1316 ../src/guestfs-actions.pod:2252
@@ -21942,15 +21777,9 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:1910 ../src/guestfs-actions.pod:3429
-#, fuzzy
-#| msgid ""
-#| "Detect and return the virtual size in bytes of the disk image called "
-#| "C<filename>."
 msgid ""
 "Detect and return whether the disk image F<filename> has a backing file."
 msgstr ""
-"C<filename> という名前のディスクイメージの仮想容量をバイト単位で検知および出"
-"力します。"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:1913 ../fish/guestfish-actions.pod:1923
@@ -21977,16 +21806,10 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:1920 ../src/guestfs-actions.pod:3445
-#, fuzzy
-#| msgid ""
-#| "Detect and return the virtual size in bytes of the disk image called "
-#| "C<filename>."
 msgid ""
 "Detect and return the virtual size in bytes of the disk image called "
 "F<filename>."
 msgstr ""
-"C<filename> という名前のディスクイメージの仮想容量をバイト単位で検知および出"
-"力します。"
 
 #. type: =head2
 #: ../fish/guestfish-actions.pod:1926
@@ -22036,24 +21859,16 @@ msgstr ""
 #. type: textblock
 #: ../fish/guestfish-actions.pod:1943 ../fish/guestfish-actions.pod:1956
 #: ../src/guestfs-actions.pod:3481 ../src/guestfs-actions.pod:3506
-#, fuzzy
-#| msgid ""
-#| "Download file C<remotefilename> and save it as C<filename> on the local "
-#| "machine."
 msgid ""
 "Download file F<remotefilename> and save it as F<filename> on the local "
 "machine."
 msgstr ""
-"ファイル C<remotefilename> をダウンロードし、ローカルマシンに C<filename> と"
-"して保存します。"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:1946 ../fish/guestfish-actions.pod:8116
 #: ../src/guestfs-actions.pod:3484 ../src/guestfs-actions.pod:13502
-#, fuzzy
-#| msgid "C<filename> can also be a named pipe."
 msgid "F<filename> can also be a named pipe."
-msgstr "C<filename> は名前付きパイプを使えます。"
+msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:1948
@@ -22364,16 +22179,10 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:2091 ../src/guestfs-actions.pod:3734
-#, fuzzy
-#| msgid ""
-#| "This compares the two files C<file1> and C<file2> and returns true if "
-#| "their content is exactly equal, or false otherwise."
 msgid ""
 "This compares the two files F<file1> and F<file2> and returns true if their "
 "content is exactly equal, or false otherwise."
 msgstr ""
-"これは 2 つのファイル C<file1> と C<file2> を比較します。内容が完全に同じなら"
-"ば真を、そうでなければ偽を返します。"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:2094 ../src/guestfs-actions.pod:3737
@@ -22876,10 +22685,8 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:2350 ../src/guestfs-actions.pod:4063
-#, fuzzy
-#| msgid "This command returns the size of C<file> in bytes."
 msgid "This command returns the size of F<file> in bytes."
-msgstr "このコマンドは C<file> の容量をバイト単位で返します。"
+msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:2352
@@ -23083,14 +22890,8 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:2431 ../src/guestfs-actions.pod:4189
-#, fuzzy
-#| msgid ""
-#| "If writes fail to pipe commands (see L</PIPES> below), then the command "
-#| "returns an error."
 msgid "If F<directory> is not a directory, then this command returns an error."
 msgstr ""
-"コマンドのパイプ (以下の L</パイプ> 参照) への書き込みに失敗した場合、 このコ"
-"マンドがエラーを返します。"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:2434 ../src/guestfs-actions.pod:4192
@@ -23513,13 +23314,8 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:2624 ../src/guestfs-actions.pod:4501
-#, fuzzy
-#| msgid ""
-#| "This tells the kernel to flush internal buffers associated with C<device>."
 msgid "This returns the file attributes associated with F<file>."
 msgstr ""
-"C<device> と関連づけられている内部バッファーをフラッシュするようカーネルに指"
-"示します。"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:2626 ../src/guestfs-actions.pod:4503
@@ -24628,10 +24424,8 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:3093 ../src/guestfs-actions.pod:5213
-#, fuzzy
-#| msgid "replacing C</dev/vda> with the name of the installation device."
 msgid "replacing F</dev/vda> with the name of the installation device."
-msgstr "C</dev/vda> をインストールデバイスの名前で置き換えます。"
+msgstr ""
 
 #. type: =head2
 #: ../fish/guestfish-actions.pod:3097
@@ -24779,21 +24573,12 @@ msgstr "ハイブへの変更をコミット（書き込み）します。"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:3146 ../src/guestfs-actions.pod:5301
-#, fuzzy
-#| msgid ""
-#| "If the optional C<filename> parameter is null, then the changes are "
-#| "written back to the same hive that was opened.  If this is not null then "
-#| "they are written to the alternate filename given and the original hive is "
-#| "left untouched."
 msgid ""
 "If the optional F<filename> parameter is null, then the changes are written "
 "back to the same hive that was opened.  If this is not null then they are "
 "written to the alternate filename given and the original hive is left "
 "untouched."
 msgstr ""
-"オプションの C<filename> パラメーターがなければ、変更は開かれているハイブに書"
-"き戻されます。このオプションがあれば、指定された他のファイルに書き込まれ、元"
-"のハイブはそのまま残されます。"
 
 #. type: =head2
 #: ../fish/guestfish-actions.pod:3153
@@ -26541,16 +26326,10 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:3941 ../src/guestfs-actions.pod:6451
-#, fuzzy
-#| msgid ""
-#| "This returns the Windows systemroot of the inspected guest.  The "
-#| "systemroot is a directory path such as C</WINDOWS>."
 msgid ""
 "This returns the Windows systemroot of the inspected guest.  The systemroot "
 "is a directory path such as F</WINDOWS>."
 msgstr ""
-"これは検査した仮想マシンの Windows システムルートを返します。システムルート"
-"は C</WINDOWS> のようなディレクトリーのパスです。"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:3944 ../src/guestfs-actions.pod:6454
@@ -28078,10 +27857,8 @@ msgstr "すべてのブロックデバイスを一覧表示します。"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:4674 ../src/guestfs-actions.pod:7758
-#, fuzzy
-#| msgid "The full block device names are returned, eg. C</dev/sda>."
 msgid "The full block device names are returned, eg. F</dev/sda>."
-msgstr "ブロックデバイスの完全名（例: C</dev/sda>）を返します。"
+msgstr ""
 
 #. type: =head2
 #: ../fish/guestfish-actions.pod:4678
@@ -28308,10 +28085,8 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:4769 ../src/guestfs-actions.pod:7906
-#, fuzzy
-#| msgid "The full block device names are returned, eg. C</dev/sda>."
 msgid "The full partition device names are returned, eg. F</dev/sda1>"
-msgstr "ブロックデバイスの完全名（例: C</dev/sda>）を返します。"
+msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:4771
@@ -28339,12 +28114,10 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:4780 ../src/guestfs-actions.pod:7925
-#, fuzzy
-#| msgid "List the files in C<directory> in the format of 'ls -laZ'."
 msgid ""
 "List the files in F<directory> (relative to the root directory, there is no "
 "cwd) in the format of 'ls -la'."
-msgstr "'ls -laZ' 形式で C<directory> にあるファイルを一覧表示します。"
+msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:4783 ../fish/guestfish-actions.pod:4792
@@ -28373,10 +28146,8 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:4790 ../src/guestfs-actions.pod:7942
-#, fuzzy
-#| msgid "List the files in C<directory> in the format of 'ls -laZ'."
 msgid "List the files in F<directory> in the format of 'ls -laZ'."
-msgstr "'ls -laZ' 形式で C<directory> にあるファイルを一覧表示します。"
+msgstr ""
 
 #. type: =head2
 #: ../fish/guestfish-actions.pod:4795
@@ -29094,29 +28865,17 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:5105 ../src/guestfs-actions.pod:8456
-#, fuzzy
-#| msgid ""
-#| "Remove an LVM logical volume C<device>, where C<device> is the path to "
-#| "the LV, such as C</dev/VG/LV>."
 msgid ""
 "Remove an LVM logical volume C<device>, where C<device> is the path to the "
 "LV, such as F</dev/VG/LV>."
 msgstr ""
-"LVM 論理ボリューム C<device> を削除します、ここで C<device> は C</dev/VG/LV> "
-"のような LV へのパスです。"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:5108 ../src/guestfs-actions.pod:8459
-#, fuzzy
-#| msgid ""
-#| "You can also remove all LVs in a volume group by specifying the VG name, "
-#| "C</dev/VG>."
 msgid ""
 "You can also remove all LVs in a volume group by specifying the VG name, F</"
 "dev/VG>."
 msgstr ""
-"VG 名 C</dev/VG> を指定することにより、ボリュームグループにあるすべての LV も"
-"削除できます。"
 
 #. type: =head2
 #: ../fish/guestfish-actions.pod:5111
@@ -29210,16 +28969,10 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:5142 ../src/guestfs-actions.pod:8519
-#, fuzzy
-#| msgid ""
-#| "This returns a list of the logical volume device names (eg. C</dev/"
-#| "VolGroup00/LogVol00>)."
 msgid ""
 "This returns a list of the logical volume device names (eg. F</dev/"
 "VolGroup00/LogVol00>)."
 msgstr ""
-"これは論理ボリュームのデバイス名（例: C</dev/VolGroup00/LogVol00>）の一覧を返"
-"します。"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:5145
@@ -32196,16 +31949,10 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:6434 ../src/guestfs-actions.pod:10790
-#, fuzzy
-#| msgid ""
-#| "Remove an LVM logical volume C<device>, where C<device> is the path to "
-#| "the LV, such as C</dev/VG/LV>."
 msgid ""
 "This creates an LVM physical volume on the named C<device>, where C<device> "
 "should usually be a partition name such as F</dev/sda1>."
 msgstr ""
-"LVM 論理ボリューム C<device> を削除します、ここで C<device> は C</dev/VG/LV> "
-"のような LV へのパスです。"
 
 #. type: =head2
 #: ../fish/guestfish-actions.pod:6438
@@ -32305,16 +32052,10 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:6470 ../src/guestfs-actions.pod:10850
-#, fuzzy
-#| msgid ""
-#| "This returns a list of the logical volume device names (eg. C</dev/"
-#| "VolGroup00/LogVol00>)."
 msgid ""
 "This returns a list of just the device names that contain PVs (eg. F</dev/"
 "sda2>)."
 msgstr ""
-"これは論理ボリュームのデバイス名（例: C</dev/VolGroup00/LogVol00>）の一覧を返"
-"します。"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:6473
@@ -34459,10 +34200,8 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:7423 ../src/guestfs-actions.pod:12327
-#, fuzzy
-#| msgid "C<device> should be a block device, for example C</dev/sda>."
 msgid "C<device> should be a block device, for example F</dev/sda>."
-msgstr "C<device> はブロックデバイスです、たとえば C</dev/sda> です。"
+msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:7425 ../src/guestfs-actions.pod:12329
@@ -35250,10 +34989,8 @@ msgstr ""
 
 #. type: =item
 #: ../fish/guestfish-actions.pod:7770 ../src/guestfs-actions.pod:12840
-#, fuzzy
-#| msgid "Directory"
 msgid "F<directory>"
-msgstr "ディレクトリ"
+msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:7772 ../src/guestfs-actions.pod:12842
@@ -35346,15 +35083,9 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:7818 ../src/guestfs-actions.pod:12952
-#, fuzzy
-#| msgid ""
-#| "This command uploads base64-encoded data from C<base64file> to "
-#| "C<filename>."
 msgid ""
 "This command uploads and unpacks local file C<tarfile> into F<directory>."
 msgstr ""
-"このコマンドは Base64 エンコードしたデータを C<base64file> から C<filename> "
-"にアップロードします。"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:7820 ../src/guestfs-actions.pod:12954
@@ -35955,13 +35686,8 @@ msgstr ""
 #. type: textblock
 #: ../fish/guestfish-actions.pod:8113 ../fish/guestfish-actions.pod:8126
 #: ../src/guestfs-actions.pod:13499 ../src/guestfs-actions.pod:13523
-#, fuzzy
-#| msgid ""
-#| "Upload local file C<filename> to C<remotefilename> on the filesystem."
 msgid "Upload local file F<filename> to F<remotefilename> on the filesystem."
 msgstr ""
-"ローカルファイル C<filename> をファイルシステムにおいて C<remotefilename> に"
-"アップロードします。"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:8118
@@ -37142,16 +36868,10 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:8598 ../src/guestfs-actions.pod:14394
-#, fuzzy
-#| msgid ""
-#| "Zero the free space in the filesystem mounted on C<directory>.  The "
-#| "filesystem must be mounted read-write."
 msgid ""
 "Zero the free space in the filesystem mounted on F<directory>.  The "
 "filesystem must be mounted read-write."
 msgstr ""
-"C<directory> にマウントされたファイルシステムにある空き領域にゼロを書き込みま"
-"す。  ファイルシステムは読み書きモードでマウントする必要があります。"
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:8601 ../src/guestfs-actions.pod:14397
@@ -37761,12 +37481,8 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-commands.pod:187
-#, fuzzy
-#| msgid "To edit the superblock of an ext2 filesystem on C</dev/sda1>, do:"
 msgid "To edit the superblock of an ext2 filesystem on F</dev/sda1>, do:"
 msgstr ""
-"C</dev/sda1> にある ext2 ファイルシステムのスーパーブロックを編集するには、次"
-"のようにします:"
 
 #. type: verbatim
 #: ../fish/guestfish-commands.pod:189
@@ -38495,11 +38211,8 @@ msgstr "シェルスクリプトから"
 
 #. type: textblock
 #: ../fish/guestfish.pod:67
-#, fuzzy
-#| msgid "Create a new C</etc/motd> file in a guest or disk image:"
 msgid "Create a new F</etc/motd> file in a guest or disk image:"
 msgstr ""
-"仮想マシンまたはディスクイメージに新しい C</etc/motd> ファイルを作成します:"
 
 #. type: verbatim
 #: ../fish/guestfish.pod:69
@@ -38570,10 +38283,8 @@ msgstr "コマンドライン 1 行において"
 
 #. type: textblock
 #: ../fish/guestfish.pod:92 ../fish/virt-copy-in.pod:29
-#, fuzzy
-#| msgid "Update C</etc/resolv.conf> in a guest:"
 msgid "Update F</etc/resolv.conf> in a guest:"
-msgstr "仮想マシンの C</etc/resolv.conf> を更新します:"
+msgstr ""
 
 #. type: verbatim
 #: ../fish/guestfish.pod:94
@@ -38591,10 +38302,8 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish.pod:98
-#, fuzzy
-#| msgid "Edit C</boot/grub/grub.conf> interactively:"
 msgid "Edit F</boot/grub/grub.conf> interactively:"
-msgstr "C</boot/grub/grub.conf> を対話的に編集します:"
+msgstr ""
 
 #. type: verbatim
 #: ../fish/guestfish.pod:100
@@ -38647,10 +38356,8 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish.pod:114
-#, fuzzy
-#| msgid "Another way to edit C</boot/grub/grub.conf> interactively is:"
 msgid "Another way to edit F</boot/grub/grub.conf> interactively is:"
-msgstr "次のように対話的に C</boot/grub/grub.conf> を編集することもできます:"
+msgstr ""
 
 #. type: verbatim
 #: ../fish/guestfish.pod:116
@@ -38697,16 +38404,10 @@ msgstr "準備済みディスクを用いた起動"
 
 #. type: textblock
 #: ../fish/guestfish.pod:130
-#, fuzzy
-#| msgid ""
-#| "An alternate way to create a 100MB disk called C<test1.img> containing a "
-#| "single ext2-formatted partition:"
 msgid ""
 "An alternate way to create a 100MB disk called F<test1.img> containing a "
 "single ext2-formatted partition:"
 msgstr ""
-"一つの ext2 フォーマット済みパーティションを含む C<test1.img> という 100MB "
-"ディスクを作成するもう一つの方法:"
 
 #. type: verbatim
 #: ../fish/guestfish.pod:133 ../src/guestfs.pod:3428
@@ -39091,11 +38792,8 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish.pod:313
-#, fuzzy
-#| msgid "You have to mount something on C</> before most commands will work."
 msgid "You have to mount something on F</> before most commands will work."
 msgstr ""
-"多くのコマンドは動作させる前に、何かを C</> にマウントする必要があります。"
 
 #. type: textblock
 #: ../fish/guestfish.pod:315
@@ -40937,14 +40635,10 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish.pod:1099
-#, fuzzy
-#| msgid "Create a 32MB disk with a VFAT-formatted partition, and mount it:"
 msgid ""
 "Create a 100MB disk with an ext4-formatted partition, called F<test1.img> in "
 "the current directory:"
 msgstr ""
-"VFAT フォーマットのパーティションを持つ 32MB ディスクを作成して、マウントしま"
-"す:"
 
 #. type: verbatim
 #: ../fish/guestfish.pod:1102
@@ -41066,11 +40760,8 @@ msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish.pod:1141
-#, fuzzy
-#| msgid "Show disk usage for a disk image file called C<test.img>:"
 msgid "Add the local disk image (or device) called F<disk.img>."
 msgstr ""
-"C<test.img> というディスクイメージファイルのディスク使用量を表示します:"
 
 #. type: =head2
 #: ../fish/guestfish.pod:1143
@@ -42782,16 +42473,10 @@ msgstr "B<--lvm=/dev/I<VG>/I<LV>>"
 
 #. type: textblock
 #: ../format/virt-format.pod:121
-#, fuzzy
-#| msgid ""
-#| "Create a Linux LVM2 logical volume called C</dev/I<VG>/I<LV>>.  You can "
-#| "change the name of the volume group and logical volume."
 msgid ""
 "Create a Linux LVM2 logical volume called F</dev/I<VG>/I<LV>>.  You can "
 "change the name of the volume group and logical volume."
 msgstr ""
-"C</dev/I<VG>/I<LV>> という Linux LVM2 論理ボリュームを作成します。ボリューム"
-"グループおよび論理ボリュームの名前を変更できます。"
 
 #. type: =item
 #: ../format/virt-format.pod:124
@@ -42800,13 +42485,9 @@ msgstr "B<--lvm>"
 
 #. type: textblock
 #: ../format/virt-format.pod:126
-#, fuzzy
-#| msgid ""
-#| "Create a Linux LVM2 logical volume with the default name (C</dev/VG/LV>)."
 msgid ""
 "Create a Linux LVM2 logical volume with the default name (F</dev/VG/LV>)."
 msgstr ""
-"初期名 (C</dev/VG/LV>) を用いて Linux LVM2 論理ボリュームを作成します。"
 
 #. type: =item
 #: ../format/virt-format.pod:129
@@ -43379,12 +43060,10 @@ msgstr ""
 
 #. type: textblock
 #: ../fuse/guestmount.pod:269
-#, fuzzy
-#| msgid "If the mountpoint is omitted, it defaults to C</>."
 msgid ""
 "If the mountpoint is omitted, it defaults to F</>.  You have to mount "
 "something on F</>."
-msgstr "マウントポイントが省略された場合、標準で C</> になります。"
+msgstr ""
 
 #. type: =item
 #: ../fuse/guestmount.pod:287
@@ -43844,29 +43523,19 @@ msgstr ""
 
 #. type: verbatim
 #: ../get-kernel/virt-get-kernel.pod:7
-#, fuzzy, no-wrap
-#| msgid ""
-#| " virt-rescue [--options] -d domname\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " virt-get-kernel [--options] -d domname\n"
 "\n"
 msgstr ""
-" virt-rescue [--options] -d domname\n"
-"\n"
 
 #. type: verbatim
 #: ../get-kernel/virt-get-kernel.pod:9
-#, fuzzy, no-wrap
-#| msgid ""
-#| " virt-alignment-scan [--options] -a disk.img [-a disk.img ...]\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " virt-get-kernel [--options] -a disk.img\n"
 "\n"
 msgstr ""
-" virt-alignment-scan [--options] -a disk.img [-a disk.img ...]\n"
-"\n"
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:13
@@ -43884,39 +43553,21 @@ msgstr ""
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:68
-#, fuzzy
-#| msgid ""
-#| "The default for the I<-a> option is to auto-detect the format of the disk "
-#| "image.  Using this forces the disk format for I<-a> options which follow "
-#| "on the command line.  Using I<--format> with no argument switches back to "
-#| "auto-detection for subsequent I<-a> options."
 msgid ""
 "The default for the I<-a> option is to auto-detect the format of the disk "
 "image.  Using this forces the disk format for the I<-a> option on the "
 "command line."
 msgstr ""
-"I<-a> オプションは標準状態でディスクイメージの形式を自動検知します。 これを使"
-"用することにより、コマンドラインで後続の I<-a> オプションのディスク形式を強制"
-"的に指定できます。 引数なしで I<--format> を使用することにより、 後続の I<-"
-"a> オプションに対して自動検知に戻せます。"
 
 #. type: =item
 #: ../get-kernel/virt-get-kernel.pod:82
-#, fuzzy
-#| msgid ""
-#| " ll directory\n"
-#| "\n"
 msgid "B<-o> directory"
 msgstr ""
-" ll directory\n"
-"\n"
 
 #. type: =item
 #: ../get-kernel/virt-get-kernel.pod:84
-#, fuzzy
-#| msgid "B<--output-format> raw"
 msgid "B<--output> directory"
-msgstr "B<--output-format> raw"
+msgstr ""
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:86
@@ -43951,24 +43602,18 @@ msgstr ""
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:100
-#, fuzzy
-#| msgid "See also I<--long>."
 msgid "See also I<--unversioned-names>."
-msgstr "I<--long> 参照。"
+msgstr ""
 
 #. type: =item
 #: ../get-kernel/virt-get-kernel.pod:102
-#, fuzzy
-#| msgid "B<--version>"
 msgid "B<--unversioned-names>"
-msgstr "B<--version>"
+msgstr ""
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:104
-#, fuzzy
-#| msgid "This sets the ext2 file generation of a file."
 msgid "This option affects the destination file name of extracted files."
-msgstr "これはファイルの ext2 ファイル世代を設定します。"
+msgstr ""
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:106
@@ -43981,26 +43626,16 @@ msgstr ""
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:111
-#, fuzzy
-#| msgid "See also I<--long>."
 msgid "See also I<--prefix>."
-msgstr "I<--long> 参照。"
+msgstr ""
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:133
-#, fuzzy
-#| msgid ""
-#| "The I<--machine-readable> option can be used to make the output more "
-#| "machine friendly, which is useful when calling virt-resize from other "
-#| "programs, GUIs etc."
 msgid ""
 "The I<--machine-readable> option can be used to make the output more machine "
 "friendly, which is useful when calling virt-get-kernel from other programs, "
 "GUIs etc."
 msgstr ""
-"I<--machine-readable> オプションはよりマシンに易しい出力を作成するために使用"
-"できます。これは他のプログラムや GUI などから virt-resize を呼び出すときに有"
-"用です。"
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:137
@@ -44011,42 +43646,24 @@ msgstr ""
 
 #. type: verbatim
 #: ../get-kernel/virt-get-kernel.pod:140
-#, fuzzy, no-wrap
-#| msgid ""
-#| " $ virt-sparsify --machine-readable\n"
-#| " virt-sparsify\n"
-#| " ntfs\n"
-#| " btrfs\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " $ virt-get-kernel --machine-readable\n"
 " virt-get-kernel\n"
 "\n"
 msgstr ""
-" $ virt-sparsify --machine-readable\n"
-" virt-sparsify\n"
-" ntfs\n"
-" btrfs\n"
-"\n"
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:158
-#, fuzzy
-#| msgid ""
-#| "L<guestfs(3)>, L<guestfish(1)>, L<guestfs-examples(3)>, L<http://"
-#| "libguestfs.org/>."
 msgid ""
 "L<guestfs(3)>, L<guestfish(1)>, L<guestmount(1)>, L<virt-copy-out(1)>, "
 "L<http://libguestfs.org/>."
 msgstr ""
-"L<guestfs(3)>, L<guestfish(1)>, L<guestfs-examples(3)>, L<http://libguestfs."
-"org/>."
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:170
-#, fuzzy
 msgid "Copyright (C) 2013-2015 Red Hat Inc."
-msgstr "Copyright (C) 2010-2012 Red Hat Inc."
+msgstr ""
 
 #. type: textblock
 #: ../golang/examples/guestfs-golang.pod:3
@@ -53225,10 +52842,8 @@ msgstr ""
 
 #. type: =item
 #: ../java/examples/guestfs-java.pod:115
-#, fuzzy
-#| msgid "guestfs_xattr"
 msgid "F<libguestfs.jar>"
-msgstr "guestfs_xattr"
+msgstr ""
 
 #. type: =item
 #: ../java/examples/guestfs-java.pod:117
@@ -53246,10 +52861,8 @@ msgstr ""
 
 #. type: =item
 #: ../java/examples/guestfs-java.pod:124
-#, fuzzy
-#| msgid "guestfs_is_fifo"
 msgid "F<libguestfs_jni.so>"
-msgstr "guestfs_is_fifo"
+msgstr ""
 
 #. type: textblock
 #: ../java/examples/guestfs-java.pod:126
@@ -53261,14 +52874,8 @@ msgstr ""
 
 #. type: =item
 #: ../java/examples/guestfs-java.pod:130
-#, fuzzy
-#| msgid ""
-#| " libguestfs-test-tool\n"
-#| "\n"
 msgid "F<libguestfs.so>"
 msgstr ""
-" libguestfs-test-tool\n"
-"\n"
 
 #. type: textblock
 #: ../java/examples/guestfs-java.pod:132
@@ -55743,10 +55350,8 @@ msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v.pod:541
-#, fuzzy
-#| msgid "C<name>"
 msgid "F<name>"
-msgstr "C<name>"
+msgstr ""
 
 #. type: textblock
 #: ../p2v/virt-p2v.pod:543 ../p2v/virt-p2v.pod:549 ../p2v/virt-p2v.pod:568
@@ -55760,10 +55365,8 @@ msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v.pod:547
-#, fuzzy
-#| msgid "B<--physical-volumes>"
 msgid "F<physical.xml>"
-msgstr "B<--physical-volumes>"
+msgstr ""
 
 #. type: textblock
 #: ../p2v/virt-p2v.pod:551
@@ -55782,10 +55385,8 @@ msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v.pod:559
-#, fuzzy
-#| msgid "statvfs"
 msgid "F<status>"
-msgstr "statvfs"
+msgstr ""
 
 #. type: textblock
 #: ../p2v/virt-p2v.pod:561
@@ -55801,10 +55402,8 @@ msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v.pod:566
-#, fuzzy
-#| msgid "time"
 msgid "F<time>"
-msgstr "time"
+msgstr ""
 
 #. type: textblock
 #: ../p2v/virt-p2v.pod:570
@@ -57343,16 +56942,10 @@ msgstr "論理パーティション"
 
 #. type: textblock
 #: ../resize/virt-resize.pod:247
-#, fuzzy
-#| msgid ""
-#| "Logical partitions (a.k.a. C</dev/sda5+> on disks using DOS partition "
-#| "tables) cannot be resized."
 msgid ""
 "Logical partitions (a.k.a. F</dev/sda5+> on disks using DOS partition "
 "tables) cannot be resized."
 msgstr ""
-"論理パーティション（DOS パーティションテーブルを使用しているディスクにおいて "
-"C</dev/sda5+> とも言う）は容量変更できません。"
 
 #. type: textblock
 #: ../resize/virt-resize.pod:250
@@ -58282,10 +57875,8 @@ msgstr ""
 
 #. type: textblock
 #: ../resize/virt-resize.pod:747
-#, fuzzy
-#| msgid "Expected results"
 msgid "Check the results of:"
-msgstr "期待される結果"
+msgstr ""
 
 #. type: verbatim
 #: ../resize/virt-resize.pod:749
@@ -59046,10 +58637,8 @@ msgstr ""
 
 #. type: textblock
 #: ../sparsify/virt-sparsify.pod:411
-#, fuzzy
-#| msgid "This defaults to C</tmp>."
 msgid "This defaults to F</tmp>."
-msgstr "この初期値は C</tmp> です。"
+msgstr ""
 
 #. type: textblock
 #: ../sparsify/virt-sparsify.pod:413
@@ -61822,20 +61411,12 @@ msgstr ""
 
 #. type: =head2
 #: ../src/guestfs-actions.pod:1869
-#, fuzzy
 msgid "guestfs_btrfs_replace"
-msgstr "guestfs_btrfs_filesystem_balance"
+msgstr ""
 
 #. type: verbatim
 #: ../src/guestfs-actions.pod:1871
-#, fuzzy, no-wrap
-#| msgid ""
-#| " int\n"
-#| " guestfs_mount_options (guestfs_h *g,\n"
-#| "                        const char *options,\n"
-#| "                        const char *mountable,\n"
-#| "                        const char *mountpoint);\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " int\n"
 " guestfs_btrfs_replace (guestfs_h *g,\n"
@@ -61844,19 +61425,11 @@ msgid ""
 "                        const char *mntpoint);\n"
 "\n"
 msgstr ""
-" int\n"
-" guestfs_mount_options (guestfs_h *g,\n"
-"                        const char *options,\n"
-"                        const char *mountable,\n"
-"                        const char *mountpoint);\n"
-"\n"
 
 #. type: textblock
 #: ../src/guestfs-actions.pod:1887
-#, fuzzy
-#| msgid "(Added in 1.9.8)"
 msgid "(Added in 1.29.48)"
-msgstr "(1.9.8 において追加)"
+msgstr ""
 
 #. type: =head2
 #: ../src/guestfs-actions.pod:1889
@@ -62475,10 +62048,8 @@ msgstr ""
 
 #. type: textblock
 #: ../src/guestfs-actions.pod:2248
-#, fuzzy
 msgid "Converted to F</dev/VG/LV> form using C<guestfs_lvm_canonical_lv_name>."
 msgstr ""
-"C<guestfs_lvm_canonical_lvm_name> を使用して C</dev/VG/LV> 形式に変換します。"
 
 #. type: textblock
 #: ../src/guestfs-actions.pod:2257 ../src/guestfs-actions.pod:3272
@@ -63197,13 +62768,7 @@ msgstr ""
 
 #. type: verbatim
 #: ../src/guestfs-actions.pod:2810
-#, fuzzy, no-wrap
-#| msgid ""
-#| " GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,\n"
-#| " GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET, int64_t destoffset,\n"
-#| " GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE, int64_t size,\n"
-#| " GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE, int sparse,\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,\n"
 " GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET, int64_t destoffset,\n"
@@ -63212,11 +62777,6 @@ msgid ""
 " GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND, int append,\n"
 "\n"
 msgstr ""
-" GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,\n"
-" GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET, int64_t destoffset,\n"
-" GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE, int64_t size,\n"
-" GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE, int sparse,\n"
-"\n"
 
 #. type: textblock
 #: ../src/guestfs-actions.pod:2816
@@ -63335,13 +62895,7 @@ msgstr ""
 
 #. type: verbatim
 #: ../src/guestfs-actions.pod:2892
-#, fuzzy, no-wrap
-#| msgid ""
-#| " GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET, int64_t srcoffset,\n"
-#| " GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET, int64_t destoffset,\n"
-#| " GUESTFS_COPY_DEVICE_TO_FILE_SIZE, int64_t size,\n"
-#| " GUESTFS_COPY_DEVICE_TO_FILE_SPARSE, int sparse,\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET, int64_t srcoffset,\n"
 " GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET, int64_t destoffset,\n"
@@ -63350,11 +62904,6 @@ msgid ""
 " GUESTFS_COPY_DEVICE_TO_FILE_APPEND, int append,\n"
 "\n"
 msgstr ""
-" GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET, int64_t srcoffset,\n"
-" GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET, int64_t destoffset,\n"
-" GUESTFS_COPY_DEVICE_TO_FILE_SIZE, int64_t size,\n"
-" GUESTFS_COPY_DEVICE_TO_FILE_SPARSE, int sparse,\n"
-"\n"
 
 #. type: textblock
 #: ../src/guestfs-actions.pod:2898 ../src/guestfs-actions.pod:2953
@@ -63446,13 +62995,7 @@ msgstr ""
 
 #. type: verbatim
 #: ../src/guestfs-actions.pod:2947
-#, fuzzy, no-wrap
-#| msgid ""
-#| " GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,\n"
-#| " GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET, int64_t destoffset,\n"
-#| " GUESTFS_COPY_FILE_TO_DEVICE_SIZE, int64_t size,\n"
-#| " GUESTFS_COPY_FILE_TO_DEVICE_SPARSE, int sparse,\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,\n"
 " GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET, int64_t destoffset,\n"
@@ -63461,11 +63004,6 @@ msgid ""
 " GUESTFS_COPY_FILE_TO_DEVICE_APPEND, int append,\n"
 "\n"
 msgstr ""
-" GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,\n"
-" GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET, int64_t destoffset,\n"
-" GUESTFS_COPY_FILE_TO_DEVICE_SIZE, int64_t size,\n"
-" GUESTFS_COPY_FILE_TO_DEVICE_SPARSE, int sparse,\n"
-"\n"
 
 #. type: =head2
 #: ../src/guestfs-actions.pod:2965
@@ -63548,13 +63086,7 @@ msgstr ""
 
 #. type: verbatim
 #: ../src/guestfs-actions.pod:3002
-#, fuzzy, no-wrap
-#| msgid ""
-#| " GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET, int64_t srcoffset,\n"
-#| " GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET, int64_t destoffset,\n"
-#| " GUESTFS_COPY_FILE_TO_FILE_SIZE, int64_t size,\n"
-#| " GUESTFS_COPY_FILE_TO_FILE_SPARSE, int sparse,\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET, int64_t srcoffset,\n"
 " GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET, int64_t destoffset,\n"
@@ -63563,11 +63095,6 @@ msgid ""
 " GUESTFS_COPY_FILE_TO_FILE_APPEND, int append,\n"
 "\n"
 msgstr ""
-" GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET, int64_t srcoffset,\n"
-" GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET, int64_t destoffset,\n"
-" GUESTFS_COPY_FILE_TO_FILE_SIZE, int64_t size,\n"
-" GUESTFS_COPY_FILE_TO_FILE_SPARSE, int sparse,\n"
-"\n"
 
 #. type: textblock
 #: ../src/guestfs-actions.pod:3011
@@ -80842,13 +80369,6 @@ msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:165
-#, fuzzy
-#| msgid ""
-#| "where C</dev/sda1> means literally the first partition (C<1>) of the "
-#| "first disk image that we added (C</dev/sda>).  If the disk contains Linux "
-#| "LVM2 logical volumes you could refer to those instead (eg. C</dev/VG/"
-#| "LV>).  Note that these are libguestfs virtual devices, and are nothing to "
-#| "do with host devices."
 msgid ""
 "where F</dev/sda1> means literally the first partition (C<1>) of the first "
 "disk image that we added (F</dev/sda>).  If the disk contains Linux LVM2 "
@@ -80856,11 +80376,6 @@ msgid ""
 "that these are libguestfs virtual devices, and are nothing to do with host "
 "devices."
 msgstr ""
-"ここで C</dev/sda1> は文字どおり追加した最初のディスクイメージ (C</dev/sda>) "
-"の最初のパーティション (C<1>) を意味します。ディスクが Linux LVM2 論理ボ"
-"リュームを含んでいると、代わりにそれら (例: C</dev/VG/LV>) を参照できます。こ"
-"れらは libguestfs 仮想デバイスであり、ホストデバイスには何もしないことに注意"
-"してください。"
 
 #. type: textblock
 #: ../src/guestfs.pod:171
@@ -81271,19 +80786,11 @@ msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:331
-#, fuzzy
-#| msgid ""
-#| "The destination (C</dev/VG/Copy>) must be at least as large as the source "
-#| "(C</dev/VG/Original>).  To copy less than the whole source device, use "
-#| "the optional C<size> parameter:"
 msgid ""
 "The destination (F</dev/VG/Copy>) must be at least as large as the source "
 "(F</dev/VG/Original>).  To copy less than the whole source device, use the "
 "optional C<size> parameter:"
 msgstr ""
-"The destination (C</dev/VG/Copy>) must be at least as large as the source "
-"(C</dev/VG/Original>).  To copy less than the whole source device, use the "
-"optional C<size> parameter:"
 
 #. type: verbatim
 #: ../src/guestfs.pod:335
@@ -82779,16 +82286,10 @@ msgstr "B<C#>"
 
 #. type: textblock
 #: ../src/guestfs.pod:1115
-#, fuzzy
-#| msgid ""
-#| "The C# bindings are highly experimental.  Please read the warnings at the "
-#| "top of C<csharp/Libguestfs.cs>."
 msgid ""
 "The C# bindings are highly experimental.  Please read the warnings at the "
 "top of F<csharp/Libguestfs.cs>."
 msgstr ""
-"C# バインディングは非常に実験的です。 C<csharp/Libguestfs.cs> の一番最初にあ"
-"る警告を参照してください。"
 
 #. type: =item
 #: ../src/guestfs.pod:1118
@@ -83216,16 +82717,10 @@ msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:1336
-#, fuzzy
-#| msgid ""
-#| "By default it looks for these in the directory C<$libdir/guestfs> (eg. C</"
-#| "usr/local/lib/guestfs> or C</usr/lib64/guestfs>)."
 msgid ""
 "By default it looks for these in the directory C<$libdir/guestfs> (eg. F</"
 "usr/local/lib/guestfs> or F</usr/lib64/guestfs>)."
 msgstr ""
-"デフォルトで、ディレクトリー C<$libdir/guestfs> にあるこれらに対して見えます "
-"(例: C</usr/local/lib/guestfs> または C</usr/lib64/guestfs>)。"
 
 #. type: textblock
 #: ../src/guestfs.pod:1339
@@ -84067,10 +83562,8 @@ msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:1750
-#, fuzzy
-#| msgid "Does the string begin with C</dev/sd>?"
 msgid "Does the string begin with F</dev/sd>?"
-msgstr "文字列が C</dev/sd> で始まっていますか？"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:1754
@@ -84083,17 +83576,13 @@ msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:1759
-#, fuzzy
-#| msgid "Replace initial C</dev/sd> string with C</dev/hd>."
 msgid "Replace initial F</dev/sd> string with F</dev/hd>."
-msgstr "最初の C</dev/sd> 文字列を C</dev/hd> で置き換えます。"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:1761
-#, fuzzy
-#| msgid "For example, change C</dev/sda2> to C</dev/hda2>."
 msgid "For example, change F</dev/sda2> to F</dev/hda2>."
-msgstr "たとえば、 C</dev/sda2> を C</dev/hda2> に変更します。"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:1763
@@ -84102,10 +83591,8 @@ msgstr "名前付きデバイスが存在すれば、それを使用します。
 
 #. type: textblock
 #: ../src/guestfs.pod:1767
-#, fuzzy
-#| msgid "Replace initial C</dev/sd> string with C</dev/vd>."
 msgid "Replace initial F</dev/sd> string with F</dev/vd>."
-msgstr "最初の C</dev/sd> 文字列を C</dev/vd> で置き換えます。"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:1769
@@ -88413,10 +87900,8 @@ msgstr ""
 
 #. type: =head2
 #: ../src/guestfs.pod:3932
-#, fuzzy
-#| msgid "C<local*> FILES"
 msgid "F<local*> FILES"
-msgstr "C<local*> ファイル"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:3934
@@ -88617,10 +88102,8 @@ msgstr "テスト環境は 4 個のブロックデバイスを持ちます:"
 
 #. type: =item
 #: ../src/guestfs.pod:4036
-#, fuzzy
-#| msgid "C</dev/sda> 500MB"
 msgid "F</dev/sda> 500MB"
-msgstr "C</dev/sda> 500MB"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4038
@@ -88629,30 +88112,20 @@ msgstr "テスト用の一般的なブロックデバイス。"
 
 #. type: =item
 #: ../src/guestfs.pod:4040
-#, fuzzy
-#| msgid "C</dev/sda> 500MB"
 msgid "F</dev/sdb> 500MB"
-msgstr "C</dev/sda> 500MB"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4042
-#, fuzzy
-#| msgid ""
-#| "C</dev/sdb1> is an ext2 filesystem used for testing filesystem write "
-#| "operations."
 msgid ""
 "F</dev/sdb1> is an ext2 filesystem used for testing filesystem write "
 "operations."
 msgstr ""
-"C</dev/sdb1> はファイルシステムの書き込み操作をテストするために使用される "
-"ext2 ファイルシステムです。"
 
 #. type: =item
 #: ../src/guestfs.pod:4045
-#, fuzzy
-#| msgid "C</dev/sdc> 10MB"
 msgid "F</dev/sdc> 10MB"
-msgstr "C</dev/sdc> 10MB"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4047
@@ -88662,17 +88135,13 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4049
-#, fuzzy
-#| msgid "C</dev/sdd>"
 msgid "F</dev/sdd>"
-msgstr "C</dev/sdd>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4051
-#, fuzzy
-#| msgid "ISO with fixed content (see C<images/test.iso>)."
 msgid "ISO with fixed content (see F<images/test.iso>)."
-msgstr "固定的な内容を持つ ISO (C<images/test.iso> 参照)。"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4055
@@ -88760,16 +88229,10 @@ msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4088
-#, fuzzy
-#| msgid ""
-#| "See C<tests/c-api/tests.c> for more details of how these environment "
-#| "variables work."
 msgid ""
 "See F<tests/c-api/tests.c> for more details of how these environment "
 "variables work."
 msgstr ""
-"これらの環境変数がどのように機能するかに関する詳細は C<tests/c-api/tests.c> "
-"を参照してください。"
 
 #. type: =head2
 #: ../src/guestfs.pod:4091
@@ -89354,10 +88817,8 @@ msgstr "ソースコードのサブディレクトリー"
 
 #. type: =item
 #: ../src/guestfs.pod:4351
-#, fuzzy
-#| msgid "C<align>"
 msgid "F<align>"
-msgstr "C<align>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4353
@@ -89366,10 +88827,8 @@ msgstr "L<virt-alignment-scan(1)> のコマンドおよびドキュメント。"
 
 #. type: =item
 #: ../src/guestfs.pod:4355
-#, fuzzy
-#| msgid "C<appliance>"
 msgid "F<appliance>"
-msgstr "C<appliance>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4357
@@ -89388,10 +88847,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4363
-#, fuzzy
-#| msgid "C<build-aux>"
 msgid "F<build-aux>"
-msgstr "C<build-aux>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4365
@@ -89400,10 +88857,8 @@ msgstr "autotools により使用されるさまざまなビルドスクリプ�
 
 #. type: =item
 #: ../src/guestfs.pod:4367
-#, fuzzy
-#| msgid "C<builder>"
 msgid "F<builder>"
-msgstr "C<builder>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4369
@@ -89412,10 +88867,8 @@ msgstr "L<virt-builder(1)> コマンドおよびドキュメント。"
 
 #. type: =item
 #: ../src/guestfs.pod:4371
-#, fuzzy
-#| msgid "C<cat>"
 msgid "F<cat>"
-msgstr "C<cat>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4373
@@ -89426,10 +88879,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4376
-#, fuzzy
-#| msgid "C<contrib>"
 msgid "F<contrib>"
-msgstr "C<contrib>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4378
@@ -89438,10 +88889,8 @@ msgstr "外部の貢献、実験的な部分です。"
 
 #. type: =item
 #: ../src/guestfs.pod:4380
-#, fuzzy
-#| msgid "C<sectorsize>"
 msgid "F<customize>"
-msgstr "C<sectorsize>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4382
@@ -89450,10 +88899,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4384
-#, fuzzy
-#| msgid "C<daemon>"
 msgid "F<daemon>"
-msgstr "C<daemon>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4386
@@ -89464,10 +88911,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4389
-#, fuzzy
-#| msgid "C<df>"
 msgid "F<df>"
-msgstr "C<df>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4391
@@ -89486,10 +88931,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4397
-#, fuzzy
-#| msgid "C<edit>"
 msgid "F<edit>"
-msgstr "C<edit>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4399
@@ -89498,10 +88941,8 @@ msgstr "L<virt-edit(1)> のコマンドおよびドキュメント。"
 
 #. type: =item
 #: ../src/guestfs.pod:4401
-#, fuzzy
-#| msgid "C<examples>"
 msgid "F<examples>"
-msgstr "C<examples>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4403
@@ -89510,10 +88951,8 @@ msgstr "C API のコード例。"
 
 #. type: =item
 #: ../src/guestfs.pod:4405
-#, fuzzy
-#| msgid "C<fish>"
 msgid "F<fish>"
-msgstr "C<fish>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4407
@@ -89528,10 +88967,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4411
-#, fuzzy
-#| msgid "C<format>"
 msgid "F<format>"
-msgstr "C<format>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4413
@@ -89540,10 +88977,8 @@ msgstr "L<virt-format(1)> のコマンドおよびドキュメント。"
 
 #. type: =item
 #: ../src/guestfs.pod:4415
-#, fuzzy
-#| msgid "C<fuse>"
 msgid "F<fuse>"
-msgstr "C<fuse>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4417
@@ -89555,10 +88990,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4419
-#, fuzzy
-#| msgid "C<generator>"
 msgid "F<generator>"
-msgstr "C<generator>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4421
@@ -89574,17 +89007,13 @@ msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4426
-#, fuzzy
-#| msgid "L<virt-edit(1)> command and documentation."
 msgid "L<virt-get-kernel(1)> command and documentation."
-msgstr "L<virt-edit(1)> のコマンドおよびドキュメント。"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4428
-#, fuzzy
-#| msgid "C<gnulib>"
 msgid "F<gnulib>"
-msgstr "C<gnulib>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4430
@@ -89597,10 +89026,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4433
-#, fuzzy
-#| msgid "C<html>"
 msgid "F<html>"
-msgstr "C<html>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4435
@@ -89609,10 +89036,8 @@ msgstr "生成された HTML マニュアルページ。"
 
 #. type: =item
 #: ../src/guestfs.pod:4437
-#, fuzzy
-#| msgid "C<inspector>"
 msgid "F<inspector>"
-msgstr "C<inspector>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4439
@@ -89621,10 +89046,8 @@ msgstr "L<virt-inspector(1)>, 仮想マシンイメージ検査ツール。"
 
 #. type: =item
 #: ../src/guestfs.pod:4441
-#, fuzzy
-#| msgid "C<logo>"
 msgid "F<logo>"
-msgstr "C<logo>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4443
@@ -89633,10 +89056,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4445
-#, fuzzy
-#| msgid "C<m4>"
 msgid "F<m4>"
-msgstr "C<m4>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4447
@@ -89655,10 +89076,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4453
-#, fuzzy
-#| msgid "C<mllib>"
 msgid "F<mllib>"
-msgstr "C<mllib>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4455
@@ -89681,10 +89100,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4463
-#, fuzzy
-#| msgid "C<po>"
 msgid "F<po>"
-msgstr "C<po>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4465
@@ -89693,10 +89110,8 @@ msgstr "シンプルな gettext 文字列の翻訳。"
 
 #. type: =item
 #: ../src/guestfs.pod:4467
-#, fuzzy
-#| msgid "C<po-docs>"
 msgid "F<po-docs>"
-msgstr "C<po-docs>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4469
@@ -89708,10 +89123,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4473
-#, fuzzy
-#| msgid "C<rescue>"
 msgid "F<rescue>"
-msgstr "C<rescue>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4475
@@ -89720,10 +89133,8 @@ msgstr "L<virt-rescue(1)> のコマンドおよびドキュメント。"
 
 #. type: =item
 #: ../src/guestfs.pod:4477
-#, fuzzy
-#| msgid "C<resize>"
 msgid "F<resize>"
-msgstr "C<resize>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4479
@@ -89732,10 +89143,8 @@ msgstr "L<virt-resize(1)> のコマンドおよびドキュメント。"
 
 #. type: =item
 #: ../src/guestfs.pod:4481
-#, fuzzy
-#| msgid "C<sparsify>"
 msgid "F<sparsify>"
-msgstr "C<sparsify>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4483
@@ -89744,10 +89153,8 @@ msgstr "L<virt-sparsify(1)> のコマンドおよびドキュメント。"
 
 #. type: =item
 #: ../src/guestfs.pod:4485
-#, fuzzy
-#| msgid "C<src>"
 msgid "F<src>"
-msgstr "C<src>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4487
@@ -89756,10 +89163,8 @@ msgstr "C ライブラリーのソースコード。"
 
 #. type: =item
 #: ../src/guestfs.pod:4489
-#, fuzzy
-#| msgid "C<sysprep>"
 msgid "F<sysprep>"
-msgstr "C<sysprep>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4491
@@ -89768,10 +89173,8 @@ msgstr "L<virt-sysprep(1)> コマンドおよびドキュメント。"
 
 #. type: =item
 #: ../src/guestfs.pod:4493
-#, fuzzy
-#| msgid "C<tests>"
 msgid "F<tests>"
-msgstr "C<tests>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4495
@@ -89780,10 +89183,8 @@ msgstr "テストします。"
 
 #. type: =item
 #: ../src/guestfs.pod:4497
-#, fuzzy
-#| msgid "C<test-tool>"
 msgid "F<test-tool>"
-msgstr "C<test-tool>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4499
@@ -89796,34 +89197,21 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4502
-#, fuzzy
-#| msgid "C<tmp>"
 msgid "F<tmp>"
-msgstr "C<tmp>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4504
-#, fuzzy
-#| msgid ""
-#| "Used for temporary files when running the tests (instead of C</tmp> "
-#| "etc).  The reason is so that you can run multiple parallel tests of "
-#| "libguestfs without having one set of tests overwriting the appliance "
-#| "created by another."
 msgid ""
 "Used for temporary files when running the tests (instead of F</tmp> etc).  "
 "The reason is so that you can run multiple parallel tests of libguestfs "
 "without having one set of tests overwriting the appliance created by another."
 msgstr ""
-"テストを実行するときに一時ファイルのために使用されます (C</tmp> などの代わ"
-"り)。この理由は、一連のテストが他者により作成されたアプライアンスを上書きする"
-"ことなく、複数の libguestfs 並行テストを実行できるようにするためです。"
 
 #. type: =item
 #: ../src/guestfs.pod:4509
-#, fuzzy
-#| msgid "C<tools>"
 msgid "F<tools>"
-msgstr "C<tools>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4511
@@ -89845,87 +89233,63 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4517
-#, fuzzy
-#| msgid "C<csharp>"
 msgid "F<csharp>"
-msgstr "C<csharp>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4519
-#, fuzzy
-#| msgid "C<erlang>"
 msgid "F<erlang>"
-msgstr "C<erlang>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4521
-#, fuzzy
-#| msgid "C<gobject>"
 msgid "F<gobject>"
-msgstr "C<gobject>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4523
-#, fuzzy
-#| msgid "B<Erlang>"
 msgid "F<golang>"
-msgstr "B<Erlang>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4525
-#, fuzzy
-#| msgid "C<haskell>"
 msgid "F<haskell>"
-msgstr "C<haskell>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4527
-#, fuzzy
-#| msgid "C<java>"
 msgid "F<java>"
-msgstr "C<java>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4529
-#, fuzzy
-#| msgid "C<lua>"
 msgid "F<lua>"
-msgstr "C<lua>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4531
-#, fuzzy
-#| msgid "C<ocaml>"
 msgid "F<ocaml>"
-msgstr "C<ocaml>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4533
-#, fuzzy
-#| msgid "C<php>"
 msgid "F<php>"
-msgstr "C<php>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4535
-#, fuzzy
-#| msgid "C<perl>"
 msgid "F<perl>"
-msgstr "C<perl>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4537
-#, fuzzy
-#| msgid "C<python>"
 msgid "F<python>"
-msgstr "C<python>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4539
-#, fuzzy
-#| msgid "C<ruby>"
 msgid "F<ruby>"
-msgstr "C<ruby>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4541
@@ -89953,10 +89317,8 @@ msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4560
-#, fuzzy
-#| msgid "Finalize C<guestfs-release-notes.pod>"
 msgid "Finalize F<guestfs-release-notes.pod>"
-msgstr "C<guestfs-release-notes.pod> をファイナライズします。"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4564
@@ -89986,10 +89348,8 @@ msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4574
-#, fuzzy
-#| msgid "which is a wrapper to pull the latest translated C<*.po> files."
 msgid "which is a wrapper to pull the latest translated F<*.po> files."
-msgstr "これは最新の翻訳された C<*.po> ファイルを取り出すためのラッパーです。"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4578
@@ -90147,19 +89507,11 @@ msgstr "一つの仮想ディスクが libguestfs により内部的に使用さ
 
 #. type: textblock
 #: ../src/guestfs.pod:4656
-#, fuzzy
-#| msgid ""
-#| "Before libguestfs 1.19.7, disk names had to be a single character (eg. C</"
-#| "dev/sda> through C</dev/sdz>), and since one disk is reserved, that meant "
-#| "the limit was 25.  This has been fixed in more recent versions."
 msgid ""
 "Before libguestfs 1.19.7, disk names had to be a single character (eg. F</"
 "dev/sda> through F</dev/sdz>), and since one disk is reserved, that meant "
 "the limit was 25.  This has been fixed in more recent versions."
 msgstr ""
-"libguestfs 1.19.7 以前、ディスク名は 1 文字である必要がありました (例: C</"
-"dev/sda> から C</dev/sdz>)。そして、一つのディスクが予約されるので、その制限"
-"は 25 でした。これはそれ以降のバージョンにおいて修正されました。"
 
 #. type: textblock
 #: ../src/guestfs.pod:4661
@@ -90181,16 +89533,10 @@ msgstr "virtio はディスクあたりの最大パーティション数を B<15
 
 #. type: textblock
 #: ../src/guestfs.pod:4668
-#, fuzzy
-#| msgid ""
-#| "This is because it reserves 4 bits for the minor device number (thus C</"
-#| "dev/vda>, and C</dev/vda1> through C</dev/vda15>)."
 msgid ""
 "This is because it reserves 4 bits for the minor device number (thus F</dev/"
 "vda>, and F</dev/vda1> through F</dev/vda15>)."
 msgstr ""
-"これはマイナーデバイス番号のために 4 ビットを予約しているからです（つまり C</"
-"dev/vda>、および C</dev/vda1> から C</dev/vda15> まで）。"
 
 #. type: textblock
 #: ../src/guestfs.pod:4671
@@ -91703,11 +91049,8 @@ msgstr ""
 
 #. type: textblock
 #: ../sysprep/virt-sysprep.pod:212
-#, fuzzy
-#| msgid "will do the same, plus mount C</var> with C<rw,nodiratime>."
 msgid "will do the same, plus mount F</var> with C<rw,nodiratime>."
 msgstr ""
-"これは追加で C</var> を C<rw,nodiratime> でマウントすることと同じです。"
 
 #. type: textblock
 #: ../sysprep/virt-sysprep.pod:238

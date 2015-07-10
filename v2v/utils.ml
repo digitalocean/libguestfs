@@ -59,6 +59,7 @@ let uri_quote str =
   String.concat "" (List.rev !xs)
 
 external drive_name : int -> string = "v2v_utils_drive_name"
+external drive_index : string -> int = "v2v_utils_drive_index"
 
 (* Map guest architecture found by inspection to the architecture
  * that KVM must emulate.  Note for x86 we assume a 64 bit hypervisor.
@@ -131,14 +132,14 @@ type virtio_win_driver_file = {
   (* Original source of file (for debugging only). *)
   vwd_original_source : string;
 }
-and vwd_os_variant = Vwd_client | Vwd_server | Vwd_any_variant
+and vwd_os_variant = Vwd_client | Vwd_not_client | Vwd_any_variant
 
 let print_virtio_win_driver_file vwd =
   printf "%s [%d,%d,%s,%s,%s] from %s\n"
          vwd.vwd_filename
          vwd.vwd_os_major vwd.vwd_os_minor
          (match vwd.vwd_os_variant with
-          | Vwd_client -> "client" | Vwd_server -> "server"
+          | Vwd_client -> "client" | Vwd_not_client -> "not-client"
           | Vwd_any_variant -> "any")
          vwd.vwd_os_arch
          vwd.vwd_extension
@@ -176,9 +177,11 @@ let find_virtio_win_drivers virtio_win =
         let paths = List.filter (g#is_file ~followsymlinks:false) paths in
         List.map (
           fun path ->
-            let i = String.rindex path '/' in
-            let len = String.length path in
-            let basename = String.sub path (i+1) (len - (i+1)) in
+            let basename =
+              match last_part_of path '/' with
+              | Some x -> x
+              | None ->
+                error "v2v/find_virtio_win_drivers: missing '/' in %s" path in
             (path, sprintf "%s:%s" virtio_win path,
              basename,
              fun () -> g#read_file path)
@@ -199,9 +202,11 @@ let find_virtio_win_drivers virtio_win =
           let lc_basename = String.lowercase basename in
 
           let extension =
-            let i = String.rindex lc_basename '.' in
-            let len = String.length lc_basename in
-            String.sub lc_basename (i+1) (len - (i+1)) in
+            match last_part_of lc_basename '.' with
+            | Some x -> x
+            | None ->
+              error "v2v/find_virtio_win_drivers: missing '.' in %s"
+                lc_basename in
 
           (* Skip files without specific extensions. *)
           if extension <> "cat" && extension <> "inf" &&
@@ -227,19 +232,19 @@ let find_virtio_win_drivers virtio_win =
             else if pathelem "vista" then
               (6, 0, Vwd_client)
             else if pathelem "2k8" || pathelem "win2008" then
-              (6, 0, Vwd_server)
+              (6, 0, Vwd_not_client)
             else if pathelem "w7" || pathelem "win7" then
               (6, 1, Vwd_client)
-            else if pathelem "2k8r2" || pathelem "win2008" then
-              (6, 1, Vwd_server)
+            else if pathelem "2k8r2" || pathelem "win2008r2" then
+              (6, 1, Vwd_not_client)
             else if pathelem "w8" || pathelem "win8" then
               (6, 2, Vwd_client)
             else if pathelem "2k12" || pathelem "win2012" then
-              (6, 2, Vwd_server)
+              (6, 2, Vwd_not_client)
             else if pathelem "w8.1" || pathelem "win8.1" then
               (6, 3, Vwd_client)
             else if pathelem "2k12r2" || pathelem "win2012r2" then
-              (6, 3, Vwd_server)
+              (6, 3, Vwd_not_client)
             else if pathelem "w10" || pathelem "win10" then
               (10, 0, Vwd_client)
             else

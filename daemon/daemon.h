@@ -152,6 +152,8 @@ extern void udev_settle (void);
 
 extern int random_name (char *template);
 
+extern char *get_random_uuid (void);
+
 /* This just stops gcc from giving a warning about our custom printf
  * formatters %Q and %R.  See guestfs(3)/EXTENDING LIBGUESTFS for more
  * info about these.  In GCC 4.8.0 the warning is even harder to
@@ -262,6 +264,7 @@ extern int copy_xattrs (const char *src, const char *dest);
 /*-- in xfs.c --*/
 /* Documented in xfs_admin(8). */
 #define XFS_LABEL_MAX 12
+extern int xfs_set_uuid (const char *device, const char *uuid);
 
 /*-- debug-bmap.c --*/
 extern char *debug_bmap (const char *subcmd, size_t argc, char *const *const argv);
@@ -270,9 +273,13 @@ extern char *debug_bmap_device (const char *subcmd, size_t argc, char *const *co
 
 /*-- in btrfs.c --*/
 extern char *btrfs_get_label (const char *device);
+extern int btrfs_set_uuid (const char *device, const char *uuid);
 
 /*-- in ntfs.c --*/
 extern char *ntfs_get_label (const char *device);
+
+/*-- in swap.c --*/
+extern int swap_set_uuid (const char *device, const char *uuid);
 
 /* ordinary daemon functions use these to indicate errors
  * NB: you don't need to prefix the string with the current command,

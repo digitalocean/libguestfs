@@ -7,9 +7,9 @@
 # Luis Bazán <lbazan@fedoraproject.org>, 2011
 msgid ""
 msgstr ""
-"Project-Id-Version: libguestfs 1.29.46\n"
+"Project-Id-Version: libguestfs 1.29.48\n"
 "Report-Msgid-Bugs-To: libguestfs@redhat.com\n"
-"POT-Creation-Date: 2015-06-29 23:18+0100\n"
+"POT-Creation-Date: 2015-07-02 18:03+0100\n"
 "PO-Revision-Date: 2014-10-18 04:01-0400\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/libguestfs/"
@@ -40710,16 +40710,11 @@ msgstr ""
 
 #. type: verbatim
 #: ../get-kernel/virt-get-kernel.pod:9
-#, fuzzy, no-wrap
-#| msgid ""
-#| " virt-sparsify [--options] indisk outdisk\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " virt-get-kernel [--options] -a disk.img\n"
 "\n"
 msgstr ""
-" virt-sparsify [--options] indisk outdisk\n"
-"\n"
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:13
@@ -40786,10 +40781,8 @@ msgstr ""
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:100
-#, fuzzy
-#| msgid "See also I<--long>."
 msgid "See also I<--unversioned-names>."
-msgstr "Vea también I<--long>."
+msgstr ""
 
 #. type: =item
 #: ../get-kernel/virt-get-kernel.pod:102
@@ -40812,10 +40805,8 @@ msgstr ""
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:111
-#, fuzzy
-#| msgid "See also I<--long>."
 msgid "See also I<--prefix>."
-msgstr "Vea también I<--long>."
+msgstr ""
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:133
@@ -40834,23 +40825,12 @@ msgstr ""
 
 #. type: verbatim
 #: ../get-kernel/virt-get-kernel.pod:140
-#, fuzzy, no-wrap
-#| msgid ""
-#| " $ virt-sparsify --machine-readable\n"
-#| " virt-sparsify\n"
-#| " ntfs\n"
-#| " btrfs\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " $ virt-get-kernel --machine-readable\n"
 " virt-get-kernel\n"
 "\n"
 msgstr ""
-" $ virt-sparsify --machine-readable\n"
-" virt-sparsify\n"
-" ntfs\n"
-" btrfs\n"
-"\n"
 
 #. type: textblock
 #: ../get-kernel/virt-get-kernel.pod:158
@@ -52276,10 +52256,8 @@ msgstr ""
 
 #. type: =item
 #: ../p2v/virt-p2v.pod:541
-#, fuzzy
-#| msgid "C<name>"
 msgid "F<name>"
-msgstr "C<name>"
+msgstr ""
 
 #. type: textblock
 #: ../p2v/virt-p2v.pod:543 ../p2v/virt-p2v.pod:549 ../p2v/virt-p2v.pod:568
@@ -57740,21 +57718,12 @@ msgstr ""
 
 #. type: =head2
 #: ../src/guestfs-actions.pod:1869
-#, fuzzy
-#| msgid "guestfs_get_smp"
 msgid "guestfs_btrfs_replace"
-msgstr "guestfs_get_smp"
+msgstr ""
 
 #. type: verbatim
 #: ../src/guestfs-actions.pod:1871
-#, fuzzy, no-wrap
-#| msgid ""
-#| " int\n"
-#| " guestfs_copy_file_to_file (guestfs_h *g,\n"
-#| "                            const char *src,\n"
-#| "                            const char *dest,\n"
-#| "                            ...);\n"
-#| "\n"
+#, no-wrap
 msgid ""
 " int\n"
 " guestfs_btrfs_replace (guestfs_h *g,\n"
@@ -57763,19 +57732,11 @@ msgid ""
 "                        const char *mntpoint);\n"
 "\n"
 msgstr ""
-" int\n"
-" guestfs_copy_file_to_file (guestfs_h *g,\n"
-"                            const char *src,\n"
-"                            const char *dest,\n"
-"                            ...);\n"
-"\n"
 
 #. type: textblock
 #: ../src/guestfs-actions.pod:1887
-#, fuzzy
-#| msgid "(Added in 1.13.15)"
 msgid "(Added in 1.29.48)"
-msgstr "(Agregado en 1.13.15)"
+msgstr ""
 
 #. type: =head2
 #: ../src/guestfs-actions.pod:1889
@@ -81789,10 +81750,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4351
-#, fuzzy
-#| msgid "C<align>"
 msgid "F<align>"
-msgstr "C<align>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4353
@@ -81937,10 +81896,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4411
-#, fuzzy
-#| msgid "B<--format> qcow2"
 msgid "F<format>"
-msgstr "B<--format> qcow2"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4413
@@ -82091,10 +82048,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4473
-#, fuzzy
-#| msgid "C<resize>"
 msgid "F<rescue>"
-msgstr "C<resize>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4475
@@ -82103,10 +82058,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4477
-#, fuzzy
-#| msgid "C<resize>"
 msgid "F<resize>"
-msgstr "C<resize>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4479
@@ -82115,10 +82068,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4481
-#, fuzzy
-#| msgid "C<sparsify>"
 msgid "F<sparsify>"
-msgstr "C<sparsify>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4483
@@ -82208,10 +82159,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4519
-#, fuzzy
-#| msgid "C<erlang>"
 msgid "F<erlang>"
-msgstr "C<erlang>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4521
@@ -82220,10 +82169,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4523
-#, fuzzy
-#| msgid "B<Erlang>"
 msgid "F<golang>"
-msgstr "B<Erlang>"
+msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4525

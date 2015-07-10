@@ -7,10 +7,10 @@
 # rjones <rjones@redhat.com>, 2011
 msgid ""
 msgstr ""
-"Project-Id-Version: libguestfs 1.29.46\n"
+"Project-Id-Version: libguestfs 1.29.48\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2015-06-29 23:18+0100\n"
+"POT-Creation-Date: 2015-07-02 18:03+0100\n"
 "PO-Revision-Date: 2014-10-18 04:00-0400\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/"
@@ -49,7 +49,7 @@ msgstr ""
 #. ../get-kernel/get_kernel.ml:154
 #. ../customize/customize_main.ml:230
 #. ../builder/builder.ml:654
-#: ../v2v/v2v.ml:689 ../v2v/v2v.ml:539 ../sysprep/main.ml:258
+#: ../v2v/v2v.ml:695 ../v2v/v2v.ml:545 ../sysprep/main.ml:258
 msgid "%s (ignored)"
 msgstr ""
 
@@ -75,7 +75,7 @@ msgstr ""
 msgid "%s option used more than once on the command line"
 msgstr ""
 
-#: ../v2v/convert_linux.ml:1295
+#: ../v2v/convert_linux.ml:1291
 msgid ""
 "%s references unknown device \"%s\".  You may have to fix this entry "
 "manually after conversion."
@@ -178,7 +178,7 @@ msgid ""
 "read the man page virt-builder(1).\n"
 msgstr ""
 
-#: ../v2v/utils.ml:187
+#: ../v2v/utils.ml:190
 msgid "%s: cannot open virtio-win ISO file: %s"
 msgstr ""
 
@@ -591,14 +591,14 @@ msgstr ""
 msgid "-o libvirt: --qemu-boot option cannot be used in this output mode"
 msgstr ""
 
-#: ../v2v/output_libvirt.ml:369
+#: ../v2v/output_libvirt.ml:361
 msgid ""
 "-o libvirt: output pool '%s' has type='dir' but the /pool/target/path "
 "element either does not exist or is not a local directory.  See virt-v2v(1) "
 "section \"OUTPUT TO LIBVIRT\""
 msgstr ""
 
-#: ../v2v/output_libvirt.ml:366
+#: ../v2v/output_libvirt.ml:358
 msgid ""
 "-o libvirt: output pool '%s' is not a directory (type='dir').  See virt-"
 "v2v(1) section \"OUTPUT TO LIBVIRT\""
@@ -650,24 +650,29 @@ msgstr ""
 msgid "-os %s: output directory does not exist or is not a directory"
 msgstr ""
 
-#: ../v2v/input_libvirtxml.ml:270
+#: ../v2v/input_libvirtxml.ml:283
 msgid "<disk type='%s'> was ignored"
 msgstr ""
 
-#: ../v2v/input_libvirtxml.ml:236
+#: ../v2v/input_libvirtxml.ml:249
 msgid "<disk type='network'> with <source protocol='%s'> was ignored"
 msgstr ""
 
-#: ../v2v/input_libvirtxml.ml:267
+#: ../v2v/input_libvirtxml.ml:280
 msgid "<disk type='volume'> with <volume type='%s'> was ignored"
 msgstr ""
 
-#: ../v2v/input_libvirtxml.ml:230
+#: ../v2v/input_libvirtxml.ml:243
 msgid "<disk type=network> was ignored"
 msgstr ""
 
-#: ../v2v/input_libvirtxml.ml:118
+#: ../v2v/input_libvirtxml.ml:131
 msgid "<listen type='%s'> in the input libvirt XML was ignored"
+msgstr ""
+
+#: ../v2v/input_libvirtxml.ml:316
+msgid ""
+"<target dev='%s'> was ignored because the device name could not be recognized"
 msgstr ""
 
 #. ../get-kernel/get_kernel.ml:57
@@ -702,6 +707,10 @@ msgstr ""
 msgid "Architecture:"
 msgstr ""
 
+#: ../v2v/v2v.ml:314
+msgid "Assigning disks to buses"
+msgstr ""
+
 #: ../customize/customize_main.ml:77 ../builder/cmdline.ml:98
 msgid "Attach data disk/ISO during install"
 msgstr ""
@@ -716,7 +725,7 @@ msgstr ""
 msgid "Boot in qemu (-o qemu only)"
 msgstr ""
 
-#: ../sysprep/sysprep_operation_user_account.ml:104
+#: ../sysprep/sysprep_operation_user_account.ml:105
 msgid ""
 "By default remove all the user accounts and their home directories.\n"
 "The \"root\" account is not removed.\n"
@@ -725,7 +734,11 @@ msgid ""
 "how to remove only some users, or to not remove some others."
 msgstr ""
 
-#: ../sysprep/sysprep_operation_user_account.ml:82
+#: ../v2v/v2v.ml:908
+msgid "CD-ROM"
+msgstr ""
+
+#: ../sysprep/sysprep_operation_user_account.ml:83
 msgid "Cannot get the home directory for %s"
 msgstr ""
 
@@ -805,7 +818,7 @@ msgstr ""
 msgid "Copying (in image): %s to %s"
 msgstr ""
 
-#: ../v2v/v2v.ml:338
+#: ../v2v/v2v.ml:343
 msgid "Copying disk %d/%d to %s (%s)"
 msgstr ""
 
@@ -833,7 +846,7 @@ msgstr ""
 msgid "Creating an overlay to protect the source from being modified"
 msgstr ""
 
-#: ../v2v/v2v.ml:441
+#: ../v2v/v2v.ml:446
 msgid "Creating output metadata"
 msgstr ""
 
@@ -970,7 +983,7 @@ msgstr ""
 msgid "Downloading: %s"
 msgstr ""
 
-#: ../v2v/v2v.ml:475
+#: ../v2v/v2v.ml:481
 msgid ""
 "Dual- or multi-boot operating system detected.  Choose the root filesystem\n"
 "that contains the main operating system from the list below:\n"
@@ -1024,7 +1037,7 @@ msgstr ""
 msgid "Enable/disable specific operations"
 msgstr ""
 
-#: ../v2v/v2v.ml:488
+#: ../v2v/v2v.ml:494
 msgid "Enter a number between 1 and %d, or 'exit': "
 msgstr ""
 
@@ -1109,7 +1122,7 @@ msgstr ""
 msgid "Fingerprint: %s\n"
 msgstr ""
 
-#: ../v2v/v2v.ml:455 ../customize/customize_main.ml:240
+#: ../v2v/v2v.ml:461 ../customize/customize_main.ml:240
 #: ../builder/builder.ml:703
 msgid "Finishing off"
 msgstr ""
@@ -1419,7 +1432,7 @@ msgstr ""
 msgid "Output vol UUID(s)"
 msgstr ""
 
-#: ../v2v/v2v.ml:451
+#: ../v2v/v2v.ml:457
 msgid "Overlay saved as %s [--debug-overlays]\n"
 msgstr ""
 
@@ -1454,11 +1467,11 @@ msgstr ""
 msgid "Performing %S ..."
 msgstr ""
 
-#: ../v2v/v2v.ml:515
+#: ../v2v/v2v.ml:521
 msgid "Picked %s because '--root %s' was used."
 msgstr ""
 
-#: ../v2v/v2v.ml:506
+#: ../v2v/v2v.ml:512
 msgid "Picked %s because '--root first' was used."
 msgstr ""
 
@@ -1642,7 +1655,7 @@ msgstr ""
 msgid "Remove the process accounting log files"
 msgstr ""
 
-#: ../sysprep/sysprep_operation_user_account.ml:103
+#: ../sysprep/sysprep_operation_user_account.ml:104
 msgid "Remove the user accounts in the guest"
 msgstr ""
 
@@ -1669,7 +1682,7 @@ msgid ""
 "undesirable.  Erasing the udev persistent net rules avoids this."
 msgstr ""
 
-#: ../sysprep/sysprep_operation_cron_spool.ml:39
+#: ../sysprep/sysprep_operation_cron_spool.ml:53
 msgid "Remove user at-jobs and cron-jobs"
 msgstr ""
 
@@ -1915,7 +1928,7 @@ msgstr ""
 msgid "Setting passwords"
 msgstr ""
 
-#: ../customize/password.ml:116
+#: ../customize/password.ml:117
 msgid "Setting random password of %s to %s"
 msgstr ""
 
@@ -2011,7 +2024,7 @@ msgid ""
 " IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!"
 msgstr ""
 
-#: ../v2v/convert_linux.ml:1089
+#: ../v2v/convert_linux.ml:1085
 msgid ""
 "The display driver was updated to '%s', but X11 does not seem to be "
 "installed in the guest.  X may not function correctly."
@@ -2061,7 +2074,7 @@ msgid ""
 "log files if the process accounting is on."
 msgstr ""
 
-#: ../sysprep/sysprep_operation_user_account.ml:128
+#: ../sysprep/sysprep_operation_user_account.ml:129
 msgid ""
 "The user accounts to be kept in the guest.\n"
 "The value of this option is a list of user names separated by comma,\n"
@@ -2075,7 +2088,7 @@ msgid ""
 "This option can be specified multiple times."
 msgstr ""
 
-#: ../sysprep/sysprep_operation_user_account.ml:113
+#: ../sysprep/sysprep_operation_user_account.ml:114
 msgid ""
 "The user accounts to be removed from the guest.\n"
 "The value of this option is a list of user names separated by comma,\n"
@@ -2214,11 +2227,11 @@ msgstr ""
 msgid "Use unversioned names for files"
 msgstr ""
 
-#: ../sysprep/sysprep_operation_user_account.ml:126
+#: ../sysprep/sysprep_operation_user_account.ml:127
 msgid "Users to keep"
 msgstr ""
 
-#: ../sysprep/sysprep_operation_user_account.ml:111
+#: ../sysprep/sysprep_operation_user_account.ml:112
 msgid "Users to remove"
 msgstr ""
 
@@ -2272,7 +2285,7 @@ msgstr ""
 msgid "Zeroing %s"
 msgstr ""
 
-#: ../v2v/output_libvirt.ml:340
+#: ../v2v/output_libvirt.ml:332
 msgid ""
 "a libvirt domain called '%s' already exists on the target.\n"
 "\n"
@@ -2280,7 +2293,7 @@ msgid ""
 "delete the existing domain on the target using the 'virsh undefine' command."
 msgstr ""
 
-#: ../v2v/output_libvirt.ml:343
+#: ../v2v/output_libvirt.ml:335
 msgid ""
 "a libvirt domain called '%s' already exists on the target.\n"
 "\n"
@@ -2340,7 +2353,7 @@ msgid ""
 "cannot find HKLM\\SYSTEM\\DriverDatabase\\DeviceIds\\%s in the guest registry"
 msgstr ""
 
-#: ../v2v/utils.ml:105
+#: ../v2v/utils.ml:106
 msgid ""
 "cannot find firmware for UEFI guests.\n"
 "\n"
@@ -2413,15 +2426,15 @@ msgstr ""
 msgid "command '%s' not valid, see the man page"
 msgstr ""
 
-#: ../v2v/v2v.ml:495
+#: ../v2v/v2v.ml:501
 msgid "connection closed"
 msgstr ""
 
-#: ../v2v/convert_linux.ml:1019
+#: ../v2v/convert_linux.ml:1015
 msgid "could not add grub2 serial console (ignored)"
 msgstr ""
 
-#: ../v2v/output_libvirt.ml:419
+#: ../v2v/output_libvirt.ml:411
 msgid ""
 "could not define libvirt domain.  The libvirt XML is still available in "
 "'%s'.  Try running 'virsh define %s' yourself instead."
@@ -2453,6 +2466,10 @@ msgstr ""
 msgid "could not parse '-ic %s'.  Original error message was: %s"
 msgstr ""
 
+#: ../v2v/input_libvirtxml.ml:46
+msgid "could not parse device name '%s' from the source libvirt XML"
+msgstr ""
+
 #: ../v2v/input_ova.ml:304
 msgid "could not parse disk rasd:HostResource from OVF document"
 msgstr ""
@@ -2467,18 +2484,18 @@ msgid ""
 "line.  Is it really an OVirt or RHEV-M %s?  The original error is: %s"
 msgstr ""
 
-#: ../v2v/convert_linux.ml:1037
+#: ../v2v/convert_linux.ml:1033
 msgid ""
 "could not rebuild grub2 configuration file (%s).  This may mean that grub "
 "output will not be sent to the serial port, but otherwise should be "
 "harmless.  Original error message: %s"
 msgstr ""
 
-#: ../v2v/output_libvirt.ml:391
+#: ../v2v/output_libvirt.ml:383
 msgid "could not refresh libvirt pool %s"
 msgstr ""
 
-#: ../v2v/convert_linux.ml:1021
+#: ../v2v/convert_linux.ml:1017
 msgid "could not remove grub2 serial console (ignored)"
 msgstr ""
 
@@ -2548,7 +2565,7 @@ msgid ""
 "format"
 msgstr ""
 
-#: ../v2v/input_libvirtxml.ml:142
+#: ../v2v/input_libvirtxml.ml:155
 msgid "display <graphics type='%s'> in the input libvirt XML was ignored"
 msgstr ""
 
@@ -2560,7 +2577,7 @@ msgstr ""
 msgid "domain"
 msgstr ""
 
-#: ../v2v/utils.ml:101
+#: ../v2v/utils.ml:102
 msgid "don't know how to convert UEFI guests for architecture %s"
 msgstr ""
 
@@ -2576,7 +2593,7 @@ msgstr ""
 msgid "don't know how to remove packages using %s: packages: %s"
 msgstr ""
 
-#: ../v2v/convert_linux.ml:1144
+#: ../v2v/convert_linux.ml:1140
 msgid "don't know how to update %s which loads the %s module"
 msgstr ""
 
@@ -2615,7 +2632,7 @@ msgstr ""
 msgid "exception: %s"
 msgstr ""
 
-#: ../v2v/input_ova.ml:198 ../v2v/input_libvirtxml.ml:58
+#: ../v2v/input_ova.ml:198 ../v2v/input_libvirtxml.ml:71
 msgid "expecting XML expression to return an integer (expression: %s)"
 msgstr ""
 
@@ -2681,6 +2698,10 @@ msgstr ""
 
 #: ../resize/resize.ml:1239
 msgid "first partition is NTFS but does not contain NTFS boot loader magic"
+msgstr ""
+
+#: ../v2v/v2v.ml:909
+msgid "floppy disk"
 msgstr ""
 
 #. ../resize/resize.ml:217
@@ -2771,11 +2792,11 @@ msgid ""
 "Requested size = %s, minimum size = %s"
 msgstr ""
 
-#: ../v2v/input_libvirtxml.ml:70
+#: ../v2v/input_libvirtxml.ml:83
 msgid "in the libvirt XML metadata, <domain type='...'> is missing or empty"
 msgstr ""
 
-#: ../v2v/input_libvirtxml.ml:74
+#: ../v2v/input_libvirtxml.ml:87
 msgid "in the libvirt XML metadata, <name> is missing or empty"
 msgstr ""
 
@@ -2795,7 +2816,7 @@ msgstr ""
 msgid "internal error: invalid argument: %s"
 msgstr ""
 
-#: ../v2v/v2v.ml:350
+#: ../v2v/v2v.ml:355
 msgid "internal error: qemu corrupted the overlay file"
 msgstr ""
 
@@ -2835,7 +2856,7 @@ msgstr ""
 msgid "libguestfs error: %s"
 msgstr ""
 
-#: ../v2v/v2v.ml:522
+#: ../v2v/v2v.ml:528
 msgid ""
 "libguestfs thinks this is not an installed operating system (it might be, "
 "for example, an installer disk or live CD).  If this is wrong, it is "
@@ -2863,7 +2884,7 @@ msgid ""
 "you need to rerun virt-v2v as root."
 msgstr ""
 
-#: ../v2v/v2v.ml:502
+#: ../v2v/v2v.ml:508
 msgid ""
 "multi-boot operating systems are not supported by virt-v2v. Use the --root "
 "option to change how virt-v2v handles this."
@@ -2939,7 +2960,7 @@ msgid ""
 "Please file a bug, giving the command line arguments you used."
 msgstr ""
 
-#: ../v2v/v2v.ml:468
+#: ../v2v/v2v.ml:474
 msgid "no root device found in this operating system image."
 msgstr ""
 
@@ -2949,7 +2970,7 @@ msgid ""
 "fail when it tries to read the source disks."
 msgstr ""
 
-#: ../v2v/v2v.ml:629
+#: ../v2v/v2v.ml:635
 msgid ""
 "not enough free space for conversion on filesystem '%s'.  %Ld bytes free < "
 "%Ld bytes needed"
@@ -3046,7 +3067,7 @@ msgid ""
 "password-crypto: unknown algorithm %s, use \"md5\", \"sha256\" or \"sha512\""
 msgstr ""
 
-#: ../customize/password.ml:171
+#: ../customize/password.ml:172
 msgid ""
 "password: using insecure md5 password encryption for\n"
 "guest of type %s version %d.\n"
@@ -3069,7 +3090,7 @@ msgstr ""
 msgid "pwrite: short write restoring swap partition header"
 msgstr ""
 
-#: ../v2v/v2v.ml:391 ../v2v/v2v.ml:145
+#: ../v2v/v2v.ml:396 ../v2v/v2v.ml:145
 msgid "qemu-img command failed, see earlier errors"
 msgstr ""
 
@@ -3081,11 +3102,20 @@ msgstr ""
 msgid "random seed could not be set for this type of guest"
 msgstr ""
 
+#: ../v2v/v2v.ml:906
+msgid ""
+"removable %s device in slot %d clashes with another disk, so it has been "
+"moved to a higher numbered slot on the same bus.  This may mean that this "
+"removable device has a different name inside the guest (for example a CD-ROM "
+"originally called /dev/hdc might move to /dev/hdd, or from D: to E: on a "
+"Windows guest)."
+msgstr ""
+
 #: ../resize/resize.ml:147
 msgid "resize2fs"
 msgstr ""
 
-#: ../v2v/v2v.ml:513
+#: ../v2v/v2v.ml:519
 msgid "root device %s not found.  Roots found were: %s"
 msgstr ""
 
@@ -3231,7 +3261,7 @@ msgid ""
 "firmware (supported firmware on target: %s)"
 msgstr ""
 
-#: ../v2v/input_libvirtxml.ml:190
+#: ../v2v/input_libvirtxml.ml:203
 msgid "this guest has no non-removable disks"
 msgstr ""
 
@@ -3243,13 +3273,13 @@ msgstr ""
 msgid "too many parameters, expecting 'os-version'"
 msgstr ""
 
-#: ../v2v/convert_linux.ml:1188
+#: ../v2v/convert_linux.ml:1184
 msgid ""
 "unable to find any valid modprobe configuration file such as /etc/modprobe."
 "conf"
 msgstr ""
 
-#: ../v2v/v2v.ml:534
+#: ../v2v/v2v.ml:540
 msgid ""
 "unable to mount the disk image for writing. This has probably happened "
 "because Windows Hibernation or Fast Restart is being used in this guest. You "
@@ -3258,7 +3288,7 @@ msgid ""
 "Original error message: %s"
 msgstr ""
 
-#: ../v2v/convert_linux.ml:886
+#: ../v2v/convert_linux.ml:882
 msgid ""
 "unable to rebuild initrd (%s) because mkinitrd or dracut was not found in "
 "the guest"
@@ -3302,7 +3332,7 @@ msgstr ""
 msgid "unknown guest operating system: %s %s %d.%d (%s)"
 msgstr ""
 
-#: ../v2v/input_libvirtxml.ml:166
+#: ../v2v/input_libvirtxml.ml:179
 msgid "unknown sound model %s ignored"
 msgstr ""
 
@@ -3326,13 +3356,13 @@ msgstr ""
 msgid "usage is: %s [--options] indisk outdisk"
 msgstr ""
 
-#: ../sysprep/sysprep_operation_user_account.ml:144
+#: ../sysprep/sysprep_operation_user_account.ml:145
 msgid ""
 "user-accounts: --keep-user-accounts parameter was used, but the \"user-"
 "account\" operation is not enabled"
 msgstr ""
 
-#: ../sysprep/sysprep_operation_user_account.ml:146
+#: ../sysprep/sysprep_operation_user_account.ml:147
 msgid ""
 "user-accounts: --remove-user-accounts parameter was used, but the \"user-"
 "account\" operation is not enabled"
@@ -3342,8 +3372,8 @@ msgstr ""
 msgid "user-accounts: empty user name"
 msgstr ""
 
-#. ../sysprep/sysprep_operation_user_account.ml:111
-#: ../sysprep/sysprep_operation_user_account.ml:126
+#. ../sysprep/sysprep_operation_user_account.ml:112
+#: ../sysprep/sysprep_operation_user_account.ml:127
 msgid "users"
 msgstr ""
 
@@ -3408,7 +3438,7 @@ msgstr ""
 msgid "virt-resize is not installed (or does not work)"
 msgstr ""
 
-#: ../v2v/input_libvirtxml.ml:139
+#: ../v2v/input_libvirtxml.ml:152
 msgid ""
 "virt-v2v does not support local displays, so <graphics type='%s'> in the "
 "input libvirt XML was ignored"
@@ -4007,8 +4037,8 @@ msgstr "ਸਪਾਰਸ ਈਮੇਜ਼ ਬਣਾਉਣ ਲਈ 'sparse file size' �
 
 #: fish/alloc.c:100
 #, c-format
-msgid "%s: invalid integer parameter (%s returned %d)\n"
-msgstr "%s: ਗਲਤ ਪੂਰਨਅੰਕ ਪੈਰਾਮੀਟਰ (%s returned %d)\n"
+msgid "%s: invalid integer parameter (%s returned %u)\n"
+msgstr ""
 
 #: fish/cmds.c:4590
 msgid "Command"
@@ -6264,8 +6294,8 @@ msgstr "%s: ਚੋਣਵੇਂ ਆਰਗੂਮੈਂਟ \"%s\" ਦੋ ਵਾਰ 
 #: fish/cmds.c:24389 fish/cmds.c:24406 fish/cmds.c:24423 fish/cmds.c:24440
 #: fish/cmds.c:24586 fish/cmds.c:24603 fish/cmds.c:24620 fish/cmds.c:24637
 #, c-format
-msgid "%s: %s: invalid integer parameter (%s returned %d)\n"
-msgstr "%s: %s: ਗਲਤ ਅੰਕ ਪੈਰਾਮੀਟਰ (%s returned %d)\n"
+msgid "%s: %s: invalid integer parameter (%s returned %u)\n"
+msgstr ""
 
 #: fish/cmds.c:6518 fish/cmds.c:7116 fish/cmds.c:7158 fish/cmds.c:7654
 #: fish/cmds.c:8709 fish/cmds.c:8755 fish/cmds.c:8774 fish/cmds.c:8907
@@ -7295,7 +7325,7 @@ msgstr ""
 
 #: make-fs/make-fs.c:623
 #, c-format
-msgid "%s: %s: invalid size parameter '%s' (%s returned %d)\n"
+msgid "%s: %s: invalid size parameter '%s' (%s returned %u)\n"
 msgstr ""
 
 #: make-fs/make-fs.c:829
@@ -7729,8 +7759,8 @@ msgstr ""
 
 #: src/appliance.c:247
 #, c-format
-msgid "security: cached appliance %s is not owned by UID %d"
-msgstr "ਸੁਰੱਖਿਆ: ਕੈਸ਼ ਜੰਤਰ %s ਨੂੰ UID %d ਦੁਆਰਾ ਨਹੀਂ ਰੋਕਿਆ ਹੈ"
+msgid "security: cached appliance %s is not owned by UID %ju"
+msgstr ""
 
 #: src/appliance.c:252
 #, c-format
@@ -8353,7 +8383,7 @@ msgstr "you must call guestfs_add_drive before guestfs_launch"
 msgid "qemu launched and contacted daemon, but state != READY"
 msgstr "qemu launched and contacted daemon, but state != READY"
 
-#: src/launch-direct.c:1253 src/launch-libvirt.c:1414
+#: src/launch-direct.c:1253 src/launch-libvirt.c:1415
 #, c-format
 msgid "realpath: could not convert '%s' to absolute path"
 msgstr ""
@@ -8450,70 +8480,70 @@ msgid ""
 "For further help, read the guestfs(3) man page and libguestfs FAQ."
 msgstr ""
 
-#: src/launch-libvirt.c:978
+#: src/launch-libvirt.c:979
 #, c-format
 msgid "%s:%d: error constructing libvirt XML near call to \"%s\""
 msgstr ""
 
-#: src/launch-libvirt.c:1368
+#: src/launch-libvirt.c:1369
 msgid "'iface' parameter is not supported by the libvirt backend"
 msgstr ""
 
-#: src/launch-libvirt.c:1497
+#: src/launch-libvirt.c:1498
 msgid ""
 "libvirt does not support the qemu curl driver protocols (ftp, http, etc.); "
 "try setting LIBGUESTFS_BACKEND=direct"
 msgstr ""
 
-#: src/launch-libvirt.c:1522
+#: src/launch-libvirt.c:1523
 msgid ""
 "could not auto-detect the format.\n"
 "If the format is known, pass the format to libguestfs, eg. using the\n"
 "'--format' option, or via the optional 'format' argument to 'add-drive'."
 msgstr ""
 
-#: src/launch-libvirt.c:1529
+#: src/launch-libvirt.c:1530
 msgid ""
 "could not auto-detect the format when using a non-file protocol.\n"
 "If the format is known, pass the format to libguestfs, eg. using the\n"
 "'--format' option, or via the optional 'format' argument to 'add-drive'."
 msgstr ""
 
-#: src/launch-libvirt.c:1859
+#: src/launch-libvirt.c:1860
 msgid "could not define libvirt secret"
 msgstr ""
 
-#: src/launch-libvirt.c:1870
+#: src/launch-libvirt.c:1871
 msgid "rbd protocol secret must be base64 encoded"
 msgstr ""
 
-#: src/launch-libvirt.c:1874
+#: src/launch-libvirt.c:1875
 #, c-format
 msgid "base64_decode_alloc: %m"
 msgstr ""
 
-#: src/launch-libvirt.c:1895
+#: src/launch-libvirt.c:1896
 msgid "could not set libvirt secret value"
 msgstr ""
 
-#: src/launch-libvirt.c:1908
+#: src/launch-libvirt.c:1909
 msgid "could not get UUID from libvirt secret"
 msgstr ""
 
-#: src/launch-libvirt.c:2015
+#: src/launch-libvirt.c:2016
 msgid "could not destroy libvirt domain"
 msgstr ""
 
-#: src/launch-libvirt.c:2066 src/launch-libvirt.c:2099
+#: src/launch-libvirt.c:2067 src/launch-libvirt.c:2100
 #, c-format
 msgid "%s: internal error forming error message"
 msgstr ""
 
-#: src/launch-libvirt.c:2162
+#: src/launch-libvirt.c:2163
 msgid "could not attach disk to libvirt domain"
 msgstr ""
 
-#: src/launch-libvirt.c:2193
+#: src/launch-libvirt.c:2194
 msgid "could not detach disk from libvirt domain"
 msgstr ""
 
@@ -8870,8 +8900,8 @@ msgstr "libguestfs-test-tool: guestfs_version failed\n"
 
 #: test-tool/test-tool.c:154
 #, c-format
-msgid "libguestfs-test-tool: unexpected command line option 0x%x\n"
-msgstr "libguestfs-test-tool: unexpected command line option 0x%x\n"
+msgid "libguestfs-test-tool: unexpected command line option %d\n"
+msgstr ""
 
 #: test-tool/test-tool.c:161
 #, c-format
@@ -9076,3 +9106,15 @@ msgstr "virt-win-reg: {p}: ਰਜਿਸਟਰੀ ਫਾਇਲ ਡਾਊਨਲੋ
 #, perl-brace-format
 msgid "virt-win-reg: {p}: could not upload registry file: {err}\n"
 msgstr "virt-win-reg: {p}: ਰਜਿਸਟਰੀ ਫਾਇਲ ਨੂੰ ਅੱਪਲੋਡ ਨਹੀਂ ਕਰ ਸਕਦਾ: {err}\n"
+
+#~ msgid "%s: invalid integer parameter (%s returned %d)\n"
+#~ msgstr "%s: ਗਲਤ ਪੂਰਨਅੰਕ ਪੈਰਾਮੀਟਰ (%s returned %d)\n"
+
+#~ msgid "%s: %s: invalid integer parameter (%s returned %d)\n"
+#~ msgstr "%s: %s: ਗਲਤ ਅੰਕ ਪੈਰਾਮੀਟਰ (%s returned %d)\n"
+
+#~ msgid "security: cached appliance %s is not owned by UID %d"
+#~ msgstr "ਸੁਰੱਖਿਆ: ਕੈਸ਼ ਜੰਤਰ %s ਨੂੰ UID %d ਦੁਆਰਾ ਨਹੀਂ ਰੋਕਿਆ ਹੈ"
+
+#~ msgid "libguestfs-test-tool: unexpected command line option 0x%x\n"
+#~ msgstr "libguestfs-test-tool: unexpected command line option 0x%x\n"

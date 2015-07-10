@@ -6,9 +6,9 @@
 # Asier Iturralde Sarasola <asier.iturralde@gmail.com>, 2012
 msgid ""
 msgstr ""
-"Project-Id-Version: libguestfs 1.29.46\n"
+"Project-Id-Version: libguestfs 1.29.48\n"
 "Report-Msgid-Bugs-To: libguestfs@redhat.com\n"
-"POT-Creation-Date: 2015-06-29 23:18+0100\n"
+"POT-Creation-Date: 2015-07-02 18:03+0100\n"
 "PO-Revision-Date: 2014-10-18 04:01-0400\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
 "Language-Team: Basque (http://www.transifex.com/projects/p/libguestfs/"
@@ -3568,17 +3568,13 @@ msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:815
-#, fuzzy
-#| msgid "Any Linux-based operating system."
 msgid "Supported operating systems are:"
-msgstr "Linux-en oinarritutako edozein sistema eragile."
+msgstr ""
 
 #. type: =item
 #: ../builder/virt-builder.pod:819
-#, fuzzy
-#| msgid "\"linux\""
 msgid "Linux"
-msgstr "\"linux\""
+msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:821
@@ -3604,10 +3600,8 @@ msgstr ""
 
 #. type: =item
 #: ../builder/virt-builder.pod:831
-#, fuzzy
-#| msgid "\"windows\""
 msgid "Windows"
-msgstr "\"windows\""
+msgstr ""
 
 #. type: textblock
 #: ../builder/virt-builder.pod:833
@@ -19118,17 +19112,13 @@ msgstr ""
 
 #. type: =item
 #: ../fish/guestfish-actions.pod:1300 ../src/guestfs-actions.pod:2236
-#, fuzzy
-#| msgid "C</dev/sdd>"
 msgid "F</dev/hdX>"
-msgstr "C</dev/sdd>"
+msgstr ""
 
 #. type: =item
 #: ../fish/guestfish-actions.pod:1302 ../src/guestfs-actions.pod:2238
-#, fuzzy
-#| msgid "C</dev/sdd>"
 msgid "F</dev/vdX>"
-msgstr "C</dev/sdd>"
+msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:1304 ../src/guestfs-actions.pod:2240
@@ -19145,10 +19135,8 @@ msgstr ""
 
 #. type: =item
 #: ../fish/guestfish-actions.pod:1310 ../src/guestfs-actions.pod:2246
-#, fuzzy
-#| msgid "C</dev/sdd>"
 msgid "F</dev/dm-N>"
-msgstr "C</dev/sdd>"
+msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:1312
@@ -80590,10 +80578,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4036
-#, fuzzy
-#| msgid "C</dev/sda> 500MB"
 msgid "F</dev/sda> 500MB"
-msgstr "C</dev/sda> 500MB"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4038
@@ -80602,10 +80588,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4040
-#, fuzzy
-#| msgid "C</dev/sda> 500MB"
 msgid "F</dev/sdb> 500MB"
-msgstr "C</dev/sda> 500MB"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4042
@@ -80616,10 +80600,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4045
-#, fuzzy
-#| msgid "C</dev/sdc> 10MB"
 msgid "F</dev/sdc> 10MB"
-msgstr "C</dev/sdc> 10MB"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4047
@@ -80628,10 +80610,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4049
-#, fuzzy
-#| msgid "C</dev/sdd>"
 msgid "F</dev/sdd>"
-msgstr "C</dev/sdd>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4051
@@ -81346,10 +81326,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4384
-#, fuzzy
-#| msgid "C<daemon>"
 msgid "F<daemon>"
-msgstr "C<daemon>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4386
@@ -81359,10 +81337,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4389
-#, fuzzy
-#| msgid "C<df>"
 msgid "F<df>"
-msgstr "C<df>"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4391
@@ -81391,10 +81367,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4401
-#, fuzzy
-#| msgid "For example:"
 msgid "F<examples>"
-msgstr "Adibidez:"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4403
@@ -81471,10 +81445,8 @@ msgstr ""
 
 #. type: =item
 #: ../src/guestfs.pod:4433
-#, fuzzy
-#| msgid "html"
 msgid "F<html>"
-msgstr "html"
+msgstr ""
 
 #. type: textblock
 #: ../src/guestfs.pod:4435

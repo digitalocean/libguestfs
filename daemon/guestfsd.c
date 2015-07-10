@@ -57,6 +57,7 @@
 #include "daemon.h"
 
 GUESTFSD_EXT_CMD(str_udevadm, udevadm);
+GUESTFSD_EXT_CMD(str_uuidgen, uuidgen);
 
 #ifndef MAX
 # define MAX(a,b) ((a)>(b)?(a):(b))
@@ -223,7 +224,8 @@ main (int argc, char *argv[])
       exit (EXIT_SUCCESS);
 
     default:
-      fprintf (stderr, "guestfsd: unexpected command line option 0x%x\n", c);
+      fprintf (stderr, "guestfsd: unexpected command line option 0x%x\n",
+               (unsigned) c);
       exit (EXIT_FAILURE);
     }
   }
@@ -1507,6 +1509,24 @@ udev_settle (void)
     perror ("system");
   else if (!WIFEXITED (r) || WEXITSTATUS (r) != 0)
     fprintf (stderr, "warning: udevadm command failed\n");
+}
+
+char *
+get_random_uuid (void)
+{
+  int r;
+  char *out;
+  CLEANUP_FREE char *err = NULL;
+
+  r = command (&out, &err, str_uuidgen, NULL);
+  if (r == -1) {
+    reply_with_error ("%s", err);
+    return NULL;
+  }
+
+  /* caller free */
+  return out;
+
 }
 
 /* Use by the CLEANUP_* macros.  Do not call these directly. */
