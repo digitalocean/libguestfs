@@ -5286,7 +5286,7 @@ guestfs_copy_file_to_device_argv (guestfs_h *g,
     return -1;
   }
 
-  if (optargs->bitmask & UINT64_C(0xfffffffffffffff0)) {
+  if (optargs->bitmask & UINT64_C(0xffffffffffffffe0)) {
     error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
            "copy_file_to_device", "copy_file_to_device");
     return -1;
@@ -5308,6 +5308,9 @@ guestfs_copy_file_to_device_argv (guestfs_h *g,
     }
     if (optargs->bitmask & GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK) {
       fprintf (trace_buffer.fp, " \"%s:%s\"", "sparse", optargs->sparse ? "true" : "false");
+    }
+    if (optargs->bitmask & GUESTFS_COPY_FILE_TO_DEVICE_APPEND_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "append", optargs->append ? "true" : "false");
     }
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
@@ -5340,6 +5343,11 @@ guestfs_copy_file_to_device_argv (guestfs_h *g,
     args.sparse = optargs->sparse;
   } else {
     args.sparse = 0;
+  }
+  if (optargs->bitmask & GUESTFS_COPY_FILE_TO_DEVICE_APPEND_BITMASK) {
+    args.append = optargs->append;
+  } else {
+    args.append = 0;
   }
   serial = guestfs_int_send (g, GUESTFS_PROC_COPY_FILE_TO_DEVICE,
                              progress_hint, optargs->bitmask,
@@ -5434,7 +5442,7 @@ guestfs_copy_file_to_file_argv (guestfs_h *g,
     return -1;
   }
 
-  if (optargs->bitmask & UINT64_C(0xfffffffffffffff0)) {
+  if (optargs->bitmask & UINT64_C(0xffffffffffffffe0)) {
     error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
            "copy_file_to_file", "copy_file_to_file");
     return -1;
@@ -5456,6 +5464,9 @@ guestfs_copy_file_to_file_argv (guestfs_h *g,
     }
     if (optargs->bitmask & GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK) {
       fprintf (trace_buffer.fp, " \"%s:%s\"", "sparse", optargs->sparse ? "true" : "false");
+    }
+    if (optargs->bitmask & GUESTFS_COPY_FILE_TO_FILE_APPEND_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "append", optargs->append ? "true" : "false");
     }
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
@@ -5488,6 +5499,11 @@ guestfs_copy_file_to_file_argv (guestfs_h *g,
     args.sparse = optargs->sparse;
   } else {
     args.sparse = 0;
+  }
+  if (optargs->bitmask & GUESTFS_COPY_FILE_TO_FILE_APPEND_BITMASK) {
+    args.append = optargs->append;
+  } else {
+    args.append = 0;
   }
   serial = guestfs_int_send (g, GUESTFS_PROC_COPY_FILE_TO_FILE,
                              progress_hint, optargs->bitmask,
@@ -8781,6 +8797,212 @@ guestfs_btrfstune_seeding (guestfs_h *g,
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "btrfstune_seeding");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_btrfs_replace (guestfs_h *g,
+                       const char *srcdev,
+                       const char *targetdev,
+                       const char *mntpoint)
+{
+  struct guestfs_btrfs_replace_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "btrfs_replace", 13);
+  if (srcdev == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfs_replace", "srcdev");
+    return -1;
+  }
+  if (targetdev == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfs_replace", "targetdev");
+    return -1;
+  }
+  if (mntpoint == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfs_replace", "mntpoint");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "btrfs_replace");
+    fprintf (trace_buffer.fp, " \"%s\"", srcdev);
+    fprintf (trace_buffer.fp, " \"%s\"", targetdev);
+    fprintf (trace_buffer.fp, " \"%s\"", mntpoint);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs_int_check_appliance_up (g, "btrfs_replace") == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfs_replace", "-1");
+    return -1;
+  }
+
+  args.srcdev = (char *) srcdev;
+  args.targetdev = (char *) targetdev;
+  args.mntpoint = (char *) mntpoint;
+  serial = guestfs_int_send (g, GUESTFS_PROC_BTRFS_REPLACE,
+                             progress_hint, 0,
+                             (xdrproc_t) xdr_guestfs_btrfs_replace_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfs_replace", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs_int_recv (g, "btrfs_replace", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfs_replace", "-1");
+    return -1;
+  }
+
+  if (guestfs_int_check_reply_header (g, &hdr, GUESTFS_PROC_BTRFS_REPLACE, serial) == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfs_replace", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfs_replace", "-1");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs_int_string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "btrfs_replace", err.error_message);
+    else
+      guestfs_int_error_errno (g, errnum, "%s: %s", "btrfs_replace",
+                               err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "btrfs_replace");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_set_uuid_random (guestfs_h *g,
+                         const char *device)
+{
+  struct guestfs_set_uuid_random_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "set_uuid_random", 15);
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "set_uuid_random", "device");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "set_uuid_random");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs_int_check_appliance_up (g, "set_uuid_random") == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "set_uuid_random", "-1");
+    return -1;
+  }
+
+  args.device = (char *) device;
+  serial = guestfs_int_send (g, GUESTFS_PROC_SET_UUID_RANDOM,
+                             progress_hint, 0,
+                             (xdrproc_t) xdr_guestfs_set_uuid_random_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "set_uuid_random", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs_int_recv (g, "set_uuid_random", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "set_uuid_random", "-1");
+    return -1;
+  }
+
+  if (guestfs_int_check_reply_header (g, &hdr, GUESTFS_PROC_SET_UUID_RANDOM, serial) == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "set_uuid_random", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "set_uuid_random", "-1");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs_int_string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "set_uuid_random", err.error_message);
+    else
+      guestfs_int_error_errno (g, errnum, "%s: %s", "set_uuid_random",
+                               err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "set_uuid_random");
     fprintf (trace_buffer.fp, "%d", ret_v);
     guestfs_int_trace_send_line (g, &trace_buffer);
   }

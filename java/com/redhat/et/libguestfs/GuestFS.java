@@ -2819,6 +2819,36 @@ public class GuestFS {
 
   /**
    * <p>
+   * replace a btrfs managed device with another device
+   * </p><p>
+   * Replace device of a btrfs filesystem. On a live
+   * filesystem, duplicate the data to the target device
+   * which is currently stored on the source device. After
+   * completion of the operation, the source device is wiped
+   * out and removed from the filesystem.
+   * </p><p>
+   * The "targetdev" needs to be same size or larger than the
+   * "srcdev". Devices which are currently mounted are never
+   * allowed to be used as the "targetdev".
+   * </p><p>
+   * </p>
+   * @since 1.29.48
+   * @throws LibGuestFSException
+   */
+  public void btrfs_replace (String srcdev, String targetdev, String mntpoint)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_replace: handle is closed");
+
+    _btrfs_replace (g, srcdev, targetdev, mntpoint);
+  }
+
+  private native void _btrfs_replace (long g, String srcdev, String targetdev, String mntpoint)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * recover the chunk tree of btrfs filesystem
    * </p><p>
    * Recover the chunk tree of btrfs filesystem by scanning
@@ -4048,6 +4078,12 @@ public class GuestFS {
    * If the destination file is not large enough, it is
    * extended.
    * </p><p>
+   * If the destination is a file and the "append" flag is
+   * not set, then the destination file is truncated. If the
+   * "append" flag is set, then the copy appends to the
+   * destination file. The "append" flag currently cannot be
+   * set for devices.
+   * </p><p>
    * If the "sparse" flag is true then the call avoids
    * writing blocks that contain only zeroes, which can help
    * in some situations where the backing disk is
@@ -4105,8 +4141,16 @@ public class GuestFS {
       sparse = ((Boolean) _optobj).booleanValue();
       _optargs_bitmask |= 8L;
     }
+    boolean append = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("append");
+    if (_optobj != null) {
+      append = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 16L;
+    }
 
-    _copy_device_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size, sparse);
+    _copy_device_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size, sparse, append);
   }
 
   public void copy_device_to_device (String src, String dest)
@@ -4115,7 +4159,7 @@ public class GuestFS {
     copy_device_to_device (src, dest, null);
   }
 
-  private native void _copy_device_to_device (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size, boolean sparse)
+  private native void _copy_device_to_device (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size, boolean sparse, boolean append)
     throws LibGuestFSException;
 
   /**
@@ -4175,8 +4219,16 @@ public class GuestFS {
       sparse = ((Boolean) _optobj).booleanValue();
       _optargs_bitmask |= 8L;
     }
+    boolean append = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("append");
+    if (_optobj != null) {
+      append = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 16L;
+    }
 
-    _copy_device_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size, sparse);
+    _copy_device_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size, sparse, append);
   }
 
   public void copy_device_to_file (String src, String dest)
@@ -4185,7 +4237,7 @@ public class GuestFS {
     copy_device_to_file (src, dest, null);
   }
 
-  private native void _copy_device_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size, boolean sparse)
+  private native void _copy_device_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size, boolean sparse, boolean append)
     throws LibGuestFSException;
 
   /**
@@ -4245,8 +4297,16 @@ public class GuestFS {
       sparse = ((Boolean) _optobj).booleanValue();
       _optargs_bitmask |= 8L;
     }
+    boolean append = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("append");
+    if (_optobj != null) {
+      append = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 16L;
+    }
 
-    _copy_file_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size, sparse);
+    _copy_file_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size, sparse, append);
   }
 
   public void copy_file_to_device (String src, String dest)
@@ -4255,7 +4315,7 @@ public class GuestFS {
     copy_file_to_device (src, dest, null);
   }
 
-  private native void _copy_file_to_device (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size, boolean sparse)
+  private native void _copy_file_to_device (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size, boolean sparse, boolean append)
     throws LibGuestFSException;
 
   /**
@@ -4320,8 +4380,16 @@ public class GuestFS {
       sparse = ((Boolean) _optobj).booleanValue();
       _optargs_bitmask |= 8L;
     }
+    boolean append = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("append");
+    if (_optobj != null) {
+      append = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 16L;
+    }
 
-    _copy_file_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size, sparse);
+    _copy_file_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size, sparse, append);
   }
 
   public void copy_file_to_file (String src, String dest)
@@ -4330,7 +4398,7 @@ public class GuestFS {
     copy_file_to_file (src, dest, null);
   }
 
-  private native void _copy_file_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size, boolean sparse)
+  private native void _copy_file_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size, boolean sparse, boolean append)
     throws LibGuestFSException;
 
   /**
@@ -9186,6 +9254,18 @@ public class GuestFS {
   }
 
   private native String[] _inspect_os (long g)
+    throws LibGuestFSException;
+
+  public void internal_exit ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("internal_exit: handle is closed");
+
+    _internal_exit (g);
+  }
+
+  private native void _internal_exit (long g)
     throws LibGuestFSException;
 
   public void internal_test (String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin, Map<String, Object> optargs)
@@ -17295,6 +17375,12 @@ public class GuestFS {
    * filesystem. The filesystem must not be mounted when
    * trying to set the label.
    * </p><p>
+   * fat The label is limited to 11 bytes.
+   * </p><p>
+   * If there is no support for changing the label for the
+   * type of the specified filesystem, set_label will fail
+   * and set errno as ENOTSUP.
+   * </p><p>
    * To read the label on a filesystem, call "g.vfs_label".
    * </p><p>
    * </p>
@@ -17732,7 +17818,10 @@ public class GuestFS {
    * <p>
    * set the filesystem UUID
    * </p><p>
-   * Set the filesystem UUID on "device" to "uuid".
+   * Set the filesystem UUID on "device" to "uuid". If this
+   * fails and the errno is ENOTSUP, means that there is no
+   * support for changing the UUID for the type of the
+   * specified filesystem.
    * </p><p>
    * Only some filesystem types support setting UUIDs.
    * </p><p>
@@ -17752,6 +17841,35 @@ public class GuestFS {
   }
 
   private native void _set_uuid (long g, String device, String uuid)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * set a random UUID for the filesystem
+   * </p><p>
+   * Set the filesystem UUID on "device" to a random UUID. If
+   * this fails and the errno is ENOTSUP, means that there is
+   * no support for changing the UUID for the type of the
+   * specified filesystem.
+   * </p><p>
+   * Only some filesystem types support setting UUIDs.
+   * </p><p>
+   * To read the UUID on a filesystem, call "g.vfs_uuid".
+   * </p><p>
+   * </p>
+   * @since 1.29.50
+   * @throws LibGuestFSException
+   */
+  public void set_uuid_random (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_uuid_random: handle is closed");
+
+    _set_uuid_random (g, device);
+  }
+
+  private native void _set_uuid_random (long g, String device)
     throws LibGuestFSException;
 
   /**

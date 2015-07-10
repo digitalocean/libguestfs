@@ -57,8 +57,7 @@
 #include "daemon.h"
 
 GUESTFSD_EXT_CMD(str_udevadm, udevadm);
-
-static char *read_cmdline (void);
+GUESTFSD_EXT_CMD(str_uuidgen, uuidgen);
 
 #ifndef MAX
 # define MAX(a,b) ((a)>(b)?(a):(b))
@@ -120,6 +119,9 @@ size_t sysroot_len = 8;
 /* If set (the default), do 'umount-all' when performing autosync. */
 int autosync_umount = 1;
 
+/* If set, we are testing the daemon as part of the libguestfs tests. */
+int test_mode = 0;
+
 /* Not used explicitly, but required by the gnulib 'error' module. */
 const char *program_name = "guestfsd";
 
@@ -136,14 +138,19 @@ usage (void)
 int
 main (int argc, char *argv[])
 {
-  static const char *options = "rv?";
+  static const char *options = "c:lnrtv?";
   static const struct option long_options[] = {
     { "help", 0, 0, '?' },
+    { "channel", 1, 0, 'c' },
+    { "listen", 0, 0, 'l' },
+    { "network", 0, 0, 'n' },
+    { "test", 0, 0, 't' },
     { "verbose", 0, 0, 'v' },
     { 0, 0, 0, 0 }
   };
   int c;
-  char *cmdline;
+  const char *channel = NULL;
+  int listen_mode = 0;
 
   ignore_value (chdir ("/"));
 
@@ -182,6 +189,18 @@ main (int argc, char *argv[])
     if (c == -1) break;
 
     switch (c) {
+    case 'c':
+      channel = optarg;
+      break;
+
+    case 'l':
+      listen_mode = 1;
+      break;
+
+    case 'n':
+      enable_network = 1;
+      break;
+
       /* The -r flag is used when running standalone.  It changes
        * several aspects of the daemon.
        */
@@ -189,6 +208,11 @@ main (int argc, char *argv[])
       sysroot = "";
       sysroot_len = 0;
       autosync_umount = 0;
+      break;
+
+      /* Undocumented --test option used for testing guestfsd. */
+    case 't':
+      test_mode = 1;
       break;
 
     case 'v':
@@ -200,7 +224,8 @@ main (int argc, char *argv[])
       exit (EXIT_SUCCESS);
 
     default:
-      fprintf (stderr, "guestfsd: unexpected command line option 0x%x\n", c);
+      fprintf (stderr, "guestfsd: unexpected command line option 0x%x\n",
+               (unsigned) c);
       exit (EXIT_FAILURE);
     }
   }
@@ -209,23 +234,6 @@ main (int argc, char *argv[])
     usage ();
     exit (EXIT_FAILURE);
   }
-
-  cmdline = read_cmdline ();
-
-  /* Set the verbose flag. */
-  verbose = verbose ||
-    (cmdline && strstr (cmdline, "guestfs_verbose=1") != NULL);
-  if (verbose)
-    printf ("verbose daemon enabled\n");
-
-  if (verbose) {
-    if (cmdline)
-      printf ("linux command line: %s\n", cmdline);
-    else
-      printf ("could not read linux command line\n");
-  }
-
-  enable_network = cmdline && strstr (cmdline, "guestfs_network=1") != NULL;
 
 #ifndef WIN32
   /* Make sure SIGPIPE doesn't kill us. */
@@ -243,11 +251,9 @@ main (int argc, char *argv[])
   /* Set up a basic environment.  After we are called by /init the
    * environment is essentially empty.
    * https://bugzilla.redhat.com/show_bug.cgi?id=502074#c5
-   *
-   * NOTE: if you change $PATH, you must also change 'prog_exists'
-   * function below.
    */
-  setenv ("PATH", "/sbin:/usr/sbin:/bin:/usr/bin", 1);
+  if (!test_mode)
+    setenv ("PATH", "/sbin:/usr/sbin:/bin:/usr/bin", 1);
   setenv ("SHELL", "/bin/sh", 1);
   setenv ("LC_ALL", "C", 1);
   setenv ("TERM", "dumb", 1);
@@ -266,41 +272,57 @@ main (int argc, char *argv[])
   /* Make a private copy of /etc/lvm so we can change the config (see
    * daemon/lvm-filter.c).
    */
-  copy_lvm ();
+  if (!test_mode)
+    copy_lvm ();
 
   /* Connect to virtio-serial channel. */
-  char *channel, *p;
-  if (cmdline && (p = strstr (cmdline, "guestfs_channel=")) != NULL) {
-    p += 16;
-    channel = strndup (p, strcspn (p, " \n"));
-  }
-  else
-    channel = strdup (VIRTIO_SERIAL_CHANNEL);
-  if (!channel) {
-    perror ("strdup");
-    exit (EXIT_FAILURE);
-  }
+  if (!channel)
+    channel = VIRTIO_SERIAL_CHANNEL;
 
   if (verbose)
     printf ("trying to open virtio-serial channel '%s'\n", channel);
 
-  int sock = open (channel, O_RDWR|O_CLOEXEC);
-  if (sock == -1) {
-    fprintf (stderr,
-             "\n"
-             "Failed to connect to virtio-serial channel.\n"
-             "\n"
-             "This is a fatal error and the appliance will now exit.\n"
-             "\n"
-             "Usually this error is caused by either QEMU or the appliance\n"
-             "kernel not supporting the vmchannel method that the\n"
-             "libguestfs library chose to use.  Please run\n"
-             "'libguestfs-test-tool' and provide the complete, unedited\n"
-             "output to the libguestfs developers, either in a bug report\n"
-             "or on the libguestfs redhat com mailing list.\n"
-             "\n");
-    perror (channel);
-    exit (EXIT_FAILURE);
+  int sock;
+  if (!listen_mode) {
+    sock = open (channel, O_RDWR|O_CLOEXEC);
+    if (sock == -1) {
+      fprintf (stderr,
+               "\n"
+               "Failed to connect to virtio-serial channel.\n"
+               "\n"
+               "This is a fatal error and the appliance will now exit.\n"
+               "\n"
+               "Usually this error is caused by either QEMU or the appliance\n"
+               "kernel not supporting the vmchannel method that the\n"
+               "libguestfs library chose to use.  Please run\n"
+               "'libguestfs-test-tool' and provide the complete, unedited\n"
+               "output to the libguestfs developers, either in a bug report\n"
+               "or on the libguestfs redhat com mailing list.\n"
+               "\n");
+      perror (channel);
+      exit (EXIT_FAILURE);
+    }
+  }
+  else {
+    struct sockaddr_un addr;
+
+    sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
+    if (sock == -1)
+      error (EXIT_FAILURE, errno, "socket");
+    addr.sun_family = AF_UNIX;
+    if (strlen (channel) > UNIX_PATH_MAX-1)
+      error (EXIT_FAILURE, 0, "%s: socket path is too long", channel);
+    strcpy (addr.sun_path, channel);
+
+    if (bind (sock, (struct sockaddr *) &addr, sizeof addr) == -1)
+      error (EXIT_FAILURE, errno, "bind: %s", channel);
+
+    if (listen (sock, 4) == -1)
+      error (EXIT_FAILURE, errno, "listen");
+
+    sock = accept4 (sock, NULL, NULL, SOCK_CLOEXEC);
+    if (sock == -1)
+      error (EXIT_FAILURE, errno, "accept");
   }
 
   /* If it's a serial-port like device then it probably has echoing
@@ -308,10 +330,6 @@ main (int argc, char *argv[])
    */
   if (STRPREFIX (channel, "/dev/ttyS"))
     makeraw (channel, sock);
-
-  /* cmdline, channel not used after this point */
-  free (cmdline);
-  free (channel);
 
   /* Wait for udev devices to be created.  If you start libguestfs,
    * especially with disks that contain complex (eg. mdadm) data
@@ -344,55 +362,6 @@ main (int argc, char *argv[])
   main_loop (sock);
 
   exit (EXIT_SUCCESS);
-}
-
-/* Read /proc/cmdline. */
-static char *
-read_cmdline (void)
-{
-  int fd = open ("/proc/cmdline", O_RDONLY|O_CLOEXEC);
-  if (fd == -1) {
-    perror ("/proc/cmdline");
-    return NULL;
-  }
-
-  size_t len = 0;
-  ssize_t n;
-  char buf[256];
-  char *r = NULL;
-
-  for (;;) {
-    n = read (fd, buf, sizeof buf);
-    if (n == -1) {
-      perror ("read");
-      free (r);
-      close (fd);
-      return NULL;
-    }
-    if (n == 0)
-      break;
-    char *newr = realloc (r, len + n + 1); /* + 1 is for terminating NUL */
-    if (newr == NULL) {
-      perror ("realloc");
-      free (r);
-      close (fd);
-      return NULL;
-    }
-    r = newr;
-    memcpy (&r[len], buf, n);
-    len += n;
-  }
-
-  if (r)
-    r[len] = '\0';
-
-  if (close (fd) == -1) {
-    perror ("close");
-    free (r);
-    return NULL;
-  }
-
-  return r;
 }
 
 /* Try to make the socket raw, but don't fail if it's not possible. */
@@ -1440,22 +1409,35 @@ mountable_to_string (const mountable_t *mountable)
   }
 }
 
-/* Check program exists and is executable on $PATH.  Actually, we
- * just assume PATH contains the default entries (see main() above).
- */
+/* Check program exists and is executable on $PATH. */
 int
 prog_exists (const char *prog)
 {
-  static const char * const dirs[] =
-    { "/sbin", "/usr/sbin", "/bin", "/usr/bin" };
-  size_t i;
-  char buf[1024];
+  const char *pathc = getenv ("PATH");
 
-  for (i = 0; i < sizeof dirs / sizeof dirs[0]; ++i) {
-    snprintf (buf, sizeof buf, "%s/%s", dirs[i], prog);
-    if (access (buf, X_OK) == 0)
+  if (!pathc)
+    return 0;
+
+  const size_t proglen = strlen (prog);
+  const char *elem;
+  char *saveptr;
+  const size_t len = strlen (pathc) + 1;
+  char path[len];
+  strcpy (path, pathc);
+
+  elem = strtok_r (path, ":", &saveptr);
+  while (elem) {
+    const size_t n = strlen (elem) + proglen + 2;
+    char testprog[n];
+
+    snprintf (testprog, n, "%s/%s", elem, prog);
+    if (access (testprog, X_OK) == 0)
       return 1;
+
+    elem = strtok_r (NULL, ":", &saveptr);
   }
+
+  /* Not found. */
   return 0;
 }
 
@@ -1527,6 +1509,24 @@ udev_settle (void)
     perror ("system");
   else if (!WIFEXITED (r) || WEXITSTATUS (r) != 0)
     fprintf (stderr, "warning: udevadm command failed\n");
+}
+
+char *
+get_random_uuid (void)
+{
+  int r;
+  char *out;
+  CLEANUP_FREE char *err = NULL;
+
+  r = command (&out, &err, str_uuidgen, NULL);
+  if (r == -1) {
+    reply_with_error ("%s", err);
+    return NULL;
+  }
+
+  /* caller free */
+  return out;
+
 }
 
 /* Use by the CLEANUP_* macros.  Do not call these directly. */

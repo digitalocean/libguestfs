@@ -29,63 +29,96 @@ let test_get_ostype ctx =
             i_root = ""; i_package_format = ""; i_package_management = "";
             i_product_name = ""; i_product_variant = ""; i_mountpoints = [];
             i_apps = []; i_apps_map = StringMap.empty; i_uefi = false } in
-  assert_equal ~printer:identity "RHEL6"
+  let printer = identity in
+  assert_equal ~printer "RHEL6"
                (OVF.get_ostype { i with i_type = "linux"; i_distro = "rhel";
                                         i_major_version = 6;
                                         i_minor_version = 0;
                                         i_arch = "i386" });
-  assert_equal ~printer:identity "RHEL6x64"
+  assert_equal ~printer "RHEL6x64"
                (OVF.get_ostype { i with i_type = "linux"; i_distro = "rhel";
                                         i_major_version = 6;
                                         i_minor_version = 0;
                                         i_arch = "x86_64" });
-  assert_equal ~printer:identity "rhel_7x64"
+  assert_equal ~printer "rhel_7x64"
                (OVF.get_ostype { i with i_type = "linux"; i_distro = "rhel";
                                         i_major_version = 7;
                                         i_minor_version = 0;
                                         i_arch = "x86_64" });
-  assert_equal ~printer:identity "Windows7"
+  assert_equal ~printer "Windows7"
                (OVF.get_ostype { i with i_type = "windows";
                                         i_major_version = 6;
                                         i_minor_version = 1;
                                         i_product_variant = "Client";
                                         i_arch = "i386" });
-  assert_equal ~printer:identity "Windows7x64"
+  assert_equal ~printer "Windows7x64"
                (OVF.get_ostype { i with i_type = "windows";
                                         i_major_version = 6;
                                         i_minor_version = 1;
                                         i_product_variant = "Client";
                                         i_arch = "x86_64" });
-  assert_equal ~printer:identity "windows_8"
+  assert_equal ~printer "windows_8"
                (OVF.get_ostype { i with i_type = "windows";
                                         i_major_version = 6;
                                         i_minor_version = 2;
                                         i_product_variant = "Client";
                                         i_arch = "i386" });
-  assert_equal ~printer:identity "windows_8x64"
+  assert_equal ~printer "windows_8x64"
                (OVF.get_ostype { i with i_type = "windows";
                                         i_major_version = 6;
                                         i_minor_version = 2;
                                         i_product_variant = "Client";
                                         i_arch = "x86_64" });
-  assert_equal ~printer:identity "windows_2012x64"
+  assert_equal ~printer "windows_2012x64"
                (OVF.get_ostype { i with i_type = "windows";
                                         i_major_version = 6;
                                         i_minor_version = 2;
                                         i_product_variant = "Server";
                                         i_arch = "x86_64" });
-  assert_equal ~printer:identity "windows_2012R2x64"
+  assert_equal ~printer "windows_2012R2x64"
                (OVF.get_ostype { i with i_type = "windows";
                                         i_major_version = 6;
                                         i_minor_version = 3;
                                         i_product_variant = "Server";
                                         i_arch = "x86_64" })
 
+let test_drive_name ctx =
+  let printer = identity in
+  assert_equal ~printer "a" (Utils.drive_name 0);
+  assert_equal ~printer "z" (Utils.drive_name 25);
+  assert_equal ~printer "aa" (Utils.drive_name 26);
+  assert_equal ~printer "ab" (Utils.drive_name 27);
+  assert_equal ~printer "az" (Utils.drive_name 51);
+  assert_equal ~printer "ba" (Utils.drive_name 52);
+  assert_equal ~printer "zz" (Utils.drive_name 701);
+  assert_equal ~printer "aaa" (Utils.drive_name 702);
+  assert_equal ~printer "zzz" (Utils.drive_name 18277)
+
+let test_drive_index ctx =
+  let printer = string_of_int in
+  assert_equal ~printer 0 (Utils.drive_index "a");
+  assert_equal ~printer 25 (Utils.drive_index "z");
+  assert_equal ~printer 26 (Utils.drive_index "aa");
+  assert_equal ~printer 27 (Utils.drive_index "ab");
+  assert_equal ~printer 51 (Utils.drive_index "az");
+  assert_equal ~printer 52 (Utils.drive_index "ba");
+  assert_equal ~printer 701 (Utils.drive_index "zz");
+  assert_equal ~printer 702 (Utils.drive_index "aaa");
+  assert_equal ~printer 18277 (Utils.drive_index "zzz");
+  let exn = Invalid_argument "drive_index: invalid parameter" in
+  assert_raises exn (fun () -> Utils.drive_index "");
+  assert_raises exn (fun () -> Utils.drive_index "abc123");
+  assert_raises exn (fun () -> Utils.drive_index "123");
+  assert_raises exn (fun () -> Utils.drive_index "Z");
+  assert_raises exn (fun () -> Utils.drive_index "aB")
+
 (* Suites declaration. *)
 let suite =
   "virt-v2v" >:::
     [
       "OVF.get_ostype" >:: test_get_ostype;
+      "Utils.drive_name" >:: test_drive_name;
+      "Utils.drive_index" >:: test_drive_index;
     ]
 
 let () =

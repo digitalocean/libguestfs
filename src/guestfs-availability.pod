@@ -65,6 +65,7 @@ L</guestfs_btrfs_qgroup_remove>
 L</guestfs_btrfs_qgroup_show>
 L</guestfs_btrfs_quota_enable>
 L</guestfs_btrfs_quota_rescan>
+L</guestfs_btrfs_replace>
 L</guestfs_btrfs_rescue_chunk_recover>
 L</guestfs_btrfs_rescue_super_recover>
 L</guestfs_btrfs_scrub_cancel>

@@ -47,6 +47,8 @@ extern int enable_network;
 
 extern int autosync_umount;
 
+extern int test_mode;
+
 extern const char *sysroot;
 extern size_t sysroot_len;
 
@@ -150,6 +152,8 @@ extern void udev_settle (void);
 
 extern int random_name (char *template);
 
+extern char *get_random_uuid (void);
+
 /* This just stops gcc from giving a warning about our custom printf
  * formatters %Q and %R.  See guestfs(3)/EXTENDING LIBGUESTFS for more
  * info about these.  In GCC 4.8.0 the warning is even harder to
@@ -219,6 +223,7 @@ extern int sync_disks (void);
 /* Confirmed this is true up to ext4 from the Linux sources. */
 #define EXT2_LABEL_MAX 16
 extern int fstype_is_extfs (const char *fstype);
+extern int ext_set_uuid_random (const char *device);
 
 /*-- in blkid.c --*/
 extern char *get_blkid_tag (const char *device, const char *tag);
@@ -260,6 +265,9 @@ extern int copy_xattrs (const char *src, const char *dest);
 /*-- in xfs.c --*/
 /* Documented in xfs_admin(8). */
 #define XFS_LABEL_MAX 12
+extern int xfs_set_uuid (const char *device, const char *uuid);
+extern int xfs_set_uuid_random (const char *device);
+extern int xfs_set_label (const char *device, const char *label);
 
 /*-- debug-bmap.c --*/
 extern char *debug_bmap (const char *subcmd, size_t argc, char *const *const argv);
@@ -268,9 +276,16 @@ extern char *debug_bmap_device (const char *subcmd, size_t argc, char *const *co
 
 /*-- in btrfs.c --*/
 extern char *btrfs_get_label (const char *device);
+extern int btrfs_set_label (const char *device, const char *label);
+extern int btrfs_set_uuid (const char *device, const char *uuid);
+extern int btrfs_set_uuid_random (const char *device);
 
 /*-- in ntfs.c --*/
 extern char *ntfs_get_label (const char *device);
+extern int ntfs_set_label (const char *device, const char *label);
+
+/*-- in swap.c --*/
+extern int swap_set_uuid (const char *device, const char *uuid);
 
 /* ordinary daemon functions use these to indicate errors
  * NB: you don't need to prefix the string with the current command,

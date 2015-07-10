@@ -97,6 +97,7 @@ extern int optgroup_zerofree_available (void);
   guestfs_int_btrfsqgroup_list *__attribute__((noreturn)) do_btrfs_qgroup_show (const char *path) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_quota_enable (const mountable_t *fs, int enable) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_quota_rescan (const mountable_t *fs) { abort (); } \
+  int __attribute__((noreturn)) do_btrfs_replace (const char *srcdev, const char *targetdev, const char *mntpoint) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_rescue_chunk_recover (const char *device) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_rescue_super_recover (const char *device) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_scrub_cancel (const char *path) { abort (); } \

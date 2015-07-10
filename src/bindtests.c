@@ -143,7 +143,7 @@ guestfs_impl_internal_test (guestfs_h *g,
   {
     size_t i;
     for (i = 0; i < bufferin_size; ++i)
-      fprintf (fp, "<%02x>", bufferin[i]);
+      fprintf (fp, "<%02x>", (unsigned) bufferin[i]);
     fprintf (fp, "\n");
   }
   fprintf (fp, "obool: ");

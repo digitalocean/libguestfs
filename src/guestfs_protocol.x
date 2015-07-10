@@ -2118,6 +2118,7 @@ struct guestfs_copy_device_to_device_args {
   int64_t destoffset;
   int64_t size;
   bool sparse;
+  bool append;
 };
 
 struct guestfs_copy_device_to_file_args {
@@ -2127,6 +2128,7 @@ struct guestfs_copy_device_to_file_args {
   int64_t destoffset;
   int64_t size;
   bool sparse;
+  bool append;
 };
 
 struct guestfs_copy_file_to_device_args {
@@ -2136,6 +2138,7 @@ struct guestfs_copy_file_to_device_args {
   int64_t destoffset;
   int64_t size;
   bool sparse;
+  bool append;
 };
 
 struct guestfs_copy_file_to_file_args {
@@ -2145,6 +2148,7 @@ struct guestfs_copy_file_to_file_args {
   int64_t destoffset;
   int64_t size;
   bool sparse;
+  bool append;
 };
 
 struct guestfs_tune2fs_args {
@@ -3125,6 +3129,16 @@ struct guestfs_part_get_mbr_part_type_ret {
   string partitiontype<>;
 };
 
+struct guestfs_btrfs_replace_args {
+  string srcdev<>;
+  string targetdev<>;
+  string mntpoint<>;
+};
+
+struct guestfs_set_uuid_random_args {
+  string device<>;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3568,10 +3582,12 @@ enum guestfs_procedure {
   GUESTFS_PROC_BTRFSTUNE_ENABLE_EXTENDED_INODE_REFS = 451,
   GUESTFS_PROC_BTRFSTUNE_ENABLE_SKINNY_METADATA_EXTENT_REFS = 452,
   GUESTFS_PROC_BTRFS_IMAGE = 453,
-  GUESTFS_PROC_PART_GET_MBR_PART_TYPE = 454
+  GUESTFS_PROC_PART_GET_MBR_PART_TYPE = 454,
+  GUESTFS_PROC_BTRFS_REPLACE = 455,
+  GUESTFS_PROC_SET_UUID_RANDOM = 456
 };
 
-const GUESTFS_MAX_PROC_NR = 454;
+const GUESTFS_MAX_PROC_NR = 456;
 
 /* The remote procedure call protocol. */
 

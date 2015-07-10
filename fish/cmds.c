@@ -115,6 +115,7 @@ static int run_btrfs_qgroup_remove (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_qgroup_show (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_quota_enable (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_quota_rescan (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_replace (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_rescue_chunk_recover (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_rescue_super_recover (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_scrub_cancel (const char *cmd, size_t argc, char *argv[]);
@@ -291,6 +292,7 @@ static int run_inspect_is_netinst (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_list_applications (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_list_applications2 (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_os (const char *cmd, size_t argc, char *argv[]);
+static int run_internal_exit (const char *cmd, size_t argc, char *argv[]);
 static int run_is_blockdev (const char *cmd, size_t argc, char *argv[]);
 static int run_is_chardev (const char *cmd, size_t argc, char *argv[]);
 static int run_is_config (const char *cmd, size_t argc, char *argv[]);
@@ -508,6 +510,7 @@ static int run_set_smp (const char *cmd, size_t argc, char *argv[]);
 static int run_set_tmpdir (const char *cmd, size_t argc, char *argv[]);
 static int run_set_trace (const char *cmd, size_t argc, char *argv[]);
 static int run_set_uuid (const char *cmd, size_t argc, char *argv[]);
+static int run_set_uuid_random (const char *cmd, size_t argc, char *argv[]);
 static int run_set_verbose (const char *cmd, size_t argc, char *argv[]);
 static int run_setcon (const char *cmd, size_t argc, char *argv[]);
 static int run_setxattr (const char *cmd, size_t argc, char *argv[]);
@@ -1187,6 +1190,13 @@ struct command_entry btrfs_quota_rescan_cmd_entry = {
   .run = run_btrfs_quota_rescan
 };
 
+struct command_entry btrfs_replace_cmd_entry = {
+  .name = "btrfs-replace",
+  .help = "NAME\n    btrfs-replace - replace a btrfs managed device with another device\n\nSYNOPSIS\n     btrfs-replace srcdev targetdev mntpoint\n\nDESCRIPTION\n    Replace device of a btrfs filesystem. On a live filesystem, duplicate\n    the data to the target device which is currently stored on the source\n    device. After completion of the operation, the source device is wiped\n    out and removed from the filesystem.\n\n    The \"targetdev\" needs to be same size or larger than the \"srcdev\".\n    Devices which are currently mounted are never allowed to be used as the\n    \"targetdev\".\n\n",
+  .synopsis = "btrfs-replace srcdev targetdev mntpoint",
+  .run = run_btrfs_replace
+};
+
 struct command_entry btrfs_rescue_chunk_recover_cmd_entry = {
   .name = "btrfs-rescue-chunk-recover",
   .help = "NAME\n    btrfs-rescue-chunk-recover - recover the chunk tree of btrfs filesystem\n\nSYNOPSIS\n     btrfs-rescue-chunk-recover device\n\nDESCRIPTION\n    Recover the chunk tree of btrfs filesystem by scanning the devices one\n    by one.\n\n",
@@ -1434,29 +1444,29 @@ struct command_entry copy_attributes_cmd_entry = {
 
 struct command_entry copy_device_to_device_cmd_entry = {
   .name = "copy-device-to-device",
-  .help = "NAME\n    copy-device-to-device - copy from source device to destination device\n\nSYNOPSIS\n     copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]\n\nDESCRIPTION\n    The four calls \"copy_device_to_device\", \"copy_device_to_file\",\n    \"copy_file_to_device\", and \"copy_file_to_file\" let you copy from a\n    source (device|file) to a destination (device|file).\n\n    Partial copies can be made since you can specify optionally the source\n    offset, destination offset and size to copy. These values are all\n    specified in bytes. If not given, the offsets both default to zero, and\n    the size defaults to copying as much as possible until we hit the end of\n    the source.\n\n    The source and destination may be the same object. However overlapping\n    regions may not be copied correctly.\n\n    If the destination is a file, it is created if required. If the\n    destination file is not large enough, it is extended.\n\n    If the \"sparse\" flag is true then the call avoids writing blocks that\n    contain only zeroes, which can help in some situations where the backing\n    disk is thin-provisioned. Note that unless the target is already zeroed,\n    using this option will result in incorrect copying.\n\n",
-  .synopsis = "copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]",
+  .help = "NAME\n    copy-device-to-device - copy from source device to destination device\n\nSYNOPSIS\n     copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]\n\nDESCRIPTION\n    The four calls \"copy_device_to_device\", \"copy_device_to_file\",\n    \"copy_file_to_device\", and \"copy_file_to_file\" let you copy from a\n    source (device|file) to a destination (device|file).\n\n    Partial copies can be made since you can specify optionally the source\n    offset, destination offset and size to copy. These values are all\n    specified in bytes. If not given, the offsets both default to zero, and\n    the size defaults to copying as much as possible until we hit the end of\n    the source.\n\n    The source and destination may be the same object. However overlapping\n    regions may not be copied correctly.\n\n    If the destination is a file, it is created if required. If the\n    destination file is not large enough, it is extended.\n\n    If the destination is a file and the \"append\" flag is not set, then the\n    destination file is truncated. If the \"append\" flag is set, then the\n    copy appends to the destination file. The \"append\" flag currently cannot\n    be set for devices.\n\n    If the \"sparse\" flag is true then the call avoids writing blocks that\n    contain only zeroes, which can help in some situations where the backing\n    disk is thin-provisioned. Note that unless the target is already zeroed,\n    using this option will result in incorrect copying.\n\n",
+  .synopsis = "copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]",
   .run = run_copy_device_to_device
 };
 
 struct command_entry copy_device_to_file_cmd_entry = {
   .name = "copy-device-to-file",
-  .help = "NAME\n    copy-device-to-file - copy from source device to destination file\n\nSYNOPSIS\n     copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
-  .synopsis = "copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]",
+  .help = "NAME\n    copy-device-to-file - copy from source device to destination file\n\nSYNOPSIS\n     copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
+  .synopsis = "copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]",
   .run = run_copy_device_to_file
 };
 
 struct command_entry copy_file_to_device_cmd_entry = {
   .name = "copy-file-to-device",
-  .help = "NAME\n    copy-file-to-device - copy from source file to destination device\n\nSYNOPSIS\n     copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
-  .synopsis = "copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]",
+  .help = "NAME\n    copy-file-to-device - copy from source file to destination device\n\nSYNOPSIS\n     copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
+  .synopsis = "copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]",
   .run = run_copy_file_to_device
 };
 
 struct command_entry copy_file_to_file_cmd_entry = {
   .name = "copy-file-to-file",
-  .help = "NAME\n    copy-file-to-file - copy from source file to destination file\n\nSYNOPSIS\n     copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n    This is not the function you want for copying files. This is for copying\n    blocks within existing files. See \"cp\", \"cp_a\" and \"mv\" for general file\n    copying and moving functions.\n\n",
-  .synopsis = "copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]",
+  .help = "NAME\n    copy-file-to-file - copy from source file to destination file\n\nSYNOPSIS\n     copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n    This is not the function you want for copying files. This is for copying\n    blocks within existing files. See \"cp\", \"cp_a\" and \"mv\" for general file\n    copying and moving functions.\n\n",
+  .synopsis = "copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]",
   .run = run_copy_file_to_file
 };
 
@@ -2417,6 +2427,13 @@ struct command_entry inspect_os_cmd_entry = {
   .help = "NAME\n    inspect-os - inspect disk and return list of operating systems found\n\nSYNOPSIS\n     inspect-os\n\nDESCRIPTION\n    This function uses other libguestfs functions and certain heuristics to\n    inspect the disk(s) (usually disks belonging to a virtual machine),\n    looking for operating systems.\n\n    The list returned is empty if no operating systems were found.\n\n    If one operating system was found, then this returns a list with a\n    single element, which is the name of the root filesystem of this\n    operating system. It is also possible for this function to return a list\n    containing more than one element, indicating a dual-boot or multi-boot\n    virtual machine, with each element being the root filesystem of one of\n    the operating systems.\n\n    You can pass the root string(s) returned to other \"inspect_get_*\"\n    functions in order to query further information about each operating\n    system, such as the name and version.\n\n    This function uses other libguestfs features such as \"mount_ro\" and\n    \"umount_all\" in order to mount and unmount filesystems and look at the\n    contents. This should be called with no disks currently mounted. The\n    function may also use Augeas, so any existing Augeas handle will be\n    closed.\n\n    This function cannot decrypt encrypted disks. The caller must do that\n    first (supplying the necessary keys) if the disk is encrypted.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n    See also \"list_filesystems\".\n\n",
   .synopsis = "inspect-os",
   .run = run_inspect_os
+};
+
+struct command_entry internal_exit_cmd_entry = {
+  .name = "internal-exit",
+  .help = "NAME\n    internal-exit - cause the daemon to exit (internal use only)\n\nSYNOPSIS\n     internal-exit\n\nDESCRIPTION\n    This function is used internally when closing the appliance. Note it's\n    only called when ./configure --enable-valgrind-daemon is used.\n\n",
+  .synopsis = "internal-exit",
+  .run = run_internal_exit
 };
 
 struct command_entry is_blockdev_cmd_entry = {
@@ -3835,7 +3852,7 @@ struct command_entry set_hv_cmd_entry = {
 
 struct command_entry set_label_cmd_entry = {
   .name = "set-label",
-  .help = "NAME\n    set-label - set filesystem label\n\nSYNOPSIS\n     set-label mountable label\n\nDESCRIPTION\n    Set the filesystem label on \"mountable\" to \"label\".\n\n    Only some filesystem types support labels, and libguestfs supports\n    setting labels on only a subset of these.\n\n    ext2, ext3, ext4\n        Labels are limited to 16 bytes.\n\n    NTFS\n        Labels are limited to 128 unicode characters.\n\n    XFS The label is limited to 12 bytes. The filesystem must not be mounted\n        when trying to set the label.\n\n    btrfs\n        The label is limited to 256 bytes and some characters are not\n        allowed. Setting the label on a btrfs subvolume will set the label\n        on its parent filesystem. The filesystem must not be mounted when\n        trying to set the label.\n\n    To read the label on a filesystem, call \"vfs_label\".\n\n",
+  .help = "NAME\n    set-label - set filesystem label\n\nSYNOPSIS\n     set-label mountable label\n\nDESCRIPTION\n    Set the filesystem label on \"mountable\" to \"label\".\n\n    Only some filesystem types support labels, and libguestfs supports\n    setting labels on only a subset of these.\n\n    ext2, ext3, ext4\n        Labels are limited to 16 bytes.\n\n    NTFS\n        Labels are limited to 128 unicode characters.\n\n    XFS The label is limited to 12 bytes. The filesystem must not be mounted\n        when trying to set the label.\n\n    btrfs\n        The label is limited to 256 bytes and some characters are not\n        allowed. Setting the label on a btrfs subvolume will set the label\n        on its parent filesystem. The filesystem must not be mounted when\n        trying to set the label.\n\n    fat The label is limited to 11 bytes.\n\n    If there is no support for changing the label for the type of the\n    specified filesystem, set_label will fail and set errno as ENOTSUP.\n\n    To read the label on a filesystem, call \"vfs_label\".\n\n",
   .synopsis = "set-label mountable label",
   .run = run_set_label
 };
@@ -3933,9 +3950,16 @@ struct command_entry set_trace_cmd_entry = {
 
 struct command_entry set_uuid_cmd_entry = {
   .name = "set-uuid",
-  .help = "NAME\n    set-uuid - set the filesystem UUID\n\nSYNOPSIS\n     set-uuid device uuid\n\nDESCRIPTION\n    Set the filesystem UUID on \"device\" to \"uuid\".\n\n    Only some filesystem types support setting UUIDs.\n\n    To read the UUID on a filesystem, call \"vfs_uuid\".\n\n",
+  .help = "NAME\n    set-uuid - set the filesystem UUID\n\nSYNOPSIS\n     set-uuid device uuid\n\nDESCRIPTION\n    Set the filesystem UUID on \"device\" to \"uuid\". If this fails and the\n    errno is ENOTSUP, means that there is no support for changing the UUID\n    for the type of the specified filesystem.\n\n    Only some filesystem types support setting UUIDs.\n\n    To read the UUID on a filesystem, call \"vfs_uuid\".\n\n",
   .synopsis = "set-uuid device uuid",
   .run = run_set_uuid
+};
+
+struct command_entry set_uuid_random_cmd_entry = {
+  .name = "set-uuid-random",
+  .help = "NAME\n    set-uuid-random - set a random UUID for the filesystem\n\nSYNOPSIS\n     set-uuid-random device\n\nDESCRIPTION\n    Set the filesystem UUID on \"device\" to a random UUID. If this fails and\n    the errno is ENOTSUP, means that there is no support for changing the\n    UUID for the type of the specified filesystem.\n\n    Only some filesystem types support setting UUIDs.\n\n    To read the UUID on a filesystem, call \"vfs_uuid\".\n\n",
+  .synopsis = "set-uuid-random device",
+  .run = run_set_uuid_random
 };
 
 struct command_entry set_verbose_cmd_entry = {
@@ -4662,6 +4686,7 @@ list_commands (void)
   printf ("%-20s %s\n", "btrfs-qgroup-show", _("show subvolume quota groups"));
   printf ("%-20s %s\n", "btrfs-quota-enable", _("enable or disable subvolume quota support"));
   printf ("%-20s %s\n", "btrfs-quota-rescan", _("trash all qgroup numbers and scan the metadata again with the current config"));
+  printf ("%-20s %s\n", "btrfs-replace", _("replace a btrfs managed device with another device"));
   printf ("%-20s %s\n", "btrfs-rescue-chunk-recover", _("recover the chunk tree of btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-rescue-super-recover", _("recover bad superblocks from good copies"));
   printf ("%-20s %s\n", "btrfs-scrub-cancel", _("cancel a running scrub"));
@@ -4865,6 +4890,7 @@ list_commands (void)
   printf ("%-20s %s\n", "inspect-list-applications", _("get list of applications installed in the operating system"));
   printf ("%-20s %s\n", "inspect-list-applications2", _("get list of applications installed in the operating system"));
   printf ("%-20s %s\n", "inspect-os", _("inspect disk and return list of operating systems found"));
+  printf ("%-20s %s\n", "internal-exit", _("cause the daemon to exit (internal use only)"));
   printf ("%-20s %s\n", "is-blockdev", _("test if block device"));
   printf ("%-20s %s\n", "is-chardev", _("test if character device"));
   printf ("%-20s %s\n", "is-config", _("is in configuration state"));
@@ -5126,6 +5152,7 @@ list_commands (void)
   printf ("%-20s %s\n", "set-tmpdir", _("set the temporary directory"));
   printf ("%-20s %s\n", "set-trace", _("enable or disable command traces"));
   printf ("%-20s %s\n", "set-uuid", _("set the filesystem UUID"));
+  printf ("%-20s %s\n", "set-uuid-random", _("set a random UUID for the filesystem"));
   printf ("%-20s %s\n", "set-verbose", _("set verbose mode"));
   printf ("%-20s %s\n", "setcon", _("set SELinux security context"));
   printf ("%-20s %s\n", "setenv", _("set an environment variable"));
@@ -5405,7 +5432,7 @@ print_isoinfo_indent (struct guestfs_isoinfo *isoinfo, const char *indent)
 static void
 print_lvm_lv_indent (struct guestfs_lvm_lv *lvm_lv, const char *indent)
 {
-  unsigned int i;
+  size_t i;
 
   printf ("%slv_name: %s\n", indent, lvm_lv->lv_name);
   printf ("%slv_uuid: ", indent);
@@ -5437,7 +5464,7 @@ print_lvm_lv_indent (struct guestfs_lvm_lv *lvm_lv, const char *indent)
 static void
 print_lvm_pv_indent (struct guestfs_lvm_pv *lvm_pv, const char *indent)
 {
-  unsigned int i;
+  size_t i;
 
   printf ("%spv_name: %s\n", indent, lvm_pv->pv_name);
   printf ("%spv_uuid: ", indent);
@@ -5461,7 +5488,7 @@ print_lvm_pv_indent (struct guestfs_lvm_pv *lvm_pv, const char *indent)
 static void
 print_lvm_vg_indent (struct guestfs_lvm_vg *lvm_vg, const char *indent)
 {
-  unsigned int i;
+  size_t i;
 
   printf ("%svg_name: %s\n", indent, lvm_vg->vg_name);
   printf ("%svg_uuid: ", indent);
@@ -5586,7 +5613,7 @@ print_version_indent (struct guestfs_version *version, const char *indent)
 static void
 print_xattr_indent (struct guestfs_xattr *xattr, const char *indent)
 {
-  unsigned int i;
+  size_t i;
 
   printf ("%sattrname: %s\n", indent, xattr->attrname);
   printf ("%sattrval: ", indent);
@@ -5594,7 +5621,7 @@ print_xattr_indent (struct guestfs_xattr *xattr, const char *indent)
     if (c_isprint (xattr->attrval[i]))
       printf ("%c", xattr->attrval[i]);
     else
-      printf ("\\x%02x", xattr->attrval[i]);
+      printf ("\\x%02x", (unsigned) xattr->attrval[i]);
   printf ("\n");
 }
 
@@ -5631,10 +5658,10 @@ print_xfsinfo_indent (struct guestfs_xfsinfo *xfsinfo, const char *indent)
 static void
 print_lvm_lv_list (struct guestfs_lvm_lv_list *lvm_lvs)
 {
-  unsigned int i;
+  size_t i;
 
   for (i = 0; i < lvm_lvs->len; ++i) {
-    printf ("[%d] = {\n", i);
+    printf ("[%zu] = {\n", i);
     print_lvm_lv_indent (&lvm_lvs->val[i], "  ");
     printf ("}\n");
   }
@@ -5643,10 +5670,10 @@ print_lvm_lv_list (struct guestfs_lvm_lv_list *lvm_lvs)
 static void
 print_dirent_list (struct guestfs_dirent_list *dirents)
 {
-  unsigned int i;
+  size_t i;
 
   for (i = 0; i < dirents->len; ++i) {
-    printf ("[%d] = {\n", i);
+    printf ("[%zu] = {\n", i);
     print_dirent_indent (&dirents->val[i], "  ");
     printf ("}\n");
   }
@@ -5655,10 +5682,10 @@ print_dirent_list (struct guestfs_dirent_list *dirents)
 static void
 print_btrfsqgroup_list (struct guestfs_btrfsqgroup_list *btrfsqgroups)
 {
-  unsigned int i;
+  size_t i;
 
   for (i = 0; i < btrfsqgroups->len; ++i) {
-    printf ("[%d] = {\n", i);
+    printf ("[%zu] = {\n", i);
     print_btrfsqgroup_indent (&btrfsqgroups->val[i], "  ");
     printf ("}\n");
   }
@@ -5667,10 +5694,10 @@ print_btrfsqgroup_list (struct guestfs_btrfsqgroup_list *btrfsqgroups)
 static void
 print_partition_list (struct guestfs_partition_list *partitions)
 {
-  unsigned int i;
+  size_t i;
 
   for (i = 0; i < partitions->len; ++i) {
-    printf ("[%d] = {\n", i);
+    printf ("[%zu] = {\n", i);
     print_partition_indent (&partitions->val[i], "  ");
     printf ("}\n");
   }
@@ -5679,10 +5706,10 @@ print_partition_list (struct guestfs_partition_list *partitions)
 static void
 print_statns_list (struct guestfs_statns_list *statnss)
 {
-  unsigned int i;
+  size_t i;
 
   for (i = 0; i < statnss->len; ++i) {
-    printf ("[%d] = {\n", i);
+    printf ("[%zu] = {\n", i);
     print_statns_indent (&statnss->val[i], "  ");
     printf ("}\n");
   }
@@ -5691,10 +5718,10 @@ print_statns_list (struct guestfs_statns_list *statnss)
 static void
 print_application2_list (struct guestfs_application2_list *application2s)
 {
-  unsigned int i;
+  size_t i;
 
   for (i = 0; i < application2s->len; ++i) {
-    printf ("[%d] = {\n", i);
+    printf ("[%zu] = {\n", i);
     print_application2_indent (&application2s->val[i], "  ");
     printf ("}\n");
   }
@@ -5703,10 +5730,10 @@ print_application2_list (struct guestfs_application2_list *application2s)
 static void
 print_inotify_event_list (struct guestfs_inotify_event_list *inotify_events)
 {
-  unsigned int i;
+  size_t i;
 
   for (i = 0; i < inotify_events->len; ++i) {
-    printf ("[%d] = {\n", i);
+    printf ("[%zu] = {\n", i);
     print_inotify_event_indent (&inotify_events->val[i], "  ");
     printf ("}\n");
   }
@@ -5715,10 +5742,10 @@ print_inotify_event_list (struct guestfs_inotify_event_list *inotify_events)
 static void
 print_application_list (struct guestfs_application_list *applications)
 {
-  unsigned int i;
+  size_t i;
 
   for (i = 0; i < applications->len; ++i) {
-    printf ("[%d] = {\n", i);
+    printf ("[%zu] = {\n", i);
     print_application_indent (&applications->val[i], "  ");
     printf ("}\n");
   }
@@ -5727,10 +5754,10 @@ print_application_list (struct guestfs_application_list *applications)
 static void
 print_hivex_value_list (struct guestfs_hivex_value_list *hivex_values)
 {
-  unsigned int i;
+  size_t i;
 
   for (i = 0; i < hivex_values->len; ++i) {
-    printf ("[%d] = {\n", i);
+    printf ("[%zu] = {\n", i);
     print_hivex_value_indent (&hivex_values->val[i], "  ");
     printf ("}\n");
   }
@@ -5739,10 +5766,10 @@ print_hivex_value_list (struct guestfs_hivex_value_list *hivex_values)
 static void
 print_xattr_list (struct guestfs_xattr_list *xattrs)
 {
-  unsigned int i;
+  size_t i;
 
   for (i = 0; i < xattrs->len; ++i) {
-    printf ("[%d] = {\n", i);
+    printf ("[%zu] = {\n", i);
     print_xattr_indent (&xattrs->val[i], "  ");
     printf ("}\n");
   }
@@ -5751,10 +5778,10 @@ print_xattr_list (struct guestfs_xattr_list *xattrs)
 static void
 print_lvm_pv_list (struct guestfs_lvm_pv_list *lvm_pvs)
 {
-  unsigned int i;
+  size_t i;
 
   for (i = 0; i < lvm_pvs->len; ++i) {
-    printf ("[%d] = {\n", i);
+    printf ("[%zu] = {\n", i);
     print_lvm_pv_indent (&lvm_pvs->val[i], "  ");
     printf ("}\n");
   }
@@ -5763,10 +5790,10 @@ print_lvm_pv_list (struct guestfs_lvm_pv_list *lvm_pvs)
 static void
 print_lvm_vg_list (struct guestfs_lvm_vg_list *lvm_vgs)
 {
-  unsigned int i;
+  size_t i;
 
   for (i = 0; i < lvm_vgs->len; ++i) {
-    printf ("[%d] = {\n", i);
+    printf ("[%zu] = {\n", i);
     print_lvm_vg_indent (&lvm_vgs->val[i], "  ");
     printf ("}\n");
   }
@@ -5775,10 +5802,10 @@ print_lvm_vg_list (struct guestfs_lvm_vg_list *lvm_vgs)
 static void
 print_btrfssubvolume_list (struct guestfs_btrfssubvolume_list *btrfssubvolumes)
 {
-  unsigned int i;
+  size_t i;
 
   for (i = 0; i < btrfssubvolumes->len; ++i) {
-    printf ("[%d] = {\n", i);
+    printf ("[%zu] = {\n", i);
     print_btrfssubvolume_indent (&btrfssubvolumes->val[i], "  ");
     printf ("}\n");
   }
@@ -5787,10 +5814,10 @@ print_btrfssubvolume_list (struct guestfs_btrfssubvolume_list *btrfssubvolumes)
 static void
 print_mdstat_list (struct guestfs_mdstat_list *mdstats)
 {
-  unsigned int i;
+  size_t i;
 
   for (i = 0; i < mdstats->len; ++i) {
-    printf ("[%d] = {\n", i);
+    printf ("[%zu] = {\n", i);
     print_mdstat_indent (&mdstats->val[i], "  ");
     printf ("}\n");
   }
@@ -5799,10 +5826,10 @@ print_mdstat_list (struct guestfs_mdstat_list *mdstats)
 static void
 print_hivex_node_list (struct guestfs_hivex_node_list *hivex_nodes)
 {
-  unsigned int i;
+  size_t i;
 
   for (i = 0; i < hivex_nodes->len; ++i) {
-    printf ("[%d] = {\n", i);
+    printf ("[%zu] = {\n", i);
     print_hivex_node_indent (&hivex_nodes->val[i], "  ");
     printf ("}\n");
   }
@@ -5811,10 +5838,10 @@ print_hivex_node_list (struct guestfs_hivex_node_list *hivex_nodes)
 static void
 print_stat_list (struct guestfs_stat_list *stats)
 {
-  unsigned int i;
+  size_t i;
 
   for (i = 0; i < stats->len; ++i) {
-    printf ("[%d] = {\n", i);
+    printf ("[%zu] = {\n", i);
     print_stat_indent (&stats->val[i], "  ");
     printf ("}\n");
   }
@@ -6288,7 +6315,7 @@ run_add_drive_scratch (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "size", "xstrtoll", xerr);
       goto out_size;
     }
@@ -6491,7 +6518,7 @@ run_aug_init (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "flags", "xstrtoll", xerr);
       goto out_flags;
     }
@@ -7089,7 +7116,7 @@ run_blockdev_setbsz (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "blocksize", "xstrtoll", xerr);
       goto out_blocksize;
     }
@@ -7131,7 +7158,7 @@ run_blockdev_setra (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "sectors", "xstrtoll", xerr);
       goto out_sectors;
     }
@@ -7466,7 +7493,7 @@ run_btrfs_filesystem_resize (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.size", "xstrtoll", xerr);
           goto out;
         }
@@ -7551,7 +7578,7 @@ run_btrfs_fsck (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.superblock", "xstrtoll", xerr);
           goto out;
         }
@@ -7627,7 +7654,7 @@ run_btrfs_image (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][14], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.compresslevel", "xstrtoll", xerr);
           goto out;
         }
@@ -7770,7 +7797,7 @@ run_btrfs_qgroup_limit (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "size", "xstrtoll", xerr);
       goto out_size;
     }
@@ -7896,6 +7923,34 @@ run_btrfs_quota_rescan (const char *cmd, size_t argc, char *argv[])
  out:
   free (fs);
  out_fs:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_replace (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *srcdev;
+  const char *targetdev;
+  char *mntpoint;
+  size_t i = 0;
+
+  if (argc != 3) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  srcdev = argv[i++];
+  targetdev = argv[i++];
+  mntpoint = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (mntpoint == NULL) goto out_mntpoint;
+  r = guestfs_btrfs_replace (g, srcdev, targetdev, mntpoint);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (mntpoint);
+ out_mntpoint:
  out_noargs:
   return ret;
 }
@@ -8217,7 +8272,7 @@ run_btrfs_subvolume_set_default (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "id", "xstrtoll", xerr);
       goto out_id;
     }
@@ -8417,7 +8472,7 @@ run_c_pointer (const char *cmd, size_t argc, char *argv[])
   r = guestfs_c_pointer (g);
   if (r == -1) goto out;
   ret = 0;
-  printf ("%s%" PRIx64 "\n", r != 0 ? "0x" : "", r);
+  printf ("%s%" PRIx64 "\n", r != 0 ? "0x" : "", (uint64_t) r);
  out:
  out_noargs:
   return ret;
@@ -8654,7 +8709,7 @@ run_chmod (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "mode", "xstrtoll", xerr);
       goto out_mode;
     }
@@ -8700,7 +8755,7 @@ run_chown (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "owner", "xstrtoll", xerr);
       goto out_owner;
     }
@@ -8719,7 +8774,7 @@ run_chown (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "group", "xstrtoll", xerr);
       goto out_group;
     }
@@ -8852,7 +8907,7 @@ run_compress_device_out (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.level", "xstrtoll", xerr);
           goto out;
         }
@@ -8925,7 +8980,7 @@ run_compress_out (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.level", "xstrtoll", xerr);
           goto out;
         }
@@ -9103,7 +9158,7 @@ run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
   struct guestfs_copy_device_to_device_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 6) {
+  if (argc < 2 || argc > 7) {
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
@@ -9122,7 +9177,7 @@ run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.srcoffset", "xstrtoll", xerr);
           goto out;
         }
@@ -9139,7 +9194,7 @@ run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.destoffset", "xstrtoll", xerr);
           goto out;
         }
@@ -9156,7 +9211,7 @@ run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.size", "xstrtoll", xerr);
           goto out;
         }
@@ -9177,6 +9232,19 @@ run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
       }
       this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
       this_arg = "sparse";
+    }
+    else if (STRPREFIX (argv[i], "append:")) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][7]);
+          goto out;
+        case 0:  optargs_s.append = 0; break;
+        default: optargs_s.append = 1;
+      }
+      this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND_BITMASK;
+      this_arg = "append";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
@@ -9211,7 +9279,7 @@ run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
   struct guestfs_copy_device_to_file_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 6) {
+  if (argc < 2 || argc > 7) {
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
@@ -9231,7 +9299,7 @@ run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.srcoffset", "xstrtoll", xerr);
           goto out;
         }
@@ -9248,7 +9316,7 @@ run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.destoffset", "xstrtoll", xerr);
           goto out;
         }
@@ -9265,7 +9333,7 @@ run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.size", "xstrtoll", xerr);
           goto out;
         }
@@ -9286,6 +9354,19 @@ run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
       }
       this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
       this_arg = "sparse";
+    }
+    else if (STRPREFIX (argv[i], "append:")) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][7]);
+          goto out;
+        case 0:  optargs_s.append = 0; break;
+        default: optargs_s.append = 1;
+      }
+      this_mask = GUESTFS_COPY_DEVICE_TO_FILE_APPEND_BITMASK;
+      this_arg = "append";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
@@ -9322,7 +9403,7 @@ run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
   struct guestfs_copy_file_to_device_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 6) {
+  if (argc < 2 || argc > 7) {
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
@@ -9342,7 +9423,7 @@ run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.srcoffset", "xstrtoll", xerr);
           goto out;
         }
@@ -9359,7 +9440,7 @@ run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.destoffset", "xstrtoll", xerr);
           goto out;
         }
@@ -9376,7 +9457,7 @@ run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.size", "xstrtoll", xerr);
           goto out;
         }
@@ -9397,6 +9478,19 @@ run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
       }
       this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
       this_arg = "sparse";
+    }
+    else if (STRPREFIX (argv[i], "append:")) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][7]);
+          goto out;
+        case 0:  optargs_s.append = 0; break;
+        default: optargs_s.append = 1;
+      }
+      this_mask = GUESTFS_COPY_FILE_TO_DEVICE_APPEND_BITMASK;
+      this_arg = "append";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
@@ -9433,7 +9527,7 @@ run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
   struct guestfs_copy_file_to_file_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 6) {
+  if (argc < 2 || argc > 7) {
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
@@ -9454,7 +9548,7 @@ run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.srcoffset", "xstrtoll", xerr);
           goto out;
         }
@@ -9471,7 +9565,7 @@ run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.destoffset", "xstrtoll", xerr);
           goto out;
         }
@@ -9488,7 +9582,7 @@ run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.size", "xstrtoll", xerr);
           goto out;
         }
@@ -9509,6 +9603,19 @@ run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
       }
       this_mask = GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
       this_arg = "sparse";
+    }
+    else if (STRPREFIX (argv[i], "append:")) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][7]);
+          goto out;
+        case 0:  optargs_s.append = 0; break;
+        default: optargs_s.append = 1;
+      }
+      this_mask = GUESTFS_COPY_FILE_TO_FILE_APPEND_BITMASK;
+      this_arg = "append";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
@@ -9561,7 +9668,7 @@ run_copy_size (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "size", "xstrtoll", xerr);
       goto out_size;
     }
@@ -9820,7 +9927,7 @@ run_debug_upload (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "mode", "xstrtoll", xerr);
       goto out_mode;
     }
@@ -9930,7 +10037,7 @@ run_disk_create (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "size", "xstrtoll", xerr);
       goto out_size;
     }
@@ -9969,7 +10076,7 @@ run_disk_create (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][12], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.clustersize", "xstrtoll", xerr);
           goto out;
         }
@@ -10149,7 +10256,7 @@ run_download_offset (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "offset", "xstrtoll", xerr);
       goto out_offset;
     }
@@ -10162,7 +10269,7 @@ run_download_offset (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "size", "xstrtoll", xerr);
       goto out_size;
     }
@@ -10201,7 +10308,7 @@ run_drop_caches (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "whattodrop", "xstrtoll", xerr);
       goto out_whattodrop;
     }
@@ -10519,7 +10626,7 @@ run_fallocate (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "len", "xstrtoll", xerr);
       goto out_len;
     }
@@ -10564,7 +10671,7 @@ run_fallocate64 (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "len", "xstrtoll", xerr);
       goto out_len;
     }
@@ -10782,7 +10889,7 @@ run_fill (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "c", "xstrtoll", xerr);
       goto out_c;
     }
@@ -10801,7 +10908,7 @@ run_fill (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "len", "xstrtoll", xerr);
       goto out_len;
     }
@@ -10849,7 +10956,7 @@ run_fill_dir (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "nr", "xstrtoll", xerr);
       goto out_nr;
     }
@@ -10894,7 +11001,7 @@ run_fill_pattern (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "len", "xstrtoll", xerr);
       goto out_len;
     }
@@ -11038,7 +11145,7 @@ run_fsck (const char *cmd, size_t argc, char *argv[])
   r = guestfs_fsck (g, fstype, device);
   if (r == -1) goto out;
   ret = 0;
-  printf ("%s%x\n", r != 0 ? "0x" : "", r);
+  printf ("%s%x\n", r != 0 ? "0x" : "", (unsigned) r);
  out:
  out_noargs:
   return ret;
@@ -11073,7 +11180,7 @@ run_fstrim (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][7], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.offset", "xstrtoll", xerr);
           goto out;
         }
@@ -11090,7 +11197,7 @@ run_fstrim (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][7], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.length", "xstrtoll", xerr);
           goto out;
         }
@@ -11107,7 +11214,7 @@ run_fstrim (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][18], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.minimumfreeextent", "xstrtoll", xerr);
           goto out;
         }
@@ -11434,7 +11541,7 @@ run_get_libvirt_requested_credential_challenge (const char *cmd, size_t argc, ch
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "index", "xstrtoll", xerr);
       goto out_index;
     }
@@ -11476,7 +11583,7 @@ run_get_libvirt_requested_credential_defresult (const char *cmd, size_t argc, ch
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "index", "xstrtoll", xerr);
       goto out_index;
     }
@@ -11518,7 +11625,7 @@ run_get_libvirt_requested_credential_prompt (const char *cmd, size_t argc, char 
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "index", "xstrtoll", xerr);
       goto out_index;
     }
@@ -11803,7 +11910,7 @@ run_get_umask (const char *cmd, size_t argc, char *argv[])
   r = guestfs_get_umask (g);
   if (r == -1) goto out;
   ret = 0;
-  printf ("%s%o\n", r != 0 ? "0" : "", r);
+  printf ("%s%o\n", r != 0 ? "0" : "", (unsigned) r);
  out:
  out_noargs:
   return ret;
@@ -12134,7 +12241,7 @@ run_head_n (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "nrlines", "xstrtoll", xerr);
       goto out_nrlines;
     }
@@ -12247,7 +12354,7 @@ run_hivex_node_add_child (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "parent", "xstrtoll", xerr);
       goto out_parent;
     }
@@ -12283,7 +12390,7 @@ run_hivex_node_children (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "nodeh", "xstrtoll", xerr);
       goto out_nodeh;
     }
@@ -12319,7 +12426,7 @@ run_hivex_node_delete_child (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "nodeh", "xstrtoll", xerr);
       goto out_nodeh;
     }
@@ -12354,7 +12461,7 @@ run_hivex_node_get_child (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "nodeh", "xstrtoll", xerr);
       goto out_nodeh;
     }
@@ -12391,7 +12498,7 @@ run_hivex_node_get_value (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "nodeh", "xstrtoll", xerr);
       goto out_nodeh;
     }
@@ -12427,7 +12534,7 @@ run_hivex_node_name (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "nodeh", "xstrtoll", xerr);
       goto out_nodeh;
     }
@@ -12463,7 +12570,7 @@ run_hivex_node_parent (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "nodeh", "xstrtoll", xerr);
       goto out_nodeh;
     }
@@ -12502,7 +12609,7 @@ run_hivex_node_set_value (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "nodeh", "xstrtoll", xerr);
       goto out_nodeh;
     }
@@ -12516,7 +12623,7 @@ run_hivex_node_set_value (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "t", "xstrtoll", xerr);
       goto out_t;
     }
@@ -12554,7 +12661,7 @@ run_hivex_node_values (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "nodeh", "xstrtoll", xerr);
       goto out_nodeh;
     }
@@ -12693,7 +12800,7 @@ run_hivex_value_key (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "valueh", "xstrtoll", xerr);
       goto out_valueh;
     }
@@ -12729,7 +12836,7 @@ run_hivex_value_type (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "valueh", "xstrtoll", xerr);
       goto out_valueh;
     }
@@ -12764,7 +12871,7 @@ run_hivex_value_utf8 (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "valueh", "xstrtoll", xerr);
       goto out_valueh;
     }
@@ -12801,7 +12908,7 @@ run_hivex_value_value (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "valueh", "xstrtoll", xerr);
       goto out_valueh;
     }
@@ -12903,7 +13010,7 @@ run_inotify_add_watch (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "mask", "xstrtoll", xerr);
       goto out_mask;
     }
@@ -12984,7 +13091,7 @@ run_inotify_init (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "maxevents", "xstrtoll", xerr);
       goto out_maxevents;
     }
@@ -13044,7 +13151,7 @@ run_inotify_rm_watch (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "wd", "xstrtoll", xerr);
       goto out_wd;
     }
@@ -13653,6 +13760,24 @@ run_inspect_os (const char *cmd, size_t argc, char *argv[])
   ret = 0;
   print_strings (r);
   guestfs_int_free_string_list (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_internal_exit (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+
+  if (argc != 0) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  r = guestfs_internal_exit (g);
+  if (r == -1) goto out;
+  ret = 0;
  out:
  out_noargs:
   return ret;
@@ -14334,7 +14459,7 @@ run_journal_set_data_threshold (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "threshold", "xstrtoll", xerr);
       goto out_threshold;
     }
@@ -14368,7 +14493,7 @@ run_journal_skip (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "skip", "xstrtoll", xerr);
       goto out_skip;
     }
@@ -14441,7 +14566,7 @@ run_lchown (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "owner", "xstrtoll", xerr);
       goto out_owner;
     }
@@ -14460,7 +14585,7 @@ run_lchown (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "group", "xstrtoll", xerr);
       goto out_group;
     }
@@ -15212,7 +15337,7 @@ run_lsetxattr (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "vallen", "xstrtoll", xerr);
       goto out_vallen;
     }
@@ -15382,7 +15507,7 @@ run_luks_add_key (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "keyslot", "xstrtoll", xerr);
       goto out_keyslot;
     }
@@ -15454,7 +15579,7 @@ run_luks_format (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "keyslot", "xstrtoll", xerr);
       goto out_keyslot;
     }
@@ -15504,7 +15629,7 @@ run_luks_format_cipher (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "keyslot", "xstrtoll", xerr);
       goto out_keyslot;
     }
@@ -15554,7 +15679,7 @@ run_luks_kill_slot (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "keyslot", "xstrtoll", xerr);
       goto out_keyslot;
     }
@@ -15660,7 +15785,7 @@ run_lvcreate (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "mbytes", "xstrtoll", xerr);
       goto out_mbytes;
     }
@@ -15704,7 +15829,7 @@ run_lvcreate_free (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "percent", "xstrtoll", xerr);
       goto out_percent;
     }
@@ -15873,7 +15998,7 @@ run_lvresize (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "mbytes", "xstrtoll", xerr);
       goto out_mbytes;
     }
@@ -15915,7 +16040,7 @@ run_lvresize_free (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "percent", "xstrtoll", xerr);
       goto out_percent;
     }
@@ -16080,7 +16205,7 @@ run_md_create (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][14], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.missingbitmap", "xstrtoll", xerr);
           goto out;
         }
@@ -16097,7 +16222,7 @@ run_md_create (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.nrdevices", "xstrtoll", xerr);
           goto out;
         }
@@ -16120,7 +16245,7 @@ run_md_create (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.spare", "xstrtoll", xerr);
           goto out;
         }
@@ -16143,7 +16268,7 @@ run_md_create (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.chunk", "xstrtoll", xerr);
           goto out;
         }
@@ -16294,7 +16419,7 @@ run_mkdir_mode (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "mode", "xstrtoll", xerr);
       goto out_mode;
     }
@@ -16395,7 +16520,7 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][12], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.blockscount", "xstrtoll", xerr);
           goto out;
         }
@@ -16412,7 +16537,7 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.blocksize", "xstrtoll", xerr);
           goto out;
         }
@@ -16429,7 +16554,7 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][9], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.fragsize", "xstrtoll", xerr);
           goto out;
         }
@@ -16446,7 +16571,7 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][15], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.blockspergroup", "xstrtoll", xerr);
           goto out;
         }
@@ -16463,7 +16588,7 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][15], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.numberofgroups", "xstrtoll", xerr);
           goto out;
         }
@@ -16480,7 +16605,7 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][14], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.bytesperinode", "xstrtoll", xerr);
           goto out;
         }
@@ -16497,7 +16622,7 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.inodesize", "xstrtoll", xerr);
           goto out;
         }
@@ -16514,7 +16639,7 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][12], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.journalsize", "xstrtoll", xerr);
           goto out;
         }
@@ -16531,7 +16656,7 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][15], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.numberofinodes", "xstrtoll", xerr);
           goto out;
         }
@@ -16548,7 +16673,7 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.stridesize", "xstrtoll", xerr);
           goto out;
         }
@@ -16565,7 +16690,7 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][12], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.stripewidth", "xstrtoll", xerr);
           goto out;
         }
@@ -16582,7 +16707,7 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][16], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.maxonlineresize", "xstrtoll", xerr);
           goto out;
         }
@@ -16599,7 +16724,7 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][25], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.reservedblockspercentage", "xstrtoll", xerr);
           goto out;
         }
@@ -16622,7 +16747,7 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][18], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.mmpupdateinterval", "xstrtoll", xerr);
           goto out;
         }
@@ -16938,7 +17063,7 @@ run_mke2fs_J (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "blocksize", "xstrtoll", xerr);
       goto out_blocksize;
     }
@@ -16984,7 +17109,7 @@ run_mke2fs_JL (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "blocksize", "xstrtoll", xerr);
       goto out_blocksize;
     }
@@ -17030,7 +17155,7 @@ run_mke2fs_JU (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "blocksize", "xstrtoll", xerr);
       goto out_blocksize;
     }
@@ -17073,7 +17198,7 @@ run_mke2journal (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "blocksize", "xstrtoll", xerr);
       goto out_blocksize;
     }
@@ -17116,7 +17241,7 @@ run_mke2journal_L (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "blocksize", "xstrtoll", xerr);
       goto out_blocksize;
     }
@@ -17160,7 +17285,7 @@ run_mke2journal_U (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "blocksize", "xstrtoll", xerr);
       goto out_blocksize;
     }
@@ -17203,7 +17328,7 @@ run_mkfifo (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "mode", "xstrtoll", xerr);
       goto out_mode;
     }
@@ -17258,7 +17383,7 @@ run_mkfs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.blocksize", "xstrtoll", xerr);
           goto out;
         }
@@ -17286,7 +17411,7 @@ run_mkfs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.inode", "xstrtoll", xerr);
           goto out;
         }
@@ -17309,7 +17434,7 @@ run_mkfs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.sectorsize", "xstrtoll", xerr);
           goto out;
         }
@@ -17373,7 +17498,7 @@ run_mkfs_b (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "blocksize", "xstrtoll", xerr);
       goto out_blocksize;
     }
@@ -17424,7 +17549,7 @@ run_mkfs_btrfs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.allocstart", "xstrtoll", xerr);
           goto out;
         }
@@ -17441,7 +17566,7 @@ run_mkfs_btrfs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.bytecount", "xstrtoll", xerr);
           goto out;
         }
@@ -17463,7 +17588,7 @@ run_mkfs_btrfs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][9], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.leafsize", "xstrtoll", xerr);
           goto out;
         }
@@ -17496,7 +17621,7 @@ run_mkfs_btrfs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][9], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.nodesize", "xstrtoll", xerr);
           goto out;
         }
@@ -17519,7 +17644,7 @@ run_mkfs_btrfs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.sectorsize", "xstrtoll", xerr);
           goto out;
         }
@@ -17625,7 +17750,7 @@ run_mknod (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "mode", "xstrtoll", xerr);
       goto out_mode;
     }
@@ -17644,7 +17769,7 @@ run_mknod (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "devmajor", "xstrtoll", xerr);
       goto out_devmajor;
     }
@@ -17663,7 +17788,7 @@ run_mknod (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "devminor", "xstrtoll", xerr);
       goto out_devminor;
     }
@@ -17712,7 +17837,7 @@ run_mknod_b (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "mode", "xstrtoll", xerr);
       goto out_mode;
     }
@@ -17731,7 +17856,7 @@ run_mknod_b (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "devmajor", "xstrtoll", xerr);
       goto out_devmajor;
     }
@@ -17750,7 +17875,7 @@ run_mknod_b (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "devminor", "xstrtoll", xerr);
       goto out_devminor;
     }
@@ -17799,7 +17924,7 @@ run_mknod_c (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "mode", "xstrtoll", xerr);
       goto out_mode;
     }
@@ -17818,7 +17943,7 @@ run_mknod_c (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "devmajor", "xstrtoll", xerr);
       goto out_devmajor;
     }
@@ -17837,7 +17962,7 @@ run_mknod_c (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "devminor", "xstrtoll", xerr);
       goto out_devminor;
     }
@@ -18177,7 +18302,7 @@ run_mount_local (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][13], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.cachetimeout", "xstrtoll", xerr);
           goto out;
         }
@@ -18691,7 +18816,7 @@ run_ntfsresize (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.size", "xstrtoll", xerr);
           goto out;
         }
@@ -18756,7 +18881,7 @@ run_ntfsresize_size (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "size", "xstrtoll", xerr);
       goto out_size;
     }
@@ -18837,7 +18962,7 @@ run_part_add (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "startsect", "xstrtoll", xerr);
       goto out_startsect;
     }
@@ -18850,7 +18975,7 @@ run_part_add (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "endsect", "xstrtoll", xerr);
       goto out_endsect;
     }
@@ -18887,7 +19012,7 @@ run_part_del (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "partnum", "xstrtoll", xerr);
       goto out_partnum;
     }
@@ -18952,7 +19077,7 @@ run_part_get_bootable (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "partnum", "xstrtoll", xerr);
       goto out_partnum;
     }
@@ -18995,7 +19120,7 @@ run_part_get_gpt_guid (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "partnum", "xstrtoll", xerr);
       goto out_partnum;
     }
@@ -19039,7 +19164,7 @@ run_part_get_gpt_type (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "partnum", "xstrtoll", xerr);
       goto out_partnum;
     }
@@ -19083,7 +19208,7 @@ run_part_get_mbr_id (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "partnum", "xstrtoll", xerr);
       goto out_partnum;
     }
@@ -19098,7 +19223,7 @@ run_part_get_mbr_id (const char *cmd, size_t argc, char *argv[])
   r = guestfs_part_get_mbr_id (g, device, partnum);
   if (r == -1) goto out;
   ret = 0;
-  printf ("%s%x\n", r != 0 ? "0x" : "", r);
+  printf ("%s%x\n", r != 0 ? "0x" : "", (unsigned) r);
  out:
  out_partnum:
  out_noargs:
@@ -19126,7 +19251,7 @@ run_part_get_mbr_part_type (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "partnum", "xstrtoll", xerr);
       goto out_partnum;
     }
@@ -19170,7 +19295,7 @@ run_part_get_name (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "partnum", "xstrtoll", xerr);
       goto out_partnum;
     }
@@ -19284,7 +19409,7 @@ run_part_set_bootable (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "partnum", "xstrtoll", xerr);
       goto out_partnum;
     }
@@ -19337,7 +19462,7 @@ run_part_set_gpt_guid (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "partnum", "xstrtoll", xerr);
       goto out_partnum;
     }
@@ -19381,7 +19506,7 @@ run_part_set_gpt_type (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "partnum", "xstrtoll", xerr);
       goto out_partnum;
     }
@@ -19425,7 +19550,7 @@ run_part_set_mbr_id (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "partnum", "xstrtoll", xerr);
       goto out_partnum;
     }
@@ -19444,7 +19569,7 @@ run_part_set_mbr_id (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "idbyte", "xstrtoll", xerr);
       goto out_idbyte;
     }
@@ -19488,7 +19613,7 @@ run_part_set_name (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "partnum", "xstrtoll", xerr);
       goto out_partnum;
     }
@@ -19597,7 +19722,7 @@ run_pread (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "count", "xstrtoll", xerr);
       goto out_count;
     }
@@ -19616,7 +19741,7 @@ run_pread (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "offset", "xstrtoll", xerr);
       goto out_offset;
     }
@@ -19663,7 +19788,7 @@ run_pread_device (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "count", "xstrtoll", xerr);
       goto out_count;
     }
@@ -19682,7 +19807,7 @@ run_pread_device (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "offset", "xstrtoll", xerr);
       goto out_offset;
     }
@@ -19827,7 +19952,7 @@ run_pvresize_size (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "size", "xstrtoll", xerr);
       goto out_size;
     }
@@ -19932,7 +20057,7 @@ run_pwrite (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "offset", "xstrtoll", xerr);
       goto out_offset;
     }
@@ -19976,7 +20101,7 @@ run_pwrite_device (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "offset", "xstrtoll", xerr);
       goto out_offset;
     }
@@ -20355,7 +20480,7 @@ run_resize2fs_size (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "size", "xstrtoll", xerr);
       goto out_size;
     }
@@ -21053,7 +21178,7 @@ run_set_e2generation (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "generation", "xstrtoll", xerr);
       goto out_generation;
     }
@@ -21181,7 +21306,7 @@ run_set_libvirt_requested_credential (const char *cmd, size_t argc, char *argv[]
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "index", "xstrtoll", xerr);
       goto out_index;
     }
@@ -21248,7 +21373,7 @@ run_set_memsize (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "memsize", "xstrtoll", xerr);
       goto out_memsize;
     }
@@ -21473,7 +21598,7 @@ run_set_smp (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "smp", "xstrtoll", xerr);
       goto out_smp;
     }
@@ -21570,6 +21695,27 @@ run_set_uuid (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_set_uuid_random (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_set_uuid_random (g, device);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_set_verbose (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -21644,7 +21790,7 @@ run_setxattr (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "vallen", "xstrtoll", xerr);
       goto out_vallen;
     }
@@ -21693,7 +21839,7 @@ run_sfdisk (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "cyls", "xstrtoll", xerr);
       goto out_cyls;
     }
@@ -21712,7 +21858,7 @@ run_sfdisk (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "heads", "xstrtoll", xerr);
       goto out_heads;
     }
@@ -21731,7 +21877,7 @@ run_sfdisk (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "sectors", "xstrtoll", xerr);
       goto out_sectors;
     }
@@ -21809,7 +21955,7 @@ run_sfdisk_N (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "partnum", "xstrtoll", xerr);
       goto out_partnum;
     }
@@ -21828,7 +21974,7 @@ run_sfdisk_N (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "cyls", "xstrtoll", xerr);
       goto out_cyls;
     }
@@ -21847,7 +21993,7 @@ run_sfdisk_N (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "heads", "xstrtoll", xerr);
       goto out_heads;
     }
@@ -21866,7 +22012,7 @@ run_sfdisk_N (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "sectors", "xstrtoll", xerr);
       goto out_sectors;
     }
@@ -22043,7 +22189,7 @@ run_sleep (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "secs", "xstrtoll", xerr);
       goto out_secs;
     }
@@ -22481,7 +22627,7 @@ run_tail_n (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "nrlines", "xstrtoll", xerr);
       goto out_nrlines;
     }
@@ -22765,7 +22911,7 @@ run_truncate_size (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "size", "xstrtoll", xerr);
       goto out_size;
     }
@@ -22823,7 +22969,7 @@ run_tune2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][14], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.maxmountcount", "xstrtoll", xerr);
           goto out;
         }
@@ -22846,7 +22992,7 @@ run_tune2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.mountcount", "xstrtoll", xerr);
           goto out;
         }
@@ -22874,7 +23020,7 @@ run_tune2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.group", "xstrtoll", xerr);
           goto out;
         }
@@ -22891,7 +23037,7 @@ run_tune2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][22], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.intervalbetweenchecks", "xstrtoll", xerr);
           goto out;
         }
@@ -22914,7 +23060,7 @@ run_tune2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][25], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.reservedblockspercentage", "xstrtoll", xerr);
           goto out;
         }
@@ -22942,7 +23088,7 @@ run_tune2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][20], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.reservedblockscount", "xstrtoll", xerr);
           goto out;
         }
@@ -22959,7 +23105,7 @@ run_tune2fs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.user", "xstrtoll", xerr);
           goto out;
         }
@@ -23090,7 +23236,7 @@ run_umask (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "mask", "xstrtoll", xerr);
       goto out_mask;
     }
@@ -23105,7 +23251,7 @@ run_umask (const char *cmd, size_t argc, char *argv[])
   r = guestfs_umask (g, mask);
   if (r == -1) goto out;
   ret = 0;
-  printf ("%s%o\n", r != 0 ? "0" : "", r);
+  printf ("%s%o\n", r != 0 ? "0" : "", (unsigned) r);
  out:
  out_mask:
  out_noargs:
@@ -23308,7 +23454,7 @@ run_upload_offset (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "offset", "xstrtoll", xerr);
       goto out_offset;
     }
@@ -23370,7 +23516,7 @@ run_utimens (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "atsecs", "xstrtoll", xerr);
       goto out_atsecs;
     }
@@ -23383,7 +23529,7 @@ run_utimens (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "atnsecs", "xstrtoll", xerr);
       goto out_atnsecs;
     }
@@ -23396,7 +23542,7 @@ run_utimens (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "mtsecs", "xstrtoll", xerr);
       goto out_mtsecs;
     }
@@ -23409,7 +23555,7 @@ run_utimens (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "mtnsecs", "xstrtoll", xerr);
       goto out_mtnsecs;
     }
@@ -24045,7 +24191,7 @@ run_write_file (const char *cmd, size_t argc, char *argv[])
     xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
     if (xerr != LONGINT_OK) {
       fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                cmd, "size", "xstrtoll", xerr);
       goto out_size;
     }
@@ -24253,7 +24399,7 @@ run_xfs_growfs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][9], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.datasize", "xstrtoll", xerr);
           goto out;
         }
@@ -24270,7 +24416,7 @@ run_xfs_growfs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][8], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.logsize", "xstrtoll", xerr);
           goto out;
         }
@@ -24287,7 +24433,7 @@ run_xfs_growfs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][7], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.rtsize", "xstrtoll", xerr);
           goto out;
         }
@@ -24304,7 +24450,7 @@ run_xfs_growfs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.rtextsize", "xstrtoll", xerr);
           goto out;
         }
@@ -24321,7 +24467,7 @@ run_xfs_growfs (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][7], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.maxpct", "xstrtoll", xerr);
           goto out;
         }
@@ -24467,7 +24613,7 @@ run_xfs_repair (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][7], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.maxmem", "xstrtoll", xerr);
           goto out;
         }
@@ -24484,7 +24630,7 @@ run_xfs_repair (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.ihashsize", "xstrtoll", xerr);
           goto out;
         }
@@ -24501,7 +24647,7 @@ run_xfs_repair (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.bhashsize", "xstrtoll", xerr);
           goto out;
         }
@@ -24518,7 +24664,7 @@ run_xfs_repair (const char *cmd, size_t argc, char *argv[])
         xerr = xstrtoll (&argv[i][9], NULL, 0, &r, xstrtol_suffixes);
         if (xerr != LONGINT_OK) {
           fprintf (stderr,
-                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   _("%s: %s: invalid integer parameter (%s returned %u)\n"),
                    cmd, "optargs_s.agstride", "xstrtoll", xerr);
           goto out;
         }

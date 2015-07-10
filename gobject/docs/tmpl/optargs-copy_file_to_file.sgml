@@ -28,6 +28,11 @@ GuestfsCopyFileToFile
 </para>
 
 
+<!-- ##### ARG GuestfsCopyFileToFile:append ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GuestfsCopyFileToFile:destoffset ##### -->
 <para>
 

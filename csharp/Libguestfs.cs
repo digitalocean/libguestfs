@@ -1347,6 +1347,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_replace (IntPtr h, [In] string srcdev, [In] string targetdev, [In] string mntpoint);
+
+    /// <summary>
+    /// replace a btrfs managed device with another device
+    /// </summary>
+    public void btrfs_replace (string srcdev, string targetdev, string mntpoint)
+    {
+      int r;
+      r = guestfs_btrfs_replace (_handle, srcdev, targetdev, mntpoint);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_btrfs_rescue_chunk_recover (IntPtr h, [In] string device);
 
     /// <summary>
@@ -3996,6 +4010,20 @@ namespace Guestfs
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_internal_exit (IntPtr h);
+
+    /// <summary>
+    /// cause the daemon to exit (internal use only)
+    /// </summary>
+    public void internal_exit ()
+    {
+      int r;
+      r = guestfs_internal_exit (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -7622,6 +7650,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_set_uuid (_handle, device, uuid);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_uuid_random (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// set a random UUID for the filesystem
+    /// </summary>
+    public void set_uuid_random (string device)
+    {
+      int r;
+      r = guestfs_set_uuid_random (_handle, device);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }

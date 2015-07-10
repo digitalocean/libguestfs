@@ -89,6 +89,7 @@
 -export([btrfs_qgroup_show/2]).
 -export([btrfs_quota_enable/3]).
 -export([btrfs_quota_rescan/2]).
+-export([btrfs_replace/4]).
 -export([btrfs_rescue_chunk_recover/2]).
 -export([btrfs_rescue_super_recover/2]).
 -export([btrfs_scrub_cancel/2]).
@@ -271,6 +272,7 @@
 -export([inspect_list_applications/2]).
 -export([inspect_list_applications2/2]).
 -export([inspect_os/1]).
+-export([internal_exit/1]).
 -export([internal_test/10, internal_test/11]).
 -export([internal_test_63_optargs/1, internal_test_63_optargs/2]).
 -export([internal_test_close_output/1]).
@@ -527,6 +529,7 @@
 -export([set_tmpdir/2]).
 -export([set_trace/2]).
 -export([set_uuid/3]).
+-export([set_uuid_random/2]).
 -export([set_verbose/2]).
 -export([setcon/2]).
 -export([setxattr/5]).
@@ -874,6 +877,9 @@ btrfs_quota_enable(G, Fs, Enable) ->
 
 btrfs_quota_rescan(G, Fs) ->
   call_port(G, {btrfs_quota_rescan, Fs}).
+
+btrfs_replace(G, Srcdev, Targetdev, Mntpoint) ->
+  call_port(G, {btrfs_replace, Srcdev, Targetdev, Mntpoint}).
 
 btrfs_rescue_chunk_recover(G, Device) ->
   call_port(G, {btrfs_rescue_chunk_recover, Device}).
@@ -1455,6 +1461,9 @@ inspect_list_applications2(G, Root) ->
 
 inspect_os(G) ->
   call_port(G, {inspect_os}).
+
+internal_exit(G) ->
+  call_port(G, {internal_exit}).
 
 internal_test(G, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin, Optargs) ->
   call_port(G, {internal_test, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin, Optargs}).
@@ -2282,6 +2291,9 @@ set_trace(G, Trace) ->
 
 set_uuid(G, Device, Uuid) ->
   call_port(G, {set_uuid, Device, Uuid}).
+
+set_uuid_random(G, Device) ->
+  call_port(G, {set_uuid_random, Device}).
 
 set_verbose(G, Verbose) ->
   call_port(G, {set_verbose, Verbose}).

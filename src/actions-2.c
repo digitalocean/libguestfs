@@ -4763,7 +4763,7 @@ guestfs_copy_device_to_file_argv (guestfs_h *g,
     return -1;
   }
 
-  if (optargs->bitmask & UINT64_C(0xfffffffffffffff0)) {
+  if (optargs->bitmask & UINT64_C(0xffffffffffffffe0)) {
     error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
            "copy_device_to_file", "copy_device_to_file");
     return -1;
@@ -4785,6 +4785,9 @@ guestfs_copy_device_to_file_argv (guestfs_h *g,
     }
     if (optargs->bitmask & GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK) {
       fprintf (trace_buffer.fp, " \"%s:%s\"", "sparse", optargs->sparse ? "true" : "false");
+    }
+    if (optargs->bitmask & GUESTFS_COPY_DEVICE_TO_FILE_APPEND_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "append", optargs->append ? "true" : "false");
     }
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
@@ -4817,6 +4820,11 @@ guestfs_copy_device_to_file_argv (guestfs_h *g,
     args.sparse = optargs->sparse;
   } else {
     args.sparse = 0;
+  }
+  if (optargs->bitmask & GUESTFS_COPY_DEVICE_TO_FILE_APPEND_BITMASK) {
+    args.append = optargs->append;
+  } else {
+    args.append = 0;
   }
   serial = guestfs_int_send (g, GUESTFS_PROC_COPY_DEVICE_TO_FILE,
                              progress_hint, optargs->bitmask,

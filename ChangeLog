@@ -1,3 +1,830 @@
+commit e6404be6eea4ef102fbb9e1a554b5ed1ee108598
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 9 18:31:47 2015 +0100
+
+    Version 1.29.50.
+
+commit 42cee8f8fccf853183040c3bf6ae1839cadaf3ee
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 9 17:55:23 2015 +0100
+
+    docs: When making a stable release, run ./configure --without-libvirt.
+
+commit 6561c96fb7b383cd239c6b1f638510514557c549
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 9 17:53:39 2015 +0100
+
+    v2v: domainxml: Fix missing functions in the !HAVE_LIBVIRT case.
+    
+    This also uses a C macro to simplify the error functions in this case.
+    
+    This fixes commit badfc2e9b2a56fd5bac849a6edca4fec823abeea.
+
+commit ae5844cc54b38666ef51c6d8dc94025592fd9d51
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 9 13:12:33 2015 +0100
+
+    Draft release notes for 1.30 release.
+
+commit 350dfe1fa26015fb0631abc3d3dc01b78dee8ead
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 9 15:35:32 2015 +0100
+
+    v2v: Remove RHEL 7 conversion server.
+    
+    We are no longer planning to ship virt-v2v as an appliance.  In RHEL 7.2
+    it will be included in the base RHEL Server product.
+    
+    This reverts commit 4e4ece53647fba810eeb45086b46d02f54e02fe2.
+
+commit 95bb1916eb1b2f6f9e9575cf4bf92501292bf545
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 9 13:18:47 2015 +0100
+
+    appliance: Exclude more log files (RHBZ#1239154).
+    
+    This removes further possible log files from the appliance, but
+    without removing any subdirectories.
+
+commit 2080f4b0dd307e842dbb0f7e891993f32f30d7f5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 9 13:11:15 2015 +0100
+
+    appliance: Remove typo $@ at beginning of line.
+    
+    This fixes commit 82b486a9086f84447324d68b3c0cae300e0334f7.
+
+commit c238a9caa1b45a87d41daa0b6ecfb31d1488fe4e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 9 13:07:59 2015 +0100
+
+    appliance: Rebuild appliance if excludefiles changes.
+
+commit 85fe0abdd01981e075353b12f8d0f76d087b5f43
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jul 9 14:55:43 2015 +0200
+
+    New tool: virt-dib
+    
+    virt-dib is a new tool to run the elements of diskimage-builder using
+    libguestfs.
+
+commit 46be6934fc86a5117fb0d36ff50123752e4390a1
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Wed Jul 8 17:34:45 2015 +0800
+
+    labels: return ENOTSUP if could not set label for specific fs
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit d9b53a27527f8a91d3f2ef821908a674341eeb52
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Wed Jul 8 17:34:44 2015 +0800
+
+    labels: use existing do_xfs_admin for xfslabel
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 5c6be8846f1627f432882e96e2dcc10a0c9cb787
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Wed Jul 8 17:34:43 2015 +0800
+
+    labels: move ntfslabel to ntfs.c
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit d5a60f21489fd264bbcaa0f17cc7f730d08a0e61
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Wed Jul 8 17:34:42 2015 +0800
+
+    labels: move e2label to ext2.c and call it directly
+    
+    ext2 should not call function in labels
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 16232ffd580fc3d700ce01e5a5e9b33c11956caa
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Wed Jul 8 11:07:47 2015 +0800
+
+    labels: move btrfslabel to btrfs.c
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit de93c690a14b201ed87d3d2a88673d4c530d59e8
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Mon Jul 6 17:13:51 2015 +0800
+
+    doc: add missing ms-dos fs section in set_label
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 105fa8bf31fe1af09bbade1949eb28d622b25b21
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Mon Jul 6 13:34:06 2015 +0800
+
+    uuids: return ENOTSUP if could not set UUID for specific fs
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit b04f39bf10e4f760d880d1077e6ffb68d028c0ae
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 6 12:37:23 2015 +0100
+
+    v2v: Add a check before copying that UEFI is supported (RHBZ#1184690).
+    
+    If UEFI is required by the guest, but not supported by the host, then
+    you wouldn't see an error message until after copying.
+    
+    Add an additional method to the output object so we can check this
+    before copying, to avoid a long wait.
+    
+    Thanks: Junqin Zhou
+    https://bugzilla.redhat.com/show_bug.cgi?id=1184690#c22
+
+commit 74e87a970b39864b8f38c9a8b0ddab61b9d9a76e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 6 12:20:48 2015 +0100
+
+    v2v: -o libvirt: Add readonly=yes to UEFI <loader> attribute (RHBZ#1184690).
+    
+    Thanks: Junqin Zhou for diagnosing the bug and finding the correct
+    solution.  https://bugzilla.redhat.com/show_bug.cgi?id=1184690#c22
+    
+    This fixes commit 40558450dd87190c9dc2649cadbf284ae0a21606.
+
+commit 659d56db3cc4333e7410cac6720c20b3b7fa66ad
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 6 10:47:45 2015 +0100
+
+    v2v: Catch real exception thrown by failing aug_get (RHBZ#1239053).
+    
+    When converting the old Perl virt-v2v code, I made a silly mistake
+    with the exception that aug_get throws when it doesn't find any node.
+    It throws a 'Guestfs.Error' exception, not 'Not_found'.
+    
+    As a result of this, the exception was escaping and the proper error
+    message was not displayed.  With a malformed grub configuration you
+    would see this error:
+    
+      $ virt-v2v -i disk centos-6.img -o null
+      [...]
+      virt-v2v: error: libguestfs error: aug_get: no matching node
+    
+    After applying this patch:
+    
+      $ virt-v2v -i disk centos-6.img -o null
+      [...]
+      virt-v2v: error: no kernels were found in the grub configuration.
+    
+      This probably indicates that virt-v2v was unable to parse the grub
+      configuration of this guest.
+    
+    which is the correct error message.
+
+commit a477e282dbd20b3eb1adfebe28d2c2bcdbfde8ff
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Thu Jul 2 19:52:37 2015 +0800
+
+    New API: set_uuid_random
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit db9bd6158503f65c5f953bfae0fcb5b092b9bbfa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 2 18:06:15 2015 +0100
+
+    Version 1.29.49.
+
+commit ccdbbc7fe43e313c16a00dd30c57a04134e60b2c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 2 15:36:04 2015 +0100
+
+    Fix various -Wformat problems.
+    
+    Updating gnulib has caused -Wformat-signedness to be enabled.  This
+    has revealed many problems in C format strings.  The fixes here fall
+    into the following main categories:
+    
+     - Using %d with an unsigned parameter.
+    
+     - %x and %o expect an unsigned argument.
+    
+     - uid_t and gid_t are unsigned on Linux.  The safe way to print these
+       is to cast them to uintmax_t and then print them using the %ju
+       modifier (see http://stackoverflow.com/a/1401581).
+    
+     - Using %d to print an enum.  Since enums may be either char or int,
+       I fixed this by casting the enum to int.
+    
+     - strtol_error & lzma_ret are both unsigned types.
+
+commit b263035c1adaffb4d7bf7e6b3f19eec8b8de1e5a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 2 14:52:39 2015 +0100
+
+    Update gnulib to latest.
+
+commit fba82456a990c689ccd38f40509ed86ed882b353
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 2 14:49:37 2015 +0100
+
+    Pull latest translations from Zanata.
+
+commit f5698c3793ade4d97f0232e537abb782457a9c81
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 2 14:14:29 2015 +0100
+
+    v2v: TODO: Add note about -i ova / -o rhev and removable device slots.
+
+commit afd80a27ef761556b53d7a64be5364b5ee231545
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 2 14:14:26 2015 +0100
+
+    v2v: Remove some items from TODO file which we've implemented.
+
+commit b7166e1a9e092b5c2e16ce42a6ee025283d6b520
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 13:53:50 2015 +0100
+
+    v2v: Add a regression test for RHBZ#1238053.
+
+commit 309e14189fa1c470977f3a4bccc5456b390d4cce
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 18:04:46 2015 +0100
+
+    v2v: Pass target_buses to output object (RHBZ#1238053).
+    
+    Pass the target_buses assignment to the output#create_metadata method.
+    
+    Now output modes have a choice: they can either ignore the new
+    parameter and continue to use the flat list of targets.  This is
+    suitable for output modes that cannot model multiple buses (eg.
+    -o glance) or can model it but don't bother (currently -o rhev).
+    
+    Or they can ignore the flat targets parameter and use the new
+    target_buses parameter, translating that into the appropriate list of
+    devices.  This is implemented in this commit for these modes:
+    
+     -o libvirt
+     -o local
+     -o qemu
+
+commit ce83f2751bea272b96107482aeb37af2358214dc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 17:33:28 2015 +0100
+
+    v2v: Introduce the concept of target buses.
+    
+    The target VM will have several buses to which disks can be attached.
+    Commonly it will have an IDE bus, and possibly a virtio-blk "bus" (not
+    really a bus) and/or a SCSI bus.
+    
+    Virt-v2v does not model this at the moment.  Disks are just added to
+    the output XML in the order that we write them, and so they can move
+    around with respect to the target VM.
+    
+    This commit introduces the idea that we should model the target disk
+    buses, and we should try to assign fixed and removable disks to slots
+    on each of those buses.  In this commit, the modelling is not used by
+    any output mode, but that will be fixed in the next commit.
+
+commit 847c303a159d9066cd0d96ae90bb30e88d2ed781
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 15:15:33 2015 +0100
+
+    v2v: -i libvirt and -i ova: Record the slot number of removable drives.
+    
+    When we see libvirt source XML for a removable drive like this:
+    
+       <disk type='file' device='cdrom'>
+         <driver name='qemu' type='raw'/>
+         <target dev='hdc' bus='ide'/>
+       </disk>
+    
+    as well as recording the bus (s_removable_controller) as we do at the
+    moment, also record the slot number (eg. hdc == 2 in the example
+    above).
+    
+    Do the same for OVA input files.
+
+commit 4ef80f28c819605f415a71a2337ae90b9b7888bc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 15:14:58 2015 +0100
+
+    v2v: Add a binding for guestfs_int_drive_index and a unit test.
+
+commit 36e22d1e8ec7a82b12624539d43467de759838e7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 15:14:49 2015 +0100
+
+    v2v: Add unit test of Utils.drive_name function.
+
+commit c8a9e4b92871b8c37ef031778e5de3f4190d5e62
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 15:13:49 2015 +0100
+
+    v2v: Refactor ~printer parameter in unit tests.
+    
+    Simple refactoring, no functional change.
+
+commit a54fef132a66a56c7287b7bc8876438d84c8ed84
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 14:27:53 2015 +0100
+
+    utils: Add guestfs_int_drive_index and unit test.
+    
+    Add guestfs_int_drive_index which does basically the opposite of
+    guestfs_int_drive_name.  This commit also includes a unit test.
+
+commit 625eae504dfe44381e9e1041c9f9846e0f5aeeb7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 14:27:36 2015 +0100
+
+    utils: Add a test of the guestfs_int_drive_name function.
+    
+    This function didn't have a unit test before.
+
+commit d9fc0656b27fd26a6574407c2e620ab729d951cb
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jul 2 11:25:06 2015 +0200
+
+    tests: do not init a partition for btrfs-image tests
+    
+    They create an own partition layout, so don't do that over the
+    testing-created layout.
+    
+    At least for me, this fixes parted issues when creating the new
+    partition layout and the old one is still reported as in use.
+    
+    Followup/fix for commit 52d1b0c593e87cb5d696dcc9d96ad6489c9bed00.
+
+commit 4e8ef1ae37d1517a08409b80af337b511770f38f
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Wed Jul 1 17:21:13 2015 +0800
+
+    uuid: use newly introduced swap_set_uuid
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 80cf46e110d9cff2862f3e98b561bae34d29bf52
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Wed Jul 1 17:21:12 2015 +0800
+
+    uuid: add support to change uuid of btrfs partition
+    
+    btrfs-progs v4.1 add support to change uuid of btrfs fs.
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 261be1f952aa984b460ff8d88d962c490df4ffcf
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jul 1 14:53:31 2015 +0200
+
+    sysprep: rework and fix cron-spool operation (RHBZ#1229305)
+    
+    When cleaning the directories with cron/at jobs, remove only files
+    there, as subdirectories might be used by other systems; for example
+    in Debian under /var/spool/cron/ there is the atjobs subdirectory with
+    the actual at queue.
+    
+    Make sure to not remove .SEQ files anymore, as they represent the at job
+    counter which is needed by the at daemon. Instead, reset these files to
+    0.
+    
+    Furthermore, add also the path to the .SEQ location in Debian-based
+    systems.
+
+commit a614f3451d1e2cc4f29b1bc7f0d88519c432b2c8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jul 1 14:35:31 2015 +0200
+
+    mllib: add and use last_part_of
+    
+    Collect this small snippet to get the part of a string after the last
+    occurrency of a character; replace with it the current snippets doing
+    the same.
+    
+    Should be just code motion.
+
+commit 775e68c4613fabaa3b48ea3dc8d45ac74b93682b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jun 30 20:59:31 2015 +0200
+
+    mllib: add an optional filter for rm_rf_only_files
+    
+    This way it is possible to use rm_rf_only_files, but not removing
+    specific files.
+
+commit 9f0036a0265417bc7fd6e6d2010f185a4a92d225
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 11:14:23 2015 +0100
+
+    v2v: Match any non-"Client" variant, instead of just "Server" (RHBZ#1234351, RHBZ#1237869).
+    
+    When checking if a Windows variant is a server variant, assume it is a
+    server variant unless the i_product_variant field is "Client".
+    
+    Windows 2008 and Windows 2008R2 does not have an InstallationType key
+    in the registry at all, so for these the product variant is returned
+    as "unknown".
+    
+    Windows "Core" would have, according to the reference below,
+    "Server Core".
+    
+    https://msdn.microsoft.com/en-us/library/ee391629%28v=vs.85%29.aspx
+    
+    This fixes commit 47b5f245bec908f803f0a89c3b1e3166cfe33aad.
+
+commit a324ae2ad72f2a2188eb0d4398c9e6548c499c5a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 1 11:01:43 2015 +0100
+
+    v2v: Fix detection of Win2008R2 drivers (RHBZ#1234351).
+    
+    This fixes commit 47b5f245bec908f803f0a89c3b1e3166cfe33aad.
+
+commit e1e4d8648d5f93c2e153832e175b7af3b5f379af
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jun 30 16:42:52 2015 +0200
+
+    tests: add/expand UUID and label tests for swap and xfs
+
+commit d0c067df8709206b494bb7ea0b2548671d50b0a9
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Tue Jun 30 19:23:12 2015 +0800
+
+    daemon: add get_random_uuid
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 516638891472441710c4df912b28229ffd52918e
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Tue Jun 30 19:23:10 2015 +0800
+
+    uuid: use newly introduced xfs_set_uuid of xfs
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit ad21fb8acf449b251460528a9244cc5567838799
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Tue Jun 30 19:23:09 2015 +0800
+
+    uuid: use existing function of ext2
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 98e1e9bcc2a490d983ba3f54e85ae82ecc70543b
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Tue Jun 30 17:45:14 2015 +0800
+
+    tests: fix two minor warnings
+    
+    "my" variable $output masks earlier declaration in same scope at /home/libguestfs/tests/daemon/test-btrfs.pl line 66.
+    "my" variable @r masks earlier declaration in same scope at /home/libguestfs/tests/daemon/test-btrfs.pl line 72.
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 2b67342bdae68cb20f593a79b4b6d5af74f4de04
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 29 23:20:54 2015 +0100
+
+    Version 1.29.48.
+
+commit 93cf45cadf51576ee275fd440267af1373db26fc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 22:56:55 2015 +0100
+
+    tests: Add a test of btrfs-qgroup-show using the captive daemon.
+
+commit 336b8f6b1620d23a5aed9d2d9327e51b62f9b1ac
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 22:56:55 2015 +0100
+
+    tests: Add a test of btrfs-subvolume-list using the captive daemon.
+
+commit f2438b75a2402af0c51f89d4cd993a4ab7ef4a8c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 24 12:43:32 2015 +0100
+
+    tests: daemon: Cleanly shut down the daemon on exit.
+    
+    This refines the previous commit by shutting down the daemon cleanly
+    at the end of the test (assuming the test was successful).  It
+    repurposes the 'internal_exit' API for this, which was previously used
+    by the now defunct --enable-valgrind-daemon functionality.
+
+commit 9f85477cbac1427b8d4d314c8b7de7f703821891
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 18:21:50 2015 +0100
+
+    tests: Add tests using a captive daemon process.
+    
+    This allows us to test the daemon running as a host process, allowing
+    us to meaningfully test it using valgrind.
+    
+    This commit only adds a single test that check that the daemon starts
+    up, can be pinged, and exits.
+
+commit 8cb1a35d75bfc5ed2e3cb0febfd3168b52281fb4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 25 15:08:52 2015 +0100
+
+    daemon: Move all the kernel command line parsing to the init script.
+    
+    Instead of parsing /proc/cmdline from the daemon, move all of that
+    parsing into the init script, and pass the argument via the daemon
+    command line.
+    
+    For example, previously the daemon and init script both looked for
+    guestfs_network=1 in /proc/cmdline.  Now the init script still looks
+    for it, and if found it runs `guestfsd --network'.
+
+commit 64ff631127bd682e7311ae20328fdafb2ca1d4da
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 15:29:15 2015 +0100
+
+    daemon: Add -l / --listen flag.
+    
+    This option, used for testing, causes the daemon to create the Unix
+    domain socket (from guestfs_channel), listen on it, and accept a
+    single connection.
+
+commit 9e0e2247ff8bca67f791775d3ea0b2998e5bc2fe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 15:26:31 2015 +0100
+
+    daemon: Add undocumented --test / -t option to enable test mode.
+    
+    This is a catch-all mode for turning off daemon features which
+    interfere with our testing of the daemon.
+
+commit 4b721a1e0b443a2a56408994c85b92a8d4911580
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 22:49:11 2015 +0100
+
+    configure: Remove test for valgrind --vgdb option.
+    
+    We'll now just require that valgrind is new enough.
+    
+    As best as I can tell from the valgrind subversion(!) repository, this
+    option was added to valgrind in around 2011.
+
+commit 3888582da89c757d0740d11c3a62433d748c85aa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 25 18:00:02 2015 +0100
+
+    v2v: Free XML objects in the correct order.
+    
+    If you free an xmlDocPtr before any xmlXPathObjectPtrs that reference
+    the doc, you'll get valgrind errors like this:
+    
+      ==7390== Invalid read of size 4
+      ==7390==    at 0x4EB8BC6: xmlXPathFreeNodeSet (xpath.c:4185)
+      ==7390==    by 0x4EB8CC5: xmlXPathFreeObject (xpath.c:5492)
+      ==7390==    by 0x400A56: main (in /tmp/test)
+      ==7390==  Address 0x60c0928 is 8 bytes inside a block of size 120 free'd
+      ==7390==    at 0x4C29D2A: free (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+      ==7390==    by 0x4E8784F: xmlFreeNodeList (tree.c:3683)
+      ==7390==    by 0x4E87605: xmlFreeDoc (tree.c:1242)
+      ==7390==    by 0x400A4A: main (in /tmp/test)
+    
+    The following simple test program demonstrates the problem:
+    
+      #include <stdio.h>
+      #include <stdlib.h>
+      #include <assert.h>
+      #include <libxml/xpath.h>
+    
+      int
+      main (int argc, char *argv[])
+      {
+        xmlDocPtr doc;
+        xmlXPathContextPtr xpathctx;
+        xmlXPathObjectPtr xpathobj;
+    
+        doc = xmlReadMemory ("<test/>", 7, NULL, NULL, XML_PARSE_NONET);
+        assert (doc);
+        xpathctx = xmlXPathNewContext (doc);
+        assert (xpathctx);
+        xpathobj = xmlXPathEvalExpression (BAD_CAST "/test", xpathctx);
+        assert (xpathobj);
+        xmlFreeDoc (doc);
+        xmlXPathFreeObject (xpathobj);
+        xmlXPathFreeContext (xpathctx);
+        exit (EXIT_SUCCESS);
+      }
+    
+    In virt-v2v we were not freeing up objects in the correct order,
+    because we didn't express the dependency between objects at the C
+    level into the OCaml, where the OCaml garbage collector could see
+    those dependencies.  For example code like:
+    
+      let doc = ... in
+      let xpathctx = xpath_new_context doc in
+      let xpathobj = xpath_eval_expression xpathctx "/foo" in
+    
+    might end up freeing the 'doc' (xmlDocPtr) if, say, there were no
+    further references to it in the code, even though the 'xpathobj'
+    (xmlXPathObjectPtr) remains live.
+    
+    To avoid this, we change the OCaml-level representation of objects
+    like xpathobj so they contain a reference back to the higher-level
+    objects (xpathctx & doc).  Therefore holding an xpathobj means that
+    the doc cannot be freed.
+    
+    However that alone is not quite sufficient.  There is a further
+    problem when the program calls Gc.full_major, Gc.compact etc., or even
+    just when xpathctx & doc happen to be freed at the same time.  The GC
+    won't necessarily free them in the right order as it knows both need
+    to be freed but doesn't know that one must be freed before the other.
+    
+    To solve this we have to move the finalisers into OCaml code, since
+    the OCaml Gc.finalise function comes with an explicit ordering
+    guarantee (that finalisers are always called in reverse order that
+    they were created), which the C-level finaliser does not.
+
+commit 36a197e2cc119f6d2691b110af5b292ba794162b
+Author: Cao jin <caoj.fnst@cn.fujitsu.com>
+Date:   Wed Jun 24 10:08:42 2015 +0800
+
+    New API: btrfs_replace
+    
+    Signed-off-by: Cao jin <caoj.fnst@cn.fujitsu.com>
+
+commit 52ca4d5dd4c909a4eac8c6f3a58f8800a444a611
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 29 10:41:10 2015 +0100
+
+    v2v: OVF: If actual_size field is estimated, add a comment to the output.
+    
+    The 'note:' comment is added, as below:
+    
+      <Section xsi:type='ovf:DiskSection_Type'>
+        <Info>List of Virtual Disks</Info>
+        <!-- note: actual_size field is estimated -->
+        <Disk ovf:actual_size='7' [...]/>
+      </Section>
+
+commit 801832e6764097466c1156a9be2d829f8401c6d9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 25 20:54:06 2015 +0100
+
+    v2v: Increase the timeout of VMware curl connections (RHBZ#1146007).
+    
+    On certain webservers these appear to go beyond even 600 seconds (10
+    minutes).
+
+commit 800e501e1e1058ed0a3b26f2d79e2511641649d6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 25 21:22:00 2015 +0100
+
+    v2v: test-harness: Build dependencies correctly.
+
+commit 1d58cd4e1d4dbce15fc27f57ddfb8c4b290642b6
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Thu Jun 18 17:39:39 2015 +0800
+
+    do_btrfs_subvolume_list: fix a bad return value
+    
+    don't return a value which is to be freed.
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 268c425791e831e9ba2a6b5e33942ba36e5dae3c
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Thu Jun 18 17:39:38 2015 +0800
+
+    do_btrfs_qgroup_show: fix a bad return value
+    
+    We should not use temporary lines buffer as return value,
+    for lines buffer will be freed.
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 445d20c1176b0ae53cec03fccce3ead779fe1575
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 13:24:23 2015 +0100
+
+    lib: Add optional 'append' parameter to copy-(device|file)-to-file APIs.
+    
+    This allows you to append one file to another:
+    
+      copy-file-to-file /input.txt /output.txt append:true
+    
+    will append the contents of /input.txt to /output.txt.
+
+commit 47b5f245bec908f803f0a89c3b1e3166cfe33aad
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 22 15:13:36 2015 +0100
+
+    v2v: Support loading virtio-win drivers from virtio-win.iso (RHBZ#1234351).
+    
+    This makes several changes to the handling of virtio-win drivers:
+    
+    The VIRTIO_WIN_DIR environment variable has been renamed
+    VIRTIO_WIN (but you can still use the old name).
+    
+    You can point the VIRTIO_WIN either at a RHEL virtio-win directory
+    (ie. /usr/share/virtio-win), OR at a loopback-mounted virtio-win ISO,
+    OR at the virtio-win.iso file itself.  In the latter case, libguestfs
+    is used to open the ISO file and read drivers from it.
+    
+    The code is more flexible about the pathnames of drivers, because the
+    paths in the ISO are completely different from the paths in RHEL
+    /usr/share/virtio-win.
+
+commit 57ae2a5cc3a95dbae0e1dc1c55213bd158e4a385
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 14:33:44 2015 +0100
+
+    daemon: Rewrite prog_exists so it uses the actual PATH, not hard-coded list.
+
+commit 68ed6dd88ab30b482b70854452b41ee2768ce03e
+Author: Cao jin <caoj.fnst@cn.fujitsu.com>
+Date:   Tue Jun 23 18:38:19 2015 +0800
+
+    Modify the function: analyze_line, make it more flexible
+    
+    Modify the function from a fixed delimiter to a variable. So,
+    it can be used in more APIs later. Also modified the existing
+    callers
+    
+    Signed-off-by: Cao jin <caoj.fnst@cn.fujitsu.com>
+
+commit 35710595c136bf24c9a4b77788c5dd93a7c72b2d
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Tue Jun 23 16:01:10 2015 +0800
+
+    btrfs: remove redundant whitespace
+    
+    s/  =/ =
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit a1f34045164f40207d1545b0a12dcea96bbaeab7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 22 18:48:47 2015 +0100
+
+    v2v: test-harness: Add Config module to library.
+    
+    Missing dependency.
+
+commit 158204529fa26654d8ac6afa518675f97de2ba82
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 22 18:08:29 2015 +0100
+
+    appliance: Make uefi_firmware variable static.
+    
+    It is not used outside the compilation unit.
+    
+    This fixes commit 544a7314824654d89ba3c70e3e93383a05d54218.
+
+commit 029fc60ee509f53548f53e75ab571ff3fc6a4459
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 19 19:49:41 2015 +0100
+
+    launch: Refactor guestfs_int_get_cpu_model code.
+    
+    Shorter and does the same thing.
+
+commit 544a7314824654d89ba3c70e3e93383a05d54218
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 20 14:49:19 2015 +0100
+
+    aarch64: appliance: Use kraxel's edk2.git repo if available.
+    
+    Gerd is making EDK2 builds available here:
+    
+    https://www.kraxel.org/repos/
+    
+    These are convenient for Fedora/aarch64 users, so use this firmware if
+    available.
+    
+    This commit also refactors the UEFI searching code.
+
+commit 74f5bb17a1fc5d42a228967a3516418432c67e8d
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Fri Jun 19 10:26:52 2015 +0800
+
+    btrfs: fix leak in btrfs_balance_status
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit abf0df6884c01acdd5423212034d9dee02a6ad56
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jun 18 15:46:21 2015 +0200
+
+    v2v: remove unused sources and libraries
+
+commit 9f683fbf0f07da9c498915f503d5cc94db30389f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jun 18 13:34:12 2015 +0200
+
+    btrfs: fix leak in btrfs_scrub_status
+    
+    Properly free the output buffer.
+
 commit d8ab90cdd628eacee7cdd9583499918022bcb870
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Jun 18 12:59:53 2015 +0100

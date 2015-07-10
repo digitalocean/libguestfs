@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [29])
-m4_define([libguestfs_release], [47])
+m4_define([libguestfs_release], [50])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1083,21 +1083,10 @@ AS_IF([$CXX --version >&AS_MESSAGE_LOG_FD 2>&1],[have_cxx=yes],[have_cxx=no])
 AC_MSG_RESULT([$have_cxx])
 AM_CONDITIONAL([HAVE_CXX], [test "$have_cxx" = "yes"])
 
-dnl If valgrind is present (it's not required), check whether or not
-dnl it supports the new 'valgrind --vgdb' option.
 AC_CHECK_PROG([VALGRIND],[valgrind],[valgrind],[no])
 AS_IF([test "x$VALGRIND" != "xno"],[
-    AC_MSG_CHECKING([if $VALGRIND supports the --vgdb option])
-    if $VALGRIND --help | grep -sq -- --vgdb; then
-        AC_MSG_RESULT([yes])
-        AC_SUBST([VALGRIND_NO_VGDB],[--vgdb=no])
-    else
-        AC_MSG_RESULT([no])
-        AC_SUBST([VALGRIND_NO_VGDB],[])
-    fi
-
     # Substitute the whole valgrind command.
-    VG='$(VALGRIND) $(VALGRIND_NO_VGDB) --log-file=$(abs_top_builddir)/tmp/valgrind-%q{T}-%p.log --leak-check=full --error-exitcode=119 --suppressions=$(abs_top_srcdir)/valgrind-suppressions'
+    VG='$(VALGRIND) --vgdb=no --log-file=$(abs_top_builddir)/tmp/valgrind-%q{T}-%p.log --leak-check=full --error-exitcode=119 --suppressions=$(abs_top_srcdir)/valgrind-suppressions'
     ],[
     # No valgrind, so substitute VG with something that will break.
     VG=VALGRIND_IS_NOT_INSTALLED
@@ -1740,6 +1729,7 @@ AC_CONFIG_FILES([Makefile
                  customize/Makefile
                  daemon/Makefile
                  df/Makefile
+                 dib/Makefile
                  diff/Makefile
                  edit/Makefile
                  erlang/Makefile
@@ -1800,6 +1790,8 @@ AC_CONFIG_FILES([Makefile
                  tests/charsets/Makefile
                  tests/create/Makefile
                  tests/data/Makefile
+                 tests/daemon/Makefile
+                 tests/daemon/captive-daemon.pm
                  tests/discard/Makefile
                  tests/disks/Makefile
                  tests/disks/test-qemu-drive-libvirt.xml

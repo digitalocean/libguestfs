@@ -1089,6 +1089,19 @@ C<path>.
 Trash all qgroup numbers and scan the metadata again with the current
 config.
 
+=head2 btrfs-replace
+
+ btrfs-replace srcdev targetdev mntpoint
+
+Replace device of a btrfs filesystem. On a live filesystem, duplicate the
+data to the target device which is currently stored on the source device.
+After completion of the operation, the source device is wiped out and
+removed from the filesystem.
+
+The C<targetdev> needs to be same size or larger than the C<srcdev>. Devices
+which are currently mounted are never allowed to be used as the
+C<targetdev>.
+
 =head2 btrfs-rescue-chunk-recover
 
  btrfs-rescue-chunk-recover device
@@ -1560,7 +1573,7 @@ enables all the other flags, if they are not specified already.
 
 =head2 copy-device-to-device
 
- copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]
+ copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]
 
 The four calls L</copy-device-to-device>, L</copy-device-to-file>,
 L</copy-file-to-device>, and L</copy-file-to-file> let you copy from a
@@ -1575,6 +1588,11 @@ defaults to copying as much as possible until we hit the end of the source.
 
 宛先がファイルならば、必要に応じて作成されます。宛先ファイルが十分に大きくなければ、拡張されます。
 
+If the destination is a file and the C<append> flag is not set, then the
+destination file is truncated.  If the C<append> flag is set, then the copy
+appends to the destination file.  The C<append> flag currently cannot be set
+for devices.
+
 If the C<sparse> flag is true then the call avoids writing blocks that
 contain only zeroes, which can help in some situations where the backing
 disk is thin-provisioned.  Note that unless the target is already zeroed,
@@ -1584,7 +1602,7 @@ using this option will result in incorrect copying.
 
 =head2 copy-device-to-file
 
- copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]
+ copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]
 
 この呼び出しの一般的な概要は L</copy-device-to-device> を参照してください。
 
@@ -1592,7 +1610,7 @@ using this option will result in incorrect copying.
 
 =head2 copy-file-to-device
 
- copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]
+ copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]
 
 この呼び出しの一般的な概要は L</copy-device-to-device> を参照してください。
 
@@ -1600,7 +1618,7 @@ using this option will result in incorrect copying.
 
 =head2 copy-file-to-file
 
- copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]
+ copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]
 
 この呼び出しの一般的な概要は L</copy-device-to-device> を参照してください。
 
@@ -6712,7 +6730,14 @@ Setting the label on a btrfs subvolume will set the label on its parent
 filesystem.  The filesystem must not be mounted when trying to set the
 label.
 
+=item fat
+
+The label is limited to 11 bytes.
+
 =back
+
+If there is no support for changing the label for the type of the specified
+filesystem, set_label will fail and set errno as ENOTSUP.
 
 ファイルシステムのラベルを読み込むには L</vfs-label> を呼び出します。
 
@@ -6937,7 +6962,21 @@ callback to send them somewhere else (see L</set-event-callback>).
 
  set-uuid device uuid
 
-Set the filesystem UUID on C<device> to C<uuid>.
+Set the filesystem UUID on C<device> to C<uuid>.  If this fails and the
+errno is ENOTSUP, means that there is no support for changing the UUID for
+the type of the specified filesystem.
+
+Only some filesystem types support setting UUIDs.
+
+To read the UUID on a filesystem, call L</vfs-uuid>.
+
+=head2 set-uuid-random
+
+ set-uuid-random device
+
+Set the filesystem UUID on C<device> to a random UUID.  If this fails and
+the errno is ENOTSUP, means that there is no support for changing the UUID
+for the type of the specified filesystem.
 
 Only some filesystem types support setting UUIDs.
 

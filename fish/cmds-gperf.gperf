@@ -100,6 +100,7 @@ extern struct command_entry btrfs_qgroup_remove_cmd_entry;
 extern struct command_entry btrfs_qgroup_show_cmd_entry;
 extern struct command_entry btrfs_quota_enable_cmd_entry;
 extern struct command_entry btrfs_quota_rescan_cmd_entry;
+extern struct command_entry btrfs_replace_cmd_entry;
 extern struct command_entry btrfs_rescue_chunk_recover_cmd_entry;
 extern struct command_entry btrfs_rescue_super_recover_cmd_entry;
 extern struct command_entry btrfs_scrub_cancel_cmd_entry;
@@ -285,6 +286,7 @@ extern struct command_entry inspect_is_netinst_cmd_entry;
 extern struct command_entry inspect_list_applications_cmd_entry;
 extern struct command_entry inspect_list_applications2_cmd_entry;
 extern struct command_entry inspect_os_cmd_entry;
+extern struct command_entry internal_exit_cmd_entry;
 extern struct command_entry is_blockdev_cmd_entry;
 extern struct command_entry is_chardev_cmd_entry;
 extern struct command_entry is_config_cmd_entry;
@@ -507,6 +509,7 @@ extern struct command_entry set_smp_cmd_entry;
 extern struct command_entry set_tmpdir_cmd_entry;
 extern struct command_entry set_trace_cmd_entry;
 extern struct command_entry set_uuid_cmd_entry;
+extern struct command_entry set_uuid_random_cmd_entry;
 extern struct command_entry set_verbose_cmd_entry;
 extern struct command_entry setcon_cmd_entry;
 extern struct command_entry setenv_cmd_entry;
@@ -739,6 +742,8 @@ btrfs_quota_enable, &btrfs_quota_enable_cmd_entry
 btrfs-quota-enable, &btrfs_quota_enable_cmd_entry
 btrfs_quota_rescan, &btrfs_quota_rescan_cmd_entry
 btrfs-quota-rescan, &btrfs_quota_rescan_cmd_entry
+btrfs_replace, &btrfs_replace_cmd_entry
+btrfs-replace, &btrfs_replace_cmd_entry
 btrfs_rescue_chunk_recover, &btrfs_rescue_chunk_recover_cmd_entry
 btrfs-rescue-chunk-recover, &btrfs_rescue_chunk_recover_cmd_entry
 btrfs_rescue_super_recover, &btrfs_rescue_super_recover_cmd_entry
@@ -1072,6 +1077,8 @@ inspect_list_applications2, &inspect_list_applications2_cmd_entry
 inspect-list-applications2, &inspect_list_applications2_cmd_entry
 inspect_os, &inspect_os_cmd_entry
 inspect-os, &inspect_os_cmd_entry
+internal_exit, &internal_exit_cmd_entry
+internal-exit, &internal_exit_cmd_entry
 is_blockdev, &is_blockdev_cmd_entry
 is-blockdev, &is_blockdev_cmd_entry
 is-blockdev-opts, &is_blockdev_cmd_entry
@@ -1483,6 +1490,8 @@ set-trace, &set_trace_cmd_entry
 trace, &set_trace_cmd_entry
 set_uuid, &set_uuid_cmd_entry
 set-uuid, &set_uuid_cmd_entry
+set_uuid_random, &set_uuid_random_cmd_entry
+set-uuid-random, &set_uuid_random_cmd_entry
 set_verbose, &set_verbose_cmd_entry
 set-verbose, &set_verbose_cmd_entry
 verbose, &set_verbose_cmd_entry

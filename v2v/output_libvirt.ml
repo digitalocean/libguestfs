@@ -54,7 +54,7 @@ let target_features_of_capabilities_doc doc arch =
     warning (f_"the target hypervisor does not support a %s KVM guest") arch;
     []
   ) else (
-    let node (* first matching <guest> *) = Xml.xpathobj_node doc obj 0 in
+    let node (* first matching <guest> *) = Xml.xpathobj_node obj 0 in
     Xml.xpathctx_set_current_context xpathctx node;
 
     (* Get guest/features/* nodes. *)
@@ -62,14 +62,14 @@ let target_features_of_capabilities_doc doc arch =
 
     let features = ref [] in
     for i = 0 to Xml.xpathobj_nr_nodes obj - 1 do
-      let feature_node = Xml.xpathobj_node doc obj i in
+      let feature_node = Xml.xpathobj_node obj i in
       let feature_name = Xml.node_name feature_node in
       features := feature_name :: !features
     done;
     !features
   )
 
-let create_libvirt_xml ?pool source targets guestcaps
+let create_libvirt_xml ?pool source target_buses guestcaps
                        target_features target_firmware =
   let memory_k = source.s_memory /^ 1024L in
 
@@ -119,21 +119,17 @@ let create_libvirt_xml ?pool source targets guestcaps
           * until that day we have to use a bunch of heuristics. XXX
           *)
          let code, vars_template = find_uefi_firmware guestcaps.gcaps_arch in
-         [ e "loader" ["type", "pflash"] [ PCData code ];
+         [ e "loader" ["readonly", "yes"; "type", "pflash"] [ PCData code ];
            e "nvram" ["template", vars_template] [] ] in
 
     (e "type" ["arch", guestcaps.gcaps_arch] [PCData "hvm"]) :: loader in
 
-  (* Disks. *)
+  (* Fixed and removable disks. *)
   let disks =
-    let block_prefix =
-      match guestcaps.gcaps_block_bus with
-      | Virtio_blk -> "vd" | IDE -> "hd" in
-    let block_bus =
-      match guestcaps.gcaps_block_bus with
-      | Virtio_blk -> "virtio" | IDE -> "ide" in
-    mapi (
-      fun i t ->
+    let make_disk bus_name drive_prefix i = function
+    | BusSlotEmpty -> Comment (sprintf "%s slot %d is empty" bus_name i)
+
+    | BusSlotTarget t ->
         e "disk" [
           "type", if pool = None then "file" else "volume";
           "device", "disk"
@@ -155,45 +151,41 @@ let create_libvirt_xml ?pool source targets guestcaps
             ] []
           );
           e "target" [
-            "dev", block_prefix ^ (drive_name i);
-            "bus", block_bus;
+            "dev", drive_prefix ^ drive_name i;
+            "bus", bus_name;
           ] [];
         ]
-    ) targets in
 
-  let removables =
-    (* CDs will be added as IDE devices if we're using virtio, else
-     * they will be added as the same as the disk bus.  The original
-     * s_removable_controller is ignored (same as old virt-v2v).
-     *)
-    let cdrom_bus, cdrom_block_prefix, cdrom_index =
-      match guestcaps.gcaps_block_bus with
-      | Virtio_blk | IDE -> "ide", "hd", ref 0
-      (* | bus -> bus, "sd", ref (List.length targets) *) in
-
-    (* Floppy disks always occupy their own virtual bus. *)
-    let fd_bus = "fdc" and fd_index = ref 0 in
-
-    List.map (
-      function
-      | { s_removable_type = CDROM } ->
-        let i = !cdrom_index in
-        incr cdrom_index;
-        let name = cdrom_block_prefix ^ drive_name i in
+    | BusSlotRemovable { s_removable_type = CDROM } ->
         e "disk" [ "device", "cdrom"; "type", "file" ] [
           e "driver" [ "name", "qemu"; "type", "raw" ] [];
-          e "target" [ "dev", name; "bus", cdrom_bus ] []
+          e "target" [
+            "dev", drive_prefix ^ drive_name i;
+            "bus", bus_name
+          ] []
         ]
 
-      | { s_removable_type = Floppy } ->
-        let i = !fd_index in
-        incr fd_index;
-        let name = "fd" ^ drive_name i in
+    | BusSlotRemovable { s_removable_type = Floppy } ->
         e "disk" [ "device", "floppy"; "type", "file" ] [
           e "driver" [ "name", "qemu"; "type", "raw" ] [];
-          e "target" [ "dev", name; "bus", fd_bus ] []
+          e "target" [
+            "dev", drive_prefix ^ drive_name i;
+            "bus", bus_name
+          ] []
         ]
-    ) source.s_removables in
+    in
+
+    List.flatten [
+      Array.to_list
+        (Array.mapi (make_disk "virtio" "vd")
+                    target_buses.target_virtio_blk_bus);
+      Array.to_list
+        (Array.mapi (make_disk "ide" "hd")
+                    target_buses.target_ide_bus);
+      Array.to_list
+        (Array.mapi (make_disk "scsi" "sd")
+                    target_buses.target_scsi_bus)
+    ] in
 
   let nics =
     let net_model =
@@ -278,7 +270,7 @@ let create_libvirt_xml ?pool source targets guestcaps
        else
          [] in
 
-  let devices = disks @ removables @ nics @ [video] @ [graphics] @ sound @
+  let devices = disks @ nics @ [video] @ [graphics] @ sound @
   (* Standard devices added to every guest. *) [
     e "input" ["type", "tablet"; "bus", "usb"] [];
     e "input" ["type", "mouse"; "bus", "ps2"] [];
@@ -355,7 +347,7 @@ class output_libvirt oc output_pool = object
       let obj = Xml.xpath_eval_expression xpathctx expr in
       if Xml.xpathobj_nr_nodes obj < 1 then default
       else (
-        let node = Xml.xpathobj_node doc obj 0 in
+        let node = Xml.xpathobj_node obj 0 in
         Xml.node_as_string node
       )
     in
@@ -376,7 +368,19 @@ class output_libvirt oc output_pool = object
         { t with target_file = target_file }
     ) targets
 
-  method create_metadata source targets guestcaps _ target_firmware =
+  method check_target_firmware guestcaps target_firmware =
+    match target_firmware with
+    | TargetBIOS -> ()
+    | TargetUEFI ->
+       (* This will fail with an error if the target firmware is
+        * not installed on the host.
+        * XXX Can remove this method when libvirt supports
+        * <loader type="efi"/> since then it will be up to
+        * libvirt to check this.
+        *)
+       ignore (find_uefi_firmware guestcaps.gcaps_arch)
+
+  method create_metadata source _ target_buses guestcaps _ target_firmware =
     (* We copied directly into the final pool directory.  However we
      * have to tell libvirt.
      *)
@@ -400,7 +404,7 @@ class output_libvirt oc output_pool = object
 
     (* Create the metadata. *)
     let doc =
-      create_libvirt_xml ~pool:output_pool source targets
+      create_libvirt_xml ~pool:output_pool source target_buses
         guestcaps target_features target_firmware in
 
     let tmpfile, chan = Filename.open_temp_file "v2vlibvirt" ".xml" in

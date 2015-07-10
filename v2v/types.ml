@@ -55,6 +55,7 @@ and s_controller = Source_IDE | Source_SCSI | Source_virtio_blk
 and source_removable = {
   s_removable_type : s_removable_type;
   s_removable_controller : s_controller option;
+  s_removable_slot : int option;
 }
 and s_removable_type = CDROM | Floppy
 and source_nic = {
@@ -175,12 +176,14 @@ and string_of_controller = function
   | Source_virtio_blk -> "virtio"
 
 and string_of_source_removable { s_removable_type = typ;
-                                 s_removable_controller = controller } =
-  sprintf "\t%s%s"
+                                 s_removable_controller = controller;
+                                 s_removable_slot = i } =
+  sprintf "\t%s%s%s"
     (match typ with CDROM -> "CD-ROM" | Floppy -> "Floppy")
     (match controller with
     | None -> ""
     | Some controller -> " [" ^ string_of_controller controller ^ "]")
+    (match i with None -> "" | Some i -> sprintf " in slot %d" i)
 
 and string_of_source_nic { s_mac = mac; s_vnet = vnet; s_vnet_type = typ } =
   sprintf "\t%s \"%s\"%s"
@@ -347,6 +350,35 @@ gcaps_acpi = %b
   gcaps.gcaps_arch
   gcaps.gcaps_acpi
 
+type target_buses = {
+  target_virtio_blk_bus : target_bus_slot array;
+  target_ide_bus : target_bus_slot array;
+  target_scsi_bus : target_bus_slot array;
+}
+
+and target_bus_slot =
+  | BusSlotEmpty
+  | BusSlotTarget of target
+  | BusSlotRemovable of source_removable
+
+let string_of_target_bus_slots bus_name slots =
+  let slots =
+    Array.mapi (
+      fun slot_nr slot ->
+        sprintf "%s slot %d:\n" bus_name slot_nr ^
+          (match slot with
+           | BusSlotEmpty -> "\t(slot empty)\n"
+           | BusSlotTarget t -> string_of_target t
+           | BusSlotRemovable r -> string_of_source_removable r ^ "\n"
+          )
+    ) slots in
+  String.concat "" (Array.to_list slots)
+
+let string_of_target_buses buses =
+  string_of_target_bus_slots "virtio-blk" buses.target_virtio_blk_bus ^
+  string_of_target_bus_slots "ide" buses.target_ide_bus ^
+  string_of_target_bus_slots "scsi" buses.target_scsi_bus
+
 class virtual input = object
   method virtual as_options : string
   method virtual source : unit -> source
@@ -357,9 +389,10 @@ class virtual output = object
   method virtual as_options : string
   method virtual prepare_targets : source -> target list -> target list
   method virtual supported_firmware : target_firmware list
+  method check_target_firmware (_ : guestcaps) (_ : target_firmware) = ()
   method check_target_free_space (_ : source) (_ : target list) = ()
   method disk_create = (new Guestfs.guestfs ())#disk_create
-  method virtual create_metadata : source -> target list -> guestcaps -> inspect -> target_firmware -> unit
+  method virtual create_metadata : source -> target list -> target_buses -> guestcaps -> inspect -> target_firmware -> unit
   method keep_serial_console = true
 end
 

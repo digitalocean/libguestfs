@@ -1360,6 +1360,21 @@ class GuestFS(object):
         r = libguestfsmod.btrfs_quota_rescan (self._o, fs)
         return r
 
+    def btrfs_replace (self, srcdev, targetdev, mntpoint):
+        """Replace device of a btrfs filesystem. On a live
+        filesystem, duplicate the data to the target device
+        which is currently stored on the source device. After
+        completion of the operation, the source device is wiped
+        out and removed from the filesystem.
+        
+        The "targetdev" needs to be same size or larger than the
+        "srcdev". Devices which are currently mounted are never
+        allowed to be used as the "targetdev".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.btrfs_replace (self._o, srcdev, targetdev, mntpoint)
+        return r
+
     def btrfs_rescue_chunk_recover (self, device):
         """Recover the chunk tree of btrfs filesystem by scanning
         the devices one by one.
@@ -1888,7 +1903,7 @@ class GuestFS(object):
         r = libguestfsmod.copy_attributes (self._o, src, dest, all, mode, xattributes, ownership)
         return r
 
-    def copy_device_to_device (self, src, dest, srcoffset=None, destoffset=None, size=None, sparse=None):
+    def copy_device_to_device (self, src, dest, srcoffset=None, destoffset=None, size=None, sparse=None, append=None):
         """The four calls "g.copy_device_to_device",
         "g.copy_device_to_file", "g.copy_file_to_device", and
         "g.copy_file_to_file" let you copy from a source
@@ -1908,6 +1923,12 @@ class GuestFS(object):
         If the destination file is not large enough, it is
         extended.
         
+        If the destination is a file and the "append" flag is
+        not set, then the destination file is truncated. If the
+        "append" flag is set, then the copy appends to the
+        destination file. The "append" flag currently cannot be
+        set for devices.
+        
         If the "sparse" flag is true then the call avoids
         writing blocks that contain only zeroes, which can help
         in some situations where the backing disk is
@@ -1916,26 +1937,26 @@ class GuestFS(object):
         copying.
         """
         self._check_not_closed ()
-        r = libguestfsmod.copy_device_to_device (self._o, src, dest, srcoffset, destoffset, size, sparse)
+        r = libguestfsmod.copy_device_to_device (self._o, src, dest, srcoffset, destoffset, size, sparse, append)
         return r
 
-    def copy_device_to_file (self, src, dest, srcoffset=None, destoffset=None, size=None, sparse=None):
+    def copy_device_to_file (self, src, dest, srcoffset=None, destoffset=None, size=None, sparse=None, append=None):
         """See "g.copy_device_to_device" for a general overview of
         this call.
         """
         self._check_not_closed ()
-        r = libguestfsmod.copy_device_to_file (self._o, src, dest, srcoffset, destoffset, size, sparse)
+        r = libguestfsmod.copy_device_to_file (self._o, src, dest, srcoffset, destoffset, size, sparse, append)
         return r
 
-    def copy_file_to_device (self, src, dest, srcoffset=None, destoffset=None, size=None, sparse=None):
+    def copy_file_to_device (self, src, dest, srcoffset=None, destoffset=None, size=None, sparse=None, append=None):
         """See "g.copy_device_to_device" for a general overview of
         this call.
         """
         self._check_not_closed ()
-        r = libguestfsmod.copy_file_to_device (self._o, src, dest, srcoffset, destoffset, size, sparse)
+        r = libguestfsmod.copy_file_to_device (self._o, src, dest, srcoffset, destoffset, size, sparse, append)
         return r
 
-    def copy_file_to_file (self, src, dest, srcoffset=None, destoffset=None, size=None, sparse=None):
+    def copy_file_to_file (self, src, dest, srcoffset=None, destoffset=None, size=None, sparse=None, append=None):
         """See "g.copy_device_to_device" for a general overview of
         this call.
         
@@ -1945,7 +1966,7 @@ class GuestFS(object):
         moving functions.
         """
         self._check_not_closed ()
-        r = libguestfsmod.copy_file_to_file (self._o, src, dest, srcoffset, destoffset, size, sparse)
+        r = libguestfsmod.copy_file_to_file (self._o, src, dest, srcoffset, destoffset, size, sparse, append)
         return r
 
     def copy_in (self, localpath, remotedir):
@@ -4593,6 +4614,11 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.inspect_os (self._o)
+        return r
+
+    def internal_exit (self):
+        self._check_not_closed ()
+        r = libguestfsmod.internal_exit (self._o)
         return r
 
     def internal_test (self, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, obool=None, oint=None, oint64=None, ostring=None, ostringlist=None):
@@ -7930,6 +7956,12 @@ class GuestFS(object):
         filesystem. The filesystem must not be mounted when
         trying to set the label.
         
+        fat The label is limited to 11 bytes.
+        
+        If there is no support for changing the label for the
+        type of the specified filesystem, set_label will fail
+        and set errno as ENOTSUP.
+        
         To read the label on a filesystem, call "g.vfs_label".
         """
         self._check_not_closed ()
@@ -8164,7 +8196,10 @@ class GuestFS(object):
         return r
 
     def set_uuid (self, device, uuid):
-        """Set the filesystem UUID on "device" to "uuid".
+        """Set the filesystem UUID on "device" to "uuid". If this
+        fails and the errno is ENOTSUP, means that there is no
+        support for changing the UUID for the type of the
+        specified filesystem.
         
         Only some filesystem types support setting UUIDs.
         
@@ -8172,6 +8207,20 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.set_uuid (self._o, device, uuid)
+        return r
+
+    def set_uuid_random (self, device):
+        """Set the filesystem UUID on "device" to a random UUID. If
+        this fails and the errno is ENOTSUP, means that there is
+        no support for changing the UUID for the type of the
+        specified filesystem.
+        
+        Only some filesystem types support setting UUIDs.
+        
+        To read the UUID on a filesystem, call "g.vfs_uuid".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.set_uuid_random (self._o, device)
         return r
 
     def set_verbose (self, verbose):

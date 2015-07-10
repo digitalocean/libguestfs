@@ -42,7 +42,8 @@ GUESTFSD_EXT_CMD(str_btrfsimage, btrfs-image);
 int
 optgroup_btrfs_available (void)
 {
-  return prog_exists (str_btrfs) && filesystem_available ("btrfs") > 0;
+  return test_mode ||
+    (prog_exists (str_btrfs) && filesystem_available ("btrfs") > 0);
 }
 
 char *
@@ -67,6 +68,22 @@ btrfs_get_label (const char *device)
     out[len-1] = '\0';
 
   return out;
+}
+
+int
+btrfs_set_label (const char *device, const char *label)
+{
+  int r;
+  CLEANUP_FREE char *err = NULL;
+
+  r = command (NULL, &err, str_btrfs, "filesystem", "label",
+               device, label, NULL);
+  if (r == -1) {
+    reply_with_error ("%s", err);
+    return -1;
+  }
+
+  return 0;
 }
 
 /* Takes optional arguments, consult optargs_bitmask. */
@@ -409,7 +426,7 @@ umount (char *fs_buf, const mountable_t *fs)
 guestfs_int_btrfssubvolume_list *
 do_btrfs_subvolume_list (const mountable_t *fs)
 {
-  char **lines;
+  CLEANUP_FREE_STRING_LIST char **lines = NULL;
   size_t i = 0;
   const size_t MAX_ARGS = 64;
   const char *argv[MAX_ARGS];
@@ -472,7 +489,7 @@ do_btrfs_subvolume_list (const mountable_t *fs)
   ret = malloc (sizeof *ret);
   if (!ret) {
     reply_with_perror ("malloc");
-    goto error;
+    return NULL;
   }
 
   ret->guestfs_int_btrfssubvolume_list_len = nr_subvolumes;
@@ -512,7 +529,7 @@ do_btrfs_subvolume_list (const mountable_t *fs)
       goto error;
     }
 
-    struct guestfs_int_btrfssubvolume *this  =
+    struct guestfs_int_btrfssubvolume *this =
       &ret->guestfs_int_btrfssubvolume_list_val[i];
 
     #if __WORDSIZE == 64
@@ -530,20 +547,26 @@ do_btrfs_subvolume_list (const mountable_t *fs)
 
     #undef XSTRTOU64
 
-    memmove (line, line + ovector[6], ovector[7] - ovector[6] + 1);
-    this->btrfssubvolume_path = line;
+    this->btrfssubvolume_path =
+      strndup (line + ovector[6], ovector[7] - ovector[6]);
+    if (this->btrfssubvolume_path == NULL)
+      goto error;
   }
 
-  free (lines);
   pcre_free (re);
 
   return ret;
 
 error:
-  free_stringslen (lines, nr_subvolumes);
-  if (ret) free (ret->guestfs_int_btrfssubvolume_list_val);
+  if (ret->guestfs_int_btrfssubvolume_list_val) {
+    for (i = 0; i < nr_subvolumes; ++i)
+      free (ret->guestfs_int_btrfssubvolume_list_val[i].btrfssubvolume_path);
+    free (ret->guestfs_int_btrfssubvolume_list_val);
+  }
   free (ret);
-  if (re) pcre_free (re);
+
+  if (re)
+    pcre_free (re);
 
   return NULL;
 }
@@ -790,6 +813,44 @@ do_btrfs_device_delete (char *const *devices, const char *fs)
   return 0;
 }
 
+
+/* btrfstune command add two new options
+ * -U UUID      change fsid to UUID
+ * -u           change fsid, use a random one
+ * since v4.1
+ * We could check wheter 'btrfstune' support
+ * '-u' and '-U UUID' option by checking the output of
+ * 'btrfstune' command.
+ */
+static int
+test_btrfstune_uuid_opt (void)
+{
+  static int result = -1;
+  if (result != -1)
+    return result;
+
+  CLEANUP_FREE char *err = NULL;
+
+  int r = commandr (NULL, &err, str_btrfstune, "--help", NULL);
+
+  if (r == -1) {
+    reply_with_error ("btrfstune: %s", err);
+    return -1;
+  }
+
+  /* FIXME currently btrfstune do not support '--help'.
+   * If got an invalid options, it will print its usage
+   * in stderr.
+   * We had to check it there.
+   */
+  if (strstr (err, "-U") == NULL || strstr (err, "-u") == NULL)
+    result = 0;
+  else
+    result = 1;
+
+  return result;
+}
+
 int
 do_btrfs_set_seeding (const char *device, int svalue)
 {
@@ -799,6 +860,45 @@ do_btrfs_set_seeding (const char *device, int svalue)
   const char *s_value = svalue ? "1" : "0";
 
   r = commandr (NULL, &err, str_btrfstune, "-S", s_value, device, NULL);
+  if (r == -1) {
+    reply_with_error ("%s: %s", device, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+btrfs_set_uuid (const char *device, const char *uuid)
+{
+  CLEANUP_FREE char *err = NULL;
+  int r;
+  int has_uuid_opts = test_btrfstune_uuid_opt ();
+
+  if (has_uuid_opts <= 0)
+    NOT_SUPPORTED(-1, "btrfs filesystems' UUID cannot be changed");
+
+  r = commandr (NULL, &err, str_btrfstune, "-f", "-U", uuid, device, NULL);
+
+  if (r == -1) {
+    reply_with_error ("%s: %s", device, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+btrfs_set_uuid_random (const char *device)
+{
+  CLEANUP_FREE char *err = NULL;
+  int r;
+  int has_uuid_opts = test_btrfstune_uuid_opt();
+
+  if (has_uuid_opts <= 0)
+    NOT_SUPPORTED(-1, "btrfs filesystems' UUID cannot be changed");
+
+  r = commandr (NULL, &err, str_btrfstune, "-f", "-u", device, NULL);
   if (r == -1) {
     reply_with_error ("%s: %s", device, err);
     return -1;
@@ -853,11 +953,10 @@ do_btrfs_fsck (const char *device, int64_t superblock, int repair)
  * returns the next position following \n.
  */
 static char *
-analyze_line (char *line, char **key, char **value)
+analyze_line (char *line, char **key, char **value, char delimiter)
 {
   char *p = line;
   char *next = NULL;
-  char delimiter = ':';
   char *del_pos = NULL;
 
   if (!line || *line == '\0') {
@@ -964,7 +1063,7 @@ do_btrfs_subvolume_show (const char *subvolume)
    *                                 snapshots/test3
    *
    */
-  p = analyze_line(out, &key, &value);
+  p = analyze_line(out, &key, &value, ':');
   if (!p) {
     reply_with_error ("truncated output: %s", out);
     return NULL;
@@ -984,7 +1083,7 @@ do_btrfs_subvolume_show (const char *subvolume)
   }
 
   /* Read the lines and split into "key: value". */
-  p = analyze_line(p, &key, &value);
+  p = analyze_line(p, &key, &value, ':');
   while (key) {
     /* snapshot is special, see the output above */
     if (STREQLEN (key, "Snapshot(s)", sizeof ("Snapshot(s)") - 1)) {
@@ -994,7 +1093,7 @@ do_btrfs_subvolume_show (const char *subvolume)
       if (add_string (&ret, key) == -1)
         return NULL;
 
-      p = analyze_line(p, &key, &value);
+      p = analyze_line(p, &key, &value, ':');
 
       while (key && !value) {
           ss = realloc (ss, ss_len + strlen (key) + 1);
@@ -1008,7 +1107,7 @@ do_btrfs_subvolume_show (const char *subvolume)
           ss_len += strlen (key);
           ss[ss_len] = '\0';
 
-          p = analyze_line(p, &key, &value);
+          p = analyze_line(p, &key, &value, ':');
       }
 
       if (ss) {
@@ -1031,7 +1130,7 @@ do_btrfs_subvolume_show (const char *subvolume)
           return NULL;
       }
 
-      p = analyze_line(p, &key, &value);
+      p = analyze_line(p, &key, &value, ':');
     }
   }
 
@@ -1249,7 +1348,7 @@ do_btrfs_qgroup_show (const char *path)
   CLEANUP_FREE char *err = NULL;
   CLEANUP_FREE char *out = NULL;
   int r;
-  char **lines;
+  CLEANUP_FREE_STRING_LIST char **lines = NULL;
 
   path_buf = sysroot_path (path);
   if (path_buf == NULL) {
@@ -1275,17 +1374,19 @@ do_btrfs_qgroup_show (const char *path)
   if (!lines)
     return NULL;
 
-  /* line 0 and 1 are:
+  /* Output of `btrfs qgroup show' is like:
    *
-   * qgroupid rfer          excl
-   * -------- ----          ----
+   *  qgroupid         rfer         excl
+   *  --------         ----         ----
+   *  0/5        9249849344   9249849344
+   *
    */
   size_t nr_qgroups = count_strings (lines) - 2;
   guestfs_int_btrfsqgroup_list *ret = NULL;
   ret = malloc (sizeof *ret);
   if (!ret) {
     reply_with_perror ("malloc");
-    goto error;
+    return NULL;
   }
 
   ret->guestfs_int_btrfsqgroup_list_len = nr_qgroups;
@@ -1298,33 +1399,25 @@ do_btrfs_qgroup_show (const char *path)
 
   for (i = 0; i < nr_qgroups; ++i) {
     char *line = lines[i + 2];
-    struct guestfs_int_btrfsqgroup *this  =
+    struct guestfs_int_btrfsqgroup *this =
       &ret->guestfs_int_btrfsqgroup_list_val[i];
-    uint64_t dummy1, dummy2;
-    char *p;
 
-    if (sscanf (line, "%" SCNu64 "/%" SCNu64 " %" SCNu64 " %" SCNu64,
-                &dummy1, &dummy2, &this->btrfsqgroup_rfer,
-                &this->btrfsqgroup_excl) != 4) {
+    if (sscanf (line, "%m[0-9/] %" SCNu64 " %" SCNu64,
+                &this->btrfsqgroup_id, &this->btrfsqgroup_rfer,
+                &this->btrfsqgroup_excl) != 3) {
       reply_with_error ("cannot parse output of qgroup show command: %s", line);
       goto error;
     }
-    p = strchr(line, ' ');
-    if (!p) {
-      reply_with_error ("truncated line: %s", line);
-      goto error;
-    }
-    *p = '\0';
-    this->btrfsqgroup_id = line;
   }
 
-  free (lines);
   return ret;
 
 error:
-  free_stringslen (lines, nr_qgroups + 2);
-  if (ret)
+  if (ret->guestfs_int_btrfsqgroup_list_val) {
+    for (i = 0; i < nr_qgroups; ++i)
+      free (ret->guestfs_int_btrfsqgroup_list_val[i].btrfsqgroup_id);
     free (ret->guestfs_int_btrfsqgroup_list_val);
+  }
   free (ret);
 
   return NULL;
@@ -1688,8 +1781,8 @@ do_btrfs_balance_status (const char *path)
   size_t i = 0;
   CLEANUP_FREE char *path_buf = NULL;
   CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *out = NULL;
   CLEANUP_FREE_STRING_LIST char **lines = NULL;
-  char *out;
   int r;
   guestfs_int_btrfsbalance *ret;
   size_t nlines;
@@ -1814,7 +1907,7 @@ do_btrfs_scrub_status (const char *path)
   CLEANUP_FREE char *path_buf = NULL;
   CLEANUP_FREE char *err = NULL;
   CLEANUP_FREE_STRING_LIST char **lines = NULL;
-  char *out;
+  CLEANUP_FREE char *out = NULL;
   int r;
   guestfs_int_btrfsscrub *ret;
 
@@ -2056,6 +2149,42 @@ do_btrfs_image (char *const *sources, const char *image,
   r = commandv (NULL, &err, argv);
   if (r == -1) {
     reply_with_error ("%s %s: %s", sources[0], image, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_btrfs_replace (const char *srcdev, const char *targetdev,
+                                const char* mntpoint)
+{
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *path_buf = NULL;
+  int r;
+
+  path_buf = sysroot_path (mntpoint);
+  if (path_buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "replace");
+  ADD_ARG (argv, i, "start");
+  ADD_ARG (argv, i, srcdev);
+  ADD_ARG (argv, i, targetdev);
+  ADD_ARG (argv, i, path_buf);
+  ADD_ARG (argv, i, "-B");
+  ADD_ARG (argv, i, "-f");
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (NULL, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", mntpoint, err);
     return -1;
   }
 

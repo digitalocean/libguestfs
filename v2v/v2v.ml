@@ -221,23 +221,6 @@ let rec main () =
   message (f_"Inspecting the overlay");
   let inspect = inspect_source g root_choice in
 
-  (* Does the guest require UEFI on the target? *)
-  let target_firmware =
-    match source.s_firmware with
-    | BIOS -> TargetBIOS
-    | UEFI -> TargetUEFI
-    | UnknownFirmware ->
-       if inspect.i_uefi then TargetUEFI else TargetBIOS in
-  let supported_firmware = output#supported_firmware in
-  if not (List.mem target_firmware supported_firmware) then
-    error (f_"this guest cannot run on the target, because the target does not support %s firmware (supported firmware on target: %s)")
-          (string_of_target_firmware target_firmware)
-          (String.concat " "
-            (List.map string_of_target_firmware supported_firmware));
-  (match target_firmware with
-   | TargetBIOS -> ()
-   | TargetUEFI -> info (f_"This guest requires UEFI on the target to boot."));
-
   (* The guest free disk space check and the target free space
    * estimation both require statvfs information from mountpoints, so
    * get that information first.
@@ -310,6 +293,40 @@ let rec main () =
   g#umount_all ();
   g#shutdown ();
   g#close ();
+
+  (* Does the guest require UEFI on the target? *)
+  message (f_"Checking if the guest needs BIOS or UEFI to boot");
+  let target_firmware =
+    match source.s_firmware with
+    | BIOS -> TargetBIOS
+    | UEFI -> TargetUEFI
+    | UnknownFirmware ->
+       if inspect.i_uefi then TargetUEFI else TargetBIOS in
+  let supported_firmware = output#supported_firmware in
+  if not (List.mem target_firmware supported_firmware) then
+    error (f_"this guest cannot run on the target, because the target does not support %s firmware (supported firmware on target: %s)")
+          (string_of_target_firmware target_firmware)
+          (String.concat " "
+            (List.map string_of_target_firmware supported_firmware));
+
+  output#check_target_firmware guestcaps target_firmware;
+
+  (match target_firmware with
+   | TargetBIOS -> ()
+   | TargetUEFI -> info (f_"This guest requires UEFI on the target to boot."));
+
+  message (f_"Assigning disks to buses");
+  let target_buses = target_bus_assignment source targets guestcaps in
+  if verbose () then
+    printf "%s%!" (string_of_target_buses target_buses);
+
+  (* Force a GC here, to ensure that we're using the minimum resources
+   * as we go into the copy stage.  The particular reason is that
+   * Windows conversion may have opened a second libguestfs handle
+   * pointing to the virtio-win ISO, which is only closed when the
+   * handle is GC'd.
+   *)
+  Gc.compact ();
 
   let delete_target_on_exit = ref true in
 
@@ -431,7 +448,8 @@ let rec main () =
 
   (* Create output metadata. *)
   message (f_"Creating output metadata");
-  output#create_metadata source targets guestcaps inspect target_firmware;
+  output#create_metadata source targets target_buses guestcaps inspect
+                         target_firmware;
 
   (* Save overlays if --debug-overlays option was used. *)
   if debug_overlays then (
@@ -824,5 +842,80 @@ and du filename =
   match lines with
   | line::_ -> (try Some (Int64.of_string line) with _ -> None)
   | [] -> None
+
+(* Assign fixed and removable disks to target buses, as best we can.
+ * This is not solvable for all guests, but at least avoid overlapping
+ * disks (RHBZ#1238053).
+ *
+ * XXX This doesn't do the right thing for PC legacy floppy devices.
+ * XXX This could handle slot assignment better when we have a mix of
+ * devices desiring their own slot, and others that don't care.  Allocate
+ * the first group in the first pass, then the second group afterwards.
+ *)
+and target_bus_assignment source targets guestcaps =
+  let virtio_blk_bus = ref [| |]
+  and ide_bus = ref [| |]
+  and scsi_bus = ref [| |] in
+
+  (* Insert a slot into the bus array, making the array bigger if necessary. *)
+  let insert bus i slot =
+    let oldbus = !bus in
+    let oldlen = Array.length oldbus in
+    if i >= oldlen then (
+      bus := Array.make (i+1) BusSlotEmpty;
+      Array.blit oldbus 0 !bus 0 oldlen
+    );
+    Array.set !bus i slot
+  in
+
+  (* Insert a slot into the bus, but if the desired slot is not empty, then
+   * increment the slot number until we find an empty one.  Returns
+   * true if we got the desired slot.
+   *)
+  let rec insert_after bus i slot =
+    let len = Array.length !bus in
+    if i >= len || Array.get !bus i = BusSlotEmpty then (
+      insert bus i slot; true
+    ) else (
+      ignore (insert_after bus (i+1) slot); false
+    )
+  in
+
+  (* Add the fixed disks (targets) to either the virtio-blk or IDE bus,
+   * depending on whether the guest has virtio drivers or not.
+   *)
+  iteri (
+    fun i t ->
+      let t = BusSlotTarget t in
+      match guestcaps.gcaps_block_bus with
+      | Virtio_blk -> insert virtio_blk_bus i t
+      | IDE -> insert ide_bus i t
+  ) targets;
+
+  (* Now try to add the removable disks to the bus at the same slot
+   * they originally occupied, but if the slot is occupied, emit a
+   * a warning and insert the disk in the next empty slot in that bus.
+   *)
+  List.iter (
+    fun r ->
+      let bus = match r.s_removable_controller with
+        | None -> ide_bus (* Wild guess, but should be safe. *)
+        | Some Source_virtio_blk -> virtio_blk_bus
+        | Some Source_IDE -> ide_bus
+        | Some Source_SCSI -> scsi_bus in
+      match r.s_removable_slot with
+      | None -> ignore (insert_after bus 0 (BusSlotRemovable r))
+      | Some desired_slot_nr ->
+         if not (insert_after bus desired_slot_nr (BusSlotRemovable r)) then
+           warning (f_"removable %s device in slot %d clashes with another disk, so it has been moved to a higher numbered slot on the same bus.  This may mean that this removable device has a different name inside the guest (for example a CD-ROM originally called /dev/hdc might move to /dev/hdd, or from D: to E: on a Windows guest).")
+                   (match r.s_removable_type with
+                    | CDROM -> s_"CD-ROM"
+                    | Floppy -> s_"floppy disk")
+                   desired_slot_nr
+  ) source.s_removables;
+
+  { target_virtio_blk_bus = !virtio_blk_bus;
+    target_ide_bus = !ide_bus;
+    target_scsi_bus = !scsi_bus }
 
 let () = run_main_and_handle_errors main

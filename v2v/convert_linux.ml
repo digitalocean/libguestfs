@@ -297,7 +297,9 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
               let expr =
                 sprintf "/files%s/title[%d]/kernel" grub_config (idx+1) in
               Some expr
-            with Not_found -> None in
+            with G.Error msg
+                 when string_find msg "aug_get: no matching node" >= 0 ->
+              None in
 
           (* If a default kernel was set, put it at the beginning of the paths
            * list.  If not set, assume the first kernel always boots (?)
@@ -795,13 +797,9 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
        *)
       let mkinitrd_kv =
         let modpath = kernel.ki_modpath in
-        let len = String.length modpath in
-        try
-          let i = String.rindex modpath '/' in
-          String.sub modpath (i+1) (len - (i+1))
-        with
-          Not_found ->
-            invalid_arg (sprintf "invalid module path: %s" modpath) in
+        match last_part_of modpath '/' with
+        | Some x -> x
+        | None -> invalid_arg (sprintf "invalid module path: %s" modpath) in
 
       if g#is_file ~followsymlinks:true "/sbin/dracut" then (
         (* Dracut. *)

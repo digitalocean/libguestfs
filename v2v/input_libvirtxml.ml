@@ -33,6 +33,19 @@ and parsed_source =
 | P_source_file of string
 | P_dont_rewrite
 
+(* Turn string like "hda" into controller slot number.  See also
+ * src/utils.c:guestfs_int_drive_index which this function calls.
+ *)
+let get_drive_slot str offset =
+  let len = String.length str in
+  if len-offset < 0 then
+    failwith (sprintf "get_drive_slot: offset longer than string length (offset = %d, string = %s)" offset str);
+  let name = String.sub str offset (len-offset) in
+  try Some (drive_index name)
+  with Invalid_argument _ ->
+       warning (f_"could not parse device name '%s' from the source libvirt XML") str;
+       None
+
 let parse_libvirt_xml ?conn xml =
   if verbose () then
     printf "libvirt xml is:\n%s\n" xml;
@@ -44,14 +57,14 @@ let parse_libvirt_xml ?conn xml =
     let obj = Xml.xpath_eval_expression xpathctx expr in
     if Xml.xpathobj_nr_nodes obj < 1 then default
     else (
-      let node = Xml.xpathobj_node doc obj 0 in
+      let node = Xml.xpathobj_node obj 0 in
       Xml.node_as_string node
     )
   and xpath_to_int expr default =
     let obj = Xml.xpath_eval_expression xpathctx expr in
     if Xml.xpathobj_nr_nodes obj < 1 then default
     else (
-      let node = Xml.xpathobj_node doc obj 0 in
+      let node = Xml.xpathobj_node obj 0 in
       let str = Xml.node_as_string node in
       try int_of_string str
       with Failure "int_of_string" ->
@@ -78,7 +91,7 @@ let parse_libvirt_xml ?conn xml =
     let obj = Xml.xpath_eval_expression xpathctx "/domain/features/*" in
     let nr_nodes = Xml.xpathobj_nr_nodes obj in
     for i = 0 to nr_nodes-1 do
-      let node = Xml.xpathobj_node doc obj i in
+      let node = Xml.xpathobj_node obj i in
       features := Xml.node_name node :: !features
     done;
     !features in
@@ -89,7 +102,7 @@ let parse_libvirt_xml ?conn xml =
     if nr_nodes < 1 then None
     else (
       (* Ignore everything except the first <graphics> device. *)
-      let node = Xml.xpathobj_node doc obj 0 in
+      let node = Xml.xpathobj_node obj 0 in
       Xml.xpathctx_set_current_context xpathctx node;
       let keymap =
         match xpath_to_string "@keymap" "" with "" -> None | k -> Some k in
@@ -150,7 +163,7 @@ let parse_libvirt_xml ?conn xml =
     if nr_nodes < 1 then None
     else (
       (* Ignore everything except the first <sound> device. *)
-      let node = Xml.xpathobj_node doc obj 0 in
+      let node = Xml.xpathobj_node obj 0 in
 
       Xml.xpathctx_set_current_context xpathctx node;
       match xpath_to_string "@model" "" with
@@ -189,7 +202,7 @@ let parse_libvirt_xml ?conn xml =
     if nr_nodes < 1 then
       error (f_"this guest has no non-removable disks");
     for i = 0 to nr_nodes-1 do
-      let node = Xml.xpathobj_node doc obj i in
+      let node = Xml.xpathobj_node obj i in
       Xml.xpathctx_set_current_context xpathctx node;
 
       let controller =
@@ -248,7 +261,7 @@ let parse_libvirt_xml ?conn xml =
             let obj = Xml.xpath_eval_expression xpathctx expr in
             if Xml.xpathobj_nr_nodes obj < 1 then default
             else (
-              let node = Xml.xpathobj_node doc obj 0 in
+              let node = Xml.xpathobj_node obj 0 in
               Xml.node_as_string node
             ) in
 
@@ -279,7 +292,7 @@ let parse_libvirt_xml ?conn xml =
     let nr_nodes = Xml.xpathobj_nr_nodes obj in
     let disks = ref [] in
     for i = 0 to nr_nodes-1 do
-      let node = Xml.xpathobj_node doc obj i in
+      let node = Xml.xpathobj_node obj i in
       Xml.xpathctx_set_current_context xpathctx node;
 
       let controller =
@@ -291,6 +304,18 @@ let parse_libvirt_xml ?conn xml =
         | "virtio" -> Some Source_virtio_blk
         | _ -> None in
 
+      let slot =
+        let target_dev = xpath_to_string "target/@dev" "" in
+        match target_dev with
+        | "" -> None
+        | s when string_prefix s "hd" -> get_drive_slot s 2
+        | s when string_prefix s "sd" -> get_drive_slot s 2
+        | s when string_prefix s "vd" -> get_drive_slot s 2
+        | s when string_prefix s "xvd" -> get_drive_slot s 3
+        | s ->
+           warning (f_"<target dev='%s'> was ignored because the device name could not be recognized") s;
+           None in
+
       let typ =
         match xpath_to_string "@device" "" with
         | "cdrom" -> CDROM
@@ -298,7 +323,9 @@ let parse_libvirt_xml ?conn xml =
         | _ -> assert false (* libxml2 error? *) in
 
       let disk =
-        { s_removable_type = typ; s_removable_controller = controller } in
+        { s_removable_type = typ;
+          s_removable_controller = controller;
+          s_removable_slot = slot } in
       disks := disk :: !disks
     done;
     List.rev !disks in
@@ -309,7 +336,7 @@ let parse_libvirt_xml ?conn xml =
     let nr_nodes = Xml.xpathobj_nr_nodes obj in
     let nics = ref [] in
     for i = 0 to nr_nodes-1 do
-      let node = Xml.xpathobj_node doc obj i in
+      let node = Xml.xpathobj_node obj i in
       Xml.xpathctx_set_current_context xpathctx node;
 
       let mac = xpath_to_string "mac/@address" "" in

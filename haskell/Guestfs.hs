@@ -78,6 +78,7 @@ module Guestfs (
   btrfs_qgroup_remove,
   btrfs_quota_enable,
   btrfs_quota_rescan,
+  btrfs_replace,
   btrfs_rescue_chunk_recover,
   btrfs_rescue_super_recover,
   btrfs_scrub_cancel,
@@ -229,6 +230,7 @@ module Guestfs (
   inspect_is_multipart,
   inspect_is_netinst,
   inspect_os,
+  internal_exit,
   internal_test_close_output,
   internal_test_rbool,
   internal_test_rboolerr,
@@ -425,6 +427,7 @@ module Guestfs (
   set_tmpdir,
   set_trace,
   set_uuid,
+  set_uuid_random,
   set_verbose,
   setcon,
   setxattr,
@@ -1197,6 +1200,18 @@ foreign import ccall unsafe "guestfs.h guestfs_btrfs_quota_rescan" c_btrfs_quota
 btrfs_quota_rescan :: GuestfsH -> String -> IO ()
 btrfs_quota_rescan h fs = do
   r <- withCString fs $ \fs -> withForeignPtr h (\p -> c_btrfs_quota_rescan p fs)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_replace" c_btrfs_replace
+  :: GuestfsP -> CString -> CString -> CString -> IO CInt
+
+btrfs_replace :: GuestfsH -> String -> String -> String -> IO ()
+btrfs_replace h srcdev targetdev mntpoint = do
+  r <- withCString srcdev $ \srcdev -> withCString targetdev $ \targetdev -> withCString mntpoint $ \mntpoint -> withForeignPtr h (\p -> c_btrfs_replace p srcdev targetdev mntpoint)
   if (r == -1)
     then do
       err <- last_error h
@@ -3023,6 +3038,18 @@ inspect_os h = do
       err <- last_error h
       fail err
     else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_internal_exit" c_internal_exit
+  :: GuestfsP -> IO CInt
+
+internal_exit :: GuestfsH -> IO ()
+internal_exit h = do
+  r <- withForeignPtr h (\p -> c_internal_exit p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
 
 foreign import ccall unsafe "guestfs.h guestfs_internal_test_close_output" c_internal_test_close_output
   :: GuestfsP -> IO CInt
@@ -5388,6 +5415,18 @@ foreign import ccall unsafe "guestfs.h guestfs_set_uuid" c_set_uuid
 set_uuid :: GuestfsH -> String -> String -> IO ()
 set_uuid h device uuid = do
   r <- withCString device $ \device -> withCString uuid $ \uuid -> withForeignPtr h (\p -> c_set_uuid p device uuid)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_set_uuid_random" c_set_uuid_random
+  :: GuestfsP -> CString -> IO CInt
+
+set_uuid_random :: GuestfsH -> String -> IO ()
+set_uuid_random h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_set_uuid_random p device)
   if (r == -1)
     then do
       err <- last_error h

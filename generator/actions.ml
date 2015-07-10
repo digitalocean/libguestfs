@@ -6126,12 +6126,14 @@ the command C<mount -o loop file mountpoint>." };
       InitEmpty, Always, TestRun (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["mkswap"; "/dev/sda1"; "hello"; "NOARG"]]), [];
-      InitEmpty, IfAvailable "linuxfsuuid", TestRun (
+      InitEmpty, IfAvailable "linuxfsuuid", TestResultString (
         [["part_disk"; "/dev/sda"; "mbr"];
-         ["mkswap"; "/dev/sda1"; "NOARG"; uuid]]), [];
-      InitEmpty, IfAvailable "linuxfsuuid", TestRun (
+         ["mkswap"; "/dev/sda1"; "NOARG"; uuid];
+         ["vfs_uuid"; "/dev/sda1"]], uuid), [];
+      InitEmpty, IfAvailable "linuxfsuuid", TestResultString (
         [["part_disk"; "/dev/sda"; "mbr"];
-         ["mkswap"; "/dev/sda1"; "hello"; uuid]]), []
+         ["mkswap"; "/dev/sda1"; "hello"; uuid];
+         ["vfs_label"; "/dev/sda1"]], "hello"), []
     ]);
     shortdesc = "create a swap partition";
     longdesc = "\
@@ -9424,7 +9426,7 @@ See also C<guestfs_part_to_dev>." };
 
   { defaults with
     name = "copy_device_to_device"; added = (1, 13, 25);
-    style = RErr, [Device "src"; Device "dest"], [OInt64 "srcoffset"; OInt64 "destoffset"; OInt64 "size"; OBool "sparse"];
+    style = RErr, [Device "src"; Device "dest"], [OInt64 "srcoffset"; OInt64 "destoffset"; OInt64 "size"; OBool "sparse"; OBool "append"];
     proc_nr = Some 294;
     progress = true;
     shortdesc = "copy from source device to destination device";
@@ -9448,6 +9450,11 @@ overlapping regions may not be copied correctly.
 If the destination is a file, it is created if required.  If
 the destination file is not large enough, it is extended.
 
+If the destination is a file and the C<append> flag is not set,
+then the destination file is truncated.  If the C<append> flag is
+set, then the copy appends to the destination file.  The C<append>
+flag currently cannot be set for devices.
+
 If the C<sparse> flag is true then the call avoids writing
 blocks that contain only zeroes, which can help in some situations
 where the backing disk is thin-provisioned.  Note that unless
@@ -9456,7 +9463,7 @@ in incorrect copying." };
 
   { defaults with
     name = "copy_device_to_file"; added = (1, 13, 25);
-    style = RErr, [Device "src"; Pathname "dest"], [OInt64 "srcoffset"; OInt64 "destoffset"; OInt64 "size"; OBool "sparse"];
+    style = RErr, [Device "src"; Pathname "dest"], [OInt64 "srcoffset"; OInt64 "destoffset"; OInt64 "size"; OBool "sparse"; OBool "append"];
     proc_nr = Some 295;
     progress = true;
     shortdesc = "copy from source device to destination file";
@@ -9466,7 +9473,7 @@ of this call." };
 
   { defaults with
     name = "copy_file_to_device"; added = (1, 13, 25);
-    style = RErr, [Pathname "src"; Device "dest"], [OInt64 "srcoffset"; OInt64 "destoffset"; OInt64 "size"; OBool "sparse"];
+    style = RErr, [Pathname "src"; Device "dest"], [OInt64 "srcoffset"; OInt64 "destoffset"; OInt64 "size"; OBool "sparse"; OBool "append"];
     proc_nr = Some 296;
     progress = true;
     shortdesc = "copy from source file to destination device";
@@ -9476,24 +9483,32 @@ of this call." };
 
   { defaults with
     name = "copy_file_to_file"; added = (1, 13, 25);
-    style = RErr, [Pathname "src"; Pathname "dest"], [OInt64 "srcoffset"; OInt64 "destoffset"; OInt64 "size"; OBool "sparse"];
+    style = RErr, [Pathname "src"; Pathname "dest"], [OInt64 "srcoffset"; OInt64 "destoffset"; OInt64 "size"; OBool "sparse"; OBool "append"];
     proc_nr = Some 297;
     progress = true;
     tests = [
       InitScratchFS, Always, TestResult (
         [["mkdir"; "/copyff"];
          ["write"; "/copyff/src"; "hello, world"];
-         ["copy_file_to_file"; "/copyff/src"; "/copyff/dest"; ""; ""; ""; ""];
+         ["copy_file_to_file"; "/copyff/src"; "/copyff/dest"; ""; ""; ""; ""; "false"];
          ["read_file"; "/copyff/dest"]],
         "compare_buffers (ret, size, \"hello, world\", 12) == 0"), [];
-      let size = 1024 * 1024 in
       InitScratchFS, Always, TestResultTrue (
+        let size = 1024 * 1024 in
         [["mkdir"; "/copyff2"];
          ["fill"; "0"; string_of_int size; "/copyff2/src"];
          ["touch"; "/copyff2/dest"];
          ["truncate_size"; "/copyff2/dest"; string_of_int size];
-         ["copy_file_to_file"; "/copyff2/src"; "/copyff2/dest"; ""; ""; ""; "true"];
-         ["is_zero"; "/copyff2/dest"]]), []
+         ["copy_file_to_file"; "/copyff2/src"; "/copyff2/dest"; ""; ""; ""; "true"; "false"];
+         ["is_zero"; "/copyff2/dest"]]), [];
+      InitScratchFS, Always, TestResult (
+        [["mkdir"; "/copyff3"];
+         ["write"; "/copyff3/src"; "hello, world"];
+         ["copy_file_to_file"; "/copyff3/src"; "/copyff3/dest"; ""; ""; ""; ""; "true"];
+         ["copy_file_to_file"; "/copyff3/src"; "/copyff3/dest"; ""; ""; ""; ""; "true"];
+         ["copy_file_to_file"; "/copyff3/src"; "/copyff3/dest"; ""; ""; ""; ""; "true"];
+         ["read_file"; "/copyff3/dest"]],
+        "compare_buffers (ret, size, \"hello, worldhello, worldhello, world\", 12*3) == 0"), [];
     ];
     shortdesc = "copy from source file to destination file";
     longdesc = "\
@@ -9926,7 +9941,15 @@ not allowed.  Setting the label on a btrfs subvolume will set the
 label on its parent filesystem.  The filesystem must not be mounted
 when trying to set the label.
 
+=item fat
+
+The label is limited to 11 bytes.
+
 =back
+
+If there is no support for changing the label
+for the type of the specified filesystem,
+set_label will fail and set errno as ENOTSUP.
 
 To read the label on a filesystem, call C<guestfs_vfs_label>." };
 
@@ -10790,14 +10813,25 @@ with zeroes)." };
     style = RErr, [Device "device"], [OBool "extunwritten"; OBool "imgfile"; OBool "v2log"; OBool "projid32bit"; OBool "lazycounter"; OString "label"; OString "uuid"];
     proc_nr = Some 349;
     optional = Some "xfs";
-    tests = [
-      InitEmpty, Always, TestResult (
-        [["part_disk"; "/dev/sda"; "mbr"];
-         ["mkfs"; "xfs"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
-         ["xfs_admin"; "/dev/sda1"; ""; ""; ""; ""; "false"; "NOARG"; "NOARG"];
-         ["mount"; "/dev/sda1"; "/"];
-         ["xfs_info"; "/"]], "ret->xfs_lazycount == 0"), [];
-    ];
+    tests =
+      (let uuid = uuidgen () in [
+        InitEmpty, Always, TestResult (
+          [["part_disk"; "/dev/sda"; "mbr"];
+           ["mkfs"; "xfs"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
+           ["xfs_admin"; "/dev/sda1"; ""; ""; ""; ""; "false"; "NOARG"; "NOARG"];
+           ["mount"; "/dev/sda1"; "/"];
+           ["xfs_info"; "/"]], "ret->xfs_lazycount == 0"), [];
+        InitEmpty, Always, TestResultString (
+          [["part_disk"; "/dev/sda"; "mbr"];
+           ["mkfs"; "xfs"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
+           ["xfs_admin"; "/dev/sda1"; ""; ""; ""; ""; "false"; "NOARG"; uuid];
+           ["vfs_uuid"; "/dev/sda1"]], uuid), [];
+        InitEmpty, Always, TestResultString (
+          [["part_disk"; "/dev/sda"; "mbr"];
+           ["mkfs"; "xfs"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
+           ["xfs_admin"; "/dev/sda1"; ""; ""; ""; ""; "false"; "LBL-TEST"; "NOARG"];
+           ["vfs_label"; "/dev/sda1"]], "LBL-TEST"), [];
+      ]);
     shortdesc = "change parameters of an XFS filesystem";
     longdesc = "\
 Change the parameters of the XFS filesystem on C<device>.
@@ -11778,6 +11812,9 @@ parameter.  In future we may allow other flags to be adjusted." };
     shortdesc = "set the filesystem UUID";
     longdesc = "\
 Set the filesystem UUID on C<device> to C<uuid>.
+If this fails and the errno is ENOTSUP,
+means that there is no support for changing the UUID
+for the type of the specified filesystem.
 
 Only some filesystem types support setting UUIDs.
 
@@ -11938,7 +11975,8 @@ This function is used internally when setting up the appliance." };
     name = "internal_exit"; added = (1, 23, 30);
     style = RErr, [], [];
     proc_nr = Some 414;
-    visibility = VInternal;
+    (* Really VInternal, but we need to use it from the Perl bindings. XXX *)
+    visibility = VDebug;
     cancellable = true;
     shortdesc = "cause the daemon to exit (internal use only)";
     longdesc = "\
@@ -12551,7 +12589,7 @@ This enable skinny metadata extent refs." };
     proc_nr = Some 453;
     optional = Some "btrfs"; camel_name = "BTRFSImage";
     tests = [
-      InitPartition, Always, TestRun (
+      InitEmpty, Always, TestRun (
         [["part_init"; "/dev/sda"; "mbr"];
          ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
          ["part_add"; "/dev/sda"; "p"; "204800"; "409599"];
@@ -12592,6 +12630,41 @@ This returns the partition type of an MBR partition
 numbered C<partnum> on device C<device>.
 
 It returns C<primary>, C<logical>, or C<extended>." };
+
+  { defaults with
+    name = "btrfs_replace"; added = (1, 29, 48);
+    style = RErr, [Device "srcdev"; Device "targetdev"; Pathname "mntpoint"], [];
+    proc_nr = Some 455;
+    optional = Some "btrfs"; camel_name = "BTRFSReplace";
+    test_excuse = "put the test in 'tests/btrfs' directory";
+    shortdesc = "replace a btrfs managed device with another device";
+    longdesc = "\
+Replace device of a btrfs filesystem. On a live filesystem, duplicate the data
+to the target device which is currently stored on the source device.
+After completion of the operation, the source device is wiped out and
+removed from the filesystem.
+
+The C<targetdev> needs to be same size or larger than the C<srcdev>. Devices
+which are currently mounted are never allowed to be used as the C<targetdev>." };
+
+  { defaults with
+    name = "set_uuid_random"; added = (1, 29, 50);
+    style = RErr, [Device "device"], [];
+    proc_nr = Some 456;
+    tests = [
+        InitBasicFS, Always, TestRun (
+            [["set_uuid_random"; "/dev/sda1"]]), [];
+      ];
+    shortdesc = "set a random UUID for the filesystem";
+    longdesc = "\
+Set the filesystem UUID on C<device> to a random UUID.
+If this fails and the errno is ENOTSUP,
+means that there is no support for changing the UUID
+for the type of the specified filesystem.
+
+Only some filesystem types support setting UUIDs.
+
+To read the UUID on a filesystem, call C<guestfs_vfs_uuid>." };
 
 ]
 

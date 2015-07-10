@@ -3983,6 +3983,44 @@ py_guestfs_btrfs_quota_rescan (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_btrfs_replace (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *srcdev;
+  const char *targetdev;
+  const char *mntpoint;
+
+  if (!PyArg_ParseTuple (args, (char *) "Osss:guestfs_btrfs_replace",
+                         &py_g, &srcdev, &targetdev, &mntpoint))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_replace (g, srcdev, targetdev, mntpoint);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_btrfs_rescue_chunk_recover (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -5390,11 +5428,12 @@ py_guestfs_copy_device_to_device (PyObject *self, PyObject *args)
   PyObject *py_destoffset;
   PyObject *py_size;
   PyObject *py_sparse;
+  PyObject *py_append;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OssOOOO:guestfs_copy_device_to_device",
-                         &py_g, &src, &dest, &py_srcoffset, &py_destoffset, &py_size, &py_sparse))
+  if (!PyArg_ParseTuple (args, (char *) "OssOOOOO:guestfs_copy_device_to_device",
+                         &py_g, &src, &dest, &py_srcoffset, &py_destoffset, &py_size, &py_sparse, &py_append))
     goto out;
   g = get_handle (py_g);
 
@@ -5416,6 +5455,11 @@ py_guestfs_copy_device_to_device (PyObject *self, PyObject *args)
   if (py_sparse != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
     optargs_s.sparse = PyLong_AsLong (py_sparse);
+    if (PyErr_Occurred ()) goto out;
+  }
+  if (py_append != Py_None) {
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND_BITMASK;
+    optargs_s.append = PyLong_AsLong (py_append);
     if (PyErr_Occurred ()) goto out;
   }
 
@@ -5456,11 +5500,12 @@ py_guestfs_copy_device_to_file (PyObject *self, PyObject *args)
   PyObject *py_destoffset;
   PyObject *py_size;
   PyObject *py_sparse;
+  PyObject *py_append;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OssOOOO:guestfs_copy_device_to_file",
-                         &py_g, &src, &dest, &py_srcoffset, &py_destoffset, &py_size, &py_sparse))
+  if (!PyArg_ParseTuple (args, (char *) "OssOOOOO:guestfs_copy_device_to_file",
+                         &py_g, &src, &dest, &py_srcoffset, &py_destoffset, &py_size, &py_sparse, &py_append))
     goto out;
   g = get_handle (py_g);
 
@@ -5482,6 +5527,11 @@ py_guestfs_copy_device_to_file (PyObject *self, PyObject *args)
   if (py_sparse != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
     optargs_s.sparse = PyLong_AsLong (py_sparse);
+    if (PyErr_Occurred ()) goto out;
+  }
+  if (py_append != Py_None) {
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_APPEND_BITMASK;
+    optargs_s.append = PyLong_AsLong (py_append);
     if (PyErr_Occurred ()) goto out;
   }
 
@@ -5522,11 +5572,12 @@ py_guestfs_copy_file_to_device (PyObject *self, PyObject *args)
   PyObject *py_destoffset;
   PyObject *py_size;
   PyObject *py_sparse;
+  PyObject *py_append;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OssOOOO:guestfs_copy_file_to_device",
-                         &py_g, &src, &dest, &py_srcoffset, &py_destoffset, &py_size, &py_sparse))
+  if (!PyArg_ParseTuple (args, (char *) "OssOOOOO:guestfs_copy_file_to_device",
+                         &py_g, &src, &dest, &py_srcoffset, &py_destoffset, &py_size, &py_sparse, &py_append))
     goto out;
   g = get_handle (py_g);
 
@@ -5548,6 +5599,11 @@ py_guestfs_copy_file_to_device (PyObject *self, PyObject *args)
   if (py_sparse != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
     optargs_s.sparse = PyLong_AsLong (py_sparse);
+    if (PyErr_Occurred ()) goto out;
+  }
+  if (py_append != Py_None) {
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_APPEND_BITMASK;
+    optargs_s.append = PyLong_AsLong (py_append);
     if (PyErr_Occurred ()) goto out;
   }
 
@@ -5588,11 +5644,12 @@ py_guestfs_copy_file_to_file (PyObject *self, PyObject *args)
   PyObject *py_destoffset;
   PyObject *py_size;
   PyObject *py_sparse;
+  PyObject *py_append;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OssOOOO:guestfs_copy_file_to_file",
-                         &py_g, &src, &dest, &py_srcoffset, &py_destoffset, &py_size, &py_sparse))
+  if (!PyArg_ParseTuple (args, (char *) "OssOOOOO:guestfs_copy_file_to_file",
+                         &py_g, &src, &dest, &py_srcoffset, &py_destoffset, &py_size, &py_sparse, &py_append))
     goto out;
   g = get_handle (py_g);
 
@@ -5614,6 +5671,11 @@ py_guestfs_copy_file_to_file (PyObject *self, PyObject *args)
   if (py_sparse != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
     optargs_s.sparse = PyLong_AsLong (py_sparse);
+    if (PyErr_Occurred ()) goto out;
+  }
+  if (py_append != Py_None) {
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_APPEND_BITMASK;
+    optargs_s.append = PyLong_AsLong (py_append);
     if (PyErr_Occurred ()) goto out;
   }
 
@@ -10873,6 +10935,41 @@ py_guestfs_inspect_os (PyObject *self, PyObject *args)
 
   py_r = put_string_list (r);
   guestfs_int_free_string_list (r);
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_internal_exit (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_internal_exit",
+                         &py_g))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_internal_exit (g);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
 
   PyErr_Clear ();
  out:
@@ -20785,6 +20882,42 @@ py_guestfs_set_uuid (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_set_uuid_random (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *device;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_set_uuid_random",
+                         &py_g, &device))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_set_uuid_random (g, device);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_set_verbose (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
@@ -24551,6 +24684,7 @@ static PyMethodDef methods[] = {
   { (char *) "btrfs_qgroup_show", py_guestfs_btrfs_qgroup_show, METH_VARARGS, NULL },
   { (char *) "btrfs_quota_enable", py_guestfs_btrfs_quota_enable, METH_VARARGS, NULL },
   { (char *) "btrfs_quota_rescan", py_guestfs_btrfs_quota_rescan, METH_VARARGS, NULL },
+  { (char *) "btrfs_replace", py_guestfs_btrfs_replace, METH_VARARGS, NULL },
   { (char *) "btrfs_rescue_chunk_recover", py_guestfs_btrfs_rescue_chunk_recover, METH_VARARGS, NULL },
   { (char *) "btrfs_rescue_super_recover", py_guestfs_btrfs_rescue_super_recover, METH_VARARGS, NULL },
   { (char *) "btrfs_scrub_cancel", py_guestfs_btrfs_scrub_cancel, METH_VARARGS, NULL },
@@ -24730,6 +24864,7 @@ static PyMethodDef methods[] = {
   { (char *) "inspect_list_applications", py_guestfs_inspect_list_applications, METH_VARARGS, NULL },
   { (char *) "inspect_list_applications2", py_guestfs_inspect_list_applications2, METH_VARARGS, NULL },
   { (char *) "inspect_os", py_guestfs_inspect_os, METH_VARARGS, NULL },
+  { (char *) "internal_exit", py_guestfs_internal_exit, METH_VARARGS, NULL },
   { (char *) "internal_test", py_guestfs_internal_test, METH_VARARGS, NULL },
   { (char *) "internal_test_63_optargs", py_guestfs_internal_test_63_optargs, METH_VARARGS, NULL },
   { (char *) "internal_test_close_output", py_guestfs_internal_test_close_output, METH_VARARGS, NULL },
@@ -24977,6 +25112,7 @@ static PyMethodDef methods[] = {
   { (char *) "set_tmpdir", py_guestfs_set_tmpdir, METH_VARARGS, NULL },
   { (char *) "set_trace", py_guestfs_set_trace, METH_VARARGS, NULL },
   { (char *) "set_uuid", py_guestfs_set_uuid, METH_VARARGS, NULL },
+  { (char *) "set_uuid_random", py_guestfs_set_uuid_random, METH_VARARGS, NULL },
   { (char *) "set_verbose", py_guestfs_set_verbose, METH_VARARGS, NULL },
   { (char *) "setcon", py_guestfs_setcon, METH_VARARGS, NULL },
   { (char *) "setxattr", py_guestfs_setxattr, METH_VARARGS, NULL },

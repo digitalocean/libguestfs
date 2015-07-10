@@ -10472,8 +10472,9 @@ copy_device_to_device_stub (XDR *xdr_in)
   int64_t destoffset;
   int64_t size;
   int sparse;
+  int append;
 
-  if (optargs_bitmask & UINT64_C(0xfffffffffffffff0)) {
+  if (optargs_bitmask & UINT64_C(0xffffffffffffffe0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
@@ -10490,8 +10491,9 @@ copy_device_to_device_stub (XDR *xdr_in)
   destoffset = args.destoffset;
   size = args.size;
   sparse = args.sparse;
+  append = args.append;
 
-  r = do_copy_device_to_device (src, dest, srcoffset, destoffset, size, sparse);
+  r = do_copy_device_to_device (src, dest, srcoffset, destoffset, size, sparse, append);
   if (r == -1)
     /* do_copy_device_to_device has already called reply_with_error */
     goto done;
@@ -10514,8 +10516,9 @@ copy_device_to_file_stub (XDR *xdr_in)
   int64_t destoffset;
   int64_t size;
   int sparse;
+  int append;
 
-  if (optargs_bitmask & UINT64_C(0xfffffffffffffff0)) {
+  if (optargs_bitmask & UINT64_C(0xffffffffffffffe0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
@@ -10533,9 +10536,10 @@ copy_device_to_file_stub (XDR *xdr_in)
   destoffset = args.destoffset;
   size = args.size;
   sparse = args.sparse;
+  append = args.append;
 
   NEED_ROOT (, goto done);
-  r = do_copy_device_to_file (src, dest, srcoffset, destoffset, size, sparse);
+  r = do_copy_device_to_file (src, dest, srcoffset, destoffset, size, sparse, append);
   if (r == -1)
     /* do_copy_device_to_file has already called reply_with_error */
     goto done;
@@ -10558,8 +10562,9 @@ copy_file_to_device_stub (XDR *xdr_in)
   int64_t destoffset;
   int64_t size;
   int sparse;
+  int append;
 
-  if (optargs_bitmask & UINT64_C(0xfffffffffffffff0)) {
+  if (optargs_bitmask & UINT64_C(0xffffffffffffffe0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
@@ -10577,9 +10582,10 @@ copy_file_to_device_stub (XDR *xdr_in)
   destoffset = args.destoffset;
   size = args.size;
   sparse = args.sparse;
+  append = args.append;
 
   NEED_ROOT (, goto done);
-  r = do_copy_file_to_device (src, dest, srcoffset, destoffset, size, sparse);
+  r = do_copy_file_to_device (src, dest, srcoffset, destoffset, size, sparse, append);
   if (r == -1)
     /* do_copy_file_to_device has already called reply_with_error */
     goto done;
@@ -10602,8 +10608,9 @@ copy_file_to_file_stub (XDR *xdr_in)
   int64_t destoffset;
   int64_t size;
   int sparse;
+  int append;
 
-  if (optargs_bitmask & UINT64_C(0xfffffffffffffff0)) {
+  if (optargs_bitmask & UINT64_C(0xffffffffffffffe0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
@@ -10622,9 +10629,10 @@ copy_file_to_file_stub (XDR *xdr_in)
   destoffset = args.destoffset;
   size = args.size;
   sparse = args.sparse;
+  append = args.append;
 
   NEED_ROOT (, goto done);
-  r = do_copy_file_to_file (src, dest, srcoffset, destoffset, size, sparse);
+  r = do_copy_file_to_file (src, dest, srcoffset, destoffset, size, sparse, append);
   if (r == -1)
     /* do_copy_file_to_file has already called reply_with_error */
     goto done;
@@ -16810,6 +16818,82 @@ done_no_free:
   return;
 }
 
+static void
+btrfs_replace_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_replace_args args;
+  CLEANUP_FREE char *srcdev = NULL;
+  CLEANUP_FREE char *targetdev = NULL;
+  const char *mntpoint;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_replace_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.srcdev, srcdev, , goto done);
+  RESOLVE_DEVICE (args.targetdev, targetdev, , goto done);
+  mntpoint = args.mntpoint;
+  ABS_PATH (mntpoint, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_replace (srcdev, targetdev, mntpoint);
+  if (r == -1)
+    /* do_btrfs_replace has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_replace_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+set_uuid_random_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_set_uuid_random_args args;
+  CLEANUP_FREE char *device = NULL;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_set_uuid_random_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.device, device, , goto done);
+
+  r = do_set_uuid_random (device);
+  if (r == -1)
+    /* do_set_uuid_random has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_set_uuid_random_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -18139,6 +18223,12 @@ void dispatch_incoming_message (XDR *xdr_in)
     case GUESTFS_PROC_PART_GET_MBR_PART_TYPE:
       part_get_mbr_part_type_stub (xdr_in);
       break;
+    case GUESTFS_PROC_BTRFS_REPLACE:
+      btrfs_replace_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_SET_UUID_RANDOM:
+      set_uuid_random_stub (xdr_in);
+      break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);
   }
@@ -18208,7 +18298,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNu64, &r->pv_size) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->pv_size) != 1) {
     fprintf (stderr, "%s: failed to parse size '%s' from token %s\n", __func__, tok, "pv_size");
     return -1;
   }
@@ -18220,7 +18310,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNu64, &r->dev_size) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->dev_size) != 1) {
     fprintf (stderr, "%s: failed to parse size '%s' from token %s\n", __func__, tok, "dev_size");
     return -1;
   }
@@ -18232,7 +18322,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNu64, &r->pv_free) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->pv_free) != 1) {
     fprintf (stderr, "%s: failed to parse size '%s' from token %s\n", __func__, tok, "pv_free");
     return -1;
   }
@@ -18244,7 +18334,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNu64, &r->pv_used) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->pv_used) != 1) {
     fprintf (stderr, "%s: failed to parse size '%s' from token %s\n", __func__, tok, "pv_used");
     return -1;
   }
@@ -18269,7 +18359,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->pv_pe_count) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->pv_pe_count) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "pv_pe_count");
     return -1;
   }
@@ -18281,7 +18371,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->pv_pe_alloc_count) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->pv_pe_alloc_count) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "pv_pe_alloc_count");
     return -1;
   }
@@ -18306,7 +18396,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNu64, &r->pe_start) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->pe_start) != 1) {
     fprintf (stderr, "%s: failed to parse size '%s' from token %s\n", __func__, tok, "pe_start");
     return -1;
   }
@@ -18318,7 +18408,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->pv_mda_count) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->pv_mda_count) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "pv_mda_count");
     return -1;
   }
@@ -18330,7 +18420,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNu64, &r->pv_mda_free) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->pv_mda_free) != 1) {
     fprintf (stderr, "%s: failed to parse size '%s' from token %s\n", __func__, tok, "pv_mda_free");
     return -1;
   }
@@ -18500,7 +18590,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNu64, &r->vg_size) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->vg_size) != 1) {
     fprintf (stderr, "%s: failed to parse size '%s' from token %s\n", __func__, tok, "vg_size");
     return -1;
   }
@@ -18512,7 +18602,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNu64, &r->vg_free) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->vg_free) != 1) {
     fprintf (stderr, "%s: failed to parse size '%s' from token %s\n", __func__, tok, "vg_free");
     return -1;
   }
@@ -18537,7 +18627,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNu64, &r->vg_extent_size) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->vg_extent_size) != 1) {
     fprintf (stderr, "%s: failed to parse size '%s' from token %s\n", __func__, tok, "vg_extent_size");
     return -1;
   }
@@ -18549,7 +18639,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->vg_extent_count) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->vg_extent_count) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "vg_extent_count");
     return -1;
   }
@@ -18561,7 +18651,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->vg_free_count) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->vg_free_count) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "vg_free_count");
     return -1;
   }
@@ -18573,7 +18663,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->max_lv) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->max_lv) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "max_lv");
     return -1;
   }
@@ -18585,7 +18675,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->max_pv) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->max_pv) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "max_pv");
     return -1;
   }
@@ -18597,7 +18687,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->pv_count) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->pv_count) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "pv_count");
     return -1;
   }
@@ -18609,7 +18699,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->lv_count) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->lv_count) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "lv_count");
     return -1;
   }
@@ -18621,7 +18711,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->snap_count) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->snap_count) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "snap_count");
     return -1;
   }
@@ -18633,7 +18723,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->vg_seqno) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->vg_seqno) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "vg_seqno");
     return -1;
   }
@@ -18658,7 +18748,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->vg_mda_count) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->vg_mda_count) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "vg_mda_count");
     return -1;
   }
@@ -18670,7 +18760,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNu64, &r->vg_mda_free) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->vg_mda_free) != 1) {
     fprintf (stderr, "%s: failed to parse size '%s' from token %s\n", __func__, tok, "vg_mda_free");
     return -1;
   }
@@ -18827,7 +18917,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->lv_major) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->lv_major) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "lv_major");
     return -1;
   }
@@ -18839,7 +18929,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->lv_minor) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->lv_minor) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "lv_minor");
     return -1;
   }
@@ -18851,7 +18941,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->lv_kernel_major) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->lv_kernel_major) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "lv_kernel_major");
     return -1;
   }
@@ -18863,7 +18953,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->lv_kernel_minor) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->lv_kernel_minor) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "lv_kernel_minor");
     return -1;
   }
@@ -18875,7 +18965,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNu64, &r->lv_size) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->lv_size) != 1) {
     fprintf (stderr, "%s: failed to parse size '%s' from token %s\n", __func__, tok, "lv_size");
     return -1;
   }
@@ -18887,7 +18977,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
   p = strchrnul (tok, ',');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
-  if (sscanf (tok, "%"SCNi64, &r->seg_count) != 1) {
+  if (sscanf (tok, "%" SCNi64, &r->seg_count) != 1) {
     fprintf (stderr, "%s: failed to parse int '%s' from token %s\n", __func__, tok, "seg_count");
     return -1;
   }

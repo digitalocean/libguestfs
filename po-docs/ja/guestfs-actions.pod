@@ -1801,6 +1801,27 @@ config.
 
 (Added in 1.29.17)
 
+=head2 guestfs_btrfs_replace
+
+ int
+ guestfs_btrfs_replace (guestfs_h *g,
+                        const char *srcdev,
+                        const char *targetdev,
+                        const char *mntpoint);
+
+Replace device of a btrfs filesystem. On a live filesystem, duplicate the
+data to the target device which is currently stored on the source device.
+After completion of the operation, the source device is wiped out and
+removed from the filesystem.
+
+The C<targetdev> needs to be same size or larger than the C<srcdev>. Devices
+which are currently mounted are never allowed to be used as the
+C<targetdev>.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(Added in 1.29.48)
+
 =head2 guestfs_btrfs_rescue_chunk_recover
 
  int
@@ -2692,6 +2713,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE, int64_t size,
  GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE, int sparse,
+ GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND, int append,
 
 4 つの呼び出し C<guestfs_copy_device_to_device>, C<guestfs_copy_device_to_file>,
 C<guestfs_copy_file_to_device>, および C<guestfs_copy_file_to_file> は、ソース
@@ -2705,6 +2727,11 @@ defaults to copying as much as possible until we hit the end of the source.
 ソースと宛先は同じオブジェクトである可能性があります。しかしながら、重なり合う領域は正しくコピーされないかもしれません。
 
 宛先がファイルならば、必要に応じて作成されます。宛先ファイルが十分に大きくなければ、拡張されます。
+
+If the destination is a file and the C<append> flag is not set, then the
+destination file is truncated.  If the C<append> flag is set, then the copy
+appends to the destination file.  The C<append> flag currently cannot be set
+for devices.
 
 If the C<sparse> flag is true then the call avoids writing blocks that
 contain only zeroes, which can help in some situations where the backing
@@ -2760,6 +2787,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_DEVICE_TO_FILE_SIZE, int64_t size,
  GUESTFS_COPY_DEVICE_TO_FILE_SPARSE, int sparse,
+ GUESTFS_COPY_DEVICE_TO_FILE_APPEND, int append,
 
 この呼び出しの一般的な概要は C<guestfs_copy_device_to_device> を参照してください。
 
@@ -2812,6 +2840,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_FILE_TO_DEVICE_SIZE, int64_t size,
  GUESTFS_COPY_FILE_TO_DEVICE_SPARSE, int sparse,
+ GUESTFS_COPY_FILE_TO_DEVICE_APPEND, int append,
 
 この呼び出しの一般的な概要は C<guestfs_copy_device_to_device> を参照してください。
 
@@ -2864,6 +2893,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_FILE_TO_FILE_SIZE, int64_t size,
  GUESTFS_COPY_FILE_TO_FILE_SPARSE, int sparse,
+ GUESTFS_COPY_FILE_TO_FILE_APPEND, int append,
 
 この呼び出しの一般的な概要は C<guestfs_copy_device_to_device> を参照してください。
 
@@ -11397,7 +11427,14 @@ Setting the label on a btrfs subvolume will set the label on its parent
 filesystem.  The filesystem must not be mounted when trying to set the
 label.
 
+=item fat
+
+The label is limited to 11 bytes.
+
 =back
+
+If there is no support for changing the label for the type of the specified
+filesystem, set_label will fail and set errno as ENOTSUP.
 
 ファイルシステムにあるラベルを読み込むには C<guestfs_vfs_label> を呼び出します。
 
@@ -11688,7 +11725,9 @@ callback to send them somewhere else (see C<guestfs_set_event_callback>).
                    const char *device,
                    const char *uuid);
 
-Set the filesystem UUID on C<device> to C<uuid>.
+Set the filesystem UUID on C<device> to C<uuid>.  If this fails and the
+errno is ENOTSUP, means that there is no support for changing the UUID for
+the type of the specified filesystem.
 
 Only some filesystem types support setting UUIDs.
 
@@ -11697,6 +11736,24 @@ To read the UUID on a filesystem, call C<guestfs_vfs_uuid>.
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (Added in 1.23.10)
+
+=head2 guestfs_set_uuid_random
+
+ int
+ guestfs_set_uuid_random (guestfs_h *g,
+                          const char *device);
+
+Set the filesystem UUID on C<device> to a random UUID.  If this fails and
+the errno is ENOTSUP, means that there is no support for changing the UUID
+for the type of the specified filesystem.
+
+Only some filesystem types support setting UUIDs.
+
+To read the UUID on a filesystem, call C<guestfs_vfs_uuid>.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(Added in 1.29.50)
 
 =head2 guestfs_set_verbose
 

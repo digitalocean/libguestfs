@@ -125,7 +125,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 @ENABLE_GNULIB_TESTS_TRUE@am__append_1 = gnulib/tests
-@ENABLE_DAEMON_TRUE@am__append_2 = daemon
+@ENABLE_DAEMON_TRUE@am__append_2 = daemon tests/daemon
 
 # Tests - order is important.
 @ENABLE_APPLIANCE_TRUE@am__append_3 = appliance tests/qemu \
@@ -163,6 +163,7 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@	mllib \
 @HAVE_OCAML_TRUE@	customize \
 @HAVE_OCAML_TRUE@	builder builder/website \
+@HAVE_OCAML_TRUE@	dib \
 @HAVE_OCAML_TRUE@	get-kernel \
 @HAVE_OCAML_TRUE@	resize \
 @HAVE_OCAML_TRUE@	sparsify \
@@ -220,14 +221,14 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/fcntl-o.m4 $(top_srcdir)/m4/fcntl-safer.m4 \
 	$(top_srcdir)/m4/fcntl.m4 $(top_srcdir)/m4/fcntl_h.m4 \
 	$(top_srcdir)/m4/fdopen.m4 $(top_srcdir)/m4/fdopendir.m4 \
-	$(top_srcdir)/m4/filenamecat.m4 $(top_srcdir)/m4/float_h.m4 \
-	$(top_srcdir)/m4/fnmatch.m4 $(top_srcdir)/m4/fpending.m4 \
-	$(top_srcdir)/m4/fpieee.m4 $(top_srcdir)/m4/fseeko.m4 \
-	$(top_srcdir)/m4/fstat.m4 $(top_srcdir)/m4/fstatat.m4 \
-	$(top_srcdir)/m4/fsusage.m4 $(top_srcdir)/m4/ftell.m4 \
-	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
-	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
-	$(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/filenamecat.m4 $(top_srcdir)/m4/flexmember.m4 \
+	$(top_srcdir)/m4/float_h.m4 $(top_srcdir)/m4/fnmatch.m4 \
+	$(top_srcdir)/m4/fpending.m4 $(top_srcdir)/m4/fpieee.m4 \
+	$(top_srcdir)/m4/fseeko.m4 $(top_srcdir)/m4/fstat.m4 \
+	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/fsusage.m4 \
+	$(top_srcdir)/m4/ftell.m4 $(top_srcdir)/m4/ftello.m4 \
+	$(top_srcdir)/m4/ftruncate.m4 $(top_srcdir)/m4/fts.m4 \
+	$(top_srcdir)/m4/futimens.m4 $(top_srcdir)/m4/getaddrinfo.m4 \
 	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
 	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
@@ -433,12 +434,12 @@ ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
 DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
-	examples po daemon appliance tests/qemu tests/guests \
-	tests/c-api tests/tmpdirs tests/protocol tests/events \
-	tests/parallel tests/create tests/disks tests/discard \
-	tests/mountable tests/network tests/lvm tests/luks tests/md \
-	tests/selinux tests/ntfsclone tests/btrfs tests/xfs \
-	tests/charsets tests/xml tests/mount-local tests/9p \
+	examples po daemon tests/daemon appliance tests/qemu \
+	tests/guests tests/c-api tests/tmpdirs tests/protocol \
+	tests/events tests/parallel tests/create tests/disks \
+	tests/discard tests/mountable tests/network tests/lvm \
+	tests/luks tests/md tests/selinux tests/ntfsclone tests/btrfs \
+	tests/xfs tests/charsets tests/xml tests/mount-local tests/9p \
 	tests/rsync tests/bigdirs tests/disk-labels tests/hotplug \
 	tests/nbd tests/http tests/syslinux tests/journal tests/fuzz \
 	tests/relative-paths tests/regressions test-tool fish align \
@@ -447,8 +448,8 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	ruby/examples java java/examples haskell php erlang \
 	erlang/examples lua lua/examples gobject golang \
 	golang/examples csharp mllib customize builder builder/website \
-	get-kernel resize sparsify sysprep v2v v2v/test-harness tools \
-	fuse po-docs
+	dib get-kernel resize sparsify sysprep v2v v2v/test-harness \
+	tools fuse po-docs
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/pick-guests.pl.in $(srcdir)/podwrapper.pl.in \
 	$(srcdir)/run.in $(top_srcdir)/build-aux/compile \
@@ -1543,7 +1544,6 @@ UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOC
 UNZIP = @UNZIP@
 USE_NLS = @USE_NLS@
 VALGRIND = @VALGRIND@
-VALGRIND_NO_VGDB = @VALGRIND_NO_VGDB@
 VERSION = @VERSION@
 VERSION_SCRIPT_FLAGS = @VERSION_SCRIPT_FLAGS@
 WARN_CFLAGS = @WARN_CFLAGS@
@@ -2395,7 +2395,7 @@ all-local:
 	grep -v -E '^python/utils.c$$' | \
 	LC_ALL=C sort > po/POTFILES
 	cd $(srcdir); \
-	find builder customize get-kernel mllib resize sparsify sysprep v2v -name '*.ml' | \
+	find builder customize dib get-kernel mllib resize sparsify sysprep v2v -name '*.ml' | \
 	LC_ALL=C sort > po/POTFILES-ml
 
 # Try to stop people using 'make install' without 'DESTDIR'.

@@ -97,6 +97,7 @@ dnl iproute has been renamed to iproute2
   vim-tiny
   xz-utils
   zfs-fuse
+  uuid-runtime
 )
 
 ifelse(ARCHLINUX,1,
@@ -252,6 +253,18 @@ util-linux
 util-linux-ng
 xfsprogs
 zerofree
+
+dnl tools needed by virt-dib
+ifelse(REDHAT,1,
+  qemu-img
+  which
+)
+ifelse(DEBIAN,1,
+  qemu-utils
+)
+curl
+dnl (virt-dib) tools optionally used for elements
+debootstrap
 
 ifelse(VALGRIND_DAEMON,1,valgrind)
 

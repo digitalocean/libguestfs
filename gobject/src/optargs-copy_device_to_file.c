@@ -41,6 +41,7 @@ struct _GuestfsCopyDeviceToFilePrivate {
   gint64 destoffset;
   gint64 size;
   GuestfsTristate sparse;
+  GuestfsTristate append;
 };
 
 G_DEFINE_TYPE (GuestfsCopyDeviceToFile, guestfs_copy_device_to_file, G_TYPE_OBJECT);
@@ -50,7 +51,8 @@ enum {
   PROP_GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET,
   PROP_GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET,
   PROP_GUESTFS_COPY_DEVICE_TO_FILE_SIZE,
-  PROP_GUESTFS_COPY_DEVICE_TO_FILE_SPARSE
+  PROP_GUESTFS_COPY_DEVICE_TO_FILE_SPARSE,
+  PROP_GUESTFS_COPY_DEVICE_TO_FILE_APPEND
 };
 
 static void
@@ -74,6 +76,10 @@ guestfs_copy_device_to_file_set_property(GObject *object, guint property_id, con
 
     case PROP_GUESTFS_COPY_DEVICE_TO_FILE_SPARSE:
       priv->sparse = g_value_get_enum (value);
+      break;
+
+    case PROP_GUESTFS_COPY_DEVICE_TO_FILE_APPEND:
+      priv->append = g_value_get_enum (value);
       break;
 
     default:
@@ -103,6 +109,10 @@ guestfs_copy_device_to_file_get_property(GObject *object, guint property_id, GVa
 
     case PROP_GUESTFS_COPY_DEVICE_TO_FILE_SPARSE:
       g_value_set_enum (value, priv->sparse);
+      break;
+
+    case PROP_GUESTFS_COPY_DEVICE_TO_FILE_APPEND:
+      g_value_set_enum (value, priv->append);
       break;
 
     default:
@@ -186,6 +196,23 @@ guestfs_copy_device_to_file_class_init (GuestfsCopyDeviceToFileClass *klass)
     g_param_spec_enum (
       "sparse",
       "sparse",
+      "A boolean.",
+      GUESTFS_TYPE_TRISTATE, GUESTFS_TRISTATE_NONE,
+      G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+    )
+  );
+
+  /**
+   * GuestfsCopyDeviceToFile:append:
+   *
+   * A boolean.
+   */
+  g_object_class_install_property (
+    object_class,
+    PROP_GUESTFS_COPY_DEVICE_TO_FILE_APPEND,
+    g_param_spec_enum (
+      "append",
+      "append",
       "A boolean.",
       GUESTFS_TYPE_TRISTATE, GUESTFS_TRISTATE_NONE,
       G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS

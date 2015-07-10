@@ -640,13 +640,19 @@ let rmdir_on_exit =
  * without removing the actual directory structure.  Also if 'dir' is
  * not a directory or doesn't exist, ignore it.
  *
+ * The optional filter is used to filter out files which will be
+ * removed: files returning true are not removed.
+ *
  * XXX Could be faster with a specific API for doing this.
  *)
-let rm_rf_only_files (g : Guestfs.guestfs) dir =
+let rm_rf_only_files (g : Guestfs.guestfs) ?filter dir =
   if g#is_dir dir then (
     let files = Array.map (Filename.concat dir) (g#find dir) in
     let files = Array.to_list files in
     let files = List.filter g#is_file files in
+    let files = match filter with
+    | None -> files
+    | Some f -> List.filter (fun x -> not (f x)) files in
     List.iter g#rm files
   )
 
@@ -732,3 +738,10 @@ let guest_arch_compatible guest_arch =
   | x, y when x = y -> true
   | "x86_64", ("i386"|"i486"|"i586"|"i686") -> true
   | _ -> false
+
+(** Return the last part of a string, after the specified separator. *)
+let last_part_of str sep =
+  try
+    let i = String.rindex str sep in
+    Some (String.sub str (i+1) (String.length str - (i+1)))
+  with Not_found -> None

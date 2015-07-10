@@ -1458,6 +1458,19 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
+btrfs_replace (g, srcdev, targetdev, mntpoint)
+      guestfs_h *g;
+      char *srcdev;
+      char *targetdev;
+      char *mntpoint;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_btrfs_replace (g, srcdev, targetdev, mntpoint);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
 btrfs_rescue_chunk_recover (g, device)
       guestfs_h *g;
       char *device;
@@ -2112,6 +2125,10 @@ PREINIT:
           optargs_s.sparse = SvIV (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
         }
+        else if (STREQ (this_arg, "append")) {
+          optargs_s.append = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND_BITMASK;
+        }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
           croak ("optional argument '%s' given twice",
@@ -2156,6 +2173,10 @@ PREINIT:
         else if (STREQ (this_arg, "sparse")) {
           optargs_s.sparse = SvIV (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
+        }
+        else if (STREQ (this_arg, "append")) {
+          optargs_s.append = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_DEVICE_TO_FILE_APPEND_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
@@ -2202,6 +2223,10 @@ PREINIT:
           optargs_s.sparse = SvIV (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
         }
+        else if (STREQ (this_arg, "append")) {
+          optargs_s.append = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_FILE_TO_DEVICE_APPEND_BITMASK;
+        }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
           croak ("optional argument '%s' given twice",
@@ -2246,6 +2271,10 @@ PREINIT:
         else if (STREQ (this_arg, "sparse")) {
           optargs_s.sparse = SvIV (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
+        }
+        else if (STREQ (this_arg, "append")) {
+          optargs_s.append = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_FILE_TO_FILE_APPEND_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
@@ -4547,6 +4576,16 @@ PREINIT:
         free (r[i]);
       }
       free (r);
+
+void
+internal_exit (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_internal_exit (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
 
 void
 internal_test (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, ...)
@@ -9272,6 +9311,17 @@ PREINIT:
       int r;
  PPCODE:
       r = guestfs_set_uuid (g, device, uuid);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+set_uuid_random (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_uuid_random (g, device);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
