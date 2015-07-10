@@ -2593,6 +2593,29 @@ func (g *Guestfs) Btrfs_quota_rescan (fs string) *GuestfsError {
     return nil
 }
 
+/* btrfs_replace : replace a btrfs managed device with another device */
+func (g *Guestfs) Btrfs_replace (srcdev string, targetdev string, mntpoint string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("btrfs_replace")
+    }
+
+    c_srcdev := C.CString (srcdev)
+    defer C.free (unsafe.Pointer (c_srcdev))
+
+    c_targetdev := C.CString (targetdev)
+    defer C.free (unsafe.Pointer (c_targetdev))
+
+    c_mntpoint := C.CString (mntpoint)
+    defer C.free (unsafe.Pointer (c_mntpoint))
+
+    r := C.guestfs_btrfs_replace (g.g, c_srcdev, c_targetdev, c_mntpoint)
+
+    if r == -1 {
+        return get_error_from_handle (g, "btrfs_replace")
+    }
+    return nil
+}
+
 /* btrfs_rescue_chunk_recover : recover the chunk tree of btrfs filesystem */
 func (g *Guestfs) Btrfs_rescue_chunk_recover (device string) *GuestfsError {
     if g.g == nil {
@@ -3355,6 +3378,9 @@ type OptargsCopy_device_to_device struct {
     /* Sparse field is ignored unless Sparse_is_set == true */
     Sparse_is_set bool
     Sparse bool
+    /* Append field is ignored unless Append_is_set == true */
+    Append_is_set bool
+    Append bool
 }
 
 /* copy_device_to_device : copy from source device to destination device */
@@ -3386,6 +3412,10 @@ func (g *Guestfs) Copy_device_to_device (src string, dest string, optargs *Optar
             c_optargs.bitmask |= C.GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK
             if optargs.Sparse { c_optargs.sparse = 1 } else { c_optargs.sparse = 0}
         }
+        if optargs.Append_is_set {
+            c_optargs.bitmask |= C.GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND_BITMASK
+            if optargs.Append { c_optargs.append = 1 } else { c_optargs.append = 0}
+        }
     }
 
     r := C.guestfs_copy_device_to_device_argv (g.g, c_src, c_dest, &c_optargs)
@@ -3410,6 +3440,9 @@ type OptargsCopy_device_to_file struct {
     /* Sparse field is ignored unless Sparse_is_set == true */
     Sparse_is_set bool
     Sparse bool
+    /* Append field is ignored unless Append_is_set == true */
+    Append_is_set bool
+    Append bool
 }
 
 /* copy_device_to_file : copy from source device to destination file */
@@ -3441,6 +3474,10 @@ func (g *Guestfs) Copy_device_to_file (src string, dest string, optargs *Optargs
             c_optargs.bitmask |= C.GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK
             if optargs.Sparse { c_optargs.sparse = 1 } else { c_optargs.sparse = 0}
         }
+        if optargs.Append_is_set {
+            c_optargs.bitmask |= C.GUESTFS_COPY_DEVICE_TO_FILE_APPEND_BITMASK
+            if optargs.Append { c_optargs.append = 1 } else { c_optargs.append = 0}
+        }
     }
 
     r := C.guestfs_copy_device_to_file_argv (g.g, c_src, c_dest, &c_optargs)
@@ -3465,6 +3502,9 @@ type OptargsCopy_file_to_device struct {
     /* Sparse field is ignored unless Sparse_is_set == true */
     Sparse_is_set bool
     Sparse bool
+    /* Append field is ignored unless Append_is_set == true */
+    Append_is_set bool
+    Append bool
 }
 
 /* copy_file_to_device : copy from source file to destination device */
@@ -3496,6 +3536,10 @@ func (g *Guestfs) Copy_file_to_device (src string, dest string, optargs *Optargs
             c_optargs.bitmask |= C.GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK
             if optargs.Sparse { c_optargs.sparse = 1 } else { c_optargs.sparse = 0}
         }
+        if optargs.Append_is_set {
+            c_optargs.bitmask |= C.GUESTFS_COPY_FILE_TO_DEVICE_APPEND_BITMASK
+            if optargs.Append { c_optargs.append = 1 } else { c_optargs.append = 0}
+        }
     }
 
     r := C.guestfs_copy_file_to_device_argv (g.g, c_src, c_dest, &c_optargs)
@@ -3520,6 +3564,9 @@ type OptargsCopy_file_to_file struct {
     /* Sparse field is ignored unless Sparse_is_set == true */
     Sparse_is_set bool
     Sparse bool
+    /* Append field is ignored unless Append_is_set == true */
+    Append_is_set bool
+    Append bool
 }
 
 /* copy_file_to_file : copy from source file to destination file */
@@ -3550,6 +3597,10 @@ func (g *Guestfs) Copy_file_to_file (src string, dest string, optargs *OptargsCo
         if optargs.Sparse_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK
             if optargs.Sparse { c_optargs.sparse = 1 } else { c_optargs.sparse = 0}
+        }
+        if optargs.Append_is_set {
+            c_optargs.bitmask |= C.GUESTFS_COPY_FILE_TO_FILE_APPEND_BITMASK
+            if optargs.Append { c_optargs.append = 1 } else { c_optargs.append = 0}
         }
     }
 
@@ -6146,6 +6197,20 @@ func (g *Guestfs) Inspect_os () ([]string, *GuestfsError) {
     }
     defer free_string_list (r)
     return return_string_list (r), nil
+}
+
+/* internal_exit : cause the daemon to exit (internal use only) */
+func (g *Guestfs) Internal_exit () *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("internal_exit")
+    }
+
+    r := C.guestfs_internal_exit (g.g)
+
+    if r == -1 {
+        return get_error_from_handle (g, "internal_exit")
+    }
+    return nil
 }
 
 /* Struct carrying optional arguments for Internal_test */

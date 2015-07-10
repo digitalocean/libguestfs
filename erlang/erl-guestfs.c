@@ -1919,6 +1919,21 @@ run_btrfs_quota_rescan (ETERM *message)
 }
 
 static ETERM *
+run_btrfs_replace (ETERM *message)
+{
+  CLEANUP_FREE char *srcdev = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *targetdev = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *mntpoint = erl_iolist_to_string (ARG (2));
+  int r;
+
+  r = guestfs_btrfs_replace (g, srcdev, targetdev, mntpoint);
+  if (r == -1)
+    return make_error ("btrfs_replace");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_btrfs_rescue_chunk_recover (ETERM *message)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
@@ -2565,6 +2580,11 @@ run_copy_device_to_device (ETERM *message)
       optargs_s.sparse = get_bool (hd_value);
     }
     else
+    if (atom_equals (hd_name, "append")) {
+      optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND_BITMASK;
+      optargs_s.append = get_bool (hd_value);
+    }
+    else
       return unknown_optarg ("copy_device_to_device", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
@@ -2610,6 +2630,11 @@ run_copy_device_to_file (ETERM *message)
     if (atom_equals (hd_name, "sparse")) {
       optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
       optargs_s.sparse = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "append")) {
+      optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_APPEND_BITMASK;
+      optargs_s.append = get_bool (hd_value);
     }
     else
       return unknown_optarg ("copy_device_to_file", hd_name);
@@ -2659,6 +2684,11 @@ run_copy_file_to_device (ETERM *message)
       optargs_s.sparse = get_bool (hd_value);
     }
     else
+    if (atom_equals (hd_name, "append")) {
+      optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_APPEND_BITMASK;
+      optargs_s.append = get_bool (hd_value);
+    }
+    else
       return unknown_optarg ("copy_file_to_device", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
@@ -2704,6 +2734,11 @@ run_copy_file_to_file (ETERM *message)
     if (atom_equals (hd_name, "sparse")) {
       optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
       optargs_s.sparse = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "append")) {
+      optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_APPEND_BITMASK;
+      optargs_s.append = get_bool (hd_value);
     }
     else
       return unknown_optarg ("copy_file_to_file", hd_name);
@@ -4914,6 +4949,18 @@ run_inspect_os (ETERM *message)
   guestfs_int_free_string_list (r);
 
   return rt;
+}
+
+static ETERM *
+run_internal_exit (ETERM *message)
+{
+  int r;
+
+  r = guestfs_internal_exit (g);
+  if (r == -1)
+    return make_error ("internal_exit");
+
+  return erl_mk_atom ("ok");
 }
 
 static ETERM *
@@ -11346,6 +11393,8 @@ dispatch (ETERM *message)
     return run_btrfs_quota_enable (message);
   else if (atom_equals (fun, "btrfs_quota_rescan"))
     return run_btrfs_quota_rescan (message);
+  else if (atom_equals (fun, "btrfs_replace"))
+    return run_btrfs_replace (message);
   else if (atom_equals (fun, "btrfs_rescue_chunk_recover"))
     return run_btrfs_rescue_chunk_recover (message);
   else if (atom_equals (fun, "btrfs_rescue_super_recover"))
@@ -11704,6 +11753,8 @@ dispatch (ETERM *message)
     return run_inspect_list_applications2 (message);
   else if (atom_equals (fun, "inspect_os"))
     return run_inspect_os (message);
+  else if (atom_equals (fun, "internal_exit"))
+    return run_internal_exit (message);
   else if (atom_equals (fun, "internal_test"))
     return run_internal_test (message);
   else if (atom_equals (fun, "internal_test_63_optargs"))

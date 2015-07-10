@@ -3606,6 +3606,48 @@ guestfs_session_btrfs_quota_rescan (GuestfsSession *session, const gchar *fs, GE
 }
 
 /**
+ * guestfs_session_btrfs_replace:
+ * @session: (transfer none): A GuestfsSession object
+ * @srcdev: (transfer none) (type filename):
+ * @targetdev: (transfer none) (type filename):
+ * @mntpoint: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * replace a btrfs managed device with another device
+ *
+ * Replace device of a btrfs filesystem. On a live filesystem, duplicate
+ * the data to the target device which is currently stored on the source
+ * device. After completion of the operation, the source device is wiped
+ * out and removed from the filesystem.
+ * 
+ * The @targetdev needs to be same size or larger than the @srcdev. Devices
+ * which are currently mounted are never allowed to be used as the
+ * @targetdev.
+ * 
+ * Returns: true on success, false on error
+ * Since: 1.29.48
+ */
+gboolean
+guestfs_session_btrfs_replace (GuestfsSession *session, const gchar *srcdev, const gchar *targetdev, const gchar *mntpoint, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_replace");
+    return FALSE;
+  }
+
+  int ret = guestfs_btrfs_replace (g, srcdev, targetdev, mntpoint);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_btrfs_rescue_chunk_recover:
  * @session: (transfer none): A GuestfsSession object
  * @device: (transfer none) (type filename):
@@ -5210,6 +5252,11 @@ guestfs_session_copy_attributes (GuestfsSession *session, const gchar *src, cons
  * If the destination is a file, it is created if required. If the
  * destination file is not large enough, it is extended.
  * 
+ * If the destination is a file and the @append flag is not set, then the
+ * destination file is truncated. If the @append flag is set, then the copy
+ * appends to the destination file. The @append flag currently cannot be
+ * set for devices.
+ * 
  * If the @sparse flag is true then the call avoids writing blocks that
  * contain only zeroes, which can help in some situations where the backing
  * disk is thin-provisioned. Note that unless the target is already zeroed,
@@ -5266,6 +5313,14 @@ guestfs_session_copy_device_to_device (GuestfsSession *session, const gchar *src
     if (sparse != GUESTFS_TRISTATE_NONE) {
       argv.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
       argv.sparse = sparse;
+    }
+    GValue append_v = {0, };
+    g_value_init (&append_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "append", &append_v);
+    GuestfsTristate append = g_value_get_enum (&append_v);
+    if (append != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND_BITMASK;
+      argv.append = append;
     }
     argvp = &argv;
   }
@@ -5343,6 +5398,14 @@ guestfs_session_copy_device_to_file (GuestfsSession *session, const gchar *src, 
       argv.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
       argv.sparse = sparse;
     }
+    GValue append_v = {0, };
+    g_value_init (&append_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "append", &append_v);
+    GuestfsTristate append = g_value_get_enum (&append_v);
+    if (append != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_APPEND_BITMASK;
+      argv.append = append;
+    }
     argvp = &argv;
   }
   int ret = guestfs_copy_device_to_file_argv (g, src, dest, argvp);
@@ -5418,6 +5481,14 @@ guestfs_session_copy_file_to_device (GuestfsSession *session, const gchar *src, 
     if (sparse != GUESTFS_TRISTATE_NONE) {
       argv.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
       argv.sparse = sparse;
+    }
+    GValue append_v = {0, };
+    g_value_init (&append_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "append", &append_v);
+    GuestfsTristate append = g_value_get_enum (&append_v);
+    if (append != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_APPEND_BITMASK;
+      argv.append = append;
     }
     argvp = &argv;
   }
@@ -5499,6 +5570,14 @@ guestfs_session_copy_file_to_file (GuestfsSession *session, const gchar *src, co
     if (sparse != GUESTFS_TRISTATE_NONE) {
       argv.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
       argv.sparse = sparse;
+    }
+    GValue append_v = {0, };
+    g_value_init (&append_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "append", &append_v);
+    GuestfsTristate append = g_value_get_enum (&append_v);
+    if (append != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_COPY_FILE_TO_FILE_APPEND_BITMASK;
+      argv.append = append;
     }
     argvp = &argv;
   }
@@ -11817,6 +11896,52 @@ guestfs_session_inspect_os (GuestfsSession *session, GError **err)
   }
 
   return ret;
+}
+
+/**
+ * guestfs_session_internal_exit:
+ * @session: (transfer none): A GuestfsSession object
+ * @cancellable: A GCancellable object
+ * @err: A GError object to receive any generated errors
+ *
+ * cause the daemon to exit (internal use only)
+ *
+ * This function is used internally when closing the appliance. Note it's
+ * only called when ./configure --enable-valgrind-daemon is used.
+ * 
+ * Returns: true on success, false on error
+ * Since: 1.23.30
+ */
+gboolean
+guestfs_session_internal_exit (GuestfsSession *session, GCancellable *cancellable, GError **err)
+{
+  /* Check we haven't already been cancelled */
+  if (g_cancellable_set_error_if_cancelled (cancellable, err))
+    return FALSE;
+
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "internal_exit");
+    return FALSE;
+  }
+
+  gulong id = 0;
+  if (cancellable) {
+    id = g_cancellable_connect (cancellable,
+                               G_CALLBACK (cancelled_handler),
+                               g, NULL);
+  }
+
+  int ret = guestfs_internal_exit (g);
+  g_cancellable_disconnect (cancellable, id);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
 }
 
 /**

@@ -1108,6 +1108,19 @@ C<path>.
 Викинути усі числові дані qgroup і виконати повторне сканування з поточними
 налаштуваннями.
 
+=head2 btrfs-replace
+
+ btrfs-replace srcdev targetdev mntpoint
+
+Replace device of a btrfs filesystem. On a live filesystem, duplicate the
+data to the target device which is currently stored on the source device.
+After completion of the operation, the source device is wiped out and
+removed from the filesystem.
+
+The C<targetdev> needs to be same size or larger than the C<srcdev>. Devices
+which are currently mounted are never allowed to be used as the
+C<targetdev>.
+
 =head2 btrfs-rescue-chunk-recover
 
  btrfs-rescue-chunk-recover device
@@ -1588,7 +1601,7 @@ ARGUMENTS>.
 
 =head2 copy-device-to-device
 
- copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]
+ copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]
 
 The four calls L</copy-device-to-device>, L</copy-device-to-file>,
 L</copy-file-to-device>, and L</copy-file-to-file> let you copy from a
@@ -1605,6 +1618,11 @@ regions may not be copied correctly.
 If the destination is a file, it is created if required.  If the destination
 file is not large enough, it is extended.
 
+If the destination is a file and the C<append> flag is not set, then the
+destination file is truncated.  If the C<append> flag is set, then the copy
+appends to the destination file.  The C<append> flag currently cannot be set
+for devices.
+
 If the C<sparse> flag is true then the call avoids writing blocks that
 contain only zeroes, which can help in some situations where the backing
 disk is thin-provisioned.  Note that unless the target is already zeroed,
@@ -1615,7 +1633,7 @@ ARGUMENTS>.
 
 =head2 copy-device-to-file
 
- copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]
+ copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]
 
 See L</copy-device-to-device> for a general overview of this call.
 
@@ -1624,7 +1642,7 @@ ARGUMENTS>.
 
 =head2 copy-file-to-device
 
- copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]
+ copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]
 
 See L</copy-device-to-device> for a general overview of this call.
 
@@ -1633,7 +1651,7 @@ ARGUMENTS>.
 
 =head2 copy-file-to-file
 
- copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]
+ copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]
 
 See L</copy-device-to-device> for a general overview of this call.
 

@@ -28,6 +28,11 @@ GuestfsCopyDeviceToDevice
 </para>
 
 
+<!-- ##### ARG GuestfsCopyDeviceToDevice:append ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GuestfsCopyDeviceToDevice:destoffset ##### -->
 <para>
 

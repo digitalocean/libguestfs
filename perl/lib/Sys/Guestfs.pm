@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.454';
+$VERSION = '0.455';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -1295,6 +1295,16 @@ Enable or disable subvolume quota support for filesystem which contains C<path>.
 
 Trash all qgroup numbers and scan the metadata again with the current config.
 
+=item $g->btrfs_replace ($srcdev, $targetdev, $mntpoint);
+
+Replace device of a btrfs filesystem. On a live filesystem, duplicate the data
+to the target device which is currently stored on the source device.
+After completion of the operation, the source device is wiped out and
+removed from the filesystem.
+
+The C<targetdev> needs to be same size or larger than the C<srcdev>. Devices
+which are currently mounted are never allowed to be used as the C<targetdev>.
+
 =item $g->btrfs_rescue_chunk_recover ($device);
 
 Recover the chunk tree of btrfs filesystem by scanning the devices one by one.
@@ -1720,7 +1730,7 @@ enables all the other flags, if they are not specified already.
 
 =back
 
-=item $g->copy_device_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse]);
+=item $g->copy_device_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse] [, append => $append]);
 
 The four calls C<$g-E<gt>copy_device_to_device>,
 C<$g-E<gt>copy_device_to_file>,
@@ -1741,23 +1751,28 @@ overlapping regions may not be copied correctly.
 If the destination is a file, it is created if required.  If
 the destination file is not large enough, it is extended.
 
+If the destination is a file and the C<append> flag is not set,
+then the destination file is truncated.  If the C<append> flag is
+set, then the copy appends to the destination file.  The C<append>
+flag currently cannot be set for devices.
+
 If the C<sparse> flag is true then the call avoids writing
 blocks that contain only zeroes, which can help in some situations
 where the backing disk is thin-provisioned.  Note that unless
 the target is already zeroed, using this option will result
 in incorrect copying.
 
-=item $g->copy_device_to_file ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse]);
+=item $g->copy_device_to_file ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse] [, append => $append]);
 
 See C<$g-E<gt>copy_device_to_device> for a general overview
 of this call.
 
-=item $g->copy_file_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse]);
+=item $g->copy_file_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse] [, append => $append]);
 
 See C<$g-E<gt>copy_device_to_device> for a general overview
 of this call.
 
-=item $g->copy_file_to_file ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse]);
+=item $g->copy_file_to_file ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse] [, append => $append]);
 
 See C<$g-E<gt>copy_device_to_device> for a general overview
 of this call.
@@ -8508,6 +8523,16 @@ use vars qw(%guestfs_introspection);
     name => "btrfs_quota_rescan",
     description => "trash all qgroup numbers and scan the metadata again with the current config",
   },
+  "btrfs_replace" => {
+    ret => 'void',
+    args => [
+      [ 'srcdev', 'string(device)', 0 ],
+      [ 'targetdev', 'string(device)', 1 ],
+      [ 'mntpoint', 'string(path)', 2 ],
+    ],
+    name => "btrfs_replace",
+    description => "replace a btrfs managed device with another device",
+  },
   "btrfs_rescue_chunk_recover" => {
     ret => 'void',
     args => [
@@ -8835,6 +8860,7 @@ use vars qw(%guestfs_introspection);
       destoffset => [ 'destoffset', 'int64', 1 ],
       size => [ 'size', 'int64', 2 ],
       sparse => [ 'sparse', 'bool', 3 ],
+      append => [ 'append', 'bool', 4 ],
     },
     name => "copy_device_to_device",
     description => "copy from source device to destination device",
@@ -8850,6 +8876,7 @@ use vars qw(%guestfs_introspection);
       destoffset => [ 'destoffset', 'int64', 1 ],
       size => [ 'size', 'int64', 2 ],
       sparse => [ 'sparse', 'bool', 3 ],
+      append => [ 'append', 'bool', 4 ],
     },
     name => "copy_device_to_file",
     description => "copy from source device to destination file",
@@ -8865,6 +8892,7 @@ use vars qw(%guestfs_introspection);
       destoffset => [ 'destoffset', 'int64', 1 ],
       size => [ 'size', 'int64', 2 ],
       sparse => [ 'sparse', 'bool', 3 ],
+      append => [ 'append', 'bool', 4 ],
     },
     name => "copy_file_to_device",
     description => "copy from source file to destination device",
@@ -8880,6 +8908,7 @@ use vars qw(%guestfs_introspection);
       destoffset => [ 'destoffset', 'int64', 1 ],
       size => [ 'size', 'int64', 2 ],
       sparse => [ 'sparse', 'bool', 3 ],
+      append => [ 'append', 'bool', 4 ],
     },
     name => "copy_file_to_file",
     description => "copy from source file to destination file",
@@ -10046,6 +10075,13 @@ use vars qw(%guestfs_introspection);
     ],
     name => "inspect_os",
     description => "inspect disk and return list of operating systems found",
+  },
+  "internal_exit" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "internal_exit",
+    description => "cause the daemon to exit (internal use only)",
   },
   "internal_test" => {
     ret => 'void',

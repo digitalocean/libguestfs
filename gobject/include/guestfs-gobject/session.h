@@ -192,6 +192,7 @@ gboolean guestfs_session_btrfs_qgroup_remove (GuestfsSession *session, const gch
 GuestfsBTRFSQgroup **guestfs_session_btrfs_qgroup_show (GuestfsSession *session, const gchar *path, GError **err);
 gboolean guestfs_session_btrfs_quota_enable (GuestfsSession *session, const gchar *fs, gboolean enable, GError **err);
 gboolean guestfs_session_btrfs_quota_rescan (GuestfsSession *session, const gchar *fs, GError **err);
+gboolean guestfs_session_btrfs_replace (GuestfsSession *session, const gchar *srcdev, const gchar *targetdev, const gchar *mntpoint, GError **err);
 gboolean guestfs_session_btrfs_rescue_chunk_recover (GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_btrfs_rescue_super_recover (GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_btrfs_scrub_cancel (GuestfsSession *session, const gchar *path, GError **err);
@@ -371,6 +372,7 @@ gint8 guestfs_session_inspect_is_netinst (GuestfsSession *session, const gchar *
 GuestfsApplication **guestfs_session_inspect_list_applications (GuestfsSession *session, const gchar *root, GError **err);
 GuestfsApplication2 **guestfs_session_inspect_list_applications2 (GuestfsSession *session, const gchar *root, GError **err);
 gchar **guestfs_session_inspect_os (GuestfsSession *session, GError **err);
+gboolean guestfs_session_internal_exit (GuestfsSession *session, GCancellable *cancellable, GError **err);
 gboolean guestfs_session_internal_test (GuestfsSession *session, const gchar *str, const gchar *optstr, gchar *const *strlist, gboolean b, gint32 integer, gint64 integer64, const gchar *filein, const gchar *fileout, const guint8 *bufferin, gsize bufferin_size, GuestfsInternalTest *optargs, GCancellable *cancellable, GError **err);
 gboolean guestfs_session_internal_test_63_optargs (GuestfsSession *session, GuestfsInternalTest63Optargs *optargs, GCancellable *cancellable, GError **err);
 gboolean guestfs_session_internal_test_close_output (GuestfsSession *session, GError **err);

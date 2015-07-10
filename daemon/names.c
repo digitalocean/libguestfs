@@ -468,4 +468,5 @@ const char *function_names[] = {
   [452] = "btrfstune_enable_skinny_metadata_extent_refs",
   [453] = "btrfs_image",
   [454] = "part_get_mbr_part_type",
+  [455] = "btrfs_replace",
 };

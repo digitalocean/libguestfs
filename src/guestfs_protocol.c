@@ -5717,6 +5717,8 @@ xdr_guestfs_copy_device_to_device_args (XDR *xdrs, guestfs_copy_device_to_device
 		 return FALSE;
 	 if (!xdr_bool (xdrs, &objp->sparse))
 		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->append))
+		 return FALSE;
 	return TRUE;
 }
 
@@ -5736,6 +5738,8 @@ xdr_guestfs_copy_device_to_file_args (XDR *xdrs, guestfs_copy_device_to_file_arg
 	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
 	 if (!xdr_bool (xdrs, &objp->sparse))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->append))
 		 return FALSE;
 	return TRUE;
 }
@@ -5757,6 +5761,8 @@ xdr_guestfs_copy_file_to_device_args (XDR *xdrs, guestfs_copy_file_to_device_arg
 		 return FALSE;
 	 if (!xdr_bool (xdrs, &objp->sparse))
 		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->append))
+		 return FALSE;
 	return TRUE;
 }
 
@@ -5776,6 +5782,8 @@ xdr_guestfs_copy_file_to_file_args (XDR *xdrs, guestfs_copy_file_to_file_args *o
 	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
 	 if (!xdr_bool (xdrs, &objp->sparse))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->append))
 		 return FALSE;
 	return TRUE;
 }
@@ -8707,6 +8715,20 @@ xdr_guestfs_part_get_mbr_part_type_ret (XDR *xdrs, guestfs_part_get_mbr_part_typ
 	register int32_t *buf;
 
 	 if (!xdr_string (xdrs, &objp->partitiontype, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_btrfs_replace_args (XDR *xdrs, guestfs_btrfs_replace_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->srcdev, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->targetdev, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->mntpoint, ~0))
 		 return FALSE;
 	return TRUE;
 }

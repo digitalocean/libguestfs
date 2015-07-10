@@ -74,6 +74,7 @@
 <ANCHOR id="guestfs-session-btrfs-qgroup-show" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-qgroup-show">
 <ANCHOR id="guestfs-session-btrfs-quota-enable" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-quota-enable">
 <ANCHOR id="guestfs-session-btrfs-quota-rescan" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-quota-rescan">
+<ANCHOR id="guestfs-session-btrfs-replace" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-replace">
 <ANCHOR id="guestfs-session-btrfs-rescue-chunk-recover" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-rescue-chunk-recover">
 <ANCHOR id="guestfs-session-btrfs-rescue-super-recover" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-rescue-super-recover">
 <ANCHOR id="guestfs-session-btrfs-scrub-cancel" href="guestfs/GuestfsSession.html#guestfs-session-btrfs-scrub-cancel">
@@ -252,6 +253,7 @@
 <ANCHOR id="guestfs-session-inspect-list-applications" href="guestfs/GuestfsSession.html#guestfs-session-inspect-list-applications">
 <ANCHOR id="guestfs-session-inspect-list-applications2" href="guestfs/GuestfsSession.html#guestfs-session-inspect-list-applications2">
 <ANCHOR id="guestfs-session-inspect-os" href="guestfs/GuestfsSession.html#guestfs-session-inspect-os">
+<ANCHOR id="guestfs-session-internal-exit" href="guestfs/GuestfsSession.html#guestfs-session-internal-exit">
 <ANCHOR id="guestfs-session-internal-test" href="guestfs/GuestfsSession.html#guestfs-session-internal-test">
 <ANCHOR id="guestfs-session-internal-test-63-optargs" href="guestfs/GuestfsSession.html#guestfs-session-internal-test-63-optargs">
 <ANCHOR id="guestfs-session-internal-test-close-output" href="guestfs/GuestfsSession.html#guestfs-session-internal-test-close-output">
@@ -1045,6 +1047,7 @@
 <ANCHOR id="GuestfsCopyDeviceToDevice-struct" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice-struct">
 <ANCHOR id="GuestfsCopyDeviceToDeviceClass" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDeviceClass">
 <ANCHOR id="GuestfsCopyDeviceToDevice.property-details" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice.property-details">
+<ANCHOR id="GuestfsCopyDeviceToDevice--append" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--append">
 <ANCHOR id="GuestfsCopyDeviceToDevice--destoffset" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--destoffset">
 <ANCHOR id="GuestfsCopyDeviceToDevice--size" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--size">
 <ANCHOR id="GuestfsCopyDeviceToDevice--sparse" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--sparse">
@@ -1062,6 +1065,7 @@
 <ANCHOR id="GuestfsCopyDeviceToFile-struct" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile-struct">
 <ANCHOR id="GuestfsCopyDeviceToFileClass" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFileClass">
 <ANCHOR id="GuestfsCopyDeviceToFile.property-details" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile.property-details">
+<ANCHOR id="GuestfsCopyDeviceToFile--append" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--append">
 <ANCHOR id="GuestfsCopyDeviceToFile--destoffset" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--destoffset">
 <ANCHOR id="GuestfsCopyDeviceToFile--size" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--size">
 <ANCHOR id="GuestfsCopyDeviceToFile--sparse" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--sparse">
@@ -1079,6 +1083,7 @@
 <ANCHOR id="GuestfsCopyFileToDevice-struct" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice-struct">
 <ANCHOR id="GuestfsCopyFileToDeviceClass" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDeviceClass">
 <ANCHOR id="GuestfsCopyFileToDevice.property-details" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice.property-details">
+<ANCHOR id="GuestfsCopyFileToDevice--append" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--append">
 <ANCHOR id="GuestfsCopyFileToDevice--destoffset" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--destoffset">
 <ANCHOR id="GuestfsCopyFileToDevice--size" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--size">
 <ANCHOR id="GuestfsCopyFileToDevice--sparse" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--sparse">
@@ -1096,6 +1101,7 @@
 <ANCHOR id="GuestfsCopyFileToFile-struct" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile-struct">
 <ANCHOR id="GuestfsCopyFileToFileClass" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFileClass">
 <ANCHOR id="GuestfsCopyFileToFile.property-details" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile.property-details">
+<ANCHOR id="GuestfsCopyFileToFile--append" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--append">
 <ANCHOR id="GuestfsCopyFileToFile--destoffset" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--destoffset">
 <ANCHOR id="GuestfsCopyFileToFile--size" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--size">
 <ANCHOR id="GuestfsCopyFileToFile--sparse" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--sparse">

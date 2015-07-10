@@ -1184,6 +1184,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_quota_enable (guestfs_h *g, const ch
 #define GUESTFS_HAVE_BTRFS_QUOTA_RESCAN 1
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_quota_rescan (guestfs_h *g, const char *fs);
 
+#define GUESTFS_HAVE_BTRFS_REPLACE 1
+extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_replace (guestfs_h *g, const char *srcdev, const char *targetdev, const char *mntpoint);
+
 #define GUESTFS_HAVE_BTRFS_RESCUE_CHUNK_RECOVER 1
 extern GUESTFS_DLL_PUBLIC int guestfs_btrfs_rescue_chunk_recover (guestfs_h *g, const char *device);
 
@@ -1362,6 +1365,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_copy_attributes_argv (guestfs_h *g, const 
 #define GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET 1
 #define GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE 2
 #define GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE 3
+#define GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND 4
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_device_to_device (guestfs_h *g, const char *src, const char *dest, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_device_to_device_va (guestfs_h *g, const char *src, const char *dest, va_list args);
 
@@ -1375,6 +1379,8 @@ struct guestfs_copy_device_to_device_argv {
   int64_t size;
 # define GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK (UINT64_C(1)<<3)
   int sparse;
+# define GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND_BITMASK (UINT64_C(1)<<4)
+  int append;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_device_to_device_argv (guestfs_h *g, const char *src, const char *dest, const struct guestfs_copy_device_to_device_argv *optargs);
@@ -1384,6 +1390,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_copy_device_to_device_argv (guestfs_h *g, 
 #define GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET 1
 #define GUESTFS_COPY_DEVICE_TO_FILE_SIZE 2
 #define GUESTFS_COPY_DEVICE_TO_FILE_SPARSE 3
+#define GUESTFS_COPY_DEVICE_TO_FILE_APPEND 4
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_device_to_file (guestfs_h *g, const char *src, const char *dest, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_device_to_file_va (guestfs_h *g, const char *src, const char *dest, va_list args);
 
@@ -1397,6 +1404,8 @@ struct guestfs_copy_device_to_file_argv {
   int64_t size;
 # define GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK (UINT64_C(1)<<3)
   int sparse;
+# define GUESTFS_COPY_DEVICE_TO_FILE_APPEND_BITMASK (UINT64_C(1)<<4)
+  int append;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_device_to_file_argv (guestfs_h *g, const char *src, const char *dest, const struct guestfs_copy_device_to_file_argv *optargs);
@@ -1406,6 +1415,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_copy_device_to_file_argv (guestfs_h *g, co
 #define GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET 1
 #define GUESTFS_COPY_FILE_TO_DEVICE_SIZE 2
 #define GUESTFS_COPY_FILE_TO_DEVICE_SPARSE 3
+#define GUESTFS_COPY_FILE_TO_DEVICE_APPEND 4
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_file_to_device (guestfs_h *g, const char *src, const char *dest, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_file_to_device_va (guestfs_h *g, const char *src, const char *dest, va_list args);
 
@@ -1419,6 +1429,8 @@ struct guestfs_copy_file_to_device_argv {
   int64_t size;
 # define GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK (UINT64_C(1)<<3)
   int sparse;
+# define GUESTFS_COPY_FILE_TO_DEVICE_APPEND_BITMASK (UINT64_C(1)<<4)
+  int append;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_file_to_device_argv (guestfs_h *g, const char *src, const char *dest, const struct guestfs_copy_file_to_device_argv *optargs);
@@ -1428,6 +1440,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_copy_file_to_device_argv (guestfs_h *g, co
 #define GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET 1
 #define GUESTFS_COPY_FILE_TO_FILE_SIZE 2
 #define GUESTFS_COPY_FILE_TO_FILE_SPARSE 3
+#define GUESTFS_COPY_FILE_TO_FILE_APPEND 4
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_file_to_file (guestfs_h *g, const char *src, const char *dest, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_file_to_file_va (guestfs_h *g, const char *src, const char *dest, va_list args);
 
@@ -1441,6 +1454,8 @@ struct guestfs_copy_file_to_file_argv {
   int64_t size;
 # define GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK (UINT64_C(1)<<3)
   int sparse;
+# define GUESTFS_COPY_FILE_TO_FILE_APPEND_BITMASK (UINT64_C(1)<<4)
+  int append;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_file_to_file_argv (guestfs_h *g, const char *src, const char *dest, const struct guestfs_copy_file_to_file_argv *optargs);
@@ -1973,6 +1988,9 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_application2_list *guestfs_inspect_list
 
 #define GUESTFS_HAVE_INSPECT_OS 1
 extern GUESTFS_DLL_PUBLIC char **guestfs_inspect_os (guestfs_h *g);
+
+#define GUESTFS_HAVE_INTERNAL_EXIT 1
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_exit (guestfs_h *g);
 
 #define GUESTFS_HAVE_IS_BLOCKDEV 1
 extern GUESTFS_DLL_PUBLIC int guestfs_is_blockdev (guestfs_h *g, const char *path);
@@ -3558,9 +3576,6 @@ extern GUESTFS_DLL_PUBLIC char **guestfs_zgrepi (guestfs_h *g, const char *regex
 #define GUESTFS_HAVE_INTERNAL_AUTOSYNC 1
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_autosync (guestfs_h *g);
 
-#define GUESTFS_HAVE_INTERNAL_EXIT 1
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_exit (guestfs_h *g);
-
 #define GUESTFS_HAVE_INTERNAL_HOT_ADD_DRIVE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_add_drive (guestfs_h *g, const char *label);
 
@@ -3984,6 +3999,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_BTRFS_QGROUP_SHOW 1
 #define LIBGUESTFS_HAVE_BTRFS_QUOTA_ENABLE 1
 #define LIBGUESTFS_HAVE_BTRFS_QUOTA_RESCAN 1
+#define LIBGUESTFS_HAVE_BTRFS_REPLACE 1
 #define LIBGUESTFS_HAVE_BTRFS_RESCUE_CHUNK_RECOVER 1
 #define LIBGUESTFS_HAVE_BTRFS_RESCUE_SUPER_RECOVER 1
 #define LIBGUESTFS_HAVE_BTRFS_SCRUB_CANCEL 1
@@ -4163,6 +4179,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_INSPECT_LIST_APPLICATIONS 1
 #define LIBGUESTFS_HAVE_INSPECT_LIST_APPLICATIONS2 1
 #define LIBGUESTFS_HAVE_INSPECT_OS 1
+#define LIBGUESTFS_HAVE_INTERNAL_EXIT 1
 #define LIBGUESTFS_HAVE_IS_BLOCKDEV 1
 #define LIBGUESTFS_HAVE_IS_BUSY 1
 #define LIBGUESTFS_HAVE_IS_CHARDEV 1

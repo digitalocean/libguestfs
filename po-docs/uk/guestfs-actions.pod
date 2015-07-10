@@ -1820,6 +1820,27 @@ C<path>.
 
 (Added in 1.29.17)
 
+=head2 guestfs_btrfs_replace
+
+ int
+ guestfs_btrfs_replace (guestfs_h *g,
+                        const char *srcdev,
+                        const char *targetdev,
+                        const char *mntpoint);
+
+Replace device of a btrfs filesystem. On a live filesystem, duplicate the
+data to the target device which is currently stored on the source device.
+After completion of the operation, the source device is wiped out and
+removed from the filesystem.
+
+The C<targetdev> needs to be same size or larger than the C<srcdev>. Devices
+which are currently mounted are never allowed to be used as the
+C<targetdev>.
+
+Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
+(Added in 1.29.48)
+
 =head2 guestfs_btrfs_rescue_chunk_recover
 
  int
@@ -2726,6 +2747,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE, int64_t size,
  GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE, int sparse,
+ GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND, int append,
 
 The four calls C<guestfs_copy_device_to_device>,
 C<guestfs_copy_device_to_file>, C<guestfs_copy_file_to_device>, and
@@ -2742,6 +2764,11 @@ regions may not be copied correctly.
 
 If the destination is a file, it is created if required.  If the destination
 file is not large enough, it is extended.
+
+If the destination is a file and the C<append> flag is not set, then the
+destination file is truncated.  If the C<append> flag is set, then the copy
+appends to the destination file.  The C<append> flag currently cannot be set
+for devices.
 
 If the C<sparse> flag is true then the call avoids writing blocks that
 contain only zeroes, which can help in some situations where the backing
@@ -2797,6 +2824,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_DEVICE_TO_FILE_SIZE, int64_t size,
  GUESTFS_COPY_DEVICE_TO_FILE_SPARSE, int sparse,
+ GUESTFS_COPY_DEVICE_TO_FILE_APPEND, int append,
 
 See C<guestfs_copy_device_to_device> for a general overview of this call.
 
@@ -2849,6 +2877,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_FILE_TO_DEVICE_SIZE, int64_t size,
  GUESTFS_COPY_FILE_TO_DEVICE_SPARSE, int sparse,
+ GUESTFS_COPY_FILE_TO_DEVICE_APPEND, int append,
 
 See C<guestfs_copy_device_to_device> for a general overview of this call.
 
@@ -2901,6 +2930,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_FILE_TO_FILE_SIZE, int64_t size,
  GUESTFS_COPY_FILE_TO_FILE_SPARSE, int sparse,
+ GUESTFS_COPY_FILE_TO_FILE_APPEND, int append,
 
 See C<guestfs_copy_device_to_device> for a general overview of this call.
 

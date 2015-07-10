@@ -160,6 +160,7 @@
     <keyword type="function" name="guestfs_session_btrfs_qgroup_show ()" link="GuestfsSession.html#guestfs-session-btrfs-qgroup-show" since="1.29.17"/>
     <keyword type="function" name="guestfs_session_btrfs_quota_enable ()" link="GuestfsSession.html#guestfs-session-btrfs-quota-enable" since="1.29.17"/>
     <keyword type="function" name="guestfs_session_btrfs_quota_rescan ()" link="GuestfsSession.html#guestfs-session-btrfs-quota-rescan" since="1.29.17"/>
+    <keyword type="function" name="guestfs_session_btrfs_replace ()" link="GuestfsSession.html#guestfs-session-btrfs-replace" since="1.29.48"/>
     <keyword type="function" name="guestfs_session_btrfs_rescue_chunk_recover ()" link="GuestfsSession.html#guestfs-session-btrfs-rescue-chunk-recover" since="1.29.22"/>
     <keyword type="function" name="guestfs_session_btrfs_rescue_super_recover ()" link="GuestfsSession.html#guestfs-session-btrfs-rescue-super-recover" since="1.29.22"/>
     <keyword type="function" name="guestfs_session_btrfs_scrub_cancel ()" link="GuestfsSession.html#guestfs-session-btrfs-scrub-cancel" since="1.29.22"/>
@@ -338,6 +339,7 @@
     <keyword type="function" name="guestfs_session_inspect_list_applications ()" link="GuestfsSession.html#guestfs-session-inspect-list-applications" deprecated="In new code, use guestfs_session_inspect_list_applications2() instead" since="1.7.8"/>
     <keyword type="function" name="guestfs_session_inspect_list_applications2 ()" link="GuestfsSession.html#guestfs-session-inspect-list-applications2" since="1.19.56"/>
     <keyword type="function" name="guestfs_session_inspect_os ()" link="GuestfsSession.html#guestfs-session-inspect-os" since="1.5.3"/>
+    <keyword type="function" name="guestfs_session_internal_exit ()" link="GuestfsSession.html#guestfs-session-internal-exit" since="1.23.30"/>
     <keyword type="function" name="guestfs_session_internal_test ()" link="GuestfsSession.html#guestfs-session-internal-test"/>
     <keyword type="function" name="guestfs_session_internal_test_63_optargs ()" link="GuestfsSession.html#guestfs-session-internal-test-63-optargs"/>
     <keyword type="function" name="guestfs_session_internal_test_close_output ()" link="GuestfsSession.html#guestfs-session-internal-test-close-output"/>
@@ -801,6 +803,7 @@
     <keyword type="function" name="guestfs_copy_device_to_device_new ()" link="GuestfsCopyDeviceToDevice.html#guestfs-copy-device-to-device-new"/>
     <keyword type="struct" name="struct GuestfsCopyDeviceToDevice" link="GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice-struct"/>
     <keyword type="struct" name="struct GuestfsCopyDeviceToDeviceClass" link="GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDeviceClass"/>
+    <keyword type="property" name="The “append” property" link="GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--append"/>
     <keyword type="property" name="The “destoffset” property" link="GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--destoffset"/>
     <keyword type="property" name="The “size” property" link="GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--size"/>
     <keyword type="property" name="The “sparse” property" link="GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--sparse"/>
@@ -808,6 +811,7 @@
     <keyword type="function" name="guestfs_copy_device_to_file_new ()" link="GuestfsCopyDeviceToFile.html#guestfs-copy-device-to-file-new"/>
     <keyword type="struct" name="struct GuestfsCopyDeviceToFile" link="GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile-struct"/>
     <keyword type="struct" name="struct GuestfsCopyDeviceToFileClass" link="GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFileClass"/>
+    <keyword type="property" name="The “append” property" link="GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--append"/>
     <keyword type="property" name="The “destoffset” property" link="GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--destoffset"/>
     <keyword type="property" name="The “size” property" link="GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--size"/>
     <keyword type="property" name="The “sparse” property" link="GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--sparse"/>
@@ -815,6 +819,7 @@
     <keyword type="function" name="guestfs_copy_file_to_device_new ()" link="GuestfsCopyFileToDevice.html#guestfs-copy-file-to-device-new"/>
     <keyword type="struct" name="struct GuestfsCopyFileToDevice" link="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice-struct"/>
     <keyword type="struct" name="struct GuestfsCopyFileToDeviceClass" link="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDeviceClass"/>
+    <keyword type="property" name="The “append” property" link="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--append"/>
     <keyword type="property" name="The “destoffset” property" link="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--destoffset"/>
     <keyword type="property" name="The “size” property" link="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--size"/>
     <keyword type="property" name="The “sparse” property" link="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--sparse"/>
@@ -822,6 +827,7 @@
     <keyword type="function" name="guestfs_copy_file_to_file_new ()" link="GuestfsCopyFileToFile.html#guestfs-copy-file-to-file-new"/>
     <keyword type="struct" name="struct GuestfsCopyFileToFile" link="GuestfsCopyFileToFile.html#GuestfsCopyFileToFile-struct"/>
     <keyword type="struct" name="struct GuestfsCopyFileToFileClass" link="GuestfsCopyFileToFile.html#GuestfsCopyFileToFileClass"/>
+    <keyword type="property" name="The “append” property" link="GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--append"/>
     <keyword type="property" name="The “destoffset” property" link="GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--destoffset"/>
     <keyword type="property" name="The “size” property" link="GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--size"/>
     <keyword type="property" name="The “sparse” property" link="GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--sparse"/>

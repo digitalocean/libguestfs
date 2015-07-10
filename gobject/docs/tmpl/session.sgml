@@ -907,6 +907,19 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_btrfs_replace ##### -->
+<para>
+
+</para>
+
+@session: 
+@srcdev: 
+@targetdev: 
+@mntpoint: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_btrfs_rescue_chunk_recover ##### -->
 <para>
 
@@ -2920,6 +2933,17 @@ GuestfsSession
 </para>
 
 @session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_exit ##### -->
+<para>
+
+</para>
+
+@session: 
+@cancellable: 
 @err: 
 @Returns: 
 

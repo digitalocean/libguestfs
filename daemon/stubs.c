@@ -10472,8 +10472,9 @@ copy_device_to_device_stub (XDR *xdr_in)
   int64_t destoffset;
   int64_t size;
   int sparse;
+  int append;
 
-  if (optargs_bitmask & UINT64_C(0xfffffffffffffff0)) {
+  if (optargs_bitmask & UINT64_C(0xffffffffffffffe0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
@@ -10490,8 +10491,9 @@ copy_device_to_device_stub (XDR *xdr_in)
   destoffset = args.destoffset;
   size = args.size;
   sparse = args.sparse;
+  append = args.append;
 
-  r = do_copy_device_to_device (src, dest, srcoffset, destoffset, size, sparse);
+  r = do_copy_device_to_device (src, dest, srcoffset, destoffset, size, sparse, append);
   if (r == -1)
     /* do_copy_device_to_device has already called reply_with_error */
     goto done;
@@ -10514,8 +10516,9 @@ copy_device_to_file_stub (XDR *xdr_in)
   int64_t destoffset;
   int64_t size;
   int sparse;
+  int append;
 
-  if (optargs_bitmask & UINT64_C(0xfffffffffffffff0)) {
+  if (optargs_bitmask & UINT64_C(0xffffffffffffffe0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
@@ -10533,9 +10536,10 @@ copy_device_to_file_stub (XDR *xdr_in)
   destoffset = args.destoffset;
   size = args.size;
   sparse = args.sparse;
+  append = args.append;
 
   NEED_ROOT (, goto done);
-  r = do_copy_device_to_file (src, dest, srcoffset, destoffset, size, sparse);
+  r = do_copy_device_to_file (src, dest, srcoffset, destoffset, size, sparse, append);
   if (r == -1)
     /* do_copy_device_to_file has already called reply_with_error */
     goto done;
@@ -10558,8 +10562,9 @@ copy_file_to_device_stub (XDR *xdr_in)
   int64_t destoffset;
   int64_t size;
   int sparse;
+  int append;
 
-  if (optargs_bitmask & UINT64_C(0xfffffffffffffff0)) {
+  if (optargs_bitmask & UINT64_C(0xffffffffffffffe0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
@@ -10577,9 +10582,10 @@ copy_file_to_device_stub (XDR *xdr_in)
   destoffset = args.destoffset;
   size = args.size;
   sparse = args.sparse;
+  append = args.append;
 
   NEED_ROOT (, goto done);
-  r = do_copy_file_to_device (src, dest, srcoffset, destoffset, size, sparse);
+  r = do_copy_file_to_device (src, dest, srcoffset, destoffset, size, sparse, append);
   if (r == -1)
     /* do_copy_file_to_device has already called reply_with_error */
     goto done;
@@ -10602,8 +10608,9 @@ copy_file_to_file_stub (XDR *xdr_in)
   int64_t destoffset;
   int64_t size;
   int sparse;
+  int append;
 
-  if (optargs_bitmask & UINT64_C(0xfffffffffffffff0)) {
+  if (optargs_bitmask & UINT64_C(0xffffffffffffffe0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
@@ -10622,9 +10629,10 @@ copy_file_to_file_stub (XDR *xdr_in)
   destoffset = args.destoffset;
   size = args.size;
   sparse = args.sparse;
+  append = args.append;
 
   NEED_ROOT (, goto done);
-  r = do_copy_file_to_file (src, dest, srcoffset, destoffset, size, sparse);
+  r = do_copy_file_to_file (src, dest, srcoffset, destoffset, size, sparse, append);
   if (r == -1)
     /* do_copy_file_to_file has already called reply_with_error */
     goto done;
@@ -16810,6 +16818,50 @@ done_no_free:
   return;
 }
 
+static void
+btrfs_replace_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_replace_args args;
+  CLEANUP_FREE char *srcdev = NULL;
+  CLEANUP_FREE char *targetdev = NULL;
+  const char *mntpoint;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_replace_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.srcdev, srcdev, , goto done);
+  RESOLVE_DEVICE (args.targetdev, targetdev, , goto done);
+  mntpoint = args.mntpoint;
+  ABS_PATH (mntpoint, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_replace (srcdev, targetdev, mntpoint);
+  if (r == -1)
+    /* do_btrfs_replace has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_replace_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -18138,6 +18190,9 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_PART_GET_MBR_PART_TYPE:
       part_get_mbr_part_type_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_REPLACE:
+      btrfs_replace_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

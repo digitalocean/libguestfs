@@ -125,7 +125,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 @ENABLE_GNULIB_TESTS_TRUE@am__append_1 = gnulib/tests
-@ENABLE_DAEMON_TRUE@am__append_2 = daemon
+@ENABLE_DAEMON_TRUE@am__append_2 = daemon tests/daemon
 
 # Tests - order is important.
 @ENABLE_APPLIANCE_TRUE@am__append_3 = appliance tests/qemu \
@@ -433,12 +433,12 @@ ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
 DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
-	examples po daemon appliance tests/qemu tests/guests \
-	tests/c-api tests/tmpdirs tests/protocol tests/events \
-	tests/parallel tests/create tests/disks tests/discard \
-	tests/mountable tests/network tests/lvm tests/luks tests/md \
-	tests/selinux tests/ntfsclone tests/btrfs tests/xfs \
-	tests/charsets tests/xml tests/mount-local tests/9p \
+	examples po daemon tests/daemon appliance tests/qemu \
+	tests/guests tests/c-api tests/tmpdirs tests/protocol \
+	tests/events tests/parallel tests/create tests/disks \
+	tests/discard tests/mountable tests/network tests/lvm \
+	tests/luks tests/md tests/selinux tests/ntfsclone tests/btrfs \
+	tests/xfs tests/charsets tests/xml tests/mount-local tests/9p \
 	tests/rsync tests/bigdirs tests/disk-labels tests/hotplug \
 	tests/nbd tests/http tests/syslinux tests/journal tests/fuzz \
 	tests/relative-paths tests/regressions test-tool fish align \
@@ -1543,7 +1543,6 @@ UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOC
 UNZIP = @UNZIP@
 USE_NLS = @USE_NLS@
 VALGRIND = @VALGRIND@
-VALGRIND_NO_VGDB = @VALGRIND_NO_VGDB@
 VERSION = @VERSION@
 VERSION_SCRIPT_FLAGS = @VERSION_SCRIPT_FLAGS@
 WARN_CFLAGS = @WARN_CFLAGS@

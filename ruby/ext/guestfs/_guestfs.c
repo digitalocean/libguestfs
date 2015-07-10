@@ -3614,6 +3614,47 @@ ruby_guestfs_btrfs_quota_rescan (VALUE gv, VALUE fsv)
 
 /*
  * call-seq:
+ *   g.btrfs_replace(srcdev, targetdev, mntpoint) -> nil
+ *
+ * replace a btrfs managed device with another device
+ *
+ * Replace device of a btrfs filesystem. On a live
+ * filesystem, duplicate the data to the target device
+ * which is currently stored on the source device. After
+ * completion of the operation, the source device is wiped
+ * out and removed from the filesystem.
+ * 
+ * The "targetdev" needs to be same size or larger than the
+ * "srcdev". Devices which are currently mounted are never
+ * allowed to be used as the "targetdev".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_replace+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_replace]).
+ */
+static VALUE
+ruby_guestfs_btrfs_replace (VALUE gv, VALUE srcdevv, VALUE targetdevv, VALUE mntpointv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_replace");
+
+  const char *srcdev = StringValueCStr (srcdevv);
+  const char *targetdev = StringValueCStr (targetdevv);
+  const char *mntpoint = StringValueCStr (mntpointv);
+
+  int r;
+
+  r = guestfs_btrfs_replace (g, srcdev, targetdev, mntpoint);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
  *   g.btrfs_rescue_chunk_recover(device) -> nil
  *
  * recover the chunk tree of btrfs filesystem
@@ -5208,6 +5249,12 @@ ruby_guestfs_copy_attributes (int argc, VALUE *argv, VALUE gv)
  * If the destination file is not large enough, it is
  * extended.
  * 
+ * If the destination is a file and the "append" flag is
+ * not set, then the destination file is truncated. If the
+ * "append" flag is set, then the copy appends to the
+ * destination file. The "append" flag currently cannot be
+ * set for devices.
+ * 
  * If the "sparse" flag is true then the call avoids
  * writing blocks that contain only zeroes, which can help
  * in some situations where the backing disk is
@@ -5264,6 +5311,11 @@ ruby_guestfs_copy_device_to_device (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.sparse = RTEST (v);
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("append")));
+  if (v != Qnil) {
+    optargs_s.append = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND_BITMASK;
   }
 
   int r;
@@ -5334,6 +5386,11 @@ ruby_guestfs_copy_device_to_file (int argc, VALUE *argv, VALUE gv)
     optargs_s.sparse = RTEST (v);
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
   }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("append")));
+  if (v != Qnil) {
+    optargs_s.append = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_APPEND_BITMASK;
+  }
 
   int r;
 
@@ -5402,6 +5459,11 @@ ruby_guestfs_copy_file_to_device (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.sparse = RTEST (v);
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("append")));
+  if (v != Qnil) {
+    optargs_s.append = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_APPEND_BITMASK;
   }
 
   int r;
@@ -5476,6 +5538,11 @@ ruby_guestfs_copy_file_to_file (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.sparse = RTEST (v);
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("append")));
+  if (v != Qnil) {
+    optargs_s.append = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_APPEND_BITMASK;
   }
 
   int r;
@@ -11996,6 +12063,30 @@ ruby_guestfs_inspect_os (VALUE gv)
   }
   free (r);
   return rv;
+}
+
+/*
+ * call-seq:
+ *   g.internal_exit
+ *
+ * :nodoc:
+ */
+static VALUE
+ruby_guestfs_internal_exit (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_exit");
+
+
+  int r;
+
+  r = guestfs_internal_exit (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
 }
 
 /*
@@ -27746,6 +27837,8 @@ Init__guestfs (void)
         ruby_guestfs_btrfs_quota_enable, 2);
   rb_define_method (c_guestfs, "btrfs_quota_rescan",
         ruby_guestfs_btrfs_quota_rescan, 1);
+  rb_define_method (c_guestfs, "btrfs_replace",
+        ruby_guestfs_btrfs_replace, 3);
   rb_define_method (c_guestfs, "btrfs_rescue_chunk_recover",
         ruby_guestfs_btrfs_rescue_chunk_recover, 1);
   rb_define_method (c_guestfs, "btrfs_rescue_super_recover",
@@ -28110,6 +28203,8 @@ Init__guestfs (void)
         ruby_guestfs_inspect_list_applications2, 1);
   rb_define_method (c_guestfs, "inspect_os",
         ruby_guestfs_inspect_os, 0);
+  rb_define_method (c_guestfs, "internal_exit",
+        ruby_guestfs_internal_exit, 0);
   rb_define_method (c_guestfs, "internal_test",
         ruby_guestfs_internal_test, -1);
   rb_define_method (c_guestfs, "internal_test_63_optargs",

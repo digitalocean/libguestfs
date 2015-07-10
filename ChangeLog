@@ -1,3 +1,343 @@
+commit 2b67342bdae68cb20f593a79b4b6d5af74f4de04
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 29 23:20:54 2015 +0100
+
+    Version 1.29.48.
+
+commit 93cf45cadf51576ee275fd440267af1373db26fc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 22:56:55 2015 +0100
+
+    tests: Add a test of btrfs-qgroup-show using the captive daemon.
+
+commit 336b8f6b1620d23a5aed9d2d9327e51b62f9b1ac
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 22:56:55 2015 +0100
+
+    tests: Add a test of btrfs-subvolume-list using the captive daemon.
+
+commit f2438b75a2402af0c51f89d4cd993a4ab7ef4a8c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 24 12:43:32 2015 +0100
+
+    tests: daemon: Cleanly shut down the daemon on exit.
+    
+    This refines the previous commit by shutting down the daemon cleanly
+    at the end of the test (assuming the test was successful).  It
+    repurposes the 'internal_exit' API for this, which was previously used
+    by the now defunct --enable-valgrind-daemon functionality.
+
+commit 9f85477cbac1427b8d4d314c8b7de7f703821891
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 18:21:50 2015 +0100
+
+    tests: Add tests using a captive daemon process.
+    
+    This allows us to test the daemon running as a host process, allowing
+    us to meaningfully test it using valgrind.
+    
+    This commit only adds a single test that check that the daemon starts
+    up, can be pinged, and exits.
+
+commit 8cb1a35d75bfc5ed2e3cb0febfd3168b52281fb4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 25 15:08:52 2015 +0100
+
+    daemon: Move all the kernel command line parsing to the init script.
+    
+    Instead of parsing /proc/cmdline from the daemon, move all of that
+    parsing into the init script, and pass the argument via the daemon
+    command line.
+    
+    For example, previously the daemon and init script both looked for
+    guestfs_network=1 in /proc/cmdline.  Now the init script still looks
+    for it, and if found it runs `guestfsd --network'.
+
+commit 64ff631127bd682e7311ae20328fdafb2ca1d4da
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 15:29:15 2015 +0100
+
+    daemon: Add -l / --listen flag.
+    
+    This option, used for testing, causes the daemon to create the Unix
+    domain socket (from guestfs_channel), listen on it, and accept a
+    single connection.
+
+commit 9e0e2247ff8bca67f791775d3ea0b2998e5bc2fe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 15:26:31 2015 +0100
+
+    daemon: Add undocumented --test / -t option to enable test mode.
+    
+    This is a catch-all mode for turning off daemon features which
+    interfere with our testing of the daemon.
+
+commit 4b721a1e0b443a2a56408994c85b92a8d4911580
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 22:49:11 2015 +0100
+
+    configure: Remove test for valgrind --vgdb option.
+    
+    We'll now just require that valgrind is new enough.
+    
+    As best as I can tell from the valgrind subversion(!) repository, this
+    option was added to valgrind in around 2011.
+
+commit 3888582da89c757d0740d11c3a62433d748c85aa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 25 18:00:02 2015 +0100
+
+    v2v: Free XML objects in the correct order.
+    
+    If you free an xmlDocPtr before any xmlXPathObjectPtrs that reference
+    the doc, you'll get valgrind errors like this:
+    
+      ==7390== Invalid read of size 4
+      ==7390==    at 0x4EB8BC6: xmlXPathFreeNodeSet (xpath.c:4185)
+      ==7390==    by 0x4EB8CC5: xmlXPathFreeObject (xpath.c:5492)
+      ==7390==    by 0x400A56: main (in /tmp/test)
+      ==7390==  Address 0x60c0928 is 8 bytes inside a block of size 120 free'd
+      ==7390==    at 0x4C29D2A: free (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+      ==7390==    by 0x4E8784F: xmlFreeNodeList (tree.c:3683)
+      ==7390==    by 0x4E87605: xmlFreeDoc (tree.c:1242)
+      ==7390==    by 0x400A4A: main (in /tmp/test)
+    
+    The following simple test program demonstrates the problem:
+    
+      #include <stdio.h>
+      #include <stdlib.h>
+      #include <assert.h>
+      #include <libxml/xpath.h>
+    
+      int
+      main (int argc, char *argv[])
+      {
+        xmlDocPtr doc;
+        xmlXPathContextPtr xpathctx;
+        xmlXPathObjectPtr xpathobj;
+    
+        doc = xmlReadMemory ("<test/>", 7, NULL, NULL, XML_PARSE_NONET);
+        assert (doc);
+        xpathctx = xmlXPathNewContext (doc);
+        assert (xpathctx);
+        xpathobj = xmlXPathEvalExpression (BAD_CAST "/test", xpathctx);
+        assert (xpathobj);
+        xmlFreeDoc (doc);
+        xmlXPathFreeObject (xpathobj);
+        xmlXPathFreeContext (xpathctx);
+        exit (EXIT_SUCCESS);
+      }
+    
+    In virt-v2v we were not freeing up objects in the correct order,
+    because we didn't express the dependency between objects at the C
+    level into the OCaml, where the OCaml garbage collector could see
+    those dependencies.  For example code like:
+    
+      let doc = ... in
+      let xpathctx = xpath_new_context doc in
+      let xpathobj = xpath_eval_expression xpathctx "/foo" in
+    
+    might end up freeing the 'doc' (xmlDocPtr) if, say, there were no
+    further references to it in the code, even though the 'xpathobj'
+    (xmlXPathObjectPtr) remains live.
+    
+    To avoid this, we change the OCaml-level representation of objects
+    like xpathobj so they contain a reference back to the higher-level
+    objects (xpathctx & doc).  Therefore holding an xpathobj means that
+    the doc cannot be freed.
+    
+    However that alone is not quite sufficient.  There is a further
+    problem when the program calls Gc.full_major, Gc.compact etc., or even
+    just when xpathctx & doc happen to be freed at the same time.  The GC
+    won't necessarily free them in the right order as it knows both need
+    to be freed but doesn't know that one must be freed before the other.
+    
+    To solve this we have to move the finalisers into OCaml code, since
+    the OCaml Gc.finalise function comes with an explicit ordering
+    guarantee (that finalisers are always called in reverse order that
+    they were created), which the C-level finaliser does not.
+
+commit 36a197e2cc119f6d2691b110af5b292ba794162b
+Author: Cao jin <caoj.fnst@cn.fujitsu.com>
+Date:   Wed Jun 24 10:08:42 2015 +0800
+
+    New API: btrfs_replace
+    
+    Signed-off-by: Cao jin <caoj.fnst@cn.fujitsu.com>
+
+commit 52ca4d5dd4c909a4eac8c6f3a58f8800a444a611
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 29 10:41:10 2015 +0100
+
+    v2v: OVF: If actual_size field is estimated, add a comment to the output.
+    
+    The 'note:' comment is added, as below:
+    
+      <Section xsi:type='ovf:DiskSection_Type'>
+        <Info>List of Virtual Disks</Info>
+        <!-- note: actual_size field is estimated -->
+        <Disk ovf:actual_size='7' [...]/>
+      </Section>
+
+commit 801832e6764097466c1156a9be2d829f8401c6d9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 25 20:54:06 2015 +0100
+
+    v2v: Increase the timeout of VMware curl connections (RHBZ#1146007).
+    
+    On certain webservers these appear to go beyond even 600 seconds (10
+    minutes).
+
+commit 800e501e1e1058ed0a3b26f2d79e2511641649d6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 25 21:22:00 2015 +0100
+
+    v2v: test-harness: Build dependencies correctly.
+
+commit 1d58cd4e1d4dbce15fc27f57ddfb8c4b290642b6
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Thu Jun 18 17:39:39 2015 +0800
+
+    do_btrfs_subvolume_list: fix a bad return value
+    
+    don't return a value which is to be freed.
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 268c425791e831e9ba2a6b5e33942ba36e5dae3c
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Thu Jun 18 17:39:38 2015 +0800
+
+    do_btrfs_qgroup_show: fix a bad return value
+    
+    We should not use temporary lines buffer as return value,
+    for lines buffer will be freed.
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 445d20c1176b0ae53cec03fccce3ead779fe1575
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 13:24:23 2015 +0100
+
+    lib: Add optional 'append' parameter to copy-(device|file)-to-file APIs.
+    
+    This allows you to append one file to another:
+    
+      copy-file-to-file /input.txt /output.txt append:true
+    
+    will append the contents of /input.txt to /output.txt.
+
+commit 47b5f245bec908f803f0a89c3b1e3166cfe33aad
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 22 15:13:36 2015 +0100
+
+    v2v: Support loading virtio-win drivers from virtio-win.iso (RHBZ#1234351).
+    
+    This makes several changes to the handling of virtio-win drivers:
+    
+    The VIRTIO_WIN_DIR environment variable has been renamed
+    VIRTIO_WIN (but you can still use the old name).
+    
+    You can point the VIRTIO_WIN either at a RHEL virtio-win directory
+    (ie. /usr/share/virtio-win), OR at a loopback-mounted virtio-win ISO,
+    OR at the virtio-win.iso file itself.  In the latter case, libguestfs
+    is used to open the ISO file and read drivers from it.
+    
+    The code is more flexible about the pathnames of drivers, because the
+    paths in the ISO are completely different from the paths in RHEL
+    /usr/share/virtio-win.
+
+commit 57ae2a5cc3a95dbae0e1dc1c55213bd158e4a385
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 14:33:44 2015 +0100
+
+    daemon: Rewrite prog_exists so it uses the actual PATH, not hard-coded list.
+
+commit 68ed6dd88ab30b482b70854452b41ee2768ce03e
+Author: Cao jin <caoj.fnst@cn.fujitsu.com>
+Date:   Tue Jun 23 18:38:19 2015 +0800
+
+    Modify the function: analyze_line, make it more flexible
+    
+    Modify the function from a fixed delimiter to a variable. So,
+    it can be used in more APIs later. Also modified the existing
+    callers
+    
+    Signed-off-by: Cao jin <caoj.fnst@cn.fujitsu.com>
+
+commit 35710595c136bf24c9a4b77788c5dd93a7c72b2d
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Tue Jun 23 16:01:10 2015 +0800
+
+    btrfs: remove redundant whitespace
+    
+    s/  =/ =
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit a1f34045164f40207d1545b0a12dcea96bbaeab7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 22 18:48:47 2015 +0100
+
+    v2v: test-harness: Add Config module to library.
+    
+    Missing dependency.
+
+commit 158204529fa26654d8ac6afa518675f97de2ba82
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 22 18:08:29 2015 +0100
+
+    appliance: Make uefi_firmware variable static.
+    
+    It is not used outside the compilation unit.
+    
+    This fixes commit 544a7314824654d89ba3c70e3e93383a05d54218.
+
+commit 029fc60ee509f53548f53e75ab571ff3fc6a4459
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 19 19:49:41 2015 +0100
+
+    launch: Refactor guestfs_int_get_cpu_model code.
+    
+    Shorter and does the same thing.
+
+commit 544a7314824654d89ba3c70e3e93383a05d54218
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 20 14:49:19 2015 +0100
+
+    aarch64: appliance: Use kraxel's edk2.git repo if available.
+    
+    Gerd is making EDK2 builds available here:
+    
+    https://www.kraxel.org/repos/
+    
+    These are convenient for Fedora/aarch64 users, so use this firmware if
+    available.
+    
+    This commit also refactors the UEFI searching code.
+
+commit 74f5bb17a1fc5d42a228967a3516418432c67e8d
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Fri Jun 19 10:26:52 2015 +0800
+
+    btrfs: fix leak in btrfs_balance_status
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit abf0df6884c01acdd5423212034d9dee02a6ad56
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jun 18 15:46:21 2015 +0200
+
+    v2v: remove unused sources and libraries
+
+commit 9f683fbf0f07da9c498915f503d5cc94db30389f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jun 18 13:34:12 2015 +0200
+
+    btrfs: fix leak in btrfs_scrub_status
+    
+    Properly free the output buffer.
+
 commit d8ab90cdd628eacee7cdd9583499918022bcb870
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Jun 18 12:59:53 2015 +0100

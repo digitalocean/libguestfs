@@ -103,6 +103,7 @@
         guestfs_btrfs_qgroup_show;
         guestfs_btrfs_quota_enable;
         guestfs_btrfs_quota_rescan;
+        guestfs_btrfs_replace;
         guestfs_btrfs_rescue_chunk_recover;
         guestfs_btrfs_rescue_super_recover;
         guestfs_btrfs_scrub_cancel;

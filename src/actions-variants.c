@@ -879,6 +879,9 @@ guestfs_copy_device_to_device_va (guestfs_h *g,
     case GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE:
       optargs_s.sparse = va_arg (args, int);
       break;
+    case GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND:
+      optargs_s.append = va_arg (args, int);
+      break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
              "copy_device_to_device", i);
@@ -940,6 +943,9 @@ guestfs_copy_device_to_file_va (guestfs_h *g,
       break;
     case GUESTFS_COPY_DEVICE_TO_FILE_SPARSE:
       optargs_s.sparse = va_arg (args, int);
+      break;
+    case GUESTFS_COPY_DEVICE_TO_FILE_APPEND:
+      optargs_s.append = va_arg (args, int);
       break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
@@ -1003,6 +1009,9 @@ guestfs_copy_file_to_device_va (guestfs_h *g,
     case GUESTFS_COPY_FILE_TO_DEVICE_SPARSE:
       optargs_s.sparse = va_arg (args, int);
       break;
+    case GUESTFS_COPY_FILE_TO_DEVICE_APPEND:
+      optargs_s.append = va_arg (args, int);
+      break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
              "copy_file_to_device", i);
@@ -1064,6 +1073,9 @@ guestfs_copy_file_to_file_va (guestfs_h *g,
       break;
     case GUESTFS_COPY_FILE_TO_FILE_SPARSE:
       optargs_s.sparse = va_arg (args, int);
+      break;
+    case GUESTFS_COPY_FILE_TO_FILE_APPEND:
+      optargs_s.append = va_arg (args, int);
       break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",

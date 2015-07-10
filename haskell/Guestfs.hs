@@ -78,6 +78,7 @@ module Guestfs (
   btrfs_qgroup_remove,
   btrfs_quota_enable,
   btrfs_quota_rescan,
+  btrfs_replace,
   btrfs_rescue_chunk_recover,
   btrfs_rescue_super_recover,
   btrfs_scrub_cancel,
@@ -229,6 +230,7 @@ module Guestfs (
   inspect_is_multipart,
   inspect_is_netinst,
   inspect_os,
+  internal_exit,
   internal_test_close_output,
   internal_test_rbool,
   internal_test_rboolerr,
@@ -1197,6 +1199,18 @@ foreign import ccall unsafe "guestfs.h guestfs_btrfs_quota_rescan" c_btrfs_quota
 btrfs_quota_rescan :: GuestfsH -> String -> IO ()
 btrfs_quota_rescan h fs = do
   r <- withCString fs $ \fs -> withForeignPtr h (\p -> c_btrfs_quota_rescan p fs)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_replace" c_btrfs_replace
+  :: GuestfsP -> CString -> CString -> CString -> IO CInt
+
+btrfs_replace :: GuestfsH -> String -> String -> String -> IO ()
+btrfs_replace h srcdev targetdev mntpoint = do
+  r <- withCString srcdev $ \srcdev -> withCString targetdev $ \targetdev -> withCString mntpoint $ \mntpoint -> withForeignPtr h (\p -> c_btrfs_replace p srcdev targetdev mntpoint)
   if (r == -1)
     then do
       err <- last_error h
@@ -3023,6 +3037,18 @@ inspect_os h = do
       err <- last_error h
       fail err
     else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_internal_exit" c_internal_exit
+  :: GuestfsP -> IO CInt
+
+internal_exit :: GuestfsH -> IO ()
+internal_exit h = do
+  r <- withForeignPtr h (\p -> c_internal_exit p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
 
 foreign import ccall unsafe "guestfs.h guestfs_internal_test_close_output" c_internal_test_close_output
   :: GuestfsP -> IO CInt

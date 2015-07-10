@@ -115,6 +115,7 @@ static int run_btrfs_qgroup_remove (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_qgroup_show (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_quota_enable (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_quota_rescan (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_replace (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_rescue_chunk_recover (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_rescue_super_recover (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_scrub_cancel (const char *cmd, size_t argc, char *argv[]);
@@ -291,6 +292,7 @@ static int run_inspect_is_netinst (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_list_applications (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_list_applications2 (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_os (const char *cmd, size_t argc, char *argv[]);
+static int run_internal_exit (const char *cmd, size_t argc, char *argv[]);
 static int run_is_blockdev (const char *cmd, size_t argc, char *argv[]);
 static int run_is_chardev (const char *cmd, size_t argc, char *argv[]);
 static int run_is_config (const char *cmd, size_t argc, char *argv[]);
@@ -1187,6 +1189,13 @@ struct command_entry btrfs_quota_rescan_cmd_entry = {
   .run = run_btrfs_quota_rescan
 };
 
+struct command_entry btrfs_replace_cmd_entry = {
+  .name = "btrfs-replace",
+  .help = "NAME\n    btrfs-replace - replace a btrfs managed device with another device\n\nSYNOPSIS\n     btrfs-replace srcdev targetdev mntpoint\n\nDESCRIPTION\n    Replace device of a btrfs filesystem. On a live filesystem, duplicate\n    the data to the target device which is currently stored on the source\n    device. After completion of the operation, the source device is wiped\n    out and removed from the filesystem.\n\n    The \"targetdev\" needs to be same size or larger than the \"srcdev\".\n    Devices which are currently mounted are never allowed to be used as the\n    \"targetdev\".\n\n",
+  .synopsis = "btrfs-replace srcdev targetdev mntpoint",
+  .run = run_btrfs_replace
+};
+
 struct command_entry btrfs_rescue_chunk_recover_cmd_entry = {
   .name = "btrfs-rescue-chunk-recover",
   .help = "NAME\n    btrfs-rescue-chunk-recover - recover the chunk tree of btrfs filesystem\n\nSYNOPSIS\n     btrfs-rescue-chunk-recover device\n\nDESCRIPTION\n    Recover the chunk tree of btrfs filesystem by scanning the devices one\n    by one.\n\n",
@@ -1434,29 +1443,29 @@ struct command_entry copy_attributes_cmd_entry = {
 
 struct command_entry copy_device_to_device_cmd_entry = {
   .name = "copy-device-to-device",
-  .help = "NAME\n    copy-device-to-device - copy from source device to destination device\n\nSYNOPSIS\n     copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]\n\nDESCRIPTION\n    The four calls \"copy_device_to_device\", \"copy_device_to_file\",\n    \"copy_file_to_device\", and \"copy_file_to_file\" let you copy from a\n    source (device|file) to a destination (device|file).\n\n    Partial copies can be made since you can specify optionally the source\n    offset, destination offset and size to copy. These values are all\n    specified in bytes. If not given, the offsets both default to zero, and\n    the size defaults to copying as much as possible until we hit the end of\n    the source.\n\n    The source and destination may be the same object. However overlapping\n    regions may not be copied correctly.\n\n    If the destination is a file, it is created if required. If the\n    destination file is not large enough, it is extended.\n\n    If the \"sparse\" flag is true then the call avoids writing blocks that\n    contain only zeroes, which can help in some situations where the backing\n    disk is thin-provisioned. Note that unless the target is already zeroed,\n    using this option will result in incorrect copying.\n\n",
-  .synopsis = "copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]",
+  .help = "NAME\n    copy-device-to-device - copy from source device to destination device\n\nSYNOPSIS\n     copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]\n\nDESCRIPTION\n    The four calls \"copy_device_to_device\", \"copy_device_to_file\",\n    \"copy_file_to_device\", and \"copy_file_to_file\" let you copy from a\n    source (device|file) to a destination (device|file).\n\n    Partial copies can be made since you can specify optionally the source\n    offset, destination offset and size to copy. These values are all\n    specified in bytes. If not given, the offsets both default to zero, and\n    the size defaults to copying as much as possible until we hit the end of\n    the source.\n\n    The source and destination may be the same object. However overlapping\n    regions may not be copied correctly.\n\n    If the destination is a file, it is created if required. If the\n    destination file is not large enough, it is extended.\n\n    If the destination is a file and the \"append\" flag is not set, then the\n    destination file is truncated. If the \"append\" flag is set, then the\n    copy appends to the destination file. The \"append\" flag currently cannot\n    be set for devices.\n\n    If the \"sparse\" flag is true then the call avoids writing blocks that\n    contain only zeroes, which can help in some situations where the backing\n    disk is thin-provisioned. Note that unless the target is already zeroed,\n    using this option will result in incorrect copying.\n\n",
+  .synopsis = "copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]",
   .run = run_copy_device_to_device
 };
 
 struct command_entry copy_device_to_file_cmd_entry = {
   .name = "copy-device-to-file",
-  .help = "NAME\n    copy-device-to-file - copy from source device to destination file\n\nSYNOPSIS\n     copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
-  .synopsis = "copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]",
+  .help = "NAME\n    copy-device-to-file - copy from source device to destination file\n\nSYNOPSIS\n     copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
+  .synopsis = "copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]",
   .run = run_copy_device_to_file
 };
 
 struct command_entry copy_file_to_device_cmd_entry = {
   .name = "copy-file-to-device",
-  .help = "NAME\n    copy-file-to-device - copy from source file to destination device\n\nSYNOPSIS\n     copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
-  .synopsis = "copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]",
+  .help = "NAME\n    copy-file-to-device - copy from source file to destination device\n\nSYNOPSIS\n     copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
+  .synopsis = "copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]",
   .run = run_copy_file_to_device
 };
 
 struct command_entry copy_file_to_file_cmd_entry = {
   .name = "copy-file-to-file",
-  .help = "NAME\n    copy-file-to-file - copy from source file to destination file\n\nSYNOPSIS\n     copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n    This is not the function you want for copying files. This is for copying\n    blocks within existing files. See \"cp\", \"cp_a\" and \"mv\" for general file\n    copying and moving functions.\n\n",
-  .synopsis = "copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]",
+  .help = "NAME\n    copy-file-to-file - copy from source file to destination file\n\nSYNOPSIS\n     copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n    This is not the function you want for copying files. This is for copying\n    blocks within existing files. See \"cp\", \"cp_a\" and \"mv\" for general file\n    copying and moving functions.\n\n",
+  .synopsis = "copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false] [append:true|false]",
   .run = run_copy_file_to_file
 };
 
@@ -2417,6 +2426,13 @@ struct command_entry inspect_os_cmd_entry = {
   .help = "NAME\n    inspect-os - inspect disk and return list of operating systems found\n\nSYNOPSIS\n     inspect-os\n\nDESCRIPTION\n    This function uses other libguestfs functions and certain heuristics to\n    inspect the disk(s) (usually disks belonging to a virtual machine),\n    looking for operating systems.\n\n    The list returned is empty if no operating systems were found.\n\n    If one operating system was found, then this returns a list with a\n    single element, which is the name of the root filesystem of this\n    operating system. It is also possible for this function to return a list\n    containing more than one element, indicating a dual-boot or multi-boot\n    virtual machine, with each element being the root filesystem of one of\n    the operating systems.\n\n    You can pass the root string(s) returned to other \"inspect_get_*\"\n    functions in order to query further information about each operating\n    system, such as the name and version.\n\n    This function uses other libguestfs features such as \"mount_ro\" and\n    \"umount_all\" in order to mount and unmount filesystems and look at the\n    contents. This should be called with no disks currently mounted. The\n    function may also use Augeas, so any existing Augeas handle will be\n    closed.\n\n    This function cannot decrypt encrypted disks. The caller must do that\n    first (supplying the necessary keys) if the disk is encrypted.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n    See also \"list_filesystems\".\n\n",
   .synopsis = "inspect-os",
   .run = run_inspect_os
+};
+
+struct command_entry internal_exit_cmd_entry = {
+  .name = "internal-exit",
+  .help = "NAME\n    internal-exit - cause the daemon to exit (internal use only)\n\nSYNOPSIS\n     internal-exit\n\nDESCRIPTION\n    This function is used internally when closing the appliance. Note it's\n    only called when ./configure --enable-valgrind-daemon is used.\n\n",
+  .synopsis = "internal-exit",
+  .run = run_internal_exit
 };
 
 struct command_entry is_blockdev_cmd_entry = {
@@ -4662,6 +4678,7 @@ list_commands (void)
   printf ("%-20s %s\n", "btrfs-qgroup-show", _("show subvolume quota groups"));
   printf ("%-20s %s\n", "btrfs-quota-enable", _("enable or disable subvolume quota support"));
   printf ("%-20s %s\n", "btrfs-quota-rescan", _("trash all qgroup numbers and scan the metadata again with the current config"));
+  printf ("%-20s %s\n", "btrfs-replace", _("replace a btrfs managed device with another device"));
   printf ("%-20s %s\n", "btrfs-rescue-chunk-recover", _("recover the chunk tree of btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-rescue-super-recover", _("recover bad superblocks from good copies"));
   printf ("%-20s %s\n", "btrfs-scrub-cancel", _("cancel a running scrub"));
@@ -4865,6 +4882,7 @@ list_commands (void)
   printf ("%-20s %s\n", "inspect-list-applications", _("get list of applications installed in the operating system"));
   printf ("%-20s %s\n", "inspect-list-applications2", _("get list of applications installed in the operating system"));
   printf ("%-20s %s\n", "inspect-os", _("inspect disk and return list of operating systems found"));
+  printf ("%-20s %s\n", "internal-exit", _("cause the daemon to exit (internal use only)"));
   printf ("%-20s %s\n", "is-blockdev", _("test if block device"));
   printf ("%-20s %s\n", "is-chardev", _("test if character device"));
   printf ("%-20s %s\n", "is-config", _("is in configuration state"));
@@ -7901,6 +7919,34 @@ run_btrfs_quota_rescan (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_btrfs_replace (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *srcdev;
+  const char *targetdev;
+  char *mntpoint;
+  size_t i = 0;
+
+  if (argc != 3) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  srcdev = argv[i++];
+  targetdev = argv[i++];
+  mntpoint = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (mntpoint == NULL) goto out_mntpoint;
+  r = guestfs_btrfs_replace (g, srcdev, targetdev, mntpoint);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (mntpoint);
+ out_mntpoint:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_btrfs_rescue_chunk_recover (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -9103,7 +9149,7 @@ run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
   struct guestfs_copy_device_to_device_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 6) {
+  if (argc < 2 || argc > 7) {
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
@@ -9178,6 +9224,19 @@ run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
       this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
       this_arg = "sparse";
     }
+    else if (STRPREFIX (argv[i], "append:")) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][7]);
+          goto out;
+        case 0:  optargs_s.append = 0; break;
+        default: optargs_s.append = 1;
+      }
+      this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND_BITMASK;
+      this_arg = "append";
+    }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
@@ -9211,7 +9270,7 @@ run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
   struct guestfs_copy_device_to_file_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 6) {
+  if (argc < 2 || argc > 7) {
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
@@ -9287,6 +9346,19 @@ run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
       this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
       this_arg = "sparse";
     }
+    else if (STRPREFIX (argv[i], "append:")) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][7]);
+          goto out;
+        case 0:  optargs_s.append = 0; break;
+        default: optargs_s.append = 1;
+      }
+      this_mask = GUESTFS_COPY_DEVICE_TO_FILE_APPEND_BITMASK;
+      this_arg = "append";
+    }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
@@ -9322,7 +9394,7 @@ run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
   struct guestfs_copy_file_to_device_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 6) {
+  if (argc < 2 || argc > 7) {
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
@@ -9398,6 +9470,19 @@ run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
       this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
       this_arg = "sparse";
     }
+    else if (STRPREFIX (argv[i], "append:")) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][7]);
+          goto out;
+        case 0:  optargs_s.append = 0; break;
+        default: optargs_s.append = 1;
+      }
+      this_mask = GUESTFS_COPY_FILE_TO_DEVICE_APPEND_BITMASK;
+      this_arg = "append";
+    }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
@@ -9433,7 +9518,7 @@ run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
   struct guestfs_copy_file_to_file_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 6) {
+  if (argc < 2 || argc > 7) {
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
@@ -9509,6 +9594,19 @@ run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
       }
       this_mask = GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
       this_arg = "sparse";
+    }
+    else if (STRPREFIX (argv[i], "append:")) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][7]);
+          goto out;
+        case 0:  optargs_s.append = 0; break;
+        default: optargs_s.append = 1;
+      }
+      this_mask = GUESTFS_COPY_FILE_TO_FILE_APPEND_BITMASK;
+      this_arg = "append";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
@@ -13653,6 +13751,24 @@ run_inspect_os (const char *cmd, size_t argc, char *argv[])
   ret = 0;
   print_strings (r);
   guestfs_int_free_string_list (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_internal_exit (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+
+  if (argc != 0) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  r = guestfs_internal_exit (g);
+  if (r == -1) goto out;
+  ret = 0;
  out:
  out_noargs:
   return ret;

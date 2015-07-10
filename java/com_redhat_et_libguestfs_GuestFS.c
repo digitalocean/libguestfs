@@ -1880,6 +1880,31 @@ Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1quota_1rescan  (JNIEnv *env, jobj
 }
 
 JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1replace  (JNIEnv *env, jobject obj, jlong jg, jstring jsrcdev, jstring jtargetdev, jstring jmntpoint)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *srcdev;
+  const char *targetdev;
+  const char *mntpoint;
+
+  srcdev = (*env)->GetStringUTFChars (env, jsrcdev, NULL);
+  targetdev = (*env)->GetStringUTFChars (env, jtargetdev, NULL);
+  mntpoint = (*env)->GetStringUTFChars (env, jmntpoint, NULL);
+
+  r = guestfs_btrfs_replace (g, srcdev, targetdev, mntpoint);
+
+  (*env)->ReleaseStringUTFChars (env, jsrcdev, srcdev);
+  (*env)->ReleaseStringUTFChars (env, jtargetdev, targetdev);
+  (*env)->ReleaseStringUTFChars (env, jmntpoint, mntpoint);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1rescue_1chunk_1recover  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
@@ -2772,7 +2797,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1copy_1attributes  (JNIEnv *env, jobject 
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1copy_1device_1to_1device  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest, jlong joptargs_bitmask, jlong jsrcoffset, jlong jdestoffset, jlong jsize, jboolean jsparse)
+Java_com_redhat_et_libguestfs_GuestFS__1copy_1device_1to_1device  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest, jlong joptargs_bitmask, jlong jsrcoffset, jlong jdestoffset, jlong jsize, jboolean jsparse, jboolean jappend)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -2788,6 +2813,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1copy_1device_1to_1device  (JNIEnv *env, 
   optargs_s.destoffset = jdestoffset;
   optargs_s.size = jsize;
   optargs_s.sparse = jsparse;
+  optargs_s.append = jappend;
   optargs_s.bitmask = joptargs_bitmask;
 
   r = guestfs_copy_device_to_device_argv (g, src, dest, optargs);
@@ -2802,7 +2828,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1copy_1device_1to_1device  (JNIEnv *env, 
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1copy_1device_1to_1file  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest, jlong joptargs_bitmask, jlong jsrcoffset, jlong jdestoffset, jlong jsize, jboolean jsparse)
+Java_com_redhat_et_libguestfs_GuestFS__1copy_1device_1to_1file  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest, jlong joptargs_bitmask, jlong jsrcoffset, jlong jdestoffset, jlong jsize, jboolean jsparse, jboolean jappend)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -2818,6 +2844,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1copy_1device_1to_1file  (JNIEnv *env, jo
   optargs_s.destoffset = jdestoffset;
   optargs_s.size = jsize;
   optargs_s.sparse = jsparse;
+  optargs_s.append = jappend;
   optargs_s.bitmask = joptargs_bitmask;
 
   r = guestfs_copy_device_to_file_argv (g, src, dest, optargs);
@@ -2832,7 +2859,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1copy_1device_1to_1file  (JNIEnv *env, jo
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1copy_1file_1to_1device  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest, jlong joptargs_bitmask, jlong jsrcoffset, jlong jdestoffset, jlong jsize, jboolean jsparse)
+Java_com_redhat_et_libguestfs_GuestFS__1copy_1file_1to_1device  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest, jlong joptargs_bitmask, jlong jsrcoffset, jlong jdestoffset, jlong jsize, jboolean jsparse, jboolean jappend)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -2848,6 +2875,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1copy_1file_1to_1device  (JNIEnv *env, jo
   optargs_s.destoffset = jdestoffset;
   optargs_s.size = jsize;
   optargs_s.sparse = jsparse;
+  optargs_s.append = jappend;
   optargs_s.bitmask = joptargs_bitmask;
 
   r = guestfs_copy_file_to_device_argv (g, src, dest, optargs);
@@ -2862,7 +2890,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1copy_1file_1to_1device  (JNIEnv *env, jo
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1copy_1file_1to_1file  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest, jlong joptargs_bitmask, jlong jsrcoffset, jlong jdestoffset, jlong jsize, jboolean jsparse)
+Java_com_redhat_et_libguestfs_GuestFS__1copy_1file_1to_1file  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest, jlong joptargs_bitmask, jlong jsrcoffset, jlong jdestoffset, jlong jsize, jboolean jsparse, jboolean jappend)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -2878,6 +2906,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1copy_1file_1to_1file  (JNIEnv *env, jobj
   optargs_s.destoffset = jdestoffset;
   optargs_s.size = jsize;
   optargs_s.sparse = jsparse;
+  optargs_s.append = jappend;
   optargs_s.bitmask = joptargs_bitmask;
 
   r = guestfs_copy_file_to_file_argv (g, src, dest, optargs);
@@ -6412,6 +6441,22 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1os  (JNIEnv *env, jobject obj, 
   }
   free (r);
   return jr;
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1internal_1exit  (JNIEnv *env, jobject obj, jlong jg)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+
+
+  r = guestfs_internal_exit (g);
+
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
 }
 
 JNIEXPORT void JNICALL

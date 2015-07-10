@@ -818,6 +818,12 @@ val btrfs_quota_rescan : t -> string -> unit
     @since 1.29.17
  *)
 
+val btrfs_replace : t -> string -> string -> string -> unit
+(** replace a btrfs managed device with another device
+
+    @since 1.29.48
+ *)
+
 val btrfs_rescue_chunk_recover : t -> string -> unit
 (** recover the chunk tree of btrfs filesystem
 
@@ -1032,25 +1038,25 @@ val copy_attributes : t -> ?all:bool -> ?mode:bool -> ?xattributes:bool -> ?owne
     @since 1.25.21
  *)
 
-val copy_device_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
+val copy_device_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> ?append:bool -> string -> string -> unit
 (** copy from source device to destination device
 
     @since 1.13.25
  *)
 
-val copy_device_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
+val copy_device_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> ?append:bool -> string -> string -> unit
 (** copy from source device to destination file
 
     @since 1.13.25
  *)
 
-val copy_file_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
+val copy_file_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> ?append:bool -> string -> string -> unit
 (** copy from source file to destination device
 
     @since 1.13.25
  *)
 
-val copy_file_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
+val copy_file_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> ?append:bool -> string -> string -> unit
 (** copy from source file to destination file
 
     @since 1.13.25
@@ -1919,6 +1925,10 @@ val inspect_os : t -> string array
 
     @since 1.5.3
  *)
+
+(**/**)
+val internal_exit : t -> unit
+(**/**)
 
 (**/**)
 val internal_test : t -> ?obool:bool -> ?oint:int -> ?oint64:int64 -> ?ostring:string -> ?ostringlist:string array -> string -> string option -> string array -> bool -> int -> int64 -> string -> string -> string -> unit
@@ -4082,6 +4092,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method btrfs_qgroup_show : string -> btrfsqgroup array
   method btrfs_quota_enable : string -> bool -> unit
   method btrfs_quota_rescan : string -> unit
+  method btrfs_replace : string -> string -> string -> unit
   method btrfs_rescue_chunk_recover : string -> unit
   method btrfs_rescue_super_recover : string -> unit
   method btrfs_scrub_cancel : string -> unit
@@ -4119,10 +4130,10 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method compress_out : ?level:int -> string -> string -> string -> unit
   method config : string -> string option -> unit
   method copy_attributes : ?all:bool -> ?mode:bool -> ?xattributes:bool -> ?ownership:bool -> string -> string -> unit
-  method copy_device_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
-  method copy_device_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
-  method copy_file_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
-  method copy_file_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
+  method copy_device_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> ?append:bool -> string -> string -> unit
+  method copy_device_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> ?append:bool -> string -> string -> unit
+  method copy_file_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> ?append:bool -> string -> string -> unit
+  method copy_file_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> ?append:bool -> string -> string -> unit
   method copy_in : string -> string -> unit
   method copy_out : string -> string -> unit
   method copy_size : string -> string -> int64 -> unit
@@ -4264,6 +4275,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method inspect_list_applications : string -> application array
   method inspect_list_applications2 : string -> application2 array
   method inspect_os : unit -> string array
+  method internal_exit : unit -> unit
   method internal_test : ?obool:bool -> ?oint:int -> ?oint64:int64 -> ?ostring:string -> ?ostringlist:string array -> string -> string option -> string array -> bool -> int -> int64 -> string -> string -> string -> unit
   method internal_test_63_optargs : ?opt1:int -> ?opt2:int -> ?opt3:int -> ?opt4:int -> ?opt5:int -> ?opt6:int -> ?opt7:int -> ?opt8:int -> ?opt9:int -> ?opt10:int -> ?opt11:int -> ?opt12:int -> ?opt13:int -> ?opt14:int -> ?opt15:int -> ?opt16:int -> ?opt17:int -> ?opt18:int -> ?opt19:int -> ?opt20:int -> ?opt21:int -> ?opt22:int -> ?opt23:int -> ?opt24:int -> ?opt25:int -> ?opt26:int -> ?opt27:int -> ?opt28:int -> ?opt29:int -> ?opt30:int -> ?opt31:int -> ?opt32:int -> ?opt33:int -> ?opt34:int -> ?opt35:int -> ?opt36:int -> ?opt37:int -> ?opt38:int -> ?opt39:int -> ?opt40:int -> ?opt41:int -> ?opt42:int -> ?opt43:int -> ?opt44:int -> ?opt45:int -> ?opt46:int -> ?opt47:int -> ?opt48:int -> ?opt49:int -> ?opt50:int -> ?opt51:int -> ?opt52:int -> ?opt53:int -> ?opt54:int -> ?opt55:int -> ?opt56:int -> ?opt57:int -> ?opt58:int -> ?opt59:int -> ?opt60:int -> ?opt61:int -> ?opt62:int -> ?opt63:int -> unit -> unit
   method internal_test_close_output : unit -> unit

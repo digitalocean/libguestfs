@@ -2084,6 +2084,31 @@ guestfs_lua_btrfs_quota_rescan (lua_State *L)
 }
 
 static int
+guestfs_lua_btrfs_replace (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *srcdev;
+  const char *targetdev;
+  const char *mntpoint;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_replace");
+
+  srcdev = luaL_checkstring (L, 2);
+  targetdev = luaL_checkstring (L, 3);
+  mntpoint = luaL_checkstring (L, 4);
+
+  r = guestfs_btrfs_replace (g, srcdev, targetdev, mntpoint);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_btrfs_rescue_chunk_recover (lua_State *L)
 {
   int r;
@@ -2981,6 +3006,10 @@ guestfs_lua_copy_device_to_device (lua_State *L)
       optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
       optargs_s.sparse = lua_toboolean (L, -1);
     );
+    OPTARG_IF_SET (4, "append",
+      optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND_BITMASK;
+      optargs_s.append = lua_toboolean (L, -1);
+    );
   }
 
   r = guestfs_copy_device_to_device_argv (g, src, dest, optargs);
@@ -3025,6 +3054,10 @@ guestfs_lua_copy_device_to_file (lua_State *L)
     OPTARG_IF_SET (4, "sparse",
       optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
       optargs_s.sparse = lua_toboolean (L, -1);
+    );
+    OPTARG_IF_SET (4, "append",
+      optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_APPEND_BITMASK;
+      optargs_s.append = lua_toboolean (L, -1);
     );
   }
 
@@ -3071,6 +3104,10 @@ guestfs_lua_copy_file_to_device (lua_State *L)
       optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
       optargs_s.sparse = lua_toboolean (L, -1);
     );
+    OPTARG_IF_SET (4, "append",
+      optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_APPEND_BITMASK;
+      optargs_s.append = lua_toboolean (L, -1);
+    );
   }
 
   r = guestfs_copy_file_to_device_argv (g, src, dest, optargs);
@@ -3115,6 +3152,10 @@ guestfs_lua_copy_file_to_file (lua_State *L)
     OPTARG_IF_SET (4, "sparse",
       optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
       optargs_s.sparse = lua_toboolean (L, -1);
+    );
+    OPTARG_IF_SET (4, "append",
+      optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_APPEND_BITMASK;
+      optargs_s.append = lua_toboolean (L, -1);
     );
   }
 
@@ -6384,6 +6425,25 @@ guestfs_lua_inspect_os (lua_State *L)
   push_string_list (L, r);
   guestfs_int_free_string_list (r);
   return 1;
+}
+
+static int
+guestfs_lua_internal_exit (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "internal_exit");
+
+
+  r = guestfs_internal_exit (g);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
 }
 
 static int
@@ -16275,6 +16335,7 @@ static luaL_Reg methods[] = {
   { "btrfs_qgroup_show", guestfs_lua_btrfs_qgroup_show },
   { "btrfs_quota_enable", guestfs_lua_btrfs_quota_enable },
   { "btrfs_quota_rescan", guestfs_lua_btrfs_quota_rescan },
+  { "btrfs_replace", guestfs_lua_btrfs_replace },
   { "btrfs_rescue_chunk_recover", guestfs_lua_btrfs_rescue_chunk_recover },
   { "btrfs_rescue_super_recover", guestfs_lua_btrfs_rescue_super_recover },
   { "btrfs_scrub_cancel", guestfs_lua_btrfs_scrub_cancel },
@@ -16454,6 +16515,7 @@ static luaL_Reg methods[] = {
   { "inspect_list_applications", guestfs_lua_inspect_list_applications },
   { "inspect_list_applications2", guestfs_lua_inspect_list_applications2 },
   { "inspect_os", guestfs_lua_inspect_os },
+  { "internal_exit", guestfs_lua_internal_exit },
   { "internal_test", guestfs_lua_internal_test },
   { "internal_test_63_optargs", guestfs_lua_internal_test_63_optargs },
   { "internal_test_close_output", guestfs_lua_internal_test_close_output },
