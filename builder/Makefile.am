@@ -65,13 +65,13 @@ SOURCES_ML = \
 	builder.ml
 
 SOURCES_C = \
-	$(top_srcdir)/mllib/fsync-c.c \
-	$(top_srcdir)/mllib/uri-c.c \
-	$(top_srcdir)/mllib/mkdtemp-c.c \
-	$(top_srcdir)/customize/perl_edit-c.c \
-	$(top_srcdir)/customize/crypt-c.c \
-	$(top_srcdir)/fish/uri.c \
-	$(top_srcdir)/fish/file-edit.c \
+	../mllib/fsync-c.c \
+	../mllib/uri-c.c \
+	../mllib/mkdtemp-c.c \
+	../customize/perl_edit-c.c \
+	../customize/crypt-c.c \
+	../fish/uri.c \
+	../fish/file-edit.c \
 	index-scan.c \
 	index-struct.c \
 	index-parse.c \
@@ -125,6 +125,7 @@ BOBJECTS = \
 	$(top_builddir)/customize/crypt.cmo \
 	$(top_builddir)/customize/password.cmo \
 	$(top_builddir)/customize/ssh_key.cmo \
+	$(top_builddir)/customize/subscription_manager.cmo \
 	$(top_builddir)/customize/customize_cmdline.cmo \
 	$(top_builddir)/customize/customize_run.cmo \
 	$(SOURCES_ML:.ml=.cmo)

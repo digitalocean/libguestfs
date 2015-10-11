@@ -1,5 +1,5 @@
 # virt-customize
-# Copyright (C) 2014 Red Hat Inc.
+# Copyright (C) 2014-2015 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
+	$(generator_built) \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	test-virt-customize.sh \
 	virt-customize.pod
@@ -43,6 +44,7 @@ SOURCES_MLI = \
 	perl_edit.mli \
 	random_seed.mli \
 	ssh_key.mli \
+	subscription_manager.mli \
 	timezone.mli \
 	urandom.mli
 
@@ -57,16 +59,17 @@ SOURCES_ML = \
 	perl_edit.ml \
 	random_seed.ml \
 	ssh_key.ml \
+	subscription_manager.ml \
 	timezone.ml \
 	customize_cmdline.ml \
 	customize_run.ml \
 	customize_main.ml
 
 SOURCES_C = \
-	$(top_srcdir)/fish/uri.c \
-	$(top_srcdir)/fish/file-edit.c \
-	$(top_srcdir)/fish/file-edit.h \
-	$(top_srcdir)/mllib/uri-c.c \
+	../fish/uri.c \
+	../fish/file-edit.c \
+	../fish/file-edit.h \
+	../mllib/uri-c.c \
 	crypt-c.c \
 	perl_edit-c.c
 

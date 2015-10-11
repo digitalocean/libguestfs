@@ -170,23 +170,48 @@ and run_curl_get_lines curl_args =
   Unix.unlink config_file;
   lines
 
-(* Helper function to extract the datacenter from a URI. *)
-let get_datacenter uri scheme =
+let multiple_slash = Str.regexp "/+"
+
+(* Helper function to extract the dcPath from a URI. *)
+let get_dcPath uri scheme =
   let default_dc = "ha-datacenter" in
   match scheme with
-  | "vpx" ->           (* Hopefully the first part of the path. *)
+  | "vpx" ->
     (match uri.uri_path with
     | None ->
-      warning (f_"vcenter: URI (-ic parameter) contains no path, so we cannot determine the datacenter name");
+      warning (f_"vcenter: URI (-ic parameter) contains no path, so we cannot determine the dcPath (datacenter name)");
       default_dc
     | Some path ->
+      (* vCenter: URIs are *usually* '/Folder/Datacenter/esxi' so we can
+       * just chop off the first '/' and final '/esxi' to get the dcPath.
+       *
+       * The libvirt driver allows things like '/DC///esxi////' so we also
+       * have to handle trailing slashes and collapse multiple slashes into
+       * single (RHBZ#1258342).
+       *
+       * However if there is a cluster involved then the URI may be
+       * /Folder/Datacenter/Cluster/esxi but dcPath=Folder/Datacenter/Cluster
+       * won't work.  In this case the user has to adjust the path to
+       * remove the Cluster name (which still works in libvirt).  There
+       * should be a way to ask the libvirt vpx driver for the correct
+       * path, but there isn't. XXX  See also RHBZ#1256823.
+       *)
+      (* Collapse multiple slashes to single slash. *)
+      let path = Str.global_replace multiple_slash "/" path in
+      (* Chop off the first and trailing '/' (if found). *)
       let path =
         let len = String.length path in
         if len > 0 && path.[0] = '/' then
           String.sub path 1 (len-1)
         else path in
+      let path =
+        let len = String.length path in
+        if len > 0 && path.[len-1] = '/' then
+          String.sub path 0 (len-1)
+        else path in
+      (* Chop off the final element (ESXi hostname). *)
       let len =
-        try String.index path '/' with Not_found -> String.length path in
+        try String.rindex path '/' with Not_found -> String.length path in
       String.sub path 0 len
     );
   | "esx" -> (* Connecting to an ESXi hypervisor directly, so it's fixed. *)
@@ -217,8 +242,8 @@ let map_source_to_uri ?readahead password uri scheme server path =
     let datastore = Str.matched_group 1 path
     and path = Str.matched_group 2 path in
 
-    (* Get the datacenter. *)
-    let datacenter = get_datacenter uri scheme in
+    (* Get the dcPath. *)
+    let dcPath = get_dcPath uri scheme in
 
     let port =
       match uri.uri_port with
@@ -230,7 +255,7 @@ let map_source_to_uri ?readahead password uri scheme server path =
       sprintf
         "https://%s%s/folder/%s-flat.vmdk?dcPath=%s&dsName=%s"
         server port
-        (uri_quote path) (uri_quote datacenter) (uri_quote datastore) in
+        (uri_quote path) (uri_quote dcPath) (uri_quote datastore) in
 
     (* If no_verify=1 was passed in the libvirt URI, then we have to
      * turn off certificate verification here too.

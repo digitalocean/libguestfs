@@ -58,6 +58,16 @@ let le32_of_int i =
   String.unsafe_set s 3 (Char.unsafe_chr (Int64.to_int c3));
   s
 
+let isdigit = function
+  | '0'..'9' -> true
+  | _ -> false
+
+let isxdigit = function
+  | '0'..'9' -> true
+  | 'a'..'f' -> true
+  | 'A'..'F' -> true
+  | _ -> false
+
 type wrap_break_t = WrapEOS | WrapSpace | WrapNL
 
 let rec wrap ?(chan = stdout) ?(indent = 0) str =
@@ -510,6 +520,31 @@ let display_long_options () =
   ) !long_options;
   exit 0
 
+let set_standard_options argspec =
+  (** Install an exit hook to check gc consistency for --debug-gc *)
+  let set_debug_gc () =
+    at_exit (fun () -> Gc.compact()) in
+  let argspec = [
+    "--short-options", Arg.Unit display_short_options, " " ^ s_"List short options";
+    "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
+    "-V",           Arg.Unit print_version_and_exit,
+                                               " " ^ s_"Display version and exit";
+    "--version",    Arg.Unit print_version_and_exit,
+                                               " " ^ s_"Display version and exit";
+    "-v",           Arg.Unit set_verbose,      " " ^ s_"Enable libguestfs debugging messages";
+    "--verbose",    Arg.Unit set_verbose,      " " ^ s_"Enable libguestfs debugging messages";
+    "-x",           Arg.Unit set_trace,        " " ^ s_"Enable tracing of libguestfs calls";
+    "--debug-gc",   Arg.Unit set_debug_gc,     " " ^ s_"Debug GC and memory allocations (internal)";
+    "-q",           Arg.Unit set_quiet,        " " ^ s_"Don't print progress messages";
+    "--quiet",      Arg.Unit set_quiet,        " " ^ s_"Don't print progress messages";
+  ] @ argspec in
+  let argspec =
+    let cmp (arg1, _, _) (arg2, _, _) = compare_command_line_args arg1 arg2 in
+    List.sort cmp argspec in
+  let argspec = Arg.align argspec in
+  long_options := argspec;
+  argspec
+
 (* Compare two version strings intelligently. *)
 let rex_numbers = Str.regexp "^\\([0-9]+\\)\\(.*\\)$"
 let rex_letters = Str.regexp_case_fold "^\\([a-z]+\\)\\(.*\\)$"
@@ -745,3 +780,9 @@ let last_part_of str sep =
     let i = String.rindex str sep in
     Some (String.sub str (i+1) (String.length str - (i+1)))
   with Not_found -> None
+
+let read_first_line_from_file filename =
+  let chan = open_in filename in
+  let line = input_line chan in
+  close_in chan;
+  line

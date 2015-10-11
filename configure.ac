@@ -25,8 +25,8 @@
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [29])
-m4_define([libguestfs_release], [50])
+m4_define([libguestfs_minor],   [30])
+m4_define([libguestfs_release], [3])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -47,7 +47,7 @@ m4_define([serial_tests], [
                      }'
     ])
 ])
-AM_INIT_AUTOMAKE(foreign serial_tests) dnl NB: Do not [quote] this parameter.
+AM_INIT_AUTOMAKE(foreign serial_tests subdir-objects) dnl NB: Do not [quote] this parameter.
 
 m4_ifndef([AM_SILENT_RULES], [m4_define([AM_SILENT_RULES],[])])
 AM_SILENT_RULES([yes]) # make --enable-silent-rules the default.
@@ -435,19 +435,6 @@ if test "x$enable_daemon" = "xyes"; then
             [enable_install_daemon=no])
     AC_MSG_RESULT([$enable_install_daemon])
 
-    dnl Enable valgrind in the daemon.
-    AC_MSG_CHECKING([if we should run the daemon under valgrind])
-    AC_ARG_ENABLE([valgrind-daemon],
-        [AS_HELP_STRING([--enable-valgrind-daemon],
-            [run the daemon under valgrind (developers only) @<:@default=no@:>@])],
-            [],
-            [enable_valgrind_daemon=no])
-    AC_MSG_RESULT([$enable_valgrind_daemon])
-
-    if test "x$enable_valgrind_daemon" = "xyes"; then
-        AC_DEFINE([VALGRIND_DAEMON],[1],[Define to 1 to run the daemon under valgrind.])
-    fi
-
     dnl Which directory should we put the daemon in?  NOTE: This
     dnl is the "virtual" directory inside the appliance, not the
     dnl install directory for libguestfs live.  Since Fedora 17
@@ -487,7 +474,6 @@ This means you either have a very old glibc (pre-2.0) or you
 are using some other libc where this is not supported.])])])
 fi
 AM_CONDITIONAL([INSTALL_DAEMON],[test "x$enable_install_daemon" = "xyes"])
-AM_CONDITIONAL([VALGRIND_DAEMON],[test "x$enable_valgrind_daemon" = "xyes"])
 
 dnl Build the appliance?
 AC_MSG_CHECKING([if we should build the appliance])
@@ -1116,6 +1102,15 @@ AM_CONDITIONAL([HAVE_OCAMLOPT],
 AM_CONDITIONAL([HAVE_OCAMLDOC],
                [test "x$OCAMLDOC" != "xno"])
 
+dnl OCaml is required if we need to run the generator.
+AS_IF([test "x$OCAMLC" = "xno" || test "x$OCAMLFIND" = "xno"],[
+    AS_IF([! test -f $srcdir/src/guestfs_protocol.x],[
+        AC_MSG_FAILURE([OCaml compiler and findlib is required to build from git.
+If you don't have OCaml available, you should build from a tarball from
+http://libguestfs.org/download])
+    ])
+])
+
 AS_IF([test "x$OCAMLC" != "xno"],[
     dnl Check for <caml/unixsupport.h> header.
     old_CPPFLAGS="$CPPFLAGS"
@@ -1338,6 +1333,7 @@ if test "x$with_java" != "xno"; then
         # Look for Java in some likely locations.
         for d in \
             /usr/lib/jvm/java \
+            /usr/lib64/jvm/java \
             /usr/lib/jvm/default-java \
             /usr/lib/jvm/default \
             /usr/lib/jvm/java-8-openjdk \
@@ -1702,6 +1698,8 @@ AC_CONFIG_FILES([appliance/libguestfs-make-fixed-appliance],
                 [chmod +x,-w appliance/libguestfs-make-fixed-appliance])
 AC_CONFIG_FILES([inspector/test-xmllint.sh],
                 [chmod +x,-w inspector/test-xmllint.sh])
+AC_CONFIG_FILES([installcheck.sh],
+                [chmod +x,-w installcheck.sh])
 AC_CONFIG_FILES([p2v/virt-p2v-make-disk],
                 [chmod +x,-w p2v/virt-p2v-make-disk])
 AC_CONFIG_FILES([p2v/virt-p2v-make-kickstart],

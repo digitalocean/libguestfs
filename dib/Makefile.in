@@ -292,8 +292,9 @@ CONFIG_CLEAN_VPATH_FILES =
 @HAVE_OCAML_TRUE@am__EXEEXT_1 = virt-dib$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__virt_dib_SOURCES_DIST = $(top_srcdir)/mllib/mkdtemp-c.c
-am__objects_1 = virt_dib-mkdtemp-c.$(OBJEXT)
+am__virt_dib_SOURCES_DIST = ../mllib/mkdtemp-c.c
+am__dirstamp = $(am__leading_dot)dirstamp
+am__objects_1 = ../mllib/virt_dib-mkdtemp-c.$(OBJEXT)
 @HAVE_OCAML_TRUE@am_virt_dib_OBJECTS = $(am__objects_1)
 virt_dib_OBJECTS = $(am_virt_dib_OBJECTS)
 virt_dib_LDADD = $(LDADD)
@@ -1526,7 +1527,7 @@ SOURCES_ML = \
 	dib.ml
 
 SOURCES_C = \
-	$(top_srcdir)/mllib/mkdtemp-c.c
+	../mllib/mkdtemp-c.c
 
 @HAVE_OCAML_TRUE@virt_dib_SOURCES = $(SOURCES_C)
 @HAVE_OCAML_TRUE@virt_dib_CPPFLAGS = \
@@ -1666,6 +1667,14 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+../mllib/$(am__dirstamp):
+	@$(MKDIR_P) ../mllib
+	@: > ../mllib/$(am__dirstamp)
+../mllib/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../mllib/$(DEPDIR)
+	@: > ../mllib/$(DEPDIR)/$(am__dirstamp)
+../mllib/virt_dib-mkdtemp-c.$(OBJEXT): ../mllib/$(am__dirstamp) \
+	../mllib/$(DEPDIR)/$(am__dirstamp)
 
 virt-dib$(EXEEXT): $(virt_dib_OBJECTS) $(virt_dib_DEPENDENCIES) $(EXTRA_virt_dib_DEPENDENCIES) 
 	@rm -f virt-dib$(EXEEXT)
@@ -1673,46 +1682,50 @@ virt-dib$(EXEEXT): $(virt_dib_OBJECTS) $(virt_dib_DEPENDENCIES) $(EXTRA_virt_dib
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../mllib/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_dib-mkdtemp-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../mllib/$(DEPDIR)/virt_dib-mkdtemp-c.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-virt_dib-mkdtemp-c.o: $(top_srcdir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_dib_CPPFLAGS) $(CPPFLAGS) $(virt_dib_CFLAGS) $(CFLAGS) -MT virt_dib-mkdtemp-c.o -MD -MP -MF $(DEPDIR)/virt_dib-mkdtemp-c.Tpo -c -o virt_dib-mkdtemp-c.o `test -f '$(top_srcdir)/mllib/mkdtemp-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_dib-mkdtemp-c.Tpo $(DEPDIR)/virt_dib-mkdtemp-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/mkdtemp-c.c' object='virt_dib-mkdtemp-c.o' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_dib-mkdtemp-c.o: ../mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_dib_CPPFLAGS) $(CPPFLAGS) $(virt_dib_CFLAGS) $(CFLAGS) -MT ../mllib/virt_dib-mkdtemp-c.o -MD -MP -MF ../mllib/$(DEPDIR)/virt_dib-mkdtemp-c.Tpo -c -o ../mllib/virt_dib-mkdtemp-c.o `test -f '../mllib/mkdtemp-c.c' || echo '$(srcdir)/'`../mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_dib-mkdtemp-c.Tpo ../mllib/$(DEPDIR)/virt_dib-mkdtemp-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/mkdtemp-c.c' object='../mllib/virt_dib-mkdtemp-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_dib_CPPFLAGS) $(CPPFLAGS) $(virt_dib_CFLAGS) $(CFLAGS) -c -o virt_dib-mkdtemp-c.o `test -f '$(top_srcdir)/mllib/mkdtemp-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/mkdtemp-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_dib_CPPFLAGS) $(CPPFLAGS) $(virt_dib_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_dib-mkdtemp-c.o `test -f '../mllib/mkdtemp-c.c' || echo '$(srcdir)/'`../mllib/mkdtemp-c.c
 
-virt_dib-mkdtemp-c.obj: $(top_srcdir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_dib_CPPFLAGS) $(CPPFLAGS) $(virt_dib_CFLAGS) $(CFLAGS) -MT virt_dib-mkdtemp-c.obj -MD -MP -MF $(DEPDIR)/virt_dib-mkdtemp-c.Tpo -c -o virt_dib-mkdtemp-c.obj `if test -f '$(top_srcdir)/mllib/mkdtemp-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/mkdtemp-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_dib-mkdtemp-c.Tpo $(DEPDIR)/virt_dib-mkdtemp-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/mkdtemp-c.c' object='virt_dib-mkdtemp-c.obj' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_dib-mkdtemp-c.obj: ../mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_dib_CPPFLAGS) $(CPPFLAGS) $(virt_dib_CFLAGS) $(CFLAGS) -MT ../mllib/virt_dib-mkdtemp-c.obj -MD -MP -MF ../mllib/$(DEPDIR)/virt_dib-mkdtemp-c.Tpo -c -o ../mllib/virt_dib-mkdtemp-c.obj `if test -f '../mllib/mkdtemp-c.c'; then $(CYGPATH_W) '../mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/mkdtemp-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_dib-mkdtemp-c.Tpo ../mllib/$(DEPDIR)/virt_dib-mkdtemp-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/mkdtemp-c.c' object='../mllib/virt_dib-mkdtemp-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_dib_CPPFLAGS) $(CPPFLAGS) $(virt_dib_CFLAGS) $(CFLAGS) -c -o virt_dib-mkdtemp-c.obj `if test -f '$(top_srcdir)/mllib/mkdtemp-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/mkdtemp-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_dib_CPPFLAGS) $(CPPFLAGS) $(virt_dib_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_dib-mkdtemp-c.obj `if test -f '../mllib/mkdtemp-c.c'; then $(CYGPATH_W) '../mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/mkdtemp-c.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1879,6 +1892,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../mllib/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../mllib/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -1889,7 +1904,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../mllib/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1935,7 +1950,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../mllib/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

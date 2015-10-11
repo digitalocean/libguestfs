@@ -263,6 +263,7 @@ mllib/mkdtemp-c.c
 mllib/progress-c.c
 mllib/uri-c.c
 ocaml/guestfs-c-actions.c
+ocaml/guestfs-c-errnos.c
 ocaml/guestfs-c.c
 p2v/about-authors.c
 p2v/about-license.c
@@ -347,6 +348,7 @@ src/structs-free.c
 src/test-utils.c
 src/tmpdirs.c
 src/utils.c
+src/whole-file.c
 test-tool/test-tool.c
 v2v/domainxml-c.c
 v2v/kvmuid-c.c

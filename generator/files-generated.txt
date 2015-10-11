@@ -230,6 +230,7 @@ lua/bindtests.lua
 lua/lua-guestfs.c
 ocaml/bindtests.ml
 ocaml/guestfs-c-actions.c
+ocaml/guestfs-c-errnos.c
 ocaml/guestfs.ml
 ocaml/guestfs.mli
 perl/Guestfs.xs

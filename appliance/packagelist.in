@@ -194,6 +194,7 @@ ifelse(MAGEIA,1,
   iproute2
   iputils
   libcap
+  libyajl
   dnl syslinux uses mtools without depending on it
   mtools
   nilfs-utils
@@ -262,11 +263,25 @@ ifelse(REDHAT,1,
 ifelse(DEBIAN,1,
   qemu-utils
 )
+ifelse(ARCHLINUX,1,
+  qemu
+  which
+)
+ifelse(SUSE,1,
+  qemu-tools
+  which
+)
+ifelse(FRUGALWARE,1,
+  qemu
+  which
+)
+ifelse(MAGEIA,1,
+  qemu-img
+  which
+)
 curl
 dnl (virt-dib) tools optionally used for elements
 debootstrap
-
-ifelse(VALGRIND_DAEMON,1,valgrind)
 
 dnl Define this by doing: ./configure --with-extra-packages="..."
 EXTRA_PACKAGES

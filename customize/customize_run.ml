@@ -59,6 +59,7 @@ let run (g : Guestfs.guestfs) root (ops : ops) =
      * - Pass environment variables through from the host.
      * - Send stdout and stderr to a log file so we capture all output
      *   in error messages.
+     * - Use setarch when running x86_64 host + i686 guest.
      * Also catch errors and dump the log file completely on error.
      *)
     let env_vars =
@@ -68,6 +69,15 @@ let run (g : Guestfs.guestfs) root (ops : ops) =
           with Not_found -> None
       ) [ "http_proxy"; "https_proxy"; "ftp_proxy"; "no_proxy" ] in
     let env_vars = String.concat "\n" env_vars ^ "\n" in
+
+    let cmd =
+      match Config.host_cpu, guest_arch with
+      | "x86_64", ("i386"|"i486"|"i586"|"i686") ->
+        sprintf "setarch i686 <<\"__EOCMD\"
+%s
+__EOCMD
+" cmd
+      | _ -> cmd in
 
     let cmd = sprintf "\
 exec >>%s 2>&1
@@ -106,7 +116,7 @@ exec >>%s 2>&1
     | "yum" ->
       sprintf "yum -y install %s" quoted_args
     | "zypper" ->
-      sprintf "zypper -n in %s" quoted_args
+      sprintf "zypper -n in -l %s" quoted_args
     | "unknown" ->
       error (f_"--install is not supported for this guest operating system")
     | pm ->
@@ -133,7 +143,7 @@ exec >>%s 2>&1
     | "yum" ->
       sprintf "yum -y update"
     | "zypper" ->
-      sprintf "zypper update"
+      sprintf "zypper -n update -l"
     | "unknown" ->
       error (f_"--update is not supported for this guest operating system")
     | pm ->
@@ -248,6 +258,40 @@ exec >>%s 2>&1
     | `Scrub path ->
       message (f_"Scrubbing: %s") path;
       g#scrub_file path
+
+    | `SMAttach pool ->
+      (match pool with
+      | Subscription_manager.PoolAuto ->
+        message (f_"Attaching to compatible subscriptions");
+        let cmd = "subscription-manager attach --auto" in
+        do_run ~display:cmd cmd
+      | Subscription_manager.PoolId id ->
+        message (f_"Attaching to the pool %s") id;
+        let cmd = sprintf "subscription-manager attach --pool=%s" (quote id) in
+        do_run ~display:cmd cmd
+      )
+
+    | `SMRegister ->
+      message (f_"Registering with subscription-manager");
+      let creds =
+        match ops.flags.sm_credentials with
+        | None ->
+          error (f_"subscription-manager credentials required for --sm-register")
+        | Some c -> c in
+      let cmd = sprintf "subscription-manager register --username=%s --password=%s"
+                  (quote creds.Subscription_manager.sm_username)
+                  (quote creds.Subscription_manager.sm_password) in
+      do_run ~display:"subscription-manager register" cmd
+
+    | `SMRemove ->
+      message (f_"Removing all the subscriptions");
+      let cmd = "subscription-manager remove --all" in
+      do_run ~display:cmd cmd
+
+    | `SMUnregister ->
+      message (f_"Unregistering with subscription-manager");
+      let cmd = "subscription-manager unregister" in
+      do_run ~display:cmd cmd
 
     | `SSHInject (user, selector) ->
       (match g#inspect_get_type root with

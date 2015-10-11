@@ -303,12 +303,13 @@ am__common_utils_tests_SOURCES_DIST = dummy.c
 @HAVE_OCAML_TRUE@am_common_utils_tests_OBJECTS = dummy.$(OBJEXT)
 common_utils_tests_OBJECTS = $(am_common_utils_tests_OBJECTS)
 common_utils_tests_LDADD = $(LDADD)
-am__dummy_SOURCES_DIST = $(top_srcdir)/fish/progress.c \
-	$(top_srcdir)/fish/uri.c fsync-c.c mkdtemp-c.c progress-c.c \
-	uri-c.c
-am__objects_1 = dummy-progress.$(OBJEXT) dummy-uri.$(OBJEXT) \
-	dummy-fsync-c.$(OBJEXT) dummy-mkdtemp-c.$(OBJEXT) \
-	dummy-progress-c.$(OBJEXT) dummy-uri-c.$(OBJEXT)
+am__dummy_SOURCES_DIST = ../fish/progress.c ../fish/uri.c fsync-c.c \
+	mkdtemp-c.c progress-c.c uri-c.c
+am__dirstamp = $(am__leading_dot)dirstamp
+am__objects_1 = ../fish/dummy-progress.$(OBJEXT) \
+	../fish/dummy-uri.$(OBJEXT) dummy-fsync-c.$(OBJEXT) \
+	dummy-mkdtemp-c.$(OBJEXT) dummy-progress-c.$(OBJEXT) \
+	dummy-uri-c.$(OBJEXT)
 @HAVE_OCAML_TRUE@am_dummy_OBJECTS = $(am__objects_1)
 dummy_OBJECTS = $(am_dummy_OBJECTS)
 dummy_LDADD = $(LDADD)
@@ -1554,8 +1555,8 @@ SOURCES_ML = \
 	JSON.ml
 
 SOURCES_C = \
-	$(top_srcdir)/fish/progress.c \
-	$(top_srcdir)/fish/uri.c \
+	../fish/progress.c \
+	../fish/uri.c \
 	fsync-c.c \
 	mkdtemp-c.c \
 	progress-c.c \
@@ -1705,6 +1706,16 @@ JSON_tests$(EXEEXT): $(JSON_tests_OBJECTS) $(JSON_tests_DEPENDENCIES) $(EXTRA_JS
 common_utils_tests$(EXEEXT): $(common_utils_tests_OBJECTS) $(common_utils_tests_DEPENDENCIES) $(EXTRA_common_utils_tests_DEPENDENCIES) 
 	@rm -f common_utils_tests$(EXEEXT)
 	$(AM_V_GEN)$(common_utils_tests_LINK) $(common_utils_tests_OBJECTS) $(common_utils_tests_LDADD) $(LIBS)
+../fish/$(am__dirstamp):
+	@$(MKDIR_P) ../fish
+	@: > ../fish/$(am__dirstamp)
+../fish/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../fish/$(DEPDIR)
+	@: > ../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/dummy-progress.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/dummy-uri.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
 
 dummy$(EXEEXT): $(dummy_OBJECTS) $(dummy_DEPENDENCIES) $(EXTRA_dummy_DEPENDENCIES) 
 	@rm -f dummy$(EXEEXT)
@@ -1712,66 +1723,70 @@ dummy$(EXEEXT): $(dummy_OBJECTS) $(dummy_DEPENDENCIES) $(EXTRA_dummy_DEPENDENCIE
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../fish/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/dummy-progress.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/dummy-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy-fsync-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy-mkdtemp-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy-progress-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy-progress.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy-uri-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-dummy-progress.o: $(top_srcdir)/fish/progress.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-progress.o -MD -MP -MF $(DEPDIR)/dummy-progress.Tpo -c -o dummy-progress.o `test -f '$(top_srcdir)/fish/progress.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/progress.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dummy-progress.Tpo $(DEPDIR)/dummy-progress.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/progress.c' object='dummy-progress.o' libtool=no @AMDEPBACKSLASH@
+../fish/dummy-progress.o: ../fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT ../fish/dummy-progress.o -MD -MP -MF ../fish/$(DEPDIR)/dummy-progress.Tpo -c -o ../fish/dummy-progress.o `test -f '../fish/progress.c' || echo '$(srcdir)/'`../fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/dummy-progress.Tpo ../fish/$(DEPDIR)/dummy-progress.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/progress.c' object='../fish/dummy-progress.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o dummy-progress.o `test -f '$(top_srcdir)/fish/progress.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/progress.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o ../fish/dummy-progress.o `test -f '../fish/progress.c' || echo '$(srcdir)/'`../fish/progress.c
 
-dummy-progress.obj: $(top_srcdir)/fish/progress.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-progress.obj -MD -MP -MF $(DEPDIR)/dummy-progress.Tpo -c -o dummy-progress.obj `if test -f '$(top_srcdir)/fish/progress.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/progress.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dummy-progress.Tpo $(DEPDIR)/dummy-progress.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/progress.c' object='dummy-progress.obj' libtool=no @AMDEPBACKSLASH@
+../fish/dummy-progress.obj: ../fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT ../fish/dummy-progress.obj -MD -MP -MF ../fish/$(DEPDIR)/dummy-progress.Tpo -c -o ../fish/dummy-progress.obj `if test -f '../fish/progress.c'; then $(CYGPATH_W) '../fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/../fish/progress.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/dummy-progress.Tpo ../fish/$(DEPDIR)/dummy-progress.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/progress.c' object='../fish/dummy-progress.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o dummy-progress.obj `if test -f '$(top_srcdir)/fish/progress.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/progress.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o ../fish/dummy-progress.obj `if test -f '../fish/progress.c'; then $(CYGPATH_W) '../fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/../fish/progress.c'; fi`
 
-dummy-uri.o: $(top_srcdir)/fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-uri.o -MD -MP -MF $(DEPDIR)/dummy-uri.Tpo -c -o dummy-uri.o `test -f '$(top_srcdir)/fish/uri.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dummy-uri.Tpo $(DEPDIR)/dummy-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/uri.c' object='dummy-uri.o' libtool=no @AMDEPBACKSLASH@
+../fish/dummy-uri.o: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT ../fish/dummy-uri.o -MD -MP -MF ../fish/$(DEPDIR)/dummy-uri.Tpo -c -o ../fish/dummy-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/dummy-uri.Tpo ../fish/$(DEPDIR)/dummy-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/dummy-uri.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o dummy-uri.o `test -f '$(top_srcdir)/fish/uri.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/uri.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o ../fish/dummy-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
 
-dummy-uri.obj: $(top_srcdir)/fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-uri.obj -MD -MP -MF $(DEPDIR)/dummy-uri.Tpo -c -o dummy-uri.obj `if test -f '$(top_srcdir)/fish/uri.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/uri.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dummy-uri.Tpo $(DEPDIR)/dummy-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/uri.c' object='dummy-uri.obj' libtool=no @AMDEPBACKSLASH@
+../fish/dummy-uri.obj: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT ../fish/dummy-uri.obj -MD -MP -MF ../fish/$(DEPDIR)/dummy-uri.Tpo -c -o ../fish/dummy-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/dummy-uri.Tpo ../fish/$(DEPDIR)/dummy-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/dummy-uri.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o dummy-uri.obj `if test -f '$(top_srcdir)/fish/uri.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/uri.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -c -o ../fish/dummy-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
 dummy-fsync-c.o: fsync-c.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummy_CPPFLAGS) $(CPPFLAGS) $(dummy_CFLAGS) $(CFLAGS) -MT dummy-fsync-c.o -MD -MP -MF $(DEPDIR)/dummy-fsync-c.Tpo -c -o dummy-fsync-c.o `test -f 'fsync-c.c' || echo '$(srcdir)/'`fsync-c.c
@@ -2043,6 +2058,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../fish/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../fish/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -2054,7 +2071,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libtool \
 	clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../fish/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2100,7 +2117,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../fish/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

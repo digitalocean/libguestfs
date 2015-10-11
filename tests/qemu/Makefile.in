@@ -288,7 +288,9 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am_qemu_boot_OBJECTS = qemu_boot-estimate-max-threads.$(OBJEXT) \
+am__dirstamp = $(am__leading_dot)dirstamp
+am_qemu_boot_OBJECTS =  \
+	../../df/qemu_boot-estimate-max-threads.$(OBJEXT) \
 	qemu_boot-qemu-boot.$(OBJEXT)
 qemu_boot_OBJECTS = $(am_qemu_boot_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -1615,6 +1617,14 @@ clean-checkPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+../../df/$(am__dirstamp):
+	@$(MKDIR_P) ../../df
+	@: > ../../df/$(am__dirstamp)
+../../df/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../../df/$(DEPDIR)
+	@: > ../../df/$(DEPDIR)/$(am__dirstamp)
+../../df/qemu_boot-estimate-max-threads.$(OBJEXT):  \
+	../../df/$(am__dirstamp) ../../df/$(DEPDIR)/$(am__dirstamp)
 
 qemu-boot$(EXEEXT): $(qemu_boot_OBJECTS) $(qemu_boot_DEPENDENCIES) $(EXTRA_qemu_boot_DEPENDENCIES) 
 	@rm -f qemu-boot$(EXEEXT)
@@ -1626,48 +1636,52 @@ qemu-speed-test$(EXEEXT): $(qemu_speed_test_OBJECTS) $(qemu_speed_test_DEPENDENC
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../../df/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qemu_boot-estimate-max-threads.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../../df/$(DEPDIR)/qemu_boot-estimate-max-threads.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qemu_boot-qemu-boot.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qemu_speed_test-qemu-speed-test.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-qemu_boot-estimate-max-threads.o: ../../df/estimate-max-threads.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_boot_CPPFLAGS) $(CPPFLAGS) $(qemu_boot_CFLAGS) $(CFLAGS) -MT qemu_boot-estimate-max-threads.o -MD -MP -MF $(DEPDIR)/qemu_boot-estimate-max-threads.Tpo -c -o qemu_boot-estimate-max-threads.o `test -f '../../df/estimate-max-threads.c' || echo '$(srcdir)/'`../../df/estimate-max-threads.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/qemu_boot-estimate-max-threads.Tpo $(DEPDIR)/qemu_boot-estimate-max-threads.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../df/estimate-max-threads.c' object='qemu_boot-estimate-max-threads.o' libtool=no @AMDEPBACKSLASH@
+../../df/qemu_boot-estimate-max-threads.o: ../../df/estimate-max-threads.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_boot_CPPFLAGS) $(CPPFLAGS) $(qemu_boot_CFLAGS) $(CFLAGS) -MT ../../df/qemu_boot-estimate-max-threads.o -MD -MP -MF ../../df/$(DEPDIR)/qemu_boot-estimate-max-threads.Tpo -c -o ../../df/qemu_boot-estimate-max-threads.o `test -f '../../df/estimate-max-threads.c' || echo '$(srcdir)/'`../../df/estimate-max-threads.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../../df/$(DEPDIR)/qemu_boot-estimate-max-threads.Tpo ../../df/$(DEPDIR)/qemu_boot-estimate-max-threads.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../df/estimate-max-threads.c' object='../../df/qemu_boot-estimate-max-threads.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_boot_CPPFLAGS) $(CPPFLAGS) $(qemu_boot_CFLAGS) $(CFLAGS) -c -o qemu_boot-estimate-max-threads.o `test -f '../../df/estimate-max-threads.c' || echo '$(srcdir)/'`../../df/estimate-max-threads.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_boot_CPPFLAGS) $(CPPFLAGS) $(qemu_boot_CFLAGS) $(CFLAGS) -c -o ../../df/qemu_boot-estimate-max-threads.o `test -f '../../df/estimate-max-threads.c' || echo '$(srcdir)/'`../../df/estimate-max-threads.c
 
-qemu_boot-estimate-max-threads.obj: ../../df/estimate-max-threads.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_boot_CPPFLAGS) $(CPPFLAGS) $(qemu_boot_CFLAGS) $(CFLAGS) -MT qemu_boot-estimate-max-threads.obj -MD -MP -MF $(DEPDIR)/qemu_boot-estimate-max-threads.Tpo -c -o qemu_boot-estimate-max-threads.obj `if test -f '../../df/estimate-max-threads.c'; then $(CYGPATH_W) '../../df/estimate-max-threads.c'; else $(CYGPATH_W) '$(srcdir)/../../df/estimate-max-threads.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/qemu_boot-estimate-max-threads.Tpo $(DEPDIR)/qemu_boot-estimate-max-threads.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../df/estimate-max-threads.c' object='qemu_boot-estimate-max-threads.obj' libtool=no @AMDEPBACKSLASH@
+../../df/qemu_boot-estimate-max-threads.obj: ../../df/estimate-max-threads.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_boot_CPPFLAGS) $(CPPFLAGS) $(qemu_boot_CFLAGS) $(CFLAGS) -MT ../../df/qemu_boot-estimate-max-threads.obj -MD -MP -MF ../../df/$(DEPDIR)/qemu_boot-estimate-max-threads.Tpo -c -o ../../df/qemu_boot-estimate-max-threads.obj `if test -f '../../df/estimate-max-threads.c'; then $(CYGPATH_W) '../../df/estimate-max-threads.c'; else $(CYGPATH_W) '$(srcdir)/../../df/estimate-max-threads.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../../df/$(DEPDIR)/qemu_boot-estimate-max-threads.Tpo ../../df/$(DEPDIR)/qemu_boot-estimate-max-threads.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../df/estimate-max-threads.c' object='../../df/qemu_boot-estimate-max-threads.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_boot_CPPFLAGS) $(CPPFLAGS) $(qemu_boot_CFLAGS) $(CFLAGS) -c -o qemu_boot-estimate-max-threads.obj `if test -f '../../df/estimate-max-threads.c'; then $(CYGPATH_W) '../../df/estimate-max-threads.c'; else $(CYGPATH_W) '$(srcdir)/../../df/estimate-max-threads.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_boot_CPPFLAGS) $(CPPFLAGS) $(qemu_boot_CFLAGS) $(CFLAGS) -c -o ../../df/qemu_boot-estimate-max-threads.obj `if test -f '../../df/estimate-max-threads.c'; then $(CYGPATH_W) '../../df/estimate-max-threads.c'; else $(CYGPATH_W) '$(srcdir)/../../df/estimate-max-threads.c'; fi`
 
 qemu_boot-qemu-boot.o: qemu-boot.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_boot_CPPFLAGS) $(CPPFLAGS) $(qemu_boot_CFLAGS) $(CFLAGS) -MT qemu_boot-qemu-boot.o -MD -MP -MF $(DEPDIR)/qemu_boot-qemu-boot.Tpo -c -o qemu_boot-qemu-boot.o `test -f 'qemu-boot.c' || echo '$(srcdir)/'`qemu-boot.c
@@ -1910,6 +1924,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../../df/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../../df/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -1920,7 +1936,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libtool \
 	mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../../df/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1966,7 +1982,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../../df/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

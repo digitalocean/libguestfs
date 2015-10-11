@@ -11906,8 +11906,7 @@ guestfs_session_inspect_os (GuestfsSession *session, GError **err)
  *
  * cause the daemon to exit (internal use only)
  *
- * This function is used internally when closing the appliance. Note it's
- * only called when ./configure --enable-valgrind-daemon is used.
+ * This function is used internally when testing the appliance.
  * 
  * Returns: true on success, false on error
  * Since: 1.23.30

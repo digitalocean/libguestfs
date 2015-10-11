@@ -292,10 +292,13 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__objects_1 = virt_rescue-config.$(OBJEXT) \
-	virt_rescue-domain.$(OBJEXT) virt_rescue-inspect.$(OBJEXT) \
-	virt_rescue-keys.$(OBJEXT) virt_rescue-options.$(OBJEXT) \
-	virt_rescue-uri.$(OBJEXT)
+am__dirstamp = $(am__leading_dot)dirstamp
+am__objects_1 = ../fish/virt_rescue-config.$(OBJEXT) \
+	../fish/virt_rescue-domain.$(OBJEXT) \
+	../fish/virt_rescue-inspect.$(OBJEXT) \
+	../fish/virt_rescue-keys.$(OBJEXT) \
+	../fish/virt_rescue-options.$(OBJEXT) \
+	../fish/virt_rescue-uri.$(OBJEXT)
 am_virt_rescue_OBJECTS = $(am__objects_1) virt_rescue-rescue.$(OBJEXT)
 virt_rescue_OBJECTS = $(am_virt_rescue_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -1678,6 +1681,24 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+../fish/$(am__dirstamp):
+	@$(MKDIR_P) ../fish
+	@: > ../fish/$(am__dirstamp)
+../fish/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../fish/$(DEPDIR)
+	@: > ../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_rescue-config.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_rescue-domain.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_rescue-inspect.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_rescue-keys.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_rescue-options.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_rescue-uri.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
 
 virt-rescue$(EXEEXT): $(virt_rescue_OBJECTS) $(virt_rescue_DEPENDENCIES) $(EXTRA_virt_rescue_DEPENDENCIES) 
 	@rm -f virt-rescue$(EXEEXT)
@@ -1685,122 +1706,126 @@ virt-rescue$(EXEEXT): $(virt_rescue_OBJECTS) $(virt_rescue_DEPENDENCIES) $(EXTRA
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../fish/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_rescue-config.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_rescue-domain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_rescue-inspect.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_rescue-keys.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_rescue-options.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_rescue-config.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_rescue-domain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_rescue-inspect.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_rescue-keys.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_rescue-options.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_rescue-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_rescue-rescue.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_rescue-uri.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-virt_rescue-config.o: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT virt_rescue-config.o -MD -MP -MF $(DEPDIR)/virt_rescue-config.Tpo -c -o virt_rescue-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_rescue-config.Tpo $(DEPDIR)/virt_rescue-config.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='virt_rescue-config.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_rescue-config.o: ../fish/config.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT ../fish/virt_rescue-config.o -MD -MP -MF ../fish/$(DEPDIR)/virt_rescue-config.Tpo -c -o ../fish/virt_rescue-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_rescue-config.Tpo ../fish/$(DEPDIR)/virt_rescue-config.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='../fish/virt_rescue-config.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o virt_rescue-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o ../fish/virt_rescue-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
 
-virt_rescue-config.obj: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT virt_rescue-config.obj -MD -MP -MF $(DEPDIR)/virt_rescue-config.Tpo -c -o virt_rescue-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_rescue-config.Tpo $(DEPDIR)/virt_rescue-config.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='virt_rescue-config.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_rescue-config.obj: ../fish/config.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT ../fish/virt_rescue-config.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_rescue-config.Tpo -c -o ../fish/virt_rescue-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_rescue-config.Tpo ../fish/$(DEPDIR)/virt_rescue-config.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='../fish/virt_rescue-config.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o virt_rescue-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o ../fish/virt_rescue-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
 
-virt_rescue-domain.o: ../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT virt_rescue-domain.o -MD -MP -MF $(DEPDIR)/virt_rescue-domain.Tpo -c -o virt_rescue-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_rescue-domain.Tpo $(DEPDIR)/virt_rescue-domain.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='virt_rescue-domain.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_rescue-domain.o: ../fish/domain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT ../fish/virt_rescue-domain.o -MD -MP -MF ../fish/$(DEPDIR)/virt_rescue-domain.Tpo -c -o ../fish/virt_rescue-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_rescue-domain.Tpo ../fish/$(DEPDIR)/virt_rescue-domain.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='../fish/virt_rescue-domain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o virt_rescue-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o ../fish/virt_rescue-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
 
-virt_rescue-domain.obj: ../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT virt_rescue-domain.obj -MD -MP -MF $(DEPDIR)/virt_rescue-domain.Tpo -c -o virt_rescue-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_rescue-domain.Tpo $(DEPDIR)/virt_rescue-domain.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='virt_rescue-domain.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_rescue-domain.obj: ../fish/domain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT ../fish/virt_rescue-domain.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_rescue-domain.Tpo -c -o ../fish/virt_rescue-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_rescue-domain.Tpo ../fish/$(DEPDIR)/virt_rescue-domain.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='../fish/virt_rescue-domain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o virt_rescue-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o ../fish/virt_rescue-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
 
-virt_rescue-inspect.o: ../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT virt_rescue-inspect.o -MD -MP -MF $(DEPDIR)/virt_rescue-inspect.Tpo -c -o virt_rescue-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_rescue-inspect.Tpo $(DEPDIR)/virt_rescue-inspect.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='virt_rescue-inspect.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_rescue-inspect.o: ../fish/inspect.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT ../fish/virt_rescue-inspect.o -MD -MP -MF ../fish/$(DEPDIR)/virt_rescue-inspect.Tpo -c -o ../fish/virt_rescue-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_rescue-inspect.Tpo ../fish/$(DEPDIR)/virt_rescue-inspect.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='../fish/virt_rescue-inspect.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o virt_rescue-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o ../fish/virt_rescue-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
 
-virt_rescue-inspect.obj: ../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT virt_rescue-inspect.obj -MD -MP -MF $(DEPDIR)/virt_rescue-inspect.Tpo -c -o virt_rescue-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_rescue-inspect.Tpo $(DEPDIR)/virt_rescue-inspect.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='virt_rescue-inspect.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_rescue-inspect.obj: ../fish/inspect.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT ../fish/virt_rescue-inspect.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_rescue-inspect.Tpo -c -o ../fish/virt_rescue-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_rescue-inspect.Tpo ../fish/$(DEPDIR)/virt_rescue-inspect.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='../fish/virt_rescue-inspect.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o virt_rescue-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o ../fish/virt_rescue-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
 
-virt_rescue-keys.o: ../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT virt_rescue-keys.o -MD -MP -MF $(DEPDIR)/virt_rescue-keys.Tpo -c -o virt_rescue-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_rescue-keys.Tpo $(DEPDIR)/virt_rescue-keys.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='virt_rescue-keys.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_rescue-keys.o: ../fish/keys.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT ../fish/virt_rescue-keys.o -MD -MP -MF ../fish/$(DEPDIR)/virt_rescue-keys.Tpo -c -o ../fish/virt_rescue-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_rescue-keys.Tpo ../fish/$(DEPDIR)/virt_rescue-keys.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='../fish/virt_rescue-keys.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o virt_rescue-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o ../fish/virt_rescue-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
 
-virt_rescue-keys.obj: ../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT virt_rescue-keys.obj -MD -MP -MF $(DEPDIR)/virt_rescue-keys.Tpo -c -o virt_rescue-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_rescue-keys.Tpo $(DEPDIR)/virt_rescue-keys.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='virt_rescue-keys.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_rescue-keys.obj: ../fish/keys.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT ../fish/virt_rescue-keys.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_rescue-keys.Tpo -c -o ../fish/virt_rescue-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_rescue-keys.Tpo ../fish/$(DEPDIR)/virt_rescue-keys.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='../fish/virt_rescue-keys.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o virt_rescue-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o ../fish/virt_rescue-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
 
-virt_rescue-options.o: ../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT virt_rescue-options.o -MD -MP -MF $(DEPDIR)/virt_rescue-options.Tpo -c -o virt_rescue-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_rescue-options.Tpo $(DEPDIR)/virt_rescue-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_rescue-options.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_rescue-options.o: ../fish/options.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT ../fish/virt_rescue-options.o -MD -MP -MF ../fish/$(DEPDIR)/virt_rescue-options.Tpo -c -o ../fish/virt_rescue-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_rescue-options.Tpo ../fish/$(DEPDIR)/virt_rescue-options.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='../fish/virt_rescue-options.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o virt_rescue-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o ../fish/virt_rescue-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
 
-virt_rescue-options.obj: ../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT virt_rescue-options.obj -MD -MP -MF $(DEPDIR)/virt_rescue-options.Tpo -c -o virt_rescue-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_rescue-options.Tpo $(DEPDIR)/virt_rescue-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_rescue-options.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_rescue-options.obj: ../fish/options.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT ../fish/virt_rescue-options.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_rescue-options.Tpo -c -o ../fish/virt_rescue-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_rescue-options.Tpo ../fish/$(DEPDIR)/virt_rescue-options.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='../fish/virt_rescue-options.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o virt_rescue-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o ../fish/virt_rescue-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
 
-virt_rescue-uri.o: ../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT virt_rescue-uri.o -MD -MP -MF $(DEPDIR)/virt_rescue-uri.Tpo -c -o virt_rescue-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_rescue-uri.Tpo $(DEPDIR)/virt_rescue-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_rescue-uri.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_rescue-uri.o: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT ../fish/virt_rescue-uri.o -MD -MP -MF ../fish/$(DEPDIR)/virt_rescue-uri.Tpo -c -o ../fish/virt_rescue-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_rescue-uri.Tpo ../fish/$(DEPDIR)/virt_rescue-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_rescue-uri.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o virt_rescue-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o ../fish/virt_rescue-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
 
-virt_rescue-uri.obj: ../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT virt_rescue-uri.obj -MD -MP -MF $(DEPDIR)/virt_rescue-uri.Tpo -c -o virt_rescue-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_rescue-uri.Tpo $(DEPDIR)/virt_rescue-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_rescue-uri.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_rescue-uri.obj: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT ../fish/virt_rescue-uri.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_rescue-uri.Tpo -c -o ../fish/virt_rescue-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_rescue-uri.Tpo ../fish/$(DEPDIR)/virt_rescue-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_rescue-uri.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o virt_rescue-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o ../fish/virt_rescue-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
 virt_rescue-rescue.o: rescue.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT virt_rescue-rescue.o -MD -MP -MF $(DEPDIR)/virt_rescue-rescue.Tpo -c -o virt_rescue-rescue.o `test -f 'rescue.c' || echo '$(srcdir)/'`rescue.c
@@ -2075,6 +2100,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../fish/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../fish/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -2084,7 +2111,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../fish/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2130,7 +2157,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../fish/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

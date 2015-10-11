@@ -318,9 +318,10 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__EXEEXT_1 = v2v_unit_tests$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
-am__v2v_unit_tests_SOURCES_DIST = $(top_srcdir)/mllib/mkdtemp-c.c \
-	domainxml-c.c kvmuid-c.c utils-c.c xml-c.c
-am__objects_1 = v2v_unit_tests-mkdtemp-c.$(OBJEXT) \
+am__v2v_unit_tests_SOURCES_DIST = ../mllib/mkdtemp-c.c domainxml-c.c \
+	kvmuid-c.c utils-c.c xml-c.c
+am__dirstamp = $(am__leading_dot)dirstamp
+am__objects_1 = ../mllib/v2v_unit_tests-mkdtemp-c.$(OBJEXT) \
 	v2v_unit_tests-domainxml-c.$(OBJEXT) \
 	v2v_unit_tests-kvmuid-c.$(OBJEXT) \
 	v2v_unit_tests-utils-c.$(OBJEXT) \
@@ -329,9 +330,9 @@ am__objects_1 = v2v_unit_tests-mkdtemp-c.$(OBJEXT) \
 @HAVE_OCAML_TRUE@am_v2v_unit_tests_OBJECTS = $(am__objects_2)
 v2v_unit_tests_OBJECTS = $(am_v2v_unit_tests_OBJECTS)
 v2v_unit_tests_LDADD = $(LDADD)
-am__virt_v2v_SOURCES_DIST = $(top_srcdir)/mllib/mkdtemp-c.c \
-	domainxml-c.c kvmuid-c.c utils-c.c xml-c.c
-am__objects_3 = virt_v2v-mkdtemp-c.$(OBJEXT) \
+am__virt_v2v_SOURCES_DIST = ../mllib/mkdtemp-c.c domainxml-c.c \
+	kvmuid-c.c utils-c.c xml-c.c
+am__objects_3 = ../mllib/virt_v2v-mkdtemp-c.$(OBJEXT) \
 	virt_v2v-domainxml-c.$(OBJEXT) virt_v2v-kvmuid-c.$(OBJEXT) \
 	virt_v2v-utils-c.$(OBJEXT) virt_v2v-xml-c.$(OBJEXT)
 @HAVE_OCAML_TRUE@am_virt_v2v_OBJECTS = $(am__objects_3)
@@ -1628,8 +1629,8 @@ SOURCES_MLI = \
 SOURCES_ML = \
 	stringMap.ml \
 	types.ml \
-	utils.ml \
 	xml.ml \
+	utils.ml \
 	domainxml.ml \
 	DOM.ml \
 	kvmuid.ml \
@@ -1656,7 +1657,7 @@ SOURCES_ML = \
 	v2v.ml
 
 SOURCES_C = \
-	$(top_srcdir)/mllib/mkdtemp-c.c \
+	../mllib/mkdtemp-c.c \
 	domainxml-c.c \
 	kvmuid-c.c \
 	utils-c.c \
@@ -1760,6 +1761,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
 @HAVE_OCAML_TRUE@	stringMap.cmo \
 @HAVE_OCAML_TRUE@	types.cmo \
+@HAVE_OCAML_TRUE@	xml.cmo \
 @HAVE_OCAML_TRUE@	utils.cmo \
 @HAVE_OCAML_TRUE@	DOM.cmo \
 @HAVE_OCAML_TRUE@	OVF.cmo \
@@ -1874,10 +1876,20 @@ clean-checkPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+../mllib/$(am__dirstamp):
+	@$(MKDIR_P) ../mllib
+	@: > ../mllib/$(am__dirstamp)
+../mllib/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../mllib/$(DEPDIR)
+	@: > ../mllib/$(DEPDIR)/$(am__dirstamp)
+../mllib/v2v_unit_tests-mkdtemp-c.$(OBJEXT): ../mllib/$(am__dirstamp) \
+	../mllib/$(DEPDIR)/$(am__dirstamp)
 
 v2v_unit_tests$(EXEEXT): $(v2v_unit_tests_OBJECTS) $(v2v_unit_tests_DEPENDENCIES) $(EXTRA_v2v_unit_tests_DEPENDENCIES) 
 	@rm -f v2v_unit_tests$(EXEEXT)
 	$(AM_V_GEN)$(v2v_unit_tests_LINK) $(v2v_unit_tests_OBJECTS) $(v2v_unit_tests_LDADD) $(LIBS)
+../mllib/virt_v2v-mkdtemp-c.$(OBJEXT): ../mllib/$(am__dirstamp) \
+	../mllib/$(DEPDIR)/$(am__dirstamp)
 
 virt-v2v$(EXEEXT): $(virt_v2v_OBJECTS) $(virt_v2v_DEPENDENCIES) $(EXTRA_virt_v2v_DEPENDENCIES) 
 	@rm -f virt-v2v$(EXEEXT)
@@ -1885,55 +1897,59 @@ virt-v2v$(EXEEXT): $(virt_v2v_OBJECTS) $(virt_v2v_DEPENDENCIES) $(EXTRA_virt_v2v
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../mllib/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@../mllib/$(DEPDIR)/v2v_unit_tests-mkdtemp-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../mllib/$(DEPDIR)/virt_v2v-mkdtemp-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-domainxml-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-kvmuid-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-mkdtemp-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-utils-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-xml-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-domainxml-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-kvmuid-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-mkdtemp-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-utils-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-xml-c.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-v2v_unit_tests-mkdtemp-c.o: $(top_srcdir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-mkdtemp-c.o -MD -MP -MF $(DEPDIR)/v2v_unit_tests-mkdtemp-c.Tpo -c -o v2v_unit_tests-mkdtemp-c.o `test -f '$(top_srcdir)/mllib/mkdtemp-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-mkdtemp-c.Tpo $(DEPDIR)/v2v_unit_tests-mkdtemp-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/mkdtemp-c.c' object='v2v_unit_tests-mkdtemp-c.o' libtool=no @AMDEPBACKSLASH@
+../mllib/v2v_unit_tests-mkdtemp-c.o: ../mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT ../mllib/v2v_unit_tests-mkdtemp-c.o -MD -MP -MF ../mllib/$(DEPDIR)/v2v_unit_tests-mkdtemp-c.Tpo -c -o ../mllib/v2v_unit_tests-mkdtemp-c.o `test -f '../mllib/mkdtemp-c.c' || echo '$(srcdir)/'`../mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/v2v_unit_tests-mkdtemp-c.Tpo ../mllib/$(DEPDIR)/v2v_unit_tests-mkdtemp-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/mkdtemp-c.c' object='../mllib/v2v_unit_tests-mkdtemp-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-mkdtemp-c.o `test -f '$(top_srcdir)/mllib/mkdtemp-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/mkdtemp-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o ../mllib/v2v_unit_tests-mkdtemp-c.o `test -f '../mllib/mkdtemp-c.c' || echo '$(srcdir)/'`../mllib/mkdtemp-c.c
 
-v2v_unit_tests-mkdtemp-c.obj: $(top_srcdir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-mkdtemp-c.obj -MD -MP -MF $(DEPDIR)/v2v_unit_tests-mkdtemp-c.Tpo -c -o v2v_unit_tests-mkdtemp-c.obj `if test -f '$(top_srcdir)/mllib/mkdtemp-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/mkdtemp-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-mkdtemp-c.Tpo $(DEPDIR)/v2v_unit_tests-mkdtemp-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/mkdtemp-c.c' object='v2v_unit_tests-mkdtemp-c.obj' libtool=no @AMDEPBACKSLASH@
+../mllib/v2v_unit_tests-mkdtemp-c.obj: ../mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT ../mllib/v2v_unit_tests-mkdtemp-c.obj -MD -MP -MF ../mllib/$(DEPDIR)/v2v_unit_tests-mkdtemp-c.Tpo -c -o ../mllib/v2v_unit_tests-mkdtemp-c.obj `if test -f '../mllib/mkdtemp-c.c'; then $(CYGPATH_W) '../mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/mkdtemp-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/v2v_unit_tests-mkdtemp-c.Tpo ../mllib/$(DEPDIR)/v2v_unit_tests-mkdtemp-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/mkdtemp-c.c' object='../mllib/v2v_unit_tests-mkdtemp-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-mkdtemp-c.obj `if test -f '$(top_srcdir)/mllib/mkdtemp-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/mkdtemp-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o ../mllib/v2v_unit_tests-mkdtemp-c.obj `if test -f '../mllib/mkdtemp-c.c'; then $(CYGPATH_W) '../mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/mkdtemp-c.c'; fi`
 
 v2v_unit_tests-domainxml-c.o: domainxml-c.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-domainxml-c.o -MD -MP -MF $(DEPDIR)/v2v_unit_tests-domainxml-c.Tpo -c -o v2v_unit_tests-domainxml-c.o `test -f 'domainxml-c.c' || echo '$(srcdir)/'`domainxml-c.c
@@ -1991,19 +2007,19 @@ v2v_unit_tests-xml-c.obj: xml-c.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-xml-c.obj `if test -f 'xml-c.c'; then $(CYGPATH_W) 'xml-c.c'; else $(CYGPATH_W) '$(srcdir)/xml-c.c'; fi`
 
-virt_v2v-mkdtemp-c.o: $(top_srcdir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-mkdtemp-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-mkdtemp-c.Tpo -c -o virt_v2v-mkdtemp-c.o `test -f '$(top_srcdir)/mllib/mkdtemp-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-mkdtemp-c.Tpo $(DEPDIR)/virt_v2v-mkdtemp-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/mkdtemp-c.c' object='virt_v2v-mkdtemp-c.o' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_v2v-mkdtemp-c.o: ../mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT ../mllib/virt_v2v-mkdtemp-c.o -MD -MP -MF ../mllib/$(DEPDIR)/virt_v2v-mkdtemp-c.Tpo -c -o ../mllib/virt_v2v-mkdtemp-c.o `test -f '../mllib/mkdtemp-c.c' || echo '$(srcdir)/'`../mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_v2v-mkdtemp-c.Tpo ../mllib/$(DEPDIR)/virt_v2v-mkdtemp-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/mkdtemp-c.c' object='../mllib/virt_v2v-mkdtemp-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-mkdtemp-c.o `test -f '$(top_srcdir)/mllib/mkdtemp-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/mkdtemp-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_v2v-mkdtemp-c.o `test -f '../mllib/mkdtemp-c.c' || echo '$(srcdir)/'`../mllib/mkdtemp-c.c
 
-virt_v2v-mkdtemp-c.obj: $(top_srcdir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-mkdtemp-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v-mkdtemp-c.Tpo -c -o virt_v2v-mkdtemp-c.obj `if test -f '$(top_srcdir)/mllib/mkdtemp-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/mkdtemp-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-mkdtemp-c.Tpo $(DEPDIR)/virt_v2v-mkdtemp-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/mkdtemp-c.c' object='virt_v2v-mkdtemp-c.obj' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_v2v-mkdtemp-c.obj: ../mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT ../mllib/virt_v2v-mkdtemp-c.obj -MD -MP -MF ../mllib/$(DEPDIR)/virt_v2v-mkdtemp-c.Tpo -c -o ../mllib/virt_v2v-mkdtemp-c.obj `if test -f '../mllib/mkdtemp-c.c'; then $(CYGPATH_W) '../mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/mkdtemp-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_v2v-mkdtemp-c.Tpo ../mllib/$(DEPDIR)/virt_v2v-mkdtemp-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/mkdtemp-c.c' object='../mllib/virt_v2v-mkdtemp-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-mkdtemp-c.obj `if test -f '$(top_srcdir)/mllib/mkdtemp-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/mkdtemp-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_v2v-mkdtemp-c.obj `if test -f '../mllib/mkdtemp-c.c'; then $(CYGPATH_W) '../mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/mkdtemp-c.c'; fi`
 
 virt_v2v-domainxml-c.o: domainxml-c.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-domainxml-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-domainxml-c.Tpo -c -o virt_v2v-domainxml-c.o `test -f 'domainxml-c.c' || echo '$(srcdir)/'`domainxml-c.c
@@ -2321,6 +2337,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../mllib/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../mllib/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -2332,7 +2350,7 @@ clean-am: clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
 	clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../mllib/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2378,7 +2396,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../mllib/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

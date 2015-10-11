@@ -364,7 +364,14 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
                 statbuf.G.st_dev = s.G.st_dev && statbuf.G.st_ino = s.G.st_ino
             ) installed_kernels in
           Some kernel
-        with Not_found -> None
+        with
+        | Not_found -> None
+        | G.Error msg as exn ->
+          (* If it isn't "no such file or directory", then re-raise it. *)
+          if g#last_errno () <> G.Errno.errno_ENOENT then raise exn;
+          warning (f_"ignoring kernel %s in grub, as it does not exist.")
+            vmlinuz;
+          None
     ) vmlinuzes in
 
   if verbose () then (
@@ -574,7 +581,7 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
               List.filter (fun s -> string_find s library = -1) provides in
 
             (* Trim whitespace. *)
-            let rex = Str.regexp "^[ \\t]*\\([^ \\t]+\\)[ \\t]*$" in
+            let rex = Str.regexp "^[ \t]*\\([^ \t]+\\)[ \t]*$" in
             let provides = List.map (Str.replace_first rex "\\1") provides in
 
             (* Install the dependencies with yum.  Use yum explicitly
@@ -719,6 +726,17 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
 
     (* Does the best/bootable kernel support virtio? *)
     let virtio = best_kernel.ki_supports_virtio in
+
+    (* Update /etc/sysconfig/kernel DEFAULTKERNEL (RHBZ#1176801). *)
+    if g#is_file ~followsymlinks:true "/etc/sysconfig/kernel" then (
+      let entries =
+        g#aug_match "/files/etc/sysconfig/kernel/DEFAULTKERNEL/value" in
+      let entries = Array.to_list entries in
+      if entries <> [] then (
+        List.iter (fun path -> g#aug_set path best_kernel.ki_name) entries;
+        g#aug_save ()
+      )
+    );
 
     best_kernel, virtio
 

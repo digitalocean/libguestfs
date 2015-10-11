@@ -118,6 +118,13 @@ main (int argc, char *argv[])
   bindtextdomain (PACKAGE, LOCALEBASEDIR);
   textdomain (PACKAGE);
 
+#if ! GLIB_CHECK_VERSION(2,32,0)
+  /* In glib2 < 2.32 you had to call g_thread_init().  In later glib2
+   * that is not required and should not be called.
+   */
+  if (glib_check_version (2, 32, 0) != NULL) /* This checks < 2.32 */
+    g_thread_init (NULL);
+#endif
   gdk_threads_init ();
   gdk_threads_enter ();
   gui_possible = gtk_init_check (&argc, &argv);
@@ -190,9 +197,13 @@ main (int argc, char *argv[])
     kernel_configuration (config, cmdline, cmdline_source);
   else {
   gui:
-    if (!gui_possible)
-      /* Gtk has already printed an error. */
+    if (!gui_possible) {
+      fprintf (stderr,
+               _("%s: gtk_init_check returned false, indicating that\n"
+                 "a GUI is not possible on this host.  Check X11, $DISPLAY etc.\n"),
+               guestfs_int_program_name);
       exit (EXIT_FAILURE);
+    }
     gui_application (config);
   }
 
@@ -279,7 +290,8 @@ set_config_defaults (struct config *config)
     config->flags = 0;
 
   find_all_disks ();
-  config->disks = guestfs_int_copy_string_list (all_disks);
+  if (all_disks)
+    config->disks = guestfs_int_copy_string_list (all_disks);
   if (all_removable)
     config->removable = guestfs_int_copy_string_list (all_removable);
   find_all_interfaces ();
@@ -448,15 +460,8 @@ find_all_disks (void)
     exit (EXIT_FAILURE);
   }
 
-  if (all_disks == NULL) {
-    fprintf (stderr, "%s: error: no non-removable disks were discovered on this machine.\n",
-             guestfs_int_program_name);
-    fprintf (stderr, "virt-p2v looked in /sys/block.\n");
-    fprintf (stderr, "This is a fatal error and virt-p2v cannot continue.\n");
-    exit (EXIT_FAILURE);
-  }
-
-  qsort (all_disks, nr_disks, sizeof (char *), compare);
+  if (all_disks)
+    qsort (all_disks, nr_disks, sizeof (char *), compare);
   if (all_removable)
     qsort (all_removable, nr_removable, sizeof (char *), compare);
 }

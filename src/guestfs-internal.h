@@ -20,7 +20,6 @@
 #define GUESTFS_INTERNAL_H_
 
 #include <stdbool.h>
-#include <sys/types.h>
 
 #include <libintl.h>
 
@@ -77,18 +76,6 @@
 #ifdef __aarch64__
 #  define DEFAULT_MEMSIZE 768
 #  define MIN_MEMSIZE 256
-#endif
-
-/* Valgrind has a fairly hefty memory overhead.  Using the defaults
- * caused the C API tests to fail.
- */
-#ifdef VALGRIND_DAEMON
-#  ifndef DEFAULT_MEMSIZE
-#    define DEFAULT_MEMSIZE 768
-#  endif
-#  ifndef MIN_MEMSIZE
-#    define MIN_MEMSIZE 256
-#  endif
 #endif
 
 /* The default and minimum memory size for most users. */
@@ -149,7 +136,7 @@
 #define VIRTIO_NET "virtio-net-device"
 #endif /* ARM */
 
-/* Machine types.  XXX Make these configurable. */
+/* Machine types. */
 #ifdef __arm__
 #define MACHINE_TYPE "virt"
 #endif
@@ -750,6 +737,9 @@ extern int guestfs_int_lazy_make_tmpdir (guestfs_h *g);
 extern void guestfs_int_remove_tmpdir (guestfs_h *g);
 extern void guestfs_int_recursive_remove_dir (guestfs_h *g, const char *dir);
 
+/* whole-file.c */
+extern int guestfs_int_read_whole_file (guestfs_h *g, const char *filename, char **data_r, size_t *size_r);
+
 /* drives.c */
 extern size_t guestfs_int_checkpoint_drives (guestfs_h *g);
 extern void guestfs_int_rollback_drives (guestfs_h *g, size_t);
@@ -873,9 +863,10 @@ extern void guestfs_int_cmd_clear_capture_errors (struct command *);
 extern void guestfs_int_cmd_clear_close_files (struct command *);
 extern void guestfs_int_cmd_set_child_callback (struct command *, cmd_child_callback child_callback, void *data);
 extern int guestfs_int_cmd_run (struct command *);
-extern int guestfs_int_cmd_run_async (struct command *, pid_t *pid, int *stdin_fd, int *stdout_fd, int *stderr_fd);
-extern int guestfs_int_cmd_wait (struct command *);
 extern void guestfs_int_cmd_close (struct command *);
+extern int guestfs_int_cmd_pipe_run (struct command *cmd, const char *mode);
+extern int guestfs_int_cmd_pipe_wait (struct command *cmd);
+extern char *guestfs_int_cmd_get_pipe_errors (struct command *cmd);
 
 #ifdef HAVE_ATTRIBUTE_CLEANUP
 #define CLEANUP_CMD_CLOSE __attribute__((cleanup(guestfs_int_cleanup_cmd_close)))

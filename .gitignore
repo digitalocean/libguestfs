@@ -23,6 +23,7 @@
 bindtests.tmp
 cscope.out
 .deps
+.dirstamp
 .gdb_history
 .libs
 Makefile
@@ -280,6 +281,7 @@ Makefile.in
 /inspector/test-xmllint.sh
 /inspector/virt-inspector
 /inspector/virt-inspector.1
+/installcheck.sh
 /install-sh
 /java/api
 /java/Bindtests.java
@@ -331,6 +333,7 @@ Makefile.in
 /ocaml/examples/inspect_vm
 /ocaml/examples/stamp-guestfs-ocaml.pod
 /ocaml/guestfs-c-actions.c
+/ocaml/guestfs-c-errnos.c
 /ocaml/guestfs.ml
 /ocaml/guestfs.mli
 /ocamlinit-stamp

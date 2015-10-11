@@ -34,8 +34,7 @@ let () = Sysprep_operation.bake ()
 let () = Random.self_init ()
 
 let main () =
-  let debug_gc, operations, g, mount_opts =
-    let debug_gc = ref false in
+  let operations, g, mount_opts =
     let domain = ref None in
     let dryrun = ref false in
     let files = ref [] in
@@ -121,7 +120,6 @@ let main () =
       "--add",     Arg.String add_file,       s_"file" ^ " " ^ s_"Add disk image file";
       "-c",        Arg.Set_string libvirturi, s_"uri" ^ " " ^ s_"Set libvirt URI";
       "--connect", Arg.Set_string libvirturi, s_"uri" ^ " " ^ s_"Set libvirt URI";
-      "--debug-gc", Arg.Set debug_gc,         " " ^ s_"Debug GC and memory allocations (internal)";
       "-d",        Arg.String set_domain,     s_"domain" ^ " " ^ s_"Set libvirt guest name";
       "--domain",  Arg.String set_domain,     s_"domain" ^ " " ^ s_"Set libvirt guest name";
       "-n",        Arg.Set dryrun,            " " ^ s_"Perform a dry run";
@@ -132,28 +130,14 @@ let main () =
       "--enable",  Arg.String set_enable,     s_"operations" ^ " " ^ s_"Enable specific operations";
       "--format",  Arg.String set_format,     s_"format" ^ " " ^ s_"Set format (default: auto)";
       "--list-operations", Arg.Unit list_operations, " " ^ s_"List supported operations";
-      "--short-options", Arg.Unit display_short_options, " " ^ s_"List short options";
-      "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
       "--mount-options", Arg.Set_string mount_opts, s_"opts" ^ " " ^ s_"Set mount options (eg /:noatime;/var:rw,noatime)";
       "--no-selinux-relabel", Arg.Unit (fun () -> ()),
                                               " " ^ s_"Compatibility option, does nothing";
       "--operation",  Arg.String set_operations, " " ^ s_"Enable/disable specific operations";
       "--operations", Arg.String set_operations, " " ^ s_"Enable/disable specific operations";
-      "-q",        Arg.Unit set_quiet,        " " ^ s_"Don't print log messages";
-      "--quiet",   Arg.Unit set_quiet,        " " ^ s_"Don't print log messages";
-      "-v",        Arg.Unit set_verbose,      " " ^ s_"Enable debugging messages";
-      "--verbose", Arg.Unit set_verbose,      " " ^ s_"Enable debugging messages";
-      "-V",        Arg.Unit print_version_and_exit,
-                                              " " ^ s_"Display version and exit";
-      "--version", Arg.Unit print_version_and_exit,
-                                              " " ^ s_"Display version and exit";
-      "-x",        Arg.Unit set_trace,        " " ^ s_"Enable tracing of libguestfs calls";
     ] in
     let args = basic_args @ Sysprep_operation.extra_args () in
-    let args =
-      List.sort (fun (a,_,_) (b,_,_) -> compare_command_line_args a b) args in
-    let argspec = Arg.align args in
-    long_options := argspec;
+    let argspec = set_standard_options args in
     let anon_fun _ = raise (Arg.Bad (s_"extra parameter on the command line")) in
     let usage_msg =
       sprintf (f_"\
@@ -207,7 +191,6 @@ read the man page virt-sysprep(1).
     in
 
     (* Dereference the rest of the args. *)
-    let debug_gc = !debug_gc in
     let dryrun = !dryrun in
     let operations = !operations in
 
@@ -234,7 +217,7 @@ read the man page virt-sysprep(1).
     add g dryrun;
     g#launch ();
 
-    debug_gc, operations, g, mount_opts in
+    operations, g, mount_opts in
 
   (* Inspection. *)
   (match Array.to_list (g#inspect_os ()) with
@@ -277,9 +260,6 @@ read the man page virt-sysprep(1).
 
   (* Finish off. *)
   g#shutdown ();
-  g#close ();
-
-  if debug_gc then
-    Gc.compact ()
+  g#close ()
 
 let () = run_main_and_handle_errors main

@@ -603,6 +603,8 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
   (* Public structures. *)
   let generate_all_structs = List.iter (
     fun { s_name = typ; s_cols = cols } ->
+      pr "#define GUESTFS_HAVE_STRUCT_%s 1\n" (String.uppercase typ);
+      pr "\n";
       pr "struct guestfs_%s {\n" typ;
       List.iter (
         function
@@ -645,13 +647,7 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
   let generate_action_header { name = shortname;
                                style = ret, args, optargs as style;
                                deprecated_by = deprecated_by } =
-    let test =
-      String.length shortname >= 13 &&
-        String.sub shortname 0 13 = "internal_test" in
-    let debug =
-      String.length shortname >= 5 && String.sub shortname 0 5 = "debug" in
-    if deprecated_by = None && not test && not debug then
-      pr "#define GUESTFS_HAVE_%s 1\n" (String.uppercase shortname);
+    pr "#define GUESTFS_HAVE_%s 1\n" (String.uppercase shortname);
 
     if optargs <> [] then (
       iteri (

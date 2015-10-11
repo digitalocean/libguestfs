@@ -66,6 +66,14 @@ and op = [
       (* --run-command 'CMD+ARGS' *)
   | `Scrub of string
       (* --scrub FILE *)
+  | `SMAttach of Subscription_manager.sm_pool
+      (* --sm-attach SELECTOR *)
+  | `SMRegister
+      (* --sm-register *)
+  | `SMRemove
+      (* --sm-remove *)
+  | `SMUnregister
+      (* --sm-unregister *)
   | `SSHInject of string * Ssh_key.ssh_key_selector
       (* --ssh-inject USER[:SELECTOR] *)
   | `Truncate of string
@@ -90,6 +98,8 @@ and flags = {
       (* --password-crypto md5|sha256|sha512 *)
   selinux_relabel : bool;
       (* --selinux-relabel *)
+  sm_credentials : Subscription_manager.sm_credentials option;
+      (* --sm-credentials SELECTOR *)
 }
 
 type argspec = Arg.key * Arg.spec * Arg.doc

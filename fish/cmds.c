@@ -2431,7 +2431,7 @@ struct command_entry inspect_os_cmd_entry = {
 
 struct command_entry internal_exit_cmd_entry = {
   .name = "internal-exit",
-  .help = "NAME\n    internal-exit - cause the daemon to exit (internal use only)\n\nSYNOPSIS\n     internal-exit\n\nDESCRIPTION\n    This function is used internally when closing the appliance. Note it's\n    only called when ./configure --enable-valgrind-daemon is used.\n\n",
+  .help = "NAME\n    internal-exit - cause the daemon to exit (internal use only)\n\nSYNOPSIS\n     internal-exit\n\nDESCRIPTION\n    This function is used internally when testing the appliance.\n\n",
   .synopsis = "internal-exit",
   .run = run_internal_exit
 };

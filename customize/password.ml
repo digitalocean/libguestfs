@@ -60,7 +60,7 @@ and parse_selector_list orig_arg = function
     let pw = parse_selector_list orig_arg rest in
     { pw with pw_locked = true }
   | [ "file"; filename ] ->
-    { pw_password = Password (read_password_from_file filename);
+    { pw_password = Password (read_first_line_from_file filename);
       pw_locked = false }
   | "password" :: password ->
     { pw_password = Password (String.concat ":" password); pw_locked = false }
@@ -70,12 +70,6 @@ and parse_selector_list orig_arg = function
     { pw_password = Disabled_password; pw_locked = false }
   | _ ->
     error (f_"invalid password selector '%s'; see the man page") orig_arg
-
-and read_password_from_file filename =
-  let chan = open_in filename in
-  let password = input_line chan in
-  close_in chan;
-  password
 
 (* Permissible characters in a salt. *)
 let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789./"
@@ -169,6 +163,8 @@ and default_crypto g root =
   | "ubuntu", _ -> `MD5
 
   | _, _ ->
-    warning (f_"password: using insecure md5 password encryption for
-guest of type %s version %d.\nIf this is incorrect, use --password-crypto option and file a bug.") distro major;
+    let minor = g#inspect_get_minor_version root in
+    warning (f_"password: using insecure md5 password encryption for guest of type %s version %d.%d.
+If this is incorrect, use --password-crypto option and file a bug.")
+      distro major minor;
     `MD5

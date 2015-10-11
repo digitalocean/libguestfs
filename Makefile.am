@@ -182,7 +182,6 @@ EXTRA_DIST = \
 	contrib/intro/vmm-icons-t.png \
 	contrib/intro/vmm-icons.png \
 	contrib/intro/win7.xml \
-	contrib/make-check-on-installed.pl \
 	contrib/README \
 	contrib/visualize-alignment/.gitignore \
 	contrib/visualize-alignment/guestfish-add-mount.qtr \
@@ -242,10 +241,12 @@ HTMLFILES = \
 	html/virt-copy-out.1.html \
 	html/virt-customize.1.html \
 	html/virt-df.1.html \
+	html/virt-dib.1.html \
 	html/virt-diff.1.html \
 	html/virt-edit.1.html \
 	html/virt-filesystems.1.html \
 	html/virt-format.1.html \
+	html/virt-get-kernel.1.html \
 	html/virt-inspector.1.html \
 	html/virt-list-filesystems.1.html \
 	html/virt-list-partitions.1.html \
@@ -374,6 +375,10 @@ install:
 	    exit 1; \
 	fi
 
+# Test installed packages.
+installcheck-local: installcheck.sh
+	$(builddir)/installcheck.sh
+
 # Manual pages in top level directory.
 
 man_MANS = \
@@ -420,6 +425,8 @@ clean-local:
 	-rm -rf tmp/libguestfs??????
 	-rm -rf tmp/guestfs.*
 	-rm -rf tmp/.guestfs-*
+	-rm -rf tmp/null.*
+	-find tmp -type s -delete
 
 # If you don't want to run all of the tests ('make check') then this
 # will just run libguestfs-test-tool for a quick check.  Note this
@@ -600,6 +607,8 @@ help:
 	@echo
 	@echo "make check-all                    Runs all 'check*' rules."
 	@echo "make check-release                Runs 'check*' rules required for release."
+	@echo
+	@echo "make installcheck                 Test installed libguestfs packages."
 	@echo
 	@echo "make syntax-check -j1 -k          Check syntax and style problems in the code."
 	@echo "make print-subdirs                Print subdirectories."

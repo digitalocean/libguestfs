@@ -69,8 +69,8 @@ SOURCES_MLI = \
 SOURCES_ML = \
 	stringMap.ml \
 	types.ml \
-	utils.ml \
 	xml.ml \
+	utils.ml \
 	domainxml.ml \
 	DOM.ml \
 	kvmuid.ml \
@@ -97,7 +97,7 @@ SOURCES_ML = \
 	v2v.ml
 
 SOURCES_C = \
-	$(top_srcdir)/mllib/mkdtemp-c.c \
+	../mllib/mkdtemp-c.c \
 	domainxml-c.c \
 	kvmuid-c.c \
 	utils-c.c \
@@ -292,6 +292,7 @@ v2v_unit_tests_BOBJECTS = \
 	$(top_builddir)/mllib/common_utils.cmo \
 	stringMap.cmo \
 	types.cmo \
+	xml.cmo \
 	utils.cmo \
 	DOM.cmo \
 	OVF.cmo \

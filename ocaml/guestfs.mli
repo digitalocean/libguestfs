@@ -124,6 +124,7 @@ module Errno : sig
   val errno_ENOTSUP : int
   val errno_EPERM : int
   val errno_ESRCH : int
+  val errno_ENOENT : int
 end
 
 type application = {

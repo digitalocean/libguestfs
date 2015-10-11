@@ -133,6 +133,9 @@ struct command
   bool capture_errors;
   int errorfd;
 
+  /* When using the pipe_* APIs, stderr is pointed to a temporary file. */
+  char *error_file;
+
   /* Close file descriptors (defaults to true). */
   bool close_files;
 
@@ -154,9 +157,6 @@ struct command
 
   /* Optional child limits. */
   struct child_rlimits *child_rlimits;
-
-  /* Optional stdin forwarding to the child. */
-  int infd;
 };
 
 /* Create a new command handle. */
@@ -171,7 +171,6 @@ guestfs_int_new_command (guestfs_h *g)
   cmd->close_files = true;
   cmd->errorfd = -1;
   cmd->outfd = -1;
-  cmd->infd = -1;
   return cmd;
 }
 
@@ -280,8 +279,8 @@ guestfs_int_cmd_add_string_quoted (struct command *cmd, const char *str)
  */
 void
 guestfs_int_cmd_set_stdout_callback (struct command *cmd,
-                                   cmd_stdout_callback stdout_callback,
-                                   void *stdout_data, unsigned flags)
+                                     cmd_stdout_callback stdout_callback,
+                                     void *stdout_data, unsigned flags)
 {
   cmd->stdout_callback = stdout_callback;
   cmd->stdout_data = stdout_data;
@@ -338,8 +337,8 @@ guestfs_int_cmd_clear_close_files (struct command *cmd)
  */
 void
 guestfs_int_cmd_set_child_callback (struct command *cmd,
-                                  cmd_child_callback child_callback,
-                                  void *data)
+                                    cmd_child_callback child_callback,
+                                    void *data)
 {
   cmd->child_callback = child_callback;
   cmd->child_callback_data = data;
@@ -412,34 +411,16 @@ debug_command (struct command *cmd)
   }
 }
 
+static void run_child (struct command *cmd) __attribute__((noreturn));
+
 static int
-run_command (struct command *cmd, bool get_stdin_fd, bool get_stdout_fd,
-             bool get_stderr_fd)
+run_command (struct command *cmd)
 {
-  struct sigaction sa;
-  int i, fd, max_fd, r;
   int errorfd[2] = { -1, -1 };
   int outfd[2] = { -1, -1 };
-  int infd[2] = { -1, -1 };
-  char status_string[80];
-#ifdef HAVE_SETRLIMIT
-  struct child_rlimits *child_rlimit;
-  struct rlimit rlimit;
-#endif
-
-  get_stdout_fd = get_stdout_fd || cmd->stdout_callback != NULL;
-  get_stderr_fd = get_stderr_fd || cmd->capture_errors;
-
-  /* Set up a pipe to forward the stdin to the command. */
-  if (get_stdin_fd) {
-    if (pipe2 (infd, O_CLOEXEC) == -1) {
-      perrorf (cmd->g, "pipe2");
-      goto error;
-    }
-  }
 
   /* Set up a pipe to capture command output and send it to the error log. */
-  if (get_stderr_fd) {
+  if (cmd->capture_errors) {
     if (pipe2 (errorfd, O_CLOEXEC) == -1) {
       perrorf (cmd->g, "pipe2");
       goto error;
@@ -447,7 +428,7 @@ run_command (struct command *cmd, bool get_stdin_fd, bool get_stdout_fd,
   }
 
   /* Set up a pipe to capture stdout for the callback. */
-  if (get_stdout_fd) {
+  if (cmd->stdout_callback) {
     if (pipe2 (outfd, O_CLOEXEC) == -1) {
       perrorf (cmd->g, "pipe2");
       goto error;
@@ -462,53 +443,67 @@ run_command (struct command *cmd, bool get_stdin_fd, bool get_stdout_fd,
 
   /* In parent, return to caller. */
   if (cmd->pid > 0) {
-    if (get_stderr_fd) {
+    if (cmd->capture_errors) {
       close (errorfd[1]);
       errorfd[1] = -1;
       cmd->errorfd = errorfd[0];
       errorfd[0] = -1;
     }
 
-    if (get_stdout_fd) {
+    if (cmd->stdout_callback) {
       close (outfd[1]);
       outfd[1] = -1;
       cmd->outfd = outfd[0];
       outfd[0] = -1;
     }
 
-    if (get_stdin_fd) {
-      close (infd[0]);
-      infd[0] = -1;
-      cmd->infd = infd[1];
-      infd[1] = -1;
-    }
-
     return 0;
   }
 
   /* Child process. */
-  if (get_stderr_fd) {
+  if (cmd->capture_errors) {
     close (errorfd[0]);
-    if (!get_stdout_fd)
+    if (!cmd->stdout_callback)
       dup2 (errorfd[1], 1);
     dup2 (errorfd[1], 2);
     close (errorfd[1]);
   }
 
-  if (get_stdout_fd) {
+  if (cmd->stdout_callback) {
     close (outfd[0]);
     dup2 (outfd[1], 1);
     close (outfd[1]);
   }
 
-  if (get_stdin_fd) {
-    close (infd[1]);
-    dup2 (infd[0], 0);
-    close (infd[0]);
-  }
-
   if (cmd->stderr_to_stdout)
     dup2 (1, 2);
+
+  run_child (cmd);
+  /*NOTREACHED*/
+
+ error:
+  if (errorfd[0] >= 0)
+    close (errorfd[0]);
+  if (errorfd[1] >= 0)
+    close (errorfd[1]);
+  if (outfd[0] >= 0)
+    close (outfd[0]);
+  if (outfd[1] >= 0)
+    close (outfd[1]);
+
+  return -1;
+}
+
+static void
+run_child (struct command *cmd)
+{
+  struct sigaction sa;
+  int i, fd, max_fd, r;
+  char status_string[80];
+#ifdef HAVE_SETRLIMIT
+  struct child_rlimits *child_rlimit;
+  struct rlimit rlimit;
+#endif
 
   /* Remove all signal handlers.  See the justification here:
    * https://www.redhat.com/archives/libvir-list/2008-August/msg00303.html
@@ -580,26 +575,16 @@ run_command (struct command *cmd, bool get_stdin_fd, bool get_stdout_fd,
       _exit (WEXITSTATUS (r));
     fprintf (stderr, "%s\n",
              guestfs_int_exit_status_to_string (r, cmd->string.str,
-                                              status_string,
-                                              sizeof status_string));
+                                                status_string,
+                                                sizeof status_string));
     _exit (EXIT_FAILURE);
 
   case COMMAND_STYLE_NOT_SELECTED:
     abort ();
   }
+
   /*NOTREACHED*/
-
- error:
-  if (errorfd[0] >= 0)
-    close (errorfd[0]);
-  if (errorfd[1] >= 0)
-    close (errorfd[1]);
-  if (outfd[0] >= 0)
-    close (outfd[0]);
-  if (outfd[1] >= 0)
-    close (outfd[1]);
-
-  return -1;
+  abort ();
 }
 
 /* The loop which reads errors and output and directs it either
@@ -643,7 +628,7 @@ loop (struct command *cmd)
       n = read (cmd->errorfd, buf, sizeof buf);
       if (n > 0)
         guestfs_int_call_callbacks_message (cmd->g, GUESTFS_EVENT_APPLIANCE,
-                                          buf, n);
+                                            buf, n);
       else if (n == 0) {
         if (close (cmd->errorfd) == -1)
           perrorf (cmd->g, "close: errorfd");
@@ -720,7 +705,7 @@ guestfs_int_cmd_run (struct command *cmd)
   if (cmd->g->verbose)
     debug_command (cmd);
 
-  if (run_command (cmd, false, false, false) == -1)
+  if (run_command (cmd) == -1)
     return -1;
 
   if (loop (cmd) == -1)
@@ -729,50 +714,145 @@ guestfs_int_cmd_run (struct command *cmd)
   return wait_command (cmd);
 }
 
-/* Fork, run the command, and returns the pid of the command,
- * and its stdin, stdout and stderr file descriptors.
+/* Fork and run the command, but don't wait.  Roughly equivalent to
+ * popen (..., "r"|"w").
  *
- * Returns the exit status.  Test it using WIF* macros.
+ * Returns the file descriptor of the pipe, connected to stdout ("r")
+ * or stdin ("w") of the child process.
  *
- * On error: Calls error(g) and returns -1.
+ * After reading/writing to this pipe, call guestfs_int_cmd_pipe_wait
+ * to wait for the status of the child.
+ *
+ * Errors from the subcommand cannot be captured to the error log
+ * using this interface.  Instead the caller should call
+ * guestfs_int_cmd_get_pipe_errors (after guestfs_int_cmd_pipe_wait
+ * returns an error).
  */
 int
-guestfs_int_cmd_run_async (struct command *cmd, pid_t *pid,
-                         int *stdin_fd, int *stdout_fd, int *stderr_fd)
+guestfs_int_cmd_pipe_run (struct command *cmd, const char *mode)
 {
+  int fd[2] = { -1, -1 };
+  int errfd = -1;
+  int r_mode;
+  int ret;
+
   finish_command (cmd);
 
-  if (cmd->g->verbose)
-    debug_command (cmd);
+  /* Various options cannot be used here. */
+  assert (!cmd->capture_errors);
+  assert (!cmd->stdout_callback);
+  assert (!cmd->stderr_to_stdout);
 
-  if (run_command (cmd, stdin_fd != NULL, stdout_fd != NULL,
-                   stderr_fd != NULL) == -1)
-    return -1;
+  if (STREQ (mode, "r"))      r_mode = 1;
+  else if (STREQ (mode, "w")) r_mode = 0;
+  else abort ();
 
-  if (pid)
-    *pid = cmd->pid;
-  if (stdin_fd)
-    *stdin_fd = cmd->infd;
-  if (stdout_fd)
-    *stdout_fd = cmd->outfd;
-  if (stderr_fd)
-    *stderr_fd = cmd->errorfd;
+  if (pipe2 (fd, O_CLOEXEC) == -1) {
+    perrorf (cmd->g, "pipe2");
+    goto error;
+  }
 
-  return 0;
+  /* We can't easily capture errors from the child process, so instead
+   * we write them into a temporary file and provide a separate
+   * function for the caller to read the error messages.
+   */
+  if (guestfs_int_lazy_make_tmpdir (cmd->g) == -1)
+    goto error;
+
+  cmd->error_file =
+    safe_asprintf (cmd->g, "%s/cmderr.%d", cmd->g->tmpdir, ++cmd->g->unique);
+  errfd = open (cmd->error_file,
+                O_WRONLY|O_CREAT|O_NOCTTY|O_TRUNC|O_CLOEXEC, 0600);
+  if (errfd == -1) {
+    perrorf (cmd->g, "open: %s", cmd->error_file);
+    goto error;
+  }
+
+  cmd->pid = fork ();
+  if (cmd->pid == -1) {
+    perrorf (cmd->g, "fork");
+    goto error;
+  }
+
+  /* Parent. */
+  if (cmd->pid > 0) {
+    close (errfd);
+    errfd = -1;
+
+    if (r_mode) {
+      close (fd[1]);
+      ret = fd[0];
+    }
+    else {
+      close (fd[0]);
+      ret = fd[1];
+    }
+
+    return ret;
+  }
+
+  /* Child. */
+  dup2 (errfd, 2);
+  close (errfd);
+
+  if (r_mode) {
+    close (fd[0]);
+    dup2 (fd[1], 1);
+    close (fd[1]);
+  }
+  else {
+    close (fd[1]);
+    dup2 (fd[0], 0);
+    close (fd[0]);
+  }
+
+  run_child (cmd);
+  /*NOTREACHED*/
+
+ error:
+  if (errfd >= 0)
+    close (errfd);
+  if (fd[0] >= 0)
+    close (fd[0]);
+  if (fd[1] >= 0)
+    close (fd[1]);
+  return -1;
 }
 
-/* Wait for the command to finish.
- *
- * The command MUST have been started with guestfs_int_cmd_run_async.
- *
- * Returns the exit status.  Test it using WIF* macros.
- *
- * On error: Calls error(g) and returns -1.
+/* Wait for a subprocess created by guestfs_int_cmd_pipe_run to
+ * finish.  On error (eg. failed syscall) this returns -1 and sets the
+ * error.  If the subcommand fails, then use WIF* macros to check
+ * this, and call guestfs_int_cmd_get_pipe_errors to read the error
+ * messages printed by the child.
  */
 int
-guestfs_int_cmd_wait (struct command *cmd)
+guestfs_int_cmd_pipe_wait (struct command *cmd)
 {
   return wait_command (cmd);
+}
+
+/* Read the error messages printed by the child.  The caller must free
+ * the returned buffer after use.
+ */
+char *
+guestfs_int_cmd_get_pipe_errors (struct command *cmd)
+{
+  char *ret;
+  size_t len;
+
+  assert (cmd->error_file != NULL);
+
+  if (guestfs_int_read_whole_file (cmd->g, cmd->error_file, &ret, NULL) == -1)
+    return NULL;
+
+  /* If the file ends with \n characters, trim them. */
+  len = strlen (ret);
+  while (len > 0 && ret[len-1] == '\n') {
+    ret[len-1] = '\0';
+    len--;
+  }
+
+  return ret;
 }
 
 void
@@ -797,14 +877,16 @@ guestfs_int_cmd_close (struct command *cmd)
     break;
   }
 
+  if (cmd->error_file != NULL) {
+    unlink (cmd->error_file);
+    free (cmd->error_file);
+  }
+
   if (cmd->errorfd >= 0)
     close (cmd->errorfd);
 
   if (cmd->outfd >= 0)
     close (cmd->outfd);
-
-  if (cmd->infd >= 0)
-    close (cmd->infd);
 
   free (cmd->outbuf.buffer);
 

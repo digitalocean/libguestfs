@@ -63,7 +63,7 @@ This parameter is B<mandatory>, as virt-dib needs to provide it for the
 elements (as some of them might use scripts in it).  Virt-dib itself does
 not make use of the library directory.
 
-=item B<--arch> ARCHITECURE
+=item B<--arch> ARCHITECTURE
 
 Use the specified architecture for the output image.  The default value is
 the same as the host running virt-dib.
@@ -282,6 +282,12 @@ debug failures to run scripts.
 
 The default is to delete the output file if virt-dib fails (or, for example,
 some script that it runs fails).
+
+=item B<-q>
+
+=item B<--quiet>
+
+Don't print ordinary progress messages.
 
 =item B<--qemu-img-options> option[,option,...]
 

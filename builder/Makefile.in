@@ -298,17 +298,19 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" \
 	"$(DESTDIR)$(repoconfdir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__virt_builder_SOURCES_DIST = $(top_srcdir)/mllib/fsync-c.c \
-	$(top_srcdir)/mllib/uri-c.c $(top_srcdir)/mllib/mkdtemp-c.c \
-	$(top_srcdir)/customize/perl_edit-c.c \
-	$(top_srcdir)/customize/crypt-c.c $(top_srcdir)/fish/uri.c \
-	$(top_srcdir)/fish/file-edit.c index-scan.c index-struct.c \
-	index-parse.c index-parser-c.c pxzcat-c.c setlocale-c.c
-am__objects_1 = virt_builder-fsync-c.$(OBJEXT) \
-	virt_builder-uri-c.$(OBJEXT) virt_builder-mkdtemp-c.$(OBJEXT) \
-	virt_builder-perl_edit-c.$(OBJEXT) \
-	virt_builder-crypt-c.$(OBJEXT) virt_builder-uri.$(OBJEXT) \
-	virt_builder-file-edit.$(OBJEXT) \
+am__virt_builder_SOURCES_DIST = ../mllib/fsync-c.c ../mllib/uri-c.c \
+	../mllib/mkdtemp-c.c ../customize/perl_edit-c.c \
+	../customize/crypt-c.c ../fish/uri.c ../fish/file-edit.c \
+	index-scan.c index-struct.c index-parse.c index-parser-c.c \
+	pxzcat-c.c setlocale-c.c
+am__dirstamp = $(am__leading_dot)dirstamp
+am__objects_1 = ../mllib/virt_builder-fsync-c.$(OBJEXT) \
+	../mllib/virt_builder-uri-c.$(OBJEXT) \
+	../mllib/virt_builder-mkdtemp-c.$(OBJEXT) \
+	../customize/virt_builder-perl_edit-c.$(OBJEXT) \
+	../customize/virt_builder-crypt-c.$(OBJEXT) \
+	../fish/virt_builder-uri.$(OBJEXT) \
+	../fish/virt_builder-file-edit.$(OBJEXT) \
 	virt_builder-index-scan.$(OBJEXT) \
 	virt_builder-index-struct.$(OBJEXT) \
 	virt_builder-index-parse.$(OBJEXT) \
@@ -1636,13 +1638,13 @@ SOURCES_ML = \
 	builder.ml
 
 SOURCES_C = \
-	$(top_srcdir)/mllib/fsync-c.c \
-	$(top_srcdir)/mllib/uri-c.c \
-	$(top_srcdir)/mllib/mkdtemp-c.c \
-	$(top_srcdir)/customize/perl_edit-c.c \
-	$(top_srcdir)/customize/crypt-c.c \
-	$(top_srcdir)/fish/uri.c \
-	$(top_srcdir)/fish/file-edit.c \
+	../mllib/fsync-c.c \
+	../mllib/uri-c.c \
+	../mllib/mkdtemp-c.c \
+	../customize/perl_edit-c.c \
+	../customize/crypt-c.c \
+	../fish/uri.c \
+	../fish/file-edit.c \
 	index-scan.c \
 	index-struct.c \
 	index-parse.c \
@@ -1692,6 +1694,7 @@ noinst_DATA = $(am__append_4) \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/crypt.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/password.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/ssh_key.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/subscription_manager.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_cmdline.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_run.cmo \
 @HAVE_OCAML_TRUE@	$(SOURCES_ML:.ml=.cmo)
@@ -1852,6 +1855,40 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+../mllib/$(am__dirstamp):
+	@$(MKDIR_P) ../mllib
+	@: > ../mllib/$(am__dirstamp)
+../mllib/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../mllib/$(DEPDIR)
+	@: > ../mllib/$(DEPDIR)/$(am__dirstamp)
+../mllib/virt_builder-fsync-c.$(OBJEXT): ../mllib/$(am__dirstamp) \
+	../mllib/$(DEPDIR)/$(am__dirstamp)
+../mllib/virt_builder-uri-c.$(OBJEXT): ../mllib/$(am__dirstamp) \
+	../mllib/$(DEPDIR)/$(am__dirstamp)
+../mllib/virt_builder-mkdtemp-c.$(OBJEXT): ../mllib/$(am__dirstamp) \
+	../mllib/$(DEPDIR)/$(am__dirstamp)
+../customize/$(am__dirstamp):
+	@$(MKDIR_P) ../customize
+	@: > ../customize/$(am__dirstamp)
+../customize/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../customize/$(DEPDIR)
+	@: > ../customize/$(DEPDIR)/$(am__dirstamp)
+../customize/virt_builder-perl_edit-c.$(OBJEXT):  \
+	../customize/$(am__dirstamp) \
+	../customize/$(DEPDIR)/$(am__dirstamp)
+../customize/virt_builder-crypt-c.$(OBJEXT):  \
+	../customize/$(am__dirstamp) \
+	../customize/$(DEPDIR)/$(am__dirstamp)
+../fish/$(am__dirstamp):
+	@$(MKDIR_P) ../fish
+	@: > ../fish/$(am__dirstamp)
+../fish/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../fish/$(DEPDIR)
+	@: > ../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_builder-uri.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_builder-file-edit.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
 
 virt-builder$(EXEEXT): $(virt_builder_OBJECTS) $(virt_builder_DEPENDENCIES) $(EXTRA_virt_builder_DEPENDENCIES) 
 	@rm -f virt-builder$(EXEEXT)
@@ -1866,146 +1903,152 @@ virt-index-validate$(EXEEXT): $(virt_index_validate_OBJECTS) $(virt_index_valida
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../customize/*.$(OBJEXT)
+	-rm -f ../fish/*.$(OBJEXT)
+	-rm -f ../mllib/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-crypt-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-file-edit.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-fsync-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../customize/$(DEPDIR)/virt_builder-crypt-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../customize/$(DEPDIR)/virt_builder-perl_edit-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_builder-file-edit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_builder-uri.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../mllib/$(DEPDIR)/virt_builder-fsync-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../mllib/$(DEPDIR)/virt_builder-mkdtemp-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../mllib/$(DEPDIR)/virt_builder-uri-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-index-parse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-index-parser-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-index-scan.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-index-struct.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-mkdtemp-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-perl_edit-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-pxzcat-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-setlocale-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-uri-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_index_validate-index-parse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_index_validate-index-scan.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_index_validate-index-struct.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_index_validate-index-validate.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-virt_builder-fsync-c.o: $(top_srcdir)/mllib/fsync-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-fsync-c.o -MD -MP -MF $(DEPDIR)/virt_builder-fsync-c.Tpo -c -o virt_builder-fsync-c.o `test -f '$(top_srcdir)/mllib/fsync-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/fsync-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder-fsync-c.Tpo $(DEPDIR)/virt_builder-fsync-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/fsync-c.c' object='virt_builder-fsync-c.o' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_builder-fsync-c.o: ../mllib/fsync-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../mllib/virt_builder-fsync-c.o -MD -MP -MF ../mllib/$(DEPDIR)/virt_builder-fsync-c.Tpo -c -o ../mllib/virt_builder-fsync-c.o `test -f '../mllib/fsync-c.c' || echo '$(srcdir)/'`../mllib/fsync-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_builder-fsync-c.Tpo ../mllib/$(DEPDIR)/virt_builder-fsync-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/fsync-c.c' object='../mllib/virt_builder-fsync-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-fsync-c.o `test -f '$(top_srcdir)/mllib/fsync-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/fsync-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_builder-fsync-c.o `test -f '../mllib/fsync-c.c' || echo '$(srcdir)/'`../mllib/fsync-c.c
 
-virt_builder-fsync-c.obj: $(top_srcdir)/mllib/fsync-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-fsync-c.obj -MD -MP -MF $(DEPDIR)/virt_builder-fsync-c.Tpo -c -o virt_builder-fsync-c.obj `if test -f '$(top_srcdir)/mllib/fsync-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/fsync-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/fsync-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder-fsync-c.Tpo $(DEPDIR)/virt_builder-fsync-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/fsync-c.c' object='virt_builder-fsync-c.obj' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_builder-fsync-c.obj: ../mllib/fsync-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../mllib/virt_builder-fsync-c.obj -MD -MP -MF ../mllib/$(DEPDIR)/virt_builder-fsync-c.Tpo -c -o ../mllib/virt_builder-fsync-c.obj `if test -f '../mllib/fsync-c.c'; then $(CYGPATH_W) '../mllib/fsync-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/fsync-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_builder-fsync-c.Tpo ../mllib/$(DEPDIR)/virt_builder-fsync-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/fsync-c.c' object='../mllib/virt_builder-fsync-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-fsync-c.obj `if test -f '$(top_srcdir)/mllib/fsync-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/fsync-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/fsync-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_builder-fsync-c.obj `if test -f '../mllib/fsync-c.c'; then $(CYGPATH_W) '../mllib/fsync-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/fsync-c.c'; fi`
 
-virt_builder-uri-c.o: $(top_srcdir)/mllib/uri-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-uri-c.o -MD -MP -MF $(DEPDIR)/virt_builder-uri-c.Tpo -c -o virt_builder-uri-c.o `test -f '$(top_srcdir)/mllib/uri-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/uri-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder-uri-c.Tpo $(DEPDIR)/virt_builder-uri-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/uri-c.c' object='virt_builder-uri-c.o' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_builder-uri-c.o: ../mllib/uri-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../mllib/virt_builder-uri-c.o -MD -MP -MF ../mllib/$(DEPDIR)/virt_builder-uri-c.Tpo -c -o ../mllib/virt_builder-uri-c.o `test -f '../mllib/uri-c.c' || echo '$(srcdir)/'`../mllib/uri-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_builder-uri-c.Tpo ../mllib/$(DEPDIR)/virt_builder-uri-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/uri-c.c' object='../mllib/virt_builder-uri-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-uri-c.o `test -f '$(top_srcdir)/mllib/uri-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/uri-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_builder-uri-c.o `test -f '../mllib/uri-c.c' || echo '$(srcdir)/'`../mllib/uri-c.c
 
-virt_builder-uri-c.obj: $(top_srcdir)/mllib/uri-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-uri-c.obj -MD -MP -MF $(DEPDIR)/virt_builder-uri-c.Tpo -c -o virt_builder-uri-c.obj `if test -f '$(top_srcdir)/mllib/uri-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/uri-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/uri-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder-uri-c.Tpo $(DEPDIR)/virt_builder-uri-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/uri-c.c' object='virt_builder-uri-c.obj' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_builder-uri-c.obj: ../mllib/uri-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../mllib/virt_builder-uri-c.obj -MD -MP -MF ../mllib/$(DEPDIR)/virt_builder-uri-c.Tpo -c -o ../mllib/virt_builder-uri-c.obj `if test -f '../mllib/uri-c.c'; then $(CYGPATH_W) '../mllib/uri-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/uri-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_builder-uri-c.Tpo ../mllib/$(DEPDIR)/virt_builder-uri-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/uri-c.c' object='../mllib/virt_builder-uri-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-uri-c.obj `if test -f '$(top_srcdir)/mllib/uri-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/uri-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/uri-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_builder-uri-c.obj `if test -f '../mllib/uri-c.c'; then $(CYGPATH_W) '../mllib/uri-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/uri-c.c'; fi`
 
-virt_builder-mkdtemp-c.o: $(top_srcdir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-mkdtemp-c.o -MD -MP -MF $(DEPDIR)/virt_builder-mkdtemp-c.Tpo -c -o virt_builder-mkdtemp-c.o `test -f '$(top_srcdir)/mllib/mkdtemp-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder-mkdtemp-c.Tpo $(DEPDIR)/virt_builder-mkdtemp-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/mkdtemp-c.c' object='virt_builder-mkdtemp-c.o' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_builder-mkdtemp-c.o: ../mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../mllib/virt_builder-mkdtemp-c.o -MD -MP -MF ../mllib/$(DEPDIR)/virt_builder-mkdtemp-c.Tpo -c -o ../mllib/virt_builder-mkdtemp-c.o `test -f '../mllib/mkdtemp-c.c' || echo '$(srcdir)/'`../mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_builder-mkdtemp-c.Tpo ../mllib/$(DEPDIR)/virt_builder-mkdtemp-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/mkdtemp-c.c' object='../mllib/virt_builder-mkdtemp-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-mkdtemp-c.o `test -f '$(top_srcdir)/mllib/mkdtemp-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/mkdtemp-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_builder-mkdtemp-c.o `test -f '../mllib/mkdtemp-c.c' || echo '$(srcdir)/'`../mllib/mkdtemp-c.c
 
-virt_builder-mkdtemp-c.obj: $(top_srcdir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-mkdtemp-c.obj -MD -MP -MF $(DEPDIR)/virt_builder-mkdtemp-c.Tpo -c -o virt_builder-mkdtemp-c.obj `if test -f '$(top_srcdir)/mllib/mkdtemp-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/mkdtemp-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder-mkdtemp-c.Tpo $(DEPDIR)/virt_builder-mkdtemp-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/mkdtemp-c.c' object='virt_builder-mkdtemp-c.obj' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_builder-mkdtemp-c.obj: ../mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../mllib/virt_builder-mkdtemp-c.obj -MD -MP -MF ../mllib/$(DEPDIR)/virt_builder-mkdtemp-c.Tpo -c -o ../mllib/virt_builder-mkdtemp-c.obj `if test -f '../mllib/mkdtemp-c.c'; then $(CYGPATH_W) '../mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/mkdtemp-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_builder-mkdtemp-c.Tpo ../mllib/$(DEPDIR)/virt_builder-mkdtemp-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/mkdtemp-c.c' object='../mllib/virt_builder-mkdtemp-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-mkdtemp-c.obj `if test -f '$(top_srcdir)/mllib/mkdtemp-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/mkdtemp-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_builder-mkdtemp-c.obj `if test -f '../mllib/mkdtemp-c.c'; then $(CYGPATH_W) '../mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/mkdtemp-c.c'; fi`
 
-virt_builder-perl_edit-c.o: $(top_srcdir)/customize/perl_edit-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-perl_edit-c.o -MD -MP -MF $(DEPDIR)/virt_builder-perl_edit-c.Tpo -c -o virt_builder-perl_edit-c.o `test -f '$(top_srcdir)/customize/perl_edit-c.c' || echo '$(srcdir)/'`$(top_srcdir)/customize/perl_edit-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder-perl_edit-c.Tpo $(DEPDIR)/virt_builder-perl_edit-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/customize/perl_edit-c.c' object='virt_builder-perl_edit-c.o' libtool=no @AMDEPBACKSLASH@
+../customize/virt_builder-perl_edit-c.o: ../customize/perl_edit-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../customize/virt_builder-perl_edit-c.o -MD -MP -MF ../customize/$(DEPDIR)/virt_builder-perl_edit-c.Tpo -c -o ../customize/virt_builder-perl_edit-c.o `test -f '../customize/perl_edit-c.c' || echo '$(srcdir)/'`../customize/perl_edit-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../customize/$(DEPDIR)/virt_builder-perl_edit-c.Tpo ../customize/$(DEPDIR)/virt_builder-perl_edit-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../customize/perl_edit-c.c' object='../customize/virt_builder-perl_edit-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-perl_edit-c.o `test -f '$(top_srcdir)/customize/perl_edit-c.c' || echo '$(srcdir)/'`$(top_srcdir)/customize/perl_edit-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../customize/virt_builder-perl_edit-c.o `test -f '../customize/perl_edit-c.c' || echo '$(srcdir)/'`../customize/perl_edit-c.c
 
-virt_builder-perl_edit-c.obj: $(top_srcdir)/customize/perl_edit-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-perl_edit-c.obj -MD -MP -MF $(DEPDIR)/virt_builder-perl_edit-c.Tpo -c -o virt_builder-perl_edit-c.obj `if test -f '$(top_srcdir)/customize/perl_edit-c.c'; then $(CYGPATH_W) '$(top_srcdir)/customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/customize/perl_edit-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder-perl_edit-c.Tpo $(DEPDIR)/virt_builder-perl_edit-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/customize/perl_edit-c.c' object='virt_builder-perl_edit-c.obj' libtool=no @AMDEPBACKSLASH@
+../customize/virt_builder-perl_edit-c.obj: ../customize/perl_edit-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../customize/virt_builder-perl_edit-c.obj -MD -MP -MF ../customize/$(DEPDIR)/virt_builder-perl_edit-c.Tpo -c -o ../customize/virt_builder-perl_edit-c.obj `if test -f '../customize/perl_edit-c.c'; then $(CYGPATH_W) '../customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/../customize/perl_edit-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../customize/$(DEPDIR)/virt_builder-perl_edit-c.Tpo ../customize/$(DEPDIR)/virt_builder-perl_edit-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../customize/perl_edit-c.c' object='../customize/virt_builder-perl_edit-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-perl_edit-c.obj `if test -f '$(top_srcdir)/customize/perl_edit-c.c'; then $(CYGPATH_W) '$(top_srcdir)/customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/customize/perl_edit-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../customize/virt_builder-perl_edit-c.obj `if test -f '../customize/perl_edit-c.c'; then $(CYGPATH_W) '../customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/../customize/perl_edit-c.c'; fi`
 
-virt_builder-crypt-c.o: $(top_srcdir)/customize/crypt-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-crypt-c.o -MD -MP -MF $(DEPDIR)/virt_builder-crypt-c.Tpo -c -o virt_builder-crypt-c.o `test -f '$(top_srcdir)/customize/crypt-c.c' || echo '$(srcdir)/'`$(top_srcdir)/customize/crypt-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder-crypt-c.Tpo $(DEPDIR)/virt_builder-crypt-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/customize/crypt-c.c' object='virt_builder-crypt-c.o' libtool=no @AMDEPBACKSLASH@
+../customize/virt_builder-crypt-c.o: ../customize/crypt-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../customize/virt_builder-crypt-c.o -MD -MP -MF ../customize/$(DEPDIR)/virt_builder-crypt-c.Tpo -c -o ../customize/virt_builder-crypt-c.o `test -f '../customize/crypt-c.c' || echo '$(srcdir)/'`../customize/crypt-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../customize/$(DEPDIR)/virt_builder-crypt-c.Tpo ../customize/$(DEPDIR)/virt_builder-crypt-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../customize/crypt-c.c' object='../customize/virt_builder-crypt-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-crypt-c.o `test -f '$(top_srcdir)/customize/crypt-c.c' || echo '$(srcdir)/'`$(top_srcdir)/customize/crypt-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../customize/virt_builder-crypt-c.o `test -f '../customize/crypt-c.c' || echo '$(srcdir)/'`../customize/crypt-c.c
 
-virt_builder-crypt-c.obj: $(top_srcdir)/customize/crypt-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-crypt-c.obj -MD -MP -MF $(DEPDIR)/virt_builder-crypt-c.Tpo -c -o virt_builder-crypt-c.obj `if test -f '$(top_srcdir)/customize/crypt-c.c'; then $(CYGPATH_W) '$(top_srcdir)/customize/crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/customize/crypt-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder-crypt-c.Tpo $(DEPDIR)/virt_builder-crypt-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/customize/crypt-c.c' object='virt_builder-crypt-c.obj' libtool=no @AMDEPBACKSLASH@
+../customize/virt_builder-crypt-c.obj: ../customize/crypt-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../customize/virt_builder-crypt-c.obj -MD -MP -MF ../customize/$(DEPDIR)/virt_builder-crypt-c.Tpo -c -o ../customize/virt_builder-crypt-c.obj `if test -f '../customize/crypt-c.c'; then $(CYGPATH_W) '../customize/crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/../customize/crypt-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../customize/$(DEPDIR)/virt_builder-crypt-c.Tpo ../customize/$(DEPDIR)/virt_builder-crypt-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../customize/crypt-c.c' object='../customize/virt_builder-crypt-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-crypt-c.obj `if test -f '$(top_srcdir)/customize/crypt-c.c'; then $(CYGPATH_W) '$(top_srcdir)/customize/crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/customize/crypt-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../customize/virt_builder-crypt-c.obj `if test -f '../customize/crypt-c.c'; then $(CYGPATH_W) '../customize/crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/../customize/crypt-c.c'; fi`
 
-virt_builder-uri.o: $(top_srcdir)/fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-uri.o -MD -MP -MF $(DEPDIR)/virt_builder-uri.Tpo -c -o virt_builder-uri.o `test -f '$(top_srcdir)/fish/uri.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder-uri.Tpo $(DEPDIR)/virt_builder-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/uri.c' object='virt_builder-uri.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_builder-uri.o: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../fish/virt_builder-uri.o -MD -MP -MF ../fish/$(DEPDIR)/virt_builder-uri.Tpo -c -o ../fish/virt_builder-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_builder-uri.Tpo ../fish/$(DEPDIR)/virt_builder-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_builder-uri.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-uri.o `test -f '$(top_srcdir)/fish/uri.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/uri.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../fish/virt_builder-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
 
-virt_builder-uri.obj: $(top_srcdir)/fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-uri.obj -MD -MP -MF $(DEPDIR)/virt_builder-uri.Tpo -c -o virt_builder-uri.obj `if test -f '$(top_srcdir)/fish/uri.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/uri.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder-uri.Tpo $(DEPDIR)/virt_builder-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/uri.c' object='virt_builder-uri.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_builder-uri.obj: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../fish/virt_builder-uri.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_builder-uri.Tpo -c -o ../fish/virt_builder-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_builder-uri.Tpo ../fish/$(DEPDIR)/virt_builder-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_builder-uri.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-uri.obj `if test -f '$(top_srcdir)/fish/uri.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/uri.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../fish/virt_builder-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
-virt_builder-file-edit.o: $(top_srcdir)/fish/file-edit.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-file-edit.o -MD -MP -MF $(DEPDIR)/virt_builder-file-edit.Tpo -c -o virt_builder-file-edit.o `test -f '$(top_srcdir)/fish/file-edit.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/file-edit.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder-file-edit.Tpo $(DEPDIR)/virt_builder-file-edit.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/file-edit.c' object='virt_builder-file-edit.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_builder-file-edit.o: ../fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../fish/virt_builder-file-edit.o -MD -MP -MF ../fish/$(DEPDIR)/virt_builder-file-edit.Tpo -c -o ../fish/virt_builder-file-edit.o `test -f '../fish/file-edit.c' || echo '$(srcdir)/'`../fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_builder-file-edit.Tpo ../fish/$(DEPDIR)/virt_builder-file-edit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/file-edit.c' object='../fish/virt_builder-file-edit.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-file-edit.o `test -f '$(top_srcdir)/fish/file-edit.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/file-edit.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../fish/virt_builder-file-edit.o `test -f '../fish/file-edit.c' || echo '$(srcdir)/'`../fish/file-edit.c
 
-virt_builder-file-edit.obj: $(top_srcdir)/fish/file-edit.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-file-edit.obj -MD -MP -MF $(DEPDIR)/virt_builder-file-edit.Tpo -c -o virt_builder-file-edit.obj `if test -f '$(top_srcdir)/fish/file-edit.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/file-edit.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder-file-edit.Tpo $(DEPDIR)/virt_builder-file-edit.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/file-edit.c' object='virt_builder-file-edit.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_builder-file-edit.obj: ../fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../fish/virt_builder-file-edit.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_builder-file-edit.Tpo -c -o ../fish/virt_builder-file-edit.obj `if test -f '../fish/file-edit.c'; then $(CYGPATH_W) '../fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/../fish/file-edit.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_builder-file-edit.Tpo ../fish/$(DEPDIR)/virt_builder-file-edit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/file-edit.c' object='../fish/virt_builder-file-edit.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-file-edit.obj `if test -f '$(top_srcdir)/fish/file-edit.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/file-edit.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../fish/virt_builder-file-edit.obj `if test -f '../fish/file-edit.c'; then $(CYGPATH_W) '../fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/../fish/file-edit.c'; fi`
 
 virt_builder-index-scan.o: index-scan.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-index-scan.o -MD -MP -MF $(DEPDIR)/virt_builder-index-scan.Tpo -c -o virt_builder-index-scan.o `test -f 'index-scan.c' || echo '$(srcdir)/'`index-scan.c
@@ -2437,6 +2480,12 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../customize/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../customize/$(am__dirstamp)
+	-rm -f ../fish/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../fish/$(am__dirstamp)
+	-rm -f ../mllib/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../mllib/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -2450,7 +2499,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../customize/$(DEPDIR) ../fish/$(DEPDIR) ../mllib/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2497,7 +2546,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../customize/$(DEPDIR) ../fish/$(DEPDIR) ../mllib/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

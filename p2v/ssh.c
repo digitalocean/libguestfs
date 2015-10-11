@@ -110,6 +110,23 @@ compile_regexps (void)
 {
   const char *err;
   int offset;
+  int p;
+
+  /* These regexps are always used for partial matching.  In pcre < 8
+   * there were limitations on the regexps possible for partial
+   * matching, so fail if that is true here.  In pcre >= 8, all
+   * regexps can be used in a partial match.
+   */
+#define CHECK_PARTIAL_OK(pattern, re)					\
+  do {									\
+    pcre_fullinfo ((re), NULL, PCRE_INFO_OKPARTIAL, &p);		\
+    if (p != 1) {							\
+      fprintf (stderr, "%s: %s:%d: internal error: pattern '%s' cannot be used for partial matching\n", \
+	       guestfs_int_program_name,				\
+	       __FILE__, __LINE__, (pattern));				\
+      abort ();								\
+    }									\
+  } while (0)
 
 #define COMPILE(re,pattern,options)                                     \
   do {                                                                  \
@@ -118,19 +135,22 @@ compile_regexps (void)
       ignore_value (write (2, err, strlen (err)));                      \
       abort ();                                                         \
     }                                                                   \
+    CHECK_PARTIAL_OK ((pattern), re);					\
   } while (0)
 
   COMPILE (password_re, "assword", 0);
   /* The magic synchronization strings all match this expression.  See
    * start_ssh function below.
    */
-  COMPILE (prompt_re, "###([0123456789abcdefghijklmnopqrstuvwxyz]{8})### ", 0);
+  COMPILE (prompt_re,
+	   "###((?:[0123456789abcdefghijklmnopqrstuvwxyz]){8})### ", 0);
   COMPILE (version_re,
-           "virt-v2v ([1-9]\\d*)\\.([1-9]\\d*)\\.(0|[1-9]\\d*)", 0);
+           "virt-v2v ([1-9](?:\\d)*)\\.([1-9](?:\\d)*)\\.(0|[1-9](?:\\d)*)",
+	   0);
   COMPILE (feature_libguestfs_rewrite_re, "libguestfs-rewrite", 0);
-  COMPILE (feature_input_re, "input:(\\w*)", 0);
-  COMPILE (feature_output_re, "output:(\\w*)", 0);
-  COMPILE (portfwd_re, "Allocated port (\\d+) for remote forward", 0);
+  COMPILE (feature_input_re, "input:((?:\\w)*)", 0);
+  COMPILE (feature_output_re, "output:((?:\\w)*)", 0);
+  COMPILE (portfwd_re, "Allocated port ((?:\\d)+) for remote forward", 0);
 }
 
 static void
@@ -345,6 +365,11 @@ test_connection (struct config *config)
   if (h == NULL)
     return -1;
 
+  /* Clear any previous version information since we may be connecting
+   * to a different server.
+   */
+  v2v_major = v2v_minor = v2v_release = 0;
+
   /* Send 'virt-v2v --version' command and hope we get back a version string.
    * Note old virt-v2v did not understand -V option.
    */
@@ -438,6 +463,13 @@ test_connection (struct config *config)
                    "the conversion server", v2v_major, v2v_minor);
     return -1;
   }
+
+  /* Clear any previous driver information since we may be connecting
+   * to a different server.
+   */
+  guestfs_int_free_string_list (input_drivers);
+  guestfs_int_free_string_list (output_drivers);
+  input_drivers = output_drivers = NULL;
 
   /* Get virt-v2v features.  See: v2v/cmdline.ml */
   if (mexp_printf (h, "%svirt-v2v --machine-readable\n",

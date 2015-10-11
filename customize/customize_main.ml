@@ -39,7 +39,6 @@ let main () =
     | s -> attach_format := Some s
   in
   let attach_disk s = attach := (!attach_format, s) :: !attach in
-  let debug_gc = ref false in
   let domain = ref None in
   let dryrun = ref false in
   let files = ref [] in
@@ -79,43 +78,24 @@ let main () =
                                             "format" ^ " " ^ s_"Set attach disk format";
     "-c",        Arg.Set_string libvirturi, s_"uri" ^ " " ^ s_"Set libvirt URI";
     "--connect", Arg.Set_string libvirturi, s_"uri" ^ " " ^ s_"Set libvirt URI";
-    "--debug-gc", Arg.Set debug_gc,         " " ^ s_"Debug GC and memory allocations (internal)";
     "-d",        Arg.String set_domain,     s_"domain" ^ " " ^ s_"Set libvirt guest name";
     "--domain",  Arg.String set_domain,     s_"domain" ^ " " ^ s_"Set libvirt guest name";
     "-n",        Arg.Set dryrun,            " " ^ s_"Perform a dry run";
     "--dryrun",  Arg.Set dryrun,            " " ^ s_"Perform a dry run";
     "--dry-run", Arg.Set dryrun,            " " ^ s_"Perform a dry run";
     "--format",  Arg.String set_format,     s_"format" ^ " " ^ s_"Set format (default: auto)";
-    "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
-    "--short-options", Arg.Unit display_short_options, " " ^ s_"List short options";
     "-m",        Arg.Int set_memsize,       "mb" ^ " " ^ s_"Set memory size";
     "--memsize", Arg.Int set_memsize,       "mb" ^ " " ^ s_"Set memory size";
     "--network", Arg.Set network,           " " ^ s_"Enable appliance network (default)";
     "--no-network", Arg.Clear network,      " " ^ s_"Disable appliance network";
-    "-q",        Arg.Unit set_quiet,        " " ^ s_"Don't print log messages";
-    "--quiet",   Arg.Unit set_quiet,        " " ^ s_"Don't print log messages";
     "--smp",     Arg.Int set_smp,           "vcpus" ^ " " ^ s_"Set number of vCPUs";
-    "-v",        Arg.Unit set_verbose,      " " ^ s_"Enable debugging messages";
-    "--verbose", Arg.Unit set_verbose,      " " ^ s_"Enable debugging messages";
-    "-V",        Arg.Unit print_version_and_exit,
-                                            " " ^ s_"Display version and exit";
-    "--version", Arg.Unit print_version_and_exit,
-                          " " ^ s_"Display version and exit";
-    "-x",        Arg.Unit set_trace,        " " ^ s_"Enable tracing of libguestfs calls";
   ] in
   let customize_argspec, get_customize_ops =
     Customize_cmdline.argspec () in
   let customize_argspec =
     List.map (fun (spec, _, _) -> spec) customize_argspec in
   let argspec = argspec @ customize_argspec in
-  let argspec =
-    let cmp (arg1, _, _) (arg2, _, _) =
-      let arg1 = skip_dashes arg1 and arg2 = skip_dashes arg2 in
-      compare (String.lowercase arg1) (String.lowercase arg2)
-    in
-    List.sort cmp argspec in
-  let argspec = Arg.align argspec in
-  long_options := argspec;
+  let argspec = set_standard_options argspec in
 
   let anon_fun _ = raise (Arg.Bad (s_"extra parameter on the command line")) in
   let usage_msg =
@@ -174,7 +154,6 @@ read the man page virt-customize(1).
 
   (* Dereference the rest of the args. *)
   let attach = List.rev !attach in
-  let debug_gc = !debug_gc in
   let dryrun = !dryrun in
   let memsize = !memsize in
   let network = !network in
@@ -239,10 +218,7 @@ read the man page virt-customize(1).
 
   message (f_"Finishing off");
   g#shutdown ();
-  g#close ();
-
-  if debug_gc then
-    Gc.compact ()
+  g#close ()
 
 (* Finished. *)
 let () = run_main_and_handle_errors main
