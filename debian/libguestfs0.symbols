@@ -89,6 +89,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_btrfs_qgroup_show@Base 1:1.29.16
  guestfs_btrfs_quota_enable@Base 1:1.29.16
  guestfs_btrfs_quota_rescan@Base 1:1.29.16
+ guestfs_btrfs_replace@Base 1:1.29.48
  guestfs_btrfs_rescue_chunk_recover@Base 1:1.29.22
  guestfs_btrfs_rescue_super_recover@Base 1:1.29.22
  guestfs_btrfs_scrub_cancel@Base 1:1.29.22
@@ -109,7 +110,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_btrfs_subvolume_snapshot_opts@Base 1:1.29.11
  guestfs_btrfs_subvolume_snapshot_opts_argv@Base 1:1.29.11
  guestfs_btrfs_subvolume_snapshot_opts_va@Base 1:1.29.11
- guestfs_c_pointer@Base 1:1.29.15
+ guestfs_c_pointer@Base 1:1.28.5
  guestfs_canonical_device_name@Base 1:1.20
  guestfs_cap_get_file@Base 1:1.20
  guestfs_cap_set_file@Base 1:1.20
@@ -798,6 +799,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_set_tmpdir@Base 1:1.20
  guestfs_set_trace@Base 1.10
  guestfs_set_uuid@Base 1:1.23.10
+ guestfs_set_uuid_random@Base 1:1.29.50
  guestfs_set_verbose@Base 1.10
  guestfs_setcon@Base 1.10
  guestfs_setxattr@Base 1.10
