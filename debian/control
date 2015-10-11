@@ -487,7 +487,7 @@ Description: guest disk image management system - GObject introspection files
 Package: lua-guestfs
 Architecture: linux-any
 Multi-Arch: same
-Pre-Depends: multiarch-support
+Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Provides: ${lua:Provides}
 XB-Lua-Versions: ${lua:Versions}
