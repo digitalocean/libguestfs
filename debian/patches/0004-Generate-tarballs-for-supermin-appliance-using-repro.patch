@@ -7,11 +7,11 @@ Subject: Generate tarballs for supermin appliance using reproducible timestamp
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/appliance/Makefile.am b/appliance/Makefile.am
-index 3135219..95450ad 100644
+index d47fd23..75b0390 100644
 --- a/appliance/Makefile.am
 +++ b/appliance/Makefile.am
-@@ -84,7 +84,7 @@ supermin.d/daemon.tar.gz: ../daemon/guestfsd guestfsd.suppressions guestfs_lvm_c
- 	ln $(srcdir)/guestfsd.suppressions tmp-d/etc/guestfsd.suppressions
+@@ -79,7 +79,7 @@ supermin.d/daemon.tar.gz: ../daemon/guestfsd guestfs_lvm_conf.aug guestfs_shadow
+ 	ln ../daemon/guestfsd tmp-d$(DAEMON_SUPERMIN_DIR)/guestfsd
  	ln $(srcdir)/guestfs_lvm_conf.aug tmp-d/usr/share/guestfs/guestfs_lvm_conf.aug
  	ln $(srcdir)/guestfs_shadow.aug tmp-d/usr/share/guestfs/guestfs_shadow.aug
 -	( cd tmp-d && tar zcf - * ) > $@-t
@@ -19,7 +19,7 @@ index 3135219..95450ad 100644
  	rm -r tmp-d
  	mv $@-t $@
  
-@@ -105,7 +105,7 @@ supermin.d/hostfiles: hostfiles.in Makefile
+@@ -100,7 +100,7 @@ supermin.d/hostfiles: hostfiles.in Makefile
  
  supermin.d/init.tar.gz: init
  	rm -f $@ $@-t
@@ -28,7 +28,7 @@ index 3135219..95450ad 100644
  	mv $@-t $@
  
  # We should put this file in /lib/udev/rules.d, but put it in /etc so
-@@ -115,7 +115,7 @@ supermin.d/udev-rules.tar.gz: 99-guestfs-serial.rules
+@@ -110,7 +110,7 @@ supermin.d/udev-rules.tar.gz: 99-guestfs-serial.rules
  	rm -rf tmp-u
  	mkdir -p tmp-u/etc/udev/rules.d
  	for f in $^; do ln $$f tmp-u/etc/udev/rules.d/$$(basename $$f); done
