@@ -1,3 +1,202 @@
+commit 59f5fdbb90c9e28c937ec6906e7cc8df78dbf765
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Oct 25 20:53:42 2015 +0000
+
+    Version 1.30.4.
+
+commit d45216b61fc727d2280e8213df7a1d95659a492a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 21 15:45:27 2015 +0100
+
+    p2v: Set the virt-p2v ISO timeout to 60 seconds (not 6 seconds).
+    
+    Thanks: Dennis Gilmore.
+    (cherry picked from commit 9ecfd8a94f40256b0935d85d7f0369eb9cf7b936)
+
+commit 39d075348c83b4ac8165193f7d33cb7791570b92
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 21 15:20:06 2015 +0100
+
+    p2v: Add dracut-live to the kickstart (RHBZ#1168223).
+    
+    Thanks: Dennis Gilmore for working out what was missing.
+    (cherry picked from commit 34d1b2678b04ad506092ee0f5a7bd2f87fe7cbd0)
+
+commit 4ed63c70f19dadd4e91140e1a6c21481548a1b7d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 21 10:36:07 2015 +0100
+
+    guestfs-performance: Add a note about Xen dom0.
+    
+    (cherry picked from commit eb36df827bcb87753b3487dea95981e1c43e1bb4)
+
+commit a7ff543653911b79d81898c5abcda528b69497b8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 21 10:35:03 2015 +0100
+
+    guestfs-performance: Use lowercase in =head2 sections.
+    
+    Makes it easier to read.
+    
+    (cherry picked from commit 0294b1f9b2456f4452f7db8f57b79c5b83ded9c4)
+
+commit 333e7ed1a0e4dbcf3a03d6905750454f505d1bb0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 14 16:44:52 2015 +0100
+
+    lib: Add comment and regression test for case where main process has large heap.
+    
+    Thanks: Dan Berrangé for identifying the problem.
+    (cherry picked from commit 2cb86bc4dcc49915588f5ba1bef8cb5c2714cd66)
+
+commit 6a1bd097aa5f8cc61c30726b77575e3fbce89435
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 14 16:25:56 2015 +0100
+
+    lib: info: Move common code for setting child rlimits.
+    
+    This is almost just refactoring, but I also set the memory
+    limit to really 1 GB, and not 1×10⁹.
+    
+    (cherry picked from commit 25bde98cb1fd485a435593e2f9b7a5d7a2fc87fb)
+
+commit 9a42f2b5357ec27fd16869e4a549d224e8048e7c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 14 14:45:48 2015 +0100
+
+    v2v: test harness: Suggest using make check -k.
+    
+    (cherry picked from commit 3bf70226f64205f7324f755af64ab927cff0bd5a)
+
+commit f4ce6fcfdd60d9426dab928a26ae747226afe2c3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 14 14:45:29 2015 +0100
+
+    v2v: test harness: Use I<> quoting around command line parameter.
+    
+    (cherry picked from commit b486ae16310f03c89c2d37b317efd7f4ce71ac55)
+
+commit f62a501d07fe64e7006d86caa79ea4920f0bf0cb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 9 17:46:36 2015 +0100
+
+    v2v: -i libvirt: Fix comment.
+    
+    (cherry picked from commit 9090408ea181595239bff2128edd6eca3c55e71a)
+
+commit f1b6c3669fb105c8ddf10c59968ed577f9a0d26c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 9 13:20:57 2015 +0100
+
+    v2v: Fix bogus comment.
+    
+    (cherry picked from commit 6fb4428358c3a210792c285bb33263b8404d33ee)
+
+commit ecf502745bf96ad2e27f3ca608247ce815bfb389
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 8 20:09:03 2015 +0100
+
+    v2v: Add xpath_int64 functions, and use them to read memory values.
+    
+    On 32 bit platforms, reading the memory values can cause some numbers
+    to be read as negative numbers.  Fix this by treating memory values as
+    64 bit integers throughout the parsing and calculation.
+    
+    (cherry picked from commit 108c8173fa7648d3f8567a69979a5aca3b989df9)
+
+commit 83ade0a73750993fbf4fdb82a5cada352dd36a53
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Oct 8 16:31:54 2015 +0200
+
+    build: use libintl where needed
+    
+    Followup of commit a5426cce5faa0fde0de1b62c8646cb8a9992ef2b.
+    
+    (cherry picked from commit 0f414edd11fe5dc57f997e844e6d032638abca8b)
+
+commit 835261ceeb1b996ec17a423e118f527c5623ff10
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Oct 8 13:34:03 2015 +0200
+
+    fuse: test-fuse: close files even on errors
+    
+    Make sure to close the open files even when test_fuse() returns earlier
+    because of failures, otherwise the mountpoint is still in use by open
+    files when later guestunmount is called on it.
+    
+    (cherry picked from commit 4d3466af6861511e74937369dca803e3273863ce)
+
+commit 465259356ebf6e81de1243f75bbbd705e545fba1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 7 17:26:01 2015 +0100
+
+    v2v: Skip test-v2v-o-libvirt.sh on !x86_64.
+    
+    (cherry picked from commit 411e8e30e7bdbf814df3920dd2a0787bed66b2ce)
+
+commit b98f0c5f84a30c8cae100f3d71d04c842130c26d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 7 14:15:05 2015 +0100
+
+    ocaml/examples: Remove all programs in 'make clean'.
+    
+    Previously the debug_logging program was not being deleted.
+    
+    (cherry picked from commit a332e23dde6f3c0405a6df638184053174cd7fc0)
+
+commit 10913ca52cc94385499adc593b6d67f317eb17a2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 6 12:23:21 2015 +0100
+
+    mllib: Don't alias G = Guestfs in Common_utils module.
+    
+    (cherry picked from commit 7d7a1aeeac0064ed56639c3129e08a70766248e1)
+
+commit e341652f04b07a5ff18fd38afce74307241641b4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 6 11:47:08 2015 +0100
+
+    tests: Don't leave a libguestfs tmpdir lying around after running test-launch-race.pl.
+    
+    Calling _exit(2) in the child process has the side effect that
+    tmp/libguestfsXXXXXX is not cleaned up.  Clean it up by ensuring the
+    handle is properly closed before _exit.
+    
+    (cherry picked from commit bdedb47cf0cc42c7bce3bdba0f699168c4d6c2f1)
+
+commit dd400ecdf6c67e030ee4e199039dd11b7246b279
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 6 11:35:54 2015 +0100
+
+    tests: Fix test-launch-race.
+    
+    This test has been broken for a while.  It is meant to test that when
+    the appliance cachedir is empty, two simultaneous runs of libguestfs
+    (both rebuilding the full appliance) will not cause conflicts, because
+    (eg) the locking in either supermin or libguestfs is not working.
+    
+    However the test only set $TMPDIR, but the ./run script sets
+    $LIBGUESTFS_CACHEDIR which overrides $TMPDIR, so it was simply reusing
+    the existing appliance, and hence not testing anything.
+    
+    Fix this by clearing $LIBGUESTFS_CACHEDIR.
+    
+    Note the test now takes a lot longer to run since it does a full
+    appliance rebuild.
+    
+    (cherry picked from commit 3b5600158333919b4eedbd802b649b55ebc8c01f)
+
+commit 674e72d9ccac4ae7393e324255d023d790e327eb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 6 11:22:21 2015 +0100
+
+    builder: Remove duplicate planner transition.
+    
+    Seems to be a copy and paste bug in
+    commit 62cc7d3361127b4e007f8e23028213852be09124.
+    
+    (cherry picked from commit cab3d5d2f6c02765368450008e1e77c5e29cb04c)
+
 commit 088a39230ad1afea649b3d52e8b437d2ddf4ac8e
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Oct 6 23:19:53 2015 +0100
